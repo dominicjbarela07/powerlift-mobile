@@ -101,7 +101,6 @@ export default function LinkCoachScreen() {
     <ThemedView
       style={{
         flex: 1,
-        paddingHorizontal: 20,
         backgroundColor: '#020617',
       }}
     >

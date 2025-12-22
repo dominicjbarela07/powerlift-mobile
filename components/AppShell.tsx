@@ -1,4 +1,3 @@
-// powerlift_mobile/components/AppShell.tsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
@@ -11,7 +10,6 @@ type Props = {
 export function AppShell({ children }: Props) {
   return (
     <ThemedView style={styles.screen}>
-      <AppHeader />
       <View style={styles.body}>
         {children}
       </View>
@@ -26,7 +24,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 24,
   },

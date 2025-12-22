@@ -9,6 +9,55 @@ export const API_BASE = (
   'https://strength-coach-ui.onrender.com'
 ).replace(/\/$/, '');
 
+type FetchJsonResult<T> = {
+  ok: boolean;
+  status: number;
+  json: T | null;
+  raw: string;
+};
+
+export async function fetchJson<T = any>(
+  path: string,
+  init: RequestInit = {}
+): Promise<FetchJsonResult<T>> {
+  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+
+  const res = await fetch(url, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(init.headers || {}),
+    },
+    // Mobile is using Flask session cookies in prod
+    credentials: init.credentials ?? 'include',
+  });
+
+  let raw = '';
+  try {
+    raw = await res.text();
+  } catch {
+    raw = '';
+  }
+
+  const trimmed = raw.trim();
+  let json: T | null = null;
+  if (trimmed.length > 0) {
+    try {
+      json = JSON.parse(trimmed) as T;
+    } catch (e) {
+      console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
+      json = null;
+    }
+  }
+
+  return {
+    ok: res.ok,
+    status: res.status,
+    json,
+    raw,
+  };
+}
+
 export type ApiLoginResponse = {
   ok: boolean;
   error?: string;
@@ -25,22 +74,19 @@ export type ApiLoginResponse = {
 // ------- LOGIN --------------------------------------------------------------
 export async function loginRequest(email: string, password: string): Promise<ApiLoginResponse> {
   try {
-    const res = await fetch(`${API_BASE}/auth/login-mobile`, {
+    const r = await fetchJson<any>(`/auth/login-mobile`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // so Flask session cookie is stored
       body: JSON.stringify({ email, password }),
+      credentials: 'include',
     });
 
-    const json = await res.json().catch(() => ({} as any));
+    const json = r.json || ({} as any);
     console.log('Login OK raw:', json);
 
-    if (!res.ok || !json.ok) {
+    if (!r.ok || !json.ok) {
       return {
         ok: false,
-        error: json.error || `HTTP ${res.status}`,
+        error: json.error || `HTTP ${r.status}`,
       };
     }
 
@@ -56,12 +102,12 @@ export async function loginRequest(email: string, password: string): Promise<Api
 
 export async function logoutRequest() {
   try {
-    const res = await fetch(`${API_BASE}/auth/logout-mobile`, {
+    const r = await fetchJson<any>(`/auth/logout-mobile`, {
       method: 'POST',
-      credentials: 'include',   // clears session cookie
+      credentials: 'include',
     });
 
-    return { ok: res.ok };
+    return { ok: r.ok };
   } catch (e) {
     return { ok: false };
   }
@@ -77,18 +123,18 @@ export async function getAthleteDashboard(): Promise<{
   recent_workouts?: any[];
 }> {
   try {
-    const res = await fetch(`${API_BASE}/athletes/mobile/dashboard`, {
+    const r = await fetchJson<any>(`/athletes/mobile/dashboard`, {
       method: 'GET',
-      credentials: 'include', // send session cookie
+      credentials: 'include',
     });
 
-    const json = await res.json().catch(() => ({} as any));
+    const json = r.json || ({} as any);
 
-    if (!res.ok || !json.ok) {
-      console.log('Dashboard API not ok:', res.status, json);
+    if (!r.ok || !json.ok) {
+      console.log('Dashboard API not ok:', r.status, json || r.raw?.slice(0, 200));
       return {
         ok: false,
-        error: json.error || `HTTP ${res.status}`,
+        error: json.error || `HTTP ${r.status}`,
       };
     }
 
@@ -121,19 +167,18 @@ export async function getAthleteWorkouts(): Promise<{
   unassigned_completed?: any[];
 }> {
   try {
-    // Must match: @workouts_bp.get("/my_list/mobile")
-    const res = await fetch(`${API_BASE}/workouts/my_list/mobile`, {
+    const r = await fetchJson<any>(`/workouts/my_list/mobile`, {
       method: 'GET',
       credentials: 'include',
     });
 
-    const json = await res.json().catch(() => ({} as any));
+    const json = r.json || ({} as any);
 
-    if (!res.ok || !json.ok) {
-      console.log('Workouts API not ok:', res.status, json);
+    if (!r.ok || !json.ok) {
+      console.log('Workouts API not ok:', r.status, json || r.raw?.slice(0, 200));
       return {
         ok: false,
-        error: json.error || `HTTP ${res.status}`,
+        error: json.error || `HTTP ${r.status}`,
       };
     }
 

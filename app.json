@@ -1,15 +1,19 @@
 {
   "expo": {
-    "name": "powerlift_mobile",
+    "name": "Strength Ledger",
     "slug": "powerlift_mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/st_ledger_icon.png",
     "scheme": "powerliftmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dominicbarela.strengthcoachui",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -43,6 +47,18 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7afb1a4b-46b6-4295-b33f-816b05589e81"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7afb1a4b-46b6-4295-b33f-816b05589e81"
     }
   }
 }

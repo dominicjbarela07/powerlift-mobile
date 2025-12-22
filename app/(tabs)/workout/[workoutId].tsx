@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  AppState,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
@@ -49,6 +50,19 @@ type WorkoutItem = {
   superset_group: string | null;
   superset_pos: number | null;
   set_logs: SetLog[];
+  // Optional lookback / history (provided by backend when available)
+  lookback_best?: {
+    workout_id?: number | null;
+    date?: string | null;
+    label?: string | null;
+    actual_weight_kg?: number | null;
+    actual_reps?: number | null;
+    actual_rpe?: number | null;
+    actual_rir?: number | null;
+  } | null;
+  // Backwards-compat aliases some endpoints may use
+  last_best?: WorkoutItem['lookback_best'];
+  prev_best?: WorkoutItem['lookback_best'];
   parent_item_id?: number | null;
 };
 
@@ -59,6 +73,11 @@ type AccessoryGroup = {
 
 type WorkoutPayload = {
   ok: boolean;
+  permissions?: {
+    can_log: boolean;
+    can_coach: boolean;
+    is_self_coached: boolean;
+  };
   workout: {
     id: number;
     athlete_id: number;
@@ -121,6 +140,7 @@ function prettyStatus(status?: string | null) {
   return status.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+
 function liftDisplayName(core: WorkoutItem): string {
   // Mirror the Jinja logic for core lift names
   if ((core.variant === 'VR' || core.lift === 'VR') && core.movement) {
@@ -132,6 +152,32 @@ function liftDisplayName(core: WorkoutItem): string {
   if (core.lift === 'DL') return 'Comp Deadlift';
 
   return core.movement || core.lift;
+}
+
+function getLookbackBest(it: any) {
+  return it?.lookback_best || it?.last_best || it?.prev_best || null;
+}
+
+function formatLookbackLine(best: any, unit: 'kg' | 'lb') {
+  if (!best) return null;
+
+  // Support both shapes:
+  // 1) { actual_weight_kg, actual_reps, actual_rpe, actual_rir, date }
+  // 2) { weight_kg, reps, rpe, rir, date }
+  const w = best.actual_weight_kg ?? best.weight_kg ?? null;
+  const reps = best.actual_reps ?? best.reps ?? null;
+  const rpe = best.actual_rpe ?? best.rpe ?? null;
+  const rir = best.actual_rir ?? best.rir ?? null;
+  const dateStr = best.date ? String(best.date).slice(0, 10) : null;
+
+  if (w == null || reps == null) return null;
+
+  let line = `Last best: ${formatWeight(w, unit)} ${unit} × ${reps}`;
+  if (rpe != null) line += ` @ RPE ${Number(rpe).toFixed(1)}`;
+  if (rir != null) line += ` (RIR ${rir})`;
+  if (dateStr) line += ` · ${dateStr}`;
+
+  return line;
 }
 
 export default function WorkoutViewerScreen() {
@@ -178,6 +224,7 @@ export default function WorkoutViewerScreen() {
   const [restSeconds, setRestSeconds] = useState(0);
   const [restActive, setRestActive] = useState(false);
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const restEndAtMsRef = useRef<number | null>(null);
 
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
@@ -199,6 +246,10 @@ export default function WorkoutViewerScreen() {
       clearInterval(restTimerRef.current);
       restTimerRef.current = null;
     }
+
+    const endAt = Date.now() + seconds * 1000;
+    restEndAtMsRef.current = endAt;
+
     setRestSeconds(seconds);
     setRestActive(true);
   };
@@ -208,6 +259,7 @@ export default function WorkoutViewerScreen() {
       clearInterval(restTimerRef.current);
       restTimerRef.current = null;
     }
+    restEndAtMsRef.current = null;
     setRestActive(false);
     setRestSeconds(0);
   };
@@ -219,10 +271,8 @@ export default function WorkoutViewerScreen() {
   };
 
   useEffect(() => {
-    if (!restActive || restSeconds <= 0) {
-      if (restActive && restSeconds <= 0) {
-        setRestActive(false);
-      }
+    // If timer isn't active or has no end timestamp, ensure interval is cleared
+    if (!restActive || !restEndAtMsRef.current) {
       if (restTimerRef.current) {
         clearInterval(restTimerRef.current);
         restTimerRef.current = null;
@@ -230,15 +280,30 @@ export default function WorkoutViewerScreen() {
       return;
     }
 
-    const id = setInterval(() => {
-      setRestSeconds((prev) => {
-        if (prev <= 1) {
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const tick = () => {
+      const remaining = Math.max(
+        0,
+        Math.ceil((restEndAtMsRef.current! - Date.now()) / 1000)
+      );
 
+      setRestSeconds(remaining);
+
+      if (remaining <= 0) {
+        setRestActive(false);
+        restEndAtMsRef.current = null;
+
+        if (restTimerRef.current) {
+          clearInterval(restTimerRef.current);
+          restTimerRef.current = null;
+        }
+      }
+    };
+
+    // Immediate sync so UI is correct right away
+    tick();
+
+    // Update frequently for smooth UI; uses end timestamp so background is fine
+    const id = setInterval(tick, 250);
     restTimerRef.current = id as any;
 
     return () => {
@@ -247,7 +312,26 @@ export default function WorkoutViewerScreen() {
         restTimerRef.current = null;
       }
     };
-  }, [restActive, restSeconds]);
+  }, [restActive]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && restActive && restEndAtMsRef.current) {
+        const remaining = Math.max(
+          0,
+          Math.ceil((restEndAtMsRef.current - Date.now()) / 1000)
+        );
+        setRestSeconds(remaining);
+
+        if (remaining <= 0) {
+          setRestActive(false);
+          restEndAtMsRef.current = null;
+        }
+      }
+    });
+
+    return () => sub.remove();
+  }, [restActive]);
 
 
 
@@ -300,11 +384,16 @@ export default function WorkoutViewerScreen() {
     if (!workoutId || !data) return;
 
     const input = straightInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit = parseFloat(input.weight);
+    let weightInUnit =
+      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
-    if (!weightInUnit || weightInUnit <= 0) {
+    if (Number.isNaN(weightInUnit)) {
       setError('Enter a valid weight');
+      return;
+    }
+    if (weightInUnit <= 0) {
+      setError('Weight required');
       return;
     }
 
@@ -358,10 +447,11 @@ export default function WorkoutViewerScreen() {
     if (!workoutId || !data) return;
 
     const input = topInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit = parseFloat(input.weight);
+    let weightInUnit =
+      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
-    if (!weightInUnit || weightInUnit <= 0 || rpe == null) {
+    if (Number.isNaN(weightInUnit) || weightInUnit <= 0 || rpe == null) {
       setError(`Enter a valid top set: weight (${unit}) and RPE`);
       return;
     }
@@ -416,11 +506,16 @@ export default function WorkoutViewerScreen() {
     if (!workoutId || !data) return;
 
     const input = bkInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit = parseFloat(input.weight);
+    let weightInUnit =
+      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
-    if (!weightInUnit || weightInUnit <= 0) {
+    if (Number.isNaN(weightInUnit)) {
       setError(`Enter a valid backdown set weight (${unit})`);
+      return;
+    }
+    if (weightInUnit <= 0) {
+      setError(`Weight required`);
       return;
     }
 
@@ -507,11 +602,12 @@ export default function WorkoutViewerScreen() {
     if (!workoutId || !data) return;
 
     const input = accInputs[itemId] || { weight: '', reps: '', rir: '' };
-    let weightInUnit = parseFloat(input.weight);
+    let weightInUnit =
+      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
     const reps = parseInt(input.reps, 10);
     const rir = input.rir && input.rir.trim() !== '' ? parseFloat(input.rir) : null;
 
-    if (!weightInUnit || weightInUnit <= 0 || !reps || reps <= 0) {
+    if (Number.isNaN(weightInUnit) || !reps || reps <= 0) {
       setError(`Enter a valid accessory weight (${unit}) and reps`);
       return;
     }
@@ -663,6 +759,11 @@ export default function WorkoutViewerScreen() {
   const beginWorkout = async () => {
     if (!data?.workout) return;
     const wkId = data.workout.id;
+
+    if (!canLogFromServer) {
+      Alert.alert('Read-only', 'You do not have permission to log this workout on mobile.');
+      return;
+    }
 
     try {
       setActionLoading('begin');
@@ -853,7 +954,7 @@ export default function WorkoutViewerScreen() {
     );
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
       <View style={styles.center}>
         <ThemedText variant="error" style={styles.errorText}>
@@ -864,21 +965,68 @@ export default function WorkoutViewerScreen() {
   }
 
   const { workout, athlete } = data;
+  const canLogFromServer = !!data.permissions?.can_log;
+  const canLog = canLogFromServer && workout.status === 'in_progress';
+  const canBegin = canLogFromServer && workout.status === 'assigned';
+  const canCompleteOrCancel =
+    canLogFromServer &&
+    (workout.status === 'in_progress' || workout.status === 'completed');
+
   const statusStyle =
     (workout.status && STATUS_STYLES[workout.status]) || STATUS_STYLES.assigned;
 
+
   return (
     <View style={styles.screen}>
-      {/* Global rest timer control (pinned) */}
-      {workout.status === 'in_progress' && (
-        <View style={styles.timerBarWrapper}>
-          <View style={styles.timerBar}>
-            <Text style={styles.timerLabel}>
-              {restActive && restSeconds > 0
-                ? `Rest timer: ${formatRestTime(restSeconds)}`
-                : 'No rest timer active'}
-            </Text>
-            <View style={styles.timerButtonsRow}>
+      {/* Pinned top bar: unit toggle and rest timer (inline) */}
+      <View style={styles.pinnedTopBar}>
+        <View style={styles.topBarRow}>
+          {/* Unit toggle */}
+          <View style={styles.unitToggleRowInline}>
+            <View style={styles.unitTogglePill}>
+              <TouchableOpacity
+                style={[
+                  styles.unitToggleOption,
+                  unit === 'kg' && styles.unitToggleOptionActive,
+                ]}
+                onPress={() => setUnit('kg')}
+              >
+                <Text
+                  style={[
+                    styles.unitToggleText,
+                    unit === 'kg' && styles.unitToggleTextActive,
+                  ]}
+                >
+                  kg
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.unitToggleOption,
+                  unit === 'lb' && styles.unitToggleOptionActive,
+                ]}
+                onPress={() => setUnit('lb')}
+              >
+                <Text
+                  style={[
+                    styles.unitToggleText,
+                    unit === 'lb' && styles.unitToggleTextActive,
+                  ]}
+                >
+                  lb
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Rest timer */}
+          {canLog && (
+            <View style={styles.timerInline}>
+              <Text style={styles.timerLabelInline}>
+                {restActive && restSeconds > 0
+                  ? formatRestTime(restSeconds)
+                  : '—'}
+              </Text>
               {!restActive ? (
                 <TouchableOpacity
                   style={styles.timerButton}
@@ -895,9 +1043,9 @@ export default function WorkoutViewerScreen() {
                 </TouchableOpacity>
               )}
             </View>
-          </View>
+          )}
         </View>
-      )}
+      </View>
 
       {/* Scrollable workout content */}
       <ScrollView
@@ -941,67 +1089,41 @@ export default function WorkoutViewerScreen() {
           )}
         </View>
 
-        {/* Global unit toggle */}
-        <View style={styles.unitToggleRow}>
-          <Text style={styles.unitLabel}>Units</Text>
-          <View style={styles.unitTogglePill}>
+        {/* Inline error banner (below header) */}
+        {!!error && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorBannerText}>{error}</Text>
             <TouchableOpacity
-              style={[
-                styles.unitToggleOption,
-                unit === 'kg' && styles.unitToggleOptionActive,
-              ]}
-              onPress={() => setUnit('kg')}
+              onPress={() => setError(null)}
+              style={styles.errorBannerClose}
+              accessibilityLabel="Dismiss error"
             >
-              <Text
-                style={[
-                  styles.unitToggleText,
-                  unit === 'kg' && styles.unitToggleTextActive,
-                ]}
-              >
-                kg
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.unitToggleOption,
-                unit === 'lb' && styles.unitToggleOptionActive,
-              ]}
-              onPress={() => setUnit('lb')}
-            >
-              <Text
-                style={[
-                  styles.unitToggleText,
-                  unit === 'lb' && styles.unitToggleTextActive,
-                ]}
-              >
-                lb
-              </Text>
+              <Text style={styles.errorBannerCloseText}>✕</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        )}
 
-        {/* Athlete actions: Begin / Complete / Cancel */}
-        {user?.role === 'athlete' && (
+
+        {/* Athlete actions: Begin */}
+        {canBegin && (
           <View style={styles.actionBar}>
-            {workout.status === 'assigned' && (
-              <TouchableOpacity
-                style={[
-                  styles.actionButton,
-                  styles.actionPrimary,
-                  actionLoading === 'begin' && { opacity: 0.7 },
-                ]}
-                onPress={beginWorkout}
-                disabled={!!actionLoading}
-              >
-                {actionLoading === 'begin' ? (
-                  <ActivityIndicator size="small" color="#020617" />
-                ) : (
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                    Begin Workout
-                  </Text>
-                )}
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.actionPrimary,
+                actionLoading === 'begin' && { opacity: 0.7 },
+              ]}
+              onPress={beginWorkout}
+              disabled={!!actionLoading}
+            >
+              {actionLoading === 'begin' ? (
+                <ActivityIndicator size="small" color="#020617" />
+              ) : (
+                <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                  Begin Workout
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
         )}
 
@@ -1033,9 +1155,8 @@ export default function WorkoutViewerScreen() {
                   )
                 : [];
 
-            // treat any logged-in athlete as the self-athlete for now
-            const isSelfAthlete = !!user && user.role === 'athlete';
-            const canLog = isSelfAthlete && workout.status === 'in_progress';
+            // Logging allowed only when server says this user can log AND workout is in progress
+            const canLog = canLogFromServer && workout.status === 'in_progress';
 
             // straight-style logs (STRAIGHT/VR items only)
             const logs = core.set_logs || [];
@@ -1413,8 +1534,7 @@ export default function WorkoutViewerScreen() {
                     const totalSets = it.sets || 0;
                     const loggedCount = logs.length;
                     const nextIndex = loggedCount + 1;
-                    const canLog =
-                      user?.role === 'athlete' && workout.status === 'in_progress';
+                    const canLog = canLogFromServer && workout.status === 'in_progress';
 
                     return (
                       <View key={it.id} style={styles.supersetRow}>
@@ -1433,6 +1553,12 @@ export default function WorkoutViewerScreen() {
                             </Text>
                           )}
                         </Text>
+                        {(() => {
+                          const best = getLookbackBest(it);
+                          const line = formatLookbackLine(best, unit);
+                          if (!line) return null;
+                          return <Text style={styles.lookbackText}>{line}</Text>;
+                        })()}
 
                         <View style={styles.setLogsBlock}>
                           {Array.from({ length: totalSets }).map((_, idx) => {
@@ -1538,8 +1664,7 @@ export default function WorkoutViewerScreen() {
               const totalSets = it.sets || 0;
               const loggedCount = logs.length;
               const nextIndex = loggedCount + 1;
-              const canLog =
-                user?.role === 'athlete' && workout.status === 'in_progress';
+              const canLog = canLogFromServer && workout.status === 'in_progress';
 
               return (
                 <View key={it.id} style={styles.accCard}>
@@ -1558,6 +1683,12 @@ export default function WorkoutViewerScreen() {
                       </Text>
                     )}
                   </Text>
+                  {(() => {
+                    const best = getLookbackBest(it);
+                    const line = formatLookbackLine(best, unit);
+                    if (!line) return null;
+                    return <Text style={styles.lookbackText}>{line}</Text>;
+                  })()}
 
                   <View style={styles.setLogsBlock}>
                     {Array.from({ length: totalSets }).map((_, idx) => {
@@ -1656,9 +1787,7 @@ export default function WorkoutViewerScreen() {
           })}
         </View>
         {/* Bottom-of-page actions: Complete / Cancel */}
-        {user?.role === 'athlete' &&
-          (workout.status === 'in_progress' ||
-            workout.status === 'completed') && (
+        {canCompleteOrCancel && (
             <View style={[styles.actionBar, { marginTop: 16, marginBottom: 24 }]}>
               {workout.status === 'in_progress' && (
                 <TouchableOpacity
@@ -1803,7 +1932,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
     backgroundColor: '#020617', // near-black (matches app)
   },
 
@@ -2023,6 +2151,13 @@ const styles = StyleSheet.create({
     color: '#facc15',
   },
 
+  lookbackText: {
+    marginTop: 6,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#cbd5e1',
+  },
+
   setLogsBlock: {
     marginTop: 10,
     borderTopWidth: 1,
@@ -2131,9 +2266,31 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 8,
   },
-  unitLabel: {
-    fontSize: 12,
-    color: '#94a3b8',
+  // --- new styles for inline top bar ---
+  topBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(148,163,184,0.3)',
+  },
+  unitToggleRowInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  timerInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  timerLabelInline: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#e5e7eb',
+    minWidth: 44,
+    textAlign: 'right',
   },
   unitTogglePill: {
     flexDirection: 'row',
@@ -2169,7 +2326,8 @@ const styles = StyleSheet.create({
   },
   timerLabel: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 16,
+    fontWeight: '600',
     color: '#e5e7eb',
   },
   timerButtonsRow: {
@@ -2236,5 +2394,42 @@ const styles = StyleSheet.create({
   timerPickerCancel: {
     marginTop: 8,
     alignSelf: 'flex-start',
+  },
+    pinnedTopBar: {
+    backgroundColor: '#020617',
+    zIndex: 10,
+  },
+  errorBanner: {
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignSelf: 'stretch',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.7)',
+    backgroundColor: 'rgba(127,29,29,0.35)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  errorBannerText: {
+    flex: 1,
+    color: '#fecaca',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  errorBannerClose: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.6)',
+    backgroundColor: 'rgba(127,29,29,0.6)',
+  },
+  errorBannerCloseText: {
+    color: '#fecaca',
+    fontSize: 12,
+    fontWeight: '800',
   },
 });

@@ -2,13 +2,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { getAthleteWorkouts } from '@/lib/api';
+import { API_BASE } from '@/lib/api';
 
 export default function WorkoutsScreen() {
   const router = useRouter(); 
+  const params = useLocalSearchParams<{ athleteId?: string; athleteName?: string }>();
+  const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
+  const rosterAthleteName = params.athleteName ? String(params.athleteName) : null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [athlete, setAthlete] = useState<any | null>(null);
@@ -26,7 +29,25 @@ export default function WorkoutsScreen() {
       setLoading(true);
       setError(null);
 
-      const res = await getAthleteWorkouts();
+      const endpoint = rosterAthleteId
+        ? `${API_BASE}/workouts/my_list/mobile/${rosterAthleteId}`
+        : `${API_BASE}/workouts/my_list/mobile`;
+
+      const httpRes = await fetch(endpoint, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      let res: any;
+      try {
+        res = await httpRes.json();
+      } catch {
+        res = { ok: false, error: `HTTP ${httpRes.status}` };
+      }
+
+      if (!httpRes.ok) {
+        res = { ...(res || {}), ok: false, error: res?.error || `HTTP ${httpRes.status}` };
+      }
 
       if (cancelled) return;
 
@@ -61,7 +82,7 @@ export default function WorkoutsScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [rosterAthleteId]);
 
   const firstName =
     athlete?.name?.split(' ')[0] || 'Athlete';
@@ -139,7 +160,9 @@ export default function WorkoutsScreen() {
       <ThemedView style={styles.screen}>
 
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ThemedText variant="h1" style={styles.pageTitle}>My Workouts</ThemedText>
+          <ThemedText variant="h1" style={styles.pageTitle}>
+            {rosterAthleteName ? `Workouts · ${rosterAthleteName}` : 'My Workouts'}
+          </ThemedText>
 
           {loading && (
             <ThemedText variant="bodyMuted" style={styles.metaText}>Loading workouts…</ThemedText>
@@ -163,7 +186,7 @@ export default function WorkoutsScreen() {
             <View style={{ gap: 12 }}>
               {blocks.map((b) => {
                 const collapseId = `completed-block-${b.id}`;
-                const collapsed = !!collapseState[collapseId];
+                const collapsed = collapseState[collapseId] ?? true;
                 const pending = (pendingMap as any)[b.id] || [];
                 const completed = (completedMap as any)[b.id] || [];
 
@@ -222,66 +245,68 @@ export default function WorkoutsScreen() {
           )}
 
           {/* Unassigned workouts card */}
-          {!loading && !error && hasAnyWorkouts && (
-            <View style={[styles.card, { marginTop: 12 }]}>
-              <View style={styles.cardHeaderRow}>
-                <ThemedText variant="h3" style={styles.cardTitle}>
-                  No Assigned Block
-                </ThemedText>
-                {unassignedPending.length === 0 &&
-                  unassignedCompleted.length === 0 && (
-                    <ThemedText variant="bodyMuted" style={styles.metaText}>
-                      No unassigned workouts
-                    </ThemedText>
-                  )}
-              </View>
-
-              <ThemedText variant="h3" style={styles.sectionHeader}>Pending</ThemedText>
-              {unassignedPending.length > 0 ? (
-                <View style={{ marginTop: 4 }}>
-                  {unassignedPending.map(renderWorkoutRow)}
+          {!loading &&
+            !error &&
+            (unassignedPending.length > 0 || unassignedCompleted.length > 0) && (
+              <View style={[styles.card, { marginTop: 12 }]}>
+                <View style={styles.cardHeaderRow}>
+                  <ThemedText variant="h3" style={styles.cardTitle}>
+                    No Assigned Block
+                  </ThemedText>
+                  {unassignedPending.length === 0 &&
+                    unassignedCompleted.length === 0 && (
+                      <ThemedText variant="bodyMuted" style={styles.metaText}>
+                        No unassigned workouts
+                      </ThemedText>
+                    )}
                 </View>
-              ) : (
-                <ThemedText variant="bodyMuted" style={styles.metaText}>
-                  No pending unassigned workouts.
-                </ThemedText>
-              )}
 
-              {unassignedCompleted.length > 0 && (
-                <View style={{ marginTop: 12 }}>
-                  {(() => {
-                    const collapseId = 'completed-unassigned';
-                    const collapsed = !!collapseState[collapseId];
-                    return (
-                      <View>
-                        <View style={styles.collapsibleHeaderRow}>
-                          <ThemedText variant="h3" style={styles.sectionHeader}>
-                            Completed{' '}
-                            <ThemedText variant="bodyMuted" style={styles.metaText}>
-                              ({unassignedCompleted.length})
+                <ThemedText variant="h3" style={styles.sectionHeader}>Pending</ThemedText>
+                {unassignedPending.length > 0 ? (
+                  <View style={{ marginTop: 4 }}>
+                    {unassignedPending.map(renderWorkoutRow)}
+                  </View>
+                ) : (
+                  <ThemedText variant="bodyMuted" style={styles.metaText}>
+                    No pending unassigned workouts.
+                  </ThemedText>
+                )}
+
+                {unassignedCompleted.length > 0 && (
+                  <View style={{ marginTop: 12 }}>
+                    {(() => {
+                      const collapseId = 'completed-unassigned';
+                      const collapsed = !!collapseState[collapseId];
+                      return (
+                        <View>
+                          <View style={styles.collapsibleHeaderRow}>
+                            <ThemedText variant="h3" style={styles.sectionHeader}>
+                              Completed{' '}
+                              <ThemedText variant="bodyMuted" style={styles.metaText}>
+                                ({unassignedCompleted.length})
+                              </ThemedText>
                             </ThemedText>
-                          </ThemedText>
-                          <Pressable
-                            style={styles.collapseBtn}
-                            onPress={() => toggleCollapse(collapseId)}
-                          >
-                            <ThemedText variant="h3" style={styles.collapseBtnText}>
-                              {collapsed ? '+' : '–'}
-                            </ThemedText>
-                          </Pressable>
-                        </View>
-                        {!collapsed && (
-                          <View style={{ marginTop: 6 }}>
-                            {unassignedCompleted.map(renderWorkoutRow)}
+                            <Pressable
+                              style={styles.collapseBtn}
+                              onPress={() => toggleCollapse(collapseId)}
+                            >
+                              <ThemedText variant="h3" style={styles.collapseBtnText}>
+                                {collapsed ? '+' : '–'}
+                              </ThemedText>
+                            </Pressable>
                           </View>
-                        )}
-                      </View>
-                    );
-                  })()}
-                </View>
-              )}
-            </View>
-          )}
+                          {!collapsed && (
+                            <View style={{ marginTop: 6 }}>
+                              {unassignedCompleted.map(renderWorkoutRow)}
+                            </View>
+                          )}
+                        </View>
+                      );
+                    })()}
+                  </View>
+                )}
+              </View>
+            )}
         </ScrollView>
       </ThemedView>
   );
@@ -297,7 +322,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#020617',
   },
   scroll: {
-    paddingHorizontal: 16,
     paddingBottom: 32,
   },
   pageTitle: {

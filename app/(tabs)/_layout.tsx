@@ -27,6 +27,14 @@ export default function TabsLayout() {
         <AppHeader
           firstName={firstName}
           onPressMenu={() => setMenuOpen((v) => !v)}
+          onPressLogo={() => {
+            setMenuOpen(false);
+            if (user?.is_coach) {
+              router.replace('/coach-dashboard');
+            } else {
+              router.replace('/(tabs)/athlete-dashboard');
+            }
+          }}
         />
 
         {/* 🔹 Menu dropdown (still controlled by state) */}
@@ -134,7 +142,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#020617',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 0,
   },
   menuCard: {

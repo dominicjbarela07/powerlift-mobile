@@ -6,10 +6,12 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Pressable,
 } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { API_BASE } from '@/lib/api';
+import { useRouter } from 'expo-router';
 
 type CoachRosterAthlete = {
   id: number;
@@ -34,6 +36,8 @@ export default function CoachRosterScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const loadRoster = async () => {
     try {
@@ -117,7 +121,16 @@ export default function CoachRosterScreen() {
               return 0;
             })
             .map((a) => (
-              <View key={a.id} style={styles.card}>
+              <Pressable
+                key={a.id}
+                style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/workouts',
+                    params: { athleteId: String(a.id), athleteName: a.name },
+                  })
+                }
+              >
                 {/* Name row */}
                 <View style={styles.row}>
                   <ThemedText variant="h3" style={styles.nameText}>{a.name}</ThemedText>
@@ -132,7 +145,7 @@ export default function CoachRosterScreen() {
                 <ThemedText variant="bodyMuted" style={styles.metaText}>
                   {a.sex || '—'} • BW {formatKg(a.bodyweight)}
                 </ThemedText>
-              </View>
+              </Pressable>
             ))}
         </ScrollView>
       )}
@@ -188,6 +201,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#1F2937',
     marginBottom: 10,
+  },
+  cardPressed: {
+    opacity: 0.85,
   },
   row: {
     flexDirection: 'row',

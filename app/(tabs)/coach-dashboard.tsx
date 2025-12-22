@@ -182,7 +182,6 @@ export default function CoachDashboardScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingHorizontal: 20,
     paddingTop: 32,
     paddingBottom: 24,
     backgroundColor: '#020617',

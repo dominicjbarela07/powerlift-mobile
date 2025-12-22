@@ -1,31 +1,41 @@
 // components/AppHeader.tsx
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 
 type AppHeaderProps = {
   firstName: string;
   onPressMenu?: () => void;
+  onPressLogo?: () => void;
 };
 
-export function AppHeader({ firstName, onPressMenu }: AppHeaderProps) {
+export function AppHeader({ firstName, onPressMenu, onPressLogo }: AppHeaderProps) {
   return (
     <View style={styles.container}>
-      {/* Menu */}
-      <Pressable style={styles.menuBtn} onPress={onPressMenu}>
-        <Text style={styles.menuText}>☰ Menu</Text>
-      </Pressable>
-
-      {/* Center Title */}
-      <View style={styles.titleWrap}>
-        <Text style={styles.titleLine}>Strength</Text>
-        <Text style={styles.titleLine}>Coach UI</Text>
+      {/* Menu (absolute left) */}
+      <View style={styles.leftSlot}>
+        <Pressable style={styles.menuBtn} onPress={onPressMenu}>
+          <Text style={styles.menuText}>☰ Menu</Text>
+        </Pressable>
       </View>
 
-      {/* Welcome */}
-      <View style={styles.welcomeBlock}>
-        <Text style={styles.welcomeLabel}>Welcome</Text>
-        <Text style={styles.welcomeName}>{firstName}</Text>
+      {/* Center Logo (absolute center) */}
+      <View style={styles.centerSlot}>
+        <Pressable onPress={onPressLogo} hitSlop={8}>
+          <Image
+            source={require('../assets/images/app_logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
+
+      {/* Welcome (absolute right) */}
+      <View style={styles.rightSlot}>
+        <View style={styles.welcomeBlock}>
+          <Text style={styles.welcomeLabel}>Welcome</Text>
+          <Text style={styles.welcomeName}>{firstName}</Text>
+        </View>
       </View>
     </View>
   );
@@ -33,11 +43,11 @@ export function AppHeader({ firstName, onPressMenu }: AppHeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    height: 56,
     paddingBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#020617',
+    justifyContent: 'center',
+    position: 'relative',
   },
   menuBtn: {
     padding: 6,
@@ -48,28 +58,51 @@ const styles = StyleSheet.create({
   },
   menuText: {
     color: '#E5E7EB',
-    fontSize: 14,
+    fontSize: 16,
   },
-  titleWrap: {
-    flex: 1,
+  leftSlot: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+  centerSlot: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
     alignItems: 'center',
   },
+  rightSlot: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
   titleLine: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: '700',
     color: '#F9FAFB',
-    lineHeight: 16,
+    lineHeight: 20,
   },
   welcomeBlock: {
     alignItems: 'flex-end',
   },
   welcomeLabel: {
-    fontSize: 10,
+    fontSize: 14,
     color: '#9CA3AF',
   },
   welcomeName: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '600',
     color: '#F9FAFB',
+  },
+  logo: {
+    height: 60,
+    width:60,
   },
 });
