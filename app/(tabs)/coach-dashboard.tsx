@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE } from '@/lib/api';
+import { fetchJson } from '@/lib/api';
 
 type CoachDashboardResponse = {
   ok: boolean;
@@ -20,7 +20,7 @@ type CoachDashboardResponse = {
 
 export default function CoachDashboardScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const [data, setData] = useState<CoachDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,17 +30,26 @@ export default function CoachDashboardScreen() {
   const loadDashboard = async () => {
     try {
       setError(null);
-      const res = await fetch(`${API_BASE}/coach/mobile/dashboard`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.ok) {
-        setError(json.error || 'Failed to load coach dashboard.');
+      if (!token) {
+        setError('Not authenticated. Please log in again.');
         return;
       }
-      setData(json);
+
+      const json: unknown = await fetchJson('/coach/mobile/dashboard', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const obj = json as any;
+      if (!obj || typeof obj !== 'object' || obj.ok !== true) {
+        const msg = obj?.error || 'Failed to load coach dashboard.';
+        setError(msg);
+        return;
+      }
+
+      setData(obj as CoachDashboardResponse);
     } catch (e) {
       console.log('Coach dashboard load error', e);
       setError('Network error. Please try again.');

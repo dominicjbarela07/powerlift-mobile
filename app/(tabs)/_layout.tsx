@@ -8,12 +8,19 @@ import { AppHeader } from '@/components/AppHeader';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/context/AuthContext';
+import * as Updates from 'expo-updates';
 
 export default function TabsLayout() {
   const { user } = useAuth();
   const router = useRouter();
   const { logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const updateLabel = Updates.isEmbeddedLaunch
+    ? 'Embedded build'
+    : Updates.updateId
+    ? `Update ${Updates.updateId.slice(0, 8)}`
+    : 'Unknown update';
 
   const firstName =
     user?.user_name?.split(' ')[0] ||
@@ -122,6 +129,12 @@ export default function TabsLayout() {
             >
               <ThemedText style={styles.menuItemText}>Logout</ThemedText>
             </Pressable>
+
+            <View style={styles.menuFooter}>
+              <ThemedText style={styles.menuFooterText}>
+                {updateLabel}
+              </ThemedText>
+            </View>
 
             {/* keep Link Coach / Delete / Logout same as before */}
           </View>

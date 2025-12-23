@@ -4,7 +4,8 @@ import { StyleSheet, View, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { getAthleteDashboard } from '@/lib/api';
+import { fetchJson } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 
 type DashboardData = {
@@ -16,6 +17,7 @@ type DashboardData = {
 
 export default function AthleteDashboard() {
   const router = useRouter();
+  const { token } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,39 +25,55 @@ export default function AthleteDashboard() {
   useEffect(() => {
     let cancelled = false;
 
-    setLoading(true);
-    setError(null);
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    getAthleteDashboard()
-        .then((res) => {
+        if (!token) {
+          setError('Not authenticated. Please log in again.');
+          setData(null);
+          return;
+        }
+
+        const json: unknown = await fetchJson('/athletes/mobile/dashboard', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (cancelled) return;
 
-        if (!res.ok) {
-            setError(res.error || 'Failed to load dashboard.');
-            setData(null);
-        } else {
-            setData({
-            athlete: res.athlete,
-            coach: res.coach,
-            next_workout: res.next_workout,
-            recent_workouts: res.recent_workouts || [],
-            });
+        const obj = json as any;
+        if (!obj || typeof obj !== 'object' || obj.ok !== true) {
+          setError(obj?.error || 'Failed to load dashboard.');
+          setData(null);
+          return;
         }
-        })
-        .catch((err) => {
+
+        setData({
+          athlete: obj.athlete,
+          coach: obj.coach,
+          next_workout: obj.next_workout,
+          recent_workouts: obj.recent_workouts || [],
+        });
+      } catch (err) {
         if (cancelled) return;
         console.log('Dashboard API error', err);
         setError('Network error while loading dashboard.');
         setData(null);
-        })
-        .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-        });
+      }
+    };
+
+    load();
 
     return () => {
-        cancelled = true;
+      cancelled = true;
     };
-    }, []); // 👈 no deps, just fetch once on mount
+  }, [token]); // 👈 re-run when token changes
 
   if (loading) {
     return (
