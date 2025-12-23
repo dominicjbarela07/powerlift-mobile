@@ -4,7 +4,9 @@ import React, {
   useContext,
   useState,
   ReactNode,
+  useEffect,
 } from 'react';
+import * as SecureStore from 'expo-secure-store';
 
 // Shape of the authenticated user coming from your Flask API
 export type AuthUser = {
@@ -16,11 +18,15 @@ export type AuthUser = {
   athlete_id: number | null;
 };
 
+const TOKEN_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
+
 type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
-  login: (payload: { user: AuthUser; token: string | null }) => void;
-  logout: () => void;
+  authReady: boolean;
+  login: (payload: { user: AuthUser; token: string | null }) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -34,20 +40,45 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
-  function login(payload: { user: AuthUser; token: string | null }) {
+  async function login(payload: { user: AuthUser; token: string | null }) {
     setUser(payload.user);
     setToken(payload.token);
+
+    if (payload.token) {
+      await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
+    }
+    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(payload.user));
   }
 
-  function logout() {
+  async function logout() {
     setUser(null);
     setToken(null);
+    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await SecureStore.deleteItemAsync(USER_KEY);
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const storedToken = await SecureStore.getItemAsync(TOKEN_KEY);
+        const storedUser = await SecureStore.getItemAsync(USER_KEY);
+
+        if (storedToken) setToken(storedToken);
+        if (storedUser) setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.warn('Failed to restore auth state', e);
+      } finally {
+        setAuthReady(true);
+      }
+    })();
+  }, []);
 
   const value: AuthContextValue = {
     user,
     token,
+    authReady,
     login,
     logout,
   };
