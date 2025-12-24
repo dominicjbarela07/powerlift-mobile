@@ -1,5 +1,5 @@
 // app/lib/api.ts
-import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 // API base URL
 // - Prod default: Render
@@ -22,14 +22,94 @@ export async function fetchJson<T = any>(
 ): Promise<FetchJsonResult<T>> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
 
+  // If callers pass a plain object as `body`, React Native fetch will NOT serialize it.
+  // Normalize to a JSON string body when appropriate.
+  const method = String(init.method || 'GET').toUpperCase();
+  const rawBody: any = (init as any).body;
+  const bodyIsPresent = rawBody !== undefined && rawBody !== null;
+
+  const isFormData = typeof FormData !== 'undefined' && rawBody instanceof FormData;
+  const isBlob = typeof Blob !== 'undefined' && rawBody instanceof Blob;
+  const isArrayBuffer = typeof ArrayBuffer !== 'undefined' && rawBody instanceof ArrayBuffer;
+
+  const shouldJsonEncodeBody =
+    bodyIsPresent &&
+    method !== 'GET' &&
+    method !== 'HEAD' &&
+    typeof rawBody !== 'string' &&
+    !isFormData &&
+    !isBlob &&
+    !isArrayBuffer;
+
+  const normalizedBody: any = shouldJsonEncodeBody ? JSON.stringify(rawBody) : rawBody;
+
+  // ---- Mobile auth: attach Bearer token automatically (if present) ----
+  // AuthContext stores the token in SecureStore; support a few key names for safety.
+  const token =
+    (await SecureStore.getItemAsync('auth_token')) ||
+    (await SecureStore.getItemAsync('token')) ||
+    (await SecureStore.getItemAsync('pl_token')) ||
+    (await SecureStore.getItemAsync('powerlift_token'));
+
+  const normalizeHeaders = (h: HeadersInit | undefined): Record<string, string> => {
+    if (!h) return {};
+    // Headers instance
+    if (typeof (h as any).forEach === 'function') {
+      const out: Record<string, string> = {};
+      (h as any).forEach((value: string, key: string) => {
+        out[key] = value;
+      });
+      return out;
+    }
+    // Array of tuples
+    if (Array.isArray(h)) {
+      const out: Record<string, string> = {};
+      for (const [k, v] of h) out[String(k)] = String(v);
+      return out;
+    }
+    // Plain object
+    return h as Record<string, string>;
+  };
+
+  const callerHeaders = normalizeHeaders(init.headers as any);
+
+  const defaultHeaders: Record<string, string> = {
+    Accept: 'application/json',
+  };
+
+  // Only set Content-Type when sending a JSON body (and caller didn't set it)
+  const hasBody = normalizedBody !== undefined && normalizedBody !== null;
+  const hasContentType =
+    Object.keys(callerHeaders).some((k) => k.toLowerCase() === 'content-type');
+
+  if (hasBody && !hasContentType) {
+    // If we normalized to JSON, or caller provided a string body but didn't set CT,
+    // default to JSON because all our endpoints are JSON.
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
+
+  const mergedHeaders: Record<string, string> = {
+    ...defaultHeaders,
+    ...callerHeaders,
+  };
+
+  // Only set Authorization if caller didn't explicitly set it (any case)
+  const hasAuth = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'authorization');
+  if (token && !hasAuth) {
+    mergedHeaders.Authorization = `Bearer ${token}`;
+  }
+
+  if (__DEV__) {
+    const authPresent = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'authorization');
+    console.log('fetchJson', method, url, 'auth?', authPresent, 'hasBody?', hasBody);
+  }
+
   const res = await fetch(url, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers || {}),
-    },
-    // Mobile is using Flask session cookies in prod
-    credentials: init.credentials ?? 'include',
+    method,
+    headers: mergedHeaders,
+    body: normalizedBody as any,
+    credentials: (init.credentials as any) ?? 'include',
   });
 
   let raw = '';

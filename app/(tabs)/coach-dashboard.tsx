@@ -35,24 +35,46 @@ export default function CoachDashboardScreen() {
         return;
       }
 
-      const json: unknown = await fetchJson('/coach/mobile/dashboard', {
+      const res: any = await fetchJson('/coach/mobile/dashboard', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const obj = json as any;
-      if (!obj || typeof obj !== 'object' || obj.ok !== true) {
-        const msg = obj?.error || 'Failed to load coach dashboard.';
-        setError(msg);
+      console.log('Coach dashboard raw response:', res);
+
+      // fetchJson returns a wrapper: { ok, status, raw, json }
+      const status = Number(res?.status ?? 0);
+      const payload = res?.json ?? res;
+
+      if (res?.ok !== true) {
+        const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
+        setError(String(msg));
+
+        // If token is missing/invalid, bounce back to login
+        if (status === 401) {
+          router.replace('/login');
+        }
         return;
       }
 
-      setData(obj as CoachDashboardResponse);
+      if (!payload || typeof payload !== 'object') {
+        setError('Bad response (non-object).');
+        return;
+      }
+
+      if (payload.ok !== true) {
+        const msg = payload?.error || payload?.message || 'Failed to load coach dashboard.';
+        setError(String(msg));
+        return;
+      }
+
+      setData(payload as CoachDashboardResponse);
     } catch (e) {
       console.log('Coach dashboard load error', e);
-      setError('Network error. Please try again.');
+      const msg = (e as any)?.message || String(e);
+      setError(`Network/parse error: ${msg}`);
     } finally {
       setLoading(false);
       setRefreshing(false);

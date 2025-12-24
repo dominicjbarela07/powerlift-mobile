@@ -4,7 +4,8 @@ import { ScrollView, View, Pressable } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useRouter } from 'expo-router';
-import { API_BASE } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { fetchJson } from '@/lib/api';
 
 type DashboardData = {
   athlete: any;
@@ -15,6 +16,7 @@ type DashboardData = {
 
 export default function LinkCoachScreen() {
   const router = useRouter();
+  const { token } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,34 +28,51 @@ export default function LinkCoachScreen() {
 
     const load = async () => {
       try {
-        const resp = await fetch(`${API_BASE}/auth/link-coach/mobile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If you are relying on cookies/session, you may need this:
-          // credentials: 'include',
-        });
-
-        if (!resp.ok) {
-          const text = await resp.text();
-          console.log('link-coach resp not ok:', resp.status, text);
-          throw new Error('Failed to load link coach data.');
+        if (!token) {
+          setError('Not authenticated. Please log in again.');
+          return;
         }
 
-        const json = await resp.json();
+        const res: any = await fetchJson('/auth/link-coach/mobile', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // fetchJson returns a wrapper: { ok, status, raw, json }
+        const status = Number(res?.status ?? 0);
+        const payload = res?.json ?? res;
+
+        if (res?.ok !== true) {
+          console.log('link-coach resp not ok:', status, res?.raw);
+          const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
+          setError(String(msg));
+
+          if (status === 401) {
+            router.replace('/login');
+          }
+          setData(null);
+          return;
+        }
 
         if (cancelled) return;
 
-        if (!json.ok) {
-          setError(json.error || 'Failed to load link coach data.');
+        if (!payload || typeof payload !== 'object') {
+          setError('Bad response (non-object).');
+          setData(null);
+          return;
+        }
+
+        if (payload.ok !== true) {
+          setError(payload.error || 'Failed to load link coach data.');
           setData(null);
           return;
         }
 
         setData({
-          athlete: json.athlete || null,
-          coach: json.coach || null,
+          athlete: payload.athlete || null,
+          coach: payload.coach || null,
           next_workout: null,
           recent_workouts: [],
         });
@@ -74,7 +93,7 @@ export default function LinkCoachScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [token, router]);
 
   if (loading) {
     return (

@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE } from '@/lib/api';
+import { API_BASE, fetchJson } from '@/lib/api';
 import { ThemedText } from '@/components/themed-text';
 
 type SetLog = {
@@ -77,6 +77,7 @@ type WorkoutPayload = {
     can_log: boolean;
     can_coach: boolean;
     is_self_coached: boolean;
+    can_hot_swap: boolean;
   };
   workout: {
     id: number;
@@ -189,13 +190,13 @@ export default function WorkoutViewerScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
     const [straightInputs, setStraightInputs] = useState<
-    Record<number, { weight: string; rpe: string }>
+    Record<number, { weight: string; reps: string; rpe: string }>
   >({});
   const [topInputs, setTopInputs] = useState<
-    Record<number, { weight: string; rpe: string }>
+    Record<number, { weight: string; reps: string; rpe: string }>
   >({});
   const [bkInputs, setBkInputs] = useState<
-    Record<number, { weight: string; rpe: string }>
+    Record<number, { weight: string; reps: string; rpe: string }>
   >({});
   const [accInputs, setAccInputs] = useState<
     Record<number, { weight: string; reps: string; rir: string }>
@@ -205,13 +206,39 @@ export default function WorkoutViewerScreen() {
     field: 'weight' | 'reps' | 'rir',
     value: string,
   ) => {
+    // iOS/Expo numeric keyboards can emit spaces/newlines or locale characters.
+    // Sanitize at the point of entry so state is always clean.
+    let v = value ?? '';
+
+    if (field === 'reps') {
+      // reps must be an integer; keep digits only
+      v = v.replace(/[^0-9]/g, '');
+    } else if (field === 'weight') {
+      // allow digits + one decimal point
+      v = v.replace(/[^0-9.]/g, '');
+      const firstDot = v.indexOf('.');
+      if (firstDot !== -1) {
+        // remove any additional dots
+        v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+      }
+    } else if (field === 'rir') {
+      // allow digits + one decimal point + optional leading minus
+      v = v.replace(/[^0-9.\-]/g, '');
+      // only keep a single leading minus
+      v = v.replace(/(?!^)-/g, '');
+      const firstDot = v.indexOf('.');
+      if (firstDot !== -1) {
+        v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+      }
+    }
+
     setAccInputs((prev) => ({
       ...prev,
       [itemId]: {
         weight: prev[itemId]?.weight || '',
         reps: prev[itemId]?.reps || '',
         rir: prev[itemId]?.rir || '',
-        [field]: value,
+        [field]: v,
       },
     }));
   };
@@ -229,6 +256,94 @@ export default function WorkoutViewerScreen() {
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
+
+  // --- Accessory hot-swap (self-coached only) ---
+  const [swapAccVisible, setSwapAccVisible] = useState(false);
+  const [swapAccItem, setSwapAccItem] = useState<WorkoutItem | null>(null);
+  const [swapAccForm, setSwapAccForm] = useState({
+    movement: '',
+    sets: '',
+    reps_text: '',
+    rir: '',
+  });
+
+  const openSwapAcc = (it: WorkoutItem) => {
+    setSwapAccItem(it);
+    setSwapAccForm({
+      movement: it.movement || '',
+      sets: it.sets != null ? String(it.sets) : '',
+      reps_text: it.reps_text || (it.reps != null ? String(it.reps) : ''),
+      rir: it.rir_target != null ? String(it.rir_target) : '',
+    });
+    setSwapAccVisible(true);
+  };
+
+  const saveSwapAcc = async () => {
+    if (!workoutId || !swapAccItem) return;
+
+    const movement = String(swapAccForm.movement || '').trim();
+    const setsStr = String(swapAccForm.sets || '').trim();
+    const repsText = String(swapAccForm.reps_text || '').trim();
+    const rirStr = String(swapAccForm.rir || '').trim();
+
+    if (!movement) {
+      setError('Movement required');
+      return;
+    }
+
+    let sets: number | null = null;
+    if (setsStr !== '') {
+      const n = parseInt(setsStr.replace(/[^0-9]/g, ''), 10);
+      if (!Number.isFinite(n) || n < 0) {
+        setError('Invalid sets');
+        return;
+      }
+      sets = n;
+    }
+
+    let rir: number | null = null;
+    if (rirStr !== '') {
+      const cleaned = rirStr.replace(/[^0-9.\-]/g, '').replace(/(?!^)-/g, '');
+      const n = parseFloat(cleaned);
+      if (!Number.isFinite(n)) {
+        setError('Invalid RIR');
+        return;
+      }
+      rir = n;
+    }
+
+    try {
+      setSavingItemId(swapAccItem.id);
+      setError(null);
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${swapAccItem.id}/swap_acc`,
+        {
+          method: 'POST',
+          body: {
+            movement,
+            sets: sets ?? undefined,
+            reps_text: repsText,
+            rir: rir ?? undefined,
+          },
+          auth: true,
+        }
+      );
+
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to swap accessory (HTTP ${status})`);
+      }
+
+      setSwapAccVisible(false);
+      setSwapAccItem(null);
+      await fetchWorkout();
+    } catch (err: any) {
+      console.log('saveSwapAcc error', err);
+      setError(err?.message || 'Error swapping accessory');
+    } finally {
+      setSavingItemId(null);
+    }
+  };
 
   const TIMER_OPTIONS = [30, 60, 90, 120, 180, 240, 300];
 
@@ -337,13 +452,14 @@ export default function WorkoutViewerScreen() {
 
   const updateStraightInput = (
     itemId: number,
-    field: 'weight' | 'rpe',
+    field: 'weight' | 'reps' | 'rpe',
     value: string,
   ) => {
     setStraightInputs((prev) => ({
       ...prev,
       [itemId]: {
         weight: prev[itemId]?.weight || '',
+        reps: prev[itemId]?.reps || '',
         rpe: prev[itemId]?.rpe || '',
         [field]: value,
       },
@@ -352,13 +468,14 @@ export default function WorkoutViewerScreen() {
 
   const updateTopInput = (
     itemId: number,
-    field: 'weight' | 'rpe',
+    field: 'weight' | 'reps' | 'rpe',
     value: string,
   ) => {
     setTopInputs((prev) => ({
       ...prev,
       [itemId]: {
         weight: prev[itemId]?.weight || '',
+        reps: prev[itemId]?.reps || '',
         rpe: prev[itemId]?.rpe || '',
         [field]: value,
       },
@@ -367,13 +484,14 @@ export default function WorkoutViewerScreen() {
 
   const updateBkInput = (
     itemId: number,
-    field: 'weight' | 'rpe',
+    field: 'weight' | 'reps' | 'rpe',
     value: string,
   ) => {
     setBkInputs((prev) => ({
       ...prev,
       [itemId]: {
         weight: prev[itemId]?.weight || '',
+        reps: prev[itemId]?.reps || '',
         rpe: prev[itemId]?.rpe || '',
         [field]: value,
       },
@@ -383,9 +501,10 @@ export default function WorkoutViewerScreen() {
   const logStraightSet = async (itemId: number) => {
     if (!workoutId || !data) return;
 
-    const input = straightInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit =
-      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const input = straightInputs[itemId] || { weight: '', reps: '', rpe: '' };
+    let weightInUnit = input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const repsStr = String(input.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
     if (Number.isNaN(weightInUnit)) {
@@ -394,6 +513,10 @@ export default function WorkoutViewerScreen() {
     }
     if (weightInUnit <= 0) {
       setError('Weight required');
+      return;
+    }
+    if (!Number.isFinite(reps) || reps <= 0) {
+      setError('Reps required');
       return;
     }
 
@@ -410,22 +533,21 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(itemId);
       setError(null);
 
-      const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_straight`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
+          body: {
             actual_weight_kg: weightKg,
+            actual_reps: reps,
             actual_rpe: rpe,
-          }),
+          },
+          auth: true,
         }
       );
 
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || 'Failed to log set');
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to log set (HTTP ${status})`);
       }
 
       setTimerPickerVisible(true);
@@ -433,7 +555,7 @@ export default function WorkoutViewerScreen() {
       await fetchWorkout();
       setStraightInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', rpe: '' },
+        [itemId]: { weight: '', reps: '', rpe: '' },
       }));
     } catch (err: any) {
       console.log('logStraightSet error', err);
@@ -446,13 +568,18 @@ export default function WorkoutViewerScreen() {
   const logTopSet = async (itemId: number) => {
     if (!workoutId || !data) return;
 
-    const input = topInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit =
-      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const input = topInputs[itemId] || { weight: '', reps: '', rpe: '' };
+    let weightInUnit = input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const repsStr = String(input.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
     if (Number.isNaN(weightInUnit) || weightInUnit <= 0 || rpe == null) {
       setError(`Enter a valid top set: weight (${unit}) and RPE`);
+      return;
+    }
+    if (!Number.isFinite(reps) || reps <= 0) {
+      setError('Reps required');
       return;
     }
 
@@ -469,22 +596,21 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(itemId);
       setError(null);
 
-      const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_top`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
+          body: {
             actual_weight_kg: weightKg,
+            actual_reps: reps,
             actual_rpe: rpe,
-          }),
+          },
+          auth: true,
         }
       );
 
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || 'Failed to log top set');
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to log top set (HTTP ${status})`);
       }
 
       setTimerPickerVisible(true);
@@ -492,7 +618,7 @@ export default function WorkoutViewerScreen() {
       await fetchWorkout();
       setTopInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', rpe: '' },
+        [itemId]: { weight: '', reps: '', rpe: '' },
       }));
     } catch (err: any) {
       console.log('logTopSet error', err);
@@ -505,9 +631,10 @@ export default function WorkoutViewerScreen() {
   const logBackdownSet = async (itemId: number) => {
     if (!workoutId || !data) return;
 
-    const input = bkInputs[itemId] || { weight: '', rpe: '' };
-    let weightInUnit =
-      input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const input = bkInputs[itemId] || { weight: '', reps: '', rpe: '' };
+    let weightInUnit = input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const repsStr = String(input.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
     if (Number.isNaN(weightInUnit)) {
@@ -516,6 +643,10 @@ export default function WorkoutViewerScreen() {
     }
     if (weightInUnit <= 0) {
       setError(`Weight required`);
+      return;
+    }
+    if (!Number.isFinite(reps) || reps <= 0) {
+      setError('Reps required');
       return;
     }
 
@@ -532,22 +663,21 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(itemId);
       setError(null);
 
-      const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_bk`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
+          body: {
             actual_weight_kg: weightKg,
+            actual_reps: reps,
             actual_rpe: rpe,
-          }),
+          },
+          auth: true,
         }
       );
 
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || 'Failed to log backdown set');
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to log backdown set (HTTP ${status})`);
       }
 
       setTimerPickerVisible(true);
@@ -555,7 +685,7 @@ export default function WorkoutViewerScreen() {
       await fetchWorkout();
       setBkInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', rpe: '' },
+        [itemId]: { weight: '', reps: '', rpe: '' },
       }));
     } catch (err: any) {
       console.log('logBackdownSet error', err);
@@ -568,33 +698,43 @@ export default function WorkoutViewerScreen() {
   async function logAccessorySet(
     workoutId: number,
     itemId: number,
-    payload: { actual_weight_kg: number; actual_reps: number; actual_rir?: number | null },
-    ) {
-    const res = await fetch(`${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_acc`, {
+    payload: {
+      actual_weight_kg: number;
+      actual_reps: number;
+      actual_rir?: number | null;
+    }
+  ) {
+    console.log('logAccessorySet payload', { workoutId, itemId, payload });
+
+    const res = await fetch(
+      `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_acc`,
+      {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-        // include cookies or auth header the same way you do for other calls
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
         credentials: 'include',
-    });
+        body: JSON.stringify(payload),
+      }
+    );
 
-    const data = await res.json();
-    if (!res.ok || !data.ok) {
-        throw new Error(data.error || 'Failed to log accessory set');
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok || !json?.ok) {
+      throw new Error(json?.error || `Failed to log accessory set (HTTP ${res.status})`);
     }
-    return data as {
-        ok: true;
-        set: {
+
+    return json as {
+      ok: true;
+      set: {
         id: number;
         set_index: number;
         actual_weight_kg: number;
         actual_reps: number;
         actual_rir: number | null;
-        };
-        next_index: number;
-        total_sets: number;
+      };
+      next_index: number;
+      total_sets: number;
     };
   }
 
@@ -602,13 +742,24 @@ export default function WorkoutViewerScreen() {
     if (!workoutId || !data) return;
 
     const input = accInputs[itemId] || { weight: '', reps: '', rir: '' };
+    console.log('handleAccessorySave input', { itemId, input });
     let weightInUnit =
       input.weight.trim() === '' ? 0 : parseFloat(input.weight);
-    const reps = parseInt(input.reps, 10);
-    const rir = input.rir && input.rir.trim() !== '' ? parseFloat(input.rir) : null;
+    // reps: digits only (defensive against invisible chars)
+    const repsStr = String(input.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
 
-    if (Number.isNaN(weightInUnit) || !reps || reps <= 0) {
-      setError(`Enter a valid accessory weight (${unit}) and reps`);
+    // rir: allow number/decimal/negative; strip other characters
+    const rirStr = String(input.rir ?? '').trim().replace(/[^0-9.\-]/g, '');
+    const rir = rirStr !== '' ? parseFloat(rirStr) : null;
+
+    if (Number.isNaN(weightInUnit)) {
+      setError(`Enter a valid accessory weight (${unit})`);
+      return;
+    }
+
+    if (!Number.isFinite(reps) || reps <= 0) {
+      setError('Reps required');
       return;
     }
 
@@ -630,7 +781,7 @@ export default function WorkoutViewerScreen() {
         itemId,
         {
           actual_weight_kg: weightKg,
-          actual_reps: reps,
+          actual_reps: Number(reps),
           actual_rir: rir ?? undefined,
         }
       );
@@ -658,26 +809,16 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(itemId);
       setError(null);
 
-      const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/clear_top`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          auth: true,
         }
       );
 
-      const text = await res.text();
-      let json: any = {};
-      try {
-        json = text ? JSON.parse(text) : {};
-      } catch (e) {
-        console.log('clearTopSet raw response:', text);
-        throw new Error(`Failed to clear top set (HTTP ${res.status})`);
-      }
-
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || `Failed to clear top set (HTTP ${res.status})`);
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to clear top set (HTTP ${status})`);
       }
 
       await fetchWorkout();
@@ -696,18 +837,16 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(itemId);
       setError(null);
 
-      const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/delete_last_set`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        },
+          auth: true,
+        }
       );
 
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || 'Failed to undo last set');
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to undo last set (HTTP ${status})`);
       }
 
       // Refresh workout so set_logs are in sync
@@ -729,32 +868,30 @@ export default function WorkoutViewerScreen() {
     if (kind === 'cancel') path = 'cancel';
 
     try {
-        setActionLoading(kind);
-        setError(null);
+      setActionLoading(kind);
+      setError(null);
 
-        const res = await fetch(
+      const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/${path}`,
         {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+          method: 'POST',
+          auth: true,
         }
-        );
+      );
 
-        const json = await res.json();
-        if (!res.ok || !json.ok) {
-        throw new Error(json.error || 'Failed to update workout status');
-        }
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to update workout status (HTTP ${status})`);
+      }
 
-        // pull fresh status + set_logs etc
-        await fetchWorkout();
+      // pull fresh status + set_logs etc
+      await fetchWorkout();
     } catch (err: any) {
-        console.log('performStatusAction error', err);
-        setError(err?.message || 'Error updating workout');
+      console.log('performStatusAction error', err);
+      setError(err?.message || 'Error updating workout');
     } finally {
-        setActionLoading(null);
+      setActionLoading(null);
     }
-    };
+  };
 
   const beginWorkout = async () => {
     if (!data?.workout) return;
@@ -770,37 +907,28 @@ export default function WorkoutViewerScreen() {
       setError(null);
 
       // Step 1: checkout the workout to this mobile client
-      const checkoutRes = await fetch(
+      const checkout = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/checkout`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        }
+        { method: 'POST', auth: true }
       );
-      const checkoutJson = await checkoutRes.json();
-      if (!checkoutRes.ok || !checkoutJson.ok) {
+
+      if (!checkout.ok || !checkout.json?.ok) {
         Alert.alert(
           'Unable to begin workout',
-          checkoutJson.error ||
-            'Workout is currently checked out by another user or device.'
+          checkout.json?.error ||
+            `Workout is currently checked out by another user or device. (HTTP ${checkout.status})`
         );
         return;
       }
 
       // Step 2: mark status as in_progress
-      const res = await fetch(
+      const begun = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/begin`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        }
+        { method: 'POST', auth: true }
       );
-      const json = await res.json();
 
-      if (!res.ok || !json.ok) {
-        Alert.alert('Error', json.error || 'Failed to begin workout');
+      if (!begun.ok || !begun.json?.ok) {
+        Alert.alert('Error', begun.json?.error || `Failed to begin workout (HTTP ${begun.status})`);
         return;
       }
 
@@ -822,18 +950,13 @@ export default function WorkoutViewerScreen() {
       setActionLoading('complete');
       setError(null);
 
-      const res = await fetch(
+      const done = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/complete`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        }
+        { method: 'POST', auth: true }
       );
-      const json = await res.json();
 
-      if (!res.ok || !json.ok) {
-        Alert.alert('Error', json.error || 'Failed to complete workout');
+      if (!done.ok || !done.json?.ok) {
+        Alert.alert('Error', done.json?.error || `Failed to complete workout (HTTP ${done.status})`);
         return;
       }
 
@@ -842,13 +965,9 @@ export default function WorkoutViewerScreen() {
 
       // Best-effort checkin: release the lock after completion
       try {
-        await fetch(
+        await fetchJson(
           `${API_BASE}/workouts/mobile/${wkId}/checkin`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-          }
+          { method: 'POST', auth: true }
         );
       } catch (e) {
         console.warn('checkin after complete failed', e);
@@ -869,18 +988,13 @@ export default function WorkoutViewerScreen() {
       setActionLoading('cancel');
       setError(null);
 
-      const res = await fetch(
+      const canceled = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/cancel`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        }
+        { method: 'POST', auth: true }
       );
-      const json = await res.json();
 
-      if (!res.ok || !json.ok) {
-        Alert.alert('Error', json.error || 'Failed to cancel workout');
+      if (!canceled.ok || !canceled.json?.ok) {
+        Alert.alert('Error', canceled.json?.error || `Failed to cancel workout (HTTP ${canceled.status})`);
         return;
       }
 
@@ -889,13 +1003,9 @@ export default function WorkoutViewerScreen() {
 
       // Best-effort checkin: release the lock after cancel
       try {
-        await fetch(
+        await fetchJson(
           `${API_BASE}/workouts/mobile/${wkId}/checkin`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-          }
+          { method: 'POST', auth: true }
         );
       } catch (e) {
         console.warn('checkin after cancel failed', e);
@@ -919,18 +1029,18 @@ export default function WorkoutViewerScreen() {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`${API_BASE}/workouts/mobile/${workoutId}`, {
-        method: 'GET',
-        credentials: 'include', // cookie session
-      });
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}`,
+        { method: 'GET', auth: true }
+      );
 
-      const json = (await res.json()) as WorkoutPayload;
+      const payload = json as WorkoutPayload;
 
-      if (!res.ok || !json.ok) {
-        throw new Error((json as any).error || 'Failed to load workout');
+      if (!ok || !payload?.ok) {
+        throw new Error((payload as any)?.error || `Failed to load workout (HTTP ${status})`);
       }
 
-      setData(json);
+      setData(payload);
     } catch (err: any) {
       console.log('Workout fetch error', err);
       setError(err?.message || 'Error loading workout');
@@ -966,6 +1076,7 @@ export default function WorkoutViewerScreen() {
 
   const { workout, athlete } = data;
   const canLogFromServer = !!data.permissions?.can_log;
+  const canHotSwap = !!data.permissions?.can_hot_swap;
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canBegin = canLogFromServer && workout.status === 'assigned';
   const canCompleteOrCancel =
@@ -1241,8 +1352,8 @@ export default function WorkoutViewerScreen() {
                           {existing ? (
                             <Text style={styles.actualText}>
                               {formatWeight(existing.actual_weight_kg, unit)} {unit}
-                              {existing.actual_rpe != null &&
-                                ` @ RPE ${existing.actual_rpe.toFixed(1)}`}
+                              {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                              {existing.actual_rpe != null ? ` @ RPE ${existing.actual_rpe.toFixed(1)}` : ''}
                             </Text>
                           ) : isNext ? (
                             canLog ? (
@@ -1255,6 +1366,16 @@ export default function WorkoutViewerScreen() {
                                   value={straightInputs[core.id]?.weight ?? ''}
                                   onChangeText={(txt) =>
                                     updateStraightInput(core.id, 'weight', txt)
+                                  }
+                                />
+                                <TextInput
+                                  style={styles.logInput}
+                                  placeholder="reps"
+                                  placeholderTextColor="#64748b"
+                                  keyboardType="number-pad"
+                                  value={straightInputs[core.id]?.reps ?? ''}
+                                  onChangeText={(txt) =>
+                                    updateStraightInput(core.id, 'reps', txt)
                                   }
                                 />
                                 <TextInput
@@ -1328,8 +1449,8 @@ export default function WorkoutViewerScreen() {
                       {hasTopActual ? (
                         <Text style={styles.actualText}>
                           {formatWeight(core.actual_weight_kg, unit)} {unit}
-                          {core.actual_rpe != null &&
-                            ` @ RPE ${core.actual_rpe.toFixed(1)}`}
+                          {core.actual_reps != null ? ` × ${core.actual_reps}` : ''}
+                          {core.actual_rpe != null ? ` @ RPE ${core.actual_rpe.toFixed(1)}` : ''}
                         </Text>
                       ) : canLog ? (
                         <View style={styles.logRow}>
@@ -1341,6 +1462,16 @@ export default function WorkoutViewerScreen() {
                             value={topInputs[core.id]?.weight ?? ''}
                             onChangeText={(txt) =>
                               updateTopInput(core.id, 'weight', txt)
+                            }
+                          />
+                          <TextInput
+                            style={styles.logInput}
+                            placeholder="reps"
+                            placeholderTextColor="#64748b"
+                            keyboardType="number-pad"
+                            value={topInputs[core.id]?.reps ?? ''}
+                            onChangeText={(txt) =>
+                              updateTopInput(core.id, 'reps', txt)
                             }
                           />
                           <TextInput
@@ -1411,8 +1542,8 @@ export default function WorkoutViewerScreen() {
                             <Text key={sl.id} style={styles.actualText}>
                               Set {sl.set_index}:{' '}
                               {formatWeight(sl.actual_weight_kg, unit)} {unit}
-                              {sl.actual_rpe != null &&
-                                ` @ RPE ${sl.actual_rpe.toFixed(1)}`}
+                              {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
+                              {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
                             </Text>
                           ))}
 
@@ -1426,6 +1557,16 @@ export default function WorkoutViewerScreen() {
                                 value={bkInputs[bd.id]?.weight ?? ''}
                                 onChangeText={(txt) =>
                                   updateBkInput(bd.id, 'weight', txt)
+                                }
+                              />
+                              <TextInput
+                                style={styles.logInput}
+                                placeholder="reps"
+                                placeholderTextColor="#64748b"
+                                keyboardType="number-pad"
+                                value={bkInputs[bd.id]?.reps ?? ''}
+                                onChangeText={(txt) =>
+                                  updateBkInput(bd.id, 'reps', txt)
                                 }
                               />
                               <TextInput
@@ -1501,8 +1642,8 @@ export default function WorkoutViewerScreen() {
                         <Text key={sl.id} style={styles.actualText}>
                           Set {sl.set_index}:{' '}
                           {formatWeight(sl.actual_weight_kg, unit)} {unit}
-                          {sl.actual_rpe != null &&
-                            ` @ RPE ${sl.actual_rpe.toFixed(1)}`}
+                          {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
+                          {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
                         </Text>
                       ))}
                     </View>
@@ -1542,6 +1683,16 @@ export default function WorkoutViewerScreen() {
                           <Text style={styles.accTitle}>
                             {it.movement || 'Accessory'}
                           </Text>
+
+                          {canHotSwap && (
+                            <TouchableOpacity
+                              style={styles.swapPill}
+                              onPress={() => openSwapAcc(it)}
+                              disabled={savingItemId === it.id}
+                            >
+                              <Text style={styles.swapPillText}>Swap</Text>
+                            </TouchableOpacity>
+                          )}
                         </View>
 
                         <Text style={styles.accMeta}>
@@ -1595,7 +1746,7 @@ export default function WorkoutViewerScreen() {
                                       style={styles.logInput}
                                       placeholder="reps"
                                       placeholderTextColor="#64748b"
-                                      keyboardType="numeric"
+                                      keyboardType="number-pad"
                                       value={accInputs[it.id]?.reps ?? ''}
                                       onChangeText={(txt) =>
                                         updateAccInput(it.id, 'reps', txt)
@@ -1672,6 +1823,16 @@ export default function WorkoutViewerScreen() {
                     <Text style={styles.accTitle}>
                       {it.movement || 'Accessory'}
                     </Text>
+
+                    {canHotSwap && (
+                      <TouchableOpacity
+                        style={styles.swapPill}
+                        onPress={() => openSwapAcc(it)}
+                        disabled={savingItemId === it.id}
+                      >
+                        <Text style={styles.swapPillText}>Swap</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
 
                   <Text style={styles.accMeta}>
@@ -1725,7 +1886,7 @@ export default function WorkoutViewerScreen() {
                                 style={styles.logInput}
                                 placeholder="reps"
                                 placeholderTextColor="#64748b"
-                                keyboardType="numeric"
+                                keyboardType="number-pad"
                                 value={accInputs[it.id]?.reps ?? ''}
                                 onChangeText={(txt) =>
                                   updateAccInput(it.id, 'reps', txt)
@@ -1914,6 +2075,77 @@ export default function WorkoutViewerScreen() {
             >
               <Text style={styles.timerButtonText}>Cancel</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Accessory hot-swap modal (self-coached only) */}
+      <Modal
+        visible={swapAccVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSwapAccVisible(false)}
+      >
+        <View style={styles.timerOverlay}>
+          <View style={[styles.timerPicker, styles.swapModalWide]}>
+            <Text style={styles.timerPickerTitle}>Swap accessory</Text>
+
+            <TextInput
+              style={styles.swapInput}
+              placeholder="Movement (e.g., Lat Pulldown)"
+              placeholderTextColor="#64748b"
+              value={swapAccForm.movement}
+              onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
+            />
+
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TextInput
+                style={[styles.swapInput, { flex: 1 }]}
+                placeholder="Sets"
+                placeholderTextColor="#64748b"
+                keyboardType="number-pad"
+                value={swapAccForm.sets}
+                onChangeText={(t) =>
+                  setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
+                }
+              />
+              <TextInput
+                style={[styles.swapInput, { flex: 1 }]}
+                placeholder="Reps (text)"
+                placeholderTextColor="#64748b"
+                value={swapAccForm.reps_text}
+                onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
+              />
+              <TextInput
+                style={[styles.swapInput, { flex: 1 }]}
+                placeholder="RIR"
+                placeholderTextColor="#64748b"
+                keyboardType="numeric"
+                value={swapAccForm.rir}
+                onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
+              <TouchableOpacity
+                style={[styles.timerButton, { borderColor: '#38bdf8' }]}
+                onPress={saveSwapAcc}
+                disabled={savingItemId != null}
+              >
+                {savingItemId === swapAccItem?.id ? (
+                  <ActivityIndicator size="small" color="#e5e7eb" />
+                ) : (
+                  <Text style={styles.timerButtonText}>Save</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.timerButton, { borderColor: 'rgba(148,163,184,0.6)' }]}
+                onPress={() => setSwapAccVisible(false)}
+              >
+                <Text style={styles.timerButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -2133,6 +2365,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 2,
+  },
+  swapPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(56,189,248,0.7)',
+    backgroundColor: 'rgba(56,189,248,0.12)',
+  },
+  swapPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#38bdf8',
+  },
+  swapInput: {
+    borderWidth: 1,
+    borderColor: '#1f2933',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: '#f9fafb',
+    fontSize: 14,
+    backgroundColor: '#020617',
+    marginBottom: 8,
   },
 
   accTitle: {
@@ -2431,5 +2687,9 @@ const styles = StyleSheet.create({
     color: '#fecaca',
     fontSize: 12,
     fontWeight: '800',
+  },
+  swapModalWide: {
+    width: '92%',
+    maxWidth: 520,
   },
 });

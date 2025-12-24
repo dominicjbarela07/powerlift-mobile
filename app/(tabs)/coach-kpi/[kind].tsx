@@ -3,7 +3,8 @@ import { ActivityIndicator, ScrollView, StyleSheet, View, TouchableOpacity } fro
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { API_BASE } from '@/lib/api';
+import { fetchJson } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { colors } from '@/theme';
 
 type KpiRow = {
@@ -32,6 +33,7 @@ function statusLabel(s?: string | null) {
 export default function CoachKpiDetailScreen() {
   const router = useRouter();
   const { kind } = useLocalSearchParams<{ kind: string }>();
+  const { token } = useAuth();
 
   const [data, setData] = useState<KpiResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,23 +52,53 @@ export default function CoachKpiDetailScreen() {
       setError(null);
       setLoading(true);
 
-      const res = await fetch(`${API_BASE}/coach/mobile/kpi/${kind}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      const json = (await res.json()) as KpiResponse;
-
-      if (!res.ok || !json.ok) {
-        setError((json as any)?.error || 'Failed to load KPI detail.');
+      if (!token) {
+        setError('Not authenticated. Please log in again.');
         setData(null);
         return;
       }
 
-      setData(json);
-    } catch (e) {
+      const res: any = await fetchJson(`/coach/mobile/kpi/${kind}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('Coach KPI raw response:', res);
+
+      const status = Number(res?.status ?? 0);
+      const payload = res?.json ?? res;
+
+      if (res?.ok !== true) {
+        const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
+        setError(String(msg));
+        setData(null);
+
+        if (status === 401) {
+          router.replace('/login');
+        }
+        return;
+      }
+
+      if (!payload || typeof payload !== 'object') {
+        setError('Bad response (non-object).');
+        setData(null);
+        return;
+      }
+
+      if (payload.ok !== true) {
+        const msg = payload?.error || payload?.message || 'Failed to load KPI detail.';
+        setError(String(msg));
+        setData(null);
+        return;
+      }
+
+      setData(payload as KpiResponse);
+    } catch (e: any) {
       console.log('KPI detail load error', e);
-      setError('Network error. Please try again.');
+      const msg = e?.message || String(e);
+      setError(`Network/parse error: ${msg}`);
       setData(null);
     } finally {
       setLoading(false);
@@ -76,7 +108,7 @@ export default function CoachKpiDetailScreen() {
   useEffect(() => {
     if (!kind) return;
     load();
-  }, [kind]);
+  }, [kind, token]);
 
   return (
     <ThemedView style={styles.screen}>

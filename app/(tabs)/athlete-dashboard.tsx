@@ -36,27 +36,50 @@ export default function AthleteDashboard() {
           return;
         }
 
-        const json: unknown = await fetchJson('/athletes/mobile/dashboard', {
+        const res: any = await fetchJson('/athletes/mobile/dashboard', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
+        console.log('Athlete dashboard raw response:', res);
+
         if (cancelled) return;
 
-        const obj = json as any;
-        if (!obj || typeof obj !== 'object' || obj.ok !== true) {
-          setError(obj?.error || 'Failed to load dashboard.');
+        // fetchJson returns a wrapper: { ok, status, raw, json }
+        const status = Number(res?.status ?? 0);
+        const payload = res?.json ?? res;
+
+        if (res?.ok !== true) {
+          const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
+          setError(String(msg));
+          setData(null);
+
+          if (status === 401) {
+            router.replace('/login');
+          }
+          return;
+        }
+
+        if (!payload || typeof payload !== 'object') {
+          setError('Bad response (non-object).');
+          setData(null);
+          return;
+        }
+
+        if (payload.ok !== true) {
+          const msg = (payload as any)?.error || (payload as any)?.message || 'Failed to load dashboard.';
+          setError(String(msg));
           setData(null);
           return;
         }
 
         setData({
-          athlete: obj.athlete,
-          coach: obj.coach,
-          next_workout: obj.next_workout,
-          recent_workouts: obj.recent_workouts || [],
+          athlete: (payload as any).athlete,
+          coach: (payload as any).coach,
+          next_workout: (payload as any).next_workout,
+          recent_workouts: (payload as any).recent_workouts || [],
         });
       } catch (err) {
         if (cancelled) return;
@@ -73,7 +96,7 @@ export default function AthleteDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [token]); // 👈 re-run when token changes
+  }, [token, router]); // 👈 re-run when token changes
 
   if (loading) {
     return (

@@ -26,10 +26,16 @@ export default function LoginScreen() {
 
     try {
         const res = await loginRequest(email.trim(), password);
+        console.log('Login response:', res);
 
         if (!res.ok) {
         setError(res.error || 'Login failed.');
         return;
+        }
+
+        if (!res.token) {
+          setError('Login succeeded but no auth token was returned. Cannot continue.');
+          return;
         }
 
         // Build the AuthUser object from your Flask response
@@ -44,7 +50,7 @@ export default function LoginScreen() {
         };
 
         // Save into global auth state
-        login({ user: authUser, token: res.token ?? null });
+        login({ user: authUser, token: res.token });
 
         // Navigate based on role
         if (!authUser.is_coach && authUser.has_linked_athlete && authUser.athlete_id) {

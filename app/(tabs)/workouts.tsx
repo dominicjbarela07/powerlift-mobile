@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { API_BASE } from '@/lib/api';
+import { fetchJson } from '@/lib/api';
 
 export default function WorkoutsScreen() {
   const router = useRouter(); 
@@ -30,34 +30,34 @@ export default function WorkoutsScreen() {
       setError(null);
 
       const endpoint = rosterAthleteId
-        ? `${API_BASE}/workouts/my_list/mobile/${rosterAthleteId}`
-        : `${API_BASE}/workouts/my_list/mobile`;
+        ? `/workouts/my_list/mobile/${rosterAthleteId}`
+        : `/workouts/my_list/mobile`;
 
-      const httpRes = await fetch(endpoint, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const resp = await fetchJson(endpoint, { method: 'GET' });
+      const res: any = resp.json;
 
-      let res: any;
-      try {
-        res = await httpRes.json();
-      } catch {
-        res = { ok: false, error: `HTTP ${httpRes.status}` };
-      }
-
-      if (!httpRes.ok) {
-        res = { ...(res || {}), ok: false, error: res?.error || `HTTP ${httpRes.status}` };
-      }
-
-      if (cancelled) return;
-
-      if (!res.ok) {
-        // Special-case auth error vs generic error
-        if (res.error === 'auth required' || res.error === 'HTTP 401') {
+      // Normalize errors
+      if (!resp.ok) {
+        const msg = res?.error || res?.message || `HTTP ${resp.status}`;
+        if (cancelled) return;
+        if (resp.status === 401 || msg === 'auth required') {
           setError('Session expired. Please log in again.');
         } else {
-          setError(res.error || 'Failed to load workouts.');
+          setError(msg || 'Failed to load workouts.');
         }
+        setAthlete(null);
+        setBlocks([]);
+        setPendingMap({});
+        setCompletedMap({});
+        setUnassignedPending([]);
+        setUnassignedCompleted([]);
+        setLoading(false);
+        return;
+      }
+
+      if (!res?.ok) {
+        const msg = res?.error || 'Failed to load workouts.';
+        setError(msg);
         setAthlete(null);
         setBlocks([]);
         setPendingMap({});

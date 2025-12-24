@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { API_BASE } from '@/lib/api';
+import { fetchJson } from '@/lib/api';
 import { useRouter } from 'expo-router';
 
 type CoachRosterAthlete = {
@@ -42,14 +42,11 @@ export default function CoachRosterScreen() {
   const loadRoster = async () => {
     try {
       setError(null);
-      const res = await fetch(`${API_BASE}/coach/mobile/roster`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const json: CoachRosterResponse = await res.json();
+      const resp = await fetchJson('/coach/mobile/roster', { method: 'GET' });
+      const json = resp.json as CoachRosterResponse | null;
 
-      if (!res.ok || !json.ok) {
-        setError(json.error || 'Failed to load roster.');
+      if (!resp.ok || !json?.ok) {
+        setError(json?.error || `Failed to load roster. (${resp.status})`);
         return;
       }
 
