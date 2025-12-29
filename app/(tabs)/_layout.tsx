@@ -16,10 +16,24 @@ export default function TabsLayout() {
   const { logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const formatPST = (d?: Date | string | null) => {
+    if (!d) return 'unknown time';
+    const date = typeof d === 'string' ? new Date(d) : d;
+    return date.toLocaleString('en-US', {
+      timeZone: 'America/Los_Angeles',
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   const updateLabel = Updates.isEmbeddedLaunch
     ? 'Embedded build'
     : Updates.updateId
-    ? `Update ${Updates.updateId.slice(0, 8)}`
+    ? `Update ${Updates.updateId.slice(0, 8)} · ${formatPST(Updates.createdAt)} PST`
     : 'Unknown update';
 
   const firstName =

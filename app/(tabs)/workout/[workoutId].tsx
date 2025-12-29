@@ -45,6 +45,7 @@ type WorkoutItem = {
   baseline_low_kg: number | null;
   baseline_high_kg: number | null;
   actual_weight_kg: number | null;
+  actual_reps: number | null;
   actual_rpe: number | null;
   notes: string | null;
   superset_group: string | null;
@@ -706,22 +707,19 @@ export default function WorkoutViewerScreen() {
   ) {
     console.log('logAccessorySet payload', { workoutId, itemId, payload });
 
-    const res = await fetch(
+    const { ok, status, json } = await fetchJson(
       `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_acc`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
+        body: payload,
+        auth: true,
       }
     );
 
-    const json = await res.json().catch(() => ({}));
-
-    if (!res.ok || !json?.ok) {
-      throw new Error(json?.error || `Failed to log accessory set (HTTP ${res.status})`);
+    if (!ok || !json?.ok) {
+      throw new Error(
+        json?.error || `Failed to log accessory set (HTTP ${status})`
+      );
     }
 
     return json as {
@@ -1077,6 +1075,8 @@ export default function WorkoutViewerScreen() {
   const { workout, athlete } = data;
   const canLogFromServer = !!data.permissions?.can_log;
   const canHotSwap = !!data.permissions?.can_hot_swap;
+  // Coach viewing an athlete workout in read-only mode
+  const isCoachView = !!data.permissions?.can_coach && !canLogFromServer;
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canBegin = canLogFromServer && workout.status === 'assigned';
   const canCompleteOrCancel =
@@ -1276,8 +1276,15 @@ export default function WorkoutViewerScreen() {
               logs.length > 0 ? Math.max(...logs.map((sl) => sl.set_index || 0)) : 0;
             const nextIdx = Math.min(latestLoggedIdx + 1, totalSets) || 1;
 
-            const hasTopActual =
-              core.actual_weight_kg != null && core.actual_rpe != null;
+            // For TOP items, reps are stored on the TOP set_log (set_index=1).
+            // Some payloads may still include core.actual_* aggregates, so support both.
+            const topSetLog = isTop
+              ? (logs.find((sl) => sl.set_index === 1) || logs[0] || null)
+              : null;
+
+            const hasTopActual = isTop
+              ? (topSetLog?.actual_weight_kg != null && topSetLog?.actual_rpe != null)
+              : (core.actual_weight_kg != null && core.actual_rpe != null);
 
             return (
               <View key={core.id} style={styles.coreCard}>
@@ -1311,15 +1318,6 @@ export default function WorkoutViewerScreen() {
                     </Text>
                   )}
                 </Text>
-
-                {/* compact summary of TOP/BK logged actuals (for straight items) */}
-                {core.actual_weight_kg != null && !isTop && !isBackdown && (
-                  <Text style={styles.actualText}>
-                    Logged {core.actual_weight_kg.toFixed(1)} kg
-                    {core.actual_rpe != null &&
-                      ` @ RPE ${core.actual_rpe.toFixed(1)}`}
-                  </Text>
-                )}
 
                 {core.notes && core.notes.trim() !== '' && (
                   <Text style={styles.notesText}>{core.notes}</Text>
@@ -1400,16 +1398,20 @@ export default function WorkoutViewerScreen() {
                                   )}
                                 </TouchableOpacity>
                               </View>
-                            ) : (
+                          ) : (
+                            isCoachView ? null : (
                               <Text style={styles.logHint}>
                                 Begin workout to log sets
                               </Text>
                             )
-                          ) : (
+                          )
+                        ) : (
+                          isCoachView ? null : (
                             <Text style={styles.logHint}>
                               Locked until previous set is logged
                             </Text>
-                          )}
+                          )
+                        )}
                         </View>
                       );
                     })}
@@ -1448,9 +1450,13 @@ export default function WorkoutViewerScreen() {
 
                       {hasTopActual ? (
                         <Text style={styles.actualText}>
-                          {formatWeight(core.actual_weight_kg, unit)} {unit}
-                          {core.actual_reps != null ? ` × ${core.actual_reps}` : ''}
-                          {core.actual_rpe != null ? ` @ RPE ${core.actual_rpe.toFixed(1)}` : ''}
+                          {formatWeight(topSetLog?.actual_weight_kg ?? core.actual_weight_kg, unit)} {unit}
+                          {(topSetLog?.actual_reps ?? core.actual_reps) != null
+                            ? ` × ${topSetLog?.actual_reps ?? core.actual_reps}`
+                            : ''}
+                          {(topSetLog?.actual_rpe ?? core.actual_rpe) != null
+                            ? ` @ RPE ${(topSetLog?.actual_rpe ?? core.actual_rpe)!.toFixed(1)}`
+                            : ''}
                         </Text>
                       ) : canLog ? (
                         <View style={styles.logRow}>
@@ -1497,9 +1503,11 @@ export default function WorkoutViewerScreen() {
                           </TouchableOpacity>
                         </View>
                       ) : (
-                        <Text style={styles.logHint}>
-                          Begin workout to log top set
-                        </Text>
+                        isCoachView ? null : (
+                          <Text style={styles.logHint}>
+                            Begin workout to log top set
+                          </Text>
+                        )
                       )}
                     </View>
 
@@ -1592,9 +1600,11 @@ export default function WorkoutViewerScreen() {
                               </TouchableOpacity>
                             </View>
                           ) : !hasTopActual ? (
-                            <Text style={styles.logHint}>
-                              Locked until top set is logged
-                            </Text>
+                            isCoachView ? null : (
+                              <Text style={styles.logHint}>
+                                Locked until top set is logged
+                              </Text>
+                            )
                           ) : (
                             bdLogs.length >= bdTotal && (
                               <Text style={styles.logHint}>
@@ -1721,7 +1731,9 @@ export default function WorkoutViewerScreen() {
 
                             return (
                               <View key={setNumber} style={styles.setLogLine}>
-                                <Text style={styles.setLabel}>Set {setNumber}</Text>
+                                {existing || (isNext && canLog && !isCoachView) ? (
+                                  <Text style={styles.setLabel}>Set {setNumber}</Text>
+                                ) : null}
 
                                 {existing ? (
                                   <Text style={styles.actualText}>
@@ -1778,11 +1790,7 @@ export default function WorkoutViewerScreen() {
                                     </TouchableOpacity>
                                   </View>
                                 ) : (
-                                  <Text style={styles.logHint}>
-                                    {canLog
-                                      ? 'Locked until previous set is logged'
-                                      : 'Begin workout to log sets'}
-                                  </Text>
+                                  isCoachView ? null : null
                                 )}
                               </View>
                             );
@@ -1861,7 +1869,9 @@ export default function WorkoutViewerScreen() {
 
                       return (
                         <View key={setNumber} style={styles.setLogLine}>
-                          <Text style={styles.setLabel}>Set {setNumber}</Text>
+                          {existing || (isNext && canLog && !isCoachView) ? (
+                            <Text style={styles.setLabel}>Set {setNumber}</Text>
+                          ) : null}
 
                           {existing ? (
                             <Text style={styles.actualText}>
@@ -1918,11 +1928,7 @@ export default function WorkoutViewerScreen() {
                               </TouchableOpacity>
                             </View>
                           ) : (
-                            <Text style={styles.logHint}>
-                              {canLog
-                                ? 'Locked until previous set is logged'
-                                : 'Begin workout to log sets'}
-                            </Text>
+                            isCoachView ? null : null
                           )}
                         </View>
                       );
