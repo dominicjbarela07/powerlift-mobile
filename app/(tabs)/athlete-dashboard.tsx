@@ -1,6 +1,6 @@
 // app/athlete-dashboard.tsx
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, View, ScrollView, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -42,8 +42,6 @@ export default function AthleteDashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        console.log('Athlete dashboard raw response:', res);
 
         if (cancelled) return;
 
@@ -147,6 +145,103 @@ export default function AthleteDashboard() {
 
   const firstName = a?.name?.split(' ')[0] || 'Athlete';
 
+  const statusLabel = (s?: string | null) => {
+    const v = String(s || 'assigned').toLowerCase();
+    if (v === 'assigned') return 'Assigned';
+    if (v === 'in_progress') return 'In progress';
+    if (['logged', 'completed', 'done'].includes(v)) return 'Completed';
+    return v.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  const statusTone = (s?: string | null) => {
+    const v = String(s || 'assigned').toLowerCase();
+    if (v === 'assigned') return '#f97316'; // warn
+    if (v === 'in_progress') return '#22c55e'; // ok
+    if (['logged', 'completed', 'done'].includes(v)) return '#38bdf8'; // accent
+    return '#e5e7eb';
+  };
+
+  const workoutPreview = (w: any) => {
+    if (!w) return null;
+
+    // Prefer NEW payload shape: w.preview.{core_lines, accessory_count, core_items}
+    const p = (w && typeof w === 'object' ? (w as any).preview : null) || {};
+
+    // NEW: array of already-formatted strings
+    const coreLinesFromPreview: any[] =
+      (Array.isArray(p.core_lines) && p.core_lines) ||
+      (Array.isArray(p.core_preview_lines) && p.core_preview_lines) ||
+      [];
+
+    // OLD: top-level fallbacks
+    const coreLinesFromTopLevel: any[] =
+      (Array.isArray(w.core_preview_lines) && w.core_preview_lines) ||
+      (Array.isArray(w.core_preview) && w.core_preview) ||
+      (typeof w.core_preview === 'string' ? [w.core_preview] : []) ||
+      (typeof w.core_lifts_preview === 'string' ? [w.core_lifts_preview] : []);
+
+    const coreLinesRaw: any[] =
+      coreLinesFromPreview.length > 0 ? coreLinesFromPreview : coreLinesFromTopLevel;
+
+    // Normalize to pure strings (some backends may send objects like {lift, scheme, variant})
+    let coreLines = (coreLinesRaw || [])
+      .map((x: any) => {
+        if (x == null) return null;
+        if (typeof x === 'string') return x;
+        if (typeof x === 'number' || typeof x === 'boolean') return String(x);
+        if (typeof x === 'object') {
+          const lift = x.lift_name || x.lift || x.movement || null;
+          const scheme = x.scheme || x.sets_reps || null;
+          const out = [lift, scheme].filter(Boolean).join(' ');
+          return out || null;
+        }
+        return null;
+      })
+      .filter((v): v is string => typeof v === 'string' && v.trim().length > 0);
+
+    // Accessory count (NEW then OLD)
+    const accessoryCount =
+      typeof p.accessory_count === 'number'
+        ? p.accessory_count
+        : typeof w.accessory_count === 'number'
+        ? w.accessory_count
+        : typeof w.accessories_count === 'number'
+        ? w.accessories_count
+        : typeof w.num_accessories === 'number'
+        ? w.num_accessories
+        : null;
+
+    // If backend sends structured core items in preview, build a simple line if no strings exist yet
+    if (coreLines.length === 0) {
+      const items = Array.isArray(p.core_items)
+        ? p.core_items
+        : Array.isArray((w as any).core_items_preview)
+        ? (w as any).core_items_preview
+        : [];
+
+      if (items.length > 0) {
+        const built = items
+          .map((it: any) => {
+            const lift = it?.lift_name || it?.lift || it?.movement || null;
+            const scheme = it?.scheme || it?.sets_reps || null;
+            if (!lift && !scheme) return null;
+            return [lift, scheme].filter(Boolean).join(' ');
+          })
+          .filter(Boolean);
+
+        if (built.length) coreLines = [...coreLines, ...built];
+      }
+    }
+
+    // Nothing to show
+    if (coreLines.length === 0 && accessoryCount == null) return null;
+
+    return {
+      coreLines,
+      accessoryCount,
+    };
+  };
+
   return (
       <ThemedView style={styles.screen}>
         <ScrollView contentContainerStyle={styles.scroll}>
@@ -182,16 +277,48 @@ export default function AthleteDashboard() {
               >
                 <View style={{ flex: 1 }}>
                   <ThemedText variant="h3" style={styles.cardMain}>
-                    {next.label || 'Unlabeled workout'}
+                    {next.label || 'Unnamed'}
                   </ThemedText>
                   <View style={styles.rowMeta}>
-                    <ThemedText variant="badge" style={styles.statusPill}>
-                      {next.status || 'assigned'}
-                    </ThemedText>
+                    <View
+                      style={[
+                        styles.statusPillBox,
+                        { borderColor: statusTone(next.status) },
+                      ]}
+                    >
+                      <ThemedText
+                        variant="badge"
+                        style={[
+                          styles.statusPillText,
+                          { color: statusTone(next.status) },
+                        ]}
+                      >
+                        {statusLabel(next.status)}
+                      </ThemedText>
+                    </View>
                     <ThemedText variant="small" style={styles.cardMetaRight}>
                       {(next.date as string) || 'Date TBD'}
                     </ThemedText>
                   </View>
+                  {(() => {
+                    const p = workoutPreview(next);
+                    if (!p) return null;
+
+                    return (
+                      <View style={styles.previewBlock}>
+                        {p.coreLines.length > 0 && (
+                          <ThemedText variant="bodyMuted" style={styles.previewText}>
+                            {p.coreLines[0]}
+                          </ThemedText>
+                        )}
+                        {p.accessoryCount != null && (
+                          <ThemedText variant="bodyMuted" style={styles.previewText}>
+                            {p.accessoryCount} {p.accessoryCount === 1 ? 'accessory' : 'accessories'}
+                          </ThemedText>
+                        )}
+                      </View>
+                    );
+                  })()}
                 </View>
               </Pressable>
             ) : (
@@ -228,13 +355,45 @@ export default function AthleteDashboard() {
                     {mostRecentCompleted.label || 'Workout'}
                   </ThemedText>
                   <View style={styles.rowMeta}>
-                    <ThemedText variant="badge" style={styles.badge}>
-                      {mostRecentCompleted.status || 'completed'}
-                    </ThemedText>
+                    <View
+                      style={[
+                        styles.statusPillBox,
+                        { borderColor: statusTone(mostRecentCompleted.status) },
+                      ]}
+                    >
+                      <ThemedText
+                        variant="badge"
+                        style={[
+                          styles.statusPillText,
+                          { color: statusTone(mostRecentCompleted.status) },
+                        ]}
+                      >
+                        {statusLabel(mostRecentCompleted.status)}
+                      </ThemedText>
+                    </View>
                     <ThemedText variant="small" style={styles.cardMetaRight}>
                       {(mostRecentCompleted.date as string) || 'Unknown date'}
                     </ThemedText>
                   </View>
+                  {(() => {
+                    const p = workoutPreview(mostRecentCompleted);
+                    if (!p) return null;
+
+                    return (
+                      <View style={styles.previewBlock}>
+                        {p.coreLines.length > 0 && (
+                          <ThemedText variant="bodyMuted" style={styles.previewText}>
+                            {p.coreLines[0]}
+                          </ThemedText>
+                        )}
+                        {p.accessoryCount != null && (
+                          <ThemedText variant="bodyMuted" style={styles.previewText}>
+                            {p.accessoryCount} {p.accessoryCount === 1 ? 'accessory' : 'accessories'}
+                          </ThemedText>
+                        )}
+                      </View>
+                    );
+                  })()}
                 </View>
               </Pressable>
             )}
@@ -250,7 +409,7 @@ export default function AthleteDashboard() {
               )}
               <View style={styles.coachActions}>
                 <Pressable style={styles.contactButton}>
-                  <ThemedText variant="small" style={styles.contactButtonText}>Contact</ThemedText>
+                  <Text style={styles.contactButtonText}>Contact</Text>
                 </Pressable>
               </View>
             </View>
@@ -321,26 +480,24 @@ const styles = StyleSheet.create({
   workoutRow: {
     marginTop: 4,
     paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(15,23,42,0.9)',
-    backgroundColor: 'rgba(15,23,42,0.9)',
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
   },
   rowMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 6,
   },
-  statusPill: {
-    fontSize: 11,
-    color: '#BBF7D0',
-    backgroundColor: 'rgba(22,163,74,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-    overflow: 'hidden',
-    marginRight: 8,
+  previewBlock: {
+    marginTop: 8,
+    gap: 4,
+  },
+  previewText: {
+    fontSize: 12,
+    color: '#9ca3af',
   },
   cardMetaRight: {
     fontSize: 13,
@@ -365,10 +522,17 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     marginTop: 2,
   },
-  badge: {
+  statusPillBox: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    marginRight: 8,
+  },
+  statusPillText: {
     fontSize: 11,
+    fontWeight: '600',
     textTransform: 'uppercase',
-    color: '#38bdf8',
   },
   coachName: {
     marginTop: 4,
@@ -386,7 +550,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   contactButton: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: '#38bdf8',
     paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 999,
@@ -394,7 +558,7 @@ const styles = StyleSheet.create({
   contactButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#E5E7EB',
+    color: '#020617',
   },
   errorText: {
     color: '#f97373',

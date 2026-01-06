@@ -42,8 +42,6 @@ export default function CoachDashboardScreen() {
         },
       });
 
-      console.log('Coach dashboard raw response:', res);
-
       // fetchJson returns a wrapper: { ok, status, raw, json }
       const status = Number(res?.status ?? 0);
       const payload = res?.json ?? res;
@@ -160,6 +158,18 @@ export default function CoachDashboardScreen() {
                     {data.missed_yesterday}
                   </ThemedText>
                   <ThemedText variant="small" style={styles.kpiHint}>Unlogged from yesterday</ThemedText>
+                </TouchableOpacity>
+
+                {/* Quick action */}
+                <TouchableOpacity
+                  style={styles.kpiCard}
+                  onPress={() => {
+                    router.push('/create-workout');
+                  }}
+                >
+                  <ThemedText variant="label" style={styles.kpiLabel}>Create Session</ThemedText>
+                  <ThemedText variant="kpi" style={styles.kpiValue}>+</ThemedText>
+                  <ThemedText variant="small" style={styles.kpiHint}>Build a new workout for an athlete</ThemedText>
                 </TouchableOpacity>
               </View>
 

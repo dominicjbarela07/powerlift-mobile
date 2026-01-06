@@ -1,6 +1,6 @@
 // app/login.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, Pressable, StyleSheet, ActivityIndicator, Linking, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -12,6 +12,7 @@ export default function LoginScreen() {
   const { login } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);   // 👈 NEW
   const [error, setError] = useState<string | null>(null);  // 👈 NEW
 
@@ -76,11 +77,18 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.screen}>
+      <View style={styles.topHeader}>
+        <ThemedText style={styles.topHeaderLeft} />
+        <View style={styles.topHeaderCenter}>
+          <Image
+            source={require('../assets/images/app_logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
       <View style={styles.header}>
-        <ThemedText style={styles.title}>Log in</ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Use the same email and password as the web app.
-        </ThemedText>
+        <ThemedText style={styles.titleMuted}>Log in</ThemedText>
       </View>
 
       <View style={styles.form}>
@@ -88,8 +96,6 @@ export default function LoginScreen() {
           <ThemedText style={styles.label}>Email</ThemedText>
           <TextInput
             style={styles.input}
-            placeholder="you@example.com"
-            placeholderTextColor="#667085"
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -99,14 +105,23 @@ export default function LoginScreen() {
 
         <View style={styles.field}>
           <ThemedText style={styles.label}>Password</ThemedText>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            placeholderTextColor="#667085"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={styles.passwordRow}>
+            <TextInput
+              style={[styles.input, { flex: 1, paddingRight: 40 }]}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Pressable
+              style={styles.eyeToggle}
+              onPress={() => setShowPassword(v => !v)}
+              hitSlop={10}
+            >
+              <ThemedText style={styles.eyeText}>
+                {showPassword ? 'Hide' : 'Show'}
+              </ThemedText>
+            </Pressable>
+          </View>
         </View>
 
         {error && (
@@ -126,10 +141,17 @@ export default function LoginScreen() {
         </Pressable>
 
         <Pressable
-          style={styles.linkRow}
-          onPress={() => router.replace('/')}
+          style={styles.forgotRow}
+          onPress={() => {
+            // Keep this dead-simple for now: open the web app login page where users can reset.
+            // If you later add a dedicated /forgot-password page, swap this URL.
+            const url = 'https://strength-coach-ui.onrender.com/auth/reset_request';
+            Linking.openURL(url).catch(() => {
+              setError('Unable to open password reset page.');
+            });
+          }}
         >
-          <ThemedText style={styles.linkText}>Back to start</ThemedText>
+          <ThemedText style={styles.forgotText}>Forgot password?</ThemedText>
         </Pressable>
       </View>
     </ThemedView>
@@ -140,7 +162,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 48,
+    paddingTop: 64,
     paddingBottom: 24,
     backgroundColor: '#020617',
   },
@@ -197,8 +219,64 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     textDecorationLine: 'underline',
   },
+  forgotRow: {
+    marginTop: 6,
+    alignItems: 'center',
+  },
+  forgotText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textDecorationLine: 'underline',
+  },
   errorText: {
     color: '#f97373',
     fontSize: 13,
+  },
+  passwordRow: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeToggle: {
+    position: 'absolute',
+    right: 12,
+    height: '100%',
+    justifyContent: 'center',
+  },
+  eyeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#38bdf8',
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  topHeaderLeft: {
+    width: 60,
+  },
+  topHeaderCenter: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  topHeaderRight: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  titleMuted: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#E5E7EB',
+  },
+    logo: {
+    height: 60,
+    width:60,
   },
 });

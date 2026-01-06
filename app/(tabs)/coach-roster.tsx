@@ -153,7 +153,7 @@ export default function CoachRosterScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     paddingTop: 32,
     paddingBottom: 24,
     backgroundColor: '#020617',

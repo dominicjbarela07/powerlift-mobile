@@ -14,7 +14,8 @@ import {
   Modal,
   AppState,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE, fetchJson } from '@/lib/api';
 import { ThemedText } from '@/components/themed-text';
@@ -96,6 +97,19 @@ type WorkoutPayload = {
   };
 };
 
+
+// Local notification handling for rest timer
+let __notifHandlerSet = false;
+if (!__notifHandlerSet) {
+  __notifHandlerSet = true;
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 const KG_PER_LB = 0.45359237; // 1 lb = 0.45359 kg
 
@@ -184,6 +198,7 @@ function formatLookbackLine(best: any, unit: 'kg' | 'lb') {
 
 export default function WorkoutViewerScreen() {
   const { workoutId } = useLocalSearchParams<{ workoutId?: string }>();
+  const router = useRouter();
   const { user } = useAuth(); // we only need session + role to decide logging availability
 
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
@@ -253,6 +268,61 @@ export default function WorkoutViewerScreen() {
   const [restActive, setRestActive] = useState(false);
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restEndAtMsRef = useRef<number | null>(null);
+  const restNotifIdRef = useRef<string | null>(null);
+  const notifPermCheckedRef = useRef(false);
+  const ensureNotifPerms = async () => {
+    // Only ask once per screen mount
+    if (notifPermCheckedRef.current) {
+      const existing = await Notifications.getPermissionsAsync();
+      return existing.status === 'granted';
+    }
+
+    notifPermCheckedRef.current = true;
+
+    const existing = await Notifications.getPermissionsAsync();
+    if (existing.status === 'granted') return true;
+
+    const req = await Notifications.requestPermissionsAsync();
+    return req.status === 'granted';
+  };
+
+  const cancelRestEndNotification = async () => {
+    const id = restNotifIdRef.current;
+    if (!id) return;
+    try {
+      await Notifications.cancelScheduledNotificationAsync(id);
+    } catch (e) {
+      // best-effort
+      console.log('cancelRestEndNotification error', e);
+    } finally {
+      restNotifIdRef.current = null;
+    }
+  };
+
+  const scheduleRestEndNotification = async (seconds: number) => {
+    // Replace any existing scheduled rest notification
+    await cancelRestEndNotification();
+
+    const granted = await ensureNotifPerms();
+    if (!granted) return;
+
+    try {
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Rest over',
+          body: 'Time for the next set.',
+          data: { kind: 'rest_end' },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds,
+        },
+      });
+      restNotifIdRef.current = id;
+    } catch (e) {
+      console.log('scheduleRestEndNotification error', e);
+    }
+  };
 
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
@@ -368,6 +438,9 @@ export default function WorkoutViewerScreen() {
 
     setRestSeconds(seconds);
     setRestActive(true);
+
+    // Schedule a local notification so the timer "works" while backgrounded
+    scheduleRestEndNotification(seconds);
   };
 
   const stopRestTimer = () => {
@@ -378,6 +451,9 @@ export default function WorkoutViewerScreen() {
     restEndAtMsRef.current = null;
     setRestActive(false);
     setRestSeconds(0);
+
+    // Cancel any pending rest-end notification
+    cancelRestEndNotification();
   };
 
   const formatRestTime = (totalSeconds: number) => {
@@ -407,6 +483,7 @@ export default function WorkoutViewerScreen() {
       if (remaining <= 0) {
         setRestActive(false);
         restEndAtMsRef.current = null;
+        restNotifIdRef.current = null;
 
         if (restTimerRef.current) {
           clearInterval(restTimerRef.current);
@@ -1051,6 +1128,13 @@ export default function WorkoutViewerScreen() {
     fetchWorkout();
   }, [workoutId]);
 
+  useEffect(() => {
+    return () => {
+      // Best-effort cleanup so scheduled notifications don't linger
+      cancelRestEndNotification();
+    };
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -1077,6 +1161,7 @@ export default function WorkoutViewerScreen() {
   const canHotSwap = !!data.permissions?.can_hot_swap;
   // Coach viewing an athlete workout in read-only mode
   const isCoachView = !!data.permissions?.can_coach && !canLogFromServer;
+  const canEdit = (!!data.permissions?.can_coach || !!data.permissions?.is_self_coached) && workout.status === 'assigned';
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canBegin = canLogFromServer && workout.status === 'assigned';
   const canCompleteOrCancel =
@@ -1215,26 +1300,44 @@ export default function WorkoutViewerScreen() {
         )}
 
 
-        {/* Athlete actions: Begin */}
-        {canBegin && (
+        {/* Actions row: Edit (coach/self) and Begin (athlete/self) */}
+        {(canBegin || canEdit) && (
           <View style={styles.actionBar}>
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                styles.actionPrimary,
-                actionLoading === 'begin' && { opacity: 0.7 },
-              ]}
-              onPress={beginWorkout}
-              disabled={!!actionLoading}
-            >
-              {actionLoading === 'begin' ? (
-                <ActivityIndicator size="small" color="#020617" />
-              ) : (
-                <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                  Begin Workout
-                </Text>
+              {canEdit && (
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.actionSecondary]}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/create-workout',
+                      params: { editWorkoutId: String(workout.id) },
+                    })
+                  }
+                >
+                  <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                    Edit
+                  </Text>
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
+
+              {canBegin && (
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    styles.actionPrimary,
+                    actionLoading === 'begin' && { opacity: 0.7 },
+                  ]}
+                  onPress={beginWorkout}
+                  disabled={!!actionLoading}
+                >
+                  {actionLoading === 'begin' ? (
+                    <ActivityIndicator size="small" color="#020617" />
+                  ) : (
+                    <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                      Begin Workout
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              )}
           </View>
         )}
 
@@ -1302,22 +1405,24 @@ export default function WorkoutViewerScreen() {
                   </View>
                 </View>
 
-                {/* Scheme row */}
-                <Text style={styles.coreScheme}>
-                  {core.sets || 0} × {core.reps || core.reps_text || '—'}
-                  {core.mode === 'RPE' && core.rpe_target != null && (
-                    <Text style={styles.coreSchemeDetail}>
-                      {' '}
-                      @ RPE {core.rpe_target.toFixed(1)}
-                    </Text>
-                  )}
-                  {core.mode === 'PCT' && core.pct != null && (
-                    <Text style={styles.coreSchemeDetail}>
-                      {' '}
-                      @ {(core.pct * 100).toFixed(1)}% TM
-                    </Text>
-                  )}
-                </Text>
+                {/* Scheme row (hide for TOP so the top/backdown rows each show their own scheme) */}
+                {!isTop && (
+                  <Text style={styles.coreScheme}>
+                    {core.sets || 0} × {core.reps || core.reps_text || '—'}
+                    {core.mode === 'RPE' && core.rpe_target != null && (
+                      <Text style={styles.coreSchemeDetail}>
+                        {' '}
+                        @ RPE {core.rpe_target.toFixed(1)}
+                      </Text>
+                    )}
+                    {core.mode === 'PCT' && core.pct != null && (
+                      <Text style={styles.coreSchemeDetail}>
+                        {' '}
+                        @ {(core.pct * 100).toFixed(1)}% TM
+                      </Text>
+                    )}
+                  </Text>
+                )}
 
                 {core.notes && core.notes.trim() !== '' && (
                   <Text style={styles.notesText}>{core.notes}</Text>
@@ -1438,6 +1543,19 @@ export default function WorkoutViewerScreen() {
                     {/* Top set row */}
                     <View style={styles.setLogLine}>
                       <Text style={styles.setLabel}>Top set</Text>
+                      <Text style={styles.coreScheme}>
+                        {core.sets || 0} × {core.reps || core.reps_text || '—'}
+                        {core.mode === 'RPE' && core.rpe_target != null && (
+                          <Text style={styles.coreSchemeDetail}>
+                            {' '}@ RPE {core.rpe_target.toFixed(1)}
+                          </Text>
+                        )}
+                        {core.mode === 'PCT' && core.pct != null && (
+                          <Text style={styles.coreSchemeDetail}>
+                            {' '}@ {(core.pct * 100).toFixed(1)}% TM
+                          </Text>
+                        )}
+                      </Text>
 
                       {core.target_low_kg != null &&
                         core.target_high_kg != null &&
@@ -1535,6 +1653,19 @@ export default function WorkoutViewerScreen() {
                         <View key={bd.id} style={styles.setLogLine}>
                           <Text style={styles.setLabel}>
                             Backdowns {bdLogs.length}/{bdTotal}
+                          </Text>
+                          <Text style={styles.coreScheme}>
+                            {bd.sets || 0} × {bd.reps || bd.reps_text || '—'}
+                            {bd.mode === 'RPE' && bd.rpe_target != null && (
+                              <Text style={styles.coreSchemeDetail}>
+                                {' '}@ RPE {bd.rpe_target.toFixed(1)}
+                              </Text>
+                            )}
+                            {bd.mode === 'PCT' && bd.pct != null && (
+                              <Text style={styles.coreSchemeDetail}>
+                                {' '}@ {(bd.pct * 100).toFixed(1)}% TM
+                              </Text>
+                            )}
                           </Text>
 
                           {bd.target_low_kg != null &&
@@ -2697,5 +2828,14 @@ const styles = StyleSheet.create({
   swapModalWide: {
     width: '92%',
     maxWidth: 520,
+  },
+  actionSecondary: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.55)',
+    backgroundColor: 'rgba(148,163,184,0.10)',
+  },
+  actionSecondaryText: {
+    color: '#e5e7eb',
   },
 });
