@@ -75,29 +75,112 @@ export default function CreateWorkoutScreen() {
     return Number.isInteger(r) ? String(Math.trunc(r)) : String(r);
   };
 
+  const roundToStep = (v: number, step: number) => {
+    if (!Number.isFinite(v)) return v;
+    if (step <= 0) return v;
+    return Math.round(v / step) * step;
+  };
+
+  const normalizeDecimalInput = (s: string) => (s ?? '').replace(/,/g, '.');
+
   const parseDisplayWeightToKg = (s: string): number | null => {
     if (s == null) return null;
-    const t = String(s).trim();
+    const t = normalizeDecimalInput(String(s)).trim();
     if (!t) return null;
-    const n = Number(t);
+
+    const n = Number(t); // allow decimals
     if (!Number.isFinite(n)) return null;
     if (n <= 0) return null;
+
     return unit === 'lb' ? lbToKg(n) : n;
   };
 
   const parseDisplayDeltaToKg = (s: string): number | null => {
     if (s == null) return null;
-    const t = String(s).trim();
+    const t = normalizeDecimalInput(String(s)).trim();
     if (!t) return null;
-    const n = Number(t);
+
+    const n = Number(t); // allow decimals
     if (!Number.isFinite(n)) return null;
     if (n < 0) return null;
+
     return unit === 'lb' ? lbToKg(n) : n;
   };
 
   const displayWeight = (kg: number | null | undefined) => {
     if (kg == null) return '';
     return fmtWeight(kg);
+  };
+
+  // ========== Manual load decimal helpers ==========
+  const sanitizeDecimalDraft = (s: string) => {
+    // allow digits + one decimal separator ('.' or ','); keep as the user types
+    const t = String(s ?? '');
+    // Remove spaces
+    const noSpace = t.replace(/\s+/g, '');
+    // Keep digits, '.' and ',' only
+    const kept = noSpace.replace(/[^0-9\.,]/g, '');
+    // If multiple separators, keep first and drop the rest
+    const firstDot = kept.indexOf('.');
+    const firstComma = kept.indexOf(',');
+    const firstSepIdx = firstDot === -1 ? firstComma : (firstComma === -1 ? firstDot : Math.min(firstDot, firstComma));
+    if (firstSepIdx === -1) return kept;
+    const sep = kept[firstSepIdx];
+    const before = kept.slice(0, firstSepIdx + 1);
+    const after = kept.slice(firstSepIdx + 1).replace(/[\.,]/g, '');
+    return before + after;
+  };
+
+  const keyForManualTarget = (idx: number) => `core:${idx}:manual_target`;
+  const keyForManualPm = (idx: number) => `core:${idx}:manual_pm`;
+
+  // ===== Step validation (kg only) =====
+  const KG_STEP = 2.5;
+  const [stepIssues, setStepIssues] = useState<Record<string, string>>({});
+
+  const isMultipleOfStep = (v: number, step: number) => {
+    const q = v / step;
+    return Math.abs(q - Math.round(q)) < 1e-6;
+  };
+
+  const setIssue = (key: string, msg?: string | null) => {
+    setStepIssues((prev) => {
+      const next = { ...prev };
+      if (!msg) delete next[key];
+      else next[key] = msg;
+      return next;
+    });
+  };
+
+  const validateKgStep = (key: string, kgVal: number | null | undefined, allowZero = false) => {
+    if (unit !== 'kg') return setIssue(key, null);
+    if (kgVal == null) return setIssue(key, null);
+
+    const n = Number(kgVal);
+    if (!Number.isFinite(n)) return setIssue(key, 'Invalid number');
+    if (!allowZero && n <= 0) return setIssue(key, null);
+    if (allowZero && n < 0) return setIssue(key, 'Must be 0 or greater');
+
+    if (!isMultipleOfStep(n, KG_STEP)) return setIssue(key, 'Must be in 2.5 kg increments');
+    setIssue(key, null);
+  };
+
+  // Use a LOCAL compute for save/canSave (do not rely on async state updates)
+  const computeKgStepIssues = () => {
+    if (unit !== 'kg') return {};
+    const issues: Record<string, string> = {};
+    coreRef.current.forEach((c, idx) => {
+      const t = c?.manual_target_kg;
+      const pm = c?.manual_plusminus_kg;
+
+      if (t != null && Number.isFinite(Number(t)) && Number(t) > 0 && !isMultipleOfStep(Number(t), KG_STEP)) {
+        issues[`core:${idx}:manual_target`] = 'Must be in 2.5 kg increments';
+      }
+      if (pm != null && Number.isFinite(Number(pm)) && Number(pm) >= 0 && !isMultipleOfStep(Number(pm), KG_STEP)) {
+        issues[`core:${idx}:manual_pm`] = 'Must be in 2.5 kg increments';
+      }
+    });
+    return issues;
   };
 
   const [roster, setRoster] = useState<RosterRow[]>([]);
@@ -114,6 +197,27 @@ export default function CreateWorkoutScreen() {
   const [templatesError, setTemplatesError] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [tempPickedDate, setTempPickedDate] = useState<Date>(() => new Date());
+
+  // Manual load text drafts (so decimals are typeable on iOS)
+  const [manualDraft, setManualDraft] = useState<Record<string, string>>({});
+
+  const getDraft = (key: string, fallbackKg: number | null | undefined) => {
+    if (manualDraft[key] != null) return manualDraft[key];
+    return displayWeight(fallbackKg);
+  };
+
+  const setDraft = (key: string, v: string) => {
+    setManualDraft((prev) => ({ ...prev, [key]: sanitizeDecimalDraft(v) }));
+  };
+
+  const clearDraft = (key: string) => {
+    setManualDraft((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
 
   const coreLiftLabel = (v: CoreDraft['lift']) => {
     if (v === 'SQ') return 'Comp Squat';
@@ -654,6 +758,10 @@ if (c.lift === 'VR') {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [templatePickerOpen]);
 
+  useEffect(() => {
+    if (unit !== 'kg') setStepIssues({});
+  }, [unit]);
+
   const selectedAthlete = useMemo(() => {
     const idNum = Number(athleteId);
     if (!idNum) return null;
@@ -825,8 +933,9 @@ if (c.lift === 'VR') {
   const [error, setError] = useState<string|null>(null);
 
   const canSave = useMemo(() => {
-    return athleteId.trim().length > 0 && dateStr.trim().length === 10 && !saving;
-  }, [athleteId, dateStr, saving]);
+    const noStepIssues = Object.keys(stepIssues).length === 0;
+    return athleteId.trim().length > 0 && dateStr.trim().length === 10 && !saving && noStepIssues;
+  }, [athleteId, dateStr, saving, stepIssues]);
 
   const addCore = () =>
     setCore((p) => [
@@ -879,20 +988,31 @@ if (c.lift === 'VR') {
       { movement: '', sets: 3, reps_text: '10-12', rir_target: 2, superset_group: null, superset_pos: null },
     ]);
 
-  const save = async () => {
+  const saveWithStatus = async (status: 'draft' | 'assigned') => {
     setError(null);
+
+    if (unit === 'kg') {
+      const issues = computeKgStepIssues();
+      setStepIssues(issues);
+      if (Object.keys(issues).length > 0) {
+        Alert.alert('Fix load entries', 'Manual load fields must be in 2.5 kg increments.');
+        return;
+      }
+    }
+
     setSaving(true);
 
     const payload = {
       athlete_id: Number(athleteId),
       date: dateStr,
       label: label.trim() || null,
+      status, // <-- IMPORTANT
       core_items: core.map((c) => ({
         ...c,
         movement: c.movement?.trim() || null,
       })),
       acc_items: acc
-        .filter(a => a.movement.trim().length > 0)
+        .filter((a) => a.movement.trim().length > 0)
         .map((a) => ({
           ...a,
           movement: a.movement.trim(),
@@ -928,6 +1048,9 @@ if (c.lift === 'VR') {
       params: { workoutId },
     });
   };
+
+const saveDraft = async () => saveWithStatus('draft');
+const assignSession = async () => saveWithStatus('assigned');
 
   return (
     <ThemedView style={styles.screen}>
@@ -1200,13 +1323,19 @@ if (c.lift === 'VR') {
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Target Load ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(c.manual_target_kg)}
-                              onChangeText={(v) => {
-                                const nKg = parseDisplayWeightToKg(v);
+                              value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
+                              onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
+                              onBlur={() => {
+                                const key = keyForManualTarget(idx);
+                                const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
                                 updateCoreAt(idx, { manual_target_kg: nKg });
                                 applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
+                                validateKgStep(key, nKg);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="Required"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
@@ -1216,19 +1345,30 @@ if (c.lift === 'VR') {
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(c.manual_plusminus_kg)}
-                              onChangeText={(v) => {
-                                const pmKg = parseDisplayDeltaToKg(v);
+                              value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
+                              onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
+                              onBlur={() => {
+                                const key = keyForManualPm(idx);
+                                const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
                                 updateCoreAt(idx, { manual_plusminus_kg: pmKg });
                                 applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
+                                validateKgStep(key, pmKg, true);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="e.g. 5"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
                             />
                           </View>
                         </View>
+                        {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
+                          <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                            {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+                          </ThemedText>
+                        ) : null}
 
                         {(() => {
                         const sr = suggestedRangeLabel(c);
@@ -1308,50 +1448,69 @@ if (c.lift === 'VR') {
                     </View>
                     {/* Manual load override (optional). If set, overrides auto suggested range. */}
                     <View style={styles.row}>
-                    <View style={styles.fieldCol}>
+                      <View style={styles.fieldCol}>
                         <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
                         <TextInput
-                        value={displayWeight(c.manual_target_kg)}
-                        onChangeText={(v) => {
-                          const nKg = v === '' ? null : parseDisplayWeightToKg(v);
+                          value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
+                          onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
+                          onBlur={() => {
+                            const key = keyForManualTarget(idx);
+                            const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
 
-                          const key = String(idx);
-                          suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                          clearSuggestTimer(key);
+                            const seqKey = String(idx);
+                            suggestSeqRef.current[seqKey] = (suggestSeqRef.current[seqKey] || 0) + 1;
+                            clearSuggestTimer(seqKey);
 
-                          updateCoreAt(idx, { manual_target_kg: nKg });
-                          applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
+                            updateCoreAt(idx, { manual_target_kg: nKg });
+                            applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
+                            validateKgStep(key, nKg);
 
-                          if (nKg == null) scheduleSuggest(idx);
-                        }}
-                        keyboardType="decimal-pad"
-                        placeholder="Optional"
-                        placeholderTextColor="#64748b"
-                        style={[styles.input, styles.inputSm]}
+                            if (nKg == null) scheduleSuggest(idx);
+
+                            clearDraft(key);
+                          }}
+                          keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                          autoCorrect={false}
+                          autoCapitalize="none"
+                          placeholder="Optional"
+                          placeholderTextColor="#64748b"
+                          style={[styles.input, styles.inputSm]}
                         />
-                    </View>
+                      </View>
 
-                    <View style={styles.fieldCol}>
+                      <View style={styles.fieldCol}>
                         <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
                         <TextInput
-                        value={displayWeight(c.manual_plusminus_kg)}
-                        onChangeText={(v) => {
-                          const pmKg = v === '' ? null : parseDisplayDeltaToKg(v);
+                          value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
+                          onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
+                          onBlur={() => {
+                            const key = keyForManualPm(idx);
+                            const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
 
-                          const key = String(idx);
-                          suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                          clearSuggestTimer(key);
+                            const seqKey = String(idx);
+                            suggestSeqRef.current[seqKey] = (suggestSeqRef.current[seqKey] || 0) + 1;
+                            clearSuggestTimer(seqKey);
 
-                          updateCoreAt(idx, { manual_plusminus_kg: pmKg });
-                          applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                        }}
-                        keyboardType="decimal-pad"
-                        placeholder="e.g. 5"
-                        placeholderTextColor="#64748b"
-                        style={[styles.input, styles.inputSm]}
+                            updateCoreAt(idx, { manual_plusminus_kg: pmKg });
+                            applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
+                            validateKgStep(key, pmKg, true);
+
+                            clearDraft(key);
+                          }}
+                          keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                          autoCorrect={false}
+                          autoCapitalize="none"
+                          placeholder="e.g. 5"
+                          placeholderTextColor="#64748b"
+                          style={[styles.input, styles.inputSm]}
                         />
+                      </View>
                     </View>
-                    </View>
+                    {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
+                      <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                        {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+                      </ThemedText>
+                    ) : null}
                     {(() => {
                       const sr = suggestedRangeLabel(c);
                       if (!sr) return null;
@@ -1435,41 +1594,47 @@ if (c.lift === 'VR') {
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(c.manual_target_kg)}
-                              onChangeText={(v) => {
-                                const nKg = v === '' ? null : parseDisplayWeightToKg(v);
-
-                                const key = String(idx);
-                                suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                                clearSuggestTimer(key);
-
+                              value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
+                              onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
+                              onBlur={() => {
+                                const key = keyForManualTarget(idx);
+                                const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
                                 updateCoreAt(idx, { manual_target_kg: nKg });
                                 applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-
-                                if (nKg == null) scheduleSuggest(idx);
+                                validateKgStep(key, nKg);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="Optional"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
                             />
                           </View>
 
+                          {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
+                            <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                              {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+                            </ThemedText>
+                          ) : null}
+
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(c.manual_plusminus_kg)}
-                              onChangeText={(v) => {
-                                const pmKg = v === '' ? null : parseDisplayDeltaToKg(v);
-
-                                const key = String(idx);
-                                suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                                clearSuggestTimer(key);
-
+                              value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
+                              onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
+                              onBlur={() => {
+                                const key = keyForManualPm(idx);
+                                const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
                                 updateCoreAt(idx, { manual_plusminus_kg: pmKg });
                                 applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
+                                validateKgStep(key, pmKg, true);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="e.g. 5"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
@@ -1556,20 +1721,19 @@ if (c.lift === 'VR') {
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(bk.manual_target_kg)}
-                              onChangeText={(v) => {
-                                const nKg = v === '' ? null : parseDisplayWeightToKg(v);
-
-                                const key = String(idx + 1);
-                                suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                                clearSuggestTimer(key);
-
+                              value={getDraft(keyForManualTarget(idx + 1), bk.manual_target_kg)}
+                              onChangeText={(v) => setDraft(keyForManualTarget(idx + 1), v)}
+                              onBlur={() => {
+                                const key = keyForManualTarget(idx + 1);
+                                const nKg = parseDisplayWeightToKg(getDraft(key, bk.manual_target_kg));
                                 updateCoreAt(idx + 1, { manual_target_kg: nKg });
                                 applyManualRange(idx + 1, nKg, bk.manual_plusminus_kg ?? 0);
-
-                                if (nKg == null) scheduleSuggest(idx + 1);
+                                validateKgStep(key, nKg);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="Optional"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
@@ -1579,18 +1743,19 @@ if (c.lift === 'VR') {
                           <View style={styles.fieldCol}>
                             <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
                             <TextInput
-                              value={displayWeight(bk.manual_plusminus_kg)}
-                              onChangeText={(v) => {
-                                const pmKg = v === '' ? null : parseDisplayDeltaToKg(v);
-
-                                const key = String(idx + 1);
-                                suggestSeqRef.current[key] = (suggestSeqRef.current[key] || 0) + 1;
-                                clearSuggestTimer(key);
-
+                              value={getDraft(keyForManualPm(idx + 1), bk.manual_plusminus_kg)}
+                              onChangeText={(v) => setDraft(keyForManualPm(idx + 1), v)}
+                              onBlur={() => {
+                                const key = keyForManualPm(idx + 1);
+                                const pmKg = parseDisplayDeltaToKg(getDraft(key, bk.manual_plusminus_kg));
                                 updateCoreAt(idx + 1, { manual_plusminus_kg: pmKg });
                                 applyManualRange(idx + 1, bk.manual_target_kg ?? null, pmKg);
+                                validateKgStep(key, pmKg, true);
+                                clearDraft(key);
                               }}
-                              keyboardType="decimal-pad"
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
                               placeholder="e.g. 5"
                               placeholderTextColor="#64748b"
                               style={[styles.input, styles.inputSm]}
@@ -1771,26 +1936,29 @@ if (c.lift === 'VR') {
 
         <View style={styles.actionRow}>
           {editWorkoutId && (
-            <Pressable
-              style={[styles.cancelBtn]}
-              onPress={() => router.back()}
-            >
-              <ThemedText variant="h3" style={styles.cancelText}>
-                Cancel
-              </ThemedText>
+            <Pressable style={[styles.cancelBtn]} onPress={() => router.back()}>
+              <ThemedText variant="h3" style={styles.cancelText}>Cancel</ThemedText>
             </Pressable>
           )}
 
           <Pressable
-            style={[styles.saveBtn, (!canSave) && { opacity: 0.5 }]}
+            style={[styles.cancelBtn, !canSave && styles.btnDisabled]}
             disabled={!canSave}
-            onPress={save}
+            onPress={saveDraft}
           >
-            <ThemedText variant="h3" style={styles.saveText}>
-              {saving
-                ? (editWorkoutId ? 'Saving…' : 'Creating…')
-                : (editWorkoutId ? 'Save Changes' : 'Create Session')}
-            </ThemedText>
+            <ThemedText variant="h3" style={styles.cancelText}>Save Draft</ThemedText>
+          </Pressable>
+
+          <Pressable
+            style={[styles.saveBtn, !canSave && styles.btnDisabled]}
+            disabled={!canSave}
+            onPress={assignSession}
+          >
+            {saving ? (
+              <ActivityIndicator />
+            ) : (
+              <ThemedText variant="h3" style={styles.saveText}>Assign Session</ThemedText>
+            )}
           </Pressable>
         </View>
 
@@ -2263,7 +2431,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(148,163,184,0.35)',
     backgroundColor: '#0b1220',
   },
-  saveText: { color:'#E5E7EB' },
+  saveText: {
+    color: '#fff',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 
   selectInput: {
     marginTop: 6,
@@ -2505,5 +2677,13 @@ reorderBtnText: {
   },
   dateActionBtn: {
     flex: 1,
+  },
+  stepWarn: {
+    marginTop: 6,
+    color: '#f97316',
+    fontSize: 12,
+  },
+  btnDisabled: {
+    opacity: 0.45,
   },
 });

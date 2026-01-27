@@ -13,6 +13,11 @@ import {
   Alert,
   Modal,
   AppState,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  findNodeHandle,
+  UIManager,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -124,6 +129,22 @@ function formatWeight(
   // Convert kg → lb
   const lbs = kg / KG_PER_LB;
   return roundToNearest5(lbs).toFixed(0); // display whole pounds
+}
+
+function formatTargetRange(
+  lowKg: number | null | undefined,
+  highKg: number | null | undefined,
+  unit: 'kg' | 'lb'
+): string | null {
+  if (lowKg == null || highKg == null) return null;
+  if (lowKg === 0 && highKg === 0) return null;
+
+  // Collapse single-point ranges (manual pm = 0)
+  if (lowKg === highKg) {
+    return `${formatWeight(lowKg, unit)} ${unit}`;
+  }
+
+  return `${formatWeight(lowKg, unit)}–${formatWeight(highKg, unit)} ${unit}`;
 }
 
 function roundToNearest5(x: number): number {
@@ -259,6 +280,65 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
+  const scrollRef = useRef<ScrollView | null>(null);
+  const scrollYRef = useRef(0);
+  const pendingRestoreScrollYRef = useRef<number | null>(null);
+
+  // --- Keyboard + focus helpers so active log row stays visible ---
+  const inputRefs = useRef<Record<string, any>>({});
+
+  const scrollToNode = (node: any) => {
+    if (!node || !scrollRef.current) return;
+
+    try {
+      // IMPORTANT: measureLayout must be called with native node handles.
+      // TextInput refs can sometimes be non-native (composite) depending on platform/runtime.
+      // Using UIManager.measureLayout avoids the warning and works reliably.
+      const nodeHandle = findNodeHandle(node);
+      const scrollNode = (scrollRef.current as any).getInnerViewNode?.() || scrollRef.current;
+      const scrollHandle = findNodeHandle(scrollNode);
+
+      if (!nodeHandle || !scrollHandle) return;
+
+      UIManager.measureLayout(
+        nodeHandle,
+        scrollHandle,
+        () => {},
+        (_x: number, y: number) => {
+          const targetY = Math.max(0, y - 120);
+          scrollRef.current?.scrollTo({ y: targetY, animated: true });
+        }
+      );
+    } catch {}
+  };
+
+  const focusField = (key: string) => {
+    const ref = inputRefs.current[key];
+    if (ref?.focus) {
+      ref.focus();
+      // Scroll after focus so we land on the correct position
+      requestAnimationFrame(() => scrollToNode(ref));
+    }
+  };
+
+  const registerRef = (key: string) => (ref: any) => {
+    if (ref) inputRefs.current[key] = ref;
+  };
+  const [refreshing, setRefreshing] = useState(false);
+
+  const rememberScroll = () => {
+    pendingRestoreScrollYRef.current = scrollYRef.current;
+  };
+
+  const restoreScrollSoon = () => {
+    const y = pendingRestoreScrollYRef.current;
+    if (y == null) return;
+    pendingRestoreScrollYRef.current = null;
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y, animated: false });
+    });
+  };
+
   const [savingItemId, setSavingItemId] = useState<number | null>(null);
   const [actionLoading, setActionLoading] = useState<
     null | 'begin' | 'complete' | 'cancel'
@@ -327,6 +407,73 @@ export default function WorkoutViewerScreen() {
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
+
+  // --- Readiness survey (mobile only) ---
+  const [readinessVisible, setReadinessVisible] = useState(false);
+  const [pendingBeginWorkoutId, setPendingBeginWorkoutId] = useState<number | null>(null);
+  const [readinessSubmitting, setReadinessSubmitting] = useState(false);
+
+  const [readinessForm, setReadinessForm] = useState({
+    sleep_quality: 3,
+    fatigue: 3,
+    soreness: 3,
+    stress: 3,
+    overall: 3,
+  });
+
+  // If backend provides readiness data, this prevents re-prompting.
+  // If it doesn't yet, you'll still get prompted once per begin tap.
+  const hasReadinessForWorkout = () => {
+    const wk: any = data?.workout;
+    return !!wk?.readiness_survey;
+  };
+
+  const openReadinessThenBegin = (wkId: number) => {
+    setPendingBeginWorkoutId(wkId);
+    setReadinessVisible(true);
+  };
+
+  // Submit readiness (best-effort) then begin workout either way.
+  const submitReadinessAndBegin = async (opts?: { skipped?: boolean }) => {
+    const wkId = pendingBeginWorkoutId;
+    if (!wkId) {
+      setReadinessVisible(false);
+      return;
+    }
+
+    try {
+      setReadinessSubmitting(true);
+      setError(null);
+
+      const skipped = !!opts?.skipped;
+      const body = skipped
+        ? { skipped: true }
+        : {
+            sleep_quality: readinessForm.sleep_quality,
+            soreness: readinessForm.soreness,
+            stress: readinessForm.stress,
+            energy: readinessForm.fatigue, // mapping fatigue -> energy for now
+          };
+
+      // Create this backend route next:
+      // POST /workouts/mobile/<wkId>/readiness
+      await fetchJson(`${API_BASE}/workouts/mobile/${wkId}/readiness`, {
+        method: 'POST',
+        auth: true,
+        body,
+      });
+    } catch (e) {
+      // Don't block beginning the workout if readiness submit fails
+      console.log('readiness submit error', e);
+    } finally {
+      setReadinessSubmitting(false);
+      setReadinessVisible(false);
+      setPendingBeginWorkoutId(null);
+
+      // Now proceed with the existing begin flow
+      requestAnimationFrame(() => beginWorkout());
+    }
+  };
 
   // --- Accessory hot-swap (self-coached only) ---
   const [swapAccVisible, setSwapAccVisible] = useState(false);
@@ -407,6 +554,7 @@ export default function WorkoutViewerScreen() {
 
       setSwapAccVisible(false);
       setSwapAccItem(null);
+      rememberScroll();
       await fetchWorkout();
     } catch (err: any) {
       console.log('saveSwapAcc error', err);
@@ -576,6 +724,136 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
+  // Helper to ensure reps is initialized in state for controlled TextInput
+  const ensureCoreRepsPrefill = (
+    itemId: number,
+    kind: 'straight' | 'top' | 'bk',
+    fallbackReps: number | string | null | undefined,
+  ) => {
+    const repsStr = (fallbackReps != null && String(fallbackReps).trim() !== '')
+      ? String(fallbackReps)
+      : '';
+
+    if (kind === 'straight') {
+      setStraightInputs((prev) => {
+        const cur = prev[itemId];
+        if (cur && (cur.reps ?? '') !== '') return prev;
+        return {
+          ...prev,
+          [itemId]: {
+            weight: cur?.weight || '',
+            reps: cur?.reps || repsStr,
+            rpe: cur?.rpe || '',
+          },
+        };
+      });
+      return;
+    }
+
+    if (kind === 'top') {
+      setTopInputs((prev) => {
+        const cur = prev[itemId];
+        if (cur && (cur.reps ?? '') !== '') return prev;
+        return {
+          ...prev,
+          [itemId]: {
+            weight: cur?.weight || '',
+            reps: cur?.reps || repsStr,
+            rpe: cur?.rpe || '',
+          },
+        };
+      });
+      return;
+    }
+
+    setBkInputs((prev) => {
+      const cur = prev[itemId];
+      if (cur && (cur.reps ?? '') !== '') return prev;
+      return {
+        ...prev,
+        [itemId]: {
+          weight: cur?.weight || '',
+          reps: cur?.reps || repsStr,
+          rpe: cur?.rpe || '',
+        },
+      };
+    });
+  };
+
+  // Prefill prescribed reps into controlled state once the workout loads.
+  useEffect(() => {
+    const wk = data?.workout;
+    if (!wk?.id) return;
+
+    const coreItems: any[] = Array.isArray(wk.core_items) ? wk.core_items : [];
+
+    // Straight-like items: STRAIGHT and VR
+    const straightLike = coreItems.filter((it) => it && (it.variant === 'STRAIGHT' || it.variant === 'VR' || it.lift === 'VR'));
+    if (straightLike.length) {
+      setStraightInputs((prev) => {
+        let next = prev;
+        for (const it of straightLike) {
+          const id = it.id;
+          const reps = it.reps;
+          if (id == null || reps == null) continue;
+          const cur = prev[id];
+          if (cur && String(cur.reps || '').trim() !== '') continue;
+          if (next === prev) next = { ...prev };
+          next[id] = {
+            weight: cur?.weight || '',
+            reps: String(reps),
+            rpe: cur?.rpe || '',
+          };
+        }
+        return next;
+      });
+    }
+
+    // Top items
+    const topItems = coreItems.filter((it) => it && it.variant === 'TOP');
+    if (topItems.length) {
+      setTopInputs((prev) => {
+        let next = prev;
+        for (const it of topItems) {
+          const id = it.id;
+          const reps = it.reps;
+          if (id == null || reps == null) continue;
+          const cur = prev[id];
+          if (cur && String(cur.reps || '').trim() !== '') continue;
+          if (next === prev) next = { ...prev };
+          next[id] = {
+            weight: cur?.weight || '',
+            reps: String(reps),
+            rpe: cur?.rpe || '',
+          };
+        }
+        return next;
+      });
+    }
+
+    // Backdowns: every BK item should get its own reps prefill
+    const bkItems = coreItems.filter((it) => it && it.variant === 'BK');
+    if (bkItems.length) {
+      setBkInputs((prev) => {
+        let next = prev;
+        for (const it of bkItems) {
+          const id = it.id;
+          const reps = it.reps;
+          if (id == null || reps == null) continue;
+          const cur = prev[id];
+          if (cur && String(cur.reps || '').trim() !== '') continue;
+          if (next === prev) next = { ...prev };
+          next[id] = {
+            weight: cur?.weight || '',
+            reps: String(reps),
+            rpe: cur?.rpe || '',
+          };
+        }
+        return next;
+      });
+    }
+  }, [data?.workout?.id]);
+
   const logStraightSet = async (itemId: number) => {
     if (!workoutId || !data) return;
 
@@ -607,6 +885,11 @@ export default function WorkoutViewerScreen() {
       ? weightInUnit
       : weightInUnit * KG_PER_LB;
 
+    const prescribedReps = (() => {
+      const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
+      return it?.reps != null ? String(it.reps) : '';
+    })();
+
     try {
       setSavingItemId(itemId);
       setError(null);
@@ -629,11 +912,19 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
-
+      rememberScroll();
       await fetchWorkout();
+
+      // Prefill next set weight with the weight just used (saves re-typing)
+      const nextWeightStr = weightInUnit > 0
+        ? (unit === 'lb'
+            ? String(roundToNearest5(weightInUnit))
+            : String(weightInUnit))
+        : '';
+
       setStraightInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', reps: '', rpe: '' },
+        [itemId]: { weight: nextWeightStr, reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
       console.log('logStraightSet error', err);
@@ -670,6 +961,11 @@ export default function WorkoutViewerScreen() {
       ? weightInUnit
       : weightInUnit * KG_PER_LB;
 
+    const prescribedReps = (() => {
+      const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
+      return it?.reps != null ? String(it.reps) : '';
+    })();
+
     try {
       setSavingItemId(itemId);
       setError(null);
@@ -692,11 +988,11 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
-
+      rememberScroll();
       await fetchWorkout();
       setTopInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', reps: '', rpe: '' },
+        [itemId]: { weight: '', reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
       console.log('logTopSet error', err);
@@ -737,6 +1033,11 @@ export default function WorkoutViewerScreen() {
       ? weightInUnit
       : weightInUnit * KG_PER_LB;
 
+    const prescribedReps = (() => {
+      const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
+      return it?.reps != null ? String(it.reps) : '';
+    })();
+
     try {
       setSavingItemId(itemId);
       setError(null);
@@ -759,11 +1060,19 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
-
+      rememberScroll();
       await fetchWorkout();
+
+      // Prefill next set weight with the weight just used (saves re-typing)
+      const nextWeightStr = weightInUnit > 0
+        ? (unit === 'lb'
+            ? String(roundToNearest5(weightInUnit))
+            : String(weightInUnit))
+        : '';
+
       setBkInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', reps: '', rpe: '' },
+        [itemId]: { weight: nextWeightStr, reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
       console.log('logBackdownSet error', err);
@@ -862,12 +1171,19 @@ export default function WorkoutViewerScreen() {
       );
 
       setTimerPickerVisible(true);
-
+      rememberScroll();
       await fetchWorkout();
+
+      // Prefill next set weight with the weight just used (saves re-typing)
+      const nextWeightStr = weightInUnit > 0
+        ? (unit === 'lb'
+            ? String(roundToNearest5(weightInUnit))
+            : String(weightInUnit))
+        : '';
 
       setAccInputs((prev) => ({
         ...prev,
-        [itemId]: { weight: '', reps: '', rir: '' },
+        [itemId]: { weight: nextWeightStr, reps: '', rir: '' },
       }));
     } catch (err: any) {
       console.log('handleAccessorySave error', err);
@@ -895,7 +1211,7 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to clear top set (HTTP ${status})`);
       }
-
+      rememberScroll();
       await fetchWorkout();
     } catch (err: any) {
       console.log('clearTopSet error', err);
@@ -925,6 +1241,7 @@ export default function WorkoutViewerScreen() {
       }
 
       // Refresh workout so set_logs are in sync
+      rememberScroll();
       await fetchWorkout();
     } catch (err: any) {
       console.log('undoLastSet error', err);
@@ -1101,7 +1418,11 @@ export default function WorkoutViewerScreen() {
     }
 
     try {
-      setLoading(true);
+      // Only show the full-screen loader on first load.
+      // Refreshes should keep ScrollView mounted to avoid snapping to top.
+      if (!data) setLoading(true);
+      else setRefreshing(true);
+
       setError(null);
 
       const { ok, status, json } = await fetchJson(
@@ -1116,11 +1437,13 @@ export default function WorkoutViewerScreen() {
       }
 
       setData(payload);
+      restoreScrollSoon();
     } catch (err: any) {
       console.log('Workout fetch error', err);
       setError(err?.message || 'Error loading workout');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -1135,7 +1458,7 @@ export default function WorkoutViewerScreen() {
     };
   }, []);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <View style={styles.center}>
         <ActivityIndicator />
@@ -1161,7 +1484,9 @@ export default function WorkoutViewerScreen() {
   const canHotSwap = !!data.permissions?.can_hot_swap;
   // Coach viewing an athlete workout in read-only mode
   const isCoachView = !!data.permissions?.can_coach && !canLogFromServer;
-  const canEdit = (!!data.permissions?.can_coach || !!data.permissions?.is_self_coached) && workout.status === 'assigned';
+  const canEdit =
+    (!!data.permissions?.can_coach || !!data.permissions?.is_self_coached) &&
+    (workout.status === 'assigned' || workout.status === 'draft');
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canBegin = canLogFromServer && workout.status === 'assigned';
   const canCompleteOrCancel =
@@ -1173,7 +1498,11 @@ export default function WorkoutViewerScreen() {
 
 
   return (
-    <View style={styles.screen}>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 92 : 0}
+    >
       {/* Pinned top bar: unit toggle and rest timer (inline) */}
       <View style={styles.pinnedTopBar}>
         <View style={styles.topBarRow}>
@@ -1245,8 +1574,14 @@ export default function WorkoutViewerScreen() {
 
       {/* Scrollable workout content */}
       <ScrollView
+        ref={scrollRef}
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 32 }}
+        onScroll={(e) => {
+          scrollYRef.current = e.nativeEvent.contentOffset.y;
+        }}
+        scrollEventThrottle={16}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Top summary — mirrors the h2 row in workout_show.html */}
         <View style={styles.summaryRow}>
@@ -1326,7 +1661,13 @@ export default function WorkoutViewerScreen() {
                     styles.actionPrimary,
                     actionLoading === 'begin' && { opacity: 0.7 },
                   ]}
-                  onPress={beginWorkout}
+                  onPress={() => {
+                    if (hasReadinessForWorkout()) {
+                      beginWorkout();
+                    } else {
+                      openReadinessThenBegin(workout.id);
+                    }
+                  }}
                   disabled={!!actionLoading}
                 >
                   {actionLoading === 'begin' ? (
@@ -1443,14 +1784,11 @@ export default function WorkoutViewerScreen() {
                           <Text style={styles.setLabel}>Set {setIdx}</Text>
 
                           {/* Inline suggested range for the whole item */}
-                          {core.target_low_kg != null &&
-                            core.target_high_kg != null &&
-                            (core.target_low_kg !== 0 || core.target_high_kg !== 0) && (
-                              <Text style={styles.setTargetInline}>
-                                {formatWeight(core.target_low_kg, unit)}–
-                                {formatWeight(core.target_high_kg, unit)} {unit}
-                              </Text>
-                            )}
+                          {(() => {
+                            const t = formatTargetRange(core.target_low_kg, core.target_high_kg, unit);
+                            if (!t) return null;
+                            return <Text style={styles.setTargetInline}>{t}</Text>;
+                          })()}
 
                           {existing ? (
                             <Text style={styles.actualText}>
@@ -1470,6 +1808,14 @@ export default function WorkoutViewerScreen() {
                                   onChangeText={(txt) =>
                                     updateStraightInput(core.id, 'weight', txt)
                                   }
+                                  ref={registerRef(`straight-${core.id}-weight`)}
+                                  returnKeyType="next"
+                                  blurOnSubmit={false}
+                                  onSubmitEditing={() => focusField(`straight-${core.id}-reps`)}
+                                  onFocus={() => {
+                                    ensureCoreRepsPrefill(core.id, 'straight', core.reps);
+                                    requestAnimationFrame(() => scrollToNode(inputRefs.current[`straight-${core.id}-weight`]));
+                                  }}
                                 />
                                 <TextInput
                                   style={styles.logInput}
@@ -1480,6 +1826,14 @@ export default function WorkoutViewerScreen() {
                                   onChangeText={(txt) =>
                                     updateStraightInput(core.id, 'reps', txt)
                                   }
+                                  ref={registerRef(`straight-${core.id}-reps`)}
+                                  returnKeyType="next"
+                                  blurOnSubmit={false}
+                                  onSubmitEditing={() => focusField(`straight-${core.id}-rpe`)}
+                                  onFocus={() => {
+                                    ensureCoreRepsPrefill(core.id, 'straight', core.reps);
+                                    requestAnimationFrame(() => scrollToNode(inputRefs.current[`straight-${core.id}-reps`]));
+                                  }}
                                 />
                                 <TextInput
                                   style={styles.logInput}
@@ -1490,6 +1844,10 @@ export default function WorkoutViewerScreen() {
                                   onChangeText={(txt) =>
                                     updateStraightInput(core.id, 'rpe', txt)
                                   }
+                                  ref={registerRef(`straight-${core.id}-rpe`)}
+                                  returnKeyType="done"
+                                  onSubmitEditing={() => { Keyboard.dismiss(); logStraightSet(core.id); }}
+                                  onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`straight-${core.id}-rpe`]))}
                                 />
                                 <TouchableOpacity
                                   style={styles.logButton}
@@ -1557,14 +1915,11 @@ export default function WorkoutViewerScreen() {
                         )}
                       </Text>
 
-                      {core.target_low_kg != null &&
-                        core.target_high_kg != null &&
-                        (core.target_low_kg !== 0 || core.target_high_kg !== 0) && (
-                          <Text style={styles.setTargetInline}>
-                            Target {formatWeight(core.target_low_kg, unit)}–
-                            {formatWeight(core.target_high_kg, unit)} {unit}
-                          </Text>
-                        )}
+                      {(() => {
+                        const t = formatTargetRange(core.target_low_kg, core.target_high_kg, unit);
+                        if (!t) return null;
+                        return <Text style={styles.setTargetInline}>Target {t}</Text>;
+                      })()}
 
                       {hasTopActual ? (
                         <Text style={styles.actualText}>
@@ -1587,6 +1942,14 @@ export default function WorkoutViewerScreen() {
                             onChangeText={(txt) =>
                               updateTopInput(core.id, 'weight', txt)
                             }
+                            ref={registerRef(`top-${core.id}-weight`)}
+                            returnKeyType="next"
+                            blurOnSubmit={false}
+                            onSubmitEditing={() => focusField(`top-${core.id}-reps`)}
+                            onFocus={() => {
+                              ensureCoreRepsPrefill(core.id, 'top', core.reps);
+                              requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-weight`]));
+                            }}
                           />
                           <TextInput
                             style={styles.logInput}
@@ -1597,6 +1960,14 @@ export default function WorkoutViewerScreen() {
                             onChangeText={(txt) =>
                               updateTopInput(core.id, 'reps', txt)
                             }
+                            ref={registerRef(`top-${core.id}-reps`)}
+                            returnKeyType="next"
+                            blurOnSubmit={false}
+                            onSubmitEditing={() => focusField(`top-${core.id}-rpe`)}
+                            onFocus={() => {
+                              ensureCoreRepsPrefill(core.id, 'top', core.reps);
+                              requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-reps`]));
+                            }}
                           />
                           <TextInput
                             style={styles.logInput}
@@ -1607,6 +1978,10 @@ export default function WorkoutViewerScreen() {
                             onChangeText={(txt) =>
                               updateTopInput(core.id, 'rpe', txt)
                             }
+                            ref={registerRef(`top-${core.id}-rpe`)}
+                            returnKeyType="done"
+                            onSubmitEditing={() => { Keyboard.dismiss(); logTopSet(core.id); }}
+                            onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-rpe`]))}
                           />
                           <TouchableOpacity
                             style={styles.logButton}
@@ -1668,14 +2043,11 @@ export default function WorkoutViewerScreen() {
                             )}
                           </Text>
 
-                          {bd.target_low_kg != null &&
-                            bd.target_high_kg != null &&
-                            (bd.target_low_kg !== 0 || bd.target_high_kg !== 0) && (
-                              <Text style={styles.setTargetInline}>
-                                {formatWeight(bd.target_low_kg, unit)}–
-                                {formatWeight(bd.target_high_kg, unit)} {unit}
-                              </Text>
-                            )}
+                          {(() => {
+                            const t = formatTargetRange(bd.target_low_kg, bd.target_high_kg, unit);
+                            if (!t) return null;
+                            return <Text style={styles.setTargetInline}>{t}</Text>;
+                          })()}
 
                           {bdLogs.map((sl) => (
                             <Text key={sl.id} style={styles.actualText}>
@@ -1697,6 +2069,14 @@ export default function WorkoutViewerScreen() {
                                 onChangeText={(txt) =>
                                   updateBkInput(bd.id, 'weight', txt)
                                 }
+                                ref={registerRef(`bk-${bd.id}-weight`)}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => focusField(`bk-${bd.id}-reps`)}
+                                onFocus={() => {
+                                  ensureCoreRepsPrefill(bd.id, 'bk', bd.reps);
+                                  requestAnimationFrame(() => scrollToNode(inputRefs.current[`bk-${bd.id}-weight`]));
+                                }}
                               />
                               <TextInput
                                 style={styles.logInput}
@@ -1707,6 +2087,14 @@ export default function WorkoutViewerScreen() {
                                 onChangeText={(txt) =>
                                   updateBkInput(bd.id, 'reps', txt)
                                 }
+                                ref={registerRef(`bk-${bd.id}-reps`)}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => focusField(`bk-${bd.id}-rpe`)}
+                                onFocus={() => {
+                                  ensureCoreRepsPrefill(bd.id, 'bk', bd.reps);
+                                  requestAnimationFrame(() => scrollToNode(inputRefs.current[`bk-${bd.id}-reps`]));
+                                }}
                               />
                               <TextInput
                                 style={styles.logInput}
@@ -1717,6 +2105,10 @@ export default function WorkoutViewerScreen() {
                                 onChangeText={(txt) =>
                                   updateBkInput(bd.id, 'rpe', txt)
                                 }
+                                ref={registerRef(`bk-${bd.id}-rpe`)}
+                                returnKeyType="done"
+                                onSubmitEditing={() => { Keyboard.dismiss(); logBackdownSet(bd.id); }}
+                                onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`bk-${bd.id}-rpe`]))}
                               />
                               <TouchableOpacity
                                 style={styles.logButton}
@@ -1770,14 +2162,11 @@ export default function WorkoutViewerScreen() {
                         Backdown sets {logs.length}/{core.sets || 0}
                       </Text>
 
-                      {core.target_low_kg != null &&
-                        core.target_high_kg != null &&
-                        (core.target_low_kg !== 0 || core.target_high_kg !== 0) && (
-                          <Text style={styles.setTargetInline}>
-                            {core.target_low_kg.toFixed(1)}–
-                            {core.target_high_kg.toFixed(1)} kg
-                          </Text>
-                        )}
+                      {(() => {
+                        const t = formatTargetRange(core.target_low_kg, core.target_high_kg, unit);
+                        if (!t) return null;
+                        return <Text style={styles.setTargetInline}>{t}</Text>;
+                      })()}
 
                       {logs.map((sl) => (
                         <Text key={sl.id} style={styles.actualText}>
@@ -1884,6 +2273,15 @@ export default function WorkoutViewerScreen() {
                                       onChangeText={(txt) =>
                                         updateAccInput(it.id, 'weight', txt)
                                       }
+                                      ref={registerRef(`acc-${it.id}-weight`)}
+                                      returnKeyType="next"
+                                      blurOnSubmit={false}
+                                      onSubmitEditing={() => focusField(`acc-${it.id}-reps`)}
+                                      onFocus={() =>
+                                        requestAnimationFrame(() =>
+                                          scrollToNode(inputRefs.current[`acc-${it.id}-weight`])
+                                        )
+                                      }
                                     />
                                     <TextInput
                                       style={styles.logInput}
@@ -1894,6 +2292,15 @@ export default function WorkoutViewerScreen() {
                                       onChangeText={(txt) =>
                                         updateAccInput(it.id, 'reps', txt)
                                       }
+                                      ref={registerRef(`acc-${it.id}-reps`)}
+                                      returnKeyType="next"
+                                      blurOnSubmit={false}
+                                      onSubmitEditing={() => focusField(`acc-${it.id}-rir`)}
+                                      onFocus={() =>
+                                        requestAnimationFrame(() =>
+                                          scrollToNode(inputRefs.current[`acc-${it.id}-reps`])
+                                        )
+                                      }
                                     />
                                     <TextInput
                                       style={styles.logInput}
@@ -1903,6 +2310,17 @@ export default function WorkoutViewerScreen() {
                                       value={accInputs[it.id]?.rir ?? ''}
                                       onChangeText={(txt) =>
                                         updateAccInput(it.id, 'rir', txt)
+                                      }
+                                      ref={registerRef(`acc-${it.id}-rir`)}
+                                      returnKeyType="done"
+                                      onSubmitEditing={() => {
+                                        Keyboard.dismiss();
+                                        handleAccessorySave(it.id);
+                                      }}
+                                      onFocus={() =>
+                                        requestAnimationFrame(() =>
+                                          scrollToNode(inputRefs.current[`acc-${it.id}-rir`])
+                                        )
                                       }
                                     />
                                     <TouchableOpacity
@@ -2022,6 +2440,15 @@ export default function WorkoutViewerScreen() {
                                 onChangeText={(txt) =>
                                   updateAccInput(it.id, 'weight', txt)
                                 }
+                                ref={registerRef(`acc-${it.id}-weight`)}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => focusField(`acc-${it.id}-reps`)}
+                                onFocus={() =>
+                                  requestAnimationFrame(() =>
+                                    scrollToNode(inputRefs.current[`acc-${it.id}-weight`])
+                                  )
+                                }
                               />
                               <TextInput
                                 style={styles.logInput}
@@ -2032,6 +2459,15 @@ export default function WorkoutViewerScreen() {
                                 onChangeText={(txt) =>
                                   updateAccInput(it.id, 'reps', txt)
                                 }
+                                ref={registerRef(`acc-${it.id}-reps`)}
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={() => focusField(`acc-${it.id}-rir`)}
+                                onFocus={() =>
+                                  requestAnimationFrame(() =>
+                                    scrollToNode(inputRefs.current[`acc-${it.id}-reps`])
+                                  )
+                                }
                               />
                               <TextInput
                                 style={styles.logInput}
@@ -2041,6 +2477,17 @@ export default function WorkoutViewerScreen() {
                                 value={accInputs[it.id]?.rir ?? ''}
                                 onChangeText={(txt) =>
                                   updateAccInput(it.id, 'rir', txt)
+                                }
+                                ref={registerRef(`acc-${it.id}-rir`)}
+                                returnKeyType="done"
+                                onSubmitEditing={() => {
+                                  Keyboard.dismiss();
+                                  handleAccessorySave(it.id);
+                                }}
+                                onFocus={() =>
+                                  requestAnimationFrame(() =>
+                                    scrollToNode(inputRefs.current[`acc-${it.id}-rir`])
+                                  )
                                 }
                               />
                               <TouchableOpacity
@@ -2216,6 +2663,156 @@ export default function WorkoutViewerScreen() {
         </View>
       </Modal>
 
+      {/* Readiness survey modal (mobile only, shown on Begin Workout) */}
+      <Modal
+        visible={readinessVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!readinessSubmitting) setReadinessVisible(false);
+        }}
+      >
+        <View style={styles.timerOverlay}>
+          <View style={styles.readinessModal}>
+            <Text style={styles.timerPickerTitle}>Quick readiness check</Text>
+            <Text style={{ color: '#94a3b8', fontSize: 12, marginBottom: 10 }}>
+              Tap values and hit Submit (or Skip).
+            </Text>
+
+            {/* Sleep */}
+            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginBottom: 6 }}>
+              Sleep quality (1–5)
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {[1,2,3,4,5].map((n) => (
+                <TouchableOpacity
+                  key={`sleep-${n}`}
+                  onPress={() => setReadinessForm((p) => ({ ...p, sleep_quality: n }))}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: n === readinessForm.sleep_quality ? '#38bdf8' : 'rgba(148,163,184,0.5)',
+                    backgroundColor: n === readinessForm.sleep_quality ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
+                  }}
+                >
+                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Fatigue */}
+            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
+              Fatigue (1–5)
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {[1,2,3,4,5].map((n) => (
+                <TouchableOpacity
+                  key={`fatigue-${n}`}
+                  onPress={() => setReadinessForm((p) => ({ ...p, fatigue: n }))}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: n === readinessForm.fatigue ? '#38bdf8' : 'rgba(148,163,184,0.5)',
+                    backgroundColor: n === readinessForm.fatigue ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
+                  }}
+                >
+                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Soreness */}
+            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
+              Soreness (1–5)
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {[1,2,3,4,5].map((n) => (
+                <TouchableOpacity
+                  key={`sore-${n}`}
+                  onPress={() => setReadinessForm((p) => ({ ...p, soreness: n }))}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: n === readinessForm.soreness ? '#38bdf8' : 'rgba(148,163,184,0.5)',
+                    backgroundColor: n === readinessForm.soreness ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
+                  }}
+                >
+                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Stress */}
+            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
+              Stress (1–5)
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {[1,2,3,4,5].map((n) => (
+                <TouchableOpacity
+                  key={`stress-${n}`}
+                  onPress={() => setReadinessForm((p) => ({ ...p, stress: n }))}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: n === readinessForm.stress ? '#38bdf8' : 'rgba(148,163,184,0.5)',
+                    backgroundColor: n === readinessForm.stress ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
+                  }}
+                >
+                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 14 }}>
+              <TouchableOpacity
+                style={[styles.timerButton, { borderColor: 'rgba(148,163,184,0.6)' }]}
+                onPress={() => submitReadinessAndBegin({ skipped: true })}
+                disabled={readinessSubmitting}
+              >
+                {readinessSubmitting ? (
+                  <ActivityIndicator size="small" color="#e5e7eb" />
+                ) : (
+                  <Text style={styles.timerButtonText}>Skip</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.timerButton, { borderColor: '#38bdf8', backgroundColor: '#38bdf8' }]}
+                onPress={() => submitReadinessAndBegin({ skipped: false })}
+                disabled={readinessSubmitting}
+              >
+                {readinessSubmitting ? (
+                  <ActivityIndicator size="small" color="#020617" />
+                ) : (
+                  <Text style={[styles.timerButtonText, { color: '#020617' }]}>Submit</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.timerButton, { borderColor: 'rgba(248,113,113,0.8)', backgroundColor: 'rgba(127,29,29,0.7)' }]}
+                onPress={() => {
+                  if (!readinessSubmitting) {
+                    setReadinessVisible(false);
+                    setPendingBeginWorkoutId(null);
+                  }
+                }}
+                disabled={readinessSubmitting}
+              >
+                <Text style={styles.timerButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Accessory hot-swap modal (self-coached only) */}
       <Modal
         visible={swapAccVisible}
@@ -2286,7 +2883,7 @@ export default function WorkoutViewerScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -2837,5 +3434,58 @@ const styles = StyleSheet.create({
   },
   actionSecondaryText: {
     color: '#e5e7eb',
+  },
+  readinessModal: {
+    width: '80%',
+    maxWidth: 420,
+    backgroundColor: '#020617',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.35)',
+    alignItems: 'center',
+  },
+  readinessHelp: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginBottom: 10,
+  },
+  readinessRow: {
+    marginTop: 10,
+  },
+  readinessLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#e5e7eb',
+    marginBottom: 6,
+  },
+  readinessPills: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  readinessPill: {
+    width: 36,
+    height: 32,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(148,163,184,0.10)',
+  },
+  readinessPillActive: {
+    borderColor: '#38bdf8',
+    backgroundColor: '#38bdf8',
+  },
+  readinessPillText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#e5e7eb',
+  },
+  readinessPillTextActive: {
+    color: '#020617',
   },
 });

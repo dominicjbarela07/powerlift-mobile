@@ -10,6 +10,7 @@ import { fetchJson } from '@/lib/api';
 type CoachDashboardResponse = {
   ok: boolean;
   total: number;
+  drafts: number;
   today_assigned: number;
   today_logged: number;
   missed_yesterday: number;
@@ -114,6 +115,7 @@ export default function CoachDashboardScreen() {
           {data && (
             <>
               <View style={styles.kpiGrid}>
+
                 <TouchableOpacity
                   style={styles.kpiCard}
                   onPress={() => {
@@ -158,6 +160,17 @@ export default function CoachDashboardScreen() {
                     {data.missed_yesterday}
                   </ThemedText>
                   <ThemedText variant="small" style={styles.kpiHint}>Unlogged from yesterday</ThemedText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.kpiCard}
+                  onPress={() => {
+                    router.push('/coach-kpi/drafts');
+                  }}
+                >
+                  <ThemedText variant="label" style={styles.kpiLabel}>Draft Sessions</ThemedText>
+                  <ThemedText variant="kpi" style={styles.kpiValue}>{data.drafts}</ThemedText>
+                  <ThemedText variant="small" style={styles.kpiHint}>Built but not assigned</ThemedText>
                 </TouchableOpacity>
 
                 {/* Quick action */}

@@ -39,6 +39,7 @@ type KpiResponse = {
 
 function statusLabel(s?: string | null) {
   const v = (s || 'assigned').toLowerCase();
+  if (v === 'draft') return 'Draft';
   if (v === 'assigned') return 'Assigned';
   if (v === 'in_progress') return 'In progress';
   if (['logged', 'completed', 'done'].includes(v)) return 'Completed';
@@ -47,6 +48,7 @@ function statusLabel(s?: string | null) {
 
 function statusTone(s?: string | null) {
   const v = (s || 'assigned').toLowerCase();
+  if (v === 'draft') return '#a78bfa'; // purple
   if (v === 'assigned') return '#f97316'; // warn
   if (v === 'in_progress') return '#22c55e'; // ok
   if (['logged', 'completed', 'done'].includes(v)) return '#38bdf8'; // accent
@@ -152,6 +154,7 @@ export default function CoachKpiDetailScreen() {
     if (kind === 'today_assigned') return 'Today Assigned';
     if (kind === 'today_logged') return 'Today Logged';
     if (kind === 'missed_yesterday') return 'Missed Yesterday';
+    if (kind === 'drafts') return 'Drafts';
     return 'KPI Detail';
   }, [data?.title, kind]);
 
