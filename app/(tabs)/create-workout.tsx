@@ -306,6 +306,21 @@ export default function CreateWorkoutScreen() {
 
   const hydrateCoreFromTemplate = (rows: any[]): CoreDraft[] => {
     if (!Array.isArray(rows)) return [];
+    // Helper functions for robust manual field hydration
+    const numOrNull = (v: any): number | null => {
+      if (v == null || v === '') return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const pickNum = (r: any, keys: string[]): number | null => {
+      for (const k of keys) {
+        const v = numOrNull(r?.[k]);
+        if (v != null) return v;
+      }
+      return null;
+    };
+
     return rows
       .map((r: any) => {
         const lift = (r?.lift || 'BN') as CoreDraft['lift'];
@@ -322,14 +337,33 @@ export default function CreateWorkoutScreen() {
           rpe_target: r?.rpe_target == null ? null : Number(r.rpe_target),
           pct: r?.pct == null ? null : Number(r.pct),
 
-          manual_target_kg: r?.manual_target_kg == null ? null : Number(r.manual_target_kg),
-          manual_plusminus_kg: r?.manual_plusminus_kg == null ? null : Number(r.manual_plusminus_kg),
+          // Manual target fields: hydrate from multiple possible backend key names
+          // (some endpoints historically used slightly different names)
+          manual_target_kg: pickNum(r, [
+            'manual_target_kg',
+            'manual_target',
+            'manual_target_weight_kg',
+            'manual_load_target_kg',
+          ]),
+          manual_plusminus_kg: pickNum(r, [
+            'manual_plusminus_kg',
+            'manual_plusminus',
+            'manual_plus_minus_kg',
+            'manual_pm_kg',
+            'manual_range_kg',
+            'manual_delta_kg',
+          ]),
 
           target_low_kg: r?.target_low_kg == null ? null : Number(r.target_low_kg),
           target_high_kg: r?.target_high_kg == null ? null : Number(r.target_high_kg),
 
           parent_item_id: r?.parent_item_id == null ? null : Number(r.parent_item_id),
         };
+
+        // If manual_target exists but plusminus is missing, default plusminus to 0 so ± field doesn't render blank
+        if (out.manual_target_kg != null && out.manual_plusminus_kg == null) {
+          out.manual_plusminus_kg = 0;
+        }
 
         return out;
       })
@@ -443,6 +477,10 @@ export default function CreateWorkoutScreen() {
     });
   };
 
+  // When editing, we hydrate athleteId + items in quick succession.
+  // The athleteId change effect below clears suggested ranges; skip that once during edit preload.
+  const skipAthleteResetOnceRef = useRef(false);
+
   // ===== Edit hydration =====
   // If navigated here with ?editWorkoutId=<id>, preload the existing workout into the builder.
   useEffect(() => {
@@ -474,6 +512,10 @@ export default function CreateWorkoutScreen() {
       const nextAthleteId = w.athlete_id != null ? String(w.athlete_id) : '';
       const nextDate = w.date ? String(w.date) : new Date().toISOString().slice(0, 10);
       const nextLabel = w.label == null ? '' : String(w.label);
+
+      // Mark that the next athleteId change is coming from edit preload hydration.
+      // This prevents the athleteId change effect from clearing preloaded ranges.
+      skipAthleteResetOnceRef.current = true;
 
       setAthleteId(nextAthleteId);
       setDateStr(nextDate);
@@ -661,6 +703,11 @@ if (c.lift === 'VR') {
 
   // When athlete changes, clear and refresh all suggestions
   useEffect(() => {
+    // During edit preload hydration we set athleteId programmatically; do not wipe preloaded ranges.
+    if (skipAthleteResetOnceRef.current) {
+      skipAthleteResetOnceRef.current = false;
+      return;
+    }
     Object.keys(suggestTimersRef.current).forEach(clearSuggestTimer);
     // Core rows can be added/removed/reordered; ensure no stale indices remain.
     Object.keys(suggestSeqRef.current).forEach((k) => {
@@ -670,7 +717,14 @@ if (c.lift === 'VR') {
       }
     });
     suggestSeqRef.current = {};
-    setCore((p) => p.map((x) => ({ ...x, target_low_kg: null, target_high_kg: null })));
+    setCore((p) =>
+      p.map((x) => {
+        // If manual override exists, keep whatever range is present (manual ranges or template-provided).
+        if (x?.manual_target_kg != null && Number(x.manual_target_kg) > 0) return x;
+        // Otherwise clear range so it can be recomputed for the newly selected athlete.
+        return { ...x, target_low_kg: null, target_high_kg: null };
+      })
+    );
 
     if (athleteId && core.length) {
       setTimeout(() => {

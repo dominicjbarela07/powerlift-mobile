@@ -222,16 +222,19 @@ export default function CoachKpiDetailScreen() {
   return (
     <ThemedView style={styles.screen}>
       <View style={styles.header}>
-        <ThemedText variant="h1">{title}</ThemedText>
+        <ThemedText variant="h1" style={styles.title}>{title}</ThemedText>
+        <ThemedText variant="bodyMuted" style={styles.subtitle}>
+          Tap a session to open the workout viewer.
+        </ThemedText>
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator />
-          <ThemedText variant="bodyMuted">Loading…</ThemedText>
+          <ActivityIndicator color="#B8B0DA" />
+          <ThemedText variant="bodyMuted" style={styles.centerText}>Loading…</ThemedText>
         </View>
       ) : error ? (
-        <View style={styles.center}>
+        <View style={styles.centerCard}>
           <ThemedText variant="error">{error}</ThemedText>
         </View>
       ) : (
@@ -240,7 +243,7 @@ export default function CoachKpiDetailScreen() {
             data.rows.map((r) => (
               <TouchableOpacity
                 key={r.workout_id}
-                activeOpacity={0.85}
+                activeOpacity={0.88}
                 onPress={() =>
                   router.push({
                     pathname: '/workout/[workoutId]',
@@ -251,15 +254,17 @@ export default function CoachKpiDetailScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`Open workout ${r.label || 'session'} for ${r.athlete_name}${r.is_self ? ' (YOU)' : ''}`}
               >
-                <ThemedText variant="h3" style={styles.name}>
-                  {r.athlete_name}{r.is_self ? ' (YOU)' : ''}
-                </ThemedText>
-                <View style={styles.metaRow}>
-                  <ThemedText variant="bodyMuted" style={styles.metaDate}>
-                    {r.date || 'No date'}
-                  </ThemedText>
+                <View style={styles.cardTopRow}>
+                  <View style={styles.cardTitleCol}>
+                    <ThemedText variant="h3" style={styles.name}>
+                      {r.athlete_name}{r.is_self ? ' (YOU)' : ''}
+                    </ThemedText>
+                    <ThemedText variant="body" style={styles.sessionLabel}>
+                      {r.label && r.label.trim() !== '' ? r.label : 'Unnamed'}
+                    </ThemedText>
+                  </View>
 
-                  <View style={[styles.statusPill, { borderColor: statusTone(r.status) }]}>
+                  <View style={[styles.statusPill, { backgroundColor: `${statusTone(r.status)}18`, borderColor: `${statusTone(r.status)}55` }]}>
                     <ThemedText
                       variant="badge"
                       style={[styles.statusPillText, { color: statusTone(r.status) }]}
@@ -269,42 +274,48 @@ export default function CoachKpiDetailScreen() {
                   </View>
                 </View>
 
-                <ThemedText variant="body" style={{ marginTop: 2 }}>
-                  {r.label && r.label.trim() !== '' ? r.label : 'Unnamed'}
+                <ThemedText variant="bodyMuted" style={styles.metaDate}>
+                  {r.date || 'No date'}
                 </ThemedText>
 
-                {trimPreview(consolidatePreview((r as any).core_preview), 3).map((p, idx) => (
-                  <ThemedText
-                    key={`${r.workout_id}-core-${idx}`}
-                    variant="bodyMuted"
-                    style={{ marginTop: idx === 0 ? 8 : 4 }}
-                  >
-                    {p.lift} — {p.scheme}
-                  </ThemedText>
-                ))}
+                {trimPreview(consolidatePreview((r as any).core_preview), 3).length > 0 ? (
+                  <View style={styles.previewBlock}>
+                    {trimPreview(consolidatePreview((r as any).core_preview), 3).map((p, idx) => (
+                      <ThemedText
+                        key={`${r.workout_id}-core-${idx}`}
+                        variant="bodyMuted"
+                        style={styles.previewLine}
+                      >
+                        {p.lift} · {p.scheme}
+                      </ThemedText>
+                    ))}
+                  </View>
+                ) : null}
 
                 {typeof (r as any).accessories_count === 'number' && (
-                  <ThemedText variant="bodyMuted" style={{ marginTop: 8 }}>
-                    Accessories: {(r as any).accessories_count}
-                  </ThemedText>
+                  <View style={styles.accessoryPill}>
+                    <ThemedText variant="bodyMuted" style={styles.accessoryPillText}>
+                      {(r as any).accessories_count} accessories
+                    </ThemedText>
+                  </View>
                 )}
 
                 {!r.label && !((r as any).core_preview?.length) && typeof (r as any).accessories_count !== 'number' && (
-                  <ThemedText variant="body">Workout</ThemedText>
+                  <ThemedText variant="body" style={styles.sessionLabel}>Workout</ThemedText>
                 )}
               </TouchableOpacity>
             ))
           ) : (
-            <View style={styles.card}>
-              <ThemedText variant="bodyMuted">No workouts in this KPI.</ThemedText>
+            <View style={styles.emptyCard}>
+              <ThemedText variant="bodyMuted" style={styles.emptyText}>No workouts in this KPI.</ThemedText>
             </View>
           )}
         </ScrollView>
       )}
 
-      <View style={{ marginTop: 16 }}>
+      <View style={styles.footerRow}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ThemedText variant="small">Back</ThemedText>
+          <ThemedText variant="small" style={styles.backBtnText}>Back</ThemedText>
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -314,21 +325,37 @@ export default function CoachKpiDetailScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingTop: 32,
+    paddingTop: 24,
     paddingBottom: 24,
-    backgroundColor: colors.bg,
+    backgroundColor: '#020617',
   },
   header: {
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  title: {
+    color: '#F8FAFC',
+    letterSpacing: -0.6,
+  },
+  subtitle: {
+    marginTop: 4,
+    color: '#94A3B8',
+    fontSize: 13,
   },
   backBtn: {
     alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    minHeight: 38,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 10,
+    borderColor: 'rgba(148,163,184,0.16)',
+    backgroundColor: 'rgba(8,16,38,0.92)',
+  },
+  backBtnText: {
+    color: '#CBD5E1',
+  },
+  footerRow: {
+    marginTop: 6,
   },
   center: {
     flex: 1,
@@ -336,19 +363,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
+  centerText: {
+    color: '#94A3B8',
+  },
+  centerCard: {
+    minHeight: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(8,16,38,0.92)',
+    paddingHorizontal: 18,
+  },
   scrollContent: {
-    paddingBottom: 24,
+    paddingBottom: 18,
   },
   card: {
     width: '100%',
-    backgroundColor: colors.cardBg,
-    borderRadius: 12,
+    backgroundColor: 'rgba(8,16,38,0.94)',
+    borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 10,
+    borderColor: 'rgba(148,163,184,0.10)',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
   },
   name: {
+    color: '#F8FAFC',
     marginBottom: 2,
   },
   metaRow: {
@@ -359,16 +405,72 @@ const styles = StyleSheet.create({
   },
   metaDate: {
     flexShrink: 1,
+    marginTop: 8,
+    color: '#8EA0BE',
+    fontSize: 13,
   },
   statusPill: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
   },
   statusPillText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  cardTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  cardTitleCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  sessionLabel: {
+    marginTop: 1,
+    color: '#E2E8F0',
+    fontWeight: '600',
+  },
+  previewBlock: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(148,163,184,0.08)',
+    gap: 6,
+  },
+  previewLine: {
+    color: '#94A3B8',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  accessoryPill: {
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(148,163,184,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+  },
+  accessoryPillText: {
+    color: '#A8B4C7',
+    fontSize: 12,
+  },
+  emptyCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(8,16,38,0.92)',
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  emptyText: {
+    color: '#94A3B8',
   },
 });

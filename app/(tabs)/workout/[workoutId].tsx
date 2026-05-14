@@ -1,7 +1,7 @@
 // app/(tabs)/workout/[workoutId].tsx
 // @ts-nocheck
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Alert,
   Modal,
   AppState,
@@ -19,8 +20,12 @@ import {
   findNodeHandle,
   UIManager,
 } from 'react-native';
-import * as Notifications from 'expo-notifications';
+let Notifications: any = null;
+if (Platform.OS !== 'web') {
+  Notifications = require('expo-notifications');
+}
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import RefreshScreen from '@/components/refresh-screen';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE, fetchJson } from '@/lib/api';
 import { ThemedText } from '@/components/themed-text';
@@ -34,11 +39,29 @@ type SetLog = {
   actual_rir: number | null;
 };
 
+type PlannedSet = {
+  set_index: number;
+  reps: number | null;
+  rpe_target: number | null;
+  pct: number | null;
+  manual_target_kg: number | null;
+  manual_pm_kg: number | null;
+  suggested_low_kg?: number | null;
+  suggested_high_kg?: number | null;
+};
+
 type WorkoutItem = {
   id: number;
   lift: string;
+  designation?: string | null;
   variant: string; // "TOP" | "BK" | "STRAIGHT" | "ACC"
+  scheme?: string | null;
+  planned_sets?: PlannedSet[];
   movement: string | null;
+  original_movement?: string | null;
+  is_substituted?: boolean;
+  selected_sub_movement?: string | null;
+  approved_subs?: string[];
   sets: number | null;
   reps: number | null;
   reps_text: string | null;
@@ -103,18 +126,7 @@ type WorkoutPayload = {
 };
 
 
-// Local notification handling for rest timer
-let __notifHandlerSet = false;
-if (!__notifHandlerSet) {
-  __notifHandlerSet = true;
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
-}
+
 
 const KG_PER_LB = 0.45359237; // 1 lb = 0.45359 kg
 
@@ -124,11 +136,16 @@ function formatWeight(
 ): string {
   if (kg == null) return '?';
 
-  if (unit === 'kg') return kg.toFixed(1);
+  if (unit === 'kg') {
+    const snapped = Math.round(Number(kg) * 4) / 4;
+    if (!Number.isFinite(snapped)) return '?';
+    return snapped.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  }
 
   // Convert kg → lb
   const lbs = kg / KG_PER_LB;
-  return roundToNearest5(lbs).toFixed(0); // display whole pounds
+  const rounded = roundToNearestGymIncrementLb(lbs);
+  return rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1);
 }
 
 function formatTargetRange(
@@ -139,16 +156,83 @@ function formatTargetRange(
   if (lowKg == null || highKg == null) return null;
   if (lowKg === 0 && highKg === 0) return null;
 
-  // Collapse single-point ranges (manual pm = 0)
-  if (lowKg === highKg) {
-    return `${formatWeight(lowKg, unit)} ${unit}`;
+  const snapKg = (v: number | null | undefined) => {
+    if (v == null) return null;
+    const snapped = Math.round(Number(v) * 4) / 4;
+    return Number.isFinite(snapped) ? snapped : null;
+  };
+
+  const formatTargetWeight = (kg: number | null | undefined) => {
+    if (kg == null) return '?';
+
+    if (unit === 'kg') {
+      const snapped = snapKg(kg);
+      if (snapped == null) return '?';
+      return snapped.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+    }
+
+    const lbs = Number(kg) / KG_PER_LB;
+    const rounded = Math.round(lbs / 2.5) * 2.5;
+    return rounded.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  };
+
+  const low = snapKg(lowKg);
+  const high = snapKg(highKg);
+  if (low == null || high == null) return null;
+
+  if (low === high) {
+    return `${formatTargetWeight(low)} ${unit}`;
   }
 
-  return `${formatWeight(lowKg, unit)}–${formatWeight(highKg, unit)} ${unit}`;
+  return `${formatTargetWeight(low)}–${formatTargetWeight(high)} ${unit}`;
+}
+
+function computeManualRangeKg(ps: PlannedSet): { lowKg: number | null; highKg: number | null } {
+  const mid = ps.manual_target_kg;
+  const pm = ps.manual_pm_kg;
+
+  if (mid == null) return { lowKg: null, highKg: null };
+
+  const plusMinus = pm != null ? Number(pm) : 0;
+  if (!Number.isFinite(plusMinus) || plusMinus <= 0) {
+    return { lowKg: mid, highKg: mid };
+  }
+  return { lowKg: mid - plusMinus, highKg: mid + plusMinus };
+}
+
+function formatPlannedWeightLine(ps: PlannedSet, unit: 'kg' | 'lb') {
+  const manual = computeManualRangeKg(ps);
+  const primary =
+    manual.lowKg != null && manual.highKg != null
+      ? formatTargetRange(manual.lowKg, manual.highKg, unit)
+      : null;
+
+  const suggested = formatTargetRange(ps.suggested_low_kg ?? null, ps.suggested_high_kg ?? null, unit);
+  return { primary, suggested };
+}
+
+function formatPlannedSchemeLine(ps: PlannedSet, mode: string | null): string {
+  const m = (mode || 'RPE').toUpperCase();
+  const reps = ps.reps != null ? String(ps.reps) : '—';
+
+  if (m === 'PCT') {
+    const pct = ps.pct;
+    if (pct == null) return `${reps} Reps`;
+    const p = pct > 1 ? pct : pct * 100;
+    return `${reps} Reps @ ${p.toFixed(1)}%`;
+  }
+
+  if (ps.rpe_target == null) return `${reps} Reps`;
+
+  return `${reps} Reps @ ${Number(ps.rpe_target).toFixed(1)}`;
 }
 
 function roundToNearest5(x: number): number {
   return Math.round(x / 5) * 5;
+}
+
+function roundToNearestGymIncrementLb(x: number): number {
+  return Math.round(x / 2.5) * 2.5;
 }
 
 const STATUS_STYLES: Record<
@@ -178,17 +262,44 @@ function prettyStatus(status?: string | null) {
 }
 
 
+function titleCaseWord(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatDesignation(des: any): string {
+  const d = String(des || '').trim();
+  if (!d) return '';
+  return titleCaseWord(d);
+}
+
 function liftDisplayName(core: WorkoutItem): string {
-  // Mirror the Jinja logic for core lift names
-  if ((core.variant === 'VR' || core.lift === 'VR') && core.movement) {
-    return core.movement;
+  const v = String(core.variant || '').toUpperCase();
+
+  // Core Variant / VR title
+  if ((v === 'VR' || core.lift === 'VR') && core.movement) {
+    const des = formatDesignation((core as any).designation);
+    return des ? `${core.movement} (${des})` : core.movement;
   }
 
-  if (core.lift === 'SQ') return 'Comp Squat';
-  if (core.lift === 'BN') return 'Comp Bench';
-  if (core.lift === 'DL') return 'Comp Deadlift';
+  let base = '';
+  if (core.lift === 'SQ') base = 'Comp Squat';
+  else if (core.lift === 'BN') base = 'Comp Bench';
+  else if (core.lift === 'DL') base = 'Comp Deadlift';
+  else base = core.movement || core.lift;
 
-  return core.movement || core.lift;
+  const isNormalLift =
+    core.lift === 'SQ' || core.lift === 'BN' || core.lift === 'DL' || core.lift === 'OHP';
+  const isNormalVariant =
+    v === 'TOP' || v === 'STRAIGHT' || v === 'FULL_CUSTOM';
+
+  const des = formatDesignation((core as any).designation);
+  if (des && isNormalLift && isNormalVariant) {
+    return `${base} (${des})`;
+  }
+
+  return base;
 }
 
 function getLookbackBest(it: any) {
@@ -226,7 +337,7 @@ export default function WorkoutViewerScreen() {
   const [data, setData] = useState<WorkoutPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-    const [straightInputs, setStraightInputs] = useState<
+  const [straightInputs, setStraightInputs] = useState<
     Record<number, { weight: string; reps: string; rpe: string }>
   >({});
   const [topInputs, setTopInputs] = useState<
@@ -235,6 +346,36 @@ export default function WorkoutViewerScreen() {
   const [bkInputs, setBkInputs] = useState<
     Record<number, { weight: string; reps: string; rpe: string }>
   >({});
+  const [fcInputs, setFcInputs] = useState<
+    Record<string, { weight: string; reps: string; rpe: string }>
+  >({});
+
+  const updateFcInput = (
+    key: string,
+    field: 'weight' | 'reps' | 'rpe',
+    value: string,
+  ) => {
+    let v = value ?? '';
+
+    if (field === 'reps') {
+      v = v.replace(/[^0-9]/g, '');
+    } else {
+      v = v.replace(/[^0-9.]/g, '');
+      const d = v.indexOf('.');
+      if (d !== -1) v = v.slice(0, d + 1) + v.slice(d + 1).replace(/\./g, '');
+    }
+
+    setFcInputs((prev) => ({
+      ...prev,
+      [key]: {
+        weight: prev[key]?.weight || '',
+        reps: prev[key]?.reps || '',
+        rpe: prev[key]?.rpe || '',
+        [field]: v,
+      },
+    }));
+  };
+
   const [accInputs, setAccInputs] = useState<
     Record<number, { weight: string; reps: string; rir: string }>
   >({});
@@ -280,7 +421,7 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
-  const scrollRef = useRef<ScrollView | null>(null);
+  const scrollRef = useRef<any>(null);
   const scrollYRef = useRef(0);
   const pendingRestoreScrollYRef = useRef<number | null>(null);
 
@@ -325,6 +466,7 @@ export default function WorkoutViewerScreen() {
     if (ref) inputRefs.current[key] = ref;
   };
   const [refreshing, setRefreshing] = useState(false);
+  const dataRef = useRef<WorkoutPayload | null>(null);
 
   const rememberScroll = () => {
     pendingRestoreScrollYRef.current = scrollYRef.current;
@@ -350,7 +492,9 @@ export default function WorkoutViewerScreen() {
   const restEndAtMsRef = useRef<number | null>(null);
   const restNotifIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
+  const notifHandlerSetRef = useRef(false);
   const ensureNotifPerms = async () => {
+    if (!Notifications) return false;
     // Only ask once per screen mount
     if (notifPermCheckedRef.current) {
       const existing = await Notifications.getPermissionsAsync();
@@ -367,6 +511,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const cancelRestEndNotification = async () => {
+    if (!Notifications) return;
     const id = restNotifIdRef.current;
     if (!id) return;
     try {
@@ -380,6 +525,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const scheduleRestEndNotification = async (seconds: number) => {
+    if (!Notifications) return;
     // Replace any existing scheduled rest notification
     await cancelRestEndNotification();
 
@@ -406,7 +552,36 @@ export default function WorkoutViewerScreen() {
 
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
+  const [timerPickerValue, setTimerPickerValue] = useState(120);
+  const timerWheelRef = useRef<ScrollView | null>(null);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
+
+  const [postSessionVisible, setPostSessionVisible] = useState(false);
+  const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
+  const [postSessionForm, setPostSessionForm] = useState({
+    sessionRpe: null as number | null,
+    strengthFeeling: '' as '' | 'much_weaker' | 'slightly_weaker' | 'normal' | 'slightly_stronger' | 'much_stronger',
+    fatigueFeeling: '' as '' | 'very_fresh' | 'slightly_fatigued' | 'moderately_fatigued' | 'very_fatigued',
+    note: '',
+  });
+
+  const [editSetVisible, setEditSetVisible] = useState(false);
+  const [editSetSubmitting, setEditSetSubmitting] = useState(false);
+  const [editSetCtx, setEditSetCtx] = useState<{
+    itemId: number;
+    setIndex: number;
+    setLogId: number;
+    canUndoDelete: boolean;
+    mode: 'rpe' | 'rir';
+    title: string;
+  } | null>(null);
+
+  const [editSetForm, setEditSetForm] = useState({
+    weight: '',
+    reps: '',
+    rpe: '',
+    rir: '',
+  });
 
   // --- Readiness survey (mobile only) ---
   const [readinessVisible, setReadinessVisible] = useState(false);
@@ -488,7 +663,7 @@ export default function WorkoutViewerScreen() {
   const openSwapAcc = (it: WorkoutItem) => {
     setSwapAccItem(it);
     setSwapAccForm({
-      movement: it.movement || '',
+      movement: it.selected_sub_movement || it.movement || it.original_movement || '',
       sets: it.sets != null ? String(it.sets) : '',
       reps_text: it.reps_text || (it.reps != null ? String(it.reps) : ''),
       rir: it.rir_target != null ? String(it.rir_target) : '',
@@ -564,10 +739,167 @@ export default function WorkoutViewerScreen() {
     }
   };
 
+  const openEditSet = (
+    itemId: number,
+    setLog: SetLog,
+    opts: { mode: 'rpe' | 'rir'; title: string; canUndoDelete?: boolean }
+  ) => {
+    const weightVal =
+      setLog.actual_weight_kg != null
+        ? unit === 'kg'
+          ? formatWeight(setLog.actual_weight_kg, 'kg')
+          : String(roundToNearestGymIncrementLb(setLog.actual_weight_kg / KG_PER_LB))
+        : '';
+
+    setEditSetCtx({
+      itemId,
+      setIndex: setLog.set_index,
+      setLogId: setLog.id,
+      canUndoDelete: !!opts.canUndoDelete,
+      mode: opts.mode,
+      title: opts.title,
+    });
+
+    setEditSetForm({
+      weight: weightVal,
+      reps: setLog.actual_reps != null ? String(setLog.actual_reps) : '',
+      rpe: setLog.actual_rpe != null ? String(setLog.actual_rpe) : '',
+      rir: setLog.actual_rir != null ? String(setLog.actual_rir) : '',
+    });
+
+    setEditSetVisible(true);
+  };
+
+  const saveEditedSet = async () => {
+    if (!workoutId || !editSetCtx) return;
+
+    let weightInUnit =
+      editSetForm.weight.trim() === '' ? NaN : parseFloat(editSetForm.weight);
+
+    const repsStr = String(editSetForm.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
+
+    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {
+      setError('Weight required');
+      return;
+    }
+    if (!Number.isFinite(reps) || reps <= 0) {
+      setError('Reps required');
+      return;
+    }
+
+    if (unit === 'lb') {
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
+    }
+
+    const weightKg = unit === 'kg' ? weightInUnit : weightInUnit * KG_PER_LB;
+
+    let actual_rpe: number | null = null;
+    let actual_rir: number | null = null;
+
+    if (editSetCtx.mode === 'rpe') {
+      actual_rpe =
+        editSetForm.rpe.trim() === '' ? null : parseFloat(editSetForm.rpe);
+      if (editSetForm.rpe.trim() !== '' && !Number.isFinite(actual_rpe as number)) {
+        setError('Enter a valid RPE');
+        return;
+      }
+    } else {
+      actual_rir =
+        editSetForm.rir.trim() === '' ? null : parseFloat(editSetForm.rir);
+      if (editSetForm.rir.trim() !== '' && !Number.isFinite(actual_rir as number)) {
+        setError('Enter a valid RIR');
+        return;
+      }
+    }
+
+    try {
+      setEditSetSubmitting(true);
+      setSavingItemId(editSetCtx.itemId);
+      setError(null);
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${editSetCtx.itemId}/edit_set`,
+        {
+          method: 'POST',
+          auth: true,
+          body: {
+            set_index: editSetCtx.setIndex,
+            actual_weight_kg: weightKg,
+            actual_reps: reps,
+            actual_rpe,
+            actual_rir,
+          },
+        }
+      );
+
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to update set (HTTP ${status})`);
+      }
+
+      setEditSetVisible(false);
+      setEditSetCtx(null);
+      rememberScroll();
+      await fetchWorkout();
+    } catch (err: any) {
+      console.log('saveEditedSet error', err);
+      setError(err?.message || 'Error updating set');
+    } finally {
+      setEditSetSubmitting(false);
+      setSavingItemId(null);
+    }
+  };
+
+  const deleteEditedSet = async () => {
+    if (!workoutId || !editSetCtx?.setLogId) return;
+
+    try {
+      setEditSetSubmitting(true);
+      setSavingItemId(editSetCtx.itemId);
+      setError(null);
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/${workoutId}/setlogs/${editSetCtx.setLogId}`,
+        {
+          method: 'DELETE',
+          auth: true,
+        }
+      );
+
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to delete set (HTTP ${status})`);
+      }
+
+      setEditSetVisible(false);
+      setEditSetCtx(null);
+
+      rememberScroll();
+      await fetchWorkout();
+    } catch (err: any) {
+      console.log('deleteEditedSet error', err);
+      setError(err?.message || 'Error deleting set');
+    } finally {
+      setEditSetSubmitting(false);
+      setSavingItemId(null);
+    }
+  };
+
   const TIMER_OPTIONS = [30, 60, 90, 120, 180, 240, 300];
 
   const openTimerPicker = () => {
+    const clamped = Math.max(30, Math.min(300, Math.round((restSeconds || 120) / 30) * 30));
+    setTimerPickerValue(clamped);
     setTimerPickerVisible(true);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const idx = Math.max(0, Math.min(9, Math.round(clamped / 30) - 1));
+        timerWheelRef.current?.scrollTo({
+          y: idx * 52,
+          animated: false,
+        });
+      });
+    });
   };
 
   const handleTimerSelect = (seconds: number) => {
@@ -852,6 +1184,32 @@ export default function WorkoutViewerScreen() {
         return next;
       });
     }
+
+    const fcItems = coreItems.filter(
+      (it) => it && (it.variant === 'FULL_CUSTOM' || String(it.scheme || '').toUpperCase() === 'FULL_CUSTOM')
+    );
+
+    if (fcItems.length) {
+      setFcInputs((prev) => {
+        let next = prev;
+        for (const it of fcItems) {
+          const planned = Array.isArray(it.planned_sets) ? it.planned_sets : [];
+          for (const ps of planned) {
+            const k = `${it.id}:${ps?.set_index}`;
+            if (!ps?.set_index) continue;
+            const cur = prev[k];
+            if (cur && String(cur.reps || '').trim() !== '') continue;
+            if (next === prev) next = { ...prev };
+            next[k] = {
+              weight: cur?.weight || '',
+              reps: ps?.reps != null ? String(ps.reps) : (cur?.reps || ''),
+              rpe: cur?.rpe || '',
+            };
+          }
+        }
+        return next;
+      });
+    }
   }, [data?.workout?.id]);
 
   const logStraightSet = async (itemId: number) => {
@@ -878,7 +1236,7 @@ export default function WorkoutViewerScreen() {
 
     // ROUND lbs before converting
     if (unit === 'lb') {
-      weightInUnit = roundToNearest5(weightInUnit);
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
     }
 
     const weightKg = unit === 'kg'
@@ -918,7 +1276,7 @@ export default function WorkoutViewerScreen() {
       // Prefill next set weight with the weight just used (saves re-typing)
       const nextWeightStr = weightInUnit > 0
         ? (unit === 'lb'
-            ? String(roundToNearest5(weightInUnit))
+            ? String(roundToNearestGymIncrementLb(weightInUnit))
             : String(weightInUnit))
         : '';
 
@@ -954,7 +1312,7 @@ export default function WorkoutViewerScreen() {
 
     // ROUND lbs before conversion
     if (unit === 'lb') {
-      weightInUnit = roundToNearest5(weightInUnit);
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
     }
 
     const weightKg = unit === 'kg'
@@ -1026,7 +1384,7 @@ export default function WorkoutViewerScreen() {
 
     // ROUND lbs before conversion
     if (unit === 'lb') {
-      weightInUnit = roundToNearest5(weightInUnit);
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
     }
 
     const weightKg = unit === 'kg'
@@ -1066,7 +1424,7 @@ export default function WorkoutViewerScreen() {
       // Prefill next set weight with the weight just used (saves re-typing)
       const nextWeightStr = weightInUnit > 0
         ? (unit === 'lb'
-            ? String(roundToNearest5(weightInUnit))
+            ? String(roundToNearestGymIncrementLb(weightInUnit))
             : String(weightInUnit))
         : '';
 
@@ -1077,6 +1435,73 @@ export default function WorkoutViewerScreen() {
     } catch (err: any) {
       console.log('logBackdownSet error', err);
       setError(err?.message || 'Error logging backdown set');
+    } finally {
+      setSavingItemId(null);
+    }
+  };
+
+  const logFullCustomSet = async (itemId: number, setIndex: number) => {
+    if (!workoutId || !data) return;
+
+    const key = `${itemId}:${setIndex}`;
+    const input = fcInputs[key] || { weight: '', reps: '', rpe: '' };
+
+    let weightInUnit = input.weight.trim() === '' ? 0 : parseFloat(input.weight);
+    const repsStr = String(input.reps ?? '').replace(/[^0-9]/g, '');
+    const reps = repsStr ? Number(repsStr) : NaN;
+    const rpe = input.rpe ? parseFloat(input.rpe) : null;
+
+    if (Number.isNaN(weightInUnit)) return setError(`Enter a valid weight (${unit})`);
+    if (weightInUnit <= 0) return setError('Weight required');
+    if (!Number.isFinite(reps) || reps <= 0) return setError('Reps required');
+
+    if (unit === 'lb') weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
+
+    const weightKg = unit === 'kg' ? weightInUnit : weightInUnit * KG_PER_LB;
+
+    try {
+      setSavingItemId(itemId);
+      setError(null);
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_fc`,
+        {
+          method: 'POST',
+          auth: true,
+          body: {
+            set_index: setIndex,
+            actual_weight_kg: weightKg,
+            actual_reps: reps,
+            actual_rpe: rpe,
+          },
+        }
+      );
+
+      if (!ok || !json?.ok) throw new Error(json?.error || `Failed (HTTP ${status})`);
+
+      setTimerPickerVisible(true);
+      rememberScroll();
+      await fetchWorkout();
+
+      // optional convenience: carry weight forward
+      const nextWeightStr =
+        weightInUnit > 0
+          ? unit === 'lb'
+            ? String(roundToNearestGymIncrementLb(weightInUnit))
+            : String(weightInUnit)
+          : '';
+
+      setFcInputs((prev) => ({
+        ...prev,
+        [`${itemId}:${setIndex}`]: {
+          weight: nextWeightStr,
+          reps: prev[`${itemId}:${setIndex}`]?.reps || '',
+          rpe: '',
+        },
+      }));
+    } catch (e: any) {
+      console.log('logFullCustomSet error', e);
+      setError(e?.message || 'Error logging set');
     } finally {
       setSavingItemId(null);
     }
@@ -1149,7 +1574,7 @@ export default function WorkoutViewerScreen() {
 
     // ROUND lbs before conversion
     if (unit === 'lb') {
-      weightInUnit = roundToNearest5(weightInUnit);
+      weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
     }
 
     const weightKg = unit === 'kg'
@@ -1177,7 +1602,7 @@ export default function WorkoutViewerScreen() {
       // Prefill next set weight with the weight just used (saves re-typing)
       const nextWeightStr = weightInUnit > 0
         ? (unit === 'lb'
-            ? String(roundToNearest5(weightInUnit))
+            ? String(roundToNearestGymIncrementLb(weightInUnit))
             : String(weightInUnit))
         : '';
 
@@ -1221,36 +1646,6 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const undoLastSet = async (itemId: number) => {
-    if (!workoutId || !data) return;
-
-    try {
-      setSavingItemId(itemId);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/delete_last_set`,
-        {
-          method: 'POST',
-          auth: true,
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to undo last set (HTTP ${status})`);
-      }
-
-      // Refresh workout so set_logs are in sync
-      rememberScroll();
-      await fetchWorkout();
-    } catch (err: any) {
-      console.log('undoLastSet error', err);
-      setError(err?.message || 'Error undoing last set');
-    } finally {
-      setSavingItemId(null);
-    }
-  };
-
   const performStatusAction = async (kind: 'begin' | 'complete' | 'cancel') => {
     if (!workoutId) return;
 
@@ -1285,7 +1680,7 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const beginWorkout = async () => {
+  const beginWorkoutConfirmed = async () => {
     if (!data?.workout) return;
     const wkId = data.workout.id;
 
@@ -1334,6 +1729,31 @@ export default function WorkoutViewerScreen() {
     }
   };
 
+  const beginWorkout = async () => {
+    if (
+      data?.workout?.status === 'completed' &&
+      (data?.workout as any)?.post_session_submitted_at
+    ) {
+      Alert.alert(
+        'Resume Session?',
+        'Resuming this completed session will delete the post-session survey for this workout.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Resume Session',
+            style: 'destructive',
+            onPress: () => {
+              requestAnimationFrame(() => beginWorkoutConfirmed());
+            },
+          },
+        ]
+      );
+      return;
+    }
+
+    await beginWorkoutConfirmed();
+  };
+
   const completeWorkout = async () => {
     if (!data?.workout) return;
     const wkId = data.workout.id;
@@ -1369,6 +1789,68 @@ export default function WorkoutViewerScreen() {
       Alert.alert('Error', 'Failed to complete workout');
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const openPostSessionSurvey = () => {
+    setPostSessionForm({
+      sessionRpe: null,
+      strengthFeeling: '',
+      fatigueFeeling: '',
+      note: '',
+    });
+    setPostSessionVisible(true);
+  };
+
+  const skipPostSessionAndComplete = async () => {
+    setPostSessionVisible(false);
+    await completeWorkout();
+  };
+
+  const submitPostSessionAndComplete = async () => {
+    if (
+      postSessionForm.sessionRpe == null ||
+      !postSessionForm.strengthFeeling ||
+      !postSessionForm.fatigueFeeling
+    ) {
+      setError('Complete the post-session check-in or choose Skip & Complete.');
+      return;
+    }
+
+    if (!workoutId) {
+      setError('Missing workout id');
+      return;
+    }
+
+    try {
+      setPostSessionSubmitting(true);
+      setError(null);
+
+      const { ok, status, json } = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/post_session_survey`,
+        {
+          method: 'POST',
+          auth: true,
+          body: {
+            session_rpe: postSessionForm.sessionRpe,
+            strength_feeling: postSessionForm.strengthFeeling,
+            fatigue_feeling: postSessionForm.fatigueFeeling,
+            note: postSessionForm.note,
+          },
+        }
+      );
+
+      if (!ok || !json?.ok) {
+        throw new Error(json?.error || `Failed to save post-session survey (HTTP ${status})`);
+      }
+
+      setPostSessionVisible(false);
+      await completeWorkout();
+    } catch (err: any) {
+      console.log('submitPostSessionAndComplete error', err);
+      setError(err?.message || 'Failed to submit post-session survey');
+    } finally {
+      setPostSessionSubmitting(false);
     }
   };
 
@@ -1410,17 +1892,19 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const fetchWorkout = async () => {
+  const fetchWorkout = useCallback(async (opts?: { silent?: boolean }) => {
     if (!workoutId) {
       setError('Missing workout id');
       setLoading(false);
+      setRefreshing(false);
       return;
     }
 
+    const silent = !!opts?.silent;
+
     try {
-      // Only show the full-screen loader on first load.
-      // Refreshes should keep ScrollView mounted to avoid snapping to top.
-      if (!data) setLoading(true);
+      if (silent) setRefreshing(true);
+      else if (!dataRef.current) setLoading(true);
       else setRefreshing(true);
 
       setError(null);
@@ -1441,15 +1925,43 @@ export default function WorkoutViewerScreen() {
     } catch (err: any) {
       console.log('Workout fetch error', err);
       setError(err?.message || 'Error loading workout');
+      if (!silent && !dataRef.current) {
+        setData(null);
+      }
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (silent) setRefreshing(false);
+      else {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
-  };
+  }, [workoutId]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web' || !Notifications) return;
+    if (notifHandlerSetRef.current) return;
+
+    notifHandlerSetRef.current = true;
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  }, []);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     fetchWorkout();
-  }, [workoutId]);
+  }, [fetchWorkout]);
+
+  const onRefresh = useCallback(async () => {
+    await fetchWorkout({ silent: true });
+  }, [fetchWorkout]);
 
   useEffect(() => {
     return () => {
@@ -1503,10 +2015,9 @@ export default function WorkoutViewerScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 92 : 0}
     >
-      {/* Pinned top bar: unit toggle and rest timer (inline) */}
-      <View style={styles.pinnedTopBar}>
-        <View style={styles.topBarRow}>
-          {/* Unit toggle */}
+      {/* Command strip */}
+      <View style={styles.commandStripWrap}>
+        <View style={[styles.commandStrip, restActive && styles.commandStripActive]}>
           <View style={styles.unitToggleRowInline}>
             <View style={styles.unitTogglePill}>
               <TouchableOpacity
@@ -1544,80 +2055,92 @@ export default function WorkoutViewerScreen() {
             </View>
           </View>
 
-          {/* Rest timer */}
-          {canLog && (
-            <View style={styles.timerInline}>
-              <Text style={styles.timerLabelInline}>
-                {restActive && restSeconds > 0
-                  ? formatRestTime(restSeconds)
-                  : '—'}
-              </Text>
-              {!restActive ? (
-                <TouchableOpacity
-                  style={styles.timerButton}
-                  onPress={openTimerPicker}
-                >
-                  <Text style={styles.timerButtonText}>Set Timer</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.timerButton, styles.timerStopButton]}
-                  onPress={stopRestTimer}
-                >
-                  <Text style={styles.timerButtonText}>Stop</Text>
-                </TouchableOpacity>
-              )}
+          <View style={styles.commandDivider} />
+
+          <View style={[styles.commandTimerBlock, restActive && styles.commandTimerBlockActive]}>
+            <Text style={[styles.commandTimerDot, !restActive && styles.commandTimerDotIdle]}>●</Text>
+            <Text style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
+              {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
+            </Text>
+            <Text style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
+              Rest Timer
+            </Text>
+          </View>
+
+          <View style={styles.commandDivider} />
+
+          {canLog ? (
+            !restActive ? (
+              <TouchableOpacity style={styles.commandButton} onPress={openTimerPicker}>
+                <Text style={styles.commandButtonText}>Set Timer</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.commandButton, styles.commandButtonDanger]}
+                onPress={stopRestTimer}
+              >
+                <Text style={styles.commandButtonText}>Stop</Text>
+              </TouchableOpacity>
+            )
+          ) : (
+            <View style={styles.commandButtonGhost}>
+              <Text style={styles.commandButtonGhostText}>Ready</Text>
             </View>
           )}
         </View>
       </View>
 
       {/* Scrollable workout content */}
-      <ScrollView
+      <RefreshScreen
         ref={scrollRef}
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        style={styles.scrollShell}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        contentContainerStyle={{
+          paddingBottom: 32,
+          flexGrow: 1,
+        }}
         onScroll={(e) => {
           scrollYRef.current = e.nativeEvent.contentOffset.y;
         }}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Top summary — mirrors the h2 row in workout_show.html */}
-        <View style={styles.summaryRow}>
-          <View style={{ flex: 1 }}>
-            <ThemedText variant="h1" style={styles.pageTitle}>
-              {workout.label || 'Training Session'}
-            </ThemedText>
-            <Text style={styles.summaryLine}>
-              <Text style={styles.summaryStrong}>{athlete.name}</Text>
-              <Text style={styles.summarySeparator}> · </Text>
-              <Text style={styles.summaryText}>
-                {workout.date || 'No date set'}
-              </Text>
-            </Text>
-          </View>
-
-          {workout.status && (
-            <View
-              style={[
-                styles.statusBadge,
-                {
-                  backgroundColor: statusStyle.bg,
-                  borderColor: statusStyle.border,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.statusText,
-                  { color: statusStyle.text },
-                ]}
-              >
-                {prettyStatus(workout.status)}
+        {/* Session header */}
+        <View style={styles.sessionHeroCard}>
+          <View style={styles.sessionHeroTopRow}>
+            <View style={styles.sessionHeroTitleCol}>
+              <ThemedText variant="h1" style={styles.pageTitle}>
+                {workout.label || 'Session'}
+              </ThemedText>
+              <Text style={styles.summaryLine}>
+                <Text style={styles.summaryText}>
+                  {workout.date || 'No date set'}
+                </Text>
               </Text>
             </View>
-          )}
+
+            {workout.status && (
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: statusStyle.bg,
+                    borderColor: statusStyle.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: statusStyle.text },
+                  ]}
+                >
+                  {prettyStatus(workout.status)}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Inline error banner (below header) */}
@@ -1635,50 +2158,50 @@ export default function WorkoutViewerScreen() {
         )}
 
 
-        {/* Actions row: Edit (coach/self) and Begin (athlete/self) */}
+        {/* Action row */}
         {(canBegin || canEdit) && (
           <View style={styles.actionBar}>
-              {canEdit && (
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.actionSecondary]}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/create-workout',
-                      params: { editWorkoutId: String(workout.id) },
-                    })
-                  }
-                >
-                  <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
-                    Edit
-                  </Text>
-                </TouchableOpacity>
-              )}
+            {canEdit && (
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionSecondary]}
+                onPress={() =>
+                  router.push({
+                    pathname: '/create-workout',
+                    params: { editWorkoutId: String(workout.id) },
+                  })
+                }
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                  Edit
+                </Text>
+              </TouchableOpacity>
+            )}
 
-              {canBegin && (
-                <TouchableOpacity
-                  style={[
-                    styles.actionButton,
-                    styles.actionPrimary,
-                    actionLoading === 'begin' && { opacity: 0.7 },
-                  ]}
-                  onPress={() => {
-                    if (hasReadinessForWorkout()) {
-                      beginWorkout();
-                    } else {
-                      openReadinessThenBegin(workout.id);
-                    }
-                  }}
-                  disabled={!!actionLoading}
-                >
-                  {actionLoading === 'begin' ? (
-                    <ActivityIndicator size="small" color="#020617" />
-                  ) : (
-                    <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                      Begin Workout
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              )}
+            {canBegin && (
+              <TouchableOpacity
+                style={[
+                  styles.actionButton,
+                  styles.actionPrimary,
+                  actionLoading === 'begin' && { opacity: 0.7 },
+                ]}
+                onPress={() => {
+                  if (hasReadinessForWorkout()) {
+                    beginWorkout();
+                  } else {
+                    openReadinessThenBegin(workout.id);
+                  }
+                }}
+                disabled={!!actionLoading}
+              >
+                {actionLoading === 'begin' ? (
+                  <ActivityIndicator size="small" color="#020617" />
+                ) : (
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                    Begin Workout
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -1694,6 +2217,10 @@ export default function WorkoutViewerScreen() {
             const isTop = core.variant === 'TOP';
             const isBackdown = core.variant === 'BK';
             const hasParent = core.parent_item_id != null;
+
+            const isFullCustom =
+              core.variant === 'FULL_CUSTOM' ||
+              ((core.scheme || '').toUpperCase() === 'FULL_CUSTOM');
 
             // Skip BK rows that belong to a TOP – they’ll be rendered under the TOP card
             if (isBackdown && hasParent) {
@@ -1720,18 +2247,27 @@ export default function WorkoutViewerScreen() {
               logs.length > 0 ? Math.max(...logs.map((sl) => sl.set_index || 0)) : 0;
             const nextIdx = Math.min(latestLoggedIdx + 1, totalSets) || 1;
 
-            // For TOP items, reps are stored on the TOP set_log (set_index=1).
-            // Some payloads may still include core.actual_* aggregates, so support both.
+            // TOP items can have multiple prescribed sets. Keep hasTopActual for existing
+            // backdown unlock logic, but also track per-set progress for TOP logging UI.
+            const topLogs = isTop ? (logs || []) : [];
+            const topTotalSets = isTop ? (core.sets || 0) : 0;
+            const topLatestLoggedIdx =
+              isTop && topLogs.length > 0
+                ? Math.max(...topLogs.map((sl) => sl.set_index || 0))
+                : 0;
+            const topNextIdx = isTop
+              ? (Math.min(topLatestLoggedIdx + 1, topTotalSets) || 1)
+              : 1;
+
             const topSetLog = isTop
-              ? (logs.find((sl) => sl.set_index === 1) || logs[0] || null)
+              ? (topLogs.find((sl) => sl.set_index === 1) || topLogs[0] || null)
               : null;
 
-            const hasTopActual = isTop
-              ? (topSetLog?.actual_weight_kg != null && topSetLog?.actual_rpe != null)
-              : (core.actual_weight_kg != null && core.actual_rpe != null);
-
+            const hasAllTopActual = isTop
+              ? topTotalSets > 0 && topLatestLoggedIdx >= topTotalSets
+              : false;
             return (
-              <View key={core.id} style={styles.coreCard}>
+              <View key={core.id} style={[styles.coreCard, styles.coreCardShell]}>
                 {/* Title row */}
                 <View style={styles.coreHeaderRow}>
                   <Text style={styles.coreTitle}>{liftDisplayName(core)}</Text>
@@ -1741,13 +2277,15 @@ export default function WorkoutViewerScreen() {
                         ? 'Top + Backdown'
                         : isBackdown
                         ? 'Backdown'
+                        : isFullCustom
+                        ? 'Full Custom'
                         : 'Straight Sets'}
                     </Text>
                   </View>
                 </View>
 
                 {/* Scheme row (hide for TOP so the top/backdown rows each show their own scheme) */}
-                {!isTop && (
+                {!isTop && !isFullCustom && (
                   <Text style={styles.coreScheme}>
                     {core.sets || 0} × {core.reps || core.reps_text || '—'}
                     {core.mode === 'RPE' && core.rpe_target != null && (
@@ -1769,6 +2307,178 @@ export default function WorkoutViewerScreen() {
                   <Text style={styles.notesText}>{core.notes}</Text>
                 )}
 
+                {/* === FULL_CUSTOM prescription (per-set logging) === */}
+                {isFullCustom && Array.isArray(core.planned_sets) && core.planned_sets.length > 0 && (
+                  <View style={styles.setLogsBlock}>
+                    {core.planned_sets
+                      .slice()
+                      .sort((a, b) => (a.set_index || 0) - (b.set_index || 0))
+                      .map((ps) => {
+                        const setIdx = ps.set_index || 0;
+                        const wt = formatPlannedWeightLine(ps, unit);
+
+                        // Existing logs for this item
+                        const fcLogs = core.set_logs || [];
+                        const fcTotal = Array.isArray(core.planned_sets) ? core.planned_sets.length : 0;
+
+                        const fcLatestLoggedIdx =
+                          fcLogs.length > 0 ? Math.max(...fcLogs.map((sl) => sl.set_index || 0)) : 0;
+
+                        const fcNextIdx = Math.min(fcLatestLoggedIdx + 1, fcTotal) || 1;
+
+                        const existing = fcLogs.find((sl) => (sl.set_index || 0) === setIdx);
+                        const isNext = !existing && setIdx === fcNextIdx;
+                        const key = `${core.id}:${setIdx}`;
+
+                        return (
+                          <View
+                            key={`fc-${core.id}-${setIdx}`}
+                            style={[
+                              styles.setLogLine,
+                              isNext && workout.status === 'in_progress' && styles.setLogLineActive,
+                              existing && !isNext && setIdx === fcLatestLoggedIdx && styles.setLogLineLatest,
+                            ]}
+                          >
+                            {isNext && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                            {existing && !isNext && setIdx === fcLatestLoggedIdx && (
+                              <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                            )}
+                            <Text style={styles.setLabel}>Set {setIdx}</Text>
+
+                            {/* Line 2: prescription */}
+                            <Text style={styles.coreScheme}>
+                              {ps.reps != null ? ps.reps : '—'} Reps
+                              {(() => {
+                                const m = (core.mode || 'RPE').toUpperCase();
+                                if (m === 'PCT') {
+                                  if (ps.pct == null) return null;
+                                  const p = ps.pct > 1 ? ps.pct : ps.pct * 100;
+                                  return <Text style={styles.coreSchemeDetail}> @ {p.toFixed(1)}%</Text>;
+                                }
+                                if (ps.rpe_target == null) return null;
+                                return (
+                                  <Text style={styles.coreSchemeDetail}>
+                                    {' '}@ RPE {Number(ps.rpe_target).toFixed(1)}
+                                  </Text>
+                                );
+                              })()}
+                            </Text>
+
+                            {/* Line 3: weight range */}
+                            {(wt.primary || wt.suggested) && (
+                              <Text style={styles.setTargetInline}>
+                                {wt.primary ? wt.primary : wt.suggested}
+                              </Text>
+                            )}
+
+                            {/* Logged actual */}
+                            {existing ? (
+                              <View style={styles.loggedRowInline}>
+                                <Text style={styles.actualTextInline}>
+                                  {formatWeight(existing.actual_weight_kg, unit)} {unit}
+                                  {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                                  {existing.actual_rpe != null ? ` @ RPE ${existing.actual_rpe.toFixed(1)}` : ''}
+                                </Text>
+
+                                {canLog && (
+                                  <TouchableOpacity
+                                    style={styles.inlineEditButtonInline}
+                                    onPress={() =>
+                                      openEditSet(core.id, existing, {
+                                        mode: 'rpe',
+                                        title: `Edit Set ${setIdx}`,
+                                        canUndoDelete: setIdx === fcLatestLoggedIdx,
+                                      })
+                                    }
+                                  >
+                                    <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                  </TouchableOpacity>
+                                )}
+                              </View>
+                            ) : isNext ? (
+                              canLog ? (
+                                <View style={styles.logRow}>
+                                  <TextInput
+                                    style={styles.logInput}
+                                    placeholder={unit}
+                                    placeholderTextColor="#64748b"
+                                    keyboardType="numeric"
+                                    value={fcInputs[key]?.weight ?? ''}
+                                    onChangeText={(txt) => updateFcInput(key, 'weight', txt)}
+                                    ref={registerRef(`fc-${core.id}-${setIdx}-weight`)}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => focusField(`fc-${core.id}-${setIdx}-reps`)}
+                                    onFocus={() =>
+                                      requestAnimationFrame(() =>
+                                        scrollToNode(inputRefs.current[`fc-${core.id}-${setIdx}-weight`])
+                                      )
+                                    }
+                                  />
+                                  <TextInput
+                                    style={styles.logInput}
+                                    placeholder="reps"
+                                    placeholderTextColor="#64748b"
+                                    keyboardType="number-pad"
+                                    value={fcInputs[key]?.reps ?? ''}
+                                    onChangeText={(txt) => updateFcInput(key, 'reps', txt)}
+                                    ref={registerRef(`fc-${core.id}-${setIdx}-reps`)}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => focusField(`fc-${core.id}-${setIdx}-rpe`)}
+                                    onFocus={() =>
+                                      requestAnimationFrame(() =>
+                                        scrollToNode(inputRefs.current[`fc-${core.id}-${setIdx}-reps`])
+                                      )
+                                    }
+                                  />
+                                  <TextInput
+                                    style={styles.logInput}
+                                    placeholder="RPE"
+                                    placeholderTextColor="#64748b"
+                                    keyboardType="numeric"
+                                    value={fcInputs[key]?.rpe ?? ''}
+                                    onChangeText={(txt) => updateFcInput(key, 'rpe', txt)}
+                                    ref={registerRef(`fc-${core.id}-${setIdx}-rpe`)}
+                                    returnKeyType="done"
+                                    onSubmitEditing={() => {
+                                      Keyboard.dismiss();
+                                      logFullCustomSet(core.id, setIdx);
+                                    }}
+                                    onFocus={() =>
+                                      requestAnimationFrame(() =>
+                                        scrollToNode(inputRefs.current[`fc-${core.id}-${setIdx}-rpe`])
+                                      )
+                                    }
+                                  />
+                                  <TouchableOpacity
+                                    style={styles.logButton}
+                                    disabled={savingItemId === core.id}
+                                    onPress={() => logFullCustomSet(core.id, setIdx)}
+                                  >
+                                    {savingItemId === core.id ? (
+                                      <ActivityIndicator size="small" color="#020617" />
+                                    ) : (
+                                      <Text style={styles.logButtonText}>Save</Text>
+                                    )}
+                                  </TouchableOpacity>
+                                </View>
+                              ) : (
+                                isCoachView ? null : (
+                                  <Text style={styles.logHint}>Begin workout to log sets</Text>
+                                )
+                              )
+                            ) : (
+                              isCoachView ? null : (
+                                <Text style={styles.logHint}>Locked until previous set is logged</Text>
+                              )
+                            )}
+                          </View>
+                        );
+                      })}
+                  </View>
+                )}
+
                 {/* === Straight / VR logging === */}
                 {isStraightLike && totalSets > 0 && (
                   <View style={styles.setLogsBlock}>
@@ -1780,7 +2490,16 @@ export default function WorkoutViewerScreen() {
                       const isNext = !existing && setIdx === nextIdx;
 
                       return (
-                        <View key={setIdx} style={styles.setLogLine}>
+                        <View
+                          key={setIdx}
+                          style={[
+                            styles.setLogLine,
+                            isNext && workout.status === 'in_progress' && styles.setLogLineActive,
+                            isLatest && !isNext && styles.setLogLineLatest,
+                          ]}
+                        >
+                          {isNext && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                          {isLatest && !isNext && <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />}
                           <Text style={styles.setLabel}>Set {setIdx}</Text>
 
                           {/* Inline suggested range for the whole item */}
@@ -1791,11 +2510,28 @@ export default function WorkoutViewerScreen() {
                           })()}
 
                           {existing ? (
-                            <Text style={styles.actualText}>
-                              {formatWeight(existing.actual_weight_kg, unit)} {unit}
-                              {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
-                              {existing.actual_rpe != null ? ` @ RPE ${existing.actual_rpe.toFixed(1)}` : ''}
-                            </Text>
+                            <View style={styles.loggedRowInline}>
+                              <Text style={styles.actualTextInline}>
+                                {formatWeight(existing.actual_weight_kg, unit)} {unit}
+                                {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                                {existing.actual_rpe != null ? ` @ RPE ${existing.actual_rpe.toFixed(1)}` : ''}
+                              </Text>
+
+                              {canLog && (
+                                <TouchableOpacity
+                                  style={styles.inlineEditButtonInline}
+                                  onPress={() =>
+                                    openEditSet(core.id, existing, {
+                                      mode: 'rpe',
+                                      title: `Edit Set ${setIdx}`,
+                                      canUndoDelete: setIdx === latestLoggedIdx,
+                                    })
+                                  }
+                                >
+                                  <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                </TouchableOpacity>
+                              )}
+                            </View>
                           ) : isNext ? (
                             canLog ? (
                               <View style={styles.logRow}>
@@ -1878,31 +2614,19 @@ export default function WorkoutViewerScreen() {
                         </View>
                       );
                     })}
-
-                    {canLog && logs.length > 0 && (
-                      <TouchableOpacity
-                        style={styles.undoButton}
-                        disabled={savingItemId === core.id}
-                        onPress={() => undoLastSet(core.id)}
-                      >
-                        {savingItemId === core.id ? (
-                          <ActivityIndicator size="small" color="#fca5a5" />
-                        ) : (
-                          <Text style={styles.undoButtonText}>Undo last set</Text>
-                        )}
-                      </TouchableOpacity>
-                    )}
                   </View>
                 )}
 
                 {/* === Top set + its Backdowns in ONE card === */}
-                {isTop && (
+                {isTop && totalSets > 0 && (
                   <View style={styles.setLogsBlock}>
-                    {/* Top set row */}
-                    <View style={styles.setLogLine}>
-                      <Text style={styles.setLabel}>Top set</Text>
+                    {/* Top set summary (once, matching backdown style) */}
+                    <View style={{ marginBottom: 10 }}>
                       <Text style={styles.coreScheme}>
-                        {core.sets || 0} × {core.reps || core.reps_text || '—'}
+                        Top Sets {topLogs.length}/{core.sets || totalSets || 0}
+                      </Text>
+                      <Text style={styles.coreScheme}>
+                        {`${core.sets || totalSets || 0} × ${core.reps || core.reps_text || '—'}`}
                         {core.mode === 'RPE' && core.rpe_target != null && (
                           <Text style={styles.coreSchemeDetail}>
                             {' '}@ RPE {core.rpe_target.toFixed(1)}
@@ -1914,118 +2638,157 @@ export default function WorkoutViewerScreen() {
                           </Text>
                         )}
                       </Text>
-
                       {(() => {
                         const t = formatTargetRange(core.target_low_kg, core.target_high_kg, unit);
                         if (!t) return null;
-                        return <Text style={styles.setTargetInline}>Target {t}</Text>;
+                        return <Text style={styles.setTargetInline}>{t}</Text>;
                       })()}
-
-                      {hasTopActual ? (
-                        <Text style={styles.actualText}>
-                          {formatWeight(topSetLog?.actual_weight_kg ?? core.actual_weight_kg, unit)} {unit}
-                          {(topSetLog?.actual_reps ?? core.actual_reps) != null
-                            ? ` × ${topSetLog?.actual_reps ?? core.actual_reps}`
-                            : ''}
-                          {(topSetLog?.actual_rpe ?? core.actual_rpe) != null
-                            ? ` @ RPE ${(topSetLog?.actual_rpe ?? core.actual_rpe)!.toFixed(1)}`
-                            : ''}
-                        </Text>
-                      ) : canLog ? (
-                        <View style={styles.logRow}>
-                          <TextInput
-                            style={styles.logInput}
-                            placeholder={unit}
-                            placeholderTextColor="#64748b"
-                            keyboardType="numeric"
-                            value={topInputs[core.id]?.weight ?? ''}
-                            onChangeText={(txt) =>
-                              updateTopInput(core.id, 'weight', txt)
-                            }
-                            ref={registerRef(`top-${core.id}-weight`)}
-                            returnKeyType="next"
-                            blurOnSubmit={false}
-                            onSubmitEditing={() => focusField(`top-${core.id}-reps`)}
-                            onFocus={() => {
-                              ensureCoreRepsPrefill(core.id, 'top', core.reps);
-                              requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-weight`]));
-                            }}
-                          />
-                          <TextInput
-                            style={styles.logInput}
-                            placeholder="reps"
-                            placeholderTextColor="#64748b"
-                            keyboardType="number-pad"
-                            value={topInputs[core.id]?.reps ?? ''}
-                            onChangeText={(txt) =>
-                              updateTopInput(core.id, 'reps', txt)
-                            }
-                            ref={registerRef(`top-${core.id}-reps`)}
-                            returnKeyType="next"
-                            blurOnSubmit={false}
-                            onSubmitEditing={() => focusField(`top-${core.id}-rpe`)}
-                            onFocus={() => {
-                              ensureCoreRepsPrefill(core.id, 'top', core.reps);
-                              requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-reps`]));
-                            }}
-                          />
-                          <TextInput
-                            style={styles.logInput}
-                            placeholder="RPE"
-                            placeholderTextColor="#64748b"
-                            keyboardType="numeric"
-                            value={topInputs[core.id]?.rpe ?? ''}
-                            onChangeText={(txt) =>
-                              updateTopInput(core.id, 'rpe', txt)
-                            }
-                            ref={registerRef(`top-${core.id}-rpe`)}
-                            returnKeyType="done"
-                            onSubmitEditing={() => { Keyboard.dismiss(); logTopSet(core.id); }}
-                            onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-rpe`]))}
-                          />
-                          <TouchableOpacity
-                            style={styles.logButton}
-                            disabled={savingItemId === core.id}
-                            onPress={() => logTopSet(core.id)}
-                          >
-                            {savingItemId === core.id ? (
-                              <ActivityIndicator size="small" color="#020617" />
-                            ) : (
-                              <Text style={styles.logButtonText}>Save</Text>
-                            )}
-                          </TouchableOpacity>
-                        </View>
-                      ) : (
-                        isCoachView ? null : (
-                          <Text style={styles.logHint}>
-                            Begin workout to log top set
-                          </Text>
-                        )
-                      )}
                     </View>
-
-                    {/* Undo top set button */}
-                    {hasTopActual && canLog && (
-                      <TouchableOpacity
-                        style={styles.undoButton}
-                        disabled={savingItemId === core.id}
-                        onPress={() => clearTopSet(core.id)}
-                      >
-                        {savingItemId === core.id ? (
-                          <ActivityIndicator size="small" color="#fca5a5" />
-                        ) : (
-                          <Text style={styles.undoButtonText}>Undo top set</Text>
-                        )}
-                      </TouchableOpacity>
-                    )}
-
-                    {/* Backdown(s) under the same card */}
-                    {backdownsForThisTop.map((bd) => {
-                      const bdLogs = bd.set_logs || [];
-                      const bdTotal = bd.sets || 0;
+                    {Array.from({ length: totalSets }).map((_, idx) => {
+                      const setIdx = idx + 1;
+                      const existing = logs.find((sl) => sl.set_index === setIdx);
+                      const isNext = !existing && setIdx === topNextIdx;
 
                       return (
-                        <View key={bd.id} style={styles.setLogLine}>
+                        <View
+                          key={`top-${core.id}-${setIdx}`}
+                          style={[
+                            styles.setLogLine,
+                            isNext && workout.status === 'in_progress' && styles.setLogLineActive,
+                            existing && !isNext && setIdx === topLatestLoggedIdx && styles.setLogLineLatest,
+                            { marginBottom: setIdx < totalSets ? 8 : 0 },
+                          ]}
+                        >
+                          {isNext && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                          {existing && !isNext && setIdx === topLatestLoggedIdx && (
+                            <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                          )}
+
+                          {existing ? (
+                            <View style={styles.loggedRowInline}>
+                              <Text style={styles.actualTextInline}>
+                                Set {setIdx}:{' '}
+                                {formatWeight(existing.actual_weight_kg, unit)} {unit}
+                                {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                                {existing.actual_rpe != null ? ` @ RPE ${existing.actual_rpe.toFixed(1)}` : ''}
+                              </Text>
+
+                              {canLog && (
+                                <TouchableOpacity
+                                  style={styles.inlineEditButtonInline}
+                                  onPress={() =>
+                                    openEditSet(core.id, existing, {
+                                      mode: 'rpe',
+                                      title: `Edit Top Set ${setIdx}`,
+                                      canUndoDelete:
+                                        setIdx === topLatestLoggedIdx &&
+                                        !backdownsForThisTop.some((bd) => (bd.set_logs || []).length > 0),
+                                    })
+                                  }
+                                >
+                                  <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                </TouchableOpacity>
+                              )}
+                            </View>
+                          ) : isNext ? (
+                            canLog ? (
+                              <View style={styles.logRow}>
+                                <TextInput
+                                  style={styles.logInput}
+                                  placeholder={unit}
+                                  placeholderTextColor="#64748b"
+                                  keyboardType="numeric"
+                                  value={topInputs[core.id]?.weight ?? ''}
+                                  onChangeText={(txt) => updateTopInput(core.id, 'weight', txt)}
+                                  ref={registerRef(`top-${core.id}-${setIdx}-weight`)}
+                                  returnKeyType="next"
+                                  blurOnSubmit={false}
+                                  onSubmitEditing={() => focusField(`top-${core.id}-${setIdx}-reps`)}
+                                  onFocus={() => {
+                                    ensureCoreRepsPrefill(core.id, 'top', core.reps);
+                                    requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-${setIdx}-weight`]));
+                                  }}
+                                />
+                                <TextInput
+                                  style={styles.logInput}
+                                  placeholder="reps"
+                                  placeholderTextColor="#64748b"
+                                  keyboardType="number-pad"
+                                  value={topInputs[core.id]?.reps ?? ''}
+                                  onChangeText={(txt) => updateTopInput(core.id, 'reps', txt)}
+                                  ref={registerRef(`top-${core.id}-${setIdx}-reps`)}
+                                  returnKeyType="next"
+                                  blurOnSubmit={false}
+                                  onSubmitEditing={() => focusField(`top-${core.id}-${setIdx}-rpe`)}
+                                  onFocus={() => {
+                                    ensureCoreRepsPrefill(core.id, 'top', core.reps);
+                                    requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-${setIdx}-reps`]));
+                                  }}
+                                />
+                                <TextInput
+                                  style={styles.logInput}
+                                  placeholder="RPE"
+                                  placeholderTextColor="#64748b"
+                                  keyboardType="numeric"
+                                  value={topInputs[core.id]?.rpe ?? ''}
+                                  onChangeText={(txt) => updateTopInput(core.id, 'rpe', txt)}
+                                  ref={registerRef(`top-${core.id}-${setIdx}-rpe`)}
+                                  returnKeyType="done"
+                                  onSubmitEditing={() => {
+                                    Keyboard.dismiss();
+                                    logTopSet(core.id);
+                                  }}
+                                  onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`top-${core.id}-${setIdx}-rpe`]))}
+                                />
+                                <TouchableOpacity
+                                  style={styles.logButton}
+                                  disabled={savingItemId === core.id}
+                                  onPress={() => logTopSet(core.id)}
+                                >
+                                  {savingItemId === core.id ? (
+                                    <ActivityIndicator size="small" color="#020617" />
+                                  ) : (
+                                    <Text style={styles.logButtonText}>Save</Text>
+                                  )}
+                                </TouchableOpacity>
+                              </View>
+                            ) : (
+                              isCoachView ? null : (
+                                <Text style={styles.logHint}>Begin workout to log sets</Text>
+                              )
+                            )
+                          ) : (
+                            isCoachView ? null : (
+                              <Text style={styles.logHint}>Locked until previous set is logged</Text>
+                            )
+                          )}
+                        </View>
+                      );
+                    })}
+
+                    {/* Backdown(s) under the same card */}
+                    <View style={{ height: 10 }} />
+                    {backdownsForThisTop.map((bd) => {
+                      const bdLogs = bd.set_logs || [];
+                      const bdLatestLoggedIdx =
+                        bdLogs.length > 0
+                          ? Math.max(...bdLogs.map((sl) => sl.set_index || 0))
+                          : 0;
+                      const bdTotal = bd.sets || 0;
+                      return (
+                        <View
+                          key={bd.id}
+                          style={[
+                            styles.setLogLine,
+                            bdLogs.length < bdTotal && hasAllTopActual && canLog && workout.status === 'in_progress' && styles.setLogLineActive,
+                            bdLogs.length > 0 && bdLogs.length === bdTotal && styles.setLogLineLatest,
+                            { marginBottom: bd === backdownsForThisTop[backdownsForThisTop.length - 1] ? 0 : 8 },
+                          ]}
+                        >
+                          {bdLogs.length < bdTotal && hasAllTopActual && canLog && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                          {bdLogs.length > 0 && bdLogs.length === bdTotal && (
+                            <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                          )}
                           <Text style={styles.setLabel}>
                             Backdowns {bdLogs.length}/{bdTotal}
                           </Text>
@@ -2050,25 +2813,40 @@ export default function WorkoutViewerScreen() {
                           })()}
 
                           {bdLogs.map((sl) => (
-                            <Text key={sl.id} style={styles.actualText}>
-                              Set {sl.set_index}:{' '}
-                              {formatWeight(sl.actual_weight_kg, unit)} {unit}
-                              {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
-                              {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
-                            </Text>
+                            <View key={sl.id} style={[styles.loggedRowInline, { marginTop: 8 }]}>
+                              <Text style={styles.actualTextInline}>
+                                Set {sl.set_index}:{' '}
+                                {formatWeight(sl.actual_weight_kg, unit)} {unit}
+                                {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
+                                {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
+                              </Text>
+
+                              {canLog && (
+                                <TouchableOpacity
+                                  style={styles.inlineEditButtonInline}
+                                  onPress={() =>
+                                    openEditSet(bd.id, sl, {
+                                      mode: 'rpe',
+                                      title: `Edit Backdown Set ${sl.set_index}`,
+                                      canUndoDelete: sl.set_index === bdLogs[bdLogs.length - 1]?.set_index,
+                                    })
+                                  }
+                                >
+                                  <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                </TouchableOpacity>
+                              )}
+                            </View>
                           ))}
 
-                          {canLog && hasTopActual && bdLogs.length < bdTotal ? (
-                            <View style={styles.logRow}>
+                          {canLog && hasAllTopActual && bdLogs.length < bdTotal ? (
+                            <View style={[styles.logRow, { marginTop: 4 }]}>
                               <TextInput
                                 style={styles.logInput}
                                 placeholder={unit}
                                 placeholderTextColor="#64748b"
                                 keyboardType="numeric"
                                 value={bkInputs[bd.id]?.weight ?? ''}
-                                onChangeText={(txt) =>
-                                  updateBkInput(bd.id, 'weight', txt)
-                                }
+                                onChangeText={(txt) => updateBkInput(bd.id, 'weight', txt)}
                                 ref={registerRef(`bk-${bd.id}-weight`)}
                                 returnKeyType="next"
                                 blurOnSubmit={false}
@@ -2084,9 +2862,7 @@ export default function WorkoutViewerScreen() {
                                 placeholderTextColor="#64748b"
                                 keyboardType="number-pad"
                                 value={bkInputs[bd.id]?.reps ?? ''}
-                                onChangeText={(txt) =>
-                                  updateBkInput(bd.id, 'reps', txt)
-                                }
+                                onChangeText={(txt) => updateBkInput(bd.id, 'reps', txt)}
                                 ref={registerRef(`bk-${bd.id}-reps`)}
                                 returnKeyType="next"
                                 blurOnSubmit={false}
@@ -2102,12 +2878,13 @@ export default function WorkoutViewerScreen() {
                                 placeholderTextColor="#64748b"
                                 keyboardType="numeric"
                                 value={bkInputs[bd.id]?.rpe ?? ''}
-                                onChangeText={(txt) =>
-                                  updateBkInput(bd.id, 'rpe', txt)
-                                }
+                                onChangeText={(txt) => updateBkInput(bd.id, 'rpe', txt)}
                                 ref={registerRef(`bk-${bd.id}-rpe`)}
                                 returnKeyType="done"
-                                onSubmitEditing={() => { Keyboard.dismiss(); logBackdownSet(bd.id); }}
+                                onSubmitEditing={() => {
+                                  Keyboard.dismiss();
+                                  logBackdownSet(bd.id);
+                                }}
                                 onFocus={() => requestAnimationFrame(() => scrollToNode(inputRefs.current[`bk-${bd.id}-rpe`]))}
                               />
                               <TouchableOpacity
@@ -2122,31 +2899,12 @@ export default function WorkoutViewerScreen() {
                                 )}
                               </TouchableOpacity>
                             </View>
-                          ) : !hasTopActual ? (
+                          ) : !hasAllTopActual ? (
                             isCoachView ? null : (
-                              <Text style={styles.logHint}>
-                                Locked until top set is logged
-                              </Text>
+                              <Text style={[styles.logHint, { marginTop: 4 }]}>Locked until all top sets are logged</Text>
                             )
                           ) : (
-                            bdLogs.length >= bdTotal && (
-                              <Text style={styles.logHint}>
-                                All backdown sets logged
-                              </Text>
-                            )
-                          )}
-                          {canLog && bdLogs.length > 0 && (
-                            <TouchableOpacity
-                              style={styles.undoButton}
-                              disabled={savingItemId === bd.id}
-                              onPress={() => undoLastSet(bd.id)}
-                            >
-                              {savingItemId === bd.id ? (
-                                <ActivityIndicator size="small" color="#fca5a5" />
-                              ) : (
-                                <Text style={styles.undoButtonText}>Undo last set</Text>
-                              )}
-                            </TouchableOpacity>
+                            null
                           )}
                         </View>
                       );
@@ -2157,7 +2915,15 @@ export default function WorkoutViewerScreen() {
                 {/* If you ever have orphan BK items w/ no parent, they’ll still render as their own card */}
                 {isBackdown && !hasParent && (core.sets || 0) > 0 && (
                   <View style={styles.setLogsBlock}>
-                    <View style={styles.setLogLine}>
+                    <View
+                      style={[
+                        styles.setLogLine,
+                        logs.length > 0 && logs.length === (core.sets || 0) && styles.setLogLineLatest,
+                      ]}
+                    >
+                      {logs.length > 0 && logs.length === (core.sets || 0) && (
+                        <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                      )}
                       <Text style={styles.setLabel}>
                         Backdown sets {logs.length}/{core.sets || 0}
                       </Text>
@@ -2169,12 +2935,29 @@ export default function WorkoutViewerScreen() {
                       })()}
 
                       {logs.map((sl) => (
-                        <Text key={sl.id} style={styles.actualText}>
-                          Set {sl.set_index}:{' '}
-                          {formatWeight(sl.actual_weight_kg, unit)} {unit}
-                          {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
-                          {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
-                        </Text>
+                        <View key={sl.id} style={styles.loggedRowInline}>
+                          <Text style={styles.actualTextInline}>
+                            Set {sl.set_index}:{' '}
+                            {formatWeight(sl.actual_weight_kg, unit)} {unit}
+                            {sl.actual_reps != null ? ` × ${sl.actual_reps}` : ''}
+                            {sl.actual_rpe != null ? ` @ RPE ${sl.actual_rpe.toFixed(1)}` : ''}
+                          </Text>
+
+                          {canLog && (
+                            <TouchableOpacity
+                              style={styles.inlineEditButtonInline}
+                              onPress={() =>
+                                openEditSet(core.id, sl, {
+                                  mode: 'rpe',
+                                  title: `Edit Backdown Set ${sl.set_index}`,
+                                  canUndoDelete: sl.set_index === bdLogs[bdLogs.length - 1]?.set_index,
+                                })
+                              }
+                            >
+                              <Text style={styles.inlineEditButtonText}>Edit</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       ))}
                     </View>
                   </View>
@@ -2185,7 +2968,7 @@ export default function WorkoutViewerScreen() {
         </View>
 
         {/* Accessories, grouped like the Jinja acc_groups */}
-        <View style={styles.sectionBlock}>
+        <View style={[styles.sectionBlock, styles.accessorySectionBlock]}>
           {workout.accessory_groups.map((grp, idx) => {
             // ... keep the entire accessory rendering block exactly as-is ...
             const isSuperset = !!grp.group;
@@ -2193,7 +2976,7 @@ export default function WorkoutViewerScreen() {
             if (isSuperset) {
               // Superset card with multiple rows inside
               return (
-                <View key={grp.group || `ss-${idx}`} style={styles.supersetCard}>
+                <View key={grp.group || `ss-${idx}`} style={[styles.supersetCard, styles.supersetCardSecondary]}>
                   <View style={styles.supersetHeader}>
                     <Text style={styles.supersetBadge}>
                       Superset {grp.group}
@@ -2202,6 +2985,10 @@ export default function WorkoutViewerScreen() {
 
                   {grp.items.map((it) => {
                     const logs = it.set_logs || [];
+                    const latestLoggedIdx =
+                      logs.length > 0
+                        ? Math.max(...logs.map((l) => l.set_index || 0))
+                        : 0;
                     const totalSets = it.sets || 0;
                     const loggedCount = logs.length;
                     const nextIndex = loggedCount + 1;
@@ -2214,15 +3001,23 @@ export default function WorkoutViewerScreen() {
                             {it.movement || 'Accessory'}
                           </Text>
 
-                          {canHotSwap && (
-                            <TouchableOpacity
-                              style={styles.swapPill}
-                              onPress={() => openSwapAcc(it)}
-                              disabled={savingItemId === it.id}
-                            >
-                              <Text style={styles.swapPillText}>Swap</Text>
-                            </TouchableOpacity>
-                          )}
+                         {canHotSwap ? (
+                          <TouchableOpacity
+                            style={styles.swapPill}
+                            onPress={() => openSwapAcc(it)}
+                            disabled={savingItemId === it.id}
+                          >
+                            <Text style={styles.swapPillText}>Swap</Text>
+                          </TouchableOpacity>
+                        ) : (Array.isArray(it.approved_subs) && it.approved_subs.length > 0 ? (
+                          <TouchableOpacity
+                            style={styles.swapPill}
+                            onPress={() => openSwapAcc(it)}
+                            disabled={savingItemId === it.id}
+                          >
+                            <Text style={styles.swapPillText}>Sub</Text>
+                          </TouchableOpacity>
+                        ) : null)}
                         </View>
 
                         <Text style={styles.accMeta}>
@@ -2234,6 +3029,9 @@ export default function WorkoutViewerScreen() {
                             </Text>
                           )}
                         </Text>
+                        {!!it.notes && (
+                          <Text style={styles.cardMeta}>{it.notes}</Text>
+                        )}
                         {(() => {
                           const best = getLookbackBest(it);
                           const line = formatLookbackLine(best, unit);
@@ -2250,18 +3048,45 @@ export default function WorkoutViewerScreen() {
                             const isNext = !existing && setNumber === nextIndex;
 
                             return (
-                              <View key={setNumber} style={styles.setLogLine}>
+                              <View
+                                key={setNumber}
+                                style={[
+                                  styles.setLogLine,
+                                  isNext && workout.status === 'in_progress' && styles.setLogLineActive,
+                                  existing && !isNext && setNumber === latestLoggedIdx && styles.setLogLineLatest,
+                                ]}
+                              >
+                                {isNext && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                                {existing && !isNext && setNumber === latestLoggedIdx && (
+                                  <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                                )}
                                 {existing || (isNext && canLog && !isCoachView) ? (
                                   <Text style={styles.setLabel}>Set {setNumber}</Text>
                                 ) : null}
 
                                 {existing ? (
-                                  <Text style={styles.actualText}>
-                                    {formatWeight(existing.actual_weight_kg, unit)} {unit} ×{' '}
-                                    {existing.actual_reps ?? '?'}
-                                    {existing.actual_rir != null &&
-                                      ` (RIR ${existing.actual_rir})`}
-                                  </Text>
+                                  <View style={styles.loggedRowInline}>
+                                    <Text style={styles.actualTextInline}>
+                                      {formatWeight(existing.actual_weight_kg, unit)} {unit}
+                                      {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                                      {existing.actual_rir != null ? ` @ RIR ${existing.actual_rir.toFixed(1)}` : ''}
+                                    </Text>
+
+                                    {canLog && (
+                                      <TouchableOpacity
+                                        style={styles.inlineEditButtonInline}
+                                        onPress={() =>
+                                          openEditSet(it.id, existing, {
+                                            mode: 'rir',
+                                            title: `Edit Set ${setNumber}`,
+                                            canUndoDelete: existing?.set_index === latestLoggedIdx,
+                                          })
+                                        }
+                                      >
+                                        <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                      </TouchableOpacity>
+                                    )}
+                                  </View>
                                 ) : isNext && canLog ? (
                                   <View style={styles.logRow}>
                                     <TextInput
@@ -2344,20 +3169,6 @@ export default function WorkoutViewerScreen() {
                               </View>
                             );
                           })}
-
-                          {canLog && logs.length > 0 && (
-                            <TouchableOpacity
-                              style={styles.undoButton}
-                              disabled={savingItemId === it.id}
-                              onPress={() => undoLastSet(it.id)}
-                            >
-                              {savingItemId === it.id ? (
-                                <ActivityIndicator size="small" color="#fca5a5" />
-                              ) : (
-                                <Text style={styles.undoButtonText}>Undo last set</Text>
-                              )}
-                            </TouchableOpacity>
-                          )}
                         </View>
                       </View>
                     );
@@ -2369,19 +3180,23 @@ export default function WorkoutViewerScreen() {
             // Ungrouped accessories – individual cards
             return grp.items.map((it) => {
               const logs = it.set_logs || [];
+              const latestLoggedIdx =
+                logs.length > 0
+                  ? Math.max(...logs.map((l) => l.set_index || 0))
+                  : 0;
               const totalSets = it.sets || 0;
               const loggedCount = logs.length;
               const nextIndex = loggedCount + 1;
               const canLog = canLogFromServer && workout.status === 'in_progress';
 
               return (
-                <View key={it.id} style={styles.accCard}>
+                <View key={it.id} style={[styles.accCard, styles.accCardSecondary]}>
                   <View style={styles.accHeadRow}>
                     <Text style={styles.accTitle}>
                       {it.movement || 'Accessory'}
                     </Text>
 
-                    {canHotSwap && (
+                    {canHotSwap ? (
                       <TouchableOpacity
                         style={styles.swapPill}
                         onPress={() => openSwapAcc(it)}
@@ -2389,7 +3204,15 @@ export default function WorkoutViewerScreen() {
                       >
                         <Text style={styles.swapPillText}>Swap</Text>
                       </TouchableOpacity>
-                    )}
+                    ) : (Array.isArray(it.approved_subs) && it.approved_subs.length > 0 ? (
+                      <TouchableOpacity
+                        style={styles.swapPill}
+                        onPress={() => openSwapAcc(it)}
+                        disabled={savingItemId === it.id}
+                      >
+                        <Text style={styles.swapPillText}>Sub</Text>
+                      </TouchableOpacity>
+                    ) : null)}
                   </View>
 
                   <Text style={styles.accMeta}>
@@ -2401,6 +3224,9 @@ export default function WorkoutViewerScreen() {
                       </Text>
                     )}
                   </Text>
+                  {!!it.notes && (
+                    <Text style={styles.cardMeta}>{it.notes}</Text>
+                  )}
                   {(() => {
                     const best = getLookbackBest(it);
                     const line = formatLookbackLine(best, unit);
@@ -2417,18 +3243,45 @@ export default function WorkoutViewerScreen() {
                       const isNext = !existing && setNumber === nextIndex;
 
                       return (
-                        <View key={setNumber} style={styles.setLogLine}>
+                        <View
+                          key={setNumber}
+                          style={[
+                            styles.setLogLine,
+                            isNext && workout.status === 'in_progress' && styles.setLogLineActive,
+                            existing && !isNext && setNumber === latestLoggedIdx && styles.setLogLineLatest,
+                          ]}
+                        >
+                          {isNext && workout.status === 'in_progress' && <View style={styles.setLogAccent} />}
+                          {existing && !isNext && setNumber === latestLoggedIdx && (
+                            <View style={[styles.setLogAccent, styles.setLogAccentMuted]} />
+                          )}
                           {existing || (isNext && canLog && !isCoachView) ? (
                             <Text style={styles.setLabel}>Set {setNumber}</Text>
                           ) : null}
 
                           {existing ? (
-                            <Text style={styles.actualText}>
-                              {formatWeight(existing.actual_weight_kg, unit)} {unit} ×{' '}
-                              {existing.actual_reps ?? '?'}
-                              {existing.actual_rir != null &&
-                                ` (RIR ${existing.actual_rir})`}
-                            </Text>
+                            <View style={styles.loggedRowInline}>
+                              <Text style={styles.actualTextInline}>
+                                {formatWeight(existing.actual_weight_kg, unit)} {unit}
+                                {existing.actual_reps != null ? ` × ${existing.actual_reps}` : ''}
+                                {existing.actual_rir != null ? ` @ RIR ${existing.actual_rir.toFixed(1)}` : ''}
+                              </Text>
+
+                              {canLog && (
+                                <TouchableOpacity
+                                  style={styles.inlineEditButtonInline}
+                                  onPress={() =>
+                                    openEditSet(it.id, existing, {
+                                      mode: 'rir',
+                                      title: `Edit Set ${setNumber}`,
+                                      canUndoDelete: existing?.set_index === latestLoggedIdx,
+                                    })
+                                  }
+                                >
+                                  <Text style={styles.inlineEditButtonText}>Edit</Text>
+                                </TouchableOpacity>
+                              )}
+                            </View>
                           ) : isNext && canLog ? (
                             <View style={styles.logRow}>
                               <TextInput
@@ -2511,20 +3364,6 @@ export default function WorkoutViewerScreen() {
                         </View>
                       );
                     })}
-
-                    {canLog && logs.length > 0 && (
-                      <TouchableOpacity
-                        style={styles.undoButton}
-                        disabled={savingItemId === it.id}
-                        onPress={() => undoLastSet(it.id)}
-                      >
-                        {savingItemId === it.id ? (
-                          <ActivityIndicator size="small" color="#fca5a5" />
-                        ) : (
-                          <Text style={styles.undoButtonText}>Undo last set</Text>
-                        )}
-                      </TouchableOpacity>
-                    )}
                   </View>
                 </View>
               );
@@ -2541,7 +3380,7 @@ export default function WorkoutViewerScreen() {
                     styles.actionPrimary,
                     actionLoading === 'complete' && { opacity: 0.7 },
                   ]}
-                  onPress={completeWorkout}
+                  onPress={openPostSessionSurvey}
                   disabled={!!actionLoading}
                 >
                   {actionLoading === 'complete' ? (
@@ -2576,7 +3415,9 @@ export default function WorkoutViewerScreen() {
                   <Text
                     style={[
                       styles.actionButtonText,
-                      workout.status === 'completed' && styles.actionPrimaryText,
+                      workout.status === 'completed'
+                        ? styles.actionPrimaryText
+                        : styles.actionDangerText,
                     ]}
                   >
                     {workout.status === 'completed' ? 'Resume Workout' : 'Cancel Workout'}
@@ -2585,7 +3426,14 @@ export default function WorkoutViewerScreen() {
               </TouchableOpacity>
             </View>
           )}
-      </ScrollView>
+      </RefreshScreen>
+
+      <TouchableOpacity
+        style={styles.floatingBackButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.floatingBackButtonText}>← Back</Text>
+      </TouchableOpacity>
 
       {/* Cancel / Resume confirmation modal */}
       <Modal
@@ -2594,17 +3442,21 @@ export default function WorkoutViewerScreen() {
         animationType="fade"
         onRequestClose={() => setCancelConfirmVisible(false)}
       >
-        <View style={styles.timerOverlay}>
-          <View style={styles.timerPicker}>
-            <Text style={styles.timerPickerTitle}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.postSessionTitle}>
               {workout.status === 'completed'
                 ? 'Resume this workout?'
                 : 'Cancel this workout?'}
             </Text>
 
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
+            <View style={styles.modalActionsRow}>
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: '#38bdf8' }]}
+                style={[
+                  styles.actionButton,
+                  workout.status === 'completed' ? styles.actionPrimary : styles.actionDanger,
+                  { flex: 1 },
+                ]}
                 onPress={async () => {
                   setCancelConfirmVisible(false);
                   if (workout.status === 'completed') {
@@ -2614,20 +3466,315 @@ export default function WorkoutViewerScreen() {
                   }
                 }}
               >
-                <Text style={styles.timerButtonText}>
+                <Text
+                  style={[
+                    styles.actionButtonText,
+                    workout.status === 'completed'
+                      ? styles.actionPrimaryText
+                      : styles.actionDangerText,
+                  ]}
+                >
                   {workout.status === 'completed' ? 'Resume' : 'Yes, Cancel'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: '#fca5a5' }]}
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
                 onPress={() => setCancelConfirmVisible(false)}
               >
-                <Text style={styles.timerButtonText}>Close</Text>
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
+      </Modal>
+
+      <Modal
+        visible={editSetVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!editSetSubmitting) {
+            setEditSetVisible(false);
+            setEditSetCtx(null);
+          }
+        }}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, styles.editSetModalWide]}>
+            <Text style={styles.postSessionTitle}>{editSetCtx?.title || 'Edit Set'}</Text>
+            <Text style={styles.modalSubtitle}>Update the logged values for this set.</Text>
+
+            <View style={styles.modalRow}>
+              <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                <Text style={styles.modalLabel}>Weight ({unit})</Text>
+                <TextInput
+                  style={styles.modalInput}
+                  value={editSetForm.weight}
+                  onChangeText={(txt) =>
+                    setEditSetForm((prev) => ({
+                      ...prev,
+                      weight: txt.replace(/[^0-9.]/g, ''),
+                    }))
+                  }
+                  placeholder={`Enter ${unit}`}
+                  placeholderTextColor="#64748b"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                <Text style={styles.modalLabel}>Reps</Text>
+                <TextInput
+                  style={styles.modalInput}
+                  value={editSetForm.reps}
+                  onChangeText={(txt) =>
+                    setEditSetForm((prev) => ({
+                      ...prev,
+                      reps: txt.replace(/[^0-9]/g, ''),
+                    }))
+                  }
+                  placeholder="Reps"
+                  placeholderTextColor="#64748b"
+                  keyboardType="number-pad"
+                />
+              </View>
+
+              {editSetCtx?.mode === 'rpe' ? (
+                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                  <Text style={styles.modalLabel}>RPE</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={editSetForm.rpe}
+                    onChangeText={(txt) =>
+                      setEditSetForm((prev) => ({
+                        ...prev,
+                        rpe: txt.replace(/[^0-9.]/g, ''),
+                      }))
+                    }
+                    placeholder="RPE"
+                    placeholderTextColor="#64748b"
+                    keyboardType="numeric"
+                  />
+                </View>
+              ) : (
+                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                  <Text style={styles.modalLabel}>RIR</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={editSetForm.rir}
+                    onChangeText={(txt) =>
+                      setEditSetForm((prev) => ({
+                        ...prev,
+                        rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
+                      }))
+                    }
+                    placeholder="RIR"
+                    placeholderTextColor="#64748b"
+                    keyboardType="numeric"
+                  />
+                </View>
+              )}
+            </View>
+
+            <View style={styles.modalActionsRow}>
+              {editSetCtx?.canUndoDelete && (
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.actionDanger, { flex: 1 }]}
+                  onPress={deleteEditedSet}
+                  disabled={editSetSubmitting}
+                >
+                  {editSetSubmitting ? (
+                    <ActivityIndicator size="small" color="#fca5a5" />
+                  ) : (
+                    <Text style={[styles.actionButtonText, styles.actionDangerText]}>Undo Set Log</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                onPress={() => {
+                  if (!editSetSubmitting) {
+                    setEditSetVisible(false);
+                    setEditSetCtx(null);
+                  }
+                }}
+                disabled={editSetSubmitting}
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
+                onPress={saveEditedSet}
+                disabled={editSetSubmitting}
+              >
+                {editSetSubmitting ? (
+                  <ActivityIndicator size="small" color="#020617" />
+                ) : (
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                    Save Changes
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={postSessionVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!postSessionSubmitting) setPostSessionVisible(false);
+        }}
+      >
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 24 : 0}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.modalBackdrop}>
+              <View style={[styles.modalCard, styles.postSessionModal]}>
+                <Text style={styles.postSessionTitle}>Post-Session Survey</Text>
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Session RPE</Text>
+                  <View style={styles.surveyChipRow}>
+                    {[6, 7, 8, 9, 10].map((value) => {
+                      const selected = postSessionForm.sessionRpe === value;
+                      return (
+                        <TouchableOpacity
+                          key={value}
+                          style={[styles.surveyChip, selected && styles.surveyChipActive]}
+                          onPress={() =>
+                            setPostSessionForm((prev) => ({
+                              ...prev,
+                              sessionRpe: value,
+                            }))
+                          }
+                        >
+                          <Text style={[styles.surveyChipText, selected && styles.surveyChipTextActive]}>
+                            {value}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Perceived Strength</Text>
+                  <View style={styles.surveyChoiceStack}>
+                    {[
+                      ['weaker', 'Weaker'],
+                      ['normal', 'Normal'],
+                      ['stronger', 'Stronger'],
+                    ].map(([value, label]) => {
+                      const selected = postSessionForm.strengthFeeling === value;
+                      return (
+                        <TouchableOpacity
+                          key={value}
+                          style={[styles.surveyChoiceButton, selected && styles.surveyChoiceButtonActive]}
+                          onPress={() =>
+                            setPostSessionForm((prev) => ({
+                              ...prev,
+                              strengthFeeling: value as any,
+                            }))
+                          }
+                        >
+                          <Text style={[styles.surveyChoiceText, selected && styles.surveyChoiceTextActive]}>
+                            {label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Perceived Fatigue</Text>
+                  <View style={styles.surveyChoiceStack}>
+                    {[
+                      ['low', 'Low'],
+                      ['medium', 'Medium'],
+                      ['high', 'High'],
+                    ].map(([value, label]) => {
+                      const selected = postSessionForm.fatigueFeeling === value;
+                      return (
+                        <TouchableOpacity
+                          key={value}
+                          style={[styles.surveyChoiceButton, selected && styles.surveyChoiceButtonActive]}
+                          onPress={() =>
+                            setPostSessionForm((prev) => ({
+                              ...prev,
+                              fatigueFeeling: value as any,
+                            }))
+                          }
+                        >
+                          <Text style={[styles.surveyChoiceText, selected && styles.surveyChoiceTextActive]}>
+                            {label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <View style={styles.surveySection}>
+                  <Text style={styles.surveyLabel}>Notes</Text>
+                  <TextInput
+                    style={[styles.modalInput, styles.surveyNoteInput]}
+                    value={postSessionForm.note}
+                    onChangeText={(txt) =>
+                      setPostSessionForm((prev) => ({
+                        ...prev,
+                        note: txt,
+                      }))
+                    }
+                    placeholder="Sleep was bad, low back felt tight, bench moved well, etc."
+                    placeholderTextColor="#64748b"
+                    multiline
+                    textAlignVertical="top"
+                    returnKeyType="done"
+                    blurOnSubmit
+                    onSubmitEditing={Keyboard.dismiss}
+                  />
+                </View>
+
+                <View style={styles.modalActionsRow}>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                    onPress={skipPostSessionAndComplete}
+                    disabled={postSessionSubmitting}
+                  >
+                    <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                      Skip & Complete
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.actionPrimary, { flex: 1.2 }]}
+                    onPress={submitPostSessionAndComplete}
+                    disabled={postSessionSubmitting}
+                  >
+                    {postSessionSubmitting ? (
+                      <ActivityIndicator size="small" color="#020617" />
+                    ) : (
+                      <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                        Submit & Complete
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Shared rest timer picker (popup modal) */}
@@ -2637,28 +3784,84 @@ export default function WorkoutViewerScreen() {
         animationType="fade"
         onRequestClose={() => setTimerPickerVisible(false)}
       >
-        <View style={styles.timerOverlay}>
-          <View style={styles.timerPicker}>
-            <Text style={styles.timerPickerTitle}>Select rest duration</Text>
-            <View style={styles.timerOptionsGrid}>
-              {TIMER_OPTIONS.map((sec) => (
-                <TouchableOpacity
-                  key={sec}
-                  style={styles.timerOptionButton}
-                  onPress={() => handleTimerSelect(sec)}
-                >
-                  <Text style={styles.timerOptionText}>
-                    {sec >= 60 ? `${sec / 60} min` : `${sec}s`}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.postSessionTitle}>Set Rest Timer</Text>
+            <View style={styles.timerWheelWrap}>
+              <View pointerEvents="none" style={styles.timerWheelCenterIndicator} />
+              <ScrollView
+                ref={timerWheelRef}
+                style={styles.timerWheel}
+                contentContainerStyle={styles.timerWheelContent}
+                showsVerticalScrollIndicator={false}
+                snapToInterval={52}
+                decelerationRate="fast"
+                disableIntervalMomentum
+                snapToAlignment="center"
+                scrollEventThrottle={16}
+                onScrollEndDrag={(e) => {
+                  const y = e.nativeEvent.contentOffset.y;
+                  const idx = Math.max(0, Math.min(9, Math.round(y / 52)));
+                  const snappedY = idx * 52;
+                  const value = (idx + 1) * 30;
+                  setTimerPickerValue(value);
+                  timerWheelRef.current?.scrollTo({ y: snappedY, animated: true });
+                }}
+                onMomentumScrollEnd={(e) => {
+                  const y = e.nativeEvent.contentOffset.y;
+                  const idx = Math.max(0, Math.min(9, Math.round(y / 52)));
+                  const snappedY = idx * 52;
+                  const value = (idx + 1) * 30;
+                  setTimerPickerValue(value);
+                  timerWheelRef.current?.scrollTo({ y: snappedY, animated: false });
+                }}
+              >
+                {Array.from({ length: 10 }).map((_, idx) => {
+                  const value = (idx + 1) * 30;
+                  const mins = Math.floor(value / 60);
+                  const secs = value % 60;
+                  const label =
+                    mins > 0
+                      ? `${mins}:${String(secs).padStart(2, '0')}`
+                      : `${secs}s`;
+                  const selected = timerPickerValue === value;
+
+                  return (
+                    <View
+                      key={value}
+                      style={[styles.timerWheelOption, selected && styles.timerWheelOptionActive]}
+                    >
+                      <Text style={[styles.timerWheelText, selected && styles.timerWheelTextActive]}>
+                        {label}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </ScrollView>
             </View>
-            <TouchableOpacity
-              style={[styles.timerButton, styles.timerPickerCancel]}
-              onPress={() => setTimerPickerVisible(false)}
-            >
-              <Text style={styles.timerButtonText}>Cancel</Text>
-            </TouchableOpacity>
+
+            <View style={styles.modalActionsRow}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                onPress={() => setTimerPickerVisible(false)}
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
+                onPress={() => {
+                  startRestTimer(timerPickerValue);
+                  setTimerPickerVisible(false);
+                }}
+              >
+                <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                  Start Timer
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -2672,132 +3875,102 @@ export default function WorkoutViewerScreen() {
           if (!readinessSubmitting) setReadinessVisible(false);
         }}
       >
-        <View style={styles.timerOverlay}>
-          <View style={styles.readinessModal}>
-            <Text style={styles.timerPickerTitle}>Quick readiness check</Text>
-            <Text style={{ color: '#94a3b8', fontSize: 12, marginBottom: 10 }}>
-              Tap values and hit Submit (or Skip).
-            </Text>
+        <View style={styles.modalBackdropCenter}>
+          <View style={[styles.modalCard, styles.readinessModal]}>
+            <Text style={styles.postSessionTitle}>Quick readiness check</Text>
 
             {/* Sleep */}
-            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginBottom: 6 }}>
-              Sleep quality (1–5)
+            <Text style={styles.readinessQuestionLabel}>
+              Sleep quality (1 = poor, 5 = great)
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
               {[1,2,3,4,5].map((n) => (
                 <TouchableOpacity
                   key={`sleep-${n}`}
                   onPress={() => setReadinessForm((p) => ({ ...p, sleep_quality: n }))}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: n === readinessForm.sleep_quality ? '#38bdf8' : 'rgba(148,163,184,0.5)',
-                    backgroundColor: n === readinessForm.sleep_quality ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
-                  }}
+                  style={[
+                    styles.readinessScalePill,
+                    n === readinessForm.sleep_quality && styles.readinessScalePillActive,
+                  ]}
                 >
-                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                  <Text style={styles.readinessScalePillText}>{n}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {/* Fatigue */}
-            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
-              Fatigue (1–5)
+            {/* Energy */}
+            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
+              Energy (1 = drained, 5 = energized)
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
               {[1,2,3,4,5].map((n) => (
                 <TouchableOpacity
                   key={`fatigue-${n}`}
                   onPress={() => setReadinessForm((p) => ({ ...p, fatigue: n }))}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: n === readinessForm.fatigue ? '#38bdf8' : 'rgba(148,163,184,0.5)',
-                    backgroundColor: n === readinessForm.fatigue ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
-                  }}
+                  style={[
+                    styles.readinessScalePill,
+                    n === readinessForm.fatigue && styles.readinessScalePillActive,
+                  ]}
                 >
-                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                  <Text style={styles.readinessScalePillText}>{n}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
             {/* Soreness */}
-            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
-              Soreness (1–5)
+            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
+              Soreness (1 = fresh, 5 = very sore)
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
               {[1,2,3,4,5].map((n) => (
                 <TouchableOpacity
                   key={`sore-${n}`}
                   onPress={() => setReadinessForm((p) => ({ ...p, soreness: n }))}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: n === readinessForm.soreness ? '#38bdf8' : 'rgba(148,163,184,0.5)',
-                    backgroundColor: n === readinessForm.soreness ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
-                  }}
+                  style={[
+                    styles.readinessScalePill,
+                    n === readinessForm.soreness && styles.readinessScalePillActive,
+                  ]}
                 >
-                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                  <Text style={styles.readinessScalePillText}>{n}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
             {/* Stress */}
-            <Text style={{ color: '#e5e7eb', fontWeight: '700', marginTop: 12, marginBottom: 6 }}>
-              Stress (1–5)
+            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
+              Stress (1 = relaxed, 5 = high stress)
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
               {[1,2,3,4,5].map((n) => (
                 <TouchableOpacity
                   key={`stress-${n}`}
                   onPress={() => setReadinessForm((p) => ({ ...p, stress: n }))}
-                  style={{
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: n === readinessForm.stress ? '#38bdf8' : 'rgba(148,163,184,0.5)',
-                    backgroundColor: n === readinessForm.stress ? 'rgba(56,189,248,0.15)' : 'rgba(148,163,184,0.08)',
-                  }}
+                  style={[
+                    styles.readinessScalePill,
+                    n === readinessForm.stress && styles.readinessScalePillActive,
+                  ]}
                 >
-                  <Text style={{ color: '#e5e7eb', fontWeight: '800' }}>{n}</Text>
+                  <Text style={styles.readinessScalePillText}>{n}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 14 }}>
-              <TouchableOpacity
-                style={[styles.timerButton, { borderColor: 'rgba(148,163,184,0.6)' }]}
-                onPress={() => submitReadinessAndBegin({ skipped: true })}
-                disabled={readinessSubmitting}
-              >
-                {readinessSubmitting ? (
-                  <ActivityIndicator size="small" color="#e5e7eb" />
-                ) : (
-                  <Text style={styles.timerButtonText}>Skip</Text>
-                )}
-              </TouchableOpacity>
+            <View style={styles.modalActionsRow}>
 
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: '#38bdf8', backgroundColor: '#38bdf8' }]}
+                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
                 onPress={() => submitReadinessAndBegin({ skipped: false })}
                 disabled={readinessSubmitting}
               >
                 {readinessSubmitting ? (
-                  <ActivityIndicator size="small" color="#020617" />
+                  <ActivityIndicator size="small" color="#0B0F1A" />
                 ) : (
-                  <Text style={[styles.timerButtonText, { color: '#020617' }]}>Submit</Text>
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Submit</Text>
                 )}
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: 'rgba(248,113,113,0.8)', backgroundColor: 'rgba(127,29,29,0.7)' }]}
+                style={[styles.actionButton, styles.actionDanger, { flex: 1 }]}
                 onPress={() => {
                   if (!readinessSubmitting) {
                     setReadinessVisible(false);
@@ -2806,78 +3979,147 @@ export default function WorkoutViewerScreen() {
                 }}
                 disabled={readinessSubmitting}
               >
-                <Text style={styles.timerButtonText}>Close</Text>
+                <Text style={styles.actionDangerText}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* Accessory hot-swap modal (self-coached only) */}
+      {/* Accessory substitution modal */}
       <Modal
         visible={swapAccVisible}
         transparent
         animationType="fade"
         onRequestClose={() => setSwapAccVisible(false)}
       >
-        <View style={styles.timerOverlay}>
-          <View style={[styles.timerPicker, styles.swapModalWide]}>
-            <Text style={styles.timerPickerTitle}>Swap accessory</Text>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, styles.swapModalWide]}>
+            <Text style={styles.postSessionTitle}>
+              {canHotSwap ? 'Swap accessory' : 'Substitute accessory'}
+            </Text>
 
-            <TextInput
-              style={styles.swapInput}
-              placeholder="Movement (e.g., Lat Pulldown)"
-              placeholderTextColor="#64748b"
-              value={swapAccForm.movement}
-              onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
-            />
+            <Text style={styles.modalSubtitle}>
+              {canHotSwap
+                ? 'Update the accessory movement and prescription.'
+                : 'Select one of the coach-approved substitutions below.'}
+            </Text>
 
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <TextInput
-                style={[styles.swapInput, { flex: 1 }]}
-                placeholder="Sets"
-                placeholderTextColor="#64748b"
-                keyboardType="number-pad"
-                value={swapAccForm.sets}
-                onChangeText={(t) =>
-                  setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
-                }
-              />
-              <TextInput
-                style={[styles.swapInput, { flex: 1 }]}
-                placeholder="Reps (text)"
-                placeholderTextColor="#64748b"
-                value={swapAccForm.reps_text}
-                onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
-              />
-              <TextInput
-                style={[styles.swapInput, { flex: 1 }]}
-                placeholder="RIR"
-                placeholderTextColor="#64748b"
-                keyboardType="numeric"
-                value={swapAccForm.rir}
-                onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
-              />
-            </View>
+            {canHotSwap ? (
+              <>
+                <TextInput
+                  style={styles.swapInput}
+                  placeholder="Movement (e.g., Lat Pulldown)"
+                  placeholderTextColor="#64748b"
+                  value={swapAccForm.movement}
+                  onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
+                />
 
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 10 }}>
+                <View style={styles.readinessScaleRow}>
+                  <TextInput
+                    style={[styles.swapInput, { flex: 1 }]}
+                    placeholder="Sets"
+                    placeholderTextColor="#64748b"
+                    keyboardType="number-pad"
+                    value={swapAccForm.sets}
+                    onChangeText={(t) =>
+                      setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
+                    }
+                  />
+                  <TextInput
+                    style={[styles.swapInput, { flex: 1 }]}
+                    placeholder="Reps (text)"
+                    placeholderTextColor="#64748b"
+                    value={swapAccForm.reps_text}
+                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
+                  />
+                  <TextInput
+                    style={[styles.swapInput, { flex: 1 }]}
+                    placeholder="RIR"
+                    placeholderTextColor="#64748b"
+                    keyboardType="numeric"
+                    value={swapAccForm.rir}
+                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
+                  />
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={{ gap: 8, marginTop: 10 }}>
+                  {(() => {
+                    const prescribed = String(
+                      swapAccItem?.original_movement || swapAccItem?.movement || ''
+                    ).trim();
+
+                    const approved = Array.isArray(swapAccItem?.approved_subs)
+                      ? swapAccItem.approved_subs
+                      : [];
+
+                    const options: string[] = [];
+                    const seen = new Set<string>();
+
+                    [prescribed, ...approved].forEach((mv) => {
+                      const clean = String(mv || '').trim();
+                      if (!clean) return;
+                      const key = clean.toLowerCase();
+                      if (seen.has(key)) return;
+                      seen.add(key);
+                      options.push(clean);
+                    });
+
+                    const currentActive = String(
+                      swapAccItem?.selected_sub_movement || swapAccItem?.movement || ''
+                    ).trim();
+
+                    return options.map((movement) => {
+                      const selected = swapAccForm.movement === movement;
+                      const isPrescribed = prescribed !== '' && movement === prescribed;
+                      const isActive = currentActive !== '' && movement === currentActive;
+
+                      return (
+                        <TouchableOpacity
+                          key={movement}
+                          style={[
+                            styles.swapOptionButton,
+                            selected && styles.swapOptionButtonActive,
+                          ]}
+                          onPress={() => setSwapAccForm((p) => ({ ...p, movement }))}
+                        >
+                          <Text style={[styles.swapOptionText, selected && styles.swapOptionTextActive]}>
+                            {movement}
+                            {isPrescribed ? ' (Prescribed)' : ''}
+                            {isActive ? ' (Active)' : ''}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    });
+                  })()}
+                </View>
+
+                <Text style={[styles.modalSubtitle, { marginTop: 10 }]}>
+                  Keeps the same sets, reps, and RIR by default.
+                </Text>
+              </>
+            )}
+            
+            <View style={styles.modalActionsRow}>
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: '#38bdf8' }]}
+                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
                 onPress={saveSwapAcc}
                 disabled={savingItemId != null}
               >
                 {savingItemId === swapAccItem?.id ? (
-                  <ActivityIndicator size="small" color="#e5e7eb" />
+                  <ActivityIndicator size="small" color="#0B0F1A" />
                 ) : (
-                  <Text style={styles.timerButtonText}>Save</Text>
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save</Text>
                 )}
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.timerButton, { borderColor: 'rgba(148,163,184,0.6)' }]}
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
                 onPress={() => setSwapAccVisible(false)}
               >
-                <Text style={styles.timerButtonText}>Cancel</Text>
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -2888,26 +4130,6 @@ export default function WorkoutViewerScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#020617',
-  },
-  timerBarWrapper: {
-    paddingHorizontal: 16,
-    backgroundColor: '#020617',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#020617', // near-black (matches app)
-  },
-
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#020617',
-  },
-
   muted: {
     color: '#94a3b8',
     marginTop: 4,
@@ -2971,7 +4193,12 @@ const styles = StyleSheet.create({
 
   // --- section blocks ---
   sectionBlock: {
-    marginTop: 20,
+    marginBottom: 20,
+  },
+
+  accessorySectionBlock: {
+    marginTop: 6,
+    marginBottom: 28,
   },
 
   sectionTitle: {
@@ -2983,65 +4210,37 @@ const styles = StyleSheet.create({
 
   // --- core cards ---
   coreCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.25)',
-    backgroundColor: '#020617',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: 12,
+    marginBottom: 14,
   },
-
   coreHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    gap: 10,
+    marginBottom: 8,
   },
-
-  coreTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#f9fafb',
-    flexShrink: 1,
-  },
-
   variantPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
     borderRadius: 999,
-    backgroundColor: '#0f172a',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(18,22,40,0.68)',
   },
 
   variantText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#cbd5e1',
+    color: '#B8B0DA',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-
-  coreScheme: {
-    fontSize: 14,
-    color: '#cbd5e1',
-    marginTop: 2,
   },
 
   coreSchemeDetail: {
-    color: '#a5b4fc',
+    color: '#A5B4FC',
+    fontWeight: '600',
   },
 
-  coreTarget: {
-    fontSize: 13,
-    color: '#38bdf8',
-    marginTop: 4,
-  },
-
-  actualText: {
-    fontSize: 13,
-    color: '#4ade80',
-    marginTop: 4,
-  },
 
   notesText: {
     fontSize: 13,
@@ -3052,66 +4251,54 @@ const styles = StyleSheet.create({
 
   // --- accessories ---
   supersetCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(59,130,246,0.35)',
-    backgroundColor: '#020617',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginBottom: 14,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginBottom: 12,
   },
 
+
   supersetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 8,
   },
 
   supersetBadge: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#bfdbfe',
-    backgroundColor: 'rgba(37,99,235,0.25)',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 999,
+    color: '#CBD5E1',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
   },
 
   supersetRow: {
-    paddingVertical: 6,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(148,163,184,0.2)',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(15,23,42,0.46)',
   },
 
   accCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.25)',
-    backgroundColor: '#020617',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     marginBottom: 12,
+  },
+
+  accCardSecondary: {
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(10,18,36,0.68)',
   },
 
   accHeadRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 2,
-  },
-  swapPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(56,189,248,0.7)',
-    backgroundColor: 'rgba(56,189,248,0.12)',
-  },
-  swapPillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#38bdf8',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 4,
   },
   swapInput: {
     borderWidth: 1,
@@ -3125,150 +4312,102 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  accTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#f9fafb',
-  },
 
   accMeta: {
+    color: '#94A3B8',
     fontSize: 13,
-    color: '#94a3b8',
-    marginTop: 2,
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  cardMeta: {
+    color: '#94A3B8',
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 10,
   },
 
-  accRir: {
-    color: '#facc15',
-  },
 
   lookbackText: {
-    marginTop: 6,
+    color: '#64748B',
     fontSize: 13,
-    fontWeight: '600',
-    color: '#cbd5e1',
+    lineHeight: 18,
+    marginTop: 2,
+    marginBottom: 8,
   },
 
   setLogsBlock: {
-    marginTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(148,163,184,0.3)',
-    paddingTop: 8,
+    marginTop: 4,
   },
   setLogLine: {
-    marginBottom: 8,
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(10,14,28,0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.06)',
+    overflow: 'hidden', // important for accent bar
   },
-  setLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#e5e7eb',
-    marginBottom: 2,
+
+  setLogLineActive: {
+    borderColor: 'rgba(109,91,208,0.18)',
+    backgroundColor: 'rgba(109,91,208,0.06)',
   },
-  setTargetInline: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginBottom: 2,
+
+  setLogLineLatest: {
+    borderColor: 'rgba(148,163,184,0.12)',
+  },
+
+  setLogAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 6,
+    bottom: 6,
+    width: 3,
+    borderRadius: 2,
+    backgroundColor: '#5B4FCF',
+    opacity: 0.65,
+  },
+
+  setLogAccentMuted: {
+    backgroundColor: 'rgba(148,163,184,0.4)',
+    opacity: 0.4,
   },
   logRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginTop: 4,
-  },
-  logInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#1f2933',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    color: '#f9fafb',
-    fontSize: 14,
-    backgroundColor: '#020617',
-  },
-  logButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: '#38bdf8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#020617',
+    marginTop: 10,
   },
   logHint: {
-    fontSize: 12,
-    color: '#64748b',
-    marginTop: 2,
+    color: '#64748B',
+    fontSize: 13,
+    marginTop: 6,
+    lineHeight: 18,
   },
-  undoButton: {
-    marginTop: 4,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.9)',
-    backgroundColor: 'transparent',
-  },
-  undoButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fca5a5',
-  },
-    actionBar: {
-    marginTop: 8,
+  actionBar: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
+    marginBottom: 14,
   },
   actionButton: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.4)',
-    backgroundColor: '#020617',
+    minHeight: 50,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    paddingHorizontal: 16,
   },
-  actionPrimary: {
-    backgroundColor: '#38bdf8',
-    borderColor: '#38bdf8',
-  },
-  actionDanger: {
-    backgroundColor: 'rgba(127,29,29,0.85)',
-    borderColor: 'rgba(248,113,113,0.9)',
-  },
-  actionButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#e5e7eb',
-  },
-  actionPrimaryText: {
-    color: '#020617',
-  },
-    unitToggleRow: {
+  unitToggleRow: {
     marginTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
     gap: 8,
   },
-  // --- new styles for inline top bar ---
-  topBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(148,163,184,0.3)',
-  },
   unitToggleRowInline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+    justifyContent: 'center',
   },
   timerInline: {
     flexDirection: 'row',
@@ -3282,27 +4421,13 @@ const styles = StyleSheet.create({
     minWidth: 44,
     textAlign: 'right',
   },
-  unitTogglePill: {
-    flexDirection: 'row',
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.5)',
-    overflow: 'hidden',
-  },
   unitToggleOption: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  unitToggleOptionActive: {
-    backgroundColor: '#38bdf8',
-  },
-  unitToggleText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#cbd5e1',
-  },
-  unitToggleTextActive: {
-    color: '#020617',
+    minWidth: 50,
+    height: 36,
+    paddingHorizontal: 12,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timerBar: {
     marginTop: 8,
@@ -3324,38 +4449,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
   },
-  timerButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.6)',
-    backgroundColor: '#0f172a',
-  },
-  timerStopButton: {
-    borderColor: 'rgba(248,113,113,0.9)',
-    backgroundColor: 'rgba(127,29,29,0.9)',
-  },
-  timerButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#e5e7eb',
-  },
   timerOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15,23,42,0.8)',
+    backgroundColor: 'rgba(2,6,23,0.76)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
+
   timerPicker: {
-    marginTop: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    width: '92%',
+    maxWidth: 420,
+    borderRadius: 22,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    backgroundColor: 'rgba(10,14,28,0.98)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.4)',
-    backgroundColor: '#020617',
+    borderColor: 'rgba(109,91,208,0.10)',
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.24,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
   },
   timerPickerTitle: {
     fontSize: 13,
@@ -3385,68 +4501,85 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignSelf: 'flex-start',
   },
-    pinnedTopBar: {
+  timerWheelWrap: {
+    marginTop: 10,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+    borderRadius: 14,
     backgroundColor: '#020617',
-    zIndex: 10,
+    overflow: 'hidden',
+    height: 220,
+    position: 'relative',
   },
-  errorBanner: {
-    marginTop: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    alignSelf: 'stretch',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.7)',
-    backgroundColor: 'rgba(127,29,29,0.35)',
-    flexDirection: 'row',
+  timerWheel: {
+    height: 220,
+  },
+  timerWheelContent: {
+    paddingVertical: 84,
+  },
+  timerWheelOption: {
+    height: 52,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#0f172a',
   },
-  errorBannerText: {
-    flex: 1,
-    color: '#fecaca',
-    fontSize: 13,
-    fontWeight: '600',
+  timerWheelOptionActive: {
+    backgroundColor: 'transparent',
   },
-  errorBannerClose: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.6)',
-    backgroundColor: 'rgba(127,29,29,0.6)',
-  },
-  errorBannerCloseText: {
-    color: '#fecaca',
-    fontSize: 12,
-    fontWeight: '800',
-  },
+
   swapModalWide: {
     width: '92%',
     maxWidth: 520,
   },
-  actionSecondary: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.55)',
-    backgroundColor: 'rgba(148,163,184,0.10)',
-  },
-  actionSecondaryText: {
-    color: '#e5e7eb',
-  },
   readinessModal: {
-    width: '80%',
+    width: '100%',
     maxWidth: 420,
-    backgroundColor: '#020617',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
     alignItems: 'center',
   },
+  readinessQuestionLabel: {
+    color: '#E2E8F0',
+    fontWeight: '700',
+    marginBottom: 8,
+    fontSize: 13,
+    textAlign: 'center'
+  },
+
+  readinessQuestionSpaced: {
+    marginTop: 14,
+  },
+  readinessScalePill: {
+    minWidth: 36,
+    height: 36,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(148,163,184,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  readinessScalePillActive: {
+    borderColor: 'rgba(109,91,208,0.50)',
+    backgroundColor: 'rgba(109,91,208,0.10)',
+  },
+
+  readinessScalePillText: {
+    color: '#E2E8F0',
+    fontWeight: '800',
+    fontSize: 13,
+  },
+  readinessScaleRow: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-between',
+  },
+
   readinessHelp: {
     fontSize: 12,
     color: '#94a3b8',
@@ -3476,16 +4609,747 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(148,163,184,0.10)',
   },
-  readinessPillActive: {
-    borderColor: '#38bdf8',
-    backgroundColor: '#38bdf8',
+  setTargetInline: {
+    marginLeft: 10,
+    color: '#94a3b8',
+    fontSize: 13,
   },
-  readinessPillText: {
+
+  // Shared modal form helper styles (used in timer/readiness/edit-set modals)
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(2,6,23,0.76)',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  modalBackdropCenter: {
+    flex: 1,
+    backgroundColor: 'rgba(2,6,23,0.76)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginBottom: 10,
+  },
+  modalBody: {
+    color: '#94A3B8',
+    marginBottom: 14,
+    lineHeight: 20,
+    fontSize: 14,
+    textAlign: 'left',
+  },
+  modalBtnGhost: {
+    backgroundColor: 'rgba(15,23,42,0.82)',
+    borderColor: 'rgba(148,163,184,0.18)',
+  },
+  modalFieldBlock: {
+    marginBottom: 10,
+  },
+  editSetModalWide: {
+    width: '95%',
+    maxWidth: 600,
+  },
+  modalRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modalFieldInline: {
+    flex: 1,
+  },
+  modalLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#e5e7eb',
+    marginBottom: 6,
+  },
+  modalActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 16,
+  },
+  loggedRowInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
+    paddingVertical: 4,
+  },
+  postSessionModal: {
+    width: '95%',
+    maxWidth: 520,
+    paddingTop: 4,
+  },
+  surveySection: {
+    marginTop: 14,
+  },
+  surveyChipRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  surveyChoiceStack: {
+    gap: 8,
+  },
+  surveyNoteInput: {
+    minHeight: 96,
+    paddingTop: 12,
+  },
+  commandStripWrap: {
+    paddingHorizontal: 0,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#020617',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(148,163,184,0.10)',
+  },
+  commandDivider: {
+    width: 1,
+    height: 26,
+    backgroundColor: 'rgba(148,163,184,0.14)',
+  },
+  commandTimerBlock: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  commandTimerBlockActive: {
+    backgroundColor: 'transparent',
+  },
+  commandTimerDotIdle: {
+    color: '#64748B',
+    textShadowRadius: 0,
+  },
+
+  screen: {
+    flex: 1,
+    backgroundColor: '#0B0F1A',
+  },
+  timerBarWrapper: {
+    paddingHorizontal: 16,
+    backgroundColor: '#0B0F1A',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 0,
+    paddingTop: 14,
+  },
+
+  scrollShell: {
+    flex: 1,
+    backgroundColor: '#020617',
+  },
+
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0B0F1A',
+  },
+  coreCardShell: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(10,14,28,0.96)',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2,
+  },
+  coreTitle: {
+    flex: 1,
+    color: '#E2E8F0',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+  },
+  coreScheme: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 10,
+    lineHeight: 19,
+  },
+  coreTarget: {
+    fontSize: 13,
+    color: '#8E84CC',
+    marginTop: 4,
+  },
+
+  actualText: {
+    fontSize: 13,
+    color: '#22C55E',
+    marginTop: 4,
+  },
+  supersetCardSecondary: {
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(12,16,32,0.92)',
+  },
+  swapPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(91,79,207,0.7)',
+    backgroundColor: 'rgba(91,79,207,0.12)',
+  },
+  swapPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#7C3AED',
+  },
+  swapOptionButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    backgroundColor: 'rgba(15,20,36,0.55)',
+    justifyContent: 'flex-start',
+  },
+
+  swapOptionButtonActive: {
+    borderColor: 'rgba(109,91,208,0.22)',
+    backgroundColor: 'rgba(109,91,208,0.08)',
+  },
+
+  swapOptionText: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  swapOptionTextActive: {
+    color: '#E2E8F0',
+  },
+  accTitle: {
+    color: '#CBD5E1',
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: -0.1,
+    flex: 1,
+  },
+  accRir: {
+    color: '#F59E0B',
+  },
+  setLabel: {
+    color: '#A9A3CF',
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+
+  setTargetInline: {
+    color: '#8E84CC',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  logInput: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: 'rgba(15,20,36,0.78)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    paddingHorizontal: 12,
+    color: '#CBD5E1',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  logInputActive: {
+    borderColor: 'rgba(109,91,208,0.22)',
+    backgroundColor: 'rgba(15,20,36,0.86)',
+  },
+
+  logButton: {
+    height: 44,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#5B4FCF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#5B4FCF',
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+
+  logButtonText: {
+    color: '#F5F3FF',
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.25,
+  },
+  undoButton: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.9)',
+    backgroundColor: 'transparent',
+  },
+  undoButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#EF4444',
+  },
+  actionPrimary: {
+    backgroundColor: '#5B4FCF',
+    borderColor: 'rgba(109,91,208,0.22)',
+    shadowColor: '#5B4FCF',
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  actionSecondary: {
+    backgroundColor: 'rgba(15,20,36,0.78)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+  },
+  actionButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  actionPrimaryText: {
+    color: '#F5F3FF',
+  },
+  actionSecondaryText: {
+    color: '#E2E8F0',
+    fontWeight: '600',
+  },
+  actionDangerText: {
+    color: '#FCA5A5',
+    fontWeight: '700',
+  },
+  unitTogglePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(15,20,36,0.82)',
+    borderRadius: 14,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+  },
+
+  unitToggleOptionActive: {
+    backgroundColor: '#5B4FCF',
+    shadowColor: '#5B4FCF',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
+  },
+  unitToggleText: {
+    color: '#94A3B8',
+    fontSize: 13,
+    fontWeight: '700',
+    textTransform: 'lowercase',
+  },
+
+  unitToggleTextActive: {
+    color: '#E5E7EB',
+  },
+  timerButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.6)',
+    backgroundColor: '#0B0F1A',
+  },
+  timerStopButton: {
+    borderColor: 'rgba(239,68,68,0.9)',
+    backgroundColor: 'rgba(127,29,29,0.9)',
+  },
+  timerButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#E2E8F0',
+  },
+  timerWheelText: {
+    color: '#CBD5E1',
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  timerWheelTextActive: {
+    color: '#7C3AED',
+  },
+  timerWheelCenterIndicator: {
+    position: 'absolute',
+    top: 84,
+    left: 0,
+    right: 0,
+    height: 52,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#7C3AED',
+    backgroundColor: 'rgba(91,79,207,0.06)',
+    zIndex: 5,
+  },
+  errorBanner: {
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignSelf: 'stretch',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.7)',
+    backgroundColor: 'rgba(127,29,29,0.35)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  errorBannerText: {
+    flex: 1,
+    color: '#EF4444',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  errorBannerClose: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.6)',
+    backgroundColor: 'rgba(127,29,29,0.6)',
+  },
+  errorBannerCloseText: {
+    color: '#EF4444',
     fontSize: 12,
     fontWeight: '800',
-    color: '#e5e7eb',
   },
-  readinessPillTextActive: {
-    color: '#020617',
+  actionSecondary: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(148,163,184,0.08)',
+  },
+  actionSecondaryText: {
+    color: '#E2E8F0',
+  },
+  inlineEditButton: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(129,140,248,0.35)',
+    backgroundColor: 'rgba(129,140,248,0.10)',
+  },
+  inlineEditButtonText: {
+    color: '#A5B4FC',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  modalCard: {
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(10,14,28,0.98)',
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+  },
+  modalTitle: {
+    color: '#E2E8F0',
+    marginBottom: 6,
+    fontWeight: '700',
+    fontSize: 18,
+    letterSpacing: -0.2,
+    textAlign: 'left',
+  },
+  modalBtnDanger: {
+    backgroundColor: 'rgba(127,29,29,0.92)',
+    borderColor: 'rgba(239,68,68,0.32)',
+  },
+  modalBtnText: {
+    color: '#E2E8F0',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#1f2933',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: '#CBD5E1',
+    fontSize: 14,
+    backgroundColor: '#0B0F1A',
+  },
+  actualTextInline: {
+    color: '#E2E8F0',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  inlineEditButtonInline: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(15,20,36,0.80)',
+  },
+  floatingBackButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(15,20,36,0.80)',
+    zIndex: 40,
+  },
+  floatingBackButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#E2E8F0',
+  },
+  postSessionTitle: {
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: '800',
+    color: '#E2E8F0',
+    marginBottom: 10,
+    letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+  surveyLabel: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  surveyChip: {
+    flex: 1,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#334155',
+    backgroundColor: '#0B0F1A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  surveyChipActive: {
+    backgroundColor: '#CBD5E1',
+    borderColor: '#CBD5E1',
+  },
+  surveyChipText: {
+    color: '#CBD5E1',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  surveyChipTextActive: {
+    color: '#0B0F1A',
+  },
+  surveyChoiceButton: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+    backgroundColor: '#0B0F1A',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  surveyChoiceButtonActive: {
+    borderColor: '#CBD5E1',
+    backgroundColor: '#111c2f',
+  },
+  surveyChoiceText: {
+    color: '#CBD5E1',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  surveyChoiceTextActive: {
+    color: '#E2E8F0',
+  },
+  commandStrip: {
+    minHeight: 64,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(10,14,28,0.94)',
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
+  },
+
+  commandStripActive: {
+    borderColor: 'rgba(34,197,94,0.16)',
+    backgroundColor: 'rgba(10,16,30,0.96)',
+    shadowOpacity: 0.16,
+  },
+  commandTimerDot: {
+    color: '#22C55E',
+    fontSize: 10,
+    marginTop: 1,
+    textShadowColor: 'rgba(34,197,94,0.28)',
+    textShadowRadius: 8,
+  },
+  commandTimerValue: {
+    color: '#E2E8F0',
+    fontSize: 28,
+    fontWeight: '800',
+    letterSpacing: -0.8,
+  },
+  commandTimerValueActive: {
+    color: '#D1FAE5',
+    textShadowColor: 'rgba(34,197,94,0.10)',
+    textShadowRadius: 8,
+  },
+  commandTimerMeta: {
+    color: '#94A3B8',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  commandTimerMetaActive: {
+    color: '#A7F3D0',
+  },
+  commandButton: {
+    minWidth: 92,
+    height: 42,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(15,20,36,0.72)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+  },
+  commandButtonDanger: {
+    borderColor: 'rgba(239,68,68,0.22)',
+    backgroundColor: 'rgba(40,12,18,0.92)',
+  },
+  commandButtonText: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  commandButtonGhost: {
+    minWidth: 92,
+    height: 42,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(15,20,36,0.40)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.06)',
+  },
+  commandButtonGhostText: {
+    color: '#64748B',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  sessionHeroCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.08)',
+    backgroundColor: 'rgba(10,14,28,0.98)',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginTop: 6,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
+  },
+
+  sessionHeroTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  sessionHeroTitleCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  summaryRow: {
+    marginBottom: 0,
+  },
+  pageTitle: {
+    color: '#F8FAFC',
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -1,
+    marginBottom: 4,
+  },
+  summaryLine: {
+    color: '#94A3B8',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  summaryStrong: {
+    color: '#E5E7EB',
+    fontWeight: '600',
+  },
+  summarySeparator: {
+    color: '#64748B',
+  },
+  summaryText: {
+    color: '#94A3B8',
+  },
+  statusBadge: {
+    minHeight: 30,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  actionDanger: {
+    backgroundColor: 'rgba(239,68,68,0.16)', // soft red fill
+    borderColor: 'rgba(239,68,68,0.55)',     // visible red edge
+    borderWidth: 1,
+  },
+  actionDangerText: {
+    color: '#FCA5A5',
+    fontWeight: '700',
   },
 });

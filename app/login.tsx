@@ -134,7 +134,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#020617" />
+            <ActivityIndicator color="#F5F3FF" />
           ) : (
             <ThemedText style={styles.btnPrimaryText}>Sign in</ThemedText>
           )}
@@ -153,6 +153,17 @@ export default function LoginScreen() {
         >
           <ThemedText style={styles.forgotText}>Forgot password?</ThemedText>
         </Pressable>
+        <Pressable
+          style={styles.signupRow}
+          onPress={() => {
+            const url = 'https://strength-coach-ui.onrender.com/auth/register';
+            Linking.openURL(url).catch(() => {
+              setError('Unable to open signup page.');
+            });
+          }}
+        >
+          <ThemedText style={styles.signupText}>Need an account? Sign up</ThemedText>
+        </Pressable>
       </View>
     </ThemedView>
   );
@@ -164,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 64,
     paddingBottom: 24,
-    backgroundColor: '#020617',
+    backgroundColor: '#0B0F1A',
   },
   header: {
     marginBottom: 24,
@@ -180,35 +191,45 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: 16,
+    marginTop: 8,
   },
   field: {
-    gap: 6,
+    gap: 8,
   },
   label: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#1F2937',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderColor: 'rgba(148,163,184,0.12)',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
     fontSize: 15,
-    color: '#F9FAFB',
-    backgroundColor: '#020617',
+    color: '#E2E8F0',
+    backgroundColor: 'rgba(15,20,36,0.82)',
   },
   btnPrimary: {
-    marginTop: 8,
-    backgroundColor: '#38bdf8',
-    paddingVertical: 12,
-    borderRadius: 10,
+    marginTop: 10,
+    backgroundColor: '#5B4FCF',
+    borderWidth: 1,
+    borderColor: 'rgba(109,91,208,0.22)',
+    paddingVertical: 13,
+    borderRadius: 14,
     alignItems: 'center',
+    shadowColor: '#5B4FCF',
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   btnPrimaryText: {
-    color: '#020617',
-    fontWeight: '600',
+    color: '#F5F3FF',
+    fontWeight: '700',
     fontSize: 16,
+    letterSpacing: 0.2,
   },
   linkRow: {
     marginTop: 12,
@@ -220,17 +241,18 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   forgotRow: {
-    marginTop: 6,
+    marginTop: 8,
     alignItems: 'center',
   },
   forgotText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: '#94A3B8',
     textDecorationLine: 'underline',
   },
   errorText: {
-    color: '#f97373',
+    color: '#F87171',
     fontSize: 13,
+    lineHeight: 18,
   },
   passwordRow: {
     position: 'relative',
@@ -245,15 +267,15 @@ const styles = StyleSheet.create({
   },
   eyeText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#38bdf8',
+    fontWeight: '700',
+    color: '#B8B0DA',
   },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 12,
-    marginBottom: 12,
+    marginBottom: 18,
     marginTop: 8,
   },
   topHeaderLeft: {
@@ -271,12 +293,24 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
   titleMuted: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#E5E7EB',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#E2E8F0',
+    letterSpacing: -0.4,
   },
     logo: {
-    height: 60,
-    width:60,
+    height: 64,
+    width: 64,
+  },
+
+  signupRow: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  signupText: {
+    fontSize: 14,
+    color: '#B8B0DA',
+    textDecorationLine: 'underline',
+    fontWeight: '600',
   },
 });

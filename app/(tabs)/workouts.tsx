@@ -1,6 +1,6 @@
 // app/(tabs)/workouts.tsx
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { StyleSheet, View, ScrollView, Pressable, Modal, TextInput } from 'react-native';
+import { StyleSheet, View, ScrollView, Pressable, Modal, RefreshControl, TextInput, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -15,6 +15,7 @@ export default function WorkoutsScreen() {
   const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
   const rosterAthleteName = params.athleteName ? String(params.athleteName) : null;
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [athlete, setAthlete] = useState<any | null>(null);
   const [blocks, setBlocks] = useState<any[]>([]);
@@ -42,24 +43,23 @@ export default function WorkoutsScreen() {
     try { swipeRefs.current[String(id)]?.close(); } catch {}
   };
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadWorkouts = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = !!opts?.silent;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
+    if (silent) setRefreshing(true);
+    else setLoading(true);
+    setError(null);
 
-      const endpoint = rosterAthleteId
-        ? `/workouts/my_list/mobile/${rosterAthleteId}`
-        : `/workouts/my_list/mobile`;
+    const endpoint = rosterAthleteId
+      ? `/workouts/my_list/mobile/${rosterAthleteId}`
+      : `/workouts/my_list/mobile`;
 
+    try {
       const resp = await fetchJson(endpoint, { method: 'GET' });
       const res: any = resp.json;
 
-      // Normalize errors
       if (!resp.ok) {
         const msg = res?.error || res?.message || `HTTP ${resp.status}`;
-        if (cancelled) return;
         if (resp.status === 401 || msg === 'auth required') {
           setError('Session expired. Please log in again.');
         } else {
@@ -71,7 +71,6 @@ export default function WorkoutsScreen() {
         setCompletedMap({});
         setUnassignedPending([]);
         setUnassignedCompleted([]);
-        setLoading(false);
         return;
       }
 
@@ -84,84 +83,83 @@ export default function WorkoutsScreen() {
         setCompletedMap({});
         setUnassignedPending([]);
         setUnassignedCompleted([]);
-      } else {
-        // Expecting my-list style payload from /workouts/my_list/mobile
-        const athleteObj = res.athlete || null;
-
-        // Determine self-coached from payload (same logic used elsewhere)
-        const selfCoached = !!(
-          athleteObj &&
-          (athleteObj.is_self_coached ??
-            (athleteObj.user_id != null &&
-              athleteObj.coach_id != null &&
-              athleteObj.user_id === athleteObj.coach_id))
-        );
-
-        // If this is a true athlete view (not coach roster view, and not self-coached), hide drafts.
-        const hideDraftsForAthlete = !rosterAthleteId && !selfCoached;
-
-        const isDraft = (w: any) => String(w?.status || '').toLowerCase() === 'draft';
-
-        const blocksRaw = res.blocks || [];
-        const pendingRaw = res.pending_map || {};
-        const completedRaw = res.completed_map || {};
-        const unassignedPendingRaw = res.unassigned_pending || [];
-        const unassignedCompletedRaw = res.unassigned_completed || [];
-
-        // Filter drafts out of maps/lists ONLY for athletes
-        const pendingFiltered = hideDraftsForAthlete
-          ? Object.fromEntries(
-              Object.entries(pendingRaw).map(([k, arr]: any) => [
-                k,
-                (arr || []).filter((w: any) => !isDraft(w)),
-              ])
-            )
-          : pendingRaw;
-
-        const completedFiltered = hideDraftsForAthlete
-          ? Object.fromEntries(
-              Object.entries(completedRaw).map(([k, arr]: any) => [
-                k,
-                (arr || []).filter((w: any) => !isDraft(w)),
-              ])
-            )
-          : completedRaw;
-
-        const unassignedPendingFiltered = hideDraftsForAthlete
-          ? unassignedPendingRaw.filter((w: any) => !isDraft(w))
-          : unassignedPendingRaw;
-
-        const unassignedCompletedFiltered = hideDraftsForAthlete
-          ? unassignedCompletedRaw.filter((w: any) => !isDraft(w))
-          : unassignedCompletedRaw;
-
-        // Optional: hide empty blocks if they only contained drafts
-        const blocksFiltered = hideDraftsForAthlete
-          ? blocksRaw.filter((b: any) => {
-              const pid = String(b?.id);
-              const p = (pendingFiltered as any)[pid] || [];
-              const c = (completedFiltered as any)[pid] || [];
-              return p.length + c.length > 0;
-            })
-          : blocksRaw;
-
-        setAthlete(athleteObj);
-        setBlocks(blocksFiltered);
-        setPendingMap(pendingFiltered);
-        setCompletedMap(completedFiltered);
-        setUnassignedPending(unassignedPendingFiltered);
-        setUnassignedCompleted(unassignedCompletedFiltered);
+        return;
       }
 
-      setLoading(false);
+      const athleteObj = res.athlete || null;
+
+      const selfCoached = !!(
+        athleteObj &&
+        (athleteObj.is_self_coached ??
+          (athleteObj.user_id != null &&
+            athleteObj.coach_id != null &&
+            athleteObj.user_id === athleteObj.coach_id))
+      );
+
+      const hideDraftsForAthlete = !rosterAthleteId && !selfCoached;
+
+      const isDraft = (w: any) => String(w?.status || '').toLowerCase() === 'draft';
+
+      const blocksRaw = res.blocks || [];
+      const pendingRaw = res.pending_map || {};
+      const completedRaw = res.completed_map || {};
+      const unassignedPendingRaw = res.unassigned_pending || [];
+      const unassignedCompletedRaw = res.unassigned_completed || [];
+
+      const pendingFiltered = hideDraftsForAthlete
+        ? Object.fromEntries(
+            Object.entries(pendingRaw).map(([k, arr]: any) => [
+              k,
+              (arr || []).filter((w: any) => !isDraft(w)),
+            ])
+          )
+        : pendingRaw;
+
+      const completedFiltered = hideDraftsForAthlete
+        ? Object.fromEntries(
+            Object.entries(completedRaw).map(([k, arr]: any) => [
+              k,
+              (arr || []).filter((w: any) => !isDraft(w)),
+            ])
+          )
+        : completedRaw;
+
+      const unassignedPendingFiltered = hideDraftsForAthlete
+        ? unassignedPendingRaw.filter((w: any) => !isDraft(w))
+        : unassignedPendingRaw;
+
+      const unassignedCompletedFiltered = hideDraftsForAthlete
+        ? unassignedCompletedRaw.filter((w: any) => !isDraft(w))
+        : unassignedCompletedRaw;
+
+      const blocksFiltered = hideDraftsForAthlete
+        ? blocksRaw.filter((b: any) => {
+            const pid = String(b?.id);
+            const p = (pendingFiltered as any)[pid] || [];
+            const c = (completedFiltered as any)[pid] || [];
+            return p.length + c.length > 0;
+          })
+        : blocksRaw;
+
+      setAthlete(athleteObj);
+      setBlocks(blocksFiltered);
+      setPendingMap(pendingFiltered);
+      setCompletedMap(completedFiltered);
+      setUnassignedPending(unassignedPendingFiltered);
+      setUnassignedCompleted(unassignedCompletedFiltered);
+    } finally {
+      if (silent) setRefreshing(false);
+      else setLoading(false);
     }
+  }, [rosterAthleteId]);
 
-    load();
+  useEffect(() => {
+    loadWorkouts();
+  }, [loadWorkouts, refreshNonce]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [rosterAthleteId, refreshNonce]);
+  const onRefresh = useCallback(async () => {
+    await loadWorkouts({ silent: true });
+  }, [loadWorkouts]);
 
   const firstName =
     athlete?.name?.split(' ')[0] || 'Athlete';
@@ -169,6 +167,7 @@ export default function WorkoutsScreen() {
   const statusLabel = (s?: string | null) => {
     const v = (s || 'assigned').toLowerCase();
     if (v === 'assigned') return 'Assigned';
+    if (v === 'missed') return 'Missed';
     if (v === 'in_progress') return 'In progress';
     if (['logged', 'completed', 'done'].includes(v)) return 'Completed';
     return v.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -176,10 +175,20 @@ export default function WorkoutsScreen() {
 
   const statusTone = (s?: string | null) => {
     const v = (s || 'assigned').toLowerCase();
-    if (v === 'assigned') return '#f97316'; // warn
-    if (v === 'in_progress') return '#22c55e'; // ok
-    if (['logged', 'completed', 'done'].includes(v)) return '#38bdf8'; // accent
-    return '#e5e7eb';
+    if (v === 'assigned') return '#f0b46a';
+    if (v === 'missed') return '#ef6b73';
+    if (v === 'in_progress') return '#4ade80';
+    if (['logged', 'completed', 'done'].includes(v)) return '#8b5cf6';
+    return '#c4cce0';
+  };
+
+  const statusFill = (s?: string | null) => {
+    const v = (s || 'assigned').toLowerCase();
+    if (v === 'assigned') return 'rgba(240,180,106,0.18)';
+    if (v === 'missed') return 'rgba(239,107,115,0.18)';
+    if (v === 'in_progress') return 'rgba(74,222,128,0.18)';
+    if (['logged', 'completed', 'done'].includes(v)) return 'rgba(139,92,246,0.18)';
+    return 'rgba(196,204,224,0.16)';
   };
 
   const toggleCollapse = useCallback((id: string) => {
@@ -345,7 +354,7 @@ export default function WorkoutsScreen() {
       return (
         <Pressable
           key={String(w.id)}
-          style={styles.row}
+          style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           onPress={() =>
             router.push({
               pathname: '/workout/[workoutId]',
@@ -353,15 +362,30 @@ export default function WorkoutsScreen() {
             })
           }
         >
-          <View>
-            <ThemedText variant="body" style={styles.rowTitle}>
-              {w.label || 'Workout'}
-            </ThemedText>
-            <ThemedText variant="small" style={styles.rowMeta}>
-              {w.date || 'Unknown date'}
-            </ThemedText>
+          <View style={styles.rowMain}>
+            <View style={styles.rowGlyphWrap}>
+              <ThemedText variant="body" style={styles.rowGlyph}>
+                {String((w.status || 'assigned')).toLowerCase() === 'draft' ? '⌁' : '⌄'}
+              </ThemedText>
+            </View>
+            <View style={styles.rowTextWrap}>
+              <ThemedText variant="body" style={styles.rowTitle}>
+                {w.label || 'Workout'}
+              </ThemedText>
+              <ThemedText variant="small" style={styles.rowMeta}>
+                {w.date || 'Unknown date'}
+              </ThemedText>
+            </View>
           </View>
-          <View style={[styles.statusPill, { borderColor: statusTone(w.status) }]}>
+          <View
+            style={[
+              styles.statusPill,
+              {
+                borderColor: statusTone(w.status),
+                backgroundColor: statusFill(w.status),
+              },
+            ]}
+          >
             <ThemedText
               variant="badge"
               style={[styles.statusPillText, { color: statusTone(w.status) }]}
@@ -395,7 +419,7 @@ export default function WorkoutsScreen() {
         }}
       >
         <Pressable
-          style={styles.row}
+          style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           onPress={() =>
             router.push({
               pathname: '/workout/[workoutId]',
@@ -403,15 +427,30 @@ export default function WorkoutsScreen() {
             })
           }
         >
-          <View>
-            <ThemedText variant="body" style={styles.rowTitle}>
-              {w.label || 'Workout'}
-            </ThemedText>
-            <ThemedText variant="small" style={styles.rowMeta}>
-              {w.date || 'Unknown date'}
-            </ThemedText>
+          <View style={styles.rowMain}>
+            <View style={styles.rowGlyphWrap}>
+              <ThemedText variant="body" style={styles.rowGlyph}>
+                {String((w.status || 'assigned')).toLowerCase() === 'draft' ? '⌁' : '⌄'}
+              </ThemedText>
+            </View>
+            <View style={styles.rowTextWrap}>
+              <ThemedText variant="body" style={styles.rowTitle}>
+                {w.label || 'Workout'}
+              </ThemedText>
+              <ThemedText variant="small" style={styles.rowMeta}>
+                {w.date || 'Unknown date'}
+              </ThemedText>
+            </View>
           </View>
-          <View style={[styles.statusPill, { borderColor: statusTone(w.status) }]}>
+          <View
+            style={[
+              styles.statusPill,
+              {
+                borderColor: statusTone(w.status),
+                backgroundColor: statusFill(w.status),
+              },
+            ]}
+          >
             <ThemedText
               variant="badge"
               style={[styles.statusPillText, { color: statusTone(w.status) }]}
@@ -427,18 +466,67 @@ export default function WorkoutsScreen() {
   return (
 
       <ThemedView style={styles.screen}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#9CA3AF" />
+          }
+        >
+          <View style={styles.heroWrap}>
+            <View style={styles.heroHeaderRow}>
+              <View style={styles.heroTitleCol}>
+                <ThemedText variant="h1" style={styles.pageTitle}>
+                  {rosterAthleteName ? `Workouts · ${rosterAthleteName}` : 'Workouts'}
+                </ThemedText>
+                <ThemedText variant="bodyMuted" style={styles.heroSubtext}>
+                  {canManageWorkouts
+                    ? 'Blocks, drafts, and assigned sessions'
+                    : 'Assigned sessions and completed work'}
+                </ThemedText>
+              </View>
 
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <ThemedText variant="h1" style={styles.pageTitle}>
-            {rosterAthleteName ? `Workouts · ${rosterAthleteName}` : 'My Workouts'}
-          </ThemedText>
-          {canCreateBlock && (
-            <View style={styles.topActionsRow}>
-              <Pressable style={styles.primaryBtn} onPress={openCreateBlock}>
-                <ThemedText variant="body" style={styles.primaryBtnText}>Create Block</ThemedText>
-              </Pressable>
+              {canCreateBlock && (
+                <Pressable style={styles.heroCreateBtn} onPress={openCreateBlock}>
+                  <View pointerEvents="none" style={styles.heroCreateBtnSheen} />
+                  <View pointerEvents="none" style={styles.heroCreateBtnRim} />
+                  <ThemedText variant="body" style={styles.heroCreateBtnText}>+ Add Block</ThemedText>
+                </Pressable>
+              )}
             </View>
-          )}
+
+            <View style={styles.heroStatsRow}>
+              <View style={[styles.heroStatCard, styles.heroStatCardWarn]}>
+                <View pointerEvents="none" style={[styles.heroStatGlow, styles.heroStatGlowWarn]} />
+                <ThemedText variant="body" style={styles.heroStatLabel}>Pending</ThemedText>
+                <ThemedText variant="body" style={[styles.heroStatValue, styles.heroStatValueWarn]}>
+                  {[
+                    ...blocks.flatMap((b) => ((pendingMap as any)[b.id] || [])),
+                    ...unassignedPending,
+                  ].filter((w: any) => String(w?.status || 'assigned').toLowerCase() !== 'missed').length}
+                </ThemedText>
+              </View>
+
+              <View style={[styles.heroStatCard, styles.heroStatCardCool]}>
+                <View pointerEvents="none" style={[styles.heroStatGlow, styles.heroStatGlowCool]} />
+                <ThemedText variant="body" style={styles.heroStatLabel}>Completed</ThemedText>
+                <ThemedText variant="body" style={[styles.heroStatValue, styles.heroStatValueCool]}>
+                  {blocks.reduce((n, b) => n + (((completedMap as any)[b.id] || []).length), 0) + unassignedCompleted.length}
+                </ThemedText>
+              </View>
+
+              <View style={[styles.heroStatCard, styles.heroStatCardMissed]}>
+                <View pointerEvents="none" style={[styles.heroStatGlow, styles.heroStatGlowMissed]} />
+                <ThemedText variant="body" style={styles.heroStatLabel}>Missed</ThemedText>
+                <ThemedText variant="body" style={[styles.heroStatValue, styles.heroStatValueMissed]}>
+                  {[
+                    ...blocks.flatMap((b) => ((pendingMap as any)[b.id] || [])),
+                    ...unassignedPending,
+                  ].filter((w: any) => String(w?.status || 'assigned').toLowerCase() === 'missed').length}
+                </ThemedText>
+              </View>
+            </View>
+          </View>
 
           {loading && (
             <ThemedText variant="bodyMuted" style={styles.metaText}>Loading workouts…</ThemedText>
@@ -459,7 +547,7 @@ export default function WorkoutsScreen() {
 
           {/* Training blocks */}
           {!loading && !error && blocks.length > 0 && (
-            <View style={{ gap: 12 }}>
+            <View style={{ gap: 16 }}>
               {blocks.map((b) => {
                 const collapseId = `completed-block-${b.id}`;
                 const collapsed = collapseState[collapseId] ?? true;
@@ -467,11 +555,16 @@ export default function WorkoutsScreen() {
                 const completed = (completedMap as any)[b.id] || [];
 
                 return (
-                  <View key={b.name} style={styles.card}>
+                  <View key={b.name} style={[styles.card, styles.sectionCard]}>
                     <View style={styles.cardHeaderRow}>
-                      <ThemedText variant="h3" style={styles.cardTitle}>
-                        {b.name}
-                      </ThemedText>
+                      <View style={styles.blockTitleRow}>
+                        <View style={styles.blockIconBadge}>
+                          <ThemedText variant="body" style={styles.blockIconText}>▣</ThemedText>
+                        </View>
+                        <ThemedText variant="h3" style={styles.cardTitle}>
+                          {b.name}
+                        </ThemedText>
+                      </View>
                     </View>
 
                     {/* Pending */}
@@ -492,12 +585,16 @@ export default function WorkoutsScreen() {
                     {completed.length > 0 && (
                       <View style={{ marginTop: 12 }}>
                         <View style={styles.collapsibleHeaderRow}>
-                          <ThemedText variant="h3" style={styles.sectionHeader}>
-                            Completed{' '}
-                            <ThemedText variant="bodyMuted" style={styles.metaText}>
-                              ({completed.length})
+                          <View style={styles.completedHeaderGroup}>
+                            <ThemedText variant="h3" style={styles.sectionHeader}>
+                              Completed
                             </ThemedText>
-                          </ThemedText>
+                            <View style={styles.completedCountChip}>
+                              <ThemedText variant="body" style={styles.completedCountText}>
+                                {completed.length}
+                              </ThemedText>
+                            </View>
+                          </View>
                           <Pressable
                             style={styles.collapseBtn}
                             onPress={() => toggleCollapse(collapseId)}
@@ -524,17 +621,28 @@ export default function WorkoutsScreen() {
           {!loading &&
             !error &&
             (unassignedPending.length > 0 || unassignedCompleted.length > 0) && (
-              <View style={[styles.card, { marginTop: 12 }]}>
-                <View style={styles.cardHeaderRow}>
-                  <ThemedText variant="h3" style={styles.cardTitle}>
-                    No Assigned Block
-                  </ThemedText>
-                  {unassignedPending.length === 0 &&
-                    unassignedCompleted.length === 0 && (
-                      <ThemedText variant="bodyMuted" style={styles.metaText}>
-                        No unassigned workouts
+              <View style={[styles.card, styles.sectionCard, { marginTop: 16 }]}>
+                <View style={styles.unassignedHeaderWrap}>
+                  <View style={styles.cardHeaderRow}>
+                    <View style={styles.blockTitleRow}>
+                      <View style={[styles.blockIconBadge, styles.blockIconBadgeAlt]}>
+                        <ThemedText variant="body" style={styles.blockIconText}>◔</ThemedText>
+                      </View>
+                      <ThemedText variant="h3" style={styles.cardTitle}>
+                        Unassigned
                       </ThemedText>
-                    )}
+                    </View>
+                  </View>
+
+                  <ThemedText variant="bodyMuted" style={styles.cardSubtext}>
+                    Sessions without a block
+                  </ThemedText>
+
+                  {unassignedPending.length === 0 && unassignedCompleted.length === 0 && (
+                    <ThemedText variant="bodyMuted" style={styles.metaText}>
+                      No unassigned workouts
+                    </ThemedText>
+                  )}
                 </View>
 
                 <ThemedText variant="h3" style={styles.sectionHeader}>Pending</ThemedText>
@@ -556,12 +664,16 @@ export default function WorkoutsScreen() {
                       return (
                         <View>
                           <View style={styles.collapsibleHeaderRow}>
-                            <ThemedText variant="h3" style={styles.sectionHeader}>
-                              Completed{' '}
-                              <ThemedText variant="bodyMuted" style={styles.metaText}>
-                                ({unassignedCompleted.length})
+                            <View style={styles.completedHeaderGroup}>
+                              <ThemedText variant="h3" style={styles.sectionHeader}>
+                                Completed
                               </ThemedText>
-                            </ThemedText>
+                              <View style={styles.completedCountChip}>
+                                <ThemedText variant="body" style={styles.completedCountText}>
+                                  {unassignedCompleted.length}
+                                </ThemedText>
+                              </View>
+                            </View>
                             <Pressable
                               style={styles.collapseBtn}
                               onPress={() => toggleCollapse(collapseId)}
@@ -732,30 +844,143 @@ const styles = StyleSheet.create({
     backgroundColor: '#020617',
   },
   scroll: {
-    paddingBottom: 32,
+    paddingHorizontal: 0,
+    paddingTop: 18,
+    paddingBottom: 44,
   },
-  pageTitle: {
-    fontSize: 22,
+  heroWrap: {
+    marginBottom: 18,
+  },
+  heroHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  heroTitleCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  heroStatsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 18,
+  },
+  heroStatCard: {
+    flex: 1,
+    minHeight: 92,
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(9,18,44,0.98)',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
+  },
+  heroStatGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '42%',
+    opacity: 1,
+  },
+  heroStatGlowWarn: {
+    backgroundColor: 'rgba(246,178,107,0.12)',
+  },
+  heroStatGlowCool: {
+    backgroundColor: 'rgba(139,92,246,0.14)',
+  },
+  heroStatGlowMissed: {
+    backgroundColor: 'rgba(239,107,115,0.14)',
+  },
+  heroStatCardWarn: {
+    borderColor: 'rgba(249,115,22,0.28)',
+  },
+  heroStatCardCool: {
+    borderColor: 'rgba(139,92,246,0.28)',
+  },
+  heroStatCardMissed: {
+    borderColor: 'rgba(239,107,115,0.28)',
+  },
+  heroStatLabel: {
+    color: '#AAB4D3',
+    fontSize: 11,
     fontWeight: '700',
-    marginTop: 12,
-    marginBottom: 8,
-    color: '#FFFFFF',
+    letterSpacing: 1.15,
+    textTransform: 'uppercase',
+    lineHeight: 15,
   },
-  topActionsRow: {
-    marginBottom: 8,
+  heroStatValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
-  primaryBtn: {
-    borderRadius: 12,
-    paddingVertical: 10,
+  heroStatValueWarn: {
+    color: '#f6b26b',
+  },
+  heroStatValueCool: {
+    color: '#a78bfa',
+  },
+  heroStatValueMissed: {
+    color: '#f07c84',
+  },
+  heroCreateBtn: {
+    minHeight: 58,
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(162,145,255,0.62)',
+    backgroundColor: '#4730cf',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(56,189,248,0.55)',
-    backgroundColor: '#38bdf8',
+    overflow: 'hidden',
+    shadowColor: '#4a2be2',
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
   },
-  primaryBtnText: {
-    color: '#0b1220',
+  heroCreateBtnSheen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '56%',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  heroCreateBtnRim: {
+    position: 'absolute',
+    left: 1,
+    right: 1,
+    bottom: 0,
+    height: 10,
+    backgroundColor: 'rgba(35,22,112,0.32)',
+  },
+  heroCreateBtnText: {
+    color: '#FBF9FF',
+    fontSize: 14,
     fontWeight: '800',
+    letterSpacing: 0.15,
+  },
+  heroSubtext: {
+    marginTop: 6,
+    fontSize: 15,
+    lineHeight: 21,
+    color: '#8B95B2',
+  },
+  pageTitle: {
+    fontSize: 26,
+    fontWeight: '800',
+    marginTop: 0,
+    marginBottom: 0,
+    color: '#F4F0FF',
+    letterSpacing: -0.7,
   },
   fieldLabel: {
     fontSize: 13,
@@ -783,40 +1008,78 @@ const styles = StyleSheet.create({
     borderColor: '#38bdf8',
   },
   card: {
-    marginTop: 8,
-    borderRadius: 18,
+    marginTop: 0,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#020617',
+    borderColor: 'rgba(102,116,164,0.26)',
+    backgroundColor: 'rgba(7,16,40,0.98)',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
+  },
+  sectionCard: {
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 5,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#E5E7EB',
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 0,
+    color: '#F7F3FF',
+    letterSpacing: -0.3,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 0,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(31,41,55,0.8)',
+    borderTopColor: 'rgba(94,106,147,0.13)',
+  },
+  rowPressed: {
+    backgroundColor: 'rgba(125,93,255,0.055)',
+  },
+  rowMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 12,
+  },
+  rowGlyphWrap: {
+    width: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  rowGlyph: {
+    color: '#EAC18A',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  rowTextWrap: {
+    flex: 1,
+    minWidth: 0,
   },
   rowTitle: {
-    fontSize: 14,
-    color: '#E5E7EB',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#F4F0FF',
+    letterSpacing: -0.2,
   },
   rowMeta: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: 11,
+    color: '#8A96B8',
+    marginTop: 3,
   },
   metaText: {
     fontSize: 13,
-    color: '#9CA3AF',
-    marginTop: 4,
+    color: '#7E89A8',
+    marginTop: 6,
+    lineHeight: 18,
   },
   errorText: {
     marginTop: 8,
@@ -827,51 +1090,118 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
+  },
+  blockTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+    minWidth: 0,
+  },
+  blockIconBadge: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  blockIconBadgeAlt: {
+    backgroundColor: 'transparent',
+  },
+  blockIconText: {
+    color: '#c4b5fd',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  unassignedHeaderWrap: {
+    marginBottom: 8,
+  },
+  cardSubtext: {
+    color: '#7E89A8',
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: -4,
+    marginBottom: 12,
   },
   sectionHeader: {
-    marginTop: 12,
-    marginBottom: 6,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E5E7EB',
+    marginTop: 0,
+    marginBottom: 0,
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#9AA4C1',
+    textTransform: 'uppercase',
+    letterSpacing: 1.3,
+  },
+  completedHeaderGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  completedCountChip: {
+    minWidth: 28,
+    height: 24,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,144,173,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(166,174,203,0.18)',
+  },
+  completedCountText: {
+    color: '#D8DBEA',
+    fontSize: 12,
+    fontWeight: '700',
   },
   statusPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    minWidth: 98,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 999,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   statusPillText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '800',
     textTransform: 'uppercase',
+    letterSpacing: 1.05,
   },
   collapsibleHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 0,
   },
   collapseBtn: {
-    borderWidth: 1,
-    borderColor: '#4b5563',
-    borderRadius: 6,
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     alignItems: 'center',
     justifyContent: 'center',
   },
   collapseBtnText: {
-    fontSize: 16,
-    color: '#E5E7EB',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#9AA4C1',
+    lineHeight: Platform.OS === 'ios' ? 20 : 18,
   },
   swipeDeleteAction: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 92,
-    backgroundColor: '#ef4444',
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 18,
-    marginTop: 8,
+    width: 96,
+    backgroundColor: 'rgba(239,68,68,0.92)',
+    borderTopRightRadius: 24,
+    borderBottomRightRadius: 24,
+    marginTop: 0,
     marginBottom: 0,
   },
   swipeDeleteText: {
@@ -886,21 +1216,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   modalCard: {
-    borderRadius: 18,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#020617',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    borderColor: 'rgba(92,104,150,0.26)',
+    backgroundColor: 'rgba(6,14,36,0.98)',
+    paddingHorizontal: 18,
+    paddingVertical: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.24,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
   },
   modalTitle: {
-    color: '#E5E7EB',
+    color: '#F4F0FF',
     marginBottom: 6,
+    fontWeight: '700',
   },
   modalBody: {
-    color: '#9CA3AF',
+    color: '#8b90ad',
     marginBottom: 14,
-    lineHeight: 18,
+    lineHeight: 20,
   },
   modalActionsRow: {
     flexDirection: 'row',
@@ -915,8 +1251,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   modalBtnGhost: {
-    backgroundColor: 'transparent',
-    borderColor: 'rgba(148,163,184,0.35)',
+    backgroundColor: 'rgba(15,23,42,0.82)',
+    borderColor: 'rgba(148,163,184,0.22)',
   },
   modalBtnDanger: {
     backgroundColor: '#ef4444',
@@ -930,10 +1266,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 92,
-    backgroundColor: '#38bdf8',
-    borderTopLeftRadius: 18,
-    borderBottomLeftRadius: 18,
-    marginTop: 8,
+    backgroundColor: 'rgba(56,189,248,0.92)',
+    borderTopLeftRadius: 24,
+    borderBottomLeftRadius: 24,
+    marginTop: 0,
     marginBottom: 0,
   },
   swipeMoveText: {
@@ -943,23 +1279,24 @@ const styles = StyleSheet.create({
   },
   moveList: {
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 12,
+    borderColor: 'rgba(92,104,150,0.22)',
+    borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 12,
+    backgroundColor: 'rgba(8,16,40,0.96)',
   },
   moveRow: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(31,41,55,0.8)',
-    backgroundColor: '#0b1220',
+    borderTopColor: 'rgba(94,106,147,0.14)',
+    backgroundColor: 'rgba(8,16,40,0.96)',
   },
   moveRowFirst: {
     borderTopWidth: 0,
   },
   moveRowText: {
-    color: '#E5E7EB',
+    color: '#F4F0FF',
     fontSize: 14,
     fontWeight: '600',
   },

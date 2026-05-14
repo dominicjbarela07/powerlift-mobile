@@ -1,6 +1,8 @@
 // app/(tabs)/link-coach.tsx
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Pressable } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useRouter } from 'expo-router';
@@ -40,7 +42,6 @@ export default function LinkCoachScreen() {
           },
         });
 
-        // fetchJson returns a wrapper: { ok, status, raw, json }
         const status = Number(res?.status ?? 0);
         const payload = res?.json ?? res;
 
@@ -97,19 +98,33 @@ export default function LinkCoachScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ThemedText>Loading…</ThemedText>
-      </ThemedView>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+        <ThemedView style={styles.screenCentered}>
+          <ActivityIndicator size="small" color="#B8B0DA" />
+          <ThemedText variant="bodyMuted" style={styles.loadingText}>Loading…</ThemedText>
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
   if (error || !data) {
     return (
-      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ThemedText variant={error ? 'error' : 'bodyMuted'}>
-          {error || 'No data.'}
-        </ThemedText>
-      </ThemedView>
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+        <ThemedView style={styles.screen}>
+          <View style={styles.header}>
+            <ThemedText variant="h1" style={styles.title}>Link Coach</ThemedText>
+            <ThemedText variant="bodyMuted" style={styles.subtitle}>
+              Connect your account to a coach when an invite is available.
+            </ThemedText>
+          </View>
+
+          <View style={styles.centerCard}>
+            <ThemedText variant={error ? 'error' : 'bodyMuted'}>
+              {error || 'No data.'}
+            </ThemedText>
+          </View>
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
@@ -117,86 +132,197 @@ export default function LinkCoachScreen() {
   const alreadyLinked = !!coach;
 
   return (
-    <ThemedView
-      style={{
-        flex: 1,
-        backgroundColor: '#020617',
-      }}
-    >
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingVertical: 20 }}
-      >
-        <ThemedText
-          variant="h1"
-          style={{
-            marginBottom: 12,
-          }}
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+      <ThemedView style={styles.screen}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          Link your coach
-        </ThemedText>
-
-        {alreadyLinked ? (
-          <View
-            style={{
-              borderRadius: 18,
-              borderWidth: 1,
-              borderColor: 'rgba(148,163,184,0.35)',
-              padding: 16,
-              backgroundColor: '#020617',
-            }}
-          >
-            <ThemedText>
-              You’re already linked to{' '}
-              <ThemedText variant="body" style={{ fontWeight: '600' }}>
-                {coach.name || coach.email || 'Coach'}
-              </ThemedText>
-              .
+          <View style={styles.header}>
+            <ThemedText variant="h1" style={styles.title}>Link Coach</ThemedText>
+            <ThemedText variant="bodyMuted" style={styles.subtitle}>
+              Connect your athlete account to a coach and unlock assigned training.
             </ThemedText>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 10,
-                marginTop: 12,
-              }}
-            >
-              <Pressable
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  backgroundColor: '#3b82f6',
-                }}
-                onPress={() => router.push('/workouts')}
-              >
-                <ThemedText variant="small" style={{ fontWeight: '600' }}>
-                  Go to My Workouts
-                </ThemedText>
-              </Pressable>
-
-              <Pressable
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  borderWidth: 1,
-                  borderColor: '#e5e7eb',
-                }}
-                onPress={() => router.push('/athlete-dashboard')}
-              >
-                <ThemedText variant="small" style={{ fontWeight: '600' }}>
-                  Home
-                </ThemedText>
-              </Pressable>
-            </View>
           </View>
-        ) : (
-          <ThemedText variant="bodyMuted">
-            Don’t see an invite? Please contact your coach directly.
-          </ThemedText>
-        )}
-      </ScrollView>
-    </ThemedView>
+
+          {alreadyLinked ? (
+            <View style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <View style={styles.titleRow}>
+                  <View style={styles.iconWrap}>
+                    <Ionicons name="link" size={22} color="#C4B5FD" />
+                  </View>
+                  <ThemedText variant="h3" style={styles.cardTitle}>Coach Linked</ThemedText>
+                </View>
+              </View>
+
+              <ThemedText style={styles.bodyText}>
+                You’re already linked to{' '}
+                <ThemedText style={styles.coachName}>
+                  {coach.name || coach.email || 'Coach'}
+                </ThemedText>
+                .
+              </ThemedText>
+            </View>
+          ) : (
+            <View style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <View style={styles.titleRow}>
+                  <View style={styles.emptyIconWrap}>
+                    <Ionicons name="mail-open-outline" size={22} color="#94A3B8" />
+                  </View>
+                  <ThemedText variant="h3" style={styles.cardTitle}>No Invite Found</ThemedText>
+                </View>
+              </View>
+
+              <ThemedText variant="bodyMuted" style={styles.emptyText}>
+                Don’t see an invite? Please contact your coach directly.
+              </ThemedText>
+            </View>
+          )}
+        </ScrollView>
+      </ThemedView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#020617',
+  },
+  screen: {
+    flex: 1,
+    backgroundColor: '#020617',
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  screenCentered: {
+    flex: 1,
+    backgroundColor: '#020617',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 36,
+  },
+  loadingText: {
+    color: '#94A3B8',
+  },
+  header: {
+    marginBottom: 18,
+  },
+  title: {
+    fontSize: 28,
+    lineHeight: 32,
+    fontWeight: '800',
+    color: '#F8FAFC',
+    letterSpacing: -0.7,
+  },
+  subtitle: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#94A3B8',
+  },
+  centerCard: {
+    minHeight: 160,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(8,16,38,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  card: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    backgroundColor: 'rgba(8,16,38,0.96)',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
+  },
+  cardHeaderRow: {
+    marginBottom: 12,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconWrap: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyIconWrap: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardTitle: {
+    color: '#F8FAFC',
+  },
+  bodyText: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  coachName: {
+    color: '#F8FAFC',
+    fontWeight: '700',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 16,
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    minHeight: 42,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: '#5B4FCF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonText: {
+    color: '#F8FAFC',
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    minHeight: 42,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.20)',
+    backgroundColor: 'rgba(148,163,184,0.06)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButtonText: {
+    color: '#CBD5E1',
+    fontWeight: '700',
+  },
+  buttonPressed: {
+    opacity: 0.88,
+  },
+  emptyText: {
+    color: '#94A3B8',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});
