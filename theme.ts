@@ -1,13 +1,15 @@
 // theme.ts
+import { SLColors, SLFontFamilies, SLRadius, SLShadows, SLSpacing, SLStatusTones, SLTheme, SLTypography } from './constants/theme';
+
 export const colors = {
-  bg: '#020617',
-  cardBg: '#020617',
-  border: '#1F2937',
-  textPrimary: '#E5E7EB',
-  textStrong: '#F9FAFB',
-  textMuted: '#9CA3AF',
-  textMutedSecondary: '#6B7280',
-  danger: '#f97373',
+  bg: SLColors.shellCanvas,
+  cardBg: SLColors.surfaceFlat,
+  border: SLColors.borderDefault,
+  textPrimary: SLColors.text,
+  textStrong: SLColors.textStrong,
+  textMuted: SLColors.textMuted,
+  textMutedSecondary: SLColors.textSubtle,
+  danger: SLColors.danger,
 };
 
 export const spacing = {
@@ -21,56 +23,64 @@ export const spacing = {
 export const typography = {
   // Matches Coach Dashboard title
   h1: {
-    fontSize: 22,
-    fontWeight: '600' as const,
+    ...SLTypography.screenTitle,
     color: colors.textStrong,
   },
   // Matches sectionTitle (Needs Attention / Work Queue)
   h2: {
-    fontSize: 18,
-    fontWeight: '600' as const,
+    ...SLTypography.sectionTitle,
     color: colors.textPrimary,
   },
   // Matches cardTitle (card headings)
   h3: {
-    fontSize: 16,
-    fontWeight: '600' as const,
+    ...SLTypography.cardTitle,
     color: colors.textPrimary,
   },
   // Matches listText (athlete names in Needs Attention)
   body: {
-    fontSize: 15,
+    ...SLTypography.body,
     color: colors.textPrimary,
   },
   // Matches mutedText
   bodyMuted: {
-    fontSize: 14,
+    ...SLTypography.rowMeta,
     color: colors.textMutedSecondary,
   },
   // Matches kpiLabel
   label: {
-    fontSize: 14,
+    ...SLTypography.label,
     color: colors.textMuted,
   },
   // Matches kpiHint
   small: {
-    fontSize: 12,
+    ...SLTypography.caption,
     color: colors.textMutedSecondary,
   },
   // Matches KPI number style
   kpi: {
-    fontSize: 22,
-    fontWeight: '600' as const,
+    ...SLTypography.kpiNumber,
     color: colors.textPrimary,
   },
   // For badge text (like “You”)
   badge: {
-    fontSize: 12,
+    ...SLTypography.chipLabel,
     color: colors.textMuted,
   },
   // Error text
   error: {
-    fontSize: 13,
+    ...SLTypography.label,
     color: colors.danger,
   },
 };
+
+export {
+  SLColors,
+  SLFontFamilies,
+  SLRadius,
+  SLShadows,
+  SLSpacing,
+  SLStatusTones,
+  SLTheme,
+  SLTypography,
+  type SLStatusTone,
+} from './constants/theme';

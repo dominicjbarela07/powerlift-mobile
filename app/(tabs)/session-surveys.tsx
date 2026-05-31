@@ -2,20 +2,17 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
-  Pressable,
-  RefreshControl,
-  ScrollView,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import RefreshScreen from '@/components/refresh-screen';
+import { SLButton, SLErrorState, SLLoadingState, SLScreen, SLStatusPill } from '@/components/ui';
+import { SLColors, SLSpacing, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -53,7 +50,11 @@ type ScreenData = {
 
 export default function SessionSurveysScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ athleteId?: string | string[]; athleteName?: string | string[]; workoutId?: string | string[] }>();
   const { token } = useAuth();
+  const athleteIdParam = Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId;
+  const athleteNameParam = Array.isArray(params.athleteName) ? params.athleteName[0] : params.athleteName;
+  const workoutIdParam = Array.isArray(params.workoutId) ? params.workoutId[0] : params.workoutId;
 
   const [data, setData] = useState<ScreenData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +79,13 @@ export default function SessionSurveysScreen() {
           return;
         }
 
-        const res: any = await fetchJson('/coach/mobile/session-surveys', {
+        const query = new URLSearchParams();
+        const requestedAthleteId = Number(athleteIdParam);
+        if (Number.isFinite(requestedAthleteId) && requestedAthleteId > 0) {
+          query.set('athlete_id', String(requestedAthleteId));
+        }
+
+        const res: any = await fetchJson(`/coach/mobile/session-surveys${query.toString() ? `?${query.toString()}` : ''}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -110,7 +117,7 @@ export default function SessionSurveysScreen() {
         }
       }
     },
-    [token]
+    [athleteIdParam, token]
   );
 
   useEffect(() => {
@@ -155,7 +162,15 @@ export default function SessionSurveysScreen() {
     return formatted;
   };
 
-  const totalPending = useMemo(() => data?.pending_rows?.length || 0, [data?.pending_rows]);
+  const visiblePendingRows = useMemo(() => {
+    const rows = data?.pending_rows || [];
+    const requestedWorkoutId = Number(workoutIdParam);
+    if (Number.isFinite(requestedWorkoutId) && requestedWorkoutId > 0) {
+      return rows.filter((row) => Number(row.workout_id) === requestedWorkoutId);
+    }
+    return rows;
+  }, [data?.pending_rows, workoutIdParam]);
+  const visiblePendingCount = visiblePendingRows.length;
 
   const openWorkout = useCallback(
     (workoutId: number) => {
@@ -163,6 +178,16 @@ export default function SessionSurveysScreen() {
         pathname: '/workout/[workoutId]',
         params: { workoutId: String(workoutId) },
       });
+    },
+    [router]
+  );
+
+  const openAthlete = useCallback(
+    (row: SurveyRow) => {
+      router.push({
+        pathname: '/(tabs)/coach-athlete/[athleteId]',
+        params: { athleteId: String(row.athlete_id), athleteName: row.athlete_name },
+      } as any);
     },
     [router]
   );
@@ -226,27 +251,11 @@ export default function SessionSurveysScreen() {
 
   const renderMetric = (label: string, value?: string | number | null) => {
     return (
-      <View
-        style={[
-          styles.metricCard,
-          label === 'RPE' && styles.metricCardRpe,
-          label === 'Strength' && styles.metricCardStrength,
-          label === 'Fatigue' && styles.metricCardFatigue,
-        ]}
-      >
-        <ThemedText variant="bodyMuted" style={styles.metricLabel}>
-          {label}
-        </ThemedText>
-        <ThemedText
-          style={[
-            styles.metricValue,
-            label === 'RPE' && styles.metricValueRpe,
-            label === 'Strength' && styles.metricValueStrength,
-            label === 'Fatigue' && styles.metricValueFatigue,
-          ]}
-        >
+      <View style={styles.metricCell}>
+        <Text style={styles.metricLabel}>{label}</Text>
+        <Text style={styles.metricValue}>
           {value ?? '—'}
-        </ThemedText>
+        </Text>
       </View>
     );
   };
@@ -254,35 +263,18 @@ export default function SessionSurveysScreen() {
   const renderSurveyCard = (row: SurveyRow, opts?: { pending?: boolean }) => {
     const isPending = !!opts?.pending;
     return (
-      <View key={`${isPending ? 'pending' : 'archive'}-${row.workout_id}`} style={[styles.card, isPending && styles.cardPending]}>
+      <View key={`${isPending ? 'pending' : 'archive'}-${row.workout_id}`} style={[styles.queueRow, !isPending && styles.archiveRow]}>
+        <View style={styles.rowRail} />
         <View style={styles.cardTopRow}>
           <View style={styles.cardTitleCol}>
-            <ThemedText style={styles.athleteName}>{row.athlete_name}</ThemedText>
-            <ThemedText variant="bodyMuted" style={styles.sessionMeta}>
-              {row.label} · {formatDate(row.date)}
-            </ThemedText>
-          </View>
-          {isPending && (
-            <View style={styles.cardActionRow}>
-              <Pressable
-                style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
-                onPress={() => markReviewed(row.workout_id, row.label)}
-                disabled={markingId === row.workout_id}
-              >
-                {markingId === row.workout_id ? (
-                  <ActivityIndicator size="small" color="#E5E7EB" />
-                ) : (
-                  <ThemedText style={styles.secondaryButtonText}>Review</ThemedText>
-                )}
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
-                onPress={() => openWorkout(row.workout_id)}
-              >
-                <ThemedText style={styles.secondaryButtonText}>View Session</ThemedText>
-              </Pressable>
+            <View style={styles.titleLine}>
+              <Text style={styles.athleteName} numberOfLines={1}>{row.athlete_name}</Text>
+              <SLStatusPill label="Pending" tone="review" icon="clipboard-outline" />
             </View>
-          )}
+            <Text style={styles.sessionMeta} numberOfLines={1}>
+              {row.label} · {formatDate(row.date)}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.metricsGrid}>
@@ -313,269 +305,258 @@ export default function SessionSurveysScreen() {
         </View>
 
         {row.survey?.notes?.trim() ? (
-          <View style={[styles.notesCard, isPending && styles.notesCardPending]}>
-            <ThemedText variant="bodyMuted" style={styles.notesLabel}>
-              Athlete Feedback
-            </ThemedText>
-            <ThemedText style={styles.notesValue}>
+          <View style={styles.notesPreview}>
+            <Text style={styles.notesLabel}>Notes</Text>
+            <Text style={styles.notesValue} numberOfLines={4}>
               {row.survey.notes.trim()}
-            </ThemedText>
+            </Text>
           </View>
         ) : null}
 
-        <ThemedText variant="bodyMuted" style={styles.submittedText}>
+        <Text style={styles.submittedText}>
           Submitted: {formatSubmittedAt(row.submitted_at)}
-        </ThemedText>
+        </Text>
+
+        {isPending ? (
+          <View style={styles.cardActionRow}>
+            <SLButton
+              fullWidth
+              iconLeft="checkmark-done-outline"
+              label="Mark Reviewed"
+              loading={markingId === row.workout_id}
+              onPress={() => markReviewed(row.workout_id, row.label)}
+            />
+            <View style={styles.secondaryActionRow}>
+              <SLButton
+                fullWidth
+                iconLeft="open-outline"
+                label="Open Workout"
+                onPress={() => openWorkout(row.workout_id)}
+                size="sm"
+                variant="secondary"
+                style={styles.secondaryAction}
+              />
+              <SLButton
+                fullWidth
+                iconLeft="person-outline"
+                label="Open Athlete"
+                onPress={() => openAthlete(row)}
+                size="sm"
+                variant="secondary"
+                style={styles.secondaryAction}
+              />
+            </View>
+          </View>
+        ) : null}
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
-      <ThemedView style={styles.screen}>
-        <ScrollView
+    <SLScreen edges="none" padded={false}>
+        <RefreshScreen
           contentContainerStyle={styles.scrollContent}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#94A3B8" />
-          }
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+          style={styles.scroll}
         >
           <View style={styles.header}>
-            <ThemedText variant="h1" style={styles.title}>
-              Post-Session Feedback
-            </ThemedText>
-            <ThemedText style={styles.headerSubhead}>Needs Review</ThemedText>
-            <ThemedText variant="bodyMuted" style={styles.subtitle}>
-              Newest submitted post-session surveys awaiting review.
-            </ThemedText>
+            <Text style={styles.title}>Session Reviews</Text>
+            <View style={styles.headerMetaRow}>
+              <SLStatusPill label={`${visiblePendingCount} pending`} tone={visiblePendingCount > 0 ? 'review' : 'success'} />
+              {athleteNameParam ? <Text style={styles.contextText} numberOfLines={1}>{athleteNameParam}</Text> : null}
+            </View>
           </View>
 
           {loading ? (
             <View style={styles.centerState}>
-              <ActivityIndicator size="small" color="#94A3B8" />
+              <SLLoadingState title="Loading Reviews" />
             </View>
           ) : error ? (
             <View style={styles.centerState}>
-              <ThemedText variant="error">{error}</ThemedText>
+              <SLErrorState
+                actionLabel="Try Again"
+                message={error}
+                onActionPress={() => loadQueue()}
+                title="Could not load reviews"
+              />
             </View>
-          ) : totalPending === 0 ? (
-            <View style={styles.emptyCard}>
-              <Ionicons name="checkmark-circle-outline" size={24} color="#86EFAC" />
-              <ThemedText style={styles.emptyTitle}>Nothing needs review</ThemedText>
-              <ThemedText variant="bodyMuted" style={styles.emptySubtitle}>
-                New post-session feedback will appear here when athletes submit it.
-              </ThemedText>
+          ) : visiblePendingCount === 0 ? (
+            <View style={styles.compactEmpty}>
+              <Ionicons name="checkmark-circle-outline" size={18} color={SLColors.success} />
+              <Text style={styles.compactEmptyText}>No pending reviews</Text>
             </View>
           ) : (
-            (data?.pending_rows || []).map((row) => renderSurveyCard(row, { pending: true }))
+            <View style={styles.queueStack}>
+              {visiblePendingRows.map((row) => renderSurveyCard(row, { pending: true }))}
+            </View>
           )}
-        </ScrollView>
-      </ThemedView>
-    </SafeAreaView>
+        </RefreshScreen>
+    </SLScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#020617',
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: '#020617',
+  scroll: {
+    backgroundColor: 'transparent',
   },
   scrollContent: {
-    paddingHorizontal: 0,
-    paddingTop: 16,
+    flexGrow: 1,
     paddingBottom: 120,
+    paddingTop: SLSpacing.md,
   },
   header: {
-    marginBottom: 18,
+    gap: SLSpacing.xs,
+    marginBottom: SLSpacing.sm,
+    paddingHorizontal: SLSpacing.md,
   },
   title: {
-    fontSize: 26,
-    lineHeight: 32,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '800',
-    color: '#F8FAFC',
-    letterSpacing: -0.5,
+    letterSpacing: 0,
+    lineHeight: SLTypography.title.lineHeight,
   },
-  headerSubhead: {
-    marginTop: 8,
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#C7BEE8',
-    letterSpacing: 0.4,
+  headerMetaRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SLSpacing.sm,
   },
-  subtitle: {
-    marginTop: 6,
-    color: '#8EA0BE',
-    fontSize: 14,
-    lineHeight: 20,
+  contextText: {
+    color: SLColors.textMuted,
+    flexShrink: 1,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '700',
+    lineHeight: SLTypography.caption.lineHeight,
   },
   centerState: {
-    minHeight: 160,
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
   },
-  emptyCard: {
-    minHeight: 180,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    gap: 8,
+  queueStack: {
+    borderTopWidth: 1,
+    borderTopColor: SLColors.shellHairline,
   },
-  emptyTitle: {
-    color: '#F8FAFC',
-    fontSize: 17,
-    fontWeight: '700',
+  queueRow: {
+    backgroundColor: 'rgba(10,11,11,0.20)',
+    borderBottomWidth: 1,
+    borderBottomColor: SLColors.shellHairline,
+    gap: SLSpacing.sm,
+    padding: SLSpacing.md,
+    paddingLeft: SLSpacing.lg,
+    position: 'relative',
   },
-  emptySubtitle: {
-    color: '#94A3B8',
-    fontSize: 13,
-    textAlign: 'center',
-    lineHeight: 19,
+  archiveRow: {
+    backgroundColor: 'rgba(10,11,11,0.12)',
   },
-  card: {
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.12)',
-    backgroundColor: 'rgba(8,16,38,0.96)',
-    padding: 14,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.16,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
-  },
-  cardPending: {
-    borderColor: 'rgba(109,91,208,0.22)',
+  rowRail: {
+    backgroundColor: SLColors.railViolet,
+    bottom: SLSpacing.md,
+    left: 0,
+    position: 'absolute',
+    top: SLSpacing.md,
+    width: 3,
   },
   cardTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 14,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    justifyContent: 'space-between',
   },
   cardTitleCol: {
     flex: 1,
     minWidth: 0,
   },
+  titleLine: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+  },
   athleteName: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    flex: 1,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '800',
+    lineHeight: SLTypography.cardTitle.lineHeight,
   },
   sessionMeta: {
-    marginTop: 4,
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: SLTypography.caption.lineHeight,
   },
   cardActionRow: {
+    gap: SLSpacing.sm,
+  },
+  secondaryActionRow: {
     flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
+    gap: SLSpacing.sm,
   },
-  secondaryButton: {
-    minHeight: 42,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(109,91,208,0.30)',
-    backgroundColor: 'rgba(109,91,208,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-  },
-  secondaryButtonText: {
-    color: '#E5E7EB',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  buttonPressed: {
-    opacity: 0.88,
+  secondaryAction: {
+    flex: 1,
   },
   metricsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 12,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: SLColors.shellHairline,
   },
-  metricCard: {
+  metricCell: {
     flex: 1,
-    minHeight: 68,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(2,8,23,0.52)',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  metricCardRpe: {
-    borderColor: 'rgba(109,91,208,0.26)',
-    backgroundColor: 'rgba(109,91,208,0.08)',
-  },
-  metricCardStrength: {
-    borderColor: 'rgba(34,197,94,0.22)',
-    backgroundColor: 'rgba(34,197,94,0.08)',
-  },
-  metricCardFatigue: {
-    borderColor: 'rgba(245,158,11,0.22)',
-    backgroundColor: 'rgba(245,158,11,0.08)',
+    minHeight: 58,
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: SLSpacing.sm,
   },
   metricLabel: {
-    color: '#94A3B8',
-    fontSize: 12,
-    marginBottom: 6,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '800',
+    marginBottom: 4,
+    textTransform: 'uppercase',
   },
   metricValue: {
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
-    textTransform: 'none',
+    lineHeight: SLTypography.body.lineHeight,
   },
-  metricValueRpe: {
-    color: '#D9D0FF',
-  },
-  metricValueStrength: {
-    color: '#BBF7D0',
-  },
-  metricValueFatigue: {
-    color: '#FCD34D',
-  },
-  notesCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(2,8,23,0.46)',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  notesCardPending: {
-    borderColor: 'rgba(59,130,246,0.16)',
+  notesPreview: {
+    backgroundColor: 'rgba(10,11,11,0.22)',
+    borderLeftWidth: 2,
+    borderLeftColor: SLColors.borderSelected,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
   },
   notesLabel: {
-    color: '#94A3B8',
-    fontSize: 12,
-    marginBottom: 8,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '800',
+    marginBottom: 4,
+    textTransform: 'uppercase',
   },
   notesValue: {
-    color: '#CBD5E1',
-    fontSize: 14,
-    lineHeight: 20,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
+    lineHeight: SLTypography.body.lineHeight,
   },
   submittedText: {
-    marginTop: 10,
-    color: '#7F91AE',
-    fontSize: 12,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: SLTypography.caption.lineHeight,
+  },
+  compactEmpty: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: SLColors.shellHairline,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 48,
+    paddingHorizontal: SLSpacing.md,
+  },
+  compactEmptyText: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.body.fontSize,
+    fontWeight: '700',
   },
 });

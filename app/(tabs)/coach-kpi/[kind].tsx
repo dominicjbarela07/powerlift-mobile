@@ -5,7 +5,6 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { fetchJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { colors } from '@/theme';
 
 type KpiRow = {
   workout_id: number;
@@ -43,6 +42,9 @@ function statusLabel(s?: string | null) {
   if (v === 'assigned') return 'Assigned';
   if (v === 'in_progress') return 'In progress';
   if (['logged', 'completed', 'done'].includes(v)) return 'Completed';
+  if (v === 'missed') return 'Missed';
+  if (v === 'missed_excused') return 'Excused';
+  if (v === 'incomplete') return 'Incomplete';
   return v.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
@@ -52,6 +54,9 @@ function statusTone(s?: string | null) {
   if (v === 'assigned') return '#f97316'; // warn
   if (v === 'in_progress') return '#22c55e'; // ok
   if (['logged', 'completed', 'done'].includes(v)) return '#38bdf8'; // accent
+  if (v === 'missed') return '#f87171';
+  if (v === 'missed_excused') return '#94a3b8';
+  if (v === 'incomplete') return '#facc15';
   return '#e5e7eb';
 }
 

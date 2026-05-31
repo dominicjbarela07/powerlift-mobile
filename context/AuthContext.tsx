@@ -20,6 +20,7 @@ export type AuthUser = {
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
+const MANUAL_TIMEZONE_KEY = 'athlete_manual_timezone';
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setToken(null);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(USER_KEY);
+    await SecureStore.deleteItemAsync(MANUAL_TIMEZONE_KEY);
   }
 
   useEffect(() => {

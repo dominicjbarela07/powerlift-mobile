@@ -1,11 +1,24 @@
 // app/login.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, StyleSheet, ActivityIndicator, Linking, Image } from 'react-native';
+import {
+  View,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+  Linking,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginRequest } from '@/lib/api';   
 import { useAuth } from '@/context/AuthContext';
+import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -13,8 +26,8 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);   // 👈 NEW
-  const [error, setError] = useState<string | null>(null);  // 👈 NEW
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -76,181 +89,259 @@ export default function LoginScreen() {
     };
 
   return (
-    <ThemedView style={styles.screen}>
-      <View style={styles.topHeader}>
-        <ThemedText style={styles.topHeaderLeft} />
-        <View style={styles.topHeaderCenter}>
-          <Image
-            source={require('../assets/images/app_logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-      <View style={styles.header}>
-        <ThemedText style={styles.titleMuted}>Log in</ThemedText>
-      </View>
-
-      <View style={styles.form}>
-        <View style={styles.field}>
-          <ThemedText style={styles.label}>Email</ThemedText>
-          <TextInput
-            style={styles.input}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-
-        <View style={styles.field}>
-          <ThemedText style={styles.label}>Password</ThemedText>
-          <View style={styles.passwordRow}>
-            <TextInput
-              style={[styles.input, { flex: 1, paddingRight: 40 }]}
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <Pressable
-              style={styles.eyeToggle}
-              onPress={() => setShowPassword(v => !v)}
-              hitSlop={10}
-            >
-              <ThemedText style={styles.eyeText}>
-                {showPassword ? 'Hide' : 'Show'}
-              </ThemedText>
-            </Pressable>
-          </View>
-        </View>
-
-        {error && (
-          <ThemedText style={styles.errorText}>{error}</ThemedText>
-        )}
-
-        <Pressable
-          style={[styles.btnPrimary, loading && { opacity: 0.7 }]}
-          onPress={handleLogin}
-          disabled={loading}
+    <View style={styles.screen}>
+      <LinearGradient
+        colors={['#24172F', '#111016', '#070707', '#050505']}
+        locations={[0, 0.28, 0.68, 1]}
+        start={{ x: 0.25, y: 0 }}
+        end={{ x: 0.75, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardWrap}
         >
-          {loading ? (
-            <ActivityIndicator color="#F5F3FF" />
-          ) : (
-            <ThemedText style={styles.btnPrimaryText}>Sign in</ThemedText>
-          )}
-        </Pressable>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <View style={styles.brandBlock}>
+              <Image
+                source={require('../assets/images/16:9.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
 
-        <Pressable
-          style={styles.forgotRow}
-          onPress={() => {
-            // Keep this dead-simple for now: open the web app login page where users can reset.
-            // If you later add a dedicated /forgot-password page, swap this URL.
-            const url = 'https://strength-coach-ui.onrender.com/auth/reset_request';
-            Linking.openURL(url).catch(() => {
-              setError('Unable to open password reset page.');
-            });
-          }}
-        >
-          <ThemedText style={styles.forgotText}>Forgot password?</ThemedText>
-        </Pressable>
-        <Pressable
-          style={styles.signupRow}
-          onPress={() => {
-            const url = 'https://strength-coach-ui.onrender.com/auth/register';
-            Linking.openURL(url).catch(() => {
-              setError('Unable to open signup page.');
-            });
-          }}
-        >
-          <ThemedText style={styles.signupText}>Need an account? Sign up</ThemedText>
-        </Pressable>
-      </View>
-    </ThemedView>
+            <View style={styles.header}>
+              <Text style={styles.title}>Welcome back</Text>
+            </View>
+
+            <View style={styles.form}>
+              <View style={styles.field}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="emailAddress"
+                  placeholder="you@example.com"
+                  placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>Password</Text>
+                <View style={styles.passwordRow}>
+                  <TextInput
+                    style={[styles.input, styles.passwordInput]}
+                    secureTextEntry={!showPassword}
+                    textContentType="password"
+                    placeholder="Password"
+                    placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                    value={password}
+                    onChangeText={setPassword}
+                  />
+                  <Pressable
+                    style={styles.eyeToggle}
+                    onPress={() => setShowPassword(v => !v)}
+                    hitSlop={10}
+                  >
+                    <Text style={styles.eyeText}>
+                      {showPassword ? 'Hide' : 'Show'}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              {error ? (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              ) : null}
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.btnPrimary,
+                  pressed && !loading && styles.btnPrimaryPressed,
+                  loading && styles.btnPrimaryLoading,
+                ]}
+                onPress={handleLogin}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#F5F3FF" />
+                ) : (
+                  <Text style={styles.btnPrimaryText}>Sign in</Text>
+                )}
+              </Pressable>
+
+              <View style={styles.linkRail}>
+                <Pressable
+                  style={styles.linkButton}
+                  onPress={() => {
+                    const url = 'https://strength-coach-ui.onrender.com/auth/reset_request';
+                    Linking.openURL(url).catch(() => {
+                      setError('Unable to open password reset page.');
+                    });
+                  }}
+                >
+                  <Text style={styles.linkText}>Forgot password?</Text>
+                </Pressable>
+                <View style={styles.linkDivider} />
+                <Pressable
+                  style={styles.linkButton}
+                  onPress={() => {
+                    const url = 'https://strength-coach-ui.onrender.com/auth/register';
+                    Linking.openURL(url).catch(() => {
+                      setError('Unable to open signup page.');
+                    });
+                  }}
+                >
+                  <Text style={styles.linkTextStrong}>Sign up</Text>
+                </Pressable>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 64,
-    paddingBottom: 24,
-    backgroundColor: '#0B0F1A',
+    backgroundColor: '#050505',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  keyboardWrap: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 42,
+    paddingBottom: 34,
+  },
+  brandBlock: {
+    alignItems: 'center',
+    marginBottom: 46,
+  },
+  logo: {
+    width: 240,
+    height: 54,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 22,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  subtitle: {
-    marginTop: 4,
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontFamily: SLTypography.commandTitle.fontFamily,
+    fontSize: 30,
+    lineHeight: 35,
+    fontWeight: SLTypography.commandTitle.fontWeight,
+    color: '#F8FAFC',
+    letterSpacing: 0,
   },
   form: {
-    gap: 16,
-    marginTop: 8,
+    gap: 15,
+    paddingVertical: 18,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(222, 198, 166, 0.08)',
+    backgroundColor: 'rgba(10, 8, 9, 0.24)',
   },
   field: {
-    gap: 8,
+    gap: 7,
   },
   label: {
-    fontSize: 13,
-    color: '#94A3B8',
-    fontWeight: '600',
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 11,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    color: '#A69B8D',
+    textTransform: 'uppercase',
+    letterSpacing: 0.35,
   },
   input: {
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.12)',
-    borderRadius: 14,
-    paddingHorizontal: 14,
+    borderColor: 'rgba(222, 198, 166, 0.10)',
+    borderRadius: 8,
+    paddingHorizontal: 13,
     paddingVertical: 13,
+    fontFamily: SLFontFamilies.sans,
     fontSize: 15,
-    color: '#E2E8F0',
-    backgroundColor: 'rgba(15,20,36,0.82)',
+    color: '#F8FAFC',
+    backgroundColor: 'rgba(8, 8, 10, 0.58)',
   },
   btnPrimary: {
-    marginTop: 10,
-    backgroundColor: '#5B4FCF',
+    marginTop: 4,
+    minHeight: 52,
+    backgroundColor: 'rgba(124, 58, 237, 0.58)',
     borderWidth: 1,
-    borderColor: 'rgba(109,91,208,0.22)',
-    paddingVertical: 13,
-    borderRadius: 14,
+    borderColor: 'rgba(196,181,253,0.28)',
+    borderRadius: 8,
     alignItems: 'center',
-    shadowColor: '#5B4FCF',
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    justifyContent: 'center',
+  },
+  btnPrimaryPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
+  },
+  btnPrimaryLoading: {
+    opacity: 0.72,
   },
   btnPrimaryText: {
+    fontFamily: SLTypography.buttonLabel.fontFamily,
     color: '#F5F3FF',
-    fontWeight: '700',
-    fontSize: 16,
-    letterSpacing: 0.2,
+    fontSize: 14,
+    fontWeight: SLTypography.buttonLabel.fontWeight,
+    letterSpacing: 0,
   },
-  linkRow: {
-    marginTop: 12,
+  linkRail: {
+    marginTop: 4,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  linkButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+  },
+  linkDivider: {
+    width: 3,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: 'rgba(184, 172, 161, 0.42)',
   },
   linkText: {
-    fontSize: 14,
-    color: '#9CA3AF',
-    textDecorationLine: 'underline',
+    fontFamily: SLFontFamilies.sansMedium,
+    fontSize: 13,
+    color: '#A69B8D',
   },
-  forgotRow: {
-    marginTop: 8,
-    alignItems: 'center',
+  linkTextStrong: {
+    fontFamily: SLFontFamilies.sansSemiBold,
+    fontSize: 13,
+    color: '#C4B5FD',
   },
-  forgotText: {
-    fontSize: 14,
-    color: '#94A3B8',
-    textDecorationLine: 'underline',
+  errorBox: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(232, 137, 137, 0.10)',
+    borderLeftWidth: 2,
+    borderLeftColor: '#E88989',
   },
   errorText: {
-    color: '#F87171',
+    fontFamily: SLFontFamilies.sans,
+    color: '#FCA5A5',
     fontSize: 13,
     lineHeight: 18,
   },
@@ -259,6 +350,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  passwordInput: {
+    flex: 1,
+    paddingRight: 54,
+  },
   eyeToggle: {
     position: 'absolute',
     right: 12,
@@ -266,51 +361,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   eyeText: {
+    fontFamily: SLFontFamilies.sansSemiBold,
     fontSize: 13,
-    fontWeight: '700',
-    color: '#B8B0DA',
-  },
-  topHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    marginBottom: 18,
-    marginTop: 8,
-  },
-  topHeaderLeft: {
-    width: 60,
-  },
-  topHeaderCenter: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  topHeaderRight: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#9CA3AF',
-  },
-  titleMuted: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#E2E8F0',
-    letterSpacing: -0.4,
-  },
-    logo: {
-    height: 64,
-    width: 64,
-  },
-
-  signupRow: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  signupText: {
-    fontSize: 14,
-    color: '#B8B0DA',
-    textDecorationLine: 'underline',
-    fontWeight: '600',
+    color: '#C4B5FD',
   },
 });

@@ -16,10 +16,17 @@
       "autoIncrement": true,
       "ios": {
         "distribution": "store"
+      },
+      "android": {
+        "distribution": "store"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "track": "internal"
+      }
+    }
   }
 }

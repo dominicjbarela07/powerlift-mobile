@@ -1,14 +1,22 @@
 // app/coach-dashboard.tsx
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import RefreshScreen from '@/components/refresh-screen';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
+import {
+  SLAthleteAvatar,
+  SLErrorState,
+  SLLoadingState,
+  SLScreen,
+  SLStatusPill,
+} from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { SLColors, SLRadius, SLShadows, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 type CoachDashboardAthleteRef = {
   id: number;
@@ -22,9 +30,10 @@ type CoachDashboardReviewAthleteRef = {
 };
 
 type CoachDashboardRecentActivityItem = {
-  kind: 'logged' | 'missed' | 'assigned';
+  kind: 'logged' | 'missed' | 'assigned' | 'tardy';
   athlete_name: string;
   session_name: string;
+  detail?: string | null;
   when: string;
   workout_id: number;
   athlete_id: number;
@@ -47,6 +56,17 @@ type CoachDashboardUpcomingDay = {
   items: CoachDashboardUpcomingItem[];
 };
 
+type CoachDashboardWorkflowItem = {
+  athlete_id: number;
+  athlete_name: string;
+  programmed_through_date?: string | null;
+  last_completed_date?: string | null;
+  next_assigned_date?: string | null;
+  days_remaining?: number | null;
+  days_since_last_completed?: number | null;
+  workflow_status?: string | null;
+};
+
 type CoachDashboardResponse = {
   ok: boolean;
   coach_name?: string;
@@ -59,12 +79,91 @@ type CoachDashboardResponse = {
   missed_yesterday: number;
   pending_approvals: number;
   pending_reviews: number;
+  workflow_programming_now?: number;
+  workflow_programming_soon?: number;
+  workflow_upcoming_reminders?: number;
+  workflow_fully_programmed?: number;
+  workflow_roster_count?: number;
+  workflow_roster_uptodate_pct?: number;
+  workflow_avg_horizon_days?: number | null;
+  workflow_snapshot?: CoachDashboardWorkflowItem[];
   no_log_3plus: CoachDashboardAthleteRef[];
   missed_yesterday_athletes?: CoachDashboardAthleteRef[];
   pending_reviews_athletes?: CoachDashboardReviewAthleteRef[];
   recent_activity?: CoachDashboardRecentActivityItem[];
   upcoming_days?: CoachDashboardUpcomingDay[];
 };
+
+type QueueItem = {
+  key: string;
+  title: string;
+  subtitle: string;
+  meta?: string;
+  athleteName?: string | null;
+  statusLabel?: string;
+  statusTone?: SLStatusTone;
+  priority?: 'high' | 'medium' | 'low' | 'neutral';
+  priorityLabel?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+  route?: string;
+  routeParams?: Record<string, string>;
+  workoutId?: number;
+  athleteRoute?: {
+    id: number;
+    name: string;
+  };
+};
+
+type MetricItem = {
+  label: string;
+  value: string | number;
+  tone?: SLStatusTone;
+};
+
+const ROUTES = {
+  coachRoster: '/coach-roster',
+  coachVideos: '/(tabs)/coach-videos',
+  createWorkout: '/create-workout',
+  messages: '/(tabs)/messages',
+  sessionSurveys: '/(tabs)/session-surveys',
+  kpiDrafts: '/coach-kpi/drafts',
+  kpiMissedYesterday: '/coach-kpi/missed_yesterday',
+  kpiTodayAssigned: '/coach-kpi/today_assigned',
+  kpiTodayLogged: '/coach-kpi/today_logged',
+} as const;
+
+const PATCH_NOTE_VERSION = 'strength_ledger_mobile_2_0_patch_notes_seen';
+
+const TODAY_MATERIAL = {
+  canvas: 'transparent',
+  canvasWarm: 'transparent',
+  graphiteWarm: 'rgba(13, 14, 14, 0.22)',
+  graphiteSoft: 'rgba(8, 8, 10, 0.44)',
+  graphiteInset: 'rgba(6, 6, 7, 0.30)',
+  commandTop: 'rgba(8, 8, 10, 0.60)',
+  commandBottom: '#070A10',
+  hairlineWarm: 'rgba(255, 255, 255, 0.052)',
+  violetWash: 'rgba(139, 92, 246, 0.045)',
+  steelWash: 'rgba(126, 166, 184, 0.08)',
+} as const;
+
+function compactDateLabel() {
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date());
+}
+
+function workflowLabel(item: CoachDashboardWorkflowItem) {
+  const days = item.days_remaining;
+  if (typeof days === 'number') {
+    if (days < 0) return `${Math.abs(days)} day${Math.abs(days) === 1 ? '' : 's'} overdue`;
+    if (days === 0) return 'Runs out today';
+    return `${days} day${days === 1 ? '' : 's'} remaining`;
+  }
+  return 'Programming horizon unknown';
+}
 
 export default function CoachDashboardScreen() {
   const router = useRouter();
@@ -74,6 +173,35 @@ export default function CoachDashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPatchNote, setShowPatchNote] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkPatchNote = async () => {
+      try {
+        const seen = await AsyncStorage.getItem(PATCH_NOTE_VERSION);
+        if (!cancelled && seen !== '1') setShowPatchNote(true);
+      } catch {
+        if (!cancelled) setShowPatchNote(true);
+      }
+    };
+
+    checkPatchNote();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const dismissPatchNote = useCallback(async () => {
+    setShowPatchNote(false);
+    try {
+      await AsyncStorage.setItem(PATCH_NOTE_VERSION, '1');
+    } catch {
+      // no-op
+    }
+  }, []);
 
   const displayName = useMemo(() => {
     const payloadName = (data?.coach_name || '').trim();
@@ -88,7 +216,6 @@ export default function CoachDashboardScreen() {
     };
 
     const userObj = user as Record<string, unknown>;
-
     const direct =
       getString(userObj, 'name') ||
       getString(userObj, 'full_name') ||
@@ -103,16 +230,6 @@ export default function CoachDashboardScreen() {
 
     return combined || 'Coach';
   }, [data?.coach_name, user]);
-
-    const displayInitials = useMemo(() => {
-    return (displayName || 'Coach')
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('') || 'C';
-  }, [displayName]);
 
   const loadDashboard = useCallback(
     async (opts?: { silent?: boolean }) => {
@@ -197,788 +314,1376 @@ export default function CoachDashboardScreen() {
     await loadDashboard({ silent: true });
   }, [loadDashboard]);
 
-  const attentionItems = useMemo(() => {
-    if (!data) return [] as Array<{
-      key: string;
-      athleteId?: number;
-      name: string;
-      reason: string;
-      tone: 'danger' | 'warn' | 'accent';
-      target?: string;
-      count?: number;
-    }>;
-
-    const items: Array<{
-      key: string;
-      athleteId?: number;
-      name: string;
-      reason: string;
-      tone: 'danger' | 'warn' | 'accent';
-      target?: string;
-      count?: number;
-    }> = [];
-
-    (data.no_log_3plus || []).forEach((a) => {
-      items.push({
-        key: `nolog-${a.id}`,
-        athleteId: a.id,
-        name: a.name,
-        reason: 'No log in 3+ days',
-        tone: 'danger',
-      });
-    });
-
-    (data.missed_yesterday_athletes || []).forEach((a) => {
-      items.push({
-        key: `missed-${a.id}`,
-        athleteId: a.id,
-        name: a.name,
-        reason: "Missed yesterday's session",
-        tone: 'warn',
-        target: '/coach-kpi/missed_yesterday',
-      });
-    });
-
-    (data.pending_reviews_athletes || []).forEach((a) => {
-      items.push({
-        key: `review-${a.id}`,
-        athleteId: a.id,
-        name: a.name,
-        reason: 'Session feedback to review',
-        tone: 'accent',
-        target: '/(tabs)/session-surveys',
-        count: a.count ?? 1,
-      });
-    });
-
-    if (!items.length) {
-      if ((data.pending_reviews ?? 0) > 0) {
-        items.push({
-          key: 'review-summary',
-          name: 'Session Feedback',
-          reason: `${data.pending_reviews} item${data.pending_reviews === 1 ? '' : 's'} ready to review`,
-          tone: 'accent',
-          target: '/(tabs)/session-surveys',
-          count: data.pending_reviews,
-        });
+  const openRoute = useCallback(
+    (route?: string, routeParams?: Record<string, string>) => {
+      if (!route) return;
+      if (routeParams) {
+        router.push({ pathname: route as any, params: routeParams } as any);
+        return;
       }
+      router.push(route as any);
+    },
+    [router]
+  );
 
-      if ((data.drafts ?? 0) > 0) {
-        items.push({
-          key: 'draft-summary',
-          name: 'Draft Sessions',
-          reason: `${data.drafts} draft${data.drafts === 1 ? '' : 's'} not assigned`,
-          tone: 'accent',
-          target: '/coach-kpi/drafts',
-          count: data.drafts,
-        });
-      }
+  const openWorkout = useCallback(
+    (workoutId?: number | null) => {
+      if (!workoutId) return;
+      router.push({
+        pathname: '/workout/[workoutId]',
+        params: { workoutId: String(workoutId) },
+      } as any);
+    },
+    [router]
+  );
+
+  const openAthlete = useCallback(
+    (athlete?: { id: number; name: string }) => {
+      if (!athlete) return;
+      router.push({
+        pathname: '/(tabs)/coach-athlete/[athleteId]',
+        params: { athleteId: String(athlete.id), athleteName: athlete.name },
+      } as any);
+    },
+    [router]
+  );
+
+  const programmingRows = useMemo(() => {
+    const rows = data?.workflow_snapshot ?? [];
+    return rows
+      .filter((row) => {
+        const status = String(row.workflow_status || '').toLowerCase();
+        const days = row.days_remaining;
+        return status.includes('need') || status.includes('soon') || (typeof days === 'number' && days <= 3);
+      })
+      .sort((a, b) => {
+        const aDays = typeof a.days_remaining === 'number' ? a.days_remaining : 999;
+        const bDays = typeof b.days_remaining === 'number' ? b.days_remaining : 999;
+        return aDays - bDays || a.athlete_name.localeCompare(b.athlete_name);
+      })
+      .slice(0, 5);
+  }, [data?.workflow_snapshot]);
+
+  const needsAction = useMemo(() => {
+    if (!data) return [] as QueueItem[];
+
+    const items: QueueItem[] = [];
+
+    (data.pending_reviews_athletes || []).forEach((athlete) => {
+      const count = athlete.count ?? 1;
+      items.push({
+        key: `review-${athlete.id}`,
+        title: athlete.name,
+        subtitle: 'Session feedback is waiting for coach review.',
+        athleteName: athlete.name,
+        statusLabel: `${count} review${count === 1 ? '' : 's'}`,
+        statusTone: 'review',
+        priority: count > 1 ? 'high' : 'medium',
+        priorityLabel: 'Review',
+        route: ROUTES.sessionSurveys,
+        routeParams: { athleteId: String(athlete.id), athleteName: athlete.name },
+      });
+    });
+
+    (data.missed_yesterday_athletes || []).forEach((athlete) => {
+      items.push({
+        key: `missed-${athlete.id}`,
+        title: athlete.name,
+        subtitle: "Missed yesterday's assigned session.",
+        athleteName: athlete.name,
+        statusLabel: 'Missed',
+        statusTone: 'warning',
+        priority: 'high',
+        priorityLabel: 'Follow up',
+        route: ROUTES.kpiMissedYesterday,
+      });
+    });
+
+    (data.no_log_3plus || []).forEach((athlete) => {
+      items.push({
+        key: `stale-${athlete.id}`,
+        title: athlete.name,
+        subtitle: 'No log for 3+ days. Open athlete context before messaging or adjusting.',
+        athleteName: athlete.name,
+        statusLabel: 'Stale',
+        statusTone: 'danger',
+        priority: 'high',
+        priorityLabel: 'Check in',
+        athleteRoute: { id: athlete.id, name: athlete.name },
+      });
+    });
+
+    programmingRows.slice(0, 3).forEach((row) => {
+      const days = row.days_remaining;
+      items.push({
+        key: `programming-${row.athlete_id}`,
+        title: row.athlete_name,
+        subtitle: workflowLabel(row),
+        athleteName: row.athlete_name,
+        statusLabel: typeof days === 'number' && days <= 0 ? 'Program now' : 'Due soon',
+        statusTone: typeof days === 'number' && days <= 0 ? 'danger' : 'warning',
+        priority: typeof days === 'number' && days <= 0 ? 'high' : 'medium',
+        priorityLabel: 'Programming',
+        athleteRoute: { id: row.athlete_id, name: row.athlete_name },
+      });
+    });
+
+    if (!items.length && (data.drafts ?? 0) > 0) {
+      items.push({
+        key: 'drafts',
+        title: 'Draft sessions',
+        subtitle: `${data.drafts} draft${data.drafts === 1 ? '' : 's'} are not assigned.`,
+        statusLabel: String(data.drafts),
+        statusTone: 'accent',
+        priority: 'low',
+        priorityLabel: 'Clean up',
+        route: ROUTES.kpiDrafts,
+        icon: 'document-text-outline',
+      });
     }
 
-    return items.slice(0, 6);
-  }, [data]);
+    return items.slice(0, 7);
+  }, [data, programmingRows]);
 
-  const recentActivity = useMemo(() => {
-    if (!data) return [] as Array<{
-      key: string;
-      title: string;
-      meta: string;
-      target: string;
-      tone: 'accent' | 'warn' | 'success';
-    }>;
+  const reviewQueue = useMemo(() => {
+    if (!data) return [] as QueueItem[];
 
-    if (data.recent_activity && data.recent_activity.length > 0) {
-      return data.recent_activity.slice(0, 4).map((item, idx) => {
-        const actionLabel =
-          item.kind === 'logged'
-            ? 'completed'
-            : item.kind === 'missed'
-            ? 'missed'
-            : 'was assigned';
+    const items: QueueItem[] = [];
 
-        const whenLabel = (() => {
-          const raw = String(item.when || '').trim();
-          if (!raw) return 'Recently updated';
-          if (raw.toLowerCase() === 'now') return 'Just now';
-          return raw;
-        })();
-
-        return {
-          key: `recent-${item.workout_id}-${idx}`,
-          title: `${item.athlete_name} ${actionLabel} ${item.session_name}`,
-          meta: whenLabel,
-          target: item.workout_id ? `/workout/${item.workout_id}` : '/coach-kpi/today_logged',
-          tone:
-            item.kind === 'logged'
-              ? 'success'
-              : item.kind === 'missed'
-              ? 'warn'
-              : 'accent',
-        };
+    if ((data.pending_reviews ?? 0) > 0) {
+      items.push({
+        key: 'session-reviews',
+        title: 'Session feedback',
+        subtitle: 'Review athlete post-session notes and mark handled.',
+        statusLabel: `${data.pending_reviews}`,
+        statusTone: 'review',
+        priority: 'high',
+        priorityLabel: 'Review',
+        icon: 'clipboard-outline',
+        route: ROUTES.sessionSurveys,
       });
     }
 
-    return [];
+    items.push({
+      key: 'video-inbox',
+      title: 'Set video inbox',
+      subtitle:
+        (data.pending_approvals ?? 0) > 0
+          ? 'Submitted videos are waiting for review.'
+          : 'Open submitted set videos with context HUD playback.',
+      statusLabel: (data.pending_approvals ?? 0) > 0 ? `${data.pending_approvals}` : 'Open',
+      statusTone: (data.pending_approvals ?? 0) > 0 ? 'review' : 'neutral',
+      priority: (data.pending_approvals ?? 0) > 0 ? 'high' : 'neutral',
+      priorityLabel: (data.pending_approvals ?? 0) > 0 ? 'Video' : undefined,
+      icon: 'videocam-outline',
+      route: ROUTES.coachVideos,
+    });
+
+    return items;
   }, [data]);
 
-  const upcomingDays = useMemo(() => {
-    return data?.upcoming_days ?? [];
+  const upcomingSessions = useMemo(() => {
+    return (data?.upcoming_days ?? []).flatMap((day) =>
+      (day.items || []).slice(0, 3).map((item, idx) => ({
+        ...item,
+        key: `${day.date_iso}-${item.workout_id}-${idx}`,
+        dateLabel: day.date_label,
+        dow: day.dow,
+      }))
+    ).slice(0, 6);
   }, [data?.upcoming_days]);
 
-  return (
-    <ThemedView style={styles.screen}>
-      {loading && !data ? (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator />
+  const recentActivity = useMemo(() => {
+    if (!data?.recent_activity) return [] as QueueItem[];
+
+    return data.recent_activity.slice(0, 5).map((item, idx): QueueItem => {
+      const actionLabel =
+        item.kind === 'logged'
+          ? 'completed'
+          : item.kind === 'missed'
+          ? 'missed'
+          : item.kind === 'tardy'
+          ? 'logged late'
+          : 'was assigned';
+
+      const title = `${item.athlete_name} ${actionLabel} ${item.session_name}`;
+      const when = String(item.when || '').trim();
+      const meta = item.kind === 'tardy' && item.detail ? `${when || 'Recently'} · ${item.detail}` : when || 'Recently';
+
+      return {
+        key: `recent-${item.workout_id}-${idx}`,
+        title,
+        subtitle: meta,
+        statusLabel:
+          item.kind === 'logged'
+            ? 'Logged'
+            : item.kind === 'missed'
+            ? 'Missed'
+            : item.kind === 'tardy'
+            ? 'Late'
+            : 'Assigned',
+        statusTone:
+          item.kind === 'logged'
+            ? 'success'
+            : item.kind === 'missed'
+            ? 'warning'
+            : item.kind === 'tardy'
+            ? 'accent'
+            : 'neutral',
+        icon:
+          item.kind === 'logged'
+            ? 'checkmark-circle-outline'
+            : item.kind === 'missed'
+            ? 'alert-circle-outline'
+            : 'time-outline',
+        route: item.workout_id ? undefined : ROUTES.kpiTodayLogged,
+        workoutId: item.workout_id,
+      };
+    });
+  }, [data?.recent_activity]);
+
+  const priorityMetrics = useMemo(() => {
+    const pendingReviews = data?.pending_reviews ?? 0;
+    const missed = data?.missed_yesterday ?? 0;
+    const programmingNow = data?.workflow_programming_now ?? 0;
+    const programmingSoon = data?.workflow_programming_soon ?? 0;
+
+    const metrics: MetricItem[] = [
+      {
+        label: 'Reviews',
+        value: pendingReviews,
+        tone: pendingReviews > 0 ? 'review' : 'neutral',
+      },
+      {
+        label: 'Missed',
+        value: missed,
+        tone: missed > 0 ? 'warning' : 'neutral',
+      },
+      {
+        label: 'Program now',
+        value: programmingNow,
+        tone: programmingNow > 0 ? 'danger' : 'neutral',
+      },
+      {
+        label: 'Due soon',
+        value: programmingSoon,
+        tone: programmingSoon > 0 ? 'warning' : 'neutral',
+      },
+    ];
+
+    return metrics;
+  }, [data]);
+
+  const firstAction = needsAction[0];
+
+  if (loading && !data) {
+    return (
+      <SLScreen edges="none">
+        <View style={styles.centerState}>
+          <SLLoadingState message="Building the command center..." title="Loading Today" />
         </View>
-      ) : (
-        <RefreshScreen
-          style={styles.scroll}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <View style={styles.heroTopRow}>
-            <View style={styles.avatarBubble}>
+      </SLScreen>
+    );
+  }
+
+  return (
+    <SLScreen edges="none" padded={false}>
+      <CoachPatchNoteModal dismissPatchNote={dismissPatchNote} showPatchNote={showPatchNote} />
+      <RefreshScreen
+        contentContainerStyle={styles.scrollContent}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        style={styles.scroll}
+      >
+        <View style={styles.commandSurface}>
+          <View style={styles.commandRail} />
+          <View style={styles.headerTop}>
+            <View style={styles.coachAvatar}>
               {data?.coach_logo_url ? (
-                <Image
-                  source={{ uri: data.coach_logo_url }}
-                  style={styles.avatarImage}
-                />
+                <Image source={{ uri: data.coach_logo_url }} style={styles.coachAvatarImage} />
               ) : (
-                <ThemedText style={styles.avatarText}>
-                  {displayInitials}
-                </ThemedText>
+                <SLAthleteAvatar name={displayName} size={44} />
               )}
             </View>
-            <View style={styles.heroCopy}>
-              <ThemedText style={styles.heroEyebrow}>Coach</ThemedText>
-              <ThemedText style={styles.heroName}>{displayName}</ThemedText>
-              <ThemedText style={styles.heroMeta}>
-                {data?.athlete_count ?? data?.total ?? 0} Athlete{((data?.athlete_count ?? data?.total ?? 0) === 1) ? '' : 's'}
-              </ThemedText>
+            <View style={styles.headerCopy}>
+              <Text style={styles.eyebrow}>Forward Operating Base</Text>
+              <Text style={styles.title}>Today</Text>
+              <Text style={styles.subtitle}>
+                {compactDateLabel()} / {displayName}
+              </Text>
             </View>
           </View>
-
-          <View style={styles.kpiRow}>
-            <TouchableOpacity
-              style={[styles.kpiCard, styles.kpiThird]}
-              onPress={() => router.push('/coach-kpi/today_assigned')}
-            >
-              <View style={styles.kpiIconRow}>
-                <Ionicons name="calendar-outline" size={22} color="#A78BFA" />
-              </View>
-              <ThemedText style={styles.kpiMiniLabel}>Assigned Today</ThemedText>
-              <ThemedText style={styles.kpiMiniValue}>{data?.today_assigned ?? 0}</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.kpiCard, styles.kpiThird]}
-              onPress={() => router.push('/coach-kpi/today_logged')}
-            >
-              <View style={styles.kpiIconRow}>
-                <Ionicons name="checkbox-outline" size={22} color="#34D399" />
-              </View>
-              <ThemedText style={styles.kpiMiniLabel}>Logged Today</ThemedText>
-              <ThemedText style={styles.kpiMiniValue}>{data?.today_logged ?? 0}</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.kpiCard, styles.kpiThird, styles.kpiWarnCard]}
-              onPress={() => router.push('/coach-kpi/missed_yesterday')}
-            >
-              <View style={styles.kpiIconRow}>
-                <Ionicons name="time-outline" size={22} color="#FBBF24" />
-              </View>
-              <ThemedText style={styles.kpiMiniLabel}>Missed Yesterday</ThemedText>
-              <ThemedText style={[styles.kpiMiniValue, styles.warnValue]}>
-                {data?.missed_yesterday ?? 0}
-              </ThemedText>
-            </TouchableOpacity>
+          <View style={styles.headerMetaRow}>
+            <SLStatusPill
+              icon="people-outline"
+              label={`${data?.athlete_count ?? data?.total ?? 0} athlete${(data?.athlete_count ?? data?.total ?? 0) === 1 ? '' : 's'}`}
+              tone="neutral"
+            />
+            {typeof data?.workflow_roster_uptodate_pct === 'number' ? (
+              <SLStatusPill label={`${data.workflow_roster_uptodate_pct}% programmed`} tone="success" />
+            ) : null}
           </View>
+        </View>
 
-          {error && (
-            <ThemedText variant="error" style={styles.errorText}>{error}</ThemedText>
-          )}
+        {error ? (
+          <SLErrorState
+            actionLabel="Try Again"
+            message={error}
+            onActionPress={() => loadDashboard()}
+            style={styles.sectionGap}
+            title="Could not load Today"
+          />
+        ) : null}
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionHeaderLeft}>
-                <Ionicons name="warning-outline" size={18} color="#FF5C72" style={styles.sectionHeaderIcon} />
-                <ThemedText variant="h2" style={styles.sectionTitle}>Needs Attention</ThemedText>
-              </View>
-              {(data?.pending_reviews ?? 0) > 0 && (
-                <TouchableOpacity onPress={() => router.push('/(tabs)/session-surveys' as any)}>
-                  <ThemedText style={styles.sectionLink}>View All</ThemedText>
-                </TouchableOpacity>
-              )}
-            </View>
-
-            <View style={styles.panelCard}>
-              {attentionItems.length > 0 ? (
-                attentionItems.map((item, idx) => (
-                  <TouchableOpacity
-                    key={item.key}
-                    style={[
-                      styles.attentionRow,
-                      idx !== attentionItems.length - 1 && styles.attentionRowBorder,
-                    ]}
-                    activeOpacity={item.target ? 0.85 : 1}
-                    disabled={!item.target}
-                    onPress={item.target ? () => router.push(item.target as any) : undefined}
-                  >
-                    <View
-                      style={[
-                        styles.attentionAvatar,
-                        item.tone === 'danger'
-                          ? styles.attentionAvatarDanger
-                          : item.tone === 'warn'
-                          ? styles.attentionAvatarWarn
-                          : styles.attentionAvatarAccent,
-                      ]}
-                    >
-                      <ThemedText style={styles.attentionAvatarText}>
-                        {item.name
-                          .split(' ')
-                          .slice(0, 2)
-                          .map((part) => part.charAt(0).toUpperCase())
-                          .join('')
-                          .slice(0, 2)}
-                      </ThemedText>
-                    </View>
-
-                    <View style={styles.attentionContent}>
-                      <ThemedText style={styles.attentionName}>{item.name}</ThemedText>
-                      <ThemedText
-                        style={[
-                          styles.attentionReason,
-                          item.tone === 'danger'
-                            ? styles.attentionReasonDanger
-                            : item.tone === 'warn'
-                            ? styles.attentionReasonWarn
-                            : styles.attentionReasonAccent,
-                        ]}
-                      >
-                        {item.reason}
-                      </ThemedText>
-                    </View>
-
-                    <View style={styles.attentionRight}>
-                      {item.count ? (
-                        <View style={styles.countBadge}>
-                          <ThemedText style={styles.countBadgeText}>{item.count}</ThemedText>
-                        </View>
-                      ) : null}
-                      {item.target ? <ThemedText style={styles.chevron}>›</ThemedText> : null}
-                    </View>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <ThemedText style={styles.emptyTitle}>Nothing urgent right now</ThemedText>
-                  <ThemedText style={styles.emptyBody}>Your queue is clear for the moment.</ThemedText>
-                </View>
-              )}
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionHeaderLeft}>
-                <Ionicons name="time-outline" size={18} color="#8B5CF6" style={styles.sectionHeaderIcon} />
-                <ThemedText variant="h2" style={styles.sectionTitle}>Recent Activity</ThemedText>
-              </View>
-            </View>
-
-            <View style={styles.panelCard}>
-              {recentActivity.length > 0 ? (
-                recentActivity.map((item, idx) => (
-                  <TouchableOpacity
-                    key={item.key}
-                    style={[
-                      styles.activityRow,
-                      idx !== recentActivity.length - 1 && styles.activityRowBorder,
-                    ]}
-                    onPress={() => router.push(item.target as any)}
-                  >
-                    <View
-                      style={[
-                        styles.activityIcon,
-                        item.tone === 'success'
-                          ? styles.activityIconSuccess
-                          : item.tone === 'warn'
-                          ? styles.activityIconWarn
-                          : styles.activityIconAccent,
-                      ]}
-                    />
-                    <View style={styles.activityContent}>
-                      <ThemedText style={styles.activityTitle}>{item.title}</ThemedText>
-                      <ThemedText style={styles.activityMeta}>{item.meta}</ThemedText>
-                    </View>
-                    <ThemedText style={styles.activityChevron}>›</ThemedText>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <ThemedText style={styles.emptyTitle}>No recent activity yet</ThemedText>
-                  <ThemedText style={styles.emptyBody}>Completed sessions and feedback will surface here.</ThemedText>
-                </View>
-              )}
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionHeaderLeft}>
-                <Ionicons name="calendar-outline" size={18} color="#A78BFA" style={styles.sectionHeaderIcon} />
-                <ThemedText variant="h2" style={styles.sectionTitle}>Upcoming</ThemedText>
-              </View>
-            </View>
-
-            <View style={styles.panelCard}>
-              {upcomingDays.length > 0 ? (
-                upcomingDays.map((day, idx) => (
-                  <View
-                    key={day.date_iso}
-                    style={[
-                      styles.upcomingDayBlock,
-                      idx !== upcomingDays.length - 1 && styles.upcomingDayBorder,
-                    ]}
-                  >
-                    <View style={styles.upcomingDayHeader}>
-                      <ThemedText style={styles.upcomingDayDow}>{day.dow}</ThemedText>
-                      <ThemedText style={styles.upcomingDayDate}>{day.date_label}</ThemedText>
-                    </View>
-
-                    {day.items && day.items.length > 0 ? (
-                      day.items.slice(0, 4).map((item, itemIdx) => (
-                        <TouchableOpacity
-                          key={`${day.date_iso}-${item.workout_id}-${itemIdx}`}
-                          style={[
-                            styles.upcomingItemRow,
-                            itemIdx !== day.items.slice(0, 4).length - 1 && styles.upcomingItemBorder,
-                          ]}
-                          onPress={() => router.push(`/workout/${item.workout_id}` as any)}
-                        >
-                          <View style={styles.upcomingItemDot} />
-                          <View style={styles.upcomingItemContent}>
-                            <ThemedText style={styles.upcomingAthlete}>{item.athlete_name}</ThemedText>
-                            <ThemedText style={styles.upcomingSession}>{item.session_name}</ThemedText>
-                          </View>
-                          <ThemedText style={styles.activityChevron}>›</ThemedText>
-                        </TouchableOpacity>
-                      ))
-                    ) : (
-                      <View style={styles.upcomingEmptyRow}>
-                        <ThemedText style={styles.upcomingEmptyText}>No sessions scheduled</ThemedText>
-                      </View>
-                    )}
-                  </View>
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <ThemedText style={styles.emptyTitle}>Nothing scheduled yet</ThemedText>
-                  <ThemedText style={styles.emptyBody}>The next 3 days will show here.</ThemedText>
-                </View>
-              )}
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.fab}
-            activeOpacity={0.9}
-            onPress={() => router.push('/create-workout')}
+        {firstAction ? (
+          <Pressable
+            onPress={() => {
+              if (firstAction.athleteRoute) openAthlete(firstAction.athleteRoute);
+              else openRoute(firstAction.route, firstAction.routeParams);
+            }}
+            style={({ pressed }) => [styles.priorityCommand, pressed && styles.pressed]}
           >
-            <ThemedText style={styles.fabPlus}>＋</ThemedText>
-            <ThemedText style={styles.fabLabel}>Create{`\n`}Session</ThemedText>
-          </TouchableOpacity>
-        </RefreshScreen>
-      )}
-    </ThemedView>
+            <View style={[styles.priorityRail, { backgroundColor: toneColor(firstAction.statusTone) }]} />
+            <View style={styles.priorityCopy}>
+              <Text style={styles.priorityKicker}>Next action</Text>
+              <Text style={styles.priorityTitle}>{firstAction.title}</Text>
+              <Text numberOfLines={2} style={styles.priorityMeta}>{firstAction.subtitle}</Text>
+            </View>
+            <View style={styles.priorityCount}>
+              <Text style={styles.priorityCountValue}>{needsAction.length}</Text>
+              <Text style={styles.priorityCountLabel}>queued</Text>
+            </View>
+          </Pressable>
+        ) : (
+          <View style={styles.clearPanel}>
+            <Ionicons color={SLColors.success} name="checkmark-circle-outline" size={22} />
+            <View style={styles.clearCopy}>
+              <Text style={styles.clearTitle}>No urgent queue items</Text>
+              <Text style={styles.clearSubtitle}>Review pulse and upcoming sessions below.</Text>
+            </View>
+          </View>
+        )}
+
+        <View style={styles.tacticalZone}>
+          <View style={styles.kpiStrip}>
+            {priorityMetrics.map((metric) => (
+              <View key={metric.label} style={styles.kpiCell}>
+                <Text style={[styles.kpiValue, metric.tone ? { color: toneColor(metric.tone) } : null]}>{metric.value}</Text>
+                <Text numberOfLines={1} style={styles.kpiLabel}>{metric.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <LedgerSection
+            actionLabel={needsAction.length > 3 ? 'Roster' : undefined}
+            primary
+            onActionPress={needsAction.length > 3 ? () => router.push(ROUTES.coachRoster as any) : undefined}
+            title="Needs Action"
+          >
+            {needsAction.length > 0 ? (
+              <View style={styles.commandQueue}>
+                {needsAction.map((item, index) => (
+                  <LedgerRow
+                    key={item.key}
+                    item={item}
+                    onPress={() => {
+                      if (item.athleteRoute) openAthlete(item.athleteRoute);
+                      else openRoute(item.route, item.routeParams);
+                    }}
+                    rank={index + 1}
+                    dominant={index === 0}
+                  />
+                ))}
+              </View>
+            ) : (
+              <InlineEmpty title="Queue clear" />
+            )}
+          </LedgerSection>
+
+          <LedgerSection
+            actionLabel="Open videos"
+            onActionPress={() => router.push(ROUTES.coachVideos as any)}
+            title="Review Queue"
+          >
+            <View style={styles.ledgerList}>
+              {reviewQueue.map((item) => (
+                <LedgerRow
+                  key={item.key}
+                  item={item}
+                  onPress={() => openRoute(item.route, item.routeParams)}
+                />
+              ))}
+            </View>
+          </LedgerSection>
+        </View>
+
+        <View style={styles.lowerPlane}>
+          <LedgerSection
+            actionLabel="Roster"
+            onActionPress={() => router.push(ROUTES.coachRoster as any)}
+            title="Programming Horizon"
+          >
+            <View style={styles.ledgerList}>
+              {programmingRows.length > 0 ? (
+                programmingRows.map((item) => (
+                  <PlanningRow
+                    key={`horizon-${item.athlete_id}`}
+                    name={item.athlete_name}
+                    horizon={workflowLabel(item)}
+                    meta={item.programmed_through_date ? `Through ${item.programmed_through_date}` : undefined}
+                    tone={typeof item.days_remaining === 'number' && item.days_remaining <= 0 ? 'danger' : 'warning'}
+                    onPress={() => openAthlete({ id: item.athlete_id, name: item.athlete_name })}
+                  />
+                ))
+              ) : (
+                <InlineEmpty
+                  title="Programming coverage stable"
+                  detail={typeof data?.workflow_avg_horizon_days === 'number' ? `Average horizon: ${data.workflow_avg_horizon_days} days` : undefined}
+                />
+              )}
+
+              {upcomingSessions.length > 0 ? (
+                <View style={styles.upcomingWrap}>
+                  <Text style={styles.subsectionLabel}>Upcoming sessions</Text>
+                  {upcomingSessions.map((item) => (
+                    <FeedRow
+                      key={item.key}
+                      title={item.athlete_name}
+                      detail={item.session_name}
+                      meta={item.dateLabel}
+                      onPress={() => openWorkout(item.workout_id)}
+                      tone="info"
+                    />
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          </LedgerSection>
+
+          <LedgerSection title="Team Pulse">
+            <View style={styles.feedList}>
+              <FeedRow
+                icon="calendar-outline"
+                onPress={() => router.push(ROUTES.kpiTodayAssigned as any)}
+                meta={`${data?.today_assigned ?? 0}`}
+                tone="info"
+                title="Today's assigned work"
+              />
+              <FeedRow
+                icon="checkmark-circle-outline"
+                onPress={() => router.push(ROUTES.kpiTodayLogged as any)}
+                meta={`${data?.today_logged ?? 0}`}
+                tone={(data?.today_logged ?? 0) > 0 ? 'success' : 'neutral'}
+                title="Today's logged work"
+              />
+              {recentActivity.length > 0 ? (
+                recentActivity.map((item) => (
+                  <FeedRow
+                    icon={item.icon}
+                    key={item.key}
+                    onPress={() => {
+                      if (item.workoutId) openWorkout(item.workoutId);
+                      else openRoute(item.route, item.routeParams);
+                    }}
+                    detail={item.subtitle}
+                    meta={item.statusLabel}
+                    tone={item.statusTone}
+                    title={item.title}
+                  />
+                ))
+              ) : (
+                <InlineEmpty title="No recent pulse yet" />
+              )}
+            </View>
+          </LedgerSection>
+        </View>
+
+        <UtilityDock
+          actions={[
+            { icon: 'add-circle-outline', label: 'Create', onPress: () => router.push(ROUTES.createWorkout as any), tone: 'accent' },
+            { icon: 'people-outline', label: 'Roster', onPress: () => router.push(ROUTES.coachRoster as any), tone: 'info' },
+            { icon: 'chatbubbles-outline', label: 'Messages', onPress: () => router.push(ROUTES.messages as any), tone: 'neutral' },
+            { icon: 'videocam-outline', label: 'Videos', onPress: () => router.push(ROUTES.coachVideos as any), tone: 'review' },
+          ]}
+        />
+      </RefreshScreen>
+    </SLScreen>
+  );
+}
+
+function CoachPatchNoteModal({
+  dismissPatchNote,
+  showPatchNote,
+}: {
+  dismissPatchNote: () => void;
+  showPatchNote: boolean;
+}) {
+  const highlights = [
+    ['Athlete Today', 'a clearer answer to what needs to happen today'],
+    ['Reflection', 'coaching focus, feedback, and film study in one place'],
+    ['Film Room', 'movement study instead of a generic video archive'],
+    ['Progression and Calendar', 'growth and training rhythm made easier to read'],
+    ['Meet Packet', 'meet prep and meet-day logging for visible plans'],
+    ['Coaching Focus', 'set active Squat, Bench, and Deadlift cues for athletes'],
+  ];
+
+  return (
+    <Modal visible={showPatchNote} transparent animationType="fade" onRequestClose={dismissPatchNote}>
+      <View style={styles.patchModalBackdrop}>
+        <View style={styles.patchModalCard}>
+          <View style={styles.patchModalIconWrap}>
+            <Ionicons name="sparkles" size={22} color={SLColors.accentViolet} />
+          </View>
+          <Text style={styles.patchModalTitle}>Mobile 2.0 is live</Text>
+          <Text style={styles.patchModalBody}>
+            Your athletes now have a refreshed mobile experience for training, feedback, progression, film study, and meet prep.
+          </Text>
+          <Text style={styles.patchModalSubtext}>
+            Use Coaching Focus to set the main Squat, Bench, and Deadlift cues your athlete should keep in mind.
+          </Text>
+          <View style={styles.patchModalFlow}>
+            {highlights.map(([label, detail]) => (
+              <View key={label} style={styles.patchModalFlowRow}>
+                <Text style={styles.patchModalFlowLabel}>{label}</Text>
+                <Text style={styles.patchModalFlowDetail}>{detail}</Text>
+              </View>
+            ))}
+          </View>
+          <Pressable
+            onPress={dismissPatchNote}
+            style={({ pressed }) => [styles.patchModalButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.patchModalButtonText}>Got it</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+function toneColor(tone?: SLStatusTone) {
+  if (!tone) return SLColors.accentSteel;
+  return SLStatusTones[tone]?.icon ?? SLColors.accentSteel;
+}
+
+function LedgerSection({
+  title,
+  actionLabel,
+  onActionPress,
+  primary = false,
+  children,
+}: {
+  title: string;
+  actionLabel?: string;
+  onActionPress?: () => void;
+  primary?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={[styles.ledgerSection, primary && styles.ledgerSectionPrimary]}>
+      <View style={styles.ledgerHeader}>
+        <View style={[styles.sectionRail, primary && styles.sectionRailPrimary]} />
+        <Text style={[styles.ledgerTitle, primary && styles.ledgerTitlePrimary]}>{title}</Text>
+        {actionLabel && onActionPress ? (
+          <Pressable onPress={onActionPress} style={({ pressed }) => [styles.sectionAction, pressed && styles.pressed]}>
+            <Text style={styles.sectionActionText}>{actionLabel}</Text>
+            <Ionicons color={SLColors.accentSteel} name="chevron-forward" size={14} />
+          </Pressable>
+        ) : null}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+function LedgerRow({
+  item,
+  onPress,
+  rank,
+  dominant = false,
+}: {
+  item: QueueItem;
+  onPress: () => void;
+  rank?: number;
+  dominant?: boolean;
+}) {
+  const rail = toneColor(item.statusTone);
+
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.ledgerRow, dominant && styles.ledgerRowDominant, pressed && styles.pressed]}>
+      <View style={[styles.ledgerRowRail, { backgroundColor: rail }]} />
+      {typeof rank === 'number' ? <Text style={styles.ledgerRank}>{String(rank).padStart(2, '0')}</Text> : null}
+      <View style={styles.ledgerIdentity}>
+        {item.athleteName ? (
+          <SLAthleteAvatar name={item.athleteName} size={dominant ? 34 : 28} />
+        ) : (
+          <View style={[styles.ledgerIcon, { borderColor: rail }]}>
+            <Ionicons color={rail} name={item.icon || 'radio-button-on-outline'} size={16} />
+          </View>
+        )}
+      </View>
+      <View style={styles.ledgerCopy}>
+        <Text numberOfLines={1} style={[styles.ledgerRowTitle, dominant && styles.ledgerRowTitleDominant]}>
+          {item.title}
+        </Text>
+        <Text numberOfLines={dominant ? 2 : 1} style={styles.ledgerRowMeta}>
+          {item.meta || item.subtitle}
+        </Text>
+      </View>
+      {item.statusLabel ? (
+        <View style={styles.ledgerStatusWrap}>
+          <Text style={[styles.ledgerStatus, { color: rail }]}>{item.statusLabel}</Text>
+        </View>
+      ) : null}
+    </Pressable>
+  );
+}
+
+function PlanningRow({
+  name,
+  horizon,
+  meta,
+  tone,
+  onPress,
+}: {
+  name: string;
+  horizon: string;
+  meta?: string;
+  tone?: SLStatusTone;
+  onPress: () => void;
+}) {
+  const rail = toneColor(tone);
+
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.planningRow, pressed && styles.pressed]}>
+      <View style={[styles.planningMarker, { backgroundColor: rail }]} />
+      <View style={styles.planningCopy}>
+        <Text numberOfLines={1} style={styles.planningName}>{name}</Text>
+        <Text numberOfLines={1} style={styles.planningHorizon}>{horizon}</Text>
+      </View>
+      {meta ? <Text numberOfLines={1} style={styles.planningMeta}>{meta}</Text> : null}
+    </Pressable>
+  );
+}
+
+function FeedRow({
+  title,
+  detail,
+  meta,
+  tone = 'neutral',
+  icon,
+  onPress,
+}: {
+  title: string;
+  detail?: string;
+  meta?: string;
+  tone?: SLStatusTone;
+  icon?: keyof typeof Ionicons.glyphMap;
+  onPress?: () => void;
+}) {
+  const rail = toneColor(tone);
+
+  const content = (
+    <>
+      <View style={styles.feedTrack}>
+        <View style={[styles.feedDot, { borderColor: rail }]}>
+          {icon ? <Ionicons color={rail} name={icon} size={12} /> : null}
+        </View>
+      </View>
+      <View style={styles.feedCopy}>
+        <Text numberOfLines={1} style={styles.feedTitle}>{title}</Text>
+        {detail ? <Text numberOfLines={1} style={styles.feedDetail}>{detail}</Text> : null}
+      </View>
+      {meta ? <Text numberOfLines={1} style={styles.feedMeta}>{meta}</Text> : null}
+    </>
+  );
+
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress} style={({ pressed }) => [styles.feedRow, pressed && styles.pressed]}>
+        {content}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={styles.feedRow}>
+      {content}
+    </View>
+  );
+}
+
+function InlineEmpty({ title, detail }: { title: string; detail?: string }) {
+  return (
+    <View style={styles.inlineEmpty}>
+      <Ionicons color={SLColors.textSubtle} name="remove-outline" size={16} />
+      <View style={styles.inlineEmptyCopy}>
+        <Text style={styles.inlineEmptyTitle}>{title}</Text>
+        {detail ? <Text style={styles.inlineEmptyDetail}>{detail}</Text> : null}
+      </View>
+    </View>
+  );
+}
+
+function UtilityDock({
+  actions,
+}: {
+  actions: Array<{
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    onPress: () => void;
+    tone?: SLStatusTone;
+  }>;
+}) {
+  return (
+    <View style={styles.utilityDock}>
+      {actions.map((action) => {
+        const color = toneColor(action.tone);
+        return (
+          <Pressable key={action.label} onPress={action.onPress} style={({ pressed }) => [styles.utilityButton, pressed && styles.pressed]}>
+            <Ionicons color={color} name={action.icon} size={17} />
+            <Text style={styles.utilityButtonText}>{action.label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    paddingTop: 0,
-    paddingBottom: 24,
-    backgroundColor: '#020617',
-  },
-  loadingBox: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scroll: {
     flex: 1,
+    backgroundColor: TODAY_MATERIAL.canvas,
   },
   scrollContent: {
-    paddingBottom: 120,
+    gap: 20,
+    paddingBottom: 44,
+    paddingHorizontal: 0,
+    paddingTop: 3,
+    position: 'relative',
   },
-  heroTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  avatarBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
+  centerState: {
+    flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'rgba(124, 108, 255, 0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(124, 108, 255, 0.32)',
-    marginRight: 12,
   },
-  avatarText: {
-    color: '#C4B5FD',
-    fontSize: 20,
-    fontWeight: '700',
+  headerShell: {
+    marginBottom: 0,
   },
-  heroCopy: {
-    flex: 1,
+  header: {
+    gap: SLSpacing.sm,
+    padding: SLSpacing.lg,
   },
-  heroEyebrow: {
-    fontSize: 14,
-    color: '#94A3B8',
-    marginBottom: 2,
-  },
-  heroName: {
-    fontSize: 30,
-    lineHeight: 34,
-    fontWeight: '700',
-    color: '#F8FAFC',
-    marginBottom: 4,
-  },
-  heroMeta: {
-    fontSize: 15,
-    color: '#94A3B8',
-  },
-  errorText: {
-    color: '#f97373',
-    fontSize: 13,
-    marginBottom: 12,
-  },
-  kpiRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 18,
-  },
-  kpiCard: {
-    flex: 1,
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 14,
-    backgroundColor: 'rgba(10, 18, 38, 0.92)',
-    borderWidth: 1,
-    borderColor: 'rgba(109, 132, 176, 0.16)',
-  },
-  kpiThird: {
-    minHeight: 104,
-    justifyContent: 'space-between',
-  },
-  kpiWarnCard: {
-    borderColor: 'rgba(245, 158, 11, 0.24)',
-  },
-  kpiIconRow: {
-    flexDirection: 'row',
+  headerTop: {
     alignItems: 'center',
-    marginBottom: 10,
-  },
-  kpiMiniLabel: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#94A3B8',
-  },
-  kpiMiniValue: {
-    fontSize: 24,
-    lineHeight: 36,
-    fontWeight: '700',
-    color: '#F8FAFC',
-  },
-  warnValue: {
-    color: '#FBBF24',
-  },
-  section: {
-    marginBottom: 18,
-  },
-  sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    gap: SLSpacing.sm,
   },
-  sectionHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sectionHeaderIcon: {
-    marginRight: 10,
-  },
-  sectionDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  sectionDotDanger: {
-    backgroundColor: '#FF5C72',
-  },
-  sectionDotAccent: {
-    backgroundColor: '#8B5CF6',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#F1F5F9',
-  },
-  sectionLink: {
-    color: '#A78BFA',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  panelCard: {
-    borderRadius: 18,
-    overflow: 'hidden',
-    backgroundColor: '#071128',
-    borderWidth: 1,
-    borderColor: 'rgba(109, 132, 176, 0.14)',
-  },
-  attentionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  attentionRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148, 163, 184, 0.08)',
-  },
-  attentionAvatar: {
-    width: 44,
+  coachAvatar: {
     height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+    width: 44,
   },
-  attentionAvatarDanger: {
-    backgroundColor: 'rgba(255, 92, 114, 0.18)',
+  coachAvatarImage: {
+    borderRadius: SLRadius.radiusCard,
+    height: '100%',
+    width: '100%',
   },
-  attentionAvatarWarn: {
-    backgroundColor: 'rgba(245, 158, 11, 0.18)',
-  },
-  attentionAvatarAccent: {
-    backgroundColor: 'rgba(139, 92, 246, 0.18)',
-  },
-  attentionAvatarText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#E5E7EB',
-  },
-  attentionContent: {
+  headerCopy: {
     flex: 1,
+    minWidth: 0,
   },
-  attentionName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#F8FAFC',
-    marginBottom: 4,
+  eyebrow: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: SLTypography.utilityLabel.fontSize,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: SLTypography.utilityLabel.letterSpacing,
+    lineHeight: SLTypography.utilityLabel.lineHeight,
+    textTransform: 'uppercase',
   },
-  attentionReason: {
-    fontSize: 16,
-    lineHeight: 20,
-    fontWeight: '500',
+  title: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.commandTitle.fontFamily,
+    fontSize: SLTypography.commandTitle.fontSize,
+    fontWeight: SLTypography.commandTitle.fontWeight,
+    letterSpacing: SLTypography.commandTitle.letterSpacing,
+    lineHeight: SLTypography.commandTitle.lineHeight,
   },
-  attentionReasonDanger: {
-    color: '#FF6B7D',
+  subtitle: {
+    color: SLColors.textMuted,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+    marginTop: 2,
   },
-  attentionReasonWarn: {
-    color: '#FBBF24',
-  },
-  attentionReasonAccent: {
-    color: '#A78BFA',
-  },
-  attentionRight: {
-    marginLeft: 12,
+  headerMetaRow: {
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flexWrap: 'wrap',
+    gap: 6,
   },
-  countBadge: {
-    minWidth: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#7C3AED',
-    alignItems: 'center',
+  sectionGap: {
+    marginTop: 0,
+  },
+  commandSurface: {
+    ...SLShadows.shadowCommand,
+    backgroundColor: TODAY_MATERIAL.commandTop,
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    borderRadius: SLRadius.radiusHero,
+    minHeight: 138,
+    overflow: 'hidden',
+    paddingHorizontal: SLSpacing.lg,
+    paddingVertical: 18,
+    position: 'relative',
+  },
+  commandRail: {
+    backgroundColor: SLColors.railViolet,
+    bottom: 0,
+    left: 0,
+    opacity: 0.72,
+    position: 'absolute',
+    top: 0,
+    width: 4,
+  },
+  priorityCommand: {
+    ...SLShadows.shadowSoft,
+    alignItems: 'stretch',
+    backgroundColor: TODAY_MATERIAL.graphiteSoft,
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.md,
+    marginTop: -2,
+    minHeight: 98,
+    overflow: 'hidden',
+    paddingRight: SLSpacing.md,
+  },
+  priorityRail: {
+    opacity: 0.82,
+    width: 4,
+  },
+  priorityCopy: {
+    flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  countBadgeText: {
-    color: '#F8FAFC',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  chevron: {
-    fontSize: 24,
-    color: '#94A3B8',
-    lineHeight: 24,
-  },
-  activityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    minWidth: 0,
     paddingVertical: 15,
-    paddingHorizontal: 16,
   },
-  activityRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148, 163, 184, 0.08)',
+  priorityKicker: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: SLTypography.utilityLabel.fontSize,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: SLTypography.utilityLabel.letterSpacing,
+    lineHeight: SLTypography.utilityLabel.lineHeight,
+    textTransform: 'uppercase',
   },
-  activityIcon: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  activityIconSuccess: {
-    backgroundColor: '#34D399',
-  },
-  activityIconWarn: {
-    backgroundColor: '#F59E0B',
-  },
-  activityIconAccent: {
-    backgroundColor: '#8B5CF6',
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 15,
-    lineHeight: 20,
-    color: '#E5E7EB',
-    fontWeight: '600',
-    marginBottom: 3,
-  },
-  activityMeta: {
-    fontSize: 13,
-    color: '#8EA0BE',
-  },
-  activityChevron: {
-    marginLeft: 10,
+  priorityTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.commandTitle.fontFamily,
     fontSize: 22,
-    color: '#64748B',
-    lineHeight: 22,
+    fontWeight: SLTypography.commandTitle.fontWeight,
+    letterSpacing: 0,
+    lineHeight: 27,
   },
-  upcomingDayBlock: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+  priorityMeta: {
+    color: '#A7AFBA',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+    marginTop: 3,
   },
-  upcomingDayBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148, 163, 184, 0.08)',
-  },
-  upcomingDayHeader: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  upcomingDayDow: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#F8FAFC',
-  },
-  upcomingDayDate: {
-    fontSize: 13,
-    color: '#94A3B8',
-    fontWeight: '600',
-  },
-  upcomingItemRow: {
-    flexDirection: 'row',
+  priorityCount: {
     alignItems: 'center',
+    borderLeftColor: TODAY_MATERIAL.hairlineWarm,
+    borderLeftWidth: 1,
+    justifyContent: 'center',
+    minWidth: 60,
+  },
+  priorityCountValue: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.kpiNumber.fontFamily,
+    fontSize: 25,
+    fontWeight: SLTypography.kpiNumber.fontWeight,
+    lineHeight: 29,
+  },
+  priorityCountLabel: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.35,
+    lineHeight: 13,
+    textTransform: 'uppercase',
+  },
+  pressed: {
+    opacity: 0.78,
+  },
+  clearPanel: {
+    alignItems: 'center',
+    backgroundColor: TODAY_MATERIAL.graphiteSoft,
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 64,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
+  },
+  clearCopy: {
+    flex: 1,
+    gap: SLSpacing.xs,
+  },
+  clearTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    letterSpacing: 0,
+  },
+  clearSubtitle: {
+    color: '#9FA8B4',
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: SLTypography.caption.lineHeight,
+  },
+  kpiStrip: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+    borderWidth: 0,
+    borderRadius: 0,
+    flexDirection: 'row',
+    marginLeft: 10,
     paddingVertical: 10,
   },
-  upcomingItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148, 163, 184, 0.08)',
-  },
-  upcomingItemDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#A78BFA',
-    marginRight: 12,
-  },
-  upcomingItemContent: {
+  kpiCell: {
+    alignItems: 'center',
     flex: 1,
+    justifyContent: 'center',
+    minWidth: 0,
   },
-  upcomingAthlete: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#E5E7EB',
-    marginBottom: 2,
+  kpiValue: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.kpiNumber.fontFamily,
+    fontSize: 21,
+    fontWeight: SLTypography.kpiNumber.fontWeight,
+    lineHeight: 24,
   },
-  upcomingSession: {
-    fontSize: 13,
-    color: '#94A3B8',
+  kpiLabel: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    marginTop: 2,
+    textTransform: 'uppercase',
   },
-  upcomingEmptyRow: {
-    paddingVertical: 8,
+  ledgerSection: {
+    gap: 9,
   },
-  upcomingEmptyText: {
-    fontSize: 14,
-    color: '#94A3B8',
+  ledgerSectionPrimary: {
+    gap: SLSpacing.sm,
   },
-  emptyState: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+  ledgerHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 28,
   },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#E5E7EB',
-    marginBottom: 4,
+  sectionRail: {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    height: 2,
+    width: 14,
   },
-  emptyBody: {
-    fontSize: 14,
-    lineHeight: 18,
-    color: '#94A3B8',
+  sectionRailPrimary: {
+    backgroundColor: SLColors.railViolet,
+    width: 30,
   },
-  fab: {
-    position: 'absolute',
-    right: 8,
-    bottom: 18,
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+  ledgerTitle: {
+    color: '#A2ACB8',
+    fontFamily: SLTypography.sectionLabel.fontFamily,
+    fontSize: SLTypography.sectionLabel.fontSize,
+    fontWeight: SLTypography.sectionLabel.fontWeight,
+    letterSpacing: SLTypography.sectionLabel.letterSpacing,
+    lineHeight: SLTypography.sectionLabel.lineHeight,
+    textTransform: 'uppercase',
+  },
+  ledgerTitlePrimary: {
+    color: SLColors.textStrong,
+  },
+  sectionAction: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 2,
+    marginLeft: 'auto',
+    minHeight: 28,
+  },
+  sectionActionText: {
+    color: SLColors.accentSteel,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: SLTypography.utilityLabel.fontSize,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: SLTypography.utilityLabel.letterSpacing,
+    lineHeight: SLTypography.utilityLabel.lineHeight,
+    textTransform: 'uppercase',
+  },
+  commandQueue: {
+    backgroundColor: TODAY_MATERIAL.graphiteInset,
+    overflow: 'hidden',
+  },
+  ledgerList: {
+    gap: 0,
+  },
+  ledgerRow: {
+    alignItems: 'center',
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 60,
+    overflow: 'hidden',
+    paddingRight: SLSpacing.sm,
+  },
+  ledgerRowDominant: {
+    backgroundColor: 'rgba(12, 13, 15, 0.48)',
+    minHeight: 80,
+  },
+  ledgerRowRail: {
+    alignSelf: 'stretch',
+    width: 3,
+  },
+  ledgerRank: {
+    color: '#65707D',
+    fontFamily: SLTypography.kpiNumber.fontFamily,
+    fontSize: 12,
+    fontWeight: SLTypography.kpiNumber.fontWeight,
+    lineHeight: 16,
+    width: 24,
+  },
+  ledgerIdentity: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7C3AED',
-    shadowColor: '#7C3AED',
-    shadowOpacity: 0.34,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8,
+    width: 36,
   },
-  fabPlus: {
-    color: '#FFFFFF',
-    fontSize: 30,
-    lineHeight: 30,
-    fontWeight: '400',
-    marginBottom: 2,
+  ledgerIcon: {
+    alignItems: 'center',
+    borderWidth: 1,
+    height: 28,
+    justifyContent: 'center',
+    width: 28,
   },
-  fabLabel: {
-    color: '#FFFFFF',
-    fontSize: 13,
+  ledgerCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  ledgerRowTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    letterSpacing: 0,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+  },
+  ledgerRowTitleDominant: {
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  ledgerRowMeta: {
+    color: '#9BA5B2',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+    marginTop: 2,
+  },
+  ledgerStatusWrap: {
+    alignItems: 'flex-end',
+    maxWidth: 82,
+  },
+  ledgerStatus: {
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    textAlign: 'right',
+    textTransform: 'uppercase',
+  },
+  planningRow: {
+    alignItems: 'center',
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 54,
+    paddingVertical: SLSpacing.xs,
+  },
+  planningMarker: {
+    height: 18,
+    width: 3,
+  },
+  planningCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  planningName: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+  },
+  planningHorizon: {
+    color: '#9CA6B1',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+  },
+  planningMeta: {
+    color: '#6F7A87',
+    flexShrink: 1,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: 11,
+    fontWeight: SLTypography.rowMeta.fontWeight,
     lineHeight: 14,
-    fontWeight: '700',
-    textAlign: 'center',
+    maxWidth: 116,
+    textAlign: 'right',
   },
-  avatarImage: {
+  upcomingWrap: {
+    borderTopColor: TODAY_MATERIAL.hairlineWarm,
+    borderTopWidth: 1,
+    gap: 0,
+    marginTop: SLSpacing.md,
+    paddingTop: SLSpacing.sm,
+  },
+  subsectionLabel: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: SLTypography.utilityLabel.fontSize,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: SLTypography.utilityLabel.letterSpacing,
+    lineHeight: SLTypography.utilityLabel.lineHeight,
+    marginBottom: SLSpacing.xs,
+    textTransform: 'uppercase',
+  },
+  feedList: {
+    gap: 0,
+  },
+  feedRow: {
+    alignItems: 'center',
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 52,
+    paddingVertical: SLSpacing.xs,
+  },
+  feedTrack: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    width: 22,
+  },
+  feedDot: {
+    alignItems: 'center',
+    backgroundColor: TODAY_MATERIAL.graphiteInset,
+    borderRadius: SLRadius.radiusSharp,
+    borderWidth: 1,
+    height: 22,
+    justifyContent: 'center',
+    width: 22,
+  },
+  feedCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  feedTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+  },
+  feedDetail: {
+    color: '#98A2AF',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+  },
+  feedMeta: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    maxWidth: 92,
+    textAlign: 'right',
+    textTransform: 'uppercase',
+  },
+  inlineEmpty: {
+    alignItems: 'center',
+    borderBottomColor: TODAY_MATERIAL.hairlineWarm,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 48,
+    paddingVertical: SLSpacing.xs,
+  },
+  inlineEmptyCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  inlineEmptyTitle: {
+    color: SLColors.textMuted,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+  },
+  inlineEmptyDetail: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+  },
+  patchModalBackdrop: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(3, 3, 5, 0.76)',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  patchModalCard: {
+    backgroundColor: 'rgba(9, 8, 12, 0.98)',
+    borderColor: 'rgba(167,139,250,0.22)',
+    borderRadius: 18,
+    borderWidth: 1,
+    maxWidth: 380,
+    paddingHorizontal: 22,
+    paddingVertical: 22,
     width: '100%',
-    height: '100%',
-    borderRadius: 26,
+  },
+  patchModalIconWrap: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(124,108,255,0.15)',
+    borderColor: 'rgba(167,139,250,0.24)',
+    borderRadius: 999,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: 'center',
+    marginBottom: 14,
+    width: 42,
+  },
+  patchModalTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.commandTitle.fontFamily,
+    fontSize: 21,
+    fontWeight: '700',
+    letterSpacing: 0,
+    lineHeight: 26,
+    marginBottom: 10,
+  },
+  patchModalBody: {
+    color: SLColors.text,
+    fontFamily: SLTypography.body.fontFamily,
+    fontSize: 14,
+    fontWeight: SLTypography.body.fontWeight,
+    lineHeight: 21,
+    marginBottom: 10,
+  },
+  patchModalSubtext: {
+    color: SLColors.textMuted,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: 13,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: 19,
+    marginBottom: 12,
+  },
+  patchModalFlow: {
+    borderTopColor: 'rgba(255,255,255,0.07)',
+    borderTopWidth: 1,
+    marginBottom: 18,
+  },
+  patchModalFlowRow: {
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomWidth: 1,
+    gap: 4,
+    paddingVertical: 9,
+  },
+  patchModalFlowLabel: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: 13,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+  },
+  patchModalFlowDetail: {
+    color: SLColors.textMuted,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: 12,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: 17,
+  },
+  patchModalButton: {
+    alignItems: 'center',
+    backgroundColor: SLColors.accentViolet,
+    borderRadius: 8,
+    justifyContent: 'center',
+    minHeight: 46,
+  },
+  patchModalButtonText: {
+    color: '#FFFFFF',
+    fontFamily: SLTypography.buttonLabel.fontFamily,
+    fontSize: SLTypography.buttonLabel.fontSize,
+    fontWeight: SLTypography.buttonLabel.fontWeight,
+  },
+  utilityDock: {
+    backgroundColor: 'rgba(6, 6, 7, 0.28)',
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 0,
+    borderRadius: SLRadius.radiusControl,
+    flexDirection: 'row',
+    gap: 1,
+    marginLeft: 12,
+    overflow: 'hidden',
+    paddingLeft: 0,
+    position: 'relative',
+  },
+  utilityButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(8, 8, 10, 0.38)',
+    flex: 1,
+    gap: 4,
+    justifyContent: 'center',
+    minHeight: 54,
+  },
+  utilityButtonText: {
+    color: SLColors.textMuted,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    textTransform: 'uppercase',
+  },
+  tacticalZone: {
+    backgroundColor: 'transparent',
+    gap: 17,
+    marginTop: -2,
+    paddingBottom: 18,
+    paddingLeft: 0,
+    paddingTop: 14,
+    position: 'relative',
+  },
+  lowerPlane: {
+    backgroundColor: 'transparent',
+    gap: 21,
+    paddingBottom: 2,
+    paddingLeft: 10,
+    paddingTop: 4,
   },
 });

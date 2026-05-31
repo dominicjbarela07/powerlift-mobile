@@ -1,0 +1,1166 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/context/AuthContext';
+import {
+  CoachAnnouncement,
+  CoachRosterAthlete,
+  createAnnouncement,
+  deleteAnnouncement,
+  getAnnouncements,
+  getCoachRoster,
+  markAnnouncementRead,
+  setAnnouncementPinned,
+  updateAnnouncement,
+} from '@/lib/api';
+
+type AnnouncementAudienceMode = 'all_roster' | 'selected_athletes';
+
+type TargetedAnnouncement = CoachAnnouncement & {
+  audience_mode?: AnnouncementAudienceMode | string | null;
+  athlete_ids?: number[] | null;
+  audience_summary?: string | null;
+};
+
+function parseServerTimestamp(value?: string | null) {
+  if (!value) return null;
+
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(raw);
+  const normalized = hasTimezone ? raw : `${raw}Z`;
+  const date = new Date(normalized);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatLocalDateTime(value?: string | null) {
+  const date = parseServerTimestamp(value);
+  if (!date) return '';
+
+  return date.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+function sortAnnouncements<T extends CoachAnnouncement>(items: T[]) {
+  return [...items].sort((a, b) => {
+    if (!!a.pinned !== !!b.pinned) {
+      return a.pinned ? -1 : 1;
+    }
+    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+  });
+}
+
+export default function AnnouncementsScreen() {
+  const { user } = useAuth();
+
+  if (user?.is_coach) {
+    return <CoachAnnouncementHub />;
+  }
+
+  return <AthleteAnnouncementsScreen />;
+}
+
+function CoachAnnouncementHub() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [announcements, setAnnouncements] = useState<TargetedAnnouncement[]>([]);
+  const [roster, setRoster] = useState<CoachRosterAthlete[]>([]);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<TargetedAnnouncement | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [pinned, setPinned] = useState(false);
+  const [audienceMode, setAudienceMode] = useState<AnnouncementAudienceMode>('all_roster');
+  const [selectedAthleteIds, setSelectedAthleteIds] = useState<number[]>([]);
+  const [athleteSearch, setAthleteSearch] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const sortedAnnouncements = useMemo(() => sortAnnouncements(announcements), [announcements]);
+  const filteredRoster = useMemo(() => {
+    const needle = athleteSearch.trim().toLowerCase();
+    return needle
+      ? roster.filter((athlete) => String(athlete.name || '').toLowerCase().includes(needle))
+      : roster;
+  }, [athleteSearch, roster]);
+
+  const toggleSelectedAthlete = useCallback((athleteId: number) => {
+    setSelectedAthleteIds((prev) => (
+      prev.includes(athleteId)
+        ? prev.filter((id) => id !== athleteId)
+        : [...prev, athleteId]
+    ));
+  }, []);
+
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = !!opts?.silent;
+
+    try {
+      if (!silent) setLoading(true);
+      setError(null);
+
+      const [announcementRes, rosterRes] = await Promise.all([
+        getAnnouncements(),
+        getCoachRoster(),
+      ]);
+      if (!announcementRes.ok) {
+        setError(announcementRes.error || 'Failed to load announcements.');
+        return;
+      }
+
+      setAnnouncements((announcementRes.announcements || []) as TargetedAnnouncement[]);
+      if (rosterRes.ok) setRoster((rosterRes.athletes || []).filter((athlete) => !athlete.is_self));
+    } catch (err) {
+      console.error('Announcements load error', err);
+      setError('Failed to load announcements.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    load({ silent: true });
+  }, [load]);
+
+  const openCreate = useCallback(() => {
+    setEditingAnnouncement(null);
+    setTitle('');
+    setBody('');
+    setPinned(false);
+    setAudienceMode('all_roster');
+    setSelectedAthleteIds([]);
+    setAthleteSearch('');
+    setComposerOpen(true);
+  }, []);
+
+  const openEdit = useCallback((announcement: TargetedAnnouncement) => {
+    setEditingAnnouncement(announcement);
+    setTitle(announcement.title || '');
+    setBody(announcement.body || '');
+    setPinned(!!announcement.pinned);
+    setAudienceMode(announcement.audience_mode === 'selected_athletes' ? 'selected_athletes' : 'all_roster');
+    setSelectedAthleteIds(Array.isArray(announcement.athlete_ids) ? announcement.athlete_ids.map(Number).filter(Boolean) : []);
+    setAthleteSearch('');
+    setComposerOpen(true);
+  }, []);
+
+  const closeComposer = useCallback(() => {
+    if (saving) return;
+    setComposerOpen(false);
+    setEditingAnnouncement(null);
+    setAthleteSearch('');
+  }, [saving]);
+
+  const replaceAnnouncement = useCallback((announcement: TargetedAnnouncement) => {
+    setAnnouncements((prev) => {
+      const idx = prev.findIndex((item) => item.id === announcement.id);
+      if (idx < 0) return [announcement, ...prev];
+      return prev.map((item) => item.id === announcement.id ? announcement : item);
+    });
+  }, []);
+
+  const saveAnnouncement = useCallback(async () => {
+    const nextTitle = title.trim();
+    const nextBody = body.trim();
+    if (!nextTitle || !nextBody || saving) return;
+    if (audienceMode === 'selected_athletes' && !selectedAthleteIds.length) {
+      setError('Select at least one athlete.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const payload: any = {
+        title: nextTitle,
+        body: nextBody,
+        pinned,
+        audience_mode: audienceMode,
+        athlete_ids: audienceMode === 'selected_athletes' ? selectedAthleteIds : [],
+      };
+      const res = editingAnnouncement
+        ? await updateAnnouncement(editingAnnouncement.id, payload)
+        : await createAnnouncement(payload);
+
+      if (!res.ok || !res.announcement) {
+        setError(res.error || 'Failed to save announcement.');
+        return;
+      }
+
+      replaceAnnouncement(res.announcement as TargetedAnnouncement);
+      setComposerOpen(false);
+      setEditingAnnouncement(null);
+    } catch (err) {
+      console.error('Save announcement failed', err);
+      setError('Failed to save announcement.');
+    } finally {
+      setSaving(false);
+    }
+  }, [audienceMode, body, editingAnnouncement, pinned, replaceAnnouncement, saving, selectedAthleteIds, title]);
+
+  const togglePinned = useCallback(async (announcement: CoachAnnouncement) => {
+    const res = await setAnnouncementPinned(announcement.id, !announcement.pinned);
+    if (res.ok && res.announcement) {
+      replaceAnnouncement(res.announcement);
+    } else {
+      setError(res.error || 'Failed to update pin.');
+    }
+  }, [replaceAnnouncement]);
+
+  const confirmDelete = useCallback((announcement: CoachAnnouncement) => {
+    Alert.alert(
+      'Delete announcement?',
+      'This removes it for athletes too.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const res = await deleteAnnouncement(announcement.id);
+            if (res.ok) {
+              setAnnouncements((prev) => prev.filter((item) => item.id !== announcement.id));
+            } else {
+              setError(res.error || 'Failed to delete announcement.');
+            }
+          },
+        },
+      ]
+    );
+  }, []);
+
+  if (loading) {
+    return (
+      <ThemedView style={styles.loadingWrap}>
+        <ActivityIndicator size="large" color="#8B7CFF" />
+        <Text style={styles.loadingText}>Loading announcements...</Text>
+      </ThemedView>
+    );
+  }
+
+  return (
+    <ThemedView style={styles.screen}>
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.replace('/(tabs)/messages' as any)}
+          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
+        >
+          <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+        </Pressable>
+
+        <View style={styles.headerTextWrap}>
+          <Text style={styles.headerTitle}>Announcements</Text>
+        </View>
+
+        <Pressable
+          onPress={openCreate}
+          style={({ pressed }) => [styles.headerIconButton, pressed && styles.backButtonPressed]}
+        >
+          <Ionicons name="add" size={22} color="#F8FAFC" />
+        </Pressable>
+      </View>
+
+      {!!error && (
+        <View style={styles.errorCard}>
+          <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      <FlatList
+        data={sortedAnnouncements}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#8B7CFF"
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyCard}>
+            <Ionicons name="megaphone-outline" size={30} color="#64748B" />
+            <Text style={styles.emptyTitle}>No announcements</Text>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <View style={[styles.announcementCard, item.pinned && styles.announcementCardPinned]}>
+            <View style={styles.cardMainRow}>
+              <View style={styles.titleRow}>
+                <Text style={styles.announcementTitle} numberOfLines={2}>
+                  {item.title}
+                </Text>
+              </View>
+
+              {!!item.pinned && (
+                <View style={styles.pinnedBadge}>
+                  <Ionicons name="pin" size={11} color="#D6CCFF" />
+                </View>
+              )}
+            </View>
+
+            <Text style={styles.announcementDate}>
+              {formatLocalDateTime(item.created_at)}
+            </Text>
+            <Text style={styles.announcementAudience} numberOfLines={1}>
+              {item.audience_summary || (item.audience_mode === 'selected_athletes' ? 'Selected athletes' : 'All athletes')}
+            </Text>
+
+            <Text style={styles.coachAnnouncementBody} numberOfLines={3}>
+              {item.body}
+            </Text>
+
+            <View style={styles.coachActions}>
+              <Pressable
+                onPress={() => togglePinned(item)}
+                style={({ pressed }) => [
+                  styles.compactActionButton,
+                  item.pinned && styles.iconActionPinned,
+                  pressed && styles.iconActionPressed,
+                ]}
+              >
+                <Ionicons name={item.pinned ? 'pin' : 'pin-outline'} size={16} color={item.pinned ? '#D6CCFF' : '#CBD5E1'} />
+                <Text style={[styles.compactActionText, item.pinned && styles.compactActionTextPinned]}>
+                  {item.pinned ? 'Pinned' : 'Pin'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => openEdit(item)}
+                style={({ pressed }) => [styles.compactActionButton, pressed && styles.iconActionPressed]}
+              >
+                <Ionicons name="create-outline" size={16} color="#CBD5E1" />
+                <Text style={styles.compactActionText}>Edit</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => confirmDelete(item)}
+                style={({ pressed }) => [styles.compactActionButton, styles.iconActionDanger, pressed && styles.iconActionPressed]}
+              >
+                <Ionicons name="trash-outline" size={16} color="#FCA5A5" />
+                <Text style={[styles.compactActionText, styles.compactActionTextDanger]}>Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+      />
+
+      {composerOpen && (
+        <View style={styles.modalOverlay}>
+          <Pressable style={styles.modalBackdrop} onPress={closeComposer} />
+          <KeyboardAvoidingView
+            style={styles.modalKeyboardAvoider}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}
+          >
+            <View style={styles.editorCard}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleWrap}>
+                  <Text style={styles.modalTitle}>{editingAnnouncement ? 'Edit Announcement' : 'New Announcement'}</Text>
+                </View>
+                <Pressable onPress={closeComposer} style={styles.modalClose}>
+                  <Ionicons name="close" size={18} color="#CBD5E1" />
+                </Pressable>
+              </View>
+
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.editorScrollContent}
+                keyboardShouldPersistTaps="handled"
+              >
+                <TextInput
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder="Title"
+                  placeholderTextColor="#64748B"
+                  style={styles.editorInput}
+                  maxLength={160}
+                  returnKeyType="next"
+                />
+
+                <TextInput
+                  value={body}
+                  onChangeText={setBody}
+                  placeholder="Body"
+                  placeholderTextColor="#64748B"
+                  style={[styles.editorInput, styles.editorBody]}
+                  multiline
+                  textAlignVertical="top"
+                />
+
+                <Pressable
+                  onPress={() => setPinned((value) => !value)}
+                  style={styles.pinToggleRow}
+                >
+                  <View style={[styles.pinToggleIcon, pinned && styles.pinToggleIconActive]}>
+                    <Ionicons name={pinned ? 'pin' : 'pin-outline'} size={14} color={pinned ? '#D6CCFF' : '#94A3B8'} />
+                  </View>
+                  <Text style={styles.pinToggleText}>{pinned ? 'Pinned' : 'Pin announcement'}</Text>
+                </Pressable>
+
+                <View style={styles.audienceBlock}>
+                  <Text style={styles.audienceLabel}>Audience</Text>
+                  <View style={styles.audienceModeRow}>
+                    {[
+                      { value: 'all_roster' as const, label: 'All athletes' },
+                      { value: 'selected_athletes' as const, label: 'Selected' },
+                    ].map((option) => {
+                      const active = audienceMode === option.value;
+                      return (
+                        <Pressable
+                          key={option.value}
+                          onPress={() => setAudienceMode(option.value)}
+                          style={[styles.audienceModeChip, active && styles.audienceModeChipActive]}
+                        >
+                          <Text style={[styles.audienceModeText, active && styles.audienceModeTextActive]}>
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  {audienceMode === 'selected_athletes' ? (
+                    <View style={styles.athletePicker}>
+                      <TextInput
+                        value={athleteSearch}
+                        onChangeText={setAthleteSearch}
+                        placeholder="Search athletes"
+                        placeholderTextColor="#64748B"
+                        style={styles.athleteSearchInput}
+                      />
+                      <ScrollView style={styles.athletePickerList} keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+                        {filteredRoster.map((athlete) => {
+                          const active = selectedAthleteIds.includes(athlete.id);
+                          return (
+                            <Pressable
+                              key={athlete.id}
+                              style={[styles.athleteOptionRow, active && styles.athleteOptionRowActive]}
+                              onPress={() => toggleSelectedAthlete(athlete.id)}
+                            >
+                              <Text style={[styles.athleteOptionText, active && styles.athleteOptionTextActive]} numberOfLines={1}>
+                                {athlete.name}
+                              </Text>
+                              {active ? <Ionicons name="checkmark" size={16} color="#A7F3D0" /> : null}
+                            </Pressable>
+                          );
+                        })}
+                        {!filteredRoster.length ? (
+                          <View style={styles.athleteOptionEmpty}>
+                            <Text style={styles.athleteOptionEmptyText}>No athletes found</Text>
+                          </View>
+                        ) : null}
+                      </ScrollView>
+                    </View>
+                  ) : null}
+                </View>
+
+                <Pressable
+                  onPress={saveAnnouncement}
+                  disabled={!title.trim() || !body.trim() || saving || (audienceMode === 'selected_athletes' && !selectedAthleteIds.length)}
+                  style={({ pressed }) => [
+                    styles.saveButton,
+                    (!title.trim() || !body.trim() || saving || (audienceMode === 'selected_athletes' && !selectedAthleteIds.length)) && styles.saveButtonDisabled,
+                    pressed && !!title.trim() && !!body.trim() && !saving && styles.iconActionPressed,
+                  ]}
+                >
+                  {saving ? (
+                    <ActivityIndicator size="small" color="#F8FAFC" />
+                  ) : (
+                    <Text style={styles.saveButtonText}>{editingAnnouncement ? 'Save' : 'Post'}</Text>
+                  )}
+                </Pressable>
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      )}
+    </ThemedView>
+  );
+}
+
+function AthleteAnnouncementsScreen() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [announcements, setAnnouncements] = useState<CoachAnnouncement[]>([]);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<CoachAnnouncement | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const sortedAnnouncements = useMemo(() => sortAnnouncements(announcements), [announcements]);
+
+  const load = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = !!opts?.silent;
+
+    try {
+      if (!silent) setLoading(true);
+      setError(null);
+
+      const res = await getAnnouncements();
+      if (!res.ok) {
+        setError(res.error || 'Failed to load announcements.');
+        return;
+      }
+
+      setAnnouncements(res.announcements || []);
+    } catch (err) {
+      console.error('Announcements load error', err);
+      setError('Failed to load announcements.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    load({ silent: true });
+  }, [load]);
+
+  const openAnnouncement = useCallback(async (announcement: CoachAnnouncement) => {
+    setSelectedAnnouncement(announcement);
+
+    if (announcement.read_at) return;
+
+    try {
+      const res = await markAnnouncementRead(announcement.id);
+      if (res.ok && res.announcement) {
+        const updated = { ...announcement, ...res.announcement };
+        setAnnouncements((prev) => prev.map((item) =>
+          item.id === announcement.id ? { ...item, ...res.announcement } : item
+        ));
+        setSelectedAnnouncement(updated);
+      }
+    } catch (err) {
+      console.warn('Mark announcement read failed', err);
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <ThemedView style={styles.loadingWrap}>
+        <ActivityIndicator size="large" color="#8B7CFF" />
+        <Text style={styles.loadingText}>Loading announcements...</Text>
+      </ThemedView>
+    );
+  }
+
+  return (
+    <ThemedView style={styles.screen}>
+      <View style={styles.header}>
+        <Pressable
+          onPress={() => router.replace('/(tabs)/messages' as any)}
+          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
+        >
+          <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+        </Pressable>
+
+        <View style={styles.headerTextWrap}>
+          <Text style={styles.headerTitle}>Announcements</Text>
+        </View>
+
+        <View style={styles.headerSpacer} />
+      </View>
+
+      {!!error && (
+        <View style={styles.errorCard}>
+          <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      <FlatList
+        data={sortedAnnouncements}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#8B7CFF"
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyCard}>
+            <Ionicons name="megaphone-outline" size={30} color="#64748B" />
+            <Text style={styles.emptyTitle}>No announcements</Text>
+          </View>
+        }
+        renderItem={({ item }) => {
+          const unread = !item.read_at;
+
+          return (
+            <Pressable
+              onPress={() => openAnnouncement(item)}
+              style={({ pressed }) => [
+                styles.announcementCard,
+                pressed && styles.announcementCardPressed,
+              ]}
+            >
+              <View style={styles.cardMainRow}>
+                <View style={styles.titleRow}>
+                  {unread && <View style={styles.unreadDot} />}
+                  <Text style={styles.announcementTitle} numberOfLines={2}>
+                    {item.title}
+                  </Text>
+                </View>
+
+                {!!item.pinned && (
+                  <View style={styles.pinnedBadge}>
+                    <Ionicons name="pin" size={11} color="#D6CCFF" />
+                  </View>
+                )}
+              </View>
+
+              <Text style={styles.announcementDate}>
+                {formatLocalDateTime(item.created_at)}
+              </Text>
+            </Pressable>
+          );
+        }}
+      />
+
+      {selectedAnnouncement && (
+        <View style={styles.modalOverlay}>
+          <Pressable
+            style={styles.modalBackdrop}
+            onPress={() => setSelectedAnnouncement(null)}
+          />
+
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <View style={styles.modalTitleWrap}>
+                <Text style={styles.modalEyebrow}>Announcement</Text>
+                <Text style={styles.modalTitle}>{selectedAnnouncement.title}</Text>
+              </View>
+
+              <Pressable
+                onPress={() => setSelectedAnnouncement(null)}
+                style={styles.modalClose}
+              >
+                <Ionicons name="close" size={18} color="#CBD5E1" />
+              </Pressable>
+            </View>
+
+            <Text style={styles.modalDate}>
+              {formatLocalDateTime(selectedAnnouncement.created_at)}
+            </Text>
+
+            <ScrollView style={styles.modalBodyScroll}>
+              <Text style={styles.modalBody}>{selectedAnnouncement.body}</Text>
+            </ScrollView>
+          </View>
+        </View>
+      )}
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  loadingText: {
+    marginTop: 14,
+    color: '#CBD5E1',
+    fontSize: 14,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(148,163,184,0.08)',
+  },
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(15,23,42,0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+  },
+  backButtonPressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.98 }],
+  },
+  headerIconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#5B4FCF',
+  },
+  headerTextWrap: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  headerTitle: {
+    color: '#F8FAFC',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  headerSub: {
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  headerSpacer: {
+    width: 38,
+  },
+  listContent: {
+    paddingTop: 12,
+    paddingBottom: 24,
+    gap: 9,
+  },
+  announcementCard: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(6,6,8,0.3)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(185,176,163,0.1)',
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(185,176,163,0.14)',
+  },
+  announcementCardPinned: {
+    borderLeftColor: 'rgba(196,181,253,0.44)',
+    backgroundColor: 'rgba(76,29,149,0.14)',
+  },
+  announcementCardPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.99 }],
+  },
+  cardMainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  titleRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 0,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: '#7C6CFF',
+    marginRight: 8,
+    flexShrink: 0,
+  },
+  announcementTitle: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 19,
+    marginRight: 10,
+  },
+  pinnedBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(124,108,255,0.16)',
+  },
+  announcementDate: {
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  announcementAudience: {
+    color: '#C4B5FD',
+    fontSize: 11,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  coachAnnouncementBody: {
+    color: '#CBD5E1',
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 8,
+  },
+  coachActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 6,
+    marginTop: 10,
+  },
+  compactActionButton: {
+    minHeight: 30,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 9,
+    backgroundColor: 'rgba(6,6,8,0.34)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+  },
+  compactActionText: {
+    color: '#CBD5E1',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  compactActionTextPinned: {
+    color: '#D6CCFF',
+  },
+  compactActionTextDanger: {
+    color: '#FCA5A5',
+  },
+  iconActionButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(6,6,8,0.38)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+  },
+  iconActionPinned: {
+    backgroundColor: 'rgba(124,108,255,0.16)',
+    borderColor: 'rgba(124,108,255,0.24)',
+  },
+  iconActionDanger: {
+    backgroundColor: 'rgba(127,29,29,0.18)',
+    borderColor: 'rgba(248,113,113,0.18)',
+  },
+  iconActionPressed: {
+    opacity: 0.86,
+    transform: [{ scale: 0.97 }],
+  },
+  emptyCard: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(185,176,163,0.1)',
+    backgroundColor: 'transparent',
+    paddingVertical: 11,
+    gap: 9,
+  },
+  emptyTitle: {
+    color: '#CBD5E1',
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 0,
+  },
+  emptyBody: {
+    color: '#94A3B8',
+    fontSize: 13,
+    display: 'none',
+    textAlign: 'center',
+  },
+  errorCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginTop: 10,
+    marginBottom: 4,
+    backgroundColor: 'rgba(127,29,29,0.22)',
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.18)',
+  },
+  errorText: {
+    flex: 1,
+    color: '#FECACA',
+    fontSize: 13,
+    marginLeft: 10,
+  },
+  modalOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 50,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(2,2,3,0.7)',
+  },
+  modalKeyboardAvoider: {
+    width: '100%',
+    maxHeight: '90%',
+    justifyContent: 'flex-end',
+  },
+  modalCard: {
+    width: '100%',
+    maxHeight: '72%',
+    borderRadius: 22,
+    padding: 18,
+    backgroundColor: 'rgba(7,7,9,0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(124,108,255,0.18)',
+  },
+  editorCard: {
+    width: '100%',
+    maxHeight: '100%',
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 18,
+    backgroundColor: 'rgba(7,7,9,0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(124,108,255,0.18)',
+  },
+  editorScroll: {
+    maxHeight: 520,
+  },
+  editorScrollContent: {
+    paddingBottom: 4,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  modalTitleWrap: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  modalEyebrow: {
+    color: '#94A3B8',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  modalTitle: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '800',
+    lineHeight: 23,
+  },
+  modalClose: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(6,6,8,0.42)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+  },
+  modalDate: {
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 14,
+  },
+  modalBodyScroll: {
+    maxHeight: 360,
+  },
+  modalBody: {
+    color: '#CBD5E1',
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  editorInput: {
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    backgroundColor: 'rgba(6,6,8,0.38)',
+    color: '#F8FAFC',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    marginTop: 10,
+  },
+  editorBody: {
+    minHeight: 124,
+    textAlignVertical: 'top',
+    lineHeight: 20,
+  },
+  pinToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  pinToggleIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(2,6,23,0.36)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    marginRight: 10,
+  },
+  pinToggleIconActive: {
+    backgroundColor: 'rgba(124,108,255,0.16)',
+    borderColor: 'rgba(124,108,255,0.24)',
+  },
+  pinToggleText: {
+    color: '#CBD5E1',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  audienceBlock: {
+    marginTop: 14,
+    gap: 9,
+  },
+  audienceLabel: {
+    color: '#CBD5E1',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  audienceModeRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  audienceModeChip: {
+    minHeight: 34,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.14)',
+    backgroundColor: 'rgba(2,6,23,0.30)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  audienceModeChipActive: {
+    borderColor: 'rgba(124,108,255,0.38)',
+    backgroundColor: 'rgba(124,108,255,0.18)',
+  },
+  audienceModeText: {
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  audienceModeTextActive: {
+    color: '#EDE9FE',
+  },
+  athletePicker: {
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    backgroundColor: 'rgba(2,6,23,0.24)',
+    padding: 9,
+  },
+  athleteSearchInput: {
+    minHeight: 38,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.12)',
+    backgroundColor: 'rgba(6,6,8,0.42)',
+    color: '#F8FAFC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
+  },
+  athletePickerList: {
+    maxHeight: 168,
+    marginTop: 8,
+  },
+  athleteOptionRow: {
+    minHeight: 38,
+    borderRadius: 11,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 6,
+    backgroundColor: 'rgba(15,23,42,0.54)',
+  },
+  athleteOptionRowActive: {
+    backgroundColor: 'rgba(5,150,105,0.18)',
+  },
+  athleteOptionText: {
+    flex: 1,
+    color: '#CBD5E1',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  athleteOptionTextActive: {
+    color: '#D1FAE5',
+    fontWeight: '900',
+  },
+  athleteOptionEmpty: {
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  athleteOptionEmptyText: {
+    color: '#64748B',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  saveButton: {
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(109,40,217,0.82)',
+    marginTop: 14,
+  },
+  saveButtonDisabled: {
+    opacity: 0.45,
+  },
+  saveButtonText: {
+    color: '#F8FAFC',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+});

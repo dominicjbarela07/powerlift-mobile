@@ -1,15 +1,24 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, TextInput, Modal, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, TextInput, Modal, TouchableOpacity, ActivityIndicator, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchJson } from '@/lib/api';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  AccessoryMovementCard,
+  CoreMovementCard,
+  CreatorAdvancedSection,
+  CreatorChoiceChips,
+  CreatorRpeSelector,
+  CreatorSegmentedControl,
+  CreatorStepper,
+} from '@/components/creator';
 
 type CoreDraft = {
   lift: 'SQ'|'BN'|'DL'|'OHP'|'VR';
-  variant: 'STRAIGHT'|'TOP'|'BK';
+  variant: 'STRAIGHT'|'TOP'|'BK'|'FULL_CUSTOM';
   mode: 'RPE'|'PCT';
   movement?: string;
   sets: number;
@@ -25,6 +34,16 @@ type CoreDraft = {
   target_high_kg?: number | null;
 
   parent_item_id?: number | null; // only needed if you ever create BK in same payload
+  planned_sets?: PlannedSetDraft[];
+};
+
+type PlannedSetDraft = {
+  set_index: number;
+  reps?: number | null;
+  rpe_target?: number | null;
+  pct?: number | null;
+  manual_target_kg?: number | null;
+  manual_pm_kg?: number | null;
 };
 
 type AccDraft = {
@@ -57,10 +76,53 @@ type TemplateDetail = {
   acc_items: any[];
 };
 
+type MovementPresetCategory = {
+  key?: string;
+  name: string;
+  movements: string[];
+};
+
+type RecentSessionRow = {
+  id: number;
+  date?: string | null;
+  label?: string | null;
+  status?: string | null;
+  planned_summary?: string | null;
+};
+
+function firstParam(value?: string | string[]) {
+  if (Array.isArray(value)) return value[0] || '';
+  return value || '';
+}
+
+function isValidYMD(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map((part) => Number(part));
+  if (!year || !month || !day) return false;
+  const parsed = new Date(year, month - 1, day);
+  return (
+    parsed.getFullYear() === year &&
+    parsed.getMonth() === month - 1 &&
+    parsed.getDate() === day
+  );
+}
+
 export default function CreateWorkoutScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ editWorkoutId?: string }>();
-  const editWorkoutId = params?.editWorkoutId ? String(params.editWorkoutId) : '';
+  const params = useLocalSearchParams<{
+    editWorkoutId?: string | string[];
+    athleteId?: string | string[];
+    athleteName?: string | string[];
+    date?: string | string[];
+  }>();
+  const editWorkoutId = firstParam(params?.editWorkoutId);
+  const prefillAthleteIdParam = firstParam(params?.athleteId);
+  const prefillAthleteNameParam = firstParam(params?.athleteName);
+  const prefillDateParam = firstParam(params?.date);
+
+  // Field programming guardrail:
+  // This mobile creator owns one session at a time. Do not expand it into bulk
+  // programming, template authoring, or block architecture; those stay web-first.
 
   // ===== Units (mobile) =====
   // Backend stores kg. UI can display/input in kg or lb.
@@ -82,6 +144,13 @@ export default function CreateWorkoutScreen() {
   };
 
   const normalizeDecimalInput = (s: string) => (s ?? '').replace(/,/g, '.');
+
+  const parseOptionalNumberInput = (s: string): number | null => {
+    const t = normalizeDecimalInput(String(s ?? '')).trim();
+    if (!t) return null;
+    const n = Number(t);
+    return Number.isFinite(n) ? n : null;
+  };
 
   const parseDisplayWeightToKg = (s: string): number | null => {
     if (s == null) return null;
@@ -133,6 +202,9 @@ export default function CreateWorkoutScreen() {
 
   const keyForManualTarget = (idx: number) => `core:${idx}:manual_target`;
   const keyForManualPm = (idx: number) => `core:${idx}:manual_pm`;
+  const keyForPlannedManualTarget = (coreIdx: number, setIdx: number) => `core:${coreIdx}:planned:${setIdx}:manual_target`;
+  const keyForPlannedManualPm = (coreIdx: number, setIdx: number) => `core:${coreIdx}:planned:${setIdx}:manual_pm`;
+  const MAX_FULL_CUSTOM_SETS = 12;
 
   // ===== Step validation (kg only) =====
   const KG_STEP = 2.5;
@@ -170,6 +242,19 @@ export default function CreateWorkoutScreen() {
     if (unit !== 'kg') return {};
     const issues: Record<string, string> = {};
     coreRef.current.forEach((c, idx) => {
+      if (c?.variant === 'FULL_CUSTOM') {
+        normalizePlannedSets(c.planned_sets, c).forEach((ps, psIdx) => {
+          const target = ps.manual_target_kg;
+          const pm = ps.manual_pm_kg;
+          if (target != null && Number.isFinite(Number(target)) && Number(target) > 0 && !isMultipleOfStep(Number(target), KG_STEP)) {
+            issues[keyForPlannedManualTarget(idx, psIdx)] = 'Must be in 2.5 kg increments';
+          }
+          if (pm != null && Number.isFinite(Number(pm)) && Number(pm) >= 0 && !isMultipleOfStep(Number(pm), KG_STEP)) {
+            issues[keyForPlannedManualPm(idx, psIdx)] = 'Must be in 2.5 kg increments';
+          }
+        });
+        return;
+      }
       const t = c?.manual_target_kg;
       const pm = c?.manual_plusminus_kg;
 
@@ -185,16 +270,33 @@ export default function CreateWorkoutScreen() {
 
   const [roster, setRoster] = useState<RosterRow[]>([]);
   const [rosterLoading, setRosterLoading] = useState(false);
+  const [rosterLoaded, setRosterLoaded] = useState(false);
   const [rosterError, setRosterError] = useState<string | null>(null);
   const [athletePickerOpen, setAthletePickerOpen] = useState(false);
   const [addLiftOpen, setAddLiftOpen] = useState(false);
+  const [coreEditorOpen, setCoreEditorOpen] = useState<null | { idx: number }>(null);
+  const [accEditorOpen, setAccEditorOpen] = useState<null | { idx: number }>(null);
+  const [movementPickerOpen, setMovementPickerOpen] = useState<null | { kind: 'accessory'|'variant'; idx: number }>(null);
+  const [movementSearch, setMovementSearch] = useState('');
+  const [movementPresets, setMovementPresets] = useState<{
+    accessories: MovementPresetCategory[];
+    coreVariants: MovementPresetCategory[];
+  }>({ accessories: [], coreVariants: [] });
+  const [movementPresetsLoading, setMovementPresetsLoading] = useState(false);
+  const [movementPresetsError, setMovementPresetsError] = useState<string | null>(null);
   const [coreSelectOpen, setCoreSelectOpen] = useState<null | { kind: 'lift'|'scheme'|'mode'; idx: number }>(null);
-  const [accSupersetSelectOpen, setAccSupersetSelectOpen] = useState<null | { idx: number }>(null);
 
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [templates, setTemplates] = useState<TemplateRow[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const [templatesError, setTemplatesError] = useState<string | null>(null);
+  const [copyExistingOpen, setCopyExistingOpen] = useState(false);
+  const [copySessions, setCopySessions] = useState<RecentSessionRow[]>([]);
+  const [copySessionsLoading, setCopySessionsLoading] = useState(false);
+  const [copySessionsError, setCopySessionsError] = useState<string | null>(null);
+  const [copySearch, setCopySearch] = useState('');
+  const [copyApplying, setCopyApplying] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState<Record<string, boolean>>({});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [tempPickedDate, setTempPickedDate] = useState<Date>(() => new Date());
 
@@ -223,17 +325,80 @@ export default function CreateWorkoutScreen() {
     if (v === 'SQ') return 'Comp Squat';
     if (v === 'BN') return 'Comp Bench';
     if (v === 'DL') return 'Comp Deadlift';
+    if (v === 'OHP') return 'OHP';
     return 'Variant';
+  };
+
+  const plannedSetSummary = (rows?: PlannedSetDraft[]) => {
+    const count = Array.isArray(rows) ? rows.length : 0;
+    if (!count) return 'No planned sets returned.';
+    return `${count} planned set${count === 1 ? '' : 's'} preserved`;
   };
 
   const coreSchemeLabel = (arr: CoreDraft[], idx: number) => {
     const c = arr[idx];
     const n = arr[idx + 1];
+    if (c?.variant === 'FULL_CUSTOM') return 'Full Custom';
     if (c?.variant === 'TOP' && n?.variant === 'BK') return 'Top + Backdown';
     return 'Straight';
   };
 
   const coreModeLabel = (v: CoreDraft['mode']) => (v === 'RPE' ? 'RPE' : '%');
+
+  const coreMovementTitle = (c: CoreDraft) => {
+    if (c.lift === 'VR') return c.movement?.trim() || 'Core Variant';
+    return coreLiftLabel(c.lift);
+  };
+
+  const formatTarget = (mode: CoreDraft['mode'], rpe?: number | null, pct?: number | null) => {
+    if (mode === 'PCT') {
+      if (pct == null) return '%';
+      return `@ ${Number(pct) > 1 ? pct : Math.round(Number(pct) * 100)}%`;
+    }
+    return rpe == null ? '@ RPE' : `@ RPE ${rpe}`;
+  };
+
+  const corePrescriptionSummary = (arr: CoreDraft[], idx: number) => {
+    const c = arr[idx];
+    const bk = c?.variant === 'TOP' && arr[idx + 1]?.variant === 'BK' ? arr[idx + 1] : null;
+    if (!c) return 'No prescription';
+
+    if (c.variant === 'FULL_CUSTOM') {
+      const rows = normalizePlannedSets(c.planned_sets, c);
+      return `Full Custom · ${rows.length} planned set${rows.length === 1 ? '' : 's'}`;
+    }
+
+    if (bk) {
+      return `Top + Backdown · ${c.sets || 1}x${c.reps || '-'} ${formatTarget(c.mode, c.rpe_target, c.pct)} + ${bk.sets || '-'}x${bk.reps || '-'} ${formatTarget(bk.mode, bk.rpe_target, bk.pct)}`;
+    }
+
+    const scheme = c.lift === 'VR' ? 'Variant' : 'Straight Sets';
+    return `${scheme} · ${c.sets || '-'}x${c.reps || '-'} ${formatTarget(c.mode, c.rpe_target, c.pct)}`;
+  };
+
+  const liftIconLabel = (lift: CoreDraft['lift']) => {
+    if (lift === 'SQ') return 'SQ';
+    if (lift === 'BN') return 'BN';
+    if (lift === 'DL') return 'DL';
+    if (lift === 'OHP') return 'OH';
+    return 'VR';
+  };
+
+  const liftToneStyle = (lift: CoreDraft['lift']) => {
+    if (lift === 'SQ') return styles.iconSquat;
+    if (lift === 'BN') return styles.iconBench;
+    if (lift === 'DL') return styles.iconDeadlift;
+    if (lift === 'OHP') return styles.iconOhp;
+    return styles.iconVariant;
+  };
+
+  const accessorySummary = (a: AccDraft) => {
+    const parts = [`${a.sets || '-'}x${a.reps_text?.trim() || '-'}`];
+    if (a.rir_target != null) parts.push(`RIR ${a.rir_target}`);
+    const group = normalizeSSGroup(a.superset_group);
+    if (group) parts.push(`Group ${group}`);
+    return parts.join(' · ');
+  };
 
   const formatDateYMD = (d: Date) => {
     const y = d.getFullYear();
@@ -298,6 +463,28 @@ export default function CreateWorkoutScreen() {
     return `${fmtWeight(lo)}–${fmtWeight(hi)} kg`;
   };
 
+  const canRequestSuggestedLoad = (c?: CoreDraft | null) => {
+    if (!c) return false;
+    if (c.variant === 'FULL_CUSTOM') return false;
+    if (c.lift === 'VR') return false;
+    if (c.manual_target_kg != null && Number(c.manual_target_kg) > 0) return false;
+
+    const reps = Number(c.reps);
+    if (!Number.isFinite(reps) || reps <= 0) return false;
+
+    if (c.mode === 'PCT') {
+      const pct = c.pct == null ? null : Number(c.pct);
+      return pct != null && Number.isFinite(pct) && pct > 0;
+    }
+
+    const rpe = c.rpe_target == null ? null : Number(c.rpe_target);
+    return rpe != null && Number.isFinite(rpe) && rpe > 0;
+  };
+
+  const devLogSuggest = (...args: unknown[]) => {
+    if (__DEV__) console.log('[create-workout:suggest]', ...args);
+  };
+
   // ===== Templates (mobile builder) =====
   // Endpoints expected:
   //   GET  /templates/mobile/list
@@ -321,21 +508,43 @@ export default function CreateWorkoutScreen() {
       return null;
     };
 
+    const hydratePlannedSets = (rows: any[]): PlannedSetDraft[] => {
+      if (!Array.isArray(rows)) return [];
+      return rows
+        .map((r: any, idx: number): PlannedSetDraft | null => {
+          if (!r || typeof r !== 'object') return null;
+          const setIndex = Number(r.set_index ?? r.set ?? r.idx ?? idx + 1);
+          if (!Number.isFinite(setIndex) || setIndex <= 0) return null;
+          return {
+            set_index: setIndex,
+            reps: numOrNull(r.reps),
+            rpe_target: numOrNull(r.rpe_target ?? r.rpe),
+            pct: numOrNull(r.pct),
+            manual_target_kg: numOrNull(r.manual_target_kg ?? r.target_kg ?? r.manual_kg),
+            manual_pm_kg: numOrNull(r.manual_pm_kg ?? r.plus_kg ?? r.plus_minus_kg) ?? 0,
+          };
+        })
+        .filter((row): row is PlannedSetDraft => !!row)
+        .sort((a, b) => a.set_index - b.set_index);
+    };
+
     return rows
       .map((r: any) => {
         const lift = (r?.lift || 'BN') as CoreDraft['lift'];
         const variant = (r?.variant || 'STRAIGHT') as CoreDraft['variant'];
         const mode = (r?.mode || 'RPE') as CoreDraft['mode'];
+        const plannedSets = hydratePlannedSets(r?.planned_sets || []);
+        const isFullCustom = variant === 'FULL_CUSTOM';
 
         const out: CoreDraft = {
           lift: lift === 'SQ' || lift === 'BN' || lift === 'DL' || lift === 'OHP' || lift === 'VR' ? lift : 'BN',
-          variant: variant === 'TOP' || variant === 'BK' || variant === 'STRAIGHT' ? variant : 'STRAIGHT',
+          variant: variant === 'TOP' || variant === 'BK' || variant === 'STRAIGHT' || variant === 'FULL_CUSTOM' ? variant : 'STRAIGHT',
           mode: mode === 'PCT' ? 'PCT' : 'RPE',
           movement: r?.movement ?? undefined,
-          sets: Number(r?.sets ?? 0),
-          reps: Number(r?.reps ?? 0),
-          rpe_target: r?.rpe_target == null ? null : Number(r.rpe_target),
-          pct: r?.pct == null ? null : Number(r.pct),
+          sets: isFullCustom ? plannedSets.length || Number(r?.sets ?? 0) : Number(r?.sets ?? 0),
+          reps: isFullCustom ? 0 : Number(r?.reps ?? 0),
+          rpe_target: isFullCustom ? null : (r?.rpe_target == null ? null : Number(r.rpe_target)),
+          pct: isFullCustom ? null : (r?.pct == null ? null : Number(r.pct)),
 
           // Manual target fields: hydrate from multiple possible backend key names
           // (some endpoints historically used slightly different names)
@@ -358,6 +567,7 @@ export default function CreateWorkoutScreen() {
           target_high_kg: r?.target_high_kg == null ? null : Number(r.target_high_kg),
 
           parent_item_id: r?.parent_item_id == null ? null : Number(r.parent_item_id),
+          planned_sets: isFullCustom ? plannedSets : undefined,
         };
 
         // If manual_target exists but plusminus is missing, default plusminus to 0 so ± field doesn't render blank
@@ -458,6 +668,157 @@ export default function CreateWorkoutScreen() {
     // If we want to compute missing suggested ranges, do it after state sets.
     refreshSuggestionsForCore(nextCore);
   };
+
+  const loadCopyExistingSessions = async (query = '') => {
+    if (!athleteId.trim()) {
+      Alert.alert('Select athlete', 'Choose an athlete before copying an existing session.');
+      return;
+    }
+
+    setCopySessionsLoading(true);
+    setCopySessionsError(null);
+
+    const searchPart = query.trim() ? `&q=${encodeURIComponent(query.trim())}` : '';
+    const resp = await fetchJson(
+      `/coach/mobile/athletes/${encodeURIComponent(athleteId)}/sessions/recent?limit=30${searchPart}`,
+      { method: 'GET' }
+    );
+    const res: any = resp.json;
+
+    if (!resp.ok || !res?.ok) {
+      const msg = res?.error || `HTTP ${resp.status}`;
+      setCopySessions([]);
+      setCopySessionsError(msg);
+      setCopySessionsLoading(false);
+      return;
+    }
+
+    setCopySessions(Array.isArray(res.sessions) ? res.sessions : []);
+    setCopySessionsLoading(false);
+  };
+
+  const openCopyExisting = () => {
+    if (editWorkoutId) return;
+    if (!athleteId.trim()) {
+      Alert.alert('Select athlete', 'Choose an athlete before copying an existing session.');
+      return;
+    }
+    setCopySearch('');
+    setCopyExistingOpen(true);
+    void loadCopyExistingSessions('');
+  };
+
+  const loadMovementPresets = async () => {
+    setMovementPresetsLoading(true);
+    setMovementPresetsError(null);
+
+    const resp = await fetchJson('/workouts/mobile/movement_presets', { method: 'GET' });
+    const res: any = resp.json;
+
+    if (!resp.ok || !res?.ok) {
+      setMovementPresets({ accessories: [], coreVariants: [] });
+      setMovementPresetsError(res?.error || `HTTP ${resp.status}`);
+      setMovementPresetsLoading(false);
+      return;
+    }
+
+    setMovementPresets({
+      accessories: Array.isArray(res.accessories?.categories) ? res.accessories.categories : [],
+      coreVariants: Array.isArray(res.core_variants?.categories) ? res.core_variants.categories : [],
+    });
+    setMovementPresetsLoading(false);
+  };
+
+  useEffect(() => {
+    void loadMovementPresets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const openMovementPicker = (kind: 'accessory'|'variant', idx: number) => {
+    setMovementSearch('');
+    setMovementPickerOpen({ kind, idx });
+    if (!movementPresetsLoading && !movementPresets.accessories.length && !movementPresets.coreVariants.length) {
+      void loadMovementPresets();
+    }
+  };
+
+  const selectMovementPreset = (movement: string) => {
+    const picker = movementPickerOpen;
+    if (!picker) return;
+
+    if (picker.kind === 'accessory') {
+      setAcc((p) => p.map((x, i) => (i === picker.idx ? { ...x, movement } : x)));
+    } else {
+      updateCoreAt(picker.idx, { movement });
+    }
+
+    setMovementPickerOpen(null);
+    setMovementSearch('');
+  };
+
+  const filteredMovementCategories = (kind: 'accessory'|'variant') => {
+    const query = movementSearch.trim().toLowerCase();
+    const categories = kind === 'accessory' ? movementPresets.accessories : movementPresets.coreVariants;
+    return categories
+      .map((category) => {
+        const movements = Array.isArray(category.movements) ? category.movements : [];
+        const filtered = query
+          ? movements.filter((movement) => movement.toLowerCase().includes(query))
+          : movements;
+        return { ...category, movements: filtered };
+      })
+      .filter((category) => category.movements.length > 0);
+  };
+
+  const applyCopyExistingSession = async (source: RecentSessionRow) => {
+    if (!source?.id) return;
+
+    const applySource = async () => {
+      setCopyApplying(true);
+      setCopySessionsError(null);
+
+      const resp = await fetchJson(`/workouts/mobile/${source.id}/edit_preload`, { method: 'GET' });
+      const res: any = resp.json;
+
+      if (!resp.ok || !res?.ok) {
+        const msg = res?.error || `HTTP ${resp.status}`;
+        setCopySessionsError(msg);
+        setCopyApplying(false);
+        return;
+      }
+
+      const nextCore = hydrateCoreFromTemplate(Array.isArray(res.core_items) ? res.core_items : []);
+      const nextAcc = hydrateAccFromTemplate(Array.isArray(res.acc_items) ? res.acc_items : []);
+      const sourceLabel = String(source.label || res.workout?.label || 'Session').trim();
+
+      setCore(nextCore);
+      setAcc(nextAcc);
+      setManualDraft({});
+      setStepIssues({});
+      if (!label.trim() && sourceLabel) {
+        setLabel(`Copy of ${sourceLabel}`.slice(0, 80));
+      }
+      refreshSuggestionsForCore(nextCore);
+
+      setCopyApplying(false);
+      setCopyExistingOpen(false);
+    };
+
+    const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
+    if (hasDraft) {
+      Alert.alert(
+        'Replace current draft?',
+        'Copying an existing session will replace the current builder contents.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Replace', style: 'destructive', onPress: applySource },
+        ]
+      );
+      return;
+    }
+
+    await applySource();
+  };
   const applyManualRange = (idx: number, targetKg: number | null, plusMinusKg: number | null) => {
     const t = targetKg == null ? null : Number(targetKg);
     const pm = plusMinusKg == null ? null : Number(plusMinusKg);
@@ -479,7 +840,11 @@ export default function CreateWorkoutScreen() {
 
   // When editing, we hydrate athleteId + items in quick succession.
   // The athleteId change effect below clears suggested ranges; skip that once during edit preload.
+  // Editing sessions that already have logs/completion state is high risk because
+  // the mobile edit endpoint rebuilds workout items; keep deeper edit safeguards deferred.
   const skipAthleteResetOnceRef = useRef(false);
+  const prefillAppliedRef = useRef(false);
+  const routeContextRef = useRef<string | null>(null);
 
   // ===== Edit hydration =====
   // If navigated here with ?editWorkoutId=<id>, preload the existing workout into the builder.
@@ -556,16 +921,17 @@ export default function CreateWorkoutScreen() {
   }
   const [acc, setAcc] = useState<AccDraft[]>([]);
 
-    // ===== Suggested load range (live) =====
+  // ===== Suggested load range (live) =====
   // Calls backend to compute target_low_kg / target_high_kg from athlete TM + reps + target (RPE or %).
   // Keep latest state for async suggest calls (avoid stale closures)
-    const coreRef = useRef<CoreDraft[]>([]);
-    const athleteIdRef = useRef<string>('');
-    const suggestTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-    const suggestSeqRef = useRef<Record<string, number>>({});
+  const coreRef = useRef<CoreDraft[]>([]);
+  const athleteIdRef = useRef<string>('');
+  const suggestTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const suggestSeqRef = useRef<Record<string, number>>({});
+  const suggestSignatureRef = useRef<Record<string, string>>({});
 
-    useEffect(() => { coreRef.current = core; }, [core]);
-    useEffect(() => { athleteIdRef.current = athleteId; }, [athleteId]);
+  useEffect(() => { coreRef.current = core; }, [core]);
+  useEffect(() => { athleteIdRef.current = athleteId; }, [athleteId]);
 
   const clearSuggestTimer = (key: string) => {
     const t = suggestTimersRef.current[key];
@@ -577,17 +943,35 @@ export default function CreateWorkoutScreen() {
 
   const scheduleSuggest = (idx: number, delayMs = 250) => {
     const row = coreRef.current[idx];
-    if (!row) return;
+    if (!row) {
+      devLogSuggest('schedule skipped: missing row', { idx });
+      return;
+    }
 
-    // If manual override is set, we do NOT auto-suggest.
-    if (row.manual_target_kg != null && Number(row.manual_target_kg) > 0) return;
-
-    if (row.lift === 'VR') return;
     const key = String(idx);
     clearSuggestTimer(key);
+    devLogSuggest('schedule', {
+      idx,
+      delayMs,
+      athleteId,
+      lift: row.lift,
+      mode: row.mode,
+      reps: row.reps,
+      rpe_target: row.rpe_target,
+      pct: row.pct,
+      manual_target_kg: row.manual_target_kg,
+    });
     suggestTimersRef.current[key] = setTimeout(() => {
-        void suggestNow(idx);
+      void suggestNow(idx);
     }, delayMs);
+  };
+
+  const scheduleSuggestAfterState = (...indices: number[]) => {
+    setTimeout(() => {
+      indices.forEach((idx) => {
+        if (Number.isFinite(idx) && idx >= 0) scheduleSuggest(idx);
+      });
+    }, 0);
   };
 
   const suggestNow = async (idx: number) => {
@@ -599,25 +983,47 @@ export default function CreateWorkoutScreen() {
     const athlete_id = Number(athleteIdRef.current);
     const c = coreRef.current[idx];
     if (!c) {
-    clearSuggestTimer(key);
-    delete suggestSeqRef.current[key];
-    return;
+      devLogSuggest('skipped: missing row at request time', { idx });
+      clearSuggestTimer(key);
+      delete suggestSeqRef.current[key];
+      return;
     }
 
-// If manual override is set, do not compute auto suggestions.
-if (c.manual_target_kg != null && Number(c.manual_target_kg) > 0) {
-  return;
-}
+    // If manual override is set, do not compute auto suggestions.
+    if (c.manual_target_kg != null && Number(c.manual_target_kg) > 0) {
+      devLogSuggest('skipped: manual target present', {
+        idx,
+        athlete_id,
+        lift: c.lift,
+        mode: c.mode,
+        reps: c.reps,
+        rpe_target: c.rpe_target,
+        pct: c.pct,
+        manual_target_kg: c.manual_target_kg,
+      });
+      return;
+    }
 
-if (c.lift === 'VR') {
-  clearSuggestTimer(key);
-  delete suggestSeqRef.current[key];
-  return;
-}
+    if (c.lift === 'VR') {
+      devLogSuggest('skipped: variant lift has no standalone suggestion', { idx, athlete_id });
+      clearSuggestTimer(key);
+      delete suggestSeqRef.current[key];
+      return;
+    }
 
     // Require lift + reps + target
     const reps = Number(c.reps);
     if (!Number.isFinite(reps) || reps <= 0) {
+      devLogSuggest('skipped: invalid reps', {
+        idx,
+        athlete_id,
+        lift: c.lift,
+        mode: c.mode,
+        reps: c.reps,
+        rpe_target: c.rpe_target,
+        pct: c.pct,
+        manual_target_kg: c.manual_target_kg,
+      });
       updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
       return;
     }
@@ -636,10 +1042,30 @@ if (c.lift === 'VR') {
     }
 
     if (mode === 'RPE' && (rpe_target == null || rpe_target <= 0)) {
+      devLogSuggest('skipped: invalid RPE target', {
+        idx,
+        athlete_id,
+        lift: c.lift,
+        mode,
+        reps,
+        rpe_target: c.rpe_target,
+        pct: c.pct,
+        manual_target_kg: c.manual_target_kg,
+      });
       updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
       return;
     }
     if (mode === 'PCT' && (pct == null || pct <= 0)) {
+      devLogSuggest('skipped: invalid pct', {
+        idx,
+        athlete_id,
+        lift: c.lift,
+        mode,
+        reps,
+        rpe_target: c.rpe_target,
+        pct: c.pct,
+        manual_target_kg: c.manual_target_kg,
+      });
       updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
       return;
     }
@@ -648,6 +1074,18 @@ if (c.lift === 'VR') {
     if (mode === 'RPE') payload.rpe_target = rpe_target;
     if (mode === 'PCT') payload.pct = pct;
 
+    devLogSuggest('request', {
+      idx,
+      athlete_id,
+      lift: c.lift,
+      mode,
+      reps,
+      rpe_target,
+      pct,
+      manual_target_kg: c.manual_target_kg,
+      payload,
+    });
+
     const resp = await fetchJson('/workouts/mobile/suggest_range', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -655,12 +1093,22 @@ if (c.lift === 'VR') {
     });
 
     const res: any = resp.json;
+    devLogSuggest('response', {
+      idx,
+      status: resp.status,
+      ok: resp.ok,
+      json: res,
+    });
 
     // If a newer suggest request was scheduled/started, ignore this response.
-    if ((suggestSeqRef.current[key] || 0) !== mySeq) return;
+    if ((suggestSeqRef.current[key] || 0) !== mySeq) {
+      devLogSuggest('ignored stale response', { idx, mySeq, latestSeq: suggestSeqRef.current[key] });
+      return;
+    }
 
     if (!resp.ok || !res?.ok) {
       // Silent fail; just clear the label
+      devLogSuggest('clearing range: response not ok', { idx, status: resp.status, json: res });
       updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
       return;
     }
@@ -669,6 +1117,7 @@ if (c.lift === 'VR') {
     const cur = coreRef.current[idx];
     const curReps = Number(cur?.reps);
     if (!cur || !Number.isFinite(curReps) || curReps <= 0) {
+      devLogSuggest('clearing range: current row invalid after response', { idx, cur });
       updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
       return;
     }
@@ -676,6 +1125,7 @@ if (c.lift === 'VR') {
     if (cur.mode === 'RPE') {
       const curRpe = cur.rpe_target == null ? null : Number(cur.rpe_target);
       if (curRpe == null || !Number.isFinite(curRpe) || curRpe <= 0) {
+        devLogSuggest('clearing range: current RPE invalid after response', { idx, cur });
         updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
         return;
       }
@@ -690,16 +1140,68 @@ if (c.lift === 'VR') {
         else curPct = raw > 1 ? raw / 100 : raw;
       }
       if (curPct == null || !Number.isFinite(curPct) || curPct <= 0) {
+        devLogSuggest('clearing range: current pct invalid after response', { idx, cur });
         updateCoreAt(idx, { target_low_kg: null, target_high_kg: null });
         return;
       }
     }
 
+    devLogSuggest('apply range', {
+      idx,
+      athlete_id,
+      lift: c.lift,
+      mode,
+      reps,
+      rpe_target,
+      pct,
+      target_low_kg: res.target_low_kg ?? null,
+      target_high_kg: res.target_high_kg ?? null,
+    });
     updateCoreAt(idx, {
       target_low_kg: res.target_low_kg ?? null,
       target_high_kg: res.target_high_kg ?? null,
     });
   };
+
+  const suggestSignatureForRow = (row: CoreDraft | undefined, athleteIdValue: string) => {
+    if (!row) return null;
+    if (row.variant === 'FULL_CUSTOM') return null;
+    if (row.lift === 'VR') return null;
+    return [
+      athleteIdValue,
+      row.lift,
+      row.mode,
+      row.reps ?? '',
+      row.rpe_target ?? '',
+      row.pct ?? '',
+      row.manual_target_kg ?? '',
+    ].join('|');
+  };
+
+  useEffect(() => {
+    const activeKeys = new Set<string>();
+
+    core.forEach((row, idx) => {
+      const key = String(idx);
+      const signature = suggestSignatureForRow(row, athleteId);
+      if (!signature) {
+        delete suggestSignatureRef.current[key];
+        return;
+      }
+
+      activeKeys.add(key);
+      if (suggestSignatureRef.current[key] === signature) return;
+      suggestSignatureRef.current[key] = signature;
+
+      if (row.manual_target_kg != null && Number(row.manual_target_kg) > 0) return;
+      scheduleSuggest(idx, 80);
+    });
+
+    Object.keys(suggestSignatureRef.current).forEach((key) => {
+      if (!activeKeys.has(key)) delete suggestSignatureRef.current[key];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [core, athleteId]);
 
   // When athlete changes, clear and refresh all suggestions
   useEffect(() => {
@@ -753,6 +1255,8 @@ if (c.lift === 'VR') {
 
   const coreSelectOptions = (kind: 'lift'|'scheme'|'mode') => {
     if (kind === 'lift') {
+      // OHP is intentionally hidden from the modern mobile core-work flow;
+      // historical OHP sessions still hydrate, render, and save safely.
       return [
         { value: 'SQ' as const, label: 'Comp Squat' },
         { value: 'BN' as const, label: 'Comp Bench' },
@@ -763,6 +1267,7 @@ if (c.lift === 'VR') {
         return [
             { value: 'STRAIGHT' as const, label: 'Straight' },
             { value: 'TOP_BK' as const, label: 'Top + Backdown' },
+            { value: 'FULL_CUSTOM' as const, label: 'Full Custom' },
         ];
     }
     return [
@@ -777,6 +1282,7 @@ if (c.lift === 'VR') {
 
     async function loadRoster() {
       setRosterLoading(true);
+      setRosterLoaded(false);
       setRosterError(null);
 
       const resp = await fetchJson('/coach/mobile/roster', { method: 'GET' });
@@ -788,6 +1294,7 @@ if (c.lift === 'VR') {
           setRoster([]);
           setRosterError(msg);
           setRosterLoading(false);
+          setRosterLoaded(true);
         }
         return;
       }
@@ -796,6 +1303,7 @@ if (c.lift === 'VR') {
       if (!cancelled) {
         setRoster(rows);
         setRosterLoading(false);
+        setRosterLoaded(true);
       }
     }
 
@@ -822,6 +1330,27 @@ if (c.lift === 'VR') {
     return roster.find((r) => r.id === idNum) || null;
   }, [athleteId, roster]);
 
+  useEffect(() => {
+    if (editWorkoutId || prefillAppliedRef.current) return;
+
+    const wantsAthletePrefill = prefillAthleteIdParam.trim().length > 0;
+    if (wantsAthletePrefill && !rosterLoaded) return;
+
+    if (prefillDateParam && isValidYMD(prefillDateParam)) {
+      setDateStr(prefillDateParam);
+    }
+
+    const requestedAthleteId = Number(prefillAthleteIdParam);
+    if (Number.isFinite(requestedAthleteId) && requestedAthleteId > 0) {
+      const match = roster.find((row) => row.id === requestedAthleteId);
+      if (match) {
+        setAthleteId(String(match.id));
+      }
+    }
+
+    prefillAppliedRef.current = true;
+  }, [editWorkoutId, prefillAthleteIdParam, prefillDateParam, roster, rosterLoaded]);
+
   
   const isTopBkStart = (arr: CoreDraft[], idx: number) => {
     const c = arr[idx];
@@ -840,7 +1369,95 @@ if (c.lift === 'VR') {
     });
     };
 
-    const setSchemeAt = (idx: number, scheme: 'STRAIGHT' | 'TOP_BK') => {
+    const normalizePlannedSets = (rows?: PlannedSetDraft[], fallback?: CoreDraft): PlannedSetDraft[] => {
+    const source = Array.isArray(rows) ? rows : [];
+    const normalized = source
+        .slice(0, MAX_FULL_CUSTOM_SETS)
+        .map((row, i) => ({
+        set_index: i + 1,
+        reps: row.reps ?? null,
+        rpe_target: row.rpe_target ?? null,
+        pct: row.pct ?? null,
+        manual_target_kg: row.manual_target_kg ?? null,
+        manual_pm_kg: row.manual_pm_kg ?? 0,
+        }));
+
+    if (normalized.length) return normalized;
+    return [{
+        set_index: 1,
+        reps: fallback?.reps && fallback.reps > 0 ? fallback.reps : null,
+        rpe_target: fallback?.mode === 'RPE' ? (fallback.rpe_target ?? null) : null,
+        pct: fallback?.mode === 'PCT' ? (fallback.pct ?? null) : null,
+        manual_target_kg: fallback?.manual_target_kg ?? null,
+        manual_pm_kg: fallback?.manual_plusminus_kg ?? 0,
+    }];
+    };
+
+    const updatePlannedSetAt = (coreIdx: number, plannedIdx: number, patch: Partial<PlannedSetDraft>) => {
+    setCore((p) =>
+        p.map((x, i) => {
+        if (i !== coreIdx || x.variant !== 'FULL_CUSTOM') return x;
+        const rows = normalizePlannedSets(x.planned_sets, x);
+        const nextRows = rows.map((row, j) => (j === plannedIdx ? { ...row, ...patch } : row));
+        return { ...x, sets: nextRows.length, planned_sets: nextRows };
+        })
+    );
+    };
+
+    const addPlannedSet = (coreIdx: number) => {
+    setCore((p) =>
+        p.map((x, i) => {
+        if (i !== coreIdx || x.variant !== 'FULL_CUSTOM') return x;
+        const rows = normalizePlannedSets(x.planned_sets, x);
+        if (rows.length >= MAX_FULL_CUSTOM_SETS) return x;
+        const last = rows[rows.length - 1];
+        const nextRows = [
+            ...rows,
+            {
+            set_index: rows.length + 1,
+            reps: last?.reps ?? null,
+            rpe_target: x.mode === 'RPE' ? (last?.rpe_target ?? null) : null,
+            pct: x.mode === 'PCT' ? (last?.pct ?? null) : null,
+            manual_target_kg: null,
+            manual_pm_kg: 0,
+            },
+        ];
+        return { ...x, sets: nextRows.length, planned_sets: nextRows };
+        })
+    );
+    };
+
+    const removePlannedSet = (coreIdx: number, plannedIdx: number) => {
+    setCore((p) =>
+        p.map((x, i) => {
+        if (i !== coreIdx || x.variant !== 'FULL_CUSTOM') return x;
+        const rows = normalizePlannedSets(x.planned_sets, x);
+        if (rows.length <= 1) return x;
+        const nextRows = rows
+            .filter((_, j) => j !== plannedIdx)
+            .map((row, j) => ({ ...row, set_index: j + 1 }));
+        return { ...x, sets: nextRows.length, planned_sets: nextRows };
+        })
+    );
+    };
+
+    const setFullCustomModeAt = (idx: number, mode: CoreDraft['mode']) => {
+    setCore((p) =>
+        p.map((x, i) => {
+        if (i !== idx) return x;
+        const rows = x.variant === 'FULL_CUSTOM'
+            ? normalizePlannedSets(x.planned_sets, x).map((row) => ({
+                ...row,
+                rpe_target: mode === 'RPE' ? row.rpe_target : null,
+                pct: mode === 'PCT' ? row.pct : null,
+            }))
+            : x.planned_sets;
+        return { ...x, mode, planned_sets: rows };
+        })
+    );
+    };
+
+    const setSchemeAt = (idx: number, scheme: 'STRAIGHT' | 'TOP_BK' | 'FULL_CUSTOM') => {
     setCore((p) => {
         const c = p[idx];
         if (!c) return p;
@@ -856,6 +1473,24 @@ if (c.lift === 'VR') {
         return p.map((x, i) => (i === idx ? { ...x, variant: 'STRAIGHT' } : x));
         }
 
+        if (scheme === 'FULL_CUSTOM') {
+        const next = [...p];
+        if (isTopBkStart(p, idx)) next.splice(idx + 1, 1);
+        const current = next[idx];
+        next[idx] = {
+            ...current,
+            variant: 'FULL_CUSTOM',
+            sets: normalizePlannedSets(current.planned_sets, current).length,
+            reps: 0,
+            rpe_target: null,
+            pct: null,
+            target_low_kg: null,
+            target_high_kg: null,
+            planned_sets: normalizePlannedSets(current.planned_sets, current),
+        };
+        return next;
+        }
+
         // Straight -> Top+Backdown (insert BK row)
         if (scheme === 'TOP_BK') {
         if (isTopBkStart(p, idx)) return p;
@@ -869,6 +1504,7 @@ if (c.lift === 'VR') {
         sets: 1,
         reps: baseReps,
         rpe_target: baseRpe,
+        planned_sets: undefined,
         };
 
         const bk: CoreDraft = {
@@ -878,6 +1514,7 @@ if (c.lift === 'VR') {
         reps: baseReps,
         rpe_target: baseRpe == null ? null : baseRpe - 1,
         parent_item_id: null,
+        planned_sets: undefined,
         };
 
         const next = [...p];
@@ -888,7 +1525,19 @@ if (c.lift === 'VR') {
 
         // Top+Backdown -> Straight (remove BK row)
         if (scheme === 'STRAIGHT') {
-        if (!isTopBkStart(p, idx)) return p.map((x, i) => (i === idx ? { ...x, variant: 'STRAIGHT' } : x));
+        if (!isTopBkStart(p, idx)) return p.map((x, i) => (
+            i === idx
+            ? {
+                ...x,
+                variant: 'STRAIGHT',
+                sets: x.variant === 'FULL_CUSTOM' ? Math.max(1, x.planned_sets?.length || x.sets || 1) : x.sets,
+                reps: x.variant === 'FULL_CUSTOM' ? (x.planned_sets?.[0]?.reps ?? 0) : x.reps,
+                rpe_target: x.variant === 'FULL_CUSTOM' && x.mode === 'RPE' ? (x.planned_sets?.[0]?.rpe_target ?? null) : x.rpe_target,
+                pct: x.variant === 'FULL_CUSTOM' && x.mode === 'PCT' ? (x.planned_sets?.[0]?.pct ?? null) : x.pct,
+                planned_sets: undefined,
+            }
+            : x
+        ));
         const next = [...p];
         next[idx] = { ...next[idx], variant: 'STRAIGHT' };
         next.splice(idx + 1, 1);
@@ -986,10 +1635,59 @@ if (c.lift === 'VR') {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string|null>(null);
 
+  const resetBuilderStateForCreate = () => {
+    Object.keys(suggestTimersRef.current).forEach(clearSuggestTimer);
+    suggestSeqRef.current = {};
+    skipAthleteResetOnceRef.current = false;
+    prefillAppliedRef.current = false;
+
+    setAthleteId('');
+    setDateStr(new Date().toISOString().slice(0, 10));
+    setLabel('');
+    setCore([]);
+    setAcc([]);
+    setManualDraft({});
+    setStepIssues({});
+    setError(null);
+    setSaving(false);
+    setUnit('kg');
+  };
+
+  useEffect(() => {
+    const previousContext = routeContextRef.current;
+
+    if (editWorkoutId) {
+      routeContextRef.current = `edit:${editWorkoutId}`;
+      return;
+    }
+
+    if (previousContext?.startsWith('edit:')) {
+      resetBuilderStateForCreate();
+
+      if (prefillDateParam && isValidYMD(prefillDateParam)) {
+        setDateStr(prefillDateParam);
+      }
+
+      const requestedAthleteId = Number(prefillAthleteIdParam);
+      const wantsAthletePrefill = prefillAthleteIdParam.trim().length > 0;
+      if (Number.isFinite(requestedAthleteId) && requestedAthleteId > 0 && rosterLoaded) {
+        const match = roster.find((row) => row.id === requestedAthleteId);
+        if (match) {
+          setAthleteId(String(match.id));
+        }
+      }
+      prefillAppliedRef.current = !wantsAthletePrefill || rosterLoaded;
+    }
+
+    routeContextRef.current = 'create';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editWorkoutId, prefillAthleteIdParam, prefillDateParam, roster, rosterLoaded]);
+
   const canSave = useMemo(() => {
     const noStepIssues = Object.keys(stepIssues).length === 0;
     return athleteId.trim().length > 0 && dateStr.trim().length === 10 && !saving && noStepIssues;
   }, [athleteId, dateStr, saving, stepIssues]);
+  const hasSessionItems = core.length > 0 || acc.length > 0;
 
   const addCore = () =>
     setCore((p) => [
@@ -1011,14 +1709,55 @@ if (c.lift === 'VR') {
         },
     ]);
 
-  // MVP: “Core Variant” creates a TOP + BK pair in the draft.
-  // Parent linking can be wired later if backend needs it.
-  // Core Variant: e.g. Pause Squat, Close Grip Bench, Deficit DL, etc.
-    // Always straight scheme, requires movement name, manual load range.
-    const addCoreVariant = () =>
-    setCore((p) => [
+  const addCoreFromChooser = (
+    lift: CoreDraft['lift'],
+    scheme: 'STRAIGHT' | 'TOP_BK' | 'FULL_CUSTOM' = 'STRAIGHT'
+  ) => {
+    const idx = coreRef.current.length;
+    const base: CoreDraft = {
+      lift,
+      variant: scheme === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : scheme === 'TOP_BK' ? 'TOP' : 'STRAIGHT',
+      mode: 'RPE',
+      sets: scheme === 'FULL_CUSTOM' ? 1 : scheme === 'TOP_BK' ? 1 : 3,
+      reps: scheme === 'FULL_CUSTOM' ? 0 : 5,
+      rpe_target: scheme === 'FULL_CUSTOM' ? null : 7,
+      pct: null,
+      manual_target_kg: null,
+      manual_plusminus_kg: 0,
+      target_low_kg: null,
+      target_high_kg: null,
+      planned_sets: scheme === 'FULL_CUSTOM'
+        ? [{ set_index: 1, reps: 5, rpe_target: 7, pct: null, manual_target_kg: null, manual_pm_kg: 0 }]
+        : undefined,
+    };
+
+    setCore((p) => {
+      if (scheme !== 'TOP_BK') return [...p, base];
+      return [
         ...p,
+        base,
         {
+          ...base,
+          variant: 'BK',
+          sets: 3,
+          rpe_target: 6,
+          parent_item_id: null,
+        },
+      ];
+    });
+    setCoreEditorOpen({ idx });
+    if (scheme !== 'FULL_CUSTOM') {
+      scheduleSuggestAfterState(idx, scheme === 'TOP_BK' ? idx + 1 : -1);
+    }
+  };
+
+  // Core Variant is preset-assisted on mobile while preserving custom text.
+  // OHP intentionally stays hidden from modern mobile core-work selection.
+  const addCoreVariant = () => {
+    const idx = coreRef.current.length;
+    setCore((p) => [
+      ...p,
+      {
         lift: 'VR',
         variant: 'STRAIGHT',
         mode: 'RPE', // irrelevant for VR but fine to keep
@@ -1033,17 +1772,104 @@ if (c.lift === 'VR') {
 
         target_low_kg: null,
         target_high_kg: null,
-        },
+      },
     ]);
+    setCoreEditorOpen({ idx });
+    setTimeout(() => openMovementPicker('variant', idx), 0);
+  };
 
-  const addAcc = () =>
+  const addAcc = () => {
+    const idx = acc.length;
     setAcc((p) => [
       ...p,
       { movement: '', sets: 3, reps_text: '10-12', rir_target: 2, superset_group: null, superset_pos: null },
     ]);
+    setAccEditorOpen({ idx });
+    setTimeout(() => openMovementPicker('accessory', idx), 0);
+  };
+
+  const updateAccAt = (idx: number, patch: Partial<AccDraft>) => {
+    setAcc((p) => p.map((x, i) => (i === idx ? { ...x, ...patch } : x)));
+  };
+
+  const setAccSupersetGroup = (idx: number, group: SSGroup | null) => {
+    setAcc((p) =>
+      p.map((x, i) =>
+        i === idx
+          ? {
+              ...x,
+              superset_group: group,
+              superset_pos: group ? nextSupersetPos(group, p) : null,
+            }
+          : x
+      )
+    );
+  };
+
+  const serializeCoreForSave = (c: CoreDraft) => {
+    if (c.variant === 'FULL_CUSTOM') {
+      const plannedSets = normalizePlannedSets(c.planned_sets, c);
+      return {
+        lift: c.lift,
+        variant: 'FULL_CUSTOM' as const,
+        mode: c.mode,
+        movement: c.movement?.trim() || null,
+        sets: plannedSets.length || c.sets || 0,
+        reps: 0,
+        rpe_target: null,
+        pct: null,
+        planned_sets: plannedSets.map((ps, idx) => ({
+          set_index: ps.set_index || idx + 1,
+          reps: ps.reps ?? null,
+          rpe_target: c.mode === 'RPE' ? (ps.rpe_target ?? null) : null,
+          pct: c.mode === 'PCT' ? (ps.pct ?? null) : null,
+          manual_target_kg: ps.manual_target_kg ?? null,
+          manual_pm_kg: ps.manual_pm_kg ?? 0,
+        })),
+      };
+    }
+
+    return {
+      ...c,
+      movement: c.movement?.trim() || null,
+    };
+  };
+
+  const validateFullCustomCore = (c: CoreDraft, coreIdx: number) => {
+    if (c.variant !== 'FULL_CUSTOM') return null;
+    const rows = normalizePlannedSets(c.planned_sets, c);
+    if (!rows.length) return `Core ${coreIdx + 1}: add at least one planned set.`;
+
+    for (let i = 0; i < rows.length; i += 1) {
+      const row = rows[i];
+      const label = `Core ${coreIdx + 1}, Set ${i + 1}`;
+      const reps = Number(row.reps);
+      if (!Number.isFinite(reps) || reps <= 0) return `${label}: reps are required.`;
+
+      if (c.mode === 'PCT') {
+        const pct = Number(row.pct);
+        if (!Number.isFinite(pct) || pct <= 0) return `${label}: percent is required.`;
+      } else {
+        const rpe = Number(row.rpe_target);
+        if (!Number.isFinite(rpe) || rpe <= 0) return `${label}: RPE is required.`;
+      }
+
+      if (row.manual_target_kg != null) {
+        const target = Number(row.manual_target_kg);
+        if (!Number.isFinite(target) || target <= 0) return `${label}: manual target load is invalid.`;
+      }
+      if (row.manual_pm_kg != null) {
+        const range = Number(row.manual_pm_kg);
+        if (!Number.isFinite(range) || range < 0) return `${label}: manual range is invalid.`;
+      }
+    }
+
+    return null;
+  };
 
   const saveWithStatus = async (status: 'draft' | 'assigned') => {
     setError(null);
+    const activeEditWorkoutId = editWorkoutId.trim();
 
     if (unit === 'kg') {
       const issues = computeKgStepIssues();
@@ -1054,6 +1880,13 @@ if (c.lift === 'VR') {
       }
     }
 
+    const fullCustomIssue = core.map(validateFullCustomCore).find(Boolean);
+    if (fullCustomIssue) {
+      setError(fullCustomIssue);
+      Alert.alert('Fix Full Custom block', fullCustomIssue);
+      return;
+    }
+
     setSaving(true);
 
     const payload = {
@@ -1061,10 +1894,7 @@ if (c.lift === 'VR') {
       date: dateStr,
       label: label.trim() || null,
       status, // <-- IMPORTANT
-      core_items: core.map((c) => ({
-        ...c,
-        movement: c.movement?.trim() || null,
-      })),
+      core_items: core.map(serializeCoreForSave),
       acc_items: acc
         .filter((a) => a.movement.trim().length > 0)
         .map((a) => ({
@@ -1074,8 +1904,8 @@ if (c.lift === 'VR') {
         })),
     };
 
-    const endpoint = editWorkoutId
-      ? `/workouts/mobile/${editWorkoutId}/edit`
+    const endpoint = activeEditWorkoutId
+      ? `/workouts/mobile/${activeEditWorkoutId}/edit`
       : '/workouts/mobile/new';
 
     const resp = await fetchJson(endpoint, {
@@ -1095,7 +1925,7 @@ if (c.lift === 'VR') {
 
     setSaving(false);
 
-    const workoutId = String(res.workout_id || editWorkoutId);
+    const workoutId = String(res.workout_id || activeEditWorkoutId);
 
     router.replace({
       pathname: '/workout/[workoutId]',
@@ -1105,18 +1935,537 @@ if (c.lift === 'VR') {
 
 const saveDraft = async () => saveWithStatus('draft');
 const assignSession = async () => saveWithStatus('assigned');
+const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 sec', '45 sec', '60 sec'];
+
+  const toggleAdvanced = (key: string) => {
+    setAdvancedOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const renderSegmented = <T extends string>(
+    options: Array<{ value: T; label: string }>,
+    active: T,
+    onSelect: (value: T) => void,
+  ) => (
+    <CreatorSegmentedControl options={options} value={active} onChange={onSelect} />
+  );
+
+  const renderStepper = (
+    label: string,
+    value: number | null | undefined,
+    onChange: (value: number) => void,
+    options?: { min?: number; max?: number; step?: number },
+  ) => {
+    return (
+      <CreatorStepper
+        label={label}
+        value={value}
+        onChange={onChange}
+        min={options?.min}
+        max={options?.max}
+        step={options?.step}
+      />
+    );
+  };
+
+  const renderRpeChips = (value: number | null | undefined, onSelect: (value: number) => void) => (
+    <CreatorRpeSelector value={value} onChange={onSelect} />
+  );
+
+  const renderChoiceChips = <T extends string | number>(
+    options: Array<{ value: T; label: string }>,
+    value: T | null | undefined,
+    onSelect: (value: T) => void,
+  ) => (
+    <CreatorChoiceChips options={options} value={value} onChange={onSelect} />
+  );
+
+  const renderPctInput = (value: number | null | undefined, onChange: (value: number | null) => void) => (
+    <View style={styles.controlBlock}>
+      <ThemedText variant="bodyMuted" style={styles.controlLabel}>%</ThemedText>
+      <TextInput
+        value={value == null ? '' : String(value)}
+        onChangeText={(v) => onChange(v === '' ? null : Number(v))}
+        keyboardType="decimal-pad"
+        placeholder="80"
+        placeholderTextColor="#64748b"
+        style={[styles.input, styles.inputSm]}
+      />
+    </View>
+  );
+
+  const renderCoreAdvanced = (idx: number, c: CoreDraft) => {
+    const advancedKey = `core:${idx}`;
+    const open = !!advancedOpen[advancedKey];
+    return (
+      <CreatorAdvancedSection open={open} onToggle={() => toggleAdvanced(advancedKey)}>
+            <View style={styles.row}>
+              <View style={styles.fieldCol}>
+                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Load ({unit})</ThemedText>
+                <TextInput
+                  value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
+                  onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
+                  onBlur={() => {
+                    const key = keyForManualTarget(idx);
+                    const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
+                    updateCoreAt(idx, { manual_target_kg: nKg });
+                    applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
+                    validateKgStep(key, nKg);
+                    clearDraft(key);
+                  }}
+                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  placeholder="Optional"
+                  placeholderTextColor="#64748b"
+                  style={[styles.input, styles.inputSm]}
+                />
+              </View>
+              <View style={styles.fieldCol}>
+                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± ({unit})</ThemedText>
+                <TextInput
+                  value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
+                  onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
+                  onBlur={() => {
+                    const key = keyForManualPm(idx);
+                    const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
+                    updateCoreAt(idx, { manual_plusminus_kg: pmKg });
+                    applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
+                    validateKgStep(key, pmKg, true);
+                    clearDraft(key);
+                  }}
+                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  placeholder="0"
+                  placeholderTextColor="#64748b"
+                  style={[styles.input, styles.inputSm]}
+                />
+              </View>
+            </View>
+            {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
+              <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+              </ThemedText>
+            ) : null}
+            {(() => {
+              const sr = suggestedRangeLabel(c);
+              if (!sr) return null;
+              return (
+                <View style={styles.suggestRow}>
+                  <ThemedText variant="bodyMuted" style={styles.suggestLabel}>
+                    {c.manual_target_kg != null && Number(c.manual_target_kg) > 0 ? 'Manual load range' : 'Suggested load'}
+                  </ThemedText>
+                  <ThemedText variant="body" style={styles.suggestValue}>{sr}</ThemedText>
+                </View>
+              );
+            })()}
+      </CreatorAdvancedSection>
+    );
+  };
+
+  const renderInlineLoadSummary = (c: CoreDraft) => {
+    const sr = suggestedRangeLabel(c);
+    if (!sr && !canRequestSuggestedLoad(c)) return null;
+    return (
+      <View style={styles.inlineLoadSummary}>
+        <ThemedText variant="bodyMuted" style={styles.inlineLoadLabel}>
+          {c.manual_target_kg != null && Number(c.manual_target_kg) > 0 ? 'Manual Load' : 'Suggested Load'}
+        </ThemedText>
+        <ThemedText variant="body" style={styles.inlineLoadValue}>
+          {sr || 'No suggested load returned'}
+        </ThemedText>
+      </View>
+    );
+  };
+
+  const renderMovementPickerBody = (kind: 'accessory'|'variant') => {
+    const categories = filteredMovementCategories(kind);
+    return (
+      <>
+        <TextInput
+          value={movementSearch}
+          onChangeText={setMovementSearch}
+          placeholder="Search movements"
+          placeholderTextColor="#64748b"
+          style={styles.input}
+          autoCorrect={false}
+          autoCapitalize="words"
+        />
+
+        {movementSearch.trim() ? (
+          <Pressable
+            style={styles.customMovementRow}
+            onPress={() => selectMovementPreset(movementSearch.trim())}
+          >
+            <ThemedText variant="body" style={styles.customMovementTitle}>
+              Use "{movementSearch.trim()}"
+            </ThemedText>
+          </Pressable>
+        ) : null}
+
+        <ScrollView
+          style={styles.editorScroll}
+          contentContainerStyle={styles.movementPickerContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        >
+          {movementPresetsLoading ? (
+            <View style={styles.rosterLoadingRow}>
+              <ActivityIndicator color="#C4B5FD" />
+              <ThemedText variant="bodyMuted" style={styles.rosterLoadingText}>Loading presets</ThemedText>
+            </View>
+          ) : movementPresetsError ? (
+            <View style={styles.emptyOutlineCard}>
+              <ThemedText variant="body" style={styles.emptyOutlineTitle}>Presets unavailable</ThemedText>
+              <ThemedText variant="bodyMuted" style={styles.emptyOutlineText}>{movementPresetsError}</ThemedText>
+            </View>
+          ) : (
+            categories.map((category) => (
+              <View key={category.key || category.name} style={styles.presetCategoryBlock}>
+                <ThemedText variant="badge" style={styles.presetCategoryTitle}>{category.name}</ThemedText>
+                {category.movements.map((movement) => (
+                  <TouchableOpacity
+                    key={`${category.name}-${movement}`}
+                    style={styles.presetMovementRow}
+                    onPress={() => selectMovementPreset(movement)}
+                  >
+                    <ThemedText variant="body" style={styles.presetMovementText}>{movement}</ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))
+          )}
+
+          {!movementPresetsLoading && !categories.length ? (
+            <View style={styles.emptyOutlineCard}>
+              <ThemedText variant="body" style={styles.emptyOutlineTitle}>No presets found</ThemedText>
+            </View>
+          ) : null}
+        </ScrollView>
+      </>
+    );
+  };
+
+  const renderCoreEditorContent = (idx: number) => {
+    const c = core[idx];
+    if (!c) return null;
+    const hasTopBk = c.variant === 'TOP' && core[idx + 1]?.variant === 'BK';
+    const bk = (hasTopBk ? core[idx + 1] : c) as CoreDraft;
+
+    return (
+      <View style={styles.editorBody}>
+        {c.lift === 'VR' ? (
+          <>
+            <ThemedText variant="bodyMuted" style={styles.controlLabel}>Core Variant</ThemedText>
+            <Pressable style={styles.selectInput} onPress={() => openMovementPicker('variant', idx)}>
+              <ThemedText variant="body" style={styles.selectText}>
+                {c.movement?.trim() || 'Choose variant'}
+              </ThemedText>
+              <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+            </Pressable>
+            <TextInput
+              value={c.movement || ''}
+              onChangeText={(v) => updateCoreAt(idx, { movement: v })}
+              placeholder="Custom variant"
+              placeholderTextColor="#64748b"
+              style={styles.input}
+            />
+          </>
+        ) : (
+          <Pressable style={styles.liftButton} onPress={() => setCoreSelectOpen({ kind: 'lift', idx })}>
+            <ThemedText variant="body" style={styles.liftButtonText}>{coreLiftLabel(c.lift)}</ThemedText>
+            <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+          </Pressable>
+        )}
+
+        {c.lift !== 'VR' ? (
+          <>
+            <ThemedText variant="bodyMuted" style={styles.controlLabel}>Scheme</ThemedText>
+            {renderSegmented(
+              [
+                { value: 'STRAIGHT', label: 'Straight' },
+                { value: 'TOP_BK', label: 'Top + Backdown' },
+                { value: 'FULL_CUSTOM', label: 'Full Custom' },
+              ],
+              c.variant === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : hasTopBk ? 'TOP_BK' : 'STRAIGHT',
+              (scheme) => {
+                setSchemeAt(idx, scheme);
+                if (scheme !== 'FULL_CUSTOM') {
+                  scheduleSuggestAfterState(idx, scheme === 'TOP_BK' ? idx + 1 : -1);
+                }
+              },
+            )}
+          </>
+        ) : null}
+
+        <ThemedText variant="bodyMuted" style={styles.controlLabel}>Mode</ThemedText>
+        {c.lift === 'VR' ? (
+          <View style={styles.segmentedRow}>
+            <View style={[styles.segmentBtn, styles.segmentBtnActive]}>
+              <ThemedText variant="badge" style={[styles.segmentText, styles.segmentTextActive]}>RPE</ThemedText>
+            </View>
+          </View>
+        ) : renderSegmented(
+          [
+            { value: 'RPE', label: 'RPE' },
+            { value: 'PCT', label: '%' },
+          ],
+          c.mode,
+          (mode) => {
+            if (c.variant === 'FULL_CUSTOM') setFullCustomModeAt(idx, mode);
+            else if (isTopBkStart(core, idx)) {
+              updateTopBkPair(idx, { mode, target_low_kg: null, target_high_kg: null });
+              scheduleSuggestAfterState(idx, idx + 1);
+            } else {
+              updateCoreAt(idx, { mode, target_low_kg: null, target_high_kg: null });
+              scheduleSuggestAfterState(idx);
+            }
+          },
+        )}
+
+        {c.variant === 'FULL_CUSTOM' ? (
+          <View style={styles.fullCustomEditor}>
+            <View style={styles.fullCustomHeaderRow}>
+              <ThemedText variant="body" style={styles.subRowLabel}>Planned Sets</ThemedText>
+              <Pressable
+                onPress={() => addPlannedSet(idx)}
+                disabled={normalizePlannedSets(c.planned_sets, c).length >= MAX_FULL_CUSTOM_SETS}
+                style={[styles.smallBtn, normalizePlannedSets(c.planned_sets, c).length >= MAX_FULL_CUSTOM_SETS && styles.reorderBtnDisabled]}
+              >
+                <ThemedText variant="badge" style={styles.smallBtnText}>+ Add Set</ThemedText>
+              </Pressable>
+            </View>
+
+            {normalizePlannedSets(c.planned_sets, c).map((ps, psIdx) => {
+              const targetKey = keyForPlannedManualTarget(idx, psIdx);
+              const pmKey = keyForPlannedManualPm(idx, psIdx);
+              const stepIssue = stepIssues[targetKey] || stepIssues[pmKey];
+              return (
+                <View key={`${idx}-${psIdx}`} style={styles.plannedSetCardCompact}>
+                  <View style={styles.plannedSetHeader}>
+                    <ThemedText variant="body" style={styles.plannedSetTitle}>Set {psIdx + 1}</ThemedText>
+                    <Pressable
+                      onPress={() => removePlannedSet(idx, psIdx)}
+                      disabled={normalizePlannedSets(c.planned_sets, c).length <= 1}
+                      style={[styles.plannedSetRemove, normalizePlannedSets(c.planned_sets, c).length <= 1 && styles.reorderBtnDisabled]}
+                    >
+                      <ThemedText variant="badge" style={styles.removeBtnText}>Remove</ThemedText>
+                    </Pressable>
+                  </View>
+                  <View style={styles.controlGrid}>
+                    {renderStepper('Reps', ps.reps, (value) => updatePlannedSetAt(idx, psIdx, { reps: value }), { min: 1, max: 99 })}
+                    {c.mode === 'PCT'
+                      ? renderPctInput(ps.pct, (value) => updatePlannedSetAt(idx, psIdx, { pct: value, rpe_target: null }))
+                      : (
+                        <View style={styles.controlBlockWide}>
+                          <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                          {renderRpeChips(ps.rpe_target, (value) => updatePlannedSetAt(idx, psIdx, { rpe_target: value, pct: null }))}
+                        </View>
+                      )}
+                  </View>
+                  <CreatorAdvancedSection
+                    open={!!advancedOpen[`planned:${idx}:${psIdx}`]}
+                    onToggle={() => toggleAdvanced(`planned:${idx}:${psIdx}`)}
+                  >
+                        <View style={styles.row}>
+                          <View style={styles.fieldCol}>
+                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Load ({unit})</ThemedText>
+                            <TextInput
+                              value={getDraft(targetKey, ps.manual_target_kg)}
+                              onChangeText={(v) => setDraft(targetKey, v)}
+                              onBlur={() => {
+                                const nKg = parseDisplayWeightToKg(getDraft(targetKey, ps.manual_target_kg));
+                                updatePlannedSetAt(idx, psIdx, { manual_target_kg: nKg });
+                                validateKgStep(targetKey, nKg);
+                                clearDraft(targetKey);
+                              }}
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
+                              placeholder="Optional"
+                              placeholderTextColor="#64748b"
+                              style={[styles.input, styles.inputSm]}
+                            />
+                          </View>
+                          <View style={styles.fieldCol}>
+                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± ({unit})</ThemedText>
+                            <TextInput
+                              value={getDraft(pmKey, ps.manual_pm_kg)}
+                              onChangeText={(v) => setDraft(pmKey, v)}
+                              onBlur={() => {
+                                const pmKg = parseDisplayDeltaToKg(getDraft(pmKey, ps.manual_pm_kg));
+                                updatePlannedSetAt(idx, psIdx, { manual_pm_kg: pmKg ?? 0 });
+                                validateKgStep(pmKey, pmKg, true);
+                                clearDraft(pmKey);
+                              }}
+                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                              autoCorrect={false}
+                              autoCapitalize="none"
+                              placeholder="0"
+                              placeholderTextColor="#64748b"
+                              style={[styles.input, styles.inputSm]}
+                            />
+                          </View>
+                        </View>
+                        {stepIssue ? <ThemedText variant="bodyMuted" style={styles.stepWarn}>{stepIssue}</ThemedText> : null}
+                  </CreatorAdvancedSection>
+                </View>
+              );
+            })}
+          </View>
+        ) : hasTopBk ? (
+          <View style={styles.editorBody}>
+            <ThemedText variant="body" style={styles.subRowLabel}>Top Set</ThemedText>
+            <View style={styles.controlGrid}>
+              {renderStepper('Sets', c.sets, (value) => updateTopBkPair(idx, { sets: value }), { min: 1, max: 12 })}
+              {renderStepper('Reps', c.reps, (value) => {
+                updateTopBkPair(idx, { reps: value });
+                if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+              }, { min: 1, max: 99 })}
+            </View>
+            {c.mode === 'PCT'
+              ? renderPctInput(c.pct, (value) => {
+                updateTopBkPair(idx, { pct: value });
+                if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+              })
+              : (
+                <>
+                  <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                  {renderRpeChips(c.rpe_target, (value) => {
+                    updateTopBkPair(idx, { rpe_target: value });
+                    if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+                  })}
+                </>
+              )}
+            {renderInlineLoadSummary(c)}
+
+            <ThemedText variant="body" style={styles.subRowLabel}>Backdown Sets</ThemedText>
+            <View style={styles.controlGrid}>
+              {renderStepper('Sets', bk.sets, (value) => updateTopBkPair(idx, {}, { sets: value }), { min: 1, max: 12 })}
+              {renderStepper('Reps', bk.reps, (value) => {
+                updateTopBkPair(idx, {}, { reps: value });
+                if (!(bk.manual_target_kg != null && Number(bk.manual_target_kg) > 0)) scheduleSuggest(idx + 1);
+              }, { min: 1, max: 99 })}
+            </View>
+            {bk.mode === 'PCT'
+              ? renderPctInput(bk.pct, (value) => {
+                updateTopBkPair(idx, {}, { pct: value });
+                if (!(bk.manual_target_kg != null && Number(bk.manual_target_kg) > 0)) scheduleSuggest(idx + 1);
+              })
+              : (
+                <>
+                  <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                  {renderRpeChips(bk.rpe_target, (value) => {
+                    updateTopBkPair(idx, {}, { rpe_target: value });
+                    if (!(bk.manual_target_kg != null && Number(bk.manual_target_kg) > 0)) scheduleSuggest(idx + 1);
+                  })}
+                </>
+              )}
+            {renderInlineLoadSummary(bk)}
+            {renderCoreAdvanced(idx, c)}
+          </View>
+        ) : (
+          <View style={styles.editorBody}>
+            <View style={styles.controlGrid}>
+              {renderStepper('Sets', c.sets, (value) => updateCoreAt(idx, { sets: value }), { min: 1, max: 12 })}
+              {renderStepper('Reps', c.reps, (value) => {
+                updateCoreAt(idx, { reps: value });
+                if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+              }, { min: 1, max: 99 })}
+            </View>
+            {c.mode === 'PCT'
+              ? renderPctInput(c.pct, (value) => {
+                updateCoreAt(idx, { pct: value });
+                if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+              })
+              : (
+                <>
+                  <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                  {renderRpeChips(c.rpe_target, (value) => {
+                    updateCoreAt(idx, { rpe_target: value });
+                    if (!(c.manual_target_kg != null && Number(c.manual_target_kg) > 0)) scheduleSuggest(idx);
+                  })}
+                </>
+              )}
+            {renderInlineLoadSummary(c)}
+            {renderCoreAdvanced(idx, c)}
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <ThemedView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <ThemedText variant="h1" style={styles.title}>
-          {editWorkoutId ? 'Edit Session' : 'Create Session'}
-        </ThemedText>
+      <KeyboardAvoidingView
+        style={styles.keyboardRoot}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+      >
+        <View style={styles.topBar}>
+          <ThemedText variant="h1" style={styles.title}>
+            {editWorkoutId ? 'Edit Session' : 'Create Session'}
+          </ThemedText>
+          <View style={styles.topActions}>
+            {editWorkoutId ? (
+              <Pressable style={styles.topSecondaryBtn} onPress={() => router.back()}>
+                <ThemedText variant="badge" style={styles.topSecondaryText}>Cancel</ThemedText>
+              </Pressable>
+            ) : null}
+            <Pressable
+              style={[styles.topSecondaryBtn, !canSave && styles.btnDisabled]}
+              disabled={!canSave}
+              onPress={saveDraft}
+            >
+              <ThemedText variant="badge" style={styles.topSecondaryText}>Save Draft</ThemedText>
+            </Pressable>
+          </View>
+        </View>
 
         {error && <ThemedText variant="error" style={styles.error}>{error}</ThemedText>}
 
-        <View style={styles.card}>
-          <ThemedText variant="h3" style={styles.h3}>Basics</ThemedText>
+        <View style={styles.sourceRow}>
+          <ThemedText variant="bodyMuted" style={styles.sourceText}>Source</ThemedText>
+          {!editWorkoutId ? (
+            <Pressable
+              style={styles.sourceBtn}
+              onPress={openCopyExisting}
+            >
+              <ThemedText variant="badge" style={styles.sourceBtnText}>Copy Existing</ThemedText>
+            </Pressable>
+          ) : null}
+          <Pressable
+            style={styles.sourceBtn}
+            onPress={() => {
+              const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
+              if (!hasDraft) {
+                setTemplatePickerOpen(true);
+                return;
+              }
+              Alert.alert(
+                'Load template?',
+                'This will replace your current draft in the builder.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Replace',
+                    style: 'destructive',
+                    onPress: () => setTemplatePickerOpen(true),
+                  },
+                ]
+              );
+            }}
+          >
+            <ThemedText variant="badge" style={styles.sourceBtnText}>Load Template</ThemedText>
+          </Pressable>
+        </View>
+
+        <View style={[styles.card, styles.basicsCard]}>
+          <ThemedText variant="h3" style={styles.sectionKicker}>Basics</ThemedText>
 
           <ThemedText variant="bodyMuted" style={styles.label}>Athlete</ThemedText>
 
@@ -1133,7 +2482,9 @@ const assignSession = async () => saveWithStatus('assigned');
               <ThemedText variant="body" style={styles.selectText}>
                 {selectedAthlete
                   ? `${selectedAthlete.name}${selectedAthlete.is_self ? ' (YOU)' : ''}`
-                  : 'Select athlete'}
+                  : prefillAthleteNameParam
+                    ? `Select athlete (${prefillAthleteNameParam})`
+                    : 'Select athlete'}
               </ThemedText>
               <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
             </Pressable>
@@ -1147,19 +2498,6 @@ const assignSession = async () => saveWithStatus('assigned');
 
 
           <View style={styles.row}>
-            <View style={styles.fieldCol}>
-              <ThemedText variant="bodyMuted" style={styles.label}>
-                Session Name
-              </ThemedText>
-              <TextInput
-                value={label}
-                onChangeText={setLabel}
-                placeholder="Optional"
-                placeholderTextColor="#64748b"
-                style={styles.input}
-              />
-            </View>
-
             <View style={styles.fieldCol}>
               <ThemedText variant="bodyMuted" style={styles.label}>
                 Date
@@ -1211,17 +2549,60 @@ const assignSession = async () => saveWithStatus('assigned');
               </View>
             </View>
           </View>
+          <ThemedText variant="bodyMuted" style={styles.label}>
+            Session Title (optional)
+          </ThemedText>
+          <TextInput
+            value={label}
+            onChangeText={setLabel}
+            placeholder="e.g. Lower Body Strength"
+            placeholderTextColor="#64748b"
+            style={styles.input}
+          />
         </View>
 
 
-        {core.length > 0 && (
-            <View style={styles.card}>
+        <View style={styles.card}>
+                <View style={styles.sectionHeaderRow}>
+                  <View>
+                    <ThemedText variant="h3" style={styles.sectionKicker}>Core Work</ThemedText>
+                  </View>
+                  <Pressable style={styles.sectionAddBtn} onPress={() => setAddLiftOpen(true)}>
+                    <ThemedText variant="badge" style={styles.sectionAddText}>+ Add Lift</ThemedText>
+                  </Pressable>
+                </View>
+                {core.length === 0 ? (
+                  <Pressable style={styles.emptyOutlineCard} onPress={() => setAddLiftOpen(true)}>
+                    <ThemedText variant="body" style={styles.emptyOutlineTitle}>No core work yet</ThemedText>
+                  </Pressable>
+                ) : null}
                 {core.map((c, idx) => {
                     // hide the BK row if it belongs to a TOP+BK pair
                     if (c.variant === 'BK' && core[idx - 1]?.variant === 'TOP') return null;
 
                     const hasTopBk = c.variant === 'TOP' && core[idx + 1]?.variant === 'BK';
-                    const bk = hasTopBk ? core[idx + 1] : null;
+                    const bk = (hasTopBk ? core[idx + 1] : c) as CoreDraft;
+
+                    return (
+                      <CoreMovementCard
+                        key={idx}
+                        lift={c.lift}
+                        title={coreMovementTitle(c)}
+                        scheme={coreSchemeLabel(core, idx)}
+                        summary={corePrescriptionSummary(core, idx).replace(`${coreSchemeLabel(core, idx)} · `, '')}
+                        suggestedLoad={suggestedRangeLabel(c)}
+                        manualLoad={c.manual_target_kg != null && Number(c.manual_target_kg) > 0}
+                        canMoveUp={canMoveCoreUp(idx)}
+                        canMoveDown={canMoveCoreDown(idx)}
+                        onOpen={() => setCoreEditorOpen({ idx })}
+                        onMoveUp={() => moveCore(idx, -1)}
+                        onMoveDown={() => moveCore(idx, 1)}
+                        onRemove={() => setCore((p) => {
+                          if (isTopBkStart(p, idx)) return p.filter((_, i) => i !== idx && i !== idx + 1);
+                          return p.filter((_, i) => i !== idx);
+                        })}
+                      />
+                    );
 
                     return (
                         <View key={idx} style={styles.block}>
@@ -1438,7 +2819,128 @@ const assignSession = async () => saveWithStatus('assigned');
                     ) : null}
 
 
-                    {!hasTopBk && c.lift !== 'VR' && (
+                    {c.variant === 'FULL_CUSTOM' && (
+                    <View style={styles.fullCustomEditor}>
+                      <View style={styles.fullCustomHeaderRow}>
+                        <View>
+                          <ThemedText variant="body" style={styles.subRowLabel}>Planned Sets</ThemedText>
+                          <ThemedText variant="bodyMuted" style={styles.fullCustomNoticeText}>
+                            Set-by-set prescription · max {MAX_FULL_CUSTOM_SETS}
+                          </ThemedText>
+                        </View>
+                        <Pressable
+                          onPress={() => addPlannedSet(idx)}
+                          disabled={normalizePlannedSets(c.planned_sets, c).length >= MAX_FULL_CUSTOM_SETS}
+                          style={[
+                            styles.smallBtn,
+                            normalizePlannedSets(c.planned_sets, c).length >= MAX_FULL_CUSTOM_SETS && styles.reorderBtnDisabled,
+                          ]}
+                        >
+                          <ThemedText variant="badge" style={styles.smallBtnText}>Add Set</ThemedText>
+                        </Pressable>
+                      </View>
+
+                      {normalizePlannedSets(c.planned_sets, c).map((ps, psIdx) => {
+                        const targetKey = keyForPlannedManualTarget(idx, psIdx);
+                        const pmKey = keyForPlannedManualPm(idx, psIdx);
+                        const stepIssue = stepIssues[targetKey] || stepIssues[pmKey];
+                        return (
+                          <View key={`${idx}-${psIdx}`} style={styles.plannedSetCard}>
+                            <View style={styles.plannedSetHeader}>
+                              <ThemedText variant="body" style={styles.plannedSetTitle}>Set {psIdx + 1}</ThemedText>
+                              <Pressable
+                                onPress={() => removePlannedSet(idx, psIdx)}
+                                disabled={normalizePlannedSets(c.planned_sets, c).length <= 1}
+                                style={[styles.plannedSetRemove, normalizePlannedSets(c.planned_sets, c).length <= 1 && styles.reorderBtnDisabled]}
+                              >
+                                <ThemedText variant="badge" style={styles.removeBtnText}>Remove</ThemedText>
+                              </Pressable>
+                            </View>
+
+                            <View style={styles.row}>
+                              <View style={styles.fieldCol}>
+                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Reps</ThemedText>
+                                <TextInput
+                                  value={ps.reps == null ? '' : String(ps.reps)}
+                                  onChangeText={(v) => updatePlannedSetAt(idx, psIdx, { reps: parseOptionalNumberInput(v) })}
+                                  keyboardType="number-pad"
+                                  placeholder="5"
+                                  placeholderTextColor="#64748b"
+                                  style={[styles.input, styles.inputSm]}
+                                />
+                              </View>
+
+                              <View style={styles.fieldCol}>
+                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>{c.mode === 'PCT' ? '%' : 'RPE'}</ThemedText>
+                                <TextInput
+                                  value={c.mode === 'PCT'
+                                    ? (ps.pct == null ? '' : String(ps.pct))
+                                    : (ps.rpe_target == null ? '' : String(ps.rpe_target))}
+                                  onChangeText={(v) => {
+                                    const nextValue = parseOptionalNumberInput(v);
+                                    if (c.mode === 'PCT') updatePlannedSetAt(idx, psIdx, { pct: nextValue, rpe_target: null });
+                                    else updatePlannedSetAt(idx, psIdx, { rpe_target: nextValue, pct: null });
+                                  }}
+                                  keyboardType="decimal-pad"
+                                  placeholder={c.mode === 'PCT' ? '80' : '7'}
+                                  placeholderTextColor="#64748b"
+                                  style={[styles.input, styles.inputSm]}
+                                />
+                              </View>
+                            </View>
+
+                            <View style={styles.row}>
+                              <View style={styles.fieldCol}>
+                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
+                                <TextInput
+                                  value={getDraft(targetKey, ps.manual_target_kg)}
+                                  onChangeText={(v) => setDraft(targetKey, v)}
+                                  onBlur={() => {
+                                    const nKg = parseDisplayWeightToKg(getDraft(targetKey, ps.manual_target_kg));
+                                    updatePlannedSetAt(idx, psIdx, { manual_target_kg: nKg });
+                                    validateKgStep(targetKey, nKg);
+                                    clearDraft(targetKey);
+                                  }}
+                                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                                  autoCorrect={false}
+                                  autoCapitalize="none"
+                                  placeholder="Optional"
+                                  placeholderTextColor="#64748b"
+                                  style={[styles.input, styles.inputSm]}
+                                />
+                              </View>
+
+                              <View style={styles.fieldCol}>
+                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
+                                <TextInput
+                                  value={getDraft(pmKey, ps.manual_pm_kg)}
+                                  onChangeText={(v) => setDraft(pmKey, v)}
+                                  onBlur={() => {
+                                    const pmKg = parseDisplayDeltaToKg(getDraft(pmKey, ps.manual_pm_kg));
+                                    updatePlannedSetAt(idx, psIdx, { manual_pm_kg: pmKg ?? 0 });
+                                    validateKgStep(pmKey, pmKg, true);
+                                    clearDraft(pmKey);
+                                  }}
+                                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+                                  autoCorrect={false}
+                                  autoCapitalize="none"
+                                  placeholder="0"
+                                  placeholderTextColor="#64748b"
+                                  style={[styles.input, styles.inputSm]}
+                                />
+                              </View>
+                            </View>
+
+                            {stepIssue ? (
+                              <ThemedText variant="bodyMuted" style={styles.stepWarn}>{stepIssue}</ThemedText>
+                            ) : null}
+                          </View>
+                        );
+                      })}
+                    </View>
+                    )}
+
+                    {!hasTopBk && c.lift !== 'VR' && c.variant !== 'FULL_CUSTOM' && (
                     <>
                     <View style={styles.row}>
                         <View style={styles.fieldCol}>
@@ -1835,253 +3337,308 @@ const assignSession = async () => saveWithStatus('assigned');
                 );
               })}
             </View>
-        )}
+        
 
-        {acc.length > 0 && (
-            <View style={styles.card}>
-                {acc.map((a, idx) => (
-                <View key={idx} style={styles.block}>
-                    <View style={styles.blockHeader}>
-                        <ThemedText variant="body" style={styles.blockTitle}>Accessory {idx + 1}</ThemedText>
-
-                        <View style={styles.blockHeaderRight}>
-                            <Pressable
-                            onPress={() => moveAcc(idx, idx - 1)}
-                            disabled={!canMoveAccUp(idx)}
-                            style={[styles.reorderBtn, !canMoveAccUp(idx) && styles.reorderBtnDisabled]}
-                            >
-                            <ThemedText variant="badge" style={styles.reorderBtnText}>↑</ThemedText>
-                            </Pressable>
-
-                            <Pressable
-                            onPress={() => moveAcc(idx, idx + 1)}
-                            disabled={!canMoveAccDown(idx)}
-                            style={[styles.reorderBtn, !canMoveAccDown(idx) && styles.reorderBtnDisabled]}
-                            >
-                            <ThemedText variant="badge" style={styles.reorderBtnText}>↓</ThemedText>
-                            </Pressable>
-
-                            <Pressable
-                            onPress={() => setAcc((p) => p.filter((_, i) => i !== idx))}
-                            style={styles.removeBtn}
-                            >
-                            <ThemedText variant="badge" style={styles.removeBtnText}>Remove</ThemedText>
-                            </Pressable>
-                        </View>
-                    </View>
-
-                    <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Movement</ThemedText>
-                    <TextInput
-                      value={a.movement}
-                      onChangeText={(v) =>
-                        setAcc((p) => p.map((x, i) => (i === idx ? { ...x, movement: v } : x)))
-                      }
-                      placeholder="e.g. Lat Pulldown"
-                      placeholderTextColor="#64748b"
-                      style={styles.input}
-                    />
-
-                    {/* Superset grouping */}
-                    <View style={styles.row}>
-                      <View style={[styles.fieldCol, { flex: 1 }]}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Superset</ThemedText>
-                        <Pressable
-                          style={styles.selectInput}
-                          onPress={() => setAccSupersetSelectOpen({ idx })}
-                        >
-                          <ThemedText variant="body" style={styles.selectText}>
-                            {normalizeSSGroup(a.superset_group) ? `Group ${normalizeSSGroup(a.superset_group)}` : 'None'}
-                          </ThemedText>
-                          <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
-                        </Pressable>
-                      </View>
-                    </View>
-
-                    <View style={styles.row}>
-                      <View style={styles.fieldCol}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Sets</ThemedText>
-                        <TextInput
-                          value={String(a.sets)}
-                          onChangeText={(v) =>
-                            setAcc((p) =>
-                              p.map((x, i) => (i === idx ? { ...x, sets: Number(v || 0) } : x))
-                            )
-                          }
-                          placeholder="3"
-                          placeholderTextColor="#64748b"
-                          keyboardType="number-pad"
-                          style={[styles.input, styles.inputSm]}
-                        />
-                      </View>
-
-                      <View style={styles.fieldCol}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Reps</ThemedText>
-                        <TextInput
-                          value={a.reps_text}
-                          onChangeText={(v) =>
-                            setAcc((p) =>
-                              p.map((x, i) => (i === idx ? { ...x, reps_text: v } : x))
-                            )
-                          }
-                          placeholder="10-12"
-                          placeholderTextColor="#64748b"
-                          style={[styles.input, styles.inputLg]}
-                        />
-                      </View>
-
-                      <View style={styles.fieldCol}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Target RIR</ThemedText>
-                        <TextInput
-                          value={a.rir_target == null ? '' : String(a.rir_target)}
-                          onChangeText={(v) =>
-                            setAcc((p) =>
-                              p.map((x, i) =>
-                                i === idx
-                                  ? { ...x, rir_target: v === '' ? null : Number(v) }
-                                  : x
-                              )
-                            )
-                          }
-                          placeholder="2"
-                          placeholderTextColor="#64748b"
-                          keyboardType="decimal-pad"
-                          style={[styles.input, styles.inputSm]}
-                        />
-                      </View>
-                    </View>
-                </View>
-                ))}
+        <View style={styles.card}>
+          <View style={styles.sectionHeaderRow}>
+            <View>
+              <ThemedText variant="h3" style={styles.sectionKicker}>Accessories</ThemedText>
             </View>
-        )}
-
-        <View style={styles.addRow}>
-          <Pressable
-            style={[styles.addLiftBtn, styles.addLeft]}
-            onPress={() => setAddLiftOpen(true)}
-          >
-            <ThemedText variant="h3" style={styles.addLiftText}>+ Add Lift</ThemedText>
-          </Pressable>
-
-          <Pressable
-            style={[styles.addLiftBtn, styles.addRight]}
-            onPress={() => {
-              const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
-              if (!hasDraft) {
-                setTemplatePickerOpen(true);
-                return;
-              }
-              Alert.alert(
-                'Load template?',
-                'This will replace your current draft in the builder.',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Replace',
-                    style: 'destructive',
-                    onPress: () => setTemplatePickerOpen(true),
-                  },
-                ]
-              );
-            }}
-          >
-            <ThemedText variant="h3" style={styles.addTemplateText}>Load Template</ThemedText>
-          </Pressable>
-        </View>
-
-        <View style={styles.actionRow}>
-          {editWorkoutId && (
-            <Pressable style={[styles.cancelBtn]} onPress={() => router.back()}>
-              <ThemedText variant="h3" style={styles.cancelText}>Cancel</ThemedText>
+            <Pressable style={styles.sectionAddBtn} onPress={addAcc}>
+              <ThemedText variant="badge" style={styles.sectionAddText}>+ Add Accessory</ThemedText>
             </Pressable>
-          )}
+          </View>
 
-          <Pressable
-            style={[styles.cancelBtn, !canSave && styles.btnDisabled]}
-            disabled={!canSave}
-            onPress={saveDraft}
-          >
-            <ThemedText variant="h3" style={styles.cancelText}>Save Draft</ThemedText>
-          </Pressable>
+          {acc.length === 0 ? (
+            <Pressable style={styles.emptyOutlineCard} onPress={addAcc}>
+              <ThemedText variant="body" style={styles.emptyOutlineTitle}>No accessories yet</ThemedText>
+            </Pressable>
+          ) : null}
 
-          <Pressable
-            style={[styles.saveBtn, !canSave && styles.btnDisabled]}
-            disabled={!canSave}
-            onPress={assignSession}
-          >
-            {saving ? (
-              <ActivityIndicator />
-            ) : (
-              <ThemedText variant="h3" style={styles.saveText}>Assign Session</ThemedText>
-            )}
-          </Pressable>
+          {acc.map((a, idx) => (
+            <AccessoryMovementCard
+              key={idx}
+              title={a.movement.trim() || `Accessory ${idx + 1}`}
+              summary={accessorySummary(a)}
+              canMoveUp={canMoveAccUp(idx)}
+              canMoveDown={canMoveAccDown(idx)}
+              onOpen={() => setAccEditorOpen({ idx })}
+              onMoveUp={() => moveAcc(idx, idx - 1)}
+              onMoveDown={() => moveAcc(idx, idx + 1)}
+              onRemove={() => setAcc((p) => p.filter((_, i) => i !== idx))}
+            />
+          ))}
         </View>
 
-        {/* Accessory superset picker */}
         <Modal
-          visible={!!accSupersetSelectOpen}
+          visible={!!coreEditorOpen && !movementPickerOpen}
           transparent
-          animationType="fade"
-          onRequestClose={() => setAccSupersetSelectOpen(null)}
+          animationType="slide"
+          onRequestClose={() => setCoreEditorOpen(null)}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
+          <KeyboardAvoidingView
+            style={styles.sheetOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={styles.editorSheet}>
               <View style={styles.modalHeader}>
-                <ThemedText variant="h3" style={styles.modalTitle}>Superset</ThemedText>
-
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>Edit movement</ThemedText>
+                  {coreEditorOpen && core[coreEditorOpen.idx] ? (
+                    <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
+                      {coreMovementTitle(core[coreEditorOpen.idx])}
+                    </ThemedText>
+                  ) : null}
+                </View>
                 <TouchableOpacity
-                  onPress={() => setAccSupersetSelectOpen(null)}
+                  onPress={() => setCoreEditorOpen(null)}
                   style={styles.modalClose}
-                  accessibilityLabel="Close superset selector"
+                  accessibilityLabel="Close movement editor"
                 >
-                  <ThemedText variant="badge" style={styles.modalCloseText}>✕</ThemedText>
+                  <ThemedText variant="badge" style={styles.modalCloseText}>Done</ThemedText>
                 </TouchableOpacity>
               </View>
 
-              <ScrollView style={{ maxHeight: 420 }}>
-                {/* None */}
-                <TouchableOpacity
-                  style={styles.modalRow}
-                  onPress={() => {
-                    const idx = accSupersetSelectOpen?.idx;
-                    if (idx == null) return;
-                    setAcc((p) =>
-                      p.map((x, i) =>
-                        i === idx ? { ...x, superset_group: null, superset_pos: null } : x
-                      )
-                    );
-                    setAccSupersetSelectOpen(null);
-                  }}
-                >
-                  <ThemedText variant="body" style={styles.modalRowText}>None</ThemedText>
-                </TouchableOpacity>
-
-                {SS_GROUPS.map((g) => (
-                  <TouchableOpacity
-                    key={g}
-                    style={styles.modalRow}
-                    onPress={() => {
-                      const idx = accSupersetSelectOpen?.idx;
-                      if (idx == null) return;
-                      setAcc((p) =>
-                        p.map((x, i) =>
-                          i === idx
-                            ? {
-                                ...x,
-                                superset_group: g,
-                                superset_pos: nextSupersetPos(g, p),
-                              }
-                            : x
-                        )
-                      );
-                      setAccSupersetSelectOpen(null);
-                    }}
-                  >
-                    <ThemedText variant="body" style={styles.modalRowText}>Group {g}</ThemedText>
-                  </TouchableOpacity>
-                ))}
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.editorScrollContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              >
+                {coreEditorOpen && core[coreEditorOpen.idx] ? renderCoreEditorContent(coreEditorOpen.idx) : null}
+                <Pressable style={styles.editorSaveBtn} onPress={() => setCoreEditorOpen(null)}>
+                  <ThemedText variant="h3" style={styles.editorSaveText}>Save Changes</ThemedText>
+                </Pressable>
               </ScrollView>
             </View>
-          </View>
+          </KeyboardAvoidingView>
+        </Modal>
+
+        <Modal
+          visible={!!accEditorOpen}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setAccEditorOpen(null)}
+        >
+          <KeyboardAvoidingView
+            style={styles.sheetOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={styles.editorSheet}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>
+                    {movementPickerOpen?.kind === 'accessory' ? 'Choose movement' : 'Edit accessory'}
+                  </ThemedText>
+                  {movementPickerOpen?.kind !== 'accessory' && accEditorOpen && acc[accEditorOpen.idx] ? (
+                    <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
+                      {acc[accEditorOpen.idx].movement.trim() || `Accessory ${accEditorOpen.idx + 1}`}
+                    </ThemedText>
+                  ) : null}
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (movementPickerOpen?.kind === 'accessory') {
+                      setMovementPickerOpen(null);
+                      setMovementSearch('');
+                      return;
+                    }
+                    setAccEditorOpen(null);
+                  }}
+                  style={styles.modalClose}
+                  accessibilityLabel="Close accessory editor"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>
+                    {movementPickerOpen?.kind === 'accessory' ? 'Back' : 'Done'}
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+
+              {movementPickerOpen?.kind === 'accessory' ? (
+                renderMovementPickerBody('accessory')
+              ) : (
+                <ScrollView
+                  style={styles.editorScroll}
+                  contentContainerStyle={styles.editorScrollContent}
+                  keyboardShouldPersistTaps="handled"
+                  keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+                >
+                  {accEditorOpen && acc[accEditorOpen.idx] ? (() => {
+                  const idx = accEditorOpen.idx;
+                  const a = acc[idx];
+                  const group = normalizeSSGroup(a.superset_group);
+                  return (
+                    <View style={styles.editorBody}>
+                      <Pressable style={styles.accessoryMovementHero} onPress={() => openMovementPicker('accessory', idx)}>
+                        <View style={[styles.movementIconBlock, styles.iconAccessory]}>
+                          <ThemedText variant="badge" style={styles.movementIconText}>AC</ThemedText>
+                        </View>
+                        <View style={styles.movementTitleWrap}>
+                          <ThemedText variant="body" style={styles.accessoryMovementTitle}>
+                            {a.movement.trim() || 'Choose movement'}
+                          </ThemedText>
+                        </View>
+                        <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+                      </Pressable>
+                      <TextInput
+                        value={a.movement}
+                        onChangeText={(v) => updateAccAt(idx, { movement: v })}
+                        placeholder="Custom movement"
+                        placeholderTextColor="#64748b"
+                        style={[styles.input, styles.customMovementInput]}
+                      />
+
+                      <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Superset</ThemedText>
+                      {renderChoiceChips<string>(
+                        [
+                          { value: 'NONE', label: 'None' },
+                          ...SS_GROUPS.map((g) => ({ value: g, label: `Group ${g}` })),
+                        ],
+                        group || 'NONE',
+                        (value) => setAccSupersetGroup(idx, value === 'NONE' ? null : (value as SSGroup)),
+                      )}
+
+                      <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Prescription</ThemedText>
+                      <View style={styles.controlGrid}>
+                        {renderStepper('Sets', a.sets, (value) => updateAccAt(idx, { sets: value }), { min: 1, max: 12 })}
+                        <View style={styles.fieldCol}>
+                          <ThemedText variant="bodyMuted" style={styles.controlLabel}>Reps</ThemedText>
+                          <TextInput
+                            value={a.reps_text}
+                            onChangeText={(v) => updateAccAt(idx, { reps_text: v })}
+                            placeholder="10-12"
+                            placeholderTextColor="#64748b"
+                            style={styles.input}
+                          />
+                        </View>
+                      </View>
+                      {renderChoiceChips<string>(
+                        ACCESSORY_REP_PRESETS.map((preset) => ({ value: preset, label: preset })),
+                        a.reps_text,
+                        (value) => updateAccAt(idx, { reps_text: value }),
+                      )}
+
+                      <ThemedText variant="bodyMuted" style={styles.fieldLabel}>RIR</ThemedText>
+                      {renderChoiceChips<number | 'NONE'>(
+                        [
+                          { value: 'NONE', label: '-' },
+                          { value: 0, label: '0' },
+                          { value: 1, label: '1' },
+                          { value: 2, label: '2' },
+                          { value: 3, label: '3' },
+                          { value: 4, label: '4' },
+                        ],
+                        a.rir_target == null ? 'NONE' : Number(a.rir_target),
+                        (value) => updateAccAt(idx, { rir_target: value === 'NONE' ? null : Number(value) }),
+                      )}
+
+                      <Pressable style={styles.editorSaveBtn} onPress={() => setAccEditorOpen(null)}>
+                        <ThemedText variant="h3" style={styles.editorSaveText}>Save Changes</ThemedText>
+                      </Pressable>
+                    </View>
+                  );
+                  })() : null}
+                </ScrollView>
+              )}
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+
+        {/* Movement preset picker */}
+        <Modal
+          visible={movementPickerOpen?.kind === 'variant'}
+          transparent
+          animationType="slide"
+          onRequestClose={() => {
+            setMovementPickerOpen(null);
+            setMovementSearch('');
+          }}
+        >
+          <KeyboardAvoidingView
+            style={styles.sheetOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={styles.editorSheet}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>
+                    {movementPickerOpen?.kind === 'variant' ? 'Core Variant' : 'Accessory'}
+                  </ThemedText>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    setMovementPickerOpen(null);
+                    setMovementSearch('');
+                  }}
+                  style={styles.modalClose}
+                  accessibilityLabel="Close movement picker"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>Done</ThemedText>
+                </TouchableOpacity>
+              </View>
+
+              <TextInput
+                value={movementSearch}
+                onChangeText={setMovementSearch}
+                placeholder="Search movements"
+                placeholderTextColor="#64748b"
+                style={styles.input}
+                autoCorrect={false}
+                autoCapitalize="words"
+              />
+
+              {movementSearch.trim() ? (
+                <Pressable
+                  style={styles.customMovementRow}
+                  onPress={() => selectMovementPreset(movementSearch.trim())}
+                >
+                  <ThemedText variant="body" style={styles.customMovementTitle}>
+                    Use "{movementSearch.trim()}"
+                  </ThemedText>
+                </Pressable>
+              ) : null}
+
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.movementPickerContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              >
+                {movementPresetsLoading ? (
+                  <View style={styles.rosterLoadingRow}>
+                    <ActivityIndicator color="#C4B5FD" />
+                    <ThemedText variant="bodyMuted" style={styles.rosterLoadingText}>Loading presets</ThemedText>
+                  </View>
+                ) : movementPresetsError ? (
+                  <View style={styles.emptyOutlineCard}>
+                    <ThemedText variant="body" style={styles.emptyOutlineTitle}>Presets unavailable</ThemedText>
+                    <ThemedText variant="bodyMuted" style={styles.emptyOutlineText}>{movementPresetsError}</ThemedText>
+                  </View>
+                ) : movementPickerOpen ? (
+                  filteredMovementCategories(movementPickerOpen.kind).map((category) => (
+                    <View key={category.key || category.name} style={styles.presetCategoryBlock}>
+                      <ThemedText variant="badge" style={styles.presetCategoryTitle}>{category.name}</ThemedText>
+                      {category.movements.map((movement) => (
+                        <TouchableOpacity
+                          key={`${category.name}-${movement}`}
+                          style={styles.presetMovementRow}
+                          onPress={() => selectMovementPreset(movement)}
+                        >
+                          <ThemedText variant="body" style={styles.presetMovementText}>{movement}</ThemedText>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  ))
+                ) : null}
+
+                {movementPickerOpen && !movementPresetsLoading && !filteredMovementCategories(movementPickerOpen.kind).length ? (
+                  <View style={styles.emptyOutlineCard}>
+                    <ThemedText variant="body" style={styles.emptyOutlineTitle}>No presets found</ThemedText>
+                  </View>
+                ) : null}
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
         </Modal>
 
         <Modal
@@ -2147,6 +3704,106 @@ const assignSession = async () => saveWithStatus('assigned');
         </Modal>
 
         <Modal
+          visible={copyExistingOpen}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setCopyExistingOpen(false)}
+        >
+          <KeyboardAvoidingView
+            style={styles.sheetOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={styles.editorSheet}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>Copy Existing</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
+                    {selectedAthlete?.name || 'Selected athlete'}
+                  </ThemedText>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setCopyExistingOpen(false)}
+                  style={styles.modalClose}
+                  accessibilityLabel="Close copy existing"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>Close</ThemedText>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.copySearchRow}>
+                <TextInput
+                  value={copySearch}
+                  onChangeText={setCopySearch}
+                  placeholder="Search label, date, status"
+                  placeholderTextColor="#64748b"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  style={[styles.input, styles.copySearchInput]}
+                  returnKeyType="search"
+                  onSubmitEditing={() => loadCopyExistingSessions(copySearch)}
+                />
+                <Pressable
+                  style={styles.sourceBtn}
+                  onPress={() => loadCopyExistingSessions(copySearch)}
+                >
+                  <ThemedText variant="badge" style={styles.sourceBtnText}>Search</ThemedText>
+                </Pressable>
+              </View>
+
+              {copySessionsLoading ? (
+                <View style={styles.rosterLoadingRow}>
+                  <ActivityIndicator />
+                  <ThemedText variant="bodyMuted" style={styles.rosterLoadingText}>Loading sessions...</ThemedText>
+                </View>
+              ) : null}
+
+              {copySessionsError ? (
+                <ThemedText variant="error" style={styles.inlineError}>{copySessionsError}</ThemedText>
+              ) : null}
+
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.editorScrollContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              >
+                {copySessions.map((session) => (
+                  <TouchableOpacity
+                    key={session.id}
+                    style={styles.copySessionRow}
+                    disabled={copyApplying}
+                    onPress={() => void applyCopyExistingSession(session)}
+                  >
+                    <View style={styles.copySessionMain}>
+                      <ThemedText variant="body" style={styles.copySessionTitle}>
+                        {session.label || 'Session'}
+                      </ThemedText>
+                      <ThemedText variant="bodyMuted" style={styles.copySessionMeta}>
+                        {[session.date, session.status].filter(Boolean).join(' · ')}
+                      </ThemedText>
+                      {session.planned_summary ? (
+                        <ThemedText variant="bodyMuted" style={styles.copySessionSummary}>
+                          {session.planned_summary}
+                        </ThemedText>
+                      ) : null}
+                    </View>
+                    {copyApplying ? <ActivityIndicator /> : (
+                      <ThemedText variant="bodyMuted" style={styles.selectChevron}>›</ThemedText>
+                    )}
+                  </TouchableOpacity>
+                ))}
+
+                {copySessions.length === 0 && !copySessionsLoading ? (
+                  <ThemedText variant="bodyMuted" style={styles.muted}>
+                    No recent sessions found.
+                  </ThemedText>
+                ) : null}
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+
+        <Modal
             visible={addLiftOpen}
             transparent
             animationType="fade"
@@ -2165,37 +3822,40 @@ const assignSession = async () => saveWithStatus('assigned');
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity
-                    style={styles.addLiftChoice}
-                    onPress={() => {
-                    addCore();
-                    setAddLiftOpen(false);
-                    }}
-                >
-                    <ThemedText variant="body" style={styles.addLiftChoiceTitle}>Core</ThemedText>
-                    <ThemedText variant="bodyMuted" style={styles.addLiftChoiceSub}>Straight sets core lift</ThemedText>
-                </TouchableOpacity>
+                <ThemedText variant="bodyMuted" style={styles.addLiftStepLabel}>Core lift</ThemedText>
+                {(['SQ', 'BN', 'DL'] as CoreDraft['lift'][]).map((lift) => (
+                  <View key={lift} style={styles.addLiftChoice}>
+                    <ThemedText variant="body" style={styles.addLiftChoiceTitle}>{coreLiftLabel(lift)}</ThemedText>
+                    <View style={styles.schemeChoiceRow}>
+                      {[
+                        { value: 'STRAIGHT' as const, label: 'Straight' },
+                        { value: 'TOP_BK' as const, label: 'Top + Backdown' },
+                        { value: 'FULL_CUSTOM' as const, label: 'Full Custom' },
+                      ].map((scheme) => (
+                        <Pressable
+                          key={scheme.value}
+                          style={styles.schemeChoiceBtn}
+                          onPress={() => {
+                            addCoreFromChooser(lift, scheme.value);
+                            setAddLiftOpen(false);
+                          }}
+                        >
+                          <ThemedText variant="badge" style={styles.schemeChoiceText}>{scheme.label}</ThemedText>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                ))}
 
                 <TouchableOpacity
-                    style={styles.addLiftChoice}
-                    onPress={() => {
+                  style={styles.addLiftChoice}
+                  onPress={() => {
                     addCoreVariant();
                     setAddLiftOpen(false);
-                    }}
+                  }}
                 >
-                    <ThemedText variant="body" style={styles.addLiftChoiceTitle}>Core Variant</ThemedText>
-                    <ThemedText variant="bodyMuted" style={styles.addLiftChoiceSub}>Input SBD Variants</ThemedText>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.addLiftChoice}
-                    onPress={() => {
-                    addAcc();
-                    setAddLiftOpen(false);
-                    }}
-                >
-                    <ThemedText variant="body" style={styles.addLiftChoiceTitle}>Accessory</ThemedText>
-                    <ThemedText variant="bodyMuted" style={styles.addLiftChoiceSub}>Accessory movement</ThemedText>
+                  <ThemedText variant="body" style={styles.addLiftChoiceTitle}>Core Variant</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.addLiftChoiceSub}>Preset-assisted, custom allowed</ThemedText>
                 </TouchableOpacity>
                 </View>
             </View>
@@ -2255,8 +3915,10 @@ const assignSession = async () => saveWithStatus('assigned');
                         }
 
                         if (kind === 'mode') {
-                            if (isTopBkStart(core, idx)) updateTopBkPair(idx, { mode: opt.value as CoreDraft['mode'] });
-                            else updateCoreAt(idx, { mode: opt.value as CoreDraft['mode'] });
+                            const nextMode = opt.value as CoreDraft['mode'];
+                            if (core[idx]?.variant === 'FULL_CUSTOM') setFullCustomModeAt(idx, nextMode);
+                            else if (isTopBkStart(core, idx)) updateTopBkPair(idx, { mode: nextMode });
+                            else updateCoreAt(idx, { mode: nextMode });
 
                             scheduleSuggest(idx);
                             if (isTopBkStart(core, idx)) scheduleSuggest(idx + 1);
@@ -2386,40 +4048,186 @@ const assignSession = async () => saveWithStatus('assigned');
         </View>
       </Modal>
       </ScrollView>
+      {hasSessionItems ? (
+        <View style={styles.stickyFooter}>
+          <Pressable
+            style={[styles.stickyAssignBtn, !canSave && styles.btnDisabled]}
+            disabled={!canSave}
+            onPress={assignSession}
+          >
+            {saving ? (
+              <ActivityIndicator />
+            ) : (
+              <ThemedText variant="h3" style={styles.stickyAssignText}>Assign Session</ThemedText>
+            )}
+          </Pressable>
+        </View>
+      ) : null}
+      </KeyboardAvoidingView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#020617' },
-  scroll: { paddingBottom: 40 },
-  title: { marginTop: 12, marginBottom: 8, color: '#fff', fontSize: 22, fontWeight: '700' },
+  screen: { flex: 1, backgroundColor: 'transparent' },
+  keyboardRoot: { flex: 1 },
+  scroll: { paddingBottom: 156 },
+  topBar: {
+    marginTop: 14,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  topActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  topSecondaryBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.22)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(8,8,10,0.34)',
+  },
+  topSecondaryText: {
+    color: '#D6D3D1',
+    fontWeight: '700',
+  },
+  title: { color: '#fff', fontSize: 23, fontWeight: '700' },
   error: { marginTop: 6, color: '#f97373' },
+  sourceRow: {
+    marginTop: 2,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  sourceText: {
+    flex: 1,
+    color: '#A8A29E',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  sourceBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.36)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(20,16,28,0.36)',
+  },
+  sourceBtnText: {
+    color: '#C4B5FD',
+    fontWeight: '700',
+  },
+  copySearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  copySearchInput: {
+    flex: 1,
+  },
+  copySessionRow: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(185,176,163,0.1)',
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  copySessionMain: {
+    flex: 1,
+    minWidth: 0,
+  },
+  copySessionTitle: {
+    color: '#E5E7EB',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  copySessionMeta: {
+    marginTop: 3,
+    color: '#94A3B8',
+    fontSize: 12,
+  },
+  copySessionSummary: {
+    marginTop: 4,
+    color: '#CBD5E1',
+    fontSize: 12,
+  },
 
   card: {
-    marginTop: 10,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#020617',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    marginTop: 14,
+    borderRadius: 0,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(185,176,163,0.12)',
+    backgroundColor: 'rgba(8,8,10,0.28)',
+    paddingHorizontal: 12,
+    paddingVertical: 13,
+  },
+  basicsCard: {
+    gap: 2,
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(139,92,246,0.42)',
+    backgroundColor: 'rgba(10,9,12,0.42)',
   },
   h3: { color: '#E5E7EB', fontSize: 16, fontWeight: '600' },
-  label: { marginTop: 10, color: '#9CA3AF' },
-  input: {
-    marginTop: 6,
+  sectionKicker: {
+    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.35,
+    textTransform: 'uppercase',
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    gap: 12,
+  },
+  sectionSubtext: {
+    marginTop: 3,
+    color: '#94A3B8',
+    fontSize: 12,
+  },
+  sectionAddBtn: {
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 12,
+    borderColor: 'rgba(139,92,246,0.38)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(20,16,28,0.34)',
+  },
+  sectionAddText: {
+    color: '#C4B5FD',
+    fontWeight: '700',
+  },
+  label: { marginTop: 8, color: '#A8A29E', fontSize: 12 },
+  input: {
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 7,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 9,
     color: '#E5E7EB',
+    backgroundColor: 'rgba(6,6,8,0.42)',
   },
   rowBetween: { flexDirection:'row', alignItems:'center', justifyContent:'space-between' },
   smallBtn: {
-    borderWidth: 1, borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6,
+    borderWidth: 1, borderColor: 'rgba(185,176,163,0.22)',
+    borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6,
+    backgroundColor: 'rgba(8,8,10,0.3)',
   },
   smallBtnText: { color:'#E5E7EB' },
 
@@ -2433,11 +4241,11 @@ const styles = StyleSheet.create({
   },
   removeBtn: {
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.7)',
-    backgroundColor: 'rgba(127,29,29,0.55)',
+    borderColor: 'rgba(248,113,113,0.42)',
+    backgroundColor: 'rgba(127,29,29,0.24)',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: 8,
   },
   removeBtnText: {
     color: '#fecaca',
@@ -2449,58 +4257,497 @@ const styles = StyleSheet.create({
     marginTop: 6,
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 12,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 7,
     overflow: 'hidden',
   },
   unitBtn: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0b1220',
+    backgroundColor: 'rgba(6,6,8,0.38)',
   },
   unitBtnActive: {
-    backgroundColor: 'rgba(56,189,248,0.18)',
+    backgroundColor: 'rgba(139,92,246,0.26)',
   },
   unitBtnText: {
     color: '#E5E7EB',
     fontWeight: '800',
   },
   unitBtnTextActive: {
-    color: '#38bdf8',
+    color: '#DDD6FE',
   },
   inputSm: { flex: 1 },
   inputLg: { flex: 2 },
 
   muted: { marginTop: 8, color:'#9CA3AF' },
+  emptyOutlineCard: {
+    marginTop: 2,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(185,176,163,0.1)',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: 11,
+  },
+  emptyOutlineTitle: {
+    color: '#A8A29E',
+    fontWeight: '600',
+  },
+  emptyOutlineText: {
+    marginTop: 4,
+    color: '#94A3B8',
+    fontSize: 12,
+  },
+  movementCard: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.12)',
+    borderRadius: 0,
+    backgroundColor: 'rgba(6,6,8,0.36)',
+    padding: 10,
+    gap: 8,
+  },
+  movementCardTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  movementIconBlock: {
+    width: 34,
+    height: 34,
+    borderRadius: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
+  movementIconText: {
+    color: '#F8FAFC',
+    fontWeight: '900',
+    fontSize: 11,
+  },
+  iconSquat: { backgroundColor: 'rgba(109,40,217,0.85)' },
+  iconBench: { backgroundColor: 'rgba(37,99,235,0.85)' },
+  iconDeadlift: { backgroundColor: 'rgba(22,163,74,0.82)' },
+  iconOhp: { backgroundColor: 'rgba(217,119,6,0.85)' },
+  iconVariant: { backgroundColor: 'rgba(100,116,139,0.82)' },
+  iconAccessory: { backgroundColor: 'rgba(220,38,38,0.72)' },
+  movementTitleWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  movementTitle: {
+    color: '#F8FAFC',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  movementSubtitle: {
+    marginTop: 3,
+    color: '#CBD5E1',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  movementSummary: {
+    marginTop: 3,
+    color: '#94A3B8',
+    fontSize: 12,
+  },
+  movementActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    flexShrink: 0,
+  },
+  overflowText: {
+    color: '#CBD5E1',
+    fontSize: 16,
+    fontWeight: '900',
+    marginLeft: 2,
+  },
+  movementMetaRow: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(148,163,184,0.14)',
+    paddingTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  accessoryMovementHero: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.42)',
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  accessoryMovementTitle: {
+    color: '#F8FAFC',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  customMovementInput: {
+    marginTop: 0,
+  },
+  sheetOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(2,2,3,0.68)',
+    justifyContent: 'flex-end',
+  },
+  editorSheet: {
+    maxHeight: '88%',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.18)',
+    backgroundColor: 'rgba(7,7,9,0.94)',
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 18,
+  },
+  editorScroll: {
+    maxHeight: '100%',
+  },
+  editorScrollContent: {
+    paddingBottom: 24,
+  },
+  movementPickerContent: {
+    paddingTop: 12,
+    paddingBottom: 28,
+  },
+  presetCategoryBlock: {
+    marginBottom: 14,
+  },
+  presetCategoryTitle: {
+    color: '#C4B5FD',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  presetMovementRow: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.12)',
+    borderRadius: 7,
+    backgroundColor: 'rgba(6,6,8,0.38)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginBottom: 7,
+  },
+  presetMovementText: {
+    color: '#F8FAFC',
+    fontWeight: '800',
+  },
+  customMovementRow: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.36)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(20,16,28,0.38)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  customMovementTitle: {
+    color: '#DDD6FE',
+    fontWeight: '800',
+  },
+  editorBody: {
+    gap: 8,
+  },
+  liftButton: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.42)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  liftButtonText: {
+    color: '#F8FAFC',
+    fontWeight: '900',
+  },
+  segmentedRow: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.14)',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(6,6,8,0.42)',
+  },
+  segmentBtn: {
+    flex: 1,
+    paddingVertical: 11,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(148,163,184,0.12)',
+  },
+  segmentBtnActive: {
+    backgroundColor: 'rgba(139,92,246,0.34)',
+  },
+  segmentText: {
+    color: '#CBD5E1',
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  segmentTextActive: {
+    color: '#FFFFFF',
+  },
+  controlLabel: {
+    marginTop: 10,
+    marginBottom: 6,
+    color: '#A8A29E',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  controlGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  controlBlock: {
+    flex: 1,
+  },
+  controlBlockWide: {
+    flex: 1,
+  },
+  stepperRow: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.14)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.4)',
+    padding: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  stepperBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.38)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(20,16,28,0.34)',
+  },
+  stepperText: {
+    color: '#C4B5FD',
+    fontWeight: '800',
+  },
+  stepperValue: {
+    minWidth: 30,
+    color: '#F8FAFC',
+    textAlign: 'center',
+    fontWeight: '900',
+  },
+  rpeSelectorScroll: {
+    flexGrow: 0,
+  },
+  rpeSelectorContent: {
+    gap: 8,
+    paddingRight: 4,
+  },
+  rpeChip: {
+    minWidth: 48,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.4)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  rpeChipActive: {
+    borderColor: 'rgba(139,92,246,0.5)',
+    backgroundColor: 'rgba(139,92,246,0.34)',
+  },
+  rpeChipText: {
+    color: '#CBD5E1',
+    fontWeight: '900',
+  },
+  rpeChipTextActive: {
+    color: '#FFFFFF',
+  },
+  advancedWrap: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(148,163,184,0.14)',
+    paddingTop: 8,
+  },
+  inlineLoadSummary: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.12)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.36)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  inlineLoadLabel: {
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  inlineLoadValue: {
+    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  advancedHeader: {
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  advancedTitle: {
+    color: '#CBD5E1',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  advancedChevron: {
+    color: '#94A3B8',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  fullCustomNotice: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.24)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(20,16,28,0.32)',
+    padding: 12,
+  },
+  fullCustomNoticeTitle: {
+    color: '#E5E7EB',
+    fontWeight: '700',
+  },
+  fullCustomNoticeText: {
+    marginTop: 6,
+    color: '#94A3B8',
+  },
+  fullCustomEditor: {
+    marginTop: 12,
+    gap: 10,
+  },
+  fullCustomHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  plannedSetCard: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.14)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.34)',
+    padding: 10,
+    gap: 8,
+  },
+  plannedSetCardCompact: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.12)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.34)',
+    padding: 10,
+    gap: 8,
+  },
+  plannedSetHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  plannedSetTitle: {
+    color: '#E5E7EB',
+    fontWeight: '700',
+  },
+  plannedSetRemove: {
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.55)',
+    backgroundColor: 'rgba(127,29,29,0.35)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
 
   saveBtn: {
     flex: 1,
     marginTop: 14,
-    borderRadius: 18,
+    borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#0b1220',
+    borderColor: 'rgba(185,176,163,0.18)',
+    backgroundColor: 'rgba(6,6,8,0.38)',
   },
   saveText: {
     color: '#fff',
     fontWeight: '600',
     textAlign: 'center',
   },
+  editorSaveBtn: {
+    marginTop: 14,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(109,40,217,0.82)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.38)',
+  },
+  editorSaveText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+  },
+  stickyFooter: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 16,
+    backgroundColor: 'rgba(5,5,6,0.78)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(185,176,163,0.1)',
+  },
+  stickyAssignBtn: {
+    borderRadius: 10,
+    paddingVertical: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(109,40,217,0.88)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.38)',
+  },
+  stickyAssignText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+  },
 
   selectInput: {
-    marginTop: 6,
+    marginTop: 5,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 12,
+    borderColor: 'rgba(185,176,163,0.16)',
+    borderRadius: 7,
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 11,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: 'rgba(6,6,8,0.42)',
   },
   selectText: {
     color: '#E5E7EB',
@@ -2527,7 +4774,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15,23,42,0.8)',
+    backgroundColor: 'rgba(2,2,3,0.72)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
@@ -2536,10 +4783,10 @@ const styles = StyleSheet.create({
     width: '92%',
     maxWidth: 520,
     alignSelf: 'center',
-    borderRadius: 16,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#020617',
+    borderColor: 'rgba(185,176,163,0.18)',
+    backgroundColor: 'rgba(7,7,9,0.95)',
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
@@ -2556,8 +4803,8 @@ const styles = StyleSheet.create({
   },
   modalClose: {
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    borderRadius: 10,
+    borderColor: 'rgba(185,176,163,0.18)',
+    borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
@@ -2567,7 +4814,7 @@ const styles = StyleSheet.create({
   modalRow: {
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(31,41,55,0.8)',
+    borderTopColor: 'rgba(185,176,163,0.1)',
   },
   modalRowText: {
     color: '#E5E7EB',
@@ -2575,15 +4822,15 @@ const styles = StyleSheet.create({
   },
   addLiftBtn: {
     marginTop: 10,
-    borderRadius: 18,
+    borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#38bdf8',
+    backgroundColor: 'rgba(139,92,246,0.82)',
   },
   addLiftText: {
-    color: '#020617',
+    color: '#FFFFFF',
   },
   addRow: {
     flexDirection: 'row',
@@ -2595,7 +4842,7 @@ const styles = StyleSheet.create({
   },
   addRight: {
     flex: 1,
-    backgroundColor: '#0b1220',
+    backgroundColor: 'rgba(6,6,8,0.42)',
   },
   addTemplateText: {
     color: '#E5E7EB',
@@ -2603,7 +4850,7 @@ const styles = StyleSheet.create({
   addLiftChoice: {
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(31,41,55,0.8)',
+    borderTopColor: 'rgba(185,176,163,0.1)',
   },
   addLiftChoiceTitle: {
     color: '#E5E7EB',
@@ -2614,6 +4861,32 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: '#9CA3AF',
     fontSize: 12,
+  },
+  addLiftStepLabel: {
+    marginTop: 4,
+    marginBottom: 2,
+    color: '#94A3B8',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  schemeChoiceRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  schemeChoiceBtn: {
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.18)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.38)',
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  schemeChoiceText: {
+    color: '#E5E7EB',
+    fontWeight: '800',
   },
   fieldCol: {
     flex: 1,
@@ -2632,22 +4905,22 @@ const styles = StyleSheet.create({
 },
 pill: {
   borderWidth: 1,
-  borderColor: 'rgba(148,163,184,0.35)',
-  backgroundColor: '#0b1220',
+  borderColor: 'rgba(185,176,163,0.18)',
+  backgroundColor: 'rgba(6,6,8,0.38)',
   paddingHorizontal: 12,
   paddingVertical: 8,
-  borderRadius: 999,
+  borderRadius: 8,
 },
 pillActive: {
-  borderColor: '#38bdf8',
-  backgroundColor: 'rgba(56,189,248,0.18)',
+  borderColor: 'rgba(139,92,246,0.46)',
+  backgroundColor: 'rgba(139,92,246,0.26)',
 },
 pillText: {
   color: '#E5E7EB',
   fontWeight: '700',
 },
 pillTextActive: {
-  color: '#38bdf8',
+  color: '#DDD6FE',
 },
 subRowLabel: {
   marginTop: 10,
@@ -2660,9 +4933,9 @@ suggestRow: {
   paddingVertical: 10,
   paddingHorizontal: 12,
   borderWidth: 1,
-  borderColor: 'rgba(148,163,184,0.22)',
-  borderRadius: 12,
-  backgroundColor: '#0b1220',
+  borderColor: 'rgba(185,176,163,0.12)',
+  borderRadius: 8,
+  backgroundColor: 'rgba(6,6,8,0.34)',
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -2683,11 +4956,11 @@ blockHeaderRight: {
 },
 reorderBtn: {
   borderWidth: 1,
-  borderColor: 'rgba(148,163,184,0.35)',
-  backgroundColor: '#0b1220',
+  borderColor: 'rgba(185,176,163,0.18)',
+  backgroundColor: 'rgba(6,6,8,0.38)',
   paddingHorizontal: 10,
   paddingVertical: 6,
-  borderRadius: 999,
+  borderRadius: 8,
 },
 reorderBtnDisabled: {
   opacity: 0.35,
@@ -2706,12 +4979,12 @@ reorderBtnText: {
   cancelBtn: {
     flex: 1,
     marginTop: 14,
-    borderRadius: 18,
+    borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.35)',
-    backgroundColor: '#0b1220',
+    borderColor: 'rgba(185,176,163,0.18)',
+    backgroundColor: 'rgba(6,6,8,0.38)',
   },
 
   cancelText: {

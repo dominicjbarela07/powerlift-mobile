@@ -1,20 +1,20 @@
 // app/coach-roster.tsx
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-  Pressable,
-  Image,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
-import { fetchJson } from '@/lib/api';
-import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import RefreshScreen from '@/components/refresh-screen';
+import {
+  SLAthleteAvatar,
+  SLEmptyState,
+  SLErrorState,
+  SLLoadingState,
+  SLScreen,
+} from '@/components/ui';
+import { fetchJson } from '@/lib/api';
+import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 type CoachRosterAthlete = {
   id: number;
@@ -39,6 +39,9 @@ type CoachRosterAthlete = {
   programmed_primary: string;
   programmed_secondary: string | null;
   meet_date?: string | null;
+  meet_date_display?: string | null;
+  meet_name?: string | null;
+  meet_date_parts?: { year: number; month: number; day: number } | null;
   days_until_meet?: number | null;
 };
 
@@ -56,6 +59,82 @@ type CoachRosterResponse = {
   error?: string;
 };
 
+type FilterKey = 'all' | 'needs' | 'soon' | 'meet' | 'up_to_date';
+
+const ROSTER_MATERIAL = {
+  surface: 'rgba(8, 8, 10, 0.44)',
+  surfaceSubtle: 'rgba(6, 6, 7, 0.30)',
+  surfaceSoft: 'rgba(12, 13, 15, 0.42)',
+  hairline: 'rgba(255, 255, 255, 0.052)',
+} as const;
+
+const filters: Array<{
+  key: FilterKey;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  tone: SLStatusTone;
+}> = [
+  { key: 'all', label: 'All', icon: 'list-outline', tone: 'neutral' },
+  { key: 'needs', label: 'Needs', icon: 'alert-circle-outline', tone: 'danger' },
+  { key: 'soon', label: 'Soon', icon: 'time-outline', tone: 'warning' },
+  { key: 'meet', label: 'Meet', icon: 'trophy-outline', tone: 'review' },
+  { key: 'up_to_date', label: 'Current', icon: 'checkmark-circle-outline', tone: 'success' },
+];
+
+function statusTone(tone: CoachRosterAthlete['status_tone']): SLStatusTone {
+  if (tone === 'danger') return 'danger';
+  if (tone === 'warn') return 'warning';
+  return 'success';
+}
+
+function toneColor(tone: SLStatusTone) {
+  return SLStatusTones[tone]?.icon ?? SLColors.accentSteel;
+}
+
+function priorityFor(status: CoachRosterAthlete['status']) {
+  if (status === 'needs_programming') return 'high' as const;
+  if (status === 'programming_soon') return 'medium' as const;
+  return undefined;
+}
+
+function formatBodyweight(v: number | null) {
+  if (v == null) return null;
+  return `BW ${v.toFixed(1)} kg`;
+}
+
+function meetLabel(athlete: CoachRosterAthlete) {
+  if (!athlete.meet_date) return null;
+
+  const dateLabel = athlete.meet_date_display || athlete.meet_date;
+  if (typeof athlete.days_until_meet !== 'number') return athlete.meet_name ? `${athlete.meet_name} · ${dateLabel}` : dateLabel;
+  if (athlete.days_until_meet < 0) return athlete.meet_name ? `${athlete.meet_name} · passed` : 'Meet passed';
+  if (athlete.days_until_meet === 0) return athlete.meet_name ? `${athlete.meet_name} · today` : 'Meet today';
+
+  const weeks = Math.floor(athlete.days_until_meet / 7);
+  const days = athlete.days_until_meet % 7;
+  const countdown = weeks > 0 ? `${weeks}w ${days}d out` : `${days}d out`;
+  return athlete.meet_name ? `${athlete.meet_name} · ${countdown}` : `Meet · ${countdown}`;
+}
+
+function buildSubtitle(athlete: CoachRosterAthlete) {
+  const programmed = `Programmed ${athlete.programmed_primary || 'unknown'}`;
+  const last = `Last ${athlete.last_session_primary || 'unknown'}`;
+  return `${programmed} · ${last}`;
+}
+
+function buildMeta(athlete: CoachRosterAthlete) {
+  const meet = meetLabel(athlete);
+  if (meet) return meet;
+
+  const bits = [
+    athlete.programmed_secondary,
+    athlete.last_session_secondary ? `last ${athlete.last_session_secondary}` : null,
+    formatBodyweight(athlete.bodyweight),
+  ].filter(Boolean);
+
+  return bits.join(' · ') || undefined;
+}
+
 export default function CoachRosterScreen() {
   const [data, setData] = useState<CoachRosterAthlete[]>([]);
   const [summary, setSummary] = useState<CoachRosterSummary>({
@@ -64,16 +143,20 @@ export default function CoachRosterScreen() {
     up_to_date: 0,
     total_athletes: 0,
   });
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<FilterKey>('all');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
-  const loadRoster = React.useCallback(async (opts?: { silent?: boolean }) => {
+  const loadRoster = useCallback(async (opts?: { silent?: boolean }) => {
     try {
-      if (!opts?.silent) setLoading(true);
+      if (opts?.silent) setRefreshing(true);
+      else setLoading(true);
       setError(null);
+
       const resp = await fetchJson('/coach/mobile/roster', { method: 'GET' });
       const json = resp.json as CoachRosterResponse | null;
 
@@ -82,13 +165,14 @@ export default function CoachRosterScreen() {
         return;
       }
 
-      setData(json.athletes || []);
+      const athletes = json.athletes || [];
+      setData(athletes);
       setSummary(
         json.summary || {
           need_programming: 0,
           programming_soon: 0,
           up_to_date: 0,
-          total_athletes: json.athletes?.length || 0,
+          total_athletes: athletes.length,
         }
       );
     } catch (e) {
@@ -110,13 +194,12 @@ export default function CoachRosterScreen() {
     }, [loadRoster])
   );
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    loadRoster();
-  };
+  const onRefresh = useCallback(() => {
+    loadRoster({ silent: true });
+  }, [loadRoster]);
 
   const sortedAthletes = useMemo(() => {
-    const rank: Record<string, number> = {
+    const rank: Record<CoachRosterAthlete['status'], number> = {
       needs_programming: 0,
       programming_soon: 1,
       up_to_date: 2,
@@ -131,508 +214,484 @@ export default function CoachRosterScreen() {
     });
   }, [data]);
 
-  const formatBodyweight = (v: number | null) => {
-    if (v == null) return 'BW —';
-    return `BW ${v.toFixed(1)} kg`;
-  };
+  const visibleAthletes = useMemo(() => {
+    const needle = query.trim().toLowerCase();
 
-  const getStatusPillStyle = (tone: CoachRosterAthlete['status_tone']) => {
-    if (tone === 'danger') return [styles.statusPill, styles.statusPillDanger];
-    if (tone === 'warn') return [styles.statusPill, styles.statusPillWarn];
-    return [styles.statusPill, styles.statusPillSuccess];
-  };
+    return sortedAthletes.filter((athlete) => {
+      if (needle && !athlete.name.toLowerCase().includes(needle)) return false;
+      if (filter === 'needs') return athlete.status === 'needs_programming';
+      if (filter === 'soon') return athlete.status === 'programming_soon';
+      if (filter === 'meet') return !!athlete.meet_date;
+      if (filter === 'up_to_date') return athlete.status === 'up_to_date';
+      return true;
+    });
+  }, [filter, query, sortedAthletes]);
 
-  const getStatusTextStyle = (tone: CoachRosterAthlete['status_tone']) => {
-    if (tone === 'danger') return [styles.statusPillText, styles.statusPillTextDanger];
-    if (tone === 'warn') return [styles.statusPillText, styles.statusPillTextWarn];
-    return [styles.statusPillText, styles.statusPillTextSuccess];
-  };
+  const metrics = useMemo(
+    (): Array<{ label: string; value: number; tone: SLStatusTone }> => [
+      { label: 'Needs Programming', value: summary.need_programming, tone: summary.need_programming > 0 ? 'danger' : 'neutral' },
+      { label: 'Due Soon', value: summary.programming_soon, tone: summary.programming_soon > 0 ? 'warning' : 'neutral' },
+      { label: 'Up To Date', value: summary.up_to_date, tone: 'success' },
+      { label: 'Total', value: summary.total_athletes, tone: 'neutral' },
+    ],
+    [summary]
+  );
 
-  const getCardToneStyle = (tone: CoachRosterAthlete['status_tone']) => {
-    if (tone === 'danger') return styles.athleteCardDanger;
-    if (tone === 'warn') return styles.athleteCardWarn;
-    return styles.athleteCardSuccess;
-  };
+  const openAthlete = useCallback(
+    (athlete: CoachRosterAthlete) => {
+      router.push({
+        pathname: '/(tabs)/coach-athlete/[athleteId]',
+        params: { athleteId: String(athlete.id), athleteName: athlete.name },
+      } as any);
+    },
+    [router]
+  );
+
+  if (loading && !refreshing && data.length === 0) {
+    return (
+      <SLScreen edges="none">
+        <View style={styles.centerState}>
+          <SLLoadingState message="Loading athlete triage..." title="Loading Roster" />
+        </View>
+      </SLScreen>
+    );
+  }
 
   return (
-    <ThemedView style={styles.screen}>
-      <View style={styles.header}>
-        <ThemedText variant="h1" style={styles.title}>Coach Roster</ThemedText>
-        <ThemedText variant="bodyMuted" style={styles.subtitle}>
-          {summary.total_athletes} {summary.total_athletes === 1 ? 'athlete' : 'athletes'} • Sorted by priority
-        </ThemedText>
-      </View>
-
-      {loading && !refreshing && (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator />
+    <SLScreen edges="none" padded={false}>
+      <RefreshScreen
+        contentContainerStyle={styles.scrollContent}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        style={styles.scroll}
+      >
+        <View style={styles.header}>
+          <View style={styles.headerRail} />
+          <Text style={styles.eyebrow}>Athlete Triage</Text>
+          <Text style={styles.title}>Roster</Text>
+          <Text style={styles.subtitle}>Athlete triage and programming horizon</Text>
         </View>
-      )}
 
-      {!loading && (
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor="#9CA3AF"
+        <RosterMetricStrip metrics={metrics} />
+
+        <View style={styles.controls}>
+          <View style={styles.searchBox}>
+            <Ionicons color={SLColors.textSubtle} name="search-outline" size={17} />
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              clearButtonMode="while-editing"
+              onChangeText={setQuery}
+              placeholder="Search athletes"
+              placeholderTextColor={SLColors.textSubtle}
+              style={styles.searchInput}
+              value={query}
             />
-          }
-        >
-          {error && (
-            <ThemedText variant="error" style={styles.errorText}>{error}</ThemedText>
-          )}
-
-          <View style={styles.kpiRow}>
-            <View style={[styles.kpiCard, styles.kpiDanger]}>
-              <Ionicons name="calendar-outline" size={20} color="#FF8A8A" style={styles.kpiIcon} />
-              <ThemedText style={styles.kpiLabel}>Need Programming</ThemedText>
-              <ThemedText style={[styles.kpiValue, styles.kpiValueDanger]}>{summary.need_programming}</ThemedText>
-            </View>
-            <View style={[styles.kpiCard, styles.kpiWarn]}>
-              <Ionicons name="time-outline" size={20} color="#FBBF24" style={styles.kpiIcon} />
-              <ThemedText style={styles.kpiLabel}>Programming Soon</ThemedText>
-              <ThemedText style={[styles.kpiValue, styles.kpiValueWarn]}>{summary.programming_soon}</ThemedText>
-            </View>
-            <View style={[styles.kpiCard, styles.kpiSuccess]}>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#4ADE80" style={styles.kpiIcon} />
-              <ThemedText style={styles.kpiLabel}>Up To Date</ThemedText>
-              <ThemedText style={[styles.kpiValue, styles.kpiValueSuccess]}>{summary.up_to_date}</ThemedText>
-            </View>
           </View>
 
-          {sortedAthletes.length === 0 && !error && (
-            <ThemedText variant="bodyMuted" style={styles.emptyText}>
-              No athletes yet. Add athletes from the web coach dashboard.
-            </ThemedText>
+          <View style={styles.filterRow}>
+            {filters.map((item) => (
+              <RosterFilterChip
+                icon={item.icon}
+                key={item.key}
+                label={item.label}
+                onPress={() => setFilter(item.key)}
+                selected={filter === item.key}
+                tone={item.tone}
+              />
+            ))}
+          </View>
+        </View>
+
+        {error ? (
+          <SLErrorState
+            actionLabel="Try Again"
+            message={error}
+            onActionPress={() => loadRoster()}
+            title="Could not load roster"
+          />
+        ) : null}
+
+        <View style={styles.section}>
+          <View style={styles.ledgerHeader}>
+            <View style={styles.sectionRail} />
+            <Text style={styles.ledgerTitle}>Priority List</Text>
+            <Text style={styles.ledgerMeta}>{visibleAthletes.length} / {summary.total_athletes}</Text>
+          </View>
+
+          {visibleAthletes.length === 0 && !error ? (
+            <SLEmptyState
+              message={query || filter !== 'all' ? 'Try a different search or filter.' : 'Add athletes from the web coach dashboard.'}
+              title={query || filter !== 'all' ? 'No matching athletes' : 'No athletes yet'}
+            />
+          ) : (
+            <View style={styles.rowStack}>
+              {visibleAthletes.map((athlete, index) => (
+                <AthleteLedgerRow
+                  athlete={athlete}
+                  key={athlete.id}
+                  meta={buildMeta(athlete)}
+                  onPress={() => openAthlete(athlete)}
+                  dominant={index === 0 && athlete.status !== 'up_to_date'}
+                  subtitle={buildSubtitle(athlete)}
+                  title={athlete.is_self ? `${athlete.name} (You)` : athlete.name}
+                />
+              ))}
+            </View>
           )}
+        </View>
+      </RefreshScreen>
+    </SLScreen>
+  );
+}
 
-          {sortedAthletes.map((a) => (
-            <Pressable
-              key={a.id}
-              style={({ pressed }) => [
-                styles.athleteCard,
-                getCardToneStyle(a.status_tone),
-                pressed && styles.cardPressed,
-              ]}
-              onPress={() =>
-                router.push({
-                  pathname: '/(tabs)/workouts',
-                  params: { athleteId: String(a.id), athleteName: a.name },
-                })
-              }
-            >
-              <View style={styles.cardTopRow}>
-                <View style={styles.avatarBubble}>
-                  {a.avatar_url ? (
-                    <Image source={{ uri: a.avatar_url }} style={styles.avatarImage} resizeMode="cover" />
-                  ) : (
-                    <ThemedText style={styles.avatarText}>
-                      {(a.name || '')
-                        .trim()
-                        .split(/\s+/)
-                        .filter(Boolean)
-                        .slice(0, 2)
-                        .map((part) => part.charAt(0).toUpperCase())
-                        .join('') || 'A'}
-                    </ThemedText>
-                  )}
-                </View>
+function RosterMetricStrip({
+  metrics,
+}: {
+  metrics: Array<{ label: string; value: number; tone: SLStatusTone }>;
+}) {
+  return (
+    <View style={styles.metricStrip}>
+      {metrics.map((metric) => (
+        <View key={metric.label} style={styles.metricCell}>
+          <Text style={[styles.metricValue, { color: toneColor(metric.tone) }]}>{metric.value}</Text>
+          <Text numberOfLines={1} style={styles.metricLabel}>{metric.label}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
 
-                <View style={styles.cardTopContent}>
-                  <View style={styles.nameRow}>
-                    <ThemedText variant="h3" style={styles.nameText}>{a.name}</ThemedText>
-                    {a.is_self && (
-                      <View style={styles.badge}>
-                        <ThemedText variant="badge" style={styles.badgeText}>You</ThemedText>
-                      </View>
-                    )}
-                  </View>
+function RosterFilterChip({
+  icon,
+  label,
+  selected,
+  tone,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  selected: boolean;
+  tone: SLStatusTone;
+  onPress: () => void;
+}) {
+  const color = selected ? toneColor(tone) : SLColors.textSubtle;
 
-                  <ThemedText variant="bodyMuted" style={styles.metaText}>
-                    {(a.sex || '—').toUpperCase()} • {formatBodyweight(a.bodyweight)}
-                  </ThemedText>
-                </View>
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.filterChip, selected && styles.filterChipSelected, pressed && styles.pressed]}>
+      <Ionicons color={color} name={icon} size={14} />
+      <Text style={[styles.filterChipText, selected && { color }]}>{label}</Text>
+    </Pressable>
+  );
+}
 
-                <ThemedText style={styles.chevron}>›</ThemedText>
-              </View>
+function AthleteLedgerRow({
+  athlete,
+  title,
+  subtitle,
+  meta,
+  dominant,
+  onPress,
+}: {
+  athlete: CoachRosterAthlete;
+  title: string;
+  subtitle: string;
+  meta?: string;
+  dominant?: boolean;
+  onPress: () => void;
+}) {
+  const tone = statusTone(athlete.status_tone);
+  const rail = toneColor(tone);
 
-              <View style={getStatusPillStyle(a.status_tone)}>
-                <ThemedText style={getStatusTextStyle(a.status_tone)}>{a.status_label}</ThemedText>
-              </View>
-
-              {a.meet_date && (
-                <View style={styles.meetRow}>
-                  <View style={styles.meetBadge}>
-                    <Ionicons name="trophy-outline" size={15} color="#DDD6FE" style={styles.meetIcon} />
-                    <ThemedText style={styles.meetText}>
-                      {(() => {
-                        try {
-                          const d = new Date(a.meet_date);
-                          const formatted = d.toLocaleDateString(undefined, {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                          });
-
-                          if (typeof a.days_until_meet === 'number') {
-                            if (a.days_until_meet > 0) {
-                              const w = Math.floor(a.days_until_meet / 7);
-                              const dRem = a.days_until_meet % 7;
-                              return `${formatted} • ${w}w ${dRem}d out`;
-                            }
-                            return `${formatted} • PASSED`;
-                          }
-
-                          return formatted;
-                        } catch {
-                          return a.meet_date;
-                        }
-                      })()}
-                    </ThemedText>
-                  </View>
-                </View>
-              )}
-
-              <View style={styles.cardDivider} />
-
-              <View style={styles.infoRow}>
-                <View style={[styles.infoBlock, styles.infoBlockNarrow]}>
-                  <View style={styles.infoHeaderRow}>
-                    <Ionicons name="barbell-outline" size={16} color="#A78BFA" style={styles.infoIcon} />
-                    <ThemedText style={styles.infoLabel}>Last Session</ThemedText>
-                  </View>
-                  <ThemedText style={styles.infoPrimary}>{a.last_session_primary}</ThemedText>
-                  {!!a.last_session_secondary && (
-                    <ThemedText style={styles.infoSecondary}>{a.last_session_secondary}</ThemedText>
-                  )}
-                </View>
-
-                <View style={styles.infoDivider} />
-
-                <View style={[styles.infoBlock, styles.infoBlockWide]}>
-                  <View style={styles.infoHeaderRow}>
-                    <Ionicons name="calendar-outline" size={16} color="#A78BFA" style={styles.infoIcon} />
-                    <ThemedText style={styles.infoLabel}>Programmed Through</ThemedText>
-                  </View>
-                  <ThemedText style={styles.infoPrimary}>{a.programmed_primary}</ThemedText>
-                  {!!a.programmed_secondary && (
-                    <ThemedText
-                      style={[
-                        styles.infoSecondary,
-                        a.status_tone === 'danger'
-                          ? styles.infoSecondaryDanger
-                          : a.status_tone === 'warn'
-                          ? styles.infoSecondaryWarn
-                          : styles.infoSecondarySuccess,
-                      ]}
-                    >
-                      {a.programmed_secondary}
-                    </ThemedText>
-                  )}
-                </View>
-              </View>
-            </Pressable>
-          ))}
-        </ScrollView>
-      )}
-    </ThemedView>
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.athleteRow, dominant && styles.athleteRowDominant, pressed && styles.pressed]}>
+      <View style={[styles.athleteRail, { backgroundColor: rail }]} />
+      <SLAthleteAvatar imageUrl={athlete.avatar_url || undefined} name={athlete.name} size={dominant ? 36 : 32} />
+      <View style={styles.athleteCopy}>
+        <View style={styles.athleteTitleRow}>
+          <Text numberOfLines={1} style={[styles.athleteName, dominant && styles.athleteNameDominant]}>{title}</Text>
+          <Text style={[styles.statusText, { color: rail }]}>{athlete.status_label}</Text>
+        </View>
+        <Text numberOfLines={1} style={styles.athleteSubtitle}>{subtitle}</Text>
+        {meta ? <Text numberOfLines={1} style={styles.athleteMeta}>{meta}</Text> : null}
+      </View>
+      <View style={styles.daysColumn}>
+        {typeof athlete.days_remaining === 'number' ? (
+          <>
+            <Text style={[styles.daysValue, { color: rail }]}>{athlete.days_remaining}</Text>
+            <Text style={styles.daysLabel}>days</Text>
+          </>
+        ) : (
+          <Ionicons color={SLColors.textSubtle} name="chevron-forward" size={16} />
+        )}
+      </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    paddingHorizontal: 0,
-    paddingTop: 16,
-    paddingBottom: 24,
-    backgroundColor: '#020617',
-  },
-  header: {
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#F9FAFB',
-  },
-  subtitle: {
-    marginTop: 4,
-    fontSize: 15,
-    color: '#9CA3AF',
-  },
-  loadingBox: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scroll: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   scrollContent: {
-    paddingBottom: 32,
+    gap: 18,
+    paddingBottom: 40,
+    paddingHorizontal: 0,
+    paddingTop: 3,
   },
-  errorText: {
-    color: '#f97373',
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#9CA3AF',
-  },
-  kpiRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
-  },
-  kpiCard: {
+  centerState: {
     flex: 1,
-    minHeight: 96,
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    backgroundColor: 'rgba(10, 18, 38, 0.92)',
-    borderWidth: 1,
-    borderColor: 'rgba(109, 132, 176, 0.16)',
-    justifyContent: 'space-between',
-  },
-  kpiDanger: {
-    borderColor: 'rgba(255, 92, 114, 0.24)',
-  },
-  kpiWarn: {
-    borderColor: 'rgba(245, 158, 11, 0.24)',
-  },
-  kpiSuccess: {
-    borderColor: 'rgba(74, 222, 128, 0.24)',
-  },
-  kpiIcon: {
-    marginBottom: 10,
-  },
-  kpiLabel: {
-    fontSize: 10,
-    lineHeight: 14,
-    color: '#94A3B8',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  kpiValue: {
-    fontSize: 24,
-    lineHeight: 26,
-    fontWeight: '700',
-    color: '#F8FAFC',
-  },
-  kpiValueDanger: {
-    color: '#FF8A8A',
-  },
-  kpiValueWarn: {
-    color: '#FBBF24',
-  },
-  kpiValueSuccess: {
-    color: '#4ADE80',
-  },
-  athleteCard: {
-    borderRadius: 20,
-    padding: 16,
-    backgroundColor: 'rgba(7, 17, 40, 1)',
-    borderWidth: 1,
-    borderColor: 'rgba(109, 132, 176, 0.14)',
-    marginBottom: 12,
-  },
-  athleteCardDanger: {
-    borderColor: 'rgba(255, 92, 114, 0.34)',
-  },
-  athleteCardWarn: {
-    borderColor: 'rgba(245, 158, 11, 0.34)',
-  },
-  athleteCardSuccess: {
-    borderColor: 'rgba(74, 222, 128, 0.26)',
-  },
-  cardPressed: {
-    opacity: 0.88,
-  },
-  cardTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatarBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(124, 108, 255, 0.16)',
+  },
+  header: {
+    gap: 3,
+    paddingBottom: SLSpacing.sm,
+    paddingLeft: SLSpacing.md,
+    paddingTop: 4,
+    position: 'relative',
+  },
+  headerRail: {
+    backgroundColor: SLColors.railViolet,
+    bottom: 8,
+    left: 0,
+    opacity: 0.72,
+    position: 'absolute',
+    top: 8,
+    width: 3,
+  },
+  eyebrow: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: SLTypography.utilityLabel.fontSize,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: SLTypography.utilityLabel.letterSpacing,
+    lineHeight: SLTypography.utilityLabel.lineHeight,
+    textTransform: 'uppercase',
+  },
+  title: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.commandTitle.fontFamily,
+    fontSize: SLTypography.commandTitle.fontSize,
+    fontWeight: SLTypography.commandTitle.fontWeight,
+    letterSpacing: SLTypography.commandTitle.letterSpacing,
+    lineHeight: SLTypography.commandTitle.lineHeight,
+  },
+  subtitle: {
+    color: '#9BA5B2',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+  },
+  metricStrip: {
+    flexDirection: 'row',
+    gap: 0,
+    paddingVertical: 8,
+  },
+  metricCell: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    minWidth: 0,
+  },
+  metricValue: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.kpiNumber.fontFamily,
+    fontSize: 21,
+    fontWeight: SLTypography.kpiNumber.fontWeight,
+    lineHeight: 24,
+  },
+  metricLabel: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    marginTop: 2,
+    textTransform: 'uppercase',
+  },
+  controls: {
+    gap: 9,
+  },
+  searchBox: {
+    alignItems: 'center',
+    backgroundColor: ROSTER_MATERIAL.surfaceSubtle,
+    borderColor: ROSTER_MATERIAL.hairline,
+    borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
-    borderColor: 'rgba(124, 108, 255, 0.28)',
-    marginRight: 12,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 42,
+    paddingHorizontal: SLSpacing.md,
+  },
+  searchInput: {
+    color: SLColors.text,
+    fontFamily: SLTypography.body.fontFamily,
+    flex: 1,
+    fontSize: 15,
+    minWidth: 0,
+    paddingVertical: 0,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    gap: 6,
+    width: '100%',
+  },
+  filterChip: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(6, 6, 7, 0.18)',
+    borderColor: ROSTER_MATERIAL.hairline,
+    borderRadius: SLRadius.radiusSharp,
+    borderWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    minHeight: 26,
+    minWidth: 0,
+    paddingHorizontal: 4,
+  },
+  filterChipSelected: {
+    backgroundColor: 'rgba(8, 8, 10, 0.46)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  filterChipText: {
+    color: SLColors.textSubtle,
+    flexShrink: 1,
+    fontFamily: SLTypography.chipLabel.fontFamily,
+    fontSize: SLTypography.chipLabel.fontSize,
+    fontWeight: SLTypography.chipLabel.fontWeight,
+    lineHeight: 12,
+    textAlign: 'center',
+  },
+  section: {
+    gap: 9,
+  },
+  ledgerHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 28,
+  },
+  sectionRail: {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    height: 2,
+    width: 22,
+  },
+  ledgerTitle: {
+    color: SLColors.textStrong,
+    fontFamily: SLTypography.sectionLabel.fontFamily,
+    fontSize: SLTypography.sectionLabel.fontSize,
+    fontWeight: SLTypography.sectionLabel.fontWeight,
+    letterSpacing: SLTypography.sectionLabel.letterSpacing,
+    lineHeight: SLTypography.sectionLabel.lineHeight,
+    textTransform: 'uppercase',
+  },
+  ledgerMeta: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 13,
+    marginLeft: 'auto',
+    textTransform: 'uppercase',
+  },
+  rowStack: {
+    backgroundColor: ROSTER_MATERIAL.surfaceSubtle,
     overflow: 'hidden',
   },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 26,
+  pressed: {
+    opacity: 0.78,
   },
-  avatarText: {
-    color: '#C4B5FD',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  cardTopContent: {
-    flex: 1,
-  },
-  nameRow: {
-    flexDirection: 'row',
+  athleteRow: {
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 4,
+    borderBottomColor: ROSTER_MATERIAL.hairline,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 74,
+    overflow: 'hidden',
+    paddingRight: SLSpacing.sm,
   },
-  nameText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#E5E7EB',
+  athleteRowDominant: {
+    backgroundColor: ROSTER_MATERIAL.surfaceSoft,
+    minHeight: 82,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(124, 108, 255, 0.26)',
-    backgroundColor: 'rgba(124, 108, 255, 0.10)',
+  athleteRail: {
+    alignSelf: 'stretch',
+    opacity: 0.78,
+    width: 4,
   },
-  badgeText: {
-    fontSize: 12,
-    color: '#C4B5FD',
+  athleteCopy: {
+    flex: 1,
+    minWidth: 0,
   },
-  chevron: {
-    fontSize: 26,
-    color: '#64748B',
-    lineHeight: 26,
-    marginLeft: 10,
+  athleteTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
   },
-  metaText: {
+  athleteName: {
+    color: SLColors.textStrong,
+    flex: 1,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+    minWidth: 0,
+  },
+  athleteNameDominant: {
     fontSize: 15,
-    color: '#9CA3AF',
+    lineHeight: 20,
   },
-  statusPill: {
-    alignSelf: 'flex-start',
-    marginTop: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-  },
-  statusPillDanger: {
-    backgroundColor: 'rgba(255, 92, 114, 0.14)',
-    borderColor: 'rgba(255, 92, 114, 0.24)',
-  },
-  statusPillWarn: {
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
-    borderColor: 'rgba(245, 158, 11, 0.24)',
-  },
-  statusPillSuccess: {
-    backgroundColor: 'rgba(74, 222, 128, 0.14)',
-    borderColor: 'rgba(74, 222, 128, 0.24)',
-  },
-  statusPillText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  statusPillTextDanger: {
-    color: '#FF8A8A',
-  },
-  statusPillTextWarn: {
-    color: '#FBBF24',
-  },
-  statusPillTextSuccess: {
-    color: '#4ADE80',
-  },
-  cardDivider: {
-    height: 1,
-    backgroundColor: 'rgba(148, 163, 184, 0.08)',
-    marginTop: 14,
-    marginBottom: 14,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-  infoBlock: {
-    flex: 1,
-  },
-  infoBlockNarrow: {
-    flex: 0.85,
-  },
-  infoBlockWide: {
-    flex: 1.15,
-  },
-  infoDivider: {
-    width: 1,
-    backgroundColor: 'rgba(148, 163, 184, 0.08)',
-    marginHorizontal: 14,
-  },
-  infoHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  infoIcon: {
-    marginRight: 8,
-  },
-  infoLabel: {
-    fontSize: 12,
-    color: '#94A3B8',
+  statusText: {
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.22,
+    lineHeight: 13,
+    maxWidth: 98,
+    textAlign: 'right',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    fontWeight: '700',
   },
-  infoPrimary: {
+  athleteSubtitle: {
+    color: '#9BA5B2',
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+    marginTop: 2,
+  },
+  athleteMeta: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: 11,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: 14,
+    marginTop: 1,
+  },
+  daysColumn: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    minWidth: 36,
+  },
+  daysValue: {
+    fontFamily: SLTypography.kpiNumber.fontFamily,
     fontSize: 17,
-    fontWeight: '700',
-    color: '#F8FAFC',
-    marginBottom: 4,
+    fontWeight: SLTypography.kpiNumber.fontWeight,
+    lineHeight: 20,
   },
-  infoSecondary: {
-    fontSize: 14,
-    color: '#94A3B8',
-  },
-  infoSecondaryDanger: {
-    color: '#FF8A8A',
-  },
-  infoSecondaryWarn: {
-    color: '#FBBF24',
-  },
-  infoSecondarySuccess: {
-    color: '#4ADE80',
-  },
-  meetRow: {
-    marginTop: 10,
-  },
-  meetBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.34)',
-    backgroundColor: 'rgba(124, 108, 255, 0.16)',
-    shadowColor: '#7C6CFF',
-    shadowOpacity: 0.22,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  meetIcon: {
-    marginRight: 7,
-  },
-  meetText: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: '#E9E3FF',
-    letterSpacing: 0.2,
+  daysLabel: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 9,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.25,
+    lineHeight: 12,
+    textTransform: 'uppercase',
   },
 });

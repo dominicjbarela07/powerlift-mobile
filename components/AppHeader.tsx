@@ -7,9 +7,17 @@ type AppHeaderProps = {
   firstName: string;
   onPressMenu?: () => void;
   onPressLogo?: () => void;
+  onPressBack?: () => void;
+  showBackButton?: boolean;
 };
 
-export function AppHeader({ firstName, onPressMenu, onPressLogo }: AppHeaderProps) {
+export function AppHeader({
+  firstName,
+  onPressMenu,
+  onPressLogo,
+  onPressBack,
+  showBackButton = false,
+}: AppHeaderProps) {
   return (
     <View style={styles.container}>
       {/* Menu (absolute left) */}
@@ -30,11 +38,19 @@ export function AppHeader({ firstName, onPressMenu, onPressLogo }: AppHeaderProp
         </Pressable>
       </View>
 
-      {/* Welcome (absolute right) */}
+      {/* Welcome + Back (absolute right) */}
       <View style={styles.rightSlot}>
-        <View style={styles.welcomeBlock}>
-          <Text style={styles.welcomeLabel}>Welcome</Text>
-          <Text style={styles.welcomeName}>{firstName}</Text>
+        <View style={styles.rightContent}>
+          <View style={styles.welcomeBlock}>
+            <Text style={styles.welcomeLabel}>Welcome</Text>
+            <Text style={styles.welcomeName}>{firstName}</Text>
+          </View>
+
+          {showBackButton && (
+            <Pressable style={styles.backBtn} onPress={onPressBack} hitSlop={8}>
+              <Text style={styles.backText}>← Back</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </View>
@@ -43,7 +59,7 @@ export function AppHeader({ firstName, onPressMenu, onPressLogo }: AppHeaderProp
 
 const styles = StyleSheet.create({
   container: {
-    height: 56,
+    height: 74,
     paddingBottom: 10,
     backgroundColor: '#020617',
     justifyContent: 'center',
@@ -82,6 +98,25 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     justifyContent: 'center',
+  },
+  rightContent: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    minHeight: 52,
+  },
+  backBtn: {
+    marginTop: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.35)',
+    borderRadius: 999,
+    backgroundColor: 'rgba(15,23,42,0.72)',
+  },
+  backText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#E5E7EB',
   },
   titleLine: {
     fontSize: 20,
