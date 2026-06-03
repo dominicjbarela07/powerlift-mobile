@@ -25,7 +25,6 @@ if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
 }
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as Speech from 'expo-speech';
 import * as ImagePicker from 'expo-image-picker';
 let VideoThumbnails: any = null;
 try {
@@ -977,6 +976,9 @@ export default function WorkoutViewerScreen() {
   const [pendingAccessoryLogItemId, setPendingAccessoryLogItemId] = useState<any>(null);
   const [expandedCompletedMovements, setExpandedCompletedMovements] = useState<Record<string, boolean>>({});
   const [expandedCoreDetails, setExpandedCoreDetails] = useState<Record<string, boolean>>({});
+  const manualMovementSelectionRef = useRef(false);
+  const pendingAutoAdvanceRef = useRef<{ fromKey: string | null } | null>(null);
+  const autoExpandWorkoutIdRef = useRef<number | null>(null);
   const [setVideoPlayer, setSetVideoPlayer] = useState<SetVideoPlayerState>({
     visible: false,
     videoId: null,
@@ -1060,6 +1062,148 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
+  const coreDetailExpansionKey = (id: number | string) => `core-detail:${id}`;
+
+  const getOrderedWorkoutMovements = useCallback((workout?: WorkoutPayload['workout'] | null) => {
+    if (!workout) return [];
+    const rows: Array<{
+      key: string;
+      detailKey: string;
+      kind: 'core' | 'accessory';
+      id: number;
+      complete: boolean;
+      logged: number;
+      total: number;
+    }> = [];
+
+    const coreItems = workout.core_items || [];
+    for (const core of coreItems) {
+      const isBackdown = core.variant === 'BK';
+      if (isBackdown && core.parent_item_id != null) continue;
+
+      const isTop = core.variant === 'TOP';
+      const isFullCustom =
+        core.variant === 'FULL_CUSTOM' ||
+        ((core.scheme || '').toUpperCase() === 'FULL_CUSTOM');
+      const backdownsForThisTop = isTop
+        ? coreItems.filter((it) => it.variant === 'BK' && it.parent_item_id === core.id)
+        : [];
+      const topLogs = isTop ? (core.set_logs || []) : [];
+      const backdownLogs = backdownsForThisTop.flatMap((bd) => bd.set_logs || []);
+      const topTotal = isTop ? (core.sets || 0) : 0;
+      const backdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
+      const total = isFullCustom
+        ? (Array.isArray(core.planned_sets) ? core.planned_sets.length : 0)
+        : isTop
+        ? topTotal + backdownTotal
+        : (core.sets || 0);
+      const logs = isTop ? [...topLogs, ...backdownLogs] : (core.set_logs || []);
+
+      rows.push({
+        key: `core:${core.id}`,
+        detailKey: coreDetailExpansionKey(core.id),
+        kind: 'core',
+        id: core.id,
+        complete: total > 0 && logs.length >= total,
+        logged: logs.length,
+        total,
+      });
+    }
+
+    for (const group of workout.accessory_groups || []) {
+      for (const item of group.items || []) {
+        const logs = item.set_logs || [];
+        const total = item.sets || 0;
+        rows.push({
+          key: `acc:${item.id}`,
+          detailKey: `acc:${item.id}`,
+          kind: 'accessory',
+          id: item.id,
+          complete: total > 0 && logs.length >= total,
+          logged: logs.length,
+          total,
+        });
+      }
+    }
+
+    return rows;
+  }, []);
+
+  const findRenderedMovementKeyForItem = useCallback((
+    workout: WorkoutPayload['workout'] | null | undefined,
+    itemId: number,
+  ) => {
+    if (!workout) return null;
+    const coreItems = workout.core_items || [];
+    for (const core of coreItems) {
+      const isBackdown = core.variant === 'BK';
+      if (isBackdown && core.parent_item_id != null) continue;
+      if (core.id === itemId) return `core:${core.id}`;
+      const isTop = core.variant === 'TOP';
+      if (isTop) {
+        const ownsBackdown = coreItems.some(
+          (it) => it.variant === 'BK' && it.parent_item_id === core.id && it.id === itemId,
+        );
+        if (ownsBackdown) return `core:${core.id}`;
+      }
+    }
+
+    for (const group of workout.accessory_groups || []) {
+      for (const item of group.items || []) {
+        if (item.id === itemId) return `acc:${item.id}`;
+      }
+    }
+
+    return null;
+  }, []);
+
+  const openMovementCard = useCallback((key: string | null | undefined) => {
+    if (!key) return;
+    if (key.startsWith('core:')) {
+      const id = key.slice('core:'.length);
+      setExpandedCoreDetails((prev) => ({ ...prev, [coreDetailExpansionKey(id)]: true }));
+      return;
+    }
+    if (key.startsWith('acc:')) {
+      setExpandedCompletedMovements((prev) => ({ ...prev, [key]: true }));
+    }
+  }, []);
+
+  const collapseMovementCard = useCallback((key: string | null | undefined) => {
+    if (!key) return;
+    if (key.startsWith('core:')) {
+      const id = key.slice('core:'.length);
+      setExpandedCoreDetails((prev) => {
+        const detailKey = coreDetailExpansionKey(id);
+        if (!prev[detailKey]) return prev;
+        return { ...prev, [detailKey]: false };
+      });
+      return;
+    }
+    if (key.startsWith('acc:')) {
+      setExpandedCompletedMovements((prev) => {
+        if (!prev[key]) return prev;
+        return { ...prev, [key]: false };
+      });
+    }
+  }, []);
+
+  const toggleMovementCard = useCallback((key: string) => {
+    manualMovementSelectionRef.current = true;
+    if (key.startsWith('core:')) {
+      const detailKey = coreDetailExpansionKey(key.slice('core:'.length));
+      setExpandedCoreDetails((prev) => ({ ...prev, [detailKey]: !prev[detailKey] }));
+      return;
+    }
+    setExpandedCompletedMovements((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const markAutoAdvanceAfterLog = useCallback((itemId: number) => {
+    pendingAutoAdvanceRef.current = {
+      fromKey: findRenderedMovementKeyForItem(dataRef.current?.workout, itemId),
+    };
+  }, [findRenderedMovementKeyForItem]);
+
   const scrollRef = useRef<any>(null);
   const scrollYRef = useRef(0);
   const pendingRestoreScrollYRef = useRef<number | null>(null);
@@ -1134,7 +1278,6 @@ export default function WorkoutViewerScreen() {
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restEndAtMsRef = useRef<number | null>(null);
   const restNotifIdRef = useRef<string | null>(null);
-  const restTimerEndSoundPlayedRef = useRef(false);
   const notifPermCheckedRef = useRef(false);
   const notifHandlerSetRef = useRef(false);
   const ensureNotifPerms = async () => {
@@ -1191,53 +1334,6 @@ export default function WorkoutViewerScreen() {
       restNotifIdRef.current = id;
     } catch (e) {
       console.log('scheduleRestEndNotification error', e);
-    }
-  };
-
-  const playRestTimerEndedPrompt = async () => {
-    if (restTimerEndSoundPlayedRef.current) return;
-    restTimerEndSoundPlayedRef.current = true;
-
-    try {
-      if (Platform.OS === 'web') {
-        const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
-        if (synth && typeof window !== 'undefined' && 'SpeechSynthesisUtterance' in window) {
-          const utterance = new window.SpeechSynthesisUtterance('Rest timer ended.');
-          utterance.rate = 0.95;
-          utterance.pitch = 1;
-          utterance.volume = 0.75;
-          synth.cancel();
-          synth.speak(utterance);
-          return;
-        }
-      } else if (Speech?.speak) {
-        Speech.stop();
-        Speech.speak('Rest timer ended.', {
-          rate: 0.95,
-          pitch: 1,
-          volume: 0.75,
-        });
-        return;
-      }
-    } catch (e) {
-      console.log('playRestTimerEndedPrompt speech error', e);
-    }
-
-    // Fallback: foreground notification sound if speech is unavailable.
-    try {
-      if (Notifications && Platform.OS !== 'web') {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Rest timer ended',
-            body: 'Time for the next set.',
-            sound: 'default',
-            data: { kind: 'rest_end_foreground_fallback' },
-          },
-          trigger: null,
-        });
-      }
-    } catch (e) {
-      console.log('playRestTimerEndedPrompt fallback error', e);
     }
   };
 
@@ -1612,7 +1708,6 @@ export default function WorkoutViewerScreen() {
 
     const endAt = Date.now() + seconds * 1000;
     restEndAtMsRef.current = endAt;
-    restTimerEndSoundPlayedRef.current = false;
 
     setRestSeconds(seconds);
     setRestActive(true);
@@ -1627,7 +1722,6 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
-    restTimerEndSoundPlayedRef.current = true;
     setRestActive(false);
     setRestSeconds(0);
 
@@ -1661,7 +1755,6 @@ export default function WorkoutViewerScreen() {
 
       if (remaining <= 0) {
         cancelRestEndNotification();
-        playRestTimerEndedPrompt();
         setRestActive(false);
         restEndAtMsRef.current = null;
 
@@ -2218,6 +2311,7 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
+      markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -2297,6 +2391,7 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
+      markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -2372,6 +2467,7 @@ export default function WorkoutViewerScreen() {
       }
 
       setTimerPickerVisible(true);
+      markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -2437,6 +2533,7 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) throw new Error(json?.error || `Failed (HTTP ${status})`);
 
       setTimerPickerVisible(true);
+      markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -2584,6 +2681,7 @@ export default function WorkoutViewerScreen() {
       );
 
       setTimerPickerVisible(true);
+      markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -3351,49 +3449,63 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     const workout = data?.workout;
-    if (!workout?.core_items?.length) return;
+    if (!workout) return;
 
-    const completedKeys: Record<string, true> = {};
-    for (const core of workout.core_items) {
-      const isBackdown = core.variant === 'BK';
-      if (isBackdown && core.parent_item_id != null) continue;
+    const orderedMovements = getOrderedWorkoutMovements(workout);
+    if (!orderedMovements.length) return;
 
-      const isTop = core.variant === 'TOP';
-      const isFullCustom =
-        core.variant === 'FULL_CUSTOM' ||
-        ((core.scheme || '').toUpperCase() === 'FULL_CUSTOM');
-      const backdownsForThisTop = isTop
-        ? workout.core_items.filter((it) => it.variant === 'BK' && it.parent_item_id === core.id)
-        : [];
-      const topLogs = isTop ? (core.set_logs || []) : [];
-      const backdownLogs = backdownsForThisTop.flatMap((bd) => bd.set_logs || []);
-      const topTotal = isTop ? (core.sets || 0) : 0;
-      const backdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
-      const total = isFullCustom
-        ? (Array.isArray(core.planned_sets) ? core.planned_sets.length : 0)
-        : isTop
-        ? topTotal + backdownTotal
-        : (core.sets || 0);
-      const logs = isTop ? [...topLogs, ...backdownLogs] : (core.set_logs || []);
-
-      if (total > 0 && logs.length >= total) {
-        completedKeys[`core-detail:${core.id}`] = true;
-      }
+    if (autoExpandWorkoutIdRef.current !== workout.id) {
+      autoExpandWorkoutIdRef.current = workout.id;
+      manualMovementSelectionRef.current = false;
+      pendingAutoAdvanceRef.current = null;
     }
 
-    if (!Object.keys(completedKeys).length) return;
-    setExpandedCoreDetails((prev) => {
-      let changed = false;
-      const next = { ...prev };
-      for (const key of Object.keys(completedKeys)) {
-        if (next[key]) {
-          next[key] = false;
-          changed = true;
+    if (workout.status !== 'in_progress') return;
+
+    const firstIncomplete = orderedMovements.find((row) => row.total > 0 && !row.complete);
+    const pendingAdvance = pendingAutoAdvanceRef.current;
+
+    if (pendingAdvance) {
+      pendingAutoAdvanceRef.current = null;
+      const fromIndex = orderedMovements.findIndex((row) => row.key === pendingAdvance.fromKey);
+      const fromRow = fromIndex >= 0 ? orderedMovements[fromIndex] : null;
+      const nextRow = fromIndex >= 0
+        ? orderedMovements.find(
+            (row, index) =>
+              row.total > 0 &&
+              !row.complete &&
+              index > fromIndex,
+          )
+        : firstIncomplete;
+
+      if (fromRow?.complete) {
+        collapseMovementCard(fromRow.key);
+        if (nextRow?.key && nextRow.key !== fromRow.key) {
+          openMovementCard(nextRow.key);
         }
+      } else if (fromRow?.key) {
+        openMovementCard(fromRow.key);
+      } else if (!manualMovementSelectionRef.current && firstIncomplete?.key) {
+        openMovementCard(firstIncomplete.key);
       }
-      return changed ? next : prev;
-    });
-  }, [data?.workout?.core_items]);
+      return;
+    }
+
+    if (!manualMovementSelectionRef.current && firstIncomplete?.key) {
+      const anyCoreExpanded = Object.values(expandedCoreDetails).some(Boolean);
+      const anyAccessoryExpanded = Object.values(expandedCompletedMovements).some(Boolean);
+      if (!anyCoreExpanded && !anyAccessoryExpanded) {
+        openMovementCard(firstIncomplete.key);
+      }
+    }
+  }, [
+    data?.workout,
+    getOrderedWorkoutMovements,
+    collapseMovementCard,
+    openMovementCard,
+    expandedCoreDetails,
+    expandedCompletedMovements,
+  ]);
 
   useEffect(() => {
     fetchWorkout();
@@ -4064,7 +4176,7 @@ export default function WorkoutViewerScreen() {
             </TouchableOpacity>
           ) : null
         }
-        onOpen={() => setExpandedCompletedMovements((prev) => ({ ...prev, [accessoryDetailKey]: !prev[accessoryDetailKey] }))}
+        onOpen={() => toggleMovementCard(accessoryDetailKey)}
       />
     );
   };
@@ -4285,7 +4397,7 @@ export default function WorkoutViewerScreen() {
                 detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
                 meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLogs.length}/${coreCompletionTotal || totalSets || 0} sets logged`}
                 top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit)}
-                onOpen={() => setExpandedCoreDetails((prev) => ({ ...prev, [detailsKey]: !prev[detailsKey] }))}
+                onOpen={() => toggleMovementCard(`core:${core.id}`)}
               />
             );
           })}
@@ -6401,15 +6513,15 @@ const styles = StyleSheet.create({
     color: '#7C3AED',
   },
   accessoryInlineAction: {
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 7,
-    backgroundColor: 'rgba(91,79,207,0.10)',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.035)',
   },
   accessoryInlineActionText: {
-    color: '#C4B5FD',
+    color: '#AFA4C8',
     fontSize: 11,
-    fontWeight: '900',
+    fontWeight: '800',
   },
   swapOptionButton: {
     paddingHorizontal: 12,

@@ -185,7 +185,7 @@ export default function LoginScreen() {
                 <Pressable
                   style={styles.linkButton}
                   onPress={() => {
-                    const url = 'https://strength-coach-ui.onrender.com/auth/reset_request';
+                    const url = 'https://app.strengthledger.fit/auth/reset_request';
                     Linking.openURL(url).catch(() => {
                       setError('Unable to open password reset page.');
                     });
@@ -197,7 +197,7 @@ export default function LoginScreen() {
                 <Pressable
                   style={styles.linkButton}
                   onPress={() => {
-                    const url = 'https://strength-coach-ui.onrender.com/auth/register';
+                    const url = 'https://app.strengthledger.fit/auth/register';
                     Linking.openURL(url).catch(() => {
                       setError('Unable to open signup page.');
                     });

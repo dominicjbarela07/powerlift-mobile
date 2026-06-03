@@ -33,11 +33,11 @@ export async function getResolvedTimezone(): Promise<string> {
 }
 
 // API base URL
-// - Prod default: Render
+// - Prod default: custom app domain
 // - Optional override for dev via Expo env: EXPO_PUBLIC_API_BASE
 export const API_BASE = (
   (process.env.EXPO_PUBLIC_API_BASE as string | undefined) ||
-  'https://strength-coach-ui.onrender.com'
+  'https://app.strengthledger.fit'
 ).replace(/\/$/, '');
 
 type FetchJsonResult<T> = {

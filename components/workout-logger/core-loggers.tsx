@@ -71,6 +71,11 @@ export function CoreMovementLedgerRow({
   const stateLabel =
     state === 'complete' ? 'Complete' : state === 'logged' ? 'Logged' : 'Not started';
   const completedRows = detailRows?.filter((row) => row.state === 'completed') || [];
+  const isActiveMovement = !!loggerFocus;
+  const isComplete = state === 'complete';
+  const showCollapsedVariant =
+    !expanded && !isComplete && variantLabel && variantLabel.toLowerCase() !== 'accessory';
+  const showScheme = !!scheme && (expanded || !isComplete);
   const reviewRail =
     !loggerFocus && expanded && detailRows?.length
       ? detailRows.map((row) => ({
@@ -85,6 +90,7 @@ export function CoreMovementLedgerRow({
       style={[
         styles.ledgerRow,
         expanded && styles.ledgerRowExpanded,
+        isActiveMovement && styles.ledgerRowActive,
         state === 'logged' && styles.ledgerRowCurrent,
         state === 'complete' && styles.ledgerRowCompleted,
       ]}
@@ -115,27 +121,64 @@ export function CoreMovementLedgerRow({
               style={[
                 styles.ledgerState,
                 state === 'complete' && styles.ledgerStateCompleted,
+                isActiveMovement && styles.ledgerStateActive,
               ]}
             >
               {stateLabel}
             </Text>
             {auxAction}
             <TouchableOpacity style={styles.ledgerActionButton} onPress={onOpen}>
-              <Text style={styles.ledgerAction}>
-                {expanded ? 'Close' : 'Open'}
+              <Text style={[styles.ledgerAction, expanded && styles.ledgerActionExpanded]}>
+                {expanded ? 'Collapse' : 'Expand'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-        {!expanded ? <Text style={styles.ledgerVariant}>{variantLabel}</Text> : null}
-        {scheme ? <Text style={styles.ledgerScheme}>{scheme}</Text> : null}
+        {showCollapsedVariant ? <Text style={styles.ledgerVariant}>{variantLabel}</Text> : null}
+        {showScheme ? <Text style={styles.ledgerScheme}>{scheme}</Text> : null}
         {!expanded && meta ? <Text style={styles.ledgerMeta}>{meta}</Text> : null}
         {!expanded && top ? <Text style={styles.ledgerTop}>{top}</Text> : null}
         {loggerFocus || (expanded && completedRows.length > 0) ? (
           <View style={styles.currentFocusBlock}>
             {loggerFocus ? <SetRail steps={loggerFocus.rail} /> : <SetRail steps={reviewRail} />}
+            {loggerFocus ? (
+              <View style={styles.nextSetPanel}>
+                <View style={styles.currentSetRow}>
+                  <View style={styles.currentSetBadge}>
+                    <Text style={styles.currentSetBadgeLabel}>Next Set</Text>
+                    <Text style={styles.currentSetBadgeValue}>{loggerFocus.currentSetLabel}</Text>
+                  </View>
+                  <View style={styles.currentTargetCopy}>
+                    {loggerFocus.targetLine ? (
+                      <Text style={styles.currentTarget}>{loggerFocus.targetLine}</Text>
+                    ) : null}
+                    {loggerFocus.prescriptionLine ? (
+                      <Text style={styles.currentPrescription}>{loggerFocus.prescriptionLine}</Text>
+                    ) : null}
+                  </View>
+                </View>
+                {loggerFocus.canLog && loggerFocus.onLogSet ? (
+                  <TouchableOpacity style={styles.currentPrimaryAction} onPress={loggerFocus.onLogSet}>
+                    <Text style={styles.currentPrimaryActionText}>Log Set</Text>
+                  </TouchableOpacity>
+                ) : null}
+                <View style={styles.currentActionRow}>
+                  {loggerFocus.canRepeat && loggerFocus.onRepeatLast ? (
+                    <TouchableOpacity style={styles.currentSecondaryAction} onPress={loggerFocus.onRepeatLast}>
+                      <Text style={styles.currentSecondaryActionText}>Repeat Last</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                  {loggerFocus.onViewHistory ? (
+                    <TouchableOpacity style={styles.currentSecondaryAction} onPress={loggerFocus.onViewHistory}>
+                      <Text style={styles.currentSecondaryActionText}>History</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+              </View>
+            ) : null}
             {completedRows.length > 0 ? (
               <View style={styles.currentLoggedList}>
+                {loggerFocus ? <Text style={styles.currentLoggedKicker}>Logged</Text> : null}
                 {completedRows.map((row) => (
                     <View key={row.key} style={styles.currentLoggedLine}>
                       <Text style={styles.currentLoggedText}>
@@ -175,41 +218,6 @@ export function CoreMovementLedgerRow({
                     </View>
                   ))}
               </View>
-            ) : null}
-            {loggerFocus ? (
-              <>
-                <View style={styles.currentSetRow}>
-                  <View style={styles.currentSetBadge}>
-                    <Text style={styles.currentSetBadgeLabel}>Next</Text>
-                    <Text style={styles.currentSetBadgeValue}>{loggerFocus.currentSetLabel}</Text>
-                  </View>
-                  <View style={styles.currentTargetCopy}>
-                    {loggerFocus.targetLine ? (
-                      <Text style={styles.currentTarget}>{loggerFocus.targetLine}</Text>
-                    ) : null}
-                    {loggerFocus.prescriptionLine ? (
-                      <Text style={styles.currentPrescription}>{loggerFocus.prescriptionLine}</Text>
-                    ) : null}
-                  </View>
-                </View>
-                <View style={styles.currentActionRow}>
-                  {loggerFocus.canRepeat && loggerFocus.onRepeatLast ? (
-                    <TouchableOpacity style={styles.currentSecondaryAction} onPress={loggerFocus.onRepeatLast}>
-                      <Text style={styles.currentSecondaryActionText}>Repeat</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                  {loggerFocus.onViewHistory ? (
-                    <TouchableOpacity style={styles.currentSecondaryAction} onPress={loggerFocus.onViewHistory}>
-                      <Text style={styles.currentSecondaryActionText}>History</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                  {loggerFocus.canLog && loggerFocus.onLogSet ? (
-                    <TouchableOpacity style={styles.currentPrimaryAction} onPress={loggerFocus.onLogSet}>
-                      <Text style={styles.currentPrimaryActionText}>Log Set</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
-              </>
             ) : null}
           </View>
         ) : null}
@@ -269,38 +277,46 @@ const styles = StyleSheet.create({
   },
   ledgerRow: {
     position: 'relative',
-    marginBottom: 5,
-    paddingVertical: 11,
-    paddingHorizontal: 12,
-    paddingLeft: 14,
-    borderRadius: 8,
-    backgroundColor: 'rgba(26,17,15,0.20)',
+    marginBottom: 9,
+    paddingVertical: 12,
+    paddingHorizontal: 13,
+    paddingLeft: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(222,198,166,0.045)',
+    backgroundColor: 'rgba(21,15,14,0.30)',
     overflow: 'hidden',
   },
   ledgerRowExpanded: {
-    backgroundColor: 'rgba(32,20,18,0.30)',
+    borderColor: 'rgba(167,139,250,0.18)',
+    backgroundColor: 'rgba(34,23,24,0.56)',
+  },
+  ledgerRowActive: {
+    borderColor: 'rgba(214,167,94,0.24)',
+    backgroundColor: 'rgba(43,27,25,0.68)',
   },
   ledgerRowCurrent: {
-    backgroundColor: 'rgba(91,79,207,0.020)',
+    backgroundColor: 'rgba(45,32,36,0.46)',
   },
   ledgerRowCompleted: {
-    backgroundColor: 'rgba(166,129,88,0.028)',
+    borderColor: 'rgba(167,190,159,0.060)',
+    backgroundColor: 'rgba(22,19,17,0.20)',
   },
   ledgerRail: {
     position: 'absolute',
     left: 0,
-    top: 10,
-    bottom: 10,
-    width: 2,
+    top: 9,
+    bottom: 9,
+    width: 3,
     borderTopRightRadius: 4,
     borderBottomRightRadius: 4,
-    backgroundColor: 'rgba(167,139,250,0.46)',
+    backgroundColor: 'rgba(167,139,250,0.62)',
   },
   ledgerRailCompleted: {
-    backgroundColor: 'rgba(167,190,159,0.34)',
+    backgroundColor: 'rgba(167,190,159,0.24)',
   },
   ledgerRailUpcoming: {
-    backgroundColor: 'rgba(132,119,106,0.42)',
+    backgroundColor: 'rgba(132,119,106,0.28)',
   },
   ledgerMain: {
     flex: 1,
@@ -320,12 +336,14 @@ const styles = StyleSheet.create({
   },
   ledgerTitle: {
     color: '#F8FAFC',
-    fontSize: 15,
+    fontSize: 19,
+    lineHeight: 24,
     fontWeight: '800',
   },
   ledgerTitleActive: {
-    fontSize: 18,
-    lineHeight: 23,
+    color: '#FFF7ED',
+    fontSize: 23,
+    lineHeight: 28,
   },
   ledgerState: {
     color: '#AFA4C8',
@@ -335,7 +353,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   ledgerStateCompleted: {
-    color: '#A7CBB5',
+    color: 'rgba(167,203,181,0.78)',
+  },
+  ledgerStateActive: {
+    color: '#D6A75E',
   },
   ledgerVariant: {
     color: '#A9A3CF',
@@ -359,10 +380,10 @@ const styles = StyleSheet.create({
   },
   ledgerScheme: {
     color: '#ECE5DA',
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: '700',
-    marginTop: 4,
+    marginTop: 6,
   },
   ledgerMeta: {
     color: '#B8ACA1',
@@ -372,42 +393,54 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   ledgerTop: {
-    color: '#EFE7DD',
+    color: '#D7CCC1',
     fontSize: 12,
     lineHeight: 17,
-    fontWeight: '800',
+    fontWeight: '700',
     marginTop: 3,
   },
   ledgerAction: {
-    color: '#B9ADD8',
+    color: '#F5F3FF',
     fontSize: 12,
     fontWeight: '900',
   },
+  ledgerActionExpanded: {
+    color: '#DEC6A6',
+  },
   ledgerActionButton: {
     alignSelf: 'flex-end',
-    paddingHorizontal: 6,
-    paddingVertical: 4,
+    minHeight: 30,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.26)',
+    backgroundColor: 'rgba(139,92,246,0.18)',
   },
   currentFocusBlock: {
-    marginTop: 10,
-    paddingTop: 9,
+    marginTop: 12,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(222,198,166,0.030)',
+    borderTopColor: 'rgba(222,198,166,0.075)',
+  },
+  nextSetPanel: {
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: 'rgba(13,10,10,0.28)',
+    borderWidth: 1,
+    borderColor: 'rgba(214,167,94,0.12)',
   },
   currentSetRow: {
     flexDirection: 'row',
-    gap: 11,
+    gap: 12,
     alignItems: 'flex-start',
-    paddingTop: 9,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(222,198,166,0.030)',
   },
   currentSetBadge: {
-    minWidth: 68,
+    minWidth: 76,
     paddingTop: 1,
   },
   currentSetBadgeLabel: {
-    color: '#A9A3CF',
+    color: '#D6A75E',
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
@@ -415,9 +448,9 @@ const styles = StyleSheet.create({
   },
   currentSetBadgeValue: {
     color: '#F8FAFC',
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: '900',
-    marginTop: 3,
+    marginTop: 4,
   },
   currentTargetCopy: {
     flex: 1,
@@ -429,10 +462,9 @@ const styles = StyleSheet.create({
   },
   currentTarget: {
     color: '#F8FAFC',
-    fontSize: 19,
-    lineHeight: 23,
+    fontSize: 21,
+    lineHeight: 25,
     fontWeight: '900',
-    marginTop: 4,
   },
   currentPrescription: {
     color: '#A9A3CF',
@@ -445,7 +477,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 2,
-    marginBottom: 8,
+    marginBottom: 10,
     flexWrap: 'wrap',
     rowGap: 8,
   },
@@ -498,54 +530,68 @@ const styles = StyleSheet.create({
   currentActionRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    gap: 6,
-    marginTop: 10,
+    gap: 8,
+    marginTop: 8,
     flexWrap: 'wrap',
   },
   currentSecondaryAction: {
-    height: 30,
-    paddingHorizontal: 8,
+    minHeight: 32,
+    paddingHorizontal: 10,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(24,16,15,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.035)',
   },
   currentSecondaryActionText: {
-    color: '#ECE5DA',
+    color: '#CFC4B9',
     fontSize: 12,
     fontWeight: '800',
   },
   currentPrimaryAction: {
-    height: 31,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    minHeight: 48,
+    width: '100%',
+    paddingHorizontal: 16,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.17)',
+    marginTop: 12,
+    backgroundColor: 'rgba(139,92,246,0.36)',
+    borderWidth: 1,
+    borderColor: 'rgba(214,167,94,0.22)',
   },
   currentPrimaryActionText: {
     color: '#F5F3FF',
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '900',
   },
   currentLoggedList: {
-    marginTop: 8,
-    paddingTop: 7,
+    marginTop: 10,
+    paddingTop: 9,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(222,198,166,0.030)',
+    borderTopColor: 'rgba(222,198,166,0.065)',
     gap: 6,
+  },
+  currentLoggedKicker: {
+    color: '#8F857B',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 1,
   },
   currentLoggedLine: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 7,
+    opacity: 0.82,
   },
   currentLoggedText: {
-    color: '#ECE5DA',
+    color: '#CFC4B9',
     fontSize: 12,
     lineHeight: 17,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   currentVideoStatus: {
     color: '#B8ACA1',
@@ -576,7 +622,7 @@ const styles = StyleSheet.create({
     opacity: 0.55,
   },
   currentLoggedActionText: {
-    color: '#ECE5DA',
+    color: '#B9ADD8',
     fontSize: 11,
     fontWeight: '900',
   },
