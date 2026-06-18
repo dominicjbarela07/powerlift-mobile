@@ -1,9 +1,11 @@
 // app/lib/api.ts
 
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 const MANUAL_TIMEZONE_KEY = 'athlete_manual_timezone';
 const FALLBACK_TIMEZONE = 'America/Los_Angeles';
+const FETCH_TIMEOUT_MS = 15000;
 
 export function getDeviceTimezone(): string | null {
   try {
@@ -33,12 +35,52 @@ export async function getResolvedTimezone(): Promise<string> {
 }
 
 // API base URL
-// - Prod default: custom app domain
-// - Optional override for dev via Expo env: EXPO_PUBLIC_API_BASE
-export const API_BASE = (
-  (process.env.EXPO_PUBLIC_API_BASE as string | undefined) ||
-  'https://app.strengthledger.fit'
-).replace(/\/$/, '');
+// - Dev default: local Flask backend for simulator/device development.
+// - Android emulator reaches the host machine at 10.0.2.2, not 127.0.0.1.
+// - Production/App Store builds must never resolve to localhost.
+export const PRODUCTION_API_BASE = 'https://app.strengthledger.fit';
+const DEV_API_BASE = Platform.OS === 'android'
+  ? 'http://10.0.2.2:5000'
+  : 'http://127.0.0.1:5000';
+
+function normalizeBaseUrl(value: string | undefined | null): string | null {
+  const trimmed = String(value || '').trim().replace(/\/$/, '');
+  return trimmed || null;
+}
+
+function isBlockedProductionBaseUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host === 'localhost' ||
+      host === '0.0.0.0' ||
+      host === '::1' ||
+      host === '10.0.2.2' ||
+      host.startsWith('127.')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function resolveApiBase(): string {
+  const configured = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE as string | undefined);
+  const fallback = typeof __DEV__ !== 'undefined' && __DEV__ ? DEV_API_BASE : PRODUCTION_API_BASE;
+  const candidate = configured || fallback;
+
+  if (!(typeof __DEV__ !== 'undefined' && __DEV__) && isBlockedProductionBaseUrl(candidate)) {
+    console.warn(
+      `Ignoring unsafe production EXPO_PUBLIC_API_BASE "${candidate}". Falling back to ${PRODUCTION_API_BASE}.`
+    );
+    return PRODUCTION_API_BASE;
+  }
+
+  return candidate;
+}
+
+export const API_BASE = resolveApiBase();
+export const WEB_BASE = API_BASE;
 
 type FetchJsonResult<T> = {
   ok: boolean;
@@ -49,14 +91,19 @@ type FetchJsonResult<T> = {
 
 type ApiFetchInit = RequestInit & {
   auth?: boolean;
+  timeoutMs?: number;
 };
+
+function createTimeoutError(timeoutMs: number) {
+  return new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`);
+}
 
 export async function fetchJson<T = any>(
   path: string,
   init: ApiFetchInit = {}
 ): Promise<FetchJsonResult<T>> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
-  const { auth: authMode, ...fetchInit } = init;
+  const { auth: authMode, timeoutMs = FETCH_TIMEOUT_MS, ...fetchInit } = init;
 
   // If callers pass a plain object as `body`, React Native fetch will NOT serialize it.
   // Normalize to a JSON string body when appropriate.
@@ -160,13 +207,48 @@ export async function fetchJson<T = any>(
     );
   }
 
-  const res = await fetch(url, {
-    ...fetchInit,
-    method,
-    headers: mergedHeaders,
-    body: normalizedBody as any,
-    credentials: (init.credentials as any) ?? 'include',
-  });
+  const controller = new AbortController();
+  const callerSignal = fetchInit.signal;
+  let didTimeout = false;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let removeCallerAbortListener: (() => void) | null = null;
+
+  if (callerSignal) {
+    if (callerSignal.aborted) {
+      controller.abort();
+    } else {
+      const abortFromCaller = () => controller.abort();
+      callerSignal.addEventListener('abort', abortFromCaller);
+      removeCallerAbortListener = () => callerSignal.removeEventListener('abort', abortFromCaller);
+    }
+  }
+
+  if (timeoutMs > 0) {
+    timeoutId = setTimeout(() => {
+      didTimeout = true;
+      controller.abort();
+    }, timeoutMs);
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...fetchInit,
+      method,
+      headers: mergedHeaders,
+      body: normalizedBody as any,
+      credentials: (init.credentials as any) ?? 'include',
+      signal: controller.signal,
+    });
+  } catch (err: any) {
+    if (didTimeout || err?.name === 'AbortError') {
+      throw createTimeoutError(timeoutMs);
+    }
+    throw err;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (removeCallerAbortListener) removeCallerAbortListener();
+  }
 
   let raw = '';
   try {
@@ -316,8 +398,11 @@ export async function getSetVideoExportStatus(
 export type ApiLoginResponse = {
   ok: boolean;
   error?: string;
+  needs_account_setup?: boolean;
 
   email?: string;
+  email_verified?: boolean;
+  provider?: 'google' | 'apple' | string;
   user_name?: string;
   role?: string;
   is_coach?: boolean;
@@ -353,7 +438,48 @@ export async function loginRequest(email: string, password: string): Promise<Api
     };
   } catch (err) {
     console.error('Login error', err);
-    return { ok: false, error: 'Network error' };
+    return { ok: false, error: (err as any)?.message || 'Network error' };
+  }
+}
+
+export async function mobileOAuthRequest(
+  provider: 'google' | 'apple',
+  idToken: string,
+  options: {
+    role?: 'coach' | 'athlete';
+    access_code?: string;
+    name?: string;
+    nonce?: string;
+  } = {}
+): Promise<ApiLoginResponse> {
+  try {
+    const r = await fetchJson<any>(`/auth/mobile/oauth/${provider}`, {
+      method: 'POST',
+      auth: false,
+      body: {
+        id_token: idToken,
+        identity_token: idToken,
+        ...options,
+      } as any,
+      credentials: 'include',
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        ...json,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return {
+      ok: true,
+      ...json,
+    };
+  } catch (err) {
+    console.error('Mobile OAuth error', err);
+    return { ok: false, error: (err as any)?.message || 'Network error' };
   }
 }
 
@@ -368,6 +494,33 @@ export async function logoutRequest() {
     return { ok: r.ok };
   } catch {
     return { ok: false };
+  }
+}
+
+export async function deleteAccountRequest(confirmEmail: string): Promise<{
+  ok: boolean;
+  error?: string;
+}> {
+  try {
+    const r = await fetchJson<any>(`/auth/account/delete-mobile`, {
+      method: 'POST',
+      auth: true,
+      body: { confirm: confirmEmail } as any,
+      credentials: 'include',
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error('Delete account error', err);
+    return { ok: false, error: 'Network error' };
   }
 }
 
@@ -453,6 +606,90 @@ export async function getAthleteWorkouts(): Promise<{
     console.error('Workouts fetch error', err);
     return { ok: false, error: 'Network error' };
   }
+}
+
+// ------- CHECK-INS ----------------------------------------------------------
+export type MobileCheckInQuestion = {
+  id: number;
+  prompt: string;
+  question_type:
+    | 'short_text'
+    | 'long_text'
+    | 'number'
+    | 'scale'
+    | 'single_choice'
+    | 'multi_choice'
+    | 'yes_no'
+    | 'date'
+    | string;
+  required: boolean;
+  position: number;
+  options: string[];
+  config: Record<string, any>;
+};
+
+export type MobileCheckInSummary = {
+  id: number;
+  assignment_id: number;
+  form_id: number;
+  title: string;
+  description?: string | null;
+  due_at?: string | null;
+  submitted_at?: string | null;
+  status: 'due' | 'late' | 'submitted' | string;
+  is_late?: boolean;
+  reviewed_at?: string | null;
+};
+
+export type MobileCheckInDetail = MobileCheckInSummary & {
+  form?: {
+    id: number;
+    title: string;
+    description?: string | null;
+    active: boolean;
+    questions: MobileCheckInQuestion[];
+  } | null;
+  answers?: { question_id: number; value: any; display_value?: string | null }[];
+};
+
+export async function getDueCheckIns(): Promise<FetchJsonResult<{
+  ok: boolean;
+  error?: string;
+  athlete?: { id: number; name: string };
+  due_check_ins?: MobileCheckInSummary[];
+  recent_submissions?: MobileCheckInSummary[];
+}>> {
+  return fetchJson('/check-ins/mobile/due', {
+    method: 'GET',
+    auth: true,
+  });
+}
+
+export async function getCheckInDetail(submissionId: number): Promise<FetchJsonResult<{
+  ok: boolean;
+  error?: string;
+  submission?: MobileCheckInDetail;
+}>> {
+  return fetchJson(`/check-ins/mobile/submissions/${submissionId}`, {
+    method: 'GET',
+    auth: true,
+  });
+}
+
+export async function submitCheckInAnswers(
+  submissionId: number,
+  answers: Record<string | number, any>
+): Promise<FetchJsonResult<{
+  ok: boolean;
+  error?: string;
+  missing?: { question_id: number; prompt: string }[];
+  submission?: MobileCheckInDetail;
+}>> {
+  return fetchJson(`/check-ins/mobile/submissions/${submissionId}/submit`, {
+    method: 'POST',
+    auth: true,
+    body: { answers } as any,
+  });
 }
 // ------- MESSAGING ----------------------------------------------------------
 export type MessengerAttachment = {
