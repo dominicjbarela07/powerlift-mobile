@@ -710,6 +710,24 @@ export type MessengerMessage = {
   sender_role?: string | null;
   body?: string | null;
   message_type?: string | null;
+  video_review_id?: number | null;
+  video_id?: number | null;
+  session_review_id?: number | null;
+  athlete_id?: number | null;
+  workout_id?: number | null;
+  set_log_id?: number | null;
+  session_date?: string | null;
+  session_title?: string | null;
+  metadata?: {
+    video_review_id?: number | null;
+    video_id?: number | null;
+    session_review_id?: number | null;
+    athlete_id?: number | null;
+    workout_id?: number | null;
+    set_log_id?: number | null;
+    session_date?: string | null;
+    session_title?: string | null;
+  } | null;
   attachment?: MessengerAttachment | null;
   attachments?: MessengerAttachment[];
   created_at?: string | null;
@@ -740,8 +758,18 @@ export type MessengerThread = {
 export type CoachAnnouncement = {
   id: number;
   coach_id?: number | null;
+  source?: string | null;
+  source_label?: string | null;
+  source_type?: string | null;
+  source_badge?: string | null;
+  message_type?: string | null;
+  target_audience?: string | null;
   title: string;
   body: string;
+  category?: string | null;
+  priority?: string | null;
+  link_label?: string | null;
+  link_url?: string | null;
   pinned?: boolean;
   expires_at?: string | null;
   created_at?: string | null;

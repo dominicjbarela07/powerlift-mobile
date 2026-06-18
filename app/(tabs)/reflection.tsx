@@ -4,6 +4,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import { ReflectionCheckInHistory } from '@/components/AthleteCheckInExperience';
 import SetVideoPlayerModal from '@/components/SetVideoPlayerModal';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
@@ -241,6 +242,11 @@ export default function ReflectionScreen() {
             <Text style={styles.focusEmptyBody}>New reviews and follow-ups will appear here.</Text>
           </View>
         )}
+      </Section>
+
+
+      <Section title="Completed Check-Ins" right="Response history">
+        <ReflectionCheckInHistory />
       </Section>
 
       <Section title="Film Study">

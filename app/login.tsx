@@ -1,5 +1,5 @@
 // app/login.tsx
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, useEffect, useState } from 'react';
 import {
   View,
   TextInput,
@@ -11,20 +11,14 @@ import {
   Platform,
   ScrollView,
   Text,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as AuthSession from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/google';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as WebBrowser from 'expo-web-browser';
 import { WEB_BASE, loginRequest, mobileOAuthRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-
-WebBrowser.maybeCompleteAuthSession();
 
 const AUTH_WEB_BASE = WEB_BASE.replace(/\/$/, '');
 const PASSWORD_RESET_URL = `${AUTH_WEB_BASE}/auth/reset_request`;
@@ -39,6 +33,14 @@ type PendingOAuthSetup = {
   email?: string;
 };
 
+type AuthSsoButtonsProps = {
+  disabled?: boolean;
+  oauthLoading: OAuthProvider | null;
+  setOauthLoading: (provider: OAuthProvider | null) => void;
+  onOAuthResult: (provider: OAuthProvider, idToken: string, res: ApiLoginResponse) => Promise<void>;
+  onError: (message: string | null) => void;
+};
+
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth(); 
@@ -47,38 +49,22 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
-  const [appleAvailable, setAppleAvailable] = useState(false);
   const [pendingOAuth, setPendingOAuth] = useState<PendingOAuthSetup | null>(null);
   const [setupRole, setSetupRole] = useState<AccountRole | null>(null);
   const [setupName, setSetupName] = useState('');
   const [setupAccessCode, setSetupAccessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  const googleClientIds = useMemo(() => ({
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  }), []);
-  const googleConfigured = Platform.OS === 'ios'
-    ? !!(googleClientIds.iosClientId || googleClientIds.webClientId)
-    : Platform.OS === 'android'
-      ? !!(googleClientIds.androidClientId || googleClientIds.webClientId)
-      : !!googleClientIds.webClientId;
-
-  const [googleRequest, , promptGoogleAsync] = Google.useAuthRequest({
-    ...googleClientIds,
-    responseType: AuthSession.ResponseType.IdToken,
-    scopes: ['openid', 'profile', 'email'],
-  });
+  const [ssoButtonsModule, setSsoButtonsModule] = useState<{ Component: ComponentType<AuthSsoButtonsProps> } | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    AppleAuthentication.isAvailableAsync()
-      .then((available) => {
-        if (mounted) setAppleAvailable(available);
+    import('@/components/AuthSsoButtons')
+      .then((module) => {
+        if (mounted) setSsoButtonsModule({ Component: module.default });
       })
-      .catch(() => {
-        if (mounted) setAppleAvailable(false);
+      .catch((err) => {
+        console.warn('SSO buttons unavailable in this build; email login remains enabled.', err);
+        if (mounted) setSsoButtonsModule(null);
       });
     return () => {
       mounted = false;
@@ -87,11 +73,20 @@ export default function LoginScreen() {
 
   const openInfoPage = async (url: string, fallbackMessage: string, label: string) => {
     try {
-      await WebBrowser.openBrowserAsync(url, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
-      });
+      try {
+        const WebBrowser = await import('expo-web-browser');
+        await WebBrowser.openBrowserAsync(url, {
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+        });
+        return;
+      } catch (browserErr) {
+        console.warn(`${label} WebBrowser unavailable; falling back to Linking`, browserErr);
+      }
+      const supported = await Linking.canOpenURL(url);
+      if (!supported) throw new Error(`Cannot open ${url}`);
+      await Linking.openURL(url);
     } catch (err) {
-      console.error(`${label} openBrowserAsync failed`, { url, err });
+      console.error(`${label} open failed`, { url, err });
       setError(fallbackMessage);
     }
   };
@@ -154,75 +149,6 @@ export default function LoginScreen() {
     await completeLogin(res, res.email);
   };
 
-  const handleGoogleSignIn = async () => {
-    if (!googleConfigured || !googleRequest) {
-      setError('Google sign-in is not configured for this build.');
-      return;
-    }
-
-    setError(null);
-    setOauthLoading('google');
-    try {
-      const result = await promptGoogleAsync();
-      if (result.type !== 'success') {
-        if (result.type !== 'dismiss' && result.type !== 'cancel') {
-          setError('Google sign-in did not finish. Please try again.');
-        }
-        return;
-      }
-      const idToken =
-        (result as any).authentication?.idToken ||
-        (result as any).params?.id_token;
-      if (!idToken) {
-        setError('Google did not return an identity token. Please try again.');
-        return;
-      }
-      const res = await mobileOAuthRequest('google', idToken);
-      await handleOAuthResponse('google', idToken, res);
-    } catch (err) {
-      console.error('Google sign-in failed', err);
-      setError('Google sign-in failed. Please try again.');
-    } finally {
-      setOauthLoading(null);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    if (!appleAvailable) {
-      setError('Apple sign-in is not available on this device.');
-      return;
-    }
-
-    setError(null);
-    setOauthLoading('apple');
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      const idToken = credential.identityToken;
-      if (!idToken) {
-        setError('Apple did not return an identity token. Please try again.');
-        return;
-      }
-      const name = [
-        credential.fullName?.givenName,
-        credential.fullName?.familyName,
-      ].filter(Boolean).join(' ');
-      const res = await mobileOAuthRequest('apple', idToken, { name: name || undefined });
-      await handleOAuthResponse('apple', idToken, res);
-    } catch (err: any) {
-      if (err?.code !== 'ERR_REQUEST_CANCELED') {
-        console.error('Apple sign-in failed', err);
-        setError('Apple sign-in failed. Please try again.');
-      }
-    } finally {
-      setOauthLoading(null);
-    }
-  };
-
   const finishOAuthSetup = async () => {
     if (!pendingOAuth) return;
     if (!setupRole) {
@@ -280,6 +206,8 @@ export default function LoginScreen() {
     }
     };
 
+  const SsoButtons = ssoButtonsModule?.Component;
+
   return (
     <View style={styles.screen}>
       <LinearGradient
@@ -312,53 +240,22 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.form}>
-              <View style={styles.ssoStack}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.ssoButton,
-                    styles.ssoButtonGoogle,
-                    pressed && googleConfigured && styles.ssoButtonPressed,
-                    (!googleConfigured || oauthLoading === 'google') && styles.ssoButtonDisabled,
-                  ]}
-                  onPress={handleGoogleSignIn}
-                  disabled={!googleConfigured || !!oauthLoading || loading}
-                >
-                  {oauthLoading === 'google' ? (
-                    <ActivityIndicator color="#111827" />
-                  ) : (
-                    <>
-                      <FontAwesome name="google" size={17} color="#111827" />
-                      <Text style={styles.ssoTextGoogle}>Continue with Google</Text>
-                    </>
-                  )}
-                </Pressable>
-
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.ssoButton,
-                    styles.ssoButtonApple,
-                    pressed && appleAvailable && styles.ssoButtonPressed,
-                    (!appleAvailable || oauthLoading === 'apple') && styles.ssoButtonDisabled,
-                  ]}
-                  onPress={handleAppleSignIn}
-                  disabled={!appleAvailable || !!oauthLoading || loading}
-                >
-                  {oauthLoading === 'apple' ? (
-                    <ActivityIndicator color="#FFFFFF" />
-                  ) : (
-                    <>
-                      <FontAwesome name="apple" size={20} color="#FFFFFF" />
-                      <Text style={styles.ssoTextApple}>Continue with Apple</Text>
-                    </>
-                  )}
-                </Pressable>
-              </View>
-
-              <View style={styles.emailDivider}>
-                <View style={styles.emailDividerLine} />
-                <Text style={styles.emailDividerText}>or continue with email</Text>
-                <View style={styles.emailDividerLine} />
-              </View>
+              {SsoButtons ? (
+                <>
+                  <SsoButtons
+                    disabled={loading || !!pendingOAuth}
+                    oauthLoading={oauthLoading}
+                    setOauthLoading={setOauthLoading}
+                    onOAuthResult={handleOAuthResponse}
+                    onError={setError}
+                  />
+                  <View style={styles.emailDivider}>
+                    <View style={styles.emailDividerLine} />
+                    <Text style={styles.emailDividerText}>or continue with email</Text>
+                    <View style={styles.emailDividerLine} />
+                  </View>
+                </>
+              ) : null}
 
               <View style={styles.field}>
                 <Text style={styles.label}>Email</Text>
@@ -552,43 +449,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.08)',
     backgroundColor: 'rgba(10, 8, 9, 0.24)',
-  },
-  ssoStack: {
-    gap: 10,
-  },
-  ssoButton: {
-    minHeight: 50,
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  ssoButtonGoogle: {
-    backgroundColor: '#FFFFFF',
-    borderColor: 'rgba(255,255,255,0.72)',
-  },
-  ssoButtonApple: {
-    backgroundColor: '#000000',
-    borderColor: 'rgba(255,255,255,0.18)',
-  },
-  ssoButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.99 }],
-  },
-  ssoButtonDisabled: {
-    opacity: 0.46,
-  },
-  ssoTextGoogle: {
-    fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 14,
-    color: '#111827',
-  },
-  ssoTextApple: {
-    fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 14,
-    color: '#FFFFFF',
   },
   emailDivider: {
     flexDirection: 'row',

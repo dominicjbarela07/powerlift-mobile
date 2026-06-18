@@ -2,7 +2,7 @@
   "expo": {
     "name": "Strength Ledger",
     "slug": "powerlift_mobile",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/iOS_icon.png",
     "scheme": "powerliftmobile",
@@ -51,7 +51,8 @@
         }
       ],
       "expo-video",
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

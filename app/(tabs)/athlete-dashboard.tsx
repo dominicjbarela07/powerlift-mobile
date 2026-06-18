@@ -2,8 +2,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 
@@ -192,6 +193,7 @@ const palette = {
 
 export default function AthleteDashboard() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ submittedCheckIn?: string }>();
   const { token } = useAuth();
   const [today, setToday] = useState<TodayPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -364,6 +366,8 @@ export default function AthleteDashboard() {
         }
       >
         <PresentState today={today} />
+        <TodaySubmittedCheckIn title={params.submittedCheckIn} />
+        <TodayCheckInSurface />
         <TodayTraining onAction={openAction} today={today} />
         <MeetPlanEntry
           meet={today.phase?.meet}
@@ -479,7 +483,7 @@ function TodayTraining({
       <View style={styles.todayTrainingRail} />
       <View style={[styles.todayTrainingBody, !hasSession && styles.todayTrainingBodyCompact]}>
         <View style={styles.todayTrainingTopRow}>
-          <Text style={styles.todayTrainingKicker}>Today's Training</Text>
+          <Text style={styles.todayTrainingKicker}>{"Today's Training"}</Text>
           <StatusPill value={hasSession ? mission?.status : 'rest'} />
         </View>
 
@@ -723,7 +727,7 @@ function PatchNoteModal({
             </View>
           </View>
           <Text style={styles.patchModalBody}>
-            Here's where to go depending on what you need.
+            Here is where to go depending on what you need.
           </Text>
           <ScrollView
             contentContainerStyle={styles.patchModalTourContent}

@@ -50,6 +50,7 @@ export function CoreMovementLedgerRow({
   scheme,
   meta,
   top,
+  movementNote,
   loggerFocus,
   expanded,
   detailRows,
@@ -62,6 +63,7 @@ export function CoreMovementLedgerRow({
   scheme?: React.ReactNode;
   meta?: string | null;
   top?: string | null;
+  movementNote?: string | null;
   loggerFocus?: MovementLoggerFocusModel | null;
   expanded?: boolean;
   detailRows?: ActiveMovementDetailRow[];
@@ -138,6 +140,12 @@ export function CoreMovementLedgerRow({
         {showScheme ? <Text style={styles.ledgerScheme}>{scheme}</Text> : null}
         {!expanded && meta ? <Text style={styles.ledgerMeta}>{meta}</Text> : null}
         {!expanded && top ? <Text style={styles.ledgerTop}>{top}</Text> : null}
+        {movementNote?.trim() ? (
+          <View style={styles.movementNoteBlock}>
+            <Text style={styles.movementNoteLabel}>Coach Note</Text>
+            <Text style={styles.movementNoteText}>{movementNote.trim()}</Text>
+          </View>
+        ) : null}
         {loggerFocus || (expanded && completedRows.length > 0) ? (
           <View style={styles.currentFocusBlock}>
             {loggerFocus ? <SetRail steps={loggerFocus.rail} /> : <SetRail steps={reviewRail} />}
@@ -398,6 +406,27 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     fontWeight: '700',
     marginTop: 3,
+  },
+  movementNoteBlock: {
+    marginTop: 9,
+    paddingTop: 9,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(222,198,166,0.075)',
+  },
+  movementNoteLabel: {
+    color: '#D6A75E',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+    marginBottom: 4,
+  },
+  movementNoteText: {
+    color: '#E7DDD1',
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '700',
   },
   ledgerAction: {
     color: '#F5F3FF',

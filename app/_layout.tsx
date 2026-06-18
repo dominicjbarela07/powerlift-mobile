@@ -152,6 +152,19 @@ function RootStack() {
             return;
           }
 
+          if (data.type === 'check_in_due') {
+            const submissionId = data.submission_id ? String(data.submission_id) : '';
+            if (submissionId) {
+              router.push({
+                pathname: '/(tabs)/check-in/[submissionId]',
+                params: { submissionId, returnTo: 'today' },
+              } as any);
+              return;
+            }
+            router.push('/(tabs)/check-ins' as any);
+            return;
+          }
+
           if (data.type !== 'message') return;
 
           const threadId = data.threadId ? String(data.threadId) : '';

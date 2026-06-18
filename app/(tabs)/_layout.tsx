@@ -84,6 +84,7 @@ function FilteredTabBar({
     messages: { label: 'Messages', icon: 'chatbubbles-outline' },
     'messages/index': { label: 'Messages', icon: 'chatbubbles-outline' },
     'athlete-dashboard': { label: 'Today', icon: 'home-outline' },
+    'check-ins': { label: 'Check-Ins', icon: 'clipboard-outline' },
     'video-archive': { label: 'Video Archive', icon: 'videocam-outline' },
     'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },
   };
@@ -166,6 +167,12 @@ export default function TabsLayout() {
   const isCoach = !!user?.is_coach;
   const viewMode: MobileViewMode = isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
+
+  useEffect(() => {
+    if (!user) {
+      router.replace('/login');
+    }
+  }, [router, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -258,6 +265,10 @@ export default function TabsLayout() {
       subscription.remove();
     };
   }, [refreshMessageNotifications]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -381,6 +392,21 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'calendar' : 'calendar-outline'}
+                size={22}
+                color={color}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="check-ins"
+          options={{
+            title: 'Check-Ins',
+            href: null,
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons
+                name={focused ? 'clipboard' : 'clipboard-outline'}
                 size={22}
                 color={color}
               />

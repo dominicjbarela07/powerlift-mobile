@@ -34,6 +34,16 @@ type CalendarMeet = {
   status?: string | null;
 };
 
+type CalendarCheckIn = {
+  submission_id: number;
+  title?: string | null;
+  description?: string | null;
+  due_at?: string | null;
+  local_due_time?: string | null;
+  submitted_at?: string | null;
+  status?: 'due' | 'late' | 'submitted' | string | null;
+};
+
 type BlockMarker = {
   kind?: 'block_start' | 'block_end' | string;
   label?: string | null;
@@ -45,6 +55,7 @@ type CalendarDay = {
   is_today?: boolean | null;
   training_status?: 'rest' | 'assigned' | 'in_progress' | 'completed' | 'missed' | 'incomplete' | 'mixed' | string | null;
   sessions?: CalendarSession[];
+  check_ins?: CalendarCheckIn[];
   meets?: CalendarMeet[];
   reminders?: unknown[];
   block_markers?: BlockMarker[];
@@ -58,6 +69,7 @@ type UpcomingItem = {
   route?: string | null;
   workout_id?: number | null;
   meet_plan_id?: number | null;
+  submission_id?: number | null;
   block_id?: number | null;
   status?: string | null;
 };
@@ -180,6 +192,14 @@ export default function AthleteCalendarScreen() {
     router.push('/(tabs)/athlete-meet-plan' as any);
   };
 
+  const openCheckIn = (checkIn?: CalendarCheckIn | UpcomingItem | null) => {
+    if (!checkIn?.submission_id) return;
+    router.push({
+      pathname: '/(tabs)/check-in/[submissionId]',
+      params: { submissionId: String(checkIn.submission_id), returnTo: 'calendar' },
+    } as any);
+  };
+
   const openUpcoming = (item: UpcomingItem) => {
     if (item.route === 'workout' && item.workout_id) {
       router.push({
@@ -190,6 +210,10 @@ export default function AthleteCalendarScreen() {
     }
     if (item.route === 'meet') {
       openMeet();
+      return;
+    }
+    if (item.route === 'check_in') {
+      openCheckIn(item);
       return;
     }
     if (item.route === 'block') {
@@ -263,7 +287,7 @@ export default function AthleteCalendarScreen() {
         <CalendarLegend hasBlockRange={!!blockRange} hasMeet={!!payload?.meet_countdown} />
       </View>
 
-      <SelectedDayTray day={selectedDay} onOpenMeet={openMeet} onOpenSession={openSession} />
+      <SelectedDayTray day={selectedDay} onOpenCheckIn={openCheckIn} onOpenMeet={openMeet} onOpenSession={openSession} />
 
       <UpcomingTimeline items={payload?.upcoming || []} onOpen={openUpcoming} />
     </ScrollView>
@@ -328,7 +352,7 @@ function DayCell({
   onPress: () => void;
 }) {
   const status = day?.training_status || 'rest';
-  const tone = toneForDay(status, !!day?.meets?.length, !!day?.block_markers?.length);
+  const tone = toneForDay(status, !!day?.meets?.length, !!day?.block_markers?.length, !!day?.check_ins?.length);
   return (
     <Pressable
       onPress={onPress}
@@ -346,6 +370,7 @@ function DayCell({
       <Text style={[styles.dayNumber, !inMonth && styles.dayTextFaded, selected && styles.dayNumberSelected]}>{date.getDate()}</Text>
       <View style={styles.markerRow}>
         {status !== 'rest' ? <View style={[styles.dayMarker, { backgroundColor: tone }]} /> : <View style={styles.restMarker} />}
+        {day?.check_ins?.length ? <View style={[styles.dayMarker, { backgroundColor: checkInTone(day.check_ins[0]?.status) }]} /> : null}
         {day?.meets?.length ? <View style={[styles.dayMarker, { backgroundColor: colors.violet }]} /> : null}
         {day?.block_markers?.length ? <View style={[styles.dayMarker, { backgroundColor: colors.amber }]} /> : null}
       </View>
@@ -355,17 +380,20 @@ function DayCell({
 
 function SelectedDayTray({
   day,
+  onOpenCheckIn,
   onOpenSession,
   onOpenMeet,
 }: {
   day: CalendarDay;
+  onOpenCheckIn: (checkIn: CalendarCheckIn) => void;
   onOpenSession: (session: CalendarSession) => void;
   onOpenMeet: () => void;
 }) {
   const sessions = day.sessions || [];
+  const checkIns = day.check_ins || [];
   const meets = day.meets || [];
   const markers = day.block_markers || [];
-  const hasEvents = sessions.length || meets.length || markers.length;
+  const hasEvents = sessions.length || checkIns.length || meets.length || markers.length;
   return (
     <View style={styles.tray}>
       <View style={styles.trayHeader}>
@@ -381,6 +409,17 @@ function SelectedDayTray({
             <Text style={styles.rowMeta} numberOfLines={1}>{session.planned_summary || session.block_name || statusLabel(session.status)}</Text>
           </View>
           <Text style={[styles.rowStatus, { color: toneForStatus(session.status) }]}>{statusLabel(session.status)}</Text>
+        </Pressable>
+      ))}
+
+      {checkIns.map((checkIn) => (
+        <Pressable key={checkIn.submission_id} style={({ pressed }) => [styles.ledgerRow, pressed && styles.pressed]} onPress={() => onOpenCheckIn(checkIn)}>
+          <View style={[styles.rowRail, { backgroundColor: checkInTone(checkIn.status) }]} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>{checkIn.title || 'Check-In'}</Text>
+            <Text style={styles.rowMeta}>{checkInCalendarLine(checkIn)}</Text>
+          </View>
+          <Text style={[styles.rowStatus, { color: checkInTone(checkIn.status) }]}>{checkInStatusLabel(checkIn.status)}</Text>
         </Pressable>
       ))}
 
@@ -421,7 +460,7 @@ function UpcomingTimeline({ items, onOpen }: { items: UpcomingItem[]; onOpen: (i
       <Text style={styles.zoneKicker}>Upcoming</Text>
       <View style={styles.timelineList}>
         {items.length ? items.map((item, index) => {
-          const actionable = item.route === 'workout' || item.route === 'meet' || item.route === 'block';
+          const actionable = item.route === 'workout' || item.route === 'meet' || item.route === 'block' || item.route === 'check_in';
           return (
             <Pressable
               key={`${item.kind}-${item.date}-${index}`}
@@ -454,6 +493,7 @@ function CalendarLegend({ hasBlockRange, hasMeet }: { hasBlockRange: boolean; ha
     <View style={styles.markerLegend}>
       {hasBlockRange ? <LegendItem kind="wash" label="Block dates" /> : null}
       <LegendItem color={colors.amber} label="Training" />
+      <LegendItem color={colors.violet} label="Check-In" />
       <LegendItem color={colors.green} label="Complete" />
       <LegendItem color={colors.red} label="Missed" />
       {hasMeet ? <LegendItem color={colors.violet} label="Meet" /> : null}
@@ -496,8 +536,9 @@ function UtilityButton({
   );
 }
 
-function toneForDay(status?: string | null, hasMeet = false, hasBlock = false) {
+function toneForDay(status?: string | null, hasMeet = false, hasBlock = false, hasCheckIn = false) {
   if (hasMeet) return colors.violet;
+  if (hasCheckIn) return colors.violet;
   if (status === 'completed') return colors.green;
   if (status === 'in_progress') return colors.violet;
   if (status === 'missed' || status === 'incomplete') return colors.red;
@@ -517,7 +558,29 @@ function toneForStatus(status?: string | null) {
 function toneForUpcoming(item: UpcomingItem) {
   if (item.kind === 'meet') return colors.violet;
   if (item.kind === 'block_marker') return colors.amber;
+  if (item.kind === 'check_in') return checkInTone(item.status);
   return toneForStatus(item.status);
+}
+
+function checkInTone(status?: string | null) {
+  const value = String(status || '').toLowerCase();
+  if (value === 'submitted') return colors.green;
+  if (value === 'late') return colors.red;
+  return colors.violet;
+}
+
+function checkInStatusLabel(status?: string | null) {
+  const value = String(status || '').toLowerCase();
+  if (value === 'submitted') return 'Submitted';
+  if (value === 'late') return 'Overdue';
+  return 'Due';
+}
+
+function checkInCalendarLine(checkIn: CalendarCheckIn) {
+  const status = String(checkIn.status || '').toLowerCase();
+  if (status === 'submitted') return 'Submitted';
+  if (status === 'late') return 'Overdue';
+  return checkIn.local_due_time ? `Due ${checkIn.local_due_time}` : 'Due';
 }
 
 function statusLabel(status?: string | null) {

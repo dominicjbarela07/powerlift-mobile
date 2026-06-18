@@ -165,6 +165,41 @@ function MessageAttachmentChip({
   );
 }
 
+function videoReviewIdForMessage(message: MessengerMessage): number | null {
+  const raw =
+    message.video_id ??
+    message.video_review_id ??
+    message.metadata?.video_id ??
+    message.metadata?.video_review_id ??
+    null;
+  const id = Number(raw);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
+function isVideoReviewFeedbackMessage(message: MessengerMessage) {
+  return (
+    message.message_type === 'video_review_feedback' ||
+    !!message.video_review_id ||
+    !!message.video_id ||
+    !!message.metadata?.video_review_id ||
+    !!message.metadata?.video_id
+  );
+}
+
+function workoutIdForSessionReviewMessage(message: MessengerMessage): number | null {
+  const raw = message.workout_id ?? message.metadata?.workout_id ?? message.session_review_id ?? message.metadata?.session_review_id ?? null;
+  const id = Number(raw);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
+function isSessionReviewFeedbackMessage(message: MessengerMessage) {
+  return (
+    message.message_type === 'session_review_feedback' ||
+    !!message.session_review_id ||
+    (message.message_type === 'session_feedback' && !!message.workout_id)
+  );
+}
+
 function AttachmentPreviewChip({
   attachment,
   onRemove,
@@ -565,6 +600,30 @@ function ThreadScreen() {
     ]);
   }, [handleChooseFile, handleChoosePhoto, sending]);
 
+  const openReviewedVideo = useCallback((message: MessengerMessage) => {
+    const videoId = videoReviewIdForMessage(message);
+    if (!videoId) {
+      setError('This reviewed video could not be opened from Messages.');
+      return;
+    }
+    router.push({
+      pathname: '/(tabs)/coach-reviews',
+      params: { videoId: String(videoId), from: 'messages' },
+    } as any);
+  }, [router]);
+
+  const openReviewedSession = useCallback((message: MessengerMessage) => {
+    const workoutId = workoutIdForSessionReviewMessage(message);
+    if (!workoutId) {
+      setError('This reviewed session could not be opened from Messages.');
+      return;
+    }
+    router.push({
+      pathname: '/workout/[workoutId]',
+      params: { workoutId: String(workoutId), from: 'messages' },
+    } as any);
+  }, [router]);
+
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
@@ -643,6 +702,10 @@ function ThreadScreen() {
               next.sender_id === item.sender_id &&
               formatMessageDate(next.created_at) === formatMessageDate(item.created_at);
             const showIncomingAvatar = !mine && !nextIsSameIncomingSender;
+            const reviewVideoId = videoReviewIdForMessage(item);
+            const showVideoReviewAction = !user?.is_coach && isVideoReviewFeedbackMessage(item) && !!reviewVideoId;
+            const reviewWorkoutId = workoutIdForSessionReviewMessage(item);
+            const showSessionReviewAction = !user?.is_coach && isSessionReviewFeedbackMessage(item) && !!reviewWorkoutId;
 
             return (
               <View>
@@ -678,6 +741,38 @@ function ThreadScreen() {
                     )}
 
                     <LinkifiedMessageText body={item.body} mine={mine} />
+
+                    {showVideoReviewAction ? (
+                      <Pressable
+                        onPress={() => openReviewedVideo(item)}
+                        style={({ pressed }) => [
+                          styles.videoReviewCta,
+                          mine ? styles.videoReviewCtaMine : styles.videoReviewCtaTheirs,
+                          pressed && styles.videoReviewCtaPressed,
+                        ]}
+                      >
+                        <Ionicons name="play-circle-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                        <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
+                          Watch reviewed video
+                        </Text>
+                      </Pressable>
+                    ) : null}
+
+                    {showSessionReviewAction ? (
+                      <Pressable
+                        onPress={() => openReviewedSession(item)}
+                        style={({ pressed }) => [
+                          styles.videoReviewCta,
+                          mine ? styles.videoReviewCtaMine : styles.videoReviewCtaTheirs,
+                          pressed && styles.videoReviewCtaPressed,
+                        ]}
+                      >
+                        <Ionicons name="barbell-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                        <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
+                          View session
+                        </Text>
+                      </Pressable>
+                    ) : null}
 
                     {messageAttachments(item).map((attachment, attachmentIndex) => (
                       attachmentIsImage(attachment) ? (
@@ -980,6 +1075,37 @@ const styles = StyleSheet.create({
     color: '#C4B5FD',
     fontWeight: '800',
     textDecorationLine: 'underline',
+  },
+  videoReviewCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 7,
+    marginTop: 10,
+    borderRadius: 12,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+    borderWidth: 1,
+  },
+  videoReviewCtaMine: {
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    borderColor: 'rgba(255,255,255,0.16)',
+  },
+  videoReviewCtaTheirs: {
+    backgroundColor: 'rgba(167,243,208,0.10)',
+    borderColor: 'rgba(167,243,208,0.26)',
+  },
+  videoReviewCtaPressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.99 }],
+  },
+  videoReviewCtaText: {
+    color: '#A7F3D0',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  videoReviewCtaTextMine: {
+    color: '#F8FAFC',
   },
   messageAttachmentChip: {
     flexDirection: 'row',

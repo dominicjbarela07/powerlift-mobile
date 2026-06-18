@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import RefreshScreen from '@/components/refresh-screen';
 import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } from '@/components/SetVideoPlayerModal';
@@ -90,11 +90,18 @@ function reviewTagLabels(tags?: AthleteReview['review_tags']) {
 
 export default function CoachReviewsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ videoId?: string; from?: string }>();
   const [reviews, setReviews] = useState<AthleteReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedReview, setSelectedReview] = useState<AthleteReview | null>(null);
+  const handledTargetVideoIdRef = useRef<number | null>(null);
+  const targetVideoId = useMemo(() => {
+    const raw = Array.isArray(params.videoId) ? params.videoId[0] : params.videoId;
+    const id = Number(raw);
+    return Number.isFinite(id) && id > 0 ? id : null;
+  }, [params.videoId]);
 
   const loadReviews = useCallback(async (opts?: { silent?: boolean }) => {
     const silent = !!opts?.silent;
@@ -108,7 +115,18 @@ export default function CoachReviewsScreen() {
         if (res.status === 401) router.replace('/login');
         throw new Error(payload.error || `Could not load coach reviews (${res.status})`);
       }
-      setReviews(Array.isArray(payload.reviews) ? payload.reviews : []);
+      const loadedReviews = Array.isArray(payload.reviews) ? payload.reviews : [];
+      setReviews(loadedReviews);
+      if (targetVideoId && handledTargetVideoIdRef.current !== targetVideoId) {
+        const targetReview = loadedReviews.find((review: AthleteReview) => Number(review.id) === targetVideoId) || null;
+        if (targetReview) {
+          handledTargetVideoIdRef.current = targetVideoId;
+          setSelectedReview(targetReview);
+        } else {
+          handledTargetVideoIdRef.current = targetVideoId;
+          setError('That reviewed video is not available for this athlete.');
+        }
+      }
     } catch (err: any) {
       setError(err?.message || 'Could not load coach reviews.');
       setReviews([]);
@@ -116,7 +134,7 @@ export default function CoachReviewsScreen() {
       setRefreshing(false);
       setLoading(false);
     }
-  }, [router]);
+  }, [router, targetVideoId]);
 
   useFocusEffect(
     useCallback(() => {

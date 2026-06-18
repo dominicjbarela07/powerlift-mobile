@@ -14,12 +14,13 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Updates from 'expo-updates';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import * as WebBrowser from 'expo-web-browser';
 
 import { ThemedText } from '@/components/themed-text';
 import { SLScreen } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
-import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
+import { API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
 
 const FALLBACK_TIMEZONES = [
@@ -100,6 +101,9 @@ export default function SettingsScreen() {
   const [timezoneSaving, setTimezoneSaving] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [privacyLoading, setPrivacyLoading] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('');
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [notifyVideoFeedback, setNotifyVideoFeedback] = useState(true);
   const [notifyVideoSubmissions, setNotifyVideoSubmissions] = useState(true);
   const [videoMlTrainingConsent, setVideoMlTrainingConsent] = useState<boolean | null>(null);
@@ -377,6 +381,55 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const deleteUrl = `${String(WEB_BASE || '').replace(/\/$/, '')}/auth/account/delete`;
+    try {
+      await WebBrowser.openBrowserAsync(deleteUrl, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+      });
+      Alert.alert(
+        'Delete Account',
+        'If the delete page asked you to sign in or did not complete, use the in-app confirmation to permanently delete this account.',
+        [
+          { text: 'Done', style: 'cancel' },
+          { text: 'Use in-app confirmation', style: 'destructive', onPress: () => setDeleteModalOpen(true) },
+        ]
+      );
+    } catch {
+      setDeleteModalOpen(true);
+    }
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    const email = String(auth?.user?.email || '').trim();
+    if (!email) {
+      Alert.alert('Delete Account', 'Your account email was not available. Please log out and sign back in.');
+      return;
+    }
+    if (deleteConfirmEmail.trim().toLowerCase() !== email.toLowerCase()) {
+      Alert.alert('Email does not match', 'Type your account email exactly to confirm deletion.');
+      return;
+    }
+
+    try {
+      setDeletingAccount(true);
+      const result = await deleteAccountRequest(deleteConfirmEmail.trim());
+      if (!result.ok) {
+        throw new Error(result.error || 'Unable to delete account.');
+      }
+      setDeleteModalOpen(false);
+      setDeleteConfirmEmail('');
+      if (typeof auth?.logout === 'function') await auth.logout();
+      Alert.alert('Account deleted', 'Your Strength Ledger account has been permanently deleted.', [
+        { text: 'OK', onPress: () => router.replace('/login') },
+      ]);
+    } catch (err: any) {
+      Alert.alert('Delete Account failed', err?.message || 'Please try again.');
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   const handleSwitchMobileMode = async () => {
     if (!isCoach) return;
 
@@ -643,6 +696,24 @@ export default function SettingsScreen() {
 
           <Pressable
             style={({ pressed }) => [styles.rowButton, pressed && styles.rowButtonPressed]}
+            onPress={handleDeleteAccount}
+          >
+            <View style={styles.rowLeft}>
+              <View style={[styles.rowIconWrap, styles.deleteIconWrap]}>
+                <Ionicons name="trash-outline" size={20} color={SLColors.danger} />
+              </View>
+              <View style={styles.rowTextWrap}>
+                <ThemedText style={styles.rowTitle}>Delete Account</ThemedText>
+                <ThemedText variant="bodyMuted" style={styles.rowSubtitle}>
+                  Permanently delete your account and related data
+                </ThemedText>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={SLColors.textSubtle} />
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [styles.rowButton, pressed && styles.rowButtonPressed]}
             onPress={handleLogout}
             disabled={loggingOut}
           >
@@ -715,6 +786,62 @@ export default function SettingsScreen() {
                   );
                 }}
               />
+            </View>
+          </View>
+        </Modal>
+        <Modal visible={deleteModalOpen} animationType="slide" transparent onRequestClose={() => setDeleteModalOpen(false)}>
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalSheet}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleWrap}>
+                  <ThemedText style={styles.modalTitle}>Delete Account</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                    This permanently deletes your account and related Strength Ledger data. This cannot be undone.
+                  </ThemedText>
+                </View>
+                <Pressable style={styles.modalClose} onPress={() => setDeleteModalOpen(false)} disabled={deletingAccount}>
+                  <Ionicons name="close" size={22} color={SLColors.text} />
+                </Pressable>
+              </View>
+              <View style={styles.deleteWarning}>
+                <Ionicons name="warning-outline" size={20} color={SLColors.danger} />
+                <ThemedText style={styles.deleteWarningText}>
+                  Type {auth?.user?.email || 'your email'} to confirm permanent deletion.
+                </ThemedText>
+              </View>
+              <View style={styles.searchWrap}>
+                <Ionicons name="mail-outline" size={18} color={SLColors.textMuted} />
+                <TextInput
+                  value={deleteConfirmEmail}
+                  onChangeText={setDeleteConfirmEmail}
+                  placeholder={auth?.user?.email || 'email@example.com'}
+                  placeholderTextColor={SLColors.textSubtle}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  style={styles.searchInput}
+                  editable={!deletingAccount}
+                />
+              </View>
+              <View style={styles.deleteActions}>
+                <Pressable
+                  style={({ pressed }) => [styles.secondaryButton, pressed && styles.rowButtonPressed]}
+                  onPress={() => setDeleteModalOpen(false)}
+                  disabled={deletingAccount}
+                >
+                  <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+                </Pressable>
+                <Pressable
+                  style={({ pressed }) => [styles.dangerButton, pressed && styles.dangerButtonPressed]}
+                  onPress={handleConfirmDeleteAccount}
+                  disabled={deletingAccount}
+                >
+                  {deletingAccount ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="trash-outline" size={18} color={SLColors.textStrong} />}
+                  <ThemedText style={styles.dangerButtonText}>
+                    {deletingAccount ? 'Deleting...' : 'Delete Account'}
+                  </ThemedText>
+                </Pressable>
+              </View>
             </View>
           </View>
         </Modal>
@@ -917,6 +1044,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(239,68,68,0.10)',
     borderColor: 'rgba(239,68,68,0.24)',
   },
+  deleteIconWrap: {
+    backgroundColor: 'rgba(239,68,68,0.10)',
+    borderColor: 'rgba(239,68,68,0.24)',
+  },
   rowTextWrap: {
     flex: 1,
     minWidth: 0,
@@ -989,6 +1120,10 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 12,
   },
+  modalTitleWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
   modalTitle: {
     color: SLColors.textStrong,
     fontSize: 21,
@@ -1024,6 +1159,44 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
     fontSize: 14,
     minHeight: 42,
+  },
+  deleteWarning: {
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.28)',
+    backgroundColor: 'rgba(239,68,68,0.10)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 9,
+  },
+  deleteWarningText: {
+    flex: 1,
+    color: SLColors.textStrong,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '700',
+  },
+  deleteActions: {
+    gap: 10,
+  },
+  dangerButton: {
+    minHeight: 48,
+    borderRadius: SLRadius.radiusControl,
+    backgroundColor: SLColors.danger,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  dangerButtonPressed: {
+    opacity: 0.88,
+  },
+  dangerButtonText: {
+    color: SLColors.textStrong,
+    fontSize: 14,
+    fontWeight: '900',
   },
   timezoneList: {
     flex: 1,

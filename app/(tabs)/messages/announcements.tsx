@@ -6,6 +6,7 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   RefreshControl,
@@ -70,6 +71,30 @@ function sortAnnouncements<T extends CoachAnnouncement>(items: T[]) {
     }
     return String(b.created_at || '').localeCompare(String(a.created_at || ''));
   });
+}
+
+function isOwnerBroadcast(item?: CoachAnnouncement | null) {
+  return item?.source === 'owner_broadcast' || item?.message_type === 'owner_broadcast';
+}
+
+function titleCaseWords(value?: string | null) {
+  return String(value || '')
+    .replace(/_/g, ' ')
+    .trim()
+    .replace(/\w\S*/g, (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase());
+}
+
+function platformBadgeLabel(item?: CoachAnnouncement | null) {
+  if (!isOwnerBroadcast(item)) return '';
+  return item?.source_badge || 'Developer Update';
+}
+
+function categoryLabel(item?: CoachAnnouncement | null) {
+  return titleCaseWords(item?.category || '');
+}
+
+function sourceLabel(item?: CoachAnnouncement | null) {
+  return isOwnerBroadcast(item) ? (item?.source_label || 'Strength Ledger') : 'Announcement';
 }
 
 export default function AnnouncementsScreen() {
@@ -627,15 +652,34 @@ function AthleteAnnouncementsScreen() {
         }
         renderItem={({ item }) => {
           const unread = !item.read_at;
+          const platformUpdate = isOwnerBroadcast(item);
+          const platformCategory = categoryLabel(item);
 
           return (
             <Pressable
               onPress={() => openAnnouncement(item)}
               style={({ pressed }) => [
                 styles.announcementCard,
+                platformUpdate && styles.platformAnnouncementCard,
+                platformUpdate && item.priority === 'important' && styles.platformAnnouncementCardImportant,
                 pressed && styles.announcementCardPressed,
               ]}
             >
+              {platformUpdate && (
+                <View style={styles.platformSourceRow}>
+                  <View style={styles.platformMark}>
+                    <Text style={styles.platformMarkText}>SL</Text>
+                  </View>
+                  <Text style={styles.platformSourceText} numberOfLines={1}>
+                    {sourceLabel(item)} · {platformBadgeLabel(item)}
+                  </Text>
+                  {!!platformCategory && (
+                    <View style={styles.platformCategoryBadge}>
+                      <Text style={styles.platformCategoryText}>{platformCategory}</Text>
+                    </View>
+                  )}
+                </View>
+              )}
               <View style={styles.cardMainRow}>
                 <View style={styles.titleRow}>
                   {unread && <View style={styles.unreadDot} />}
@@ -669,7 +713,30 @@ function AthleteAnnouncementsScreen() {
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <View style={styles.modalTitleWrap}>
-                <Text style={styles.modalEyebrow}>Announcement</Text>
+                {isOwnerBroadcast(selectedAnnouncement) ? (
+                  <View style={styles.platformModalSource}>
+                    <View style={styles.platformModalMark}>
+                      <Text style={styles.platformMarkText}>SL</Text>
+                    </View>
+                    <View style={styles.platformModalSourceCopy}>
+                      <Text style={styles.platformModalSourceLabel}>
+                        {sourceLabel(selectedAnnouncement)}
+                      </Text>
+                      <View style={styles.platformModalBadgeRow}>
+                        <Text style={styles.platformModalBadge}>
+                          {platformBadgeLabel(selectedAnnouncement)}
+                        </Text>
+                        {!!categoryLabel(selectedAnnouncement) && (
+                          <Text style={styles.platformModalCategory}>
+                            {categoryLabel(selectedAnnouncement)}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <Text style={styles.modalEyebrow}>Announcement</Text>
+                )}
                 <Text style={styles.modalTitle}>{selectedAnnouncement.title}</Text>
               </View>
 
@@ -687,6 +754,25 @@ function AthleteAnnouncementsScreen() {
 
             <ScrollView style={styles.modalBodyScroll}>
               <Text style={styles.modalBody}>{selectedAnnouncement.body}</Text>
+              {!!selectedAnnouncement.link_url && !!selectedAnnouncement.link_label && (
+                <Pressable
+                  onPress={() => {
+                    const url = String(selectedAnnouncement.link_url || '');
+                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                      Linking.openURL(url).catch(() => {});
+                    } else {
+                      Alert.alert('Open in Strength Ledger', url);
+                    }
+                  }}
+                  style={({ pressed }) => [
+                    styles.modalLinkButton,
+                    isOwnerBroadcast(selectedAnnouncement) && styles.platformModalLinkButton,
+                    pressed && styles.modalLinkButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.modalLinkButtonText}>{selectedAnnouncement.link_label}</Text>
+                </Pressable>
+              )}
             </ScrollView>
           </View>
         </View>
@@ -778,9 +864,64 @@ const styles = StyleSheet.create({
     borderLeftColor: 'rgba(196,181,253,0.44)',
     backgroundColor: 'rgba(76,29,149,0.14)',
   },
+  platformAnnouncementCard: {
+    borderLeftColor: 'rgba(214,182,109,0.76)',
+    backgroundColor: 'rgba(18,18,22,0.74)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(214,182,109,0.14)',
+  },
+  platformAnnouncementCardImportant: {
+    backgroundColor: 'rgba(42,31,14,0.38)',
+    borderLeftColor: 'rgba(245,158,11,0.95)',
+  },
   announcementCardPressed: {
     opacity: 0.92,
     transform: [{ scale: 0.99 }],
+  },
+  platformSourceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginBottom: 8,
+  },
+  platformMark: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(214,182,109,0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(214,182,109,0.32)',
+  },
+  platformMarkText: {
+    color: '#F5D38C',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+  },
+  platformSourceText: {
+    flex: 1,
+    minWidth: 0,
+    color: '#F5D38C',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+  },
+  platformCategoryBadge: {
+    flexShrink: 0,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(15,23,42,0.56)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  platformCategoryText: {
+    color: '#CBD5E1',
+    fontSize: 10,
+    fontWeight: '800',
   },
   cardMainRow: {
     flexDirection: 'row',
@@ -978,6 +1119,58 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 12,
   },
+  platformModalSource: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  platformModalMark: {
+    width: 34,
+    height: 34,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(214,182,109,0.17)',
+    borderWidth: 1,
+    borderColor: 'rgba(214,182,109,0.38)',
+  },
+  platformModalSourceCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  platformModalSourceLabel: {
+    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  platformModalBadgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+  platformModalBadge: {
+    overflow: 'hidden',
+    borderRadius: 999,
+    backgroundColor: 'rgba(214,182,109,0.17)',
+    color: '#F5D38C',
+    fontSize: 10,
+    fontWeight: '900',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    textTransform: 'uppercase',
+  },
+  platformModalCategory: {
+    overflow: 'hidden',
+    borderRadius: 999,
+    backgroundColor: 'rgba(148,163,184,0.12)',
+    color: '#CBD5E1',
+    fontSize: 10,
+    fontWeight: '800',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
   modalEyebrow: {
     color: '#94A3B8',
     fontSize: 11,
@@ -1015,6 +1208,27 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     fontSize: 14,
     lineHeight: 22,
+  },
+  modalLinkButton: {
+    alignSelf: 'flex-start',
+    marginTop: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 204, 255, 0.36)',
+    backgroundColor: 'rgba(139, 124, 255, 0.16)',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  platformModalLinkButton: {
+    borderColor: 'rgba(214,182,109,0.42)',
+    backgroundColor: 'rgba(214,182,109,0.14)',
+  },
+  modalLinkButtonPressed: {
+    opacity: 0.78,
+  },
+  modalLinkButtonText: {
+    color: '#D6CCFF',
+    fontWeight: '800',
   },
   editorInput: {
     borderRadius: 14,

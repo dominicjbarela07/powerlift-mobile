@@ -26,6 +26,7 @@ if (Platform.OS !== 'web') {
 }
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 let VideoThumbnails: any = null;
 try {
   VideoThumbnails = require('expo-video-thumbnails');
@@ -186,6 +187,9 @@ type WorkoutPayload = {
     tardy_reason?: string | null;
     block_reason?: string | null;
     training_block_id: number | null;
+    programming_notes?: string | null;
+    post_session_coach_feedback?: string | null;
+    post_session_coach_feedback_at?: string | null;
     core_items: WorkoutItem[];
     accessory_groups: AccessoryGroup[];
   };
@@ -199,6 +203,8 @@ type WorkoutPayload = {
 
 
 const KG_PER_LB = 0.45359237; // 1 lb = 0.45359 kg
+const MAX_ACCESSORY_LOAD_LB = 2000;
+const MAX_ACCESSORY_LOAD_KG = Math.ceil((MAX_ACCESSORY_LOAD_LB * KG_PER_LB) / 2.5) * 2.5;
 const CORE_WHEEL_ROW_HEIGHT = 44;
 const CORE_WHEEL_VISIBLE_ROWS = 5;
 
@@ -469,6 +475,9 @@ type SelectedSetVideo = {
 
 const VIDEO_UPLOAD_CONNECTION_ERROR =
   'Upload failed due to connection instability. Your set was saved, but the video did not upload. Try again on stronger Wi-Fi or cellular.';
+const VIDEO_CHUNKED_UPLOAD_ENABLED =
+  (typeof __DEV__ !== 'undefined' && __DEV__) || process.env.EXPO_PUBLIC_VIDEO_CHUNKED_UPLOAD === '1';
+const VIDEO_CHUNK_UPLOAD_RETRIES = 3;
 
 function videoUploadFailureMessage(error: any) {
   const message = String(error?.message || '').trim();
@@ -481,6 +490,98 @@ function videoUploadFailureMessage(error: any) {
     return VIDEO_UPLOAD_CONNECTION_ERROR;
   }
   return message;
+}
+
+function videoUploadIntent(selectedVideo: SelectedSetVideo) {
+  return selectedVideo.submitForReview === false ? 'archive_only' : 'submitted';
+}
+
+function videoSubmitForReviewValue(selectedVideo: SelectedSetVideo) {
+  return selectedVideo.submitForReview === false ? 'false' : 'true';
+}
+
+async function uploadVideoChunkWithRetry(setLogId: number, payload: any) {
+  let lastError: any = null;
+  for (let attempt = 1; attempt <= VIDEO_CHUNK_UPLOAD_RETRIES; attempt += 1) {
+    const { ok, status, json, raw } = await fetchJson(
+      `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/chunk`,
+      {
+        method: 'POST',
+        body: payload,
+        auth: true,
+      }
+    );
+    if (ok && json?.ok) return json;
+    lastError = new Error(json?.error || raw || `Video chunk upload failed (HTTP ${status})`);
+    await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
+  }
+  throw lastError || new Error('Video chunk upload failed.');
+}
+
+async function uploadSetVideoChunked(setLogId: number, selectedVideo: SelectedSetVideo) {
+  if (!VIDEO_CHUNKED_UPLOAD_ENABLED || Platform.OS === 'web') {
+    throw new Error('chunked upload disabled');
+  }
+  const info = await FileSystem.getInfoAsync(selectedVideo.uri, { size: true } as any);
+  const size = Number(selectedVideo.sizeBytes || (info as any)?.size || 0);
+  if (!size) throw new Error('video file required');
+
+  const init = await fetchJson(`${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/init`, {
+    method: 'POST',
+    auth: true,
+    body: {
+      filename: selectedVideo.name || 'set-video.mp4',
+      content_type: selectedVideo.mimeType || 'video/mp4',
+      size,
+      video_angle: selectedVideo.videoAngle || 'unknown',
+      submit_for_review: videoSubmitForReviewValue(selectedVideo),
+      upload_intent: videoUploadIntent(selectedVideo),
+    },
+  });
+  if (!init.ok || !init.json?.ok) {
+    throw new Error(init.json?.error || init.raw || `Chunked upload init failed (HTTP ${init.status})`);
+  }
+  const uploadId = init.json.upload_id;
+  const chunkSize = Number(init.json.chunk_size || 1024 * 1024);
+  const totalChunks = Number(init.json.total_chunks || Math.ceil(size / chunkSize));
+
+  for (let index = 0; index < totalChunks; index += 1) {
+    const position = index * chunkSize;
+    const length = Math.min(chunkSize, size - position);
+    const dataBase64 = await FileSystem.readAsStringAsync(selectedVideo.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+      position,
+      length,
+    } as any);
+    await uploadVideoChunkWithRetry(setLogId, {
+      upload_id: uploadId,
+      index,
+      data_base64: dataBase64,
+    });
+  }
+
+  let thumbnailBase64 = '';
+  if (selectedVideo.thumbnailUri) {
+    thumbnailBase64 = await FileSystem.readAsStringAsync(selectedVideo.thumbnailUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    } as any);
+  }
+
+  const complete = await fetchJson(`${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/complete`, {
+    method: 'POST',
+    auth: true,
+    body: {
+      upload_id: uploadId,
+      total_chunks: totalChunks,
+      thumbnail_base64: thumbnailBase64,
+      thumbnail_filename: thumbnailBase64 ? `set-video-thumbnail-${Date.now()}.jpg` : '',
+      thumbnail_content_type: thumbnailBase64 ? 'image/jpeg' : '',
+    },
+  });
+  if (!complete.ok || !complete.json?.ok) {
+    throw new Error(complete.json?.error || complete.raw || `Chunked upload complete failed (HTTP ${complete.status})`);
+  }
+  return complete.json?.video || null;
 }
 
 const VIDEO_ANGLE_OPTIONS = [
@@ -699,10 +800,10 @@ function buildAccessoryWeightOptions(unit: 'kg' | 'lb', defaultValue: string) {
 
   if (unit === 'kg') {
     pushRange(0, 68.75, 1.25);
-    pushRange(70, 250, 2.5);
+    pushRange(70, MAX_ACCESSORY_LOAD_KG, 2.5);
   } else {
     pushRange(0, 147.5, 2.5);
-    pushRange(150, 500, 5);
+    pushRange(150, MAX_ACCESSORY_LOAD_LB, 5);
   }
 
   const snapped = formatWheelNumber(snapCoreWheelWeight(Number(defaultValue), unit));
@@ -1062,6 +1163,25 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
+  const uniqueLoggedSetIndexes = (logs?: SetLog[] | null) =>
+    Array.from(
+      new Set(
+        (logs || [])
+          .map((log) => Number(log.set_index || 0))
+          .filter((idx) => Number.isFinite(idx) && idx > 0),
+      ),
+    ).sort((a, b) => a - b);
+
+  const loggedSetIndexCount = (logs?: SetLog[] | null) => uniqueLoggedSetIndexes(logs).length;
+
+  const nextMissingSetIndex = (logs: SetLog[] | null | undefined, total: number) => {
+    const indexes = new Set(uniqueLoggedSetIndexes(logs));
+    for (let idx = 1; idx <= total; idx += 1) {
+      if (!indexes.has(idx)) return idx;
+    }
+    return null;
+  };
+
   const coreDetailExpansionKey = (id: number | string) => `core-detail:${id}`;
 
   const getOrderedWorkoutMovements = useCallback((workout?: WorkoutPayload['workout'] | null) => {
@@ -1089,7 +1209,6 @@ export default function WorkoutViewerScreen() {
         ? coreItems.filter((it) => it.variant === 'BK' && it.parent_item_id === core.id)
         : [];
       const topLogs = isTop ? (core.set_logs || []) : [];
-      const backdownLogs = backdownsForThisTop.flatMap((bd) => bd.set_logs || []);
       const topTotal = isTop ? (core.sets || 0) : 0;
       const backdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
       const total = isFullCustom
@@ -1097,15 +1216,17 @@ export default function WorkoutViewerScreen() {
         : isTop
         ? topTotal + backdownTotal
         : (core.sets || 0);
-      const logs = isTop ? [...topLogs, ...backdownLogs] : (core.set_logs || []);
+      const logged = isTop
+        ? loggedSetIndexCount(topLogs) + backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
+        : loggedSetIndexCount(core.set_logs || []);
 
       rows.push({
         key: `core:${core.id}`,
         detailKey: coreDetailExpansionKey(core.id),
         kind: 'core',
         id: core.id,
-        complete: total > 0 && logs.length >= total,
-        logged: logs.length,
+        complete: total > 0 && logged >= total,
+        logged,
         total,
       });
     }
@@ -1114,13 +1235,14 @@ export default function WorkoutViewerScreen() {
       for (const item of group.items || []) {
         const logs = item.set_logs || [];
         const total = item.sets || 0;
+        const logged = loggedSetIndexCount(logs);
         rows.push({
           key: `acc:${item.id}`,
           detailKey: `acc:${item.id}`,
           kind: 'accessory',
           id: item.id,
-          complete: total > 0 && logs.length >= total,
-          logged: logs.length,
+          complete: total > 0 && logged >= total,
+          logged,
           total,
         });
       }
@@ -3171,47 +3293,56 @@ export default function WorkoutViewerScreen() {
     let uploadSucceeded = false;
 
     try {
-      const formData = new FormData();
-      formData.append('video', {
-        uri: selectedVideo.uri,
-        name: selectedVideo.name,
-        type: selectedVideo.mimeType,
-      } as any);
-      formData.append('video_angle', selectedVideo.videoAngle || 'unknown');
-      formData.append('submit_for_review', selectedVideo.submitForReview === false ? 'false' : 'true');
-      formData.append('upload_intent', selectedVideo.submitForReview === false ? 'archive_only' : 'submitted');
-      if (selectedVideo.thumbnailUri) {
-        formData.append('thumbnail', {
-          uri: selectedVideo.thumbnailUri,
-          name: `set-video-thumbnail-${Date.now()}.jpg`,
-          type: 'image/jpeg',
-        } as any);
-      }
-
       rememberScroll();
       setVideoUploadBySetLogId((prev) => ({
         ...prev,
         [setLogId]: { uploading: true, error: null },
       }));
 
-      const { ok, status, json, raw } = await fetchJson(
-        `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video`,
-        {
-          method: 'POST',
-          body: formData,
-          auth: true,
+      let uploadedVideo: any = null;
+      try {
+        uploadedVideo = await uploadSetVideoChunked(setLogId, selectedVideo);
+      } catch (chunkErr) {
+        if (__DEV__) {
+          console.warn('Chunked video upload failed; falling back to single multipart upload.', chunkErr);
         }
-      );
+        const formData = new FormData();
+        formData.append('video', {
+          uri: selectedVideo.uri,
+          name: selectedVideo.name,
+          type: selectedVideo.mimeType,
+        } as any);
+        formData.append('video_angle', selectedVideo.videoAngle || 'unknown');
+        formData.append('submit_for_review', videoSubmitForReviewValue(selectedVideo));
+        formData.append('upload_intent', videoUploadIntent(selectedVideo));
+        if (selectedVideo.thumbnailUri) {
+          formData.append('thumbnail', {
+            uri: selectedVideo.thumbnailUri,
+            name: `set-video-thumbnail-${Date.now()}.jpg`,
+            type: 'image/jpeg',
+          } as any);
+        }
 
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || raw || `Video upload failed (HTTP ${status})`);
+        const { ok, status, json, raw } = await fetchJson(
+          `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video`,
+          {
+            method: 'POST',
+            body: formData,
+            auth: true,
+          }
+        );
+
+        if (!ok || !json?.ok) {
+          throw new Error(json?.error || raw || `Video upload failed (HTTP ${status})`);
+        }
+        uploadedVideo = json?.video || null;
       }
 
       uploadSucceeded = true;
       if (opts?.refresh !== false) {
         await fetchWorkout({ silent: true });
       }
-      return json?.video || null;
+      return uploadedVideo;
     } catch (err: any) {
       const message = videoUploadFailureMessage(err);
       setVideoUploadBySetLogId((prev) => ({
@@ -3835,11 +3966,12 @@ export default function WorkoutViewerScreen() {
     }
 
     if (isTop && totalSets > 0) {
-      const completedIndexes = topLogs.map((log) => log.set_index || 0).filter(Boolean);
+      const completedIndexes = uniqueLoggedSetIndexes(topLogs);
       const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
       const fullTopBackdownTotal = totalSets + topBackdownTotal;
       const topBackdownLoggedCount =
-        topLogs.length + backdownsForThisTop.reduce((sum, bd) => sum + ((bd.set_logs || []).length), 0);
+        loggedSetIndexCount(topLogs) +
+        backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0);
         const topBackdownProgressLabel = `${topBackdownLoggedCount}/${fullTopBackdownTotal || totalSets}`;
       const topRailSteps = Array.from({ length: totalSets }).map((_, idx) => {
         const setIdx = idx + 1;
@@ -3853,7 +3985,7 @@ export default function WorkoutViewerScreen() {
       });
       const backdownRailSteps = backdownsForThisTop.flatMap((bd) => {
         const bdLogs = bd.set_logs || [];
-        const bdNextIdx = bdLogs.length + 1;
+        const bdNextIdx = nextMissingSetIndex(bdLogs, bd.sets || 0) || (loggedSetIndexCount(bdLogs) + 1);
         return Array.from({ length: bd.sets || 0 }).map((_, idx) => {
           const setIdx = idx + 1;
           const existing = bdLogs.find((sl) => sl.set_index === setIdx);
@@ -3905,7 +4037,7 @@ export default function WorkoutViewerScreen() {
                 existing,
                 `Edit Top Set ${setIdx}`,
                 setIdx === topLatestLoggedIdx &&
-                  !backdownsForThisTop.some((bd) => (bd.set_logs || []).length > 0),
+                  !backdownsForThisTop.some((bd) => loggedSetIndexCount(bd.set_logs || []) > 0),
               )
             : {}),
           onLogSet: isNext && canLog
@@ -3922,8 +4054,8 @@ export default function WorkoutViewerScreen() {
       backdownsForThisTop.forEach((bd) => {
         const bdLogs = bd.set_logs || [];
         const bdTotal = bd.sets || 0;
-        const bdNextIdx = bdLogs.length + 1;
-        const bdCompletedIndexes = bdLogs.map((log) => log.set_index || 0).filter(Boolean);
+        const bdNextIdx = nextMissingSetIndex(bdLogs, bdTotal) || (loggedSetIndexCount(bdLogs) + 1);
+        const bdCompletedIndexes = uniqueLoggedSetIndexes(bdLogs);
         const targetLine = formatTargetRange(bd.target_low_kg, bd.target_high_kg, unit);
         const prescriptionLine = compactSchemeText(bd, bdTotal);
 
@@ -3981,14 +4113,15 @@ export default function WorkoutViewerScreen() {
     }
 
     if (isBackdown && !hasParent && totalSets > 0) {
-      const completedIndexes = logs.map((log) => log.set_index || 0).filter(Boolean);
+      const completedIndexes = uniqueLoggedSetIndexes(logs);
       Array.from({ length: totalSets }).forEach((_, idx) => {
         const setIdx = idx + 1;
         const existing = logs.find((sl) => sl.set_index === setIdx);
         const previousLog = [...logs]
           .filter((sl) => (sl.set_index || 0) < setIdx)
           .sort((a, b) => (b.set_index || 0) - (a.set_index || 0))[0] || null;
-        const isNext = !existing && setIdx === nextIdx;
+        const fallbackNextIdx = nextMissingSetIndex(logs, totalSets) || nextIdx;
+        const isNext = !existing && setIdx === fallbackNextIdx;
         const targetLine = formatTargetRange(core.target_low_kg, core.target_high_kg, unit);
         const prescriptionLine = compactSchemeText(core, totalSets);
 
@@ -4112,7 +4245,7 @@ export default function WorkoutViewerScreen() {
           targetLine: accessoryTargetLine(item),
           prescriptionLine: (() => {
             const lookback = formatLookbackLine(getLookbackBest(item), unit);
-            return lookback || item.notes || null;
+            return lookback || null;
           })(),
           recentContext: formatLookbackLine(getLookbackBest(item), unit),
           rail: railForSets(totalSets, nextIndex, completedIndexes),
@@ -4164,7 +4297,8 @@ export default function WorkoutViewerScreen() {
         expanded={accessoryIsExpanded}
         detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
         meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
-        top={accessoryIsComplete ? accessorySummary.top : [it.notes, lookbackLine].filter(Boolean).join(' · ')}
+        top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
+        movementNote={it.notes}
         auxAction={
           swapLabel ? (
             <TouchableOpacity
@@ -4233,6 +4367,18 @@ export default function WorkoutViewerScreen() {
           onEditWorkout={handleEditWorkout}
           onBeginWorkout={handleBeginWorkoutPress}
         />
+        {!!(workout.programming_notes || '').trim() && (
+          <View style={styles.coachFeedbackCard}>
+            <Text style={styles.coachFeedbackEyebrow}>Session Notes</Text>
+            <Text style={styles.coachFeedbackText}>{workout.programming_notes}</Text>
+          </View>
+        )}
+        {!!(workout.post_session_coach_feedback || '').trim() && (
+          <View style={styles.coachFeedbackCard}>
+            <Text style={styles.coachFeedbackEyebrow}>Coach Feedback</Text>
+            <Text style={styles.coachFeedbackText}>{workout.post_session_coach_feedback}</Text>
+          </View>
+        )}
         {/* Inline error banner (below header) */}
         {!!error && (
           <View style={styles.errorBanner}>
@@ -4325,7 +4471,11 @@ export default function WorkoutViewerScreen() {
               ? topTotalSets + topBackdownTotal
               : totalSets;
             const coreCompletionLogs = isTop ? [...topLogs, ...topBackdownLogs] : logs;
-            const coreIsComplete = coreCompletionTotal > 0 && coreCompletionLogs.length >= coreCompletionTotal;
+            const coreCompletionLoggedCount = isTop
+              ? loggedSetIndexCount(topLogs) +
+                backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
+              : loggedSetIndexCount(logs);
+            const coreIsComplete = coreCompletionTotal > 0 && coreCompletionLoggedCount >= coreCompletionTotal;
             const coreIsExpanded = !!expandedCompletedMovements[coreDetailKey];
             const coreSummary = completedSetSummary(coreCompletionLogs, coreCompletionTotal, unit, 'rpe');
             const variantLabel =
@@ -4361,7 +4511,7 @@ export default function WorkoutViewerScreen() {
             );
             const detailsKey = `core-detail:${core.id}`;
             const detailsExpanded = !!expandedCoreDetails[detailsKey];
-            const hasAnyLogs = coreCompletionLogs.length > 0;
+            const hasAnyLogs = coreCompletionLoggedCount > 0;
             const presentationState = coreIsComplete
               ? 'complete'
               : hasAnyLogs
@@ -4395,8 +4545,9 @@ export default function WorkoutViewerScreen() {
                 loggerFocus={detailsExpanded ? movementPresentation.loggerFocus : null}
                 expanded={detailsExpanded}
                 detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
-                meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLogs.length}/${coreCompletionTotal || totalSets || 0} sets logged`}
+                meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
                 top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit)}
+                movementNote={core.notes}
                 onOpen={() => toggleMovementCard(`core:${core.id}`)}
               />
             );
@@ -5601,6 +5752,31 @@ const styles = StyleSheet.create({
     color: '#C4B5FD',
     fontSize: 12,
     fontWeight: '900',
+  },
+  coachFeedbackCard: {
+    marginHorizontal: 14,
+    marginTop: 12,
+    marginBottom: 2,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(167,203,181,0.16)',
+    backgroundColor: 'rgba(18,32,28,0.58)',
+  },
+  coachFeedbackEyebrow: {
+    color: '#A7CBB5',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  coachFeedbackText: {
+    color: '#E2E8F0',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
   },
   cardMeta: {
     color: '#94A3B8',
