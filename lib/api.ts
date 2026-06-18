@@ -409,6 +409,8 @@ export type ApiLoginResponse = {
   has_linked_athlete?: boolean;
   athlete_id?: number | null;
   token?: string;
+  billing_required?: boolean;
+  billing_url?: string;
 };
 
 // ------- LOGIN --------------------------------------------------------------

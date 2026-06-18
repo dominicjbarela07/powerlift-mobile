@@ -99,7 +99,7 @@ export default function LoginScreen() {
   const openSignup = () =>
     openInfoPage(SIGNUP_URL, 'Unable to open signup page. Please try again.', 'Signup');
 
-  const completeLogin = (res: ApiLoginResponse, fallbackEmail?: string) => {
+  const completeLogin = async (res: ApiLoginResponse, fallbackEmail?: string) => {
     if (!res.token) {
       setError('Login succeeded but no auth token was returned. Cannot continue.');
       return;
@@ -117,7 +117,13 @@ export default function LoginScreen() {
 
     login({ user: authUser, token: res.token });
 
-    if (!authUser.is_coach && authUser.has_linked_athlete && authUser.athlete_id) {
+    if (authUser.is_coach && res.billing_required && res.billing_url) {
+      await openInfoPage(
+        res.billing_url,
+        'Your account is ready. Open billing activation from the web app to continue.',
+        'Billing activation'
+      );
+    } else if (!authUser.is_coach && authUser.has_linked_athlete && authUser.athlete_id) {
       router.replace({
         pathname: '/athlete-dashboard',
         params: { athlete_id: String(authUser.athlete_id) },
@@ -129,7 +135,7 @@ export default function LoginScreen() {
     }
   };
 
-  const handleOAuthResponse = (provider: OAuthProvider, idToken: string, res: ApiLoginResponse) => {
+  const handleOAuthResponse = async (provider: OAuthProvider, idToken: string, res: ApiLoginResponse) => {
     if (res.needs_account_setup) {
       setPendingOAuth({ provider, idToken, email: res.email });
       setSetupRole(null);
@@ -145,7 +151,7 @@ export default function LoginScreen() {
     }
 
     setPendingOAuth(null);
-    completeLogin(res, res.email);
+    await completeLogin(res, res.email);
   };
 
   const handleGoogleSignIn = async () => {
@@ -172,7 +178,7 @@ export default function LoginScreen() {
         return;
       }
       const res = await mobileOAuthRequest('google', idToken);
-      handleOAuthResponse('google', idToken, res);
+      await handleOAuthResponse('google', idToken, res);
     } catch (err) {
       console.error('Google sign-in failed', err);
       setError('Google sign-in failed. Please try again.');
@@ -206,7 +212,7 @@ export default function LoginScreen() {
         credential.fullName?.familyName,
       ].filter(Boolean).join(' ');
       const res = await mobileOAuthRequest('apple', idToken, { name: name || undefined });
-      handleOAuthResponse('apple', idToken, res);
+      await handleOAuthResponse('apple', idToken, res);
     } catch (err: any) {
       if (err?.code !== 'ERR_REQUEST_CANCELED') {
         console.error('Apple sign-in failed', err);
@@ -241,7 +247,7 @@ export default function LoginScreen() {
         return;
       }
       setPendingOAuth(null);
-      completeLogin(res, pendingOAuth.email);
+      await completeLogin(res, pendingOAuth.email);
     } finally {
       setOauthLoading(null);
     }
@@ -265,7 +271,7 @@ export default function LoginScreen() {
         return;
         }
 
-        completeLogin(res, email.trim());
+        await completeLogin(res, email.trim());
     } catch (e) {
         console.log('Login error', e);
         setError('Network error. Please try again.');
