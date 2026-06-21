@@ -402,10 +402,16 @@ export type ApiLoginResponse = {
 
   email?: string;
   email_verified?: boolean;
+  verification_required?: boolean;
+  verification_url?: string | null;
   provider?: 'google' | 'apple' | string;
   user_name?: string;
   role?: string;
   is_coach?: boolean;
+  workspace_mode?: 'team' | 'individual';
+  is_individual_workspace?: boolean;
+  is_self_coached?: boolean;
+  self_athlete_id?: number | null;
   has_linked_athlete?: boolean;
   athlete_id?: number | null;
   token?: string;
@@ -444,13 +450,50 @@ export async function loginRequest(email: string, password: string): Promise<Api
   }
 }
 
+export async function registerMobileRequest(options: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+  role: 'coach' | 'athlete' | 'self_coach';
+  access_code?: string;
+}): Promise<ApiLoginResponse> {
+  try {
+    const r = await fetchJson<any>(`/auth/register-mobile`, {
+      method: 'POST',
+      auth: false,
+      body: options as any,
+      credentials: 'include',
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        ...json,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return {
+      ok: true,
+      ...json,
+    };
+  } catch (err) {
+    console.error('Mobile register error', err);
+    return { ok: false, error: (err as any)?.message || 'Network error' };
+  }
+}
+
 export async function mobileOAuthRequest(
   provider: 'google' | 'apple',
   idToken: string,
   options: {
-    role?: 'coach' | 'athlete';
+    role?: 'coach' | 'athlete' | 'self_coach';
     access_code?: string;
-    name?: string;
+    first_name?: string;
+    last_name?: string;
     nonce?: string;
   } = {}
 ): Promise<ApiLoginResponse> {

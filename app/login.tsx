@@ -16,16 +16,16 @@ import {
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WEB_BASE, loginRequest, mobileOAuthRequest, type ApiLoginResponse } from '@/lib/api';
+import { WEB_BASE, loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 const AUTH_WEB_BASE = WEB_BASE.replace(/\/$/, '');
 const PASSWORD_RESET_URL = `${AUTH_WEB_BASE}/auth/reset_request`;
-const SIGNUP_URL = `${AUTH_WEB_BASE}/auth/register`;
 
 type OAuthProvider = 'google' | 'apple';
-type AccountRole = 'coach' | 'athlete';
+type AccountRole = 'coach' | 'athlete' | 'self_coach';
+type AuthMode = 'login' | 'signup';
 
 type PendingOAuthSetup = {
   provider: OAuthProvider;
@@ -46,12 +46,19 @@ export default function LoginScreen() {
   const { login } = useAuth(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
   const [pendingOAuth, setPendingOAuth] = useState<PendingOAuthSetup | null>(null);
+  const [signupRole, setSignupRole] = useState<AccountRole>('self_coach');
   const [setupRole, setSetupRole] = useState<AccountRole | null>(null);
-  const [setupName, setSetupName] = useState('');
+  const [setupFirstName, setSetupFirstName] = useState('');
+  const [setupLastName, setSetupLastName] = useState('');
   const [setupAccessCode, setSetupAccessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [ssoButtonsModule, setSsoButtonsModule] = useState<{ Component: ComponentType<AuthSsoButtonsProps> } | null>(null);
@@ -91,9 +98,6 @@ export default function LoginScreen() {
     }
   };
 
-  const openSignup = () =>
-    openInfoPage(SIGNUP_URL, 'Unable to open signup page. Please try again.', 'Signup');
-
   const completeLogin = async (res: ApiLoginResponse, fallbackEmail?: string) => {
     if (!res.token) {
       setError('Login succeeded but no auth token was returned. Cannot continue.');
@@ -106,18 +110,32 @@ export default function LoginScreen() {
       role: (res.role as 'coach' | 'athlete') ||
               (res.is_coach ? 'coach' : 'athlete'),
       is_coach: !!(res.is_coach || res.role === 'coach'),
+      workspace_mode: res.workspace_mode,
+      is_individual_workspace: res.is_individual_workspace,
+      is_self_coached: res.is_self_coached,
+      self_athlete_id: res.self_athlete_id ?? null,
+      email_verified: res.email_verified !== false,
+      verification_required: res.verification_required === true,
+      verification_url: res.verification_url ?? null,
+      billing_required: res.billing_required === true,
+      billing_url: res.billing_url ?? null,
       has_linked_athlete: !!res.has_linked_athlete,
       athlete_id: res.athlete_id ?? null,
     };
+    const isIndividual =
+      authUser.is_coach &&
+      (authUser.workspace_mode === 'individual' ||
+        authUser.is_individual_workspace === true ||
+        authUser.is_self_coached === true);
 
-    login({ user: authUser, token: res.token });
+    await login({ user: authUser, token: res.token });
 
-    if (authUser.is_coach && res.billing_required && res.billing_url) {
-      await openInfoPage(
-        res.billing_url,
-        'Your account is ready. Open billing activation from the web app to continue.',
-        'Billing activation'
-      );
+    if (authUser.verification_required && authUser.email_verified === false) {
+      router.replace('/');
+    } else if (authUser.is_coach && res.billing_required && res.billing_url) {
+      router.replace('/');
+    } else if (isIndividual) {
+      router.replace('/(tabs)/athlete-dashboard');
     } else if (!authUser.is_coach && authUser.has_linked_athlete && authUser.athlete_id) {
       router.replace({
         pathname: '/athlete-dashboard',
@@ -134,7 +152,8 @@ export default function LoginScreen() {
     if (res.needs_account_setup) {
       setPendingOAuth({ provider, idToken, email: res.email });
       setSetupRole(null);
-      setSetupName('');
+      setSetupFirstName('');
+      setSetupLastName('');
       setSetupAccessCode('');
       setError(res.error || 'Finish account setup to continue.');
       return;
@@ -152,7 +171,7 @@ export default function LoginScreen() {
   const finishOAuthSetup = async () => {
     if (!pendingOAuth) return;
     if (!setupRole) {
-      setError('Choose Athlete or Coach to finish setup.');
+      setError('Choose Athlete, Coach, or Self-Coach to finish setup.');
       return;
     }
     if (setupRole === 'coach' && !setupAccessCode.trim()) {
@@ -165,7 +184,8 @@ export default function LoginScreen() {
     try {
       const res = await mobileOAuthRequest(pendingOAuth.provider, pendingOAuth.idToken, {
         role: setupRole,
-        name: setupName.trim() || undefined,
+        first_name: setupFirstName.trim() || undefined,
+        last_name: setupLastName.trim() || undefined,
         access_code: setupAccessCode.trim() || undefined,
       });
       if (!res.ok) {
@@ -206,7 +226,83 @@ export default function LoginScreen() {
     }
     };
 
+  useEffect(() => {
+    if (authMode === 'signup' && error) {
+      setError(null);
+    }
+  }, [authMode, confirmPassword, email, firstName, lastName, password, setupAccessCode, signupRole]);
+
+  const handleSignup = async () => {
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword) {
+      setError('First name, last name, email, password, and confirmation are required.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (signupRole === 'coach' && !setupAccessCode.trim()) {
+      setError('Founder Beta Access Code is required for coach accounts.');
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await registerMobileRequest({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        password,
+        confirm_password: confirmPassword,
+        role: signupRole,
+        access_code: setupAccessCode.trim() || undefined,
+      });
+
+      if (!res.ok) {
+        setError(res.error || 'Could not create account.');
+        return;
+      }
+
+      await completeLogin(res, email.trim());
+    } catch (e) {
+      console.log('Signup error', e);
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const SsoButtons = ssoButtonsModule?.Component;
+  const passwordStarted = password.length > 0 || confirmPassword.length > 0;
+  const passwordTooShort = password.length > 0 && password.length < 8;
+  const passwordsMatch = password.length >= 8 && confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch = password.length >= 8 && confirmPassword.length > 0 && password !== confirmPassword;
+  const signupPasswordMessage = passwordTooShort
+    ? 'Password must be at least 8 characters.'
+    : passwordsMismatch
+    ? 'Passwords do not match.'
+    : passwordsMatch
+    ? 'Passwords match.'
+    : passwordStarted
+    ? 'Confirm your password to continue.'
+    : '';
+  const canSubmitSignup =
+    authMode !== 'signup' ||
+    (
+      firstName.trim().length > 0 &&
+      lastName.trim().length > 0 &&
+      email.trim().length > 0 &&
+      password.length >= 8 &&
+      confirmPassword.length > 0 &&
+      password === confirmPassword &&
+      (signupRole !== 'coach' || setupAccessCode.trim().length > 0)
+    );
 
   return (
     <View style={styles.screen}>
@@ -236,11 +332,11 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.header}>
-              <Text style={styles.title}>Welcome back</Text>
+              <Text style={styles.title}>{authMode === 'signup' ? 'Create account' : 'Welcome back'}</Text>
             </View>
 
             <View style={styles.form}>
-              {SsoButtons ? (
+              {authMode === 'login' && SsoButtons ? (
                 <>
                   <SsoButtons
                     disabled={loading || !!pendingOAuth}
@@ -253,6 +349,74 @@ export default function LoginScreen() {
                     <View style={styles.emailDividerLine} />
                     <Text style={styles.emailDividerText}>or continue with email</Text>
                     <View style={styles.emailDividerLine} />
+                  </View>
+                </>
+              ) : null}
+
+              {authMode === 'signup' ? (
+                <>
+                  <View style={styles.setupPanel}>
+                    <Text style={styles.setupTitle}>Choose account type</Text>
+                    <View style={styles.roleGrid}>
+                      <Pressable
+                        style={[styles.roleOption, signupRole === 'athlete' && styles.roleOptionActive]}
+                        onPress={() => setSignupRole('athlete')}
+                      >
+                        <Text style={[styles.roleOptionText, signupRole === 'athlete' && styles.roleOptionTextActive]}>
+                          Athlete
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        style={[styles.roleOption, signupRole === 'coach' && styles.roleOptionActive]}
+                        onPress={() => setSignupRole('coach')}
+                      >
+                        <Text style={[styles.roleOptionText, signupRole === 'coach' && styles.roleOptionTextActive]}>
+                          Coach
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        style={[styles.roleOption, signupRole === 'self_coach' && styles.roleOptionActive]}
+                        onPress={() => setSignupRole('self_coach')}
+                      >
+                        <Text style={[styles.roleOptionText, signupRole === 'self_coach' && styles.roleOptionTextActive]}>
+                          Self-Coach
+                        </Text>
+                      </Pressable>
+                    </View>
+                    <Text style={styles.setupHint}>
+                      {signupRole === 'self_coach'
+                        ? 'Self-Coach creates an Individual workspace for your own training.'
+                        : signupRole === 'coach'
+                        ? 'Coach accounts require a Founder Beta Access Code.'
+                        : 'Athlete accounts require a pending coach invite for this email.'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.nameGrid}>
+                    <View style={[styles.field, styles.nameGridItem]}>
+                      <Text style={styles.label}>First Name</Text>
+                      <TextInput
+                        style={styles.input}
+                        autoCapitalize="words"
+                        textContentType="givenName"
+                        placeholder="Alex"
+                        placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                        value={firstName}
+                        onChangeText={setFirstName}
+                      />
+                    </View>
+                    <View style={[styles.field, styles.nameGridItem]}>
+                      <Text style={styles.label}>Last Name</Text>
+                      <TextInput
+                        style={styles.input}
+                        autoCapitalize="words"
+                        textContentType="familyName"
+                        placeholder="Carter"
+                        placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                        value={lastName}
+                        onChangeText={setLastName}
+                      />
+                    </View>
                   </View>
                 </>
               ) : null}
@@ -271,6 +435,20 @@ export default function LoginScreen() {
                   onChangeText={setEmail}
                 />
               </View>
+
+              {authMode === 'signup' && signupRole === 'coach' ? (
+                <View style={styles.field}>
+                  <Text style={styles.label}>Founder Beta Access Code</Text>
+                  <TextInput
+                    style={styles.input}
+                    autoCapitalize="characters"
+                    placeholder="Access code"
+                    placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                    value={setupAccessCode}
+                    onChangeText={setSetupAccessCode}
+                  />
+                </View>
+              ) : null}
 
               <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
@@ -296,6 +474,52 @@ export default function LoginScreen() {
                 </View>
               </View>
 
+              {authMode === 'signup' ? (
+                <View style={styles.field}>
+                  <Text style={styles.label}>Confirm Password</Text>
+                  <View style={styles.passwordRow}>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput]}
+                      secureTextEntry={!showConfirmPassword}
+                      textContentType="password"
+                      placeholder="Confirm password"
+                      placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                    />
+                    <Pressable
+                      style={styles.eyeToggle}
+                      onPress={() => setShowConfirmPassword(v => !v)}
+                      hitSlop={10}
+                    >
+                      <Text style={styles.eyeText}>
+                        {showConfirmPassword ? 'Hide' : 'Show'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : null}
+
+              {authMode === 'signup' && signupPasswordMessage ? (
+                <View
+                  style={[
+                    styles.passwordCheck,
+                    passwordsMatch && styles.passwordCheckOk,
+                    (passwordTooShort || passwordsMismatch) && styles.passwordCheckError,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.passwordCheckText,
+                      passwordsMatch && styles.passwordCheckTextOk,
+                      (passwordTooShort || passwordsMismatch) && styles.passwordCheckTextError,
+                    ]}
+                  >
+                    {signupPasswordMessage}
+                  </Text>
+                </View>
+              ) : null}
+
               {error ? (
                 <View style={styles.errorBox}>
                   <Text style={styles.errorText}>{error}</Text>
@@ -307,18 +531,19 @@ export default function LoginScreen() {
                   styles.btnPrimary,
                   pressed && !loading && styles.btnPrimaryPressed,
                   loading && styles.btnPrimaryLoading,
+                  authMode === 'signup' && !canSubmitSignup && styles.btnPrimaryDisabled,
                 ]}
-                onPress={handleLogin}
-                disabled={loading}
+                onPress={authMode === 'signup' ? handleSignup : handleLogin}
+                disabled={loading || (authMode === 'signup' && !canSubmitSignup)}
               >
                 {loading ? (
                   <ActivityIndicator color="#F5F3FF" />
                 ) : (
-                  <Text style={styles.btnPrimaryText}>Sign in</Text>
+                  <Text style={styles.btnPrimaryText}>{authMode === 'signup' ? 'Create Account' : 'Sign in'}</Text>
                 )}
               </Pressable>
 
-              {pendingOAuth ? (
+              {authMode === 'login' && pendingOAuth ? (
                 <View style={styles.setupPanel}>
                   <Text style={styles.setupTitle}>Finish account setup</Text>
                   <Text style={styles.setupCopy}>
@@ -341,15 +566,41 @@ export default function LoginScreen() {
                         Coach
                       </Text>
                     </Pressable>
+                    <Pressable
+                      style={[styles.roleOption, setupRole === 'self_coach' && styles.roleOptionActive]}
+                      onPress={() => setSetupRole('self_coach')}
+                    >
+                      <Text style={[styles.roleOptionText, setupRole === 'self_coach' && styles.roleOptionTextActive]}>
+                        Self-Coach
+                      </Text>
+                    </Pressable>
                   </View>
-                  <TextInput
-                    style={styles.input}
-                    autoCapitalize="words"
-                    placeholder="Name"
-                    placeholderTextColor="rgba(184, 172, 161, 0.48)"
-                    value={setupName}
-                    onChangeText={setSetupName}
-                  />
+                  <View style={styles.nameGrid}>
+                    <View style={[styles.field, styles.nameGridItem]}>
+                      <Text style={styles.label}>First Name</Text>
+                      <TextInput
+                        style={styles.input}
+                        autoCapitalize="words"
+                        textContentType="givenName"
+                        placeholder="Alex"
+                        placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                        value={setupFirstName}
+                        onChangeText={setSetupFirstName}
+                      />
+                    </View>
+                    <View style={[styles.field, styles.nameGridItem]}>
+                      <Text style={styles.label}>Last Name</Text>
+                      <TextInput
+                        style={styles.input}
+                        autoCapitalize="words"
+                        textContentType="familyName"
+                        placeholder="Carter"
+                        placeholderTextColor="rgba(184, 172, 161, 0.48)"
+                        value={setupLastName}
+                        onChangeText={setSetupLastName}
+                      />
+                    </View>
+                  </View>
                   {setupRole === 'coach' ? (
                     <TextInput
                       style={styles.input}
@@ -362,6 +613,10 @@ export default function LoginScreen() {
                   ) : setupRole === 'athlete' ? (
                     <Text style={styles.setupHint}>
                       Athlete account creation requires a pending coach invite for this email.
+                    </Text>
+                  ) : setupRole === 'self_coach' ? (
+                    <Text style={styles.setupHint}>
+                      Self-Coach creates an Individual workspace for your own training.
                     </Text>
                   ) : null}
                   <Pressable
@@ -392,9 +647,13 @@ export default function LoginScreen() {
                 <View style={styles.linkDivider} />
                 <Pressable
                   style={styles.linkButton}
-                  onPress={openSignup}
+                  onPress={() => {
+                    setError(null);
+                    setPendingOAuth(null);
+                    setAuthMode(authMode === 'signup' ? 'login' : 'signup');
+                  }}
                 >
-                  <Text style={styles.linkTextStrong}>Sign up</Text>
+                  <Text style={styles.linkTextStrong}>{authMode === 'signup' ? 'Sign in' : 'Sign up'}</Text>
                 </Pressable>
               </View>
             </View>
@@ -471,6 +730,13 @@ const styles = StyleSheet.create({
   field: {
     gap: 7,
   },
+  nameGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  nameGridItem: {
+    flex: 1,
+  },
   label: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
     fontSize: 11,
@@ -506,6 +772,9 @@ const styles = StyleSheet.create({
   },
   btnPrimaryLoading: {
     opacity: 0.72,
+  },
+  btnPrimaryDisabled: {
+    opacity: 0.44,
   },
   btnPrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
@@ -620,6 +889,34 @@ const styles = StyleSheet.create({
     color: '#FCA5A5',
     fontSize: 13,
     lineHeight: 18,
+  },
+  passwordCheck: {
+    marginTop: -6,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: 'rgba(196, 181, 253, 0.45)',
+    backgroundColor: 'rgba(124, 58, 237, 0.08)',
+  },
+  passwordCheckOk: {
+    borderLeftColor: '#9ED9B2',
+    backgroundColor: 'rgba(158, 217, 178, 0.08)',
+  },
+  passwordCheckError: {
+    borderLeftColor: '#E88989',
+    backgroundColor: 'rgba(232, 137, 137, 0.08)',
+  },
+  passwordCheckText: {
+    fontFamily: SLFontFamilies.sansMedium,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#C4B5FD',
+  },
+  passwordCheckTextOk: {
+    color: '#9ED9B2',
+  },
+  passwordCheckTextError: {
+    color: '#FCA5A5',
   },
   passwordRow: {
     position: 'relative',

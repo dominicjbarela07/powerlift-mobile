@@ -154,11 +154,10 @@ export default function AuthSsoButtons({
         onError('Apple did not return an identity token. Please try again.');
         return;
       }
-      const name = [
-        credential.fullName?.givenName,
-        credential.fullName?.familyName,
-      ].filter(Boolean).join(' ');
-      const res = await mobileOAuthRequest('apple', idToken, { name: name || undefined });
+      const res = await mobileOAuthRequest('apple', idToken, {
+        first_name: credential.fullName?.givenName || undefined,
+        last_name: credential.fullName?.familyName || undefined,
+      });
       await onOAuthResult('apple', idToken, res);
     } catch (err: any) {
       if (err?.code !== 'ERR_REQUEST_CANCELED') {

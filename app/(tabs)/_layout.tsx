@@ -23,12 +23,14 @@ function FilteredTabBar({
   descriptors,
   navigation,
   isCoach,
+  isIndividual,
   viewMode,
   hasMeetDate,
   hasMessageNotifications,
   onMessagesTabPress,
 }: BottomTabBarProps & {
   isCoach: boolean;
+  isIndividual: boolean;
   viewMode: MobileViewMode;
   hasMeetDate: boolean;
   hasMessageNotifications: boolean;
@@ -36,7 +38,9 @@ function FilteredTabBar({
 }) {
   const router = useRouter();
   const allowedNames =
-    isCoach && viewMode === 'coach'
+    isIndividual
+      ? ['athlete-dashboard', 'workout/index', 'athlete-calendar', 'athlete-progression', 'reflection']
+      : isCoach && viewMode === 'coach'
       ? ['coach-dashboard', 'coach-roster', 'coach-calendar', 'coach-videos', 'messages/index']
       : [
           'athlete-dashboard',
@@ -87,6 +91,7 @@ function FilteredTabBar({
     'check-ins': { label: 'Check-Ins', icon: 'clipboard-outline' },
     'video-archive': { label: 'Video Archive', icon: 'videocam-outline' },
     'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },
+    settings: { label: 'Settings', icon: 'settings-outline' },
   };
 
   return (
@@ -165,18 +170,38 @@ export default function TabsLayout() {
   const unreadPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
-  const viewMode: MobileViewMode = isCoach ? mobileViewMode : 'athlete';
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+  const accessBlocked =
+    !!user &&
+    (
+      (user.verification_required === true && user.email_verified === false) ||
+      (user.is_coach === true && user.billing_required === true)
+    );
+  const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
 
   useEffect(() => {
     if (!user) {
       router.replace('/login');
+    } else if (accessBlocked && !pathname.includes('/settings')) {
+      router.replace('/');
     }
-  }, [router, user]);
+  }, [accessBlocked, pathname, router, user]);
 
   useEffect(() => {
     let mounted = true;
     setMobileViewModeLoaded(false);
+
+    if (isIndividual) {
+      setMobileViewMode('coach');
+      setMobileViewModeLoaded(true);
+      return () => {
+        mounted = false;
+      };
+    }
 
     getMobileViewMode(isCoach).then((mode) => {
       if (mounted) {
@@ -188,20 +213,36 @@ export default function TabsLayout() {
     return () => {
       mounted = false;
     };
-  }, [isCoach, user?.email]);
+  }, [isCoach, isIndividual, user?.email]);
 
   useEffect(() => {
-    if (!isCoach) return undefined;
+    if (!isCoach || isIndividual) return undefined;
 
     return subscribeMobileViewModeChanged((mode) => {
       setMobileViewMode(mode);
       setMobileViewModeLoaded(true);
     });
-  }, [isCoach]);
+  }, [isCoach, isIndividual]);
 
   useEffect(() => {
     if (!isCoach || !mobileViewModeLoaded) return;
-    if (pathname.includes('/settings') || pathname.includes('/messages')) return;
+    if (pathname.includes('/settings')) return;
+
+    if (isIndividual) {
+      const isTeamFacingPath =
+        pathname.includes('/coach-dashboard') ||
+        pathname.includes('/coach-roster') ||
+        pathname.includes('/check-ins') ||
+        pathname.includes('/check-in/') ||
+        pathname.includes('/messages');
+
+      if (isTeamFacingPath) {
+        router.replace('/(tabs)/athlete-dashboard');
+      }
+      return;
+    }
+
+    if (pathname.includes('/messages')) return;
 
     const isAthleteFacingPath =
       pathname.includes('/athlete-dashboard') ||
@@ -224,11 +265,12 @@ export default function TabsLayout() {
     } else if (viewMode === 'athlete' && isCoachFacingPath) {
       router.replace('/(tabs)/athlete-dashboard');
     }
-  }, [isCoach, mobileViewModeLoaded, pathname, router, viewMode]);
+  }, [isCoach, isIndividual, mobileViewModeLoaded, pathname, router, viewMode]);
 
   const refreshMessageNotifications = useCallback(async () => {
-    if (!user || unreadPollingRef.current) {
+    if (!user || isIndividual || unreadPollingRef.current) {
       if (!user) setHasMessageNotifications(false);
+      if (isIndividual) setHasMessageNotifications(false);
       return;
     }
 
@@ -243,7 +285,7 @@ export default function TabsLayout() {
     } finally {
       unreadPollingRef.current = false;
     }
-  }, [user]);
+  }, [isIndividual, user]);
 
   useEffect(() => {
     refreshMessageNotifications();
@@ -270,6 +312,10 @@ export default function TabsLayout() {
     return null;
   }
 
+  if (accessBlocked && !pathname.includes('/settings')) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SLAtmosphere />
@@ -289,7 +335,9 @@ export default function TabsLayout() {
 
                 <TouchableOpacity
                   onPress={() => {
-                    if (isCoach && viewMode === 'coach') {
+                    if (isIndividual) {
+                      router.replace('/(tabs)/athlete-dashboard');
+                    } else if (isCoach && viewMode === 'coach') {
                       router.replace('/coach-dashboard');
                     } else {
                       router.replace('/(tabs)/athlete-dashboard');
@@ -303,24 +351,35 @@ export default function TabsLayout() {
                   />
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={() => {
-                    if (viewMode === 'athlete') {
-                      refreshMessageNotifications();
-                      router.push('/(tabs)/messages');
-                    }
-                  }}
-                  style={styles.headerSideButton}
-                >
-                  <Ionicons
-                    name={viewMode === 'athlete' ? 'chatbubbles-outline' : 'notifications-outline'}
-                    size={viewMode === 'athlete' ? 21 : 20}
-                    color="#E5E7EB"
-                  />
-                  {viewMode === 'athlete' && hasMessageNotifications ? (
-                    <View style={styles.messageNotificationDot} />
-                  ) : null}
-                </TouchableOpacity>
+                {isIndividual ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push('/create-workout');
+                    }}
+                    style={styles.headerSideButton}
+                  >
+                    <Ionicons name="add-circle-outline" size={23} color="#E5E7EB" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (viewMode === 'athlete') {
+                        refreshMessageNotifications();
+                        router.push('/(tabs)/messages');
+                      }
+                    }}
+                    style={styles.headerSideButton}
+                  >
+                    <Ionicons
+                      name={viewMode === 'athlete' ? 'chatbubbles-outline' : 'notifications-outline'}
+                      size={viewMode === 'athlete' ? 21 : 20}
+                      color="#E5E7EB"
+                    />
+                    {viewMode === 'athlete' && hasMessageNotifications ? (
+                      <View style={styles.messageNotificationDot} />
+                    ) : null}
+                  </TouchableOpacity>
+                )}
               </View>
             </ThemedView>
           ),
@@ -332,6 +391,7 @@ export default function TabsLayout() {
           <FilteredTabBar
             {...props}
             isCoach={isCoach}
+            isIndividual={isIndividual}
             viewMode={viewMode}
             hasMeetDate={hasMeetDate}
             hasMessageNotifications={hasMessageNotifications}
@@ -343,7 +403,7 @@ export default function TabsLayout() {
           name="coach-dashboard"
           options={{
             title: 'Today',
-            href: isCoach && viewMode === 'coach' ? '/coach-dashboard' : null,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-dashboard' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'home' : 'home-outline'}
@@ -358,7 +418,7 @@ export default function TabsLayout() {
           name="athlete-dashboard"
           options={{
             title: 'Today',
-            href: viewMode === 'athlete' ? '/(tabs)/athlete-dashboard' : null,
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/athlete-dashboard' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'home' : 'home-outline'}
@@ -373,7 +433,7 @@ export default function TabsLayout() {
           name="coach-roster"
           options={{
             title: 'Roster',
-            href: isCoach && viewMode === 'coach' ? '/coach-roster' : null,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-roster' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'people' : 'people-outline'}
@@ -418,7 +478,7 @@ export default function TabsLayout() {
           name="athlete-calendar"
           options={{
             title: 'Calendar',
-            href: viewMode === 'athlete' ? '/(tabs)/athlete-calendar' : null,
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/athlete-calendar' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'calendar' : 'calendar-outline'}
@@ -433,7 +493,7 @@ export default function TabsLayout() {
           name="athlete-progression"
           options={{
             title: 'Progression',
-            href: viewMode === 'athlete' ? '/(tabs)/athlete-progression' : null,
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/athlete-progression' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'trending-up' : 'trending-up-outline'}
@@ -509,7 +569,7 @@ export default function TabsLayout() {
           name="reflection"
           options={{
             title: 'Reflection',
-            href: viewMode === 'athlete' ? '/(tabs)/reflection' : null,
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/reflection' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'sparkles' : 'sparkles-outline'}
@@ -579,7 +639,7 @@ export default function TabsLayout() {
           name="messages/index"
           options={{
             title: 'Messages',
-            href: isCoach && viewMode === 'coach' ? '/(tabs)/messages' : null,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/(tabs)/messages' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'chatbubbles' : 'chatbubbles-outline'}
@@ -618,6 +678,14 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            href: null,
           }}
         />
       </Tabs>
