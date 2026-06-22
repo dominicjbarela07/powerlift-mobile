@@ -123,7 +123,6 @@ export default function IndexGate() {
         title={isIndividual ? 'Activate Individual' : 'Activate membership'}
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
         actionLabel="Open activation"
-        actionUrl={user.billing_url}
         mode="billing"
       />
     );
