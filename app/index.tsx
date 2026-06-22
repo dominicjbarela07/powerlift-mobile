@@ -1,29 +1,67 @@
 // app/index.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { startMobileBillingCheckout } from '@/lib/api';
 
 function AccountAccessGate({
   title,
   body,
   actionLabel,
   actionUrl,
+  mode = 'link',
 }: {
   title: string;
   body: string;
   actionLabel: string;
   actionUrl?: string | null;
+  mode?: 'link' | 'billing';
 }) {
-  const { logout } = useAuth();
+  const { logout, refreshUser } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const openAction = async () => {
-    if (!actionUrl) return;
+    if (busy) return;
+    setError(null);
     try {
+      setBusy(true);
+      if (mode === 'billing') {
+        const checkout = await startMobileBillingCheckout();
+        if (!checkout.ok) {
+          setError(checkout.error || 'Unable to start activation.');
+          return;
+        }
+        if (checkout.active) {
+          await refreshUser();
+          return;
+        }
+        if (!checkout.checkout_url) {
+          setError('Stripe Checkout did not return a URL.');
+          return;
+        }
+        try {
+          const WebBrowser = await import('expo-web-browser');
+          await WebBrowser.openBrowserAsync(checkout.checkout_url, {
+            presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+          });
+        } catch (browserErr) {
+          console.warn('Stripe WebBrowser unavailable; falling back to Linking', browserErr);
+          await Linking.openURL(checkout.checkout_url);
+        }
+        await refreshUser();
+        return;
+      }
+
+      if (!actionUrl) return;
       await Linking.openURL(actionUrl);
     } catch (err) {
       console.warn('Could not open account action URL', err);
+      setError((err as any)?.message || 'Unable to open activation.');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -38,8 +76,13 @@ function AccountAccessGate({
         <Text style={styles.gateEyebrow}>Account Setup</Text>
         <Text style={styles.gateTitle}>{title}</Text>
         <Text style={styles.gateBody}>{body}</Text>
-        <Pressable style={styles.gatePrimary} onPress={openAction} disabled={!actionUrl}>
-          <Text style={styles.gatePrimaryText}>{actionLabel}</Text>
+        {error ? <Text style={styles.gateError}>{error}</Text> : null}
+        <Pressable
+          style={[styles.gatePrimary, busy ? styles.gatePrimaryDisabled : null]}
+          onPress={openAction}
+          disabled={busy || (mode === 'link' && !actionUrl)}
+        >
+          <Text style={styles.gatePrimaryText}>{busy ? 'Opening Stripe...' : actionLabel}</Text>
         </Pressable>
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
@@ -81,6 +124,7 @@ export default function IndexGate() {
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
         actionLabel="Open activation"
         actionUrl={user.billing_url}
+        mode="billing"
       />
     );
   }
@@ -150,10 +194,19 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(124, 58, 237, 0.58)',
   },
+  gatePrimaryDisabled: {
+    opacity: 0.62,
+  },
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     color: '#F5F3FF',
+  },
+  gateError: {
+    fontFamily: SLFontFamilies.sansSemiBold,
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#FCA5A5',
   },
   gateSecondary: {
     minHeight: 46,

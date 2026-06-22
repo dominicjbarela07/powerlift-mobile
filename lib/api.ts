@@ -419,6 +419,36 @@ export type ApiLoginResponse = {
   billing_url?: string;
 };
 
+export type MobileCheckoutResponse = {
+  ok: boolean;
+  error?: string;
+  active?: boolean;
+  checkout_url?: string | null;
+  billing_tier?: string;
+};
+
+export async function startMobileBillingCheckout(): Promise<MobileCheckoutResponse> {
+  try {
+    const r = await fetchJson<MobileCheckoutResponse>('/mobile/billing/checkout', {
+      method: 'POST',
+      auth: true,
+    });
+    const json = r.json || ({} as MobileCheckoutResponse);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        error: json.error || `Unable to start activation. (HTTP ${r.status})`,
+      };
+    }
+    return {
+      ...json,
+      ok: true,
+    };
+  } catch (err) {
+    return { ok: false, error: (err as any)?.message || 'Unable to start activation.' };
+  }
+}
+
 // ------- LOGIN --------------------------------------------------------------
 export async function loginRequest(email: string, password: string): Promise<ApiLoginResponse> {
   try {
