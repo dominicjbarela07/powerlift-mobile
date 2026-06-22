@@ -655,7 +655,7 @@ export default function SetVideoPlayerModal({
       setExportUrl(payload.export.download_url);
     }
     if (status === 'failed') {
-      setExportError(payload.export.error || payload.export.error_message || 'Export failed.');
+      setExportError(payload.export.error || payload.export.error_message || 'Download failed.');
     }
     return payload.export;
   }, []);
@@ -673,7 +673,7 @@ export default function SetVideoPlayerModal({
       const res = await prepareSetVideoExport(videoId);
       const payload = res.json || {};
       if (!res.ok || !payload.ok || !payload.export_id) {
-        throw new Error(payload.error || `Could not start export (${res.status})`);
+        throw new Error(payload.error || `Could not prepare download (${res.status})`);
       }
       const nextStatus = String(payload.status || payload.export?.status || 'queued') as typeof exportStatus;
       setExportJobId(Number(payload.export_id));
@@ -684,7 +684,7 @@ export default function SetVideoPlayerModal({
       return Number(payload.export_id);
     } catch (err: any) {
       setExportStatus('failed');
-      setExportError(err?.message || 'Could not start export.');
+      setExportError(err?.message || 'Could not prepare download.');
       return null;
     } finally {
       setExporting(false);
