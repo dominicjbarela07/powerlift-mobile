@@ -886,7 +886,7 @@ export default function SetVideoPlayerModal({
                     activeOpacity={0.88}
                     onPress={openExportSheet}
                   >
-                    <Text style={styles.toolLauncherText}>Export</Text>
+                    <Text style={styles.toolLauncherText}>Download</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -914,8 +914,8 @@ export default function SetVideoPlayerModal({
                   ) : null}
                   {canExport ? (
                     <TouchableOpacity style={styles.toolMenuAction} activeOpacity={0.84} onPress={openExportSheet}>
-                      <Text style={styles.toolMenuActionText}>Export</Text>
-                      <Text style={styles.toolMenuActionMeta}>Create clip</Text>
+                      <Text style={styles.toolMenuActionText}>Download</Text>
+                      <Text style={styles.toolMenuActionMeta}>Download video</Text>
                     </TouchableOpacity>
                   ) : null}
                 </View>
