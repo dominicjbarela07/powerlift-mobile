@@ -719,7 +719,7 @@ function bestLoggedSet(workout?: WorkoutPayload['workout'] | null) {
   for (const item of items) {
     for (const log of item.set_logs || []) {
       if (log.actual_weight_kg == null) continue;
-      const reps = log.actual_reps || 1;
+      const reps = log.actual_reps ?? 0;
       const coreBonus = item.variant !== 'ACC' ? 1000000 : 0;
       const score = coreBonus + Number(log.actual_weight_kg) * (1 + Number(reps) / 30);
       if (!best || score > best.score) best = { item, log, score };
@@ -731,7 +731,8 @@ function bestLoggedSet(workout?: WorkoutPayload['workout'] | null) {
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg') {
   if (!log) return null;
   let text = `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
-  if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
+  if (log.actual_reps === 0) text += ' × Failed';
+  else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
   if (log.actual_rpe != null) text += ` @ RPE ${log.actual_rpe.toFixed(1)}`;
   if (log.actual_rir != null) text += ` @ RIR ${log.actual_rir.toFixed(1)}`;
   return text;
@@ -920,8 +921,8 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
     : null;
 
   const top = [...logs].sort((a, b) => {
-    const aScore = Number(a.actual_weight_kg || 0) * (1 + Number(a.actual_reps || 1) / 30);
-    const bScore = Number(b.actual_weight_kg || 0) * (1 + Number(b.actual_reps || 1) / 30);
+    const aScore = Number(a.actual_weight_kg || 0) * (1 + Number(a.actual_reps ?? 0) / 30);
+    const bScore = Number(b.actual_weight_kg || 0) * (1 + Number(b.actual_reps ?? 0) / 30);
     return bScore - aScore;
   })[0] || null;
 
@@ -934,7 +935,7 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
 
   const topMetric = metric === 'rpe' ? top?.actual_rpe : top?.actual_rir;
   const topLine = top
-    ? `Top: ${formatWeight(top.actual_weight_kg, unit)} ${unit}${top.actual_reps != null ? ` × ${top.actual_reps}` : ''}${topMetric != null ? (metric === 'rpe' ? ` @${formatWheelNumber(Number(topMetric))}` : ` @${formatWheelNumber(Number(topMetric))} RIR`) : ''}`
+    ? `Top: ${formatWeight(top.actual_weight_kg, unit)} ${unit}${top.actual_reps === 0 ? ' × Failed' : top.actual_reps != null ? ` × ${top.actual_reps}` : ''}${topMetric != null ? (metric === 'rpe' ? ` @${formatWheelNumber(Number(topMetric))}` : ` @${formatWheelNumber(Number(topMetric))} RIR`) : ''}`
     : null;
 
   return {
@@ -1695,7 +1696,7 @@ export default function WorkoutViewerScreen() {
       setError('Weight required');
       return;
     }
-    if (!Number.isFinite(reps) || reps <= 0) {
+    if (!Number.isFinite(reps) || reps < 0) {
       setError('Reps required');
       return;
     }
@@ -2046,7 +2047,7 @@ export default function WorkoutViewerScreen() {
   const openAccessoryWheel = (item: WorkoutItem) => {
     const rawWeight = defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
-    const repsOptions = Array.from({ length: 30 }, (_, idx) => String(idx + 1));
+    const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
     const repsDefault = accInputs[item.id]?.reps || accessoryRepsDefault(item);
     const rirDefault = accInputs[item.id]?.rir || defaultAccessoryRir(item);
@@ -2074,7 +2075,7 @@ export default function WorkoutViewerScreen() {
       [itemId]: {
         weight: accessoryWheel.weight,
         reps: accessoryWheel.reps,
-        rir: accessoryWheel.rir,
+        rir: accessoryWheel.reps === '0' ? '' : accessoryWheel.rir,
       },
     }));
     setPendingAccessoryLogItemId({
@@ -2140,7 +2141,7 @@ export default function WorkoutViewerScreen() {
     const rawWeight = defaultCoreWeight(item, unit, carriedInput, planned || null);
     const weightOptions = buildCoreWeightOptions(unit, rawWeight);
     const weight = nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || (unit === 'kg' ? '100' : '225'));
-    const repsOptions = Array.from({ length: 20 }, (_, idx) => String(idx + 1));
+    const repsOptions = ['0', ...Array.from({ length: 20 }, (_, idx) => String(idx + 1))];
     const rpeOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5));
     const defaultReps = defaultCoreReps(item, planned || null);
     const defaultRpe = defaultCoreRpe(item, planned || null);
@@ -2198,7 +2199,7 @@ export default function WorkoutViewerScreen() {
     if (!coreWheel) return;
     const weight = coreWheel.weight;
     const reps = coreWheel.reps;
-    const rpe = coreWheel.rpe;
+    const rpe = reps === '0' ? '' : coreWheel.rpe;
 
     if (coreWheel.kind === 'straight') {
       prefillCoreInput('straight', { id: coreWheel.itemId } as WorkoutItem, { weight, reps, rpe });
@@ -2392,7 +2393,7 @@ export default function WorkoutViewerScreen() {
       setError('Weight required');
       return;
     }
-    if (!Number.isFinite(reps) || reps <= 0) {
+    if (!Number.isFinite(reps) || reps < 0) {
       setError('Reps required');
       return;
     }
@@ -2468,12 +2469,16 @@ export default function WorkoutViewerScreen() {
     const reps = repsStr ? Number(repsStr) : NaN;
     const rpe = input.rpe ? parseFloat(input.rpe) : null;
 
-    if (Number.isNaN(weightInUnit) || weightInUnit <= 0 || rpe == null) {
-      setError(`Enter a valid top set: weight (${unit}) and RPE`);
+    if (Number.isNaN(weightInUnit) || weightInUnit <= 0) {
+      setError(`Enter a valid top set weight (${unit})`);
       return;
     }
-    if (!Number.isFinite(reps) || reps <= 0) {
+    if (!Number.isFinite(reps) || reps < 0) {
       setError('Reps required');
+      return;
+    }
+    if (reps > 0 && rpe == null) {
+      setError('Enter a valid top set RPE');
       return;
     }
 
@@ -2548,7 +2553,7 @@ export default function WorkoutViewerScreen() {
       setError(`Weight required`);
       return;
     }
-    if (!Number.isFinite(reps) || reps <= 0) {
+    if (!Number.isFinite(reps) || reps < 0) {
       setError('Reps required');
       return;
     }
@@ -2628,7 +2633,7 @@ export default function WorkoutViewerScreen() {
 
     if (Number.isNaN(weightInUnit)) return setError(`Enter a valid weight (${unit})`);
     if (weightInUnit <= 0) return setError('Weight required');
-    if (!Number.isFinite(reps) || reps <= 0) return setError('Reps required');
+    if (!Number.isFinite(reps) || reps < 0) return setError('Reps required');
 
     if (unit === 'lb') weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
 
@@ -2774,7 +2779,7 @@ export default function WorkoutViewerScreen() {
       return;
     }
 
-    if (!Number.isFinite(reps) || reps <= 0) {
+    if (!Number.isFinite(reps) || reps < 0) {
       setError('Reps required');
       return;
     }
@@ -4694,6 +4699,22 @@ export default function WorkoutViewerScreen() {
                 />
               </View>
 
+              <TouchableOpacity
+                style={[
+                  styles.failedSetToggle,
+                  coreWheel.reps === '0' && styles.failedSetToggleActive,
+                ]}
+                onPress={() =>
+                  setCoreWheel((prev) =>
+                    prev ? { ...prev, reps: prev.reps === '0' ? '1' : '0', rpe: prev.reps === '0' ? prev.rpe : '' } : prev
+                  )
+                }
+              >
+                <Text style={[styles.failedSetToggleText, coreWheel.reps === '0' && styles.failedSetToggleTextActive]}>
+                  Failed lift / 0 reps
+                </Text>
+              </TouchableOpacity>
+
               <View style={styles.logVideoChoice}>
                 <TouchableOpacity
                   style={styles.logVideoAttachButton}
@@ -4823,6 +4844,22 @@ export default function WorkoutViewerScreen() {
                   onChange={(value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev)}
                 />
               </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.failedSetToggle,
+                  accessoryWheel.reps === '0' && styles.failedSetToggleActive,
+                ]}
+                onPress={() =>
+                  setAccessoryWheel((prev) =>
+                    prev ? { ...prev, reps: prev.reps === '0' ? '1' : '0', rir: prev.reps === '0' ? prev.rir : '' } : prev
+                  )
+                }
+              >
+                <Text style={[styles.failedSetToggleText, accessoryWheel.reps === '0' && styles.failedSetToggleTextActive]}>
+                  Failed lift / 0 reps
+                </Text>
+              </TouchableOpacity>
 
               <View style={styles.coreWheelActions}>
                 <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setAccessoryWheel(null)}>
@@ -5101,6 +5138,26 @@ export default function WorkoutViewerScreen() {
                 </View>
               )}
             </View>
+
+            <TouchableOpacity
+              style={[
+                styles.failedSetToggle,
+                editSetForm.reps === '0' && styles.failedSetToggleActive,
+                { marginBottom: 14 },
+              ]}
+              onPress={() =>
+                setEditSetForm((prev) => ({
+                  ...prev,
+                  reps: prev.reps === '0' ? '1' : '0',
+                  rpe: prev.reps === '0' ? prev.rpe : '',
+                  rir: prev.reps === '0' ? prev.rir : '',
+                }))
+              }
+            >
+              <Text style={[styles.failedSetToggleText, editSetForm.reps === '0' && styles.failedSetToggleTextActive]}>
+                Failed lift / 0 reps
+              </Text>
+            </TouchableOpacity>
 
             <View style={styles.modalActionsRow}>
               {editSetCtx?.canUndoDelete && (
@@ -7132,6 +7189,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 18,
+  },
+  failedSetToggle: {
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.34)',
+    backgroundColor: 'rgba(127,29,29,0.18)',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  failedSetToggleActive: {
+    borderColor: 'rgba(248,113,113,0.72)',
+    backgroundColor: 'rgba(127,29,29,0.46)',
+  },
+  failedSetToggleText: {
+    color: '#FCA5A5',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  failedSetToggleTextActive: {
+    color: '#FEE2E2',
   },
   modalTitle: {
     color: '#E2E8F0',
