@@ -72,6 +72,9 @@ export function CoreMovementLedgerRow({
 }) {
   const stateLabel =
     state === 'complete' ? 'Complete' : state === 'logged' ? 'Logged' : 'Not started';
+  // P0 invariant: render every prescribed detail row from the API.
+  // Do not filter this list down to completed/logged rows only.
+  // Coach prescription, API payload, and athlete UI must match in meaning.
   const allDetailRows = detailRows || [];
   const completedRows = allDetailRows.filter((row) => row.state === 'completed');
   const visibleDetailRows = expanded ? allDetailRows : completedRows;
