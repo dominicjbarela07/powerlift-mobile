@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { API_BASE, fetchJson, getSetVideoExportStatus, prepareSetVideoExport, type SetVideoExportOptions } from '@/lib/api';
+import { API_BASE, fetchJson, getSetVideoDownloadExportsStatus, getSetVideoExportStatus, type SetVideoExportOptions } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const STRENGTH_LEDGER_LOGO = require('@/assets/images/Instagram Profile.png');
@@ -104,6 +104,22 @@ export type SetVideoSummary = {
   coaching_focus?: SetVideoCoachingFocus | null;
   can_export?: boolean;
   export_permission_error?: string | null;
+  download_exports?: {
+    state?: 'ready' | 'preparing' | 'failed' | string;
+    exports?: Record<string, {
+      id?: number;
+      status?: string;
+      weight_unit?: 'kg' | 'lbs' | string;
+      download_url?: string | null;
+      url?: string | null;
+      error?: string | null;
+      error_message?: string | null;
+    } | null>;
+    ready_units?: string[];
+    failed_units?: string[];
+    preparing_units?: string[];
+  } | null;
+  download_exports_status_url?: string | null;
   context?: SetVideoContext | null;
 };
 
@@ -456,6 +472,17 @@ export default function SetVideoPlayerModal({
   const hasLoggedRepsForExport = !!actualParts.reps;
   const hasLoggedRpeForExport = !!actualParts.rpe;
   const hasLoggedSetForExport = hasLoggedWeightForExport || hasLoggedRepsForExport || hasLoggedRpeForExport;
+  const downloadExports = video?.download_exports || null;
+  const readyDownloadUnits = (['kg', 'lbs'] as const).filter((unit) => {
+    const row = downloadExports?.exports?.[unit];
+    return row?.status === 'ready' && !!(row.download_url || row.url);
+  });
+  const downloadPreparing = canExport && !readyDownloadUnits.length && downloadExports?.state !== 'failed';
+  const downloadFailed = canExport && !readyDownloadUnits.length && downloadExports?.state === 'failed';
+  const downloadArtifactForUnit = useCallback((unit: 'kg' | 'lbs') => {
+    const row = video?.download_exports?.exports?.[unit];
+    return row?.download_url || row?.url || null;
+  }, [video?.download_exports]);
   const effectiveExportOptions = useMemo<SetVideoExportOptions>(() => ({
     show_date: !!exportOptions.show_date && hasDateForExport,
     show_movement: !!exportOptions.show_movement && hasMovementForExport,
@@ -498,7 +525,7 @@ export default function SetVideoPlayerModal({
   const rawVideoDuration = Number((player as any)?.duration || 0);
   const hasKnownExportDuration = Number.isFinite(rawVideoDuration) && rawVideoDuration > 0;
   const sourceUnderExportLimit = hasKnownExportDuration && rawVideoDuration <= MAX_EXPORT_DURATION_SECONDS;
-  const showExportTrimTool = hasKnownExportDuration && rawVideoDuration > MAX_EXPORT_DURATION_SECONDS;
+  const showExportTrimTool = false;
   const maxExportStartSeconds = hasKnownExportDuration
     ? Math.max(0, Math.floor(rawVideoDuration - MAX_EXPORT_DURATION_SECONDS))
     : 0;
@@ -570,7 +597,7 @@ export default function SetVideoPlayerModal({
     };
   }, [exportRequestStartSeconds, exportTrimDragging, showExportTrimTool, video?.thumbnail_url, videoUrl]);
 
-  const canStartExport = !exportTrimError && hasKnownExportDuration && !exporting && !['queued', 'processing'].includes(exportStatus);
+  const canStartExport = readyDownloadUnits.length > 1 && !exporting;
   const resetExportJob = useCallback(() => {
     setExportUrl(null);
     setExportJobId(null);
@@ -610,6 +637,43 @@ export default function SetVideoPlayerModal({
     }
     resetExportJob();
   }, [player, resetExportJob]);
+  const syncReadyDownloadUrl = useCallback((exportsPayload?: SetVideoSummary['download_exports'] | null) => {
+    const payload = exportsPayload || video?.download_exports || null;
+    const readyUnits = (['kg', 'lbs'] as const).filter((unit) => {
+      const row = payload?.exports?.[unit];
+      return row?.status === 'ready' && !!(row.download_url || row.url);
+    });
+    if (readyUnits.length === 1) {
+      const row = payload?.exports?.[readyUnits[0]];
+      setExportUrl(row?.download_url || row?.url || null);
+      setExportStatus('ready');
+    } else if (readyUnits.length > 1) {
+      setExportUrl(null);
+      setExportStatus('ready');
+    } else if (payload?.state === 'failed') {
+      setExportUrl(null);
+      setExportStatus('failed');
+      setExportError("We couldn't prepare this video yet. Please try again later.");
+    } else {
+      setExportUrl(null);
+      setExportStatus('queued');
+      setExportError(null);
+    }
+  }, [video?.download_exports]);
+
+  const refreshDownloadExportsStatus = useCallback(async () => {
+    if (!videoId) return null;
+    const res = await getSetVideoDownloadExportsStatus(videoId);
+    const payload = res.json || {};
+    if (!res.ok || !payload.ok) {
+      throw new Error(payload.error || `Could not check download (${res.status})`);
+    }
+    const nextExports = payload.download_exports || null;
+    setVideo((current) => current ? ({ ...current, download_exports: nextExports }) : current);
+    syncReadyDownloadUrl(nextExports);
+    return nextExports;
+  }, [syncReadyDownloadUrl, videoId]);
+
   const openExportSheet = useCallback(() => {
     Keyboard.dismiss();
     setToolMenuOpen(false);
@@ -627,8 +691,13 @@ export default function SetVideoPlayerModal({
     }
     resetExportJob();
     setExportError(null);
+    syncReadyDownloadUrl();
     setExportSheetOpen(true);
-  }, [player, resetExportJob]);
+    refreshDownloadExportsStatus().catch((err: any) => {
+      setExportStatus('failed');
+      setExportError(err?.message || 'Could not check download status.');
+    });
+  }, [player, refreshDownloadExportsStatus, resetExportJob, syncReadyDownloadUrl]);
 
   const openReviewSheet = useCallback(() => {
     Keyboard.dismiss();
@@ -671,38 +740,28 @@ export default function SetVideoPlayerModal({
     try {
       setExporting(true);
       setExportError(null);
-      setExportUrl(null);
-      setExportJobId(null);
-      if (exportTrimError) {
-        throw new Error(exportTrimError);
+      const unit = unitOverride || selectedWeightUnit || 'kg';
+      const url = downloadArtifactForUnit(unit);
+      if (!url) {
+        const payload = await refreshDownloadExportsStatus();
+        const row = payload?.exports?.[unit];
+        const refreshedUrl = row?.download_url || row?.url || null;
+        if (!refreshedUrl) {
+          throw new Error('Download is still preparing.');
+        }
+        setExportUrl(refreshedUrl);
+      } else {
+        setExportUrl(url);
       }
-      const requestOptions = {
-        ...effectiveExportOptions,
-        weight_unit: unitOverride || effectiveExportOptions.weight_unit || 'kg',
-      };
-      const res = await prepareSetVideoExport(videoId, requestOptions, {
-        start_seconds: exportRequestStartSeconds,
-        end_seconds: exportRequestEndSeconds,
-      });
-      const payload = res.json || {};
-      if (!res.ok || !payload.ok || !payload.export_id) {
-        throw new Error(payload.error || `Could not start export (${res.status})`);
-      }
-      const nextStatus = String(payload.status || payload.export?.status || 'queued') as typeof exportStatus;
-      setExportJobId(Number(payload.export_id));
-      setExportStatus(nextStatus);
-      if (payload.export?.download_url) {
-        setExportUrl(payload.export.download_url);
-      }
-      return Number(payload.export_id);
+      setExportStatus('ready');
+      return null;
     } catch (err: any) {
-      setExportStatus('failed');
-      setExportError(err?.message || 'Could not start export.');
+      setExportError(err?.message || 'Could not prepare download.');
       return null;
     } finally {
       setExporting(false);
     }
-  }, [effectiveExportOptions, exportRequestEndSeconds, exportRequestStartSeconds, exportTrimError, videoId]);
+  }, [downloadArtifactForUnit, refreshDownloadExportsStatus, selectedWeightUnit, videoId]);
 
   const startExportWithUnit = useCallback((unit: 'kg' | 'lbs') => {
     resetExportJob();
@@ -721,7 +780,7 @@ export default function SetVideoPlayerModal({
 
   const downloadExport = useCallback(async (purpose: 'save' | 'share') => {
     if (!exportUrl) {
-      setExportError('Export is not ready yet.');
+      setExportError('Download is not ready yet.');
       return null;
     }
     const stamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
@@ -786,19 +845,19 @@ export default function SetVideoPlayerModal({
   }, [exportSheetOpen, player]);
 
   useEffect(() => {
-    if (!exportSheetOpen || !exportJobId || !['queued', 'processing'].includes(exportStatus)) {
+    if (!exportSheetOpen || readyDownloadUnits.length || downloadFailed) {
       return;
     }
     let cancelled = false;
     const timer = setInterval(async () => {
       try {
         if (!cancelled) {
-          await pollExportStatus(exportJobId);
+          await refreshDownloadExportsStatus();
         }
       } catch (err: any) {
         if (!cancelled) {
           setExportStatus('failed');
-          setExportError(err?.message || 'Could not check export status.');
+          setExportError(err?.message || 'Could not check download status.');
         }
       }
     }, 3000);
@@ -806,7 +865,7 @@ export default function SetVideoPlayerModal({
       cancelled = true;
       clearInterval(timer);
     };
-  }, [exportJobId, exportSheetOpen, exportStatus, pollExportStatus]);
+  }, [downloadFailed, exportSheetOpen, readyDownloadUnits.length, refreshDownloadExportsStatus]);
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={closePlayer}>
@@ -900,7 +959,7 @@ export default function SetVideoPlayerModal({
                     activeOpacity={0.88}
                     onPress={openExportSheet}
                   >
-                    <Text style={styles.toolLauncherText}>Export</Text>
+                    <Text style={styles.toolLauncherText}>Download</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -928,8 +987,8 @@ export default function SetVideoPlayerModal({
                   ) : null}
                   {canExport ? (
                     <TouchableOpacity style={styles.toolMenuAction} activeOpacity={0.84} onPress={openExportSheet}>
-                      <Text style={styles.toolMenuActionText}>Export</Text>
-                      <Text style={styles.toolMenuActionMeta}>Create clip</Text>
+                      <Text style={styles.toolMenuActionText}>Download</Text>
+                      <Text style={styles.toolMenuActionMeta}>Download video</Text>
                     </TouchableOpacity>
                   ) : null}
                 </View>
@@ -939,8 +998,8 @@ export default function SetVideoPlayerModal({
               <View style={styles.exportSheet}>
                 <View style={styles.reviewSheetHeader}>
                   <View>
-                    <Text style={styles.reviewSheetTitle}>Export Clip</Text>
-                    <Text style={styles.exportSheetMeta}>Clean lifting post</Text>
+                    <Text style={styles.reviewSheetTitle}>Download Video</Text>
+                    <Text style={styles.exportSheetMeta}>Strength Ledger HUD video</Text>
                   </View>
                   <TouchableOpacity style={styles.reviewSheetClose} onPress={() => setExportSheetOpen(false)}>
                     <Text style={styles.reviewSheetCloseText}>Close</Text>
@@ -973,7 +1032,7 @@ export default function SetVideoPlayerModal({
                       </View>
                     ) : null}
                   </View>
-                  {hasLoggedWeightForExport ? (
+                  {false ? (
                     <View style={styles.exportUnitRow}>
                       <Text style={styles.exportUnitLabel}>Weight unit</Text>
                       <View style={styles.exportUnitToggle}>
@@ -996,7 +1055,7 @@ export default function SetVideoPlayerModal({
                       </View>
                     </View>
                   ) : null}
-                  <View style={styles.exportOptionList}>
+                  {false ? <View style={styles.exportOptionList}>
                     {exportOptionRows.map(([optionKey, label]) => {
                       const active = !!effectiveExportOptions[optionKey];
                       return (
@@ -1013,7 +1072,7 @@ export default function SetVideoPlayerModal({
                         </TouchableOpacity>
                       );
                     })}
-                  </View>
+                  </View> : null}
                   <View style={styles.exportDurationBlock}>
                     {showExportTrimTool ? (
                       <>
@@ -1070,8 +1129,14 @@ export default function SetVideoPlayerModal({
                       </>
                     ) : (
                       <View style={styles.exportReadyNotice}>
-                        <Text style={styles.exportDurationTitle}>Ready to export</Text>
-                        <Text style={styles.exportDurationHint}>This clip is under 30 seconds and ready to export.</Text>
+                        <Text style={styles.exportDurationTitle}>{readyDownloadUnits.length ? 'Download ready' : downloadFailed ? 'Download unavailable' : 'Preparing download'}</Text>
+                        <Text style={styles.exportDurationHint}>
+                          {readyDownloadUnits.length
+                            ? 'Your branded video is ready.'
+                            : downloadFailed
+                              ? "We couldn't prepare this video yet. Please try again later."
+                              : "We're getting this video ready. Check back shortly."}
+                        </Text>
                         <Text style={styles.exportTrimTimeText}>Duration {formatClipTime(exportDurationSeconds)}</Text>
                       </View>
                     )}
@@ -1080,14 +1145,14 @@ export default function SetVideoPlayerModal({
                     <View style={styles.exportStatusBox}>
                       {['queued', 'processing'].includes(exportStatus) ? <ActivityIndicator color="#A7F3D0" /> : null}
                       <Text style={styles.exportStatusText}>
-                        {exportStatus === 'queued' ? 'Queued' : exportStatus === 'processing' ? 'Processing' : exportStatus === 'ready' ? 'Ready' : 'Failed'}
+                        {downloadFailed ? 'Download unavailable' : readyDownloadUnits.length ? 'Ready' : 'Preparing download'}
                       </Text>
                     </View>
                   ) : null}
                   {exporting ? (
                     <View style={styles.exportLoadingRow}>
                       <ActivityIndicator color="#A7F3D0" />
-                      <Text style={styles.exportLoadingText}>Starting export...</Text>
+                      <Text style={styles.exportLoadingText}>Preparing download...</Text>
                     </View>
                   ) : null}
                   {exportError ? <Text style={styles.exportErrorText}>{exportError}</Text> : null}
@@ -1103,7 +1168,7 @@ export default function SetVideoPlayerModal({
                   ) : (
                     <TouchableOpacity style={[styles.exportActionButton, styles.exportActionButtonPrimary, !canStartExport && styles.exportActionButtonDisabled]} onPress={() => setExportUnitChoiceOpen(true)} disabled={!canStartExport}>
                       <Text style={[styles.exportActionText, styles.exportActionTextPrimary]}>
-                        {exportStatus === 'failed' ? 'Retry Download' : 'Start Download'}
+                        {readyDownloadUnits.length > 1 ? 'Choose Unit' : downloadFailed ? 'Download unavailable' : 'Preparing download'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -1114,14 +1179,18 @@ export default function SetVideoPlayerModal({
               <View style={styles.exportUnitChoiceBackdrop}>
                 <View style={styles.exportUnitChoiceCard}>
                   <Text style={styles.exportUnitChoiceKicker}>Download video</Text>
-                  <Text style={styles.exportUnitChoiceTitle}>Choose the unit shown on the branded video.</Text>
+                  <Text style={styles.exportUnitChoiceTitle}>Choose the ready unit shown on the branded video.</Text>
                   <View style={styles.exportUnitChoiceActions}>
-                    <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('kg')} disabled={exporting}>
-                      <Text style={styles.exportUnitChoiceButtonText}>Download in kg</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('lbs')} disabled={exporting}>
-                      <Text style={styles.exportUnitChoiceButtonText}>Download in lbs</Text>
-                    </TouchableOpacity>
+                    {readyDownloadUnits.includes('kg') ? (
+                      <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('kg')} disabled={exporting}>
+                        <Text style={styles.exportUnitChoiceButtonText}>Download in kg</Text>
+                      </TouchableOpacity>
+                    ) : null}
+                    {readyDownloadUnits.includes('lbs') ? (
+                      <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('lbs')} disabled={exporting}>
+                        <Text style={styles.exportUnitChoiceButtonText}>Download in lbs</Text>
+                      </TouchableOpacity>
+                    ) : null}
                   </View>
                   <TouchableOpacity style={styles.exportUnitChoiceCancel} onPress={() => setExportUnitChoiceOpen(false)} disabled={exporting}>
                     <Text style={styles.exportUnitChoiceCancelText}>Cancel</Text>

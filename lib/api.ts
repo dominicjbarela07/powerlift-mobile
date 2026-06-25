@@ -386,6 +386,15 @@ export async function prepareSetVideoExport(
   });
 }
 
+export async function getSetVideoDownloadExportsStatus(
+  attachmentId: number
+): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/video-review/mobile/athlete/attachments/${attachmentId}/exports/status`, {
+    method: 'GET',
+    auth: true,
+  });
+}
+
 export async function getSetVideoExportStatus(
   exportId: number
 ): Promise<FetchJsonResult<any>> {
