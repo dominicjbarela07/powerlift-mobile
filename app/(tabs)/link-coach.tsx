@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,6 +15,8 @@ import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { SLAtmosphere } from '@/components/ui';
+import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
 import {
   acceptPendingCoachInvite,
@@ -90,6 +93,13 @@ export default function PendingCoachInviteScreen() {
     await loadInvites({ quiet: true });
   };
 
+  const openPendingMessagesNotice = () => {
+    Alert.alert(
+      'Messages unlock with your coach',
+      'Once your coach invitation is accepted, coach messages and announcements will appear in Strength Ledger.',
+    );
+  };
+
   const acceptInvite = (invite: PendingCoachInvite) => {
     Alert.alert(
       'Accept coach invite?',
@@ -152,8 +162,9 @@ export default function PendingCoachInviteScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
       <ThemedView style={styles.screen}>
+        <SLAtmosphere />
         <ScrollView
           contentContainerStyle={styles.content}
           refreshControl={
@@ -165,37 +176,73 @@ export default function PendingCoachInviteScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <View style={styles.iconBadge}>
-              <Ionicons name="mail-unread-outline" size={24} color="#F5D58A" />
-            </View>
-            <ThemedText style={styles.title}>Pending coach invite</ThemedText>
-            <ThemedText style={styles.body}>
-              You’re signed in, but you haven’t been linked to a coach yet. When your coach sends an invite, it will appear here.
-            </ThemedText>
+          <View style={styles.topBar}>
+            <Pressable
+              accessibilityLabel="Open Settings"
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={() => router.push('/(tabs)/settings' as any)}
+              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
+            >
+              <Ionicons name="settings-outline" size={25} color={SLColors.text} />
+            </Pressable>
+            <Image
+              source={require('../../assets/images/app_logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Pressable
+              accessibilityLabel="Messages unlock after coach invite"
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={openPendingMessagesNotice}
+              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
+            >
+              <Ionicons name="chatbubble-ellipses-outline" size={25} color={SLColors.text} />
+            </Pressable>
           </View>
 
-          <View style={styles.actionRow}>
-            <Pressable
-              style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
-              onPress={checkForInvite}
-              disabled={loading || refreshing}
-            >
-              {refreshing ? (
-                <ActivityIndicator size="small" color="#08111F" />
-              ) : (
-                <Ionicons name="refresh" size={17} color="#08111F" />
-              )}
-              <ThemedText style={styles.primaryButtonText}>Check for invite</ThemedText>
-            </Pressable>
+          <View style={styles.heroCard}>
+            <View style={styles.heroGlow} />
+            <View style={styles.heroTopRow}>
+              <View style={styles.statusPill}>
+                <View style={styles.statusDot} />
+                <ThemedText style={styles.statusPillText}>Account ready</ThemedText>
+              </View>
+              <View style={styles.iconBadge}>
+                <Ionicons name="barbell-outline" size={20} color={SLColors.accentViolet} />
+              </View>
+            </View>
+            <ThemedText style={styles.title}>Pending coach invite</ThemedText>
+            <ThemedText style={styles.heroLead}>You’re all set.</ThemedText>
+            <ThemedText style={styles.body}>
+              Your account has been created successfully. Once your coach sends an invitation, it will appear below and you’ll immediately gain access to your training.
+            </ThemedText>
 
-            <Pressable
-              style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
-              onPress={() => router.push('/(tabs)/settings' as any)}
-            >
-              <Ionicons name="settings-outline" size={17} color="#CBD5E1" />
-              <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
-            </Pressable>
+            <View style={styles.actionRow}>
+              <Pressable
+                accessibilityRole="button"
+                style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
+                onPress={checkForInvite}
+                disabled={loading || refreshing}
+              >
+                {refreshing ? (
+                  <ActivityIndicator size="small" color={SLColors.textInverted} />
+                ) : (
+                  <Ionicons name="refresh" size={17} color={SLColors.textInverted} />
+                )}
+                <ThemedText style={styles.primaryButtonText}>Check for Invite</ThemedText>
+              </Pressable>
+
+              <Pressable
+                accessibilityRole="button"
+                style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
+                onPress={() => router.push('/(tabs)/settings' as any)}
+              >
+                <Ionicons name="settings-outline" size={17} color={SLColors.text} />
+                <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
+              </Pressable>
+            </View>
           </View>
 
           {loading ? (
@@ -210,6 +257,10 @@ export default function PendingCoachInviteScreen() {
             </View>
           ) : state.invites.length ? (
             <View style={styles.inviteList}>
+              <View style={styles.sectionHeader}>
+                <ThemedText style={styles.sectionKicker}>Coach connection</ThemedText>
+                <ThemedText style={styles.sectionTitle}>Invitation waiting</ThemedText>
+              </View>
               {state.invites.map((invite) => {
                 const athleteName = `${invite.athlete_first || ''} ${invite.athlete_last || ''}`.trim() || 'Athlete';
                 const isWorking = workingInviteId === invite.id;
@@ -217,9 +268,10 @@ export default function PendingCoachInviteScreen() {
                   <View key={invite.id} style={styles.inviteCard}>
                     <View style={styles.inviteTopRow}>
                       <View style={styles.coachAvatar}>
-                        <Ionicons name="person-outline" size={20} color="#F5D58A" />
+                        <Ionicons name="person" size={24} color={SLColors.textStrong} />
                       </View>
                       <View style={styles.inviteTitleBlock}>
+                        <ThemedText style={styles.inviteKicker}>Coach invite</ThemedText>
                         <ThemedText style={styles.coachName}>{invite.coach_name || 'Coach'}</ThemedText>
                         {invite.coach_email ? (
                           <ThemedText style={styles.coachEmail}>{invite.coach_email}</ThemedText>
@@ -236,6 +288,7 @@ export default function PendingCoachInviteScreen() {
                         onPress={() => acceptInvite(invite)}
                         disabled={isWorking}
                       >
+                        <Ionicons name="checkmark-circle-outline" size={17} color={SLColors.textInverted} />
                         <ThemedText style={styles.acceptButtonText}>
                           {isWorking ? 'Working…' : 'Accept'}
                         </ThemedText>
@@ -245,6 +298,7 @@ export default function PendingCoachInviteScreen() {
                         onPress={() => declineInvite(invite)}
                         disabled={isWorking}
                       >
+                        <Ionicons name="close-outline" size={17} color="#FCA5A5" />
                         <ThemedText style={styles.declineButtonText}>Decline</ThemedText>
                       </Pressable>
                     </View>
@@ -254,10 +308,12 @@ export default function PendingCoachInviteScreen() {
             </View>
           ) : (
             <View style={styles.panel}>
-              <Ionicons name="time-outline" size={24} color="#94A3B8" />
-              <ThemedText style={styles.emptyTitle}>No invite yet</ThemedText>
+              <View style={styles.emptyIcon}>
+                <Ionicons name="pulse-outline" size={24} color={SLColors.accentViolet} />
+              </View>
+              <ThemedText style={styles.emptyTitle}>Your account is ready.</ThemedText>
               <ThemedText style={styles.mutedText}>
-                You’re all set on this side. Check again after your coach sends an invite to this email.
+                Your coach hasn’t sent an invitation yet. Once they do, it’ll appear here automatically.
               </ThemedText>
             </View>
           )}
@@ -270,95 +326,187 @@ export default function PendingCoachInviteScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.shellCanvas,
   },
   screen: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.shellCanvas,
   },
   content: {
     flexGrow: 1,
-    paddingTop: 28,
-    paddingBottom: 48,
-    gap: 18,
+    paddingHorizontal: SLSpacing.xl,
+    paddingTop: SLSpacing.md,
+    paddingBottom: 44,
+    gap: SLSpacing.lg,
   },
-  header: {
-    gap: 12,
+  topBar: {
+    minHeight: 76,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  iconBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+  topIconButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(216, 183, 106, 0.12)',
+    backgroundColor: 'rgba(8, 10, 13, 0.34)',
     borderWidth: 1,
-    borderColor: 'rgba(216, 183, 106, 0.24)',
+    borderColor: 'rgba(205, 194, 176, 0.08)',
+  },
+  logo: {
+    width: 178,
+    height: 66,
+  },
+  heroCard: {
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.22)',
+    backgroundColor: 'rgba(12, 13, 17, 0.76)',
+    padding: SLSpacing.xl,
+    gap: SLSpacing.md,
+    shadowColor: '#000',
+    shadowOpacity: 0.28,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 18 },
+    elevation: 8,
+  },
+  heroGlow: {
+    position: 'absolute',
+    top: -70,
+    right: -60,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(167, 139, 250, 0.16)',
+  },
+  heroTopRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statusPill: {
+    minHeight: 32,
+    paddingHorizontal: 12,
+    borderRadius: SLRadius.pill,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(126, 166, 184, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(126, 166, 184, 0.24)',
+  },
+  statusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: SLColors.success,
+  },
+  statusPillText: {
+    color: SLColors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  iconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(167, 139, 250, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.26)',
   },
   title: {
-    color: '#F8FAFC',
-    fontSize: 30,
-    lineHeight: 34,
+    color: SLColors.textStrong,
+    fontSize: 31,
+    lineHeight: 36,
+    fontFamily: SLTypography.hero.fontFamily,
+    fontWeight: SLTypography.hero.fontWeight,
+  },
+  heroLead: {
+    color: '#F5D58A',
+    fontSize: 17,
+    lineHeight: 22,
     fontWeight: '800',
   },
   body: {
-    color: '#CBD5E1',
+    color: '#CDC2B0',
     fontSize: 15,
-    lineHeight: 23,
+    lineHeight: 22,
   },
   actionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: SLSpacing.sm,
+    paddingTop: SLSpacing.sm,
   },
   primaryButton: {
-    minHeight: 44,
-    paddingHorizontal: 16,
-    borderRadius: 999,
-    backgroundColor: '#D8B76A',
+    minHeight: 46,
+    paddingHorizontal: SLSpacing.lg,
+    borderRadius: SLRadius.radiusControl,
+    backgroundColor: SLColors.accentSteel,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: SLSpacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 166, 184, 0.92)',
   },
   primaryButtonText: {
-    color: '#08111F',
+    color: SLColors.textInverted,
     fontWeight: '800',
   },
   secondaryButton: {
-    minHeight: 44,
-    paddingHorizontal: 16,
-    borderRadius: 999,
+    minHeight: 46,
+    paddingHorizontal: SLSpacing.lg,
+    borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.22)',
-    backgroundColor: 'rgba(15,23,42,0.78)',
+    borderColor: SLColors.borderStrong,
+    backgroundColor: 'rgba(17,24,39,0.74)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: SLSpacing.sm,
   },
   secondaryButtonText: {
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontWeight: '700',
   },
   panel: {
-    minHeight: 190,
-    borderRadius: 22,
+    minHeight: 178,
+    borderRadius: SLRadius.radiusSheet,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.13)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
+    borderColor: 'rgba(205, 194, 176, 0.08)',
+    backgroundColor: 'rgba(10, 11, 13, 0.68)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 22,
-    gap: 10,
+    padding: SLSpacing.xl,
+    gap: SLSpacing.sm,
+  },
+  emptyIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.24)',
   },
   emptyTitle: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     fontSize: 18,
     fontWeight: '800',
+    textAlign: 'center',
   },
   mutedText: {
-    color: '#94A3B8',
+    color: '#B8AEA1',
     fontSize: 14,
     lineHeight: 21,
     textAlign: 'center',
@@ -370,86 +518,117 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   inviteList: {
-    gap: 12,
+    gap: SLSpacing.md,
+  },
+  sectionHeader: {
+    gap: 2,
+    paddingHorizontal: 2,
+  },
+  sectionKicker: {
+    color: SLColors.accentViolet,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  sectionTitle: {
+    color: SLColors.textStrong,
+    fontSize: 18,
+    fontWeight: '800',
   },
   inviteCard: {
-    borderRadius: 22,
+    borderRadius: SLRadius.radiusSheet,
     borderWidth: 1,
-    borderColor: 'rgba(216, 183, 106, 0.20)',
-    backgroundColor: 'rgba(8,16,38,0.96)',
-    padding: 16,
-    gap: 14,
+    borderColor: 'rgba(167, 139, 250, 0.24)',
+    backgroundColor: 'rgba(12, 13, 17, 0.82)',
+    padding: SLSpacing.lg,
+    gap: SLSpacing.md,
   },
   inviteTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: SLSpacing.md,
   },
   coachAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(216, 183, 106, 0.12)',
+    backgroundColor: 'rgba(126, 166, 184, 0.22)',
     borderWidth: 1,
-    borderColor: 'rgba(216, 183, 106, 0.28)',
+    borderColor: 'rgba(126, 166, 184, 0.38)',
   },
   inviteTitleBlock: {
     flex: 1,
-    gap: 2,
+    gap: 3,
+  },
+  inviteKicker: {
+    color: SLColors.textSubtle,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
   },
   coachName: {
-    color: '#F8FAFC',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: 20,
     fontWeight: '800',
   },
   coachEmail: {
-    color: '#94A3B8',
+    color: '#B8AEA1',
     fontSize: 13,
   },
   inviteMeta: {
-    borderRadius: 16,
-    backgroundColor: 'rgba(148,163,184,0.08)',
-    padding: 12,
+    borderRadius: SLRadius.radiusRow,
+    backgroundColor: 'rgba(205, 194, 176, 0.055)',
+    borderWidth: 1,
+    borderColor: 'rgba(205, 194, 176, 0.07)',
+    padding: SLSpacing.md,
     gap: 3,
   },
   metaLabel: {
-    color: '#94A3B8',
+    color: SLColors.textSubtle,
     fontSize: 11,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   metaValue: {
-    color: '#E2E8F0',
+    color: SLColors.text,
     fontSize: 15,
     fontWeight: '700',
   },
   inviteActions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: SLSpacing.sm,
   },
   acceptButton: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: 14,
-    backgroundColor: '#D8B76A',
+    minHeight: 46,
+    borderRadius: SLRadius.radiusControl,
+    backgroundColor: SLColors.accentSteel,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 166, 184, 0.92)',
   },
   acceptButtonText: {
-    color: '#08111F',
+    color: SLColors.textInverted,
     fontWeight: '800',
   },
   declineButton: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: 14,
+    minHeight: 46,
+    borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: 'rgba(248,113,113,0.28)',
-    backgroundColor: 'rgba(127,29,29,0.20)',
+    backgroundColor: 'rgba(127,29,29,0.14)',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.xs,
   },
   declineButtonText: {
     color: '#FCA5A5',
