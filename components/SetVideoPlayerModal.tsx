@@ -154,9 +154,9 @@ function clampNumber(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function normalizeExportWeightUnit(value?: string | null): 'kg' | 'lb' {
+function normalizeExportWeightUnit(value?: string | null): 'kg' | 'lbs' {
   const unit = String(value || '').trim().toLowerCase();
-  return unit === 'lb' || unit === 'lbs' ? 'lb' : 'kg';
+  return unit === 'lb' || unit === 'lbs' ? 'lbs' : 'kg';
 }
 
 function compactNumber(value: number, decimals = 2) {
@@ -164,19 +164,19 @@ function compactNumber(value: number, decimals = 2) {
   return value.toFixed(decimals).replace(/0+$/, '').replace(/\.$/, '');
 }
 
-function defaultExportWeightUnit(context?: SetVideoContext | null): 'kg' | 'lb' {
+function defaultExportWeightUnit(context?: SetVideoContext | null): 'kg' | 'lbs' {
   if (context?.preferred_units) return normalizeExportWeightUnit(context.preferred_units);
   const label = String(context?.actual_weight_label || '').trim().toLowerCase();
-  if (/\b(lb|lbs)\b/.test(label)) return 'lb';
+  if (/\b(lb|lbs)\b/.test(label)) return 'lbs';
   if (/\bkg\b/.test(label)) return 'kg';
   return 'kg';
 }
 
-function exportWeightLabel(context: SetVideoContext | null | undefined, unit: 'kg' | 'lb') {
+function exportWeightLabel(context: SetVideoContext | null | undefined, unit: 'kg' | 'lbs') {
   if (context?.actual_weight_kg == null) return context?.actual_weight_label || null;
   const kg = Number(context.actual_weight_kg);
   if (!Number.isFinite(kg)) return context.actual_weight_label || null;
-  if (unit === 'lb') return `${Math.round(kg * 2.2046226218)} lb`;
+  if (unit === 'lbs') return `${Math.round(kg * 2.2046226218)} lbs`;
   return `${compactNumber(kg)} kg`;
 }
 
@@ -269,6 +269,7 @@ export default function SetVideoPlayerModal({
   const [loadingUrl, setLoadingUrl] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
   const [exportSheetOpen, setExportSheetOpen] = useState(false);
+  const [exportUnitChoiceOpen, setExportUnitChoiceOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
@@ -356,6 +357,7 @@ export default function SetVideoPlayerModal({
       setFeedbackSheetOpen(false);
       setToolMenuOpen(false);
       setExportSheetOpen(false);
+      setExportUnitChoiceOpen(false);
       setExporting(false);
       setExportError(null);
       setExportUrl(null);
@@ -661,7 +663,7 @@ export default function SetVideoPlayerModal({
     return payload.export;
   }, []);
 
-  const startExport = useCallback(async () => {
+  const startExport = useCallback(async (unitOverride?: 'kg' | 'lbs') => {
     if (!videoId) {
       setExportError('Video is unavailable.');
       return null;
@@ -674,7 +676,11 @@ export default function SetVideoPlayerModal({
       if (exportTrimError) {
         throw new Error(exportTrimError);
       }
-      const res = await prepareSetVideoExport(videoId, effectiveExportOptions, {
+      const requestOptions = {
+        ...effectiveExportOptions,
+        weight_unit: unitOverride || effectiveExportOptions.weight_unit || 'kg',
+      };
+      const res = await prepareSetVideoExport(videoId, requestOptions, {
         start_seconds: exportRequestStartSeconds,
         end_seconds: exportRequestEndSeconds,
       });
@@ -697,6 +703,13 @@ export default function SetVideoPlayerModal({
       setExporting(false);
     }
   }, [effectiveExportOptions, exportRequestEndSeconds, exportRequestStartSeconds, exportTrimError, videoId]);
+
+  const startExportWithUnit = useCallback((unit: 'kg' | 'lbs') => {
+    resetExportJob();
+    setExportOptions((current) => ({ ...current, weight_unit: unit }));
+    setExportUnitChoiceOpen(false);
+    startExport(unit);
+  }, [resetExportJob, startExport]);
 
   const toggleExportOption = useCallback((key: keyof SetVideoExportOptions) => {
     resetExportJob();
@@ -964,7 +977,7 @@ export default function SetVideoPlayerModal({
                     <View style={styles.exportUnitRow}>
                       <Text style={styles.exportUnitLabel}>Weight unit</Text>
                       <View style={styles.exportUnitToggle}>
-                        {(['kg', 'lb'] as const).map((unit) => {
+                        {(['kg', 'lbs'] as const).map((unit) => {
                           const active = selectedWeightUnit === unit;
                           return (
                             <TouchableOpacity
@@ -1088,13 +1101,32 @@ export default function SetVideoPlayerModal({
                       </TouchableOpacity>
                     </View>
                   ) : (
-                    <TouchableOpacity style={[styles.exportActionButton, styles.exportActionButtonPrimary, !canStartExport && styles.exportActionButtonDisabled]} onPress={startExport} disabled={!canStartExport}>
+                    <TouchableOpacity style={[styles.exportActionButton, styles.exportActionButtonPrimary, !canStartExport && styles.exportActionButtonDisabled]} onPress={() => setExportUnitChoiceOpen(true)} disabled={!canStartExport}>
                       <Text style={[styles.exportActionText, styles.exportActionTextPrimary]}>
-                        {exportStatus === 'failed' ? 'Retry Export' : 'Start Export'}
+                        {exportStatus === 'failed' ? 'Retry Download' : 'Start Download'}
                       </Text>
                     </TouchableOpacity>
                   )}
                 </ScrollView>
+              </View>
+            ) : null}
+            {exportUnitChoiceOpen ? (
+              <View style={styles.exportUnitChoiceBackdrop}>
+                <View style={styles.exportUnitChoiceCard}>
+                  <Text style={styles.exportUnitChoiceKicker}>Download video</Text>
+                  <Text style={styles.exportUnitChoiceTitle}>Choose the unit shown on the branded video.</Text>
+                  <View style={styles.exportUnitChoiceActions}>
+                    <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('kg')} disabled={exporting}>
+                      <Text style={styles.exportUnitChoiceButtonText}>Download in kg</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.exportUnitChoiceButton} onPress={() => startExportWithUnit('lbs')} disabled={exporting}>
+                      <Text style={styles.exportUnitChoiceButtonText}>Download in lbs</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity style={styles.exportUnitChoiceCancel} onPress={() => setExportUnitChoiceOpen(false)} disabled={exporting}>
+                    <Text style={styles.exportUnitChoiceCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             ) : null}
             {showCoachFeedback && feedbackSheetOpen ? (
@@ -2136,6 +2168,66 @@ const styles = StyleSheet.create({
   hudLabel: {
     color: '#A7F3D0',
     fontWeight: '900',
+  },
+  exportUnitChoiceBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 80,
+    backgroundColor: 'rgba(2,6,23,0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  exportUnitChoiceCard: {
+    width: '100%',
+    maxWidth: 360,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.26)',
+    backgroundColor: 'rgba(15,23,42,0.97)',
+    padding: 18,
+  },
+  exportUnitChoiceKicker: {
+    color: '#C4B5FD',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1.1,
+    marginBottom: 8,
+  },
+  exportUnitChoiceTitle: {
+    color: '#F8FAFC',
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 22,
+    marginBottom: 14,
+  },
+  exportUnitChoiceActions: {
+    gap: 10,
+  },
+  exportUnitChoiceButton: {
+    minHeight: 46,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.36)',
+    backgroundColor: 'rgba(124,58,237,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exportUnitChoiceButtonText: {
+    color: '#EDE9FE',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  exportUnitChoiceCancel: {
+    minHeight: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  exportUnitChoiceCancelText: {
+    color: '#CBD5E1',
+    fontSize: 13,
+    fontWeight: '800',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

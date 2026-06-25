@@ -360,7 +360,7 @@ export type SetVideoExportOptions = {
   show_logged_weight?: boolean;
   show_logged_reps?: boolean;
   show_logged_rpe?: boolean;
-  weight_unit?: 'kg' | 'lb';
+  weight_unit?: 'kg' | 'lbs';
   show_bodyweight?: boolean;
   show_coach_feedback?: boolean;
   show_planned_prescription?: boolean;
