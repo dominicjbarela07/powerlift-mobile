@@ -161,7 +161,7 @@ type WorkoutItem = {
   last_best?: WorkoutItem['lookback_best'];
   prev_best?: WorkoutItem['lookback_best'];
   movement_history?: MovementHistory | null;
-  parent_item_id?: number | null;
+  parent_item_id?: number | string | null;
 };
 
 type AccessoryGroup = {
@@ -657,11 +657,44 @@ function deriveScreenMode(status?: string | null): SessionScreenMode {
   return 'pre_session';
 }
 
+function positiveInt(value: unknown, fallback = 0): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.floor(parsed);
+}
+
+function normalizedWorkoutVariant(item?: Pick<WorkoutItem, 'variant'> | null): string {
+  return String(item?.variant || '').trim().toUpperCase();
+}
+
+function numericId(value: unknown): number | null {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function isBackdownWorkoutItem(item?: WorkoutItem | null): boolean {
+  const variant = normalizedWorkoutVariant(item);
+  if (variant === 'BK' || variant === 'BACKDOWN' || variant === 'BACKDOWNS') return true;
+  return item?.parent_item_id != null && variant !== 'ACC';
+}
+
+function isTopWorkoutItem(item?: WorkoutItem | null): boolean {
+  const variant = normalizedWorkoutVariant(item);
+  return variant === 'TOP' || variant === 'TOP_BACKDOWN';
+}
+
+function isFullCustomWorkoutItem(item?: WorkoutItem | null): boolean {
+  return (
+    normalizedWorkoutVariant(item) === 'FULL_CUSTOM' ||
+    String(item?.scheme || '').trim().toUpperCase() === 'FULL_CUSTOM'
+  );
+}
+
 function plannedSetCountForItem(item: WorkoutItem) {
-  if (item.variant === 'FULL_CUSTOM' || String(item.scheme || '').toUpperCase() === 'FULL_CUSTOM') {
-    return Array.isArray(item.planned_sets) && item.planned_sets.length ? item.planned_sets.length : (item.sets || 0);
+  if (isFullCustomWorkoutItem(item)) {
+    return Array.isArray(item.planned_sets) && item.planned_sets.length ? item.planned_sets.length : positiveInt(item.sets);
   }
-  return item.sets || 0;
+  return positiveInt(item.sets);
 }
 
 function loggedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
@@ -717,7 +750,7 @@ function progressSegmentsForWorkout(workout?: WorkoutPayload['workout'] | null):
 }
 
 function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
-  const coreItems = (workout?.core_items || []).filter((item) => item.variant !== 'BK');
+  const coreItems = (workout?.core_items || []).filter((item) => !isBackdownWorkoutItem(item));
   const accessoryCount = (workout?.accessory_groups || []).reduce(
     (sum, group) => sum + (group.items || []).length,
     0,
@@ -912,7 +945,7 @@ function accessoryRepsDefault(item: WorkoutItem) {
 }
 
 function accessoryTargetLine(item: WorkoutItem) {
-  const base = `${item.sets || 0}×${item.reps_text || item.reps || '—'}`;
+  const base = `${positiveInt(item.sets)}×${item.reps_text || item.reps || '—'}`;
   if (item.rir_target == null) return base;
   return `${base} @${formatWheelNumber(Number(item.rir_target))} RIR`;
 }
@@ -1247,24 +1280,22 @@ export default function WorkoutViewerScreen() {
 
     const coreItems = workout.core_items || [];
     for (const core of coreItems) {
-      const isBackdown = core.variant === 'BK';
+      const isBackdown = isBackdownWorkoutItem(core);
       if (isBackdown && core.parent_item_id != null) continue;
 
-      const isTop = core.variant === 'TOP';
-      const isFullCustom =
-        core.variant === 'FULL_CUSTOM' ||
-        ((core.scheme || '').toUpperCase() === 'FULL_CUSTOM');
+      const isTop = isTopWorkoutItem(core);
+      const isFullCustom = isFullCustomWorkoutItem(core);
       const backdownsForThisTop = isTop
-        ? coreItems.filter((it) => it.variant === 'BK' && it.parent_item_id === core.id)
+        ? coreItems.filter((it) => isBackdownWorkoutItem(it) && numericId(it.parent_item_id) === numericId(core.id))
         : [];
       const topLogs = isTop ? (core.set_logs || []) : [];
-      const topTotal = isTop ? (core.sets || 0) : 0;
-      const backdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
+      const topTotal = isTop ? positiveInt(core.sets) : 0;
+      const backdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
       const total = isFullCustom
         ? (Array.isArray(core.planned_sets) ? core.planned_sets.length : 0)
         : isTop
         ? topTotal + backdownTotal
-        : (core.sets || 0);
+        : positiveInt(core.sets);
       const logged = isTop
         ? loggedSetIndexCount(topLogs) + backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
         : loggedSetIndexCount(core.set_logs || []);
@@ -1283,7 +1314,7 @@ export default function WorkoutViewerScreen() {
     for (const group of workout.accessory_groups || []) {
       for (const item of group.items || []) {
         const logs = item.set_logs || [];
-        const total = item.sets || 0;
+        const total = positiveInt(item.sets);
         const logged = loggedSetIndexCount(logs);
         rows.push({
           key: `acc:${item.id}`,
@@ -1307,13 +1338,16 @@ export default function WorkoutViewerScreen() {
     if (!workout) return null;
     const coreItems = workout.core_items || [];
     for (const core of coreItems) {
-      const isBackdown = core.variant === 'BK';
+      const isBackdown = isBackdownWorkoutItem(core);
       if (isBackdown && core.parent_item_id != null) continue;
       if (core.id === itemId) return `core:${core.id}`;
-      const isTop = core.variant === 'TOP';
+      const isTop = isTopWorkoutItem(core);
       if (isTop) {
         const ownsBackdown = coreItems.some(
-          (it) => it.variant === 'BK' && it.parent_item_id === core.id && it.id === itemId,
+          (it) =>
+            isBackdownWorkoutItem(it) &&
+            numericId(it.parent_item_id) === numericId(core.id) &&
+            numericId(it.id) === numericId(itemId),
         );
         if (ownsBackdown) return `core:${core.id}`;
       }
@@ -2354,7 +2388,7 @@ export default function WorkoutViewerScreen() {
     }
 
     // Top items
-    const topItems = coreItems.filter((it) => it && it.variant === 'TOP');
+    const topItems = coreItems.filter((it) => isTopWorkoutItem(it));
     if (topItems.length) {
       setTopInputs((prev) => {
         let next = prev;
@@ -2376,7 +2410,7 @@ export default function WorkoutViewerScreen() {
     }
 
     // Backdowns: every BK item should get its own reps prefill
-    const bkItems = coreItems.filter((it) => it && it.variant === 'BK');
+    const bkItems = coreItems.filter((it) => isBackdownWorkoutItem(it));
     if (bkItems.length) {
       setBkInputs((prev) => {
         let next = prev;
@@ -2398,7 +2432,7 @@ export default function WorkoutViewerScreen() {
     }
 
     const fcItems = coreItems.filter(
-      (it) => it && (it.variant === 'FULL_CUSTOM' || String(it.scheme || '').toUpperCase() === 'FULL_CUSTOM')
+      (it) => isFullCustomWorkoutItem(it)
     );
 
     if (fcItems.length) {
@@ -4033,7 +4067,7 @@ export default function WorkoutViewerScreen() {
 
     if (isTop && totalSets > 0) {
       const completedIndexes = uniqueLoggedSetIndexes(topLogs);
-      const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
+      const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
       const fullTopBackdownTotal = totalSets + topBackdownTotal;
       const topBackdownLoggedCount =
         loggedSetIndexCount(topLogs) +
@@ -4051,8 +4085,9 @@ export default function WorkoutViewerScreen() {
       });
       const backdownRailSteps = backdownsForThisTop.flatMap((bd) => {
         const bdLogs = bd.set_logs || [];
-        const bdNextIdx = nextMissingSetIndex(bdLogs, bd.sets || 0) || (loggedSetIndexCount(bdLogs) + 1);
-        return Array.from({ length: bd.sets || 0 }).map((_, idx) => {
+        const bdTotal = positiveInt(bd.sets);
+        const bdNextIdx = nextMissingSetIndex(bdLogs, bdTotal) || (loggedSetIndexCount(bdLogs) + 1);
+        return Array.from({ length: bdTotal }).map((_, idx) => {
           const setIdx = idx + 1;
           const existing = bdLogs.find((sl) => sl.set_index === setIdx);
           const isNextBackdown = hasAllTopActual && !existing && setIdx === bdNextIdx;
@@ -4119,7 +4154,7 @@ export default function WorkoutViewerScreen() {
 
       backdownsForThisTop.forEach((bd) => {
         const bdLogs = bd.set_logs || [];
-        const bdTotal = bd.sets || 0;
+        const bdTotal = positiveInt(bd.sets);
         const bdNextIdx = nextMissingSetIndex(bdLogs, bdTotal) || (loggedSetIndexCount(bdLogs) + 1);
         const bdCompletedIndexes = uniqueLoggedSetIndexes(bdLogs);
         const targetLine = formatTargetRange(bd.target_low_kg, bd.target_high_kg, unit);
@@ -4332,7 +4367,7 @@ export default function WorkoutViewerScreen() {
       logs.length > 0
         ? Math.max(...logs.map((l) => l.set_index || 0))
         : 0;
-    const totalSets = it.sets || 0;
+    const totalSets = positiveInt(it.sets);
     const loggedCount = logs.length;
     const nextIndex = loggedCount + 1;
     const accessoryDetailKey = `acc:${it.id}`;
@@ -4477,13 +4512,11 @@ export default function WorkoutViewerScreen() {
               core.variant === 'VR' ||
               core.lift === 'VR';
 
-            const isTop = core.variant === 'TOP';
-            const isBackdown = core.variant === 'BK';
+            const isTop = isTopWorkoutItem(core);
+            const isBackdown = isBackdownWorkoutItem(core);
             const hasParent = core.parent_item_id != null;
 
-            const isFullCustom =
-              core.variant === 'FULL_CUSTOM' ||
-              ((core.scheme || '').toUpperCase() === 'FULL_CUSTOM');
+            const isFullCustom = isFullCustomWorkoutItem(core);
 
             // Skip BK rows that belong to a TOP – they’ll be rendered under the TOP card
             if (isBackdown && hasParent) {
@@ -4495,8 +4528,8 @@ export default function WorkoutViewerScreen() {
               isTop
                 ? workout.core_items.filter(
                     (it) =>
-                      it.variant === 'BK' &&
-                      it.parent_item_id === core.id,
+                      isBackdownWorkoutItem(it) &&
+                      numericId(it.parent_item_id) === numericId(core.id),
                   )
                 : [];
 
@@ -4505,7 +4538,7 @@ export default function WorkoutViewerScreen() {
 
             // straight-style logs (STRAIGHT/VR items only)
             const logs = core.set_logs || [];
-            const totalSets = core.sets || 0;
+            const totalSets = positiveInt(core.sets);
             const latestLoggedIdx =
               logs.length > 0 ? Math.max(...logs.map((sl) => sl.set_index || 0)) : 0;
             const nextIdx = Math.min(latestLoggedIdx + 1, totalSets) || 1;
@@ -4513,7 +4546,7 @@ export default function WorkoutViewerScreen() {
             // TOP items can have multiple prescribed sets. Keep hasTopActual for existing
             // backdown unlock logic, but also track per-set progress for TOP logging UI.
             const topLogs = isTop ? (logs || []) : [];
-            const topTotalSets = isTop ? (core.sets || 0) : 0;
+            const topTotalSets = isTop ? positiveInt(core.sets) : 0;
             const topLatestLoggedIdx =
               isTop && topLogs.length > 0
                 ? Math.max(...topLogs.map((sl) => sl.set_index || 0))
@@ -4529,9 +4562,8 @@ export default function WorkoutViewerScreen() {
             const hasAllTopActual = isTop
               ? topTotalSets > 0 && topLatestLoggedIdx >= topTotalSets
               : false;
-            const coreDetailKey = `core:${core.id}`;
             const topBackdownLogs = backdownsForThisTop.flatMap((bd) => bd.set_logs || []);
-            const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
+            const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
             const coreCompletionTotal = isFullCustom
               ? (Array.isArray(core.planned_sets) ? core.planned_sets.length : 0)
               : isTop
@@ -4543,7 +4575,6 @@ export default function WorkoutViewerScreen() {
                 backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
               : loggedSetIndexCount(logs);
             const coreIsComplete = coreCompletionTotal > 0 && coreCompletionLoggedCount >= coreCompletionTotal;
-            const coreIsExpanded = !!expandedCompletedMovements[coreDetailKey];
             const coreSummary = completedSetSummary(coreCompletionLogs, coreCompletionTotal, unit, 'rpe');
             const variantLabel =
               isTop
@@ -4556,7 +4587,7 @@ export default function WorkoutViewerScreen() {
             const topSchemeText = compactSchemeText(core, totalSets);
             const backdownSchemeText = (() => {
               if (!isTop || !backdownsForThisTop.length) return null;
-              const totalBackdownSets = backdownsForThisTop.reduce((sum, bd) => sum + (bd.sets || 0), 0);
+              const totalBackdownSets = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
               const firstBackdown = backdownsForThisTop[0];
               return compactSchemeText(firstBackdown, totalBackdownSets);
             })();
@@ -4602,6 +4633,9 @@ export default function WorkoutViewerScreen() {
               topNextIdx,
               hasAllTopActual,
             });
+            // P0 prescription integrity invariant:
+            // Expanded athlete UI must render every prescribed API detail row,
+            // even for completed sessions. Do not filter to logged/completed rows only.
             return (
               <CoreMovementLedgerRow
                 key={core.id}
