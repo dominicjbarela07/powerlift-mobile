@@ -9,6 +9,7 @@ import React, {
 import * as SecureStore from 'expo-secure-store';
 
 import { fetchJson } from '@/lib/api';
+import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
 
 // Shape of the authenticated user coming from your Flask API
 export type AuthUser = {
@@ -62,9 +63,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
     }
     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(payload.user));
+    startVideoUploadQueue();
   }
 
   async function logout() {
+    stopVideoUploadQueue();
     setUser(null);
     setToken(null);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
@@ -79,6 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const storedUser = await SecureStore.getItemAsync(USER_KEY);
 
         if (storedToken) setToken(storedToken);
+        if (storedToken) startVideoUploadQueue();
         let restoredUser: AuthUser | null = null;
         if (storedUser) {
           restoredUser = JSON.parse(storedUser);
