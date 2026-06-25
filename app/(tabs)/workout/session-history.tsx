@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementList, simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 type HistorySession = {
@@ -168,7 +169,9 @@ export default function SessionHistoryScreen() {
                 <View style={styles.copy}>
                   <Text style={styles.rowTitle} numberOfLines={1}>{session.title || session.label || 'Training Session'}</Text>
                   <Text style={styles.meta} numberOfLines={1}>{[formatShortDate(session.date), session.block_name, focusLine(session)].filter(Boolean).join(' / ')}</Text>
-                  {session.recap?.top_work ? <Text style={styles.recap} numberOfLines={1}>{session.recap.top_work}</Text> : null}
+                  {session.recap?.top_work ? (
+                    <Text style={styles.recap} numberOfLines={1}>{simplifyMobileMovementText(session.recap.top_work)}</Text>
+                  ) : null}
                 </View>
                 <Text style={[styles.status, { color: toneForKind(session.kind || session.status) }]}>{labelForKind(session.kind || session.status)}</Text>
               </Pressable>
@@ -470,7 +473,7 @@ function filterValueCount(input: {
 }
 
 function focusLine(session: HistorySession) {
-  return (session.focus?.primary || []).filter(Boolean).join(' / ');
+  return simplifyMobileMovementList(session.focus?.primary).join(' / ');
 }
 
 function optionLabel(options: FilterOption[] | undefined, key: string) {

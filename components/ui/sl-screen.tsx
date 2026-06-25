@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   padded: {
-    paddingHorizontal: SLSpacing.lg,
     paddingVertical: SLSpacing.lg,
   },
 });

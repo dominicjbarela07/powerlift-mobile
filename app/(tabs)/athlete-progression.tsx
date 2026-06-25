@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -10,12 +10,15 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle, Polyline } from 'react-native-svg';
+import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 type ProgressionRange = '30d' | '90d' | '180d' | '1y' | 'all';
+type DisplayUnit = 'kg' | 'lb';
+type MetricKey = 'e1rm' | 'top_weight' | 'avg_rpe' | 'volume' | 'readiness';
 type Trend = 'up' | 'steady' | 'down' | 'insufficient_data' | string;
 
 type ArcPoint = {
@@ -23,8 +26,13 @@ type ArcPoint = {
   value_kg?: number | null;
 };
 
+type ChartPoint = {
+  date?: string | null;
+  value: number;
+};
+
 type BigThreeLift = {
-  key: 'squat' | 'bench' | 'deadlift';
+  key?: string | null;
   label?: string | null;
   current_e1rm_kg?: number | null;
   best_e1rm_kg?: number | null;
@@ -32,6 +40,16 @@ type BigThreeLift = {
   change_pct?: number | null;
   trend?: Trend | null;
   points?: ArcPoint[];
+};
+
+type MetricTrend = {
+  points?: Array<{ date?: string | null; value?: number | null; value_kg?: number | null }>;
+  summary?: {
+    current?: number | null;
+    best?: number | null;
+    change?: number | null;
+  } | null;
+  source?: string | null;
 };
 
 type ProgressionPayload = {
@@ -60,21 +78,15 @@ type ProgressionPayload = {
   consistency?: {
     sessions_assigned?: number | null;
     sessions_completed?: number | null;
-    missed_or_incomplete?: number | null;
     completion_rate_pct?: number | null;
     current_streak?: number | null;
-    best_streak?: number | null;
-    weeks?: Array<{
-      week_start?: string | null;
-      completed?: number | null;
-      assigned?: number | null;
-      missed?: number | null;
-    }>;
   } | null;
   milestones?: StoryItem[];
   readiness?: {
     average?: number | null;
     trend?: Trend | null;
+    trend_label?: string | null;
+    trend_delta?: string | null;
     points?: Array<{ date?: string | null; score?: number | null }>;
     context_line?: string | null;
   } | null;
@@ -82,6 +94,11 @@ type ProgressionPayload = {
     current_kg?: number | null;
     recent_points?: Array<{ date?: string | null; bodyweight_kg?: number | null }>;
     context_line?: string | null;
+  } | null;
+  metric_trends?: {
+    top_weight?: MetricTrend;
+    avg_rpe?: MetricTrend;
+    volume?: MetricTrend;
   } | null;
 };
 
@@ -94,12 +111,27 @@ type StoryItem = {
   route?: string | null;
 };
 
+type ChartSeries = {
+  key: string;
+  label: string;
+  color: string;
+  points: ChartPoint[];
+};
+
 const RANGE_OPTIONS: Array<{ key: ProgressionRange; label: string }> = [
   { key: '30d', label: '30d' },
   { key: '90d', label: '90d' },
   { key: '180d', label: '180d' },
   { key: '1y', label: '1y' },
   { key: 'all', label: 'All' },
+];
+
+const METRICS: Array<{ key: MetricKey; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
+  { key: 'e1rm', label: 'e1RM', icon: 'trending-up-outline' },
+  { key: 'top_weight', label: 'Top Weight', icon: 'barbell-outline' },
+  { key: 'avg_rpe', label: 'Avg RPE', icon: 'pulse-outline' },
+  { key: 'volume', label: 'Volume', icon: 'albums-outline' },
+  { key: 'readiness', label: 'Readiness', icon: 'heart-outline' },
 ];
 
 const PROGRESSION_UNIT_KEY = 'strength-ledger.progression.unit';
@@ -109,21 +141,25 @@ const colors = {
   textStrong: '#F9FAFB',
   muted: '#B8ACA1',
   subtle: '#82766D',
-  line: 'rgba(222, 198, 166, 0.10)',
-  lineSoft: 'rgba(222, 198, 166, 0.06)',
-  surface: 'rgba(20, 14, 13, 0.28)',
-  surfaceStrong: 'rgba(26, 17, 16, 0.48)',
+  line: 'rgba(222, 198, 166, 0.14)',
+  lineSoft: 'rgba(222, 198, 166, 0.08)',
+  surface: 'rgba(20, 14, 18, 0.48)',
+  surfaceStrong: 'rgba(28, 20, 30, 0.72)',
+  surfaceLift: 'rgba(34, 24, 42, 0.74)',
   violet: SLColors.accentViolet,
-  violetSoft: 'rgba(167, 139, 250, 0.18)',
-  plum: 'rgba(77, 39, 63, 0.26)',
-  amber: '#D6A75E',
-  green: '#A7CBB5',
-  red: '#E88989',
+  violetStrong: '#9B6CFF',
+  violetSoft: 'rgba(155, 108, 255, 0.22)',
+  cyan: '#55D6CF',
+  pink: '#F06A8B',
+  amber: '#F3BE55',
+  green: '#7DE0A3',
+  red: '#E96D78',
 };
 
 export default function AthleteProgressionScreen() {
   const [range, setRange] = useState<ProgressionRange>('90d');
   const [unit, setUnit] = useState<DisplayUnit>('kg');
+  const [metric, setMetric] = useState<MetricKey>('e1rm');
   const [unitPreferenceLoaded, setUnitPreferenceLoaded] = useState(false);
   const [hasStoredUnitPreference, setHasStoredUnitPreference] = useState(false);
   const [payload, setPayload] = useState<ProgressionPayload | null>(null);
@@ -170,9 +206,7 @@ export default function AthleteProgressionScreen() {
           setHasStoredUnitPreference(true);
         }
       })
-      .catch(() => {
-        // Best-effort preference load. The screen remains fully usable without it.
-      })
+      .catch(() => {})
       .finally(() => {
         if (alive) setUnitPreferenceLoaded(true);
       });
@@ -189,16 +223,17 @@ export default function AthleteProgressionScreen() {
   const changeUnit = useCallback((next: DisplayUnit) => {
     setUnit(next);
     setHasStoredUnitPreference(true);
-    AsyncStorage.setItem(PROGRESSION_UNIT_KEY, next).catch(() => {
-      // Preference persistence is non-critical.
-    });
+    AsyncStorage.setItem(PROGRESSION_UNIT_KEY, next).catch(() => {});
   }, []);
+
+  const chart = useMemo(() => buildChart(payload, metric, unit), [metric, payload, unit]);
+  const insight = useMemo(() => buildInsight(payload, metric, unit, range), [metric, payload, range, unit]);
 
   if (loading && !refreshing && !payload) {
     return (
       <View style={styles.centerState}>
         <ActivityIndicator color={colors.violet} />
-        <Text style={styles.stateTitle}>Loading Progression</Text>
+        <Text style={styles.stateTitle}>Loading Progress</Text>
       </View>
     );
   }
@@ -210,17 +245,68 @@ export default function AthleteProgressionScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadProgression({ silent: true })} tintColor={colors.violet} />}
     >
       <View style={styles.header}>
-        <View style={styles.headerCopy}>
-          <Text style={styles.title}>Progression</Text>
-          <Text style={styles.rangeCopy}>{payload?.range?.label || 'Training story'}</Text>
-        </View>
-        <ProgressionControls
-          range={range}
-          onRangeChange={setRange}
-          unit={unit}
-          onUnitChange={changeUnit}
-        />
+        <Text style={styles.title}>Progress</Text>
+        <Text style={styles.subtitle}>Your training story</Text>
       </View>
+
+      <View style={styles.controlRow}>
+        <View style={styles.rangeRail}>
+          {RANGE_OPTIONS.map((option) => {
+            const active = option.key === range;
+            return (
+              <Pressable
+                key={option.key}
+                onPress={() => setRange(option.key)}
+                style={({ pressed }) => [
+                  styles.rangeOption,
+                  active && styles.rangeOptionActive,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text style={[styles.rangeOptionText, active && styles.rangeOptionTextActive]}>{option.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <View style={styles.unitRail}>
+          {(['kg', 'lb'] as const).map((option) => {
+            const active = unit === option;
+            return (
+              <Pressable
+                key={option}
+                onPress={() => changeUnit(option)}
+                style={({ pressed }) => [
+                  styles.unitOption,
+                  active && styles.unitOptionActive,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text style={[styles.unitOptionText, active && styles.unitOptionTextActive]}>{option}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.metricRail}>
+        {METRICS.map((option) => {
+          const active = option.key === metric;
+          return (
+            <Pressable
+              key={option.key}
+              onPress={() => setMetric(option.key)}
+              style={({ pressed }) => [
+                styles.metricCard,
+                active && styles.metricCardActive,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Ionicons name={option.icon} size={22} color={metricColor(option.key)} />
+              <Text style={[styles.metricCardLabel, active && styles.metricCardLabelActive]}>{option.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
 
       {error ? (
         <View style={styles.stateLine}>
@@ -229,313 +315,497 @@ export default function AthleteProgressionScreen() {
         </View>
       ) : null}
 
-      <StrengthStory story={payload?.strength_story} unit={unit} />
-      <BigThreeArc arc={payload?.big_three_arc} unit={unit} />
-      <EstimatedTotal arc={payload?.big_three_arc} unit={unit} />
-      <RecentWins wins={payload?.recent_wins || []} unit={unit} />
-      <ConsistencyThread consistency={payload?.consistency} />
-      <MilestoneTimeline milestones={payload?.milestones || []} unit={unit} />
-      <ContextRows readiness={payload?.readiness || null} bodyweight={payload?.bodyweight || null} unit={unit} />
+      <View style={styles.heroCard}>
+        <View style={styles.chartHeader}>
+          <View>
+            <Text style={styles.chartTitle}>{metricTitle(metric)} Trend</Text>
+            <Text style={styles.chartSubtitle}>{metricSubtitle(metric, unit)}</Text>
+          </View>
+          <View style={styles.adjustPill}>
+            <Ionicons name="options-outline" size={15} color={colors.text} />
+            <Text style={styles.adjustText}>Adjust View</Text>
+          </View>
+        </View>
+        <Legend series={chart.series} />
+        <HeroChart series={chart.series} formatValue={chart.formatValue} emptyTitle={chart.emptyTitle} />
+      </View>
+
+      <InsightCard insight={insight} />
+      <SupportingMetrics payload={payload} selected={metric} unit={unit} />
+      <StrengthStory payload={payload} unit={unit} />
+      <RecentMilestones milestones={payload?.milestones || []} unit={unit} />
     </ScrollView>
   );
 }
 
-function ProgressionControls({
-  range,
-  onRangeChange,
-  unit,
-  onUnitChange,
+function HeroChart({
+  series,
+  formatValue,
+  emptyTitle,
 }: {
-  range: ProgressionRange;
-  onRangeChange: (next: ProgressionRange) => void;
-  unit: DisplayUnit;
-  onUnitChange: (next: DisplayUnit) => void;
+  series: ChartSeries[];
+  formatValue: (value: number) => string;
+  emptyTitle: string;
 }) {
-  return (
-    <View style={styles.controlRail}>
-      <View style={styles.rangeRail}>
-        {RANGE_OPTIONS.map((option) => {
-          const active = option.key === range;
-          return (
-            <Pressable
-              key={option.key}
-              onPress={() => onRangeChange(option.key)}
-              style={({ pressed }) => [
-                styles.rangeOption,
-                active && styles.rangeOptionActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={[styles.rangeOptionText, active && styles.rangeOptionTextActive]}>{option.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      <View style={styles.unitRail}>
-        {(['kg', 'lb'] as const).map((option) => {
-          const active = unit === option;
-          return (
-            <Pressable
-              key={option}
-              onPress={() => onUnitChange(option)}
-              style={({ pressed }) => [
-                styles.unitOption,
-                active && styles.unitOptionActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={[styles.unitOptionText, active && styles.unitOptionTextActive]}>{option}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
+  const populated = series.filter((item) => item.points.length >= 2);
+  const allValues = populated.flatMap((item) => item.points.map((point) => point.value));
+  const allDates = populated.flatMap((item) => item.points.map((point) => point.date || ''));
 
-function StrengthStory({ story, unit }: { story?: ProgressionPayload['strength_story']; unit: DisplayUnit }) {
-  const title = story?.title || 'Your story is just getting started.';
-  const body = story?.body || 'Keep logging sessions and your progression story will build here.';
-  return (
-    <View style={styles.storyAnchor}>
-      <View style={styles.storyRail} />
-      <View style={styles.storyCopy}>
-        <Text style={styles.zoneKicker}>Strength Story</Text>
-        <Text style={styles.storyTitle}>{title}</Text>
-        <Text style={styles.storyBody}>{convertKgText(body, unit)}</Text>
-      </View>
-    </View>
-  );
-}
-
-function BigThreeArc({ arc, unit }: { arc?: ProgressionPayload['big_three_arc']; unit: DisplayUnit }) {
-  const lifts = normalizeBigThreeLifts(arc?.lifts || []);
-  return (
-    <View style={styles.zone}>
-      <View style={styles.zoneHeader}>
-        <Text style={styles.zoneKicker}>Big Three Arc</Text>
-        <Text style={styles.zoneHint}>e1RM markers</Text>
-      </View>
-      <View style={styles.liftLanes}>
-        {lifts.map((lift) => (
-          <View key={lift.key} style={styles.liftLane}>
-            <View style={styles.liftLaneHeader}>
-              <View>
-                <Text style={styles.liftName}>{lift.label || liftLabel(lift.key)}</Text>
-                <Text style={[styles.trendLabel, { color: trendColor(lift.trend) }]}>{trendLabel(lift.trend)}</Text>
-              </View>
-              <Sparkline points={lift.points || []} trend={lift.trend} />
-            </View>
-            <View style={styles.liftStats}>
-              <MetricLine label="Current" value={formatWeight(lift.current_e1rm_kg, unit)} />
-              <MetricLine label="Best" value={formatWeight(lift.best_e1rm_kg, unit)} />
-              <MetricLine label="Change" value={formatDelta(lift.change_kg, unit)} tone={deltaTone(lift.change_kg)} />
-            </View>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-function EstimatedTotal({ arc, unit }: { arc?: ProgressionPayload['big_three_arc']; unit: DisplayUnit }) {
-  if (arc?.estimated_total_kg == null) return null;
-  const delta = arc.estimated_total_change_kg;
-  return (
-    <View style={styles.totalLine}>
-      <View style={styles.totalRail} />
-      <Text style={styles.totalText}>
-        Estimated total: <Text style={styles.totalStrong}>{formatWeight(arc.estimated_total_kg, unit)}</Text>
-        {delta != null ? <Text style={[styles.totalDelta, { color: deltaTone(delta) }]}> · {formatDelta(delta, unit)}</Text> : null}
-      </Text>
-    </View>
-  );
-}
-
-function RecentWins({ wins, unit }: { wins: StoryItem[]; unit: DisplayUnit }) {
-  return (
-    <View style={styles.zone}>
-      <Text style={styles.zoneKicker}>Recent Wins</Text>
-      <View style={styles.storyRows}>
-        {wins.length ? wins.slice(0, 6).map((win, index) => (
-          <StoryRow key={`${win.id || win.date || 'win'}-${index}`} item={win} tone={colors.green} unit={unit} />
-        )) : (
-          <Text style={styles.emptyLine}>Wins appear as training history builds.</Text>
-        )}
-      </View>
-    </View>
-  );
-}
-
-function ConsistencyThread({ consistency }: { consistency?: ProgressionPayload['consistency'] }) {
-  const assigned = Number(consistency?.sessions_assigned || 0);
-  const completed = Number(consistency?.sessions_completed || 0);
-  const completionRate = consistency?.completion_rate_pct;
-  return (
-    <View style={styles.zone}>
-      <View style={styles.zoneHeader}>
-        <Text style={styles.zoneKicker}>Consistency Thread</Text>
-        <Text style={styles.zoneHint}>
-          {assigned ? `${completed} of ${assigned} sessions` : 'Story building'}
-        </Text>
-      </View>
-      <Text style={styles.contextBody}>
-        {assigned
-          ? `${formatPercent(completionRate)} complete · ${Number(consistency?.current_streak || 0)} session streak`
-          : 'Complete sessions and your weekly rhythm will show here.'}
-      </Text>
-      <View style={styles.weekStrip}>
-        {(consistency?.weeks || []).slice(-8).map((week, index) => {
-          const weekAssigned = Number(week.assigned || 0);
-          const weekCompleted = Number(week.completed || 0);
-          const pct = weekAssigned > 0 ? Math.max(0.08, Math.min(1, weekCompleted / weekAssigned)) : 0.08;
-          return (
-            <View key={`${week.week_start || 'week'}-${index}`} style={styles.weekColumn}>
-              <View style={styles.weekTrack}>
-                <View style={[styles.weekFill, { height: `${pct * 100}%`, backgroundColor: weekCompleted >= weekAssigned && weekAssigned > 0 ? colors.green : colors.amber }]} />
-              </View>
-              <Text style={styles.weekLabel}>{formatShortWeek(week.week_start)}</Text>
-            </View>
-          );
-        })}
-        {!(consistency?.weeks || []).length ? <View style={styles.weekPlaceholder} /> : null}
-      </View>
-    </View>
-  );
-}
-
-function MilestoneTimeline({ milestones, unit }: { milestones: StoryItem[]; unit: DisplayUnit }) {
-  return (
-    <View style={styles.zone}>
-      <Text style={styles.zoneKicker}>Milestones</Text>
-      <View style={styles.timeline}>
-        {milestones.length ? milestones.slice(0, 12).map((milestone, index) => (
-          <StoryRow key={`${milestone.id || milestone.date || 'milestone'}-${index}`} item={milestone} tone={colors.violet} timeline unit={unit} />
-        )) : (
-          <Text style={styles.emptyLine}>Milestones will appear as your training history grows.</Text>
-        )}
-      </View>
-    </View>
-  );
-}
-
-function ContextRows({
-  readiness,
-  bodyweight,
-  unit,
-}: {
-  readiness: ProgressionPayload['readiness'];
-  bodyweight: ProgressionPayload['bodyweight'];
-  unit: DisplayUnit;
-}) {
-  if (!readiness && !bodyweight) return null;
-  return (
-    <View style={styles.zone}>
-      <Text style={styles.zoneKicker}>Training Context</Text>
-      {readiness ? (
-        <View style={styles.contextRow}>
-          <View style={[styles.rowRail, { backgroundColor: colors.violet }]} />
-          <View style={styles.rowCopy}>
-            <Text style={styles.rowTitle}>Readiness</Text>
-            <Text style={styles.rowMeta}>{readiness.context_line || `Average ${formatDecimal(readiness.average)}`}</Text>
-          </View>
-        </View>
-      ) : null}
-      {bodyweight ? (
-        <View style={styles.contextRow}>
-          <View style={[styles.rowRail, { backgroundColor: colors.amber }]} />
-          <View style={styles.rowCopy}>
-            <Text style={styles.rowTitle}>Bodyweight</Text>
-            <Text style={styles.rowMeta}>
-              {bodyweight.current_kg != null
-                ? `Current ${formatWeight(bodyweight.current_kg, unit)}`
-                : convertKgText(bodyweight.context_line || 'Context building', unit)}
-            </Text>
-          </View>
-        </View>
-      ) : null}
-    </View>
-  );
-}
-
-function MetricLine({ label, value, tone }: { label: string; value: string; tone?: string }) {
-  return (
-    <View style={styles.metricLine}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={[styles.metricValue, tone ? { color: tone } : null]}>{value}</Text>
-    </View>
-  );
-}
-
-function StoryRow({ item, tone, timeline, unit }: { item: StoryItem; tone: string; timeline?: boolean; unit: DisplayUnit }) {
-  return (
-    <View style={styles.storyRow}>
-      <View style={styles.timelineDate}>
-        <Text style={styles.timelineMonth}>{formatMonth(item.date)}</Text>
-        <Text style={styles.timelineDay}>{formatDayNumber(item.date)}</Text>
-      </View>
-      <View style={[timeline ? styles.timelineRail : styles.rowRail, { backgroundColor: tone }]} />
-      <View style={styles.rowCopy}>
-        <Text style={styles.rowTitle}>{item.title || 'Training marker'}</Text>
-        {item.body ? <Text style={styles.rowMeta}>{convertKgText(item.body, unit)}</Text> : null}
-      </View>
-    </View>
-  );
-}
-
-function Sparkline({ points, trend }: { points: ArcPoint[]; trend?: Trend | null }) {
-  const values = points.map((point) => Number(point.value_kg)).filter((value) => Number.isFinite(value));
-  if (values.length < 2) {
+  if (allValues.length < 2) {
     return (
-      <View style={styles.sparklineEmpty}>
-        <View style={styles.sparklineBaseline} />
+      <View style={styles.chartEmpty}>
+        <Ionicons name="analytics-outline" size={30} color={colors.violet} />
+        <Text style={styles.chartEmptyTitle}>{emptyTitle}</Text>
+        <Text style={styles.chartEmptyBody}>Log a few sessions to start building your progress story.</Text>
       </View>
     );
   }
 
-  const width = 86;
-  const height = 28;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const width = 330;
+  const height = 250;
+  const left = 38;
+  const right = 12;
+  const top = 16;
+  const bottom = 34;
+  const innerWidth = width - left - right;
+  const innerHeight = height - top - bottom;
+  const min = Math.min(...allValues);
+  const max = Math.max(...allValues);
   const spread = Math.max(1, max - min);
-  const path = values.map((value, index) => {
-    const x = values.length === 1 ? width / 2 : (index / (values.length - 1)) * width;
-    const y = height - ((value - min) / spread) * (height - 6) - 3;
+  const yMin = Math.max(0, min - spread * 0.12);
+  const yMax = max + spread * 0.12;
+  const ySpread = Math.max(1, yMax - yMin);
+  const gridValues = [0, 0.5, 1].map((ratio) => yMin + (1 - ratio) * ySpread);
+
+  const pointToCoord = (point: ChartPoint, index: number, count: number) => {
+    const x = left + (count <= 1 ? innerWidth / 2 : (index / (count - 1)) * innerWidth);
+    const y = top + innerHeight - ((point.value - yMin) / ySpread) * innerHeight;
+    return { x, y };
+  };
+
+  const firstDate = allDates.filter(Boolean)[0];
+  const lastDate = allDates.filter(Boolean).slice(-1)[0];
+
+  return (
+    <View style={styles.chartWrap}>
+      <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
+        {gridValues.map((value, index) => {
+          const y = top + (index / 2) * innerHeight;
+          return (
+            <React.Fragment key={`${value}-${index}`}>
+              <Line x1={left} x2={width - right} y1={y} y2={y} stroke="rgba(255,255,255,0.07)" strokeWidth={1} strokeDasharray="4 4" />
+              <Line x1={left} x2={left} y1={top} y2={top + innerHeight} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
+            </React.Fragment>
+          );
+        })}
+        {populated.map((item) => {
+          const path = item.points.map((point, index) => {
+            const coord = pointToCoord(point, index, item.points.length);
+            return `${coord.x},${coord.y}`;
+          }).join(' ');
+          return (
+            <React.Fragment key={item.key}>
+              <Polyline points={path} fill="none" stroke={item.color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+              {item.points.map((point, index) => {
+                const coord = pointToCoord(point, index, item.points.length);
+                return <Circle key={`${item.key}-${index}`} cx={coord.x} cy={coord.y} r={4} fill={item.color} />;
+              })}
+            </React.Fragment>
+          );
+        })}
+      </Svg>
+      <View style={styles.yLabels}>
+        <Text style={styles.axisLabel}>{formatValue(yMax)}</Text>
+        <Text style={styles.axisLabel}>{formatValue((yMin + yMax) / 2)}</Text>
+        <Text style={styles.axisLabel}>{formatValue(yMin)}</Text>
+      </View>
+      <View style={styles.xLabels}>
+        <Text style={styles.axisLabel}>{formatChartDate(firstDate)}</Text>
+        <Text style={styles.axisLabel}>{formatChartDate(lastDate)}</Text>
+      </View>
+    </View>
+  );
+}
+
+function Legend({ series }: { series: ChartSeries[] }) {
+  const visible = series.filter((item) => item.points.length);
+  if (!visible.length) return null;
+  return (
+    <View style={styles.legend}>
+      {visible.map((item) => (
+        <View key={item.key} style={styles.legendItem}>
+          <View style={[styles.legendDot, { backgroundColor: item.color }]} />
+          <Text style={styles.legendText}>{item.label}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function InsightCard({ insight }: { insight: string }) {
+  return (
+    <View style={styles.insightCard}>
+      <View style={styles.insightIcon}>
+        <Ionicons name="sparkles-outline" size={18} color={colors.amber} />
+      </View>
+      <View style={styles.insightCopy}>
+        <Text style={styles.insightTitle}>Insight</Text>
+        <Text style={styles.insightBody}>{insight}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color={colors.amber} />
+    </View>
+  );
+}
+
+function SupportingMetrics({ payload, selected, unit }: { payload: ProgressionPayload | null; selected: MetricKey; unit: DisplayUnit }) {
+  const cards = buildSupportingMetricCards(payload, selected, unit);
+  if (!cards.length) return null;
+  return (
+    <View style={styles.supportingStack}>
+      {cards.map((card) => (
+        <View key={card.key} style={styles.supportCard}>
+          <View style={[styles.supportIcon, { backgroundColor: card.iconBg }]}>
+            <Ionicons name={card.icon} size={18} color={card.color} />
+          </View>
+          <View style={styles.supportCopy}>
+            <Text style={styles.supportLabel}>{card.label}</Text>
+            <Text style={styles.supportValue}>{card.value}</Text>
+            {card.meta ? <Text style={styles.supportMeta}>{card.meta}</Text> : null}
+          </View>
+          {card.change ? <Text style={[styles.supportChange, { color: card.changeColor }]}>{card.change}</Text> : null}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function StrengthStory({ payload, unit }: { payload: ProgressionPayload | null; unit: DisplayUnit }) {
+  const lifts = (payload?.big_three_arc?.lifts || []).filter((lift) => (lift.points || []).length > 0);
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Strength Story</Text>
+        <Text style={styles.sectionMeta}>{metricRangeLabel(payload?.range?.label)}</Text>
+      </View>
+      <View style={styles.storyStack}>
+        {lifts.length ? lifts.map((lift) => (
+          <View key={String(lift.key || lift.label)} style={styles.liftCard}>
+            <View style={[styles.liftIcon, { backgroundColor: liftTone(String(lift.key)).bg }]}>
+              <Ionicons name={liftIcon(String(lift.key))} size={21} color={liftTone(String(lift.key)).color} />
+            </View>
+            <View style={styles.liftCardCopy}>
+              <Text style={styles.liftName}>{friendlyLiftLabel(lift.label || lift.key || 'Lift')}</Text>
+              <View style={styles.liftStatsRow}>
+                <MetricColumn label="Current" value={formatWeight(lift.current_e1rm_kg, unit)} tone={liftTone(String(lift.key)).color} />
+                <MetricColumn label="Best" value={formatWeight(lift.best_e1rm_kg, unit)} />
+                <MetricColumn label="Change" value={formatDelta(lift.change_kg, unit)} tone={deltaTone(lift.change_kg)} />
+              </View>
+            </View>
+            <Sparkline points={(lift.points || []).map((point) => ({ date: point.date, value: unitValue(point.value_kg, unit) })).filter((point) => Number.isFinite(point.value))} color={liftTone(String(lift.key)).color} />
+          </View>
+        )) : (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyTitle}>Strength story is building.</Text>
+            <Text style={styles.emptyBody}>Logged top sets will appear here as your training history grows.</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function RecentMilestones({ milestones, unit }: { milestones: StoryItem[]; unit: DisplayUnit }) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Recent Milestones</Text>
+        {milestones.length ? <Text style={styles.sectionAction}>View All</Text> : null}
+      </View>
+      <View style={styles.milestoneCard}>
+        {milestones.length ? milestones.slice(0, 4).map((item, index) => (
+          <View key={`${item.id || item.date || 'milestone'}-${index}`} style={[styles.milestoneRow, index > 0 && styles.milestoneRowBorder]}>
+            <View style={styles.milestoneIcon}>
+              <Ionicons name="star-outline" size={19} color={colors.amber} />
+            </View>
+            <View style={styles.milestoneCopy}>
+              <Text style={styles.milestoneTitle}>{item.title || 'Training milestone'}</Text>
+              {item.body ? <Text style={styles.milestoneBody}>{convertKgText(item.body, unit)}</Text> : null}
+            </View>
+            <Text style={styles.milestoneDate}>{formatMilestoneDate(item.date)}</Text>
+          </View>
+        )) : (
+          <View style={styles.emptyMilestone}>
+            <Text style={styles.emptyTitle}>Milestones will appear as you log training.</Text>
+            <Text style={styles.emptyBody}>New markers, streaks, and completed chapters will live here.</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function MetricColumn({ label, value, tone }: { label: string; value: string; tone?: string }) {
+  return (
+    <View style={styles.metricColumn}>
+      <Text style={styles.metricColumnLabel}>{label}</Text>
+      <Text style={[styles.metricColumnValue, tone ? { color: tone } : null]}>{value}</Text>
+    </View>
+  );
+}
+
+function Sparkline({ points, color }: { points: ChartPoint[]; color: string }) {
+  if (points.length < 2) {
+    return <View style={styles.sparklineEmpty} />;
+  }
+  const width = 76;
+  const height = 34;
+  const min = Math.min(...points.map((point) => point.value));
+  const max = Math.max(...points.map((point) => point.value));
+  const spread = Math.max(1, max - min);
+  const path = points.map((point, index) => {
+    const x = (index / (points.length - 1)) * width;
+    const y = height - ((point.value - min) / spread) * (height - 8) - 4;
     return `${x},${y}`;
   }).join(' ');
   const last = path.split(' ').pop()?.split(',').map(Number) || [width, height / 2];
-
   return (
     <Svg width={width} height={height}>
-      <Polyline points={path} fill="none" stroke={trendColor(trend)} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" opacity={0.82} />
-      <Circle cx={last[0]} cy={last[1]} r={2.8} fill={trendColor(trend)} opacity={0.95} />
+      <Polyline points={path} fill="none" stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
+      <Circle cx={last[0]} cy={last[1]} r={3} fill={color} />
     </Svg>
   );
 }
 
-type DisplayUnit = 'kg' | 'lb';
+function buildChart(payload: ProgressionPayload | null, metric: MetricKey, unit: DisplayUnit) {
+  if (metric === 'e1rm') {
+    const lifts = payload?.big_three_arc?.lifts || [];
+    const series = lifts.map((lift) => ({
+      key: String(lift.key || lift.label || 'lift'),
+      label: friendlyLiftLabel(lift.label || lift.key || 'Lift'),
+      color: liftTone(String(lift.key)).color,
+      points: (lift.points || [])
+        .map((point) => ({ date: point.date, value: unitValue(point.value_kg, unit) }))
+        .filter((point) => Number.isFinite(point.value)),
+    }));
+    return {
+      series,
+      formatValue: (value: number) => `${roundWeight(value)}`,
+      emptyTitle: 'No e1RM trend yet.',
+    };
+  }
+  if (metric === 'readiness') {
+    return {
+      series: [{
+        key: 'readiness',
+        label: 'Readiness',
+        color: colors.amber,
+        points: (payload?.readiness?.points || [])
+          .map((point) => ({ date: point.date, value: Number(point.score) }))
+          .filter((point) => Number.isFinite(point.value)),
+      }],
+      formatValue: (value: number) => `${Math.round(value * 10) / 10}`,
+      emptyTitle: 'No readiness trend yet.',
+    };
+  }
+  const trend = payload?.metric_trends?.[metric];
+  const isWeightMetric = metric === 'top_weight' || metric === 'volume';
+  return {
+    series: [{
+      key: metric,
+      label: metricTitle(metric),
+      color: metricColor(metric),
+      points: (trend?.points || [])
+        .map((point) => ({
+          date: point.date,
+          value: isWeightMetric ? unitValue(point.value_kg, unit) : Number(point.value),
+        }))
+        .filter((point) => Number.isFinite(point.value)),
+    }],
+    formatValue: (value: number) => isWeightMetric ? `${compactNumber(value)}` : `${Math.round(value * 10) / 10}`,
+    emptyTitle: `No ${metricTitle(metric).toLowerCase()} trend yet.`,
+  };
+}
+
+function buildInsight(payload: ProgressionPayload | null, metric: MetricKey, unit: DisplayUnit, range: ProgressionRange) {
+  const rangeLabel = RANGE_OPTIONS.find((item) => item.key === range)?.label || 'this range';
+  if (!payload) return 'Log a few sessions and your first trend will appear here.';
+  if (metric === 'e1rm') {
+    const best = (payload.big_three_arc?.lifts || [])
+      .filter((lift) => lift.change_kg != null)
+      .sort((a, b) => Number(b.change_kg || 0) - Number(a.change_kg || 0))[0];
+    if (best && Number(best.change_kg || 0) > 0) {
+      return `Your ${friendlyLiftLabel(best.label || best.key || 'lift').toLowerCase()} e1RM is trending up ${formatWeight(Math.abs(Number(best.change_kg)), unit)} over ${rangeLabel}.`;
+    }
+    return convertKgText(payload.strength_story?.body || 'Keep logging sessions and your first trend will appear here.', unit);
+  }
+  if (metric === 'readiness') {
+    return payload.readiness?.context_line || 'Log readiness after training and recovery trends will appear here.';
+  }
+  const trend = payload.metric_trends?.[metric];
+  const change = trend?.summary?.change;
+  if (change != null && Number.isFinite(Number(change))) {
+    const direction = Number(change) >= 0 ? 'up' : 'down';
+    const formatted = metric === 'avg_rpe'
+      ? `${Math.abs(Number(change)).toFixed(1)}`
+      : formatWeight(Math.abs(Number(change)), unit);
+    return `${metricTitle(metric)} is ${direction} ${formatted} over ${rangeLabel}.`;
+  }
+  return `Keep logging sessions and your ${metricTitle(metric).toLowerCase()} trend will appear here.`;
+}
+
+function buildSupportingMetricCards(payload: ProgressionPayload | null, selected: MetricKey, unit: DisplayUnit) {
+  const cards: Array<{
+    key: string;
+    label: string;
+    value: string;
+    meta?: string;
+    change?: string;
+    changeColor?: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    iconBg: string;
+    color: string;
+  }> = [];
+  const volume = payload?.metric_trends?.volume?.summary;
+  if (selected !== 'volume' && volume?.current != null) {
+    cards.push({
+      key: 'volume',
+      label: 'Training Load (Volume)',
+      value: formatWeight(volume.current, unit),
+      meta: 'Current range',
+      change: volume.change != null ? formatDelta(volume.change, unit) : undefined,
+      changeColor: deltaTone(volume.change),
+      icon: 'albums-outline',
+      iconBg: 'rgba(240,106,139,0.14)',
+      color: colors.pink,
+    });
+  }
+  if (selected !== 'readiness' && payload?.readiness?.average != null) {
+    cards.push({
+      key: 'readiness',
+      label: 'Readiness Score',
+      value: `${formatDecimal(payload.readiness.average)} / 5`,
+      meta: 'Average',
+      change: payload.readiness.trend_delta || undefined,
+      changeColor: trendColor(payload.readiness.trend),
+      icon: 'heart-outline',
+      iconBg: 'rgba(243,190,85,0.14)',
+      color: colors.amber,
+    });
+  }
+  const avgRpe = payload?.metric_trends?.avg_rpe?.summary;
+  if (selected !== 'avg_rpe' && avgRpe?.current != null) {
+    cards.push({
+      key: 'avg_rpe',
+      label: 'Average RPE',
+      value: formatDecimal(avgRpe.current),
+      meta: 'Logged sets',
+      change: avgRpe.change != null ? signedDecimal(avgRpe.change) : undefined,
+      changeColor: deltaTone(avgRpe.change),
+      icon: 'pulse-outline',
+      iconBg: 'rgba(85,214,207,0.14)',
+      color: colors.cyan,
+    });
+  }
+  return cards.slice(0, 3);
+}
+
+function metricTitle(metric: MetricKey) {
+  if (metric === 'e1rm') return 'e1RM';
+  if (metric === 'top_weight') return 'Top Weight';
+  if (metric === 'avg_rpe') return 'Avg RPE';
+  if (metric === 'volume') return 'Volume';
+  return 'Readiness';
+}
+
+function metricSubtitle(metric: MetricKey, unit: DisplayUnit) {
+  if (metric === 'e1rm') return `Estimated 1 Rep Max (${unit})`;
+  if (metric === 'top_weight') return `Heaviest logged set (${unit})`;
+  if (metric === 'avg_rpe') return 'Average logged RPE';
+  if (metric === 'volume') return `Logged set volume (${unit})`;
+  return 'Readiness score';
+}
+
+function metricColor(metric: MetricKey) {
+  if (metric === 'top_weight') return colors.text;
+  if (metric === 'avg_rpe') return colors.cyan;
+  if (metric === 'volume') return colors.pink;
+  if (metric === 'readiness') return colors.amber;
+  return colors.violetStrong;
+}
+
+function liftTone(key: string) {
+  const normalized = key.toLowerCase();
+  if (normalized.includes('bench')) return { color: colors.cyan, bg: 'rgba(85,214,207,0.14)' };
+  if (normalized.includes('dead')) return { color: colors.pink, bg: 'rgba(240,106,139,0.14)' };
+  return { color: colors.violetStrong, bg: 'rgba(155,108,255,0.18)' };
+}
+
+function liftIcon(key: string): keyof typeof Ionicons.glyphMap {
+  const normalized = key.toLowerCase();
+  if (normalized.includes('bench')) return 'barbell-outline';
+  if (normalized.includes('dead')) return 'body-outline';
+  return 'walk-outline';
+}
+
+function friendlyLiftLabel(value: string) {
+  return simplifyMobileMovementName(value).replace(/^Competition\s+/i, '');
+}
 
 function normalizeUnit(value?: string | null): DisplayUnit {
   const lower = String(value || '').toLowerCase();
   return lower.startsWith('lb') ? 'lb' : 'kg';
 }
 
+function unitValue(valueKg?: number | null, unit: DisplayUnit = 'kg') {
+  if (valueKg == null || !Number.isFinite(Number(valueKg))) return Number.NaN;
+  return unit === 'lb' ? Number(valueKg) * 2.2046226218 : Number(valueKg);
+}
+
 function formatWeight(valueKg?: number | null, unit: DisplayUnit = 'kg') {
   if (valueKg == null || !Number.isFinite(Number(valueKg))) return 'Building';
-  const value = unit === 'lb' ? Number(valueKg) * 2.2046226218 : Number(valueKg);
-  return `${roundWeight(value)} ${unit}`;
+  return `${roundWeight(unitValue(valueKg, unit))} ${unit}`;
 }
 
 function formatDelta(valueKg?: number | null, unit: DisplayUnit = 'kg') {
   if (valueKg == null || !Number.isFinite(Number(valueKg))) return 'Building';
-  const value = unit === 'lb' ? Number(valueKg) * 2.2046226218 : Number(valueKg);
+  const value = unitValue(valueKg, unit);
   const sign = value > 0 ? '+' : '';
   return `${sign}${roundWeight(value)} ${unit}`;
 }
 
 function roundWeight(value: number) {
+  if (!Number.isFinite(value)) return '0';
   const rounded = Math.round(value * 10) / 10;
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function compactNumber(value: number) {
+  if (!Number.isFinite(value)) return '0';
+  if (Math.abs(value) >= 1000) return `${Math.round(value / 100) / 10}k`;
+  return roundWeight(value);
+}
+
+function formatDecimal(value?: number | null) {
+  if (value == null || !Number.isFinite(Number(value))) return 'Building';
+  return (Math.round(Number(value) * 10) / 10).toFixed(1);
+}
+
+function signedDecimal(value?: number | null) {
+  if (value == null || !Number.isFinite(Number(value))) return undefined;
+  const rounded = Math.round(Number(value) * 10) / 10;
+  return `${rounded > 0 ? '+' : ''}${rounded.toFixed(1)}`;
+}
+
+function deltaTone(value?: number | null) {
+  if (value == null || Math.abs(Number(value)) < 0.1) return colors.muted;
+  return Number(value) > 0 ? colors.green : colors.red;
+}
+
+function trendColor(trend?: Trend | null) {
+  if (trend === 'up' || trend === 'improving') return colors.green;
+  if (trend === 'down' || trend === 'declining') return colors.red;
+  if (trend === 'steady' || trend === 'stable') return colors.amber;
+  return colors.muted;
 }
 
 function convertKgText(value: string | null | undefined, unit: DisplayUnit) {
@@ -548,69 +818,30 @@ function convertKgText(value: string | null | undefined, unit: DisplayUnit) {
   });
 }
 
-function normalizeBigThreeLifts(lifts: BigThreeLift[]) {
-  const map = new Map(lifts.map((lift) => [lift.key, lift]));
-  return (['squat', 'bench', 'deadlift'] as const).map((key) => map.get(key) || { key, label: liftLabel(key), points: [], trend: 'insufficient_data' });
-}
-
-function liftLabel(key: string) {
-  if (key === 'squat') return 'Squat';
-  if (key === 'bench') return 'Bench';
-  if (key === 'deadlift') return 'Deadlift';
-  return key;
-}
-
-function trendLabel(trend?: Trend | null) {
-  if (trend === 'up') return 'Trending up';
-  if (trend === 'down') return 'Recent dip';
-  if (trend === 'steady') return 'Holding steady';
-  return 'Story building';
-}
-
-function trendColor(trend?: Trend | null) {
-  if (trend === 'up') return colors.green;
-  if (trend === 'down') return colors.red;
-  if (trend === 'steady') return colors.amber;
-  return colors.subtle;
-}
-
-function deltaTone(value?: number | null) {
-  if (value == null || Math.abs(Number(value)) < 0.1) return colors.muted;
-  return Number(value) > 0 ? colors.green : colors.red;
-}
-
-function formatPercent(value?: number | null) {
-  if (value == null || !Number.isFinite(Number(value))) return '0%';
-  return `${Math.round(Number(value))}%`;
-}
-
-function formatDecimal(value?: number | null) {
-  if (value == null || !Number.isFinite(Number(value))) return 'building';
-  return (Math.round(Number(value) * 10) / 10).toFixed(1);
-}
-
 function parseDate(value?: string | null) {
   if (!value) return null;
   const date = new Date(`${value}T12:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function formatMonth(value?: string | null) {
+function formatChartDate(value?: string | null) {
   const date = parseDate(value);
   if (!date) return '';
-  return date.toLocaleDateString(undefined, { month: 'short' }).toUpperCase();
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-function formatDayNumber(value?: string | null) {
+function formatMilestoneDate(value?: string | null) {
   const date = parseDate(value);
   if (!date) return '';
-  return String(date.getDate());
+  const today = new Date();
+  const sameDay = today.getFullYear() === date.getFullYear() && today.getMonth() === date.getMonth() && today.getDate() === date.getDate();
+  if (sameDay) return 'Today';
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-function formatShortWeek(value?: string | null) {
-  const date = parseDate(value);
-  if (!date) return '';
-  return date.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' });
+function metricRangeLabel(value?: string | null) {
+  if (!value) return 'e1RM';
+  return value.replace(/^Last\s+/i, '');
 }
 
 const styles = StyleSheet.create({
@@ -621,7 +852,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingTop: 12,
     paddingBottom: 28,
-    gap: 18,
+    gap: 14,
   },
   centerState: {
     flex: 1,
@@ -651,336 +882,436 @@ const styles = StyleSheet.create({
     color: colors.muted,
   },
   header: {
-    gap: 12,
-  },
-  headerCopy: {
-    gap: 2,
+    gap: 4,
   },
   title: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 30,
-    lineHeight: 36,
+    fontSize: 34,
+    lineHeight: 39,
     color: colors.textStrong,
     letterSpacing: 0,
   },
-  rangeCopy: {
+  subtitle: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.muted,
   },
-  controlRail: {
+  controlRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    minHeight: 36,
-    paddingVertical: 2,
-    paddingHorizontal: 2,
-    backgroundColor: 'rgba(22, 14, 14, 0.22)',
+    gap: 10,
+    marginTop: 4,
   },
   rangeRail: {
     flex: 1,
+    minHeight: 38,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(12, 10, 14, 0.44)',
   },
   rangeOption: {
     flex: 1,
+    minHeight: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 32,
-    paddingHorizontal: 4,
   },
   rangeOptionActive: {
-    backgroundColor: colors.violetSoft,
+    backgroundColor: colors.violetStrong,
   },
   rangeOptionText: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.muted,
-    letterSpacing: 0.2,
   },
   rangeOptionTextActive: {
     color: colors.textStrong,
   },
   unitRail: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 6,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.lineSoft,
+    minHeight: 38,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(12, 10, 14, 0.44)',
   },
   unitOption: {
-    minWidth: 34,
-    minHeight: 28,
+    minWidth: 39,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
   },
   unitOptionActive: {
-    backgroundColor: colors.violetSoft,
+    backgroundColor: colors.violetStrong,
   },
   unitOptionText: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.muted,
-    letterSpacing: 0.2,
     textTransform: 'uppercase',
   },
   unitOptionTextActive: {
     color: colors.textStrong,
   },
-  storyAnchor: {
-    flexDirection: 'row',
-    gap: 14,
-    paddingVertical: 18,
-    backgroundColor: colors.plum,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+  metricRail: {
+    gap: 8,
+    paddingVertical: 4,
+  },
+  metricCard: {
+    width: 82,
+    minHeight: 78,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
     borderColor: colors.lineSoft,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
   },
-  storyRail: {
-    width: 2,
-    borderRadius: 999,
-    backgroundColor: colors.violet,
-    opacity: 0.72,
+  metricCardActive: {
+    borderColor: 'rgba(155,108,255,0.65)',
+    backgroundColor: colors.violetSoft,
   },
-  storyCopy: {
-    flex: 1,
-    gap: 7,
+  metricCardLabel: {
+    fontFamily: SLFontFamilies.sansMedium,
+    fontSize: 12,
+    color: colors.muted,
+    textAlign: 'center',
   },
-  storyTitle: {
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 22,
-    lineHeight: 28,
+  metricCardLabelActive: {
     color: colors.textStrong,
-    letterSpacing: 0,
   },
-  storyBody: {
+  heroCard: {
+    gap: 15,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 14,
+    padding: 16,
+    backgroundColor: 'rgba(16, 13, 18, 0.76)',
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  chartTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 17,
+    color: colors.textStrong,
+  },
+  chartSubtitle: {
+    marginTop: 3,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 13,
+    color: colors.muted,
+  },
+  adjustPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    minHeight: 34,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.16)',
+  },
+  adjustText: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 12,
     color: colors.text,
   },
-  zone: {
-    gap: 12,
+  legend: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 13,
   },
-  zoneHeader: {
+  legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
+    gap: 7,
   },
-  zoneKicker: {
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
-    fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: colors.subtle,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 999,
   },
-  zoneHint: {
-    fontFamily: SLFontFamilies.sans,
+  legendText: {
+    fontFamily: SLFontFamilies.sansMedium,
     fontSize: 12,
-    color: colors.subtle,
+    color: colors.text,
   },
-  liftLanes: {
-    gap: 10,
+  chartWrap: {
+    position: 'relative',
+    minHeight: 276,
   },
-  liftLane: {
-    paddingVertical: 13,
-    paddingLeft: 12,
-    paddingRight: 2,
+  yLabels: {
+    position: 'absolute',
+    left: 0,
+    top: 12,
+    bottom: 42,
+    justifyContent: 'space-between',
+  },
+  xLabels: {
+    position: 'absolute',
+    left: 38,
+    right: 12,
+    bottom: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  axisLabel: {
+    fontFamily: SLFontFamilies.sans,
+    fontSize: 11,
+    color: colors.muted,
+  },
+  chartEmpty: {
+    minHeight: 250,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.lineSoft,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+  chartEmptyTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 18,
+    color: colors.textStrong,
+  },
+  chartEmptyBody: {
+    maxWidth: 250,
+    textAlign: 'center',
+    fontFamily: SLFontFamilies.sans,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.muted,
+  },
+  insightCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(243,190,85,0.26)',
+    borderRadius: 13,
+    padding: 15,
+    backgroundColor: 'rgba(51, 36, 12, 0.22)',
+  },
+  insightIcon: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  insightCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  insightTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 15,
+    color: colors.amber,
+  },
+  insightBody: {
+    fontFamily: SLFontFamilies.sans,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.text,
+  },
+  supportingStack: {
+    gap: 8,
+  },
+  supportCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: 12,
+    padding: 13,
     backgroundColor: colors.surface,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.violet,
   },
-  liftLaneHeader: {
+  supportIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  supportCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  supportLabel: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 13,
+    color: colors.text,
+  },
+  supportValue: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 20,
+    color: colors.textStrong,
+  },
+  supportMeta: {
+    fontFamily: SLFontFamilies.sans,
+    fontSize: 11,
+    color: colors.muted,
+  },
+  supportChange: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 13,
+  },
+  section: {
+    gap: 10,
+    marginTop: 2,
+  },
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
+  },
+  sectionTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 17,
+    color: colors.textStrong,
+  },
+  sectionMeta: {
+    fontFamily: SLFontFamilies.sansMedium,
+    fontSize: 12,
+    color: colors.muted,
+  },
+  sectionAction: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 13,
+    color: colors.violetStrong,
+  },
+  storyStack: {
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: 13,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
+  },
+  liftCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lineSoft,
+  },
+  liftIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  liftCardCopy: {
+    flex: 1,
+    gap: 8,
   },
   liftName: {
     fontFamily: SLFontFamilies.sansBold,
     fontSize: 16,
     color: colors.textStrong,
   },
-  trendLabel: {
-    marginTop: 2,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
-  },
-  liftStats: {
-    marginTop: 10,
-    gap: 7,
-  },
-  metricLine: {
+  liftStatsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: colors.lineSoft,
-    paddingTop: 7,
+    gap: 8,
   },
-  metricLabel: {
+  metricColumn: {
+    gap: 2,
+  },
+  metricColumnLabel: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 12,
-    color: colors.subtle,
-  },
-  metricValue: {
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
-    color: colors.text,
-  },
-  sparklineEmpty: {
-    width: 86,
-    height: 28,
-    justifyContent: 'center',
-  },
-  sparklineBaseline: {
-    height: 1,
-    backgroundColor: colors.line,
-  },
-  totalLine: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 11,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.lineSoft,
-  },
-  totalRail: {
-    width: 2,
-    height: 24,
-    borderRadius: 999,
-    backgroundColor: colors.amber,
-    opacity: 0.8,
-  },
-  totalText: {
-    flex: 1,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: 10,
     color: colors.muted,
   },
-  totalStrong: {
+  metricColumnValue: {
     fontFamily: SLFontFamilies.sansBold,
+    fontSize: 13,
     color: colors.textStrong,
   },
-  totalDelta: {
-    fontFamily: SLFontFamilies.sansBold,
+  sparklineEmpty: {
+    width: 76,
+    height: 34,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lineSoft,
   },
-  storyRows: {
-    gap: 10,
+  milestoneCard: {
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: 13,
+    overflow: 'hidden',
+    backgroundColor: colors.surface,
   },
-  storyRow: {
+  milestoneRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
+    gap: 12,
+    padding: 14,
+  },
+  milestoneRowBorder: {
     borderTopWidth: 1,
     borderTopColor: colors.lineSoft,
   },
-  timeline: {
-    gap: 4,
-  },
-  timelineDate: {
+  milestoneIcon: {
     width: 42,
-    alignItems: 'flex-start',
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(243,190,85,0.16)',
   },
-  timelineMonth: {
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 9,
-    color: colors.subtle,
-    letterSpacing: 0.4,
-  },
-  timelineDay: {
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 16,
-    color: colors.text,
-  },
-  timelineRail: {
-    width: 2,
-    alignSelf: 'stretch',
-    borderRadius: 999,
-    opacity: 0.72,
-  },
-  rowRail: {
-    width: 2,
-    alignSelf: 'stretch',
-    borderRadius: 999,
-    opacity: 0.72,
-  },
-  rowCopy: {
+  milestoneCopy: {
     flex: 1,
     gap: 3,
   },
-  rowTitle: {
+  milestoneTitle: {
     fontFamily: SLFontFamilies.sansBold,
     fontSize: 14,
     color: colors.textStrong,
   },
-  rowMeta: {
+  milestoneBody: {
     fontFamily: SLFontFamilies.sans,
     fontSize: 12,
     lineHeight: 17,
     color: colors.muted,
   },
-  emptyLine: {
+  milestoneDate: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
-    color: colors.subtle,
-    paddingVertical: 8,
-  },
-  contextBody: {
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: 12,
     color: colors.muted,
-    lineHeight: 18,
   },
-  weekStrip: {
-    minHeight: 66,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 9,
-    paddingTop: 4,
+  emptyCard: {
+    padding: 15,
+    gap: 5,
   },
-  weekColumn: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 6,
+  emptyMilestone: {
+    padding: 16,
+    gap: 5,
   },
-  weekTrack: {
-    width: '100%',
-    maxWidth: 22,
-    height: 42,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(236, 229, 218, 0.06)',
-    overflow: 'hidden',
+  emptyTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 15,
+    color: colors.textStrong,
   },
-  weekFill: {
-    width: '100%',
-    opacity: 0.72,
-  },
-  weekLabel: {
+  emptyBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 10,
-    color: colors.subtle,
-  },
-  weekPlaceholder: {
-    flex: 1,
-    height: 34,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.lineSoft,
-  },
-  contextRow: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingVertical: 11,
-    borderTopWidth: 1,
-    borderTopColor: colors.lineSoft,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.muted,
   },
   pressed: {
     opacity: 0.72,

@@ -1,7 +1,7 @@
 // app/(tabs)/workout/[workoutId].tsx
 // @ts-nocheck
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -55,9 +55,11 @@ import {
 import {
   SessionCommandStrip,
   SessionIntentPanel,
+  type WorkoutProgressSetSegment,
 } from '@/components/workout-logger/session-shell';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE, fetchJson, removeVideoAttachment } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { ThemedText } from '@/components/themed-text';
 
 type SetLog = {
@@ -383,14 +385,15 @@ function liftDisplayName(core: WorkoutItem): string {
   // Core Variant / VR title
   if ((v === 'VR' || core.lift === 'VR') && core.movement) {
     const des = formatDesignation((core as any).designation);
-    return des ? `${core.movement} (${des})` : core.movement;
+    const movement = simplifyMobileMovementName(core.movement);
+    return des ? `${movement} (${des})` : movement;
   }
 
   let base = '';
-  if (core.lift === 'SQ') base = 'Comp Squat';
-  else if (core.lift === 'BN') base = 'Comp Bench';
-  else if (core.lift === 'DL') base = 'Comp Deadlift';
-  else base = core.movement || core.lift;
+  if (core.lift === 'SQ') base = 'Squat';
+  else if (core.lift === 'BN') base = 'Bench';
+  else if (core.lift === 'DL') base = 'Deadlift';
+  else base = simplifyMobileMovementName(core.movement || core.lift);
 
   const isNormalLift =
     core.lift === 'SQ' || core.lift === 'BN' || core.lift === 'DL' || core.lift === 'OHP';
@@ -681,6 +684,38 @@ function plannedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
   return core + acc;
 }
 
+function progressSegmentsForWorkout(workout?: WorkoutPayload['workout'] | null): WorkoutProgressSetSegment[] {
+  if (!workout) return [];
+  const segments: WorkoutProgressSetSegment[] = [];
+  (workout.core_items || []).forEach((item) => {
+    const total = plannedSetCountForItem(item);
+    const logged = (item.set_logs || []).length;
+    const lift = String(item.lift || '').toUpperCase();
+    const group = lift === 'DL' ? 'secondary' : 'primary';
+    Array.from({ length: total }).forEach((_, setIndex) => {
+      segments.push({
+        key: `core-${item.id}-${setIndex}`,
+        group,
+        logged: setIndex < logged,
+      });
+    });
+  });
+  (workout.accessory_groups || []).forEach((group, groupIndex) => {
+    (group.items || []).forEach((item, itemIndex) => {
+      const total = plannedSetCountForItem(item);
+      const logged = (item.set_logs || []).length;
+      Array.from({ length: total }).forEach((_, setIndex) => {
+        segments.push({
+          key: `acc-${groupIndex}-${item.id || itemIndex}-${setIndex}`,
+          group: 'accessory',
+          logged: setIndex < logged,
+        });
+      });
+    });
+  });
+  return segments;
+}
+
 function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
   const coreItems = (workout?.core_items || []).filter((item) => item.variant !== 'BK');
   const accessoryCount = (workout?.accessory_groups || []).reduce(
@@ -698,7 +733,7 @@ function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
           if (lift === 'BN') return 'Bench';
           if (lift === 'DL') return 'Deadlift';
           if (lift === 'OHP') return 'OHP';
-          return String(item.movement || item.lift || '').trim();
+          return simplifyMobileMovementName(item.movement || item.lift);
         })
         .filter(Boolean)
         .filter((name, index, arr) => arr.indexOf(name) === index)
@@ -1055,6 +1090,10 @@ export default function WorkoutViewerScreen() {
   const { workoutId } = useLocalSearchParams<{ workoutId?: string }>();
   const router = useRouter();
   const { user } = useAuth(); // we only need session + role to decide logging availability
+  const isIndividualUser =
+    user?.workspace_mode === 'individual' ||
+    user?.is_individual_workspace === true ||
+    user?.is_self_coached === true;
 
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const [data, setData] = useState<WorkoutPayload | null>(null);
@@ -1092,6 +1131,15 @@ export default function WorkoutViewerScreen() {
     selectedVideo: SelectedSetVideo;
   } | null>(null);
   const [videoMlTrainingConsent, setVideoMlTrainingConsent] = useState<boolean | null | undefined>(undefined);
+  const videoIntentOptions = useMemo(
+    () => isIndividualUser
+      ? [{ submitForReview: false, title: 'Save to Archive', body: 'Store it for your own review.' }]
+      : [
+          { submitForReview: false, title: 'Save to Archive', body: 'Store it for your own reference.' },
+          { submitForReview: true, title: 'Submit to Coach', body: 'Send it to your coach for review.' },
+        ],
+    [isIndividualUser]
+  );
 
   const updateFcInput = (
     key: string,
@@ -2953,7 +3001,12 @@ export default function WorkoutViewerScreen() {
   const beginWorkout = async () => {
     const workout = data?.workout;
     if (workout?.loggable === false || workout?.timeliness === 'missed') {
-      Alert.alert('Session locked', workout.block_reason || 'This session is outside the 48-hour logging window. Ask your coach to shift the date.');
+      Alert.alert(
+        'Session locked',
+        workout.block_reason || (isIndividualUser
+          ? 'This session is outside the 48-hour logging window. Shift the session date from Programming Manager.'
+          : 'This session is outside the 48-hour logging window. Ask your coach to shift the date.')
+      );
       return;
     }
     if (workout?.requires_tardy_reason && !String(workout.tardy_reason || '').trim()) {
@@ -2988,7 +3041,12 @@ export default function WorkoutViewerScreen() {
   const submitTardyReason = async () => {
     const reason = tardyReason.trim();
     if (!reason) {
-      Alert.alert('Reason required', 'This session is being logged late. Add a quick reason for your coach.');
+      Alert.alert(
+        'Reason required',
+        isIndividualUser
+          ? 'This session is being logged late. Add a quick note for your training log.'
+          : 'This session is being logged late. Add a quick reason for your coach.'
+      );
       return;
     }
     setTardyReasonVisible(false);
@@ -3217,7 +3275,9 @@ export default function WorkoutViewerScreen() {
     return new Promise((resolve) => {
       Alert.alert(
         'Help Improve Future Video Analysis?',
-        'Strength Ledger is building future ML tools for things like automatic video tags, camera angle detection, and training analysis. If you allow it, your uploaded training videos and related labels may be used internally to help train and improve those tools. Your videos stay private to you and your coach and are never shown to other athletes or coaches.',
+        isIndividualUser
+          ? 'Strength Ledger is building future ML tools for things like automatic video tags, camera angle detection, and training analysis. If you allow it, your uploaded training videos and related labels may be used internally to help train and improve those tools. Your videos stay private to you.'
+          : 'Strength Ledger is building future ML tools for things like automatic video tags, camera angle detection, and training analysis. If you allow it, your uploaded training videos and related labels may be used internally to help train and improve those tools. Your videos stay private to you and your coach and are never shown to other athletes or coaches.',
         [
           {
             text: 'Not Now',
@@ -3245,7 +3305,7 @@ export default function WorkoutViewerScreen() {
         ],
       );
     });
-  }, [saveVideoMlConsentChoice, videoMlTrainingConsent]);
+  }, [isIndividualUser, saveVideoMlConsentChoice, videoMlTrainingConsent]);
 
   const pickSetVideo = useCallback(async (): Promise<SelectedSetVideo | null> => {
     const consentReady = await ensureVideoMlConsentChoice();
@@ -3282,9 +3342,9 @@ export default function WorkoutViewerScreen() {
       sizeBytes: asset.fileSize ?? null,
       videoAngle: 'unknown',
       thumbnailUri,
-      submitForReview: true,
+      submitForReview: !isIndividualUser,
     };
-  }, [ensureVideoMlConsentChoice]);
+  }, [ensureVideoMlConsentChoice, isIndividualUser]);
 
   const uploadSelectedVideoToSetLog = useCallback(async (
     setLogId: number,
@@ -3700,6 +3760,7 @@ export default function WorkoutViewerScreen() {
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
   const progressPct = plannedSets ? Math.min(100, Math.round((loggedSets / plannedSets) * 100)) : 0;
+  const workoutProgressSegments = progressSegmentsForWorkout(workout);
   const topLogged = bestLoggedSet(workout);
   const focusLine = firstSessionFocus(workout);
 
@@ -4242,7 +4303,7 @@ export default function WorkoutViewerScreen() {
       ? {
           itemId: item.id,
           groupItemId: item.id,
-          movementName: item.movement || 'Accessory',
+          movementName: simplifyMobileMovementName(item.movement) || 'Accessory',
           designation: 'Accessory',
           liftType: 'Support Work',
           currentSetLabel: `Set ${nextIndex}`,
@@ -4365,6 +4426,7 @@ export default function WorkoutViewerScreen() {
           loggedSets={loggedSets}
           plannedSets={plannedSets}
           progressPct={progressPct}
+          progressSegments={workoutProgressSegments}
           topLoggedText={topLogged ? `${liftDisplayName(topLogged.item)} · ${loggedSetText(topLogged.log, unit)}` : null}
           canBegin={canBegin}
           canEdit={canEdit}
@@ -4380,7 +4442,7 @@ export default function WorkoutViewerScreen() {
         )}
         {!!(workout.post_session_coach_feedback || '').trim() && (
           <View style={styles.coachFeedbackCard}>
-            <Text style={styles.coachFeedbackEyebrow}>Coach Feedback</Text>
+            <Text style={styles.coachFeedbackEyebrow}>{isIndividualUser ? 'Session Feedback' : 'Coach Feedback'}</Text>
             <Text style={styles.coachFeedbackText}>{workout.post_session_coach_feedback}</Text>
           </View>
         )}
@@ -4669,7 +4731,10 @@ export default function WorkoutViewerScreen() {
               <View style={styles.coreWheelHandle} />
               <View style={styles.coreWheelHeaderRow}>
                 <View style={styles.coreWheelHeaderCopy}>
-                  <Text style={styles.coreWheelTitle}>{coreWheel.title}</Text>
+                  <Text style={styles.coreWheelTitle}>
+                    <Text style={styles.coreWheelTitleDot}>• </Text>
+                    {coreWheel.title}
+                  </Text>
                   <Text style={styles.coreWheelSubtitle}>
                     {coreWheel.targetLine ? coreWheel.targetLine : 'Select actuals'}
                   </Text>
@@ -4728,7 +4793,7 @@ export default function WorkoutViewerScreen() {
                   style={styles.logVideoSkipButton}
                   onPress={() => setCoreWheel((prev) => prev ? { ...prev, selectedVideo: null } : prev)}
                 >
-                  <Text style={styles.logVideoSkipText}>Ok skip and upload later</Text>
+                  <Text style={styles.logVideoSkipText}>Skip for now</Text>
                 </TouchableOpacity>
                 {coreWheel.selectedVideo ? (
                   <View style={styles.logVideoSelectedBlock}>
@@ -4761,10 +4826,7 @@ export default function WorkoutViewerScreen() {
                     </View>
                     <View style={styles.logVideoIntentGroup}>
                       <Text style={styles.logVideoIntentTitle}>What do you want to do with this video?</Text>
-                      {[
-                        { submitForReview: false, title: 'Save to Archive', body: 'Store it for your own reference.' },
-                        { submitForReview: true, title: 'Submit to Coach', body: 'Send it to your coach for review.' },
-                      ].map((option) => {
+                      {videoIntentOptions.map((option) => {
                         const active = (coreWheel.selectedVideo?.submitForReview !== false) === option.submitForReview;
                         return (
                           <TouchableOpacity
@@ -4890,7 +4952,7 @@ export default function WorkoutViewerScreen() {
               <View style={styles.coreWheelHeaderRow}>
                 <View style={styles.coreWheelHeaderCopy}>
                   <Text style={styles.coreWheelTitle}>Video angle</Text>
-                  <Text style={styles.coreWheelSubtitle}>Tag the camera angle for coach review.</Text>
+                  <Text style={styles.coreWheelSubtitle}>{isIndividualUser ? 'Tag the camera angle for your archive.' : 'Tag the camera angle for coach review.'}</Text>
                 </View>
               </View>
               <View style={[styles.logVideoAngleChips, { marginTop: 16 }]}>
@@ -4919,10 +4981,7 @@ export default function WorkoutViewerScreen() {
               </View>
               <View style={styles.logVideoIntentGroup}>
                 <Text style={styles.logVideoIntentTitle}>What do you want to do with this video?</Text>
-                {[
-                  { submitForReview: false, title: 'Save to Archive', body: 'Store it for your own reference.' },
-                  { submitForReview: true, title: 'Submit to Coach', body: 'Send it to your coach for review.' },
-                ].map((option) => {
+                {videoIntentOptions.map((option) => {
                   const active = (pendingRowVideoUpload.selectedVideo.submitForReview !== false) === option.submitForReview;
                   return (
                     <TouchableOpacity
@@ -5064,77 +5123,105 @@ export default function WorkoutViewerScreen() {
       >
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalCard, styles.editSetModalWide]}>
+            <View style={styles.modalSheetHandle} />
             <Text style={styles.postSessionTitle}>{editSetCtx?.title || 'Edit Set'}</Text>
             <Text style={styles.modalSubtitle}>Update the logged values for this set.</Text>
+
+            <View style={styles.loggedSummaryPill}>
+              <View style={styles.loggedSummaryIcon}>
+                <Text style={styles.loggedSummaryIconText}>✓</Text>
+              </View>
+              <Text style={styles.loggedSummaryLabel}>Currently logged</Text>
+              <Text style={styles.loggedSummaryValue}>
+                {editSetForm.weight || '—'} {unit} × {editSetForm.reps || '—'}
+                {editSetCtx?.mode === 'rpe'
+                  ? ` @ RPE ${editSetForm.rpe || '—'}`
+                  : ` @ ${editSetForm.rir || '—'} RIR`}
+              </Text>
+            </View>
+
+            <Text style={styles.modalSectionKicker}>Set Details</Text>
 
             <View style={styles.modalRow}>
               <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
                 <Text style={styles.modalLabel}>Weight ({unit})</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  value={editSetForm.weight}
-                  onChangeText={(txt) =>
-                    setEditSetForm((prev) => ({
-                      ...prev,
-                      weight: txt.replace(/[^0-9.]/g, ''),
-                    }))
-                  }
-                  placeholder={`Enter ${unit}`}
-                  placeholderTextColor="#64748b"
-                  keyboardType="numeric"
-                />
+                <View style={styles.modalValueCard}>
+                  <TextInput
+                    style={styles.modalValueInput}
+                    value={editSetForm.weight}
+                    onChangeText={(txt) =>
+                      setEditSetForm((prev) => ({
+                        ...prev,
+                        weight: txt.replace(/[^0-9.]/g, ''),
+                      }))
+                    }
+                    placeholder="—"
+                    placeholderTextColor="#64748b"
+                    keyboardType="numeric"
+                  />
+                  <Text style={styles.modalValueUnit}>{unit}</Text>
+                </View>
               </View>
 
               <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
                 <Text style={styles.modalLabel}>Reps</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  value={editSetForm.reps}
-                  onChangeText={(txt) =>
-                    setEditSetForm((prev) => ({
-                      ...prev,
-                      reps: txt.replace(/[^0-9]/g, ''),
-                    }))
-                  }
-                  placeholder="Reps"
-                  placeholderTextColor="#64748b"
-                  keyboardType="number-pad"
-                />
+                <View style={styles.modalValueCard}>
+                  <TextInput
+                    style={styles.modalValueInput}
+                    value={editSetForm.reps}
+                    onChangeText={(txt) =>
+                      setEditSetForm((prev) => ({
+                        ...prev,
+                        reps: txt.replace(/[^0-9]/g, ''),
+                      }))
+                    }
+                    placeholder="—"
+                    placeholderTextColor="#64748b"
+                    keyboardType="number-pad"
+                  />
+                  <Text style={styles.modalValueUnit}>reps</Text>
+                </View>
               </View>
 
               {editSetCtx?.mode === 'rpe' ? (
                 <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
                   <Text style={styles.modalLabel}>RPE</Text>
-                  <TextInput
-                    style={styles.modalInput}
-                    value={editSetForm.rpe}
-                    onChangeText={(txt) =>
-                      setEditSetForm((prev) => ({
-                        ...prev,
-                        rpe: txt.replace(/[^0-9.]/g, ''),
-                      }))
-                    }
-                    placeholder="RPE"
-                    placeholderTextColor="#64748b"
-                    keyboardType="numeric"
-                  />
+                  <View style={styles.modalValueCard}>
+                    <TextInput
+                      style={styles.modalValueInput}
+                      value={editSetForm.rpe}
+                      onChangeText={(txt) =>
+                        setEditSetForm((prev) => ({
+                          ...prev,
+                          rpe: txt.replace(/[^0-9.]/g, ''),
+                        }))
+                      }
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="numeric"
+                    />
+                    <Text style={styles.modalValueUnit}>/10</Text>
+                  </View>
                 </View>
               ) : (
                 <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
                   <Text style={styles.modalLabel}>RIR</Text>
-                  <TextInput
-                    style={styles.modalInput}
-                    value={editSetForm.rir}
-                    onChangeText={(txt) =>
-                      setEditSetForm((prev) => ({
-                        ...prev,
-                        rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
-                      }))
-                    }
-                    placeholder="RIR"
-                    placeholderTextColor="#64748b"
-                    keyboardType="numeric"
-                  />
+                  <View style={styles.modalValueCard}>
+                    <TextInput
+                      style={styles.modalValueInput}
+                      value={editSetForm.rir}
+                      onChangeText={(txt) =>
+                        setEditSetForm((prev) => ({
+                          ...prev,
+                          rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
+                        }))
+                      }
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="numeric"
+                    />
+                    <Text style={styles.modalValueUnit}>RIR</Text>
+                  </View>
                 </View>
               )}
             </View>
@@ -5203,6 +5290,8 @@ export default function WorkoutViewerScreen() {
                 )}
               </TouchableOpacity>
             </View>
+
+            <Text style={styles.modalHelperLine}>Changes will update this set across all views.</Text>
           </View>
         </View>
       </Modal>
@@ -5499,52 +5588,95 @@ export default function WorkoutViewerScreen() {
       >
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalCard, styles.swapModalWide]}>
-            <Text style={styles.postSessionTitle}>
-              {canHotSwap ? 'Swap accessory' : 'Substitute accessory'}
-            </Text>
+            <View style={styles.modalSheetHandle} />
+            <View style={styles.swapHeaderRow}>
+              <View style={styles.swapHeaderSpacer} />
+              <Text style={styles.postSessionTitle}>
+                {canHotSwap ? 'Swap accessory' : 'Substitute accessory'}
+              </Text>
+              <TouchableOpacity style={styles.swapCloseButton} onPress={() => setSwapAccVisible(false)}>
+                <Text style={styles.swapCloseText}>×</Text>
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.modalSubtitle}>
               {canHotSwap
                 ? 'Update the accessory movement and prescription.'
-                : 'Select one of the coach-approved substitutions below.'}
+                : isIndividualUser
+                  ? 'Select one of the approved substitutions below.'
+                  : 'Select one of the coach-approved substitutions below.'}
             </Text>
 
             {canHotSwap ? (
               <>
-                <TextInput
-                  style={styles.swapInput}
-                  placeholder="Movement (e.g., Lat Pulldown)"
-                  placeholderTextColor="#64748b"
-                  value={swapAccForm.movement}
-                  onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
-                />
+                <Text style={styles.modalSectionKicker}>Movement</Text>
+                <View style={styles.swapMovementField}>
+                  <Text style={styles.swapSearchIcon}>⌕</Text>
+                  <TextInput
+                    style={styles.swapMovementInput}
+                    placeholder="Movement (e.g., Lat Pulldown)"
+                    placeholderTextColor="#64748b"
+                    value={swapAccForm.movement}
+                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
+                  />
+                  {swapAccForm.movement ? (
+                    <TouchableOpacity onPress={() => setSwapAccForm((p) => ({ ...p, movement: '' }))}>
+                      <Text style={styles.swapClearText}>×</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
 
+                <Text style={styles.modalSectionKicker}>Prescription</Text>
                 <View style={styles.readinessScaleRow}>
-                  <TextInput
-                    style={[styles.swapInput, { flex: 1 }]}
-                    placeholder="Sets"
-                    placeholderTextColor="#64748b"
-                    keyboardType="number-pad"
-                    value={swapAccForm.sets}
-                    onChangeText={(t) =>
-                      setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
-                    }
-                  />
-                  <TextInput
-                    style={[styles.swapInput, { flex: 1 }]}
-                    placeholder="Reps (text)"
-                    placeholderTextColor="#64748b"
-                    value={swapAccForm.reps_text}
-                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
-                  />
-                  <TextInput
-                    style={[styles.swapInput, { flex: 1 }]}
-                    placeholder="RIR"
-                    placeholderTextColor="#64748b"
-                    keyboardType="numeric"
-                    value={swapAccForm.rir}
-                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
-                  />
+                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
+                    <Text style={styles.modalLabel}>Sets</Text>
+                    <TextInput
+                      style={styles.swapPrescriptionInput}
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="number-pad"
+                      value={swapAccForm.sets}
+                      onChangeText={(t) =>
+                        setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
+                      }
+                    />
+                    <Text style={styles.modalValueUnit}>sets</Text>
+                  </View>
+                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
+                    <Text style={styles.modalLabel}>Reps</Text>
+                    <TextInput
+                      style={styles.swapPrescriptionInput}
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      value={swapAccForm.reps_text}
+                      onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
+                    />
+                    <Text style={styles.modalValueUnit}>reps</Text>
+                  </View>
+                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
+                    <Text style={styles.modalLabel}>RIR</Text>
+                    <TextInput
+                      style={styles.swapPrescriptionInput}
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="numeric"
+                      value={swapAccForm.rir}
+                      onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
+                    />
+                    <Text style={styles.modalValueUnit}>RIR</Text>
+                  </View>
+                </View>
+
+                <View style={styles.swapSummaryCard}>
+                  <Text style={styles.swapSummaryIcon}>↔</Text>
+                  <View style={styles.swapSummaryCopy}>
+                    <Text style={styles.swapSummaryTitle}>
+                      This will update {swapAccItem?.movement || 'this accessory'}
+                    </Text>
+                    <Text style={styles.swapSummaryText}>
+                      {swapAccForm.sets || '—'}×{swapAccForm.reps_text || '—'} @ {swapAccForm.rir || '—'} RIR
+                    </Text>
+                  </View>
                 </View>
               </>
             ) : (
@@ -5608,6 +5740,12 @@ export default function WorkoutViewerScreen() {
             
             <View style={styles.modalActionsRow}>
               <TouchableOpacity
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                onPress={() => setSwapAccVisible(false)}
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
                 onPress={saveSwapAcc}
                 disabled={savingItemId != null}
@@ -5615,15 +5753,8 @@ export default function WorkoutViewerScreen() {
                 {savingItemId === swapAccItem?.id ? (
                   <ActivityIndicator size="small" color="#0B0F1A" />
                 ) : (
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save</Text>
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save Changes</Text>
                 )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-                onPress={() => setSwapAccVisible(false)}
-              >
-                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -6191,32 +6322,35 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logVideoAttachButton: {
-    minHeight: 36,
-    borderRadius: 10,
+    flex: 1,
+    minHeight: 48,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(129,140,248,0.34)',
-    backgroundColor: 'rgba(129,140,248,0.14)',
+    borderColor: 'rgba(167,139,250,0.34)',
+    backgroundColor: 'rgba(139,92,246,0.14)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,
   },
   logVideoAttachText: {
     color: '#E0E7FF',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '900',
   },
   logVideoSkipButton: {
-    minHeight: 36,
-    borderRadius: 10,
+    flex: 1,
+    minHeight: 48,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.2)',
+    borderColor: 'rgba(148,163,184,0.20)',
+    backgroundColor: 'rgba(5,10,20,0.50)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,
   },
   logVideoSkipText: {
     color: '#CBD5E1',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
   },
   logVideoSelectedText: {
@@ -6605,9 +6739,9 @@ const styles = StyleSheet.create({
   // Shared modal form helper styles (used in timer/readiness/edit-set modals)
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(2,6,23,0.76)',
+    backgroundColor: 'rgba(2,6,23,0.70)',
     justifyContent: 'center',
-    paddingHorizontal: 18,
+    paddingHorizontal: 14,
   },
   modalBackdropCenter: {
     flex: 1,
@@ -6617,9 +6751,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modalSubtitle: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginBottom: 10,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#C7D2FE',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   modalBody: {
     color: '#94A3B8',
@@ -6636,7 +6772,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   editSetModalWide: {
-    width: '95%',
+    width: '100%',
     maxWidth: 600,
   },
   modalRow: {
@@ -6647,10 +6783,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#e5e7eb',
-    marginBottom: 6,
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#A78BFA',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   modalActionsRow: {
     flexDirection: 'row',
@@ -6922,13 +7060,13 @@ const styles = StyleSheet.create({
     color: '#EF4444',
   },
   actionPrimary: {
-    backgroundColor: 'rgba(91,79,207,0.22)',
-    borderColor: 'rgba(167,139,250,0.18)',
+    backgroundColor: '#6D28D9',
+    borderColor: 'rgba(196,181,253,0.32)',
     shadowColor: '#5B4FCF',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   actionButtonText: {
     fontSize: 16,
@@ -7044,8 +7182,8 @@ const styles = StyleSheet.create({
   actionSecondary: {
     flex: 1,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.07)',
-    backgroundColor: 'rgba(148,163,184,0.045)',
+    borderColor: 'rgba(148,163,184,0.20)',
+    backgroundColor: 'rgba(9,14,25,0.70)',
   },
   actionSecondaryText: {
     color: '#E2E8F0',
@@ -7063,8 +7201,8 @@ const styles = StyleSheet.create({
   modalCard: {
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
-    backgroundColor: 'rgba(10,14,28,0.98)',
+    borderColor: 'rgba(148,163,184,0.24)',
+    backgroundColor: 'rgba(9,14,25,0.98)',
     paddingHorizontal: 18,
     paddingVertical: 18,
     shadowColor: '#000',
@@ -7076,7 +7214,7 @@ const styles = StyleSheet.create({
   coreWheelBackdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(8,5,4,0.54)',
+    backgroundColor: 'rgba(2,6,23,0.70)',
   },
   coreWheelBackdropHit: {
     flex: 1,
@@ -7086,8 +7224,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     borderWidth: 1,
     borderBottomWidth: 0,
-    borderColor: 'rgba(167,139,250,0.16)',
-    backgroundColor: 'rgba(24,16,15,0.98)',
+    borderColor: 'rgba(148,163,184,0.24)',
+    backgroundColor: 'rgba(9,14,25,0.98)',
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 24,
@@ -7112,10 +7250,13 @@ const styles = StyleSheet.create({
   },
   coreWheelTitle: {
     color: '#F8FAFC',
-    fontSize: 20,
-    lineHeight: 25,
+    fontSize: 22,
+    lineHeight: 28,
     fontWeight: '900',
     textAlign: 'left',
+  },
+  coreWheelTitleDot: {
+    color: '#8B5CF6',
   },
   coreWheelSubtitle: {
     color: '#A5B4FC',
@@ -7147,8 +7288,8 @@ const styles = StyleSheet.create({
     height: CORE_WHEEL_ROW_HEIGHT * CORE_WHEEL_VISIBLE_ROWS,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(15,20,36,0.64)',
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(5,10,20,0.76)',
     overflow: 'hidden',
   },
   coreWheelCenterBand: {
@@ -7159,8 +7300,8 @@ const styles = StyleSheet.create({
     height: CORE_WHEEL_ROW_HEIGHT,
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.45)',
-    backgroundColor: 'rgba(91,79,207,0.22)',
+    borderColor: 'rgba(167,139,250,0.76)',
+    backgroundColor: 'rgba(109,40,217,0.76)',
     zIndex: 4,
   },
   coreWheelScroll: {
@@ -7193,11 +7334,11 @@ const styles = StyleSheet.create({
   failedSetToggle: {
     marginTop: 14,
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.34)',
-    backgroundColor: 'rgba(127,29,29,0.18)',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderColor: 'rgba(248,113,113,0.42)',
+    backgroundColor: 'rgba(127,29,29,0.24)',
+    borderRadius: 13,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
     alignItems: 'center',
   },
   failedSetToggleActive: {
@@ -7211,6 +7352,194 @@ const styles = StyleSheet.create({
   },
   failedSetToggleTextActive: {
     color: '#FEE2E2',
+  },
+  modalSheetHandle: {
+    alignSelf: 'center',
+    width: 46,
+    height: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(148,163,184,0.46)',
+    marginBottom: 14,
+  },
+  modalSectionKicker: {
+    color: '#A78BFA',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginBottom: 10,
+    marginTop: 2,
+  },
+  loggedSummaryPill: {
+    minHeight: 52,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.28)',
+    backgroundColor: 'rgba(5,10,20,0.74)',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 18,
+  },
+  loggedSummaryIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(45,212,191,0.76)',
+  },
+  loggedSummaryIconText: {
+    color: '#2DD4BF',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  loggedSummaryLabel: {
+    color: '#34D399',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  loggedSummaryValue: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'right',
+  },
+  modalValueCard: {
+    minHeight: 88,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(5,10,20,0.74)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    justifyContent: 'space-between',
+  },
+  modalValueInput: {
+    color: '#F8FAFC',
+    fontSize: 27,
+    lineHeight: 33,
+    fontWeight: '900',
+    padding: 0,
+    margin: 0,
+  },
+  modalValueUnit: {
+    color: '#A78BFA',
+    fontSize: 14,
+    fontWeight: '800',
+    textAlign: 'right',
+  },
+  modalHelperLine: {
+    color: '#A78BFA',
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 14,
+  },
+  swapHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  swapHeaderSpacer: {
+    width: 34,
+  },
+  swapCloseButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swapCloseText: {
+    color: '#E5E7EB',
+    fontSize: 28,
+    lineHeight: 30,
+    fontWeight: '300',
+  },
+  swapMovementField: {
+    minHeight: 54,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.24)',
+    backgroundColor: 'rgba(5,10,20,0.74)',
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 18,
+  },
+  swapSearchIcon: {
+    color: '#CBD5E1',
+    fontSize: 24,
+    fontWeight: '500',
+  },
+  swapMovementInput: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 16,
+    fontWeight: '700',
+    paddingVertical: 0,
+  },
+  swapClearText: {
+    color: '#CBD5E1',
+    fontSize: 25,
+    fontWeight: '400',
+  },
+  swapPrescriptionCard: {
+    minHeight: 88,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(5,10,20,0.74)',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  swapPrescriptionInput: {
+    color: '#F8FAFC',
+    fontSize: 23,
+    lineHeight: 29,
+    fontWeight: '900',
+    padding: 0,
+    margin: 0,
+  },
+  swapSummaryCard: {
+    marginTop: 16,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: 'rgba(45,212,191,0.48)',
+    backgroundColor: 'rgba(13,148,136,0.14)',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  swapSummaryIcon: {
+    color: '#2DD4BF',
+    fontSize: 25,
+    fontWeight: '900',
+  },
+  swapSummaryCopy: {
+    flex: 1,
+  },
+  swapSummaryTitle: {
+    color: '#F8FAFC',
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: '800',
+  },
+  swapSummaryText: {
+    color: '#C7D2FE',
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '700',
+    marginTop: 3,
   },
   modalTitle: {
     color: '#E2E8F0',
@@ -7240,11 +7569,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#0B0F1A',
   },
   postSessionTitle: {
-    fontSize: 22,
-    lineHeight: 26,
-    fontWeight: '800',
-    color: '#E2E8F0',
-    marginBottom: 10,
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: '900',
+    color: '#F8FAFC',
+    marginBottom: 8,
     letterSpacing: 0.2,
     textAlign: 'center',
   },

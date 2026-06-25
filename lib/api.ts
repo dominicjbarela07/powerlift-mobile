@@ -419,36 +419,6 @@ export type ApiLoginResponse = {
   billing_url?: string;
 };
 
-export type MobileCheckoutResponse = {
-  ok: boolean;
-  error?: string;
-  active?: boolean;
-  checkout_url?: string | null;
-  billing_tier?: string;
-};
-
-export async function startMobileBillingCheckout(): Promise<MobileCheckoutResponse> {
-  try {
-    const r = await fetchJson<MobileCheckoutResponse>('/mobile/billing/checkout', {
-      method: 'POST',
-      auth: true,
-    });
-    const json = r.json || ({} as MobileCheckoutResponse);
-    if (!r.ok || !json.ok) {
-      return {
-        ok: false,
-        error: json.error || `Unable to start activation. (HTTP ${r.status})`,
-      };
-    }
-    return {
-      ...json,
-      ok: true,
-    };
-  } catch (err) {
-    return { ok: false, error: (err as any)?.message || 'Unable to start activation.' };
-  }
-}
-
 // ------- LOGIN --------------------------------------------------------------
 export async function loginRequest(email: string, password: string): Promise<ApiLoginResponse> {
   try {
@@ -679,6 +649,117 @@ export async function getAthleteWorkouts(): Promise<{
     };
   } catch (err) {
     console.error('Workouts fetch error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export type CreateIndividualProgramBlock = {
+  id?: number | null;
+  name: string;
+  weeks: number;
+  focus?: string;
+};
+
+export type CreateIndividualProgramPayload = {
+  name: string;
+  program_type: string;
+  start_date: string;
+  end_date: string;
+  meet_date?: string | null;
+  blocks: CreateIndividualProgramBlock[];
+};
+
+export async function createIndividualProgram(payload: CreateIndividualProgramPayload): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>('/mobile/individual/programs', {
+      method: 'POST',
+      body: payload as any,
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return {
+      ok: true,
+      program: json.program,
+      blocks: json.blocks || [],
+    };
+  } catch (err) {
+    console.error('Create individual program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function getIndividualProgram(programId: number | string): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>(`/mobile/individual/programs/${programId}`, {
+      method: 'GET',
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return {
+      ok: true,
+      program: json.program,
+      blocks: json.blocks || [],
+    };
+  } catch (err) {
+    console.error('Get individual program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function updateIndividualProgram(
+  programId: number | string,
+  payload: CreateIndividualProgramPayload
+): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>(`/mobile/individual/programs/${programId}`, {
+      method: 'PATCH',
+      body: payload as any,
+    });
+
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) {
+      return {
+        ok: false,
+        error: json.error || `HTTP ${r.status}`,
+      };
+    }
+
+    return {
+      ok: true,
+      program: json.program,
+      blocks: json.blocks || [],
+    };
+  } catch (err) {
+    console.error('Update individual program error', err);
     return { ok: false, error: 'Network error' };
   }
 }

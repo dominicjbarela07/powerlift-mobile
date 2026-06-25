@@ -287,7 +287,22 @@ function MessageAvatar({
 
 export default function MessageThreadScreen() {
   const { user } = useAuth();
+  const router = useRouter();
   const params = useLocalSearchParams<{ coachPlaceholder?: string }>();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+
+  React.useEffect(() => {
+    if (isIndividual) {
+      router.replace('/(tabs)/athlete-dashboard' as any);
+    }
+  }, [isIndividual, router]);
+
+  if (isIndividual) {
+    return null;
+  }
 
   if (user?.is_coach && params.coachPlaceholder === '1') {
     return <CoachConversationPlaceholderScreen />;

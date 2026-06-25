@@ -2,8 +2,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -20,6 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 type TodayAction = {
   kind?: string | null;
@@ -57,6 +59,7 @@ type TodayPayload = {
     id?: number;
     name?: string | null;
     avatar_url?: string | null;
+    bodyweight_kg?: number | null;
   } | null;
   coach?: {
     id?: number;
@@ -65,6 +68,12 @@ type TodayPayload = {
   } | null;
   phase?: {
     label?: string | null;
+    active_program?: {
+      id?: number | null;
+      name?: string | null;
+      start_date?: string | null;
+      end_date?: string | null;
+    } | null;
     block?: {
       id?: number;
       name?: string | null;
@@ -164,6 +173,12 @@ type CoachConnectionItem = {
   route?: string | null;
 };
 
+type CoachConnectionDisplayItem = {
+  sender_name?: string | null;
+  title?: string | null;
+  body?: string | null;
+};
+
 type TodayResponse = {
   ok?: boolean;
   error?: string;
@@ -172,6 +187,9 @@ type TodayResponse = {
 };
 
 const PATCH_NOTE_VERSION = 'strength_ledger_mobile_2_0_athlete_tour_seen';
+const INDIVIDUAL_TODAY_WELCOME_VERSION = 'strength_ledger_individual_today_welcome_seen_v1';
+const REST_DAY_IMAGE = require('@/assets/images/chair.png');
+const TRAINING_DAY_IMAGE = require('@/assets/images/gym_vibe.jpg');
 
 const palette = {
   violet: '#8B5CF6',
@@ -194,12 +212,20 @@ const palette = {
 export default function AthleteDashboard() {
   const router = useRouter();
   const params = useLocalSearchParams<{ submittedCheckIn?: string }>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [today, setToday] = useState<TodayPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPatchNote, setShowPatchNote] = useState(false);
+  const [showIndividualWelcome, setShowIndividualWelcome] = useState(false);
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+  const isAuthenticatedCoach = user?.role === 'coach' || user?.is_coach === true;
+  const showCoachCheckIn = !isAuthenticatedCoach && !isIndividual;
+  const individualWelcomeKey = `${INDIVIDUAL_TODAY_WELCOME_VERSION}:${user?.email || 'unknown'}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -207,9 +233,9 @@ export default function AthleteDashboard() {
     const checkPatchNote = async () => {
       try {
         const seen = await AsyncStorage.getItem(PATCH_NOTE_VERSION);
-        if (!cancelled && seen !== '1') setShowPatchNote(true);
+        if (!cancelled && !isIndividual && seen !== '1') setShowPatchNote(true);
       } catch {
-        if (!cancelled) setShowPatchNote(true);
+        if (!cancelled && !isIndividual) setShowPatchNote(true);
       }
     };
 
@@ -218,7 +244,7 @@ export default function AthleteDashboard() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isIndividual]);
 
   const dismissPatchNote = async () => {
     setShowPatchNote(false);
@@ -227,6 +253,44 @@ export default function AthleteDashboard() {
     } catch {
       // no-op
     }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkIndividualWelcome = async () => {
+      if (!isIndividual || !today || hasActiveProgram(today)) {
+        setShowIndividualWelcome(false);
+        return;
+      }
+
+      try {
+        const seen = await AsyncStorage.getItem(individualWelcomeKey);
+        if (!cancelled) setShowIndividualWelcome(seen !== '1');
+      } catch {
+        if (!cancelled) setShowIndividualWelcome(true);
+      }
+    };
+
+    checkIndividualWelcome();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [individualWelcomeKey, isIndividual, today]);
+
+  const dismissIndividualWelcome = async () => {
+    setShowIndividualWelcome(false);
+    try {
+      await AsyncStorage.setItem(individualWelcomeKey, '1');
+    } catch {
+      // no-op
+    }
+  };
+
+  const goToProgrammingFromWelcome = async () => {
+    await dismissIndividualWelcome();
+    router.push('/(tabs)/workout' as any);
   };
 
   const loadToday = React.useCallback(
@@ -296,11 +360,19 @@ export default function AthleteDashboard() {
   const openAction = React.useCallback(
     (action?: TodayAction | null) => {
       if (!action) return;
+      if (isIndividual && action.route === 'programming') {
+        router.push('/(tabs)/workout' as any);
+        return;
+      }
       if (action.route === 'workout' && action.workout_id) {
         router.push({
           pathname: '/workout/[workoutId]',
           params: { workoutId: String(action.workout_id) },
         });
+        return;
+      }
+      if (isIndividual && (action.route === 'messages' || action.route === 'announcements' || action.route === 'message_thread')) {
+        router.push('/(tabs)/workout' as any);
         return;
       }
       if (action.route === 'messages') {
@@ -319,6 +391,17 @@ export default function AthleteDashboard() {
         return;
       }
       if (action.route === 'feedback') {
+        if (action.workout_id) {
+          router.push({
+            pathname: '/workout/[workoutId]',
+            params: { workoutId: String(action.workout_id) },
+          });
+          return;
+        }
+        if (isIndividual) {
+          router.push('/(tabs)/reflection' as any);
+          return;
+        }
         router.push('/(tabs)/coach-reviews' as any);
         return;
       }
@@ -332,7 +415,7 @@ export default function AthleteDashboard() {
       }
       router.push('/(tabs)/workout' as any);
     },
-    [router]
+    [isIndividual, router]
   );
 
   if (loading) {
@@ -358,32 +441,71 @@ export default function AthleteDashboard() {
 
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
-      <PatchNoteModal dismissPatchNote={dismissPatchNote} showPatchNote={showPatchNote} />
+      <PatchNoteModal dismissPatchNote={dismissPatchNote} showPatchNote={showPatchNote && !isIndividual} />
+      <IndividualTodayWelcomeModal
+        onGoToProgramming={goToProgrammingFromWelcome}
+        onNotNow={dismissIndividualWelcome}
+        visible={showIndividualWelcome}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => loadToday({ silent: true })} tintColor={palette.muted} />
         }
       >
-        <PresentState today={today} />
-        <TodaySubmittedCheckIn title={params.submittedCheckIn} />
-        <TodayCheckInSurface />
-        <TodayTraining onAction={openAction} today={today} />
+        <PresentState isIndividual={isIndividual} today={today} />
+        {showCoachCheckIn ? <TodaySubmittedCheckIn title={params.submittedCheckIn} /> : null}
+        {showCoachCheckIn ? <TodayCheckInSurface /> : null}
+        <NoActiveProgramGuidance isIndividual={isIndividual} onAction={openAction} today={today} />
+        {!(isIndividual && !hasActiveProgram(today)) ? (
+          <TodayTraining isIndividual={isIndividual} onAction={openAction} today={today} />
+        ) : null}
         <MeetPlanEntry
           meet={today.phase?.meet}
           onPress={() => openAction({ route: 'meet', label: 'View Meet Plan', meet_plan_id: today.phase?.meet?.id })}
         />
-        <ReadinessLine today={today} />
-        <ContextTray onAction={openAction} today={today} />
+        <ReadinessLine isIndividual={isIndividual} today={today} />
+        <ContextTray isIndividual={isIndividual} onAction={openAction} today={today} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function PresentState({ today }: { today: TodayPayload }) {
-  const dateLabel = formatLongDate(today.date);
+function NoActiveProgramGuidance({
+  isIndividual,
+  onAction,
+  today,
+}: {
+  isIndividual?: boolean;
+  onAction: (action?: TodayAction | null) => void;
+  today: TodayPayload;
+}) {
+  if (!isIndividual || hasActiveProgram(today)) return null;
+
+  return (
+    <View style={styles.noProgramGuidance}>
+      <View style={styles.noProgramRail} />
+      <View style={styles.noProgramCopy}>
+        <Text style={styles.noProgramTitle}>No Active Program</Text>
+        <Text style={styles.noProgramBody}>
+          Create your first training program to begin scheduling sessions and building your training calendar.
+        </Text>
+      </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Open Programming"
+        onPress={() => onAction({ route: 'programming', label: 'Open Programming' })}
+        style={({ pressed }) => [styles.noProgramButton, pressed && styles.rowPressed]}
+      >
+        <Text style={styles.noProgramButtonText}>Open Programming</Text>
+        <Ionicons name="arrow-forward" size={15} color={palette.violetSoft} />
+      </Pressable>
+    </View>
+  );
+}
+
+function PresentState({ isIndividual, today }: { isIndividual?: boolean; today: TodayPayload }) {
   const athleteName = today.athlete?.name || 'Athlete';
-  const phaseLine = buildPhaseLine(today);
 
   return (
     <View style={styles.presentZone}>
@@ -396,18 +518,12 @@ function PresentState({ today }: { today: TodayPayload }) {
           )}
         </View>
         <View style={styles.identityText}>
-          <Text style={styles.todayKicker}>Today</Text>
+          <Text style={styles.todayKicker}>{isIndividual ? 'Good morning' : 'Today'}</Text>
           <Text style={styles.athleteName}>{athleteName}</Text>
           <Text style={styles.coachLine}>
-            {today.coach?.name ? `Coached by ${today.coach.name}` : 'Training companion'}
+            {isIndividual ? 'Self-coached training' : today.coach?.name ? `Coached by ${today.coach.name}` : 'Training companion'}
           </Text>
         </View>
-      </View>
-
-      <View style={styles.presentStrip}>
-        <Text style={styles.dateText}>{dateLabel}</Text>
-        <View style={styles.presentDivider} />
-        <Text style={styles.phaseText} numberOfLines={1}>{phaseLine}</Text>
       </View>
     </View>
   );
@@ -453,9 +569,11 @@ function MeetPlanEntry({
 }
 
 function TodayTraining({
+  isIndividual,
   onAction,
   today,
 }: {
+  isIndividual?: boolean;
   onAction: (action?: TodayAction | null) => void;
   today: TodayPayload;
 }) {
@@ -468,6 +586,7 @@ function TodayTraining({
   const sessionAction = hasSession
     ? action || { route: 'workout', workout_id: session.id, label: 'Open Session' }
     : null;
+  const isToday = String(session?.date || mission?.date || today.date).slice(0, 10) === String(today.date).slice(0, 10);
   const trainingSummary = buildTodayTrainingSummary(
     preview?.primary_lifts?.length ? preview.primary_lifts : mission?.focus,
     preview?.core_count,
@@ -476,23 +595,55 @@ function TodayTraining({
   );
   const actionLabel = actionLabelForSession(sessionAction, mission?.status, hasSession);
   const sessionLabel = hasSession ? session?.label || mission?.title || 'Today' : 'Recovery day';
-  const sessionDate = session?.date ? formatShortDate(session.date) : mission?.date ? formatShortDate(mission.date) : formatShortDate(today.date);
+  const focusDate = session?.date || mission?.date || today.date;
+  const sessionDate = hasSession
+    ? formatShortDate(focusDate)
+    : `${formatWeekdayAbbrev(focusDate)}  •  ${formatShortDate(focusDate)}  •  Rest`;
+  const focusImage = hasSession ? TRAINING_DAY_IMAGE : REST_DAY_IMAGE;
 
   return (
     <View style={[styles.todayTrainingZone, !hasSession && styles.todayTrainingZoneCompact]}>
+      <View pointerEvents="none" style={styles.restDayArtLayer}>
+        <Image
+          source={focusImage}
+          style={[styles.restDayImage, hasSession && styles.trainingDayImage]}
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={['rgba(18,18,30,0.94)', 'rgba(18,18,30,0.58)', 'rgba(18,18,30,0.16)']}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={styles.restDayImageSideFade}
+        />
+        <LinearGradient
+          colors={['rgba(18,18,30,0.22)', 'rgba(18,18,30,0.72)']}
+          start={{ x: 0.65, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.restDayImageDarken}
+        />
+        <LinearGradient
+          colors={['rgba(214,167,94,0.12)', 'rgba(139,92,246,0.05)', 'rgba(18,18,30,0)']}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.restDayImageWarmth}
+        />
+        </View>
       <View style={styles.todayTrainingRail} />
       <View style={[styles.todayTrainingBody, !hasSession && styles.todayTrainingBodyCompact]}>
         <View style={styles.todayTrainingTopRow}>
-          <Text style={styles.todayTrainingKicker}>{"Today's Training"}</Text>
-          <StatusPill value={hasSession ? mission?.status : 'rest'} />
+          <Text style={styles.todayTrainingKicker}>{isIndividual ? "Today's Focus" : "Today's Training"}</Text>
         </View>
 
-        <Text style={[styles.todayTrainingTitle, !hasSession && styles.todayTrainingTitleCompact]}>{sessionLabel}</Text>
-        <Text style={styles.todayTrainingDate}>{sessionDate}</Text>
-        <Text style={[styles.todayTrainingMovements, !hasSession && styles.todayTrainingMovementsCompact]} numberOfLines={2}>{trainingSummary.mainLine}</Text>
-        {trainingSummary.workLine ? (
-          <Text style={styles.todayTrainingSummary} numberOfLines={1}>{trainingSummary.workLine}</Text>
-        ) : null}
+        <View style={styles.todayFocusContentRow}>
+          <View style={[styles.todayFocusCopy, hasSession ? styles.todayFocusCopyTraining : styles.todayFocusCopyRest]}>
+            <Text style={[styles.todayTrainingTitle, !hasSession && styles.todayTrainingTitleCompact]}>{sessionLabel}</Text>
+            <Text style={styles.todayTrainingDate}>{sessionDate}</Text>
+            <Text style={[styles.todayTrainingMovements, !hasSession && styles.todayTrainingMovementsCompact]} numberOfLines={2}>{trainingSummary.mainLine}</Text>
+            {trainingSummary.workLine ? (
+              <Text style={styles.todayTrainingSummary} numberOfLines={1}>{trainingSummary.workLine}</Text>
+            ) : null}
+          </View>
+        </View>
 
         {sessionAction ? (
           <Pressable
@@ -514,11 +665,17 @@ function TodayTraining({
   );
 }
 
-function ReadinessLine({ today }: { today: TodayPayload }) {
+function ReadinessLine({ isIndividual, today }: { isIndividual?: boolean; today: TodayPayload }) {
   const readiness = today.readiness;
-  const score = formatNumber(readiness?.score, 1);
+  const hasScore = readiness?.score != null && Number.isFinite(Number(readiness.score));
+  const score = hasScore ? formatNumber(readiness?.score, 1) : null;
+  const readinessMessage =
+    isIndividual && (!readiness?.score || String(readiness?.message || '').toLowerCase().includes('coach'))
+      ? 'Readiness context will appear as you log readiness.'
+      : readiness?.message || 'Readiness context will appear after check-ins.';
   const metrics = readiness?.metrics || {};
   const metricLine = [
+    ['Bodyweight', today.athlete?.bodyweight_kg != null ? `${formatNumber(today.athlete.bodyweight_kg, 1)} kg` : null],
     ['Sleep', metrics.sleep],
     ['Energy', metrics.energy],
     ['Soreness', metrics.soreness],
@@ -526,33 +683,48 @@ function ReadinessLine({ today }: { today: TodayPayload }) {
   ]
     .filter(([, value]) => value != null)
     .slice(0, 3)
-    .map(([label, value]) => `${label} ${formatNumber(value as number, 1)}`);
+    .map(([label, value]) => `${label} ${typeof value === 'string' ? value : formatNumber(value as number, 1)}`);
 
   return (
     <View style={styles.readinessLine}>
       <View style={styles.readinessRail} />
-      <View style={styles.readinessScore}>
-        <Text style={styles.readinessScoreValue}>{score}</Text>
-        <Text style={styles.readinessScoreLabel}>Ready</Text>
+      <View style={styles.readinessIcon}>
+        <Ionicons name="pulse-outline" size={24} color={palette.violetSoft} />
       </View>
       <View style={styles.readinessCopy}>
-        <Text style={styles.readinessMessage}>{readiness?.message || 'Readiness context will appear after check-ins.'}</Text>
+        <Text style={styles.readinessKicker}>Readiness</Text>
+        <Text style={styles.readinessTitle}>{hasScore ? 'Ready' : 'Readiness'}</Text>
+        <Text style={styles.readinessMessage}>{readinessMessage}</Text>
         {metricLine.length > 0 ? <Text style={styles.readinessMetrics}>{metricLine.join(' / ')}</Text> : null}
       </View>
+      {hasScore ? (
+        <View style={styles.readinessScore}>
+          <Text style={styles.readinessScoreValue}>{score}</Text>
+          <Text style={styles.readinessScoreLabel}>Score</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
 
 function ContextTray({
+  isIndividual,
   onAction,
   today,
 }: {
+  isIndividual?: boolean;
   onAction: (action?: TodayAction | null) => void;
   today: TodayPayload;
 }) {
   const yesterday = today.yesterday;
   const tomorrow = today.tomorrow;
+  const guidance = today.coach_guidance;
+  const hasGuidance = !!(guidance?.body && guidance.source !== 'empty');
   const hasConnection = !!(today.latest_announcement || today.latest_message);
+
+  if (isIndividual) {
+    return <IndividualTrainingContext onAction={onAction} today={today} />;
+  }
 
   return (
     <View style={styles.contextZone}>
@@ -574,8 +746,19 @@ function ContextTray({
         />
       </View>
 
-      {hasConnection ? (
+      {(hasGuidance || hasConnection) ? (
         <View style={styles.coachConnection}>
+          {hasGuidance ? (
+            <CoachConnectionRow
+              item={guidance}
+              label={guidance.source === 'session_feedback' ? 'Coach Feedback' : 'Coach Guidance'}
+              onPress={() => onAction({
+                route: guidance.route || 'feedback',
+                workout_id: guidance.workout_id,
+                label: 'Open Session',
+              })}
+            />
+          ) : null}
           {today.latest_announcement ? (
             <CoachConnectionRow
               item={today.latest_announcement}
@@ -605,12 +788,118 @@ function ContextTray({
   );
 }
 
+function IndividualTrainingContext({
+  onAction,
+  today,
+}: {
+  onAction: (action?: TodayAction | null) => void;
+  today: TodayPayload;
+}) {
+  const recent = today.recent_glance;
+  const next = today.next_glance;
+  const progress = today.progress_signal;
+  const hasRecent = !!recent?.workout_id || !!recent?.title;
+  const hasNext = !!next?.workout_id || !!next?.title;
+  const week = next?.week;
+  const weekLine = week?.pct != null
+    ? `${week.logged || 0}/${week.assigned || 0} logged this week`
+    : week?.assigned
+    ? `${week.assigned} session${week.assigned === 1 ? '' : 's'} this week`
+    : 'Training week context appears as sessions are scheduled.';
+
+  return (
+    <View style={styles.contextZone}>
+      <View style={styles.glanceStrip}>
+        <GlanceCell
+          icon="calendar-outline"
+          label="Next"
+          title={next?.title || dayStateTitle(today.tomorrow)}
+          meta={next?.date ? formatShortDate(next.date) : today.tomorrow?.date ? formatShortDate(today.tomorrow.date) : 'Training runway'}
+          onPress={() => next?.workout_id && onAction({ route: 'workout', workout_id: next.workout_id })}
+        />
+        <View style={styles.glanceDivider} />
+        <GlanceCell
+          icon="checkmark-circle-outline"
+          label="Recent"
+          title={recent?.title || 'Recent training'}
+          meta={recent?.date ? formatShortDate(recent.date) : 'Log sessions to build history'}
+          onPress={() => recent?.workout_id && onAction({ route: 'workout', workout_id: recent.workout_id })}
+        />
+      </View>
+
+      <View style={styles.trainingObjectStack}>
+        <TrainingSignalRow
+          icon="analytics-outline"
+          label="Your Progress"
+          title={progress?.label || 'Training momentum'}
+          body={progress?.body || 'Training signals appear as you log sessions.'}
+        />
+        <TrainingSignalRow
+          icon="barbell-outline"
+          label="Up Next"
+          title={hasNext ? next?.title || 'Next session' : 'No upcoming session'}
+          body={hasNext ? `${next?.date ? formatShortDate(next.date) : 'Next scheduled day'} / ${weekLine}` : weekLine}
+          onPress={next?.workout_id ? () => onAction({ route: 'workout', workout_id: next.workout_id }) : undefined}
+        />
+        {hasRecent ? (
+          <TrainingSignalRow
+            icon="time-outline"
+            label="Last Session"
+            title={recent?.title || 'Completed session'}
+            body={recent?.date ? `${formatShortDate(recent.date)} / ${recent.status || 'completed'}` : recent.status || 'Completed'}
+            onPress={recent?.workout_id ? () => onAction({ route: 'workout', workout_id: recent.workout_id }) : undefined}
+          />
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+function TrainingSignalRow({
+  body,
+  icon,
+  label,
+  onPress,
+  title,
+}: {
+  body: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress?: () => void;
+  title: string;
+}) {
+  const content = (
+    <>
+      <View style={styles.contextRail} />
+      <View style={styles.trainingSignalIcon}>
+        <Ionicons name={icon} size={18} color={palette.violetSoft} />
+      </View>
+      <View style={styles.contextCopy}>
+        <Text style={styles.contextLabel}>{label}</Text>
+        <Text style={styles.contextTitle}>{title}</Text>
+        <Text style={styles.contextBody} numberOfLines={2}>{body}</Text>
+      </View>
+      {onPress ? <Ionicons name="chevron-forward" size={17} color={palette.muted} /> : null}
+    </>
+  );
+
+  if (!onPress) {
+    return <View style={styles.coachPocket}>{content}</View>;
+  }
+
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.coachPocket, pressed && styles.rowPressed]}>
+      {content}
+    </Pressable>
+  );
+}
+
 function CoachConnectionRow({
   item,
   label,
   onPress,
 }: {
-  item: CoachConnectionItem;
+  item: CoachConnectionDisplayItem;
   label: string;
   onPress: () => void;
 }) {
@@ -660,12 +949,57 @@ function GlanceCell({
   );
 }
 
-function StatusPill({ value }: { value?: string | null }) {
-  const status = String(value || '').replace('_', ' ');
-  if (!status || status === 'rest') {
-    return <Text style={styles.statusText}>Rest</Text>;
-  }
-  return <Text style={styles.statusText}>{status}</Text>;
+function hasActiveProgram(today: TodayPayload) {
+  return !!(today.phase?.active_program?.id || today.phase?.block?.id);
+}
+
+function IndividualTodayWelcomeModal({
+  onGoToProgramming,
+  onNotNow,
+  visible,
+}: {
+  onGoToProgramming: () => void;
+  onNotNow: () => void;
+  visible: boolean;
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onNotNow}>
+      <View style={styles.patchModalBackdrop}>
+        <View style={styles.patchModalCard}>
+          <View style={styles.patchModalHeader}>
+            <View style={styles.patchModalIconWrap}>
+              <Ionicons name="barbell" size={22} color={palette.violetSoft} />
+            </View>
+            <View style={styles.patchModalHeaderCopy}>
+              <Text style={styles.patchModalTitle}>Welcome to Strength Ledger Mobile</Text>
+              <Text style={styles.patchModalSubtitle}>Pilot Self-Coach workspace</Text>
+            </View>
+          </View>
+          <Text style={styles.patchModalBody}>
+            Thanks for downloading Strength Ledger and participating in the pilot. Let&apos;s get you started by creating your first training program.
+          </Text>
+          <View style={styles.individualWelcomeActions}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Go to Programming"
+              onPress={onGoToProgramming}
+              style={({ pressed }) => [styles.patchModalButton, pressed && styles.primaryActionPressed]}
+            >
+              <Text style={styles.patchModalButtonText}>Go to Programming</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Not now"
+              onPress={onNotNow}
+              style={({ pressed }) => [styles.individualWelcomeSecondary, pressed && styles.rowPressed]}
+            >
+              <Text style={styles.individualWelcomeSecondaryText}>Not now</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 }
 
 function PatchNoteModal({
@@ -727,7 +1061,7 @@ function PatchNoteModal({
             </View>
           </View>
           <Text style={styles.patchModalBody}>
-            Here is where to go depending on what you need.
+            Here's where to go depending on what you need.
           </Text>
           <ScrollView
             contentContainerStyle={styles.patchModalTourContent}
@@ -753,15 +1087,6 @@ function PatchNoteModal({
       </View>
     </Modal>
   );
-}
-
-function buildPhaseLine(today: TodayPayload) {
-  const meet = today.phase?.meet;
-  const block = today.phase?.block;
-  if (meet?.days_until === 0) return 'Meet day';
-  if (meet?.days_until != null && meet?.name) return `${meet.name} / ${meet.days_until} days out`;
-  if (block?.name) return block.name;
-  return today.phase?.label || 'Training phase';
 }
 
 function meetDaysLabel(days?: number | null) {
@@ -861,7 +1186,7 @@ function classifyTodayMovement(name: string): { kind: 'base' | 'variant' | 'othe
 
 function cleanTodayMovementLabel(name: string) {
   const classification = classifyTodayMovementBaseOnly(name);
-  return classification || name.replace(/\b(comp|competition)\b/gi, '').replace(/\s+/g, ' ').trim();
+  return classification || simplifyMobileMovementName(name);
 }
 
 function classifyTodayMovementBaseOnly(name: string) {
@@ -882,18 +1207,18 @@ function initials(name?: string | null) {
   return parts.slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'A';
 }
 
-function formatLongDate(iso?: string | null) {
-  if (!iso) return 'Today';
-  const d = new Date(`${String(iso).slice(0, 10)}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return String(iso);
-  return new Intl.DateTimeFormat([], { weekday: 'long', month: 'short', day: 'numeric' }).format(d);
-}
-
 function formatShortDate(iso?: string | null) {
   if (!iso) return 'Date TBD';
   const d = new Date(`${String(iso).slice(0, 10)}T00:00:00`);
   if (Number.isNaN(d.getTime())) return String(iso);
   return new Intl.DateTimeFormat([], { month: 'short', day: 'numeric' }).format(d);
+}
+
+function formatWeekdayAbbrev(iso?: string | null) {
+  if (!iso) return 'TODAY';
+  const d = new Date(`${String(iso).slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return 'TODAY';
+  return ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][d.getDay()];
 }
 
 function formatNumber(value?: number | null, digits = 1) {
@@ -908,8 +1233,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 0,
-    paddingTop: 10,
+    paddingTop: 12,
     paddingBottom: 104,
+    gap: 16,
   },
   centered: {
     flex: 1,
@@ -929,25 +1255,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   presentZone: {
-    paddingVertical: 8,
-    marginBottom: 8,
+    paddingTop: 8,
+    paddingBottom: 2,
   },
   identityRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   avatar: {
-    width: 52,
-    height: 52,
+    width: 64,
+    height: 64,
     borderRadius: 999,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.violetDim,
+    backgroundColor: 'rgba(139, 92, 246, 0.18)',
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.26)',
+    borderColor: 'rgba(196,181,253,0.32)',
   },
   avatarImage: {
     width: '100%',
@@ -955,7 +1281,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     color: palette.violetSoft,
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: '900',
     letterSpacing: 0,
   },
@@ -972,42 +1298,16 @@ const styles = StyleSheet.create({
   },
   athleteName: {
     color: palette.textStrong,
-    fontSize: 28,
-    lineHeight: 32,
+    fontSize: 30,
+    lineHeight: 36,
     fontWeight: '900',
     letterSpacing: 0,
   },
   coachLine: {
     color: palette.muted,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 16,
+    lineHeight: 22,
     marginTop: 2,
-  },
-  presentStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: palette.rail,
-  },
-  dateText: {
-    color: palette.text,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  presentDivider: {
-    width: 3,
-    height: 3,
-    borderRadius: 999,
-    backgroundColor: palette.subtle,
-  },
-  phaseText: {
-    flex: 1,
-    color: palette.muted,
-    fontSize: 13,
-    fontWeight: '700',
   },
   meetPlanEntry: {
     minHeight: 88,
@@ -1073,30 +1373,111 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
   },
+  noProgramGuidance: {
+    minHeight: 118,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    backgroundColor: 'rgba(24,16,15,0.42)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.18)',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  noProgramRail: {
+    width: 3,
+    backgroundColor: 'rgba(139,92,246,0.68)',
+  },
+  noProgramCopy: {
+    flex: 1,
+    minWidth: 0,
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingLeft: 14,
+    paddingRight: 10,
+  },
+  noProgramTitle: {
+    color: palette.textStrong,
+    fontSize: 20,
+    lineHeight: 25,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  noProgramBody: {
+    color: palette.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '700',
+    marginTop: 6,
+  },
+  noProgramButton: {
+    width: 116,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(196,181,253,0.10)',
+    backgroundColor: 'rgba(139,92,246,0.075)',
+    paddingHorizontal: 10,
+  },
+  noProgramButtonText: {
+    color: palette.textStrong,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
   todayTrainingZone: {
     flexDirection: 'row',
-    minHeight: 250,
-    marginBottom: 10,
+    minHeight: 248,
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: 'rgba(24,16,15,0.24)',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(205,194,176,0.055)',
+    backgroundColor: 'rgba(18,18,30,0.62)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.18)',
+    borderRadius: 22,
   },
   todayTrainingZoneCompact: {
     minHeight: 0,
-    marginBottom: 8,
+  },
+  restDayArtLayer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: '54%',
+  },
+  restDayImage: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.64,
+  },
+  trainingDayImage: {
+    opacity: 0.58,
+  },
+  restDayImageSideFade: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  restDayImageDarken: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  restDayImageWarmth: {
+    ...StyleSheet.absoluteFillObject,
   },
   todayTrainingRail: {
     width: 4,
-    backgroundColor: 'rgba(214,167,94,0.64)',
+    backgroundColor: 'rgba(214,167,94,0.88)',
+    zIndex: 2,
   },
   todayTrainingBody: {
     flex: 1,
     paddingHorizontal: 18,
     paddingTop: 20,
     paddingBottom: 16,
+    zIndex: 2,
   },
   todayTrainingBodyCompact: {
     paddingTop: 16,
@@ -1107,7 +1488,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   todayTrainingKicker: {
     color: palette.amber,
@@ -1116,16 +1497,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0,
   },
-  statusText: {
-    color: palette.muted,
-    fontSize: 12,
-    fontWeight: '800',
-    textTransform: 'capitalize',
-  },
   todayTrainingTitle: {
     color: palette.textStrong,
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 36,
+    lineHeight: 40,
     fontWeight: '900',
     letterSpacing: 0,
   },
@@ -1134,19 +1509,16 @@ const styles = StyleSheet.create({
     lineHeight: 31,
   },
   todayTrainingDate: {
-    marginTop: 4,
-    color: palette.subtle,
-    fontSize: 13,
+    marginTop: 7,
+    color: palette.muted,
+    fontSize: 16,
     lineHeight: 18,
     fontWeight: '800',
   },
   todayTrainingMovements: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderColor: 'rgba(205,194,176,0.075)',
+    marginTop: 18,
     color: palette.textStrong,
-    fontSize: 18,
+    fontSize: 17,
     lineHeight: 24,
     fontWeight: '900',
   },
@@ -1164,6 +1536,32 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 8,
     fontWeight: '800',
+  },
+  todayFocusContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  todayFocusCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  todayFocusCopyTraining: {
+    maxWidth: '76%',
+  },
+  todayFocusCopyRest: {
+    maxWidth: '72%',
+  },
+  todayFocusIcon: {
+    width: 112,
+    height: 112,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.12)',
+    backgroundColor: 'rgba(139,92,246,0.10)',
+    overflow: 'hidden',
   },
   intentStack: {
     marginTop: 18,
@@ -1213,19 +1611,41 @@ const styles = StyleSheet.create({
   },
   readinessLine: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 20,
-    paddingVertical: 13,
-    paddingRight: 12,
-    backgroundColor: 'rgba(24,16,15,0.22)',
+    alignItems: 'center',
+    gap: 14,
+    minHeight: 136,
+    paddingVertical: 18,
+    paddingRight: 16,
+    backgroundColor: 'rgba(18,18,30,0.54)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.18)',
+    borderRadius: 22,
+    overflow: 'hidden',
   },
   readinessRail: {
-    width: 2,
+    width: 4,
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(166,129,88,0.42)',
+    backgroundColor: 'rgba(139,92,246,0.88)',
+  },
+  readinessIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.20)',
   },
   readinessScore: {
-    width: 54,
+    width: 78,
+    height: 78,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(167,203,181,0.64)',
+    backgroundColor: 'rgba(8,10,12,0.28)',
   },
   readinessScoreValue: {
     color: palette.textStrong,
@@ -1234,8 +1654,8 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   readinessScoreLabel: {
-    color: palette.steel,
-    fontSize: 11,
+    color: palette.muted,
+    fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1243,6 +1663,21 @@ const styles = StyleSheet.create({
   readinessCopy: {
     flex: 1,
     minWidth: 0,
+  },
+  readinessKicker: {
+    color: palette.violetSoft,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0,
+    marginBottom: 5,
+  },
+  readinessTitle: {
+    color: palette.textStrong,
+    fontSize: 21,
+    lineHeight: 27,
+    fontWeight: '900',
+    marginBottom: 6,
   },
   readinessMessage: {
     color: palette.text,
@@ -1304,22 +1739,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139,92,246,0.10)',
   },
   contextZone: {
-    gap: 8,
+    gap: 16,
   },
   coachConnection: {
-    gap: 0,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(205,194,176,0.055)',
+    gap: 12,
+  },
+  trainingObjectStack: {
+    gap: 16,
   },
   coachPocket: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    minHeight: 104,
-    backgroundColor: 'rgba(24,16,15,0.18)',
-    paddingVertical: 13,
-    paddingRight: 12,
+    minHeight: 100,
+    backgroundColor: 'rgba(18,18,30,0.50)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.16)',
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingRight: 14,
+    overflow: 'hidden',
   },
   coachEmptyLine: {
     minHeight: 44,
@@ -1336,9 +1775,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   contextRail: {
-    width: 2,
+    width: 4,
     alignSelf: 'stretch',
-    backgroundColor: 'rgba(196,181,253,0.24)',
+    backgroundColor: 'rgba(139,92,246,0.70)',
+  },
+  trainingSignalIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.14)',
   },
   contextCopy: {
     flex: 1,
@@ -1354,14 +1803,14 @@ const styles = StyleSheet.create({
   },
   contextTitle: {
     color: palette.textStrong,
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 19,
+    lineHeight: 24,
     fontWeight: '900',
   },
   contextBody: {
     color: palette.text,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: 15,
+    lineHeight: 21,
     marginTop: 5,
   },
   rowPressed: {
@@ -1370,19 +1819,20 @@ const styles = StyleSheet.create({
   glanceStrip: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    minHeight: 112,
-    backgroundColor: 'rgba(24,16,15,0.14)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(205,194,176,0.045)',
+    gap: 16,
+    minHeight: 136,
   },
   glanceCell: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.15)',
+    borderRadius: 20,
+    backgroundColor: 'rgba(18,18,30,0.48)',
   },
   glanceDivider: {
-    width: 1,
-    backgroundColor: palette.rail,
+    display: 'none',
   },
   glanceLabel: {
     color: palette.muted,
@@ -1394,8 +1844,8 @@ const styles = StyleSheet.create({
   },
   glanceTitle: {
     color: palette.textStrong,
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 19,
+    lineHeight: 24,
     fontWeight: '900',
     marginTop: 4,
   },
@@ -1512,6 +1962,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 17,
   },
+  individualWelcomeActions: {
+    gap: 10,
+  },
   patchModalButton: {
     minHeight: 46,
     borderRadius: 8,
@@ -1523,5 +1976,15 @@ const styles = StyleSheet.create({
     color: palette.textStrong,
     fontSize: 15,
     fontWeight: '900',
+  },
+  individualWelcomeSecondary: {
+    minHeight: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  individualWelcomeSecondaryText: {
+    color: palette.muted,
+    fontSize: 13,
+    fontWeight: '800',
   },
 });

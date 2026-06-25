@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Tabs, usePathname, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
@@ -28,6 +28,7 @@ function FilteredTabBar({
   hasMeetDate,
   hasMessageNotifications,
   onMessagesTabPress,
+  bottomInset,
 }: BottomTabBarProps & {
   isCoach: boolean;
   isIndividual: boolean;
@@ -35,6 +36,7 @@ function FilteredTabBar({
   hasMeetDate: boolean;
   hasMessageNotifications: boolean;
   onMessagesTabPress: () => void;
+  bottomInset: number;
 }) {
   const router = useRouter();
   const allowedNames =
@@ -74,14 +76,15 @@ function FilteredTabBar({
     return routes;
   }, [] as typeof state.routes);
 
+  const trainingTabLabel = isIndividual ? 'Programming' : 'Training';
   const tabConfig: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap }> = {
     'coach-dashboard': { label: 'Today', icon: 'home-outline' },
     'coach-roster': { label: 'Roster', icon: 'people-outline' },
     'coach-calendar': { label: 'Calendar', icon: 'calendar-outline' },
     'coach-videos': { label: 'Videos', icon: 'videocam-outline' },
-    workout: { label: 'Training', icon: 'barbell-outline' },
-    'workout/index': { label: 'Training', icon: 'barbell-outline' },
-    workouts: { label: 'Training', icon: 'barbell-outline' },
+    workout: { label: trainingTabLabel, icon: 'barbell-outline' },
+    'workout/index': { label: trainingTabLabel, icon: 'barbell-outline' },
+    workouts: { label: trainingTabLabel, icon: 'barbell-outline' },
     'athlete-calendar': { label: 'Calendar', icon: 'calendar-outline' },
     'athlete-progression': { label: 'Progression', icon: 'trending-up-outline' },
     reflection: { label: 'Reflection', icon: 'sparkles-outline' },
@@ -95,7 +98,7 @@ function FilteredTabBar({
   };
 
   return (
-    <View style={styles.tabBar}>
+    <View style={[styles.tabBar, { height: 56 + bottomInset, paddingBottom: bottomInset }]}>
       {visibleRoutes.map((route) => {
         const routeIndex = state.routes.findIndex((r) => r.key === route.key);
         const isFocused = state.index === routeIndex;
@@ -164,6 +167,7 @@ export default function TabsLayout() {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [mobileViewModeLoaded, setMobileViewModeLoaded] = useState(false);
@@ -317,12 +321,12 @@ export default function TabsLayout() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <SLAtmosphere />
       <Tabs
         screenOptions={{
           header: () => (
-            <ThemedView style={styles.headerShell}>
+            <ThemedView style={[styles.headerShell, { paddingTop: insets.top }]}>
               <View style={styles.headerRow}>
                 <TouchableOpacity
                   onPress={() => {
@@ -396,6 +400,7 @@ export default function TabsLayout() {
             hasMeetDate={hasMeetDate}
             hasMessageNotifications={hasMessageNotifications}
             onMessagesTabPress={refreshMessageNotifications}
+            bottomInset={insets.bottom}
           />
         )}
       >
@@ -583,8 +588,8 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="workout/index"
           options={{
-            title: 'Training',
-            href: viewMode === 'athlete' ? '/(tabs)/workout' : null,
+            title: isIndividual ? 'Programming' : 'Training',
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/workout' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'barbell' : 'barbell-outline'}
@@ -608,6 +613,14 @@ export default function TabsLayout() {
           options={{
             href: null,
             title: 'Block Details',
+          }}
+        />
+
+        <Tabs.Screen
+          name="workout/create-program"
+          options={{
+            href: null,
+            title: 'Create Program',
           }}
         />
 
@@ -689,7 +702,7 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
-    </SafeAreaView>
+    </View>
   );
 }
 

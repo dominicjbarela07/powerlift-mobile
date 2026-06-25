@@ -8,6 +8,7 @@ import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } fro
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getAthleteCoachReviews } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 type AthleteReview = Omit<SetVideoSummary, 'review_tags'> & {
   review_tags?: SetVideoReviewTag[] | null;
@@ -180,7 +181,7 @@ export default function CoachReviewsScreen() {
               reviews.map((review) => {
                 const context = review.context || {};
                 const isFollowup = review.review_status === 'needs_followup';
-                const movement = context.movement_name || context.lift_name || 'Movement';
+                const movement = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                 const setLabel = context.set_display_label || context.set_context_label || (context.set_index != null ? `Set ${context.set_index}` : 'Set');
                 const planned = context.prescription_label || 'No planned snapshot';
                 const logged = compactActual(review) || 'No logged actuals';

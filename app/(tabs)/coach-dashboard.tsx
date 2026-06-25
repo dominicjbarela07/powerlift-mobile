@@ -168,6 +168,10 @@ function workflowLabel(item: CoachDashboardWorkflowItem) {
 export default function CoachDashboardScreen() {
   const router = useRouter();
   const { user, token } = useAuth();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
 
   const [data, setData] = useState<CoachDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -675,9 +679,9 @@ export default function CoachDashboardScreen() {
           </View>
 
           <LedgerSection
-            actionLabel={needsAction.length > 3 ? 'Roster' : undefined}
+            actionLabel={needsAction.length > 3 && !isIndividual ? 'Roster' : undefined}
             primary
-            onActionPress={needsAction.length > 3 ? () => router.push(ROUTES.coachRoster as any) : undefined}
+            onActionPress={needsAction.length > 3 && !isIndividual ? () => router.push(ROUTES.coachRoster as any) : undefined}
             title="Needs Action"
           >
             {needsAction.length > 0 ? (
@@ -719,8 +723,8 @@ export default function CoachDashboardScreen() {
 
         <View style={styles.lowerPlane}>
           <LedgerSection
-            actionLabel="Roster"
-            onActionPress={() => router.push(ROUTES.coachRoster as any)}
+            actionLabel={isIndividual ? undefined : 'Roster'}
+            onActionPress={isIndividual ? undefined : () => router.push(ROUTES.coachRoster as any)}
             title="Programming Horizon"
           >
             <View style={styles.ledgerList}>
@@ -801,8 +805,12 @@ export default function CoachDashboardScreen() {
         <UtilityDock
           actions={[
             { icon: 'add-circle-outline', label: 'Create', onPress: () => router.push(ROUTES.createWorkout as any), tone: 'accent' },
-            { icon: 'people-outline', label: 'Roster', onPress: () => router.push(ROUTES.coachRoster as any), tone: 'info' },
-            { icon: 'chatbubbles-outline', label: 'Messages', onPress: () => router.push(ROUTES.messages as any), tone: 'neutral' },
+            ...(!isIndividual
+              ? [
+                  { icon: 'people-outline' as const, label: 'Roster', onPress: () => router.push(ROUTES.coachRoster as any), tone: 'info' as const },
+                  { icon: 'chatbubbles-outline' as const, label: 'Messages', onPress: () => router.push(ROUTES.messages as any), tone: 'neutral' as const },
+                ]
+              : []),
             { icon: 'videocam-outline', label: 'Videos', onPress: () => router.push(ROUTES.coachVideos as any), tone: 'review' },
           ]}
         />

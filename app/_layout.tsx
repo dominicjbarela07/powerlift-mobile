@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Updates from 'expo-updates';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -18,7 +18,7 @@ import {
   GeistMono_400Regular,
   GeistMono_600SemiBold,
 } from '@expo-google-fonts/geist-mono';
-import { Platform } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -28,15 +28,46 @@ void SplashScreen.preventAutoHideAsync().catch(() => {});
 
 type ExpoNotificationsModule = typeof import('expo-notifications');
 
+const STARTUP_TIMEOUT_MS = 6000;
+
+function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) {
+  return (
+    <View style={styles.startupScreen}>
+      <Text style={styles.startupTitle}>Strength Ledger</Text>
+      <ActivityIndicator color="#C4B5FD" style={styles.startupSpinner} />
+      <Text style={styles.startupMessage}>{message}</Text>
+    </View>
+  );
+}
+
 function RootStack() {
   const { authReady, user } = useAuth();
   const router = useRouter();
   const registeredPushTokenRef = useRef<string | null>(null);
+  const [authWaitExpired, setAuthWaitExpired] = useState(false);
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
 
   const notificationModuleRef = useRef<ExpoNotificationsModule | null>(null);
 
   useEffect(() => {
-    if (!authReady || !user || Platform.OS === 'web') return;
+    if (authReady) {
+      setAuthWaitExpired(false);
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      console.warn('Auth bootstrap timed out; continuing to login shell.');
+      setAuthWaitExpired(true);
+    }, STARTUP_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [authReady]);
+
+  useEffect(() => {
+    if (!authReady || !user || isIndividual || Platform.OS === 'web') return;
 
     let cancelled = false;
 
@@ -121,7 +152,7 @@ function RootStack() {
     return () => {
       cancelled = true;
     };
-  }, [authReady, user]);
+  }, [authReady, isIndividual, user]);
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
@@ -137,6 +168,17 @@ function RootStack() {
 
         subscription = Notifications.addNotificationResponseReceivedListener((response) => {
           const data = response.notification.request.content.data || {};
+          if (
+            isIndividual &&
+            (data.type === 'announcement' ||
+              data.type === 'message' ||
+              data.type === 'video_submission' ||
+              data.type === 'check_in_due')
+          ) {
+            router.push('/(tabs)/athlete-dashboard' as any);
+            return;
+          }
+
           if (data.type === 'announcement') {
             router.push('/(tabs)/messages/announcements' as any);
             return;
@@ -165,6 +207,19 @@ function RootStack() {
             return;
           }
 
+          if (data.type === 'session_feedback') {
+            const workoutId = data.workout_id ? String(data.workout_id) : '';
+            if (workoutId) {
+              router.push({
+                pathname: '/(tabs)/workout/[workoutId]',
+                params: { workoutId },
+              } as any);
+              return;
+            }
+            router.push('/(tabs)/reflection' as any);
+            return;
+          }
+
           if (data.type !== 'message') return;
 
           const threadId = data.threadId ? String(data.threadId) : '';
@@ -189,10 +244,12 @@ function RootStack() {
       mounted = false;
       if (subscription) subscription.remove();
     };
-  }, [router, user?.is_coach]);
+  }, [isIndividual, router, user?.is_coach]);
 
-  // Prevent login/dashboard flicker while SecureStore rehydrates
-  if (!authReady) return null;
+  // Prevent login/dashboard flicker while SecureStore rehydrates, but never stay blank forever.
+  if (!authReady && !authWaitExpired) {
+    return <StartupLoadingScreen message="Preparing your account..." />;
+  }
 
   return (
     <Stack>
@@ -205,6 +262,7 @@ function RootStack() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [fontWaitExpired, setFontWaitExpired] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
     Geist_400Regular,
     Geist_500Medium,
@@ -215,8 +273,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    // Force EAS Updates check on launch for TestFlight builds.
-    // If your embedded updates config is conservative, this ensures OTA actually applies.
+    // Fetch available updates, but do not reload during first-launch review interaction.
     if (__DEV__) return;
 
     (async () => {
@@ -224,7 +281,7 @@ export default function RootLayout() {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
           await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
+          console.log('EAS update fetched; deferring reload until next cold start.');
         }
       } catch (e) {
         // Don’t crash the app if updates fail; just log.
@@ -234,12 +291,27 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    const timer = setTimeout(() => {
+      console.warn('Font loading timed out; continuing with fallback fonts.');
+      setFontWaitExpired(true);
+    }, STARTUP_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    void SplashScreen.hideAsync().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded || fontError || fontWaitExpired) {
       void SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontError, fontsLoaded]);
+  }, [fontError, fontWaitExpired, fontsLoaded]);
 
-  if (!fontsLoaded && !fontError) return null;
+  if (!fontsLoaded && !fontError && !fontWaitExpired) {
+    return <StartupLoadingScreen message="Starting Strength Ledger..." />;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -252,3 +324,29 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  startupScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#050505',
+    paddingHorizontal: 24,
+  },
+  startupTitle: {
+    color: '#F8FAFC',
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: 0,
+    textAlign: 'center',
+  },
+  startupSpinner: {
+    marginTop: 18,
+  },
+  startupMessage: {
+    marginTop: 12,
+    color: '#B8ACA1',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+});

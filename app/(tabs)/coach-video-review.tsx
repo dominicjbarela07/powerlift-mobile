@@ -8,6 +8,7 @@ import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideo
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { fetchJson, getCoachVideoReviewInbox } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const REVIEW_TAG_OPTIONS = [
   ['great_set', 'Great Set'],
@@ -359,7 +360,7 @@ export default function CoachVideoReviewScreen() {
             {videos.length > 0 ? (
               videos.map((video) => {
                 const context = video.context || {};
-                const movement = context.movement_name || context.lift_name || 'Movement';
+                const movement = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                 const setLabel = context.set_display_label || context.set_context_label || (context.set_index != null ? `Set ${context.set_index}` : 'Set');
                 const planned = context.prescription_label || 'No planned snapshot';
                 const logged = compactActual(video) || 'No logged actuals';

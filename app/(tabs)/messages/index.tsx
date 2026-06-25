@@ -293,6 +293,21 @@ function AttachmentPreviewChip({
 
 export default function MessagesScreen() {
   const { user } = useAuth();
+  const router = useRouter();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+
+  useEffect(() => {
+    if (isIndividual) {
+      router.replace('/(tabs)/athlete-dashboard' as any);
+    }
+  }, [isIndividual, router]);
+
+  if (isIndividual) {
+    return null;
+  }
 
   if (user?.is_coach) {
     return <CoachMessagesScreen />;

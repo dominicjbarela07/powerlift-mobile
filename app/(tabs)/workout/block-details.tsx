@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementList } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 type HubSession = {
@@ -173,7 +174,7 @@ function SessionRow({ session, onPress }: { session: HubSession; onPress: () => 
 }
 
 function focusLine(focus?: HubSession['focus']) {
-  const primary = (focus?.primary || []).filter(Boolean);
+  const primary = simplifyMobileMovementList(focus?.primary);
   return primary.join(' / ');
 }
 

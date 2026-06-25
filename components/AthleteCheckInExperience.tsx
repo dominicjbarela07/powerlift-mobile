@@ -275,8 +275,8 @@ export function CheckInFallbackSurface() {
         </View>
       ) : (
         <View style={styles.historyEmpty}>
-          <Text style={styles.historyEmptyTitle}>No check-ins due</Text>
-          <Text style={styles.mutedText}>You don’t have any check-ins assigned right now.</Text>
+          <Text style={styles.historyEmptyTitle}>Nothing due right now.</Text>
+          <Text style={styles.mutedText}>Completed check-ins live in Reflection.</Text>
         </View>
       )}
     </View>
@@ -721,7 +721,7 @@ function CheckInSubmitted({ title }: { title: string }) {
       <Ionicons name="checkmark-circle" size={24} color={colors.green} />
       <View style={styles.submittedCopy}>
         <Text style={styles.submittedTitle}>{title} Submitted</Text>
-        <Text style={styles.submittedText}>Thanks. Your coach now has your latest update.</Text>
+        <Text style={styles.submittedText}>Thanks. Your coach now has this week's update.</Text>
       </View>
     </View>
   );

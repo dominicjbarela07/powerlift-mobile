@@ -75,6 +75,7 @@ export function CoreMovementLedgerRow({
   const completedRows = detailRows?.filter((row) => row.state === 'completed') || [];
   const isActiveMovement = !!loggerFocus;
   const isComplete = state === 'complete';
+  const isAccessory = variantLabel?.toLowerCase() === 'accessory';
   const showCollapsedVariant =
     !expanded && !isComplete && variantLabel && variantLabel.toLowerCase() !== 'accessory';
   const showScheme = !!scheme && (expanded || !isComplete);
@@ -95,6 +96,7 @@ export function CoreMovementLedgerRow({
         isActiveMovement && styles.ledgerRowActive,
         state === 'logged' && styles.ledgerRowCurrent,
         state === 'complete' && styles.ledgerRowCompleted,
+        isAccessory && styles.ledgerRowAccessory,
       ]}
     >
       <View
@@ -102,6 +104,8 @@ export function CoreMovementLedgerRow({
           styles.ledgerRail,
           state === 'complete' && styles.ledgerRailCompleted,
           state === 'not_started' && styles.ledgerRailUpcoming,
+          isAccessory && styles.ledgerRailAccessory,
+          isActiveMovement && styles.ledgerRailActive,
         ]}
       />
       <View style={styles.ledgerMain}>
@@ -110,13 +114,6 @@ export function CoreMovementLedgerRow({
             <Text style={[styles.ledgerTitle, loggerFocus && styles.ledgerTitleActive]}>
               {title}
             </Text>
-            {loggerFocus ? (
-              <View style={styles.ledgerMetaChips}>
-                {loggerFocus.designation ? (
-                  <Text style={styles.ledgerMetaChip}>{loggerFocus.designation}</Text>
-                ) : null}
-              </View>
-            ) : null}
           </View>
           <View style={styles.ledgerHeaderActions}>
             <Text
@@ -131,7 +128,7 @@ export function CoreMovementLedgerRow({
             {auxAction}
             <TouchableOpacity style={styles.ledgerActionButton} onPress={onOpen}>
               <Text style={[styles.ledgerAction, expanded && styles.ledgerActionExpanded]}>
-                {expanded ? 'Collapse' : 'Expand'}
+                {expanded ? 'Collapse  ^' : 'Expand  v'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -151,15 +148,13 @@ export function CoreMovementLedgerRow({
             {loggerFocus ? <SetRail steps={loggerFocus.rail} /> : <SetRail steps={reviewRail} />}
             {loggerFocus ? (
               <View style={styles.nextSetPanel}>
-                <View style={styles.currentSetRow}>
-                  <View style={styles.currentSetBadge}>
-                    <Text style={styles.currentSetBadgeLabel}>Next Set</Text>
+                <View style={styles.currentTargetCopy}>
+                  <Text style={styles.currentSetBadgeLabel}>Next Set</Text>
+                  {loggerFocus.targetLine ? (
+                    <Text style={styles.currentTarget}>{loggerFocus.targetLine}</Text>
+                  ) : null}
+                  <View style={styles.currentSetSummaryRow}>
                     <Text style={styles.currentSetBadgeValue}>{loggerFocus.currentSetLabel}</Text>
-                  </View>
-                  <View style={styles.currentTargetCopy}>
-                    {loggerFocus.targetLine ? (
-                      <Text style={styles.currentTarget}>{loggerFocus.targetLine}</Text>
-                    ) : null}
                     {loggerFocus.prescriptionLine ? (
                       <Text style={styles.currentPrescription}>{loggerFocus.prescriptionLine}</Text>
                     ) : null}
@@ -255,7 +250,7 @@ function SetRail({ steps }: { steps: SetRailStep[] }) {
                   step.state === 'active' && styles.railNodeTextActive,
                 ]}
               >
-                {step.state === 'completed' ? '✓' : step.state === 'active' ? '•' : ''}
+                {step.state === 'completed' ? '✓' : step.label.replace(/[^0-9]/g, '') || '•'}
               </Text>
             </View>
             <Text
@@ -285,46 +280,55 @@ const styles = StyleSheet.create({
   },
   ledgerRow: {
     position: 'relative',
-    marginBottom: 9,
-    paddingVertical: 12,
-    paddingHorizontal: 13,
-    paddingLeft: 16,
-    borderRadius: 10,
+    marginBottom: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingLeft: 20,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.045)',
-    backgroundColor: 'rgba(21,15,14,0.30)',
+    borderColor: 'rgba(148,163,184,0.16)',
+    backgroundColor: 'rgba(10,13,22,0.72)',
     overflow: 'hidden',
   },
   ledgerRowExpanded: {
-    borderColor: 'rgba(167,139,250,0.18)',
-    backgroundColor: 'rgba(34,23,24,0.56)',
+    borderColor: 'rgba(167,139,250,0.30)',
+    backgroundColor: 'rgba(12,17,30,0.86)',
   },
   ledgerRowActive: {
-    borderColor: 'rgba(214,167,94,0.24)',
-    backgroundColor: 'rgba(43,27,25,0.68)',
+    borderColor: 'rgba(167,139,250,0.38)',
+    backgroundColor: 'rgba(12,17,30,0.92)',
   },
   ledgerRowCurrent: {
-    backgroundColor: 'rgba(45,32,36,0.46)',
+    backgroundColor: 'rgba(13,18,32,0.82)',
   },
   ledgerRowCompleted: {
-    borderColor: 'rgba(167,190,159,0.060)',
-    backgroundColor: 'rgba(22,19,17,0.20)',
+    borderColor: 'rgba(74,222,128,0.18)',
+    backgroundColor: 'rgba(9,17,18,0.66)',
+  },
+  ledgerRowAccessory: {
+    borderColor: 'rgba(45,212,191,0.18)',
   },
   ledgerRail: {
     position: 'absolute',
     left: 0,
-    top: 9,
-    bottom: 9,
-    width: 3,
+    top: 0,
+    bottom: 0,
+    width: 5,
     borderTopRightRadius: 4,
     borderBottomRightRadius: 4,
-    backgroundColor: 'rgba(167,139,250,0.62)',
+    backgroundColor: '#8B5CF6',
   },
   ledgerRailCompleted: {
-    backgroundColor: 'rgba(167,190,159,0.24)',
+    backgroundColor: '#4ADE80',
   },
   ledgerRailUpcoming: {
-    backgroundColor: 'rgba(132,119,106,0.28)',
+    backgroundColor: '#F6B657',
+  },
+  ledgerRailAccessory: {
+    backgroundColor: '#2DD4BF',
+  },
+  ledgerRailActive: {
+    backgroundColor: '#8B5CF6',
   },
   ledgerMain: {
     flex: 1,
@@ -344,27 +348,27 @@ const styles = StyleSheet.create({
   },
   ledgerTitle: {
     color: '#F8FAFC',
-    fontSize: 19,
-    lineHeight: 24,
-    fontWeight: '800',
+    fontSize: 25,
+    lineHeight: 30,
+    fontWeight: '900',
   },
   ledgerTitleActive: {
-    color: '#FFF7ED',
-    fontSize: 23,
-    lineHeight: 28,
+    color: '#F8FAFC',
+    fontSize: 30,
+    lineHeight: 36,
   },
   ledgerState: {
-    color: '#AFA4C8',
+    color: '#F6B657',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   ledgerStateCompleted: {
-    color: 'rgba(167,203,181,0.78)',
+    color: '#4ADE80',
   },
   ledgerStateActive: {
-    color: '#D6A75E',
+    color: '#A78BFA',
   },
   ledgerVariant: {
     color: '#A9A3CF',
@@ -387,22 +391,22 @@ const styles = StyleSheet.create({
     paddingRight: 2,
   },
   ledgerScheme: {
-    color: '#ECE5DA',
-    fontSize: 13,
-    lineHeight: 18,
+    color: '#E5E7EB',
+    fontSize: 17,
+    lineHeight: 23,
     fontWeight: '700',
-    marginTop: 6,
+    marginTop: 4,
   },
   ledgerMeta: {
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: '#C7BEB4',
+    fontSize: 15,
     lineHeight: 17,
     fontWeight: '700',
     marginTop: 3,
   },
   ledgerTop: {
     color: '#D7CCC1',
-    fontSize: 12,
+    fontSize: 14,
     lineHeight: 17,
     fontWeight: '700',
     marginTop: 3,
@@ -438,26 +442,26 @@ const styles = StyleSheet.create({
   },
   ledgerActionButton: {
     alignSelf: 'flex-end',
-    minHeight: 30,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 999,
+    minHeight: 38,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 11,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.26)',
-    backgroundColor: 'rgba(139,92,246,0.18)',
+    borderColor: 'rgba(167,139,250,0.50)',
+    backgroundColor: 'rgba(15,17,28,0.72)',
   },
   currentFocusBlock: {
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: 16,
+    paddingTop: 14,
     borderTopWidth: 1,
     borderTopColor: 'rgba(222,198,166,0.075)',
   },
   nextSetPanel: {
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: 'rgba(13,10,10,0.28)',
+    padding: 14,
+    borderRadius: 13,
+    backgroundColor: 'rgba(9,14,25,0.74)',
     borderWidth: 1,
-    borderColor: 'rgba(214,167,94,0.12)',
+    borderColor: 'rgba(148,163,184,0.18)',
   },
   currentSetRow: {
     flexDirection: 'row',
@@ -469,20 +473,27 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   currentSetBadgeLabel: {
-    color: '#D6A75E',
-    fontSize: 10,
+    color: '#A78BFA',
+    fontSize: 11,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   currentSetBadgeValue: {
-    color: '#F8FAFC',
+    color: '#D7CCC1',
     fontSize: 20,
-    fontWeight: '900',
-    marginTop: 4,
+    fontWeight: '700',
+    marginTop: 0,
   },
   currentTargetCopy: {
     flex: 1,
+  },
+  currentSetSummaryRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 10,
+    flexWrap: 'wrap',
+    marginTop: 6,
   },
   currentProgression: {
     color: '#E2E8F0',
@@ -491,47 +502,53 @@ const styles = StyleSheet.create({
   },
   currentTarget: {
     color: '#F8FAFC',
-    fontSize: 21,
-    lineHeight: 25,
+    fontSize: 29,
+    lineHeight: 35,
     fontWeight: '900',
+    marginTop: 5,
   },
   currentPrescription: {
-    color: '#A9A3CF',
-    fontSize: 13,
+    color: '#D7CCC1',
+    fontSize: 15,
     lineHeight: 19,
-    fontWeight: '700',
-    marginTop: 3,
+    fontWeight: '600',
+    marginTop: 0,
   },
   railWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
-    marginBottom: 10,
-    flexWrap: 'wrap',
-    rowGap: 8,
+    marginTop: 8,
+    marginBottom: 14,
+    flexWrap: 'nowrap',
   },
   railStep: {
     alignItems: 'center',
     gap: 5,
   },
   railNode: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(33,24,20,0.42)',
+    backgroundColor: 'rgba(10,13,22,0.76)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.22)',
   },
   railNodeCompleted: {
-    backgroundColor: 'rgba(167,190,159,0.20)',
+    backgroundColor: 'rgba(139,92,246,0.78)',
+    borderColor: 'rgba(196,181,253,0.50)',
   },
   railNodeActive: {
-    width: 28,
-    backgroundColor: 'rgba(139,92,246,0.20)',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#7C3AED',
+    borderColor: 'rgba(196,181,253,0.70)',
   },
   railNodeText: {
-    color: '#82766D',
-    fontSize: 10,
+    color: '#C7BEB4',
+    fontSize: 13,
     fontWeight: '900',
   },
   railNodeTextCompleted: {
@@ -549,10 +566,11 @@ const styles = StyleSheet.create({
     color: '#D6CCF5',
   },
   railConnector: {
-    width: 18,
-    height: 2,
-    marginHorizontal: 3,
-    marginBottom: 14,
+    flex: 1,
+    minWidth: 28,
+    height: 1,
+    marginHorizontal: 2,
+    marginBottom: 22,
     borderRadius: 999,
     backgroundColor: 'rgba(222,198,166,0.08)',
   },
@@ -564,12 +582,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   currentSecondaryAction: {
-    minHeight: 32,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    flex: 1,
+    minHeight: 38,
+    paddingHorizontal: 12,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.035)',
+    backgroundColor: 'rgba(10,13,22,0.74)',
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
   },
   currentSecondaryActionText: {
     color: '#CFC4B9',
@@ -577,32 +598,32 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   currentPrimaryAction: {
-    minHeight: 48,
+    minHeight: 58,
     width: '100%',
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 12,
-    backgroundColor: 'rgba(139,92,246,0.36)',
+    backgroundColor: '#6D28D9',
     borderWidth: 1,
-    borderColor: 'rgba(214,167,94,0.22)',
+    borderColor: 'rgba(196,181,253,0.28)',
   },
   currentPrimaryActionText: {
     color: '#F5F3FF',
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: '900',
   },
   currentLoggedList: {
-    marginTop: 10,
-    paddingTop: 9,
+    marginTop: 12,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: 'rgba(222,198,166,0.065)',
     gap: 6,
   },
   currentLoggedKicker: {
-    color: '#8F857B',
-    fontSize: 10,
+    color: '#A78BFA',
+    fontSize: 12,
     lineHeight: 14,
     fontWeight: '900',
     textTransform: 'uppercase',

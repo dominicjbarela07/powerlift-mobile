@@ -17,6 +17,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { ThemedView } from '@/components/themed-view';
 import { getAthleteVideoArchive } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const palette = {
   bg: '#020617',
@@ -390,7 +391,7 @@ export default function AthleteVideoArchiveScreen() {
               <View style={styles.reviewRail}>
                 {latestSignals.map((video) => {
                   const context = video.context || {};
-                  const movementName = context.movement_name || context.lift_name || 'Movement';
+                  const movementName = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                   const feedback = feedbackPreview(video.coach_feedback);
                   return (
                     <Pressable
@@ -454,7 +455,7 @@ export default function AthleteVideoArchiveScreen() {
             {videos.length ? (
               videos.map((video) => {
                 const context = video.context || {};
-                const movementName = context.movement_name || context.lift_name || 'Movement';
+                const movementName = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                 const setLabel = context.set_display_label || context.set_context_label || (context.set_index != null ? `Set ${context.set_index}` : 'Set');
                 const isFollowup = video.review_status === 'needs_followup';
                 const feedback = feedbackPreview(video.coach_feedback);

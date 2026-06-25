@@ -18,6 +18,7 @@ import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } fro
 import { SLScreen } from '@/components/ui';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { getCoachVideoArchive } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const palette = {
   border: SLColors.borderHairline,
@@ -348,7 +349,7 @@ export default function CoachVideoArchiveScreen() {
             {videos.length ? (
               videos.map((video) => {
                 const context = video.context || {};
-                const movementName = context.movement_name || context.lift_name || 'Movement';
+                const movementName = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                 const setLabel = context.set_display_label || context.set_context_label || (context.set_index != null ? `Set ${context.set_index}` : 'Set');
                 const isFollowup = video.review_status === 'needs_followup';
                 const tags = tagLabels(video.review_tags).slice(0, 3);

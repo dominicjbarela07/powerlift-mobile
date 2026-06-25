@@ -3,8 +3,10 @@ import { View, StyleSheet, ScrollView, Pressable, TextInput, Modal, TouchableOpa
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
+import { useAuth } from '@/context/AuthContext';
 import { useLocalSearchParams } from 'expo-router';
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   AccessoryMovementCard,
@@ -109,6 +111,11 @@ function isValidYMD(value: string) {
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
   const params = useLocalSearchParams<{
     editWorkoutId?: string | string[];
     athleteId?: string | string[];
@@ -287,10 +294,13 @@ export default function CreateWorkoutScreen() {
   const [coreSelectOpen, setCoreSelectOpen] = useState<null | { kind: 'lift'|'scheme'|'mode'; idx: number }>(null);
 
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [templateReplaceConfirmOpen, setTemplateReplaceConfirmOpen] = useState(false);
   const [templates, setTemplates] = useState<TemplateRow[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const [templatesError, setTemplatesError] = useState<string | null>(null);
   const [copyExistingOpen, setCopyExistingOpen] = useState(false);
+  const [copyReplaceConfirmSource, setCopyReplaceConfirmSource] = useState<RecentSessionRow | null>(null);
+  const [quickStartNotice, setQuickStartNotice] = useState<null | { title: string; body: string }>(null);
   const [copySessions, setCopySessions] = useState<RecentSessionRow[]>([]);
   const [copySessionsLoading, setCopySessionsLoading] = useState(false);
   const [copySessionsError, setCopySessionsError] = useState<string | null>(null);
@@ -322,9 +332,9 @@ export default function CreateWorkoutScreen() {
   };
 
   const coreLiftLabel = (v: CoreDraft['lift']) => {
-    if (v === 'SQ') return 'Comp Squat';
-    if (v === 'BN') return 'Comp Bench';
-    if (v === 'DL') return 'Comp Deadlift';
+    if (v === 'SQ') return simplifyMobileMovementName('Competition Squat');
+    if (v === 'BN') return simplifyMobileMovementName('Competition Bench');
+    if (v === 'DL') return simplifyMobileMovementName('Competition Deadlift');
     if (v === 'OHP') return 'OHP';
     return 'Variant';
   };
@@ -671,7 +681,10 @@ export default function CreateWorkoutScreen() {
 
   const loadCopyExistingSessions = async (query = '') => {
     if (!athleteId.trim()) {
-      Alert.alert('Select athlete', 'Choose an athlete before copying an existing session.');
+      setQuickStartNotice({
+        title: 'Select athlete',
+        body: 'Choose an athlete before copying an existing session.',
+      });
       return;
     }
 
@@ -700,7 +713,10 @@ export default function CreateWorkoutScreen() {
   const openCopyExisting = () => {
     if (editWorkoutId) return;
     if (!athleteId.trim()) {
-      Alert.alert('Select athlete', 'Choose an athlete before copying an existing session.');
+      setQuickStartNotice({
+        title: 'Select athlete',
+        body: 'Choose an athlete before copying an existing session.',
+      });
       return;
     }
     setCopySearch('');
@@ -770,7 +786,7 @@ export default function CreateWorkoutScreen() {
       .filter((category) => category.movements.length > 0);
   };
 
-  const applyCopyExistingSession = async (source: RecentSessionRow) => {
+  const applyCopyExistingSession = async (source: RecentSessionRow, skipConfirm = false) => {
     if (!source?.id) return;
 
     const applySource = async () => {
@@ -805,15 +821,8 @@ export default function CreateWorkoutScreen() {
     };
 
     const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
-    if (hasDraft) {
-      Alert.alert(
-        'Replace current draft?',
-        'Copying an existing session will replace the current builder contents.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Replace', style: 'destructive', onPress: applySource },
-        ]
-      );
+    if (hasDraft && !skipConfirm) {
+      setCopyReplaceConfirmSource(source);
       return;
     }
 
@@ -1302,6 +1311,10 @@ export default function CreateWorkoutScreen() {
       const rows: RosterRow[] = Array.isArray(res.athletes) ? res.athletes : [];
       if (!cancelled) {
         setRoster(rows);
+        if (isIndividual && !editWorkoutId && !prefillAthleteIdParam.trim()) {
+          const selfRow = rows.find((row) => row.is_self) || rows[0];
+          if (selfRow?.id) setAthleteId(String(selfRow.id));
+        }
         setRosterLoading(false);
         setRosterLoaded(true);
       }
@@ -1312,7 +1325,7 @@ export default function CreateWorkoutScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [editWorkoutId, isIndividual, prefillAthleteIdParam]);
 
   useEffect(() => {
     if (!templatePickerOpen) return;
@@ -1688,6 +1701,9 @@ export default function CreateWorkoutScreen() {
     return athleteId.trim().length > 0 && dateStr.trim().length === 10 && !saving && noStepIssues;
   }, [athleteId, dateStr, saving, stepIssues]);
   const hasSessionItems = core.length > 0 || acc.length > 0;
+  const setupComplete = athleteId.trim().length > 0 && dateStr.trim().length === 10;
+  const mainLiftCount = core.filter((item, index) => !(item.variant === 'BK' && core[index - 1]?.variant === 'TOP')).length;
+  const accessoryCount = acc.length;
 
   const addCore = () =>
     setCore((p) => [
@@ -2407,9 +2423,14 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
         keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
       >
         <View style={styles.topBar}>
-          <ThemedText variant="h1" style={styles.title}>
-            {editWorkoutId ? 'Edit Session' : 'Create Session'}
-          </ThemedText>
+          <View style={styles.titleBlock}>
+            <ThemedText variant="h1" style={styles.title}>
+              {editWorkoutId ? 'Edit Session' : 'Create Session'}
+            </ThemedText>
+            <ThemedText variant="bodyMuted" style={styles.titleSubtext}>
+              Build your workout plan, then save it when it feels right.
+            </ThemedText>
+          </View>
           <View style={styles.topActions}>
             {editWorkoutId ? (
               <Pressable style={styles.topSecondaryBtn} onPress={() => router.back()}>
@@ -2426,46 +2447,26 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           </View>
         </View>
 
-        {error && <ThemedText variant="error" style={styles.error}>{error}</ThemedText>}
-
-        <View style={styles.sourceRow}>
-          <ThemedText variant="bodyMuted" style={styles.sourceText}>Source</ThemedText>
-          {!editWorkoutId ? (
-            <Pressable
-              style={styles.sourceBtn}
-              onPress={openCopyExisting}
-            >
-              <ThemedText variant="badge" style={styles.sourceBtnText}>Copy Existing</ThemedText>
-            </Pressable>
-          ) : null}
-          <Pressable
-            style={styles.sourceBtn}
-            onPress={() => {
-              const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
-              if (!hasDraft) {
-                setTemplatePickerOpen(true);
-                return;
-              }
-              Alert.alert(
-                'Load template?',
-                'This will replace your current draft in the builder.',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Replace',
-                    style: 'destructive',
-                    onPress: () => setTemplatePickerOpen(true),
-                  },
-                ]
-              );
-            }}
-          >
-            <ThemedText variant="badge" style={styles.sourceBtnText}>Load Template</ThemedText>
-          </Pressable>
+        <View style={styles.progressStrip}>
+          <ProgressStep label="Setup" value={setupComplete ? '✓' : '•'} active complete={setupComplete} />
+          <ProgressStep label="Main Lifts" value={String(mainLiftCount)} active={mainLiftCount > 0} />
+          <ProgressStep label="Accessories" value={String(accessoryCount)} active={accessoryCount > 0} accessory />
         </View>
 
+        {error && <ThemedText variant="error" style={styles.error}>{error}</ThemedText>}
+
         <View style={[styles.card, styles.basicsCard]}>
-          <ThemedText variant="h3" style={styles.sectionKicker}>Basics</ThemedText>
+          <View style={styles.setupHero}>
+            <View style={styles.setupHeroIcon}>
+              <ThemedText variant="h3" style={styles.setupHeroIconText}>⌁</ThemedText>
+            </View>
+            <View style={styles.setupHeroCopy}>
+              <ThemedText variant="h3" style={styles.setupHeroTitle}>Session Setup</ThemedText>
+              <ThemedText variant="bodyMuted" style={styles.setupHeroText}>
+                Choose who this is for, when it happens, and how loads should read.
+              </ThemedText>
+            </View>
+          </View>
 
           <ThemedText variant="bodyMuted" style={styles.label}>Athlete</ThemedText>
 
@@ -2561,11 +2562,69 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           />
         </View>
 
+        <View style={styles.chapter}>
+          <ThemedText variant="bodyMuted" style={styles.chapterKicker}>Quick Start (optional)</ThemedText>
+          <View style={styles.quickStartGrid}>
+            {!editWorkoutId ? (
+              <Pressable
+                style={({ pressed }) => [styles.quickStartCard, pressed && styles.pressed]}
+                onPress={openCopyExisting}
+              >
+                <View style={styles.quickStartIcon}>
+                  <ThemedText variant="h3" style={styles.quickStartIconText}>⧉</ThemedText>
+                </View>
+                <View style={styles.quickStartCopy}>
+                  <ThemedText variant="body" style={styles.quickStartTitle}>Copy Existing Session</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.quickStartText}>Start from a previous workout you created.</ThemedText>
+                </View>
+                <ThemedText variant="h3" style={styles.quickStartArrow}>›</ThemedText>
+              </Pressable>
+            ) : null}
+            <Pressable
+              style={({ pressed }) => [styles.quickStartCard, pressed && styles.pressed]}
+              onPress={() => {
+                const hasDraft = core.length > 0 || acc.length > 0 || !!label.trim();
+                if (!hasDraft) {
+                  setTemplatePickerOpen(true);
+                  return;
+                }
+                setTemplateReplaceConfirmOpen(true);
+              }}
+            >
+              <View style={[styles.quickStartIcon, styles.quickStartIconGreen]}>
+                <ThemedText variant="h3" style={styles.quickStartIconText}>⌗</ThemedText>
+              </View>
+              <View style={styles.quickStartCopy}>
+                <ThemedText variant="body" style={styles.quickStartTitle}>Load Template</ThemedText>
+                <ThemedText variant="bodyMuted" style={styles.quickStartText}>Use a template to jump-start this session.</ThemedText>
+              </View>
+              <ThemedText variant="h3" style={styles.quickStartArrow}>›</ThemedText>
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.chapter}>
+          <ThemedText variant="bodyMuted" style={styles.chapterKicker}>What's Next?</ThemedText>
+          <View style={styles.guidanceStack}>
+            <GuidanceRow
+              icon="⌘"
+              title="Add your main lifts"
+              body="Start with the key lifts for this workout. You can always adjust later."
+            />
+            <GuidanceRow
+              icon="♡"
+              title="Add supporting accessories"
+              body="Accessories help round out your session and support your main lifts."
+              accessory
+            />
+          </View>
+        </View>
 
         <View style={styles.card}>
                 <View style={styles.sectionHeaderRow}>
                   <View>
-                    <ThemedText variant="h3" style={styles.sectionKicker}>Core Work</ThemedText>
+                    <ThemedText variant="h3" style={styles.sectionKicker}>Main Lifts</ThemedText>
+                    <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>Add the key lifts for this workout.</ThemedText>
                   </View>
                   <Pressable style={styles.sectionAddBtn} onPress={() => setAddLiftOpen(true)}>
                     <ThemedText variant="badge" style={styles.sectionAddText}>+ Add Lift</ThemedText>
@@ -2573,7 +2632,11 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                 </View>
                 {core.length === 0 ? (
                   <Pressable style={styles.emptyOutlineCard} onPress={() => setAddLiftOpen(true)}>
-                    <ThemedText variant="body" style={styles.emptyOutlineTitle}>No core work yet</ThemedText>
+                    <ThemedText variant="body" style={styles.emptyOutlineTitle}>No main lifts yet.</ThemedText>
+                    <ThemedText variant="bodyMuted" style={styles.emptyOutlineText}>Add your first lift to begin building your workout.</ThemedText>
+                    <View style={styles.emptyCta}>
+                      <ThemedText variant="badge" style={styles.emptyCtaText}>+ Add First Lift</ThemedText>
+                    </View>
                   </Pressable>
                 ) : null}
                 {core.map((c, idx) => {
@@ -3351,7 +3414,11 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
 
           {acc.length === 0 ? (
             <Pressable style={styles.emptyOutlineCard} onPress={addAcc}>
-              <ThemedText variant="body" style={styles.emptyOutlineTitle}>No accessories yet</ThemedText>
+              <ThemedText variant="body" style={styles.emptyOutlineTitle}>No accessories yet.</ThemedText>
+              <ThemedText variant="bodyMuted" style={styles.emptyOutlineText}>Add accessories to support your main lifts.</ThemedText>
+              <View style={[styles.emptyCta, styles.emptyCtaAccessory]}>
+                <ThemedText variant="badge" style={styles.emptyCtaText}>+ Add Accessory</ThemedText>
+              </View>
             </Pressable>
           ) : null}
 
@@ -3804,6 +3871,88 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
         </Modal>
 
         <Modal
+          visible={!!copyReplaceConfirmSource}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setCopyReplaceConfirmSource(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>Replace current draft?</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.templateConfirmText}>
+                    Copying an existing session will replace the current builder contents.
+                  </ThemedText>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setCopyReplaceConfirmSource(null)}
+                  style={styles.modalClose}
+                  accessibilityLabel="Close copy confirmation"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>✕</ThemedText>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.templateConfirmActions}>
+                <Pressable
+                  style={styles.cancelBtn}
+                  onPress={() => setCopyReplaceConfirmSource(null)}
+                >
+                  <ThemedText variant="h3" style={styles.cancelText}>Cancel</ThemedText>
+                </Pressable>
+                <Pressable
+                  style={styles.saveBtn}
+                  onPress={async () => {
+                    const source = copyReplaceConfirmSource;
+                    setCopyReplaceConfirmSource(null);
+                    if (source) await applyCopyExistingSession(source, true);
+                  }}
+                >
+                  <ThemedText variant="h3" style={styles.saveText}>Replace</ThemedText>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          visible={!!quickStartNotice}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setQuickStartNotice(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>
+                    {quickStartNotice?.title || ''}
+                  </ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.templateConfirmText}>
+                    {quickStartNotice?.body || ''}
+                  </ThemedText>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setQuickStartNotice(null)}
+                  style={styles.modalClose}
+                  accessibilityLabel="Close quick start notice"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>✕</ThemedText>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.templateConfirmActions}>
+                <Pressable
+                  style={styles.saveBtn}
+                  onPress={() => setQuickStartNotice(null)}
+                >
+                  <ThemedText variant="h3" style={styles.saveText}>Done</ThemedText>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
             visible={addLiftOpen}
             transparent
             animationType="fade"
@@ -4047,6 +4196,50 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={templateReplaceConfirmOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setTemplateReplaceConfirmOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <View>
+                <ThemedText variant="h3" style={styles.modalTitle}>Load template?</ThemedText>
+                <ThemedText variant="bodyMuted" style={styles.templateConfirmText}>
+                  This will replace your current draft in the builder.
+                </ThemedText>
+              </View>
+              <TouchableOpacity
+                onPress={() => setTemplateReplaceConfirmOpen(false)}
+                style={styles.modalClose}
+                accessibilityLabel="Close template confirmation"
+              >
+                <ThemedText variant="badge" style={styles.modalCloseText}>✕</ThemedText>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.templateConfirmActions}>
+              <Pressable
+                style={styles.cancelBtn}
+                onPress={() => setTemplateReplaceConfirmOpen(false)}
+              >
+                <ThemedText variant="h3" style={styles.cancelText}>Cancel</ThemedText>
+              </Pressable>
+              <Pressable
+                style={styles.saveBtn}
+                onPress={() => {
+                  setTemplateReplaceConfirmOpen(false);
+                  setTemplatePickerOpen(true);
+                }}
+              >
+                <ThemedText variant="h3" style={styles.saveText}>Replace</ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       </ScrollView>
       {hasSessionItems ? (
         <View style={styles.stickyFooter}>
@@ -4068,17 +4261,78 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
   );
 }
 
+function ProgressStep({
+  label,
+  value,
+  active,
+  complete,
+  accessory,
+}: {
+  label: string;
+  value: string;
+  active?: boolean;
+  complete?: boolean;
+  accessory?: boolean;
+}) {
+  return (
+    <View style={styles.progressStep}>
+      <View style={[
+        styles.progressBubble,
+        active && styles.progressBubbleActive,
+        complete && styles.progressBubbleComplete,
+        accessory && active && styles.progressBubbleAccessory,
+      ]}>
+        <ThemedText variant="badge" style={styles.progressBubbleText}>{value}</ThemedText>
+      </View>
+      <ThemedText variant="bodyMuted" style={active ? styles.progressLabelActive : styles.progressLabel}>{label}</ThemedText>
+    </View>
+  );
+}
+
+function GuidanceRow({
+  icon,
+  title,
+  body,
+  accessory,
+}: {
+  icon: string;
+  title: string;
+  body: string;
+  accessory?: boolean;
+}) {
+  return (
+    <View style={styles.guidanceRow}>
+      <View style={[styles.guidanceIcon, accessory && styles.guidanceIconAccessory]}>
+        <ThemedText variant="h3" style={styles.guidanceIconText}>{icon}</ThemedText>
+      </View>
+      <View style={styles.guidanceCopy}>
+        <ThemedText variant="body" style={styles.guidanceTitle}>{title}</ThemedText>
+        <ThemedText variant="bodyMuted" style={styles.guidanceBody}>{body}</ThemedText>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   keyboardRoot: { flex: 1 },
-  scroll: { paddingBottom: 156 },
+  scroll: { paddingBottom: 156, gap: 14 },
   topBar: {
     marginTop: 14,
-    marginBottom: 10,
+    marginBottom: 2,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: 12,
+  },
+  titleBlock: {
+    flex: 1,
+    gap: 4,
+  },
+  titleSubtext: {
+    color: '#B8ACA1',
+    fontSize: 13,
+    lineHeight: 18,
   },
   topActions: {
     flexDirection: 'row',
@@ -4087,17 +4341,72 @@ const styles = StyleSheet.create({
   },
   topSecondaryBtn: {
     borderWidth: 1,
-    borderColor: 'rgba(185,176,163,0.22)',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    backgroundColor: 'rgba(8,8,10,0.34)',
+    borderColor: 'rgba(167,139,250,0.42)',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    backgroundColor: 'rgba(28,19,42,0.46)',
   },
   topSecondaryText: {
-    color: '#D6D3D1',
+    color: '#C4B5FD',
     fontWeight: '700',
   },
-  title: { color: '#fff', fontSize: 23, fontWeight: '700' },
+  title: { color: '#fff', fontSize: 26, lineHeight: 32, fontWeight: '800' },
+  progressStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.16)',
+    backgroundColor: 'rgba(18,15,25,0.42)',
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+  progressStep: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+  },
+  progressBubble: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  progressBubbleActive: {
+    backgroundColor: 'rgba(139,92,246,0.44)',
+    borderColor: 'rgba(196,181,253,0.42)',
+  },
+  progressBubbleComplete: {
+    backgroundColor: 'rgba(74,222,128,0.16)',
+    borderColor: 'rgba(167,203,181,0.38)',
+  },
+  progressBubbleAccessory: {
+    backgroundColor: 'rgba(88,166,123,0.24)',
+    borderColor: 'rgba(167,203,181,0.32)',
+  },
+  progressBubbleText: {
+    color: '#F8FAFC',
+    fontWeight: '900',
+  },
+  progressLabel: {
+    color: '#82766D',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  progressLabelActive: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#ECE5DA',
+  },
+  pressed: {
+    opacity: 0.76,
+  },
   error: { marginTop: 6, color: '#f97373' },
   sourceRow: {
     marginTop: 2,
@@ -4126,6 +4435,111 @@ const styles = StyleSheet.create({
   sourceBtnText: {
     color: '#C4B5FD',
     fontWeight: '700',
+  },
+  chapter: {
+    gap: 10,
+  },
+  chapterKicker: {
+    color: '#B8ACA1',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  quickStartGrid: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  quickStartCard: {
+    flex: 1,
+    minHeight: 126,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(222,198,166,0.12)',
+    backgroundColor: 'rgba(24,20,32,0.52)',
+    padding: 14,
+    gap: 10,
+  },
+  quickStartIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.24)',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.22)',
+  },
+  quickStartIconGreen: {
+    backgroundColor: 'rgba(74,222,128,0.12)',
+    borderColor: 'rgba(167,203,181,0.20)',
+  },
+  quickStartIconText: {
+    color: '#A78BFA',
+    fontWeight: '900',
+  },
+  quickStartCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  quickStartTitle: {
+    color: '#F8FAFC',
+    fontWeight: '900',
+    fontSize: 14,
+  },
+  quickStartText: {
+    color: '#B8ACA1',
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  quickStartArrow: {
+    position: 'absolute',
+    right: 12,
+    top: 16,
+    color: '#D8B4FE',
+    fontSize: 20,
+  },
+  guidanceStack: {
+    gap: 9,
+  },
+  guidanceRow: {
+    minHeight: 82,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 13,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(222,198,166,0.11)',
+    backgroundColor: 'rgba(24,20,32,0.42)',
+    padding: 14,
+  },
+  guidanceIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.22)',
+  },
+  guidanceIconAccessory: {
+    backgroundColor: 'rgba(74,222,128,0.12)',
+  },
+  guidanceIconText: {
+    color: '#A78BFA',
+    fontWeight: '900',
+  },
+  guidanceCopy: {
+    flex: 1,
+    gap: 3,
+  },
+  guidanceTitle: {
+    color: '#F8FAFC',
+    fontWeight: '900',
+  },
+  guidanceBody: {
+    color: '#B8ACA1',
+    fontSize: 12,
+    lineHeight: 18,
   },
   copySearchRow: {
     flexDirection: 'row',
@@ -4163,28 +4577,77 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     fontSize: 12,
   },
+  templateConfirmText: {
+    marginTop: 6,
+    color: '#B8ACA1',
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  templateConfirmActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 18,
+  },
 
   card: {
-    marginTop: 14,
-    borderRadius: 0,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(185,176,163,0.12)',
-    backgroundColor: 'rgba(8,8,10,0.28)',
-    paddingHorizontal: 12,
-    paddingVertical: 13,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(222,198,166,0.12)',
+    backgroundColor: 'rgba(18,15,24,0.54)',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   basicsCard: {
-    gap: 2,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(139,92,246,0.42)',
-    backgroundColor: 'rgba(10,9,12,0.42)',
+    gap: 6,
+    borderColor: 'rgba(167,139,250,0.18)',
+    backgroundColor: 'rgba(25,20,34,0.62)',
+    shadowColor: '#8B5CF6',
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+  },
+  setupHero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(222,198,166,0.10)',
+    paddingBottom: 14,
+    marginBottom: 4,
+  },
+  setupHeroIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.24)',
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.20)',
+  },
+  setupHeroIconText: {
+    color: '#A78BFA',
+    fontWeight: '900',
+  },
+  setupHeroCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  setupHeroTitle: {
+    color: '#F8FAFC',
+    fontSize: 19,
+    fontWeight: '900',
+  },
+  setupHeroText: {
+    color: '#B8ACA1',
+    fontSize: 13,
+    lineHeight: 19,
   },
   h3: { color: '#E5E7EB', fontSize: 16, fontWeight: '600' },
   sectionKicker: {
     color: '#F8FAFC',
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '900',
     letterSpacing: 0.35,
     textTransform: 'uppercase',
   },
@@ -4197,31 +4660,31 @@ const styles = StyleSheet.create({
   },
   sectionSubtext: {
     marginTop: 3,
-    color: '#94A3B8',
+    color: '#B8ACA1',
     fontSize: 12,
   },
   sectionAddBtn: {
     borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.38)',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    backgroundColor: 'rgba(20,16,28,0.34)',
+    borderColor: 'rgba(167,139,250,0.42)',
+    borderRadius: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    backgroundColor: 'rgba(139,92,246,0.13)',
   },
   sectionAddText: {
     color: '#C4B5FD',
     fontWeight: '700',
   },
-  label: { marginTop: 8, color: '#A8A29E', fontSize: 12 },
+  label: { marginTop: 8, color: '#B8ACA1', fontSize: 12, fontWeight: '800' },
   input: {
     marginTop: 5,
     borderWidth: 1,
-    borderColor: 'rgba(185,176,163,0.16)',
-    borderRadius: 7,
+    borderColor: 'rgba(222,198,166,0.14)',
+    borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 11,
     color: '#E5E7EB',
-    backgroundColor: 'rgba(6,6,8,0.42)',
+    backgroundColor: 'rgba(6,6,10,0.48)',
   },
   rowBetween: { flexDirection:'row', alignItems:'center', justifyContent:'space-between' },
   smallBtn: {
@@ -4283,21 +4746,47 @@ const styles = StyleSheet.create({
 
   muted: { marginTop: 8, color:'#9CA3AF' },
   emptyOutlineCard: {
-    marginTop: 2,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(185,176,163,0.1)',
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
-    paddingVertical: 11,
+    marginTop: 6,
+    minHeight: 154,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.24)',
+    borderRadius: 18,
+    backgroundColor: 'rgba(22,18,30,0.46)',
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   emptyOutlineTitle: {
-    color: '#A8A29E',
-    fontWeight: '600',
+    color: '#F8FAFC',
+    fontWeight: '900',
+    fontSize: 17,
+    textAlign: 'center',
   },
   emptyOutlineText: {
-    marginTop: 4,
-    color: '#94A3B8',
-    fontSize: 12,
+    color: '#B8ACA1',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  emptyCta: {
+    marginTop: 8,
+    minHeight: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(139,92,246,0.82)',
+    paddingHorizontal: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyCtaAccessory: {
+    backgroundColor: 'rgba(74,222,128,0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(167,203,181,0.28)',
+  },
+  emptyCtaText: {
+    color: '#F8FAFC',
+    fontWeight: '900',
   },
   movementCard: {
     marginTop: 8,

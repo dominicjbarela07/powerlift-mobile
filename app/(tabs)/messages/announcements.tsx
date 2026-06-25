@@ -99,6 +99,21 @@ function sourceLabel(item?: CoachAnnouncement | null) {
 
 export default function AnnouncementsScreen() {
   const { user } = useAuth();
+  const router = useRouter();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+
+  React.useEffect(() => {
+    if (isIndividual) {
+      router.replace('/(tabs)/athlete-dashboard' as any);
+    }
+  }, [isIndividual, router]);
+
+  if (isIndividual) {
+    return null;
+  }
 
   if (user?.is_coach) {
     return <CoachAnnouncementHub />;

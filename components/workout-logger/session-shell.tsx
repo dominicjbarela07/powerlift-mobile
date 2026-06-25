@@ -1,9 +1,80 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 
 type SessionScreenMode = 'pre_session' | 'active_session' | 'finished_session';
+export type WorkoutProgressSetSegment = {
+  key: string;
+  group: 'primary' | 'secondary' | 'accessory';
+  logged: boolean;
+};
+
+function SessionProgressRing({ progressPct, loggedSets, plannedSets }: {
+  progressPct: number;
+  loggedSets: number;
+  plannedSets: number;
+}) {
+  const size = 86;
+  const stroke = 8;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clampedProgress = Math.max(0, Math.min(100, progressPct || 0));
+  const dashOffset = circumference - (clampedProgress / 100) * circumference;
+
+  return (
+    <View style={styles.progressRingWrap}>
+      <Svg width={size} height={size} style={styles.progressRingSvg}>
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="rgba(148,163,184,0.16)"
+          strokeWidth={stroke}
+          fill="transparent"
+        />
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#8B5CF6"
+          strokeWidth={stroke}
+          fill="transparent"
+          strokeLinecap="round"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={dashOffset}
+          rotation="-90"
+          origin={`${size / 2}, ${size / 2}`}
+        />
+      </Svg>
+      <View style={styles.progressRingCenter}>
+        <Text style={styles.progressRingPct}>{Math.round(clampedProgress)}%</Text>
+        <Text style={styles.progressRingSets}>{loggedSets} / {plannedSets || '—'} sets</Text>
+      </View>
+    </View>
+  );
+}
+
+function SessionSetProgressStrip({ segments }: { segments: WorkoutProgressSetSegment[] }) {
+  if (!segments.length) return null;
+  return (
+    <View style={styles.sessionSetStrip}>
+      {segments.map((segment) => (
+        <View
+          key={segment.key}
+          style={[
+            styles.sessionSetBlock,
+            segment.group === 'primary' && (segment.logged ? styles.sessionSetPrimaryDone : styles.sessionSetPrimaryFuture),
+            segment.group === 'secondary' && (segment.logged ? styles.sessionSetSecondaryDone : styles.sessionSetSecondaryFuture),
+            segment.group === 'accessory' && (segment.logged ? styles.sessionSetAccessoryDone : styles.sessionSetAccessoryFuture),
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
 
 export function SessionCommandStrip({
   unit,
@@ -120,6 +191,7 @@ export function SessionIntentPanel({
   loggedSets,
   plannedSets,
   progressPct,
+  progressSegments,
   topLoggedText,
   canBegin,
   canEdit,
@@ -135,6 +207,7 @@ export function SessionIntentPanel({
   loggedSets: number;
   plannedSets: number;
   progressPct: number;
+  progressSegments?: WorkoutProgressSetSegment[];
   topLoggedText?: string | null;
   canBegin: boolean;
   canEdit: boolean;
@@ -202,21 +275,23 @@ export function SessionIntentPanel({
   if (isActiveSession) {
     return (
       <View style={[styles.sessionIdentityShell, styles.sessionIdentityActive]}>
-        <View style={styles.sessionIdentityRailActive} />
         <View style={styles.sessionIdentityBody}>
           <View style={styles.sessionIdentityTopRow}>
             <View style={styles.sessionIdentityTitleCol}>
+              <Text style={styles.sessionModeKickerActive}>{statusLabel}</Text>
               <ThemedText variant="h1" style={styles.pageTitle}>
                 {workout.label || 'Session'}
               </ThemedText>
               <Text style={styles.sessionIdentityMeta}>{workout.date || 'No date set'}</Text>
               {focusLine ? <Text style={styles.sessionFocusLine}>{focusLine}</Text> : null}
             </View>
-            {statusBadge}
+            <SessionProgressRing
+              progressPct={progressPct}
+              loggedSets={loggedSets}
+              plannedSets={plannedSets}
+            />
           </View>
-          <View style={styles.sessionProgressTrack}>
-            <View style={[styles.sessionProgressFill, { width: `${progressPct}%` }]} />
-          </View>
+          <SessionSetProgressStrip segments={progressSegments || []} />
         </View>
       </View>
     );
@@ -260,20 +335,19 @@ export function SessionIntentPanel({
 
   return (
     <View style={[styles.sessionIdentityShell, styles.sessionIdentityPre]}>
-      <View style={styles.sessionIdentityRailPre} />
       <View style={styles.sessionIdentityBody}>
-        <View style={styles.sessionIdentityTopRow}>
+        <View style={styles.preSessionHeaderRow}>
           <View style={styles.sessionIdentityTitleCol}>
             <Text style={styles.sessionModeKickerPre}>Pre Session</Text>
-            <ThemedText variant="h1" style={styles.pageTitle}>
+            <ThemedText variant="h1" style={[styles.pageTitle, styles.preSessionTitle]}>
               {workout.label || 'Session'}
             </ThemedText>
-            <Text style={styles.sessionIdentityMeta}>{workout.date || 'No date set'}</Text>
+            <Text style={styles.preSessionDate}>{workout.date || 'No date set'}</Text>
           </View>
           {statusBadge}
         </View>
 
-        <View style={styles.preSessionIntentBand}>
+        <View style={styles.preSessionFocusBlock}>
           <Text style={styles.preSessionIntentLabel}>Focus</Text>
           <Text style={styles.preSessionIntentText}>{focusLine || 'Training session'}</Text>
         </View>
@@ -286,6 +360,18 @@ export function SessionIntentPanel({
           <View style={styles.preSessionPrepItem}>
             <Text style={styles.preSessionPrepLabel}>Readiness</Text>
             <Text style={styles.preSessionPrepValue}>Before begin</Text>
+          </View>
+        </View>
+
+        <View style={styles.preSessionPrepCard}>
+          <View style={styles.preSessionPrepIcon}>
+            <Ionicons name="calendar-outline" size={28} color="#A78BFA" />
+          </View>
+          <View style={styles.preSessionPrepCopy}>
+            <Text style={styles.preSessionPrepCardTitle}>You have a workout assigned</Text>
+            <Text style={styles.preSessionPrepCardText}>
+              Review your plan and begin when you are ready.
+            </Text>
           </View>
         </View>
         {actionRow}
@@ -307,8 +393,8 @@ const styles = StyleSheet.create({
     minHeight: 52,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    gap: 8,
+    paddingHorizontal: 4,
+    gap: 10,
   },
   commandStripActive: {
     backgroundColor: 'transparent',
@@ -320,11 +406,11 @@ const styles = StyleSheet.create({
   unitTogglePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(24,16,15,0.28)',
+    backgroundColor: 'rgba(10,13,22,0.62)',
     borderRadius: 11,
     padding: 2,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.06)',
+    borderColor: 'rgba(148,163,184,0.18)',
   },
   unitToggleOption: {
     minWidth: 46,
@@ -335,7 +421,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   unitToggleOptionActive: {
-    backgroundColor: 'rgba(91,79,207,0.26)',
+    backgroundColor: 'rgba(109,40,217,0.72)',
     shadowColor: '#5B4FCF',
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -354,7 +440,7 @@ const styles = StyleSheet.create({
   commandDivider: {
     width: 1,
     height: 22,
-    backgroundColor: 'rgba(222,198,166,0.07)',
+    backgroundColor: 'rgba(148,163,184,0.18)',
   },
   commandTimerBlock: {
     flex: 1,
@@ -369,7 +455,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   commandTimerDot: {
-    color: '#A7CBB5',
+    color: '#8B5CF6',
     fontSize: 10,
     marginTop: 1,
     textShadowColor: 'rgba(134,239,172,0.12)',
@@ -381,7 +467,7 @@ const styles = StyleSheet.create({
   },
   commandTimerValue: {
     color: '#ECE5DA',
-    fontSize: 24,
+    fontSize: 15,
     fontWeight: '800',
     letterSpacing: -0.8,
   },
@@ -399,15 +485,15 @@ const styles = StyleSheet.create({
     color: '#B8CDBF',
   },
   commandButton: {
-    minWidth: 84,
-    height: 34,
+    minWidth: 98,
+    height: 38,
     paddingHorizontal: 10,
-    borderRadius: 9,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(24,16,15,0.22)',
+    backgroundColor: 'rgba(10,13,22,0.68)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.07)',
+    borderColor: 'rgba(148,163,184,0.20)',
   },
   commandButtonDanger: {
     borderColor: 'rgba(239,68,68,0.18)',
@@ -436,33 +522,25 @@ const styles = StyleSheet.create({
   },
   sessionIdentityShell: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(148,163,184,0.055)',
-    backgroundColor: 'rgba(24,16,15,0.26)',
-    marginTop: 6,
-    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(11,16,28,0.76)',
+    marginTop: 8,
+    marginBottom: 16,
+    borderRadius: 14,
+    overflow: 'hidden',
   },
   sessionIdentityPre: {
-    backgroundColor: 'rgba(24,16,15,0.24)',
+    backgroundColor: 'rgba(10,15,28,0.84)',
+    borderColor: 'rgba(148,163,184,0.22)',
   },
   sessionIdentityActive: {
-    backgroundColor: 'rgba(24,17,15,0.22)',
-    borderColor: 'rgba(134,239,172,0.055)',
+    backgroundColor: 'rgba(11,16,28,0.78)',
+    borderColor: 'rgba(167,139,250,0.20)',
   },
   sessionIdentityFinished: {
     backgroundColor: 'rgba(24,16,17,0.24)',
     borderColor: 'rgba(129,140,248,0.10)',
-  },
-  sessionIdentityRailPre: {
-    width: 3,
-    backgroundColor: '#A5B4FC',
-    opacity: 0.56,
-  },
-  sessionIdentityRailActive: {
-    width: 3,
-    backgroundColor: '#A7CBB5',
-    opacity: 0.48,
   },
   sessionIdentityRailFinished: {
     width: 3,
@@ -471,9 +549,15 @@ const styles = StyleSheet.create({
   },
   sessionIdentityBody: {
     flex: 1,
-    paddingVertical: 17,
-    paddingLeft: 15,
-    paddingRight: 13,
+    paddingVertical: 18,
+    paddingLeft: 16,
+    paddingRight: 16,
+    gap: 16,
+  },
+  preSessionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     gap: 14,
   },
   sessionIdentityTopRow: {
@@ -488,32 +572,100 @@ const styles = StyleSheet.create({
   },
   sessionIdentityMeta: {
     color: '#B8ACA1',
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
     fontWeight: '600',
   },
   sessionFocusLine: {
-    color: '#D8CFC4',
-    fontSize: 13,
-    lineHeight: 18,
+    color: '#F8FAFC',
+    fontSize: 16,
+    lineHeight: 22,
     fontWeight: '800',
     marginTop: 5,
   },
   sessionModeKickerPre: {
-    color: '#A5B4FC',
-    fontSize: 11,
+    color: '#FACC15',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1.3,
+    marginBottom: 8,
+  },
+  preSessionTitle: {
+    marginBottom: 6,
+  },
+  preSessionDate: {
+    color: '#C7BEB4',
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+  },
+  sessionModeKickerActive: {
+    color: '#4ADE80',
+    fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 1.1,
     marginBottom: 5,
   },
-  sessionModeKickerActive: {
-    color: '#A7CBB5',
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 1.1,
-    marginBottom: 5,
+  progressRingWrap: {
+    width: 96,
+    height: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  progressRingSvg: {
+    position: 'absolute',
+  },
+  progressRingCenter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressRingPct: {
+    color: '#F8FAFC',
+    fontSize: 25,
+    lineHeight: 30,
+    fontWeight: '700',
+    letterSpacing: -0.6,
+  },
+  progressRingSets: {
+    color: '#C7BEB4',
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  sessionSetStrip: {
+    flexDirection: 'row',
+    height: 8,
+    borderRadius: 999,
+    overflow: 'hidden',
+    gap: 4,
+  },
+  sessionSetBlock: {
+    flex: 1,
+    minWidth: 5,
+    height: '100%',
+    borderRadius: 999,
+  },
+  sessionSetPrimaryDone: {
+    backgroundColor: '#8B5CF6',
+  },
+  sessionSetPrimaryFuture: {
+    backgroundColor: 'rgba(139,92,246,0.28)',
+  },
+  sessionSetSecondaryDone: {
+    backgroundColor: '#F6B657',
+  },
+  sessionSetSecondaryFuture: {
+    backgroundColor: 'rgba(246,182,87,0.28)',
+  },
+  sessionSetAccessoryDone: {
+    backgroundColor: '#2DD4BF',
+  },
+  sessionSetAccessoryFuture: {
+    backgroundColor: 'rgba(45,212,191,0.24)',
   },
   sessionModeKickerFinished: {
     color: '#C4B5FD',
@@ -523,52 +675,89 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
     marginBottom: 5,
   },
-  preSessionIntentBand: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(148,163,184,0.055)',
-    paddingVertical: 10,
+  preSessionFocusBlock: {
+    paddingTop: 2,
     gap: 4,
   },
   preSessionIntentLabel: {
-    color: '#818CF8',
-    fontSize: 11,
+    color: '#A78BFA',
+    fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
-    letterSpacing: 0.9,
+    letterSpacing: 1.2,
   },
   preSessionIntentText: {
-    color: '#ECE5DA',
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: '800',
+    color: '#F8FAFC',
+    fontSize: 19,
+    lineHeight: 25,
+    fontWeight: '900',
   },
   preSessionPrepRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 18,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(148,163,184,0.16)',
+    paddingTop: 16,
   },
   preSessionPrepItem: {
     flex: 1,
     borderLeftWidth: 2,
-    borderLeftColor: 'rgba(165,180,252,0.34)',
-    paddingLeft: 9,
-    gap: 2,
+    borderLeftColor: 'rgba(167,139,250,0.46)',
+    paddingLeft: 12,
+    gap: 3,
   },
   preSessionPrepLabel: {
-    color: '#64748B',
-    fontSize: 11,
+    color: '#A7B0C2',
+    fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
-    letterSpacing: 0.7,
+    letterSpacing: 1.1,
   },
   preSessionPrepValue: {
-    color: '#ECE5DA',
-    fontSize: 13,
-    fontWeight: '800',
+    color: '#F8FAFC',
+    fontSize: 18,
+    lineHeight: 23,
+    fontWeight: '900',
+  },
+  preSessionPrepCard: {
+    minHeight: 84,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.18)',
+    backgroundColor: 'rgba(13,18,32,0.72)',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  preSessionPrepIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.16)',
+  },
+  preSessionPrepCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  preSessionPrepCardTitle: {
+    color: '#C4B5FD',
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: '900',
+  },
+  preSessionPrepCardText: {
+    color: '#C7BEB4',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
   },
   sessionIntentActions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
   },
   activeProgressBand: {
     flexDirection: 'row',
@@ -652,9 +841,9 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: '#F8FAFC',
-    fontSize: 34,
+    fontSize: 36,
     lineHeight: 42,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: -1,
     marginBottom: 2,
     paddingTop: 2,
@@ -662,9 +851,9 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     minHeight: 26,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    borderRadius: 11,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -675,33 +864,40 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   statusText: {
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   actionButton: {
-    minHeight: 40,
-    paddingHorizontal: 14,
-    borderRadius: 10,
+    minHeight: 54,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
   },
   actionButtonText: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '900',
   },
   actionPrimary: {
-    backgroundColor: 'rgba(91,79,207,0.20)',
-    borderColor: 'rgba(167,139,250,0.16)',
+    flex: 1.7,
+    backgroundColor: '#6D28D9',
+    borderColor: 'rgba(196,181,253,0.32)',
+    shadowColor: '#6D28D9',
+    shadowOpacity: 0.24,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   actionPrimaryText: {
     color: '#F5F3FF',
   },
   actionSecondary: {
-    backgroundColor: 'rgba(24,16,15,0.18)',
-    borderColor: 'rgba(148,163,184,0.08)',
+    flex: 0.8,
+    backgroundColor: 'rgba(9,14,25,0.64)',
+    borderColor: 'rgba(148,163,184,0.22)',
   },
   actionSecondaryText: {
     color: '#E2E8F0',

@@ -1,112 +1,29 @@
 // app/index.tsx
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
+import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { startMobileBillingCheckout } from '@/lib/api';
 
 function AccountAccessGate({
   title,
   body,
   actionLabel,
   actionUrl,
-  mode = 'link',
 }: {
   title: string;
   body: string;
   actionLabel: string;
   actionUrl?: string | null;
-  mode?: 'link' | 'billing';
 }) {
-  const { logout, refreshUser } = useAuth();
-  const [busy, setBusy] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const refreshInFlightRef = useRef(false);
-
-  const refreshBillingState = useCallback(async (options?: { silent?: boolean }) => {
-    if (mode !== 'billing' || refreshInFlightRef.current) return;
-    refreshInFlightRef.current = true;
-    setRefreshing(true);
-    if (!options?.silent) setError(null);
-    try {
-      await refreshUser();
-    } catch (err) {
-      console.warn('Could not refresh billing status', err);
-      if (!options?.silent) {
-        setError('Could not refresh activation status. Please try again.');
-      }
-    } finally {
-      refreshInFlightRef.current = false;
-      setRefreshing(false);
-    }
-  }, [mode, refreshUser]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (mode === 'billing') {
-        refreshBillingState({ silent: true });
-      }
-      return undefined;
-    }, [mode, refreshBillingState])
-  );
-
-  useEffect(() => {
-    if (mode !== 'billing') return undefined;
-
-    refreshBillingState({ silent: true });
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'active') {
-        refreshBillingState({ silent: true });
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [mode, refreshBillingState]);
+  const { logout } = useAuth();
 
   const openAction = async () => {
-    if (busy || refreshing) return;
-    setError(null);
+    if (!actionUrl) return;
     try {
-      setBusy(true);
-      if (mode === 'billing') {
-        const checkout = await startMobileBillingCheckout();
-        if (!checkout.ok) {
-          setError(checkout.error || 'Unable to start activation.');
-          return;
-        }
-        if (checkout.active) {
-          await refreshUser();
-          return;
-        }
-        if (!checkout.checkout_url) {
-          setError('Stripe Checkout did not return a URL.');
-          return;
-        }
-        try {
-          const WebBrowser = await import('expo-web-browser');
-          await WebBrowser.openBrowserAsync(checkout.checkout_url, {
-            presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
-          });
-        } catch (browserErr) {
-          console.warn('Stripe WebBrowser unavailable; falling back to Linking', browserErr);
-          await Linking.openURL(checkout.checkout_url);
-        }
-        await refreshBillingState({ silent: true });
-        return;
-      }
-
-      if (!actionUrl) return;
       await Linking.openURL(actionUrl);
     } catch (err) {
       console.warn('Could not open account action URL', err);
-      setError((err as any)?.message || 'Unable to open activation.');
-    } finally {
-      setBusy(false);
     }
   };
 
@@ -121,25 +38,9 @@ function AccountAccessGate({
         <Text style={styles.gateEyebrow}>Account Setup</Text>
         <Text style={styles.gateTitle}>{title}</Text>
         <Text style={styles.gateBody}>{body}</Text>
-        {error ? <Text style={styles.gateError}>{error}</Text> : null}
-        <Pressable
-          style={[styles.gatePrimary, busy || refreshing ? styles.gatePrimaryDisabled : null]}
-          onPress={openAction}
-          disabled={busy || refreshing || (mode === 'link' && !actionUrl)}
-        >
-          <Text style={styles.gatePrimaryText}>
-            {busy ? 'Opening Stripe...' : refreshing ? 'Checking status...' : actionLabel}
-          </Text>
+        <Pressable style={styles.gatePrimary} onPress={openAction} disabled={!actionUrl}>
+          <Text style={styles.gatePrimaryText}>{actionLabel}</Text>
         </Pressable>
-        {mode === 'billing' ? (
-          <Pressable
-            style={[styles.gateSecondary, refreshing ? styles.gateSecondaryDisabled : null]}
-            onPress={() => refreshBillingState()}
-            disabled={refreshing || busy}
-          >
-            <Text style={styles.gateSecondaryText}>{refreshing ? 'Checking...' : 'Refresh status'}</Text>
-          </Pressable>
-        ) : null}
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
@@ -179,7 +80,7 @@ export default function IndexGate() {
         title={isIndividual ? 'Activate Individual' : 'Activate membership'}
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
         actionLabel="Open activation"
-        mode="billing"
+        actionUrl={user.billing_url}
       />
     );
   }
@@ -249,27 +150,15 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(124, 58, 237, 0.58)',
   },
-  gatePrimaryDisabled: {
-    opacity: 0.62,
-  },
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     color: '#F5F3FF',
   },
-  gateError: {
-    fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 13,
-    lineHeight: 19,
-    color: '#FCA5A5',
-  },
   gateSecondary: {
     minHeight: 46,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  gateSecondaryDisabled: {
-    opacity: 0.65,
   },
   gateSecondaryText: {
     fontFamily: SLFontFamilies.sansSemiBold,

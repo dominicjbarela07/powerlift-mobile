@@ -11,7 +11,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 type CalendarSession = {
@@ -116,12 +118,18 @@ const colors = {
 
 export default function AthleteCalendarScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const isIndividual =
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
   const [anchorMonth, setAnchorMonth] = useState(() => startOfMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState(() => toYMD(new Date()));
   const [payload, setPayload] = useState<AthleteCalendarPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [upcomingExpanded, setUpcomingExpanded] = useState(false);
 
   const range = useMemo(() => monthGridRange(anchorMonth), [anchorMonth]);
   const daysByDate = useMemo(() => {
@@ -130,7 +138,15 @@ export default function AthleteCalendarScreen() {
     return map;
   }, [payload?.days]);
   const gridDays = useMemo(() => buildDateRange(range.start, range.end), [range.end, range.start]);
-  const selectedDay = daysByDate.get(selectedDate) || { date: selectedDate, training_status: 'rest', sessions: [], meets: [], block_markers: [] };
+  const selectedDayRaw = daysByDate.get(selectedDate) || { date: selectedDate, training_status: 'rest', sessions: [], meets: [], block_markers: [] };
+  const selectedDay = useMemo(
+    () => isIndividual ? { ...selectedDayRaw, check_ins: [] } : selectedDayRaw,
+    [isIndividual, selectedDayRaw]
+  );
+  const upcomingItems = useMemo(
+    () => (payload?.upcoming || []).filter((item) => !isIndividual || item.route !== 'check_in'),
+    [isIndividual, payload?.upcoming]
+  );
   const blockRange = useMemo(() => {
     const start = parseDate(payload?.block_pacing?.start_date);
     const end = parseDate(payload?.block_pacing?.end_date);
@@ -180,13 +196,23 @@ export default function AthleteCalendarScreen() {
     setSelectedDate(today);
   };
 
-  const openSession = (session?: CalendarSession | null) => {
+  const openSessionLogger = (session?: CalendarSession | null) => {
     if (!session?.workout_id) return;
     router.push({
       pathname: '/workout/[workoutId]',
       params: { workoutId: String(session.workout_id) },
     });
   };
+
+  const openSessionWorkspace = (session?: CalendarSession | null) => {
+    if (!session?.workout_id) return;
+    router.push({
+      pathname: '/workout/session-workspace/[workoutId]' as any,
+      params: { workoutId: String(session.workout_id) },
+    });
+  };
+
+  const openSessionSummary = openSessionLogger;
 
   const openMeet = () => {
     router.push('/(tabs)/athlete-meet-plan' as any);
@@ -197,6 +223,14 @@ export default function AthleteCalendarScreen() {
     router.push({
       pathname: '/(tabs)/check-in/[submissionId]',
       params: { submissionId: String(checkIn.submission_id), returnTo: 'calendar' },
+    } as any);
+  };
+
+  const openCreateSession = () => {
+    if (!isIndividual) return;
+    router.push({
+      pathname: '/create-workout',
+      params: { date: selectedDate },
     } as any);
   };
 
@@ -213,6 +247,7 @@ export default function AthleteCalendarScreen() {
       return;
     }
     if (item.route === 'check_in') {
+      if (isIndividual) return;
       openCheckIn(item);
       return;
     }
@@ -233,20 +268,14 @@ export default function AthleteCalendarScreen() {
   return (
     <ScrollView
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadCalendar({ silent: true })} tintColor={colors.violet} />}
-      style={styles.screen}
       contentContainerStyle={styles.scroll}
     >
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Calendar</Text>
-          <Text style={styles.rangeLabel}>{monthLabel(anchorMonth)}</Text>
-        </View>
-        <View style={styles.monthControls}>
-          <UtilityButton icon="chevron-back" label="Prev" onPress={() => setAnchorMonth(addMonths(anchorMonth, -1))} position="start" />
-          <UtilityButton icon="calendar-outline" label="Today" onPress={goToday} position="middle" />
-          <UtilityButton icon="chevron-forward" label="Next" onPress={() => setAnchorMonth(addMonths(anchorMonth, 1))} position="end" />
-        </View>
-      </View>
+      <MonthHeader
+        anchorMonth={anchorMonth}
+        onPrev={() => setAnchorMonth(addMonths(anchorMonth, -1))}
+        onNext={() => setAnchorMonth(addMonths(anchorMonth, 1))}
+        onToday={goToday}
+      />
 
       {error ? (
         <View style={styles.stateLine}>
@@ -254,8 +283,6 @@ export default function AthleteCalendarScreen() {
           <Text style={styles.stateBody}>{error}</Text>
         </View>
       ) : null}
-
-      <ContextStrip payload={payload} />
 
       <View style={styles.calendarZone}>
         <View style={styles.weekHeader}>
@@ -274,6 +301,7 @@ export default function AthleteCalendarScreen() {
                 key={ymd}
                 date={date}
                 day={day}
+                hideCheckIns={isIndividual}
                 inMonth={inMonth}
                 selected={ymd === selectedDate}
                 inBlockRange={inBlockRange}
@@ -284,13 +312,59 @@ export default function AthleteCalendarScreen() {
             );
           })}
         </View>
-        <CalendarLegend hasBlockRange={!!blockRange} hasMeet={!!payload?.meet_countdown} />
+        <CalendarLegend hasBlockRange={!!blockRange} hasMeet={!!payload?.meet_countdown} hideCheckIns={isIndividual} />
       </View>
 
-      <SelectedDayTray day={selectedDay} onOpenCheckIn={openCheckIn} onOpenMeet={openMeet} onOpenSession={openSession} />
+      <SelectedDayTray
+        day={selectedDay}
+        canCreateSession={isIndividual}
+        onCreateSession={openCreateSession}
+        onOpenCheckIn={openCheckIn}
+        onOpenMeet={openMeet}
+        onOpenSession={openSessionLogger}
+        onEditSession={openSessionWorkspace}
+        onOpenSessionSummary={openSessionSummary}
+      />
 
-      <UpcomingTimeline items={payload?.upcoming || []} onOpen={openUpcoming} />
+      <View style={styles.upcomingSummaryHeader}>
+        <Text style={styles.upcomingTitle}>Upcoming</Text>
+        <Pressable
+          onPress={() => setUpcomingExpanded((value) => !value)}
+          style={({ pressed }) => [styles.viewAllButton, pressed && styles.pressed]}
+        >
+          <Text style={styles.viewAllText}>{upcomingExpanded ? 'Collapse' : 'View All'}</Text>
+        </Pressable>
+      </View>
+      {upcomingExpanded ? <UpcomingTimeline items={upcomingItems} onOpen={openUpcoming} /> : null}
     </ScrollView>
+  );
+}
+
+function MonthHeader({
+  anchorMonth,
+  onPrev,
+  onNext,
+  onToday,
+}: {
+  anchorMonth: Date;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
+}) {
+  return (
+    <View style={styles.monthHeader}>
+      <Pressable onPress={onToday} style={({ pressed }) => [styles.monthLabelButton, pressed && styles.pressed]}>
+        <Text style={styles.monthTitle}>{monthLabel(anchorMonth)}</Text>
+      </Pressable>
+      <View style={styles.monthArrowGroup}>
+        <Pressable onPress={onPrev} style={({ pressed }) => [styles.monthArrow, pressed && styles.pressed]}>
+          <Ionicons name="chevron-back" size={20} color={colors.textStrong} />
+        </Pressable>
+        <Pressable onPress={onNext} style={({ pressed }) => [styles.monthArrow, pressed && styles.pressed]}>
+          <Ionicons name="chevron-forward" size={20} color={colors.textStrong} />
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -335,6 +409,7 @@ function ContextStrip({ payload }: { payload: AthleteCalendarPayload | null }) {
 function DayCell({
   date,
   day,
+  hideCheckIns,
   inMonth,
   selected,
   inBlockRange,
@@ -344,6 +419,7 @@ function DayCell({
 }: {
   date: Date;
   day?: CalendarDay;
+  hideCheckIns?: boolean;
   inMonth: boolean;
   selected: boolean;
   inBlockRange: boolean;
@@ -352,7 +428,9 @@ function DayCell({
   onPress: () => void;
 }) {
   const status = day?.training_status || 'rest';
-  const tone = toneForDay(status, !!day?.meets?.length, !!day?.block_markers?.length, !!day?.check_ins?.length);
+  const tone = toneForDay(status, !!day?.meets?.length, !!day?.block_markers?.length, !hideCheckIns && !!day?.check_ins?.length);
+  const hasSessionCount = Number(day?.sessions?.length || 0);
+  const markerLabel = hasSessionCount > 1 ? String(hasSessionCount) : '';
   return (
     <Pressable
       onPress={onPress}
@@ -369,8 +447,12 @@ function DayCell({
     >
       <Text style={[styles.dayNumber, !inMonth && styles.dayTextFaded, selected && styles.dayNumberSelected]}>{date.getDate()}</Text>
       <View style={styles.markerRow}>
-        {status !== 'rest' ? <View style={[styles.dayMarker, { backgroundColor: tone }]} /> : <View style={styles.restMarker} />}
-        {day?.check_ins?.length ? <View style={[styles.dayMarker, { backgroundColor: checkInTone(day.check_ins[0]?.status) }]} /> : null}
+        {status !== 'rest' || hasSessionCount ? (
+          <View style={[styles.dayMarker, hasSessionCount > 1 && styles.dayMarkerCount, { backgroundColor: tone }]}>
+            {markerLabel ? <Text style={styles.dayMarkerCountText}>{markerLabel}</Text> : null}
+          </View>
+        ) : <View style={styles.restMarker} />}
+        {!hideCheckIns && day?.check_ins?.length ? <View style={[styles.dayMarker, { backgroundColor: checkInTone(day.check_ins[0]?.status) }]} /> : null}
         {day?.meets?.length ? <View style={[styles.dayMarker, { backgroundColor: colors.violet }]} /> : null}
         {day?.block_markers?.length ? <View style={[styles.dayMarker, { backgroundColor: colors.amber }]} /> : null}
       </View>
@@ -380,37 +462,98 @@ function DayCell({
 
 function SelectedDayTray({
   day,
+  canCreateSession,
+  onCreateSession,
   onOpenCheckIn,
   onOpenSession,
+  onEditSession,
+  onOpenSessionSummary,
   onOpenMeet,
 }: {
   day: CalendarDay;
+  canCreateSession?: boolean;
+  onCreateSession: () => void;
   onOpenCheckIn: (checkIn: CalendarCheckIn) => void;
   onOpenSession: (session: CalendarSession) => void;
+  onEditSession: (session: CalendarSession) => void;
+  onOpenSessionSummary: (session: CalendarSession) => void;
   onOpenMeet: () => void;
 }) {
   const sessions = day.sessions || [];
   const checkIns = day.check_ins || [];
   const meets = day.meets || [];
   const markers = day.block_markers || [];
+  const primarySession = sessions[0] || null;
+  const completed = !!primarySession && isCompletedStatus(primarySession.status || day.training_status);
+  const inProgress = !!primarySession && isInProgressStatus(primarySession.status || day.training_status);
   const hasEvents = sessions.length || checkIns.length || meets.length || markers.length;
+  const cardTone = completed ? colors.green : primarySession ? colors.amber : colors.violet;
+  const cardIcon = completed ? 'checkmark' : primarySession ? 'barbell-outline' : 'calendar-outline';
+  const cardTitle = completed
+    ? (primarySession?.title || 'Training complete')
+    : primarySession
+      ? (primarySession.title || 'Training Session')
+      : 'Nothing scheduled';
+  const cardBody = primarySession ? sessionSummaryParts(primarySession) : ['Build your day. Stay consistent.'];
   return (
-    <View style={styles.tray}>
-      <View style={styles.trayHeader}>
-        <Text style={styles.zoneKicker}>Selected Day</Text>
-        <Text style={styles.trayDate}>{formatLongDate(day.date)}</Text>
+    <View style={[
+      styles.selectedDayCard,
+      { borderColor: fade(cardTone, completed ? 0.46 : primarySession ? 0.44 : 0.50) },
+      completed ? styles.selectedDayCardComplete : primarySession ? styles.selectedDayCardTraining : styles.selectedDayCardEmpty,
+    ]}>
+      <View style={styles.selectedDayKickerRow}>
+        <Text style={styles.selectedDayKicker}>{formatCalendarKicker(day.date)}</Text>
+      </View>
+      <View style={styles.selectedDayBody}>
+        <View style={[styles.selectedDayIcon, { borderColor: fade(cardTone, 0.40), backgroundColor: fade(cardTone, 0.13) }]}>
+          <Ionicons name={cardIcon as keyof typeof Ionicons.glyphMap} size={24} color={cardTone} />
+        </View>
+        <View style={styles.selectedDayCopy}>
+          <View style={styles.selectedDayTitleRow}>
+            <Text style={styles.selectedDayTitle}>{cardTitle}</Text>
+            {primarySession ? (
+              <Text style={[styles.selectedDayStatus, { color: cardTone }]}>{sessionStateLabel(primarySession.status)}</Text>
+            ) : null}
+          </View>
+          <View style={styles.selectedSummaryList}>
+            {cardBody.map((line, index) => (
+              <Text key={`${line}-${index}`} style={styles.selectedSummaryLine} numberOfLines={1}>
+                {primarySession ? `• ${line}` : line}
+              </Text>
+            ))}
+          </View>
+        </View>
       </View>
 
-      {sessions.map((session) => (
-        <Pressable key={session.workout_id} style={({ pressed }) => [styles.ledgerRow, pressed && styles.pressed]} onPress={() => onOpenSession(session)}>
-          <View style={[styles.rowRail, { backgroundColor: toneForStatus(session.status) }]} />
-          <View style={styles.rowCopy}>
-            <Text style={styles.rowTitle}>{session.title || 'Training Session'}</Text>
-            <Text style={styles.rowMeta} numberOfLines={1}>{session.planned_summary || session.block_name || statusLabel(session.status)}</Text>
-          </View>
-          <Text style={[styles.rowStatus, { color: toneForStatus(session.status) }]}>{statusLabel(session.status)}</Text>
+      {primarySession ? (
+        <View style={styles.selectedActionStack}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.selectedPrimaryButton,
+              { backgroundColor: completed ? 'rgba(87, 171, 112, 0.14)' : 'rgba(113, 66, 222, 0.88)', borderColor: fade(cardTone, 0.46) },
+              pressed && styles.pressed,
+            ]}
+            onPress={() => completed ? onOpenSessionSummary(primarySession) : onOpenSession(primarySession)}
+          >
+            <Text style={styles.selectedPrimaryButtonText}>{completed ? 'View Summary' : inProgress ? 'Continue Workout' : 'Start Workout'}</Text>
+            <Ionicons name="arrow-forward" size={18} color={colors.textStrong} />
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [styles.selectedSecondaryButton, pressed && styles.pressed]}
+            onPress={() => onEditSession(primarySession)}
+          >
+            <Text style={styles.selectedSecondaryButtonText}>Edit Plan</Text>
+          </Pressable>
+        </View>
+      ) : canCreateSession ? (
+        <Pressable
+          style={({ pressed }) => [styles.selectedPrimaryButton, styles.createPrimaryButton, pressed && styles.pressed]}
+          onPress={onCreateSession}
+        >
+          <Ionicons name="add" size={18} color={colors.textStrong} />
+          <Text style={styles.selectedPrimaryButtonText}>Create Session</Text>
         </Pressable>
-      ))}
+      ) : null}
 
       {checkIns.map((checkIn) => (
         <Pressable key={checkIn.submission_id} style={({ pressed }) => [styles.ledgerRow, pressed && styles.pressed]} onPress={() => onOpenCheckIn(checkIn)}>
@@ -445,10 +588,7 @@ function SelectedDayTray({
       ))}
 
       {!hasEvents ? (
-        <View style={styles.quietRest}>
-          <Text style={styles.quietRestTitle}>Rest</Text>
-          <Text style={styles.quietRestBody}>No training scheduled for this day.</Text>
-        </View>
+        null
       ) : null}
     </View>
   );
@@ -457,7 +597,8 @@ function SelectedDayTray({
 function UpcomingTimeline({ items, onOpen }: { items: UpcomingItem[]; onOpen: (item: UpcomingItem) => void }) {
   return (
     <View style={styles.timelineZone}>
-      <Text style={styles.zoneKicker}>Upcoming</Text>
+      <View style={styles.timelineHandle} />
+      <Text style={styles.timelineSheetTitle}>Upcoming</Text>
       <View style={styles.timelineList}>
         {items.length ? items.map((item, index) => {
           const actionable = item.route === 'workout' || item.route === 'meet' || item.route === 'block' || item.route === 'check_in';
@@ -488,12 +629,12 @@ function UpcomingTimeline({ items, onOpen }: { items: UpcomingItem[]; onOpen: (i
   );
 }
 
-function CalendarLegend({ hasBlockRange, hasMeet }: { hasBlockRange: boolean; hasMeet: boolean }) {
+function CalendarLegend({ hasBlockRange, hasMeet, hideCheckIns }: { hasBlockRange: boolean; hasMeet: boolean; hideCheckIns?: boolean }) {
   return (
     <View style={styles.markerLegend}>
       {hasBlockRange ? <LegendItem kind="wash" label="Block dates" /> : null}
       <LegendItem color={colors.amber} label="Training" />
-      <LegendItem color={colors.violet} label="Check-In" />
+      {!hideCheckIns ? <LegendItem color={colors.violet} label="Check-In" /> : null}
       <LegendItem color={colors.green} label="Complete" />
       <LegendItem color={colors.red} label="Missed" />
       {hasMeet ? <LegendItem color={colors.violet} label="Meet" /> : null}
@@ -593,11 +734,78 @@ function statusLabel(status?: string | null) {
   return 'Not started';
 }
 
+function isCompletedStatus(status?: string | null) {
+  const value = String(status || '').toLowerCase();
+  return value === 'completed' || value === 'logged' || value === 'done';
+}
+
+function isInProgressStatus(status?: string | null) {
+  return String(status || '').toLowerCase() === 'in_progress';
+}
+
+function sessionStateLabel(status?: string | null) {
+  const value = String(status || 'assigned').toLowerCase();
+  if (isCompletedStatus(value)) return 'Complete';
+  if (value === 'in_progress') return 'In progress';
+  if (value === 'missed') return 'Missed';
+  if (value === 'incomplete') return 'Incomplete';
+  if (value === 'tardy') return 'Tardy';
+  return 'Assigned';
+}
+
+function sessionSummaryParts(session: CalendarSession) {
+  const parts: string[] = [];
+  const lifts = (session.primary_lifts || [])
+    .map((lift) => simplifyMobileMovementText(lift))
+    .filter(Boolean);
+  parts.push(...lifts.slice(0, 3));
+
+  const accessoryCount = Number(session.accessory_count || 0);
+  if (accessoryCount > 0) {
+    parts.push(`${accessoryCount} ${accessoryCount === 1 ? 'Accessory' : 'Accessories'}`);
+  }
+
+  const setsMatch = String(session.planned_summary || '').match(/(\d+)\s+sets?/i);
+  if (setsMatch?.[1]) {
+    const sets = Number(setsMatch[1]);
+    if (sets > 0) parts.push(`${sets} ${sets === 1 ? 'Set' : 'Sets'}`);
+  }
+
+  if (!parts.length && session.planned_summary) {
+    return simplifyMobileMovementText(session.planned_summary)
+      .split(/[·/]/)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .slice(0, 3);
+  }
+
+  return parts.length ? parts : [session.block_name || statusLabel(session.status)];
+}
+
+function formatCalendarKicker(value?: string | null) {
+  const date = parseDate(value);
+  if (!date) return 'SELECTED DAY';
+  const weekday = date.toLocaleDateString(undefined, { weekday: 'long' }).toUpperCase();
+  const month = date.toLocaleDateString(undefined, { month: 'long' }).toUpperCase();
+  return `${weekday} • ${month} ${date.getDate()}`;
+}
+
+function fade(hex: string, alpha: number) {
+  const normalized = hex.replace('#', '');
+  if (normalized.length !== 6) return hex;
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function monthGridRange(month: Date) {
   const first = startOfMonth(month);
   const firstWeekday = (first.getDay() + 6) % 7;
   const start = addDays(first, -firstWeekday);
-  const end = addDays(start, 42);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+  const lastWeekday = (last.getDay() + 6) % 7;
+  const end = addDays(last, 7 - lastWeekday);
   return { start, end };
 }
 
@@ -668,9 +876,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scroll: {
-    paddingTop: 16,
+    paddingTop: 10,
     paddingBottom: 36,
-    gap: 24,
+    gap: 18,
   },
   centerState: {
     flex: 1,
@@ -696,6 +904,39 @@ const styles = StyleSheet.create({
   stateBody: {
     ...SLTypography.body,
     color: colors.muted,
+  },
+  monthHeader: {
+    minHeight: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  monthLabelButton: {
+    minHeight: 40,
+    justifyContent: 'center',
+  },
+  monthTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 22,
+    lineHeight: 27,
+    color: colors.textStrong,
+    letterSpacing: 0,
+  },
+  monthArrowGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  monthArrow: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(18, 15, 25, 0.24)',
   },
   header: {
     gap: 14,
@@ -768,8 +1009,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   calendarZone: {
-    gap: 11,
-    marginBottom: 8,
+    gap: 10,
+    marginBottom: 0,
   },
   weekHeader: {
     flexDirection: 'row',
@@ -791,13 +1032,13 @@ const styles = StyleSheet.create({
   },
   dayCell: {
     width: `${100 / 7}%`,
-    minHeight: 58,
+    minHeight: 43,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
+    gap: 5,
     borderBottomWidth: 1,
     borderColor: colors.lineSoft,
-    backgroundColor: 'rgba(24, 16, 15, 0.11)',
+    backgroundColor: 'rgba(24, 16, 15, 0.055)',
   },
   dayCellInBlock: {
     backgroundColor: 'rgba(92, 55, 105, 0.082)',
@@ -817,7 +1058,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(167, 139, 250, 0.12)',
   },
   dayCellSelected: {
-    backgroundColor: 'rgba(167, 139, 250, 0.24)',
+    backgroundColor: 'rgba(113, 66, 222, 0.72)',
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(188, 154, 255, 0.72)',
   },
   dayNumber: {
     fontFamily: SLFontFamilies.monoSemiBold,
@@ -832,13 +1076,26 @@ const styles = StyleSheet.create({
   },
   markerRow: {
     flexDirection: 'row',
-    minHeight: 5,
+    minHeight: 7,
     gap: 3,
+    alignItems: 'center',
   },
   dayMarker: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
+    width: 6,
+    height: 6,
+    borderRadius: 4,
+  },
+  dayMarkerCount: {
+    minWidth: 14,
+    height: 14,
+    borderRadius: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayMarkerCountText: {
+    fontFamily: SLFontFamilies.monoSemiBold,
+    fontSize: 8,
+    color: '#0D0A12',
   },
   restMarker: {
     width: 10,
@@ -859,9 +1116,9 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   legendDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
+    width: 6,
+    height: 6,
+    borderRadius: 4,
   },
   legendWash: {
     width: 14,
@@ -878,7 +1135,112 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 6,
   },
+  selectedDayCard: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 13,
+    gap: 14,
+    overflow: 'hidden',
+  },
+  selectedDayCardTraining: {
+    backgroundColor: 'rgba(43, 30, 12, 0.28)',
+  },
+  selectedDayCardComplete: {
+    backgroundColor: 'rgba(15, 45, 29, 0.28)',
+  },
+  selectedDayCardEmpty: {
+    backgroundColor: 'rgba(36, 24, 51, 0.34)',
+  },
+  selectedDayKickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectedDayKicker: {
+    ...SLTypography.label,
+    color: colors.muted,
+    textTransform: 'uppercase',
+  },
+  selectedDayBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  selectedDayIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  selectedDayCopy: {
+    flex: 1,
+    gap: 6,
+  },
+  selectedDayTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  selectedDayTitle: {
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 20,
+    lineHeight: 25,
+    color: colors.textStrong,
+    flex: 1,
+  },
+  selectedDayStatus: {
+    ...SLTypography.label,
+  },
+  selectedSummaryList: {
+    gap: 3,
+  },
+  selectedSummaryLine: {
+    ...SLTypography.body,
+    color: colors.muted,
+  },
+  selectedActionStack: {
+    gap: 9,
+  },
+  selectedPrimaryButton: {
+    minHeight: 46,
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  selectedPrimaryButtonText: {
+    ...SLTypography.label,
+    color: colors.textStrong,
+  },
+  createPrimaryButton: {
+    backgroundColor: 'rgba(113, 66, 222, 0.78)',
+    borderColor: 'rgba(188, 154, 255, 0.62)',
+  },
+  selectedSecondaryButton: {
+    minHeight: 42,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(222, 198, 166, 0.14)',
+    backgroundColor: 'rgba(10, 8, 12, 0.24)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedSecondaryButtonText: {
+    ...SLTypography.label,
+    color: colors.muted,
+  },
   trayHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  trayHeaderCopy: {
+    flex: 1,
     gap: 3,
   },
   zoneKicker: {
@@ -888,6 +1250,21 @@ const styles = StyleSheet.create({
   },
   trayDate: {
     ...SLTypography.sectionTitle,
+    color: colors.textStrong,
+  },
+  createSessionButton: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.44)',
+    backgroundColor: 'rgba(167, 139, 250, 0.14)',
+  },
+  createSessionText: {
+    ...SLTypography.label,
     color: colors.textStrong,
   },
   ledgerRow: {
@@ -938,7 +1315,25 @@ const styles = StyleSheet.create({
     color: colors.subtle,
   },
   timelineZone: {
-    gap: 12,
+    gap: 10,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(26, 23, 33, 0.88)',
+    paddingTop: 14,
+    overflow: 'hidden',
+  },
+  timelineSheetTitle: {
+    ...SLTypography.sectionTitle,
+    color: colors.textStrong,
+    paddingHorizontal: 16,
+  },
+  timelineHandle: {
+    width: 58,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    alignSelf: 'center',
   },
   timelineList: {
     borderTopWidth: 1,
@@ -979,6 +1374,28 @@ const styles = StyleSheet.create({
     ...SLTypography.body,
     color: colors.subtle,
     paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  upcomingSummaryHeader: {
+    minHeight: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lineSoft,
+  },
+  upcomingTitle: {
+    ...SLTypography.label,
+    color: colors.muted,
+    textTransform: 'uppercase',
+  },
+  viewAllButton: {
+    minHeight: 32,
+    justifyContent: 'center',
+  },
+  viewAllText: {
+    ...SLTypography.label,
+    color: colors.violet,
   },
   pressed: {
     opacity: 0.72,
