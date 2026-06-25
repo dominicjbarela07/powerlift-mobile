@@ -97,6 +97,7 @@ type AthleteCalendarPayload = {
   meet_countdown?: CalendarMeet | null;
   days?: CalendarDay[];
   upcoming?: UpcomingItem[];
+  can_edit_programming?: boolean;
 };
 
 const colors = {
@@ -130,6 +131,7 @@ export default function AthleteCalendarScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [upcomingExpanded, setUpcomingExpanded] = useState(false);
+  const canEditProgramming = user?.role === 'coach' && payload?.can_edit_programming !== false;
 
   const range = useMemo(() => monthGridRange(anchorMonth), [anchorMonth]);
   const daysByDate = useMemo(() => {
@@ -206,6 +208,10 @@ export default function AthleteCalendarScreen() {
 
   const openSessionWorkspace = (session?: CalendarSession | null) => {
     if (!session?.workout_id) return;
+    if (!canEditProgramming) {
+      openSessionLogger(session);
+      return;
+    }
     router.push({
       pathname: '/workout/session-workspace/[workoutId]' as any,
       params: { workoutId: String(session.workout_id) },
@@ -323,6 +329,7 @@ export default function AthleteCalendarScreen() {
         onOpenMeet={openMeet}
         onOpenSession={openSessionLogger}
         onEditSession={openSessionWorkspace}
+        canEditProgramming={canEditProgramming}
         onOpenSessionSummary={openSessionSummary}
       />
 
@@ -467,6 +474,7 @@ function SelectedDayTray({
   onOpenCheckIn,
   onOpenSession,
   onEditSession,
+  canEditProgramming,
   onOpenSessionSummary,
   onOpenMeet,
 }: {
@@ -476,6 +484,7 @@ function SelectedDayTray({
   onOpenCheckIn: (checkIn: CalendarCheckIn) => void;
   onOpenSession: (session: CalendarSession) => void;
   onEditSession: (session: CalendarSession) => void;
+  canEditProgramming?: boolean;
   onOpenSessionSummary: (session: CalendarSession) => void;
   onOpenMeet: () => void;
 }) {
@@ -538,12 +547,14 @@ function SelectedDayTray({
             <Text style={styles.selectedPrimaryButtonText}>{completed ? 'View Summary' : inProgress ? 'Continue Workout' : 'Start Workout'}</Text>
             <Ionicons name="arrow-forward" size={18} color={colors.textStrong} />
           </Pressable>
-          <Pressable
-            style={({ pressed }) => [styles.selectedSecondaryButton, pressed && styles.pressed]}
-            onPress={() => onEditSession(primarySession)}
-          >
-            <Text style={styles.selectedSecondaryButtonText}>Edit Plan</Text>
-          </Pressable>
+          {canEditProgramming ? (
+            <Pressable
+              style={({ pressed }) => [styles.selectedSecondaryButton, pressed && styles.pressed]}
+              onPress={() => onEditSession(primarySession)}
+            >
+              <Text style={styles.selectedSecondaryButtonText}>Edit Plan</Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : canCreateSession ? (
         <Pressable
