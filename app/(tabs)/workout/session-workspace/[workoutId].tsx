@@ -3099,13 +3099,16 @@ const styles = StyleSheet.create({
   },
   liftHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     gap: 10,
   },
   liftTitleRow: {
-    flex: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 220,
+    minWidth: 220,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -3126,6 +3129,7 @@ const styles = StyleSheet.create({
   },
   liftTitleWrap: {
     flex: 1,
+    minWidth: 0,
     gap: 8,
   },
   liftName: {

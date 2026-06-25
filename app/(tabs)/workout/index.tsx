@@ -1778,25 +1778,25 @@ function CurrentPosition({
               {cue ? <Text style={styles.positionCue}>{cue}</Text> : null}
             </View>
           </View>
-          <View style={styles.positionDivider} />
-          <View style={styles.positionWeekBlock}>
-            <Text style={styles.positionMetaLabel}>This Week</Text>
-            <Text style={styles.positionWeekValue}>{weekTotal ? `${weekTotal} session${weekTotal === 1 ? '' : 's'}` : 'No sessions'}</Text>
-            <View style={styles.positionDotLine}>
-              {weekDots.map((_, index) => (
-                <View
-                  key={`week-dot-${index}`}
-                  style={[styles.positionWeekDot, index < weekCompleted && styles.positionWeekDotDone]}
-                />
-              ))}
+          <View style={styles.positionSecondaryRow}>
+            <View style={styles.positionWeekBlock}>
+              <Text style={styles.positionMetaLabel}>This Week</Text>
+              <Text style={styles.positionWeekValue}>{weekTotal ? `${weekTotal} session${weekTotal === 1 ? '' : 's'}` : 'No sessions'}</Text>
+              <View style={styles.positionDotLine}>
+                {weekDots.map((_, index) => (
+                  <View
+                    key={`week-dot-${index}`}
+                    style={[styles.positionWeekDot, index < weekCompleted && styles.positionWeekDotDone]}
+                  />
+                ))}
+              </View>
+              <Text style={styles.positionMetaValue}>{weekPosition}</Text>
             </View>
-            <Text style={styles.positionMetaValue}>{weekPosition}</Text>
-          </View>
-          <View style={styles.positionDivider} />
-          <View style={styles.positionNextBlock}>
-            <Text style={styles.positionMetaLabel}>Next</Text>
-            <Text style={styles.positionPrimarySmall} numberOfLines={2}>{nextText}</Text>
-            <Text style={styles.positionMetaValue}>{next?.date ? formatShortDate(next.date) : 'Next training day'}</Text>
+            <View style={styles.positionNextBlock}>
+              <Text style={styles.positionMetaLabel}>Next</Text>
+              <Text style={styles.positionPrimarySmall}>{nextText}</Text>
+              <Text style={styles.positionMetaValue}>{next?.date ? formatShortDate(next.date) : 'Next training day'}</Text>
+            </View>
           </View>
         </View>
         {todaySession?.id ? (
@@ -2164,8 +2164,8 @@ function buildSessionPreview(index: number, session: HubSession) {
     .map((row) => {
       const label = fullMovementName(row.movement);
       const details = [
-        (row.prescription || '').trim(),
-        (row.load || '').trim(),
+        trainingReadableText(row.prescription),
+        trainingReadableText(row.load),
       ].filter(Boolean).join('  ');
       return label ? { label, detail: details || 'No prescription' } : null;
     })
@@ -2177,6 +2177,15 @@ function buildSessionPreview(index: number, session: HubSession) {
     lines: previewRows,
     accessories: accessoryText(session.preview, session.focus),
   };
+}
+
+function trainingReadableText(value?: string | null) {
+  return String(value || '')
+    .trim()
+    .replace(/\btop\s*\/\s*bk\b/gi, 'Top + backdown')
+    .replace(/\btop\s*\+\s*bk\b/gi, 'Top + backdown')
+    .replace(/\bbk\b/g, 'backdown')
+    .replace(/\bBK\b/g, 'Backdown');
 }
 
 function splitPreviewDetail(value?: string | null) {
@@ -2804,17 +2813,23 @@ const styles = StyleSheet.create({
   sessionPreviewHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 10,
   },
   sessionPreviewTitleLine: {
-    flex: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 180,
+    minWidth: 180,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: 10,
   },
   sessionPreviewCode: {
+    flexShrink: 1,
+    minWidth: 0,
     fontFamily: SLFontFamilies.sansBold,
     fontSize: 23,
     lineHeight: 29,
@@ -2852,14 +2867,16 @@ const styles = StyleSheet.create({
   },
   sessionPreviewLine: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     gap: 9,
     paddingVertical: 4,
     borderBottomWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.07)',
   },
   sessionPreviewLift: {
-    minWidth: 86,
+    minWidth: 112,
+    flexShrink: 0,
     fontFamily: SLFontFamilies.sansBold,
     fontSize: 16,
     lineHeight: 21,
@@ -2870,7 +2887,10 @@ const styles = StyleSheet.create({
     fontFamily: SLFontFamilies.sansMedium,
     fontSize: 16,
     lineHeight: 21,
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 130,
+    minWidth: 130,
     color: colors.muted,
   },
   sessionPreviewLoad: {
@@ -2879,7 +2899,10 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: colors.muted,
     textAlign: 'right',
-    flexShrink: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 110,
+    minWidth: 110,
   },
   sessionAccessoryRow: {
     flexDirection: 'row',
@@ -3147,12 +3170,9 @@ const styles = StyleSheet.create({
     color: colors.textStrong,
   },
   positionGrid: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 12,
   },
   positionTodayBlock: {
-    flex: 1.1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -3171,20 +3191,34 @@ const styles = StyleSheet.create({
     minWidth: 0,
     gap: 3,
   },
-  positionDivider: {
-    width: 1,
-    alignSelf: 'stretch',
-    backgroundColor: 'rgba(148, 163, 184, 0.20)',
+  // Critical training text must remain readable. Reflow/stack instead of
+  // preserving cramped columns that split words into fragments.
+  positionSecondaryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
   },
   positionWeekBlock: {
-    flex: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    flexBasis: 148,
+    minWidth: 148,
     gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.14)',
+    borderRadius: 12,
+    backgroundColor: 'rgba(8, 8, 12, 0.22)',
+    padding: 10,
   },
   positionNextBlock: {
-    flex: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    flexBasis: 148,
+    minWidth: 148,
     gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.14)',
+    borderRadius: 12,
+    backgroundColor: 'rgba(8, 8, 12, 0.22)',
+    padding: 10,
   },
   positionMetaLabel: {
     fontFamily: SLFontFamilies.sansBold,
