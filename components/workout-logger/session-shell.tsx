@@ -149,12 +149,14 @@ export function SessionCommandStrip({
 
         <View style={[styles.commandTimerBlock, restActive && styles.commandTimerBlockActive]}>
           <Text style={[styles.commandTimerDot, !restActive && styles.commandTimerDotIdle]}>●</Text>
-          <Text style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
-            {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
-          </Text>
-          <Text style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
-            Rest Timer
-          </Text>
+          <View style={styles.commandTimerTextStack}>
+            <Text style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
+              Rest Timer
+            </Text>
+            <Text style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
+              {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.commandDivider} />
@@ -447,17 +449,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    gap: 7,
+    minHeight: 42,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: 13,
   },
   commandTimerBlockActive: {
-    backgroundColor: 'transparent',
+    borderColor: 'rgba(134,239,172,0.22)',
+    backgroundColor: 'rgba(20,83,45,0.18)',
   },
   commandTimerDot: {
-    color: '#8B5CF6',
-    fontSize: 10,
-    marginTop: 1,
+    color: '#86EFAC',
+    fontSize: 11,
     textShadowColor: 'rgba(134,239,172,0.12)',
     textShadowRadius: 5,
   },
@@ -465,27 +471,38 @@ const styles = StyleSheet.create({
     color: '#64748B',
     textShadowRadius: 0,
   },
+  commandTimerTextStack: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    minWidth: 0,
+  },
   commandTimerValue: {
     color: '#ECE5DA',
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: -0.8,
+    fontSize: 18,
+    lineHeight: 21,
+    fontWeight: '900',
+    letterSpacing: -0.5,
   },
   commandTimerValueActive: {
-    color: '#D9EDE1',
-    textShadowColor: 'rgba(134,239,172,0.06)',
-    textShadowRadius: 5,
+    color: '#F8FAFC',
+    fontSize: 22,
+    lineHeight: 25,
+    textShadowColor: 'rgba(134,239,172,0.14)',
+    textShadowRadius: 7,
   },
   commandTimerMeta: {
     color: '#B8ACA1',
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
   },
   commandTimerMetaActive: {
-    color: '#B8CDBF',
+    color: '#BBF7D0',
   },
   commandButton: {
-    minWidth: 98,
+    minWidth: 88,
     height: 38,
     paddingHorizontal: 10,
     borderRadius: 11,

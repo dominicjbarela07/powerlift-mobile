@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -1804,131 +1807,145 @@ function AccessoryEditorModal({
   };
 
   return (
-    <Modal visible={!!state} animationType="slide" onRequestClose={onCancel}>
-      <View style={styles.trainingLiftEditorScreen}>
-        <View style={styles.trainingLiftEditorHeader}>
-          <View>
-            <Text style={styles.trainingLiftEditorEyebrow}>Workspace edit</Text>
-            <Text style={styles.trainingLiftEditorTitle}>{title}</Text>
-          </View>
+    <Modal visible={!!state} transparent animationType="fade" onRequestClose={onCancel}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.accessoryEditorKeyboardWrap}
+      >
+        <Pressable style={styles.accessoryEditorBackdrop} onPress={Keyboard.dismiss}>
           <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Cancel accessory changes"
-            onPress={onCancel}
-            style={({ pressed }) => [styles.trainingLiftCancelButton, pressed && styles.pressed]}
+            style={styles.accessoryEditorCard}
+            onPress={(event) => event.stopPropagation()}
           >
-            <Text style={styles.trainingLiftCancelText}>Cancel</Text>
-          </Pressable>
-        </View>
-
-        {!setup ? null : (
-          <ScrollView
-            style={styles.trainingLiftEditorScroll}
-            contentContainerStyle={styles.trainingLiftEditorContent}
-            keyboardShouldPersistTaps="handled"
-          >
-            <TrainingLiftSection title="Movement">
-              {loadingGroups ? (
-                <View style={styles.trainingLiftLoadingRow}>
-                  <ActivityIndicator color={colors.violet} />
-                  <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
-                </View>
-              ) : null}
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
-                {groups.map((group) => {
-                  const selected = group.key === activeGroup?.key;
-                  return (
-                    <Pressable
-                      key={group.key}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      onPress={() => chooseFamily(group)}
-                      style={({ pressed }) => [
-                        styles.trainingLiftFamilyButton,
-                        selected && styles.trainingLiftFamilyButtonActive,
-                        pressed && styles.pressed,
-                      ]}
-                    >
-                      <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                        {group.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-              <View style={styles.trainingLiftCardGrid}>
-                {(activeGroup?.movements || []).slice(0, 18).map((movement) => {
-                  const name = movementPresetName(movement);
-                  const selected = name === setup.movement;
-                  return (
-                    <TrainingLiftOptionCard
-                      key={`${activeGroup?.key}-${name}`}
-                      title={name}
-                      detail={activeGroup?.name || 'Accessory movement'}
-                      selected={selected}
-                      tone="amber"
-                      onPress={() => chooseMovement(movement)}
-                    />
-                  );
-                })}
+            <View style={[styles.trainingLiftEditorHeader, styles.accessoryEditorHeader]}>
+              <View style={styles.accessoryEditorTitleBlock}>
+                <Text style={styles.trainingLiftEditorEyebrow}>Workspace edit</Text>
+                <Text style={styles.trainingLiftEditorTitle}>{title}</Text>
               </View>
-              <View style={styles.trainingLiftCustomBlock}>
-                <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
-                <TextInput
-                  value={setup.customMovement}
-                  onChangeText={(value) => patchSetup({ customMovement: value })}
-                  placeholder="Type custom accessory"
-                  placeholderTextColor={colors.subtle}
-                  style={styles.trainingLiftInput}
-                />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Cancel accessory changes"
+                onPress={onCancel}
+                style={({ pressed }) => [styles.trainingLiftCancelButton, pressed && styles.pressed]}
+              >
+                <Text style={styles.trainingLiftCancelText}>Cancel</Text>
+              </Pressable>
+            </View>
+
+            {!setup ? null : (
+              <ScrollView
+                style={styles.trainingLiftEditorScroll}
+                contentContainerStyle={styles.accessoryEditorContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+              >
+                <TrainingLiftSection title="Movement">
+                  {loadingGroups ? (
+                    <View style={styles.trainingLiftLoadingRow}>
+                      <ActivityIndicator color={colors.violet} />
+                      <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
+                    </View>
+                  ) : null}
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
+                    {groups.map((group) => {
+                      const selected = group.key === activeGroup?.key;
+                      return (
+                        <Pressable
+                          key={group.key}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected }}
+                          onPress={() => chooseFamily(group)}
+                          style={({ pressed }) => [
+                            styles.trainingLiftFamilyButton,
+                            selected && styles.trainingLiftFamilyButtonActive,
+                            pressed && styles.pressed,
+                          ]}
+                        >
+                          <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
+                            {group.name}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                  <View style={styles.trainingLiftCardGrid}>
+                    {(activeGroup?.movements || []).slice(0, 18).map((movement) => {
+                      const name = movementPresetName(movement);
+                      const selected = name === setup.movement;
+                      return (
+                        <TrainingLiftOptionCard
+                          key={`${activeGroup?.key}-${name}`}
+                          title={name}
+                          detail={activeGroup?.name || 'Accessory movement'}
+                          selected={selected}
+                          tone="amber"
+                          onPress={() => chooseMovement(movement)}
+                        />
+                      );
+                    })}
+                  </View>
+                  <View style={styles.trainingLiftCustomBlock}>
+                    <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
+                    <TextInput
+                      value={setup.customMovement}
+                      onChangeText={(value) => patchSetup({ customMovement: value })}
+                      placeholder="Type custom accessory"
+                      placeholderTextColor={colors.subtle}
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                      blurOnSubmit
+                      style={styles.trainingLiftInput}
+                    />
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={useCustomMovement}
+                      style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
+                    >
+                      <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
+                    </Pressable>
+                  </View>
+                </TrainingLiftSection>
+
+                <TrainingLiftSection title="Movement Notes">
+                  <TextInput
+                    value={setup.notes}
+                    onChangeText={(value) => patchSetup({ notes: value })}
+                    placeholder="Add cue, setup note, or movement context..."
+                    placeholderTextColor={colors.subtle}
+                    multiline
+                    style={[styles.trainingLiftInput, styles.trainingLiftNotesInput]}
+                  />
+                </TrainingLiftSection>
+              </ScrollView>
+            )}
+
+            {setup ? (
+              <View style={[styles.trainingLiftEditorActions, styles.accessoryEditorActions]}>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={useCustomMovement}
-                  style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
+                  disabled={saving}
+                  onPress={onCancel}
+                  style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
                 >
-                  <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
+                  <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={saving || !setup.movement}
+                  onPress={() => onApply(setup)}
+                  style={({ pressed }) => [
+                    styles.trainingLiftActionPrimary,
+                    (saving || !setup.movement) && styles.editorDisabled,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Changes'}</Text>
                 </Pressable>
               </View>
-            </TrainingLiftSection>
-
-            <TrainingLiftSection title="Movement Notes">
-              <TextInput
-                value={setup.notes}
-                onChangeText={(value) => patchSetup({ notes: value })}
-                placeholder="Add cue, setup note, or movement context..."
-                placeholderTextColor={colors.subtle}
-                multiline
-                style={[styles.trainingLiftInput, styles.trainingLiftNotesInput]}
-              />
-            </TrainingLiftSection>
-          </ScrollView>
-        )}
-
-        {setup ? (
-          <View style={styles.trainingLiftEditorActions}>
-            <Pressable
-              accessibilityRole="button"
-              disabled={saving}
-              onPress={onCancel}
-              style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              disabled={saving || !setup.movement}
-              onPress={() => onApply(setup)}
-              style={({ pressed }) => [
-                styles.trainingLiftActionPrimary,
-                (saving || !setup.movement) && styles.editorDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Changes'}</Text>
-            </Pressable>
-          </View>
-        ) : null}
-      </View>
+            ) : null}
+          </Pressable>
+        </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -3630,6 +3647,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0B080D',
   },
+  accessoryEditorKeyboardWrap: {
+    flex: 1,
+  },
+  accessoryEditorBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 18,
+    backgroundColor: 'rgba(3, 5, 10, 0.78)',
+  },
+  accessoryEditorCard: {
+    width: '100%',
+    maxHeight: '92%',
+    borderWidth: 1,
+    borderColor: 'rgba(222, 198, 166, 0.14)',
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: '#0B080D',
+    shadowColor: '#000',
+    shadowOpacity: 0.44,
+    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 18 },
+    elevation: 16,
+  },
   trainingLiftEditorHeader: {
     paddingTop: 58,
     paddingHorizontal: 16,
@@ -3641,6 +3682,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.10)',
     backgroundColor: 'rgba(30, 24, 38, 0.42)',
+  },
+  accessoryEditorHeader: {
+    paddingTop: 18,
+    paddingBottom: 14,
+    backgroundColor: 'rgba(30, 24, 38, 0.72)',
+  },
+  accessoryEditorTitleBlock: {
+    flex: 1,
+    minWidth: 0,
   },
   trainingLiftEditorEyebrow: {
     color: colors.violet,
@@ -3674,6 +3724,12 @@ const styles = StyleSheet.create({
   trainingLiftEditorContent: {
     paddingTop: 14,
     paddingBottom: 112,
+    gap: 14,
+  },
+  accessoryEditorContent: {
+    paddingTop: 14,
+    paddingHorizontal: 12,
+    paddingBottom: 18,
     gap: 14,
   },
   trainingLiftSection: {
@@ -3822,6 +3878,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.10)',
     backgroundColor: 'rgba(10, 8, 12, 0.94)',
+  },
+  accessoryEditorActions: {
+    position: 'relative',
+    left: undefined,
+    right: undefined,
+    bottom: undefined,
+    paddingBottom: 16,
+    backgroundColor: 'rgba(10, 8, 12, 0.98)',
   },
   trainingLiftActionSecondary: {
     flex: 1,
