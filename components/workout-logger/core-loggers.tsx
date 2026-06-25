@@ -72,7 +72,9 @@ export function CoreMovementLedgerRow({
 }) {
   const stateLabel =
     state === 'complete' ? 'Complete' : state === 'logged' ? 'Logged' : 'Not started';
-  const completedRows = detailRows?.filter((row) => row.state === 'completed') || [];
+  const allDetailRows = detailRows || [];
+  const completedRows = allDetailRows.filter((row) => row.state === 'completed');
+  const visibleDetailRows = expanded ? allDetailRows : completedRows;
   const isActiveMovement = !!loggerFocus;
   const isComplete = state === 'complete';
   const isAccessory = variantLabel?.toLowerCase() === 'accessory';
@@ -143,7 +145,7 @@ export function CoreMovementLedgerRow({
             <Text style={styles.movementNoteText}>{movementNote.trim()}</Text>
           </View>
         ) : null}
-        {loggerFocus || (expanded && completedRows.length > 0) ? (
+        {loggerFocus || (expanded && visibleDetailRows.length > 0) ? (
           <View style={styles.currentFocusBlock}>
             {loggerFocus ? <SetRail steps={loggerFocus.rail} /> : <SetRail steps={reviewRail} />}
             {loggerFocus ? (
@@ -179,14 +181,28 @@ export function CoreMovementLedgerRow({
                 </View>
               </View>
             ) : null}
-            {completedRows.length > 0 ? (
+            {visibleDetailRows.length > 0 ? (
               <View style={styles.currentLoggedList}>
-                {loggerFocus ? <Text style={styles.currentLoggedKicker}>Logged</Text> : null}
-                {completedRows.map((row) => (
-                    <View key={row.key} style={styles.currentLoggedLine}>
-                      <Text style={styles.currentLoggedText}>
+                <Text style={styles.currentLoggedKicker}>{expanded ? 'Prescription' : 'Logged'}</Text>
+                {visibleDetailRows.map((row) => {
+                  const isCompleted = row.state === 'completed';
+                  const isActive = row.state === 'active';
+                  const statusText = isCompleted
+                    ? row.resultText
+                    : [row.target, row.prescription].filter(Boolean).join(' · ');
+                  return (
+                    <View key={row.key} style={[
+                      styles.currentLoggedLine,
+                      !isCompleted && styles.currentPlannedLine,
+                      isActive && styles.currentPlannedLineActive,
+                    ]}>
+                      <Text style={[
+                        styles.currentLoggedText,
+                        !isCompleted && styles.currentPlannedText,
+                        isActive && styles.currentPlannedTextActive,
+                      ]}>
                         {row.label}
-                        {row.resultText ? ` · ${row.resultText}` : ''}
+                        {statusText ? ` · ${statusText}` : ''}
                       </Text>
                       {row.videoStatus ? (
                         <Text
@@ -200,6 +216,11 @@ export function CoreMovementLedgerRow({
                         </Text>
                       ) : null}
                       <View style={styles.currentLoggedActions}>
+                        {row.onLogSet ? (
+                          <TouchableOpacity style={styles.currentLoggedAction} onPress={row.onLogSet}>
+                            <Text style={styles.currentLoggedActionText}>Log</Text>
+                          </TouchableOpacity>
+                        ) : null}
                         {row.onEdit ? (
                           <TouchableOpacity style={styles.currentLoggedAction} onPress={row.onEdit}>
                             <Text style={styles.currentLoggedActionText}>Edit</Text>
@@ -219,7 +240,8 @@ export function CoreMovementLedgerRow({
                         ) : null}
                       </View>
                     </View>
-                  ))}
+                  );
+                })}
               </View>
             ) : null}
           </View>
@@ -637,11 +659,23 @@ const styles = StyleSheet.create({
     gap: 7,
     opacity: 0.82,
   },
+  currentPlannedLine: {
+    opacity: 0.9,
+  },
+  currentPlannedLineActive: {
+    opacity: 1,
+  },
   currentLoggedText: {
     color: '#CFC4B9',
     fontSize: 12,
     lineHeight: 17,
     fontWeight: '700',
+  },
+  currentPlannedText: {
+    color: '#B8ACA1',
+  },
+  currentPlannedTextActive: {
+    color: '#E9D5FF',
   },
   currentVideoStatus: {
     color: '#B8ACA1',
