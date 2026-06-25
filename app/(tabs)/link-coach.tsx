@@ -1,183 +1,263 @@
-// app/(tabs)/link-coach.tsx
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
-import { fetchJson } from '@/lib/api';
 
-type DashboardData = {
-  athlete: any;
-  coach: any;
-  next_workout: any;
-  recent_workouts: any[];
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useAuth, type AuthUser } from '@/context/AuthContext';
+import {
+  acceptPendingCoachInvite,
+  declinePendingCoachInvite,
+  getPendingCoachInvites,
+  type PendingCoachInvite,
+} from '@/lib/api';
+
+type InviteState = {
+  alreadyLinked: boolean;
+  invites: PendingCoachInvite[];
 };
 
-export default function LinkCoachScreen() {
+function authUserFromPayload(payload: any, fallbackEmail: string): AuthUser {
+  return {
+    email: String(payload?.email || fallbackEmail || ''),
+    user_name: payload?.user_name ?? null,
+    role: payload?.role === 'coach' ? 'coach' : 'athlete',
+    is_coach: payload?.is_coach === true || payload?.role === 'coach',
+    workspace_mode: payload?.workspace_mode,
+    is_individual_workspace: payload?.is_individual_workspace === true,
+    is_self_coached: payload?.is_self_coached === true,
+    self_athlete_id: payload?.self_athlete_id ?? null,
+    email_verified: payload?.email_verified !== false,
+    verification_required: payload?.verification_required === true,
+    verification_url: payload?.verification_url ?? null,
+    billing_required: payload?.billing_required === true,
+    billing_url: payload?.billing_url ?? null,
+    has_linked_athlete: payload?.has_linked_athlete === true || !!payload?.athlete_id,
+    athlete_id: payload?.athlete_id ?? payload?.athlete?.id ?? null,
+  };
+}
+
+export default function PendingCoachInviteScreen() {
   const router = useRouter();
-  const { token } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
+  const auth = useAuth();
+  const [state, setState] = useState<InviteState>({ alreadyLinked: false, invites: [] });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [workingInviteId, setWorkingInviteId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
+  const loadInvites = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
     setError(null);
-
-    const load = async () => {
-      try {
-        if (!token) {
-          setError('Not authenticated. Please log in again.');
-          return;
-        }
-
-        const res: any = await fetchJson('/auth/link-coach/mobile', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const status = Number(res?.status ?? 0);
-        const payload = res?.json ?? res;
-
-        if (res?.ok !== true) {
-          console.log('link-coach resp not ok:', status, res?.raw);
-          const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
-          setError(String(msg));
-
-          if (status === 401) {
-            router.replace('/login');
-          }
-          setData(null);
-          return;
-        }
-
-        if (cancelled) return;
-
-        if (!payload || typeof payload !== 'object') {
-          setError('Bad response (non-object).');
-          setData(null);
-          return;
-        }
-
-        if (payload.ok !== true) {
-          setError(payload.error || 'Failed to load link coach data.');
-          setData(null);
-          return;
-        }
-
-        setData({
-          athlete: payload.athlete || null,
-          coach: payload.coach || null,
-          next_workout: null,
-          recent_workouts: [],
-        });
-      } catch (err: any) {
-        if (cancelled) return;
-        console.log('LinkCoach API error', err);
-        setError(err.message || 'Network error while loading coach info.');
-        setData(null);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+    try {
+      const res = await getPendingCoachInvites();
+      const payload = res.json;
+      if (!res.ok || !payload?.ok) {
+        throw new Error(payload?.error || `Could not check invites (${res.status})`);
       }
-    };
+      const alreadyLinked = payload.already_linked === true || !!payload.athlete?.coach_id;
+      setState({
+        alreadyLinked,
+        invites: Array.isArray(payload.pending_invites) ? payload.pending_invites : [],
+      });
+      if (alreadyLinked) {
+        router.replace('/(tabs)/athlete-dashboard' as any);
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Could not check for coach invites.');
+    } finally {
+      if (!quiet) setLoading(false);
+      setRefreshing(false);
+    }
+  }, [router]);
 
-    load();
+  useEffect(() => {
+    loadInvites();
+  }, [loadInvites]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [token, router]);
+  const checkForInvite = async () => {
+    setRefreshing(true);
+    await loadInvites({ quiet: true });
+  };
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-        <ThemedView style={styles.screenCentered}>
-          <ActivityIndicator size="small" color="#B8B0DA" />
-          <ThemedText variant="bodyMuted" style={styles.loadingText}>Loading…</ThemedText>
-        </ThemedView>
-      </SafeAreaView>
+  const acceptInvite = (invite: PendingCoachInvite) => {
+    Alert.alert(
+      'Accept coach invite?',
+      'This will link your account to this coach and give them access to your training logs and videos.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Accept invite',
+          onPress: async () => {
+            setWorkingInviteId(invite.id);
+            try {
+              const res = await acceptPendingCoachInvite(invite.id);
+              const payload = res.json;
+              if (!res.ok || !payload?.ok) {
+                throw new Error(payload?.error || `Could not accept invite (${res.status})`);
+              }
+              await auth.login({
+                token: payload.token || auth.token,
+                user: authUserFromPayload(payload, auth.user?.email || ''),
+              });
+              router.replace('/(tabs)/athlete-dashboard' as any);
+            } catch (err: any) {
+              Alert.alert('Invite not accepted', err?.message || 'Please try again.');
+            } finally {
+              setWorkingInviteId(null);
+            }
+          },
+        },
+      ],
     );
-  }
+  };
 
-  if (error || !data) {
-    return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-        <ThemedView style={styles.screen}>
-          <View style={styles.header}>
-            <ThemedText variant="h1" style={styles.title}>Link Coach</ThemedText>
-            <ThemedText variant="bodyMuted" style={styles.subtitle}>
-              Connect your account to a coach when an invite is available.
-            </ThemedText>
-          </View>
-
-          <View style={styles.centerCard}>
-            <ThemedText variant={error ? 'error' : 'bodyMuted'}>
-              {error || 'No data.'}
-            </ThemedText>
-          </View>
-        </ThemedView>
-      </SafeAreaView>
+  const declineInvite = (invite: PendingCoachInvite) => {
+    Alert.alert(
+      'Decline coach invite?',
+      'This invite will be removed. You can only join this coach later if they send a new invite.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Decline invite',
+          style: 'destructive',
+          onPress: async () => {
+            setWorkingInviteId(invite.id);
+            try {
+              const res = await declinePendingCoachInvite(invite.id);
+              const payload = res.json;
+              if (!res.ok || !payload?.ok) {
+                throw new Error(payload?.error || `Could not decline invite (${res.status})`);
+              }
+              await loadInvites({ quiet: true });
+            } catch (err: any) {
+              Alert.alert('Invite not declined', err?.message || 'Please try again.');
+            } finally {
+              setWorkingInviteId(null);
+            }
+          },
+        },
+      ],
     );
-  }
-
-  const coach = data.coach;
-  const alreadyLinked = !!coach;
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ThemedView style={styles.screen}>
         <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={styles.content}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={checkForInvite}
+              tintColor="#D8B76A"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            <ThemedText variant="h1" style={styles.title}>Link Coach</ThemedText>
-            <ThemedText variant="bodyMuted" style={styles.subtitle}>
-              Connect your athlete account to a coach and unlock assigned training.
+            <View style={styles.iconBadge}>
+              <Ionicons name="mail-unread-outline" size={24} color="#F5D58A" />
+            </View>
+            <ThemedText style={styles.title}>Pending coach invite</ThemedText>
+            <ThemedText style={styles.body}>
+              You’re signed in, but you haven’t been linked to a coach yet. When your coach sends an invite, it will appear here.
             </ThemedText>
           </View>
 
-          {alreadyLinked ? (
-            <View style={styles.card}>
-              <View style={styles.cardHeaderRow}>
-                <View style={styles.titleRow}>
-                  <View style={styles.iconWrap}>
-                    <Ionicons name="link" size={22} color="#C4B5FD" />
-                  </View>
-                  <ThemedText variant="h3" style={styles.cardTitle}>Coach Linked</ThemedText>
-                </View>
-              </View>
+          <View style={styles.actionRow}>
+            <Pressable
+              style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
+              onPress={checkForInvite}
+              disabled={loading || refreshing}
+            >
+              {refreshing ? (
+                <ActivityIndicator size="small" color="#08111F" />
+              ) : (
+                <Ionicons name="refresh" size={17} color="#08111F" />
+              )}
+              <ThemedText style={styles.primaryButtonText}>Check for invite</ThemedText>
+            </Pressable>
 
-              <ThemedText style={styles.bodyText}>
-                You’re already linked to{' '}
-                <ThemedText style={styles.coachName}>
-                  {coach.name || coach.email || 'Coach'}
-                </ThemedText>
-                .
-              </ThemedText>
+            <Pressable
+              style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
+              onPress={() => router.push('/(tabs)/settings' as any)}
+            >
+              <Ionicons name="settings-outline" size={17} color="#CBD5E1" />
+              <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
+            </Pressable>
+          </View>
+
+          {loading ? (
+            <View style={styles.panel}>
+              <ActivityIndicator size="small" color="#D8B76A" />
+              <ThemedText style={styles.mutedText}>Checking for invites…</ThemedText>
+            </View>
+          ) : error ? (
+            <View style={styles.panel}>
+              <Ionicons name="alert-circle-outline" size={22} color="#FCA5A5" />
+              <ThemedText style={styles.errorText}>{error}</ThemedText>
+            </View>
+          ) : state.invites.length ? (
+            <View style={styles.inviteList}>
+              {state.invites.map((invite) => {
+                const athleteName = `${invite.athlete_first || ''} ${invite.athlete_last || ''}`.trim() || 'Athlete';
+                const isWorking = workingInviteId === invite.id;
+                return (
+                  <View key={invite.id} style={styles.inviteCard}>
+                    <View style={styles.inviteTopRow}>
+                      <View style={styles.coachAvatar}>
+                        <Ionicons name="person-outline" size={20} color="#F5D58A" />
+                      </View>
+                      <View style={styles.inviteTitleBlock}>
+                        <ThemedText style={styles.coachName}>{invite.coach_name || 'Coach'}</ThemedText>
+                        {invite.coach_email ? (
+                          <ThemedText style={styles.coachEmail}>{invite.coach_email}</ThemedText>
+                        ) : null}
+                      </View>
+                    </View>
+                    <View style={styles.inviteMeta}>
+                      <ThemedText style={styles.metaLabel}>Athlete name</ThemedText>
+                      <ThemedText style={styles.metaValue}>{athleteName}</ThemedText>
+                    </View>
+                    <View style={styles.inviteActions}>
+                      <Pressable
+                        style={({ pressed }) => [styles.acceptButton, pressed && styles.pressed]}
+                        onPress={() => acceptInvite(invite)}
+                        disabled={isWorking}
+                      >
+                        <ThemedText style={styles.acceptButtonText}>
+                          {isWorking ? 'Working…' : 'Accept'}
+                        </ThemedText>
+                      </Pressable>
+                      <Pressable
+                        style={({ pressed }) => [styles.declineButton, pressed && styles.pressed]}
+                        onPress={() => declineInvite(invite)}
+                        disabled={isWorking}
+                      >
+                        <ThemedText style={styles.declineButtonText}>Decline</ThemedText>
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              })}
             </View>
           ) : (
-            <View style={styles.card}>
-              <View style={styles.cardHeaderRow}>
-                <View style={styles.titleRow}>
-                  <View style={styles.emptyIconWrap}>
-                    <Ionicons name="mail-open-outline" size={22} color="#94A3B8" />
-                  </View>
-                  <ThemedText variant="h3" style={styles.cardTitle}>No Invite Found</ThemedText>
-                </View>
-              </View>
-
-              <ThemedText variant="bodyMuted" style={styles.emptyText}>
-                Don’t see an invite? Please contact your coach directly.
+            <View style={styles.panel}>
+              <Ionicons name="time-outline" size={24} color="#94A3B8" />
+              <ThemedText style={styles.emptyTitle}>No invite yet</ThemedText>
+              <ThemedText style={styles.mutedText}>
+                You’re all set on this side. Check again after your coach sends an invite to this email.
               </ThemedText>
             </View>
           )}
@@ -195,134 +275,187 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#020617',
-    paddingTop: 12,
-    paddingBottom: 24,
   },
-  screenCentered: {
-    flex: 1,
-    backgroundColor: '#020617',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 36,
-  },
-  loadingText: {
-    color: '#94A3B8',
+  content: {
+    flexGrow: 1,
+    paddingTop: 28,
+    paddingBottom: 48,
+    gap: 18,
   },
   header: {
-    marginBottom: 18,
+    gap: 12,
+  },
+  iconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(216, 183, 106, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 183, 106, 0.24)',
   },
   title: {
-    fontSize: 28,
-    lineHeight: 32,
+    color: '#F8FAFC',
+    fontSize: 30,
+    lineHeight: 34,
     fontWeight: '800',
-    color: '#F8FAFC',
-    letterSpacing: -0.7,
   },
-  subtitle: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#94A3B8',
-  },
-  centerCard: {
-    minHeight: 160,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-  },
-  card: {
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.12)',
-    backgroundColor: 'rgba(8,16,38,0.96)',
-    padding: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.14,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
-  },
-  cardHeaderRow: {
-    marginBottom: 12,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconWrap: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyIconWrap: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardTitle: {
-    color: '#F8FAFC',
-  },
-  bodyText: {
+  body: {
     color: '#CBD5E1',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  coachName: {
-    color: '#F8FAFC',
-    fontWeight: '700',
+    fontSize: 15,
+    lineHeight: 23,
   },
   actionRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 16,
     flexWrap: 'wrap',
+    gap: 10,
   },
   primaryButton: {
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: 16,
-    paddingVertical: 10,
     borderRadius: 999,
-    backgroundColor: '#5B4FCF',
+    backgroundColor: '#D8B76A',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   primaryButtonText: {
-    color: '#F8FAFC',
-    fontWeight: '700',
+    color: '#08111F',
+    fontWeight: '800',
   },
   secondaryButton: {
-    minHeight: 42,
+    minHeight: 44,
     paddingHorizontal: 16,
-    paddingVertical: 10,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.20)',
-    backgroundColor: 'rgba(148,163,184,0.06)',
+    borderColor: 'rgba(148,163,184,0.22)',
+    backgroundColor: 'rgba(15,23,42,0.78)',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   secondaryButtonText: {
     color: '#CBD5E1',
     fontWeight: '700',
   },
-  buttonPressed: {
-    opacity: 0.88,
+  panel: {
+    minHeight: 190,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.13)',
+    backgroundColor: 'rgba(8,16,38,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 22,
+    gap: 10,
   },
-  emptyText: {
+  emptyTitle: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  mutedText: {
     color: '#94A3B8',
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 21,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: '#FCA5A5',
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: 'center',
+  },
+  inviteList: {
+    gap: 12,
+  },
+  inviteCard: {
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(216, 183, 106, 0.20)',
+    backgroundColor: 'rgba(8,16,38,0.96)',
+    padding: 16,
+    gap: 14,
+  },
+  inviteTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  coachAvatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(216, 183, 106, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(216, 183, 106, 0.28)',
+  },
+  inviteTitleBlock: {
+    flex: 1,
+    gap: 2,
+  },
+  coachName: {
+    color: '#F8FAFC',
+    fontSize: 17,
+    fontWeight: '800',
+  },
+  coachEmail: {
+    color: '#94A3B8',
+    fontSize: 13,
+  },
+  inviteMeta: {
+    borderRadius: 16,
+    backgroundColor: 'rgba(148,163,184,0.08)',
+    padding: 12,
+    gap: 3,
+  },
+  metaLabel: {
+    color: '#94A3B8',
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  metaValue: {
+    color: '#E2E8F0',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  inviteActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  acceptButton: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: 14,
+    backgroundColor: '#D8B76A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  acceptButtonText: {
+    color: '#08111F',
+    fontWeight: '800',
+  },
+  declineButton: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.28)',
+    backgroundColor: 'rgba(127,29,29,0.20)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  declineButtonText: {
+    color: '#FCA5A5',
+    fontWeight: '800',
+  },
+  pressed: {
+    opacity: 0.86,
   },
 });

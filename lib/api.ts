@@ -404,6 +404,52 @@ export async function getSetVideoExportStatus(
   });
 }
 
+export type PendingCoachInvite = {
+  id: number;
+  coach_id: number;
+  coach_name?: string | null;
+  coach_email?: string | null;
+  athlete_first?: string | null;
+  athlete_last?: string | null;
+  athlete_email?: string | null;
+  status?: string | null;
+};
+
+export async function getPendingCoachInvites(): Promise<FetchJsonResult<{
+  ok: boolean;
+  already_linked: boolean;
+  coach?: { id: number; name?: string | null; email?: string | null } | null;
+  athlete?: { id: number; name?: string | null; coach_id?: number | null } | null;
+  pending_invites: PendingCoachInvite[];
+  error?: string;
+}>> {
+  return fetchJson('/auth/link-coach/mobile', {
+    method: 'GET',
+    auth: true,
+  });
+}
+
+export async function acceptPendingCoachInvite(inviteId: number): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/link-coach/mobile/accept/${inviteId}`, {
+    method: 'POST',
+    auth: true,
+    body: {} as any,
+  });
+}
+
+export async function declinePendingCoachInvite(inviteId: number): Promise<FetchJsonResult<{
+  ok: boolean;
+  declined?: boolean;
+  invite_id?: number;
+  error?: string;
+}>> {
+  return fetchJson(`/auth/link-coach/mobile/deny/${inviteId}`, {
+    method: 'POST',
+    auth: true,
+    body: {} as any,
+  });
+}
+
 export type ApiLoginResponse = {
   ok: boolean;
   error?: string;

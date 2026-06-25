@@ -24,6 +24,7 @@ function FilteredTabBar({
   navigation,
   isCoach,
   isIndividual,
+  isUnlinkedAthlete,
   viewMode,
   hasMeetDate,
   hasMessageNotifications,
@@ -32,6 +33,7 @@ function FilteredTabBar({
 }: BottomTabBarProps & {
   isCoach: boolean;
   isIndividual: boolean;
+  isUnlinkedAthlete: boolean;
   viewMode: MobileViewMode;
   hasMeetDate: boolean;
   hasMessageNotifications: boolean;
@@ -40,7 +42,9 @@ function FilteredTabBar({
 }) {
   const router = useRouter();
   const allowedNames =
-    isIndividual
+    isUnlinkedAthlete
+      ? ['link-coach', 'settings']
+      : isIndividual
       ? ['athlete-dashboard', 'workout/index', 'athlete-calendar', 'athlete-progression', 'reflection']
       : isCoach && viewMode === 'coach'
       ? ['coach-dashboard', 'coach-roster', 'coach-calendar', 'coach-videos', 'messages/index']
@@ -95,6 +99,7 @@ function FilteredTabBar({
     'video-archive': { label: 'Video Archive', icon: 'videocam-outline' },
     'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },
     settings: { label: 'Settings', icon: 'settings-outline' },
+    'link-coach': { label: 'Invite', icon: 'mail-outline' },
   };
 
   return (
@@ -174,6 +179,7 @@ export default function TabsLayout() {
   const unreadPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
+  const isUnlinkedAthlete = !!user && !user.is_coach && (!user.has_linked_athlete || !user.athlete_id);
   const isIndividual =
     user?.workspace_mode === 'individual' ||
       user?.is_individual_workspace === true ||
@@ -192,8 +198,10 @@ export default function TabsLayout() {
       router.replace('/login');
     } else if (accessBlocked && !pathname.includes('/settings')) {
       router.replace('/');
+    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
+      router.replace('/(tabs)/link-coach');
     }
-  }, [accessBlocked, pathname, router, user]);
+  }, [accessBlocked, isUnlinkedAthlete, pathname, router, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -230,6 +238,7 @@ export default function TabsLayout() {
 
   useEffect(() => {
     if (!isCoach || !mobileViewModeLoaded) return;
+    if (isUnlinkedAthlete) return;
     if (pathname.includes('/settings')) return;
 
     if (isIndividual) {
@@ -269,12 +278,13 @@ export default function TabsLayout() {
     } else if (viewMode === 'athlete' && isCoachFacingPath) {
       router.replace('/(tabs)/athlete-dashboard');
     }
-  }, [isCoach, isIndividual, mobileViewModeLoaded, pathname, router, viewMode]);
+  }, [isCoach, isIndividual, isUnlinkedAthlete, mobileViewModeLoaded, pathname, router, viewMode]);
 
   const refreshMessageNotifications = useCallback(async () => {
-    if (!user || isIndividual || unreadPollingRef.current) {
+    if (!user || isIndividual || isUnlinkedAthlete || unreadPollingRef.current) {
       if (!user) setHasMessageNotifications(false);
       if (isIndividual) setHasMessageNotifications(false);
+      if (isUnlinkedAthlete) setHasMessageNotifications(false);
       return;
     }
 
@@ -289,7 +299,7 @@ export default function TabsLayout() {
     } finally {
       unreadPollingRef.current = false;
     }
-  }, [isIndividual, user]);
+  }, [isIndividual, isUnlinkedAthlete, user]);
 
   useEffect(() => {
     refreshMessageNotifications();
@@ -316,7 +326,7 @@ export default function TabsLayout() {
     return null;
   }
 
-  if (accessBlocked && !pathname.includes('/settings')) {
+  if ((accessBlocked && !pathname.includes('/settings')) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))) {
     return null;
   }
 
@@ -339,7 +349,9 @@ export default function TabsLayout() {
 
                 <TouchableOpacity
                   onPress={() => {
-                    if (isIndividual) {
+                    if (isUnlinkedAthlete) {
+                      router.replace('/(tabs)/link-coach');
+                    } else if (isIndividual) {
                       router.replace('/(tabs)/athlete-dashboard');
                     } else if (isCoach && viewMode === 'coach') {
                       router.replace('/coach-dashboard');
@@ -396,6 +408,7 @@ export default function TabsLayout() {
             {...props}
             isCoach={isCoach}
             isIndividual={isIndividual}
+            isUnlinkedAthlete={isUnlinkedAthlete}
             viewMode={viewMode}
             hasMeetDate={hasMeetDate}
             hasMessageNotifications={hasMessageNotifications}
@@ -691,6 +704,14 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="link-coach"
+          options={{
+            title: 'Pending Invite',
+            href: isUnlinkedAthlete ? '/(tabs)/link-coach' : null,
           }}
         />
 

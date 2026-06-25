@@ -108,8 +108,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                   ? false
                   : restoredUser?.billing_required === true,
               billing_url: profileUser.billing_url ?? restoredUser?.billing_url ?? null,
-              has_linked_athlete: !!profile.json?.athlete?.coach_id || !!restoredUser?.has_linked_athlete,
-              athlete_id: profile.json?.athlete?.id ?? restoredUser?.athlete_id ?? null,
+              has_linked_athlete: !!profile.json?.athlete?.coach_id,
+              athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
             };
             setUser(refreshedUser);
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(refreshedUser));

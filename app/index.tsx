@@ -95,6 +95,10 @@ export default function IndexGate() {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 
+  if (!user.is_coach) {
+    return <Redirect href="/(tabs)/link-coach" />;
+  }
+
   // ✅ Logged in coach → send to tabs home (the file app/(tabs)/index.tsx)
   return <Redirect href="/(tabs)/coach-dashboard" />;
 }
