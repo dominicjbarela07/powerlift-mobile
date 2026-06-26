@@ -56,6 +56,7 @@ export default function VerifyEmailScreen() {
         email_verified: true,
         verification_required: false,
         verification_url: null,
+        account_state_verified: user.is_coach ? false : user.account_state_verified,
       };
       const profile = await getMobileMe();
       const profileUser = profile.json?.user;
@@ -72,6 +73,7 @@ export default function VerifyEmailScreen() {
           self_athlete_id: profileUser.self_athlete_id ?? null,
           billing_required: profileUser.billing_required === true,
           billing_url: profileUser.billing_url ?? null,
+          account_state_verified: true,
           has_linked_athlete: !!profile.json?.athlete?.coach_id,
           athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
         };

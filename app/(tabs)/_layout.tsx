@@ -185,6 +185,7 @@ export default function TabsLayout() {
   const isIndividual =
     lifecycle.isIndividual;
   const verificationBlocked = lifecycle.route === 'verify_email';
+  const accountStateLoading = lifecycle.route === 'account_state_loading';
   const billingBlocked = lifecycle.route === 'billing_activation';
   const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
@@ -194,6 +195,8 @@ export default function TabsLayout() {
       router.replace('/login');
     } else if (lifecycle.route === 'verify_email') {
       router.replace('/verify-email' as any);
+    } else if (lifecycle.route === 'account_state_loading') {
+      router.replace('/');
     } else if (lifecycle.route === 'billing_activation' && !pathname.includes('/settings')) {
       router.replace('/');
     } else if (lifecycle.route === 'pending_invite' && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
@@ -326,6 +329,7 @@ export default function TabsLayout() {
 
   if (
     verificationBlocked ||
+    accountStateLoading ||
     (billingBlocked && !pathname.includes('/settings')) ||
     (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))
   ) {

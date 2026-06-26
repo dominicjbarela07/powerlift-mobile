@@ -555,6 +555,7 @@ export type ApiLoginResponse = {
   token?: string;
   billing_required?: boolean;
   billing_url?: string;
+  account_state_verified?: boolean;
 };
 
 // ------- LOGIN --------------------------------------------------------------

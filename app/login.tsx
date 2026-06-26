@@ -120,6 +120,7 @@ export default function LoginScreen() {
       verification_url: res.verification_url ?? null,
       billing_required: res.billing_required === true,
       billing_url: res.billing_url ?? null,
+      account_state_verified: (res.is_coach || res.role === 'coach') ? res.account_state_verified !== false : undefined,
       has_linked_athlete: !!res.has_linked_athlete,
       athlete_id: res.athlete_id ?? null,
     };

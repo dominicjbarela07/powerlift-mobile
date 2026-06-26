@@ -34,6 +34,7 @@ export type AuthUser = {
   verification_url?: string | null;
   billing_required?: boolean;
   billing_url?: string | null;
+  account_state_verified?: boolean;
   has_linked_athlete: boolean;
   athlete_id: number | null;
 };
@@ -141,6 +142,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           ? false
           : restoredUser?.billing_required === true,
       billing_url: profileUser.billing_url ?? restoredUser?.billing_url ?? null,
+      account_state_verified: true,
       has_linked_athlete: !!profileJson?.athlete?.coach_id,
       athlete_id: profileJson?.athlete?.coach_id ? profileJson?.athlete?.id ?? null : null,
     };
@@ -175,6 +177,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           ? true
           : restoredUser.billing_required,
       billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,
+      account_state_verified: true,
     };
   }
 
@@ -296,7 +299,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         if (storedToken && storedUser) {
-          const cachedUser = JSON.parse(storedUser) as AuthUser;
+          const parsedCachedUser = JSON.parse(storedUser) as AuthUser;
+          const cachedUser = parsedCachedUser.is_coach
+            ? { ...parsedCachedUser, account_state_verified: parsedCachedUser.billing_required === true }
+            : parsedCachedUser;
           await applyUser(cachedUser, false);
           bootLog('token_validation', { mode: 'cached_token_present' });
           const cachedResolution = resolveMobileLifecycle({ user: cachedUser, token: storedToken });
@@ -370,6 +376,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         ...currentUser,
         billing_required: true,
         billing_url: event.billingUrl ?? currentUser.billing_url ?? null,
+        account_state_verified: true,
       };
 
       userRef.current = nextUser;

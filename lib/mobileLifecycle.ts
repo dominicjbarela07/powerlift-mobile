@@ -4,6 +4,7 @@ export type MobileLifecycleRoute =
   | 'login'
   | 'verify_email'
   | 'workspace_setup'
+  | 'account_state_loading'
   | 'billing_activation'
   | 'pending_invite'
   | 'coach_app'
@@ -54,6 +55,10 @@ export function resolveMobileLifecycle({
     return { route: 'billing_activation', isIndividual, isUnlinkedAthlete };
   }
 
+  if (user.is_coach && user.account_state_verified !== true) {
+    return { route: 'account_state_loading', isIndividual, isUnlinkedAthlete };
+  }
+
   if (isIndividual) {
     return { route: 'individual_app', isIndividual, isUnlinkedAthlete };
   }
@@ -68,4 +73,3 @@ export function resolveMobileLifecycle({
 
   return { route: 'coach_app', isIndividual, isUnlinkedAthlete };
 }
-

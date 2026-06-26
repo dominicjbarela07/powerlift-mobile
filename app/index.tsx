@@ -174,6 +174,54 @@ function BillingActivationGate({
   );
 }
 
+function AccountStateLoadingGate() {
+  const { accountStateRefreshing, logout, refreshAccountState } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+
+  const retry = async () => {
+    setError(null);
+    const refreshed = await refreshAccountState('manual');
+    if (!refreshed) {
+      setError('We could not refresh your account yet. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    void retry();
+  }, []);
+
+  return (
+    <View style={styles.gateScreen}>
+      <Image
+        source={require('@/assets/images/16:9.png')}
+        style={styles.gateLogo}
+        resizeMode="contain"
+      />
+      <View style={styles.gatePanel}>
+        <Text style={styles.gateEyebrow}>Account Setup</Text>
+        <Text style={styles.gateTitle}>Preparing your account</Text>
+        <Text style={styles.gateBody}>
+          We’re confirming your account access before opening Strength Ledger.
+        </Text>
+        {error ? <Text style={styles.gateError}>{error}</Text> : null}
+        <Pressable
+          style={[styles.gateSecondaryButton, accountStateRefreshing && styles.gatePrimaryDisabled]}
+          onPress={retry}
+          disabled={accountStateRefreshing}
+        >
+          <Text style={styles.gateSecondaryButtonText}>
+            {accountStateRefreshing ? 'Checking status...' : 'Check status'}
+          </Text>
+        </Pressable>
+        <Pressable style={styles.gateSecondary} onPress={logout}>
+          <Text style={styles.gateSecondaryText}>Log out</Text>
+        </Pressable>
+        <OnboardingSupportFooter />
+      </View>
+    </View>
+  );
+}
+
 export default function IndexGate() {
   const { token, user } = useAuth();
   const lifecycle = resolveMobileLifecycle({ user, token });
@@ -193,6 +241,10 @@ export default function IndexGate() {
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
       />
     );
+  }
+
+  if (user && lifecycle.route === 'account_state_loading') {
+    return <AccountStateLoadingGate />;
   }
 
   if (lifecycle.route === 'individual_app') {
