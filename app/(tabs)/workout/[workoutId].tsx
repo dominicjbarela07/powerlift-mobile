@@ -5216,131 +5216,158 @@ export default function WorkoutViewerScreen() {
           }
         }}
       >
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalCard, styles.editSetModalWide]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+          style={styles.editSetKeyboardRoot}
+        >
+          <View style={[styles.modalBackdrop, styles.editSetModalBackdrop]}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={StyleSheet.absoluteFillObject}
+              onPress={Keyboard.dismiss}
+              accessibilityLabel="Dismiss keyboard"
+            />
+          <View style={[styles.modalCard, styles.editSetModalWide, styles.editSetModalCard]}>
             <View style={styles.modalSheetHandle} />
             <Text style={styles.postSessionTitle}>{editSetCtx?.title || 'Edit Set'}</Text>
             <Text style={styles.modalSubtitle}>Update the logged values for this set.</Text>
 
-            <View style={styles.loggedSummaryPill}>
-              <View style={styles.loggedSummaryIcon}>
-                <Text style={styles.loggedSummaryIconText}>✓</Text>
-              </View>
-              <Text style={styles.loggedSummaryLabel}>Currently logged</Text>
-              <Text style={styles.loggedSummaryValue}>
-                {editSetForm.weight || '—'} {unit} × {editSetForm.reps || '—'}
-                {editSetCtx?.mode === 'rpe'
-                  ? ` @ RPE ${editSetForm.rpe || '—'}`
-                  : ` @ ${editSetForm.rir || '—'} RIR`}
-              </Text>
-            </View>
-
-            <Text style={styles.modalSectionKicker}>Set Details</Text>
-
-            <View style={styles.modalRow}>
-              <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                <Text style={styles.modalLabel}>Weight ({unit})</Text>
-                <View style={styles.modalValueCard}>
-                  <TextInput
-                    style={styles.modalValueInput}
-                    value={editSetForm.weight}
-                    onChangeText={(txt) =>
-                      setEditSetForm((prev) => ({
-                        ...prev,
-                        weight: txt.replace(/[^0-9.]/g, ''),
-                      }))
-                    }
-                    placeholder="—"
-                    placeholderTextColor="#64748b"
-                    keyboardType="numeric"
-                  />
-                  <Text style={styles.modalValueUnit}>{unit}</Text>
-                </View>
-              </View>
-
-              <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                <Text style={styles.modalLabel}>Reps</Text>
-                <View style={styles.modalValueCard}>
-                  <TextInput
-                    style={styles.modalValueInput}
-                    value={editSetForm.reps}
-                    onChangeText={(txt) =>
-                      setEditSetForm((prev) => ({
-                        ...prev,
-                        reps: txt.replace(/[^0-9]/g, ''),
-                      }))
-                    }
-                    placeholder="—"
-                    placeholderTextColor="#64748b"
-                    keyboardType="number-pad"
-                  />
-                  <Text style={styles.modalValueUnit}>reps</Text>
-                </View>
-              </View>
-
-              {editSetCtx?.mode === 'rpe' ? (
-                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                  <Text style={styles.modalLabel}>RPE</Text>
-                  <View style={styles.modalValueCard}>
-                    <TextInput
-                      style={styles.modalValueInput}
-                      value={editSetForm.rpe}
-                      onChangeText={(txt) =>
-                        setEditSetForm((prev) => ({
-                          ...prev,
-                          rpe: txt.replace(/[^0-9.]/g, ''),
-                        }))
-                      }
-                      placeholder="—"
-                      placeholderTextColor="#64748b"
-                      keyboardType="numeric"
-                    />
-                    <Text style={styles.modalValueUnit}>/10</Text>
-                  </View>
-                </View>
-              ) : (
-                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                  <Text style={styles.modalLabel}>RIR</Text>
-                  <View style={styles.modalValueCard}>
-                    <TextInput
-                      style={styles.modalValueInput}
-                      value={editSetForm.rir}
-                      onChangeText={(txt) =>
-                        setEditSetForm((prev) => ({
-                          ...prev,
-                          rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
-                        }))
-                      }
-                      placeholder="—"
-                      placeholderTextColor="#64748b"
-                      keyboardType="numeric"
-                    />
-                    <Text style={styles.modalValueUnit}>RIR</Text>
-                  </View>
-                </View>
-              )}
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.failedSetToggle,
-                editSetForm.reps === '0' && styles.failedSetToggleActive,
-                { marginBottom: 14 },
-              ]}
-              onPress={() =>
-                setEditSetForm((prev) => ({
-                  ...prev,
-                  reps: prev.reps === '0' ? '1' : '0',
-                  rpe: prev.reps === '0' ? prev.rpe : '',
-                  rir: prev.reps === '0' ? prev.rir : '',
-                }))
-              }
+            <ScrollView
+              style={styles.editSetModalScroll}
+              contentContainerStyle={styles.editSetModalScrollContent}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              showsVerticalScrollIndicator={false}
             >
-              <Text style={[styles.failedSetToggleText, editSetForm.reps === '0' && styles.failedSetToggleTextActive]}>
-                Failed lift / 0 reps
-              </Text>
-            </TouchableOpacity>
+              <View style={styles.loggedSummaryPill}>
+                <View style={styles.loggedSummaryIcon}>
+                  <Text style={styles.loggedSummaryIconText}>✓</Text>
+                </View>
+                <Text style={styles.loggedSummaryLabel}>Currently logged</Text>
+                <Text style={styles.loggedSummaryValue}>
+                  {editSetForm.weight || '—'} {unit} × {editSetForm.reps || '—'}
+                  {editSetCtx?.mode === 'rpe'
+                    ? ` @ RPE ${editSetForm.rpe || '—'}`
+                    : ` @ ${editSetForm.rir || '—'} RIR`}
+                </Text>
+              </View>
 
+              <Text style={styles.modalSectionKicker}>Set Details</Text>
+
+              <View style={styles.modalRow}>
+                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                  <Text style={styles.modalLabel}>Weight ({unit})</Text>
+                  <View style={styles.modalValueCard}>
+                    <TextInput
+                      style={styles.modalValueInput}
+                      value={editSetForm.weight}
+                      onChangeText={(txt) =>
+                        setEditSetForm((prev) => ({
+                          ...prev,
+                          weight: txt.replace(/[^0-9.]/g, ''),
+                        }))
+                      }
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="numeric"
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                    />
+                    <Text style={styles.modalValueUnit}>{unit}</Text>
+                  </View>
+                </View>
+
+                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                  <Text style={styles.modalLabel}>Reps</Text>
+                  <View style={styles.modalValueCard}>
+                    <TextInput
+                      style={styles.modalValueInput}
+                      value={editSetForm.reps}
+                      onChangeText={(txt) =>
+                        setEditSetForm((prev) => ({
+                          ...prev,
+                          reps: txt.replace(/[^0-9]/g, ''),
+                        }))
+                      }
+                      placeholder="—"
+                      placeholderTextColor="#64748b"
+                      keyboardType="number-pad"
+                      returnKeyType="done"
+                      onSubmitEditing={Keyboard.dismiss}
+                    />
+                    <Text style={styles.modalValueUnit}>reps</Text>
+                  </View>
+                </View>
+
+                {editSetCtx?.mode === 'rpe' ? (
+                  <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                    <Text style={styles.modalLabel}>RPE</Text>
+                    <View style={styles.modalValueCard}>
+                      <TextInput
+                        style={styles.modalValueInput}
+                        value={editSetForm.rpe}
+                        onChangeText={(txt) =>
+                          setEditSetForm((prev) => ({
+                            ...prev,
+                            rpe: txt.replace(/[^0-9.]/g, ''),
+                          }))
+                        }
+                        placeholder="—"
+                        placeholderTextColor="#64748b"
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                        onSubmitEditing={Keyboard.dismiss}
+                      />
+                      <Text style={styles.modalValueUnit}>/10</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
+                    <Text style={styles.modalLabel}>RIR</Text>
+                    <View style={styles.modalValueCard}>
+                      <TextInput
+                        style={styles.modalValueInput}
+                        value={editSetForm.rir}
+                        onChangeText={(txt) =>
+                          setEditSetForm((prev) => ({
+                            ...prev,
+                            rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
+                          }))
+                        }
+                        placeholder="—"
+                        placeholderTextColor="#64748b"
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                        onSubmitEditing={Keyboard.dismiss}
+                      />
+                      <Text style={styles.modalValueUnit}>RIR</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.failedSetToggle,
+                  editSetForm.reps === '0' && styles.failedSetToggleActive,
+                ]}
+                onPress={() =>
+                  setEditSetForm((prev) => ({
+                    ...prev,
+                    reps: prev.reps === '0' ? '1' : '0',
+                    rpe: prev.reps === '0' ? prev.rpe : '',
+                    rir: prev.reps === '0' ? prev.rir : '',
+                  }))
+                }
+              >
+                <Text style={[styles.failedSetToggleText, editSetForm.reps === '0' && styles.failedSetToggleTextActive]}>
+                  Failed lift / 0 reps
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+
+            {/* P0 mobile invariant: keyboard must never cover modal composer/action rows. */}
             <View style={styles.modalActionsRow}>
               {editSetCtx?.canUndoDelete && (
                 <TouchableOpacity
@@ -5388,7 +5415,8 @@ export default function WorkoutViewerScreen() {
 
             <Text style={styles.modalHelperLine}>Changes will update this set across all views.</Text>
           </View>
-        </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal
@@ -6866,9 +6894,27 @@ const styles = StyleSheet.create({
   modalFieldBlock: {
     marginBottom: 10,
   },
+  editSetKeyboardRoot: {
+    flex: 1,
+  },
+  editSetModalBackdrop: {
+    justifyContent: 'flex-end',
+    paddingTop: 18,
+    paddingBottom: Platform.OS === 'ios' ? 18 : 14,
+  },
   editSetModalWide: {
     width: '100%',
     maxWidth: 600,
+    alignSelf: 'center',
+  },
+  editSetModalCard: {
+    maxHeight: '92%',
+  },
+  editSetModalScroll: {
+    maxHeight: 360,
+  },
+  editSetModalScrollContent: {
+    paddingBottom: 4,
   },
   modalRow: {
     flexDirection: 'row',
