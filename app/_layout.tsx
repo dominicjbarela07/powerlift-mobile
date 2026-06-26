@@ -23,8 +23,10 @@ import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-nativ
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { registerPushToken } from '@/lib/api';
+import { bootLog } from '@/lib/bootLogger';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
+bootLog('app_start', { platform: Platform.OS });
 
 type ExpoNotificationsModule = typeof import('expo-notifications');
 
@@ -54,17 +56,31 @@ function RootStack() {
 
   useEffect(() => {
     if (authReady) {
+      bootLog('navigation_complete', {
+        route_state: user
+          ? user.verification_required === true && user.email_verified === false
+            ? 'verify_email'
+            : user.is_coach && user.billing_required === true
+            ? 'billing_activation'
+            : user.is_coach
+            ? 'coach_or_individual'
+            : user.has_linked_athlete && user.athlete_id
+            ? 'linked_athlete'
+            : 'unlinked_athlete'
+          : 'logged_out',
+      });
       setAuthWaitExpired(false);
       return undefined;
     }
 
     const timer = setTimeout(() => {
+      bootLog('auth_wait_timeout', { timeout_ms: STARTUP_TIMEOUT_MS });
       console.warn('Auth bootstrap timed out; continuing to login shell.');
       setAuthWaitExpired(true);
     }, STARTUP_TIMEOUT_MS);
 
     return () => clearTimeout(timer);
-  }, [authReady]);
+  }, [authReady, user]);
 
   useEffect(() => {
     if (!authReady || !user || isIndividual || Platform.OS === 'web') return;
@@ -72,6 +88,7 @@ function RootStack() {
     let cancelled = false;
 
     async function registerForPushNotifications() {
+      bootLog('push_registration_start');
       try {
         const Notifications = await import('expo-notifications');
         const ConstantsModule = await import('expo-constants');
@@ -105,6 +122,7 @@ function RootStack() {
         }
 
         if (status !== 'granted' || cancelled) {
+          bootLog('push_registration_done', { status, registered: false });
           console.log('Push notification permission not granted');
           return;
         }
@@ -133,16 +151,20 @@ function RootStack() {
             if (cancelled) return;
             if (res.ok) {
               registeredPushTokenRef.current = expoPushToken;
+              bootLog('push_registration_done', { registered: true });
               console.log('Push token backend registration response:', res);
               return;
             }
 
+            bootLog('push_registration_done', { registered: false, error: res.error || 'unknown' });
             console.warn('Push token registration skipped:', res.error || 'unknown error');
           })
           .catch((err) => {
+            bootLog('push_registration_done', { registered: false, error: 'network' });
             console.warn('Push token registration skipped:', err);
           });
       } catch (err) {
+        bootLog('push_registration_done', { registered: false, error: 'exception' });
         console.warn('Push notification registration skipped:', err);
       }
     }
@@ -278,14 +300,19 @@ export default function RootLayout() {
     if (__DEV__) return;
 
     (async () => {
+      bootLog('updates_check_start');
       try {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
           await Updates.fetchUpdateAsync();
+          bootLog('updates_check_done', { available: true, fetched: true });
           console.log('EAS update fetched; deferring reload until next cold start.');
+        } else {
+          bootLog('updates_check_done', { available: false });
         }
       } catch (e) {
         // Don’t crash the app if updates fail; just log.
+        bootLog('updates_check_done', { error: 'failed' });
         console.log('EAS update check failed', e);
       }
     })();
@@ -293,6 +320,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      bootLog('font_load_timeout', { timeout_ms: STARTUP_TIMEOUT_MS });
       console.warn('Font loading timed out; continuing with fallback fonts.');
       setFontWaitExpired(true);
     }, STARTUP_TIMEOUT_MS);
@@ -306,6 +334,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded || fontError || fontWaitExpired) {
+      bootLog('font_load_done', {
+        loaded: fontsLoaded,
+        error: !!fontError,
+        timeout: fontWaitExpired,
+      });
       void SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontError, fontWaitExpired, fontsLoaded]);
