@@ -4,6 +4,7 @@ import {
   Alert,
   FlatList,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -195,6 +196,14 @@ export default function SettingsScreen() {
     preferred_cues: '',
   });
   const [settingsNotice, setSettingsNotice] = useState<string | null>(null);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [feedbackDraft, setFeedbackDraft] = useState({
+    category: 'bug' as 'bug' | 'feature_request' | 'general_feedback',
+    severity: 'medium' as 'low' | 'medium' | 'high' | 'critical',
+    title: '',
+    body: '',
+  });
   const [timezoneModalOpen, setTimezoneModalOpen] = useState(false);
   const [timezoneSearch, setTimezoneSearch] = useState('');
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
@@ -718,6 +727,45 @@ export default function SettingsScreen() {
     }
   };
 
+  const submitFeedback = async () => {
+    const title = feedbackDraft.title.trim();
+    const body = feedbackDraft.body.trim();
+    if (title.length < 4 || body.length < 10) {
+      Alert.alert('Add a little more detail', 'Include a short title and a few details so we can understand the feedback.');
+      return;
+    }
+    try {
+      setFeedbackSubmitting(true);
+      const resp = await fetchJson<any>('/mobile/feedback', {
+        method: 'POST',
+        body: {
+          category: feedbackDraft.category,
+          severity: feedbackDraft.severity,
+          title,
+          body,
+          app_context: updateLabel,
+          app_version: Updates.updateId || (__DEV__ ? 'dev' : 'embedded'),
+          platform: Platform.OS,
+          device_context: `${Platform.OS} ${Platform.Version || ''}`.trim(),
+          page_context: 'mobile settings',
+          metadata: {
+            role,
+            is_individual: isIndividual,
+          },
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      setFeedbackModalOpen(false);
+      setFeedbackDraft({ category: 'bug', severity: 'medium', title: '', body: '' });
+      Alert.alert('Thanks — your feedback was sent.', 'We’ll use it to keep Strength Ledger tighter.');
+    } catch (err: any) {
+      Alert.alert('Feedback not sent', err?.message || 'Please try again.');
+    } finally {
+      setFeedbackSubmitting(false);
+    }
+  };
+
   const profileEditorTitle =
     profileEditor === 'details'
       ? 'Edit Profile Details'
@@ -1142,6 +1190,13 @@ export default function SettingsScreen() {
             'settings-outline',
             <>
               {settingsRow({
+                icon: 'chatbubble-ellipses-outline',
+                title: 'Send Feedback',
+                description: 'Report a bug, request a feature, or share feedback',
+                onPress: () => setFeedbackModalOpen(true),
+                accent: 'purple',
+              })}
+              {settingsRow({
                 icon: 'log-out-outline',
                 title: loggingOut ? 'Logging out...' : 'Log out',
                 description: 'End your current session',
@@ -1245,6 +1300,94 @@ export default function SettingsScreen() {
                 >
                   {profileSaving ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="checkmark" size={18} color={SLColors.textStrong} />}
                   <ThemedText style={styles.primaryButtonText}>{profileSaving ? 'Saving...' : 'Apply Changes'}</ThemedText>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal visible={feedbackModalOpen} animationType="slide" transparent onRequestClose={() => setFeedbackModalOpen(false)}>
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalSheet}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleWrap}>
+                  <ThemedText style={styles.modalTitle}>Send Feedback</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                    Report a bug, request a feature, or share what would make Strength Ledger better.
+                  </ThemedText>
+                </View>
+                <Pressable style={styles.modalClose} onPress={() => setFeedbackModalOpen(false)} disabled={feedbackSubmitting}>
+                  <Ionicons name="close" size={22} color={SLColors.text} />
+                </Pressable>
+              </View>
+
+              <ScrollView style={styles.editorScroll} contentContainerStyle={styles.editorContent} keyboardShouldPersistTaps="handled">
+                <View style={styles.editorField}>
+                  <ThemedText style={styles.editorLabel}>Category</ThemedText>
+                  <View style={styles.editorChoiceRow}>
+                    {[
+                      { label: 'Bug', value: 'bug' },
+                      { label: 'Feature', value: 'feature_request' },
+                      { label: 'General', value: 'general_feedback' },
+                    ].map((option) => {
+                      const selected = feedbackDraft.category === option.value;
+                      return (
+                        <Pressable
+                          key={option.value}
+                          style={({ pressed }) => [styles.editorChoice, selected && styles.editorChoiceSelected, pressed && styles.rowButtonPressed]}
+                          onPress={() => setFeedbackDraft((draft) => ({ ...draft, category: option.value as any }))}
+                          disabled={feedbackSubmitting}
+                        >
+                          <ThemedText style={[styles.editorChoiceText, selected && styles.editorChoiceTextSelected]}>{option.label}</ThemedText>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <View style={styles.editorField}>
+                  <ThemedText style={styles.editorLabel}>Severity</ThemedText>
+                  <View style={styles.editorChoiceRow}>
+                    {['low', 'medium', 'high', 'critical'].map((value) => {
+                      const selected = feedbackDraft.severity === value;
+                      return (
+                        <Pressable
+                          key={value}
+                          style={({ pressed }) => [styles.editorChoice, selected && styles.editorChoiceSelected, pressed && styles.rowButtonPressed]}
+                          onPress={() => setFeedbackDraft((draft) => ({ ...draft, severity: value as any }))}
+                          disabled={feedbackSubmitting}
+                        >
+                          <ThemedText style={[styles.editorChoiceText, selected && styles.editorChoiceTextSelected]}>{value}</ThemedText>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {editorField('Title', feedbackDraft.title, (value) => setFeedbackDraft((draft) => ({ ...draft, title: value })), {
+                  placeholder: 'Short summary',
+                })}
+                {editorField('Details', feedbackDraft.body, (value) => setFeedbackDraft((draft) => ({ ...draft, body: value })), {
+                  multiline: true,
+                  placeholder: 'What happened? What would help?',
+                })}
+              </ScrollView>
+
+              <View style={styles.editorActions}>
+                <Pressable
+                  style={({ pressed }) => [styles.secondaryButton, styles.editorActionButton, pressed && styles.rowButtonPressed]}
+                  onPress={() => setFeedbackModalOpen(false)}
+                  disabled={feedbackSubmitting}
+                >
+                  <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+                </Pressable>
+                <Pressable
+                  style={({ pressed }) => [styles.primaryButton, styles.editorActionButton, pressed && styles.primaryButtonPressed]}
+                  onPress={submitFeedback}
+                  disabled={feedbackSubmitting}
+                >
+                  {feedbackSubmitting ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="send-outline" size={18} color={SLColors.textStrong} />}
+                  <ThemedText style={styles.primaryButtonText}>{feedbackSubmitting ? 'Sending...' : 'Send Feedback'}</ThemedText>
                 </Pressable>
               </View>
             </View>
