@@ -1054,6 +1054,21 @@ export default function SettingsScreen() {
           </View>
 
           {settingsGroup(
+            'Feedback',
+            'chatbubble-ellipses-outline',
+            <>
+              {settingsRow({
+                icon: 'chatbubble-ellipses-outline',
+                title: 'Send Feedback',
+                description: 'Report a bug, request a feature, or share feedback',
+                onPress: () => setFeedbackModalOpen(true),
+                accent: 'purple',
+              })}
+            </>,
+            'purple'
+          )}
+
+          {settingsGroup(
             'Account & Profile',
             'person-circle-outline',
             <>
@@ -1189,13 +1204,6 @@ export default function SettingsScreen() {
             'Account',
             'settings-outline',
             <>
-              {settingsRow({
-                icon: 'chatbubble-ellipses-outline',
-                title: 'Send Feedback',
-                description: 'Report a bug, request a feature, or share feedback',
-                onPress: () => setFeedbackModalOpen(true),
-                accent: 'purple',
-              })}
               {settingsRow({
                 icon: 'log-out-outline',
                 title: loggingOut ? 'Logging out...' : 'Log out',
