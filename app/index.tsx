@@ -116,12 +116,12 @@ function BillingActivationGate({
         return;
       }
       if (payload.active) {
-        setError('Membership is already active. Close and reopen Strength Ledger to continue.');
+        await refreshAccountState('manual');
         return;
       }
       throw new Error('Checkout is not available for this account yet.');
     } catch (err) {
-      setError((err as Error)?.message || 'Unable to start Stripe Checkout.');
+      setError((err as Error)?.message || 'We could not start activation right now. Please try again.');
     } finally {
       setIsOpeningCheckout(false);
     }

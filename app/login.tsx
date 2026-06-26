@@ -133,7 +133,7 @@ export default function LoginScreen() {
 
     if (authUser.verification_required && authUser.email_verified === false) {
       router.replace('/verify-email' as any);
-    } else if (authUser.is_coach && res.billing_required && res.billing_url) {
+    } else if (authUser.is_coach && res.billing_required) {
       router.replace('/');
     } else if (isIndividual) {
       router.replace('/(tabs)/athlete-dashboard');
