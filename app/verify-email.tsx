@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { resendEmailVerificationCode, verifyEmailVerificationCode } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
@@ -151,6 +152,8 @@ export default function VerifyEmailScreen() {
               <Pressable style={styles.logoutButton} onPress={logout}>
                 <Text style={styles.logoutText}>Log out</Text>
               </Pressable>
+
+              <OnboardingSupportFooter />
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>

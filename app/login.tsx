@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WEB_BASE, loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 const AUTH_WEB_BASE = WEB_BASE.replace(/\/$/, '');
 const PASSWORD_RESET_URL = `${AUTH_WEB_BASE}/auth/reset_request`;
@@ -656,6 +657,7 @@ export default function LoginScreen() {
                   <Text style={styles.linkTextStrong}>{authMode === 'signup' ? 'Sign in' : 'Sign up'}</Text>
                 </Pressable>
               </View>
+              {authMode === 'signup' || pendingOAuth ? <OnboardingSupportFooter /> : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

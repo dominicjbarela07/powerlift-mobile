@@ -5,6 +5,7 @@ import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { startMobileBillingCheckout } from '@/lib/api';
+import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 function AccountAccessGate({
   title,
@@ -45,6 +46,7 @@ function AccountAccessGate({
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
+        <OnboardingSupportFooter />
       </View>
     </View>
   );
@@ -116,6 +118,7 @@ function BillingActivationGate({
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
+        <OnboardingSupportFooter />
       </View>
     </View>
   );

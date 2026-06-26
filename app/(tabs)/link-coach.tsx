@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 import { SLAtmosphere } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
@@ -317,6 +318,7 @@ export default function PendingCoachInviteScreen() {
               </ThemedText>
             </View>
           )}
+          <OnboardingSupportFooter />
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
