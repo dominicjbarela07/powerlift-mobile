@@ -23,7 +23,7 @@ import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
-  const { user, token, login, logout } = useAuth();
+  const { user, token, login, logout, refreshAccountState } = useAuth();
   const [code, setCode] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +77,7 @@ export default function VerifyEmailScreen() {
         };
       }
       await login({ user: refreshed, token });
+      await refreshAccountState('verification');
       router.replace('/');
     } catch (err: any) {
       setError(err?.message || 'Network error. Please try again.');

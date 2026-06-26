@@ -1,10 +1,12 @@
 // app/index.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { startMobileBillingCheckout } from '@/lib/api';
+import { activationRefreshLog } from '@/lib/bootLogger';
+import { resolveMobileLifecycle } from '@/lib/mobileLifecycle';
 import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 function AccountAccessGate({
@@ -59,9 +61,39 @@ function BillingActivationGate({
   title: string;
   body: string;
 }) {
-  const { logout } = useAuth();
+  const { accountStateRefreshing, logout, refreshAccountState, user } = useAuth();
   const [isOpeningCheckout, setIsOpeningCheckout] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user?.billing_required) return undefined;
+
+    let elapsedMs = 0;
+    let stopped = false;
+
+    const poll = async () => {
+      if (stopped) return;
+      elapsedMs += 3000;
+      if (elapsedMs > 90000) {
+        stopped = true;
+        clearInterval(interval);
+        activationRefreshLog('poll', 'timeout', { elapsed_ms: elapsedMs });
+        return;
+      }
+      await refreshAccountState('poll');
+    };
+
+    const interval = setInterval(() => {
+      void poll();
+    }, 3000);
+
+    void refreshAccountState('poll');
+
+    return () => {
+      stopped = true;
+      clearInterval(interval);
+    };
+  }, [user?.billing_required]);
 
   const openCheckout = async () => {
     if (isOpeningCheckout) return;
@@ -80,6 +112,7 @@ function BillingActivationGate({
       }
       if (payload.checkout_url) {
         await Linking.openURL(payload.checkout_url);
+        void refreshAccountState('manual');
         return;
       }
       if (payload.active) {
@@ -91,6 +124,14 @@ function BillingActivationGate({
       setError((err as Error)?.message || 'Unable to start Stripe Checkout.');
     } finally {
       setIsOpeningCheckout(false);
+    }
+  };
+
+  const checkStatus = async () => {
+    setError(null);
+    const refreshed = await refreshAccountState('manual');
+    if (!refreshed) {
+      setError('We could not refresh your activation status. Please try again.');
     }
   };
 
@@ -115,6 +156,15 @@ function BillingActivationGate({
             {isOpeningCheckout ? 'Opening Stripe...' : 'Start activation'}
           </Text>
         </Pressable>
+        <Pressable
+          style={[styles.gateSecondaryButton, accountStateRefreshing && styles.gatePrimaryDisabled]}
+          onPress={checkStatus}
+          disabled={accountStateRefreshing}
+        >
+          <Text style={styles.gateSecondaryButtonText}>
+            {accountStateRefreshing ? 'Checking status...' : 'Already activated? Check status'}
+          </Text>
+        </Pressable>
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
@@ -125,47 +175,38 @@ function BillingActivationGate({
 }
 
 export default function IndexGate() {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
+  const lifecycle = resolveMobileLifecycle({ user, token });
 
-  // 🔒 Not logged in → go to login
-  if (!user) {
+  if (lifecycle.route === 'login') {
     return <Redirect href="/login" />;
   }
 
-  const isIndividual =
-    user.is_coach &&
-    (user.workspace_mode === 'individual' ||
-      user.is_individual_workspace === true ||
-      user.is_self_coached === true);
-
-  if (user.verification_required && user.email_verified === false) {
+  if (lifecycle.route === 'verify_email') {
     return <Redirect href={'/verify-email' as any} />;
   }
 
-  if (user.is_coach && user.billing_required) {
+  if (user && lifecycle.route === 'billing_activation') {
     return (
       <BillingActivationGate
-        title={isIndividual ? 'Activate Individual' : 'Activate membership'}
+        title={lifecycle.isIndividual ? 'Activate Individual' : 'Activate membership'}
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
       />
     );
   }
 
-  // ✅ Individual / self-coached users are coach-role accounts.
-  if (isIndividual) {
+  if (lifecycle.route === 'individual_app') {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 
-  // ✅ Logged in athlete with linked profile → athlete dashboard
-  if (!user.is_coach && user.has_linked_athlete && user.athlete_id) {
+  if (lifecycle.route === 'athlete_app') {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 
-  if (!user.is_coach) {
+  if (lifecycle.route === 'pending_invite') {
     return <Redirect href="/(tabs)/link-coach" />;
   }
 
-  // ✅ Logged in coach → send to tabs home (the file app/(tabs)/index.tsx)
   return <Redirect href="/(tabs)/coach-dashboard" />;
 }
 
@@ -233,6 +274,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     color: '#FCA5A5',
+  },
+  gateSecondaryButton: {
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.24)',
+    backgroundColor: 'rgba(196,181,253,0.08)',
+  },
+  gateSecondaryButtonText: {
+    fontFamily: SLTypography.buttonLabel.fontFamily,
+    fontWeight: SLTypography.buttonLabel.fontWeight,
+    color: '#DDD6FE',
   },
   gateSecondary: {
     minHeight: 46,

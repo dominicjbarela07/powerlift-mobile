@@ -12,6 +12,7 @@ import { SLAtmosphere } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { getUnreadSummary } from '@/lib/api';
 import { SLColors, SLTypography } from '@/constants/theme';
+import { resolveMobileLifecycle } from '@/lib/mobileLifecycle';
 import {
   getMobileViewMode,
   subscribeMobileViewModeChanged,
@@ -169,7 +170,7 @@ function FilteredTabBar({
 }
 
 export default function TabsLayout() {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
@@ -179,31 +180,26 @@ export default function TabsLayout() {
   const unreadPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
-  const isUnlinkedAthlete = !!user && !user.is_coach && (!user.has_linked_athlete || !user.athlete_id);
+  const lifecycle = resolveMobileLifecycle({ user, token });
+  const isUnlinkedAthlete = lifecycle.isUnlinkedAthlete;
   const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
-  const verificationBlocked = !!user && user.verification_required === true && user.email_verified === false;
-  const billingBlocked =
-    !!user &&
-    !verificationBlocked &&
-    user.is_coach === true &&
-    user.billing_required === true;
+    lifecycle.isIndividual;
+  const verificationBlocked = lifecycle.route === 'verify_email';
+  const billingBlocked = lifecycle.route === 'billing_activation';
   const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
 
   useEffect(() => {
-    if (!user) {
+    if (lifecycle.route === 'login') {
       router.replace('/login');
-    } else if (verificationBlocked) {
+    } else if (lifecycle.route === 'verify_email') {
       router.replace('/verify-email' as any);
-    } else if (billingBlocked && !pathname.includes('/settings')) {
+    } else if (lifecycle.route === 'billing_activation' && !pathname.includes('/settings')) {
       router.replace('/');
-    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
+    } else if (lifecycle.route === 'pending_invite' && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
       router.replace('/(tabs)/link-coach');
     }
-  }, [billingBlocked, isUnlinkedAthlete, pathname, router, user, verificationBlocked]);
+  }, [lifecycle.route, pathname, router]);
 
   useEffect(() => {
     let mounted = true;

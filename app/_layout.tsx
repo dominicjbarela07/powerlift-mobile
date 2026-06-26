@@ -18,12 +18,13 @@ import {
   GeistMono_400Regular,
   GeistMono_600SemiBold,
 } from '@expo-google-fonts/geist-mono';
-import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { registerPushToken } from '@/lib/api';
 import { bootLog } from '@/lib/bootLogger';
+import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 bootLog('app_start', { platform: Platform.OS });
@@ -42,8 +43,35 @@ function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) 
   );
 }
 
+function RecoverableAccountStateScreen() {
+  const { accountStateRefreshing, logout, refreshAccountState } = useAuth();
+
+  return (
+    <View style={styles.startupScreen}>
+      <Text style={styles.startupTitle}>Strength Ledger</Text>
+      <Text style={styles.recoverableTitle}>We’re having trouble loading your account.</Text>
+      <Text style={styles.recoverableBody}>
+        Check your connection and try again. If this keeps happening, contact Strength Ledger support.
+      </Text>
+      <Pressable
+        style={[styles.recoverablePrimary, accountStateRefreshing && styles.recoverableDisabled]}
+        onPress={() => void refreshAccountState('manual')}
+        disabled={accountStateRefreshing}
+      >
+        <Text style={styles.recoverablePrimaryText}>
+          {accountStateRefreshing ? 'Checking...' : 'Try again'}
+        </Text>
+      </Pressable>
+      <Pressable style={styles.recoverableSecondary} onPress={logout}>
+        <Text style={styles.recoverableSecondaryText}>Log out</Text>
+      </Pressable>
+      <OnboardingSupportFooter />
+    </View>
+  );
+}
+
 function RootStack() {
-  const { authReady, user } = useAuth();
+  const { accountStateError, authReady, user } = useAuth();
   const router = useRouter();
   const registeredPushTokenRef = useRef<string | null>(null);
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
@@ -273,6 +301,10 @@ function RootStack() {
     return <StartupLoadingScreen message="Preparing your account..." />;
   }
 
+  if (authReady && accountStateError && !user) {
+    return <RecoverableAccountStateScreen />;
+  }
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -382,5 +414,48 @@ const styles = StyleSheet.create({
     color: '#B8ACA1',
     fontSize: 14,
     textAlign: 'center',
+  },
+  recoverableTitle: {
+    marginTop: 18,
+    color: '#F8FAFC',
+    fontSize: 22,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  recoverableBody: {
+    marginTop: 10,
+    maxWidth: 320,
+    color: '#B8ACA1',
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+  recoverablePrimary: {
+    minWidth: 220,
+    minHeight: 50,
+    marginTop: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(124, 58, 237, 0.74)',
+  },
+  recoverableDisabled: {
+    opacity: 0.65,
+  },
+  recoverablePrimaryText: {
+    color: '#F5F3FF',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  recoverableSecondary: {
+    minHeight: 44,
+    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recoverableSecondaryText: {
+    color: '#A3A3A3',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

@@ -14,7 +14,10 @@ export function bootLog(stage: string, details?: Record<string, unknown>) {
   const deltaMs = now - lastMarkAt;
   const totalMs = now - bootStartedAt;
   lastMarkAt = now;
-  console.log(`[BOOT] ${stage} delta_ms=${deltaMs} total_ms=${totalMs}${formatDetails(details)}`);
+  console.log(`[MOBILE_BOOT] stage=${stage} delta_ms=${deltaMs} total_ms=${totalMs}${formatDetails(details)}`);
+  if (stage === 'navigation_complete' && totalMs > 5000) {
+    console.warn(`[MOBILE_BOOT] warning=slow_boot total_ms=${totalMs}`);
+  }
 }
 
 export function bootNow(): number {
@@ -28,3 +31,6 @@ export function bootDuration(stage: string, startedAt: number, details?: Record<
   });
 }
 
+export function activationRefreshLog(source: string, status: string, details?: Record<string, unknown>) {
+  console.log(`[MOBILE_ACTIVATION_REFRESH] source=${source} status=${status}${formatDetails(details)}`);
+}

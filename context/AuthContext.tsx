@@ -7,11 +7,16 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import {
+  AppState,
+  type AppStateStatus,
+} from 'react-native';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
 import { fetchJson, subscribeBillingRequired } from '@/lib/api';
-import { bootDuration, bootLog, bootNow } from '@/lib/bootLogger';
+import { activationRefreshLog, bootDuration, bootLog, bootNow } from '@/lib/bootLogger';
+import { resolveMobileLifecycle } from '@/lib/mobileLifecycle';
 import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
 
 // Shape of the authenticated user coming from your Flask API
@@ -42,9 +47,14 @@ type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
   authReady: boolean;
+  accountStateError: string | null;
+  accountStateRefreshing: boolean;
+  refreshAccountState: (source?: AccountRefreshSource) => Promise<boolean>;
   login: (payload: { user: AuthUser; token: string | null }) => Promise<void>;
   logout: () => Promise<void>;
 };
+
+export type AccountRefreshSource = 'bootstrap' | 'background' | 'foreground' | 'poll' | 'manual' | 'verification';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -58,11 +68,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [accountStateError, setAccountStateError] = useState<string | null>(null);
+  const [accountStateRefreshing, setAccountStateRefreshing] = useState(false);
   const userRef = useRef<AuthUser | null>(null);
+  const tokenRef = useRef<string | null>(null);
+  const refreshInFlightRef = useRef<Promise<boolean> | null>(null);
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
     userRef.current = user;
   }, [user]);
+
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
 
   async function login(payload: { user: AuthUser; token: string | null }) {
     bootLog('auth_login_state_update', {
@@ -74,6 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(payload.user);
     userRef.current = payload.user;
     setToken(payload.token);
+    tokenRef.current = payload.token;
 
     if (payload.token) {
       await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
@@ -88,143 +108,174 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
     userRef.current = null;
     setToken(null);
+    tokenRef.current = null;
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(USER_KEY);
     await SecureStore.deleteItemAsync(MANUAL_TIMEZONE_KEY);
   }
 
-  useEffect(() => {
-    function buildUserFromProfile(profileJson: any, restoredUser: AuthUser | null): AuthUser | null {
-      const profileUser = profileJson?.user;
-      if (!profileUser) return null;
+  function buildUserFromProfile(profileJson: any, restoredUser: AuthUser | null): AuthUser | null {
+    const profileUser = profileJson?.user;
+    if (!profileUser) return null;
 
-      const profileVerificationRequired = profileUser.verification_required === true;
-      const profileEmailVerified = profileUser.email_verified !== false;
-      return {
-        email: String(profileUser.email || restoredUser?.email || ''),
-        user_name: profileUser.name ?? restoredUser?.user_name ?? null,
-        role: profileUser.role === 'coach' ? 'coach' : 'athlete',
-        is_coach: profileUser.role === 'coach',
-        workspace_mode: profileUser.workspace_mode,
-        is_individual_workspace: profileUser.is_individual_workspace === true,
-        is_self_coached: profileUser.is_self_coached === true,
-        self_athlete_id: profileUser.self_athlete_id ?? null,
-        email_verified: profileEmailVerified,
-        verification_required: profileVerificationRequired,
-        verification_url: profileUser.verification_url ?? restoredUser?.verification_url ?? null,
-        billing_required:
-          profileVerificationRequired && !profileEmailVerified
-            ? false
-            : profileUser.billing_required === true
-            ? true
-            : profileUser.billing_required === false
-            ? false
-            : restoredUser?.billing_required === true,
-        billing_url: profileUser.billing_url ?? restoredUser?.billing_url ?? null,
-        has_linked_athlete: !!profileJson?.athlete?.coach_id,
-        athlete_id: profileJson?.athlete?.coach_id ? profileJson?.athlete?.id ?? null : null,
-      };
-    }
-
-    function buildGuardedUserFromProfileStatus(profile: any, restoredUser: AuthUser): AuthUser {
-      const profileError = String((profile.json as any)?.error || '');
-      const normalizedError = profileError.toLowerCase();
-      const profileBillingRequired =
-        profile.status === 402 &&
-        (((profile.json as any)?.billing_required === true) ||
-          normalizedError.includes('billing') ||
-          normalizedError.includes('activation'));
-      const nextVerificationRequired =
-        profile.status === 403 && profileError.includes('email verification')
-          ? true
-          : restoredUser.verification_required;
-      const nextEmailVerified =
-        profile.status === 403 && profileError.includes('email verification')
+    const profileVerificationRequired = profileUser.verification_required === true;
+    const profileEmailVerified = profileUser.email_verified !== false;
+    return {
+      email: String(profileUser.email || restoredUser?.email || ''),
+      user_name: profileUser.name ?? restoredUser?.user_name ?? null,
+      role: profileUser.role === 'coach' ? 'coach' : 'athlete',
+      is_coach: profileUser.role === 'coach',
+      workspace_mode: profileUser.workspace_mode,
+      is_individual_workspace: profileUser.is_individual_workspace === true,
+      is_self_coached: profileUser.is_self_coached === true,
+      self_athlete_id: profileUser.self_athlete_id ?? null,
+      email_verified: profileEmailVerified,
+      verification_required: profileVerificationRequired,
+      verification_url: profileUser.verification_url ?? restoredUser?.verification_url ?? null,
+      billing_required:
+        profileVerificationRequired && !profileEmailVerified
           ? false
-          : restoredUser.email_verified;
+          : profileUser.billing_required === true
+          ? true
+          : profileUser.billing_required === false
+          ? false
+          : restoredUser?.billing_required === true,
+      billing_url: profileUser.billing_url ?? restoredUser?.billing_url ?? null,
+      has_linked_athlete: !!profileJson?.athlete?.coach_id,
+      athlete_id: profileJson?.athlete?.coach_id ? profileJson?.athlete?.id ?? null : null,
+    };
+  }
 
-      return {
-        ...restoredUser,
-        email_verified: nextEmailVerified,
-        verification_required: nextVerificationRequired,
-        verification_url: (profile.json as any)?.verification_url ?? restoredUser.verification_url ?? null,
-        billing_required:
-          nextVerificationRequired && nextEmailVerified === false
-            ? false
-            : profileBillingRequired
-            ? true
-            : restoredUser.billing_required,
-        billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,
-      };
+  function buildGuardedUserFromProfileStatus(profile: any, restoredUser: AuthUser): AuthUser {
+    const profileError = String((profile.json as any)?.error || '');
+    const normalizedError = profileError.toLowerCase();
+    const profileBillingRequired =
+      profile.status === 402 &&
+      (((profile.json as any)?.billing_required === true) ||
+        normalizedError.includes('billing') ||
+        normalizedError.includes('activation'));
+    const nextVerificationRequired =
+      profile.status === 403 && profileError.includes('email verification')
+        ? true
+        : restoredUser.verification_required;
+    const nextEmailVerified =
+      profile.status === 403 && profileError.includes('email verification')
+        ? false
+        : restoredUser.email_verified;
+
+    return {
+      ...restoredUser,
+      email_verified: nextEmailVerified,
+      verification_required: nextVerificationRequired,
+      verification_url: (profile.json as any)?.verification_url ?? restoredUser.verification_url ?? null,
+      billing_required:
+        nextVerificationRequired && nextEmailVerified === false
+          ? false
+          : profileBillingRequired
+          ? true
+          : restoredUser.billing_required,
+      billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,
+    };
+  }
+
+  async function applyUser(nextUser: AuthUser, persist: boolean) {
+    setUser(nextUser);
+    userRef.current = nextUser;
+    if (persist) {
+      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(nextUser));
+    }
+  }
+
+  async function refreshAccountState(source: AccountRefreshSource = 'manual'): Promise<boolean> {
+    if (refreshInFlightRef.current) {
+      activationRefreshLog(source, 'joined_in_flight');
+      return refreshInFlightRef.current;
     }
 
-    async function applyUser(nextUser: AuthUser, persist: boolean) {
-      setUser(nextUser);
-      userRef.current = nextUser;
-      if (persist) {
-        await SecureStore.setItemAsync(USER_KEY, JSON.stringify(nextUser));
+    const run = (async () => {
+      const currentToken = tokenRef.current || await SecureStore.getItemAsync(TOKEN_KEY);
+      if (!currentToken) {
+        activationRefreshLog(source, 'skipped_no_token');
+        return false;
       }
-    }
 
-    async function refreshProfile(restoredUser: AuthUser | null, blocking: boolean) {
+      const currentUser = userRef.current;
+      setAccountStateRefreshing(true);
+      setAccountStateError(null);
       const profileStart = bootNow();
-      bootLog('current_user_fetch_start', { blocking });
+      bootLog('account_state_fetch_start', { source });
+      activationRefreshLog(source, 'start');
+
       try {
         const profile = await fetchJson<any>('/mobile/me', {
           method: 'GET',
           timeoutMs: BOOT_PROFILE_TIMEOUT_MS,
         });
-        bootDuration('current_user_fetch_done', profileStart, {
-          blocking,
+        bootDuration('account_state_fetch_done', profileStart, {
+          source,
           status: profile.status,
           ok: profile.ok,
         });
 
         const refreshedFromProfile = profile.ok
-          ? buildUserFromProfile(profile.json, restoredUser)
+          ? buildUserFromProfile(profile.json, currentUser)
+          : null;
+        const nextUser = refreshedFromProfile
+          ? refreshedFromProfile
+          : currentUser && (profile.status === 402 || profile.status === 403)
+          ? buildGuardedUserFromProfileStatus(profile, currentUser)
           : null;
 
-        if (refreshedFromProfile) {
+        if (nextUser) {
+          const resolution = resolveMobileLifecycle({ user: nextUser, token: currentToken });
           bootLog('workspace_resolution', {
-            role: refreshedFromProfile.role,
-            workspace_mode: refreshedFromProfile.workspace_mode || 'unset',
-            linked_athlete: refreshedFromProfile.has_linked_athlete,
+            role: nextUser.role,
+            workspace_mode: nextUser.workspace_mode || 'unset',
+            linked_athlete: nextUser.has_linked_athlete,
           });
           bootLog('email_verification_check', {
-            required: refreshedFromProfile.verification_required === true,
-            verified: refreshedFromProfile.email_verified !== false,
+            required: nextUser.verification_required === true,
+            verified: nextUser.email_verified !== false,
           });
           bootLog('billing_resolution', {
-            required: refreshedFromProfile.billing_required === true,
+            required: nextUser.billing_required === true,
           });
-          await applyUser(refreshedFromProfile, true);
+          bootLog('route_resolution', {
+            source,
+            result: resolution.route,
+          });
+          await applyUser(nextUser, true);
+          activationRefreshLog(source, resolution.route, { http_status: profile.status });
           return true;
         }
 
-        if (restoredUser && (profile.status === 402 || profile.status === 403)) {
-          const guardedUser = buildGuardedUserFromProfileStatus(profile, restoredUser);
-          bootLog('email_verification_check', {
-            required: guardedUser.verification_required === true,
-            verified: guardedUser.email_verified !== false,
-          });
-          bootLog('billing_resolution', {
-            required: guardedUser.billing_required === true,
-            status: profile.status,
-          });
-          await applyUser(guardedUser, true);
-          return true;
+        if (!currentUser) {
+          setAccountStateError("We're having trouble loading your account.");
         }
-
+        activationRefreshLog(source, 'unresolved', { http_status: profile.status });
         return false;
       } catch (e) {
-        bootDuration('current_user_fetch_failed', profileStart, {
-          blocking,
+        bootDuration('account_state_fetch_failed', profileStart, {
+          source,
           error: (e as Error)?.message || 'unknown',
         });
+        if (!currentUser) {
+          setAccountStateError("We're having trouble loading your account.");
+        }
+        activationRefreshLog(source, 'failed', { error: (e as Error)?.message || 'unknown' });
         return false;
+      } finally {
+        setAccountStateRefreshing(false);
       }
-    }
+    })().finally(() => {
+      refreshInFlightRef.current = null;
+    });
 
+    refreshInFlightRef.current = run;
+    return run;
+  }
+
+  useEffect(() => {
     (async () => {
       const authStart = bootNow();
       bootLog('auth_restore_start');
@@ -239,34 +290,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
           has_cached_user: !!storedUser,
         });
 
-        if (storedToken) setToken(storedToken);
-        let restoredUser: AuthUser | null = null;
+        if (storedToken) {
+          setToken(storedToken);
+          tokenRef.current = storedToken;
+        }
+
         if (storedToken && storedUser) {
           const cachedUser = JSON.parse(storedUser) as AuthUser;
-          restoredUser = cachedUser;
           await applyUser(cachedUser, false);
           bootLog('token_validation', { mode: 'cached_token_present' });
+          const cachedResolution = resolveMobileLifecycle({ user: cachedUser, token: storedToken });
           bootLog('route_resolution', {
             source: 'cached_user',
+            result: cachedResolution.route,
             role: cachedUser.role,
             verification_required: cachedUser.verification_required === true,
             billing_required: cachedUser.billing_required === true,
           });
           setAuthReady(true);
+          void refreshAccountState('background');
         } else if (!storedToken && storedUser) {
           bootLog('token_validation', { mode: 'cached_user_without_token_cleared' });
           await SecureStore.deleteItemAsync(USER_KEY);
-        }
-
-        if (storedToken) {
-          if (restoredUser) {
-            void refreshProfile(restoredUser, false);
-          } else {
-            const resolved = await refreshProfile(null, true);
-            bootLog('route_resolution', {
-              source: resolved ? 'profile_fetch' : 'profile_fetch_failed',
-            });
-          }
+        } else if (storedToken) {
+          const resolved = await refreshAccountState('bootstrap');
+          bootLog('route_resolution', {
+            source: resolved ? 'profile_fetch' : 'profile_fetch_failed',
+          });
         }
 
         if (storedToken) {
@@ -276,11 +326,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       } catch (e) {
         console.warn('Failed to restore auth state', e);
+        setAccountStateError("We're having trouble loading your account.");
       } finally {
         bootDuration('auth_restore_complete', authStart);
         setAuthReady(true);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const previousState = appStateRef.current;
+      appStateRef.current = nextState;
+      if ((previousState === 'background' || previousState === 'inactive') && nextState === 'active') {
+        void refreshAccountState('foreground');
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   useEffect(() => {
@@ -322,6 +385,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     token,
     authReady,
+    accountStateError,
+    accountStateRefreshing,
+    refreshAccountState,
     login,
     logout,
   };
