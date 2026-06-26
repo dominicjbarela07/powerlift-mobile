@@ -5,10 +5,12 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useRef,
 } from 'react';
+import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
-import { fetchJson } from '@/lib/api';
+import { fetchJson, subscribeBillingRequired } from '@/lib/api';
 import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
 
 // Shape of the authenticated user coming from your Flask API
@@ -54,9 +56,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const userRef = useRef<AuthUser | null>(null);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   async function login(payload: { user: AuthUser; token: string | null }) {
     setUser(payload.user);
+    userRef.current = payload.user;
     setToken(payload.token);
 
     if (payload.token) {
@@ -69,6 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function logout() {
     stopVideoUploadQueue();
     setUser(null);
+    userRef.current = null;
     setToken(null);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(USER_KEY);
@@ -87,6 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (storedUser) {
           restoredUser = JSON.parse(storedUser);
           setUser(restoredUser);
+          userRef.current = restoredUser;
         }
 
         if (storedToken) {
@@ -120,9 +130,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
               athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
             };
             setUser(refreshedUser);
+            userRef.current = refreshedUser;
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(refreshedUser));
           } else if (restoredUser && (profile.status === 402 || profile.status === 403)) {
             const profileError = String((profile.json as any)?.error || '');
+            const profileBillingRequired =
+              profile.status === 402 &&
+              (((profile.json as any)?.billing_required === true) ||
+                profileError.toLowerCase().includes('billing') ||
+                profileError.toLowerCase().includes('activation'));
             const nextVerificationRequired =
               profile.status === 403 && profileError.includes('email verification')
                 ? true
@@ -139,12 +155,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
               billing_required:
                 nextVerificationRequired && nextEmailVerified === false
                   ? false
-                  : profile.status === 402 && profileError.includes('billing')
+                  : profileBillingRequired
                   ? true
                   : restoredUser.billing_required,
               billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,
             };
             setUser(refreshedUser);
+            userRef.current = refreshedUser;
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(refreshedUser));
           }
         }
@@ -154,6 +171,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthReady(true);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    return subscribeBillingRequired((event) => {
+      const currentUser = userRef.current;
+      if (!currentUser) return;
+
+      if (currentUser.verification_required === true && currentUser.email_verified === false) {
+        const nextUser: AuthUser = {
+          ...currentUser,
+          billing_required: false,
+        };
+        userRef.current = nextUser;
+        setUser(nextUser);
+        SecureStore.setItemAsync(USER_KEY, JSON.stringify(nextUser)).catch((err) => {
+          console.warn('Failed to persist verification-first billing state', err);
+        });
+        return;
+      }
+
+      if (!currentUser.is_coach) return;
+
+      const nextUser: AuthUser = {
+        ...currentUser,
+        billing_required: true,
+        billing_url: event.billingUrl ?? currentUser.billing_url ?? null,
+      };
+
+      userRef.current = nextUser;
+      setUser(nextUser);
+      SecureStore.setItemAsync(USER_KEY, JSON.stringify(nextUser)).catch((err) => {
+        console.warn('Failed to persist billing activation state', err);
+      });
+      router.replace('/');
+    });
   }, []);
 
   const value: AuthContextValue = {

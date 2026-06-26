@@ -94,6 +94,59 @@ type ApiFetchInit = RequestInit & {
   timeoutMs?: number;
 };
 
+export type BillingRequiredEvent = {
+  billingUrl?: string | null;
+  sourcePath?: string;
+  status: number;
+};
+
+type BillingRequiredListener = (event: BillingRequiredEvent) => void;
+
+const billingRequiredListeners = new Set<BillingRequiredListener>();
+
+export function subscribeBillingRequired(listener: BillingRequiredListener): () => void {
+  billingRequiredListeners.add(listener);
+  return () => {
+    billingRequiredListeners.delete(listener);
+  };
+}
+
+function emitBillingRequired(event: BillingRequiredEvent) {
+  billingRequiredListeners.forEach((listener) => {
+    try {
+      listener(event);
+    } catch (err) {
+      console.warn('Billing required listener failed', err);
+    }
+  });
+}
+
+export function isBillingRequiredResponse(status: number, json: any): boolean {
+  if (status !== 402) return false;
+  if (json?.billing_required === true) return true;
+  const error = String(json?.error || json?.message || '').toLowerCase();
+  return error.includes('billing');
+}
+
+function normalizeBillingRequiredJson<T>(json: T | null): T | null {
+  if (!json || typeof json !== 'object') {
+    return ({
+      ok: false,
+      error: 'Activation required',
+      message: 'Activation required',
+      billing_required: true,
+    } as unknown) as T;
+  }
+
+  return ({
+    ...(json as any),
+    ok: (json as any).ok === true ? true : false,
+    error: 'Activation required',
+    message: 'Activation required',
+    billing_required: true,
+  } as unknown) as T;
+}
+
 function createTimeoutError(timeoutMs: number) {
   return new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`);
 }
@@ -266,6 +319,22 @@ export async function fetchJson<T = any>(
       console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
       json = null;
     }
+  }
+
+  const billingRequired = isBillingRequiredResponse(res.status, json);
+  if (billingRequired) {
+    const billingUrl = (json as any)?.billing_url ?? null;
+    emitBillingRequired({
+      billingUrl,
+      sourcePath: path,
+      status: res.status,
+    });
+    json = normalizeBillingRequiredJson(json);
+    raw = JSON.stringify(json || {
+      ok: false,
+      error: 'Activation required',
+      billing_required: true,
+    });
   }
 
   return {
