@@ -3,6 +3,8 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
@@ -1315,8 +1317,16 @@ export default function SettingsScreen() {
         </Modal>
 
         <Modal visible={feedbackModalOpen} animationType="slide" transparent onRequestClose={() => setFeedbackModalOpen(false)}>
-          <View style={styles.modalBackdrop}>
-            <View style={styles.modalSheet}>
+          <KeyboardAvoidingView
+            style={styles.keyboardModalRoot}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}
+          >
+            <Pressable style={styles.modalBackdrop} onPress={Keyboard.dismiss}>
+              <Pressable
+                style={[styles.modalSheet, styles.feedbackModalSheet]}
+                onPress={(event) => event.stopPropagation()}
+              >
               <View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
                   <ThemedText style={styles.modalTitle}>Send Feedback</ThemedText>
@@ -1329,7 +1339,12 @@ export default function SettingsScreen() {
                 </Pressable>
               </View>
 
-              <ScrollView style={styles.editorScroll} contentContainerStyle={styles.editorContent} keyboardShouldPersistTaps="handled">
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={[styles.editorContent, styles.feedbackEditorContent]}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="interactive"
+              >
                 <View style={styles.editorField}>
                   <ThemedText style={styles.editorLabel}>Category</ThemedText>
                   <View style={styles.editorChoiceRow}>
@@ -1381,6 +1396,7 @@ export default function SettingsScreen() {
                 })}
               </ScrollView>
 
+              {/* P0 mobile invariant: keyboard must never cover composer/action rows. */}
               <View style={styles.editorActions}>
                 <Pressable
                   style={({ pressed }) => [styles.secondaryButton, styles.editorActionButton, pressed && styles.rowButtonPressed]}
@@ -1398,8 +1414,9 @@ export default function SettingsScreen() {
                   <ThemedText style={styles.primaryButtonText}>{feedbackSubmitting ? 'Sending...' : 'Send Feedback'}</ThemedText>
                 </Pressable>
               </View>
-            </View>
-          </View>
+              </Pressable>
+            </Pressable>
+          </KeyboardAvoidingView>
         </Modal>
 
         <Modal visible={timezoneModalOpen} animationType="slide" transparent onRequestClose={() => setTimezoneModalOpen(false)}>
@@ -2193,6 +2210,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(2,2,3,0.58)',
     justifyContent: 'flex-end',
   },
+  keyboardModalRoot: {
+    flex: 1,
+  },
   modalSheet: {
     maxHeight: '82%',
     minHeight: '62%',
@@ -2204,6 +2224,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingTop: 16,
     paddingBottom: 22,
+  },
+  feedbackModalSheet: {
+    maxHeight: '78%',
+    minHeight: 0,
+    paddingBottom: 12,
   },
   profileEditorSheet: {
     maxHeight: '88%',
@@ -2294,6 +2319,9 @@ const styles = StyleSheet.create({
   editorContent: {
     paddingBottom: 16,
     gap: 12,
+  },
+  feedbackEditorContent: {
+    paddingBottom: 24,
   },
   editorField: {
     gap: 7,
