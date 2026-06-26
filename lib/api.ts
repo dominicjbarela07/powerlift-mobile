@@ -450,6 +450,20 @@ export async function declinePendingCoachInvite(inviteId: number): Promise<Fetch
   });
 }
 
+export async function startMobileBillingCheckout(): Promise<FetchJsonResult<{
+  ok: boolean;
+  active?: boolean;
+  checkout_url?: string | null;
+  billing_tier?: string;
+  error?: string;
+}>> {
+  return fetchJson('/mobile/billing/checkout', {
+    method: 'POST',
+    auth: true,
+    body: {} as any,
+  });
+}
+
 export type ApiLoginResponse = {
   ok: boolean;
   error?: string;

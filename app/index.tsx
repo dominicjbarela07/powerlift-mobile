@@ -1,9 +1,10 @@
 // app/index.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { startMobileBillingCheckout } from '@/lib/api';
 
 function AccountAccessGate({
   title,
@@ -49,6 +50,77 @@ function AccountAccessGate({
   );
 }
 
+function BillingActivationGate({
+  title,
+  body,
+}: {
+  title: string;
+  body: string;
+}) {
+  const { logout } = useAuth();
+  const [isOpeningCheckout, setIsOpeningCheckout] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const openCheckout = async () => {
+    if (isOpeningCheckout) return;
+    setIsOpeningCheckout(true);
+    setError(null);
+    try {
+      const response = await startMobileBillingCheckout();
+      const payload: {
+        ok?: boolean;
+        active?: boolean;
+        checkout_url?: string | null;
+        error?: string;
+      } = response.json || {};
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || `Unable to start checkout (HTTP ${response.status}).`);
+      }
+      if (payload.checkout_url) {
+        await Linking.openURL(payload.checkout_url);
+        return;
+      }
+      if (payload.active) {
+        setError('Membership is already active. Close and reopen Strength Ledger to continue.');
+        return;
+      }
+      throw new Error('Checkout is not available for this account yet.');
+    } catch (err) {
+      setError((err as Error)?.message || 'Unable to start Stripe Checkout.');
+    } finally {
+      setIsOpeningCheckout(false);
+    }
+  };
+
+  return (
+    <View style={styles.gateScreen}>
+      <Image
+        source={require('@/assets/images/16:9.png')}
+        style={styles.gateLogo}
+        resizeMode="contain"
+      />
+      <View style={styles.gatePanel}>
+        <Text style={styles.gateEyebrow}>Account Setup</Text>
+        <Text style={styles.gateTitle}>{title}</Text>
+        <Text style={styles.gateBody}>{body}</Text>
+        {error ? <Text style={styles.gateError}>{error}</Text> : null}
+        <Pressable
+          style={[styles.gatePrimary, isOpeningCheckout && styles.gatePrimaryDisabled]}
+          onPress={openCheckout}
+          disabled={isOpeningCheckout}
+        >
+          <Text style={styles.gatePrimaryText}>
+            {isOpeningCheckout ? 'Opening Stripe...' : 'Start activation'}
+          </Text>
+        </Pressable>
+        <Pressable style={styles.gateSecondary} onPress={logout}>
+          <Text style={styles.gateSecondaryText}>Log out</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export default function IndexGate() {
   const { user } = useAuth();
 
@@ -76,11 +148,9 @@ export default function IndexGate() {
 
   if (user.is_coach && user.billing_required) {
     return (
-      <AccountAccessGate
+      <BillingActivationGate
         title={isIndividual ? 'Activate Individual' : 'Activate membership'}
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
-        actionLabel="Open activation"
-        actionUrl={user.billing_url}
       />
     );
   }
@@ -154,10 +224,19 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(124, 58, 237, 0.58)',
   },
+  gatePrimaryDisabled: {
+    opacity: 0.68,
+  },
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     color: '#F5F3FF',
+  },
+  gateError: {
+    fontFamily: SLFontFamilies.sansSemiBold,
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#FCA5A5',
   },
   gateSecondary: {
     minHeight: 46,
