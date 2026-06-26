@@ -136,14 +136,7 @@ export default function IndexGate() {
       user.is_self_coached === true);
 
   if (user.verification_required && user.email_verified === false) {
-    return (
-      <AccountAccessGate
-        title="Verify your email"
-        body="Check your inbox and verify your email before entering Strength Ledger."
-        actionLabel="Open verification"
-        actionUrl={user.verification_url}
-      />
-    );
+    return <Redirect href={'/verify-email' as any} />;
   }
 
   if (user.is_coach && user.billing_required) {

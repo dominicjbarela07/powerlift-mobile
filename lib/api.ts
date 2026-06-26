@@ -555,6 +555,19 @@ export async function registerMobileRequest(options: {
   }
 }
 
+export async function resendEmailVerificationCode(): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/mobile/email-verification/resend-code`, {
+    method: 'POST',
+  });
+}
+
+export async function verifyEmailVerificationCode(code: string): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/mobile/email-verification/verify-code`, {
+    method: 'POST',
+    body: { code } as any,
+  });
+}
+
 export async function mobileOAuthRequest(
   provider: 'google' | 'apple',
   idToken: string,
