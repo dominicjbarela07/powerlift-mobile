@@ -93,6 +93,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const profile = await fetchJson<any>('/mobile/me', { method: 'GET' });
           const profileUser = profile.json?.user;
           if (profile.ok && profileUser) {
+            const profileVerificationRequired = profileUser.verification_required === true;
+            const profileEmailVerified = profileUser.email_verified !== false;
             const refreshedUser: AuthUser = {
               email: String(profileUser.email || restoredUser?.email || ''),
               user_name: profileUser.name ?? restoredUser?.user_name ?? null,
@@ -102,11 +104,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
               is_individual_workspace: profileUser.is_individual_workspace === true,
               is_self_coached: profileUser.is_self_coached === true,
               self_athlete_id: profileUser.self_athlete_id ?? null,
-              email_verified: profileUser.email_verified !== false,
-              verification_required: profileUser.verification_required === true,
+              email_verified: profileEmailVerified,
+              verification_required: profileVerificationRequired,
               verification_url: profileUser.verification_url ?? restoredUser?.verification_url ?? null,
               billing_required:
-                profileUser.billing_required === true
+                profileVerificationRequired && !profileEmailVerified
+                  ? false
+                  : profileUser.billing_required === true
                   ? true
                   : profileUser.billing_required === false
                   ? false
@@ -118,19 +122,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(refreshedUser);
             await SecureStore.setItemAsync(USER_KEY, JSON.stringify(refreshedUser));
           } else if (restoredUser && (profile.status === 402 || profile.status === 403)) {
+            const profileError = String((profile.json as any)?.error || '');
+            const nextVerificationRequired =
+              profile.status === 403 && profileError.includes('email verification')
+                ? true
+                : restoredUser.verification_required;
+            const nextEmailVerified =
+              profile.status === 403 && profileError.includes('email verification')
+                ? false
+                : restoredUser.email_verified;
             const refreshedUser: AuthUser = {
               ...restoredUser,
-              email_verified:
-                profile.status === 403 && String((profile.json as any)?.error || '').includes('email verification')
-                  ? false
-                  : restoredUser.email_verified,
-              verification_required:
-                profile.status === 403 && String((profile.json as any)?.error || '').includes('email verification')
-                  ? true
-                  : restoredUser.verification_required,
+              email_verified: nextEmailVerified,
+              verification_required: nextVerificationRequired,
               verification_url: (profile.json as any)?.verification_url ?? restoredUser.verification_url ?? null,
               billing_required:
-                profile.status === 402 && String((profile.json as any)?.error || '').includes('billing')
+                nextVerificationRequired && nextEmailVerified === false
+                  ? false
+                  : profile.status === 402 && profileError.includes('billing')
                   ? true
                   : restoredUser.billing_required,
               billing_url: (profile.json as any)?.billing_url ?? restoredUser.billing_url ?? null,

@@ -184,24 +184,26 @@ export default function TabsLayout() {
     user?.workspace_mode === 'individual' ||
       user?.is_individual_workspace === true ||
       user?.is_self_coached === true;
-  const accessBlocked =
+  const verificationBlocked = !!user && user.verification_required === true && user.email_verified === false;
+  const billingBlocked =
     !!user &&
-    (
-      (user.verification_required === true && user.email_verified === false) ||
-      (user.is_coach === true && user.billing_required === true)
-    );
+    !verificationBlocked &&
+    user.is_coach === true &&
+    user.billing_required === true;
   const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
 
   useEffect(() => {
     if (!user) {
       router.replace('/login');
-    } else if (accessBlocked && !pathname.includes('/settings')) {
+    } else if (verificationBlocked) {
+      router.replace('/verify-email' as any);
+    } else if (billingBlocked && !pathname.includes('/settings')) {
       router.replace('/');
     } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
       router.replace('/(tabs)/link-coach');
     }
-  }, [accessBlocked, isUnlinkedAthlete, pathname, router, user]);
+  }, [billingBlocked, isUnlinkedAthlete, pathname, router, user, verificationBlocked]);
 
   useEffect(() => {
     let mounted = true;
@@ -326,7 +328,11 @@ export default function TabsLayout() {
     return null;
   }
 
-  if ((accessBlocked && !pathname.includes('/settings')) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))) {
+  if (
+    verificationBlocked ||
+    (billingBlocked && !pathname.includes('/settings')) ||
+    (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))
+  ) {
     return null;
   }
 

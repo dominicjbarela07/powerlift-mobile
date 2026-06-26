@@ -568,6 +568,12 @@ export async function verifyEmailVerificationCode(code: string): Promise<FetchJs
   });
 }
 
+export async function getMobileMe(): Promise<FetchJsonResult<any>> {
+  return fetchJson('/mobile/me', {
+    method: 'GET',
+  });
+}
+
 export async function mobileOAuthRequest(
   provider: 'google' | 'apple',
   idToken: string,

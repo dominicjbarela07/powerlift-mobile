@@ -16,7 +16,7 @@ import {
 import { Redirect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { resendEmailVerificationCode, verifyEmailVerificationCode } from '@/lib/api';
+import { getMobileMe, resendEmailVerificationCode, verifyEmailVerificationCode } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
@@ -51,12 +51,31 @@ export default function VerifyEmailScreen() {
         setError(payload.error || payload.message || 'That code could not be verified.');
         return;
       }
-      const refreshed = {
+      let refreshed = {
         ...user,
         email_verified: true,
         verification_required: false,
         verification_url: null,
       };
+      const profile = await getMobileMe();
+      const profileUser = profile.json?.user;
+      if (profile.ok && profileUser) {
+        refreshed = {
+          ...refreshed,
+          email: String(profileUser.email || refreshed.email || ''),
+          user_name: profileUser.name ?? refreshed.user_name ?? null,
+          role: profileUser.role === 'coach' ? 'coach' : 'athlete',
+          is_coach: profileUser.role === 'coach',
+          workspace_mode: profileUser.workspace_mode,
+          is_individual_workspace: profileUser.is_individual_workspace === true,
+          is_self_coached: profileUser.is_self_coached === true,
+          self_athlete_id: profileUser.self_athlete_id ?? null,
+          billing_required: profileUser.billing_required === true,
+          billing_url: profileUser.billing_url ?? null,
+          has_linked_athlete: !!profile.json?.athlete?.coach_id,
+          athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
+        };
+      }
       await login({ user: refreshed, token });
       router.replace('/');
     } catch (err: any) {

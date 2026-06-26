@@ -132,7 +132,7 @@ export default function LoginScreen() {
     await login({ user: authUser, token: res.token });
 
     if (authUser.verification_required && authUser.email_verified === false) {
-      router.replace('/');
+      router.replace('/verify-email' as any);
     } else if (authUser.is_coach && res.billing_required && res.billing_url) {
       router.replace('/');
     } else if (isIndividual) {
