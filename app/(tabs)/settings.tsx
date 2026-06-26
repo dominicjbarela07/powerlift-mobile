@@ -11,6 +11,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -157,6 +158,7 @@ function supportedTimezones(deviceTimezone: string | null) {
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { height: viewportHeight } = useWindowDimensions();
   const auth = useAuth() as any;
   const [loggingOut, setLoggingOut] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -231,6 +233,7 @@ export default function SettingsScreen() {
     : Updates.updateId
     ? `Update ${Updates.updateId.slice(0, 8)} · ${formatLocalTime(Updates.createdAt)}`
     : 'Unknown update';
+  const feedbackModalHeight = Math.min(620, Math.max(440, Math.round(viewportHeight * 0.78)));
 
   const role = useMemo(() => {
     const raw =
@@ -1322,9 +1325,9 @@ export default function SettingsScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={0}
           >
-            <Pressable style={styles.modalBackdrop} onPress={Keyboard.dismiss}>
+            <Pressable style={[styles.modalBackdrop, styles.feedbackModalBackdrop]} onPress={Keyboard.dismiss}>
               <Pressable
-                style={[styles.modalSheet, styles.feedbackModalSheet]}
+                style={[styles.modalSheet, styles.feedbackModalSheet, { height: feedbackModalHeight }]}
                 onPress={(event) => event.stopPropagation()}
               >
               <View style={styles.modalHeader}>
@@ -2226,9 +2229,16 @@ const styles = StyleSheet.create({
     paddingBottom: 22,
   },
   feedbackModalSheet: {
-    maxHeight: '78%',
-    minHeight: 0,
+    width: '100%',
+    maxWidth: 620,
+    alignSelf: 'center',
+    borderRadius: SLRadius.radiusCard,
     paddingBottom: 12,
+  },
+  feedbackModalBackdrop: {
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 18,
   },
   profileEditorSheet: {
     maxHeight: '88%',
@@ -2321,7 +2331,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   feedbackEditorContent: {
-    paddingBottom: 24,
+    paddingBottom: 28,
+    flexGrow: 1,
   },
   editorField: {
     gap: 7,
