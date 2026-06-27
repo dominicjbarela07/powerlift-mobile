@@ -12,7 +12,6 @@ import { SLAtmosphere } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { getUnreadSummary } from '@/lib/api';
 import { SLColors, SLTypography } from '@/constants/theme';
-import { resolveMobileLifecycle } from '@/lib/mobileLifecycle';
 import {
   getMobileViewMode,
   subscribeMobileViewModeChanged,
@@ -170,7 +169,7 @@ function FilteredTabBar({
 }
 
 export default function TabsLayout() {
-  const { token, user } = useAuth();
+  const { user, refreshAccountState } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
@@ -180,29 +179,51 @@ export default function TabsLayout() {
   const unreadPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
-  const lifecycle = resolveMobileLifecycle({ user, token });
-  const isUnlinkedAthlete = lifecycle.isUnlinkedAthlete;
+  const accountState = user?.account_state;
+  const isUnlinkedAthlete =
+    !!user &&
+    !user.is_coach &&
+    (accountState === 'LINK_COACH_REQUIRED' ||
+      user.link_coach_required === true ||
+      !user.has_linked_athlete ||
+      !user.athlete_id);
   const isIndividual =
-    lifecycle.isIndividual;
-  const verificationBlocked = lifecycle.route === 'verify_email';
-  const accountStateLoading = lifecycle.route === 'account_state_loading';
-  const billingBlocked = lifecycle.route === 'billing_activation';
+    user?.workspace_mode === 'individual' ||
+      user?.is_individual_workspace === true ||
+      user?.is_self_coached === true;
+  const accessBlocked =
+    !!user &&
+    (
+      accountState === 'EMAIL_VERIFICATION_REQUIRED' ||
+      accountState === 'ACTIVATION_REQUIRED' ||
+      (user.verification_required === true && user.email_verified === false) ||
+      (user.is_coach === true && (user.billing_required === true || user.can_access_product === false))
+    );
   const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
 
   useEffect(() => {
-    if (lifecycle.route === 'login') {
+    void refreshAccountState();
+  }, [refreshAccountState]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void refreshAccountState();
+      }
+    });
+    return () => subscription.remove();
+  }, [refreshAccountState]);
+
+  useEffect(() => {
+    if (!user) {
       router.replace('/login');
-    } else if (lifecycle.route === 'verify_email') {
-      router.replace('/verify-email' as any);
-    } else if (lifecycle.route === 'account_state_loading') {
+    } else if (accessBlocked && !pathname.includes('/settings')) {
       router.replace('/');
-    } else if (lifecycle.route === 'billing_activation' && !pathname.includes('/settings')) {
-      router.replace('/');
-    } else if (lifecycle.route === 'pending_invite' && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
+    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
       router.replace('/(tabs)/link-coach');
     }
-  }, [lifecycle.route, pathname, router]);
+  }, [accessBlocked, isUnlinkedAthlete, pathname, router, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -327,12 +348,7 @@ export default function TabsLayout() {
     return null;
   }
 
-  if (
-    verificationBlocked ||
-    accountStateLoading ||
-    (billingBlocked && !pathname.includes('/settings')) ||
-    (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))
-  ) {
+  if ((accessBlocked && !pathname.includes('/settings')) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))) {
     return null;
   }
 

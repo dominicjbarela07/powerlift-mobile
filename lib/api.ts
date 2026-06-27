@@ -94,57 +94,62 @@ type ApiFetchInit = RequestInit & {
   timeoutMs?: number;
 };
 
-export type BillingRequiredEvent = {
-  billingUrl?: string | null;
-  sourcePath?: string;
-  status: number;
+export type AccountStatePayload = {
+  ok?: boolean;
+  error?: string;
+  email_verified?: boolean;
+  account_state?: string | null;
+  next_url?: string | null;
+  next_route?: string | null;
+  can_access_product?: boolean;
+  billing_required?: boolean;
+  verification_required?: boolean;
+  link_coach_required?: boolean;
+  workspace_mode?: 'team' | 'individual' | string | null;
+  role?: string | null;
+  athlete_id?: number | null;
+  coach_id?: number | null;
+  reason?: string | null;
+  account_state_detail?: any;
+  billing_url?: string | null;
+  verification_url?: string | null;
+  link_coach_url?: string | null;
+  dev_onboarding_simulation_enabled?: boolean;
+  user?: Record<string, any>;
 };
 
-type BillingRequiredListener = (event: BillingRequiredEvent) => void;
+type AccountStateBlockListener = (payload: AccountStatePayload, context: { path: string; status: number }) => void;
+const accountStateBlockListeners = new Set<AccountStateBlockListener>();
 
-const billingRequiredListeners = new Set<BillingRequiredListener>();
+export function isAccountStateBlockedPayload(payload: any): payload is AccountStatePayload {
+  if (!payload || typeof payload !== 'object') return false;
+  const state = typeof payload.account_state === 'string' ? payload.account_state : '';
+  return (
+    payload.can_access_product === false ||
+    state === 'EMAIL_VERIFICATION_REQUIRED' ||
+    state === 'ACTIVATION_REQUIRED' ||
+    state === 'LINK_COACH_REQUIRED' ||
+    payload.billing_required === true ||
+    payload.verification_required === true ||
+    payload.link_coach_required === true
+  );
+}
 
-export function subscribeBillingRequired(listener: BillingRequiredListener): () => void {
-  billingRequiredListeners.add(listener);
+export function subscribeAccountStateBlocks(listener: AccountStateBlockListener): () => void {
+  accountStateBlockListeners.add(listener);
   return () => {
-    billingRequiredListeners.delete(listener);
+    accountStateBlockListeners.delete(listener);
   };
 }
 
-function emitBillingRequired(event: BillingRequiredEvent) {
-  billingRequiredListeners.forEach((listener) => {
+function notifyAccountStateBlock(payload: AccountStatePayload, context: { path: string; status: number }) {
+  for (const listener of Array.from(accountStateBlockListeners)) {
     try {
-      listener(event);
+      listener(payload, context);
     } catch (err) {
-      console.warn('Billing required listener failed', err);
+      console.warn('Account-state block listener failed', err);
     }
-  });
-}
-
-export function isBillingRequiredResponse(status: number, json: any): boolean {
-  if (status !== 402) return false;
-  if (json?.billing_required === true) return true;
-  const error = String(json?.error || json?.message || '').toLowerCase();
-  return error.includes('billing');
-}
-
-function normalizeBillingRequiredJson<T>(json: T | null): T | null {
-  if (!json || typeof json !== 'object') {
-    return ({
-      ok: false,
-      error: 'Activation required',
-      message: 'Activation required',
-      billing_required: true,
-    } as unknown) as T;
   }
-
-  return ({
-    ...(json as any),
-    ok: (json as any).ok === true ? true : false,
-    error: 'Activation required',
-    message: 'Activation required',
-    billing_required: true,
-  } as unknown) as T;
 }
 
 function createTimeoutError(timeoutMs: number) {
@@ -321,20 +326,8 @@ export async function fetchJson<T = any>(
     }
   }
 
-  const billingRequired = isBillingRequiredResponse(res.status, json);
-  if (billingRequired) {
-    const billingUrl = (json as any)?.billing_url ?? null;
-    emitBillingRequired({
-      billingUrl,
-      sourcePath: path,
-      status: res.status,
-    });
-    json = normalizeBillingRequiredJson(json);
-    raw = JSON.stringify(json || {
-      ok: false,
-      error: 'Activation required',
-      billing_required: true,
-    });
+  if (!res.ok && isAccountStateBlockedPayload(json)) {
+    notifyAccountStateBlock(json, { path, status: res.status });
   }
 
   return {
@@ -519,20 +512,6 @@ export async function declinePendingCoachInvite(inviteId: number): Promise<Fetch
   });
 }
 
-export async function startMobileBillingCheckout(): Promise<FetchJsonResult<{
-  ok: boolean;
-  active?: boolean;
-  checkout_url?: string | null;
-  billing_tier?: string;
-  error?: string;
-}>> {
-  return fetchJson('/mobile/billing/checkout', {
-    method: 'POST',
-    auth: true,
-    body: {} as any,
-  });
-}
-
 export type ApiLoginResponse = {
   ok: boolean;
   error?: string;
@@ -550,12 +529,18 @@ export type ApiLoginResponse = {
   is_individual_workspace?: boolean;
   is_self_coached?: boolean;
   self_athlete_id?: number | null;
+  account_state?: string | null;
+  next_url?: string | null;
+  next_route?: string | null;
+  can_access_product?: boolean;
+  link_coach_required?: boolean;
+  account_state_detail?: any;
   has_linked_athlete?: boolean;
   athlete_id?: number | null;
   token?: string;
   billing_required?: boolean;
   billing_url?: string;
-  account_state_verified?: boolean;
+  dev_onboarding_simulation_enabled?: boolean;
 };
 
 // ------- LOGIN --------------------------------------------------------------
@@ -638,9 +623,24 @@ export async function verifyEmailVerificationCode(code: string): Promise<FetchJs
   });
 }
 
-export async function getMobileMe(): Promise<FetchJsonResult<any>> {
-  return fetchJson('/mobile/me', {
-    method: 'GET',
+export async function devSimulateEmailVerification(): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/mobile/email-verification/dev-simulate`, {
+    method: 'POST',
+    body: {} as any,
+  });
+}
+
+export async function devSimulateStripeActivation(): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/mobile/billing/dev-simulate`, {
+    method: 'POST',
+    body: {} as any,
+  });
+}
+
+export async function startMobileBillingCheckout(): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/mobile/billing/checkout`, {
+    method: 'POST',
+    body: {} as any,
   });
 }
 

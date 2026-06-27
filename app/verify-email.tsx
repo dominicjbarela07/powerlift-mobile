@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -13,13 +13,17 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getMobileMe, resendEmailVerificationCode, verifyEmailVerificationCode } from '@/lib/api';
+import {
+  devSimulateEmailVerification,
+  resendEmailVerificationCode,
+  verifyEmailVerificationCode,
+} from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
@@ -29,11 +33,117 @@ export default function VerifyEmailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
+  const [simulating, setSimulating] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  const refreshVerificationState = useCallback(
+    async ({ showMessage = false }: { showMessage?: boolean } = {}) => {
+      if (showMessage) setChecking(true);
+      if (showMessage) {
+        setError(null);
+        setMessage(null);
+      }
+      try {
+        const refreshed = await refreshAccountState();
+        const stillNeedsVerification =
+          refreshed?.account_state === 'EMAIL_VERIFICATION_REQUIRED' ||
+          (refreshed?.verification_required === true && refreshed?.email_verified === false);
+        if (refreshed && !stillNeedsVerification) {
+          router.replace('/');
+          return;
+        }
+        if (showMessage) {
+          setMessage('Still waiting for email verification.');
+        }
+      } catch (err: any) {
+        if (showMessage) {
+          setError(err?.message || 'Could not check verification status.');
+        }
+      } finally {
+        if (showMessage) setChecking(false);
+      }
+    },
+    [refreshAccountState, router]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshVerificationState();
+    }, [refreshVerificationState])
+  );
 
   if (!user) return <Redirect href="/login" />;
   if (!user.verification_required || user.email_verified !== false) return <Redirect href="/" />;
 
   const normalizedCode = code.replace(/\D/g, '').slice(0, 6);
+  const showDevSimulation =
+    typeof __DEV__ !== 'undefined' &&
+    __DEV__ &&
+    user.dev_onboarding_simulation_enabled === true;
+
+  const applyVerifiedPayload = async (payload: any = {}) => {
+    const payloadUser = payload.user || payload;
+    const refreshed = {
+      ...user,
+      email_verified: true,
+      account_state: payloadUser.account_state ?? user.account_state ?? null,
+      next_url: payloadUser.next_url ?? user.next_url ?? null,
+      next_route: payloadUser.next_route ?? user.next_route ?? null,
+      can_access_product:
+        payloadUser.can_access_product === false
+          ? false
+          : payloadUser.can_access_product === true
+          ? true
+          : user.can_access_product,
+      link_coach_required:
+        payloadUser.link_coach_required === true
+          ? true
+          : payloadUser.link_coach_required === false
+          ? false
+          : user.link_coach_required,
+      account_state_detail: payloadUser.account_state_detail ?? user.account_state_detail,
+      verification_required:
+        payloadUser.verification_required === true
+          ? true
+          : payloadUser.verification_required === false
+          ? false
+          : false,
+      verification_url: null,
+      billing_required:
+        payloadUser.billing_required === true
+          ? true
+          : payloadUser.billing_required === false
+          ? false
+          : user.billing_required,
+      billing_url: payloadUser.billing_url ?? user.billing_url ?? null,
+      workspace_mode: payloadUser.workspace_mode ?? user.workspace_mode,
+      is_individual_workspace:
+        payloadUser.is_individual_workspace === true
+          ? true
+          : payloadUser.is_individual_workspace === false
+          ? false
+          : user.is_individual_workspace,
+      is_self_coached:
+        payloadUser.is_self_coached === true
+          ? true
+          : payloadUser.is_self_coached === false
+          ? false
+          : user.is_self_coached,
+      self_athlete_id: payloadUser.self_athlete_id ?? user.self_athlete_id ?? null,
+      has_linked_athlete:
+        payloadUser.has_linked_athlete === true
+          ? true
+          : payloadUser.has_linked_athlete === false
+          ? false
+          : user.has_linked_athlete,
+      athlete_id: payloadUser.athlete_id ?? user.athlete_id ?? null,
+      dev_onboarding_simulation_enabled:
+        payloadUser.dev_onboarding_simulation_enabled === true ||
+        user.dev_onboarding_simulation_enabled === true,
+    };
+    await login({ user: refreshed, token });
+    router.replace('/');
+  };
 
   const handleVerify = async () => {
     if (normalizedCode.length !== 6) {
@@ -51,40 +161,30 @@ export default function VerifyEmailScreen() {
         setError(payload.error || payload.message || 'That code could not be verified.');
         return;
       }
-      let refreshed = {
-        ...user,
-        email_verified: true,
-        verification_required: false,
-        verification_url: null,
-        account_state_verified: user.is_coach ? false : user.account_state_verified,
-      };
-      const profile = await getMobileMe();
-      const profileUser = profile.json?.user;
-      if (profile.ok && profileUser) {
-        refreshed = {
-          ...refreshed,
-          email: String(profileUser.email || refreshed.email || ''),
-          user_name: profileUser.name ?? refreshed.user_name ?? null,
-          role: profileUser.role === 'coach' ? 'coach' : 'athlete',
-          is_coach: profileUser.role === 'coach',
-          workspace_mode: profileUser.workspace_mode,
-          is_individual_workspace: profileUser.is_individual_workspace === true,
-          is_self_coached: profileUser.is_self_coached === true,
-          self_athlete_id: profileUser.self_athlete_id ?? null,
-          billing_required: profileUser.billing_required === true,
-          billing_url: profileUser.billing_url ?? null,
-          account_state_verified: true,
-          has_linked_athlete: !!profile.json?.athlete?.coach_id,
-          athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
-        };
-      }
-      await login({ user: refreshed, token });
-      await refreshAccountState('verification');
-      router.replace('/');
+      await applyVerifiedPayload(payload);
     } catch (err: any) {
       setError(err?.message || 'Network error. Please try again.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDevSimulate = async () => {
+    setSimulating(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const result = await devSimulateEmailVerification();
+      const payload = result.json || {};
+      if (!result.ok || payload.ok === false) {
+        setError(payload.error || payload.message || 'Could not simulate email verification.');
+        return;
+      }
+      await applyVerifiedPayload(payload);
+    } catch (err: any) {
+      setError(err?.message || 'Network error. Please try again.');
+    } finally {
+      setSimulating(false);
     }
   };
 
@@ -171,11 +271,29 @@ export default function VerifyEmailScreen() {
                 </Text>
               </Pressable>
 
+              <Pressable
+                style={[styles.secondaryButton, checking && styles.disabledButton]}
+                onPress={() => refreshVerificationState({ showMessage: true })}
+                disabled={checking}
+              >
+                <Text style={styles.secondaryButtonText}>Check again</Text>
+              </Pressable>
+
+              {showDevSimulation ? (
+                <Pressable
+                  style={[styles.devButton, simulating && styles.disabledButton]}
+                  onPress={handleDevSimulate}
+                  disabled={simulating}
+                >
+                  <Text style={styles.devButtonText}>
+                    {simulating ? 'Simulating...' : 'Dev: Simulate Email Verification'}
+                  </Text>
+                </Pressable>
+              ) : null}
+
               <Pressable style={styles.logoutButton} onPress={logout}>
                 <Text style={styles.logoutText}>Log out</Text>
               </Pressable>
-
-              <OnboardingSupportFooter />
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
@@ -285,6 +403,21 @@ const styles = StyleSheet.create({
     color: '#D9CEFF',
     fontFamily: SLFontFamilies.sans,
     fontSize: 15,
+    fontWeight: '800',
+  },
+  devButton: {
+    minHeight: 46,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(240, 191, 99, 0.42)',
+    backgroundColor: 'rgba(240, 191, 99, 0.12)',
+  },
+  devButtonText: {
+    color: '#F0BF63',
+    fontFamily: SLFontFamilies.sans,
+    fontSize: 14,
     fontWeight: '800',
   },
   logoutButton: {

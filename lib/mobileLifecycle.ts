@@ -55,7 +55,12 @@ export function resolveMobileLifecycle({
     return { route: 'billing_activation', isIndividual, isUnlinkedAthlete };
   }
 
-  if (user.is_coach && user.account_state_verified !== true) {
+  if (
+    user.is_coach &&
+    user.can_access_product === false &&
+    user.account_state !== 'EMAIL_VERIFICATION_REQUIRED' &&
+    user.account_state !== 'ACTIVATION_REQUIRED'
+  ) {
     return { route: 'account_state_loading', isIndividual, isUnlinkedAthlete };
   }
 

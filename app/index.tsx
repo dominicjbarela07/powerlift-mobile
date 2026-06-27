@@ -1,13 +1,11 @@
 // app/index.tsx
-import React, { useEffect, useState } from 'react';
-import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Redirect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Redirect, useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { devSimulateStripeActivation, startMobileBillingCheckout } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { startMobileBillingCheckout } from '@/lib/api';
-import { activationRefreshLog } from '@/lib/bootLogger';
-import { resolveMobileLifecycle } from '@/lib/mobileLifecycle';
-import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 function AccountAccessGate({
   title,
@@ -20,118 +18,165 @@ function AccountAccessGate({
   actionLabel: string;
   actionUrl?: string | null;
 }) {
-  const { logout } = useAuth();
+  const router = useRouter();
+  const { user, token, login, logout, refreshAccountState } = useAuth();
+  const [simulating, setSimulating] = useState(false);
+  const [activating, setActivating] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const activationRequired =
+    user?.account_state === 'ACTIVATION_REQUIRED' ||
+    user?.billing_required === true ||
+    (user?.is_coach === true && user?.can_access_product === false);
+  const showDevSimulation =
+    typeof __DEV__ !== 'undefined' &&
+    __DEV__ &&
+    user?.dev_onboarding_simulation_enabled === true &&
+    activationRequired;
 
-  const openAction = async () => {
+  const refreshActivationState = useCallback(
+    async ({ showMessage = false }: { showMessage?: boolean } = {}) => {
+      if (showMessage) setChecking(true);
+      if (showMessage) setError(null);
+      try {
+        const refreshed = await refreshAccountState();
+        const stillActivationRequired =
+          refreshed?.account_state === 'ACTIVATION_REQUIRED' ||
+          refreshed?.billing_required === true ||
+          (refreshed?.is_coach === true && refreshed?.can_access_product === false);
+        if (refreshed && !stillActivationRequired) {
+          router.replace('/');
+          return;
+        }
+        if (showMessage) {
+          setError('Still waiting for activation to complete.');
+        }
+      } catch (err: any) {
+        if (showMessage) {
+          setError(err?.message || 'Could not check activation status.');
+        }
+      } finally {
+        if (showMessage) setChecking(false);
+      }
+    },
+    [refreshAccountState, router]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshActivationState();
+    }, [refreshActivationState])
+  );
+
+  const applyActivationPayload = async (payload: any = {}) => {
+    if (!user) return;
+    const payloadUser = payload.user || payload;
+    const refreshed = {
+      ...user,
+      account_state: payloadUser.account_state ?? user.account_state ?? null,
+      next_url: payloadUser.next_url ?? user.next_url ?? null,
+      next_route: payloadUser.next_route ?? user.next_route ?? null,
+      can_access_product:
+        payloadUser.can_access_product === false
+          ? false
+          : payloadUser.can_access_product === true
+          ? true
+          : user.can_access_product,
+      link_coach_required:
+        payloadUser.link_coach_required === true
+          ? true
+          : payloadUser.link_coach_required === false
+          ? false
+          : user.link_coach_required,
+      account_state_detail: payloadUser.account_state_detail ?? user.account_state_detail,
+      billing_required:
+        payloadUser.billing_required === true
+          ? true
+          : payloadUser.billing_required === false
+          ? false
+          : user.billing_required,
+      billing_url: payloadUser.billing_url ?? user.billing_url ?? null,
+      verification_required:
+        payloadUser.verification_required === true
+          ? true
+          : payloadUser.verification_required === false
+          ? false
+          : user.verification_required,
+      workspace_mode: payloadUser.workspace_mode ?? user.workspace_mode,
+      is_individual_workspace:
+        payloadUser.is_individual_workspace === true
+          ? true
+          : payloadUser.is_individual_workspace === false
+          ? false
+          : user.is_individual_workspace,
+      is_self_coached:
+        payloadUser.is_self_coached === true
+          ? true
+          : payloadUser.is_self_coached === false
+          ? false
+          : user.is_self_coached,
+      self_athlete_id: payloadUser.self_athlete_id ?? user.self_athlete_id ?? null,
+      dev_onboarding_simulation_enabled:
+        payloadUser.dev_onboarding_simulation_enabled === true ||
+        user.dev_onboarding_simulation_enabled === true,
+    };
+    await login({ user: refreshed, token });
+  };
+
+  const openActivation = async () => {
+    setActivating(true);
+    setError(null);
+    try {
+      const result = await startMobileBillingCheckout();
+      const payload = result.json || {};
+      if (!result.ok || payload.ok === false) {
+        setError(payload.error || payload.message || 'Could not start activation. Please try again.');
+        return;
+      }
+      if (payload.active === true && !payload.checkout_url) {
+        await refreshActivationState();
+        return;
+      }
+      const checkoutUrl = payload.checkout_url || actionUrl;
+      if (!checkoutUrl) {
+        setError('Could not start activation. Please try again.');
+        return;
+      }
+      await Linking.openURL(checkoutUrl);
+      void refreshActivationState();
+    } catch (err: any) {
+      console.warn('Could not start activation', err);
+      setError(err?.message || 'Could not start activation. Please try again.');
+    } finally {
+      setActivating(false);
+    }
+  };
+
+  const openFallbackAction = async () => {
     if (!actionUrl) return;
     try {
       await Linking.openURL(actionUrl);
     } catch (err) {
       console.warn('Could not open account action URL', err);
+      setError('Could not open activation. Please try again.');
     }
   };
 
-  return (
-    <View style={styles.gateScreen}>
-      <Image
-        source={require('@/assets/images/16:9.png')}
-        style={styles.gateLogo}
-        resizeMode="contain"
-      />
-      <View style={styles.gatePanel}>
-        <Text style={styles.gateEyebrow}>Account Setup</Text>
-        <Text style={styles.gateTitle}>{title}</Text>
-        <Text style={styles.gateBody}>{body}</Text>
-        <Pressable style={styles.gatePrimary} onPress={openAction} disabled={!actionUrl}>
-          <Text style={styles.gatePrimaryText}>{actionLabel}</Text>
-        </Pressable>
-        <Pressable style={styles.gateSecondary} onPress={logout}>
-          <Text style={styles.gateSecondaryText}>Log out</Text>
-        </Pressable>
-        <OnboardingSupportFooter />
-      </View>
-    </View>
-  );
-}
-
-function BillingActivationGate({
-  title,
-  body,
-}: {
-  title: string;
-  body: string;
-}) {
-  const { accountStateRefreshing, logout, refreshAccountState, user } = useAuth();
-  const [isOpeningCheckout, setIsOpeningCheckout] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!user?.billing_required) return undefined;
-
-    let elapsedMs = 0;
-    let stopped = false;
-
-    const poll = async () => {
-      if (stopped) return;
-      elapsedMs += 3000;
-      if (elapsedMs > 90000) {
-        stopped = true;
-        clearInterval(interval);
-        activationRefreshLog('poll', 'timeout', { elapsed_ms: elapsedMs });
-        return;
-      }
-      await refreshAccountState('poll');
-    };
-
-    const interval = setInterval(() => {
-      void poll();
-    }, 3000);
-
-    void refreshAccountState('poll');
-
-    return () => {
-      stopped = true;
-      clearInterval(interval);
-    };
-  }, [user?.billing_required]);
-
-  const openCheckout = async () => {
-    if (isOpeningCheckout) return;
-    setIsOpeningCheckout(true);
+  const simulateActivation = async () => {
+    setSimulating(true);
     setError(null);
     try {
-      const response = await startMobileBillingCheckout();
-      const payload: {
-        ok?: boolean;
-        active?: boolean;
-        checkout_url?: string | null;
-        error?: string;
-      } = response.json || {};
-      if (!response.ok || payload.ok === false) {
-        throw new Error(payload.error || `Unable to start checkout (HTTP ${response.status}).`);
-      }
-      if (payload.checkout_url) {
-        await Linking.openURL(payload.checkout_url);
-        void refreshAccountState('manual');
+      const result = await devSimulateStripeActivation();
+      const payload = result.json || {};
+      if (!result.ok || payload.ok === false) {
+        setError(payload.error || payload.message || 'Could not simulate Stripe activation.');
         return;
       }
-      if (payload.active) {
-        await refreshAccountState('manual');
-        return;
-      }
-      throw new Error('Checkout is not available for this account yet.');
-    } catch (err) {
-      setError((err as Error)?.message || 'We could not start activation right now. Please try again.');
+      await applyActivationPayload(payload);
+    } catch (err: any) {
+      setError(err?.message || 'Network error. Please try again.');
     } finally {
-      setIsOpeningCheckout(false);
-    }
-  };
-
-  const checkStatus = async () => {
-    setError(null);
-    const refreshed = await refreshAccountState('manual');
-    if (!refreshed) {
-      setError('We could not refresh your activation status. Please try again.');
+      setSimulating(false);
     }
   };
 
@@ -148,117 +193,89 @@ function BillingActivationGate({
         <Text style={styles.gateBody}>{body}</Text>
         {error ? <Text style={styles.gateError}>{error}</Text> : null}
         <Pressable
-          style={[styles.gatePrimary, isOpeningCheckout && styles.gatePrimaryDisabled]}
-          onPress={openCheckout}
-          disabled={isOpeningCheckout}
+          style={[styles.gatePrimary, (showDevSimulation ? simulating : activating) && styles.disabledButton]}
+          onPress={showDevSimulation ? simulateActivation : openActivation}
+          disabled={showDevSimulation ? simulating : activating}
         >
-          <Text style={styles.gatePrimaryText}>
-            {isOpeningCheckout ? 'Opening Stripe...' : 'Start activation'}
-          </Text>
+          {simulating || activating ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.gatePrimaryText}>
+              {showDevSimulation ? 'Dev: Simulate Stripe Activation' : actionLabel}
+            </Text>
+          )}
         </Pressable>
+        {showDevSimulation && actionUrl ? (
+          <Pressable style={styles.gateOutline} onPress={openFallbackAction} disabled={simulating}>
+            <Text style={styles.gateOutlineText}>Open activation URL</Text>
+          </Pressable>
+        ) : null}
         <Pressable
-          style={[styles.gateSecondaryButton, accountStateRefreshing && styles.gatePrimaryDisabled]}
-          onPress={checkStatus}
-          disabled={accountStateRefreshing}
+          style={[styles.gateOutline, checking && styles.disabledButton]}
+          onPress={() => refreshActivationState({ showMessage: true })}
+          disabled={checking}
         >
-          <Text style={styles.gateSecondaryButtonText}>
-            {accountStateRefreshing ? 'Checking status...' : 'Already activated? Check status'}
-          </Text>
+          <Text style={styles.gateOutlineText}>Check again</Text>
         </Pressable>
         <Pressable style={styles.gateSecondary} onPress={logout}>
           <Text style={styles.gateSecondaryText}>Log out</Text>
         </Pressable>
-        <OnboardingSupportFooter />
-      </View>
-    </View>
-  );
-}
-
-function AccountStateLoadingGate() {
-  const { accountStateRefreshing, logout, refreshAccountState } = useAuth();
-  const [error, setError] = useState<string | null>(null);
-
-  const retry = async () => {
-    setError(null);
-    const refreshed = await refreshAccountState('manual');
-    if (!refreshed) {
-      setError('We could not refresh your account yet. Please try again.');
-    }
-  };
-
-  useEffect(() => {
-    void retry();
-  }, []);
-
-  return (
-    <View style={styles.gateScreen}>
-      <Image
-        source={require('@/assets/images/16:9.png')}
-        style={styles.gateLogo}
-        resizeMode="contain"
-      />
-      <View style={styles.gatePanel}>
-        <Text style={styles.gateEyebrow}>Account Setup</Text>
-        <Text style={styles.gateTitle}>Preparing your account</Text>
-        <Text style={styles.gateBody}>
-          We’re confirming your account access before opening Strength Ledger.
-        </Text>
-        {error ? <Text style={styles.gateError}>{error}</Text> : null}
-        <Pressable
-          style={[styles.gateSecondaryButton, accountStateRefreshing && styles.gatePrimaryDisabled]}
-          onPress={retry}
-          disabled={accountStateRefreshing}
-        >
-          <Text style={styles.gateSecondaryButtonText}>
-            {accountStateRefreshing ? 'Checking status...' : 'Check status'}
-          </Text>
-        </Pressable>
-        <Pressable style={styles.gateSecondary} onPress={logout}>
-          <Text style={styles.gateSecondaryText}>Log out</Text>
-        </Pressable>
-        <OnboardingSupportFooter />
       </View>
     </View>
   );
 }
 
 export default function IndexGate() {
-  const { token, user } = useAuth();
-  const lifecycle = resolveMobileLifecycle({ user, token });
+  const { user } = useAuth();
 
-  if (lifecycle.route === 'login') {
+  // 🔒 Not logged in → go to login
+  if (!user) {
     return <Redirect href="/login" />;
   }
 
-  if (lifecycle.route === 'verify_email') {
+  const isIndividual =
+    user.is_coach &&
+    (user.workspace_mode === 'individual' ||
+      user.is_individual_workspace === true ||
+      user.is_self_coached === true);
+  const accountState = user.account_state;
+
+  if (
+    accountState === 'EMAIL_VERIFICATION_REQUIRED' ||
+    (user.verification_required && user.email_verified === false)
+  ) {
     return <Redirect href={'/verify-email' as any} />;
   }
 
-  if (user && lifecycle.route === 'billing_activation') {
+  if (
+    user.is_coach &&
+    (accountState === 'ACTIVATION_REQUIRED' || user.billing_required || user.can_access_product === false)
+  ) {
     return (
-      <BillingActivationGate
-        title={lifecycle.isIndividual ? 'Activate Individual' : 'Activate membership'}
+      <AccountAccessGate
+        title={isIndividual ? 'Activate Individual' : 'Activate membership'}
         body="Your account is ready. Activate Stripe membership before entering the mobile app."
+        actionLabel="Open activation"
+        actionUrl={user.billing_url}
       />
     );
   }
 
-  if (user && lifecycle.route === 'account_state_loading') {
-    return <AccountStateLoadingGate />;
-  }
-
-  if (lifecycle.route === 'individual_app') {
+  // ✅ Individual / self-coached users are coach-role accounts.
+  if (isIndividual) {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 
-  if (lifecycle.route === 'athlete_app') {
+  // ✅ Logged in athlete with linked profile → athlete dashboard
+  if (!user.is_coach && user.has_linked_athlete && user.athlete_id) {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 
-  if (lifecycle.route === 'pending_invite') {
+  if (!user.is_coach) {
     return <Redirect href="/(tabs)/link-coach" />;
   }
 
+  // ✅ Logged in coach → send to tabs home (the file app/(tabs)/index.tsx)
   return <Redirect href="/(tabs)/coach-dashboard" />;
 }
 
@@ -313,30 +330,29 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(124, 58, 237, 0.58)',
   },
-  gatePrimaryDisabled: {
-    opacity: 0.68,
-  },
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     color: '#F5F3FF',
   },
+  disabledButton: {
+    opacity: 0.62,
+  },
   gateError: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 13,
-    lineHeight: 19,
     color: '#FCA5A5',
+    fontSize: 13,
+    lineHeight: 18,
   },
-  gateSecondaryButton: {
+  gateOutline: {
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.24)',
-    backgroundColor: 'rgba(196,181,253,0.08)',
+    borderColor: 'rgba(196,181,253,0.28)',
   },
-  gateSecondaryButtonText: {
+  gateOutlineText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     color: '#DDD6FE',

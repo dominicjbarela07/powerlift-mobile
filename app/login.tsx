@@ -19,7 +19,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WEB_BASE, loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 
 const AUTH_WEB_BASE = WEB_BASE.replace(/\/$/, '');
 const PASSWORD_RESET_URL = `${AUTH_WEB_BASE}/auth/reset_request`;
@@ -115,12 +114,18 @@ export default function LoginScreen() {
       is_individual_workspace: res.is_individual_workspace,
       is_self_coached: res.is_self_coached,
       self_athlete_id: res.self_athlete_id ?? null,
+      account_state: res.account_state ?? null,
+      next_url: res.next_url ?? null,
+      next_route: res.next_route ?? null,
+      can_access_product: res.can_access_product,
+      link_coach_required: res.link_coach_required === true,
+      account_state_detail: res.account_state_detail,
       email_verified: res.email_verified !== false,
       verification_required: res.verification_required === true,
       verification_url: res.verification_url ?? null,
       billing_required: res.billing_required === true,
       billing_url: res.billing_url ?? null,
-      account_state_verified: (res.is_coach || res.role === 'coach') ? res.account_state_verified !== false : undefined,
+      dev_onboarding_simulation_enabled: res.dev_onboarding_simulation_enabled === true,
       has_linked_athlete: !!res.has_linked_athlete,
       athlete_id: res.athlete_id ?? null,
     };
@@ -132,9 +137,15 @@ export default function LoginScreen() {
 
     await login({ user: authUser, token: res.token });
 
-    if (authUser.verification_required && authUser.email_verified === false) {
-      router.replace('/verify-email' as any);
-    } else if (authUser.is_coach && res.billing_required) {
+    if (
+      authUser.account_state === 'EMAIL_VERIFICATION_REQUIRED' ||
+      (authUser.verification_required && authUser.email_verified === false)
+    ) {
+      router.replace('/');
+    } else if (
+      authUser.account_state === 'ACTIVATION_REQUIRED' ||
+      (authUser.is_coach && res.billing_required)
+    ) {
       router.replace('/');
     } else if (isIndividual) {
       router.replace('/(tabs)/athlete-dashboard');
@@ -658,7 +669,6 @@ export default function LoginScreen() {
                   <Text style={styles.linkTextStrong}>{authMode === 'signup' ? 'Sign in' : 'Sign up'}</Text>
                 </Pressable>
               </View>
-              {authMode === 'signup' || pendingOAuth ? <OnboardingSupportFooter /> : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

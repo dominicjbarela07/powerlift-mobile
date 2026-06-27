@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { OnboardingSupportFooter } from '@/components/OnboardingSupportFooter';
 import { SLAtmosphere } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
@@ -54,16 +54,33 @@ function authUserFromPayload(payload: any, fallbackEmail: string): AuthUser {
 export default function PendingCoachInviteScreen() {
   const router = useRouter();
   const auth = useAuth();
+  const { refreshAccountState } = auth;
   const [state, setState] = useState<InviteState>({ alreadyLinked: false, invites: [] });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [workingInviteId, setWorkingInviteId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const refreshAccountLinkState = useCallback(async () => {
+    const refreshed = await refreshAccountState();
+    if (
+      refreshed &&
+      refreshed.account_state !== 'LINK_COACH_REQUIRED' &&
+      refreshed.link_coach_required !== true &&
+      (refreshed.is_coach || (refreshed.has_linked_athlete && refreshed.athlete_id))
+    ) {
+      router.replace('/' as any);
+      return true;
+    }
+    return false;
+  }, [refreshAccountState, router]);
+
   const loadInvites = useCallback(async ({ quiet = false } = {}) => {
     if (!quiet) setLoading(true);
     setError(null);
     try {
+      const accountReady = await refreshAccountLinkState();
+      if (accountReady) return;
       const res = await getPendingCoachInvites();
       const payload = res.json;
       if (!res.ok || !payload?.ok) {
@@ -83,11 +100,17 @@ export default function PendingCoachInviteScreen() {
       if (!quiet) setLoading(false);
       setRefreshing(false);
     }
-  }, [router]);
+  }, [refreshAccountLinkState, router]);
 
   useEffect(() => {
     loadInvites();
   }, [loadInvites]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadInvites({ quiet: true });
+    }, [loadInvites])
+  );
 
   const checkForInvite = async () => {
     setRefreshing(true);
@@ -318,7 +341,6 @@ export default function PendingCoachInviteScreen() {
               </ThemedText>
             </View>
           )}
-          <OnboardingSupportFooter />
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
