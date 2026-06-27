@@ -169,7 +169,7 @@ function FilteredTabBar({
 }
 
 export default function TabsLayout() {
-  const { user, refreshAccountState } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
@@ -201,19 +201,6 @@ export default function TabsLayout() {
     );
   const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
-
-  useEffect(() => {
-    void refreshAccountState();
-  }, [refreshAccountState]);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'active') {
-        void refreshAccountState();
-      }
-    });
-    return () => subscription.remove();
-  }, [refreshAccountState]);
 
   useEffect(() => {
     if (!user) {
@@ -324,6 +311,11 @@ export default function TabsLayout() {
   }, [isIndividual, isUnlinkedAthlete, user]);
 
   useEffect(() => {
+    if (!user || accessBlocked || isIndividual || isUnlinkedAthlete) {
+      setHasMessageNotifications(false);
+      return undefined;
+    }
+
     refreshMessageNotifications();
 
     const timer = setInterval(() => {
@@ -342,7 +334,7 @@ export default function TabsLayout() {
       clearInterval(timer);
       subscription.remove();
     };
-  }, [refreshMessageNotifications]);
+  }, [accessBlocked, isIndividual, isUnlinkedAthlete, refreshMessageNotifications, user]);
 
   if (!user) {
     return null;
