@@ -2009,54 +2009,104 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
     </View>
   );
 
+  const renderManualLoadInput = ({
+    label,
+    draftKey,
+    fallbackKg,
+    placeholder,
+    allowZero = false,
+    onCommit,
+  }: {
+    label: string;
+    draftKey: string;
+    fallbackKg: number | null | undefined;
+    placeholder: string;
+    allowZero?: boolean;
+    onCommit: (kg: number | null) => void;
+  }) => {
+    const commitDisplayValue = (displayText: string, options?: { clearDraft?: boolean }) => {
+      const kg = allowZero ? parseDisplayDeltaToKg(displayText) : parseDisplayWeightToKg(displayText);
+      onCommit(kg);
+      validateKgStep(draftKey, kg, allowZero);
+      if (options?.clearDraft) clearDraft(draftKey);
+      return kg;
+    };
+
+    const stepDisplayValue = (direction: -1 | 1) => {
+      const raw = normalizeDecimalInput(getDraft(draftKey, fallbackKg)).trim();
+      const current = raw ? Number(raw) : Number.NaN;
+      const displayStep = unit === 'lb' ? 5 : 2.5;
+      const base = Number.isFinite(current) ? current : 0;
+      const minimum = allowZero ? 0 : displayStep;
+      const next = Math.max(minimum, roundToStep(base + direction * displayStep, displayStep));
+      const text = Number.isInteger(next) ? String(next) : String(Math.round(next * 10) / 10);
+      setDraft(draftKey, text);
+      commitDisplayValue(text);
+    };
+
+    return (
+      <View style={styles.fieldCol}>
+        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>{label}</ThemedText>
+        <View style={styles.manualLoadStepper}>
+          <Pressable
+            onPress={() => stepDisplayValue(-1)}
+            style={styles.manualLoadStepButton}
+            accessibilityRole="button"
+            accessibilityLabel={`Decrease ${label.toLowerCase()}`}
+          >
+            <ThemedText variant="h3" style={styles.manualLoadStepText}>-</ThemedText>
+          </Pressable>
+          <TextInput
+            value={getDraft(draftKey, fallbackKg)}
+            onChangeText={(v) => setDraft(draftKey, v)}
+            onBlur={() => commitDisplayValue(getDraft(draftKey, fallbackKg), { clearDraft: true })}
+            keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
+            autoCorrect={false}
+            autoCapitalize="none"
+            placeholder={placeholder}
+            placeholderTextColor="#64748b"
+            style={[styles.input, styles.inputSm, styles.manualLoadInput]}
+          />
+          <Pressable
+            onPress={() => stepDisplayValue(1)}
+            style={styles.manualLoadStepButton}
+            accessibilityRole="button"
+            accessibilityLabel={`Increase ${label.toLowerCase()}`}
+          >
+            <ThemedText variant="h3" style={styles.manualLoadStepText}>+</ThemedText>
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
+
   const renderCoreAdvanced = (idx: number, c: CoreDraft) => {
     const advancedKey = `core:${idx}`;
     const open = !!advancedOpen[advancedKey];
     return (
       <CreatorAdvancedSection open={open} onToggle={() => toggleAdvanced(advancedKey)}>
             <View style={styles.row}>
-              <View style={styles.fieldCol}>
-                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Load ({unit})</ThemedText>
-                <TextInput
-                  value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
-                  onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
-                  onBlur={() => {
-                    const key = keyForManualTarget(idx);
-                    const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
+              {renderManualLoadInput({
+                label: `Load (${unit})`,
+                draftKey: keyForManualTarget(idx),
+                fallbackKg: c.manual_target_kg,
+                placeholder: 'Optional',
+                onCommit: (nKg) => {
                     updateCoreAt(idx, { manual_target_kg: nKg });
                     applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-                    validateKgStep(key, nKg);
-                    clearDraft(key);
-                  }}
-                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  placeholder="Optional"
-                  placeholderTextColor="#64748b"
-                  style={[styles.input, styles.inputSm]}
-                />
-              </View>
-              <View style={styles.fieldCol}>
-                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± ({unit})</ThemedText>
-                <TextInput
-                  value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
-                  onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
-                  onBlur={() => {
-                    const key = keyForManualPm(idx);
-                    const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
+                },
+              })}
+              {renderManualLoadInput({
+                label: `± (${unit})`,
+                draftKey: keyForManualPm(idx),
+                fallbackKg: c.manual_plusminus_kg,
+                placeholder: '0',
+                allowZero: true,
+                onCommit: (pmKg) => {
                     updateCoreAt(idx, { manual_plusminus_kg: pmKg });
                     applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                    validateKgStep(key, pmKg, true);
-                    clearDraft(key);
-                  }}
-                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  placeholder="0"
-                  placeholderTextColor="#64748b"
-                  style={[styles.input, styles.inputSm]}
-                />
-              </View>
+                },
+              })}
             </View>
             {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
               <ThemedText variant="bodyMuted" style={styles.stepWarn}>
@@ -2284,44 +2334,25 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                     onToggle={() => toggleAdvanced(`planned:${idx}:${psIdx}`)}
                   >
                         <View style={styles.row}>
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Load ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(targetKey, ps.manual_target_kg)}
-                              onChangeText={(v) => setDraft(targetKey, v)}
-                              onBlur={() => {
-                                const nKg = parseDisplayWeightToKg(getDraft(targetKey, ps.manual_target_kg));
+                          {renderManualLoadInput({
+                            label: `Load (${unit})`,
+                            draftKey: targetKey,
+                            fallbackKg: ps.manual_target_kg,
+                            placeholder: 'Optional',
+                            onCommit: (nKg) => {
                                 updatePlannedSetAt(idx, psIdx, { manual_target_kg: nKg });
-                                validateKgStep(targetKey, nKg);
-                                clearDraft(targetKey);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="Optional"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(pmKey, ps.manual_pm_kg)}
-                              onChangeText={(v) => setDraft(pmKey, v)}
-                              onBlur={() => {
-                                const pmKg = parseDisplayDeltaToKg(getDraft(pmKey, ps.manual_pm_kg));
+                            },
+                          })}
+                          {renderManualLoadInput({
+                            label: `± (${unit})`,
+                            draftKey: pmKey,
+                            fallbackKg: ps.manual_pm_kg,
+                            placeholder: '0',
+                            allowZero: true,
+                            onCommit: (pmKg) => {
                                 updatePlannedSetAt(idx, psIdx, { manual_pm_kg: pmKg ?? 0 });
-                                validateKgStep(pmKey, pmKg, true);
-                                clearDraft(pmKey);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="0"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
+                            },
+                          })}
                         </View>
                         {stepIssue ? <ThemedText variant="bodyMuted" style={styles.stepWarn}>{stepIssue}</ThemedText> : null}
                   </CreatorAdvancedSection>
@@ -2818,49 +2849,28 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
 
                         {/* Manual load entry: Target Load and ± Range on same row */}
                         <View style={styles.row}>
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Target Load ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
-                              onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
-                              onBlur={() => {
-                                const key = keyForManualTarget(idx);
-                                const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
+                          {renderManualLoadInput({
+                            label: `Target Load (${unit})`,
+                            draftKey: keyForManualTarget(idx),
+                            fallbackKg: c.manual_target_kg,
+                            placeholder: 'Required',
+                            onCommit: (nKg) => {
                                 updateCoreAt(idx, { manual_target_kg: nKg });
                                 applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-                                validateKgStep(key, nKg);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="Required"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
+                            },
+                          })}
 
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
-                              onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
-                              onBlur={() => {
-                                const key = keyForManualPm(idx);
-                                const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
+                          {renderManualLoadInput({
+                            label: `± Range (${unit})`,
+                            draftKey: keyForManualPm(idx),
+                            fallbackKg: c.manual_plusminus_kg,
+                            placeholder: 'e.g. 5',
+                            allowZero: true,
+                            onCommit: (pmKg) => {
                                 updateCoreAt(idx, { manual_plusminus_kg: pmKg });
                                 applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                                validateKgStep(key, pmKg, true);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="e.g. 5"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
+                            },
+                          })}
                         </View>
                         {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
                           <ThemedText variant="bodyMuted" style={styles.stepWarn}>
@@ -2953,45 +2963,26 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                             </View>
 
                             <View style={styles.row}>
-                              <View style={styles.fieldCol}>
-                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
-                                <TextInput
-                                  value={getDraft(targetKey, ps.manual_target_kg)}
-                                  onChangeText={(v) => setDraft(targetKey, v)}
-                                  onBlur={() => {
-                                    const nKg = parseDisplayWeightToKg(getDraft(targetKey, ps.manual_target_kg));
+                              {renderManualLoadInput({
+                                label: `Manual Target (${unit})`,
+                                draftKey: targetKey,
+                                fallbackKg: ps.manual_target_kg,
+                                placeholder: 'Optional',
+                                onCommit: (nKg) => {
                                     updatePlannedSetAt(idx, psIdx, { manual_target_kg: nKg });
-                                    validateKgStep(targetKey, nKg);
-                                    clearDraft(targetKey);
-                                  }}
-                                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                                  autoCorrect={false}
-                                  autoCapitalize="none"
-                                  placeholder="Optional"
-                                  placeholderTextColor="#64748b"
-                                  style={[styles.input, styles.inputSm]}
-                                />
-                              </View>
+                                },
+                              })}
 
-                              <View style={styles.fieldCol}>
-                                <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
-                                <TextInput
-                                  value={getDraft(pmKey, ps.manual_pm_kg)}
-                                  onChangeText={(v) => setDraft(pmKey, v)}
-                                  onBlur={() => {
-                                    const pmKg = parseDisplayDeltaToKg(getDraft(pmKey, ps.manual_pm_kg));
+                              {renderManualLoadInput({
+                                label: `± Range (${unit})`,
+                                draftKey: pmKey,
+                                fallbackKg: ps.manual_pm_kg,
+                                placeholder: '0',
+                                allowZero: true,
+                                onCommit: (pmKg) => {
                                     updatePlannedSetAt(idx, psIdx, { manual_pm_kg: pmKg ?? 0 });
-                                    validateKgStep(pmKey, pmKg, true);
-                                    clearDraft(pmKey);
-                                  }}
-                                  keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                                  autoCorrect={false}
-                                  autoCapitalize="none"
-                                  placeholder="0"
-                                  placeholderTextColor="#64748b"
-                                  style={[styles.input, styles.inputSm]}
-                                />
-                              </View>
+                                },
+                              })}
                             </View>
 
                             {stepIssue ? (
@@ -3067,63 +3058,38 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                     </View>
                     {/* Manual load override (optional). If set, overrides auto suggested range. */}
                     <View style={styles.row}>
-                      <View style={styles.fieldCol}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
-                        <TextInput
-                          value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
-                          onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
-                          onBlur={() => {
-                            const key = keyForManualTarget(idx);
-                            const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
-
+                      {renderManualLoadInput({
+                        label: `Manual Target (${unit})`,
+                        draftKey: keyForManualTarget(idx),
+                        fallbackKg: c.manual_target_kg,
+                        placeholder: 'Optional',
+                        onCommit: (nKg) => {
                             const seqKey = String(idx);
                             suggestSeqRef.current[seqKey] = (suggestSeqRef.current[seqKey] || 0) + 1;
                             clearSuggestTimer(seqKey);
 
                             updateCoreAt(idx, { manual_target_kg: nKg });
                             applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-                            validateKgStep(key, nKg);
 
                             if (nKg == null) scheduleSuggest(idx);
+                        },
+                      })}
 
-                            clearDraft(key);
-                          }}
-                          keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                          autoCorrect={false}
-                          autoCapitalize="none"
-                          placeholder="Optional"
-                          placeholderTextColor="#64748b"
-                          style={[styles.input, styles.inputSm]}
-                        />
-                      </View>
-
-                      <View style={styles.fieldCol}>
-                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
-                        <TextInput
-                          value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
-                          onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
-                          onBlur={() => {
-                            const key = keyForManualPm(idx);
-                            const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
-
+                      {renderManualLoadInput({
+                        label: `± Range (${unit})`,
+                        draftKey: keyForManualPm(idx),
+                        fallbackKg: c.manual_plusminus_kg,
+                        placeholder: 'e.g. 5',
+                        allowZero: true,
+                        onCommit: (pmKg) => {
                             const seqKey = String(idx);
                             suggestSeqRef.current[seqKey] = (suggestSeqRef.current[seqKey] || 0) + 1;
                             clearSuggestTimer(seqKey);
 
                             updateCoreAt(idx, { manual_plusminus_kg: pmKg });
                             applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                            validateKgStep(key, pmKg, true);
-
-                            clearDraft(key);
-                          }}
-                          keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                          autoCorrect={false}
-                          autoCapitalize="none"
-                          placeholder="e.g. 5"
-                          placeholderTextColor="#64748b"
-                          style={[styles.input, styles.inputSm]}
-                        />
-                      </View>
+                        },
+                      })}
                     </View>
                     {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
                       <ThemedText variant="bodyMuted" style={styles.stepWarn}>
@@ -3210,56 +3176,33 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                         </View>
                         {/* Manual load override (Top) */}
                         <View style={styles.row}>
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualTarget(idx), c.manual_target_kg)}
-                              onChangeText={(v) => setDraft(keyForManualTarget(idx), v)}
-                              onBlur={() => {
-                                const key = keyForManualTarget(idx);
-                                const nKg = parseDisplayWeightToKg(getDraft(key, c.manual_target_kg));
-                                updateCoreAt(idx, { manual_target_kg: nKg });
-                                applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-                                validateKgStep(key, nKg);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="Optional"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
-
-                          {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
-                            <ThemedText variant="bodyMuted" style={styles.stepWarn}>
-                              {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
-                            </ThemedText>
-                          ) : null}
-
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualPm(idx), c.manual_plusminus_kg)}
-                              onChangeText={(v) => setDraft(keyForManualPm(idx), v)}
-                              onBlur={() => {
-                                const key = keyForManualPm(idx);
-                                const pmKg = parseDisplayDeltaToKg(getDraft(key, c.manual_plusminus_kg));
-                                updateCoreAt(idx, { manual_plusminus_kg: pmKg });
-                                applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                                validateKgStep(key, pmKg, true);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="e.g. 5"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
+                          {renderManualLoadInput({
+                            label: `Manual Target (${unit})`,
+                            draftKey: keyForManualTarget(idx),
+                            fallbackKg: c.manual_target_kg,
+                            placeholder: 'Optional',
+                            onCommit: (nKg) => {
+                              updateCoreAt(idx, { manual_target_kg: nKg });
+                              applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
+                            },
+                          })}
+                          {renderManualLoadInput({
+                            label: `± Range (${unit})`,
+                            draftKey: keyForManualPm(idx),
+                            fallbackKg: c.manual_plusminus_kg,
+                            placeholder: 'e.g. 5',
+                            allowZero: true,
+                            onCommit: (pmKg) => {
+                              updateCoreAt(idx, { manual_plusminus_kg: pmKg });
+                              applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
+                            },
+                          })}
                         </View>
+                        {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
+                          <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                            {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+                          </ThemedText>
+                        ) : null}
                         {(() => {
                           const sr = suggestedRangeLabel(c);
                           if (!sr) return null;
@@ -3337,50 +3280,33 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                         </View>
                         {/* Manual load override (Backdown) */}
                         <View style={styles.row}>
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Manual Target ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualTarget(idx + 1), bk.manual_target_kg)}
-                              onChangeText={(v) => setDraft(keyForManualTarget(idx + 1), v)}
-                              onBlur={() => {
-                                const key = keyForManualTarget(idx + 1);
-                                const nKg = parseDisplayWeightToKg(getDraft(key, bk.manual_target_kg));
-                                updateCoreAt(idx + 1, { manual_target_kg: nKg });
-                                applyManualRange(idx + 1, nKg, bk.manual_plusminus_kg ?? 0);
-                                validateKgStep(key, nKg);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="Optional"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
-
-                          <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>± Range ({unit})</ThemedText>
-                            <TextInput
-                              value={getDraft(keyForManualPm(idx + 1), bk.manual_plusminus_kg)}
-                              onChangeText={(v) => setDraft(keyForManualPm(idx + 1), v)}
-                              onBlur={() => {
-                                const key = keyForManualPm(idx + 1);
-                                const pmKg = parseDisplayDeltaToKg(getDraft(key, bk.manual_plusminus_kg));
-                                updateCoreAt(idx + 1, { manual_plusminus_kg: pmKg });
-                                applyManualRange(idx + 1, bk.manual_target_kg ?? null, pmKg);
-                                validateKgStep(key, pmKg, true);
-                                clearDraft(key);
-                              }}
-                              keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'numeric'}
-                              autoCorrect={false}
-                              autoCapitalize="none"
-                              placeholder="e.g. 5"
-                              placeholderTextColor="#64748b"
-                              style={[styles.input, styles.inputSm]}
-                            />
-                          </View>
+                          {renderManualLoadInput({
+                            label: `Manual Target (${unit})`,
+                            draftKey: keyForManualTarget(idx + 1),
+                            fallbackKg: bk.manual_target_kg,
+                            placeholder: 'Optional',
+                            onCommit: (nKg) => {
+                              updateCoreAt(idx + 1, { manual_target_kg: nKg });
+                              applyManualRange(idx + 1, nKg, bk.manual_plusminus_kg ?? 0);
+                            },
+                          })}
+                          {renderManualLoadInput({
+                            label: `± Range (${unit})`,
+                            draftKey: keyForManualPm(idx + 1),
+                            fallbackKg: bk.manual_plusminus_kg,
+                            placeholder: 'e.g. 5',
+                            allowZero: true,
+                            onCommit: (pmKg) => {
+                              updateCoreAt(idx + 1, { manual_plusminus_kg: pmKg });
+                              applyManualRange(idx + 1, bk.manual_target_kg ?? null, pmKg);
+                            },
+                          })}
                         </View>
+                        {unit === 'kg' && (stepIssues[`core:${idx + 1}:manual_target`] || stepIssues[`core:${idx + 1}:manual_pm`]) ? (
+                          <ThemedText variant="bodyMuted" style={styles.stepWarn}>
+                            {stepIssues[`core:${idx + 1}:manual_target`] || stepIssues[`core:${idx + 1}:manual_pm`]}
+                          </ThemedText>
+                        ) : null}
                         {(() => {
                           const sr = suggestedRangeLabel(bk);
                           if (!sr) return null;
@@ -5036,6 +4962,37 @@ const styles = StyleSheet.create({
     color: '#F8FAFC',
     textAlign: 'center',
     fontWeight: '900',
+  },
+  manualLoadStepper: {
+    minHeight: 38,
+    borderWidth: 1,
+    borderColor: 'rgba(185,176,163,0.14)',
+    borderRadius: 8,
+    backgroundColor: 'rgba(6,6,8,0.4)',
+    padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  manualLoadStepButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: 'rgba(139,92,246,0.38)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(20,16,28,0.34)',
+  },
+  manualLoadStepText: {
+    color: '#C4B5FD',
+    fontWeight: '900',
+    lineHeight: 22,
+  },
+  manualLoadInput: {
+    flex: 1,
+    minWidth: 0,
+    textAlign: 'center',
   },
   rpeSelectorScroll: {
     flexGrow: 0,
