@@ -207,6 +207,7 @@ type WorkoutPayload = {
   athlete: {
     id: number;
     name: string;
+    preferred_units?: string | null;
   };
 };
 
@@ -235,6 +236,14 @@ function formatWeight(
   const lbs = kg / KG_PER_LB;
   const rounded = roundToNearestGymIncrementLb(lbs);
   return rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1);
+}
+
+function normalizeMobileLoggerUnit(value?: string | null): 'kg' | 'lb' {
+  const unit = String(value || '').trim().toLowerCase();
+  if (unit === 'lb' || unit === 'lbs' || unit === 'pound' || unit === 'pounds') {
+    return 'lb';
+  }
+  return 'kg';
 }
 
 function formatTargetRange(
@@ -1147,6 +1156,7 @@ export default function WorkoutViewerScreen() {
     user?.is_self_coached === true;
 
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
+  const unitSeededWorkoutIdRef = useRef<string | null>(null);
   const [data, setData] = useState<WorkoutPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -3287,6 +3297,22 @@ export default function WorkoutViewerScreen() {
       }
     }
   }, [workoutId]);
+
+  useEffect(() => {
+    unitSeededWorkoutIdRef.current = null;
+  }, [workoutId]);
+
+  const workoutAthleteId = data?.athlete?.id;
+  const workoutAthletePreferredUnits = data?.athlete?.preferred_units;
+
+  useEffect(() => {
+    if (!workoutId || !workoutAthleteId) return;
+    const key = String(workoutId);
+    if (unitSeededWorkoutIdRef.current === key) return;
+
+    setUnit(normalizeMobileLoggerUnit(workoutAthletePreferredUnits));
+    unitSeededWorkoutIdRef.current = key;
+  }, [workoutAthleteId, workoutAthletePreferredUnits, workoutId]);
 
   useEffect(() => {
     startVideoUploadQueue();
