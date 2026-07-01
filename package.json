@@ -8,7 +8,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test:video-upload-policy": "node scripts/assert-video-upload-policy.js"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",

@@ -49,6 +49,7 @@ type EnqueueVideoUploadInput = {
 const STORAGE_KEY = 'strength-ledger.video-upload-queue.v1';
 const MAX_RETRY_COUNT = 8;
 const UPLOAD_TIMEOUT_MS = 5 * 60 * 1000;
+const CHUNK_UPLOAD_RETRIES = 3;
 const listeners = new Set<(jobs: QueuedVideoUploadJob[]) => void>();
 
 let processing = false;
@@ -78,6 +79,12 @@ function uploadIntentForJob(job: QueuedVideoUploadJob) {
 
 function submitForReviewValue(job: QueuedVideoUploadJob) {
   return job.submitForReview === false ? 'false' : 'true';
+}
+
+function shouldUseChunkedUpload(_job: QueuedVideoUploadJob, _actualSize?: number | null) {
+  // Production iOS has produced empty Flask multipart parses on the direct
+  // endpoint at 16MB+, so native video uploads must always use chunked JSON.
+  return Platform.OS !== 'web';
 }
 
 function backoffMs(retryCount: number) {
@@ -157,18 +164,113 @@ async function updateJob(id: string, updater: (job: QueuedVideoUploadJob) => Que
 }
 
 function statusFromFailure(status: number, message: string): QueuedVideoUploadStatus {
+  if (/video file required/i.test(message)) {
+    return 'failed_retryable';
+  }
   if (status === 400 || status === 401 || status === 403 || status === 404 || status === 413 || /unsupported|too large|forbidden|not available/i.test(message)) {
     return 'failed_permanent';
   }
   return 'failed_retryable';
 }
 
-async function uploadJob(job: QueuedVideoUploadJob) {
-  const info = await FileSystem.getInfoAsync(job.localFileUri, { size: true } as any);
-  if (!info.exists) {
-    throw Object.assign(new Error('Local video file is no longer available.'), { permanent: true });
+async function uploadChunkWithRetry(setLogId: number, payload: any) {
+  let lastError: any = null;
+  for (let attempt = 1; attempt <= CHUNK_UPLOAD_RETRIES; attempt += 1) {
+    const { ok, status, json, raw } = await fetchJson(
+      `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/chunk`,
+      {
+        method: 'POST',
+        body: payload,
+        auth: true,
+        timeoutMs: 60 * 1000,
+      },
+    );
+    if (ok && json?.ok) return json;
+    lastError = new Error(json?.error || raw || `Video chunk upload failed (HTTP ${status})`);
+    await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
+  }
+  throw lastError || new Error('Video chunk upload failed.');
+}
+
+async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
+  const init = await fetchJson(
+    `${API_BASE}/video-review/mobile/set-logs/${job.setLogId}/video/chunked/init`,
+    {
+      method: 'POST',
+      auth: true,
+      timeoutMs: 60 * 1000,
+      body: {
+        client_upload_id: job.id,
+        filename: job.filename || 'set-video.mp4',
+        content_type: job.mimeType || 'video/mp4',
+        size: actualSize,
+        video_angle: job.videoAngle || 'unknown',
+        submit_for_review: submitForReviewValue(job),
+        upload_intent: uploadIntentForJob(job),
+      } as any,
+    },
+  );
+  if (!init.ok || !init.json?.ok) {
+    throw Object.assign(
+      new Error(init.json?.error || init.raw || `Chunked upload init failed (HTTP ${init.status})`),
+      { httpStatus: init.status },
+    );
   }
 
+  const uploadId = init.json.upload_id;
+  const chunkSize = Number(init.json.chunk_size || 1024 * 1024);
+  const totalChunks = Number(init.json.total_chunks || Math.ceil(actualSize / chunkSize));
+
+  for (let index = 0; index < totalChunks; index += 1) {
+    const position = index * chunkSize;
+    const length = Math.min(chunkSize, actualSize - position);
+    const dataBase64 = await FileSystem.readAsStringAsync(job.localFileUri, {
+      encoding: FileSystem.EncodingType.Base64,
+      position,
+      length,
+    } as any);
+    await uploadChunkWithRetry(job.setLogId, {
+      upload_id: uploadId,
+      index,
+      data_base64: dataBase64,
+    });
+  }
+
+  let thumbnailBase64 = '';
+  if (job.thumbnailUri) {
+    const thumbInfo = await FileSystem.getInfoAsync(job.thumbnailUri);
+    if (thumbInfo.exists) {
+      thumbnailBase64 = await FileSystem.readAsStringAsync(job.thumbnailUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      } as any);
+    }
+  }
+
+  const complete = await fetchJson(
+    `${API_BASE}/video-review/mobile/set-logs/${job.setLogId}/video/chunked/complete`,
+    {
+      method: 'POST',
+      auth: true,
+      timeoutMs: UPLOAD_TIMEOUT_MS,
+      body: {
+        upload_id: uploadId,
+        total_chunks: totalChunks,
+        thumbnail_base64: thumbnailBase64,
+        thumbnail_filename: thumbnailBase64 ? `set-video-thumbnail-${job.id}.jpg` : '',
+        thumbnail_content_type: thumbnailBase64 ? 'image/jpeg' : '',
+      } as any,
+    },
+  );
+  if (!complete.ok || !complete.json?.ok) {
+    throw Object.assign(
+      new Error(complete.json?.error || complete.raw || `Chunked upload complete failed (HTTP ${complete.status})`),
+      { httpStatus: complete.status },
+    );
+  }
+  return complete.json?.video || null;
+}
+
+async function uploadJobLegacyDirectMultipartForWebOnly(job: QueuedVideoUploadJob) {
   const formData = new FormData();
   formData.append('video', {
     uri: job.localFileUri,
@@ -209,6 +311,21 @@ async function uploadJob(job: QueuedVideoUploadJob) {
   }
 
   return json?.video || null;
+}
+
+async function uploadJob(job: QueuedVideoUploadJob) {
+  const info = await FileSystem.getInfoAsync(job.localFileUri, { size: true } as any);
+  if (!info.exists) {
+    throw Object.assign(new Error('Local video file is no longer available.'), { permanent: true });
+  }
+  const actualSize = Number((info as any)?.size || job.fileSizeBytes || 0);
+  if (shouldUseChunkedUpload(job, actualSize)) {
+    if (!actualSize || actualSize <= 0) {
+      throw Object.assign(new Error('Local video file size is unavailable.'), { permanent: true });
+    }
+    return uploadJobChunked(job, actualSize);
+  }
+  return uploadJobLegacyDirectMultipartForWebOnly(job);
 }
 
 async function cleanupJobFiles(job: QueuedVideoUploadJob) {

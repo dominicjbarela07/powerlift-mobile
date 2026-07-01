@@ -1,6 +1,7 @@
 // app/lib/api.ts
 
 import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 const MANUAL_TIMEZONE_KEY = 'athlete_manual_timezone';
@@ -156,6 +157,25 @@ function createTimeoutError(timeoutMs: number) {
   return new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`);
 }
 
+function mobileAppVersionHeaders(): Record<string, string> {
+  const expoConfig: any = Constants.expoConfig || {};
+  const appVersion =
+    (Constants as any).nativeApplicationVersion ||
+    expoConfig.version ||
+    '';
+  const buildVersion =
+    (Constants as any).nativeBuildVersion ||
+    expoConfig.ios?.buildNumber ||
+    expoConfig.android?.versionCode ||
+    '';
+  const headers: Record<string, string> = {
+    'X-Strength-Ledger-Platform': Platform.OS,
+  };
+  if (appVersion) headers['X-Strength-Ledger-App-Version'] = String(appVersion);
+  if (buildVersion) headers['X-Strength-Ledger-Build'] = String(buildVersion);
+  return headers;
+}
+
 export async function fetchJson<T = any>(
   path: string,
   init: ApiFetchInit = {}
@@ -216,6 +236,7 @@ export async function fetchJson<T = any>(
 
   const defaultHeaders: Record<string, string> = {
     Accept: 'application/json',
+    ...mobileAppVersionHeaders(),
   };
 
   // Only set Content-Type when sending a JSON body (and caller didn't set it)
