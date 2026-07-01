@@ -104,6 +104,7 @@ export function SessionCommandStrip({
   void loggedSets;
   void plannedSets;
   void workoutStatus;
+  const showTimerControls = canLog;
 
   return (
     <View style={styles.commandStripWrap}>
@@ -145,40 +146,38 @@ export function SessionCommandStrip({
           </View>
         </View>
 
-        <View style={styles.commandDivider} />
+        {showTimerControls ? (
+          <>
+            <View style={styles.commandDivider} />
 
-        <View style={[styles.commandTimerBlock, restActive && styles.commandTimerBlockActive]}>
-          <Text style={[styles.commandTimerDot, !restActive && styles.commandTimerDotIdle]}>●</Text>
-          <View style={styles.commandTimerTextStack}>
-            <Text style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
-              Rest Timer
-            </Text>
-            <Text style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
-              {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
-            </Text>
-          </View>
-        </View>
+            <View style={[styles.commandTimerBlock, restActive && styles.commandTimerBlockActive]}>
+              <Text style={[styles.commandTimerDot, !restActive && styles.commandTimerDotIdle]}>●</Text>
+              <View style={styles.commandTimerTextStack}>
+                <Text style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
+                  Rest Timer
+                </Text>
+                <Text style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
+                  {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
+                </Text>
+              </View>
+            </View>
 
-        <View style={styles.commandDivider} />
+            <View style={styles.commandDivider} />
 
-        {canLog ? (
-          !restActive ? (
-            <TouchableOpacity style={styles.commandButton} onPress={openTimerPicker}>
-              <Text style={styles.commandButtonText}>Set Timer</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[styles.commandButton, styles.commandButtonDanger]}
-              onPress={stopRestTimer}
-            >
-              <Text style={styles.commandButtonText}>Stop</Text>
-            </TouchableOpacity>
-          )
-        ) : (
-          <View style={styles.commandButtonGhost}>
-            <Text style={styles.commandButtonGhostText}>Ready</Text>
-          </View>
-        )}
+            {!restActive ? (
+              <TouchableOpacity style={styles.commandButton} onPress={openTimerPicker}>
+                <Text style={styles.commandButtonText}>Set Timer</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.commandButton, styles.commandButtonDanger]}
+                onPress={stopRestTimer}
+              >
+                <Text style={styles.commandButtonText}>Stop</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        ) : null}
       </View>
     </View>
   );

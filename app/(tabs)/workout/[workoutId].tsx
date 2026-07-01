@@ -2032,6 +2032,21 @@ export default function WorkoutViewerScreen() {
     return () => sub.remove();
   }, [restActive]);
 
+  useEffect(() => {
+    const status = String(data?.workout?.status || '').toLowerCase();
+    if (status === 'in_progress') return;
+
+    if (restTimerRef.current) {
+      clearInterval(restTimerRef.current);
+      restTimerRef.current = null;
+    }
+    restEndAtMsRef.current = null;
+    if (restActive) setRestActive(false);
+    if (restSeconds !== 0) setRestSeconds(0);
+    if (timerPickerVisible) setTimerPickerVisible(false);
+    cancelRestEndNotification();
+  }, [data?.workout?.status, restActive, restSeconds, timerPickerVisible]);
+
 
 
   const updateStraightInput = (
