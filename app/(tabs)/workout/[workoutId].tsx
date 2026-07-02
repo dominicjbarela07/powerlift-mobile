@@ -192,6 +192,9 @@ type WorkoutPayload = {
     date: string | null;
     label: string | null;
     status: string | null;
+    started_at?: string | null;
+    completed_duration_seconds?: number | null;
+    completion_reminder_sent_at?: string | null;
     timeliness?: 'on_time' | 'tardy' | 'missed' | string | null;
     loggable?: boolean | null;
     requires_tardy_reason?: boolean | null;
@@ -474,6 +477,24 @@ function queuedVideoStatusLabel(uploadState: { uploading?: boolean; queued?: boo
   return null;
 }
 
+function parseTimestampMs(value?: string | null) {
+  if (!value) return null;
+  const normalized = /z$|[+-]\d\d:?\d\d$/i.test(value) ? value : `${value}Z`;
+  const ms = Date.parse(normalized);
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function formatSessionDuration(totalSeconds?: number | null) {
+  const seconds = Math.max(0, Math.floor(Number(totalSeconds || 0)));
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
 function formatHistoryPattern(value: any) {
   const text = String(value || 'accessory').replace(/_/g, ' ').trim();
   return text ? text.replace(/\b\w/g, (m) => m.toUpperCase()) : 'Accessory';
@@ -699,6 +720,16 @@ function numericId(value: unknown): number | null {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
+function uniqueLoggedSetIndexesForLogs(logs?: SetLog[] | null): number[] {
+  return Array.from(
+    new Set(
+      (logs || [])
+        .map((log) => Number(log.set_index || 0))
+        .filter((idx) => Number.isFinite(idx) && idx > 0),
+    ),
+  ).sort((a, b) => a - b);
+}
+
 function isBackdownWorkoutItem(item?: WorkoutItem | null): boolean {
   const variant = normalizedWorkoutVariant(item);
   if (variant === 'BK' || variant === 'BACKDOWN' || variant === 'BACKDOWNS') return true;
@@ -715,6 +746,11 @@ function isFullCustomWorkoutItem(item?: WorkoutItem | null): boolean {
     normalizedWorkoutVariant(item) === 'FULL_CUSTOM' ||
     String(item?.scheme || '').trim().toUpperCase() === 'FULL_CUSTOM'
   );
+}
+
+function isStraightWorkoutItem(item?: WorkoutItem | null): boolean {
+  const variant = normalizedWorkoutVariant(item);
+  return variant === 'STRAIGHT' || variant === 'VR' || !variant;
 }
 
 function plannedSetCountForItem(item: WorkoutItem) {
@@ -742,6 +778,98 @@ function plannedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
     0,
   );
   return core + acc;
+}
+
+function missingSetLabelsForWorkout(workout?: WorkoutPayload['workout'] | null): string[] {
+  if (!workout) return [];
+  const missing: string[] = [];
+  const formatSetRangeList = (indexes: number[]) => {
+    if (!indexes.length) return '';
+    const ranges: string[] = [];
+    let start = indexes[0];
+    let previous = indexes[0];
+    for (let idx = 1; idx < indexes.length; idx += 1) {
+      const current = indexes[idx];
+      if (current === previous + 1) {
+        previous = current;
+        continue;
+      }
+      ranges.push(start === previous ? String(start) : `${start}-${previous}`);
+      start = current;
+      previous = current;
+    }
+    ranges.push(start === previous ? String(start) : `${start}-${previous}`);
+    return ranges.join(', ');
+  };
+  const missingIndexesForItem = (item: WorkoutItem, indexes: number[]) => {
+    const logged = new Set(uniqueLoggedSetIndexesForLogs(item.set_logs || []));
+    return indexes.filter((setIndex) => !logged.has(setIndex));
+  };
+  const addMissingForItem = (
+    item: WorkoutItem,
+    indexes: number[],
+    labelPrefix: string,
+    noun = 'Set',
+  ) => {
+    const missingIndexes = missingIndexesForItem(item, indexes);
+    if (!missingIndexes.length) return;
+    const plural = missingIndexes.length === 1 ? noun : `${noun}s`;
+    missing.push(`${labelPrefix} - ${plural} ${formatSetRangeList(missingIndexes)}`);
+  };
+
+  const coreItems = workout.core_items || [];
+  for (const core of coreItems) {
+    const isBackdown = isBackdownWorkoutItem(core);
+    if (isBackdown && core.parent_item_id != null) continue;
+
+    const name = liftDisplayName(core);
+    if (isFullCustomWorkoutItem(core)) {
+      const planned = Array.isArray(core.planned_sets) ? core.planned_sets : [];
+      const plannedIndexes = planned
+        .map((ps) => Number(ps?.set_index || 0))
+        .filter((idx) => Number.isFinite(idx) && idx > 0)
+        .sort((a, b) => a - b);
+      const indexes = plannedIndexes.length
+        ? plannedIndexes
+        : Array.from({ length: positiveInt(core.sets) }).map((_, idx) => idx + 1);
+      addMissingForItem(core, indexes, name);
+      continue;
+    }
+
+    if (isTopWorkoutItem(core)) {
+      const topTotal = positiveInt(core.sets);
+      addMissingForItem(
+        core,
+        Array.from({ length: topTotal }).map((_, idx) => idx + 1),
+        name,
+        'Top',
+      );
+
+      const backdowns = coreItems.filter(
+        (item) => isBackdownWorkoutItem(item) && numericId(item.parent_item_id) === numericId(core.id),
+      );
+      backdowns.forEach((backdown) => {
+        addMissingForItem(
+          backdown,
+          Array.from({ length: positiveInt(backdown.sets) }).map((_, idx) => idx + 1),
+          name,
+          'Backdown',
+        );
+      });
+      continue;
+    }
+
+    addMissingForItem(core, Array.from({ length: positiveInt(core.sets) }).map((_, idx) => idx + 1), name);
+  }
+
+  for (const group of workout.accessory_groups || []) {
+    for (const item of group.items || []) {
+      const name = simplifyMobileMovementName(item.movement || item.lift || 'Accessory');
+      addMissingForItem(item, Array.from({ length: positiveInt(item.sets) }).map((_, idx) => idx + 1), name);
+    }
+  }
+
+  return missing;
 }
 
 function progressSegmentsForWorkout(workout?: WorkoutPayload['workout'] | null): WorkoutProgressSetSegment[] {
@@ -1158,6 +1286,7 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const unitSeededWorkoutIdRef = useRef<string | null>(null);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+  const [sessionNowMs, setSessionNowMs] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [straightInputs, setStraightInputs] = useState<
@@ -1273,14 +1402,7 @@ export default function WorkoutViewerScreen() {
     }));
   };
 
-  const uniqueLoggedSetIndexes = (logs?: SetLog[] | null) =>
-    Array.from(
-      new Set(
-        (logs || [])
-          .map((log) => Number(log.set_index || 0))
-          .filter((idx) => Number.isFinite(idx) && idx > 0),
-      ),
-    ).sort((a, b) => a - b);
+  const uniqueLoggedSetIndexes = (logs?: SetLog[] | null) => uniqueLoggedSetIndexesForLogs(logs);
 
   const loggedSetIndexCount = (logs?: SetLog[] | null) => uniqueLoggedSetIndexes(logs).length;
 
@@ -1580,6 +1702,7 @@ export default function WorkoutViewerScreen() {
 
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
+  const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
   const [postSessionForm, setPostSessionForm] = useState({
     sessionRpe: null as number | null,
     strengthFeeling: '' as '' | 'much_weaker' | 'slightly_weaker' | 'normal' | 'slightly_stronger' | 'much_stronger',
@@ -2047,7 +2170,14 @@ export default function WorkoutViewerScreen() {
     cancelRestEndNotification();
   }, [data?.workout?.status, restActive, restSeconds, timerPickerVisible]);
 
+  useEffect(() => {
+    const status = String(data?.workout?.status || '').toLowerCase();
+    if (status !== 'in_progress' || !data?.workout?.started_at) return;
 
+    setSessionNowMs(Date.now());
+    const id = setInterval(() => setSessionNowMs(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [data?.workout?.status, data?.workout?.started_at]);
 
   const updateStraightInput = (
     itemId: number,
@@ -3130,9 +3260,14 @@ export default function WorkoutViewerScreen() {
     await beginWorkoutConfirmed(reason);
   };
 
-  const completeWorkout = async () => {
+  const completeWorkout = async ({ skipIncompleteWarning = false }: { skipIncompleteWarning?: boolean } = {}) => {
     if (!data?.workout) return;
     const wkId = data.workout.id;
+
+    if (!skipIncompleteWarning && missingSetLabelsForWorkout(data.workout).length > 0) {
+      setMissingCompletionSets(missingSetLabelsForWorkout(data.workout));
+      return;
+    }
 
     try {
       setActionLoading('complete');
@@ -3178,9 +3313,24 @@ export default function WorkoutViewerScreen() {
     setPostSessionVisible(true);
   };
 
+  const requestCompleteWorkout = () => {
+    if (!data?.workout) return;
+    const missingSets = missingSetLabelsForWorkout(data.workout);
+    if (missingSets.length > 0) {
+      setMissingCompletionSets(missingSets);
+      return;
+    }
+    openPostSessionSurvey();
+  };
+
+  const continueToPostSessionWithMissingSets = () => {
+    setMissingCompletionSets(null);
+    requestAnimationFrame(() => openPostSessionSurvey());
+  };
+
   const skipPostSessionAndComplete = async () => {
     setPostSessionVisible(false);
-    await completeWorkout();
+    await completeWorkout({ skipIncompleteWarning: true });
   };
 
   const submitPostSessionAndComplete = async () => {
@@ -3221,7 +3371,7 @@ export default function WorkoutViewerScreen() {
       }
 
       setPostSessionVisible(false);
-      await completeWorkout();
+      await completeWorkout({ skipIncompleteWarning: true });
     } catch (err: any) {
       console.log('submitPostSessionAndComplete error', err);
       setError(err?.message || 'Failed to submit post-session survey');
@@ -3867,6 +4017,16 @@ export default function WorkoutViewerScreen() {
   const isPreSession = screenMode === 'pre_session';
   const isActiveSession = screenMode === 'active_session';
   const isFinishedSession = screenMode === 'finished_session';
+  const startedAtMs = parseTimestampMs(workout.started_at);
+  const liveSessionDurationSeconds =
+    isActiveSession && startedAtMs != null
+      ? Math.max(0, Math.floor((sessionNowMs - startedAtMs) / 1000))
+      : null;
+  const sessionDurationLabel = isActiveSession
+    ? (liveSessionDurationSeconds != null ? formatSessionDuration(liveSessionDurationSeconds) : null)
+    : (isFinishedSession && workout.completed_duration_seconds != null
+        ? formatSessionDuration(workout.completed_duration_seconds)
+        : null);
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
   const progressPct = plannedSets ? Math.min(100, Math.round((loggedSets / plannedSets) * 100)) : 0;
@@ -4565,6 +4725,7 @@ export default function WorkoutViewerScreen() {
           progressPct={progressPct}
           progressSegments={workoutProgressSegments}
           topLoggedText={topLogged ? `${liftDisplayName(topLogged.item)} · ${loggedSetText(topLogged.log, unit)}` : null}
+          sessionDurationLabel={sessionDurationLabel}
           canBegin={canBegin}
           canEdit={canEdit}
           actionLoading={actionLoading}
@@ -4609,10 +4770,7 @@ export default function WorkoutViewerScreen() {
         <View style={styles.sectionBlock}>
           {workout.core_items.map((core) => {
             // ... keep the entire core_items.map block exactly as-is ...
-            const isStraightLike =
-              core.variant === 'STRAIGHT' ||
-              core.variant === 'VR' ||
-              core.lift === 'VR';
+            const isStraightLike = isStraightWorkoutItem(core);
 
             const isTop = isTopWorkoutItem(core);
             const isBackdown = isBackdownWorkoutItem(core);
@@ -4796,7 +4954,7 @@ export default function WorkoutViewerScreen() {
                     styles.actionPrimary,
                     actionLoading === 'complete' && { opacity: 0.7 },
                   ]}
-                  onPress={openPostSessionSurvey}
+                  onPress={requestCompleteWorkout}
                   disabled={!!actionLoading}
                 >
                   {actionLoading === 'complete' ? (
@@ -5458,6 +5616,51 @@ export default function WorkoutViewerScreen() {
           </View>
           </View>
         </KeyboardAvoidingView>
+      </Modal>
+
+      <Modal
+        visible={!!missingCompletionSets}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMissingCompletionSets(null)}
+      >
+        <View style={styles.modalBackdropCenter}>
+          <View style={[styles.modalCard, styles.incompleteCompleteModal]}>
+            <View style={styles.incompleteWarningIcon}>
+              <Text style={styles.incompleteWarningIconText}>!</Text>
+            </View>
+            <Text style={styles.postSessionTitle}>Finish with unlogged sets?</Text>
+            <Text style={styles.incompleteCompleteCopy}>
+              These prescribed sets have not been logged. You can keep logging or continue to the post-session survey.
+            </Text>
+
+            <View style={styles.incompleteMissingListFrame}>
+              <ScrollView style={styles.incompleteMissingList} showsVerticalScrollIndicator>
+                {(missingCompletionSets || []).map((label, idx) => (
+                  <View key={`${label}-${idx}`} style={styles.incompleteMissingRow}>
+                    <Text style={styles.incompleteMissingBullet}>•</Text>
+                    <Text style={styles.incompleteMissingText}>{label}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={styles.modalActionsRow}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                onPress={() => setMissingCompletionSets(null)}
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Keep Logging</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.actionDanger, { flex: 1.15 }]}
+                onPress={continueToPostSessionWithMissingSets}
+              >
+                <Text style={[styles.actionButtonText, styles.actionDangerText]}>Continue</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
 
       <Modal
@@ -6981,6 +7184,69 @@ const styles = StyleSheet.create({
     width: '95%',
     maxWidth: 520,
     paddingTop: 4,
+  },
+  incompleteCompleteModal: {
+    width: '92%',
+    maxWidth: 520,
+    alignItems: 'stretch',
+  },
+  incompleteWarningIcon: {
+    alignSelf: 'center',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1,
+    borderColor: 'rgba(251,191,36,0.58)',
+    backgroundColor: 'rgba(120,53,15,0.34)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  incompleteWarningIconText: {
+    color: '#FDE68A',
+    fontSize: 25,
+    lineHeight: 29,
+    fontWeight: '900',
+  },
+  incompleteCompleteCopy: {
+    color: '#C7D2FE',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  incompleteMissingListFrame: {
+    maxHeight: 220,
+    marginTop: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(251,191,36,0.22)',
+    backgroundColor: 'rgba(15,23,42,0.62)',
+    overflow: 'hidden',
+  },
+  incompleteMissingList: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  incompleteMissingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    paddingVertical: 6,
+  },
+  incompleteMissingBullet: {
+    color: '#FBBF24',
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '900',
+  },
+  incompleteMissingText: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '800',
   },
   surveySection: {
     marginTop: 14,

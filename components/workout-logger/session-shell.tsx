@@ -194,6 +194,7 @@ export function SessionIntentPanel({
   progressPct,
   progressSegments,
   topLoggedText,
+  sessionDurationLabel,
   canBegin,
   canEdit,
   actionLoading,
@@ -210,6 +211,7 @@ export function SessionIntentPanel({
   progressPct: number;
   progressSegments?: WorkoutProgressSetSegment[];
   topLoggedText?: string | null;
+  sessionDurationLabel?: string | null;
   canBegin: boolean;
   canEdit: boolean;
   actionLoading: null | 'begin' | 'complete' | 'cancel';
@@ -286,12 +288,20 @@ export function SessionIntentPanel({
               <Text style={styles.sessionIdentityMeta}>{workout.date || 'No date set'}</Text>
               {focusLine ? <Text style={styles.sessionFocusLine}>{focusLine}</Text> : null}
             </View>
-            <SessionProgressRing
-              progressPct={progressPct}
-              loggedSets={loggedSets}
-              plannedSets={plannedSets}
-            />
-          </View>
+          <SessionProgressRing
+            progressPct={progressPct}
+            loggedSets={loggedSets}
+            plannedSets={plannedSets}
+          />
+        </View>
+          {sessionDurationLabel ? (
+            <View style={styles.activeSessionStatsRow}>
+              <View style={styles.activeSessionStat}>
+                <Text style={styles.activeSessionStatLabel}>Session Length</Text>
+                <Text style={styles.activeSessionStatValue}>{sessionDurationLabel}</Text>
+              </View>
+            </View>
+          ) : null}
           <SessionSetProgressStrip segments={progressSegments || []} />
         </View>
       </View>
@@ -325,6 +335,15 @@ export function SessionIntentPanel({
                 {topLoggedText || 'Completed work logged'}
               </Text>
             </View>
+            {sessionDurationLabel ? (
+              <>
+                <View style={styles.finishedRecapDivider} />
+                <View style={styles.finishedRecapBlock}>
+                  <Text style={styles.finishedRecapLabel}>Session Length</Text>
+                  <Text style={styles.finishedRecapValue}>{sessionDurationLabel}</Text>
+                </View>
+              </>
+            ) : null}
           </View>
           <View style={styles.sessionProgressTrack}>
             <View style={[styles.sessionProgressFillFinished, { width: `${progressPct}%` }]} />
@@ -599,6 +618,40 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 5,
   },
+  activeSessionStatsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(167,139,250,0.13)',
+    paddingVertical: 10,
+  },
+  activeSessionStat: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.20)',
+    backgroundColor: 'rgba(15,23,42,0.36)',
+    gap: 12,
+  },
+  activeSessionStatLabel: {
+    color: '#A5B4FC',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  activeSessionStatValue: {
+    color: '#F8FAFC',
+    fontSize: 24,
+    lineHeight: 29,
+    fontWeight: '900',
+  },
   sessionModeKickerPre: {
     color: '#FACC15',
     fontSize: 12,
@@ -808,6 +861,7 @@ const styles = StyleSheet.create({
   },
   finishedRecapStrip: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
