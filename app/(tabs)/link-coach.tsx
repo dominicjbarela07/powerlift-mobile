@@ -178,7 +178,7 @@ export default function PendingCoachInviteScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
       <ThemedView style={styles.screen}>
         <SLAtmosphere />
         <ScrollView
@@ -221,7 +221,6 @@ export default function PendingCoachInviteScreen() {
                 )}
                 <ThemedText style={styles.primaryButtonText}>Check for Invite</ThemedText>
               </Pressable>
-
             </View>
           </View>
 
