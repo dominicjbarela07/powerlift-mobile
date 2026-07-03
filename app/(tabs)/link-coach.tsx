@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -210,11 +209,14 @@ export default function PendingCoachInviteScreen() {
             >
               <Ionicons name="settings-outline" size={25} color={SLColors.text} />
             </Pressable>
-            <Image
-              source={require('../../assets/images/app_logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <View style={styles.wordmark} accessibilityLabel="Strength Ledger">
+              <ThemedText style={styles.wordmarkTop}>STRENGTH</ThemedText>
+              <View style={styles.wordmarkBottomRow}>
+                <View style={styles.wordmarkRule} />
+                <ThemedText style={styles.wordmarkBottom}>LEDGER</ThemedText>
+                <View style={styles.wordmarkRule} />
+              </View>
+            </View>
             <Pressable
               accessibilityLabel="Messages unlock after coach invite"
               accessibilityRole="button"
@@ -226,21 +228,19 @@ export default function PendingCoachInviteScreen() {
             </Pressable>
           </View>
 
-          <View style={styles.heroCard}>
-            <View style={styles.heroGlow} />
-            <View style={styles.heroTopRow}>
+          <View style={styles.statusCard}>
+            <View style={styles.statusTopRow}>
               <View style={styles.statusPill}>
                 <View style={styles.statusDot} />
                 <ThemedText style={styles.statusPillText}>Account ready</ThemedText>
               </View>
-              <View style={styles.iconBadge}>
-                <Ionicons name="barbell-outline" size={20} color={SLColors.accentViolet} />
+              <View style={styles.statusIcon}>
+                <Ionicons name="mail-unread-outline" size={19} color={SLColors.accentViolet} />
               </View>
             </View>
             <ThemedText style={styles.title}>Pending coach invite</ThemedText>
-            <ThemedText style={styles.heroLead}>You’re all set.</ThemedText>
             <ThemedText style={styles.body}>
-              Your account has been created successfully. Once your coach sends an invitation, it will appear below and you’ll immediately gain access to your training.
+              We’ve created your athlete account. Once your coach sends an invitation, you’ll be able to immediately begin training.
             </ThemedText>
 
             <View style={styles.actionRow}>
@@ -266,6 +266,29 @@ export default function PendingCoachInviteScreen() {
                 <Ionicons name="settings-outline" size={17} color={SLColors.text} />
                 <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
               </Pressable>
+            </View>
+
+            <View style={styles.workflowCard} accessibilityLabel="How coach invites work">
+              <View style={styles.workflowStep}>
+                <View style={styles.workflowIndex}>
+                  <ThemedText style={styles.workflowIndexText}>1</ThemedText>
+                </View>
+                <ThemedText style={styles.workflowText}>Coach invites you</ThemedText>
+              </View>
+              <Ionicons name="chevron-down" size={14} color={SLColors.textSubtle} />
+              <View style={styles.workflowStep}>
+                <View style={styles.workflowIndex}>
+                  <ThemedText style={styles.workflowIndexText}>2</ThemedText>
+                </View>
+                <ThemedText style={styles.workflowText}>Accept invitation</ThemedText>
+              </View>
+              <Ionicons name="chevron-down" size={14} color={SLColors.textSubtle} />
+              <View style={styles.workflowStep}>
+                <View style={styles.workflowIndex}>
+                  <ThemedText style={styles.workflowIndexText}>3</ThemedText>
+                </View>
+                <ThemedText style={styles.workflowText}>Training unlocks</ThemedText>
+              </View>
             </View>
           </View>
 
@@ -358,56 +381,77 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    paddingHorizontal: SLSpacing.xl,
-    paddingTop: SLSpacing.md,
-    paddingBottom: 44,
-    gap: SLSpacing.lg,
+    paddingHorizontal: SLSpacing.lg,
+    paddingTop: SLSpacing.sm,
+    paddingBottom: 104,
+    gap: SLSpacing.md,
   },
   topBar: {
-    minHeight: 76,
+    minHeight: 74,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   topIconButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(8, 10, 13, 0.34)',
+    backgroundColor: 'rgba(8, 10, 13, 0.42)',
     borderWidth: 1,
-    borderColor: 'rgba(205, 194, 176, 0.08)',
+    borderColor: 'rgba(205, 194, 176, 0.10)',
   },
-  logo: {
-    width: 178,
-    height: 66,
+  wordmark: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 184,
   },
-  heroCard: {
+  wordmarkTop: {
+    color: SLColors.textStrong,
+    fontSize: 29,
+    lineHeight: 31,
+    fontFamily: SLTypography.title.fontFamily,
+    fontWeight: '800',
+    letterSpacing: 4,
+  },
+  wordmarkBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: -1,
+  },
+  wordmarkBottom: {
+    color: SLColors.accentViolet,
+    fontSize: 18,
+    lineHeight: 20,
+    fontFamily: SLTypography.title.fontFamily,
+    fontWeight: '800',
+    letterSpacing: 5,
+  },
+  wordmarkRule: {
+    width: 34,
+    height: 2,
+    borderRadius: 999,
+    backgroundColor: SLColors.accentViolet,
+  },
+  statusCard: {
     position: 'relative',
     overflow: 'hidden',
-    borderRadius: 28,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.22)',
-    backgroundColor: 'rgba(12, 13, 17, 0.76)',
+    borderColor: 'rgba(196,181,253,0.18)',
+    backgroundColor: 'rgba(18,18,30,0.62)',
     padding: SLSpacing.xl,
     gap: SLSpacing.md,
     shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 26,
-    shadowOffset: { width: 0, height: 18 },
-    elevation: 8,
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 5,
   },
-  heroGlow: {
-    position: 'absolute',
-    top: -70,
-    right: -60,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(167, 139, 250, 0.16)',
-  },
-  heroTopRow: {
+  statusTopRow: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -419,9 +463,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(126, 166, 184, 0.12)',
+    backgroundColor: 'rgba(52, 211, 153, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(126, 166, 184, 0.24)',
+    borderColor: 'rgba(52, 211, 153, 0.22)',
   },
   statusDot: {
     width: 7,
@@ -430,69 +474,67 @@ const styles = StyleSheet.create({
     backgroundColor: SLColors.success,
   },
   statusPillText: {
-    color: SLColors.text,
+    color: '#A7F3D0',
     fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0,
   },
-  iconBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  statusIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(167, 139, 250, 0.14)',
+    backgroundColor: 'rgba(139,92,246,0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.26)',
+    borderColor: 'rgba(196,181,253,0.18)',
   },
   title: {
     color: SLColors.textStrong,
-    fontSize: 31,
-    lineHeight: 36,
-    fontFamily: SLTypography.hero.fontFamily,
-    fontWeight: SLTypography.hero.fontWeight,
-  },
-  heroLead: {
-    color: '#F5D58A',
-    fontSize: 17,
-    lineHeight: 22,
-    fontWeight: '800',
+    fontSize: 34,
+    lineHeight: 39,
+    fontFamily: SLTypography.commandTitle.fontFamily,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   body: {
-    color: '#CDC2B0',
-    fontSize: 15,
-    lineHeight: 22,
+    color: '#B8ACA1',
+    fontSize: 16,
+    lineHeight: 23,
+    fontWeight: '600',
   },
   actionRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: SLSpacing.sm,
     paddingTop: SLSpacing.sm,
   },
   primaryButton: {
+    flex: 1.2,
     minHeight: 46,
-    paddingHorizontal: SLSpacing.lg,
+    paddingHorizontal: SLSpacing.md,
     borderRadius: SLRadius.radiusControl,
-    backgroundColor: SLColors.accentSteel,
+    backgroundColor: '#A69B8D',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SLSpacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(126, 166, 184, 0.92)',
+    borderColor: 'rgba(214, 167, 94, 0.20)',
   },
   primaryButtonText: {
     color: SLColors.textInverted,
     fontWeight: '800',
+    fontSize: 13,
   },
   secondaryButton: {
+    flex: 0.85,
     minHeight: 46,
-    paddingHorizontal: SLSpacing.lg,
+    paddingHorizontal: SLSpacing.md,
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
-    borderColor: SLColors.borderStrong,
-    backgroundColor: 'rgba(17,24,39,0.74)',
+    borderColor: 'rgba(196,181,253,0.16)',
+    backgroundColor: 'rgba(24,16,15,0.48)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -501,13 +543,49 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: SLColors.text,
     fontWeight: '700',
+    fontSize: 13,
+  },
+  workflowCard: {
+    marginTop: SLSpacing.xs,
+    borderRadius: SLRadius.radiusRow,
+    borderWidth: 1,
+    borderColor: 'rgba(205, 194, 176, 0.07)',
+    backgroundColor: 'rgba(10, 11, 13, 0.42)',
+    padding: SLSpacing.md,
+    gap: SLSpacing.xs,
+  },
+  workflowStep: {
+    minHeight: 34,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SLSpacing.sm,
+  },
+  workflowIndex: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(139,92,246,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(196,181,253,0.20)',
+  },
+  workflowIndexText: {
+    color: SLColors.accentViolet,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  workflowText: {
+    color: SLColors.text,
+    fontSize: 13,
+    fontWeight: '800',
   },
   panel: {
-    minHeight: 178,
-    borderRadius: SLRadius.radiusSheet,
+    minHeight: 142,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(205, 194, 176, 0.08)',
-    backgroundColor: 'rgba(10, 11, 13, 0.68)',
+    borderColor: 'rgba(205, 194, 176, 0.07)',
+    backgroundColor: 'rgba(10, 11, 13, 0.50)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SLSpacing.xl,
