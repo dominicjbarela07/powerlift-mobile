@@ -116,13 +116,6 @@ export default function PendingCoachInviteScreen() {
     await loadInvites({ quiet: true });
   };
 
-  const openPendingMessagesNotice = () => {
-    Alert.alert(
-      'Messages unlock with your coach',
-      'Once your coach invitation is accepted, coach messages and announcements will appear in Strength Ledger.',
-    );
-  };
-
   const acceptInvite = (invite: PendingCoachInvite) => {
     Alert.alert(
       'Accept coach invite?',
@@ -199,35 +192,6 @@ export default function PendingCoachInviteScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.topBar}>
-            <Pressable
-              accessibilityLabel="Open Settings"
-              accessibilityRole="button"
-              hitSlop={8}
-              onPress={() => router.push('/(tabs)/settings' as any)}
-              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="settings-outline" size={25} color={SLColors.text} />
-            </Pressable>
-            <View style={styles.wordmark} accessibilityLabel="Strength Ledger">
-              <ThemedText style={styles.wordmarkTop}>STRENGTH</ThemedText>
-              <View style={styles.wordmarkBottomRow}>
-                <View style={styles.wordmarkRule} />
-                <ThemedText style={styles.wordmarkBottom}>LEDGER</ThemedText>
-                <View style={styles.wordmarkRule} />
-              </View>
-            </View>
-            <Pressable
-              accessibilityLabel="Messages unlock after coach invite"
-              accessibilityRole="button"
-              hitSlop={8}
-              onPress={openPendingMessagesNotice}
-              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="chatbubble-ellipses-outline" size={25} color={SLColors.text} />
-            </Pressable>
-          </View>
-
           <View style={styles.statusCard}>
             <View style={styles.statusTopRow}>
               <View style={styles.statusPill}>
@@ -258,37 +222,6 @@ export default function PendingCoachInviteScreen() {
                 <ThemedText style={styles.primaryButtonText}>Check for Invite</ThemedText>
               </Pressable>
 
-              <Pressable
-                accessibilityRole="button"
-                style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
-                onPress={() => router.push('/(tabs)/settings' as any)}
-              >
-                <Ionicons name="settings-outline" size={17} color={SLColors.text} />
-                <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
-              </Pressable>
-            </View>
-
-            <View style={styles.workflowCard} accessibilityLabel="How coach invites work">
-              <View style={styles.workflowStep}>
-                <View style={styles.workflowIndex}>
-                  <ThemedText style={styles.workflowIndexText}>1</ThemedText>
-                </View>
-                <ThemedText style={styles.workflowText}>Coach invites you</ThemedText>
-              </View>
-              <Ionicons name="chevron-down" size={14} color={SLColors.textSubtle} />
-              <View style={styles.workflowStep}>
-                <View style={styles.workflowIndex}>
-                  <ThemedText style={styles.workflowIndexText}>2</ThemedText>
-                </View>
-                <ThemedText style={styles.workflowText}>Accept invitation</ThemedText>
-              </View>
-              <Ionicons name="chevron-down" size={14} color={SLColors.textSubtle} />
-              <View style={styles.workflowStep}>
-                <View style={styles.workflowIndex}>
-                  <ThemedText style={styles.workflowIndexText}>3</ThemedText>
-                </View>
-                <ThemedText style={styles.workflowText}>Training unlocks</ThemedText>
-              </View>
             </View>
           </View>
 
@@ -382,59 +315,9 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     paddingHorizontal: SLSpacing.lg,
-    paddingTop: SLSpacing.sm,
+    paddingTop: SLSpacing.lg,
     paddingBottom: 104,
     gap: SLSpacing.md,
-  },
-  topBar: {
-    minHeight: 74,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  topIconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(8, 10, 13, 0.42)',
-    borderWidth: 1,
-    borderColor: 'rgba(205, 194, 176, 0.10)',
-  },
-  wordmark: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 184,
-  },
-  wordmarkTop: {
-    color: SLColors.textStrong,
-    fontSize: 29,
-    lineHeight: 31,
-    fontFamily: SLTypography.title.fontFamily,
-    fontWeight: '800',
-    letterSpacing: 4,
-  },
-  wordmarkBottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginTop: -1,
-  },
-  wordmarkBottom: {
-    color: SLColors.accentViolet,
-    fontSize: 18,
-    lineHeight: 20,
-    fontFamily: SLTypography.title.fontFamily,
-    fontWeight: '800',
-    letterSpacing: 5,
-  },
-  wordmarkRule: {
-    width: 34,
-    height: 2,
-    borderRadius: 999,
-    backgroundColor: SLColors.accentViolet,
   },
   statusCard: {
     position: 'relative',
@@ -510,7 +393,7 @@ const styles = StyleSheet.create({
     paddingTop: SLSpacing.sm,
   },
   primaryButton: {
-    flex: 1.2,
+    flex: 1,
     minHeight: 46,
     paddingHorizontal: SLSpacing.md,
     borderRadius: SLRadius.radiusControl,
@@ -526,59 +409,6 @@ const styles = StyleSheet.create({
     color: SLColors.textInverted,
     fontWeight: '800',
     fontSize: 13,
-  },
-  secondaryButton: {
-    flex: 0.85,
-    minHeight: 46,
-    paddingHorizontal: SLSpacing.md,
-    borderRadius: SLRadius.radiusControl,
-    borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.16)',
-    backgroundColor: 'rgba(24,16,15,0.48)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SLSpacing.sm,
-  },
-  secondaryButtonText: {
-    color: SLColors.text,
-    fontWeight: '700',
-    fontSize: 13,
-  },
-  workflowCard: {
-    marginTop: SLSpacing.xs,
-    borderRadius: SLRadius.radiusRow,
-    borderWidth: 1,
-    borderColor: 'rgba(205, 194, 176, 0.07)',
-    backgroundColor: 'rgba(10, 11, 13, 0.42)',
-    padding: SLSpacing.md,
-    gap: SLSpacing.xs,
-  },
-  workflowStep: {
-    minHeight: 34,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SLSpacing.sm,
-  },
-  workflowIndex: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.20)',
-  },
-  workflowIndexText: {
-    color: SLColors.accentViolet,
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  workflowText: {
-    color: SLColors.text,
-    fontSize: 13,
-    fontWeight: '800',
   },
   panel: {
     minHeight: 142,
