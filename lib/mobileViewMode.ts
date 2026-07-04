@@ -1,12 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DeviceEventEmitter } from 'react-native';
 
-export type MobileViewMode = 'coach' | 'athlete';
+export type MobileViewMode = 'coach' | 'athlete' | 'individual';
 
 export const MOBILE_VIEW_MODE_KEY = 'mobile_view_mode';
 const MOBILE_VIEW_MODE_CHANGED = 'mobile_view_mode_changed';
 
 function normalizeMode(value: string | null): MobileViewMode {
+  if (value === 'individual') return 'individual';
   return value === 'athlete' ? 'athlete' : 'coach';
 }
 

@@ -211,6 +211,8 @@ export default function SettingsScreen() {
   const [timezoneModalOpen, setTimezoneModalOpen] = useState(false);
   const [timezoneSearch, setTimezoneSearch] = useState('');
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
+  const [modeModalOpen, setModeModalOpen] = useState(false);
+  const [modeSwitching, setModeSwitching] = useState<MobileViewMode | null>(null);
 
   const deviceTimezone = useMemo(() => getDeviceTimezone(), []);
   const timezoneOptions = useMemo(() => supportedTimezones(deviceTimezone), [deviceTimezone]);
@@ -256,6 +258,48 @@ export default function SettingsScreen() {
     auth?.user?.workspace_mode === 'individual' ||
       auth?.user?.is_individual_workspace === true ||
       auth?.user?.is_self_coached === true;
+  const availableMobileModes = useMemo(() => {
+    const raw = Array.isArray(auth?.user?.available_mobile_modes)
+      ? auth.user.available_mobile_modes
+      : isCoach
+      ? ['athlete', 'coach']
+      : ['athlete'];
+    const normalized = raw
+      .map((mode: unknown) => String(mode || '').trim().toLowerCase())
+      .filter((mode: string): mode is MobileViewMode => ['athlete', 'coach', 'individual'].includes(mode));
+    return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
+  }, [auth?.user?.available_mobile_modes, isCoach]);
+  const activeMobileMode: MobileViewMode = isIndividual ? 'individual' : mobileViewMode;
+  const modeOptions = useMemo(
+    () =>
+      availableMobileModes.map((mode) => {
+        if (mode === 'individual') {
+          return {
+            mode,
+            icon: 'barbell-outline' as keyof typeof Ionicons.glyphMap,
+            label: 'Self-Coach',
+            description: 'Use your own athlete identity for individual programming and training.',
+          };
+        }
+        if (mode === 'coach') {
+          return {
+            mode,
+            icon: 'people-outline' as keyof typeof Ionicons.glyphMap,
+            label: 'Coach',
+            description: 'Open roster, calendar, videos, messages, and team coach tools.',
+          };
+        }
+        return {
+          mode,
+          icon: 'person-outline' as keyof typeof Ionicons.glyphMap,
+          label: 'Athlete',
+          description: 'Open your athlete training, calendar, progression, and reflection views.',
+        };
+      }),
+    [availableMobileModes]
+  );
+  const mobileModeSummary =
+    activeMobileMode === 'individual' ? 'Self-Coach' : activeMobileMode === 'coach' ? 'Coach' : 'Athlete';
   const hasTrainingProfile = role === 'athlete' || isIndividual;
   const showVideoFeedbackNotifications = role === 'athlete' && !isIndividual;
   const showVideoSubmissionNotifications = isCoach && !isIndividual;
@@ -299,7 +343,7 @@ export default function SettingsScreen() {
     let mounted = true;
 
     if (isIndividual) {
-      setMobileViewMode('athlete');
+      setMobileViewMode('individual');
       return () => {
         mounted = false;
       };
@@ -337,6 +381,12 @@ export default function SettingsScreen() {
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       setNotifyVideoFeedback(json.notify_video_feedback !== false);
       setNotifyVideoSubmissions(json.notify_video_submissions !== false);
+      if (Array.isArray(json.available_mobile_modes) || json.mobile_mode) {
+        await auth?.applyAccountStatePayload?.({ user: json } as any);
+      }
+      if (json.mobile_mode && ['athlete', 'coach', 'individual'].includes(String(json.mobile_mode))) {
+        setMobileViewMode(String(json.mobile_mode) as MobileViewMode);
+      }
       setVideoMlTrainingConsent(
         typeof json.video_ml_training_consent === 'boolean'
           ? json.video_ml_training_consent
@@ -719,16 +769,30 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleSwitchMobileMode = async () => {
-    if (!isCoach || isIndividual) return;
+  const handleSelectMobileMode = async (nextMode: MobileViewMode) => {
+    if (!isCoach || !availableMobileModes.includes(nextMode)) return;
+    if (nextMode === activeMobileMode) {
+      setModeModalOpen(false);
+      return;
+    }
 
-    const nextMode: MobileViewMode = mobileViewMode === 'coach' ? 'athlete' : 'coach';
     try {
+      setModeSwitching(nextMode);
+      const resp = await fetchJson<any>('/mobile/settings/mode', {
+        method: 'PATCH',
+        body: { mode: nextMode } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      await auth?.applyAccountStatePayload?.(json);
       await saveMobileViewMode(nextMode);
       setMobileViewMode(nextMode);
+      setModeModalOpen(false);
       router.replace(nextMode === 'coach' ? '/coach-dashboard' : '/(tabs)/athlete-dashboard');
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
+    } finally {
+      setModeSwitching(null);
     }
   };
 
@@ -1094,13 +1158,13 @@ export default function SettingsScreen() {
                     disabled: uploadingAvatar,
                   })
                 : null}
-              {isCoach && !isIndividual
+              {isCoach && availableMobileModes.length > 1
                 ? settingsRow({
                     icon: 'swap-horizontal-outline',
                     title: 'Mobile Mode',
-                    description: 'Switch between coach and athlete mobile views',
-                    summary: mobileViewMode === 'coach' ? 'Coach' : 'Athlete',
-                    onPress: handleSwitchMobileMode,
+                    description: 'Switch between available mobile views',
+                    summary: mobileModeSummary,
+                    onPress: () => setModeModalOpen(true),
                   })
                 : null}
               {role === 'athlete' && !isIndividual
@@ -1420,6 +1484,56 @@ export default function SettingsScreen() {
               </Pressable>
             </Pressable>
           </KeyboardAvoidingView>
+        </Modal>
+
+        <Modal visible={modeModalOpen} animationType="slide" transparent onRequestClose={() => setModeModalOpen(false)}>
+          <Pressable style={styles.modalBackdrop} onPress={() => setModeModalOpen(false)}>
+            <Pressable style={[styles.modalSheet, styles.modeModalSheet]} onPress={(event) => event.stopPropagation()}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleWrap}>
+                  <ThemedText style={styles.modalTitle}>Switch mobile mode</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                    Choose which Strength Ledger workspace this device should open.
+                  </ThemedText>
+                </View>
+                <Pressable style={styles.modalClose} onPress={() => setModeModalOpen(false)} disabled={modeSwitching !== null}>
+                  <Ionicons name="close" size={22} color={SLColors.text} />
+                </Pressable>
+              </View>
+
+              <View style={styles.modeOptionList}>
+                {modeOptions.map((option) => {
+                  const selected = option.mode === activeMobileMode;
+                  const switching = modeSwitching === option.mode;
+                  return (
+                    <Pressable
+                      key={option.mode}
+                      style={({ pressed }) => [
+                        styles.modeOption,
+                        selected && styles.modeOptionSelected,
+                        pressed && !switching && styles.rowButtonPressed,
+                      ]}
+                      onPress={() => handleSelectMobileMode(option.mode)}
+                      disabled={modeSwitching !== null}
+                    >
+                      <View style={[styles.modeOptionIcon, selected && styles.modeOptionIconSelected]}>
+                        {switching ? (
+                          <ActivityIndicator color={SLColors.accentViolet} />
+                        ) : (
+                          <Ionicons name={option.icon} size={21} color={selected ? SLColors.textStrong : SLColors.accentViolet} />
+                        )}
+                      </View>
+                      <View style={styles.rowTextWrap}>
+                        <ThemedText style={styles.modeOptionTitle}>{option.label}</ThemedText>
+                        <ThemedText style={styles.modeOptionDescription}>{option.description}</ThemedText>
+                      </View>
+                      {selected ? <Ionicons name="checkmark-circle" size={22} color={SLColors.success} /> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </Pressable>
+          </Pressable>
         </Modal>
 
         <Modal visible={timezoneModalOpen} animationType="slide" transparent onRequestClose={() => setTimezoneModalOpen(false)}>
@@ -2240,6 +2354,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 18,
   },
+  modeModalSheet: {
+    minHeight: 0,
+    maxHeight: '58%',
+    backgroundColor: 'rgba(9,10,13,0.96)',
+  },
   profileEditorSheet: {
     maxHeight: '88%',
     minHeight: '70%',
@@ -2280,6 +2399,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(205,194,176,0.07)',
+  },
+  modeOptionList: {
+    gap: 10,
+    paddingBottom: 4,
+  },
+  modeOption: {
+    minHeight: 78,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: SLColors.borderHairline,
+    backgroundColor: 'rgba(4,6,9,0.42)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  modeOptionSelected: {
+    borderColor: SLColors.borderSelected,
+    backgroundColor: 'rgba(126,101,255,0.18)',
+  },
+  modeOptionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.20)',
+    backgroundColor: 'rgba(126,101,255,0.11)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeOptionIconSelected: {
+    borderColor: 'rgba(167,139,250,0.48)',
+    backgroundColor: 'rgba(126,101,255,0.28)',
+  },
+  modeOptionTitle: {
+    color: SLColors.textStrong,
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '900',
+  },
+  modeOptionDescription: {
+    marginTop: 3,
+    color: SLColors.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
   },
   searchWrap: {
     minHeight: 46,

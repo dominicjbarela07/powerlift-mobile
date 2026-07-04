@@ -21,6 +21,9 @@ export type AuthUser = {
   role: 'coach' | 'athlete';
   is_coach: boolean;
   workspace_mode?: 'team' | 'individual';
+  available_mobile_modes?: Array<'athlete' | 'coach' | 'individual' | string>;
+  mobile_mode?: 'athlete' | 'coach' | 'individual' | string | null;
+  can_access_internal_self_coach_mobile_mode?: boolean;
   is_individual_workspace?: boolean;
   is_self_coached?: boolean;
   self_athlete_id?: number | null;
@@ -117,6 +120,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       role,
       is_coach: isCoach,
       workspace_mode: (payloadUser.workspace_mode ?? payload.workspace_mode ?? base.workspace_mode) as AuthUser['workspace_mode'],
+      available_mobile_modes:
+        Array.isArray(payloadUser.available_mobile_modes)
+          ? payloadUser.available_mobile_modes
+          : Array.isArray((payload as any).available_mobile_modes)
+          ? (payload as any).available_mobile_modes
+          : base.available_mobile_modes,
+      mobile_mode: payloadUser.mobile_mode ?? (payload as any).mobile_mode ?? base.mobile_mode ?? null,
+      can_access_internal_self_coach_mobile_mode:
+        payloadUser.can_access_internal_self_coach_mobile_mode === true ||
+        (payload as any).can_access_internal_self_coach_mobile_mode === true ||
+        base.can_access_internal_self_coach_mobile_mode === true,
       is_individual_workspace:
         payloadUser.is_individual_workspace === true
           ? true

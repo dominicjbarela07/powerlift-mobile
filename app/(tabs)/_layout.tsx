@@ -199,7 +199,7 @@ export default function TabsLayout() {
       (user.verification_required === true && user.email_verified === false) ||
       (user.is_coach === true && (user.billing_required === true || user.can_access_product === false))
     );
-  const viewMode: MobileViewMode = isIndividual ? 'coach' : isCoach ? mobileViewMode : 'athlete';
+  const viewMode: MobileViewMode = isIndividual ? 'individual' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
 
   useEffect(() => {
@@ -217,7 +217,7 @@ export default function TabsLayout() {
     setMobileViewModeLoaded(false);
 
     if (isIndividual) {
-      setMobileViewMode('coach');
+      setMobileViewMode('individual');
       setMobileViewModeLoaded(true);
       return () => {
         mounted = false;
