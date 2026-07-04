@@ -629,6 +629,7 @@ function IndividualProgrammingHome({
           <StateLine icon="alert-circle-outline" title="Programming unavailable" body={error} />
         ) : activeProgram ? (
           <ActiveProgrammingRoadmap
+            key={`programming-roadmap-${activeProgram.id || 'none'}`}
             activeProgram={activeProgram}
             currentBlock={currentBlock}
             blocks={blocks}
