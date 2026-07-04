@@ -2108,7 +2108,7 @@ function weekDayShortLabel(day: HubDay, session?: HubSession | null) {
 
 function blockTabLabel(block: ProgramBlockPayload, index: number) {
   const rawName = (block.name || '').trim();
-  if (/^block\s+\d+$/i.test(rawName)) return rawName;
+  if (rawName) return rawName;
   return `Block ${Number(block.order_idx || index) + 1}`;
 }
 
