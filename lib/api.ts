@@ -3,8 +3,10 @@
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MANUAL_TIMEZONE_KEY = 'athlete_manual_timezone';
+const MOBILE_VIEW_MODE_KEY = 'mobile_view_mode';
 const FALLBACK_TIMEZONE = 'America/Los_Angeles';
 const FETCH_TIMEOUT_MS = 15000;
 
@@ -267,6 +269,18 @@ export async function fetchJson<T = any>(
   const hasAuth = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'authorization');
   if (wantsAuth && token && !hasAuth) {
     mergedHeaders.Authorization = `Bearer ${token}`;
+  }
+
+  const hasMobileModeHeader = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'x-strength-ledger-mobile-mode');
+  if (wantsAuth && !hasMobileModeHeader) {
+    try {
+      const mobileMode = String((await AsyncStorage.getItem(MOBILE_VIEW_MODE_KEY)) || '').trim().toLowerCase();
+      if (['athlete', 'coach', 'individual'].includes(mobileMode)) {
+        mergedHeaders['X-Strength-Ledger-Mobile-Mode'] = mobileMode;
+      }
+    } catch {
+      // Mobile mode is only a view hint; requests must continue without it.
+    }
   }
 
   if (__DEV__) {

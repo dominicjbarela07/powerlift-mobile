@@ -303,6 +303,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
               role: profileUser.role === 'coach' ? 'coach' : 'athlete',
               is_coach: profileUser.role === 'coach',
               workspace_mode: profileUser.workspace_mode,
+              available_mobile_modes: Array.isArray(profileUser.available_mobile_modes)
+                ? profileUser.available_mobile_modes
+                : restoredUser?.available_mobile_modes,
+              mobile_mode: profileUser.mobile_mode ?? restoredUser?.mobile_mode ?? null,
+              can_access_internal_self_coach_mobile_mode:
+                profileUser.can_access_internal_self_coach_mobile_mode === true ||
+                restoredUser?.can_access_internal_self_coach_mobile_mode === true,
               is_individual_workspace: profileUser.is_individual_workspace === true,
               is_self_coached: profileUser.is_self_coached === true,
               self_athlete_id: profileUser.self_athlete_id ?? null,
