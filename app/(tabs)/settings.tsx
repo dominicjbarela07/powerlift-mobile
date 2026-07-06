@@ -112,6 +112,38 @@ type TrainingProfileContext = {
 
 type ProfileEditor = 'details' | 'maxes' | 'context' | null;
 
+type AccountTransitionMode = {
+  mode?: string | null;
+  available?: boolean;
+  reason?: string | null;
+  next_action?: string | null;
+};
+
+type AccountTransitionMetadata = {
+  ok?: boolean;
+  posture?: string | null;
+  current_mode?: string | null;
+  account_state?: string | null;
+  next_action?: string | null;
+  available_modes?: AccountTransitionMode[];
+  transitions?: Array<{
+    transition?: string | null;
+    available?: boolean;
+    reason?: string | null;
+    next_action?: string | null;
+    requires_confirmation?: boolean;
+    destructive?: boolean;
+  }>;
+  unavailable_transitions?: Array<{
+    transition?: string | null;
+    available?: boolean;
+    reason?: string | null;
+    next_action?: string | null;
+    requires_confirmation?: boolean;
+    destructive?: boolean;
+  }>;
+};
+
 const KG_TO_LB = 2.2046226218;
 
 const normalizeUnits = (value?: string | null) => {
@@ -130,6 +162,16 @@ const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'kg') => {
   if (!Number.isFinite(parsed)) return 0;
   return units === 'lbs' ? parsed / KG_TO_LB : parsed;
 };
+
+const normalizeMobileMode = (value: unknown): MobileViewMode | null => {
+  const mode = String(value || '').trim().toLowerCase();
+  return ['athlete', 'coach', 'individual'].includes(mode) ? (mode as MobileViewMode) : null;
+};
+
+const humanizeToken = (value?: string | null) =>
+  String(value || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 
 type SettingsAccent = 'purple' | 'amber' | 'teal' | 'neutral';
 
@@ -213,6 +255,9 @@ export default function SettingsScreen() {
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [modeModalOpen, setModeModalOpen] = useState(false);
   const [modeSwitching, setModeSwitching] = useState<MobileViewMode | null>(null);
+  const [accountTransitions, setAccountTransitions] = useState<AccountTransitionMetadata | null>(null);
+  const [accountTransitionsLoading, setAccountTransitionsLoading] = useState(false);
+  const [accountTransitionsError, setAccountTransitionsError] = useState<string | null>(null);
 
   const deviceTimezone = useMemo(() => getDeviceTimezone(), []);
   const timezoneOptions = useMemo(() => supportedTimezones(deviceTimezone), [deviceTimezone]);
@@ -258,7 +303,8 @@ export default function SettingsScreen() {
     auth?.user?.workspace_mode === 'individual' ||
       auth?.user?.is_individual_workspace === true ||
       auth?.user?.is_self_coached === true;
-  const availableMobileModes = useMemo(() => {
+  const safeBackendMobileModes = useMemo(() => {
+    if (isIndividual) return ['individual'] as MobileViewMode[];
     const raw = Array.isArray(auth?.user?.available_mobile_modes)
       ? auth.user.available_mobile_modes
       : isCoach
@@ -268,13 +314,58 @@ export default function SettingsScreen() {
       .map((mode: unknown) => String(mode || '').trim().toLowerCase())
       .filter((mode: string): mode is MobileViewMode => ['athlete', 'coach', 'individual'].includes(mode));
     return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
-  }, [auth?.user?.available_mobile_modes, isCoach]);
+  }, [auth?.user?.available_mobile_modes, isCoach, isIndividual]);
   const activeMobileMode: MobileViewMode = isIndividual ? 'individual' : mobileViewMode;
+  const transitionModeOptions = useMemo(() => {
+    const transitionModes = Array.isArray(accountTransitions?.available_modes)
+      ? accountTransitions.available_modes
+          .map((mode) => {
+            const normalized = normalizeMobileMode(mode.mode);
+            if (!normalized) return null;
+            const existingSwitchEnabled = safeBackendMobileModes.includes(normalized);
+            const currentSelection = normalized === activeMobileMode;
+            return {
+              mode: normalized,
+              backendAvailable: mode.available === true,
+              switchable: currentSelection || (mode.available === true && existingSwitchEnabled && isCoach),
+              reason: mode.available === true && !existingSwitchEnabled && !currentSelection
+                ? 'mobile_switch_not_enabled'
+                : mode.reason || null,
+              nextAction: mode.next_action || null,
+            };
+          })
+          .filter(Boolean)
+      : [];
+
+    if (transitionModes.length) {
+      return transitionModes as Array<{
+        mode: MobileViewMode;
+        backendAvailable: boolean;
+        switchable: boolean;
+        reason: string | null;
+        nextAction: string | null;
+      }>;
+    }
+
+    return safeBackendMobileModes.map((mode) => ({
+      mode,
+      backendAvailable: true,
+      switchable: isCoach,
+      reason: null,
+      nextAction: null,
+    }));
+  }, [accountTransitions?.available_modes, activeMobileMode, isCoach, safeBackendMobileModes]);
+  const availableMobileModes = useMemo(
+    () => transitionModeOptions.filter((option) => option.switchable).map((option) => option.mode),
+    [transitionModeOptions]
+  );
   const modeOptions = useMemo(
     () =>
-      availableMobileModes.map((mode) => {
+      transitionModeOptions.map((modeOption) => {
+        const { mode } = modeOption;
         if (mode === 'individual') {
           return {
+            ...modeOption,
             mode,
             icon: 'barbell-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Self-Coach',
@@ -283,6 +374,7 @@ export default function SettingsScreen() {
         }
         if (mode === 'coach') {
           return {
+            ...modeOption,
             mode,
             icon: 'people-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Coach',
@@ -290,13 +382,14 @@ export default function SettingsScreen() {
           };
         }
         return {
+          ...modeOption,
           mode,
           icon: 'person-outline' as keyof typeof Ionicons.glyphMap,
           label: 'Athlete',
           description: 'Open your athlete training, calendar, progression, and reflection views.',
         };
       }),
-    [availableMobileModes]
+    [transitionModeOptions]
   );
   const mobileModeSummary =
     activeMobileMode === 'individual' ? 'Self-Coach' : activeMobileMode === 'coach' ? 'Coach' : 'Athlete';
@@ -411,6 +504,26 @@ export default function SettingsScreen() {
   useEffect(() => {
     loadMobileSettings();
   }, [loadMobileSettings]);
+
+  const loadAccountTransitionMetadata = useCallback(async () => {
+    try {
+      setAccountTransitionsLoading(true);
+      setAccountTransitionsError(null);
+      const resp = await fetchJson<AccountTransitionMetadata>('/auth/account-transitions.json', { method: 'GET' });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error((json as any).error || `HTTP ${resp.status}`);
+      setAccountTransitions(json);
+    } catch (err: any) {
+      setAccountTransitions(null);
+      setAccountTransitionsError(err?.message || 'Account transition metadata unavailable.');
+    } finally {
+      setAccountTransitionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAccountTransitionMetadata();
+  }, [loadAccountTransitionMetadata]);
 
   const openProfileEditor = (editor: Exclude<ProfileEditor, null>) => {
     if (!trainingProfile) return;
@@ -770,7 +883,8 @@ export default function SettingsScreen() {
   };
 
   const handleSelectMobileMode = async (nextMode: MobileViewMode) => {
-    if (!isCoach || !availableMobileModes.includes(nextMode)) return;
+    const selectedOption = transitionModeOptions.find((option) => option.mode === nextMode);
+    if (!selectedOption?.switchable) return;
     if (nextMode === activeMobileMode) {
       setModeModalOpen(false);
       return;
@@ -785,10 +899,17 @@ export default function SettingsScreen() {
       const json = resp.json || {};
       if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       await auth?.applyAccountStatePayload?.(json);
-      await saveMobileViewMode(nextMode);
-      setMobileViewMode(nextMode);
+      const resolvedMode =
+        ['athlete', 'coach', 'individual'].includes(String(json?.user?.mobile_mode))
+          ? (String(json.user.mobile_mode) as MobileViewMode)
+          : ['athlete', 'coach', 'individual'].includes(String(json?.mode))
+          ? (String(json.mode) as MobileViewMode)
+          : nextMode;
+      await saveMobileViewMode(resolvedMode);
+      setMobileViewMode(resolvedMode);
       setModeModalOpen(false);
-      router.replace(nextMode === 'coach' ? '/coach-dashboard' : '/(tabs)/athlete-dashboard');
+      loadAccountTransitionMetadata();
+      router.replace(resolvedMode === 'coach' ? '/coach-dashboard' : '/(tabs)/athlete-dashboard');
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
     } finally {
@@ -1158,12 +1279,14 @@ export default function SettingsScreen() {
                     disabled: uploadingAvatar,
                   })
                 : null}
-              {isCoach && availableMobileModes.length > 1
+              {modeOptions.length > 1
                 ? settingsRow({
                     icon: 'swap-horizontal-outline',
                     title: 'Mobile Mode',
-                    description: 'Switch between available mobile views',
-                    summary: mobileModeSummary,
+                    description: accountTransitions
+                      ? 'Backend-approved mobile modes and blocked reasons'
+                      : 'Switch between available mobile views',
+                    summary: accountTransitionsLoading ? 'Loading...' : mobileModeSummary,
                     onPress: () => setModeModalOpen(true),
                   })
                 : null}
@@ -1502,35 +1625,77 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.modeOptionList}>
+                {accountTransitions ? (
+                  <View style={styles.modeMetadataCard}>
+                    <ThemedText style={styles.modeMetadataTitle}>
+                      {humanizeToken(accountTransitions.posture || accountTransitions.current_mode || 'Account')}
+                    </ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>
+                      {humanizeToken(accountTransitions.account_state || 'Account state unavailable')}
+                      {accountTransitions.next_action && accountTransitions.next_action !== 'none'
+                        ? ` · Next action: ${humanizeToken(accountTransitions.next_action)}`
+                        : ''}
+                    </ThemedText>
+                  </View>
+                ) : accountTransitionsError ? (
+                  <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
+                    <ThemedText style={styles.modeMetadataTitle}>Transition metadata unavailable</ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>{accountTransitionsError}</ThemedText>
+                  </View>
+                ) : null}
                 {modeOptions.map((option) => {
                   const selected = option.mode === activeMobileMode;
                   const switching = modeSwitching === option.mode;
+                  const blocked = !option.switchable;
+                  const reason = option.reason ? humanizeToken(option.reason) : null;
+                  const nextAction = option.nextAction ? humanizeToken(option.nextAction) : null;
                   return (
                     <Pressable
                       key={option.mode}
                       style={({ pressed }) => [
                         styles.modeOption,
                         selected && styles.modeOptionSelected,
-                        pressed && !switching && styles.rowButtonPressed,
+                        blocked && styles.modeOptionBlocked,
+                        pressed && !switching && !blocked && styles.rowButtonPressed,
                       ]}
                       onPress={() => handleSelectMobileMode(option.mode)}
-                      disabled={modeSwitching !== null}
+                      disabled={modeSwitching !== null || blocked}
                     >
-                      <View style={[styles.modeOptionIcon, selected && styles.modeOptionIconSelected]}>
+                      <View style={[styles.modeOptionIcon, selected && styles.modeOptionIconSelected, blocked && styles.modeOptionIconBlocked]}>
                         {switching ? (
                           <ActivityIndicator color={SLColors.accentViolet} />
                         ) : (
-                          <Ionicons name={option.icon} size={21} color={selected ? SLColors.textStrong : SLColors.accentViolet} />
+                          <Ionicons
+                            name={option.icon}
+                            size={21}
+                            color={blocked ? SLColors.textSubtle : selected ? SLColors.textStrong : SLColors.accentViolet}
+                          />
                         )}
                       </View>
                       <View style={styles.rowTextWrap}>
-                        <ThemedText style={styles.modeOptionTitle}>{option.label}</ThemedText>
+                        <ThemedText style={[styles.modeOptionTitle, blocked && styles.modeOptionTitleBlocked]}>{option.label}</ThemedText>
                         <ThemedText style={styles.modeOptionDescription}>{option.description}</ThemedText>
+                        {blocked ? (
+                          <ThemedText style={styles.modeOptionReason}>
+                            {reason || 'Unavailable'}
+                            {nextAction ? ` · ${nextAction}` : ''}
+                          </ThemedText>
+                        ) : null}
                       </View>
-                      {selected ? <Ionicons name="checkmark-circle" size={22} color={SLColors.success} /> : null}
+                      {selected ? (
+                        <Ionicons name="checkmark-circle" size={22} color={SLColors.success} />
+                      ) : blocked ? (
+                        <Ionicons name="lock-closed-outline" size={20} color={SLColors.textSubtle} />
+                      ) : null}
                     </Pressable>
                   );
                 })}
+                <View style={styles.modeMetadataCard}>
+                  <ThemedText style={styles.modeMetadataTitle}>Account transitions</ThemedText>
+                  <ThemedText style={styles.modeMetadataDescription}>
+                    Upgrade and downgrade transitions are display-only in this version.
+                  </ThemedText>
+                </View>
               </View>
             </Pressable>
           </Pressable>
@@ -2420,6 +2585,10 @@ const styles = StyleSheet.create({
     borderColor: SLColors.borderSelected,
     backgroundColor: 'rgba(126,101,255,0.18)',
   },
+  modeOptionBlocked: {
+    opacity: 0.68,
+    backgroundColor: 'rgba(4,6,9,0.26)',
+  },
   modeOptionIcon: {
     width: 44,
     height: 44,
@@ -2434,14 +2603,52 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167,139,250,0.48)',
     backgroundColor: 'rgba(126,101,255,0.28)',
   },
+  modeOptionIconBlocked: {
+    borderColor: 'rgba(205,194,176,0.12)',
+    backgroundColor: 'rgba(205,194,176,0.045)',
+  },
   modeOptionTitle: {
     color: SLColors.textStrong,
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '900',
   },
+  modeOptionTitleBlocked: {
+    color: SLColors.textMuted,
+  },
   modeOptionDescription: {
     marginTop: 3,
+    color: SLColors.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
+  },
+  modeOptionReason: {
+    marginTop: 5,
+    color: SLColors.warning,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '800',
+  },
+  modeMetadataCard: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.16)',
+    backgroundColor: 'rgba(126,101,255,0.075)',
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    gap: 3,
+  },
+  modeMetadataCardWarning: {
+    borderColor: 'rgba(245,158,11,0.20)',
+    backgroundColor: 'rgba(245,158,11,0.08)',
+  },
+  modeMetadataTitle: {
+    color: SLColors.textStrong,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  modeMetadataDescription: {
     color: SLColors.textMuted,
     fontSize: 12,
     lineHeight: 17,
