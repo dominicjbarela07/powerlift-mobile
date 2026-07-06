@@ -258,8 +258,9 @@ export default function SettingsScreen() {
     auth?.user?.workspace_mode === 'individual' ||
       auth?.user?.is_individual_workspace === true ||
       auth?.user?.is_self_coached === true;
+  const canUseInternalSelfCoachMode = auth?.user?.can_access_internal_self_coach_mobile_mode === true;
   const availableMobileModes = useMemo(() => {
-    if (isIndividual) return ['individual'] as MobileViewMode[];
+    if (isIndividual && !canUseInternalSelfCoachMode) return ['individual'] as MobileViewMode[];
     const raw = Array.isArray(auth?.user?.available_mobile_modes)
       ? auth.user.available_mobile_modes
       : isCoach
@@ -269,7 +270,7 @@ export default function SettingsScreen() {
       .map((mode: unknown) => String(mode || '').trim().toLowerCase())
       .filter((mode: string): mode is MobileViewMode => ['athlete', 'coach', 'individual'].includes(mode));
     return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
-  }, [auth?.user?.available_mobile_modes, isCoach, isIndividual]);
+  }, [auth?.user?.available_mobile_modes, canUseInternalSelfCoachMode, isCoach, isIndividual]);
   const activeMobileMode: MobileViewMode = isIndividual ? 'individual' : mobileViewMode;
   const modeOptions = useMemo(
     () =>
