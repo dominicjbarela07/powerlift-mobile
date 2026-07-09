@@ -174,13 +174,22 @@ function statusFromFailure(status: number, message: string): QueuedVideoUploadSt
 }
 
 async function uploadChunkWithRetry(setLogId: number, payload: any) {
+  const uploadId = String(payload?.upload_id || '').trim();
+  if (!uploadId) {
+    throw new Error('Chunked upload session was not initialized.');
+  }
+  const body = JSON.stringify({
+    ...payload,
+    upload_id: uploadId,
+  });
   let lastError: any = null;
   for (let attempt = 1; attempt <= CHUNK_UPLOAD_RETRIES; attempt += 1) {
     const { ok, status, json, raw } = await fetchJson(
       `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/chunk`,
       {
         method: 'POST',
-        body: payload,
+        headers: { 'Content-Type': 'application/json' },
+        body,
         auth: true,
         timeoutMs: 60 * 1000,
       },
@@ -217,7 +226,10 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
     );
   }
 
-  const uploadId = init.json.upload_id;
+  const uploadId = String(init.json.upload_id || '').trim();
+  if (!uploadId) {
+    throw new Error('Chunked upload init did not return an upload id.');
+  }
   const chunkSize = Number(init.json.chunk_size || 1024 * 1024);
   const totalChunks = Number(init.json.total_chunks || Math.ceil(actualSize / chunkSize));
 

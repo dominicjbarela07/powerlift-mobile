@@ -26,4 +26,12 @@ if (!/function uploadJobLegacyDirectMultipartForWebOnly/.test(source)) {
   fail('The remaining direct multipart uploader must be explicitly named as web-only legacy behavior.');
 }
 
+if (!/Chunked upload session was not initialized/.test(source)) {
+  fail('Chunk uploads must fail locally before sending when upload_id is missing.');
+}
+
+if (!/const body = JSON\.stringify\(\{[\s\S]*upload_id: uploadId/.test(source)) {
+  fail('Chunk uploads must send an explicit serialized JSON body with a validated upload_id.');
+}
+
 console.log('Mobile video upload policy guard passed.');
