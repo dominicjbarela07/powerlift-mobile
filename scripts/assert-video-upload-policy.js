@@ -34,4 +34,9 @@ if (!/const body = JSON\.stringify\(\{[\s\S]*upload_id: uploadId/.test(source)) 
   fail('Chunk uploads must send an explicit serialized JSON body with a validated upload_id.');
 }
 
+const cancelledGuards = source.match(/current\.status === 'cancelled'/g) || [];
+if (cancelledGuards.length < 2) {
+  fail('Upload queue completion/failure paths must preserve cancelled jobs as terminal.');
+}
+
 console.log('Mobile video upload policy guard passed.');

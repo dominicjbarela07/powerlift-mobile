@@ -63,7 +63,6 @@ import {
   cancelVideoUploadJob,
   enqueueVideoUpload,
   processVideoUploadQueue,
-  retryVideoUploadJob,
   startVideoUploadQueue,
   subscribeVideoUploadQueue,
   type QueuedVideoUploadJob,
@@ -3677,10 +3676,10 @@ export default function WorkoutViewerScreen() {
     }
   }, [uploadSelectedVideoToSetLog]);
 
-  const uploadVideoForSetLog = useCallback(async (setLog: SetLog) => {
+  const uploadVideoForSetLog = useCallback(async (setLog: SetLog, opts?: { ignoreExistingUpload?: boolean }) => {
     if (!setLog?.id) return;
     const currentUpload = videoUploadBySetLogId[setLog.id];
-    if (currentUpload?.uploading || currentUpload?.queued) {
+    if (!opts?.ignoreExistingUpload && (currentUpload?.uploading || currentUpload?.queued)) {
       return;
     }
 
@@ -3689,6 +3688,33 @@ export default function WorkoutViewerScreen() {
 
     setPendingRowVideoUpload({ setLogId: setLog.id, selectedVideo });
   }, [pickSetVideo, videoUploadBySetLogId]);
+
+  const clearVideoUploadStateForSetLog = useCallback((setLogId: number) => {
+    setVideoUploadBySetLogId((prev) => {
+      const next = { ...prev };
+      delete next[setLogId];
+      return next;
+    });
+  }, []);
+
+  const cancelQueuedVideoUploadForSetLog = useCallback(async (setLogId: number, jobId?: string | null) => {
+    if (!setLogId || !jobId) return;
+    try {
+      await cancelVideoUploadJob(jobId);
+    } finally {
+      clearVideoUploadStateForSetLog(setLogId);
+    }
+  }, [clearVideoUploadStateForSetLog]);
+
+  const retryFreshVideoUploadForSetLog = useCallback(async (setLog: SetLog, jobId?: string | null) => {
+    if (!setLog?.id) return;
+    if (jobId) {
+      await cancelQueuedVideoUploadForSetLog(setLog.id, jobId);
+    } else {
+      clearVideoUploadStateForSetLog(setLog.id);
+    }
+    await uploadVideoForSetLog(setLog, { ignoreExistingUpload: true });
+  }, [cancelQueuedVideoUploadForSetLog, clearVideoUploadStateForSetLog, uploadVideoForSetLog]);
 
   const confirmPendingRowVideoUpload = useCallback(async () => {
     const pending = pendingRowVideoUpload;
@@ -3776,6 +3802,8 @@ export default function WorkoutViewerScreen() {
     const state = videoUploadBySetLogId[setLog.id] || {};
     const hasVideo = !!(setLog.has_video || setLog.video_id || setLog.video?.id);
     const queuedJob = state.job || null;
+    const canRetryFresh = !!queuedJob && !!state.error && !state.permanent;
+    const canCancelUpload = !!queuedJob && !hasVideo;
     const label = state.uploading
       ? 'Uploading video...'
       : state.uploaded && !hasVideo
@@ -3787,7 +3815,7 @@ export default function WorkoutViewerScreen() {
       : state.queued
       ? 'Video queued'
       : videoStatusLabel(setLog, false, null);
-    const disabled = !canAttachVideo || !!state.uploading || !!state.queued || !!(state as any).deleting;
+    const uploadButtonDisabled = !canAttachVideo || !!state.uploading || !!state.queued || !!(state as any).deleting;
 
     return (
       <View style={styles.setVideoRow}>
@@ -3831,10 +3859,10 @@ export default function WorkoutViewerScreen() {
             <TouchableOpacity
               style={[
                 styles.setVideoButton,
-                disabled && styles.setVideoButtonDisabled,
+                uploadButtonDisabled && styles.setVideoButtonDisabled,
               ]}
               onPress={() => uploadVideoForSetLog(setLog)}
-              disabled={disabled}
+              disabled={uploadButtonDisabled}
             >
               {state.uploading ? (
                 <ActivityIndicator size="small" color="#E2E8F0" />
@@ -3847,10 +3875,10 @@ export default function WorkoutViewerScreen() {
                 style={[
                   styles.setVideoButton,
                   styles.setVideoRemoveButton,
-                  disabled && styles.setVideoButtonDisabled,
+                  uploadButtonDisabled && styles.setVideoButtonDisabled,
                 ]}
                 onPress={() => removeVideoForSetLog(setLog)}
-                disabled={disabled}
+                disabled={uploadButtonDisabled}
               >
                 {(state as any).deleting ? (
                   <ActivityIndicator size="small" color="#FECACA" />
@@ -3864,18 +3892,18 @@ export default function WorkoutViewerScreen() {
             {!hasVideo && queuedJob && state.error && !state.permanent ? (
               <TouchableOpacity
                 style={styles.setVideoButton}
-                onPress={() => retryVideoUploadJob(queuedJob.id)}
+                onPress={() => retryFreshVideoUploadForSetLog(setLog, queuedJob.id)}
               >
-                <Text style={styles.setVideoButtonText}>Retry upload</Text>
+                <Text style={styles.setVideoButtonText}>Retry fresh</Text>
               </TouchableOpacity>
             ) : null}
-            {!hasVideo && queuedJob && !state.uploading ? (
+            {!hasVideo && queuedJob ? (
               <TouchableOpacity
                 style={[styles.setVideoButton, styles.setVideoRemoveButton]}
-                onPress={() => cancelVideoUploadJob(queuedJob.id)}
+                onPress={() => cancelQueuedVideoUploadForSetLog(setLog.id, queuedJob.id)}
               >
                 <Text style={[styles.setVideoButtonText, styles.setVideoRemoveButtonText]}>
-                  Remove pending
+                  Cancel upload
                 </Text>
               </TouchableOpacity>
             ) : null}
@@ -3883,7 +3911,7 @@ export default function WorkoutViewerScreen() {
         ) : null}
       </View>
     );
-  }, [openSetVideoPlayer, removeVideoForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
+  }, [cancelQueuedVideoUploadForSetLog, openSetVideoPlayer, removeVideoForSetLog, retryFreshVideoUploadForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
 
   useEffect(() => {
     if (Platform.OS === 'web' || !Notifications) return;
@@ -4147,16 +4175,19 @@ export default function WorkoutViewerScreen() {
     const queuedStatus = queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
-    const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
+    const canCancelUpload = !!queuedJob && !hasVideo;
+    const disabled = !canManageSetVideo || (!!uploadState.uploading && !canCancelUpload) || (!!uploadState.queued && !canRetryUpload && !canCancelUpload) || !!(uploadState as any).deleting;
 
     return {
       resultText: loggedSetText(log, unit),
       videoLabel: hasVideo
         ? 'View'
+        : canRetryUpload
+        ? 'Retry fresh'
+        : canCancelUpload
+        ? 'Cancel upload'
         : uploadState.uploading
         ? 'Uploading...'
-        : canRetryUpload
-        ? 'Retry upload'
         : uploadState.queued
         ? 'Queued'
         : 'Add video',
@@ -4173,7 +4204,9 @@ export default function WorkoutViewerScreen() {
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload
-        ? () => retryVideoUploadJob(queuedJob.id)
+        ? () => retryFreshVideoUploadForSetLog(log, queuedJob.id)
+        : canCancelUpload
+        ? () => cancelQueuedVideoUploadForSetLog(log.id, queuedJob.id)
         : canManageSetVideo
         ? () => uploadVideoForSetLog(log)
         : undefined,
@@ -4529,16 +4562,19 @@ export default function WorkoutViewerScreen() {
     const queuedStatus = queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
-    const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
+    const canCancelUpload = !!queuedJob && !hasVideo;
+    const disabled = !canManageSetVideo || (!!uploadState.uploading && !canCancelUpload) || (!!uploadState.queued && !canRetryUpload && !canCancelUpload) || !!(uploadState as any).deleting;
 
     return {
       resultText: loggedSetText(log, unit),
       videoLabel: hasVideo
         ? 'View'
+        : canRetryUpload
+        ? 'Retry fresh'
+        : canCancelUpload
+        ? 'Cancel upload'
         : uploadState.uploading
         ? 'Uploading...'
-        : canRetryUpload
-        ? 'Retry upload'
         : uploadState.queued
         ? 'Queued'
         : 'Add video',
@@ -4555,7 +4591,9 @@ export default function WorkoutViewerScreen() {
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload
-        ? () => retryVideoUploadJob(queuedJob.id)
+        ? () => retryFreshVideoUploadForSetLog(log, queuedJob.id)
+        : canCancelUpload
+        ? () => cancelQueuedVideoUploadForSetLog(log.id, queuedJob.id)
         : canManageSetVideo
         ? () => uploadVideoForSetLog(log)
         : undefined,

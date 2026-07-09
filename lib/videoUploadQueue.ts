@@ -403,27 +403,33 @@ export async function processVideoUploadQueue() {
 
     try {
       const video = await uploadJob(job);
-      const updated = await updateJob(job.id, (current) => ({
-        ...current,
-        status: 'uploaded',
-        serverAttachmentId: video?.id ?? current.serverAttachmentId ?? null,
-        lastError: null,
-        updatedAt: nowIso(),
-        nextAttemptAt: null,
-      }));
+      const updated = await updateJob(job.id, (current) => {
+        if (current.status === 'cancelled') return current;
+        return {
+          ...current,
+          status: 'uploaded',
+          serverAttachmentId: video?.id ?? current.serverAttachmentId ?? null,
+          lastError: null,
+          updatedAt: nowIso(),
+          nextAttemptAt: null,
+        };
+      });
       if (updated) await cleanupJobFiles(updated);
     } catch (err: any) {
       const message = String(err?.message || 'Video upload failed.');
       const retryCount = (job.retryCount || 0) + 1;
       const permanent = err?.permanent === true || retryCount >= MAX_RETRY_COUNT || statusFromFailure(Number(err?.httpStatus || 0), message) === 'failed_permanent';
-      await updateJob(job.id, (current) => ({
-        ...current,
-        status: permanent ? 'failed_permanent' : 'failed_retryable',
-        retryCount,
-        lastError: message,
-        updatedAt: nowIso(),
-        nextAttemptAt: permanent ? null : new Date(Date.now() + backoffMs(retryCount)).toISOString(),
-      }));
+      await updateJob(job.id, (current) => {
+        if (current.status === 'cancelled') return current;
+        return {
+          ...current,
+          status: permanent ? 'failed_permanent' : 'failed_retryable',
+          retryCount,
+          lastError: message,
+          updatedAt: nowIso(),
+          nextAttemptAt: permanent ? null : new Date(Date.now() + backoffMs(retryCount)).toISOString(),
+        };
+      });
     }
   } finally {
     processing = false;
