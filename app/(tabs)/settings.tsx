@@ -5,7 +5,6 @@ import {
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
-  Linking,
   Modal,
   Platform,
   Pressable,
@@ -28,6 +27,7 @@ import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { API_BASE, PRODUCTION_API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
+import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -1087,7 +1087,7 @@ export default function SettingsScreen() {
         setUpgradeBetaCode('');
         setUpgradeSubmitting(false);
         try {
-          await Linking.openURL(json.checkout_url);
+          await openRecoverableCheckoutBrowser(json.checkout_url);
         } finally {
           setUpgradeModalOpen(false);
           setUpgradeSubmitting(false);

@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { AppState, Platform } from 'react-native';
 
 import { API_BASE, fetchJson } from '@/lib/api';
+import { setUpdateBlocker } from '@/lib/updateSafety';
 
 export type QueuedVideoUploadStatus =
   | 'pending'
@@ -387,6 +388,7 @@ export async function enqueueVideoUpload(input: EnqueueVideoUploadInput): Promis
 export async function processVideoUploadQueue() {
   if (processing) return;
   processing = true;
+  setUpdateBlocker('video_upload', true);
   try {
     const jobs = await loadJobs();
     const job = jobs
@@ -433,6 +435,7 @@ export async function processVideoUploadQueue() {
     }
   } finally {
     processing = false;
+    setUpdateBlocker('video_upload', false);
     const remaining = (await loadJobs()).some((job) => !isTerminal(job.status) && isDue(job));
     if (remaining) {
       setTimeout(() => void processVideoUploadQueue(), 1000);

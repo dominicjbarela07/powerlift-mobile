@@ -68,6 +68,7 @@ import {
   type QueuedVideoUploadJob,
 } from '@/lib/videoUploadQueue';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { setUpdateBlocker } from '@/lib/updateSafety';
 import { ThemedText } from '@/components/themed-text';
 
 type SetLog = {
@@ -1277,6 +1278,7 @@ export default function WorkoutViewerScreen() {
   const { workoutId } = useLocalSearchParams<{ workoutId?: string }>();
   const router = useRouter();
   const { user } = useAuth(); // we only need session + role to decide logging availability
+
   const isIndividualUser =
     user?.workspace_mode === 'individual' ||
     user?.is_individual_workspace === true ||
@@ -1285,6 +1287,12 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const unitSeededWorkoutIdRef = useRef<string | null>(null);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+
+  useEffect(() => {
+    const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
+    setUpdateBlocker('workout', isLogging);
+    return () => setUpdateBlocker('workout', false);
+  }, [data?.workout?.status]);
   const [sessionNowMs, setSessionNowMs] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 
+import { setUpdateBlocker } from '@/lib/updateSafety';
+
 const CHECKOUT_BROWSER_TIMEOUT_MS = 120_000;
 const MODAL_DISMISS_DELAY_MS = 400;
 
@@ -16,6 +18,7 @@ export async function waitForBlockingUiToDismiss(): Promise<void> {
 
 export async function openRecoverableCheckoutBrowser(url: string): Promise<CheckoutBrowserResult> {
   let timeout: ReturnType<typeof setTimeout> | null = null;
+  setUpdateBlocker('billing_browser', true);
   try {
     return await Promise.race([
       WebBrowser.openBrowserAsync(url, {
@@ -32,5 +35,6 @@ export async function openRecoverableCheckoutBrowser(url: string): Promise<Check
     } catch {
       // The browser may already be dismissed. UI cleanup must still continue.
     }
+    setUpdateBlocker('billing_browser', false);
   }
 }

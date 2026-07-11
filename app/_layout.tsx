@@ -4,8 +4,9 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Updates from 'expo-updates';
+import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import {
@@ -18,12 +19,13 @@ import {
   GeistMono_400Regular,
   GeistMono_600SemiBold,
 } from '@expo-google-fonts/geist-mono';
-import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { registerPushToken } from '@/lib/api';
+import { API_BASE, registerPushToken } from '@/lib/api';
 import { bootLog } from '@/lib/bootLogger';
+import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 bootLog('app_start', { platform: Platform.OS });
@@ -31,6 +33,147 @@ bootLog('app_start', { platform: Platform.OS });
 type ExpoNotificationsModule = typeof import('expo-notifications');
 
 const STARTUP_TIMEOUT_MS = 6000;
+const UPDATE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
+const UPDATE_PROMPT_DELAY_MS = 15 * 60 * 1000;
+
+function OtaUpdateController() {
+  const [updateReady, setUpdateReady] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const [requiredError, setRequiredError] = useState<string | null>(null);
+  const [safetyVersion, setSafetyVersion] = useState(0);
+  const lastCheckRef = useRef(0);
+  const checkingRef = useRef(false);
+  const promptOpenRef = useRef(false);
+  const promptAfterRef = useRef(0);
+
+  const checkForUpdates = useCallback(async (ignoreThrottle = false) => {
+    if (__DEV__ || checkingRef.current) return;
+    const now = Date.now();
+    if (!ignoreThrottle && now - lastCheckRef.current < UPDATE_CHECK_INTERVAL_MS) return;
+    checkingRef.current = true;
+    lastCheckRef.current = now;
+    setRequiredError(null);
+    bootLog('updates_check_start');
+
+    let policyForce = false;
+    try {
+      const revision = Number((Constants.expoConfig?.extra as any)?.appRevision || 0);
+      try {
+        const policyResponse = await fetch(`${API_BASE}/mobile/release-policy`, {
+          headers: {
+            'X-Strength-Ledger-Client-Revision': String(revision),
+          },
+        });
+        if (policyResponse.ok) {
+          const policy = await policyResponse.json();
+          policyForce = policy.force_update === true;
+          setForceUpdate(policyForce);
+        }
+      } catch (policyError) {
+        console.log('Release policy check failed', policyError);
+      }
+
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        setUpdateReady(true);
+        bootLog('updates_check_done', { available: true, fetched: true });
+      } else {
+        if (policyForce) {
+          setRequiredError('The required update is not available yet. Please try again.');
+        }
+        bootLog('updates_check_done', { available: false });
+      }
+    } catch (error) {
+      bootLog('updates_check_done', { error: 'failed' });
+      setRequiredError('Could not download the update. Check your connection and try again.');
+      console.log('EAS update check failed', error);
+    } finally {
+      checkingRef.current = false;
+    }
+  }, []);
+
+  useEffect(() => {
+    void checkForUpdates(true);
+    const safetySubscription = subscribeUpdateSafety(() => setSafetyVersion((value) => value + 1));
+    const appStateSubscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void checkForUpdates(false);
+    });
+    return () => {
+      safetySubscription();
+      appStateSubscription.remove();
+    };
+  }, [checkForUpdates]);
+
+  useEffect(() => {
+    if (!updateReady || forceUpdate || !isUpdateReloadSafe() || promptOpenRef.current) return;
+    const delay = Math.max(0, promptAfterRef.current - Date.now());
+    const timer = setTimeout(() => {
+      if (!isUpdateReloadSafe() || promptOpenRef.current) return;
+      promptOpenRef.current = true;
+      Alert.alert(
+        'Update ready',
+        'A new version of Strength Ledger is ready.',
+        [
+          {
+            text: 'Later',
+            style: 'cancel',
+            onPress: () => {
+              promptAfterRef.current = Date.now() + UPDATE_PROMPT_DELAY_MS;
+              promptOpenRef.current = false;
+              setSafetyVersion((value) => value + 1);
+            },
+          },
+          {
+            text: 'Update Now',
+            onPress: () => {
+              promptOpenRef.current = false;
+              if (isUpdateReloadSafe()) void Updates.reloadAsync();
+            },
+          },
+        ],
+        { cancelable: false },
+      );
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [forceUpdate, safetyVersion, updateReady]);
+
+  useEffect(() => {
+    if (!forceUpdate || !updateReady || !isUpdateReloadSafe()) return;
+    void Updates.reloadAsync().catch(() => {
+      setRequiredError('The update could not be applied. Please try again.');
+    });
+  }, [forceUpdate, safetyVersion, updateReady]);
+
+  const showRequiredGate = forceUpdate && isUpdateReloadSafe();
+  return (
+    <Modal visible={showRequiredGate} animationType="fade" presentationStyle="fullScreen">
+      <View style={styles.updateGate}>
+        <Text style={styles.updateGateTitle}>Update Required</Text>
+        <Text style={styles.updateGateBody}>
+          {requiredError || (updateReady ? 'Restarting Strength Ledger…' : 'Downloading the latest version…')}
+        </Text>
+        {!updateReady ? <ActivityIndicator color="#C4B5FD" style={styles.updateGateSpinner} /> : null}
+        {requiredError ? (
+          <TouchableOpacity
+            style={styles.updateGateButton}
+            onPress={() => {
+              if (updateReady) {
+                void Updates.reloadAsync().catch(() => {
+                  setRequiredError('The update could not be applied. Please try again.');
+                });
+              } else {
+                void checkForUpdates(true);
+              }
+            }}
+          >
+            <Text style={styles.updateGateButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    </Modal>
+  );
+}
 
 function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) {
   return (
@@ -296,29 +439,6 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    // Fetch available updates, but do not reload during first-launch review interaction.
-    if (__DEV__) return;
-
-    (async () => {
-      bootLog('updates_check_start');
-      try {
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          bootLog('updates_check_done', { available: true, fetched: true });
-          console.log('EAS update fetched; deferring reload until next cold start.');
-        } else {
-          bootLog('updates_check_done', { available: false });
-        }
-      } catch (e) {
-        // Don’t crash the app if updates fail; just log.
-        bootLog('updates_check_done', { error: 'failed' });
-        console.log('EAS update check failed', e);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
       bootLog('font_load_timeout', { timeout_ms: STARTUP_TIMEOUT_MS });
       console.warn('Font loading timed out; continuing with fallback fonts.');
@@ -352,6 +472,7 @@ export default function RootLayout() {
       <AuthProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <RootStack />
+          <OtaUpdateController />
           <StatusBar style="light" />
         </ThemeProvider>
       </AuthProvider>
@@ -360,6 +481,43 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  updateGate: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#050505',
+    paddingHorizontal: 28,
+  },
+  updateGateTitle: {
+    color: '#F8FAFC',
+    fontSize: 28,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  updateGateBody: {
+    marginTop: 12,
+    color: '#B8ACA1',
+    fontSize: 16,
+    lineHeight: 23,
+    textAlign: 'center',
+  },
+  updateGateSpinner: {
+    marginTop: 24,
+  },
+  updateGateButton: {
+    minWidth: 180,
+    minHeight: 50,
+    marginTop: 24,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#6D28D9',
+  },
+  updateGateButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+  },
   startupScreen: {
     flex: 1,
     alignItems: 'center',
