@@ -84,6 +84,15 @@ type MovementPresetCategory = {
   movements: string[];
 };
 
+type MovementPickerKind = 'accessory' | 'variant' | 'pendingVariant';
+
+type PendingCoreVariantDraft = {
+  scheme: 'STRAIGHT' | 'TOP_BK' | 'FULL_CUSTOM';
+  top: CoreDraft;
+  backdown?: CoreDraft;
+  error?: string | null;
+};
+
 type RecentSessionRow = {
   id: number;
   date?: string | null;
@@ -283,7 +292,8 @@ export default function CreateWorkoutScreen() {
   const [addLiftOpen, setAddLiftOpen] = useState(false);
   const [coreEditorOpen, setCoreEditorOpen] = useState<null | { idx: number }>(null);
   const [accEditorOpen, setAccEditorOpen] = useState<null | { idx: number }>(null);
-  const [movementPickerOpen, setMovementPickerOpen] = useState<null | { kind: 'accessory'|'variant'; idx: number }>(null);
+  const [movementPickerOpen, setMovementPickerOpen] = useState<null | { kind: MovementPickerKind; idx: number }>(null);
+  const [pendingCoreVariant, setPendingCoreVariant] = useState<PendingCoreVariantDraft | null>(null);
   const [movementSearch, setMovementSearch] = useState('');
   const [movementPresets, setMovementPresets] = useState<{
     accessories: MovementPresetCategory[];
@@ -329,6 +339,74 @@ export default function CreateWorkoutScreen() {
       delete next[key];
       return next;
     });
+  };
+
+  const clearDraftsWithPrefix = (prefix: string) => {
+    setManualDraft((prev) => {
+      const keys = Object.keys(prev).filter((key) => key.startsWith(prefix));
+      if (!keys.length) return prev;
+      const next = { ...prev };
+      keys.forEach((key) => delete next[key]);
+      return next;
+    });
+    setStepIssues((prev) => {
+      const keys = Object.keys(prev).filter((key) => key.startsWith(prefix));
+      if (!keys.length) return prev;
+      const next = { ...prev };
+      keys.forEach((key) => delete next[key]);
+      return next;
+    });
+  };
+
+  const createPendingVariantRow = (patch?: Partial<CoreDraft>): CoreDraft => ({
+    lift: 'VR',
+    variant: 'STRAIGHT',
+    mode: 'RPE',
+    movement: '',
+    sets: 3,
+    reps: 5,
+    rpe_target: 7,
+    pct: null,
+    manual_target_kg: null,
+    manual_plusminus_kg: 0,
+    target_low_kg: null,
+    target_high_kg: null,
+    ...patch,
+  });
+
+  const createPendingCoreVariantDraft = (scheme: PendingCoreVariantDraft['scheme'] = 'STRAIGHT'): PendingCoreVariantDraft => {
+    if (scheme === 'TOP_BK') {
+      return {
+        scheme,
+        top: createPendingVariantRow({ variant: 'TOP', sets: 1 }),
+        backdown: createPendingVariantRow({ variant: 'BK', sets: 3, rpe_target: 6, parent_item_id: null }),
+        error: null,
+      };
+    }
+    if (scheme === 'FULL_CUSTOM') {
+      return {
+        scheme,
+        top: createPendingVariantRow({
+          variant: 'FULL_CUSTOM',
+          sets: 1,
+          reps: 0,
+          rpe_target: null,
+          pct: null,
+          planned_sets: [{ set_index: 1, reps: 5, rpe_target: 7, pct: null, manual_target_kg: null, manual_pm_kg: 0 }],
+        }),
+        error: null,
+      };
+    }
+    return { scheme, top: createPendingVariantRow(), error: null };
+  };
+
+  const closePendingCoreVariant = () => {
+    setPendingCoreVariant(null);
+    if (movementPickerOpen?.kind === 'pendingVariant') {
+      setMovementPickerOpen(null);
+      setMovementSearch('');
+    }
+    clearDraftsWithPrefix('pendingVariant:');
   };
 
   const coreLiftLabel = (v: CoreDraft['lift']) => {
@@ -382,8 +460,7 @@ export default function CreateWorkoutScreen() {
       return `Top + Backdown · ${c.sets || 1}x${c.reps || '-'} ${formatTarget(c.mode, c.rpe_target, c.pct)} + ${bk.sets || '-'}x${bk.reps || '-'} ${formatTarget(bk.mode, bk.rpe_target, bk.pct)}`;
     }
 
-    const scheme = c.lift === 'VR' ? 'Variant' : 'Straight Sets';
-    return `${scheme} · ${c.sets || '-'}x${c.reps || '-'} ${formatTarget(c.mode, c.rpe_target, c.pct)}`;
+    return `Straight Sets · ${c.sets || '-'}x${c.reps || '-'} ${formatTarget(c.mode, c.rpe_target, c.pct)}`;
   };
 
   const liftIconLabel = (lift: CoreDraft['lift']) => {
@@ -750,7 +827,7 @@ export default function CreateWorkoutScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openMovementPicker = (kind: 'accessory'|'variant', idx: number) => {
+  const openMovementPicker = (kind: MovementPickerKind, idx: number) => {
     setMovementSearch('');
     setMovementPickerOpen({ kind, idx });
     if (!movementPresetsLoading && !movementPresets.accessories.length && !movementPresets.coreVariants.length) {
@@ -764,6 +841,13 @@ export default function CreateWorkoutScreen() {
 
     if (picker.kind === 'accessory') {
       setAcc((p) => p.map((x, i) => (i === picker.idx ? { ...x, movement } : x)));
+    } else if (picker.kind === 'pendingVariant') {
+      setPendingCoreVariant((draft) => draft ? {
+        ...draft,
+        top: { ...draft.top, movement },
+        backdown: draft.backdown ? { ...draft.backdown, movement } : undefined,
+        error: null,
+      } : draft);
     } else {
       updateCoreAt(picker.idx, { movement });
     }
@@ -772,7 +856,7 @@ export default function CreateWorkoutScreen() {
     setMovementSearch('');
   };
 
-  const filteredMovementCategories = (kind: 'accessory'|'variant') => {
+  const filteredMovementCategories = (kind: MovementPickerKind) => {
     const query = movementSearch.trim().toLowerCase();
     const categories = kind === 'accessory' ? movementPresets.accessories : movementPresets.coreVariants;
     return categories
@@ -1475,17 +1559,6 @@ export default function CreateWorkoutScreen() {
         const c = p[idx];
         if (!c) return p;
 
-        // Variants (VR) are always straight scheme
-        if (c.lift === 'VR') {
-        if (isTopBkStart(p, idx)) {
-            const next = [...p];
-            next[idx] = { ...next[idx], variant: 'STRAIGHT' };
-            next.splice(idx + 1, 1);
-            return next;
-        }
-        return p.map((x, i) => (i === idx ? { ...x, variant: 'STRAIGHT' } : x));
-        }
-
         if (scheme === 'FULL_CUSTOM') {
         const next = [...p];
         if (isTopBkStart(p, idx)) next.splice(idx + 1, 1);
@@ -1559,6 +1632,302 @@ export default function CreateWorkoutScreen() {
 
       return p;
     });
+    };
+
+    const pendingManualTargetKey = (part: 'top' | 'backdown') => `pendingVariant:${part}:manual_target`;
+    const pendingManualPmKey = (part: 'top' | 'backdown') => `pendingVariant:${part}:manual_pm`;
+    const pendingPlannedManualTargetKey = (setIdx: number) => `pendingVariant:planned:${setIdx}:manual_target`;
+    const pendingPlannedManualPmKey = (setIdx: number) => `pendingVariant:planned:${setIdx}:manual_pm`;
+
+    const updatePendingVariantTop = (patch: Partial<CoreDraft>) => {
+    setPendingCoreVariant((draft) => draft ? {
+        ...draft,
+        top: { ...draft.top, ...patch },
+        backdown: draft.backdown ? { ...draft.backdown, ...(patch.movement !== undefined ? { movement: patch.movement } : {}) } : undefined,
+        error: null,
+    } : draft);
+    };
+
+    const updatePendingVariantBackdown = (patch: Partial<CoreDraft>) => {
+    setPendingCoreVariant((draft) => draft ? {
+        ...draft,
+        backdown: draft.backdown ? { ...draft.backdown, ...patch } : draft.backdown,
+        error: null,
+    } : draft);
+    };
+
+    const setPendingVariantScheme = (scheme: PendingCoreVariantDraft['scheme']) => {
+    setPendingCoreVariant((draft) => {
+        const current = draft || createPendingCoreVariantDraft(scheme);
+        const movement = current.top.movement || '';
+        const mode = current.top.mode || 'RPE';
+        const manualTarget = current.top.manual_target_kg ?? null;
+        const manualPm = current.top.manual_plusminus_kg ?? 0;
+
+        if (scheme === 'TOP_BK') {
+        return {
+            scheme,
+            top: {
+            ...current.top,
+            lift: 'VR',
+            variant: 'TOP',
+            movement,
+            mode,
+            sets: 1,
+            reps: current.top.reps && current.top.reps > 0 ? current.top.reps : 5,
+            rpe_target: mode === 'RPE' ? (current.top.rpe_target ?? 7) : null,
+            pct: mode === 'PCT' ? (current.top.pct ?? null) : null,
+            manual_target_kg: manualTarget,
+            manual_plusminus_kg: manualPm,
+            planned_sets: undefined,
+            },
+            backdown: {
+            ...(current.backdown || current.top),
+            lift: 'VR',
+            variant: 'BK',
+            movement,
+            mode,
+            sets: current.backdown?.sets && current.backdown.sets > 0 ? current.backdown.sets : 3,
+            reps: current.backdown?.reps && current.backdown.reps > 0 ? current.backdown.reps : (current.top.reps || 5),
+            rpe_target: mode === 'RPE' ? (current.backdown?.rpe_target ?? 6) : null,
+            pct: mode === 'PCT' ? (current.backdown?.pct ?? null) : null,
+            parent_item_id: null,
+            planned_sets: undefined,
+            },
+            error: null,
+        };
+        }
+
+        if (scheme === 'FULL_CUSTOM') {
+        const rows = normalizePlannedSets(current.top.planned_sets, current.top);
+        return {
+            scheme,
+            top: {
+            ...current.top,
+            lift: 'VR',
+            variant: 'FULL_CUSTOM',
+            movement,
+            mode,
+            sets: rows.length,
+            reps: 0,
+            rpe_target: null,
+            pct: null,
+            manual_target_kg: null,
+            manual_plusminus_kg: 0,
+            target_low_kg: null,
+            target_high_kg: null,
+            planned_sets: rows,
+            },
+            error: null,
+        };
+        }
+
+        return {
+        scheme,
+        top: {
+            ...current.top,
+            lift: 'VR',
+            variant: 'STRAIGHT',
+            movement,
+            mode,
+            sets: current.top.sets && current.top.sets > 0 ? current.top.sets : 3,
+            reps: current.top.reps && current.top.reps > 0 ? current.top.reps : 5,
+            rpe_target: mode === 'RPE' ? (current.top.rpe_target ?? 7) : null,
+            pct: mode === 'PCT' ? (current.top.pct ?? null) : null,
+            manual_target_kg: manualTarget,
+            manual_plusminus_kg: manualPm,
+            planned_sets: undefined,
+        },
+        error: null,
+        };
+    });
+    clearDraftsWithPrefix('pendingVariant:');
+    };
+
+    const setPendingFullCustomMode = (mode: CoreDraft['mode']) => {
+    setPendingCoreVariant((draft) => draft ? {
+        ...draft,
+        top: {
+        ...draft.top,
+        mode,
+        planned_sets: normalizePlannedSets(draft.top.planned_sets, draft.top).map((row) => ({
+            ...row,
+            rpe_target: mode === 'RPE' ? row.rpe_target : null,
+            pct: mode === 'PCT' ? row.pct : null,
+        })),
+        },
+        error: null,
+    } : draft);
+    };
+
+    const updatePendingPlannedSetAt = (plannedIdx: number, patch: Partial<PlannedSetDraft>) => {
+    setPendingCoreVariant((draft) => {
+        if (!draft || draft.scheme !== 'FULL_CUSTOM') return draft;
+        const rows = normalizePlannedSets(draft.top.planned_sets, draft.top);
+        const nextRows = rows.map((row, idx) => (idx === plannedIdx ? { ...row, ...patch } : row));
+        return { ...draft, top: { ...draft.top, sets: nextRows.length, planned_sets: nextRows }, error: null };
+    });
+    };
+
+    const addPendingPlannedSet = () => {
+    setPendingCoreVariant((draft) => {
+        if (!draft || draft.scheme !== 'FULL_CUSTOM') return draft;
+        const rows = normalizePlannedSets(draft.top.planned_sets, draft.top);
+        if (rows.length >= MAX_FULL_CUSTOM_SETS) return draft;
+        const last = rows[rows.length - 1];
+        const nextRows = [
+        ...rows,
+        {
+            set_index: rows.length + 1,
+            reps: last?.reps ?? null,
+            rpe_target: draft.top.mode === 'RPE' ? (last?.rpe_target ?? null) : null,
+            pct: draft.top.mode === 'PCT' ? (last?.pct ?? null) : null,
+            manual_target_kg: null,
+            manual_pm_kg: 0,
+        },
+        ];
+        return { ...draft, top: { ...draft.top, sets: nextRows.length, planned_sets: nextRows }, error: null };
+    });
+    };
+
+    const removePendingPlannedSet = (plannedIdx: number) => {
+    setPendingCoreVariant((draft) => {
+        if (!draft || draft.scheme !== 'FULL_CUSTOM') return draft;
+        const rows = normalizePlannedSets(draft.top.planned_sets, draft.top);
+        if (rows.length <= 1) return draft;
+        const nextRows = rows
+        .filter((_, idx) => idx !== plannedIdx)
+        .map((row, idx) => ({ ...row, set_index: idx + 1 }));
+        return { ...draft, top: { ...draft.top, sets: nextRows.length, planned_sets: nextRows }, error: null };
+    });
+    };
+
+    const validateCoreVariantDraft = (draft: PendingCoreVariantDraft | null) => {
+    if (!draft) return 'Core Variant setup is missing.';
+    const movement = draft.top.movement?.trim();
+    if (!movement) return 'Choose or enter a Core Variant movement.';
+
+    const validateRow = (row: CoreDraft, label: string) => {
+        const sets = Number(row.sets);
+        const reps = Number(row.reps);
+        if (!Number.isFinite(sets) || sets <= 0) return `${label}: sets are required.`;
+        if (!Number.isFinite(reps) || reps <= 0) return `${label}: reps are required.`;
+        if (row.mode === 'PCT') {
+        const pct = Number(row.pct);
+        if (!Number.isFinite(pct) || pct <= 0) return `${label}: percent is required.`;
+        } else {
+        const rpe = Number(row.rpe_target);
+        if (!Number.isFinite(rpe) || rpe <= 0) return `${label}: RPE is required.`;
+        }
+        const target = Number(row.manual_target_kg);
+        if (!Number.isFinite(target) || target <= 0) return `${label}: manual target load is required.`;
+        if (unit === 'kg' && !isMultipleOfStep(target, KG_STEP)) return `${label}: manual target must be in 2.5 kg increments.`;
+        const pm = row.manual_plusminus_kg == null ? 0 : Number(row.manual_plusminus_kg);
+        if (!Number.isFinite(pm) || pm < 0) return `${label}: manual range is invalid.`;
+        if (unit === 'kg' && !isMultipleOfStep(pm, KG_STEP)) return `${label}: manual range must be in 2.5 kg increments.`;
+        return null;
+    };
+
+    if (draft.scheme === 'FULL_CUSTOM') {
+        const rows = normalizePlannedSets(draft.top.planned_sets, draft.top);
+        if (!rows.length) return 'Full Custom: add at least one planned set.';
+        for (let idx = 0; idx < rows.length; idx += 1) {
+        const row = rows[idx];
+        const label = `Full Custom Set ${idx + 1}`;
+        const reps = Number(row.reps);
+        if (!Number.isFinite(reps) || reps <= 0) return `${label}: reps are required.`;
+        if (draft.top.mode === 'PCT') {
+            const pct = Number(row.pct);
+            if (!Number.isFinite(pct) || pct <= 0) return `${label}: percent is required.`;
+        } else {
+            const rpe = Number(row.rpe_target);
+            if (!Number.isFinite(rpe) || rpe <= 0) return `${label}: RPE is required.`;
+        }
+        const target = Number(row.manual_target_kg);
+        if (!Number.isFinite(target) || target <= 0) return `${label}: manual target load is required.`;
+        if (unit === 'kg' && !isMultipleOfStep(target, KG_STEP)) return `${label}: manual target must be in 2.5 kg increments.`;
+        const pm = row.manual_pm_kg == null ? 0 : Number(row.manual_pm_kg);
+        if (!Number.isFinite(pm) || pm < 0) return `${label}: manual range is invalid.`;
+        if (unit === 'kg' && !isMultipleOfStep(pm, KG_STEP)) return `${label}: manual range must be in 2.5 kg increments.`;
+        }
+        return null;
+    }
+
+    const topIssue = validateRow(draft.top, draft.scheme === 'TOP_BK' ? 'Top Set' : 'Straight Sets');
+    if (topIssue) return topIssue;
+    if (draft.scheme === 'TOP_BK') {
+        if (!draft.backdown) return 'Backdown Sets: setup is missing.';
+        return validateRow(draft.backdown, 'Backdown Sets');
+    }
+    return null;
+    };
+
+    const validateCoreVariantCoreForSave = (c: CoreDraft, idx: number) => {
+    if (c.lift !== 'VR') return null;
+    const movement = c.movement?.trim();
+    const label = movement || `Core Variant ${idx + 1}`;
+    if (!movement) return `${label}: choose or enter a movement.`;
+
+    if (c.variant === 'FULL_CUSTOM') {
+        const rows = normalizePlannedSets(c.planned_sets, c);
+        if (!rows.length) return `${label}: add at least one planned set.`;
+        for (let rowIdx = 0; rowIdx < rows.length; rowIdx += 1) {
+        const row = rows[rowIdx];
+        const rowLabel = `${label}, Set ${rowIdx + 1}`;
+        const reps = Number(row.reps);
+        if (!Number.isFinite(reps) || reps <= 0) return `${rowLabel}: reps are required.`;
+        if (c.mode === 'PCT') {
+            const pct = Number(row.pct);
+            if (!Number.isFinite(pct) || pct <= 0) return `${rowLabel}: percent is required.`;
+        } else {
+            const rpe = Number(row.rpe_target);
+            if (!Number.isFinite(rpe) || rpe <= 0) return `${rowLabel}: RPE is required.`;
+        }
+        const target = Number(row.manual_target_kg);
+        if (!Number.isFinite(target) || target <= 0) return `${rowLabel}: manual target load is required.`;
+        if (unit === 'kg' && !isMultipleOfStep(target, KG_STEP)) return `${rowLabel}: manual target must be in 2.5 kg increments.`;
+        const pm = row.manual_pm_kg == null ? 0 : Number(row.manual_pm_kg);
+        if (!Number.isFinite(pm) || pm < 0) return `${rowLabel}: manual range is invalid.`;
+        if (unit === 'kg' && !isMultipleOfStep(pm, KG_STEP)) return `${rowLabel}: manual range must be in 2.5 kg increments.`;
+        }
+        return null;
+    }
+
+    const sets = Number(c.sets);
+    const reps = Number(c.reps);
+    if (!Number.isFinite(sets) || sets <= 0) return `${label}: sets are required.`;
+    if (!Number.isFinite(reps) || reps <= 0) return `${label}: reps are required.`;
+    if (c.mode === 'PCT') {
+        const pct = Number(c.pct);
+        if (!Number.isFinite(pct) || pct <= 0) return `${label}: percent is required.`;
+    } else {
+        const rpe = Number(c.rpe_target);
+        if (!Number.isFinite(rpe) || rpe <= 0) return `${label}: RPE is required.`;
+    }
+    const target = Number(c.manual_target_kg);
+    if (!Number.isFinite(target) || target <= 0) return `${label}: manual target load is required.`;
+    if (unit === 'kg' && !isMultipleOfStep(target, KG_STEP)) return `${label}: manual target must be in 2.5 kg increments.`;
+    const pm = c.manual_plusminus_kg == null ? 0 : Number(c.manual_plusminus_kg);
+    if (!Number.isFinite(pm) || pm < 0) return `${label}: manual range is invalid.`;
+    if (unit === 'kg' && !isMultipleOfStep(pm, KG_STEP)) return `${label}: manual range must be in 2.5 kg increments.`;
+    return null;
+    };
+
+    const commitPendingCoreVariant = () => {
+    const issue = validateCoreVariantDraft(pendingCoreVariant);
+    if (issue) {
+        setPendingCoreVariant((draft) => draft ? { ...draft, error: issue } : draft);
+        return;
+    }
+
+    const draft = pendingCoreVariant!;
+    const rows = draft.scheme === 'TOP_BK' && draft.backdown
+        ? [{ ...draft.top, movement: draft.top.movement?.trim() }, { ...draft.backdown, movement: draft.top.movement?.trim() }]
+        : [{ ...draft.top, movement: draft.top.movement?.trim() }];
+    const nextIdx = coreRef.current.length;
+    setCore((p) => [...p, ...rows]);
+    setCoreEditorOpen({ idx: nextIdx });
+    closePendingCoreVariant();
     };
 
     // ===== Reorder helpers (mobile builder) =====
@@ -1770,28 +2139,7 @@ export default function CreateWorkoutScreen() {
   // Core Variant is preset-assisted on mobile while preserving custom text.
   // OHP intentionally stays hidden from modern mobile core-work selection.
   const addCoreVariant = () => {
-    const idx = coreRef.current.length;
-    setCore((p) => [
-      ...p,
-      {
-        lift: 'VR',
-        variant: 'STRAIGHT',
-        mode: 'RPE', // irrelevant for VR but fine to keep
-        movement: '',
-        sets: 0,
-        reps: 0,
-        rpe_target: null,
-        pct: null,
-
-        manual_target_kg: null,
-        manual_plusminus_kg: 0,
-
-        target_low_kg: null,
-        target_high_kg: null,
-      },
-    ]);
-    setCoreEditorOpen({ idx });
-    setTimeout(() => openMovementPicker('variant', idx), 0);
+    setPendingCoreVariant(createPendingCoreVariantDraft('STRAIGHT'));
   };
 
   const addAcc = () => {
@@ -1900,6 +2248,13 @@ export default function CreateWorkoutScreen() {
     if (fullCustomIssue) {
       setError(fullCustomIssue);
       Alert.alert('Fix Full Custom block', fullCustomIssue);
+      return;
+    }
+
+    const coreVariantIssue = core.map(validateCoreVariantCoreForSave).find(Boolean);
+    if (coreVariantIssue) {
+      setError(coreVariantIssue);
+      Alert.alert('Fix Core Variant', coreVariantIssue);
       return;
     }
 
@@ -2164,7 +2519,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
             onPress={() => selectMovementPreset(movementSearch.trim())}
           >
             <ThemedText variant="body" style={styles.customMovementTitle}>
-              Use "{movementSearch.trim()}"
+              {`Use "${movementSearch.trim()}"`}
             </ThemedText>
           </Pressable>
         ) : null}
@@ -2244,34 +2599,24 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           </Pressable>
         )}
 
-        {c.lift !== 'VR' ? (
-          <>
-            <ThemedText variant="bodyMuted" style={styles.controlLabel}>Scheme</ThemedText>
-            {renderSegmented(
-              [
-                { value: 'STRAIGHT', label: 'Straight' },
-                { value: 'TOP_BK', label: 'Top + Backdown' },
-                { value: 'FULL_CUSTOM', label: 'Full Custom' },
-              ],
-              c.variant === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : hasTopBk ? 'TOP_BK' : 'STRAIGHT',
-              (scheme) => {
-                setSchemeAt(idx, scheme);
-                if (scheme !== 'FULL_CUSTOM') {
-                  scheduleSuggestAfterState(idx, scheme === 'TOP_BK' ? idx + 1 : -1);
-                }
-              },
-            )}
-          </>
-        ) : null}
+        <ThemedText variant="bodyMuted" style={styles.controlLabel}>Scheme</ThemedText>
+        {renderSegmented(
+          [
+            { value: 'STRAIGHT', label: 'Straight' },
+            { value: 'TOP_BK', label: 'Top + Backdown' },
+            { value: 'FULL_CUSTOM', label: 'Full Custom' },
+          ],
+          c.variant === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : hasTopBk ? 'TOP_BK' : 'STRAIGHT',
+          (scheme) => {
+            setSchemeAt(idx, scheme);
+            if (scheme !== 'FULL_CUSTOM') {
+              scheduleSuggestAfterState(idx, scheme === 'TOP_BK' ? idx + 1 : -1);
+            }
+          },
+        )}
 
         <ThemedText variant="bodyMuted" style={styles.controlLabel}>Mode</ThemedText>
-        {c.lift === 'VR' ? (
-          <View style={styles.segmentedRow}>
-            <View style={[styles.segmentBtn, styles.segmentBtnActive]}>
-              <ThemedText variant="badge" style={[styles.segmentText, styles.segmentTextActive]}>RPE</ThemedText>
-            </View>
-          </View>
-        ) : renderSegmented(
+        {renderSegmented(
           [
             { value: 'RPE', label: 'RPE' },
             { value: 'PCT', label: '%' },
@@ -2635,7 +2980,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
         </View>
 
         <View style={styles.chapter}>
-          <ThemedText variant="bodyMuted" style={styles.chapterKicker}>What's Next?</ThemedText>
+          <ThemedText variant="bodyMuted" style={styles.chapterKicker}>{"What's Next?"}</ThemedText>
           <View style={styles.guidanceStack}>
             <GuidanceRow
               icon="⌘"
@@ -2759,137 +3104,32 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                     )}
 
                     {/* Scheme + Mode row */}
-                    {c.lift === 'VR' ? (
-                      // Variant: Scheme + Mode (locked, non-interactive, in a row)
-                      <View style={styles.row}>
-                        <View style={styles.fieldCol}>
-                          <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Scheme</ThemedText>
-                          <View style={styles.selectInput}>
-                            <ThemedText variant="body" style={styles.selectText}>Straight</ThemedText>
-                          </View>
-                        </View>
-                        <View style={styles.fieldCol}>
-                          <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Mode</ThemedText>
-                          <View style={styles.selectInput}>
-                            <ThemedText variant="body" style={styles.selectText}>RPE</ThemedText>
-                          </View>
-                        </View>
-                      </View>
-                    ) : (
-                      // Core: Scheme + Mode (interactive, in a row)
-                      <View style={styles.row}>
-                        <View style={styles.fieldCol}>
-                          <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Scheme</ThemedText>
-                          <Pressable
-                            style={styles.selectInput}
-                            onPress={() => setCoreSelectOpen({ kind: 'scheme', idx })}
-                          >
-                            <ThemedText variant="body" style={styles.selectText}>
-                              {coreSchemeLabel(core, idx)}
-                            </ThemedText>
-                            <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
-                          </Pressable>
-                        </View>
-                        <View style={styles.fieldCol}>
-                          <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Mode</ThemedText>
-                          <Pressable
-                            style={styles.selectInput}
-                            onPress={() => setCoreSelectOpen({ kind: 'mode', idx })}
-                          >
-                            <ThemedText variant="body" style={styles.selectText}>
-                              {coreModeLabel(c.mode)}
-                            </ThemedText>
-                            <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
-                          </Pressable>
-                        </View>
-                      </View>
-                    )}
-
-                    {/* Variant details (lives under Scheme) OR Mode selector for standard core */}
-                    {c.lift === 'VR' ? (
-                    <>
-                        {/* Variant scheme inputs (always Straight) */}
-                        <View style={styles.row}>
-                        <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Sets</ThemedText>
-                            <TextInput
-                            value={String(c.sets)}
-                            onChangeText={(v) => updateCoreAt(idx, { sets: Number(v || 0) })}
-                            keyboardType="number-pad"
-                            placeholder="3"
-                            placeholderTextColor="#64748b"
-                            style={[styles.input, styles.inputSm]}
-                            />
-                        </View>
-
-                        <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Reps</ThemedText>
-                            <TextInput
-                            value={String(c.reps)}
-                            onChangeText={(v) => updateCoreAt(idx, { reps: Number(v || 0) })}
-                            keyboardType="number-pad"
-                            placeholder="5"
-                            placeholderTextColor="#64748b"
-                            style={[styles.input, styles.inputSm]}
-                            />
-                        </View>
-
-                        <View style={styles.fieldCol}>
-                            <ThemedText variant="bodyMuted" style={styles.fieldLabel}>RPE</ThemedText>
-                            <TextInput
-                            value={c.rpe_target == null ? '' : String(c.rpe_target)}
-                            onChangeText={(v) => updateCoreAt(idx, { rpe_target: v === '' ? null : Number(v) })}
-                            keyboardType="decimal-pad"
-                            placeholder="7"
-                            placeholderTextColor="#64748b"
-                            style={[styles.input, styles.inputSm]}
-                            />
-                        </View>
-                        </View>
-
-                        {/* Manual load entry: Target Load and ± Range on same row */}
-                        <View style={styles.row}>
-                          {renderManualLoadInput({
-                            label: `Target Load (${unit})`,
-                            draftKey: keyForManualTarget(idx),
-                            fallbackKg: c.manual_target_kg,
-                            placeholder: 'Required',
-                            onCommit: (nKg) => {
-                                updateCoreAt(idx, { manual_target_kg: nKg });
-                                applyManualRange(idx, nKg, c.manual_plusminus_kg ?? 0);
-                            },
-                          })}
-
-                          {renderManualLoadInput({
-                            label: `± Range (${unit})`,
-                            draftKey: keyForManualPm(idx),
-                            fallbackKg: c.manual_plusminus_kg,
-                            placeholder: 'e.g. 5',
-                            allowZero: true,
-                            onCommit: (pmKg) => {
-                                updateCoreAt(idx, { manual_plusminus_kg: pmKg });
-                                applyManualRange(idx, c.manual_target_kg ?? null, pmKg);
-                            },
-                          })}
-                        </View>
-                        {unit === 'kg' && (stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]) ? (
-                          <ThemedText variant="bodyMuted" style={styles.stepWarn}>
-                            {stepIssues[`core:${idx}:manual_target`] || stepIssues[`core:${idx}:manual_pm`]}
+                    <View style={styles.row}>
+                      <View style={styles.fieldCol}>
+                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Scheme</ThemedText>
+                        <Pressable
+                          style={styles.selectInput}
+                          onPress={() => setCoreSelectOpen({ kind: 'scheme', idx })}
+                        >
+                          <ThemedText variant="body" style={styles.selectText}>
+                            {coreSchemeLabel(core, idx)}
                           </ThemedText>
-                        ) : null}
-
-                        {(() => {
-                        const sr = suggestedRangeLabel(c);
-                        if (!sr) return null;
-                        return (
-                            <View style={styles.suggestRow}>
-                            <ThemedText variant="bodyMuted" style={styles.suggestLabel}>Suggested load</ThemedText>
-                            <ThemedText variant="body" style={styles.suggestValue}>{sr}</ThemedText>
-                            </View>
-                        );
-                        })()}
-                    </>
-                    ) : null}
+                          <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+                        </Pressable>
+                      </View>
+                      <View style={styles.fieldCol}>
+                        <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Mode</ThemedText>
+                        <Pressable
+                          style={styles.selectInput}
+                          onPress={() => setCoreSelectOpen({ kind: 'mode', idx })}
+                        >
+                          <ThemedText variant="body" style={styles.selectText}>
+                            {coreModeLabel(c.mode)}
+                          </ThemedText>
+                          <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+                        </Pressable>
+                      </View>
+                    </View>
 
 
                     {c.variant === 'FULL_CUSTOM' && (
@@ -2994,7 +3234,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                     </View>
                     )}
 
-                    {!hasTopBk && c.lift !== 'VR' && c.variant !== 'FULL_CUSTOM' && (
+                    {!hasTopBk && c.variant !== 'FULL_CUSTOM' && (
                     <>
                     <View style={styles.row}>
                         <View style={styles.fieldCol}>
@@ -3539,7 +3779,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
 
         {/* Movement preset picker */}
         <Modal
-          visible={movementPickerOpen?.kind === 'variant'}
+          visible={movementPickerOpen?.kind === 'variant' || movementPickerOpen?.kind === 'pendingVariant'}
           transparent
           animationType="slide"
           onRequestClose={() => {
@@ -3555,7 +3795,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
               <View style={styles.modalHeader}>
                 <View>
                   <ThemedText variant="h3" style={styles.modalTitle}>
-                    {movementPickerOpen?.kind === 'variant' ? 'Core Variant' : 'Accessory'}
+                    {movementPickerOpen?.kind === 'variant' || movementPickerOpen?.kind === 'pendingVariant' ? 'Core Variant' : 'Accessory'}
                   </ThemedText>
                 </View>
                 <TouchableOpacity
@@ -3586,7 +3826,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                   onPress={() => selectMovementPreset(movementSearch.trim())}
                 >
                   <ThemedText variant="body" style={styles.customMovementTitle}>
-                    Use "{movementSearch.trim()}"
+                    {`Use "${movementSearch.trim()}"`}
                   </ThemedText>
                 </Pressable>
               ) : null}
@@ -3934,6 +4174,263 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                 </TouchableOpacity>
                 </View>
             </View>
+        </Modal>
+
+        <Modal
+          visible={!!pendingCoreVariant}
+          transparent
+          animationType="slide"
+          onRequestClose={closePendingCoreVariant}
+        >
+          <KeyboardAvoidingView
+            style={styles.sheetOverlay}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={styles.editorSheet}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <ThemedText variant="h3" style={styles.modalTitle}>Configure Core Variant</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
+                    Movement, scheme, prescription, and manual target are required.
+                  </ThemedText>
+                </View>
+                <TouchableOpacity
+                  onPress={closePendingCoreVariant}
+                  style={styles.modalClose}
+                  accessibilityLabel="Cancel core variant setup"
+                >
+                  <ThemedText variant="badge" style={styles.modalCloseText}>Cancel</ThemedText>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.editorScrollContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              >
+                {pendingCoreVariant ? (
+                  <View style={styles.editorBody}>
+                    {pendingCoreVariant.error ? (
+                      <ThemedText variant="error" style={styles.inlineError}>{pendingCoreVariant.error}</ThemedText>
+                    ) : null}
+
+                    <ThemedText variant="bodyMuted" style={styles.controlLabel}>Core Variant</ThemedText>
+                    <Pressable style={styles.selectInput} onPress={() => openMovementPicker('pendingVariant', -1)}>
+                      <ThemedText variant="body" style={styles.selectText}>
+                        {pendingCoreVariant.top.movement?.trim() || 'Choose variant'}
+                      </ThemedText>
+                      <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
+                    </Pressable>
+                    <TextInput
+                      value={pendingCoreVariant.top.movement || ''}
+                      onChangeText={(movement) => updatePendingVariantTop({ movement })}
+                      placeholder="Custom variant"
+                      placeholderTextColor="#64748b"
+                      style={styles.input}
+                    />
+
+                    <ThemedText variant="bodyMuted" style={styles.controlLabel}>Scheme</ThemedText>
+                    {renderSegmented(
+                      [
+                        { value: 'STRAIGHT', label: 'Straight' },
+                        { value: 'TOP_BK', label: 'Top + Backdown' },
+                        { value: 'FULL_CUSTOM', label: 'Full Custom' },
+                      ],
+                      pendingCoreVariant.scheme,
+                      setPendingVariantScheme,
+                    )}
+
+                    <ThemedText variant="bodyMuted" style={styles.controlLabel}>Mode</ThemedText>
+                    {renderSegmented(
+                      [
+                        { value: 'RPE', label: 'RPE' },
+                        { value: 'PCT', label: '%' },
+                      ],
+                      pendingCoreVariant.top.mode,
+                      (mode) => {
+                        if (pendingCoreVariant.scheme === 'FULL_CUSTOM') setPendingFullCustomMode(mode);
+                        else {
+                          updatePendingVariantTop({ mode, rpe_target: mode === 'RPE' ? (pendingCoreVariant.top.rpe_target ?? 7) : null, pct: mode === 'PCT' ? pendingCoreVariant.top.pct : null });
+                          updatePendingVariantBackdown({ mode, rpe_target: mode === 'RPE' ? (pendingCoreVariant.backdown?.rpe_target ?? 6) : null, pct: mode === 'PCT' ? pendingCoreVariant.backdown?.pct : null });
+                        }
+                      },
+                    )}
+
+                    {pendingCoreVariant.scheme === 'FULL_CUSTOM' ? (
+                      <View style={styles.fullCustomEditor}>
+                        <View style={styles.fullCustomHeaderRow}>
+                          <ThemedText variant="body" style={styles.subRowLabel}>Planned Sets</ThemedText>
+                          <Pressable
+                            onPress={addPendingPlannedSet}
+                            disabled={normalizePlannedSets(pendingCoreVariant.top.planned_sets, pendingCoreVariant.top).length >= MAX_FULL_CUSTOM_SETS}
+                            style={[
+                              styles.smallBtn,
+                              normalizePlannedSets(pendingCoreVariant.top.planned_sets, pendingCoreVariant.top).length >= MAX_FULL_CUSTOM_SETS && styles.reorderBtnDisabled,
+                            ]}
+                          >
+                            <ThemedText variant="badge" style={styles.smallBtnText}>+ Add Set</ThemedText>
+                          </Pressable>
+                        </View>
+
+                        {normalizePlannedSets(pendingCoreVariant.top.planned_sets, pendingCoreVariant.top).map((ps, psIdx) => {
+                          const targetKey = pendingPlannedManualTargetKey(psIdx);
+                          const pmKey = pendingPlannedManualPmKey(psIdx);
+                          const stepIssue = stepIssues[targetKey] || stepIssues[pmKey];
+                          return (
+                            <View key={`pending-vr-${psIdx}`} style={styles.plannedSetCardCompact}>
+                              <View style={styles.plannedSetHeader}>
+                                <ThemedText variant="body" style={styles.plannedSetTitle}>Set {psIdx + 1}</ThemedText>
+                                <Pressable
+                                  onPress={() => removePendingPlannedSet(psIdx)}
+                                  disabled={normalizePlannedSets(pendingCoreVariant.top.planned_sets, pendingCoreVariant.top).length <= 1}
+                                  style={[
+                                    styles.plannedSetRemove,
+                                    normalizePlannedSets(pendingCoreVariant.top.planned_sets, pendingCoreVariant.top).length <= 1 && styles.reorderBtnDisabled,
+                                  ]}
+                                >
+                                  <ThemedText variant="badge" style={styles.removeBtnText}>Remove</ThemedText>
+                                </Pressable>
+                              </View>
+                              <View style={styles.controlGrid}>
+                                {renderStepper('Reps', ps.reps, (value) => updatePendingPlannedSetAt(psIdx, { reps: value }), { min: 1, max: 99 })}
+                                {pendingCoreVariant.top.mode === 'PCT'
+                                  ? renderPctInput(ps.pct, (value) => updatePendingPlannedSetAt(psIdx, { pct: value, rpe_target: null }))
+                                  : (
+                                    <View style={styles.controlBlockWide}>
+                                      <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                                      {renderRpeChips(ps.rpe_target, (value) => updatePendingPlannedSetAt(psIdx, { rpe_target: value, pct: null }))}
+                                    </View>
+                                  )}
+                              </View>
+                              <View style={styles.row}>
+                                {renderManualLoadInput({
+                                  label: `Load (${unit})`,
+                                  draftKey: targetKey,
+                                  fallbackKg: ps.manual_target_kg,
+                                  placeholder: 'Required',
+                                  onCommit: (nKg) => updatePendingPlannedSetAt(psIdx, { manual_target_kg: nKg }),
+                                })}
+                                {renderManualLoadInput({
+                                  label: `± (${unit})`,
+                                  draftKey: pmKey,
+                                  fallbackKg: ps.manual_pm_kg,
+                                  placeholder: '0',
+                                  allowZero: true,
+                                  onCommit: (pmKg) => updatePendingPlannedSetAt(psIdx, { manual_pm_kg: pmKg ?? 0 }),
+                                })}
+                              </View>
+                              {stepIssue ? <ThemedText variant="bodyMuted" style={styles.stepWarn}>{stepIssue}</ThemedText> : null}
+                            </View>
+                          );
+                        })}
+                      </View>
+                    ) : pendingCoreVariant.scheme === 'TOP_BK' ? (
+                      <View style={styles.editorBody}>
+                        <ThemedText variant="body" style={styles.subRowLabel}>Top Set</ThemedText>
+                        <View style={styles.controlGrid}>
+                          {renderStepper('Sets', pendingCoreVariant.top.sets, (value) => updatePendingVariantTop({ sets: value }), { min: 1, max: 12 })}
+                          {renderStepper('Reps', pendingCoreVariant.top.reps, (value) => updatePendingVariantTop({ reps: value }), { min: 1, max: 99 })}
+                        </View>
+                        {pendingCoreVariant.top.mode === 'PCT'
+                          ? renderPctInput(pendingCoreVariant.top.pct, (value) => updatePendingVariantTop({ pct: value, rpe_target: null }))
+                          : (
+                            <>
+                              <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                              {renderRpeChips(pendingCoreVariant.top.rpe_target, (value) => updatePendingVariantTop({ rpe_target: value, pct: null }))}
+                            </>
+                          )}
+                        <View style={styles.row}>
+                          {renderManualLoadInput({
+                            label: `Load (${unit})`,
+                            draftKey: pendingManualTargetKey('top'),
+                            fallbackKg: pendingCoreVariant.top.manual_target_kg,
+                            placeholder: 'Required',
+                            onCommit: (nKg) => updatePendingVariantTop({ manual_target_kg: nKg }),
+                          })}
+                          {renderManualLoadInput({
+                            label: `± (${unit})`,
+                            draftKey: pendingManualPmKey('top'),
+                            fallbackKg: pendingCoreVariant.top.manual_plusminus_kg,
+                            placeholder: '0',
+                            allowZero: true,
+                            onCommit: (pmKg) => updatePendingVariantTop({ manual_plusminus_kg: pmKg ?? 0 }),
+                          })}
+                        </View>
+
+                        <ThemedText variant="body" style={styles.subRowLabel}>Backdown Sets</ThemedText>
+                        <View style={styles.controlGrid}>
+                          {renderStepper('Sets', pendingCoreVariant.backdown?.sets, (value) => updatePendingVariantBackdown({ sets: value }), { min: 1, max: 12 })}
+                          {renderStepper('Reps', pendingCoreVariant.backdown?.reps, (value) => updatePendingVariantBackdown({ reps: value }), { min: 1, max: 99 })}
+                        </View>
+                        {pendingCoreVariant.top.mode === 'PCT'
+                          ? renderPctInput(pendingCoreVariant.backdown?.pct, (value) => updatePendingVariantBackdown({ pct: value, rpe_target: null }))
+                          : (
+                            <>
+                              <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                              {renderRpeChips(pendingCoreVariant.backdown?.rpe_target, (value) => updatePendingVariantBackdown({ rpe_target: value, pct: null }))}
+                            </>
+                          )}
+                        <View style={styles.row}>
+                          {renderManualLoadInput({
+                            label: `Load (${unit})`,
+                            draftKey: pendingManualTargetKey('backdown'),
+                            fallbackKg: pendingCoreVariant.backdown?.manual_target_kg,
+                            placeholder: 'Required',
+                            onCommit: (nKg) => updatePendingVariantBackdown({ manual_target_kg: nKg }),
+                          })}
+                          {renderManualLoadInput({
+                            label: `± (${unit})`,
+                            draftKey: pendingManualPmKey('backdown'),
+                            fallbackKg: pendingCoreVariant.backdown?.manual_plusminus_kg,
+                            placeholder: '0',
+                            allowZero: true,
+                            onCommit: (pmKg) => updatePendingVariantBackdown({ manual_plusminus_kg: pmKg ?? 0 }),
+                          })}
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.editorBody}>
+                        <View style={styles.controlGrid}>
+                          {renderStepper('Sets', pendingCoreVariant.top.sets, (value) => updatePendingVariantTop({ sets: value }), { min: 1, max: 12 })}
+                          {renderStepper('Reps', pendingCoreVariant.top.reps, (value) => updatePendingVariantTop({ reps: value }), { min: 1, max: 99 })}
+                        </View>
+                        {pendingCoreVariant.top.mode === 'PCT'
+                          ? renderPctInput(pendingCoreVariant.top.pct, (value) => updatePendingVariantTop({ pct: value, rpe_target: null }))
+                          : (
+                            <>
+                              <ThemedText variant="bodyMuted" style={styles.controlLabel}>RPE</ThemedText>
+                              {renderRpeChips(pendingCoreVariant.top.rpe_target, (value) => updatePendingVariantTop({ rpe_target: value, pct: null }))}
+                            </>
+                          )}
+                        <View style={styles.row}>
+                          {renderManualLoadInput({
+                            label: `Load (${unit})`,
+                            draftKey: pendingManualTargetKey('top'),
+                            fallbackKg: pendingCoreVariant.top.manual_target_kg,
+                            placeholder: 'Required',
+                            onCommit: (nKg) => updatePendingVariantTop({ manual_target_kg: nKg }),
+                          })}
+                          {renderManualLoadInput({
+                            label: `± (${unit})`,
+                            draftKey: pendingManualPmKey('top'),
+                            fallbackKg: pendingCoreVariant.top.manual_plusminus_kg,
+                            placeholder: '0',
+                            allowZero: true,
+                            onCommit: (pmKg) => updatePendingVariantTop({ manual_plusminus_kg: pmKg ?? 0 }),
+                          })}
+                        </View>
+                      </View>
+                    )}
+
+                    <Pressable style={styles.editorSaveBtn} onPress={commitPendingCoreVariant}>
+                      <ThemedText variant="h3" style={styles.editorSaveText}>Add Core Variant</ThemedText>
+                    </Pressable>
+                  </View>
+                ) : null}
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
         </Modal>
 
         {/* Core dropdown picker (Lift / Scheme / Mode) */}

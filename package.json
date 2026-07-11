@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:video-upload-policy": "node scripts/assert-video-upload-policy.js"
+    "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
+    "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
