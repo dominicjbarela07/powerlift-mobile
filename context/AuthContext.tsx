@@ -104,7 +104,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       accountState === 'EMAIL_VERIFICATION_REQUIRED' ||
       accountState === 'ACTIVATION_REQUIRED' ||
       accountState === 'LINK_COACH_REQUIRED';
-    const role = payloadUser.role === 'coach' || payload.role === 'coach' ? 'coach' : base.role;
+    const payloadRole = payloadUser.role ?? payload.role;
+    const role = payloadRole === 'coach' || payloadRole === 'athlete' ? payloadRole : base.role;
     const isCoach = role === 'coach';
     const hasLinkedAthlete =
       payload.link_coach_required === true || payloadUser.link_coach_required === true
