@@ -28,6 +28,8 @@ import {
 type InviteState = {
   alreadyLinked: boolean;
   invites: PendingCoachInvite[];
+  coach?: { id?: number | null; name?: string | null; email?: string | null } | null;
+  athlete?: { id?: number | null; name?: string | null; coach_id?: number | null } | null;
 };
 
 function authUserFromPayload(payload: any, fallbackEmail: string): AuthUser {
@@ -54,6 +56,7 @@ export default function PendingCoachInviteScreen() {
   const router = useRouter();
   const auth = useAuth();
   const { refreshAccountState } = auth;
+  const isCoachAccount = auth.user?.role === 'coach' || auth.user?.is_coach === true;
   const [state, setState] = useState<InviteState>({ alreadyLinked: false, invites: [] });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -62,6 +65,7 @@ export default function PendingCoachInviteScreen() {
 
   const refreshAccountLinkState = useCallback(async () => {
     const refreshed = await refreshAccountState();
+    if (isCoachAccount) return false;
     if (
       refreshed &&
       refreshed.account_state !== 'LINK_COACH_REQUIRED' &&
@@ -72,7 +76,7 @@ export default function PendingCoachInviteScreen() {
       return true;
     }
     return false;
-  }, [refreshAccountState, router]);
+  }, [isCoachAccount, refreshAccountState, router]);
 
   const loadInvites = useCallback(async ({ quiet = false } = {}) => {
     if (!quiet) setLoading(true);
@@ -89,8 +93,10 @@ export default function PendingCoachInviteScreen() {
       setState({
         alreadyLinked,
         invites: Array.isArray(payload.pending_invites) ? payload.pending_invites : [],
+        coach: payload.coach || null,
+        athlete: payload.athlete || null,
       });
-      if (alreadyLinked) {
+      if (alreadyLinked && !isCoachAccount) {
         router.replace('/(tabs)/athlete-dashboard' as any);
       }
     } catch (err: any) {
@@ -99,7 +105,7 @@ export default function PendingCoachInviteScreen() {
       if (!quiet) setLoading(false);
       setRefreshing(false);
     }
-  }, [refreshAccountLinkState, router]);
+  }, [isCoachAccount, refreshAccountLinkState, router]);
 
   useEffect(() => {
     loadInvites();
@@ -136,7 +142,7 @@ export default function PendingCoachInviteScreen() {
                 token: payload.token || auth.token,
                 user: authUserFromPayload(payload, auth.user?.email || ''),
               });
-              router.replace('/(tabs)/athlete-dashboard' as any);
+              router.replace(isCoachAccount ? '/(tabs)/settings' as any : '/(tabs)/athlete-dashboard' as any);
             } catch (err: any) {
               Alert.alert('Invite not accepted', err?.message || 'Please try again.');
             } finally {
@@ -233,6 +239,14 @@ export default function PendingCoachInviteScreen() {
             <View style={styles.panel}>
               <Ionicons name="alert-circle-outline" size={22} color="#FCA5A5" />
               <ThemedText style={styles.errorText}>{error}</ThemedText>
+            </View>
+          ) : state.alreadyLinked ? (
+            <View style={styles.panel}>
+              <Ionicons name="link-outline" size={22} color={SLColors.accentViolet} />
+              <ThemedText style={styles.emptyTitle}>Coach linked</ThemedText>
+              <ThemedText style={styles.mutedText}>
+                You’re linked to {state.coach?.name || state.coach?.email || 'your coach'} through your Athlete identity.
+              </ThemedText>
             </View>
           ) : state.invites.length ? (
             <View style={styles.inviteList}>

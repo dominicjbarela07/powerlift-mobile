@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import RefreshScreen from '@/components/refresh-screen';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
 import {
   SLAthleteAvatar,
   SLEmptyState,
@@ -52,11 +53,23 @@ type CoachRosterSummary = {
   total_athletes: number;
 };
 
+type CoachRosterInvite = {
+  id: number;
+  athlete_first?: string | null;
+  athlete_last?: string | null;
+  athlete_email: string;
+  status: string;
+  sent_at?: string | null;
+  updated_at?: string | null;
+};
+
 type CoachRosterResponse = {
   ok: boolean;
   summary: CoachRosterSummary;
   athletes: CoachRosterAthlete[];
+  pending_invites?: CoachRosterInvite[];
   error?: string;
+  new_coach_experience?: NewCoachExperiencePayload | null;
 };
 
 type FilterKey = 'all' | 'needs' | 'soon' | 'meet' | 'up_to_date';
@@ -135,8 +148,21 @@ function buildMeta(athlete: CoachRosterAthlete) {
   return bits.join(' · ') || undefined;
 }
 
+function inviteName(invite: CoachRosterInvite) {
+  return [invite.athlete_first, invite.athlete_last].filter(Boolean).join(' ').trim() || 'Invited athlete';
+}
+
+function inviteTimestamp(invite: CoachRosterInvite) {
+  const raw = invite.updated_at || invite.sent_at;
+  if (!raw) return 'Awaiting acceptance';
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return 'Awaiting acceptance';
+  return `Updated ${parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+}
+
 export default function CoachRosterScreen() {
   const [data, setData] = useState<CoachRosterAthlete[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<CoachRosterInvite[]>([]);
   const [summary, setSummary] = useState<CoachRosterSummary>({
     need_programming: 0,
     programming_soon: 0,
@@ -148,6 +174,7 @@ export default function CoachRosterScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newCoachExperience, setNewCoachExperience] = useState<NewCoachExperiencePayload | null>(null);
 
   const router = useRouter();
 
@@ -167,6 +194,8 @@ export default function CoachRosterScreen() {
 
       const athletes = json.athletes || [];
       setData(athletes);
+      setPendingInvites(json.pending_invites || []);
+      setNewCoachExperience(json.new_coach_experience || null);
       setSummary(
         json.summary || {
           need_programming: 0,
@@ -268,8 +297,20 @@ export default function CoachRosterScreen() {
         <View style={styles.header}>
           <View style={styles.headerRail} />
           <Text style={styles.eyebrow}>Athlete Triage</Text>
-          <Text style={styles.title}>Roster</Text>
-          <Text style={styles.subtitle}>Athlete triage and programming horizon</Text>
+          <View style={styles.titleRow}>
+            <View style={styles.titleCopy}>
+              <Text style={styles.title}>Roster</Text>
+              <Text style={styles.subtitle}>Athlete triage and programming horizon</Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/(tabs)/coach-invite-athlete' as any)}
+              style={({ pressed }) => [styles.inviteButton, pressed && styles.pressed]}
+            >
+              <Ionicons color="#FFFFFF" name="person-add-outline" size={15} />
+              <Text style={styles.inviteButtonText}>Invite Athlete</Text>
+            </Pressable>
+          </View>
         </View>
 
         <RosterMetricStrip metrics={metrics} />
@@ -320,10 +361,14 @@ export default function CoachRosterScreen() {
           </View>
 
           {visibleAthletes.length === 0 && !error ? (
-            <SLEmptyState
-              message={query || filter !== 'all' ? 'Try a different search or filter.' : 'Add athletes from the web coach dashboard.'}
-              title={query || filter !== 'all' ? 'No matching athletes' : 'No athletes yet'}
-            />
+            newCoachExperience && !query && filter === 'all' ? (
+              <NewCoachExperience experience={newCoachExperience} />
+            ) : (
+              <SLEmptyState
+                message={query || filter !== 'all' ? 'Try a different search or filter.' : 'Add athletes from the web coach dashboard.'}
+                title={query || filter !== 'all' ? 'No matching athletes' : 'No athletes yet'}
+              />
+            )
           ) : (
             <View style={styles.rowStack}>
               {visibleAthletes.map((athlete, index) => (
@@ -337,6 +382,27 @@ export default function CoachRosterScreen() {
                   title={athlete.is_self ? `${athlete.name} (You)` : athlete.name}
                 />
               ))}
+            </View>
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.ledgerHeader}>
+            <View style={styles.sectionRail} />
+            <Text style={styles.ledgerTitle}>Pending Invites</Text>
+            <Text style={styles.ledgerMeta}>{pendingInvites.length}</Text>
+          </View>
+
+          {pendingInvites.length > 0 ? (
+            <View style={styles.pendingStack}>
+              {pendingInvites.map((invite) => (
+                <PendingInviteRow invite={invite} key={invite.id} />
+              ))}
+            </View>
+          ) : (
+            <View style={styles.pendingEmpty}>
+              <Ionicons color={SLColors.textSubtle} name="mail-outline" size={18} />
+              <Text style={styles.pendingEmptyText}>No pending roster invites.</Text>
             </View>
           )}
         </View>
@@ -429,6 +495,24 @@ function AthleteLedgerRow({
   );
 }
 
+function PendingInviteRow({ invite }: { invite: CoachRosterInvite }) {
+  return (
+    <View style={styles.pendingInviteRow}>
+      <View style={styles.pendingInviteIcon}>
+        <Ionicons color={SLColors.accentViolet} name="mail-unread-outline" size={18} />
+      </View>
+      <View style={styles.pendingInviteCopy}>
+        <View style={styles.pendingInviteTitleRow}>
+          <Text numberOfLines={1} style={styles.pendingInviteName}>{inviteName(invite)}</Text>
+          <Text style={styles.pendingBadge}>Pending</Text>
+        </View>
+        <Text numberOfLines={1} style={styles.pendingInviteEmail}>{invite.athlete_email}</Text>
+        <Text numberOfLines={1} style={styles.pendingInviteMeta}>{inviteTimestamp(invite)}</Text>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
@@ -483,6 +567,33 @@ const styles = StyleSheet.create({
     fontSize: SLTypography.rowMeta.fontSize,
     fontWeight: SLTypography.rowMeta.fontWeight,
     lineHeight: SLTypography.rowMeta.lineHeight,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.md,
+    justifyContent: 'space-between',
+    paddingRight: SLSpacing.md,
+  },
+  titleCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  inviteButton: {
+    alignItems: 'center',
+    backgroundColor: SLColors.accentViolet,
+    borderRadius: SLRadius.radiusControl,
+    flexDirection: 'row',
+    gap: 6,
+    minHeight: 38,
+    paddingHorizontal: SLSpacing.md,
+  },
+  inviteButtonText: {
+    color: '#FFFFFF',
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 12,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    lineHeight: 15,
   },
   metricStrip: {
     flexDirection: 'row',
@@ -603,6 +714,95 @@ const styles = StyleSheet.create({
   rowStack: {
     backgroundColor: ROSTER_MATERIAL.surfaceSubtle,
     overflow: 'hidden',
+  },
+  pendingStack: {
+    backgroundColor: ROSTER_MATERIAL.surfaceSubtle,
+    borderColor: ROSTER_MATERIAL.hairline,
+    borderRadius: SLRadius.radiusCard,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  pendingInviteRow: {
+    alignItems: 'center',
+    borderBottomColor: ROSTER_MATERIAL.hairline,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.md,
+    minHeight: 78,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
+  },
+  pendingInviteIcon: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(108, 56, 255, 0.12)',
+    borderColor: 'rgba(108, 56, 255, 0.28)',
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
+  },
+  pendingInviteCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  pendingInviteTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+  },
+  pendingInviteName: {
+    color: SLColors.textStrong,
+    flex: 1,
+    fontFamily: SLTypography.rowTitle.fontFamily,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontWeight: SLTypography.rowTitle.fontWeight,
+    lineHeight: SLTypography.rowTitle.lineHeight,
+  },
+  pendingBadge: {
+    color: SLColors.accentViolet,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.2,
+    lineHeight: 13,
+    textTransform: 'uppercase',
+  },
+  pendingInviteEmail: {
+    color: SLColors.text,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
+    marginTop: 2,
+  },
+  pendingInviteMeta: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.utilityLabel.fontFamily,
+    fontSize: 10,
+    fontWeight: SLTypography.utilityLabel.fontWeight,
+    letterSpacing: 0.2,
+    lineHeight: 13,
+    marginTop: 4,
+    textTransform: 'uppercase',
+  },
+  pendingEmpty: {
+    alignItems: 'center',
+    backgroundColor: ROSTER_MATERIAL.surfaceSubtle,
+    borderColor: ROSTER_MATERIAL.hairline,
+    borderRadius: SLRadius.radiusCard,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    minHeight: 48,
+    paddingHorizontal: SLSpacing.md,
+  },
+  pendingEmptyText: {
+    color: SLColors.textSubtle,
+    fontFamily: SLTypography.rowMeta.fontFamily,
+    fontSize: SLTypography.rowMeta.fontSize,
+    fontWeight: SLTypography.rowMeta.fontWeight,
+    lineHeight: SLTypography.rowMeta.lineHeight,
   },
   pressed: {
     opacity: 0.78,
