@@ -679,6 +679,13 @@ export async function startMobileBillingCheckout(): Promise<FetchJsonResult<any>
   });
 }
 
+export async function cancelPendingTeamCoachUpgrade(): Promise<FetchJsonResult<any>> {
+  return fetchJson(`/auth/account-transitions/team-coach-upgrade/cancel`, {
+    method: 'POST',
+    body: { confirmed: true } as any,
+  });
+}
+
 export async function mobileOAuthRequest(
   provider: 'google' | 'apple',
   idToken: string,

@@ -1,10 +1,11 @@
 // app/index.tsx
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { useAuth } from '@/context/AuthContext';
-import { devSimulateStripeActivation, startMobileBillingCheckout } from '@/lib/api';
+import { cancelPendingTeamCoachUpgrade, devSimulateStripeActivation, startMobileBillingCheckout } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
 function AccountAccessGate({
@@ -28,6 +29,7 @@ function AccountAccessGate({
     user?.account_state === 'ACTIVATION_REQUIRED' ||
     user?.billing_required === true ||
     (user?.is_coach === true && user?.can_access_product === false);
+  const pendingTeamCoach = activationRequired && user?.is_individual_workspace !== true;
   const showDevSimulation =
     typeof __DEV__ !== 'undefined' &&
     __DEV__ &&
@@ -142,7 +144,9 @@ function AccountAccessGate({
         setError('Could not start activation. Please try again.');
         return;
       }
-      await Linking.openURL(checkoutUrl);
+      await WebBrowser.openBrowserAsync(checkoutUrl, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+      });
       void refreshActivationState();
     } catch (err: any) {
       console.warn('Could not start activation', err);
@@ -150,6 +154,35 @@ function AccountAccessGate({
     } finally {
       setActivating(false);
     }
+  };
+
+  const cancelTeamCoachUpgrade = () => {
+    Alert.alert(
+      'Cancel Team Coach upgrade?',
+      'You will return to Athlete. Your identity, training history, and linked coach relationship will remain.',
+      [
+        { text: 'Keep upgrade', style: 'cancel' },
+        {
+          text: 'Return to Athlete',
+          style: 'destructive',
+          onPress: async () => {
+            setActivating(true);
+            setError(null);
+            try {
+              const result = await cancelPendingTeamCoachUpgrade();
+              const payload = result.json || {};
+              if (!result.ok || payload.ok === false) throw new Error(payload.reason || payload.error || 'Could not cancel the upgrade.');
+              await refreshAccountState();
+              router.replace('/');
+            } catch (err: any) {
+              setError(err?.message || 'Could not cancel the upgrade.');
+            } finally {
+              setActivating(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const openFallbackAction = async () => {
@@ -205,6 +238,14 @@ function AccountAccessGate({
             </Text>
           )}
         </Pressable>
+        <Pressable style={styles.gateOutline} onPress={() => router.push('/(tabs)/settings')}>
+          <Text style={styles.gateOutlineText}>Settings</Text>
+        </Pressable>
+        {pendingTeamCoach ? (
+          <Pressable style={styles.gateOutline} onPress={cancelTeamCoachUpgrade} disabled={activating}>
+            <Text style={styles.gateOutlineText}>Cancel Team Coach upgrade</Text>
+          </Pressable>
+        ) : null}
         {showDevSimulation && actionUrl ? (
           <Pressable style={styles.gateOutline} onPress={openFallbackAction} disabled={simulating}>
             <Text style={styles.gateOutlineText}>Open activation URL</Text>
@@ -253,9 +294,9 @@ export default function IndexGate() {
   ) {
     return (
       <AccountAccessGate
-        title={isIndividual ? 'Activate Individual' : 'Activate membership'}
-        body="Your account is ready. Activate Stripe membership before entering the mobile app."
-        actionLabel="Open activation"
+        title={isIndividual ? 'Activate Individual' : 'Activate Team Coach'}
+        body={isIndividual ? 'Activate Stripe membership before entering your Individual workspace.' : 'Complete Team Coach membership activation before entering coach tools.'}
+        actionLabel={isIndividual ? 'Open Individual activation' : 'Open Team Coach activation'}
         actionUrl={user.billing_url}
       />
     );

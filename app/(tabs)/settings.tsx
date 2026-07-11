@@ -433,15 +433,18 @@ export default function SettingsScreen() {
     ? 'Billing activation is required before Team Coach access opens.'
     : 'Founder Beta Team Coach is $10/month forever after the 14-day free trial.';
   const teamCoachDowngradeReason = String(teamCoachDowngradeTransition?.reason || '');
+  const pendingTeamCoachUpgrade =
+    isCoach && !isIndividual && String(accountTransitions?.account_state || '').toUpperCase() === 'ACTIVATION_REQUIRED';
   const showTeamCoachDowngradeEntry =
     !!teamCoachDowngradeTransition &&
     !['not_current_posture', 'unsupported_transition'].includes(teamCoachDowngradeReason);
   const canStartTeamCoachDowngrade =
-    showTeamCoachDowngradeEntry &&
-    teamCoachDowngradeTransition?.available === true &&
+    (pendingTeamCoachUpgrade || (showTeamCoachDowngradeEntry && teamCoachDowngradeTransition?.available === true)) &&
     !downgradeSubmitting;
   const teamCoachDowngradeSummary = accountTransitionsLoading ? 'Loading...' : 'Athlete';
-  const teamCoachDowngradeDescription = teamCoachDowngradeReason === 'roster_offboarding_required'
+  const teamCoachDowngradeDescription = pendingTeamCoachUpgrade
+    ? 'Cancel this incomplete unpaid upgrade and return to Athlete. Your identity, history, and linked coach remain.'
+    : teamCoachDowngradeReason === 'roster_offboarding_required'
     ? 'Resolve roster athletes before returning to Athlete only.'
     : 'Cancel your coaching subscription and return to Athlete while preserving your identity and history.';
   const accountTypeTitle = isCoach
@@ -1115,7 +1118,10 @@ export default function SettingsScreen() {
     try {
       setDowngradeSubmitting(true);
       setDowngradeError(null);
-      const resp = await fetchJson<any>(`/auth/account-transitions/${TRANSITION_TEAM_COACH_TO_ATHLETE}/start`, {
+      const endpoint = pendingTeamCoachUpgrade
+        ? '/auth/account-transitions/team-coach-upgrade/cancel'
+        : `/auth/account-transitions/${TRANSITION_TEAM_COACH_TO_ATHLETE}/start`;
+      const resp = await fetchJson<any>(endpoint, {
         method: 'POST',
         body: { confirmed: true } as any,
       });
@@ -1553,7 +1559,7 @@ export default function SettingsScreen() {
                   {isCoach && !isIndividual
                     ? settingsRow({
                         icon: 'person-outline',
-                        title: 'Return to Athlete',
+                        title: pendingTeamCoachUpgrade ? 'Cancel Team Coach upgrade' : 'Return to Athlete',
                         description: teamCoachDowngradeDescription,
                         summary: downgradeSubmitting ? 'Working...' : teamCoachDowngradeSummary,
                         onPress: openTeamCoachDowngrade,
