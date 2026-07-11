@@ -27,6 +27,7 @@ import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
+import { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -1080,12 +1081,23 @@ export default function SettingsScreen() {
       if (json.checkout_url) {
         setUpgradeModalOpen(false);
         setUpgradeBetaCode('');
-        await WebBrowser.openBrowserAsync(json.checkout_url, {
-          presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
-        });
-        await auth?.refreshAccountState?.();
-        await loadMobileSettings();
-        await loadAccountTransitionMetadata();
+        setUpgradeSubmitting(false);
+        await waitForBlockingUiToDismiss();
+        let browserResult: { type: string } | null = null;
+        try {
+          browserResult = await openRecoverableCheckoutBrowser(json.checkout_url);
+        } finally {
+          setUpgradeModalOpen(false);
+          setUpgradeSubmitting(false);
+        }
+        const refreshed = await auth?.refreshAccountState?.();
+        await Promise.allSettled([loadMobileSettings(), loadAccountTransitionMetadata()]);
+        if (browserResult?.type === 'timeout') {
+          Alert.alert('Activation still pending', 'The checkout browser timed out. You can open activation again, check status, use Settings, or cancel the upgrade.');
+        } else if (refreshed?.account_state === 'ACTIVATION_REQUIRED') {
+          Alert.alert('Activation not completed', 'Your upgrade is still pending. You can reopen activation or cancel the upgrade.');
+        }
+        router.replace('/');
         return;
       }
 

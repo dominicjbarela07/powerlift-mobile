@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useAuth } from '@/context/AuthContext';
 import { cancelPendingTeamCoachUpgrade, devSimulateStripeActivation, startMobileBillingCheckout } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 
 function AccountAccessGate({
   title,
@@ -144,10 +144,9 @@ function AccountAccessGate({
         setError('Could not start activation. Please try again.');
         return;
       }
-      await WebBrowser.openBrowserAsync(checkoutUrl, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
-      });
-      void refreshActivationState();
+      const browserResult = await openRecoverableCheckoutBrowser(checkoutUrl);
+      setActivating(false);
+      await refreshActivationState({ showMessage: browserResult.type !== 'opened' });
     } catch (err: any) {
       console.warn('Could not start activation', err);
       setError(err?.message || 'Could not start activation. Please try again.');
