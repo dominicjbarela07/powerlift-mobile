@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   Pressable,
@@ -25,9 +26,8 @@ import { ThemedText } from '@/components/themed-text';
 import { SLScreen } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
-import { API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
+import { API_BASE, PRODUCTION_API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
-import { openRecoverableCheckoutBrowser, waitForBlockingUiToDismiss } from '@/lib/checkoutBrowser';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -288,6 +288,7 @@ export default function SettingsScreen() {
   const [upgradeBetaCode, setUpgradeBetaCode] = useState('');
   const [upgradeSubmitting, setUpgradeSubmitting] = useState(false);
   const [upgradeError, setUpgradeError] = useState<string | null>(null);
+  const upgradeBetaCodeInputRef = useRef<TextInput>(null);
   const [downgradeModalOpen, setDowngradeModalOpen] = useState(false);
   const [downgradeError, setDowngradeError] = useState<string | null>(null);
   const [downgradeSubmitting, setDowngradeSubmitting] = useState(false);
@@ -1050,6 +1051,8 @@ export default function SettingsScreen() {
     const betaCode = upgradeBetaCode.trim();
     if (!betaCode) {
       setUpgradeError('Enter your founder beta access code.');
+      Alert.alert('Founder beta code required', 'Enter your founder beta access code before activating Team Coach.');
+      upgradeBetaCodeInputRef.current?.focus();
       return;
     }
 
@@ -1059,6 +1062,7 @@ export default function SettingsScreen() {
       const devSimulationEnabled =
         typeof __DEV__ !== 'undefined' &&
         __DEV__ &&
+        API_BASE !== PRODUCTION_API_BASE &&
         auth?.user?.dev_onboarding_simulation_enabled === true;
       const resp = await fetchJson<any>(`/auth/account-transitions/${TRANSITION_ATHLETE_TO_TEAM_COACH}/start`, {
         method: 'POST',
@@ -1082,21 +1086,13 @@ export default function SettingsScreen() {
         setUpgradeModalOpen(false);
         setUpgradeBetaCode('');
         setUpgradeSubmitting(false);
-        await waitForBlockingUiToDismiss();
-        let browserResult: { type: string } | null = null;
         try {
-          browserResult = await openRecoverableCheckoutBrowser(json.checkout_url);
+          await Linking.openURL(json.checkout_url);
         } finally {
           setUpgradeModalOpen(false);
           setUpgradeSubmitting(false);
         }
-        const refreshed = await auth?.refreshAccountState?.();
-        await Promise.allSettled([loadMobileSettings(), loadAccountTransitionMetadata()]);
-        if (browserResult?.type === 'timeout') {
-          Alert.alert('Activation still pending', 'The checkout browser timed out. You can open activation again, check status, use Settings, or cancel the upgrade.');
-        } else if (refreshed?.account_state === 'ACTIVATION_REQUIRED') {
-          Alert.alert('Activation not completed', 'Your upgrade is still pending. You can reopen activation or cancel the upgrade.');
-        }
+        void auth?.refreshAccountState?.();
         router.replace('/');
         return;
       }
@@ -1111,7 +1107,9 @@ export default function SettingsScreen() {
       setUpgradeBetaCode('');
       Alert.alert('Team Coach mode ready', 'Your account is now ready for Team Coach surfaces. You can switch to Coach mode from Mobile Mode.');
     } catch (err: any) {
-      setUpgradeError(err?.message || 'Team Coach upgrade failed.');
+      const message = err?.message || 'Team Coach upgrade failed.';
+      setUpgradeError(message);
+      Alert.alert('Could not open Stripe Checkout', message);
     } finally {
       setUpgradeSubmitting(false);
     }
@@ -2095,6 +2093,7 @@ export default function SettingsScreen() {
                     <View style={styles.searchWrap}>
                       <Ionicons name="key-outline" size={18} color={SLColors.textMuted} />
                       <TextInput
+                        ref={upgradeBetaCodeInputRef}
                         value={upgradeBetaCode}
                         onChangeText={(value) => {
                           setUpgradeBetaCode(value);
