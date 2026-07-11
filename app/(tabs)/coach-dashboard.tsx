@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import RefreshScreen from '@/components/refresh-screen';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
 import {
   SLAthleteAvatar,
   SLErrorState,
@@ -15,7 +16,7 @@ import {
   SLStatusPill,
 } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { fetchJson } from '@/lib/api';
+import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
 import { SLColors, SLRadius, SLShadows, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 type CoachDashboardAthleteRef = {
@@ -92,6 +93,7 @@ type CoachDashboardResponse = {
   pending_reviews_athletes?: CoachDashboardReviewAthleteRef[];
   recent_activity?: CoachDashboardRecentActivityItem[];
   upcoming_days?: CoachDashboardUpcomingDay[];
+  new_coach_experience?: NewCoachExperiencePayload | null;
 };
 
 type QueueItem = {
@@ -167,7 +169,7 @@ function workflowLabel(item: CoachDashboardWorkflowItem) {
 
 export default function CoachDashboardScreen() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, applyAccountStatePayload } = useAuth();
   const isIndividual =
     user?.workspace_mode === 'individual' ||
       user?.is_individual_workspace === true ||
@@ -264,6 +266,12 @@ export default function CoachDashboardScreen() {
         const payload = res?.json ?? res;
 
         if (res?.ok !== true) {
+          if (isAccountStateBlockedPayload(payload)) {
+            await applyAccountStatePayload(payload);
+            setData(null);
+            router.replace('/');
+            return;
+          }
           const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
           setError(String(msg));
           setData(null);
@@ -301,7 +309,7 @@ export default function CoachDashboardScreen() {
         }
       }
     },
-    [token, router]
+    [applyAccountStatePayload, token, router]
   );
 
   useEffect(() => {
@@ -639,7 +647,15 @@ export default function CoachDashboardScreen() {
           />
         ) : null}
 
-        {firstAction ? (
+        {data?.new_coach_experience ? (
+          <NewCoachExperience
+            experience={data.new_coach_experience}
+            onPrimaryPress={() => router.push('/(tabs)/coach-invite-athlete' as any)}
+            onSecondaryPress={() => router.push('/(tabs)/coach-calendar' as any)}
+          />
+        ) : null}
+
+        {!data?.new_coach_experience && firstAction ? (
           <Pressable
             onPress={() => {
               if (firstAction.athleteRoute) openAthlete(firstAction.athleteRoute);
@@ -658,7 +674,7 @@ export default function CoachDashboardScreen() {
               <Text style={styles.priorityCountLabel}>queued</Text>
             </View>
           </Pressable>
-        ) : (
+        ) : !data?.new_coach_experience ? (
           <View style={styles.clearPanel}>
             <Ionicons color={SLColors.success} name="checkmark-circle-outline" size={22} />
             <View style={styles.clearCopy}>
@@ -666,8 +682,10 @@ export default function CoachDashboardScreen() {
               <Text style={styles.clearSubtitle}>Review pulse and upcoming sessions below.</Text>
             </View>
           </View>
-        )}
+        ) : null}
 
+        {!data?.new_coach_experience ? (
+        <>
         <View style={styles.tacticalZone}>
           <View style={styles.kpiStrip}>
             {priorityMetrics.map((metric) => (
@@ -814,6 +832,8 @@ export default function CoachDashboardScreen() {
             { icon: 'videocam-outline', label: 'Videos', onPress: () => router.push(ROUTES.coachVideos as any), tone: 'review' },
           ]}
         />
+        </>
+        ) : null}
       </RefreshScreen>
     </SLScreen>
   );

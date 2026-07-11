@@ -477,6 +477,14 @@ export default function TabsLayout() {
         />
 
         <Tabs.Screen
+          name="coach-invite-athlete"
+          options={{
+            href: null,
+            title: 'Invite Athlete',
+          }}
+        />
+
+        <Tabs.Screen
           name="coach-calendar"
           options={{
             title: 'Calendar',

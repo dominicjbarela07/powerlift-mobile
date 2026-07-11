@@ -112,6 +112,56 @@ type TrainingProfileContext = {
 
 type ProfileEditor = 'details' | 'maxes' | 'context' | null;
 
+type AccountTransitionMode = {
+  mode?: string | null;
+  available?: boolean;
+  reason?: string | null;
+  next_action?: string | null;
+};
+
+type AccountTransitionOption = {
+  transition?: string | null;
+  available?: boolean;
+  reason?: string | null;
+  next_action?: string | null;
+  requires_confirmation?: boolean;
+  destructive?: boolean;
+};
+
+type AccountTransitionMetadata = {
+  ok?: boolean;
+  posture?: string | null;
+  current_mode?: string | null;
+  account_state?: string | null;
+  next_action?: string | null;
+  available_modes?: AccountTransitionMode[];
+  transitions?: AccountTransitionOption[];
+  unavailable_transitions?: AccountTransitionOption[];
+};
+
+type LinkCoachStatus = {
+  already_linked?: boolean;
+  can_link_coach?: boolean;
+  coach?: {
+    id?: number | null;
+    name?: string | null;
+    email?: string | null;
+  } | null;
+  athlete?: {
+    id?: number | null;
+    name?: string | null;
+    coach_id?: number | null;
+  } | null;
+  pending_invites?: Array<{
+    id: number;
+    coach_id?: number | null;
+    coach_name?: string | null;
+    coach_email?: string | null;
+  }>;
+};
+
+const TRANSITION_ATHLETE_TO_TEAM_COACH = 'athlete_to_team_coach';
+const TRANSITION_TEAM_COACH_TO_ATHLETE = 'team_coach_to_athlete';
 const KG_TO_LB = 2.2046226218;
 
 const normalizeUnits = (value?: string | null) => {
@@ -130,6 +180,16 @@ const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'kg') => {
   if (!Number.isFinite(parsed)) return 0;
   return units === 'lbs' ? parsed / KG_TO_LB : parsed;
 };
+
+const normalizeMobileMode = (value: unknown): MobileViewMode | null => {
+  const mode = String(value || '').trim().toLowerCase();
+  return ['athlete', 'coach', 'individual'].includes(mode) ? (mode as MobileViewMode) : null;
+};
+
+const humanizeToken = (value?: string | null) =>
+  String(value || '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 
 type SettingsAccent = 'purple' | 'amber' | 'teal' | 'neutral';
 
@@ -213,6 +273,17 @@ export default function SettingsScreen() {
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [modeModalOpen, setModeModalOpen] = useState(false);
   const [modeSwitching, setModeSwitching] = useState<MobileViewMode | null>(null);
+  const [accountTransitions, setAccountTransitions] = useState<AccountTransitionMetadata | null>(null);
+  const [accountTransitionsLoading, setAccountTransitionsLoading] = useState(false);
+  const [accountTransitionsError, setAccountTransitionsError] = useState<string | null>(null);
+  const [linkCoachStatus, setLinkCoachStatus] = useState<LinkCoachStatus | null>(null);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeBetaCode, setUpgradeBetaCode] = useState('');
+  const [upgradeSubmitting, setUpgradeSubmitting] = useState(false);
+  const [upgradeError, setUpgradeError] = useState<string | null>(null);
+  const [downgradeModalOpen, setDowngradeModalOpen] = useState(false);
+  const [downgradeError, setDowngradeError] = useState<string | null>(null);
+  const [downgradeSubmitting, setDowngradeSubmitting] = useState(false);
 
   const deviceTimezone = useMemo(() => getDeviceTimezone(), []);
   const timezoneOptions = useMemo(() => supportedTimezones(deviceTimezone), [deviceTimezone]);
@@ -259,7 +330,7 @@ export default function SettingsScreen() {
       auth?.user?.is_individual_workspace === true ||
       auth?.user?.is_self_coached === true;
   const canUseInternalSelfCoachMode = auth?.user?.can_access_internal_self_coach_mobile_mode === true;
-  const availableMobileModes = useMemo(() => {
+  const safeBackendMobileModes = useMemo(() => {
     if (isIndividual && !canUseInternalSelfCoachMode) return ['individual'] as MobileViewMode[];
     const raw = Array.isArray(auth?.user?.available_mobile_modes)
       ? auth.user.available_mobile_modes
@@ -272,11 +343,133 @@ export default function SettingsScreen() {
     return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
   }, [auth?.user?.available_mobile_modes, canUseInternalSelfCoachMode, isCoach, isIndividual]);
   const activeMobileMode: MobileViewMode = isIndividual ? 'individual' : mobileViewMode;
+  const transitionModeOptions = useMemo(() => {
+    const transitionModes = Array.isArray(accountTransitions?.available_modes)
+      ? accountTransitions.available_modes
+          .map((mode) => {
+            const normalized = normalizeMobileMode(mode.mode);
+            if (!normalized) return null;
+            const existingSwitchEnabled = safeBackendMobileModes.includes(normalized);
+            const currentSelection = normalized === activeMobileMode;
+            return {
+              mode: normalized,
+              backendAvailable: mode.available === true,
+              switchable: currentSelection || (mode.available === true && existingSwitchEnabled && isCoach),
+              reason: mode.available === true && !existingSwitchEnabled && !currentSelection
+                ? 'mobile_switch_not_enabled'
+                : mode.reason || null,
+              nextAction: mode.next_action || null,
+            };
+          })
+          .filter(Boolean)
+      : [];
+
+    if (transitionModes.length) {
+      return transitionModes as Array<{
+        mode: MobileViewMode;
+        backendAvailable: boolean;
+        switchable: boolean;
+        reason: string | null;
+        nextAction: string | null;
+      }>;
+    }
+
+    return safeBackendMobileModes.map((mode) => ({
+      mode,
+      backendAvailable: true,
+      switchable: isCoach,
+      reason: null,
+      nextAction: null,
+    }));
+  }, [accountTransitions?.available_modes, activeMobileMode, isCoach, safeBackendMobileModes]);
+  const availableMobileModes = useMemo(
+    () => transitionModeOptions.filter((option) => option.switchable).map((option) => option.mode),
+    [transitionModeOptions]
+  );
+  const accountTransitionOptions = useMemo(
+    () => [
+      ...(Array.isArray(accountTransitions?.transitions) ? accountTransitions.transitions : []),
+      ...(Array.isArray(accountTransitions?.unavailable_transitions) ? accountTransitions.unavailable_transitions : []),
+    ],
+    [accountTransitions?.transitions, accountTransitions?.unavailable_transitions]
+  );
+  const teamCoachUpgradeTransition = useMemo(
+    () =>
+      accountTransitionOptions.find(
+        (transition) => String(transition.transition || '') === TRANSITION_ATHLETE_TO_TEAM_COACH
+      ) || null,
+    [accountTransitionOptions]
+  );
+  const teamCoachDowngradeTransition = useMemo(
+    () =>
+      accountTransitionOptions.find(
+        (transition) => String(transition.transition || '') === TRANSITION_TEAM_COACH_TO_ATHLETE
+      ) || null,
+    [accountTransitionOptions]
+  );
+  const teamCoachUpgradeReason = String(teamCoachUpgradeTransition?.reason || '');
+  const teamCoachUpgradeNextAction = String(teamCoachUpgradeTransition?.next_action || '');
+  const showTeamCoachUpgradeEntry =
+    !!teamCoachUpgradeTransition &&
+    !['not_current_posture', 'unsupported_transition'].includes(teamCoachUpgradeReason);
+  const canOpenTeamCoachUpgrade =
+    showTeamCoachUpgradeEntry &&
+    !upgradeSubmitting &&
+    (
+      teamCoachUpgradeTransition?.available === true ||
+      teamCoachUpgradeReason === 'beta_code_required' ||
+      teamCoachUpgradeNextAction === 'enter_beta_code'
+    );
+  const teamCoachUpgradeSummary = accountTransitionsLoading
+    ? 'Loading...'
+    : teamCoachUpgradeTransition?.available
+    ? 'Available'
+    : teamCoachUpgradeReason
+    ? humanizeToken(teamCoachUpgradeReason)
+    : 'Unavailable';
+  const teamCoachUpgradeDescription = teamCoachUpgradeReason === 'email_verification_required'
+    ? 'Verify your email before starting a Team Coach upgrade.'
+    : teamCoachUpgradeReason === 'billing_required'
+    ? 'Billing activation is required before Team Coach access opens.'
+    : 'Founder Beta Team Coach is $10/month forever after the 14-day free trial.';
+  const teamCoachDowngradeReason = String(teamCoachDowngradeTransition?.reason || '');
+  const teamCoachDowngradeNextAction = String(teamCoachDowngradeTransition?.next_action || '');
+  const showTeamCoachDowngradeEntry =
+    !!teamCoachDowngradeTransition &&
+    !['not_current_posture', 'unsupported_transition'].includes(teamCoachDowngradeReason);
+  const canStartTeamCoachDowngrade =
+    showTeamCoachDowngradeEntry &&
+    teamCoachDowngradeTransition?.available === true &&
+    !downgradeSubmitting;
+  const teamCoachDowngradeSummary = accountTransitionsLoading
+    ? 'Loading...'
+    : teamCoachDowngradeTransition?.available
+    ? 'Available'
+    : teamCoachDowngradeReason
+    ? humanizeToken(teamCoachDowngradeReason)
+    : 'Unavailable';
+  const teamCoachDowngradeDescription = teamCoachDowngradeReason === 'roster_offboarding_required'
+    ? 'Resolve roster athletes before returning to Athlete only.'
+    : 'Cancel your coaching subscription and return to Athlete while preserving your identity and history.';
+  const accountTypeTitle = accountTransitions?.posture
+    ? humanizeToken(accountTransitions.posture)
+    : isCoach
+    ? 'Team Coach'
+    : isIndividual
+    ? 'Self-Coach'
+    : 'Athlete';
+  const accountTypeDescription = isCoach
+    ? 'Coach capabilities are active. Your Athlete identity remains available for your own training.'
+    : isIndividual
+    ? 'Self-coach access is active for your own Athlete identity.'
+    : 'Athlete access is active. Coaching upgrades start from this section when available.';
   const modeOptions = useMemo(
     () =>
-      availableMobileModes.map((mode) => {
+      transitionModeOptions.map((modeOption) => {
+        const { mode } = modeOption;
         if (mode === 'individual') {
           return {
+            ...modeOption,
             mode,
             icon: 'barbell-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Self-Coach',
@@ -285,6 +478,7 @@ export default function SettingsScreen() {
         }
         if (mode === 'coach') {
           return {
+            ...modeOption,
             mode,
             icon: 'people-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Coach',
@@ -292,20 +486,42 @@ export default function SettingsScreen() {
           };
         }
         return {
+          ...modeOption,
           mode,
           icon: 'person-outline' as keyof typeof Ionicons.glyphMap,
           label: 'Athlete',
           description: 'Open your athlete training, calendar, progression, and reflection views.',
         };
       }),
-    [availableMobileModes]
+    [transitionModeOptions]
   );
   const mobileModeSummary =
     activeMobileMode === 'individual' ? 'Self-Coach' : activeMobileMode === 'coach' ? 'Coach' : 'Athlete';
-  const hasTrainingProfile = role === 'athlete' || isIndividual;
-  const showVideoFeedbackNotifications = role === 'athlete' && !isIndividual;
-  const showVideoSubmissionNotifications = isCoach && !isIndividual;
+  const hasTrainingProfile = isIndividual || activeMobileMode === 'athlete' || !!trainingProfile;
+  const showVideoFeedbackNotifications = activeMobileMode === 'athlete' && !isIndividual;
+  const showVideoSubmissionNotifications = isCoach && activeMobileMode === 'coach' && !isIndividual;
   const showNotificationsSection = showVideoFeedbackNotifications || showVideoSubmissionNotifications;
+  const showLinkCoachEntry = !isIndividual && (role === 'athlete' || isCoach);
+  const linkCoachAlreadyLinked = linkCoachStatus?.already_linked === true || !!linkCoachStatus?.athlete?.coach_id;
+  const linkCoachPendingCount = Array.isArray(linkCoachStatus?.pending_invites)
+    ? linkCoachStatus?.pending_invites?.length || 0
+    : 0;
+  const linkCoachSummary = linkCoachAlreadyLinked
+    ? 'Linked'
+    : linkCoachPendingCount > 0
+    ? `${linkCoachPendingCount} pending`
+    : 'Open';
+  const linkCoachDescription = linkCoachAlreadyLinked
+    ? `Linked to ${linkCoachStatus?.coach?.name || linkCoachStatus?.coach?.email || 'your coach'}`
+    : isCoach
+    ? 'Connect your own Athlete identity to a coach'
+    : 'Connect your account to a coach';
+  const showAccountTypeSection =
+    !!accountTransitions ||
+    accountTransitionsLoading ||
+    showTeamCoachUpgradeEntry ||
+    showTeamCoachDowngradeEntry ||
+    showLinkCoachEntry;
 
   const profileUnits = useMemo(() => normalizeUnits(trainingProfile?.preferred_units || trainingProfile?.context?.preferred_units), [trainingProfile]);
 
@@ -395,6 +611,7 @@ export default function SettingsScreen() {
           : null
       );
       setTrainingProfile(json.training_profile || null);
+      setLinkCoachStatus(json.link_coach || null);
       if (hasTrainingProfile) {
         setTimezone(json.timezone || deviceTimezone || 'America/Los_Angeles');
         setTimezoneSource(json.timezone_source || 'device');
@@ -403,6 +620,7 @@ export default function SettingsScreen() {
     } catch (err) {
       console.warn('Failed to load mobile settings', err);
       setTrainingProfile(null);
+      setLinkCoachStatus(null);
       setTimezone(deviceTimezone || 'America/Los_Angeles');
       setTimezoneSource(deviceTimezone ? 'device' : 'fallback');
     } finally {
@@ -413,6 +631,26 @@ export default function SettingsScreen() {
   useEffect(() => {
     loadMobileSettings();
   }, [loadMobileSettings]);
+
+  const loadAccountTransitionMetadata = useCallback(async () => {
+    try {
+      setAccountTransitionsLoading(true);
+      setAccountTransitionsError(null);
+      const resp = await fetchJson<AccountTransitionMetadata>('/auth/account-transitions.json', { method: 'GET' });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error((json as any).error || `HTTP ${resp.status}`);
+      setAccountTransitions(json);
+    } catch (err: any) {
+      setAccountTransitions(null);
+      setAccountTransitionsError(err?.message || 'Account transition metadata unavailable.');
+    } finally {
+      setAccountTransitionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAccountTransitionMetadata();
+  }, [loadAccountTransitionMetadata]);
 
   const openProfileEditor = (editor: Exclude<ProfileEditor, null>) => {
     if (!trainingProfile) return;
@@ -771,8 +1009,119 @@ export default function SettingsScreen() {
     }
   };
 
+  const openTeamCoachUpgrade = () => {
+    if (!canOpenTeamCoachUpgrade) {
+      const reason = teamCoachUpgradeReason ? humanizeToken(teamCoachUpgradeReason) : 'This transition is not available.';
+      const nextAction = teamCoachUpgradeNextAction ? `\nNext action: ${humanizeToken(teamCoachUpgradeNextAction)}` : '';
+      Alert.alert('Become a Team Coach', `${reason}${nextAction}`);
+      return;
+    }
+    setUpgradeError(null);
+    setUpgradeBetaCode('');
+    setUpgradeModalOpen(true);
+  };
+
+  const submitTeamCoachUpgrade = async () => {
+    const betaCode = upgradeBetaCode.trim();
+    if (!betaCode) {
+      setUpgradeError('Enter your founder beta access code.');
+      return;
+    }
+
+    try {
+      setUpgradeSubmitting(true);
+      setUpgradeError(null);
+      const devSimulationEnabled =
+        typeof __DEV__ !== 'undefined' &&
+        __DEV__ &&
+        auth?.user?.dev_onboarding_simulation_enabled === true;
+      const resp = await fetchJson<any>(`/auth/account-transitions/${TRANSITION_ATHLETE_TO_TEAM_COACH}/start`, {
+        method: 'POST',
+        body: {
+          confirmed: true,
+          beta_code: betaCode,
+          dev_simulate_billing: devSimulationEnabled,
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) {
+        const message =
+          json.error ||
+          json.reason ||
+          json.next_action ||
+          `HTTP ${resp.status}`;
+        throw new Error(humanizeToken(message));
+      }
+
+      if (json.account_state_payload) {
+        await auth?.applyAccountStatePayload?.(json.account_state_payload);
+      }
+      await auth?.refreshAccountState?.();
+      await loadMobileSettings();
+      await loadAccountTransitionMetadata();
+      setUpgradeModalOpen(false);
+      setUpgradeBetaCode('');
+      Alert.alert('Team Coach mode ready', 'Your account is now ready for Team Coach surfaces. You can switch to Coach mode from Mobile Mode.');
+    } catch (err: any) {
+      setUpgradeError(err?.message || 'Team Coach upgrade failed.');
+    } finally {
+      setUpgradeSubmitting(false);
+    }
+  };
+
+  const openTeamCoachDowngrade = () => {
+    if (!canStartTeamCoachDowngrade) {
+      const reason = teamCoachDowngradeReason ? humanizeToken(teamCoachDowngradeReason) : 'This transition is not available.';
+      const nextAction = teamCoachDowngradeNextAction ? `\nNext action: ${humanizeToken(teamCoachDowngradeNextAction)}` : '';
+      Alert.alert('Return to Athlete', `${reason}${nextAction}`);
+      return;
+    }
+    setDowngradeError(null);
+    setDowngradeModalOpen(true);
+  };
+
+  const submitTeamCoachDowngrade = async () => {
+    try {
+      setDowngradeSubmitting(true);
+      setDowngradeError(null);
+      const resp = await fetchJson<any>(`/auth/account-transitions/${TRANSITION_TEAM_COACH_TO_ATHLETE}/start`, {
+        method: 'POST',
+        body: { confirmed: true } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) {
+        if (json.retryable) {
+          throw new Error('Cancellation could not be fully confirmed. Coach access was not removed. Please retry.');
+        }
+        const message =
+          json.error ||
+          json.reason ||
+          json.next_action ||
+          `HTTP ${resp.status}`;
+        throw new Error(humanizeToken(message));
+      }
+
+      if (json.account_state_payload) {
+        await auth?.applyAccountStatePayload?.(json.account_state_payload);
+      }
+      await auth?.refreshAccountState?.();
+      await loadMobileSettings();
+      await loadAccountTransitionMetadata();
+      await saveMobileViewMode('athlete');
+      setMobileViewMode('athlete');
+      setDowngradeModalOpen(false);
+      Alert.alert('Athlete account ready', 'Your coaching subscription was cancelled and Team Coach access removed. Your Athlete identity, history, and linked coach relationship remain.');
+      router.replace('/(tabs)/athlete-dashboard');
+    } catch (err: any) {
+      setDowngradeError(err?.message || 'Please try again.');
+    } finally {
+      setDowngradeSubmitting(false);
+    }
+  };
+
   const handleSelectMobileMode = async (nextMode: MobileViewMode) => {
-    if (!isCoach || !availableMobileModes.includes(nextMode)) return;
+    const selectedOption = transitionModeOptions.find((option) => option.mode === nextMode);
+    if (!selectedOption?.switchable) return;
     if (nextMode === activeMobileMode) {
       setModeModalOpen(false);
       return;
@@ -796,6 +1145,7 @@ export default function SettingsScreen() {
       await saveMobileViewMode(resolvedMode);
       setMobileViewMode(resolvedMode);
       setModeModalOpen(false);
+      loadAccountTransitionMetadata();
       router.replace(resolvedMode === 'coach' ? '/coach-dashboard' : '/(tabs)/athlete-dashboard');
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
@@ -917,12 +1267,18 @@ export default function SettingsScreen() {
   const initials = nameParts.length >= 2
     ? `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase()
     : String(profileName).replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || 'SL';
-  const accountModeLabel = isIndividual ? 'Self-Coached' : isCoach ? 'Coach' : 'Athlete';
-  const profileDescriptor = isIndividual
-    ? 'Self-coached training'
-    : isCoach
-    ? 'Coach account'
-    : 'Athlete profile';
+  const backendCurrentMode = ['athlete', 'coach', 'individual'].includes(String(accountTransitions?.current_mode || ''))
+    ? (String(accountTransitions?.current_mode) as MobileViewMode)
+    : null;
+  const displayMobileMode = backendCurrentMode || activeMobileMode;
+  const accountModeLabel =
+    displayMobileMode === 'individual' ? 'Self-Coached' : displayMobileMode === 'coach' ? 'Coach' : 'Athlete';
+  const profileDescriptor =
+    displayMobileMode === 'individual'
+      ? 'Self-coached training'
+      : displayMobileMode === 'coach'
+      ? 'Coach account'
+      : 'Athlete profile';
   const bodyweightSummary = formatProfileWeight(trainingProfile?.bodyweight) || 'Not set';
   const unitsSummary = trainingProfile ? profileUnits.toUpperCase() : 'Not set';
   const trainingStartSummary =
@@ -1145,6 +1501,55 @@ export default function SettingsScreen() {
             'purple'
           )}
 
+          {showAccountTypeSection
+            ? settingsGroup(
+                'Account Type',
+                'briefcase-outline',
+                <>
+                  {settingsRow({
+                    icon: 'person-circle-outline',
+                    title: accountTransitionsLoading ? 'Loading account type...' : accountTypeTitle,
+                    description: accountTypeDescription,
+                    summary: accountTransitionsError ? 'Unavailable' : accountTransitions?.account_state ? humanizeToken(accountTransitions.account_state) : undefined,
+                    onPress: () => {},
+                    disabled: true,
+                  })}
+                  {showTeamCoachUpgradeEntry
+                    ? settingsRow({
+                        icon: 'rocket-outline',
+                        title: 'Become a Team Coach',
+                        description: teamCoachUpgradeDescription,
+                        summary: teamCoachUpgradeSummary,
+                        onPress: openTeamCoachUpgrade,
+                        disabled: !canOpenTeamCoachUpgrade,
+                        accent: 'amber',
+                      })
+                    : null}
+                  {showTeamCoachDowngradeEntry
+                    ? settingsRow({
+                        icon: 'person-outline',
+                        title: 'Return to Athlete',
+                        description: teamCoachDowngradeDescription,
+                        summary: downgradeSubmitting ? 'Working...' : teamCoachDowngradeSummary,
+                        onPress: openTeamCoachDowngrade,
+                        disabled: !canStartTeamCoachDowngrade,
+                        accent: 'neutral',
+                      })
+                    : null}
+                  {showLinkCoachEntry
+                    ? settingsRow({
+                        icon: 'link-outline',
+                        title: linkCoachAlreadyLinked ? 'Coach linked' : 'Link coach',
+                        description: linkCoachDescription,
+                        summary: linkCoachSummary,
+                        onPress: handleLinkCoach,
+                      })
+                    : null}
+                </>,
+                'purple'
+              )
+            : null}
+
           {settingsGroup(
             'Account & Profile',
             'person-circle-outline',
@@ -1166,21 +1571,15 @@ export default function SettingsScreen() {
                     disabled: uploadingAvatar,
                   })
                 : null}
-              {isCoach && availableMobileModes.length > 1
+              {modeOptions.length > 1
                 ? settingsRow({
                     icon: 'swap-horizontal-outline',
                     title: 'Mobile Mode',
-                    description: 'Switch between available mobile views',
-                    summary: mobileModeSummary,
+                    description: accountTransitions
+                      ? 'Switch between backend-approved mobile views'
+                      : 'Switch between available mobile views',
+                    summary: accountTransitionsLoading ? 'Loading...' : mobileModeSummary,
                     onPress: () => setModeModalOpen(true),
-                  })
-                : null}
-              {role === 'athlete' && !isIndividual
-                ? settingsRow({
-                    icon: 'link-outline',
-                    title: 'Link coach',
-                    description: 'Connect your account to a coach',
-                    onPress: handleLinkCoach,
                   })
                 : null}
             </>
@@ -1510,35 +1909,231 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.modeOptionList}>
+                {accountTransitions ? (
+                  <View style={styles.modeMetadataCard}>
+                    <ThemedText style={styles.modeMetadataTitle}>
+                      {humanizeToken(accountTransitions.posture || accountTransitions.current_mode || 'Account')}
+                    </ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>
+                      {humanizeToken(accountTransitions.account_state || 'Account state unavailable')}
+                      {accountTransitions.next_action && accountTransitions.next_action !== 'none'
+                        ? ` · Next action: ${humanizeToken(accountTransitions.next_action)}`
+                        : ''}
+                    </ThemedText>
+                  </View>
+                ) : accountTransitionsError ? (
+                  <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
+                    <ThemedText style={styles.modeMetadataTitle}>Transition metadata unavailable</ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>{accountTransitionsError}</ThemedText>
+                  </View>
+                ) : null}
                 {modeOptions.map((option) => {
                   const selected = option.mode === activeMobileMode;
                   const switching = modeSwitching === option.mode;
+                  const blocked = !option.switchable;
+                  const reason = option.reason ? humanizeToken(option.reason) : null;
+                  const nextAction = option.nextAction ? humanizeToken(option.nextAction) : null;
                   return (
                     <Pressable
                       key={option.mode}
                       style={({ pressed }) => [
                         styles.modeOption,
                         selected && styles.modeOptionSelected,
-                        pressed && !switching && styles.rowButtonPressed,
+                        blocked && styles.modeOptionBlocked,
+                        pressed && !switching && !blocked && styles.rowButtonPressed,
                       ]}
                       onPress={() => handleSelectMobileMode(option.mode)}
-                      disabled={modeSwitching !== null}
+                      disabled={modeSwitching !== null || blocked}
                     >
-                      <View style={[styles.modeOptionIcon, selected && styles.modeOptionIconSelected]}>
+                      <View style={[styles.modeOptionIcon, selected && styles.modeOptionIconSelected, blocked && styles.modeOptionIconBlocked]}>
                         {switching ? (
                           <ActivityIndicator color={SLColors.accentViolet} />
                         ) : (
-                          <Ionicons name={option.icon} size={21} color={selected ? SLColors.textStrong : SLColors.accentViolet} />
+                          <Ionicons
+                            name={option.icon}
+                            size={21}
+                            color={blocked ? SLColors.textSubtle : selected ? SLColors.textStrong : SLColors.accentViolet}
+                          />
                         )}
                       </View>
                       <View style={styles.rowTextWrap}>
-                        <ThemedText style={styles.modeOptionTitle}>{option.label}</ThemedText>
+                        <ThemedText style={[styles.modeOptionTitle, blocked && styles.modeOptionTitleBlocked]}>{option.label}</ThemedText>
                         <ThemedText style={styles.modeOptionDescription}>{option.description}</ThemedText>
+                        {blocked ? (
+                          <ThemedText style={styles.modeOptionReason}>
+                            {reason || 'Unavailable'}
+                            {nextAction ? ` · ${nextAction}` : ''}
+                          </ThemedText>
+                        ) : null}
                       </View>
-                      {selected ? <Ionicons name="checkmark-circle" size={22} color={SLColors.success} /> : null}
+                      {selected ? (
+                        <Ionicons name="checkmark-circle" size={22} color={SLColors.success} />
+                      ) : blocked ? (
+                        <Ionicons name="lock-closed-outline" size={20} color={SLColors.textSubtle} />
+                      ) : null}
                     </Pressable>
                   );
                 })}
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
+
+        <Modal visible={upgradeModalOpen} animationType="slide" transparent onRequestClose={() => setUpgradeModalOpen(false)}>
+          <KeyboardAvoidingView
+            style={styles.keyboardModalRoot}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}
+          >
+            <Pressable style={styles.modalBackdrop} onPress={Keyboard.dismiss}>
+              <Pressable style={[styles.modalSheet, styles.upgradeModalSheet]} onPress={(event) => event.stopPropagation()}>
+                <View style={styles.modalHeader}>
+                  <View style={styles.modalTitleWrap}>
+                    <ThemedText style={styles.modalTitle}>Become a Team Coach</ThemedText>
+                    <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                      Activate Founder Beta access with your code.
+                    </ThemedText>
+                  </View>
+                  <Pressable style={styles.modalClose} onPress={() => setUpgradeModalOpen(false)} disabled={upgradeSubmitting}>
+                    <Ionicons name="close" size={22} color={SLColors.text} />
+                  </Pressable>
+                </View>
+
+                <ScrollView style={styles.upgradeModalScroll} contentContainerStyle={styles.upgradeModalContent} keyboardShouldPersistTaps="handled">
+                  <View style={styles.upgradePlanHero}>
+                    <View style={styles.upgradePlanEyebrowRow}>
+                      <ThemedText style={styles.upgradePlanEyebrow}>Founder Beta Team Coach</ThemedText>
+                      <View style={styles.upgradePlanBadge}>
+                        <ThemedText style={styles.upgradePlanBadgeText}>Beta code</ThemedText>
+                      </View>
+                    </View>
+                    <View style={styles.upgradePriceRow}>
+                      <ThemedText style={styles.upgradePrice}>$10/mo</ThemedText>
+                      <ThemedText style={styles.upgradePriceMeta}>after 14-day trial</ThemedText>
+                    </View>
+                    <ThemedText style={styles.upgradeHeroDescription}>
+                      Unlimited athletes for approved founding beta coaches.
+                    </ThemedText>
+                  </View>
+
+                  <View style={styles.upgradeBenefitList}>
+                    {[
+                      ['people-outline', 'Roster, programming, check-ins, and coach dashboard'],
+                      ['videocam-outline', 'Video review, messages, and athlete feedback'],
+                      ['shield-checkmark-outline', 'Same account and Athlete identity stay preserved'],
+                    ].map(([icon, text]) => (
+                      <View style={styles.upgradeBenefitRow} key={text}>
+                        <View style={styles.upgradeBenefitIcon}>
+                          <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={17} color={SLColors.accent} />
+                        </View>
+                        <ThemedText style={styles.upgradeBenefitText}>{text}</ThemedText>
+                      </View>
+                    ))}
+                  </View>
+
+                  <ThemedText style={styles.upgradeBillingNote}>
+                    Production activation continues through Stripe billing. Local dev uses simulated billing only. Any linked coach relationship stays active.
+                  </ThemedText>
+
+                  {upgradeError ? (
+                    <View style={styles.editorError}>
+                      <Ionicons name="alert-circle-outline" size={18} color={SLColors.danger} />
+                      <ThemedText style={styles.editorErrorText}>{upgradeError}</ThemedText>
+                    </View>
+                  ) : null}
+
+                  <View style={styles.upgradeCodeField}>
+                    <ThemedText style={styles.upgradeCodeLabel}>Founder beta access code</ThemedText>
+                    <View style={styles.searchWrap}>
+                      <Ionicons name="key-outline" size={18} color={SLColors.textMuted} />
+                      <TextInput
+                        value={upgradeBetaCode}
+                        onChangeText={(value) => {
+                          setUpgradeBetaCode(value);
+                          if (upgradeError) setUpgradeError(null);
+                        }}
+                        placeholder="Enter beta code"
+                        placeholderTextColor={SLColors.textSubtle}
+                        autoCapitalize="characters"
+                        autoCorrect={false}
+                        style={styles.searchInput}
+                        editable={!upgradeSubmitting}
+                      />
+                    </View>
+                  </View>
+                </ScrollView>
+
+                <View style={styles.deleteActions}>
+                  <Pressable
+                    style={({ pressed }) => [styles.secondaryButton, pressed && styles.rowButtonPressed]}
+                    onPress={() => setUpgradeModalOpen(false)}
+                    disabled={upgradeSubmitting}
+                  >
+                    <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+                  </Pressable>
+                  <Pressable
+                    style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
+                    onPress={submitTeamCoachUpgrade}
+                    disabled={upgradeSubmitting}
+                  >
+                    {upgradeSubmitting ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="rocket-outline" size={18} color={SLColors.textStrong} />}
+                    <ThemedText style={styles.primaryButtonText}>
+                      {upgradeSubmitting ? 'Activating...' : 'Activate Team Coach Beta'}
+                    </ThemedText>
+                  </Pressable>
+                </View>
+              </Pressable>
+            </Pressable>
+          </KeyboardAvoidingView>
+        </Modal>
+
+        <Modal visible={downgradeModalOpen} animationType="slide" transparent onRequestClose={() => setDowngradeModalOpen(false)}>
+          <Pressable style={styles.modalBackdrop} onPress={() => (!downgradeSubmitting ? setDowngradeModalOpen(false) : null)}>
+            <Pressable style={styles.modalSheet} onPress={(event) => event.stopPropagation()}>
+              <View style={styles.modalHeader}>
+                <View style={styles.modalTitleWrap}>
+                  <ThemedText style={styles.modalTitle}>Return to Athlete</ThemedText>
+                  <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
+                    This cancels your coaching subscription and removes Team Coach access.
+                  </ThemedText>
+                </View>
+                <Pressable style={styles.modalClose} onPress={() => setDowngradeModalOpen(false)} disabled={downgradeSubmitting}>
+                  <Ionicons name="close" size={22} color={SLColors.text} />
+                </Pressable>
+              </View>
+
+              <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
+                <ThemedText style={styles.modeMetadataTitle}>Before you continue</ThemedText>
+                <ThemedText style={styles.modeMetadataDescription}>
+                  Your same account, Athlete identity, workouts, history, videos, check-ins, and linked coach relationship remain. Stripe cancellation is confirmed before coach tools are removed.
+                </ThemedText>
+              </View>
+
+              {downgradeError ? (
+                <View style={styles.editorError}>
+                  <Ionicons name="alert-circle-outline" size={18} color={SLColors.danger} />
+                  <ThemedText style={styles.editorErrorText}>{downgradeError}</ThemedText>
+                </View>
+              ) : null}
+
+              <View style={styles.deleteActions}>
+                <Pressable
+                  style={({ pressed }) => [styles.secondaryButton, pressed && styles.rowButtonPressed]}
+                  onPress={() => setDowngradeModalOpen(false)}
+                  disabled={downgradeSubmitting}
+                >
+                  <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+                </Pressable>
+                <Pressable
+                  style={({ pressed }) => [styles.dangerButton, pressed && styles.rowButtonPressed]}
+                  onPress={submitTeamCoachDowngrade}
+                  disabled={downgradeSubmitting}
+                >
+                  {downgradeSubmitting ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="person-outline" size={18} color={SLColors.textStrong} />}
+                  <ThemedText style={styles.dangerButtonText}>
+                    {downgradeSubmitting ? 'Cancelling subscription...' : 'Cancel Subscription & Return'}
+                  </ThemedText>
+                </Pressable>
               </View>
             </Pressable>
           </Pressable>
@@ -2367,6 +2962,11 @@ const styles = StyleSheet.create({
     maxHeight: '58%',
     backgroundColor: 'rgba(9,10,13,0.96)',
   },
+  upgradeModalSheet: {
+    minHeight: 0,
+    maxHeight: '86%',
+    backgroundColor: 'rgba(8,9,12,0.97)',
+  },
   profileEditorSheet: {
     maxHeight: '88%',
     minHeight: '70%',
@@ -2428,6 +3028,10 @@ const styles = StyleSheet.create({
     borderColor: SLColors.borderSelected,
     backgroundColor: 'rgba(126,101,255,0.18)',
   },
+  modeOptionBlocked: {
+    opacity: 0.68,
+    backgroundColor: 'rgba(4,6,9,0.26)',
+  },
   modeOptionIcon: {
     width: 44,
     height: 44,
@@ -2442,11 +3046,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167,139,250,0.48)',
     backgroundColor: 'rgba(126,101,255,0.28)',
   },
+  modeOptionIconBlocked: {
+    borderColor: 'rgba(205,194,176,0.12)',
+    backgroundColor: 'rgba(205,194,176,0.045)',
+  },
   modeOptionTitle: {
     color: SLColors.textStrong,
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '900',
+  },
+  modeOptionTitleBlocked: {
+    color: SLColors.textMuted,
   },
   modeOptionDescription: {
     marginTop: 3,
@@ -2454,6 +3065,148 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
     fontWeight: '600',
+  },
+  modeOptionReason: {
+    marginTop: 5,
+    color: SLColors.warning,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '800',
+  },
+  modeMetadataCard: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.16)',
+    backgroundColor: 'rgba(126,101,255,0.075)',
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    gap: 3,
+  },
+  modeMetadataCardWarning: {
+    borderColor: 'rgba(245,158,11,0.20)',
+    backgroundColor: 'rgba(245,158,11,0.08)',
+  },
+  modeMetadataTitle: {
+    color: SLColors.textStrong,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  modeMetadataDescription: {
+    color: SLColors.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
+  },
+  upgradeModalScroll: {
+    flexGrow: 0,
+  },
+  upgradeModalContent: {
+    gap: 12,
+    paddingBottom: 4,
+  },
+  upgradePlanHero: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.30)',
+    backgroundColor: 'rgba(126,101,255,0.13)',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+  upgradePlanEyebrowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  upgradePlanEyebrow: {
+    color: SLColors.textStrong,
+    fontSize: 13,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  upgradePlanBadge: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(51,211,190,0.13)',
+    borderWidth: 1,
+    borderColor: 'rgba(51,211,190,0.28)',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  upgradePlanBadgeText: {
+    color: SLColors.accent,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  upgradePriceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+    marginTop: 10,
+  },
+  upgradePrice: {
+    color: SLColors.textStrong,
+    fontSize: 34,
+    lineHeight: 38,
+    fontWeight: '900',
+  },
+  upgradePriceMeta: {
+    color: SLColors.textMuted,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  upgradeHeroDescription: {
+    marginTop: 5,
+    color: SLColors.textMuted,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '700',
+  },
+  upgradeBenefitList: {
+    gap: 8,
+  },
+  upgradeBenefitRow: {
+    minHeight: 48,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: SLColors.borderHairline,
+    backgroundColor: 'rgba(4,6,9,0.38)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+  },
+  upgradeBenefitIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(51,211,190,0.10)',
+  },
+  upgradeBenefitText: {
+    flex: 1,
+    color: SLColors.text,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '800',
+  },
+  upgradeBillingNote: {
+    color: SLColors.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '600',
+  },
+  upgradeCodeField: {
+    gap: 7,
+  },
+  upgradeCodeLabel: {
+    color: SLColors.textMuted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
   },
   searchWrap: {
     minHeight: 46,
