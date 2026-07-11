@@ -1,18 +1,17 @@
-import { InteractionManager } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
 const CHECKOUT_BROWSER_TIMEOUT_MS = 120_000;
+const MODAL_DISMISS_DELAY_MS = 400;
 
 export type CheckoutBrowserResult =
   | WebBrowser.WebBrowserResult
   | { type: 'timeout' };
 
 export async function waitForBlockingUiToDismiss(): Promise<void> {
-  await new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      InteractionManager.runAfterInteractions(() => resolve());
-    });
-  });
+  // React Native Modal uses a native transition. A bounded delay lets the
+  // backdrop unmount without making checkout depend on InteractionManager,
+  // whose queue can remain blocked by that same transition.
+  await new Promise<void>((resolve) => setTimeout(resolve, MODAL_DISMISS_DELAY_MS));
 }
 
 export async function openRecoverableCheckoutBrowser(url: string): Promise<CheckoutBrowserResult> {
