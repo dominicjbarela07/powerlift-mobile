@@ -142,6 +142,7 @@ export default function PendingCoachInviteScreen() {
                 token: payload.token || auth.token,
                 user: authUserFromPayload(payload, auth.user?.email || ''),
               });
+              await refreshAccountState();
               router.replace(isCoachAccount ? '/(tabs)/settings' as any : '/(tabs)/athlete-dashboard' as any);
             } catch (err: any) {
               Alert.alert('Invite not accepted', err?.message || 'Please try again.');

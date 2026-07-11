@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Updates from 'expo-updates';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -137,6 +138,11 @@ type AccountTransitionMetadata = {
   available_modes?: AccountTransitionMode[];
   transitions?: AccountTransitionOption[];
   unavailable_transitions?: AccountTransitionOption[];
+  billing?: {
+    applies_to_coaching?: boolean;
+    is_entitled?: boolean;
+    category?: string | null;
+  } | null;
 };
 
 type LinkCoachStatus = {
@@ -420,20 +426,13 @@ export default function SettingsScreen() {
       teamCoachUpgradeReason === 'beta_code_required' ||
       teamCoachUpgradeNextAction === 'enter_beta_code'
     );
-  const teamCoachUpgradeSummary = accountTransitionsLoading
-    ? 'Loading...'
-    : teamCoachUpgradeTransition?.available
-    ? 'Available'
-    : teamCoachUpgradeReason
-    ? humanizeToken(teamCoachUpgradeReason)
-    : 'Unavailable';
+  const teamCoachUpgradeSummary = accountTransitionsLoading ? 'Loading...' : 'Team Coach';
   const teamCoachUpgradeDescription = teamCoachUpgradeReason === 'email_verification_required'
     ? 'Verify your email before starting a Team Coach upgrade.'
     : teamCoachUpgradeReason === 'billing_required'
     ? 'Billing activation is required before Team Coach access opens.'
     : 'Founder Beta Team Coach is $10/month forever after the 14-day free trial.';
   const teamCoachDowngradeReason = String(teamCoachDowngradeTransition?.reason || '');
-  const teamCoachDowngradeNextAction = String(teamCoachDowngradeTransition?.next_action || '');
   const showTeamCoachDowngradeEntry =
     !!teamCoachDowngradeTransition &&
     !['not_current_posture', 'unsupported_transition'].includes(teamCoachDowngradeReason);
@@ -441,19 +440,11 @@ export default function SettingsScreen() {
     showTeamCoachDowngradeEntry &&
     teamCoachDowngradeTransition?.available === true &&
     !downgradeSubmitting;
-  const teamCoachDowngradeSummary = accountTransitionsLoading
-    ? 'Loading...'
-    : teamCoachDowngradeTransition?.available
-    ? 'Available'
-    : teamCoachDowngradeReason
-    ? humanizeToken(teamCoachDowngradeReason)
-    : 'Unavailable';
+  const teamCoachDowngradeSummary = accountTransitionsLoading ? 'Loading...' : 'Athlete';
   const teamCoachDowngradeDescription = teamCoachDowngradeReason === 'roster_offboarding_required'
     ? 'Resolve roster athletes before returning to Athlete only.'
     : 'Cancel your coaching subscription and return to Athlete while preserving your identity and history.';
-  const accountTypeTitle = accountTransitions?.posture
-    ? humanizeToken(accountTransitions.posture)
-    : isCoach
+  const accountTypeTitle = isCoach
     ? 'Team Coach'
     : isIndividual
     ? 'Self-Coach'
@@ -463,6 +454,32 @@ export default function SettingsScreen() {
     : isIndividual
     ? 'Self-coach access is active for your own Athlete identity.'
     : 'Athlete access is active. Coaching upgrades start from this section when available.';
+  const accountStateSummary = (() => {
+    switch (String(accountTransitions?.account_state || '').toUpperCase()) {
+      case 'READY_ATHLETE':
+      case 'READY_TEAM_COACH':
+      case 'READY_INDIVIDUAL':
+      case 'READY_OWNER_ADMIN':
+        return 'Ready';
+      case 'LINK_COACH_REQUIRED':
+        return 'Coach connection needed';
+      case 'ACTIVATION_REQUIRED':
+        return 'Membership activation needed';
+      case 'EMAIL_VERIFICATION_REQUIRED':
+        return 'Email verification needed';
+      default:
+        return accountTransitionsError ? 'Unavailable' : 'Needs attention';
+    }
+  })();
+  const billingStatusSummary = accountTransitions?.billing?.applies_to_coaching
+    ? accountTransitions.billing.is_entitled
+      ? 'Active'
+      : accountTransitions.billing.category === 'intentional_cancellation'
+      ? 'Cancelled'
+      : accountTransitions.billing.category === 'missing'
+      ? 'Not started'
+      : 'Needs attention'
+    : null;
   const modeOptions = useMemo(
     () =>
       transitionModeOptions.map((modeOption) => {
@@ -516,13 +533,6 @@ export default function SettingsScreen() {
     : isCoach
     ? 'Connect your own Athlete identity to a coach'
     : 'Connect your account to a coach';
-  const showAccountTypeSection =
-    !!accountTransitions ||
-    accountTransitionsLoading ||
-    showTeamCoachUpgradeEntry ||
-    showTeamCoachDowngradeEntry ||
-    showLinkCoachEntry;
-
   const profileUnits = useMemo(() => normalizeUnits(trainingProfile?.preferred_units || trainingProfile?.context?.preferred_units), [trainingProfile]);
 
   const formatProfileWeight = useCallback(
@@ -628,10 +638,6 @@ export default function SettingsScreen() {
     }
   }, [deviceTimezone, hasTrainingProfile]);
 
-  useEffect(() => {
-    loadMobileSettings();
-  }, [loadMobileSettings]);
-
   const loadAccountTransitionMetadata = useCallback(async () => {
     try {
       setAccountTransitionsLoading(true);
@@ -648,9 +654,26 @@ export default function SettingsScreen() {
     }
   }, []);
 
+  const refreshSettingsContinuity = useCallback(async () => {
+    await auth?.refreshAccountState?.();
+    await Promise.all([
+      loadMobileSettings(),
+      loadAccountTransitionMetadata(),
+    ]);
+  }, [auth?.refreshAccountState, loadAccountTransitionMetadata, loadMobileSettings]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshSettingsContinuity();
+    }, [refreshSettingsContinuity])
+  );
+
   useEffect(() => {
-    loadAccountTransitionMetadata();
-  }, [loadAccountTransitionMetadata]);
+    void Promise.all([
+      loadMobileSettings(),
+      loadAccountTransitionMetadata(),
+    ]);
+  }, [auth?.user?.account_state, auth?.user?.role, loadAccountTransitionMetadata, loadMobileSettings]);
 
   const openProfileEditor = (editor: Exclude<ProfileEditor, null>) => {
     if (!trainingProfile) return;
@@ -1011,9 +1034,7 @@ export default function SettingsScreen() {
 
   const openTeamCoachUpgrade = () => {
     if (!canOpenTeamCoachUpgrade) {
-      const reason = teamCoachUpgradeReason ? humanizeToken(teamCoachUpgradeReason) : 'This transition is not available.';
-      const nextAction = teamCoachUpgradeNextAction ? `\nNext action: ${humanizeToken(teamCoachUpgradeNextAction)}` : '';
-      Alert.alert('Become a Team Coach', `${reason}${nextAction}`);
+      Alert.alert('Become a Team Coach', teamCoachUpgradeDescription);
       return;
     }
     setUpgradeError(null);
@@ -1053,6 +1074,18 @@ export default function SettingsScreen() {
         throw new Error(humanizeToken(message));
       }
 
+      if (json.checkout_url) {
+        setUpgradeModalOpen(false);
+        setUpgradeBetaCode('');
+        await WebBrowser.openBrowserAsync(json.checkout_url, {
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
+        });
+        await auth?.refreshAccountState?.();
+        await loadMobileSettings();
+        await loadAccountTransitionMetadata();
+        return;
+      }
+
       if (json.account_state_payload) {
         await auth?.applyAccountStatePayload?.(json.account_state_payload);
       }
@@ -1071,9 +1104,7 @@ export default function SettingsScreen() {
 
   const openTeamCoachDowngrade = () => {
     if (!canStartTeamCoachDowngrade) {
-      const reason = teamCoachDowngradeReason ? humanizeToken(teamCoachDowngradeReason) : 'This transition is not available.';
-      const nextAction = teamCoachDowngradeNextAction ? `\nNext action: ${humanizeToken(teamCoachDowngradeNextAction)}` : '';
-      Alert.alert('Return to Athlete', `${reason}${nextAction}`);
+      Alert.alert('Return to Athlete', teamCoachDowngradeDescription);
       return;
     }
     setDowngradeError(null);
@@ -1487,22 +1518,6 @@ export default function SettingsScreen() {
           </View>
 
           {settingsGroup(
-            'Feedback',
-            'chatbubble-ellipses-outline',
-            <>
-              {settingsRow({
-                icon: 'chatbubble-ellipses-outline',
-                title: 'Send Feedback',
-                description: 'Report a bug, request a feature, or share feedback',
-                onPress: () => setFeedbackModalOpen(true),
-                accent: 'purple',
-              })}
-            </>,
-            'purple'
-          )}
-
-          {showAccountTypeSection
-            ? settingsGroup(
                 'Account Type',
                 'briefcase-outline',
                 <>
@@ -1510,11 +1525,21 @@ export default function SettingsScreen() {
                     icon: 'person-circle-outline',
                     title: accountTransitionsLoading ? 'Loading account type...' : accountTypeTitle,
                     description: accountTypeDescription,
-                    summary: accountTransitionsError ? 'Unavailable' : accountTransitions?.account_state ? humanizeToken(accountTransitions.account_state) : undefined,
+                    summary: accountStateSummary,
                     onPress: () => {},
                     disabled: true,
                   })}
-                  {showTeamCoachUpgradeEntry
+                  {billingStatusSummary
+                    ? settingsRow({
+                        icon: 'card-outline',
+                        title: 'Billing status',
+                        description: 'Your Team Coach membership',
+                        summary: billingStatusSummary,
+                        onPress: () => {},
+                        disabled: true,
+                      })
+                    : null}
+                  {role === 'athlete' && !isIndividual
                     ? settingsRow({
                         icon: 'rocket-outline',
                         title: 'Become a Team Coach',
@@ -1525,7 +1550,7 @@ export default function SettingsScreen() {
                         accent: 'amber',
                       })
                     : null}
-                  {showTeamCoachDowngradeEntry
+                  {isCoach && !isIndividual
                     ? settingsRow({
                         icon: 'person-outline',
                         title: 'Return to Athlete',
@@ -1547,21 +1572,56 @@ export default function SettingsScreen() {
                     : null}
                 </>,
                 'purple'
+              )}
+
+          {settingsGroup(
+            'Mobile Mode',
+            'swap-horizontal-outline',
+            <>
+              {settingsRow({
+                icon: 'phone-portrait-outline',
+                title: 'View selector',
+                description: modeOptions.length > 1
+                  ? 'Choose how you use Strength Ledger on this device'
+                  : 'This account currently has one available view',
+                summary: accountTransitionsLoading ? 'Loading...' : mobileModeSummary,
+                onPress: () => setModeModalOpen(true),
+                disabled: modeOptions.length <= 1 || accountTransitionsLoading,
+              })}
+            </>
+          )}
+
+          {showVideoSubmissionNotifications
+            ? settingsGroup(
+                'Coach Preferences',
+                'options-outline',
+                <>
+                  {settingsRow({
+                    icon: 'videocam-outline',
+                    title: 'Video submission notifications',
+                    description: 'When an athlete submits a set video',
+                    summary: notifyVideoSubmissions ? 'On' : 'Off',
+                    onPress: () => saveNotificationPreference('notify_video_submissions', !notifyVideoSubmissions),
+                    disabled: notificationLoading,
+                  })}
+                </>
               )
             : null}
 
           {settingsGroup(
-            'Account & Profile',
+            'Profile',
             'person-circle-outline',
             <>
-              {hasTrainingProfile && trainingProfile
-                ? settingsRow({
-                    icon: 'person-outline',
-                    title: 'My Training Profile',
-                    description: 'Profile details and personal information',
-                    onPress: () => openProfileEditor('details'),
-                  })
-                : null}
+              {settingsRow({
+                icon: 'person-outline',
+                title: 'Personal profile',
+                description: hasTrainingProfile
+                  ? 'Profile details and personal information'
+                  : auth?.user?.email || 'Your Strength Ledger account',
+                summary: profileName,
+                onPress: () => openProfileEditor('details'),
+                disabled: !hasTrainingProfile,
+              })}
               {hasTrainingProfile
                 ? settingsRow({
                     icon: 'image-outline',
@@ -1569,17 +1629,6 @@ export default function SettingsScreen() {
                     description: 'Update your training profile photo',
                     onPress: handleUpdateAvatar,
                     disabled: uploadingAvatar,
-                  })
-                : null}
-              {modeOptions.length > 1
-                ? settingsRow({
-                    icon: 'swap-horizontal-outline',
-                    title: 'Mobile Mode',
-                    description: accountTransitions
-                      ? 'Switch between backend-approved mobile views'
-                      : 'Switch between available mobile views',
-                    summary: accountTransitionsLoading ? 'Loading...' : mobileModeSummary,
-                    onPress: () => setModeModalOpen(true),
                   })
                 : null}
             </>
@@ -1661,19 +1710,23 @@ export default function SettingsScreen() {
                     accent: 'teal',
                   })
                 : null}
-              {showVideoSubmissionNotifications
-                ? settingsRow({
-                    icon: 'videocam-outline',
-                    title: 'Video submission notifications',
-                    description: 'When an athlete submits a set video',
-                    summary: notifyVideoSubmissions ? 'On' : 'Off',
-                    onPress: () => saveNotificationPreference('notify_video_submissions', !notifyVideoSubmissions),
-                    disabled: notificationLoading,
-                    accent: 'teal',
-                  })
-                : null}
             </>,
             'teal'
+          )}
+
+          {settingsGroup(
+            'Feedback',
+            'chatbubble-ellipses-outline',
+            <>
+              {settingsRow({
+                icon: 'chatbubble-ellipses-outline',
+                title: 'Send Feedback',
+                description: 'Report a bug, request a feature, or share feedback',
+                onPress: () => setFeedbackModalOpen(true),
+                accent: 'purple',
+              })}
+            </>,
+            'purple'
           )}
 
           {settingsGroup(
@@ -1909,30 +1962,10 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.modeOptionList}>
-                {accountTransitions ? (
-                  <View style={styles.modeMetadataCard}>
-                    <ThemedText style={styles.modeMetadataTitle}>
-                      {humanizeToken(accountTransitions.posture || accountTransitions.current_mode || 'Account')}
-                    </ThemedText>
-                    <ThemedText style={styles.modeMetadataDescription}>
-                      {humanizeToken(accountTransitions.account_state || 'Account state unavailable')}
-                      {accountTransitions.next_action && accountTransitions.next_action !== 'none'
-                        ? ` · Next action: ${humanizeToken(accountTransitions.next_action)}`
-                        : ''}
-                    </ThemedText>
-                  </View>
-                ) : accountTransitionsError ? (
-                  <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
-                    <ThemedText style={styles.modeMetadataTitle}>Transition metadata unavailable</ThemedText>
-                    <ThemedText style={styles.modeMetadataDescription}>{accountTransitionsError}</ThemedText>
-                  </View>
-                ) : null}
                 {modeOptions.map((option) => {
                   const selected = option.mode === activeMobileMode;
                   const switching = modeSwitching === option.mode;
                   const blocked = !option.switchable;
-                  const reason = option.reason ? humanizeToken(option.reason) : null;
-                  const nextAction = option.nextAction ? humanizeToken(option.nextAction) : null;
                   return (
                     <Pressable
                       key={option.mode}
@@ -1960,10 +1993,7 @@ export default function SettingsScreen() {
                         <ThemedText style={[styles.modeOptionTitle, blocked && styles.modeOptionTitleBlocked]}>{option.label}</ThemedText>
                         <ThemedText style={styles.modeOptionDescription}>{option.description}</ThemedText>
                         {blocked ? (
-                          <ThemedText style={styles.modeOptionReason}>
-                            {reason || 'Unavailable'}
-                            {nextAction ? ` · ${nextAction}` : ''}
-                          </ThemedText>
+                          <ThemedText style={styles.modeOptionReason}>Not available for this account</ThemedText>
                         ) : null}
                       </View>
                       {selected ? (
