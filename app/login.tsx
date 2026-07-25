@@ -16,12 +16,11 @@ import {
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WEB_BASE, loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
+import { loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 
-const AUTH_WEB_BASE = WEB_BASE.replace(/\/$/, '');
-const PASSWORD_RESET_URL = `${AUTH_WEB_BASE}/auth/reset_request`;
+const PASSWORD_RESET_URL = 'https://app.strengthledger.fit/auth/reset_request';
 
 type OAuthProvider = 'google' | 'apple';
 type AccountRole = 'coach' | 'athlete' | 'self_coach';
@@ -95,6 +94,17 @@ export default function LoginScreen() {
     } catch (err) {
       console.error(`${label} open failed`, { url, err });
       setError(fallbackMessage);
+    }
+  };
+
+  const openPasswordReset = async () => {
+    try {
+      const supported = await Linking.canOpenURL(PASSWORD_RESET_URL);
+      if (!supported) throw new Error(`Cannot open ${PASSWORD_RESET_URL}`);
+      await Linking.openURL(PASSWORD_RESET_URL);
+    } catch (err) {
+      console.error('Password reset open failed', { url: PASSWORD_RESET_URL, err });
+      setError('Unable to open password reset page.');
     }
   };
 
@@ -649,11 +659,7 @@ export default function LoginScreen() {
               <View style={styles.linkRail}>
                 <Pressable
                   style={styles.linkButton}
-                  onPress={() => openInfoPage(
-                    PASSWORD_RESET_URL,
-                    'Unable to open password reset page.',
-                    'Password reset'
-                  )}
+                  onPress={openPasswordReset}
                 >
                   <Text style={styles.linkText}>Forgot password?</Text>
                 </Pressable>
