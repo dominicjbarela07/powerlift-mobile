@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "accessedAt": "2026-07-17",
+  "outputPolicy": {
+    "format": "WebP",
+    "dimensions": "1200x675",
+    "encoder": "cwebp quality 82, method 6",
+    "treatment": "Intentional 16:9 crop with runtime dark gradient and restrained context tint; no generative or synthetic edits."
+  },
+  "assets": [
+    {
+      "localFilename": "100k-airbus-a320.webp",
+      "displayedObject": "Lufthansa Airbus A320-211 D-AIQT",
+      "thresholdLb": 100000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Lufthansa_Airbus_A320-211_D-AIQT_01.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Lufthansa_Airbus_A320-211_D-AIQT_01.jpg/1920px-Lufthansa_Airbus_A320-211_D-AIQT_01.jpg",
+      "creator": "Julian Herzog",
+      "license": "Creative Commons Attribution 4.0 International",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "requiredAttribution": "Julian Herzog, CC BY 4.0",
+      "usageRestriction": "Attribution and license notice required; modifications must be indicated.",
+      "downloadedDimensions": "1920x1080",
+      "processing": "Full-frame 16:9 crop; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "250k-shuttle-orbiter.webp",
+      "displayedObject": "Space Shuttle Discovery landing after STS-121",
+      "thresholdLb": 250000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:ShuttleDiscovery_landing.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/ShuttleDiscovery_landing.jpg/1920px-ShuttleDiscovery_landing.jpg",
+      "creator": "NASA / Tony Gray and Tim Powers",
+      "license": "Public domain, United States government work",
+      "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "requiredAttribution": "None legally required; NASA / Tony Gray and Tim Powers credited editorially.",
+      "usageRestriction": "NASA identifiers must not imply endorsement; NASA insignia and logotype have separate restrictions.",
+      "downloadedDimensions": "1920x1265",
+      "processing": "Cropped to 1920x1080 with vertical offset 92; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "500k-heavy-mikado.webp",
+      "displayedObject": "Chicago, Burlington and Quincy No. 4963 heavy Mikado locomotive",
+      "thresholdLb": 500000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Chicago,_Burlington_and_Quincy_No._4963_at_the_Illinois_Railway_Museum_-_May_2023.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Chicago%2C_Burlington_and_Quincy_No._4963_at_the_Illinois_Railway_Museum_-_May_2023.jpg/1920px-Chicago%2C_Burlington_and_Quincy_No._4963_at_the_Illinois_Railway_Museum_-_May_2023.jpg",
+      "creator": "Aaron Headly",
+      "license": "Creative Commons Attribution 2.0 Generic",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "requiredAttribution": "Aaron Headly, CC BY 2.0",
+      "usageRestriction": "Attribution and license link required; modifications must be indicated.",
+      "downloadedDimensions": "1920x4339",
+      "processing": "Cropped to 1920x1080 with vertical offset 660 to preserve locomotive face and number; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "1m-international-space-station.webp",
+      "displayedObject": "International Space Station after STS-134 undocking",
+      "thresholdLb": 1000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:STS-134_International_Space_Station_after_undocking.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/STS-134_International_Space_Station_after_undocking.jpg/1920px-STS-134_International_Space_Station_after_undocking.jpg",
+      "creator": "NASA",
+      "license": "Public domain, United States government work",
+      "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "usageRestriction": "NASA identifiers must not imply endorsement.",
+      "downloadedDimensions": "1920x1275",
+      "processing": "Cropped to 1920x1080 with vertical offset 97; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "2m-christ-redeemer.webp",
+      "displayedObject": "Christ the Redeemer monument, Rio de Janeiro",
+      "thresholdLb": 2000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Guardian_of_Rio,_The_Iconic_Christ_Statue.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Guardian_of_Rio%2C_The_Iconic_Christ_Statue.jpg/1920px-Guardian_of_Rio%2C_The_Iconic_Christ_Statue.jpg",
+      "creator": "Pinterpandai",
+      "license": "Creative Commons Attribution 4.0 International",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "requiredAttribution": "Pinterpandai, CC BY 4.0",
+      "usageRestriction": "Attribution and license notice required; modifications must be indicated.",
+      "downloadedDimensions": "1920x3413",
+      "processing": "Cropped to 1920x1080 with vertical offset 700 to preserve the recognizable head, arms, and upper monument; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "5m-space-shuttle-stack.webp",
+      "displayedObject": "Space Shuttle Columbia launch stack at liftoff",
+      "thresholdLb": 5000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Space_Shuttle_Columbia_launching.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Space_Shuttle_Columbia_launching.jpg/1920px-Space_Shuttle_Columbia_launching.jpg",
+      "creator": "NASA",
+      "license": "Public domain, United States government work",
+      "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "usageRestriction": "NASA identifiers must not imply endorsement.",
+      "downloadedDimensions": "1920x1920",
+      "processing": "Cropped to 1920x1080 with vertical offset 420 to retain the orbiter, boosters, external tank, tower, and exhaust; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "10m-national-security-cutter.webp",
+      "displayedObject": "USCGC Bertholf (WMSL-750), National Security Cutter",
+      "thresholdLb": 10000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:USCGC_Bertholf_WMSL-750.jpg",
+      "directSourceAsset": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/USCGC_Bertholf_WMSL-750.jpg/1920px-USCGC_Bertholf_WMSL-750.jpg",
+      "creator": "United States Coast Guard / RDML Ronald Rabago",
+      "license": "Public domain, United States government work",
+      "licenseUrl": "https://www.uscg.mil/Community/Photos/",
+      "requiredAttribution": "None legally required; U.S. Coast Guard / RDML Ronald Rabago credited editorially.",
+      "usageRestriction": "U.S. Coast Guard identifiers must not imply endorsement.",
+      "downloadedDimensions": "1920x1440",
+      "processing": "Cropped to 1920x1080 with vertical offset 180 to preserve the complete vessel silhouette; resized to 1200x675; encoded WebP quality 82. Runtime overlay supplies darkening and tint."
+    },
+    {
+      "localFilename": "100k-boeing-737-800.webp",
+      "displayedObject": "Boeing 737-800 on approach",
+      "thresholdLb": 100000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Gear_Actuation-Boeing-737-800_EL-AL_approaching_VIE-DSC_3259w.jpg",
+      "creator": "Peter Haas",
+      "license": "Creative Commons Attribution-ShareAlike 3.0",
+      "requiredAttribution": "Peter Haas, CC BY-SA 3.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "100k-highway-semi.webp",
+      "displayedObject": "Highway semi-trailer truck",
+      "thresholdLb": 100000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_3497_Truck_on_highway_rural_NSW.jpg",
+      "creator": "Carl Davies / CSIRO",
+      "license": "Creative Commons Attribution 3.0",
+      "requiredAttribution": "Carl Davies / CSIRO, CC BY 3.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "100k-r160-subway-car.webp",
+      "displayedObject": "New York City R160 subway car",
+      "thresholdLb": 100000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:NYC_Subway_R160_Car.jpg",
+      "creator": "GK tramrunner RU",
+      "license": "Creative Commons Attribution-ShareAlike 4.0",
+      "requiredAttribution": "GK tramrunner RU, CC BY-SA 4.0",
+      "processing": "Full-frame 16:9 resize to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "250k-blue-whale.webp",
+      "displayedObject": "Blue whale",
+      "thresholdLb": 250000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:2023-08-04_Blue_whale_Isfjord_Svalbard_01.jpg",
+      "creator": "Carina Gsottbauer",
+      "license": "Creative Commons Attribution-ShareAlike 4.0",
+      "requiredAttribution": "Carina Gsottbauer, CC BY-SA 4.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "250k-c17-globemaster.webp",
+      "displayedObject": "C-17 Globemaster III test aircraft",
+      "thresholdLb": 250000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:C-17_test_sortie.jpg",
+      "creator": "United States Air Force",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; U.S. Air Force credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "250k-shuttle-srb.webp",
+      "displayedObject": "Space Shuttle solid rocket booster in ground transport",
+      "thresholdLb": 250000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:KAMAG_transporting_moving_a_Space_Shuttle_Solid_Rocket_Boosters_(214587).jpg",
+      "creator": "NASA",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "500k-statue-of-liberty.webp",
+      "displayedObject": "Statue of Liberty",
+      "thresholdLb": 500000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:New_York_City_(New_York,_USA),_Statue_of_Liberty_--_2012_--_6660.jpg",
+      "creator": "Dietmar Rabich",
+      "license": "Creative Commons Attribution-ShareAlike 4.0",
+      "requiredAttribution": "Dietmar Rabich, CC BY-SA 4.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "500k-old-hickory-rotor.webp",
+      "displayedObject": "Representative hydroelectric generator rotor",
+      "thresholdLb": 500000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Bi-Hai_Power_Plant03.jpg",
+      "creator": "Eric Deng",
+      "license": "Creative Commons Attribution-ShareAlike 4.0",
+      "requiredAttribution": "Eric Deng, CC BY-SA 4.0; identified in-product as a representative rotor photo.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "500k-airbus-a380.webp",
+      "displayedObject": "Air France Airbus A380",
+      "thresholdLb": 500000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Air_France_A380_F-HPJA.jpg",
+      "creator": "Joe Ravi",
+      "license": "Creative Commons Attribution-ShareAlike 3.0",
+      "requiredAttribution": "Joe Ravi, CC BY-SA 3.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "1m-lower-granite-rotor.webp",
+      "displayedObject": "Representative hydroelectric generator rotor",
+      "thresholdLb": 1000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Goldisthal_Rotor-Blechpaket.jpg",
+      "creator": "Mazbln",
+      "license": "Creative Commons Attribution-ShareAlike 3.0",
+      "requiredAttribution": "Mazbln, CC BY-SA 3.0; identified in-product as a representative rotor photo.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "1m-boeing-747-8f.webp",
+      "displayedObject": "Atlas Air Boeing 747-8F",
+      "thresholdLb": 1000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Atlas_Air_Boeing_747-8F_departing_Taoyuan_February_2026.jpg",
+      "creator": "4300streetcar",
+      "license": "Creative Commons Attribution 4.0",
+      "requiredAttribution": "4300streetcar, CC BY 4.0",
+      "processing": "Full-frame 16:9 resize to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "1m-saturn-v-sii.webp",
+      "displayedObject": "Saturn V S-II second stage",
+      "thresholdLb": 1000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:S-II_Stage_of_Saturn_V_Rocket_(67-701-c).jpeg",
+      "creator": "NASA Stennis Space Center",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "2m-belaz-75710.webp",
+      "displayedObject": "BelAZ 75710 haul truck",
+      "thresholdLb": 2000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:BelAZ_75710_1.png",
+      "creator": "Hasan Hüseyin Kulak",
+      "license": "Creative Commons Attribution 3.0",
+      "requiredAttribution": "Hasan Hüseyin Kulak, CC BY 3.0",
+      "processing": "Full-frame 16:9 resize to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "2m-john-day-generator.webp",
+      "displayedObject": "John Day Dam and powerhouse",
+      "thresholdLb": 2000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:John_Day_Dam_(11955928563).jpg",
+      "creator": "Bonneville Power Administration",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; Bonneville Power Administration credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "2m-shuttle-external-tank.webp",
+      "displayedObject": "Space Shuttle external tank after separation",
+      "thresholdLb": 2000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:S125-E-005085_-_Space_Shuttle_External_tank_after_separation_from_Atlantis_during_STS-125.jpg",
+      "creator": "NASA",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "5m-hoover-generators.webp",
+      "displayedObject": "Hoover Dam generator hall",
+      "thresholdLb": 5000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Hoover_Dam_generators_001.jpg",
+      "creator": "Swickouski",
+      "license": "Creative Commons Attribution-ShareAlike 4.0",
+      "requiredAttribution": "Swickouski, CC BY-SA 4.0",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "5m-balao-submarine.webp",
+      "displayedObject": "USS Bowfin, Balao-class submarine",
+      "thresholdLb": 5000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:USS_Bowfin_Submarine_Museum_%26_Park,_Pearl_Harbor,_Honolulu_(503653)_(20588889142).jpg",
+      "creator": "Robert Linsdell",
+      "license": "Creative Commons Attribution 2.0",
+      "requiredAttribution": "Robert Linsdell, CC BY 2.0",
+      "processing": "Full-frame 16:9 resize to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "5m-saturn-v-sic.webp",
+      "displayedObject": "Saturn V S-IC first stage",
+      "thresholdLb": 5000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Saturn_V_S-IC-T_Stage_Heads_to_Test_Stand.jpg",
+      "creator": "NASA / Marshall Space Flight Center",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "10m-uss-nautilus.webp",
+      "displayedObject": "USS Nautilus underway in 1965",
+      "thresholdLb": 10000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:USS_Nautilus_(SSN-571)_underway_at_sea_in_June_1965.jpg",
+      "creator": "United States Navy",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; U.S. Navy credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "10m-nasa-crawler.webp",
+      "displayedObject": "NASA crawler-transporter 2",
+      "thresholdLb": 10000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:NASA_Crawler_Transporter_2_on_the_crawlerway.jpg",
+      "creator": "NASA / Kennedy Space Center",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA / KSC credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    },
+    {
+      "localFilename": "10m-shuttle-transport.webp",
+      "displayedObject": "STS-86 Shuttle rollout assembly",
+      "thresholdLb": 10000000,
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:STS-86_Rollout_-_GPN-2000-000799.jpg",
+      "creator": "NASA",
+      "license": "Public domain, United States government work",
+      "requiredAttribution": "None legally required; NASA credited editorially.",
+      "processing": "Intentional center crop to 16:9; resized to 1200x675; encoded WebP quality 82."
+    }
+  ]
+}
