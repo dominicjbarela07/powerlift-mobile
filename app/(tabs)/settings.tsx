@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Updates from 'expo-updates';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -306,6 +307,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { height: viewportHeight } = useWindowDimensions();
   const auth = useAuth() as any;
+  const refreshAccountState = auth?.refreshAccountState;
   const [loggingOut, setLoggingOut] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [timezone, setTimezone] = useState<string>(getDeviceTimezone() || 'America/Los_Angeles');
@@ -710,6 +712,12 @@ export default function SettingsScreen() {
   useEffect(() => {
     loadMobileSettings();
   }, [loadMobileSettings]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshAccountState?.();
+    }, [refreshAccountState]),
+  );
 
   const loadAccountTransitionMetadata = useCallback(async () => {
     try {

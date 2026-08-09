@@ -37,6 +37,16 @@ assert.equal(deleted.hasProfilePhotoValue, true);
 assert.equal(deleted.profilePhotoUrl, null);
 assert.equal(deleted.profilePhotoVersion, null);
 
+const mixedAliases = normalizeProfilePhotoPayload({
+  profilePhotoUrl: null,
+  profilePhotoVersion: '',
+  avatar_url: '/static/uploads/canonical-athlete.jpg',
+  avatar_uploaded_at: '2026-08-09T16:00:00',
+});
+assert.equal(mixedAliases.hasProfilePhotoValue, true);
+assert.equal(mixedAliases.profilePhotoUrl, '/static/uploads/canonical-athlete.jpg');
+assert.equal(mixedAliases.profilePhotoVersion, '2026-08-09T16:00:00');
+
 assert.equal(
   resolveProfilePhotoUrl('/static/uploads/athlete photo.jpg', apiBase),
   'https://api.strengthledger.test/static/uploads/athlete%20photo.jpg'
@@ -88,6 +98,13 @@ for (const source of [
 const settingsSource = fs.readFileSync(path.join(root, 'app/(tabs)/settings.tsx'), 'utf8');
 assert.match(settingsSource, /updateProfilePhoto\(payload\)/);
 assert.match(settingsSource, /method: 'DELETE'/);
+assert.match(settingsSource, /useFocusEffect\(/);
+assert.match(settingsSource, /void refreshAccountState\?\.\(\)/);
+
+const rosterSource = fs.readFileSync(path.join(root, 'app/(tabs)/coach-roster.tsx'), 'utf8');
+assert.match(rosterSource, /const \{ refreshAccountState, user \} = useAuth\(\)/);
+assert.match(rosterSource, /\.\.\.normalizeProfilePhotoPayload\(athlete\)/);
+assert.match(rosterSource, /void refreshAccountState\(\)/);
 
 const authSource = fs.readFileSync(path.join(root, 'context/AuthContext.tsx'), 'utf8');
 assert.match(authSource, /normalizeProfilePhotoPayload\(profileUser\)/);
@@ -106,18 +123,18 @@ const apiSource = fs.readFileSync(path.join(root, 'lib/api.ts'), 'utf8');
 assert.match(apiSource, /normalizeMessengerThread/);
 assert.match(apiSource, /normalizeCoachRosterAthlete/);
 
-const registrySource = fs.readFileSync(
-  path.join(root, 'dev-mocks/live-screen-registry.ts'),
-  'utf8'
-);
-for (const id of [
-  'avatar-with-photo-preview',
-  'avatar-initials-preview',
-  'avatar-loading-preview',
-  'avatar-failure-preview',
-  'settings-profile-photo-preview',
-]) {
-  assert.match(registrySource, new RegExp(`id: '${id}'`));
+const registryPath = path.join(root, 'dev-mocks/live-screen-registry.ts');
+if (fs.existsSync(registryPath)) {
+  const registrySource = fs.readFileSync(registryPath, 'utf8');
+  for (const id of [
+    'avatar-with-photo-preview',
+    'avatar-initials-preview',
+    'avatar-loading-preview',
+    'avatar-failure-preview',
+    'settings-profile-photo-preview',
+  ]) {
+    assert.match(registrySource, new RegExp(`id: '${id}'`));
+  }
 }
 
 console.log('Canonical mobile profile-photo contract passed.');

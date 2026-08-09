@@ -24,21 +24,24 @@ export type CanonicalProfilePhoto = {
   hasProfilePhotoValue: boolean;
 };
 
-function firstPresentValue(
-  input: Record<string, unknown>,
-  fields: readonly string[]
-): { present: boolean; value: unknown } {
-  for (const field of fields) {
-    if (Object.prototype.hasOwnProperty.call(input, field)) {
-      return { present: true, value: input[field] };
-    }
-  }
-  return { present: false, value: undefined };
-}
-
 function normalizedOptionalString(value: unknown): string | null {
   const normalized = String(value ?? '').trim();
   return normalized || null;
+}
+
+function firstUsableValue(
+  input: Record<string, unknown>,
+  fields: readonly string[]
+): { present: boolean; value: string | null } {
+  let present = false;
+  for (const field of fields) {
+    if (Object.prototype.hasOwnProperty.call(input, field)) {
+      present = true;
+      const value = normalizedOptionalString(input[field]);
+      if (value) return { present: true, value };
+    }
+  }
+  return { present, value: null };
 }
 
 /**
@@ -50,12 +53,12 @@ export function normalizeProfilePhotoPayload(input: unknown): CanonicalProfilePh
     input && typeof input === 'object'
       ? (input as Record<string, unknown>)
       : {};
-  const photo = firstPresentValue(record, PHOTO_URL_FIELDS);
-  const version = firstPresentValue(record, PHOTO_VERSION_FIELDS);
+  const photo = firstUsableValue(record, PHOTO_URL_FIELDS);
+  const version = firstUsableValue(record, PHOTO_VERSION_FIELDS);
 
   return {
-    profilePhotoUrl: normalizedOptionalString(photo.value),
-    profilePhotoVersion: normalizedOptionalString(version.value),
+    profilePhotoUrl: photo.value,
+    profilePhotoVersion: version.value,
     hasProfilePhotoValue: photo.present,
   };
 }

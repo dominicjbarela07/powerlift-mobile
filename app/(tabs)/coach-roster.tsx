@@ -145,7 +145,7 @@ function greetingForTimezone(now: Date, timezone: string) {
 export default function CoachRosterScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ filter?: string }>();
-  const { user } = useAuth();
+  const { refreshAccountState, user } = useAuth();
   const accountKey = user?.email || (user?.athlete_id ? `athlete:${user.athlete_id}` : null);
   const requestedFilter = Array.isArray(params.filter) ? params.filter[0] : params.filter;
   const listRef = useRef<FlatList<CoachRosterAthlete>>(null);
@@ -260,6 +260,7 @@ export default function CoachRosterScreen() {
   useFocusEffect(
     useCallback(() => {
       loadRoster({ silent: true });
+      void refreshAccountState();
       refreshGreetingContext();
       requestAnimationFrame(() => {
         if (rosterMemory.scrollOffset > 0) {
@@ -269,18 +270,19 @@ export default function CoachRosterScreen() {
           });
         }
       });
-    }, [loadRoster, refreshGreetingContext]),
+    }, [loadRoster, refreshAccountState, refreshGreetingContext]),
   );
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         loadRoster({ silent: true });
+        void refreshAccountState();
         refreshGreetingContext();
       }
     });
     return () => subscription.remove();
-  }, [loadRoster, refreshGreetingContext]);
+  }, [loadRoster, refreshAccountState, refreshGreetingContext]);
 
   useEffect(() => {
     const timer = setInterval(() => setGreetingClock(new Date()), 60_000);
