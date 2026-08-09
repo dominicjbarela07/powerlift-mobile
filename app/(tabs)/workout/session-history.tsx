@@ -1,12 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList, simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLPageHeader } from '@/components/ui';
+import { CompactAccomplishmentSignal, type AccomplishmentSignal } from '@/components/core-accomplishments';
+import { feedbackAnalytics } from '@/lib/logger-feedback';
+import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
 
 type HistorySession = {
   id: number;
@@ -18,6 +32,7 @@ type HistorySession = {
   block_name?: string | null;
   recap?: { top_work?: string | null; execution_summary?: string | null } | null;
   focus?: { primary?: string[] } | null;
+  accomplishment_signal?: AccomplishmentSignal | null;
 };
 
 type FilterOption = {
@@ -50,6 +65,8 @@ const colors = {
 
 export default function SessionHistoryScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ athleteId?: string }>();
+  const athleteId = params.athleteId ? String(params.athleteId) : null;
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,9 +81,11 @@ export default function SessionHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
+  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
+    if (athleteId) params.set('athlete_id', athleteId);
     if (q.trim()) params.set('q', q.trim());
     if (startDate.trim()) params.set('start_date', startDate.trim());
     if (endDate.trim()) params.set('end_date', endDate.trim());
@@ -76,7 +95,7 @@ export default function SessionHistoryScreen() {
     if (designations.length) params.set('designations', designations.join(','));
     const raw = params.toString();
     return raw ? `?${raw}` : '';
-  }, [accessories, blockIds, coreLifts, designations, endDate, q, startDate]);
+  }, [accessories, athleteId, blockIds, coreLifts, designations, endDate, q, startDate]);
 
   const load = useCallback(async (silent = false) => {
     if (silent) setRefreshing(true);
@@ -85,12 +104,22 @@ export default function SessionHistoryScreen() {
     try {
       const resp = await fetchJson(`/workouts/mobile/training-hub/session-history${queryString}`, { method: 'GET' });
       const json: any = resp.json || {};
+      if (resp.status === 401 || resp.status === 403) feedbackAnalytics('historical_accomplishment_authorization_denied', { surface: 'session_history', status: resp.status });
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      setSessions(Array.isArray(json.session_history?.sessions) ? json.session_history.sessions : []);
+      const nextSessions = Array.isArray(json.session_history?.sessions) ? json.session_history.sessions : [];
+      setSessions(nextSessions);
       setOptions(json.session_history?.options || {});
+      setDisplayUnit(json.session_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
+      feedbackAnalytics('historical_accomplishment_timeline_loaded', {
+        surface: 'session_history',
+        session_count: nextSessions.length,
+        accomplishment_session_count: nextSessions.filter((row: HistorySession) => Number(row.accomplishment_signal?.count || 0) > 0).length,
+      });
+      if (silent) feedbackAnalytics('historical_accomplishment_refresh', { surface: 'session_history' });
     } catch (err: any) {
       setError(err?.message || 'Session history could not load.');
       setSessions([]);
+      feedbackAnalytics('historical_accomplishment_timeline_failed', { surface: 'session_history' });
     } finally {
       if (silent) setRefreshing(false);
       else setLoading(false);
@@ -127,8 +156,11 @@ export default function SessionHistoryScreen() {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.muted} />}
       >
-        <ReturnControl onPress={() => router.push('/(tabs)/workout' as any)} />
-        <Text style={styles.title}>Session History</Text>
+        <SLPageHeader
+          title="Session History"
+          backLabel="Return to Training Hub"
+          onBack={() => router.push('/(tabs)/workout' as any)}
+        />
 
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
@@ -165,13 +197,13 @@ export default function SessionHistoryScreen() {
                 style={({ pressed }) => [styles.row, pressed && styles.pressed]}
                 onPress={() => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(session.id) } })}
               >
-                <View style={[styles.rail, { backgroundColor: toneForKind(session.kind || session.status) }]} />
                 <View style={styles.copy}>
-                  <Text style={styles.rowTitle} numberOfLines={1}>{session.title || session.label || 'Training Session'}</Text>
+                  <Text typographyRole="workoutName" style={styles.rowTitle} numberOfLines={1}>{session.title || session.label || 'Training Session'}</Text>
                   <Text style={styles.meta} numberOfLines={1}>{[formatShortDate(session.date), session.block_name, focusLine(session)].filter(Boolean).join(' / ')}</Text>
                   {session.recap?.top_work ? (
                     <Text style={styles.recap} numberOfLines={1}>{simplifyMobileMovementText(session.recap.top_work)}</Text>
                   ) : null}
+                  <CompactAccomplishmentSignal signal={session.accomplishment_signal} displayUnit={displayUnit} />
                 </View>
                 <Text style={[styles.status, { color: toneForKind(session.kind || session.status) }]}>{labelForKind(session.kind || session.status)}</Text>
               </Pressable>
@@ -369,15 +401,6 @@ function FilterSheet({
   );
 }
 
-function ReturnControl({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable style={({ pressed }) => [styles.returnControl, pressed && styles.pressed]} onPress={onPress}>
-      <Ionicons name="arrow-back" size={15} color={colors.muted} />
-      <Text style={styles.returnText}>Return to Training Hub</Text>
-    </Pressable>
-  );
-}
-
 function DatePickerControl({
   label,
   value,
@@ -526,17 +549,17 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
-  title: { fontFamily: SLFontFamilies.sansBold, fontSize: 28, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
-  returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
+  title: { fontFamily: SLFontFamilies.sansBold, fontSize: SLTypography.hero.fontSize, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
+  returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
   returnText: { ...SLTypography.label, color: colors.muted },
   searchControlRow: { flexDirection: 'row', alignItems: 'stretch', gap: 10 },
   searchRow: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, backgroundColor: 'rgba(10, 11, 11, 0.18)', paddingHorizontal: 10 },
-  searchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: 14, paddingVertical: 10 },
-  filterButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.28)', paddingHorizontal: 11 },
+  searchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: SLTypography.rowTitle.fontSize, paddingVertical: 10 },
+  filterButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: 'rgba(10, 11, 11, 0.28)', paddingHorizontal: 11 },
   filterButtonText: { ...SLTypography.label, color: colors.textStrong },
   activeSummary: { minHeight: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, paddingVertical: 9 },
   summaryText: { ...SLTypography.caption, color: colors.subtle, flex: 1 },
-  clearButton: { paddingVertical: 6, paddingHorizontal: 8, borderLeftWidth: 2, borderLeftColor: colors.violet },
+  clearButton: { paddingVertical: 6, paddingHorizontal: 8 },
   clearText: { ...SLTypography.label, color: colors.textStrong },
   list: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
   row: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderColor: colors.lineSoft, backgroundColor: 'rgba(10, 11, 11, 0.16)', paddingVertical: 11 },
@@ -576,11 +599,11 @@ const styles = StyleSheet.create({
   chipText: { ...SLTypography.label, color: colors.muted },
   chipTextSelected: { color: colors.textStrong },
   accessorySearch: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, paddingHorizontal: 9 },
-  accessorySearchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: 14, paddingVertical: 8 },
+  accessorySearchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: SLTypography.rowTitle.fontSize, paddingVertical: 8 },
   sheetActions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 12, borderTopWidth: 1, borderColor: colors.lineSoft, paddingTop: 12, paddingHorizontal: 18 },
   sheetSecondary: { paddingVertical: 10, paddingHorizontal: 10 },
   sheetSecondaryText: { ...SLTypography.label, color: colors.muted },
-  sheetPrimary: { borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.36)', paddingVertical: 10, paddingHorizontal: 14 },
+  sheetPrimary: { backgroundColor: 'rgba(10, 11, 11, 0.36)', paddingVertical: 10, paddingHorizontal: 14 },
   sheetPrimaryText: { ...SLTypography.label, color: colors.textStrong },
   pressed: { opacity: 0.72 },
 });

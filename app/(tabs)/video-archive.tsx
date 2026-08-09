@@ -7,10 +7,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -18,18 +17,19 @@ import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } fro
 import { ThemedView } from '@/components/themed-view';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 const palette = {
-  bg: '#020617',
-  panel: '#0F172A',
-  panelSoft: '#111827',
-  border: 'rgba(148,163,184,0.22)',
-  text: '#F8FAFC',
-  muted: '#94A3B8',
-  green: '#A7F3D0',
-  violet: '#C4B5FD',
-  amber: '#FEF3C7',
-  red: '#FCA5A5',
+  bg: SLColors.background,
+  panel: SLColors.surface,
+  panelSoft: SLColors.surfaceRaised,
+  border: SLColors.borderSubtle,
+  text: SLColors.textStrong,
+  muted: SLColors.textMuted,
+  green: SLColors.success,
+  violet: SLColors.accentViolet,
+  amber: SLColors.warning,
+  red: SLColors.danger,
 };
 
 type ArchiveVideo = SetVideoSummary & {
@@ -153,6 +153,7 @@ export default function AthleteVideoArchiveScreen() {
 
   const loadArchive = useCallback(async (opts?: {
     silent?: boolean;
+    showRefreshIndicator?: boolean;
     filters?: {
       movement?: string;
       lift?: string;
@@ -170,7 +171,7 @@ export default function AthleteVideoArchiveScreen() {
     const nextSetType = opts?.filters?.setType ?? setType;
     const nextNeedsFollowupOnly = opts?.filters?.needsFollowupOnly ?? needsFollowupOnly;
     try {
-      if (silent) setRefreshing(true);
+      if (silent && opts?.showRefreshIndicator !== false) setRefreshing(true);
       else setLoading(true);
       setError(null);
       const requestLift = nextLift === 'accessories' ? '' : nextLift;
@@ -213,11 +214,11 @@ export default function AthleteVideoArchiveScreen() {
       const routeLift = typeof params.lift === 'string' ? params.lift : '';
       if (routeLift && routeLift !== lift) {
         setLift(routeLift);
-        loadArchive({ silent: true, filters: { lift: routeLift } });
+        loadArchive({ silent: true, showRefreshIndicator: false, filters: { lift: routeLift } });
         loadFilmRoomSource();
         return;
       }
-      loadArchive({ silent: true });
+      loadArchive({ silent: true, showRefreshIndicator: false });
       loadFilmRoomSource();
     }, [lift, loadArchive, loadFilmRoomSource, params.lift]),
   );
@@ -341,8 +342,8 @@ export default function AthleteVideoArchiveScreen() {
         >
           <View style={styles.header}>
             <View>
-              <Text style={styles.title}>Film Room</Text>
-              <Text style={styles.subtitle}>
+              <Text typographyRole="pageTitle" style={styles.title}>Film Room</Text>
+              <Text typographyRole="supportingBody" style={styles.subtitle}>
                 Review movement. Study feedback.
               </Text>
             </View>
@@ -373,7 +374,6 @@ export default function AthleteVideoArchiveScreen() {
             </View>
           ) : selectedRoom ? (
             <View style={styles.singleRoomContext}>
-              <View style={styles.singleRoomRail} />
               <View style={styles.singleRoomCopy}>
                 <Text style={styles.singleRoomTitle}>
                   Studying {selectedRoom.label} · {selectedRoom.count} clip{selectedRoom.count === 1 ? '' : 's'}
@@ -399,7 +399,6 @@ export default function AthleteVideoArchiveScreen() {
                       style={({ pressed }) => [styles.reviewRow, pressed && styles.cardPressed]}
                       onPress={() => setSelectedVideo(video)}
                     >
-                      <View style={[styles.reviewRailMark, video.review_status === 'needs_followup' && styles.reviewRailMarkFollowup]} />
                       <View style={styles.reviewCopy}>
                         <View style={styles.reviewTopline}>
                           <Text style={styles.reviewTitle} numberOfLines={1}>
@@ -433,7 +432,7 @@ export default function AthleteVideoArchiveScreen() {
                   onChangeText={setMovement}
                   onSubmitEditing={() => loadArchive({ silent: true })}
                   placeholder="Search film"
-                  placeholderTextColor="#64748B"
+                  placeholderTextColor={SLColors.textSubtle}
                   style={styles.searchInput}
                   returnKeyType="search"
                 />
@@ -606,7 +605,7 @@ export default function AthleteVideoArchiveScreen() {
                   }}
                 >
                   <View style={[styles.followupToggleIcon, draftNeedsFollowupOnly && styles.followupToggleIconActive]}>
-                    {draftNeedsFollowupOnly ? <Ionicons name="checkmark" size={14} color="#451A03" /> : null}
+                    {draftNeedsFollowupOnly ? <Ionicons name="checkmark" size={14} color={SLColors.textInverted} /> : null}
                   </View>
                   <View style={styles.followupToggleTextWrap}>
                     <Text style={[styles.followupToggleTitle, draftNeedsFollowupOnly && styles.followupToggleTitleActive]}>
@@ -667,27 +666,23 @@ const styles = StyleSheet.create({
   },
   kicker: {
     color: palette.green,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
   title: {
     color: palette.text,
-    fontSize: 30,
-    lineHeight: 34,
-    fontWeight: '700',
     marginTop: 4,
   },
   subtitle: {
     color: palette.muted,
-    fontSize: 13,
     marginTop: 6,
   },
   headerIcon: {
     width: 48,
     height: 48,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.24)',
     backgroundColor: 'rgba(6,6,8,0.34)',
@@ -714,19 +709,19 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
     letterSpacing: 0.35,
     textTransform: 'uppercase',
   },
   sectionMeta: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
   },
   sectionAction: {
     color: palette.violet,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.25,
@@ -753,12 +748,12 @@ const styles = StyleSheet.create({
   },
   singleRoomTitle: {
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   singleRoomMeta: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
   },
   roomGrid: {
@@ -769,8 +764,6 @@ const styles = StyleSheet.create({
   roomTile: {
     width: '48.5%',
     minHeight: 58,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(167,243,208,0.24)',
     backgroundColor: 'rgba(6,6,8,0.28)',
     paddingHorizontal: 11,
     paddingVertical: 8,
@@ -782,7 +775,7 @@ const styles = StyleSheet.create({
   },
   roomTitle: {
     color: palette.text,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   roomTitleActive: {
@@ -790,7 +783,7 @@ const styles = StyleSheet.create({
   },
   roomMeta: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
@@ -828,7 +821,7 @@ const styles = StyleSheet.create({
   reviewTitle: {
     flex: 1,
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   reviewDate: {
@@ -838,7 +831,7 @@ const styles = StyleSheet.create({
   },
   reviewBody: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
   },
   filterPanel: {
@@ -857,20 +850,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(196,181,253,0.5)',
     backgroundColor: 'rgba(124,58,237,0.1)',
     paddingHorizontal: 9,
     paddingVertical: 6,
   },
   libraryContextText: {
     color: palette.text,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   libraryContextAction: {
     color: palette.violet,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
@@ -883,7 +874,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     minHeight: 38,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: 'rgba(185,176,163,0.14)',
     backgroundColor: 'rgba(6,6,8,0.38)',
@@ -896,13 +887,13 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     color: palette.text,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     paddingVertical: 6,
   },
   filtersButton: {
     width: 38,
     height: 38,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(20,16,28,0.34)',
@@ -915,26 +906,26 @@ const styles = StyleSheet.create({
     right: -5,
     minWidth: 17,
     height: 17,
-    borderRadius: 9,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
-    borderColor: '#020617',
+    borderColor: SLColors.background,
     backgroundColor: palette.green,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
   },
   filterBadgeText: {
-    color: '#052E2B',
+    color: SLColors.successSoft,
     fontSize: 10,
     fontWeight: '900',
   },
   filterSummary: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   filterChip: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.22)',
     backgroundColor: 'rgba(15,23,42,0.54)',
@@ -951,7 +942,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   filterChipTextActive: {
@@ -982,7 +973,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 44,
     height: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(148,163,184,0.38)',
     marginTop: 9,
   },
@@ -1004,14 +995,14 @@ const styles = StyleSheet.create({
   },
   filterSheetSubtitle: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 3,
   },
   sheetCloseButton: {
     width: 34,
     height: 34,
-    borderRadius: 17,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.2)',
     backgroundColor: 'rgba(15,23,42,0.9)',
@@ -1031,7 +1022,7 @@ const styles = StyleSheet.create({
   },
   filterGroupTitle: {
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   modalChipGrid: {
@@ -1041,7 +1032,7 @@ const styles = StyleSheet.create({
   },
   followupToggle: {
     minHeight: 58,
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.2)',
     backgroundColor: 'rgba(15,23,42,0.72)',
@@ -1058,7 +1049,7 @@ const styles = StyleSheet.create({
   followupToggleIcon: {
     width: 24,
     height: 24,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.28)',
     alignItems: 'center',
@@ -1074,7 +1065,7 @@ const styles = StyleSheet.create({
   },
   followupToggleTitle: {
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   followupToggleTitleActive: {
@@ -1082,7 +1073,7 @@ const styles = StyleSheet.create({
   },
   followupToggleBody: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
@@ -1097,7 +1088,7 @@ const styles = StyleSheet.create({
   resetButton: {
     flex: 1,
     minHeight: 42,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.22)',
     backgroundColor: 'rgba(6,6,8,0.38)',
@@ -1106,13 +1097,13 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   applyFiltersButton: {
     flex: 1.4,
     minHeight: 42,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.34)',
     backgroundColor: 'rgba(20,184,166,0.2)',
@@ -1121,12 +1112,12 @@ const styles = StyleSheet.create({
   },
   applyFiltersText: {
     color: palette.green,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   errorText: {
     color: palette.red,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     marginHorizontal: 0,
     marginTop: 12,
   },
@@ -1140,8 +1131,6 @@ const styles = StyleSheet.create({
   card: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(185,176,163,0.1)',
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(20,184,166,0.26)',
     backgroundColor: 'rgba(6,6,8,0.3)',
     paddingVertical: 10,
     paddingLeft: 9,
@@ -1160,7 +1149,7 @@ const styles = StyleSheet.create({
   thumbWrap: {
     width: 76,
     height: 102,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     overflow: 'hidden',
     backgroundColor: 'rgba(6,6,8,0.52)',
     flexShrink: 0,
@@ -1192,12 +1181,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 112,
     color: palette.text,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 19,
     fontWeight: '700',
   },
   statusPill: {
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(124,58,237,0.17)',
@@ -1219,13 +1208,13 @@ const styles = StyleSheet.create({
   },
   cardMeta: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     marginTop: 3,
     marginBottom: 5,
   },
   detailLine: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
   },
   detailLabel: {
@@ -1242,14 +1231,14 @@ const styles = StyleSheet.create({
   feedbackPreviewText: {
     flex: 1,
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     lineHeight: 15,
   },
   feedbackPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(6,6,8,0.38)',
@@ -1262,7 +1251,7 @@ const styles = StyleSheet.create({
   },
   feedbackText: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   feedbackTextActive: {
@@ -1280,7 +1269,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
     marginTop: 0,
   },
@@ -1288,7 +1277,7 @@ const styles = StyleSheet.create({
     color: palette.muted,
     display: 'none',
     textAlign: 'center',
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     marginTop: 6,
   },

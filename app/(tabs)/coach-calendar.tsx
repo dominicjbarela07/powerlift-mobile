@@ -3,9 +3,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import RefreshScreen from '@/components/refresh-screen';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
 import {
   SLErrorState,
   SLLoadingState,
@@ -72,6 +82,7 @@ type CalendarResponse = {
   };
   athletes: CalendarAthlete[];
   days: CalendarDay[];
+  new_coach_experience?: NewCoachExperiencePayload | null;
 };
 
 type MoveResponse = {
@@ -104,10 +115,10 @@ type StatusFilter = 'all' | 'needs' | 'upcoming' | 'completed';
 type DatePickerTarget = 'move' | 'duplicate' | null;
 
 const CALENDAR_MATERIAL = {
-  surface: 'rgba(8, 8, 10, 0.44)',
-  surfaceSubtle: 'rgba(6, 6, 7, 0.30)',
-  surfaceSoft: 'rgba(12, 13, 15, 0.42)',
-  hairline: 'rgba(255, 255, 255, 0.052)',
+  surface: SLColors.object,
+  surfaceSubtle: SLColors.surfaceEmbedded,
+  surfaceSoft: SLColors.surfaceFlat,
+  hairline: SLColors.borderHairline,
 } as const;
 
 const statusFilters: Array<{ key: StatusFilter; label: string; icon: keyof typeof Ionicons.glyphMap; tone: SLStatusTone }> = [
@@ -270,10 +281,11 @@ export default function CoachCalendarScreen() {
   const weekEnd = useMemo(() => addDays(weekStart, 7), [weekStart]);
 
   const loadCalendar = useCallback(
-    async (opts?: { silent?: boolean }) => {
+    async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
       try {
-        if (opts?.silent) setRefreshing(true);
-        else setLoading(true);
+        if (opts?.silent) {
+          if (opts.showRefreshIndicator !== false) setRefreshing(true);
+        } else setLoading(true);
         setError(null);
 
         const query = new URLSearchParams({
@@ -304,7 +316,7 @@ export default function CoachCalendarScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadCalendar({ silent: true });
+      loadCalendar({ silent: true, showRefreshIndicator: false });
     }, [loadCalendar])
   );
 
@@ -370,8 +382,8 @@ export default function CoachCalendarScreen() {
       if (!isEditableStatus(session)) return;
       setSelectedSession(null);
       router.push({
-        pathname: '/create-workout',
-        params: { editWorkoutId: String(session.workout_id) },
+        pathname: '/workout/session-workspace/[workoutId]' as any,
+        params: { workoutId: String(session.workout_id), athleteId: String(session.athlete_id) },
       } as any);
     },
     [router]
@@ -571,7 +583,6 @@ export default function CoachCalendarScreen() {
       >
         <View style={styles.topBar}>
           <View style={styles.header}>
-            <View style={styles.headerRail} />
             <Text style={styles.title}>Calendar</Text>
             <Text style={styles.weekLabelText}>
               {formatDate(toYMD(weekStart), { month: 'short', day: 'numeric' })} - {formatDate(toYMD(addDays(weekEnd, -1)), { month: 'short', day: 'numeric' })}
@@ -582,6 +593,10 @@ export default function CoachCalendarScreen() {
             <CalendarUtilityChip icon="chevron-forward-outline" label="Next" onPress={() => setWeekStart((prev) => addDays(prev, 7))} />
           </View>
         </View>
+
+        {data?.new_coach_experience ? (
+          <NewCoachExperience experience={data.new_coach_experience} />
+        ) : null}
 
         <CalendarMetricStrip metrics={metrics} />
 
@@ -756,7 +771,7 @@ export default function CoachCalendarScreen() {
                   <Text numberOfLines={1} style={styles.sheetTitle}>
                     {selectedSession?.label || 'Session'}
                   </Text>
-                  <Text style={styles.sheetSubtitle}>
+                  <Text typographyRole="supportingBody" style={styles.sheetSubtitle}>
                     {selectedSession?.athlete_name} · {selectedSession ? formatDate(selectedSession.date) : ''}
                   </Text>
                 </View>
@@ -1088,7 +1103,6 @@ function CalendarLedgerRow({
   const color = toneColor(statusTone);
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionRow, dominant && styles.sessionRowDominant, pressed && styles.pressed]}>
-      <View style={[styles.sessionRail, { backgroundColor: color }]} />
       <View style={[styles.sessionIcon, { borderColor: color }]}>
         <Ionicons color={color} name={icon} size={15} />
       </View>
@@ -1168,7 +1182,7 @@ const styles = StyleSheet.create({
     gap: SLSpacing.xs,
   },
   weekLabelText: {
-    color: '#9BA5B2',
+    color: SLColors.textMuted,
     fontFamily: SLTypography.rowMeta.fontFamily,
     fontSize: SLTypography.rowMeta.fontSize,
     fontWeight: SLTypography.rowMeta.fontWeight,
@@ -1229,7 +1243,7 @@ const styles = StyleSheet.create({
   },
   utilityChip: {
     alignItems: 'center',
-    backgroundColor: 'rgba(6, 6, 7, 0.22)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderColor: CALENDAR_MATERIAL.hairline,
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
@@ -1239,8 +1253,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
   },
   utilityChipSelected: {
-    backgroundColor: 'rgba(8, 8, 10, 0.46)',
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: SLColors.object,
+    borderColor: SLColors.borderSubtle,
   },
   utilityChipText: {
     color: SLColors.textSubtle,
@@ -1250,9 +1264,9 @@ const styles = StyleSheet.create({
     lineHeight: SLTypography.chipLabel.lineHeight,
   },
   filterSheet: {
-    backgroundColor: 'rgba(8, 8, 10, 0.88)',
+    backgroundColor: SLColors.surfaceCommand,
     borderColor: CALENDAR_MATERIAL.hairline,
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     gap: SLSpacing.md,
     maxWidth: 560,
@@ -1325,15 +1339,15 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.62)',
+    backgroundColor: SLColors.surfaceScrim,
     flex: 1,
     justifyContent: 'flex-end',
     padding: SLSpacing.lg,
   },
   sheet: {
-    backgroundColor: 'rgba(8, 8, 10, 0.90)',
+    backgroundColor: SLColors.surfaceCommand,
     borderColor: CALENDAR_MATERIAL.hairline,
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     gap: SLSpacing.lg,
     maxHeight: '88%',
@@ -1342,9 +1356,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   dateSheet: {
-    backgroundColor: 'rgba(8, 8, 10, 0.90)',
+    backgroundColor: SLColors.surfaceCommand,
     borderColor: CALENDAR_MATERIAL.hairline,
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     gap: SLSpacing.md,
     maxWidth: 560,
@@ -1507,7 +1521,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   sessionSubtitle: {
-    color: '#9BA5B2',
+    color: SLColors.textMuted,
     fontFamily: SLTypography.rowMeta.fontFamily,
     fontSize: SLTypography.rowMeta.fontSize,
     fontWeight: SLTypography.rowMeta.fontWeight,

@@ -1,19 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { type ReactNode } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type GestureResponderEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { Pressable, StyleSheet, View, type GestureResponderEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLAthleteAvatar } from './sl-athlete-avatar';
 import { SLPriorityBadge } from './sl-priority-badge';
 import { SLStatusPill } from './sl-status-pill';
-import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMaterialOverlay } from './sl-workspace';
+import { SLColors, SLControlSize, SLOpacity, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type Priority = 'high' | 'medium' | 'low' | 'neutral';
@@ -24,6 +18,7 @@ type SLQueueRowProps = {
   meta?: string;
   athleteName?: string | null;
   athleteImageUrl?: string | null;
+  athleteImageVersion?: string | null;
   leading?: ReactNode;
   icon?: IconName;
   statusLabel?: string;
@@ -32,7 +27,6 @@ type SLQueueRowProps = {
   priorityLabel?: string;
   rightLabel?: string;
   variant?: 'flat' | 'card' | 'priority';
-  railTone?: SLStatusTone;
   onPress?: (event: GestureResponderEvent) => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -43,6 +37,7 @@ export function SLQueueRow({
   meta,
   athleteName,
   athleteImageUrl,
+  athleteImageVersion,
   leading,
   icon,
   statusLabel,
@@ -51,7 +46,6 @@ export function SLQueueRow({
   priorityLabel,
   rightLabel,
   variant = 'card',
-  railTone,
   onPress,
   style,
 }: SLQueueRowProps) {
@@ -59,14 +53,17 @@ export function SLQueueRow({
   const leadingNode =
     leading ??
     (athleteName || athleteImageUrl ? (
-      <SLAthleteAvatar imageUrl={athleteImageUrl} name={athleteName} size={38} />
+      <SLAthleteAvatar
+        imageUrl={athleteImageUrl}
+        imageVersion={athleteImageVersion}
+        name={athleteName}
+        size={38}
+      />
     ) : icon ? (
       <View style={styles.iconWrap}>
         <Ionicons color={iconTone} name={icon} size={19} />
       </View>
     ) : null);
-  const effectiveRailTone = railTone ?? (variant === 'priority' ? statusTone : undefined);
-  const railColor = effectiveRailTone ? SLStatusTones[effectiveRailTone].icon : undefined;
   const variantStyle = variant === 'flat' ? styles.flatRow : variant === 'priority' ? styles.priorityRow : styles.cardRow;
 
   return (
@@ -79,29 +76,29 @@ export function SLQueueRow({
         styles.row,
         variantStyle,
         {
-          opacity: pressed ? 0.78 : 1,
+          opacity: pressed ? SLOpacity.pressed : 1,
         },
         style,
       ]}
     >
-      {railColor ? <View style={[styles.rail, { backgroundColor: railColor }]} /> : null}
+      <SLMaterialOverlay compact level={variant === 'priority' ? 3 : variant === 'flat' ? 1 : 2} />
       {leadingNode}
       <View style={styles.main}>
         <View style={styles.titleLine}>
-          <Text numberOfLines={1} style={styles.title}>
+          <Text numberOfLines={1} typographyRole="bodyStrong" style={styles.title}>
             {title}
           </Text>
-          {rightLabel ? <Text style={styles.rightLabel}>{rightLabel}</Text> : null}
+          {rightLabel ? <Text typographyRole="label" style={styles.rightLabel}>{rightLabel}</Text> : null}
         </View>
         {subtitle ? (
-          <Text numberOfLines={2} style={styles.subtitle}>
+          <Text numberOfLines={2} typographyRole="supportingBody" style={styles.subtitle}>
             {subtitle}
           </Text>
         ) : null}
         <View style={styles.metaLine}>
           {priority ? <SLPriorityBadge label={priorityLabel} priority={priority} /> : null}
           {statusLabel ? <SLStatusPill label={statusLabel} tone={statusTone} /> : null}
-          {meta ? <Text numberOfLines={1} style={styles.meta}>{meta}</Text> : null}
+          {meta ? <Text numberOfLines={1} typographyRole="caption" style={styles.meta}>{meta}</Text> : null}
         </View>
       </View>
       {onPress ? <Ionicons color={SLColors.textSubtle} name="chevron-forward" size={18} /> : null}
@@ -115,9 +112,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: SLSpacing.sm,
-    minHeight: 64,
+    minHeight: SLControlSize.queueRow,
     paddingHorizontal: SLSpacing.md,
     paddingVertical: SLSpacing.sm,
+    overflow: 'hidden',
     position: 'relative',
   },
   flatRow: {
@@ -144,13 +142,6 @@ const styles = StyleSheet.create({
     height: 38,
     justifyContent: 'center',
     width: 38,
-  },
-  rail: {
-    bottom: 8,
-    left: 0,
-    position: 'absolute',
-    top: 8,
-    width: 3,
   },
   main: {
     flex: 1,

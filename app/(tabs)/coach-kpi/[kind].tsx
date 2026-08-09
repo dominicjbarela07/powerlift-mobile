@@ -5,6 +5,8 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { fetchJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 type KpiRow = {
   workout_id: number;
@@ -33,6 +35,7 @@ type KpiResponse = {
   kind: string;
   title: string;
   rows: KpiRow[];
+  new_coach_experience?: NewCoachExperiencePayload | null;
   error?: string;
 };
 
@@ -50,14 +53,14 @@ function statusLabel(s?: string | null) {
 
 function statusTone(s?: string | null) {
   const v = (s || 'assigned').toLowerCase();
-  if (v === 'draft') return '#a78bfa'; // purple
-  if (v === 'assigned') return '#f97316'; // warn
-  if (v === 'in_progress') return '#22c55e'; // ok
-  if (['logged', 'completed', 'done'].includes(v)) return '#38bdf8'; // accent
-  if (v === 'missed') return '#f87171';
-  if (v === 'missed_excused') return '#94a3b8';
-  if (v === 'incomplete') return '#facc15';
-  return '#e5e7eb';
+  if (v === 'draft') return SLColors.accentViolet;
+  if (v === 'assigned') return SLColors.warning;
+  if (v === 'in_progress') return SLColors.success;
+  if (['logged', 'completed', 'done'].includes(v)) return SLColors.info;
+  if (v === 'missed') return SLColors.danger;
+  if (v === 'missed_excused') return SLColors.textMuted;
+  if (v === 'incomplete') return SLColors.warning;
+  return SLColors.text;
 }
 
 function trimPreview(
@@ -229,13 +232,13 @@ export default function CoachKpiDetailScreen() {
       <View style={styles.header}>
         <ThemedText variant="h1" style={styles.title}>{title}</ThemedText>
         <ThemedText variant="bodyMuted" style={styles.subtitle}>
-          Tap a session to open the workout viewer.
+          Tap a Session to open its details.
         </ThemedText>
       </View>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color="#B8B0DA" />
+          <ActivityIndicator color={SLColors.accentViolet} />
           <ThemedText variant="bodyMuted" style={styles.centerText}>Loading…</ThemedText>
         </View>
       ) : error ? (
@@ -257,11 +260,11 @@ export default function CoachKpiDetailScreen() {
                 }
                 style={styles.card}
                 accessibilityRole="button"
-                accessibilityLabel={`Open workout ${r.label || 'session'} for ${r.athlete_name}${r.is_self ? ' (YOU)' : ''}`}
+                accessibilityLabel={`Open Session ${r.label || 'session'} for ${r.athlete_name}${r.is_self ? ' (YOU)' : ''}`}
               >
                 <View style={styles.cardTopRow}>
                   <View style={styles.cardTitleCol}>
-                    <ThemedText variant="h3" style={styles.name}>
+                    <ThemedText typographyRole="dynamicName" variant="h3" style={styles.name}>
                       {r.athlete_name}{r.is_self ? ' (YOU)' : ''}
                     </ThemedText>
                     <ThemedText variant="body" style={styles.sessionLabel}>
@@ -306,13 +309,15 @@ export default function CoachKpiDetailScreen() {
                 )}
 
                 {!r.label && !((r as any).core_preview?.length) && typeof (r as any).accessories_count !== 'number' && (
-                  <ThemedText variant="body" style={styles.sessionLabel}>Workout</ThemedText>
+                  <ThemedText variant="body" style={styles.sessionLabel}>Training Session</ThemedText>
                 )}
               </TouchableOpacity>
             ))
+          ) : data?.new_coach_experience ? (
+            <NewCoachExperience experience={data.new_coach_experience} />
           ) : (
             <View style={styles.emptyCard}>
-              <ThemedText variant="bodyMuted" style={styles.emptyText}>No workouts in this KPI.</ThemedText>
+              <ThemedText variant="bodyMuted" style={styles.emptyText}>No Training Sessions in this KPI.</ThemedText>
             </View>
           )}
         </ScrollView>
@@ -332,32 +337,32 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 24,
     paddingBottom: 24,
-    backgroundColor: '#020617',
+    backgroundColor: 'transparent',
   },
   header: {
     marginBottom: 16,
   },
   title: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     letterSpacing: -0.6,
   },
   subtitle: {
     marginTop: 4,
-    color: '#94A3B8',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
   },
   backBtn: {
     alignSelf: 'flex-start',
     minHeight: 38,
     paddingVertical: 8,
     paddingHorizontal: 14,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.16)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surface,
   },
   backBtnText: {
-    color: '#CBD5E1',
+    color: SLColors.text,
   },
   footerRow: {
     marginTop: 6,
@@ -369,16 +374,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   centerText: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
   },
   centerCard: {
     minHeight: 140,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.surface,
     paddingHorizontal: 18,
   },
   scrollContent: {
@@ -386,20 +391,16 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    backgroundColor: 'rgba(8,16,38,0.94)',
-    borderRadius: 18,
+    backgroundColor: SLColors.surface,
+    borderRadius: SLRadius.radiusHero,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
+    borderColor: SLColors.borderHairline,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 3,
+    ...SLShadows.card,
   },
   name: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     marginBottom: 2,
   },
   metaRow: {
@@ -411,17 +412,17 @@ const styles = StyleSheet.create({
   metaDate: {
     flexShrink: 1,
     marginTop: 8,
-    color: '#8EA0BE',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
   },
   statusPill: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
   },
   statusPillText: {
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
@@ -438,44 +439,43 @@ const styles = StyleSheet.create({
   },
   sessionLabel: {
     marginTop: 1,
-    color: '#E2E8F0',
+    color: SLColors.text,
     fontWeight: '600',
   },
   previewBlock: {
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(148,163,184,0.08)',
+    borderTopColor: SLColors.borderHairline,
     gap: 6,
   },
   previewLine: {
-    color: '#94A3B8',
-    fontSize: 13,
-    lineHeight: 18,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
   },
   accessoryPill: {
     alignSelf: 'flex-start',
     marginTop: 10,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: 'rgba(148,163,184,0.08)',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.surfaceMuted,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
+    borderColor: SLColors.borderHairline,
   },
   accessoryPillText: {
-    color: '#A8B4C7',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.textMuted,
   },
   emptyCard: {
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-    backgroundColor: 'rgba(8,16,38,0.92)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.surface,
     paddingHorizontal: 16,
     paddingVertical: 18,
   },
   emptyText: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
   },
 });

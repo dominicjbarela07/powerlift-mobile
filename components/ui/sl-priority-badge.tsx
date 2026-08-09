@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type Priority = 'high' | 'medium' | 'low' | 'neutral';
@@ -47,8 +49,9 @@ export function SLPriorityBadge({
         style,
       ]}
     >
+      <SLMaterialOverlay compact level={2} />
       <Ionicons color={palette.icon} name={icon} size={12} />
-      <Text numberOfLines={1} style={[styles.label, { color: palette.text }]}>
+      <Text numberOfLines={1} typographyRole="badge" style={[styles.label, { color: palette.text }]}>
         {label ?? priorityLabel[priority]}
       </Text>
     </View>
@@ -64,8 +67,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SLSpacing.xs,
     maxWidth: '100%',
+    overflow: 'hidden',
     paddingHorizontal: SLSpacing.sm,
     paddingVertical: 3,
+    position: 'relative',
   },
   label: {
     fontFamily: SLTypography.micro.fontFamily,

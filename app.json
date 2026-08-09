@@ -2,11 +2,11 @@
   "expo": {
     "name": "Strength Ledger",
     "slug": "powerlift_mobile",
-    "version": "2.0.2",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/iOS_icon.png",
     "scheme": "powerliftmobile",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -37,7 +37,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#020205",
           "dark": {
             "backgroundColor": "#000000"
           }
@@ -52,7 +52,15 @@
       ],
       "expo-video",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -60,7 +68,7 @@
     },
     "extra": {
       "router": {},
-      "appRevision": 1,
+      "appRevision": 3,
       "eas": {
         "projectId": "7afb1a4b-46b6-4295-b33f-816b05589e81"
       }

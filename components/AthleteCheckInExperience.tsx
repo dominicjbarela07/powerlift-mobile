@@ -2,14 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 
 import {
   getCheckInDetail,
@@ -19,27 +13,27 @@ import {
   type MobileCheckInQuestion,
   type MobileCheckInSummary,
 } from '@/lib/api';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLColors, SLControlSize, SLFontFamilies, SLOpacity, SLRadius, SLTypography } from '@/constants/theme';
 
 const colors = {
-  text: '#ECE5DA',
-  strong: '#F9FAFB',
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  line: 'rgba(222,198,166,0.13)',
-  lineSoft: 'rgba(222,198,166,0.075)',
-  surface: 'rgba(28,18,20,0.20)',
-  surfaceStrong: 'rgba(36,24,22,0.40)',
-  surfaceInput: 'rgba(18,15,13,0.38)',
+  text: SLColors.text,
+  strong: SLColors.textStrong,
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  line: SLColors.borderSubtle,
+  lineSoft: SLColors.borderHairline,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
+  surfaceInput: SLColors.surfaceInset,
   violet: SLColors.accentViolet,
-  violetSoft: 'rgba(167,139,250,0.18)',
-  amber: '#D6A75E',
-  amberSoft: 'rgba(214,167,94,0.16)',
-  amberActive: 'rgba(214,167,94,0.30)',
-  green: '#A7CBB5',
-  greenSoft: 'rgba(167,203,181,0.13)',
-  red: '#F87171',
-  redSoft: 'rgba(248,113,113,0.10)',
+  violetSoft: SLColors.accentVioletSoft,
+  amber: SLColors.warning,
+  amberSoft: SLColors.warningSoft,
+  amberActive: SLColors.warningSoft,
+  green: SLColors.success,
+  greenSoft: SLColors.successSoft,
+  red: SLColors.danger,
+  redSoft: SLColors.dangerSoft,
 };
 
 type CheckInState = {
@@ -195,7 +189,6 @@ export function TodayCheckInSurface() {
 
   return (
     <View style={styles.todaySurface}>
-      <View style={styles.todaySurfaceRail} />
       <View style={styles.todaySurfaceBody}>
         <Text style={styles.zoneKicker}>Coach Check-In</Text>
         {checkIns.error ? <ErrorLine text={checkIns.error} /> : null}
@@ -239,7 +232,7 @@ export function ReflectionCheckInHistory() {
   return (
     <View style={styles.historyList}>
       {checkIns.recent.map((item) => (
-        <HistoryCheckInRow key={item.id} item={item} onPress={() => openCheckIn(router, item, 'reflection')} />
+        <HistoryCheckInRow key={item.id} item={item} onPress={() => openCheckIn(router, item, 'history')} />
       ))}
     </View>
   );
@@ -263,7 +256,7 @@ export function CheckInFallbackSurface() {
       <View style={styles.fallbackHeader}>
         <Text style={styles.zoneKicker}>Internal Check-In Surface</Text>
         <Text style={styles.fallbackTitle}>Today owns due check-ins.</Text>
-        <Text style={styles.mutedText}>This page remains available as a fallback, but athletes should complete check-ins from Today and revisit them in Reflection.</Text>
+        <Text style={styles.mutedText}>This page remains available as a fallback, but athletes should complete check-ins from Today and revisit them in Check-Ins.</Text>
       </View>
       {checkIns.submittedTitle ? <CheckInSubmitted title={checkIns.submittedTitle} /> : null}
       {checkIns.error ? <ErrorLine text={checkIns.error} /> : null}
@@ -276,7 +269,7 @@ export function CheckInFallbackSurface() {
       ) : (
         <View style={styles.historyEmpty}>
           <Text style={styles.historyEmptyTitle}>Nothing due right now.</Text>
-          <Text style={styles.mutedText}>Completed check-ins live in Reflection.</Text>
+          <Text style={styles.mutedText}>Completed check-ins live in Check-Ins.</Text>
         </View>
       )}
     </View>
@@ -300,8 +293,8 @@ export function StandaloneCheckInFormScreen({
   const [error, setError] = useState<string | null>(null);
 
   const goBack = useCallback((submittedTitle?: string | null) => {
-    if (target === 'reflection') {
-      router.replace('/(tabs)/reflection' as any);
+    if (target === 'history' || target === 'reflection') {
+      router.replace('/(tabs)/check-ins' as any);
       return;
     }
     if (target === 'calendar') {
@@ -412,7 +405,7 @@ export function StandaloneCheckInFormScreen({
   );
 }
 
-function openCheckIn(router: ReturnType<typeof useRouter>, item: MobileCheckInSummary, returnTo: 'today' | 'reflection') {
+function openCheckIn(router: ReturnType<typeof useRouter>, item: MobileCheckInSummary, returnTo: 'today' | 'history') {
   router.push({
     pathname: '/(tabs)/check-in/[submissionId]',
     params: { submissionId: String(item.id), returnTo },
@@ -721,7 +714,7 @@ function CheckInSubmitted({ title }: { title: string }) {
       <Ionicons name="checkmark-circle" size={24} color={colors.green} />
       <View style={styles.submittedCopy}>
         <Text style={styles.submittedTitle}>{title} Submitted</Text>
-        <Text style={styles.submittedText}>Thanks. Your coach now has this week's update.</Text>
+        <Text style={styles.submittedText}>Thanks. Your coach now has this week’s update.</Text>
       </View>
     </View>
   );
@@ -773,18 +766,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   mutedText: {
+    ...SLTypography.label,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
-    lineHeight: 18,
   },
   todaySurface: {
     flexDirection: 'row',
     marginBottom: 10,
-    backgroundColor: 'rgba(34,23,21,0.34)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(214,167,94,0.10)',
+    borderColor: SLColors.borderHairline,
   },
   todaySurfaceRail: {
     width: 4,
@@ -797,9 +788,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   zoneKicker: {
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
-    fontWeight: SLTypography.utilityLabel.fontWeight,
+    ...SLTypography.utilityLabel,
     color: colors.amber,
     letterSpacing: 0.35,
     textTransform: 'uppercase',
@@ -807,14 +796,14 @@ const styles = StyleSheet.create({
   dueCard: {
     gap: 9,
     padding: 15,
-    backgroundColor: 'rgba(18,16,14,0.30)',
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(214,167,94,0.18)',
-    borderRadius: 12,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusCard,
   },
   dueCardLate: {
-    borderColor: 'rgba(248,113,113,0.22)',
-    backgroundColor: 'rgba(248,113,113,0.055)',
+    borderColor: SLColors.danger,
+    backgroundColor: SLColors.dangerSoft,
   },
   dueCardTop: {
     flexDirection: 'row',
@@ -823,31 +812,24 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   dueStatus: {
+    ...SLTypography.utilityLabel,
     color: colors.amber,
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
-    fontWeight: SLTypography.utilityLabel.fontWeight,
     textTransform: 'uppercase',
   },
   dueStatusLate: {
     color: colors.red,
   },
   dueEstimate: {
+    ...SLTypography.caption,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
   },
   dueTitle: {
+    ...SLTypography.sectionTitle,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 19,
-    lineHeight: 24,
   },
   dueDescription: {
+    ...SLTypography.label,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
-    lineHeight: 18,
   },
   dueFooter: {
     flexDirection: 'row',
@@ -857,10 +839,9 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   dueMeta: {
+    ...SLTypography.caption,
     flex: 1,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
   },
   openAction: {
     flexDirection: 'row',
@@ -868,13 +849,12 @@ const styles = StyleSheet.create({
     gap: 5,
     paddingHorizontal: 10,
     paddingVertical: 7,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: colors.violetSoft,
   },
   openActionText: {
+    ...SLTypography.chipLabel,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 12,
   },
   conversation: {
     gap: 18,
@@ -889,22 +869,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   backText: {
+    ...SLTypography.label,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
   },
   conversationHeader: {
     gap: 8,
     paddingVertical: 16,
     paddingHorizontal: 2,
     borderBottomWidth: 1,
-    borderColor: 'rgba(214,167,94,0.12)',
+    borderColor: SLColors.borderHairline,
   },
   conversationStatus: {
+    ...SLTypography.utilityLabel,
     color: colors.amber,
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
-    fontWeight: SLTypography.utilityLabel.fontWeight,
     letterSpacing: 0.35,
     textTransform: 'uppercase',
   },
@@ -920,35 +897,30 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   conversationMeta: {
+    ...SLTypography.label,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
   },
   conversationDot: {
     color: colors.subtle,
     fontFamily: SLFontFamilies.sansBold,
   },
   conversationDescription: {
+    ...SLTypography.note,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
-    lineHeight: 20,
   },
   errorLine: {
     flexDirection: 'row',
     gap: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.26)',
-    borderRadius: 10,
+    borderColor: SLColors.danger,
+    borderRadius: SLRadius.radiusCard,
     backgroundColor: colors.redSoft,
   },
   errorText: {
+    ...SLTypography.label,
     flex: 1,
     color: colors.red,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
-    lineHeight: 18,
   },
   questionStack: {
     gap: 18,
@@ -959,28 +931,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     borderTopWidth: 1,
     borderBottomWidth: 0,
-    borderColor: 'rgba(222,198,166,0.07)',
+    borderColor: SLColors.borderHairline,
   },
   questionPrompt: {
+    ...SLTypography.sectionTitle,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 18,
-    lineHeight: 24,
   },
   input: {
-    minHeight: 50,
+    minHeight: SLControlSize.comfortable,
     paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.12)',
-    borderRadius: 12,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusCard,
     backgroundColor: colors.surfaceInput,
     color: colors.text,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
+    ...SLTypography.body,
   },
   inputFocused: {
-    borderColor: 'rgba(214,167,94,0.42)',
-    backgroundColor: 'rgba(36,24,22,0.48)',
+    borderColor: SLColors.warning,
+    backgroundColor: SLColors.focus,
   },
   textArea: {
     minHeight: 118,
@@ -1006,12 +975,12 @@ const styles = StyleSheet.create({
   },
   scaleTrack: {
     flexDirection: 'row',
-    minHeight: 50,
+    minHeight: SLControlSize.comfortable,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(214,167,94,0.16)',
-    borderRadius: 14,
-    backgroundColor: 'rgba(20,16,13,0.34)',
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusCard,
+    backgroundColor: SLColors.surfaceInset,
   },
   scaleSegment: {
     flex: 1,
@@ -1021,18 +990,17 @@ const styles = StyleSheet.create({
   },
   scaleSegmentDivider: {
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(222,198,166,0.07)',
+    borderLeftColor: SLColors.borderHairline,
   },
   scaleSegmentActive: {
-    backgroundColor: 'rgba(214,167,94,0.10)',
+    backgroundColor: SLColors.warningSoft,
   },
   scaleSegmentSelected: {
     backgroundColor: colors.amberActive,
   },
   scaleSegmentText: {
+    ...SLTypography.label,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
   },
   scaleSegmentTextActive: {
     color: colors.text,
@@ -1046,19 +1014,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   scaleHint: {
+    ...SLTypography.micro,
     color: colors.subtle,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 11,
   },
   choiceChip: {
-    minHeight: 44,
+    minHeight: SLControlSize.minimumTouchTarget,
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.13)',
-    borderRadius: 999,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: 'rgba(18,15,13,0.30)',
+    backgroundColor: SLColors.surfaceInset,
   },
   scaleChip: {
     minWidth: 42,
@@ -1066,16 +1033,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   choiceChipSelected: {
-    borderColor: 'rgba(214,167,94,0.58)',
+    borderColor: SLColors.warning,
     backgroundColor: colors.amberSoft,
   },
   choiceText: {
+    ...SLTypography.rowTitle,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 14,
   },
   scaleText: {
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
   },
   choiceTextSelected: {
     color: colors.strong,
@@ -1086,15 +1052,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    borderRadius: 14,
-    backgroundColor: '#8B5CF6',
+    borderRadius: SLRadius.radiusCard,
+    backgroundColor: SLColors.railViolet,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.34)',
+    borderColor: SLColors.borderSelected,
   },
   submitText: {
+    ...SLTypography.bodyStrong,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
   },
   completedState: {
     flexDirection: 'row',
@@ -1102,9 +1067,9 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(167,203,181,0.30)',
-    borderRadius: 14,
-    backgroundColor: 'rgba(38,54,42,0.26)',
+    borderColor: SLColors.success,
+    borderRadius: SLRadius.radiusCard,
+    backgroundColor: SLColors.successSoft,
     marginBottom: 10,
   },
   submittedBox: {
@@ -1113,24 +1078,21 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(167,203,181,0.30)',
-    borderRadius: 14,
-    backgroundColor: 'rgba(38,54,42,0.26)',
+    borderColor: SLColors.success,
+    borderRadius: SLRadius.radiusCard,
+    backgroundColor: SLColors.successSoft,
   },
   submittedCopy: {
     flex: 1,
     gap: 3,
   },
   submittedTitle: {
+    ...SLTypography.cardTitle,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 16,
   },
   submittedText: {
+    ...SLTypography.label,
     color: colors.green,
-    fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
-    lineHeight: 18,
   },
   historyList: {
     gap: 0,
@@ -1155,24 +1117,20 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   historyTitle: {
+    ...SLTypography.rowTitle,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 14,
-    lineHeight: 19,
   },
   historyMeta: {
+    ...SLTypography.caption,
     color: colors.muted,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 12,
   },
   historyEmpty: {
     gap: 6,
     paddingVertical: 14,
   },
   historyEmptyTitle: {
+    ...SLTypography.rowTitle,
     color: colors.strong,
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 14,
   },
   fallback: {
     gap: 16,
@@ -1196,9 +1154,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pressed: {
-    opacity: 0.78,
+    opacity: SLOpacity.pressed,
   },
   disabled: {
-    opacity: 0.55,
+    opacity: SLOpacity.loading,
   },
 });

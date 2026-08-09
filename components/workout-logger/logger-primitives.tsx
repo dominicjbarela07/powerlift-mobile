@@ -1,5 +1,9 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Image, type ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
+import { SLButton, SLMotionPressable } from '@/components/ui';
+import type { LoggerPlateStack } from '@/lib/logger-visual-context';
 
 export function MovementCompleteSummary({
   title,
@@ -22,9 +26,9 @@ export function MovementCompleteSummary({
       </View>
       <Text style={styles.completedMovementMeta}>{meta}</Text>
       {top ? <Text style={styles.completedMovementTop}>{top}</Text> : null}
-      <TouchableOpacity style={styles.completedMovementAction} onPress={onExpand}>
+      <SLMotionPressable style={styles.completedMovementAction} onPress={onExpand}>
         <Text style={styles.completedMovementActionText}>View / Edit</Text>
-      </TouchableOpacity>
+      </SLMotionPressable>
     </View>
   );
 }
@@ -41,7 +45,7 @@ export function LogSheetUnitToggle({
       {(['kg', 'lb'] as const).map((option) => {
         const active = unit === option;
         return (
-          <TouchableOpacity
+          <SLMotionPressable
             key={option}
             style={[styles.unitToggleOption, active && styles.unitToggleOptionActive]}
             onPress={() => onChange(option)}
@@ -49,27 +53,64 @@ export function LogSheetUnitToggle({
             <Text style={[styles.unitToggleText, active && styles.unitToggleTextActive]}>
               {option}
             </Text>
-          </TouchableOpacity>
+          </SLMotionPressable>
         );
       })}
     </View>
   );
 }
 
-export function CoreWheelLogButton({ onPress }: { onPress: () => void }) {
+export function SessionUnitFloatingControl({
+  unit,
+  bottom,
+  disabled = false,
+  onChange,
+}: {
+  unit: 'kg' | 'lb';
+  bottom: number;
+  disabled?: boolean;
+  onChange: (unit: 'kg' | 'lb') => void;
+}) {
+  const nextUnit = unit === 'kg' ? 'lb' : 'kg';
   return (
-    <TouchableOpacity style={styles.coreWheelButton} onPress={onPress}>
-      <Text style={styles.coreWheelButtonText}>Log Set</Text>
-    </TouchableOpacity>
+    <SLMotionPressable
+      accessibilityRole="button"
+      accessibilityLabel={`Display unit: ${unit}. Switch to ${nextUnit}`}
+      accessibilityHint="Switches every Session weight display to the other unit."
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={() => onChange(nextUnit)}
+      style={[styles.sessionUnitFloatingControl, { bottom }, disabled && styles.sessionUnitFloatingControlDisabled]}
+    >
+      <Text style={styles.sessionUnitFloatingControlText}>{unit}</Text>
+    </SLMotionPressable>
   );
 }
 
-export function CoreRepeatLastButton({ onPress }: { onPress: () => void }) {
+export function LoggerPlateStackVisual({
+  plateStack,
+  style,
+}: {
+  plateStack: LoggerPlateStack;
+  style?: StyleProp<ImageStyle>;
+}) {
   return (
-    <TouchableOpacity style={styles.coreRepeatLastButton} onPress={onPress}>
-      <Text style={styles.coreRepeatLastButtonText}>Repeat Last</Text>
-    </TouchableOpacity>
+    <Image
+      accessibilityIgnoresInvertColors
+      accessibilityLabel={plateStack.accessibilityLabel}
+      resizeMode="contain"
+      source={plateStack.imageSource}
+      style={[styles.loggerPlateStackVisual, style, plateStack.presentationStyle]}
+    />
   );
+}
+
+export function CoreWheelLogButton({ onPress }: { onPress: () => void }) {
+  return <SLButton fullWidth label="Log Set" onPress={onPress} size="lg" style={styles.coreWheelButton} />;
+}
+
+export function CoreRepeatLastButton({ onPress }: { onPress: () => void }) {
+  return <SLButton label="Repeat Last" onPress={onPress} size="sm" variant="secondary" style={styles.coreRepeatLastButton} />;
 }
 
 export function LoggedSetRow({
@@ -87,9 +128,9 @@ export function LoggedSetRow({
     <View style={[styles.loggedRowInline, style]}>
       <Text style={styles.actualTextInline}>{actualText}</Text>
       {canEdit && onEdit ? (
-        <TouchableOpacity style={styles.inlineEditButtonInline} onPress={onEdit}>
+        <SLMotionPressable style={styles.inlineEditButtonInline} onPress={onEdit}>
           <Text style={styles.inlineEditButtonText}>Edit</Text>
-        </TouchableOpacity>
+        </SLMotionPressable>
       ) : null}
     </View>
   );
@@ -100,10 +141,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: SLRadius.radiusCard,
     borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.16)',
-    backgroundColor: 'rgba(34,197,94,0.045)',
+    borderColor: 'rgba(143,178,154,0.36)',
+    backgroundColor: SLColors.object,
   },
   completedMovementHeader: {
     flexDirection: 'row',
@@ -113,35 +154,34 @@ const styles = StyleSheet.create({
   },
   completedMovementTitle: {
     flex: 1,
-    color: '#E2E8F0',
-    fontSize: 15,
+    ...SLTypography.bodyStrong,
+    color: SLColors.text,
     fontWeight: '800',
   },
   completedMovementBadge: {
     paddingHorizontal: 9,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.24)',
-    backgroundColor: 'rgba(34,197,94,0.10)',
+    borderColor: SLColors.success,
+    backgroundColor: SLColors.successSoft,
   },
   completedMovementBadgeText: {
-    color: '#86EFAC',
-    fontSize: 10,
+    ...SLTypography.micro,
+    color: SLColors.success,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
   completedMovementMeta: {
-    color: '#CBD5E1',
-    fontSize: 13,
-    lineHeight: 18,
+    ...SLTypography.label,
+    color: SLColors.text,
     fontWeight: '700',
     marginTop: 7,
   },
   completedMovementTop: {
-    color: '#94A3B8',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.textMuted,
     lineHeight: 17,
     fontWeight: '600',
     marginTop: 3,
@@ -151,81 +191,82 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(129,140,248,0.22)',
-    backgroundColor: 'rgba(91,79,207,0.09)',
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.accentVioletSoft,
   },
   completedMovementActionText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.accentViolet,
     fontWeight: '900',
   },
   unitTogglePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15,20,36,0.82)',
-    borderRadius: 14,
+    backgroundColor: SLColors.object,
+    borderRadius: SLRadius.radiusCard,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
   },
   unitToggleOption: {
     minWidth: 50,
     height: 36,
     paddingHorizontal: 12,
-    borderRadius: 11,
+    borderRadius: SLRadius.radiusRow,
     alignItems: 'center',
     justifyContent: 'center',
   },
   unitToggleOptionActive: {
-    backgroundColor: '#5B4FCF',
-    shadowColor: '#5B4FCF',
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
+    backgroundColor: SLColors.surfaceSelected,
+    borderColor: SLColors.borderFocus,
+    borderWidth: 1,
+    ...SLShadows.level2,
   },
   unitToggleText: {
-    color: '#94A3B8',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
     fontWeight: '700',
     textTransform: 'lowercase',
   },
   unitToggleTextActive: {
-    color: '#E5E7EB',
+    color: SLColors.textStrong,
+  },
+  sessionUnitFloatingControl: {
+    position: 'absolute',
+    right: 0,
+    width: 48,
+    height: 48,
+    borderRadius: SLRadius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: SLColors.focus,
+    borderWidth: 1,
+    borderColor: SLColors.borderSubtle,
+    zIndex: 10,
+    ...SLShadows.card,
+  },
+  sessionUnitFloatingControlDisabled: {
+    opacity: 0.45,
+  },
+  sessionUnitFloatingControlText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+    textTransform: 'lowercase',
+  },
+  loggerPlateStackVisual: {
+    width: '100%',
+    height: '100%',
   },
   coreWheelButton: {
     marginTop: 10,
-    minHeight: 50,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(129,140,248,0.28)',
-    backgroundColor: 'rgba(91,79,207,0.92)',
-  },
-  coreWheelButtonText: {
-    color: '#F5F3FF',
-    fontSize: 15,
-    fontWeight: '900',
-    letterSpacing: 0.2,
   },
   coreRepeatLastButton: {
     alignSelf: 'flex-start',
     marginTop: 10,
     marginBottom: 0,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(129,140,248,0.24)',
-    backgroundColor: 'rgba(91,79,207,0.10)',
-  },
-  coreRepeatLastButtonText: {
-    color: '#C4B5FD',
-    fontSize: 12,
-    fontWeight: '900',
   },
   loggedRowInline: {
     flexDirection: 'row',
@@ -235,21 +276,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   actualTextInline: {
-    color: '#E2E8F0',
-    fontSize: 14,
+    ...SLTypography.rowTitle,
+    color: SLColors.text,
     fontWeight: '600',
   },
   inlineEditButtonInline: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 10,
+    borderRadius: SLRadius.radiusRow,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
-    backgroundColor: 'rgba(15,20,36,0.80)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.object,
   },
   inlineEditButtonText: {
-    color: '#A5B4FC',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.accentViolet,
     fontWeight: '700',
   },
 });

@@ -1,20 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLCanonicalIcon } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useAuth } from '@/context/AuthContext';
-import { createIndividualProgram, getIndividualProgram, updateIndividualProgram } from '@/lib/api';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import {
+  createIndividualProgram,
+  createProgrammingProgram,
+  getIndividualProgram,
+  getProgrammingProgram,
+  updateIndividualProgram,
+  updateProgrammingProgram,
+} from '@/lib/api';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 
 type ProgramTypeKey = 'offseason' | 'meet_prep' | 'general_strength' | 'custom';
 type TimelineKey = '4' | '8' | '12' | '16' | 'custom';
@@ -67,17 +67,17 @@ const steps = ['Type', 'Timeline', 'Blocks', 'Review'];
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const colors = {
-  text: '#ECE5DA',
+  text: SLColors.text,
   textStrong: SLColors.textStrong,
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  line: 'rgba(222, 198, 166, 0.10)',
-  lineSoft: 'rgba(222, 198, 166, 0.058)',
-  surface: 'rgba(20, 14, 13, 0.32)',
-  surfaceStrong: 'rgba(24, 16, 15, 0.50)',
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  line: SLColors.borderSubtle,
+  lineSoft: SLColors.borderHairline,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
   violet: SLColors.accentViolet,
-  green: '#A7CBB5',
-  amber: '#D6A75E',
+  green: SLColors.success,
+  amber: SLColors.warning,
 };
 
 const coerceProgramDate = (value?: string | null) => {
@@ -120,9 +120,17 @@ const hydrateLoadedProgramBlocks = (rows: any[]): ProgramBlock[] => {
 
 export default function CreateProgramScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ mode?: string; programId?: string }>();
+  const params = useLocalSearchParams<{
+    mode?: string;
+    programId?: string;
+    athleteId?: string;
+    athleteName?: string;
+  }>();
   const { user } = useAuth();
   const isIndividual = user?.workspace_mode === 'individual' || !!user?.is_individual_workspace || !!user?.is_self_coached;
+  const managedAthleteId = params.athleteId ? Number(params.athleteId) : null;
+  const isCoachManaged = !isIndividual && Number.isFinite(managedAthleteId || NaN);
+  const canUseProgramBuilder = isIndividual || isCoachManaged;
   const editProgramId = params.programId ? Number(params.programId) : null;
   const isEditMode = params.mode === 'edit' && Number.isFinite(editProgramId || NaN);
   const [stepIndex, setStepIndex] = useState(0);
@@ -134,6 +142,7 @@ export default function CreateProgramScreen() {
   const [customLength, setCustomLength] = useState('12');
   const [blocks, setBlocks] = useState<ProgramBlock[]>(() => buildBlockPlan('offseason', 12));
   const [preserveLoadedBlocks, setPreserveLoadedBlocks] = useState(false);
+  const [loadedUpdatedAt, setLoadedUpdatedAt] = useState<string | null>(null);
   const [loadingProgram, setLoadingProgram] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -160,7 +169,10 @@ export default function CreateProgramScreen() {
 
     let active = true;
     setLoadingProgram(true);
-    getIndividualProgram(editProgramId)
+    const request = isCoachManaged && managedAthleteId
+      ? getProgrammingProgram(editProgramId, managedAthleteId)
+      : getIndividualProgram(editProgramId);
+    request
       .then((result) => {
         if (!active) return;
         if (!result.ok || !result.program) {
@@ -182,6 +194,7 @@ export default function CreateProgramScreen() {
         setTimeline(timelineState.timeline);
         setCustomLength(timelineState.customLength);
         setBlocks(hydrateLoadedProgramBlocks(loadedBlocks));
+        setLoadedUpdatedAt(loadedProgram.updated_at || null);
         setPreserveLoadedBlocks(true);
       })
       .finally(() => {
@@ -191,10 +204,13 @@ export default function CreateProgramScreen() {
     return () => {
       active = false;
     };
-  }, [editProgramId, isEditMode]);
+  }, [editProgramId, isCoachManaged, isEditMode, managedAthleteId]);
 
   const returnHome = () => {
-    router.replace('/(tabs)/workout' as any);
+    router.replace({
+      pathname: '/(tabs)/workout',
+      params: managedAthleteId ? { athleteId: String(managedAthleteId) } : {},
+    } as any);
   };
 
   const handleNext = async () => {
@@ -226,9 +242,21 @@ export default function CreateProgramScreen() {
         focus: block.focus,
       })),
     };
-    const result = isEditMode && editProgramId
-      ? await updateIndividualProgram(editProgramId, payload)
-      : await createIndividualProgram(payload);
+    const result = isCoachManaged && managedAthleteId
+      ? (
+          isEditMode && editProgramId
+            ? await updateProgrammingProgram(editProgramId, {
+                ...payload,
+                athlete_id: managedAthleteId,
+                expected_updated_at: loadedUpdatedAt,
+              })
+            : await createProgrammingProgram({ ...payload, athlete_id: managedAthleteId })
+        )
+      : (
+          isEditMode && editProgramId
+            ? await updateIndividualProgram(editProgramId, payload)
+            : await createIndividualProgram(payload)
+        );
     setSubmitting(false);
 
     if (!result.ok) {
@@ -241,17 +269,20 @@ export default function CreateProgramScreen() {
 
     router.replace({
       pathname: '/(tabs)/workout',
-      params: { programCreated: String(result.program?.id || Date.now()) },
+      params: {
+        programCreated: String(result.program?.id || Date.now()),
+        ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
+      },
     } as any);
   };
 
-  if (!isIndividual) {
+  if (!canUseProgramBuilder) {
     return (
       <View style={styles.screen}>
         <View style={styles.blockedState}>
           <Ionicons name="lock-closed-outline" size={24} color={colors.muted} />
-          <Text style={styles.blockedTitle}>Self-Coach flow only</Text>
-          <Text style={styles.blockedBody}>This program builder mock is only available in Individual Mode.</Text>
+          <Text style={styles.blockedTitle}>Choose an athlete first</Text>
+          <Text style={styles.blockedBody}>Open an athlete workspace before managing a Training Program.</Text>
           <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]} onPress={returnHome}>
             <Text style={styles.secondaryButtonText}>Return to Training</Text>
           </Pressable>
@@ -287,7 +318,7 @@ export default function CreateProgramScreen() {
             onPress={returnHome}
             style={styles.exitButton}
           >
-            <Ionicons name="arrow-back" size={15} color="#FCA5A5" />
+            <Ionicons name="arrow-back" size={15} color={SLColors.danger} />
             <Text style={styles.exitButtonText}>Exit</Text>
           </Pressable>
         </View>
@@ -451,7 +482,7 @@ function ProgramTypeRow({
         {selected ? <Ionicons name="checkmark" size={17} color={SLColors.textInverted} /> : null}
       </View>
       <View style={[styles.programTypeIcon, selected && styles.programTypeIconSelected]}>
-        <Ionicons name={option.icon} size={18} color={selected ? colors.violet : colors.muted} />
+        <SLCanonicalIcon name={option.icon} size={18} color={selected ? colors.violet : colors.muted} trophyTier="bronze" />
       </View>
       <View style={styles.optionCopy}>
         <Text style={styles.optionTitle}>{option.label}</Text>
@@ -960,7 +991,7 @@ function ReviewStep({
 
       <View style={styles.reviewHero}>
         <View style={styles.reviewHeroIcon}>
-          <Ionicons name={selectedType.icon} size={20} color={colors.violet} />
+          <SLCanonicalIcon name={selectedType.icon} size={20} color={colors.violet} trophyTier="bronze" />
         </View>
         <View style={styles.reviewHeroCopy}>
           <Text style={styles.reviewProgramName}>{programTitle}</Text>
@@ -1142,7 +1173,7 @@ const styles = StyleSheet.create({
   },
   programNamePreview: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     lineHeight: 28,
     color: colors.textStrong,
     letterSpacing: 0,
@@ -1157,11 +1188,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(248, 113, 113, 0.34)',
     backgroundColor: 'rgba(127, 29, 29, 0.16)',
     paddingHorizontal: 11,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   exitButtonText: {
     ...SLTypography.buttonLabel,
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   stepTrack: {
     flexDirection: 'row',
@@ -1181,7 +1212,7 @@ const styles = StyleSheet.create({
   stepDot: {
     width: 13,
     height: 13,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: 'rgba(24, 16, 15, 0.28)',
@@ -1246,7 +1277,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(214, 167, 94, 0.24)',
     backgroundColor: 'rgba(214, 167, 94, 0.08)',
     paddingHorizontal: 10,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     marginTop: 4,
   },
   blockStatusPillComplete: {
@@ -1275,7 +1306,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(5, 10, 19, 0.44)',
     color: colors.textStrong,
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     paddingHorizontal: 12,
   },
   dateField: {
@@ -1291,7 +1322,7 @@ const styles = StyleSheet.create({
   },
   dateFieldText: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   calendarPanel: {
@@ -1387,7 +1418,7 @@ const styles = StyleSheet.create({
   },
   calendarDayText: {
     fontFamily: SLFontFamilies.monoSemiBold,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     color: colors.textStrong,
   },
   calendarDayTextOutside: {
@@ -1430,7 +1461,7 @@ const styles = StyleSheet.create({
   checkboxBox: {
     width: 34,
     height: 34,
-    borderRadius: 5,
+    borderRadius: SLRadius.radiusSharp,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -1492,7 +1523,7 @@ const styles = StyleSheet.create({
   blockIndex: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(167, 139, 250, 0.12)',
@@ -1501,7 +1532,7 @@ const styles = StyleSheet.create({
   },
   blockIndexText: {
     fontFamily: SLFontFamilies.monoSemiBold,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.violet,
   },
   blockSummaryCopy: {
@@ -1525,7 +1556,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167, 139, 250, 0.16)',
     backgroundColor: 'rgba(167, 139, 250, 0.055)',
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   blockEditorHintText: {
     ...SLTypography.caption,
@@ -1565,7 +1596,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(5, 10, 19, 0.44)',
     color: colors.textStrong,
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     paddingHorizontal: 10,
   },
   weekStepper: {
@@ -1576,7 +1607,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: 'rgba(5, 10, 19, 0.44)',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     overflow: 'hidden',
   },
   weekStepperButton: {
@@ -1589,7 +1620,7 @@ const styles = StyleSheet.create({
     minWidth: 44,
     textAlign: 'center',
     fontFamily: SLFontFamilies.monoSemiBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   blockEditorActions: {
@@ -1604,11 +1635,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(248, 113, 113, 0.28)',
     backgroundColor: 'rgba(127, 29, 29, 0.12)',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   removeBlockText: {
     ...SLTypography.buttonLabel,
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   doneBlockButton: {
     minHeight: 40,
@@ -1618,7 +1649,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   doneBlockText: {
     ...SLTypography.buttonLabel,
@@ -1633,7 +1664,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     marginTop: 2,
   },
   addBlockText: {
@@ -1649,7 +1680,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167, 139, 250, 0.20)',
     backgroundColor: 'rgba(167, 139, 250, 0.055)',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
   },
   reviewHeroIcon: {
     width: 44,
@@ -1659,7 +1690,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.26)',
     backgroundColor: 'rgba(167, 139, 250, 0.08)',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
   },
   reviewHeroCopy: {
     flex: 1,
@@ -1668,7 +1699,7 @@ const styles = StyleSheet.create({
   },
   reviewProgramName: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 20,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 25,
     color: colors.textStrong,
   },
@@ -1691,7 +1722,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lineSoft,
     backgroundColor: 'rgba(24, 16, 15, 0.18)',
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
   },
   reviewHighlightLabel: {
     ...SLTypography.utilityLabel,
@@ -1732,7 +1763,7 @@ const styles = StyleSheet.create({
   },
   reviewBlockWeeks: {
     fontFamily: SLFontFamilies.monoSemiBold,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     color: colors.green,
   },
   reviewNote: {
@@ -1744,7 +1775,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167, 203, 181, 0.18)',
     backgroundColor: 'rgba(167, 203, 181, 0.07)',
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
   },
   reviewNoteText: {
     ...SLTypography.caption,
@@ -1774,7 +1805,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   footerNextButton: {
     minHeight: 48,
@@ -1784,7 +1815,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
     backgroundColor: colors.green,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   footerBackText: {
     ...SLTypography.buttonLabel,
@@ -1808,7 +1839,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
   },
   secondaryButtonText: {
     ...SLTypography.buttonLabel,

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   ActivityIndicator,
   Alert,
   Keyboard,
@@ -7,13 +8,11 @@ import {
   Modal,
   Platform,
   Pressable,
-  RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -24,9 +23,21 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
-import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
-import { SLColors, SLFontFamilies } from '@/constants/theme';
+import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
+import {
+  mapCoachSessionEditorPayload,
+} from '@/lib/coach-session-editor';
+import { SLColors, SLControlSize, SLFontFamilies, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import {
+  SessionEditingWorkspace,
+  type CalculatedLoadRequest,
+  type CalculatedLoadResult,
+  type SessionMovementItem,
+  type SessionWorkspaceSavePlan,
+} from '@/components/coach-mobile/SessionEditingWorkspace';
+import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -35,12 +46,11 @@ type PlannedSet = {
   pct?: number | null;
   manual_target_kg?: number | null;
   manual_pm_kg?: number | null;
-  suggested_low_kg?: number | null;
-  suggested_high_kg?: number | null;
 };
 
 type WorkoutItem = {
   id: number;
+  parent_item_id?: number | null;
   lift?: string | null;
   variant?: string | null;
   designation?: string | null;
@@ -58,10 +68,17 @@ type WorkoutItem = {
   target_high_kg?: number | null;
   baseline_low_kg?: number | null;
   baseline_high_kg?: number | null;
+  coach_prescribed_low_kg?: number | null;
+  coach_prescribed_high_kg?: number | null;
   notes?: string | null;
   superset_group?: string | null;
   superset_pos?: number | null;
+  approved_subs?: string[];
   planned_sets?: PlannedSet[];
+  movement_identity?: {
+    id?: number | null;
+    display_name?: string | null;
+  } | null;
 };
 
 type AccessoryGroup = {
@@ -81,29 +98,79 @@ type WorkoutPayload = {
     training_block_id?: number | null;
     program_id?: number | null;
     programming_notes?: string | null;
+    scheduled_timezone?: string | null;
+    estimated_duration_minutes?: number | null;
+    estimated_duration_low_minutes?: number | null;
+    estimated_duration_high_minutes?: number | null;
+    workspace_capabilities?: WorkspaceCapabilities | null;
     core_items?: WorkoutItem[];
     accessory_groups?: AccessoryGroup[];
   } | null;
   athlete?: {
     id?: number | null;
     name?: string | null;
+    timezone?: string | null;
+    preferred_units?: string | null;
+    avatar_url?: string | null;
+    avatar_uploaded_at?: string | null;
+  } | null;
+  coach?: {
+    id?: number | null;
+    name?: string | null;
+    avatar_url?: string | null;
+    avatar_uploaded_at?: string | null;
   } | null;
 };
 
-type MovementPreset = {
+type WorkspaceCapabilities = {
+  editable?: boolean;
+  locked_reason?: string | null;
+  can_assign?: boolean;
+  can_revert_to_draft?: boolean;
+  can_delete?: boolean;
+  can_move?: boolean;
+  can_copy?: boolean;
+  can_save_template?: boolean;
+  can_rename?: boolean;
+  can_edit_session_notes?: boolean;
+  can_add_movement?: boolean;
+  can_edit_movement?: boolean;
+  can_remove_movement?: boolean;
+  can_reorder?: boolean;
+  can_open_athlete_view?: boolean;
+  assign_blocked_reason?: string | null;
+};
+
+type RosterAthlete = {
+  id: number;
   name?: string | null;
+  avatar_url?: string | null;
+  avatar_uploaded_at?: string | null;
+};
+
+type MovementPreset = {
+  id?: number | null;
+  name?: string | null;
+  display_name?: string | null;
   lift?: string | null;
   category?: string | null;
   category_key?: string | null;
   family?: string | null;
+  family_display_name?: string | null;
   type?: string | null;
   loading_behavior?: string | null;
+  equipment_type?: string | null;
+  loading_implementation?: string | null;
+  load_convention?: string | null;
+  measurement_type?: string | null;
+  sidedness?: string | null;
+  ownership_scope?: string | null;
 };
 
 type MovementPresetGroup = {
   name: string;
   key: string;
-  movements?: Array<MovementPreset | string>;
+  movements?: (MovementPreset | string)[];
 };
 
 type MovementPresetPayload = {
@@ -113,22 +180,14 @@ type MovementPresetPayload = {
   };
   accessories?: {
     categories?: MovementPresetGroup[];
+    definitions?: MovementPreset[];
   };
 };
 
 type EditKind = 'core' | 'accessory';
-type HotEditField = 'sets' | 'reps' | 'rpe' | 'pct' | 'load' | 'notes' | 'accessory_reps' | 'rir';
-
-type HotEditState = {
-  item: WorkoutItem;
-  kind: EditKind;
-  field: HotEditField;
-};
-type AccessoryRepType = 'fixed' | 'range' | 'plus' | 'amrap';
-
-type SessionActionKey = 'revert' | 'copy' | 'template' | 'move' | 'delete';
+type WorkspaceSection = 'core' | 'accessories';
+type SessionActionKey = 'assign' | 'revert' | 'copy' | 'template' | 'move' | 'delete';
 type CalendarAction = 'copy' | 'move';
-type LoadStyleInfo = 'rpe' | 'pct' | 'rir';
 type TrainingLiftScheme = 'STRAIGHT' | 'TOP_BACKDOWN' | 'FULL_CUSTOM';
 type TrainingLiftMode = 'RPE' | 'PCT';
 
@@ -138,6 +197,7 @@ type TrainingLiftEditorState = {
   mode: TrainingLiftEditorMode;
   item?: WorkoutItem | null;
   setup: TrainingLiftSetup;
+  initialSetup: TrainingLiftSetup;
 };
 
 type AccessoryEditorMode = 'edit' | 'add';
@@ -146,6 +206,7 @@ type AccessoryEditorState = {
   mode: AccessoryEditorMode;
   item?: WorkoutItem | null;
   setup: AccessorySetup;
+  initialSetup: AccessorySetup;
 };
 
 type ReorderEditorState = {
@@ -162,61 +223,71 @@ type TrainingLiftSetup = {
   mode: TrainingLiftMode;
   notes: string;
   customMovement: string;
+  targetLow: string;
+  targetHigh: string;
 };
 
 type AccessorySetup = {
   movement: string;
+  movementDefinitionId: number | null;
   family: string;
   notes: string;
   customMovement: string;
+  supersetGroup: string;
+  supersetPosition: string;
+  equipmentType: string;
+  loadingImplementation: string;
+  loadConvention: string;
+  measurementType: string;
+  sidedness: string;
 };
 
 const KG_PER_LB = 0.45359237;
-const LBS_INCREMENT_THRESHOLD = 150;
-const LBS_INCREMENT_BELOW_THRESHOLD = 2.5;
-const LBS_INCREMENT_AT_OR_ABOVE_THRESHOLD = 5;
 const WHEEL_ITEM_WIDTH = 64;
 const REORDER_ROW_HEIGHT = 78;
 const REORDER_ROW_GAP = 10;
 const REORDER_ROW_STEP = REORDER_ROW_HEIGHT + REORDER_ROW_GAP;
 
 const colors = {
-  text: '#ECE5DA',
+  text: SLColors.text,
   textStrong: SLColors.textStrong,
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  line: 'rgba(222, 198, 166, 0.12)',
-  lineSoft: 'rgba(222, 198, 166, 0.07)',
-  surface: 'rgba(20, 14, 13, 0.28)',
-  surfaceStrong: 'rgba(24, 16, 15, 0.46)',
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  line: SLColors.borderSubtle,
+  lineSoft: SLColors.borderHairline,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
   violet: SLColors.accentViolet,
-  violetSoft: 'rgba(167, 139, 250, 0.14)',
-  green: '#A7CBB5',
+  violetSoft: SLColors.accentVioletSoft,
+  green: SLColors.success,
   red: SLColors.railDanger,
 };
 
 export default function MobileSessionWorkspaceScreen() {
   const router = useRouter();
+  const { user, authReady } = useAuth();
   const params = useLocalSearchParams<{
     workoutId?: string | string[];
+    athleteId?: string | string[];
     programmingBlockId?: string | string[];
     programmingWeek?: string | string[];
     programmingDay?: string | string[];
+    section?: string | string[];
   }>();
   const workoutId = firstParam(params.workoutId);
+  const programmingAthleteId = firstParam(params.athleteId);
   const programmingBlockId = firstParam(params.programmingBlockId);
   const programmingWeek = firstParam(params.programmingWeek);
   const programmingDay = firstParam(params.programmingDay);
+  const requestedSection = firstParam(params.section);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [payload, setPayload] = useState<WorkoutPayload | null>(null);
-  const [editing, setEditing] = useState<HotEditState | null>(null);
-  const [savingEdit, setSavingEdit] = useState(false);
+  const activeSection: WorkspaceSection = requestedSection === 'accessories' ? 'accessories' : 'core';
   const [pendingAction, setPendingAction] = useState<SessionActionKey | null>(null);
   const [calendarAction, setCalendarAction] = useState<CalendarAction | null>(null);
-  const [loadStyleInfo, setLoadStyleInfo] = useState<LoadStyleInfo | null>(null);
   const [trainingLiftEditor, setTrainingLiftEditor] = useState<TrainingLiftEditorState | null>(null);
   const [accessoryEditor, setAccessoryEditor] = useState<AccessoryEditorState | null>(null);
   const [movementGroups, setMovementGroups] = useState<MovementPresetGroup[]>([]);
@@ -224,11 +295,18 @@ export default function MobileSessionWorkspaceScreen() {
   const [movementGroupsLoading, setMovementGroupsLoading] = useState(false);
   const [trainingLiftSaving, setTrainingLiftSaving] = useState(false);
   const [accessorySaving, setAccessorySaving] = useState(false);
-  const [renamingSession, setRenamingSession] = useState(false);
-  const [sessionNameDraft, setSessionNameDraft] = useState('');
-  const [sessionRenameSaving, setSessionRenameSaving] = useState(false);
   const [reorderEditor, setReorderEditor] = useState<ReorderEditorState | null>(null);
   const [reorderSaving, setReorderSaving] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [roster, setRoster] = useState<RosterAthlete[]>([]);
+  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>('kg');
+  const hasLoadedSessionRef = useRef(false);
+  const loadRequestRevisionRef = useRef(0);
+  const nextDraftMovementIdRef = useRef(-1);
+  const addCoreCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
+  const addAccessoryCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
+  const reorderCompletionRef = useRef<((order: ReorderEditorState) => void) | null>(null);
+  const redirectingToLogger = authReady && user?.role !== 'coach';
 
   const loadSession = useCallback(async (silent?: boolean) => {
     if (!workoutId) {
@@ -236,6 +314,7 @@ export default function MobileSessionWorkspaceScreen() {
       setLoading(false);
       return;
     }
+    const requestRevision = ++loadRequestRevisionRef.current;
     if (silent) setRefreshing(true);
     else setLoading(true);
     setError(null);
@@ -246,11 +325,17 @@ export default function MobileSessionWorkspaceScreen() {
       if (!resp.ok || !json.ok || !json.workout) {
         throw new Error(json.error || `HTTP ${resp.status}`);
       }
-      setPayload(json);
+      if (requestRevision !== loadRequestRevisionRef.current) return;
+      setPayload(mapCoachSessionEditorPayload(json));
+      hasLoadedSessionRef.current = true;
     } catch (err: any) {
-      setPayload(null);
-      setError(err?.message || 'Session workspace could not load.');
+      if (requestRevision !== loadRequestRevisionRef.current) return;
+      if (!silent) {
+        setPayload(null);
+        setError(err?.message || 'Session workspace could not load.');
+      }
     } finally {
+      if (requestRevision !== loadRequestRevisionRef.current) return;
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
@@ -258,19 +343,67 @@ export default function MobileSessionWorkspaceScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      void loadSession(false);
+      void loadSession(hasLoadedSessionRef.current);
     }, [loadSession])
   );
 
   useEffect(() => {
     let active = true;
+    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
+      if (active) setReduceMotion(enabled);
+    });
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => {
+      active = false;
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    const preferredUnits = String(payload?.athlete?.preferred_units || '').toLowerCase();
+    setWorkspaceDisplayUnit(['lb', 'lbs'].includes(preferredUnits) ? 'lb' : 'kg');
+  }, [payload?.athlete?.id, payload?.athlete?.preferred_units]);
+
+  useEffect(() => {
+    if (!authReady || user?.role !== 'coach') return;
+    let active = true;
+    void fetchJson<any>('/coach/mobile/roster', { method: 'GET' })
+      .then((response) => {
+        const json = response.json || {};
+        if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+        if (active) setRoster(Array.isArray(json.athletes) ? json.athletes : []);
+      })
+      .catch(() => {
+        if (active) setRoster([]);
+      });
+    return () => { active = false; };
+  }, [authReady, user?.role]);
+
+  useEffect(() => {
+    let active = true;
     setMovementGroupsLoading(true);
-    fetchJson<MovementPresetPayload>('/workouts/mobile/movement_presets', { method: 'GET' })
-      .then((resp) => {
+    const athleteId = payload?.athlete?.id;
+    const customDefinitionsRequest = athleteId
+      ? fetchJson<any>(`/workouts/mobile/movement-definitions/search?athlete_id=${athleteId}&limit=49`, { method: 'GET' })
+      : Promise.resolve(null);
+    Promise.all([
+      fetchJson<MovementPresetPayload>('/workouts/mobile/movement_presets', { method: 'GET' }),
+      customDefinitionsRequest,
+    ])
+      .then(([resp, customResponse]) => {
         const json = resp.json || {};
         if (!active) return;
         setMovementGroups(Array.isArray(json.training_lifts?.categories) ? json.training_lifts.categories : []);
-        setAccessoryGroups(Array.isArray(json.accessories?.categories) ? json.accessories.categories : []);
+        const categories = Array.isArray(json.accessories?.categories) ? json.accessories.categories : [];
+        const definitions = Array.isArray(json.accessories?.definitions) ? json.accessories.definitions : [];
+        const customItems = customResponse?.ok && Array.isArray(customResponse.json?.items)
+          ? customResponse.json.items.filter((row: MovementPreset) => row.ownership_scope !== 'global')
+          : [];
+        setAccessoryGroups(accessoryGroupsWithCanonicalIdentity(
+          accessoryGroupsWithCanonicalIdentity(categories, definitions),
+          customItems,
+          'custom_identity',
+        ));
       })
       .catch(() => {
         if (!active) return;
@@ -283,9 +416,19 @@ export default function MobileSessionWorkspaceScreen() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [payload?.athlete?.id]);
+
+  useEffect(() => {
+    if (!redirectingToLogger || !workoutId) return;
+    router.replace({
+      pathname: '/workout/[workoutId]',
+      params: { workoutId: String(workoutId) },
+    });
+  }, [redirectingToLogger, router, workoutId]);
 
   const workout = payload?.workout || null;
+  const workspaceCapabilities = workout?.workspace_capabilities || {};
+  const workspaceEditable = workspaceCapabilities.editable !== false;
   const coreItems = workout?.core_items || [];
   const accessoryItems = useMemo(
     () => (workout?.accessory_groups || []).flatMap((group) => group.items || []),
@@ -294,13 +437,13 @@ export default function MobileSessionWorkspaceScreen() {
 
   const status = humanStatus(workout?.raw_status || workout?.status);
   const title = sessionTitle(workout?.label);
-  const context = sessionContext(workout?.label, workout?.date);
-  const executionCtaLabel = executionLabel(workout?.raw_status || workout?.status);
+  const context = sessionContext(payload?.athlete?.name, workout?.label, workout?.date);
 
   const closeToProgrammingHome = () => {
     router.replace({
       pathname: '/(tabs)/workout' as any,
       params: {
+        ...(programmingAthleteId ? { athleteId: programmingAthleteId } : {}),
         ...(programmingBlockId ? { programmingBlockId } : {}),
         ...(programmingWeek ? { programmingWeek } : {}),
         ...(programmingDay ? { programmingDay } : {}),
@@ -308,51 +451,105 @@ export default function MobileSessionWorkspaceScreen() {
     });
   };
 
-  const openSessionLogger = () => {
+  const openAthleteView = () => {
     if (!workout?.id) return;
     router.push({
       pathname: '/workout/[workoutId]',
-      params: { workoutId: String(workout.id) },
+      params: {
+        workoutId: String(workout.id),
+        athleteView: 'coach-preview',
+        returnSection: activeSection,
+        ...(programmingAthleteId ? { coachAthleteId: programmingAthleteId } : {}),
+        ...(programmingBlockId ? { coachProgrammingBlockId: programmingBlockId } : {}),
+        ...(programmingWeek ? { coachProgrammingWeek: programmingWeek } : {}),
+        ...(programmingDay ? { coachProgrammingDay: programmingDay } : {}),
+      },
     });
   };
 
-  const openTrainingLiftEditor = (item: WorkoutItem) => {
-    setTrainingLiftEditor({
-      mode: 'edit',
-      item,
-      setup: trainingLiftSetupFromItem(item, movementGroups),
-    });
-  };
-
-  const openAddCoreLiftEditor = () => {
+  const openAddCoreLiftEditor = (draftDisplayUnit: 'lb' | 'kg', onAdd: (item: SessionMovementItem) => void) => {
+    setWorkspaceDisplayUnit(draftDisplayUnit);
+    addCoreCompletionRef.current = onAdd;
+    const setup = defaultTrainingLiftSetup(coreItems.length, movementGroups);
     setTrainingLiftEditor({
       mode: 'add',
       item: null,
-      setup: defaultTrainingLiftSetup(coreItems.length, movementGroups),
+      setup,
+      initialSetup: setup,
     });
   };
 
-  const openAccessoryEditor = (item: WorkoutItem) => {
-    setAccessoryEditor({
-      mode: 'edit',
-      item,
-      setup: accessorySetupFromItem(item, accessoryGroups),
-    });
-  };
-
-  const openAddAccessoryEditor = () => {
+  const openAddAccessoryEditor = (onAdd: (item: SessionMovementItem) => void) => {
+    addAccessoryCompletionRef.current = onAdd;
+    const setup = defaultAccessorySetup(accessoryGroups);
     setAccessoryEditor({
       mode: 'add',
       item: null,
-      setup: defaultAccessorySetup(accessoryGroups),
+      setup,
+      initialSetup: setup,
     });
+  };
+
+  const cancelTrainingLiftEditor = () => {
+    if (trainingLiftEditor && JSON.stringify(trainingLiftEditor.setup) !== JSON.stringify(trainingLiftEditor.initialSetup)) {
+      Alert.alert('Discard movement changes?', 'Your unsaved movement setup changes will be lost.', [
+        { text: 'Keep Editing', style: 'cancel' },
+        { text: 'Discard Changes', style: 'destructive', onPress: () => { addCoreCompletionRef.current = null; setTrainingLiftEditor(null); } },
+      ]);
+      return;
+    }
+    addCoreCompletionRef.current = null;
+    setTrainingLiftEditor(null);
+  };
+
+  const cancelAccessoryEditor = () => {
+    if (accessoryEditor && JSON.stringify(accessoryEditor.setup) !== JSON.stringify(accessoryEditor.initialSetup)) {
+      Alert.alert('Discard movement changes?', 'Your unsaved accessory setup changes will be lost.', [
+        { text: 'Keep Editing', style: 'cancel' },
+        { text: 'Discard Changes', style: 'destructive', onPress: () => { addAccessoryCompletionRef.current = null; setAccessoryEditor(null); } },
+      ]);
+      return;
+    }
+    addAccessoryCompletionRef.current = null;
+    setAccessoryEditor(null);
+  };
+
+  const cancelReorderEditor = () => {
+    reorderCompletionRef.current = null;
+    setReorderEditor(null);
   };
 
   const applyTrainingLiftSetup = async (setup: TrainingLiftSetup) => {
     if (!workout?.id || !trainingLiftEditor) return;
+    if (trainingLiftEditor.mode === 'add' && addCoreCompletionRef.current) {
+      const id = nextDraftMovementIdRef.current--;
+      const targetMultiplier = workspaceDisplayUnit === 'lb' ? KG_PER_LB : 1;
+      addCoreCompletionRef.current({
+        id,
+        movement: setup.movement,
+        lift: setup.lift,
+        designation: setup.designation,
+        variant: setup.scheme === 'TOP_BACKDOWN' ? 'TOP' : setup.scheme === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : 'STRAIGHT',
+        mode: setup.mode,
+        sets: setup.scheme === 'FULL_CUSTOM' ? 4 : 4,
+        reps: 5,
+        rpe_target: setup.mode === 'RPE' ? 7 : null,
+        pct: setup.mode === 'PCT' ? 70 : null,
+        coach_prescribed_low_kg: setup.lift === 'VR' && setup.targetLow ? Number(setup.targetLow) * targetMultiplier : null,
+        coach_prescribed_high_kg: setup.lift === 'VR' && setup.targetHigh ? Number(setup.targetHigh) * targetMultiplier : null,
+        notes: setup.notes,
+        planned_sets: setup.scheme === 'FULL_CUSTOM'
+          ? Array.from({ length: 4 }, (_, index) => ({ set_index: index + 1, reps: 5, rpe_target: setup.mode === 'RPE' ? 7 : null, pct: setup.mode === 'PCT' ? 70 : null }))
+          : [],
+      });
+      addCoreCompletionRef.current = null;
+      setTrainingLiftEditor(null);
+      return;
+    }
     try {
       setTrainingLiftSaving(true);
       const isAddMode = trainingLiftEditor.mode === 'add';
+      const isCoreVariantSelection = setup.lift === 'VR';
       const endpoint = isAddMode
         ? `/workouts/mobile/${workout.id}/core-lifts`
         : `/workouts/mobile/${workout.id}/items/${trainingLiftEditor.item?.id}/programming`;
@@ -362,15 +559,29 @@ export default function MobileSessionWorkspaceScreen() {
           movement: setup.movement,
           lift: setup.lift,
           designation: setup.designation,
-          scheme: setup.scheme,
-          mode: setup.mode,
           notes: setup.notes,
+          ...(!isCoreVariantSelection ? { scheme: setup.scheme, mode: setup.mode } : {}),
+          ...(isCoreVariantSelection ? {
+            target_low_lb: String(Number(setup.targetLow) * (workspaceDisplayUnit === 'lb' ? 1 : 1 / KG_PER_LB)),
+            target_high_lb: String(Number(setup.targetHigh) * (workspaceDisplayUnit === 'lb' ? 1 : 1 / KG_PER_LB)),
+          } : {}),
+          ...(!isCoreVariantSelection && setup.scheme === 'FULL_CUSTOM' && String(trainingLiftEditor.item?.variant || '').toUpperCase() !== 'FULL_CUSTOM'
+            ? {
+                planned_sets: Array.from({ length: 4 }, (_, index) => ({
+                  set_index: index + 1,
+                  reps: 5,
+                  rpe_target: setup.mode === 'RPE' ? 7 : null,
+                  pct: setup.mode === 'PCT' ? 70 : null,
+                  manual_target_kg: null,
+                  manual_pm_kg: 0,
+                })),
+              }
+            : {}),
           ...(isAddMode
             ? {
                 sets: 4,
                 reps: 5,
-                rpe_target: 7,
-                pct: 70,
+                ...(!isCoreVariantSelection ? { rpe_target: 7, pct: 70 } : {}),
               }
             : {}),
         } as any,
@@ -389,45 +600,21 @@ export default function MobileSessionWorkspaceScreen() {
     }
   };
 
-  const startSessionRename = () => {
-    setSessionNameDraft(title);
-    setRenamingSession(true);
-  };
-
-  const cancelSessionRename = () => {
-    setSessionNameDraft('');
-    setRenamingSession(false);
-  };
-
-  const saveSessionRename = async () => {
-    if (!workout?.id) return;
-    const label = sessionNameDraft.trim();
-    if (!label) return;
-    try {
-      setSessionRenameSaving(true);
-      const resp = await fetchJson(`/workouts/mobile/${workout.id}/rename`, {
-        method: 'PATCH',
-        body: { label } as any,
-      });
-      const json: any = resp.json || {};
-      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      setRenamingSession(false);
-      await loadSession(true);
-    } catch (err: any) {
-      Alert.alert('Could not rename session', err?.message || 'Please try again.');
-    } finally {
-      setSessionRenameSaving(false);
-    }
-  };
-
-  const openReorderEditor = () => {
+  const openReorderEditor = (order: ReorderEditorState, onApply: (order: ReorderEditorState) => void) => {
+    reorderCompletionRef.current = onApply;
     setReorderEditor({
-      coreIds: coreItems.map((item) => item.id),
-      accessoryIds: accessoryItems.map((item) => item.id),
+      coreIds: order.coreIds,
+      accessoryIds: order.accessoryIds,
     });
   };
 
   const applyReorder = async (nextOrder: ReorderEditorState) => {
+    if (reorderCompletionRef.current) {
+      reorderCompletionRef.current(nextOrder);
+      reorderCompletionRef.current = null;
+      setReorderEditor(null);
+      return;
+    }
     if (!workout?.id) return;
     try {
       setReorderSaving(true);
@@ -453,9 +640,59 @@ export default function MobileSessionWorkspaceScreen() {
     if (!workout?.id || !accessoryEditor) return;
     try {
       setAccessorySaving(true);
+      let movementDefinitionId = setup.movementDefinitionId;
+      const isNewCustomMovement = !movementDefinitionId
+        && !!setup.customMovement.trim()
+        && setup.movement === setup.customMovement.trim();
+      if (isNewCustomMovement) {
+        const identityResponse = await fetchJson<any>('/workouts/mobile/movement-definitions', {
+          method: 'POST',
+          body: {
+            athlete_id: payload?.athlete?.id,
+            display_name: setup.movement,
+            equipment_type: setup.equipmentType,
+            loading_implementation: setup.loadingImplementation,
+            load_convention: setup.loadConvention,
+            measurement_type: setup.measurementType,
+            sidedness: setup.sidedness,
+          } as any,
+        });
+        const identityJson = identityResponse.json || {};
+        if (!identityResponse.ok || !identityJson.ok || !identityJson.movement_definition?.id) {
+          throw new Error(identityJson.error || `HTTP ${identityResponse.status}`);
+        }
+        movementDefinitionId = Number(identityJson.movement_definition.id);
+        setAccessoryGroups((current) => accessoryGroupsWithCanonicalIdentity(current, [identityJson.movement_definition], 'custom_identity'));
+        setAccessoryEditor((current) => current ? {
+          ...current,
+          setup: { ...current.setup, movementDefinitionId },
+        } : current);
+      }
+      if (accessoryEditor.mode === 'add' && addAccessoryCompletionRef.current) {
+        const id = nextDraftMovementIdRef.current--;
+        addAccessoryCompletionRef.current({
+          id,
+          movement: setup.movement,
+          original_movement: setup.movement,
+          variant: 'ACC',
+          sets: 3,
+          reps_text: '10-12',
+          rir_target: 2,
+          notes: setup.notes,
+          superset_group: setup.supersetGroup || null,
+          superset_pos: setup.supersetGroup ? Number(setup.supersetPosition || 1) : null,
+          movement_identity: movementDefinitionId ? { display_name: setup.movement } : null,
+        });
+        addAccessoryCompletionRef.current = null;
+        setAccessoryEditor(null);
+        return;
+      }
       const body = {
         movement: setup.movement,
+        movement_definition_id: movementDefinitionId,
         notes: setup.notes,
+        superset_group: setup.supersetGroup || null,
+        superset_pos: setup.supersetGroup ? Number(setup.supersetPosition || 1) : null,
         ...(accessoryEditor.mode === 'add'
           ? {
               sets: 3,
@@ -485,42 +722,6 @@ export default function MobileSessionWorkspaceScreen() {
     }
   };
 
-  const saveHotEdit = async (item: WorkoutItem, kind: EditKind, values: Record<string, string>) => {
-    if (!workout?.id) return;
-    const body = kind === 'accessory'
-      ? {
-          sets: values.sets,
-          reps_text: values.repsText,
-          rir_target: values.rir,
-          notes: values.notes,
-        }
-        : {
-          sets: values.sets,
-          reps: values.reps,
-          rpe_target: values.rpe,
-          pct: values.pct,
-          target_low_lb: values.targetLow,
-          target_high_lb: values.targetHigh,
-          notes: values.notes,
-        };
-
-    try {
-      setSavingEdit(true);
-      const resp = await fetchJson(`/workouts/mobile/${workout.id}/items/${item.id}/programming`, {
-        method: 'PATCH',
-        body: body as any,
-      });
-      const json: any = resp.json || {};
-      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      setEditing(null);
-      await loadSession(true);
-    } catch (err: any) {
-      Alert.alert('Could not save edit', err?.message || 'Please try again.');
-    } finally {
-      setSavingEdit(false);
-    }
-  };
-
   const runSessionAction = async (
     action: SessionActionKey,
     request: () => Promise<{ message?: string | null }>
@@ -547,6 +748,19 @@ export default function MobileSessionWorkspaceScreen() {
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       return { message: 'Session reverted to draft.' };
+    });
+  };
+
+  const assignSession = () => {
+    if (!workout?.id) return;
+    void runSessionAction('assign', async () => {
+      const resp = await fetchJson<any>(`/workouts/mobile/${workout.id}/programming-status`, {
+        method: 'PATCH',
+        body: { status: 'assigned' } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      return { message: 'Session assigned.' };
     });
   };
 
@@ -618,899 +832,233 @@ export default function MobileSessionWorkspaceScreen() {
     );
   };
 
-  return (
-    <View style={styles.screen}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => loadSession(true)} tintColor={colors.muted} />
-        }
-      >
-        {loading ? (
-          <View style={styles.stateBox}>
-            <ActivityIndicator color={colors.violet} />
-            <Text style={styles.stateTitle}>Loading Session Workspace</Text>
-          </View>
-        ) : error ? (
-          <View style={styles.stateBox}>
-            <Ionicons name="alert-circle-outline" size={24} color={colors.red} />
-            <Text style={styles.stateTitle}>Workspace unavailable</Text>
-            <Text style={styles.stateBody}>{error}</Text>
-          </View>
-        ) : workout ? (
-          <>
-            <View style={styles.workspaceHeader}>
-              <View style={styles.headerTitleRow}>
-                {renamingSession ? (
-                  <View style={styles.sessionRenameEditor}>
-                    <TextInput
-                      value={sessionNameDraft}
-                      onChangeText={setSessionNameDraft}
-                      placeholder="Session name"
-                      placeholderTextColor={colors.subtle}
-                      style={styles.sessionRenameInput}
-                      autoFocus
-                    />
-                    <View style={styles.sessionRenameActions}>
-                      <Pressable
-                        accessibilityRole="button"
-                        disabled={sessionRenameSaving}
-                        onPress={cancelSessionRename}
-                        style={({ pressed }) => [styles.sessionRenameSecondary, pressed && styles.pressed]}
-                      >
-                        <Text style={styles.sessionRenameSecondaryText}>Cancel</Text>
-                      </Pressable>
-                      <Pressable
-                        accessibilityRole="button"
-                        disabled={sessionRenameSaving || !sessionNameDraft.trim()}
-                        onPress={saveSessionRename}
-                        style={({ pressed }) => [
-                          styles.sessionRenamePrimary,
-                          (sessionRenameSaving || !sessionNameDraft.trim()) && styles.editorDisabled,
-                          pressed && styles.pressed,
-                        ]}
-                      >
-                        <Text style={styles.sessionRenamePrimaryText}>{sessionRenameSaving ? 'Saving' : 'Save'}</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                ) : (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Rename session"
-                    onPress={startSessionRename}
-                    style={({ pressed }) => [styles.sessionNameButton, pressed && styles.pressed]}
-                  >
-                    <Text style={styles.sessionName}>{title}</Text>
-                    <Ionicons name="create-outline" size={18} color={colors.muted} />
-                  </Pressable>
-                )}
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Close session workspace"
-                  onPress={closeToProgrammingHome}
-                  style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}
-                >
-                  <Ionicons name="close" size={20} color={colors.textStrong} />
-                </Pressable>
-              </View>
-              <View style={styles.headerMetaRow}>
-                <View style={styles.headerMetaCopy}>
-                  <Text style={styles.sessionMeta}>{context}</Text>
-                  <Text style={styles.statusPill}>{status}</Text>
-                </View>
-                <View style={styles.headerActionGroup}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={executionCtaLabel}
-                    onPress={openSessionLogger}
-                    style={({ pressed }) => [styles.headerStartButton, pressed && styles.pressed]}
-                  >
-                    <Text style={styles.headerStartText}>{executionCtaLabel}</Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Reorder session items"
-                    onPress={openReorderEditor}
-                    style={({ pressed }) => [styles.headerReorderButton, pressed && styles.pressed]}
-                  >
-                    <Ionicons name="swap-vertical-outline" size={16} color={colors.violet} />
-                    <Text style={styles.headerReorderText}>Reorder</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
+  const saveSessionDraft = async (plan: SessionWorkspaceSavePlan) => {
+    if (!workout?.id) return false;
+    try {
+      const requireOk = async (request: Promise<{ ok: boolean; status: number; json: any }>) => {
+        const response = await request;
+        const json = response.json || {};
+        if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+        return json;
+      };
 
-            <SectionHeader
-              title="Core Lifts"
-              countLabel={`${coreItems.length} ${coreItems.length === 1 ? 'lift' : 'lifts'}`}
-              actionLabel="+ Core Lift"
-              onAction={openAddCoreLiftEditor}
-            />
-            {coreItems.length ? (
-              coreItems.map((item) => (
-                <LiftCard
-                  key={item.id}
-                  item={item}
-                  kind="core"
-                  editing={editing?.item.id === item.id ? editing : null}
-                  saving={savingEdit}
-                  onEdit={(field) => setEditing({ item, kind: 'core', field })}
-                  onOpenTrainingLiftEditor={() => openTrainingLiftEditor(item)}
-                  onInfo={setLoadStyleInfo}
-                  onCancelEdit={() => setEditing(null)}
-                  onSaveEdit={(values) => saveHotEdit(item, 'core', values)}
-                />
-              ))
-            ) : (
-              <EmptySection label="No core lifts in this session." />
-            )}
+      if (plan.metadataPatch.title !== undefined) {
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/rename`, {
+          method: 'PATCH',
+          body: { label: plan.metadataPatch.title } as any,
+        }));
+      }
+      const setupPatch = {
+        ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
+        ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
+        ...(plan.metadataPatch.displayUnit !== undefined ? { preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg' } : {}),
+      };
+      if (Object.keys(setupPatch).length) {
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
+          method: 'PATCH',
+          body: setupPatch as any,
+        }));
+      }
+      if (plan.metadataPatch.notes !== undefined) {
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/programming-notes`, {
+          method: 'PATCH',
+          body: { programming_notes: plan.metadataPatch.notes } as any,
+        }));
+      }
 
-            <SectionHeader
-              title="Accessories"
-              countLabel={`${accessoryItems.length} ${accessoryItems.length === 1 ? 'exercise' : 'exercises'}`}
-              actionLabel="+ Accessory"
-              onAction={openAddAccessoryEditor}
-            />
-            {accessoryItems.length ? (
-              accessoryItems.map((item) => (
-                <LiftCard
-                  key={item.id}
-                  item={item}
-                  kind="accessory"
-                  editing={editing?.item.id === item.id ? editing : null}
-                  saving={savingEdit}
-                  onEdit={(field) => setEditing({ item, kind: 'accessory', field })}
-                  onOpenTrainingLiftEditor={() => openAccessoryEditor(item)}
-                  onInfo={setLoadStyleInfo}
-                  onCancelEdit={() => setEditing(null)}
-                  onSaveEdit={(values) => saveHotEdit(item, 'accessory', values)}
-                />
-              ))
-            ) : (
-              <EmptySection label="No accessories in this session." />
-            )}
+      for (const itemId of plan.deletedMovementIds) {
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/${itemId}/programming`, { method: 'DELETE' }));
+      }
+      for (const movement of plan.movementUpdates) {
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/${movement.item.id}/programming`, {
+          method: 'PATCH',
+          body: movement.patch as any,
+        }));
+      }
 
-            <SessionActions
-              status={workout.raw_status || workout.status}
-              pendingAction={pendingAction}
-              onRevert={revertToDraft}
-              onCopy={() => setCalendarAction('copy')}
-              onSaveTemplate={saveAsTemplate}
-              onMove={() => setCalendarAction('move')}
-              onDelete={deleteSession}
-            />
+      const createdIds = new Map<number, number>();
+      for (const movement of plan.movementCreates) {
+        const endpoint = movement.kind === 'accessory'
+          ? `/workouts/mobile/${workout.id}/accessories`
+          : `/workouts/mobile/${workout.id}/core-lifts`;
+        const json = await requireOk(fetchJson(endpoint, {
+          method: 'POST',
+          body: movement.patch as any,
+        }));
+        if (!json.item_id) throw new Error('The server did not return the created movement.');
+        createdIds.set(movement.item.id, Number(json.item_id));
+      }
 
-            <SessionCalendarModal
-              visible={!!calendarAction}
-              title={calendarAction === 'copy' ? 'Copy Session To' : 'Move Session'}
-              actionLabel={calendarAction === 'copy' ? 'Copy Session' : 'Move Session'}
-              initialDate={workout.date || todayIso()}
-              busy={pendingAction === calendarAction}
-              onCancel={() => setCalendarAction(null)}
-              onConfirm={confirmCalendarAction}
-            />
-            <LoadStyleInfoModal
-              styleType={loadStyleInfo}
-              onClose={() => setLoadStyleInfo(null)}
-            />
-            <TrainingLiftEditorModal
-              state={trainingLiftEditor}
-              groups={movementGroups}
-              loadingGroups={movementGroupsLoading}
-              saving={trainingLiftSaving}
-              onChange={(setup) => setTrainingLiftEditor((current) => current ? { ...current, setup } : current)}
-              onCancel={() => setTrainingLiftEditor(null)}
-              onApply={applyTrainingLiftSetup}
-            />
-            <AccessoryEditorModal
-              state={accessoryEditor}
-              groups={accessoryGroups}
-              loadingGroups={movementGroupsLoading}
-              saving={accessorySaving}
-              onChange={(setup) => setAccessoryEditor((current) => current ? { ...current, setup } : current)}
-              onCancel={() => setAccessoryEditor(null)}
-              onApply={applyAccessorySetup}
-            />
-            <ReorderEditorModal
-              state={reorderEditor}
-              coreItems={coreItems}
-              accessoryItems={accessoryItems}
-              saving={reorderSaving}
-              onChange={setReorderEditor}
-              onCancel={() => setReorderEditor(null)}
-              onApply={applyReorder}
-            />
-          </>
-        ) : null}
-      </ScrollView>
-    </View>
-  );
-}
+      if (plan.orderChanged || plan.movementCreates.length || plan.deletedMovementIds.length) {
+        const resolveId = (id: number) => createdIds.get(id) ?? id;
+        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/reorder`, {
+          method: 'PATCH',
+          body: {
+            core_item_ids: plan.coreOrder.map(resolveId),
+            accessory_item_ids: plan.accessoryOrder.map(resolveId),
+          } as any,
+        }));
+      }
 
-function SectionHeader({
-  title,
-  countLabel,
-  actionLabel,
-  onAction,
-}: {
-  title: string;
-  countLabel?: string;
-  actionLabel: string;
-  onAction?: () => void;
-}) {
-  return (
-    <View style={styles.sectionHeader}>
-      <View style={styles.sectionTitleRow}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {countLabel ? <Text style={styles.sectionCountPill}>{countLabel}</Text> : null}
-      </View>
-      {onAction ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={actionLabel}
-          onPress={onAction}
-          style={({ pressed }) => [styles.sectionActionButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.sectionActionText}>{actionLabel}</Text>
-        </Pressable>
-      ) : (
-        <DisabledAction label={actionLabel} compact />
-      )}
-    </View>
-  );
-}
+      setWorkspaceDisplayUnit(plan.displayUnit);
+      await loadSession(true);
+      return true;
+    } catch (err: any) {
+      Alert.alert('Could not save Session', err?.message || 'Your Session edits are still available.');
+      return false;
+    }
+  };
 
-function LiftCard({
-  item,
-  kind,
-  editing,
-  saving,
-  onEdit,
-  onOpenTrainingLiftEditor,
-  onInfo,
-  onCancelEdit,
-  onSaveEdit,
-}: {
-  item: WorkoutItem;
-  kind: EditKind;
-  editing: HotEditState | null;
-  saving: boolean;
-  onEdit: (field: HotEditField) => void;
-  onOpenTrainingLiftEditor: () => void;
-  onInfo: (styleType: LoadStyleInfo) => void;
-  onCancelEdit: () => void;
-  onSaveEdit: (values: Record<string, string>) => void;
-}) {
-  const name = simplifyMobileMovementName(item.movement || item.original_movement || liftName(item.lift)) || 'Training item';
-  const designation = designationLabel(item.designation, kind);
-  const showDesignation = designation && designation !== 'Core Lift' && designation !== 'Accessory';
-  const variant = variantLabel(item.variant);
-  const target = kind === 'core' ? targetText(item) : '';
-  const hasNotes = !!String(item.notes || '').trim();
-  const plannedSets = item.planned_sets || [];
-  const isEditing = !!editing;
-  const iconName: keyof typeof Ionicons.glyphMap = kind === 'core' ? 'barbell-outline' : 'fitness-outline';
+  const calculateMovementLoad = useCallback(async (request: CalculatedLoadRequest): Promise<CalculatedLoadResult> => {
+    const athleteId = Number(payload?.athlete?.id);
+    const reps = Number(request.reps);
+    const intensity = Number(request.intensity);
+    if (!athleteId || !request.lift.trim() || !Number.isFinite(intensity) || intensity <= 0) {
+      return { lowKg: null, highKg: null, trainingMaxKg: null, note: 'Calculated target unavailable' };
+    }
+    try {
+      const resp = await fetchJson<any>('/workouts/mobile/suggest_range', {
+        method: 'POST',
+        body: {
+          athlete_id: athleteId,
+          lift: request.lift,
+          mode: request.mode,
+          ...(request.mode === 'PCT'
+            ? { pct: intensity }
+            : { reps: Number.isFinite(reps) && reps > 0 ? reps : null, rpe_target: intensity }),
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) {
+        return { lowKg: null, highKg: null, trainingMaxKg: null, note: 'Calculated target unavailable' };
+      }
+      const finiteOrNull = (value: unknown) => value == null || value === ''
+        ? null
+        : Number.isFinite(Number(value)) ? Number(value) : null;
+      return {
+        lowKg: finiteOrNull(json.target_low_kg),
+        highKg: finiteOrNull(json.target_high_kg),
+        trainingMaxKg: finiteOrNull(json.tm),
+        note: String(json.note || '').trim() || undefined,
+      };
+    } catch {
+      return { lowKg: null, highKg: null, trainingMaxKg: null, note: 'Calculated target unavailable' };
+    }
+  }, [payload?.athlete?.id]);
 
-  return (
-    <View style={[styles.liftCard, kind === 'accessory' && styles.liftCardAccessory]}>
-      <View style={[styles.liftAccentRail, kind === 'accessory' && styles.liftAccentRailAccessory]} />
-      <View style={styles.liftHeader}>
-        <View style={styles.liftTitleRow}>
-          <View style={[styles.liftIconShell, kind === 'accessory' && styles.liftIconShellAccessory]}>
-            <Ionicons name={iconName} size={20} color={kind === 'core' ? colors.violet : colors.green} />
-          </View>
-          <View style={styles.liftTitleWrap}>
-            <Text style={styles.liftName}>{name}</Text>
-            <View style={styles.liftTags}>
-              {showDesignation ? <Text style={styles.softTag}>{designation}</Text> : null}
-              {variant ? <Text style={styles.softTag}>{variant}</Text> : null}
-            </View>
-          </View>
-        </View>
-        <View style={styles.itemActions}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Edit ${name}`}
-            onPress={onOpenTrainingLiftEditor}
-            style={({ pressed }) => [styles.inlineEditButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.inlineEditText}>Edit</Text>
-          </Pressable>
-          <DisabledIconAction icon="close" />
-        </View>
-      </View>
-
-      <View style={styles.prescriptionRow}>
-        <PrescriptionTokens item={item} kind={kind} onEdit={onEdit} onInfo={onInfo} />
-        {target ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Edit target range for ${name}`}
-            onPress={() => onEdit('load')}
-            style={({ pressed }) => pressed && styles.pressed}
-          >
-            <Text style={styles.targetText}>{target}</Text>
-          </Pressable>
-        ) : null}
-      </View>
-
-      {isEditing ? (
-        <InlineLiftEditor
-          item={item}
-          kind={kind}
-          editing={editing}
-          saving={saving}
-          onCancel={onCancelEdit}
-          onSave={onSaveEdit}
-        />
-      ) : null}
-
-      {plannedSets.length > 0 ? (
-        <View style={styles.plannedSetList}>
-          {plannedSets.slice(0, 4).map((set, index) => (
-            <Text key={`${item.id}-${set.set_index || index}`} style={styles.plannedSetText}>
-              Set {set.set_index || index + 1}: {plannedSetText(set)}
-            </Text>
-          ))}
-          {plannedSets.length > 4 ? (
-            <Text style={styles.plannedSetText}>+ {plannedSets.length - 4} more planned sets</Text>
-          ) : null}
-        </View>
-      ) : null}
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Edit notes for ${name}`}
-        onPress={() => onEdit('notes')}
-        style={({ pressed }) => [styles.notesIndicator, pressed && styles.pressed]}
-      >
-        <Ionicons name={hasNotes ? 'information-circle-outline' : 'add-circle-outline'} size={15} color={colors.violet} />
-        <Text style={styles.notesText}>{hasNotes ? 'Movement notes' : 'Add movement notes'}</Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function PrescriptionTokens({
-  item,
-  kind,
-  onEdit,
-  onInfo,
-}: {
-  item: WorkoutItem;
-  kind: EditKind;
-  onEdit: (field: HotEditField) => void;
-  onInfo: (styleType: LoadStyleInfo) => void;
-}) {
-  const sets = numberText(item.sets);
-  const reps = String(item.reps_text || numberText(item.reps) || '').trim();
-  if (!sets && !reps) {
+  if (redirectingToLogger || loading || error || !workout) {
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Edit sets"
-        onPress={() => onEdit('sets')}
-        style={({ pressed }) => pressed && styles.pressed}
-      >
-        <Text style={styles.prescriptionText}>Prescription pending</Text>
-      </Pressable>
+      <View style={styles.screen}>
+        <View style={styles.stateBox}>
+          {error ? <Ionicons name="alert-circle-outline" size={24} color={colors.red} /> : <ActivityIndicator color={colors.violet} />}
+          <Text style={styles.stateTitle}>
+            {redirectingToLogger ? 'Opening Training Session' : error ? 'Workspace unavailable' : 'Loading Session Workspace'}
+          </Text>
+          {error ? <Text style={styles.stateBody}>{error}</Text> : null}
+        </View>
+      </View>
     );
   }
 
   return (
-    <View style={styles.tokenLine}>
-      {sets ? <PrescriptionToken label={sets} field="sets" onEdit={onEdit} /> : null}
-      {sets && reps ? <Text style={styles.tokenJoiner}>x</Text> : null}
-      {reps ? <PrescriptionToken label={reps} field={kind === 'accessory' ? 'accessory_reps' : 'reps'} onEdit={onEdit} /> : null}
-      {kind === 'accessory' && item.rir_target != null ? (
-        <>
-          <Text style={styles.tokenJoiner}>@</Text>
-          <PrescriptionToken label={formatNumber(item.rir_target)} field="rir" onEdit={onEdit} />
-          <Text style={styles.tokenJoiner}>RIR</Text>
-          <LoadStyleInfoButton styleType="rir" onInfo={onInfo} />
-        </>
-      ) : null}
-      {kind === 'core' && String(item.mode || 'RPE').toUpperCase() === 'PCT' && item.pct != null ? (
-        <>
-          <Text style={styles.tokenJoiner}>@</Text>
-          <PrescriptionToken label={formatNumber(displayPct(item.pct))} field="pct" onEdit={onEdit} />
-          <Text style={styles.tokenJoiner}>%</Text>
-          <LoadStyleInfoButton styleType="pct" onInfo={onInfo} />
-        </>
-      ) : null}
-      {kind === 'core' && String(item.mode || 'RPE').toUpperCase() !== 'PCT' && item.rpe_target != null ? (
-        <>
-          <Text style={styles.tokenJoiner}>@</Text>
-          <PrescriptionToken label={formatNumber(item.rpe_target)} field="rpe" onEdit={onEdit} />
-          <Text style={styles.tokenJoiner}>RPE</Text>
-          <LoadStyleInfoButton styleType="rpe" onInfo={onInfo} />
-        </>
-      ) : null}
-    </View>
-  );
-}
-
-function LoadStyleInfoButton({
-  styleType,
-  onInfo,
-}: {
-  styleType: LoadStyleInfo;
-  onInfo: (styleType: LoadStyleInfo) => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`About ${styleType === 'pct' ? 'percent 1RM' : styleType.toUpperCase()}`}
-      onPress={() => onInfo(styleType)}
-      hitSlop={8}
-      style={({ pressed }) => [styles.loadStyleInfoButton, pressed && styles.pressed]}
-    >
-      <Ionicons name="information-circle-outline" size={15} color={colors.violet} />
-    </Pressable>
-  );
-}
-
-function PrescriptionToken({
-  label,
-  field,
-  onEdit,
-}: {
-  label: string;
-  field: HotEditField;
-  onEdit: (field: HotEditField) => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Edit ${field}`}
-      onPress={() => onEdit(field)}
-      style={({ pressed }) => [styles.prescriptionText, pressed && styles.pressed]}
-    >
-      <Text style={styles.prescriptionTokenText}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function InlineLiftEditor({
-  item,
-  kind,
-  editing,
-  saving,
-  onCancel,
-  onSave,
-}: {
-  item: WorkoutItem;
-  kind: EditKind;
-  editing: HotEditState;
-  saving: boolean;
-  onCancel: () => void;
-  onSave: (values: Record<string, string>) => void;
-}) {
-  const [sets, setSets] = useState(String(item.sets ?? ''));
-  const [reps, setReps] = useState(String(item.reps ?? ''));
-  const [repsText, setRepsText] = useState(String(item.reps_text || item.reps || ''));
-  const [rpe, setRpe] = useState(String(item.rpe_target ?? ''));
-  const [pct, setPct] = useState(item.pct != null ? String(formatNumber(displayPct(item.pct))) : '');
-  const [rir, setRir] = useState(String(item.rir_target ?? ''));
-  const [notes, setNotes] = useState(String(item.notes || ''));
-  const initialLoad = loadEditorInfo(item);
-  const [manualTarget, setManualTarget] = useState(initialLoad.targetDisplay);
-  const [manualRange, setManualRange] = useState(initialLoad.rangeDisplay);
-  const normalizedTarget = parseDisplayNumber(manualTarget);
-  const normalizedRange = Math.max(0, parseDisplayNumber(manualRange) || 0);
-  const targetLow = normalizedTarget ? Math.max(0, normalizedTarget - normalizedRange) : '';
-  const targetHigh = normalizedTarget ? normalizedTarget + normalizedRange : '';
-  const stepLoad = (field: 'target' | 'range', direction: -1 | 1) => {
-    const current = field === 'target' ? parseDisplayNumber(manualTarget) : parseDisplayNumber(manualRange);
-    const next = Math.max(0, (current || 0) + direction * 5);
-    if (field === 'target') setManualTarget(String(next));
-    else setManualRange(String(next));
-  };
-  const useSuggested = () => {
-    if (!initialLoad.suggestedTargetDisplay) return;
-    setManualTarget(initialLoad.suggestedTargetDisplay);
-    setManualRange(initialLoad.suggestedRangeDisplay);
-  };
-  const clearOverride = () => {
-    setManualTarget('');
-    setManualRange('');
-  };
-
-  return (
-    <View style={styles.inlineEditor}>
-      {editing.field === 'load' && kind === 'core' ? (
-        <View style={styles.webLoadEditor}>
-          <View style={styles.webEditorMeta}>
-            <Text style={styles.webEditorMetaLabel}>Suggested</Text>
-            <Text style={styles.webEditorMetaValue}>{initialLoad.suggestedLabel || 'No TM suggestion'}</Text>
-            {initialLoad.calculatedLabel ? <Text style={styles.webEditorMetaHint}>{initialLoad.calculatedLabel}</Text> : null}
-          </View>
-          <WebLoadStepper
-            label="Manual Override"
-            value={manualTarget}
-            unit="lb"
-            onChangeText={setManualTarget}
-            onStep={(direction) => stepLoad('target', direction)}
-            inputLabel="Manual target load in lb"
+    <View style={styles.screen}>
+      <SessionEditingWorkspace
+        title={title}
+        context={context}
+        status={status}
+        athleteId={payload?.athlete?.id || null}
+        athleteName={payload?.athlete?.name || null}
+        athleteAvatarUrl={payload?.athlete?.avatar_url || null}
+        athleteAvatarVersion={payload?.athlete?.avatar_uploaded_at || null}
+        scheduledDate={workout.date || null}
+        coachName={payload?.coach?.name || null}
+        coachAvatarUrl={payload?.coach?.avatar_url || null}
+        coachAvatarVersion={payload?.coach?.avatar_uploaded_at || null}
+        estimatedDurationMinutes={workout.estimated_duration_minutes ?? null}
+        estimatedDurationLowMinutes={workout.estimated_duration_low_minutes ?? null}
+        estimatedDurationHighMinutes={workout.estimated_duration_high_minutes ?? null}
+        notes={String(workout.programming_notes || '')}
+        lockedReason={workspaceCapabilities.locked_reason}
+        editable={workspaceEditable}
+        capabilities={workspaceCapabilities}
+        coreItems={coreItems}
+        accessoryItems={accessoryItems}
+        refreshing={refreshing}
+        pendingMovementId={null}
+        reduceMotion={reduceMotion}
+        displayUnit={workspaceDisplayUnit}
+        athleteOptions={roster.map((athlete) => ({
+          id: athlete.id,
+          name: String(athlete.name || 'Athlete'),
+          avatarUrl: athlete.avatar_url || null,
+          avatarVersion: athlete.avatar_uploaded_at || null,
+        }))}
+        assignmentBlockedReason={workspaceCapabilities.assign_blocked_reason || null}
+        onRefresh={() => { void loadSession(true); }}
+        onCloseWorkspace={closeToProgrammingHome}
+        onOpenAthleteView={openAthleteView}
+        onOpenReorder={openReorderEditor}
+        onAddCore={openAddCoreLiftEditor}
+        onAddAccessory={openAddAccessoryEditor}
+        onSaveSession={saveSessionDraft}
+        onCalculateLoad={calculateMovementLoad}
+        renderLifecycleActions={(guard, restricted) => (
+          <CompactSessionActions
+            status={workout.raw_status || workout.status}
+            capabilities={workspaceCapabilities}
+            pendingAction={pendingAction}
+            onlyDelete={restricted}
+            onAssign={() => guard(assignSession)}
+            onRevert={() => guard(revertToDraft)}
+            onCopy={() => guard(() => setCalendarAction('copy'))}
+            onMove={() => guard(() => setCalendarAction('move'))}
+            onSaveTemplate={() => guard(saveAsTemplate)}
+            onDelete={() => guard(deleteSession)}
           />
-          <WebLoadStepper
-            label="Range"
-            value={manualRange}
-            unit="lb"
-            prefix="±"
-            onChangeText={setManualRange}
-            onStep={(direction) => stepLoad('range', direction)}
-            inputLabel="Manual range in lb"
-          />
-          <View style={styles.webLoadActions}>
-            <Pressable
-              disabled={!initialLoad.suggestedTargetDisplay}
-              onPress={useSuggested}
-              style={[styles.webLoadAction, !initialLoad.suggestedTargetDisplay && styles.editorDisabled]}
-            >
-              <Text style={styles.webLoadActionText}>Use suggested</Text>
-            </Pressable>
-            <Pressable onPress={clearOverride} style={styles.webLoadAction}>
-              <Text style={styles.webLoadActionText}>Clear override</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : null}
-      {editing.field === 'accessory_reps' ? (
-        <AccessoryRepTargetEditor value={repsText} onChange={setRepsText} />
-      ) : null}
-      {editing.field !== 'load' && editing.field !== 'notes' && editing.field !== 'accessory_reps' ? (
-        <WebPrescriptionValueEditor
-          field={editing.field}
-          value={
-            editing.field === 'sets' ? sets
-              : editing.field === 'reps' ? reps
-                : editing.field === 'rpe' ? rpe
-                  : editing.field === 'pct' ? pct
-                    : rir
-          }
-          onChange={
-            editing.field === 'sets' ? setSets
-              : editing.field === 'reps' ? setReps
-                : editing.field === 'rpe' ? setRpe
-                  : editing.field === 'pct' ? setPct
-                    : setRir
-          }
-        />
-      ) : null}
-      {editing.field === 'notes' ? (
-      <View style={styles.editorFieldFull}>
-        <Text style={styles.editorLabel}>Movement Notes</Text>
-        <TextInput
-          value={notes}
-          onChangeText={setNotes}
-          placeholder="Movement notes"
-          placeholderTextColor={colors.subtle}
-          multiline
-          style={[styles.editorInput, styles.editorNotesInput]}
-        />
-      </View>
-      ) : null}
-      <View style={styles.editorActions}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onCancel}
-          disabled={saving}
-          style={({ pressed }) => [styles.editorSecondary, pressed && styles.pressed]}
-        >
-          <Text style={styles.editorSecondaryText}>Cancel</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => onSave({
-            ...(editing.field === 'sets' ? { sets } : {}),
-            ...(editing.field === 'reps' ? { reps } : {}),
-            ...(editing.field === 'rpe' ? { rpe } : {}),
-            ...(editing.field === 'pct' ? { pct } : {}),
-            ...(editing.field === 'accessory_reps' ? { repsText } : {}),
-            ...(editing.field === 'rir' ? { rir } : {}),
-            ...(editing.field === 'load' ? { targetLow: String(targetLow), targetHigh: String(targetHigh) } : {}),
-            ...(editing.field === 'notes' ? { notes } : {}),
-          })}
-          disabled={saving}
-          style={({ pressed }) => [styles.editorPrimary, pressed && styles.pressed, saving && styles.editorDisabled]}
-        >
-          <Text style={styles.editorPrimaryText}>{saving ? 'Saving' : 'Apply'}</Text>
-        </Pressable>
-      </View>
+        )}
+      />
+
+      <SessionCalendarModal
+        visible={!!calendarAction}
+        title={calendarAction === 'copy' ? 'Copy Session To' : 'Move Session'}
+        actionLabel={calendarAction === 'copy' ? 'Copy Session' : 'Move Session'}
+        initialDate={workout.date || todayIso()}
+        busy={pendingAction === calendarAction}
+        onCancel={() => setCalendarAction(null)}
+        onConfirm={confirmCalendarAction}
+      />
+      <TrainingLiftEditorModal
+        state={trainingLiftEditor}
+        groups={movementGroups}
+        loadingGroups={movementGroupsLoading}
+        saving={trainingLiftSaving}
+        displayUnit={workspaceDisplayUnit}
+        onChange={(setup) => setTrainingLiftEditor((current) => current ? { ...current, setup } : current)}
+        onCancel={cancelTrainingLiftEditor}
+        onApply={applyTrainingLiftSetup}
+      />
+      <AccessoryEditorModal
+        state={accessoryEditor}
+        groups={accessoryGroups}
+        loadingGroups={movementGroupsLoading}
+        saving={accessorySaving}
+        onChange={(setup) => setAccessoryEditor((current) => current ? { ...current, setup } : current)}
+        onCancel={cancelAccessoryEditor}
+        onApply={applyAccessorySetup}
+      />
+      <ReorderEditorModal
+        state={reorderEditor}
+        coreItems={coreItems}
+        accessoryItems={accessoryItems}
+        saving={reorderSaving}
+        reduceMotion={reduceMotion}
+        onChange={setReorderEditor}
+        onCancel={cancelReorderEditor}
+        onApply={applyReorder}
+      />
     </View>
   );
-}
 
-function WebPrescriptionValueEditor({
-  field,
-  value,
-  onChange,
-  options: customOptions,
-}: {
-  field: HotEditField;
-  value: string;
-  onChange: (value: string) => void;
-  options?: string[];
-}) {
-  const kind = field === 'accessory_reps' ? 'accessory_reps' : field;
-  const options = customOptions || notationOptionsFor(kind);
-  const scrollRef = useRef<ScrollView>(null);
-  const dragSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isInteracting = useRef(false);
-  const [wheelWidth, setWheelWidth] = useState(0);
-  const sidePadding = Math.max(0, (wheelWidth - WHEEL_ITEM_WIDTH) / 2);
-  const selectedIndex = Math.max(0, options.findIndex((option) => String(option) === String(value)));
-
-  const scrollToIndex = useCallback((index: number, animated: boolean) => {
-    scrollRef.current?.scrollTo({
-      x: Math.max(0, index * WHEEL_ITEM_WIDTH),
-      y: 0,
-      animated,
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isInteracting.current) return;
-    if (!wheelWidth || selectedIndex < 0) return;
-    requestAnimationFrame(() => scrollToIndex(selectedIndex, false));
-  }, [scrollToIndex, selectedIndex, wheelWidth]);
-
-  useEffect(() => () => {
-    if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-  }, []);
-
-  const settleWheel = (offsetX: number, animated = true) => {
-    if (!options.length) return;
-    const index = Math.min(options.length - 1, Math.max(0, Math.round(offsetX / WHEEL_ITEM_WIDTH)));
-    onChange(options[index]);
-    const targetX = index * WHEEL_ITEM_WIDTH;
-    if (Math.abs(offsetX - targetX) > 1) scrollToIndex(index, animated);
-  };
-
-  const settleAfterQuietDrag = (offsetX: number) => {
-    if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-    dragSettleTimer.current = setTimeout(() => {
-      isInteracting.current = false;
-      settleWheel(offsetX, true);
-    }, 90);
-  };
-
-  return (
-    <View style={styles.webValueEditor}>
-      <View
-        style={styles.wheelFrame}
-        onLayout={(event) => setWheelWidth(event.nativeEvent.layout.width)}
-      >
-        <View pointerEvents="none" style={styles.wheelCenterMarker} />
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          decelerationRate="normal"
-          snapToInterval={WHEEL_ITEM_WIDTH}
-          snapToAlignment="start"
-          scrollEventThrottle={16}
-          contentContainerStyle={[
-            styles.wheelContent,
-            { paddingLeft: sidePadding, paddingRight: sidePadding },
-          ]}
-          onScrollBeginDrag={() => {
-            isInteracting.current = true;
-            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-          }}
-          onMomentumScrollBegin={() => {
-            isInteracting.current = true;
-            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-          }}
-          onMomentumScrollEnd={(event) => {
-            isInteracting.current = false;
-            settleWheel(event.nativeEvent.contentOffset.x, true);
-          }}
-          onScrollEndDrag={(event) => {
-            settleAfterQuietDrag(event.nativeEvent.contentOffset.x);
-          }}
-        >
-          {options.map((option) => {
-            const selected = String(option) === String(value);
-            return (
-              <Pressable
-                key={`${kind}-${option}`}
-                onPress={() => {
-                  onChange(option);
-                  scrollToIndex(options.indexOf(option), true);
-                }}
-                style={styles.wheelItem}
-              >
-                <Text style={[styles.wheelItemText, selected && styles.wheelItemTextSelected]}>{option}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
-    </View>
-  );
-}
-
-function AccessoryRepTargetEditor({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const parsed = useMemo(() => parseAccessoryRepTarget(value), [value]);
-  const repOptions = useMemo(() => Array.from({ length: 30 }, (_, index) => String(index + 1)), []);
-
-  const setType = (nextType: AccessoryRepType) => {
-    if (nextType === 'amrap') {
-      onChange('AMRAP');
-      return;
-    }
-    if (nextType === 'range') {
-      const low = parsed.type === 'range' ? parsed.low || 10 : parsed.value || 10;
-      const high = parsed.type === 'range' ? parsed.high || Math.max(low + 2, 12) : Math.max(low + 2, 12);
-      onChange(`${low}-${high}`);
-      return;
-    }
-    if (nextType === 'plus') {
-      const target = parsed.type === 'plus' ? parsed.value : parsed.value || parsed.low || 10;
-      onChange(`${target}+`);
-      return;
-    }
-    onChange(String(parsed.value || parsed.low || 10));
-  };
-
-  const setFixed = (next: string) => onChange(next);
-  const setPlus = (next: string) => onChange(`${next}+`);
-  const setRangeLow = (next: string) => {
-    const low = Number(next);
-    const high = Math.max(low, parsed.high || low);
-    onChange(`${low}-${high}`);
-  };
-  const setRangeHigh = (next: string) => {
-    const high = Number(next);
-    const low = Math.min(parsed.low || high, high);
-    onChange(`${low}-${high}`);
-  };
-
-  return (
-    <View style={styles.repTargetEditor}>
-      <Text style={styles.editorLabel}>Rep Type</Text>
-      <View style={styles.repTypeGrid}>
-        {[
-          { key: 'fixed' as const, label: 'Fixed Reps' },
-          { key: 'range' as const, label: 'Rep Range' },
-          { key: 'plus' as const, label: 'Plus Set' },
-          { key: 'amrap' as const, label: 'AMRAP' },
-        ].map((option) => {
-          const selected = parsed.type === option.key;
-          return (
-            <Pressable
-              key={option.key}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              onPress={() => setType(option.key)}
-              style={({ pressed }) => [
-                styles.repTypeButton,
-                selected && styles.repTypeButtonActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <View style={[styles.repTypeDot, selected && styles.repTypeDotActive]} />
-              <Text style={[styles.repTypeText, selected && styles.repTypeTextActive]}>{option.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      {parsed.type === 'fixed' ? (
-        <View style={styles.repWheelBlock}>
-          <Text style={styles.editorLabel}>Reps</Text>
-          <WebPrescriptionValueEditor
-            field="accessory_reps"
-            value={String(parsed.value || 10)}
-            onChange={setFixed}
-            options={repOptions}
-          />
-        </View>
-      ) : null}
-
-      {parsed.type === 'range' ? (
-        <View style={styles.repRangeGrid}>
-          <View style={styles.repWheelBlock}>
-            <Text style={styles.editorLabel}>Low Reps</Text>
-            <WebPrescriptionValueEditor
-              field="accessory_reps"
-              value={String(parsed.low || 10)}
-              onChange={setRangeLow}
-              options={repOptions}
-            />
-          </View>
-          <View style={styles.repWheelBlock}>
-            <Text style={styles.editorLabel}>High Reps</Text>
-            <WebPrescriptionValueEditor
-              field="accessory_reps"
-              value={String(parsed.high || 12)}
-              onChange={setRangeHigh}
-              options={repOptions}
-            />
-          </View>
-        </View>
-      ) : null}
-
-      {parsed.type === 'plus' ? (
-        <View style={styles.repWheelBlock}>
-          <Text style={styles.editorLabel}>Target Reps</Text>
-          <WebPrescriptionValueEditor
-            field="accessory_reps"
-            value={String(parsed.value || 10)}
-            onChange={setPlus}
-            options={repOptions}
-          />
-        </View>
-      ) : null}
-
-      {parsed.type === 'amrap' ? (
-        <View style={styles.amrapSelectedBox}>
-          <Text style={styles.amrapSelectedText}>AMRAP</Text>
-        </View>
-      ) : null}
-    </View>
-  );
-}
-
-function WebLoadStepper({
-  label,
-  value,
-  unit,
-  prefix,
-  inputLabel,
-  onChangeText,
-  onStep,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  prefix?: string;
-  inputLabel: string;
-  onChangeText: (value: string) => void;
-  onStep: (direction: -1 | 1) => void;
-}) {
-  return (
-    <View style={styles.webLoadStepper}>
-      <Text style={styles.webLoadStepperLabel}>{label}</Text>
-      <Pressable
-        onPress={() => onStep(-1)}
-        style={styles.webLoadStepButton}
-        accessibilityRole="button"
-        accessibilityLabel={`Decrease ${label.toLowerCase()}`}
-      >
-        <Text style={styles.webLoadStepText}>-</Text>
-      </Pressable>
-      <View style={styles.webLoadField}>
-        {prefix ? <Text style={styles.webLoadPrefix}>{prefix}</Text> : null}
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          keyboardType="decimal-pad"
-          accessibilityLabel={inputLabel}
-          style={styles.webLoadInput}
-        />
-        <Text style={styles.webLoadUnit}>{unit}</Text>
-      </View>
-      <Pressable
-        onPress={() => onStep(1)}
-        style={styles.webLoadStepButton}
-        accessibilityRole="button"
-        accessibilityLabel={`Increase ${label.toLowerCase()}`}
-      >
-        <Text style={styles.webLoadStepText}>+</Text>
-      </Pressable>
-    </View>
-  );
 }
 
 function TrainingLiftEditorModal({
@@ -1518,6 +1066,7 @@ function TrainingLiftEditorModal({
   groups,
   loadingGroups,
   saving,
+  displayUnit,
   onChange,
   onCancel,
   onApply,
@@ -1526,14 +1075,30 @@ function TrainingLiftEditorModal({
   groups: MovementPresetGroup[];
   loadingGroups: boolean;
   saving: boolean;
+  displayUnit: 'lb' | 'kg';
   onChange: (setup: TrainingLiftSetup) => void;
   onCancel: () => void;
   onApply: (setup: TrainingLiftSetup) => void | Promise<void>;
 }) {
+  const [movementQuery, setMovementQuery] = useState('');
   const setup = state?.setup || null;
   const activeGroup = setup ? movementGroupByKey(groups, setup.family) || groups[0] || null : null;
   const isCompetition = activeGroup?.key === 'competition_lifts';
   const title = state?.mode === 'add' ? 'Add training lift' : 'Change training lift';
+  const isCoreVariantSelection = setup?.lift === 'VR';
+  const coreVariantLoadComplete = !!setup
+    && Number.isFinite(Number(setup.targetLow))
+    && Number.isFinite(Number(setup.targetHigh))
+    && !!setup.targetLow.trim()
+    && !!setup.targetHigh.trim();
+  useEffect(() => setMovementQuery(''), [state?.item?.id, state?.mode]);
+  const visibleMovementChoices = useMemo(() => {
+    const query = movementQuery.trim().toLowerCase();
+    const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
+    return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
+      .filter(({ movement }) => !query || movementPresetName(movement).toLowerCase().includes(query))
+      .slice(0, query ? 48 : (isCompetition ? 3 : 14));
+  }, [activeGroup, groups, isCompetition, movementQuery]);
 
   const patchSetup = (patch: Partial<TrainingLiftSetup>) => {
     if (!setup) return;
@@ -1547,16 +1112,18 @@ function TrainingLiftEditorModal({
       family: group.key,
       movement: preset.name,
       lift: preset.lift,
+      ...(preset.lift === 'VR' ? { scheme: 'STRAIGHT', mode: 'RPE' } : {}),
     });
   };
 
-  const chooseMovement = (movement: MovementPreset | string) => {
-    if (!activeGroup) return;
-    const preset = movementPresetFromValue(movement, activeGroup);
+  const chooseMovement = (movement: MovementPreset | string, group = activeGroup) => {
+    if (!group) return;
+    const preset = movementPresetFromValue(movement, group);
     patchSetup({
       movement: preset.name,
-      family: preset.categoryKey || activeGroup.key,
+      family: preset.categoryKey || group.key,
       lift: preset.lift,
+      ...(preset.lift === 'VR' ? { scheme: 'STRAIGHT', mode: 'RPE' } : {}),
     });
   };
 
@@ -1565,6 +1132,8 @@ function TrainingLiftEditorModal({
     patchSetup({
       movement: setup.customMovement.trim(),
       lift: 'VR',
+      scheme: 'STRAIGHT',
+      mode: 'RPE',
     });
   };
 
@@ -1621,18 +1190,20 @@ function TrainingLiftEditorModal({
                   );
                 })}
               </ScrollView>
+              <TextInput accessibilityLabel="Search training movements" value={movementQuery} onChangeText={setMovementQuery} placeholder="Search movements" placeholderTextColor={colors.subtle} style={styles.trainingLiftInput} />
               <View style={styles.trainingLiftCardGrid}>
-                {(activeGroup?.movements || []).slice(0, isCompetition ? 3 : 14).map((movement) => {
-                  const preset = movementPresetFromValue(movement, activeGroup);
+                {visibleMovementChoices.map(({ movement, group }) => {
+                  const preset = movementPresetFromValue(movement, group);
                   const selected = preset.name === setup.movement;
+                  const competitionChoice = group.key === 'competition_lifts';
                   return (
                     <TrainingLiftOptionCard
-                      key={`${activeGroup?.key}-${preset.name}`}
+                      key={`${group.key}-${preset.name}`}
                       title={preset.name}
-                      detail={isCompetition ? 'TM-based competition lift' : `${activeGroup?.name || 'Training lift'} · manual load required`}
+                      detail={competitionChoice ? 'TM-based competition lift' : `${group.name || 'Training lift'} · manual load required`}
                       selected={selected}
-                      tone={isCompetition ? 'primary' : 'amber'}
-                      onPress={() => chooseMovement(movement)}
+                      tone={competitionChoice ? 'primary' : 'amber'}
+                      onPress={() => chooseMovement(movement, group)}
                     />
                   );
                 })}
@@ -1658,6 +1229,16 @@ function TrainingLiftEditorModal({
               ) : null}
             </TrainingLiftSection>
 
+            {isCoreVariantSelection ? (
+              <TrainingLiftSection title="Variant Load">
+                <Text style={styles.trainingLiftMuted}>Core variants require an explicit coach-authored load range.</Text>
+                <View style={styles.trainingLiftCardGrid}>
+                  <View style={[styles.trainingLiftCustomBlock, { flex: 1 }]}><Text style={styles.trainingLiftFieldLabel}>Low ({displayUnit})</Text><TextInput accessibilityLabel={`Core variant low load ${displayUnit}`} value={setup.targetLow} onChangeText={(targetLow) => patchSetup({ targetLow })} keyboardType="decimal-pad" style={styles.trainingLiftInput} /></View>
+                  <View style={[styles.trainingLiftCustomBlock, { flex: 1 }]}><Text style={styles.trainingLiftFieldLabel}>High ({displayUnit})</Text><TextInput accessibilityLabel={`Core variant high load ${displayUnit}`} value={setup.targetHigh} onChangeText={(targetHigh) => patchSetup({ targetHigh })} keyboardType="decimal-pad" style={styles.trainingLiftInput} /></View>
+                </View>
+              </TrainingLiftSection>
+            ) : null}
+
             <TrainingLiftSection title="Role">
               <View style={styles.trainingLiftCardGrid}>
                 {[
@@ -1678,7 +1259,7 @@ function TrainingLiftEditorModal({
               </View>
             </TrainingLiftSection>
 
-            <TrainingLiftSection title="Pattern">
+            {!isCoreVariantSelection ? <TrainingLiftSection title="Pattern">
               <View style={styles.trainingLiftCardGrid}>
                 {[
                   { value: 'STRAIGHT' as TrainingLiftScheme, label: 'Straight Sets', detail: 'One clean prescription' },
@@ -1694,9 +1275,9 @@ function TrainingLiftEditorModal({
                   />
                 ))}
               </View>
-            </TrainingLiftSection>
+            </TrainingLiftSection> : null}
 
-            <TrainingLiftSection title="Load language">
+            {!isCoreVariantSelection ? <TrainingLiftSection title="Load language">
               <View style={styles.trainingLiftTwoColumnGrid}>
                 {[
                   { value: 'RPE' as TrainingLiftMode, label: 'RPE-based', detail: 'Effort target' },
@@ -1711,7 +1292,7 @@ function TrainingLiftEditorModal({
                   />
                 ))}
               </View>
-            </TrainingLiftSection>
+            </TrainingLiftSection> : null}
 
             <TrainingLiftSection title="Movement Notes">
               <TextInput
@@ -1738,11 +1319,11 @@ function TrainingLiftEditorModal({
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              disabled={saving || !setup.movement}
+              disabled={saving || !setup.movement || (isCoreVariantSelection && !coreVariantLoadComplete)}
               onPress={() => onApply(setup)}
               style={({ pressed }) => [
                 styles.trainingLiftActionPrimary,
-                (saving || !setup.movement) && styles.editorDisabled,
+                (saving || !setup.movement || (isCoreVariantSelection && !coreVariantLoadComplete)) && styles.editorDisabled,
                 pressed && styles.pressed,
               ]}
             >
@@ -1772,9 +1353,28 @@ function AccessoryEditorModal({
   onCancel: () => void;
   onApply: (setup: AccessorySetup) => void | Promise<void>;
 }) {
+  const [movementQuery, setMovementQuery] = useState('');
   const setup = state?.setup || null;
   const activeGroup = setup ? movementGroupByKey(groups, setup.family) || groups[0] || null : null;
   const title = state?.mode === 'add' ? 'Add accessory' : 'Change accessory';
+  const isNewCustomMovement = !!setup
+    && !setup.movementDefinitionId
+    && !!setup.customMovement.trim()
+    && setup.movement === setup.customMovement.trim();
+  const customIdentityComplete = !!setup
+    && !!setup.equipmentType
+    && !!setup.loadingImplementation
+    && !!setup.loadConvention
+    && !!setup.measurementType
+    && !!setup.sidedness;
+  useEffect(() => setMovementQuery(''), [state?.item?.id, state?.mode]);
+  const visibleMovementChoices = useMemo(() => {
+    const query = movementQuery.trim().toLowerCase();
+    const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
+    return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
+      .filter(({ movement }) => !query || movementPresetName(movement).toLowerCase().includes(query))
+      .slice(0, query ? 48 : 18);
+  }, [activeGroup, groups, movementQuery]);
 
   const patchSetup = (patch: Partial<AccessorySetup>) => {
     if (!setup) return;
@@ -1784,18 +1384,21 @@ function AccessoryEditorModal({
   const chooseFamily = (group: MovementPresetGroup) => {
     const first = group.movements?.[0] || null;
     const name = movementPresetName(first);
+    const preset = typeof first === 'object' && first ? first : null;
     patchSetup({
       family: group.key,
       movement: name || setup?.movement || '',
+      movementDefinitionId: preset?.id || null,
     });
   };
 
-  const chooseMovement = (movement: MovementPreset | string) => {
-    if (!activeGroup) return;
+  const chooseMovement = (movement: MovementPreset | string, group = activeGroup) => {
+    if (!group) return;
     const name = movementPresetName(movement);
     patchSetup({
       movement: name,
-      family: activeGroup.key,
+      family: group.key,
+      movementDefinitionId: typeof movement === 'object' ? movement.id || null : null,
     });
   };
 
@@ -1803,6 +1406,7 @@ function AccessoryEditorModal({
     if (!setup?.customMovement.trim()) return;
     patchSetup({
       movement: setup.customMovement.trim(),
+      movementDefinitionId: null,
     });
   };
 
@@ -1840,21 +1444,106 @@ function AccessoryEditorModal({
                 keyboardDismissMode="on-drag"
               >
                 <TrainingLiftSection title="Movement">
-                  {loadingGroups ? (
-                    <View style={styles.trainingLiftLoadingRow}>
-                      <ActivityIndicator color={colors.violet} />
-                      <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
-                    </View>
-                  ) : null}
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
-                    {groups.map((group) => {
-                      const selected = group.key === activeGroup?.key;
+              {loadingGroups ? (
+                <View style={styles.trainingLiftLoadingRow}>
+                  <ActivityIndicator color={colors.violet} />
+                  <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
+                </View>
+              ) : null}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
+                {groups.map((group) => {
+                  const selected = group.key === activeGroup?.key;
+                  return (
+                    <Pressable
+                      key={group.key}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      onPress={() => chooseFamily(group)}
+                      style={({ pressed }) => [
+                        styles.trainingLiftFamilyButton,
+                        selected && styles.trainingLiftFamilyButtonActive,
+                        pressed && styles.pressed,
+                      ]}
+                    >
+                      <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
+                        {group.name}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+              <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} placeholder="Search movements" placeholderTextColor={colors.subtle} style={styles.trainingLiftInput} />
+              <View style={styles.trainingLiftCardGrid}>
+                {visibleMovementChoices.map(({ movement, group }) => {
+                  const name = movementPresetName(movement);
+                  const selected = name === setup.movement;
+                  return (
+                    <TrainingLiftOptionCard
+                      key={`${group.key}-${name}`}
+                      title={name}
+                      detail={group.name || 'Accessory movement'}
+                      selected={selected}
+                      tone="amber"
+                      onPress={() => chooseMovement(movement, group)}
+                    />
+                  );
+                })}
+              </View>
+              <View style={styles.trainingLiftCustomBlock}>
+                <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
+                <TextInput
+                  value={setup.customMovement}
+                  onChangeText={(value) => patchSetup({ customMovement: value })}
+                  placeholder="Type custom accessory"
+                  placeholderTextColor={colors.subtle}
+                  returnKeyType="done"
+                  onSubmitEditing={Keyboard.dismiss}
+                  blurOnSubmit
+                  style={styles.trainingLiftInput}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={useCustomMovement}
+                  style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
+                >
+                  <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
+                </Pressable>
+              </View>
+                </TrainingLiftSection>
+
+                {isNewCustomMovement ? (
+                  <TrainingLiftSection title="Custom Equipment Identity">
+                    <Text style={styles.trainingLiftMuted}>Define the movement’s equipment and measurement semantics before adding it.</Text>
+                    <AccessoryConfigChoices label="Equipment" value={setup.equipmentType} values={['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'other']} onSelect={(equipmentType) => patchSetup({ equipmentType })} />
+                    <AccessoryConfigChoices label="Loading" value={setup.loadingImplementation} values={['free_weight', 'selectorized_machine', 'plate_loaded_machine', 'cable_stack', 'bodyweight', 'unknown']} onSelect={(loadingImplementation) => patchSetup({ loadingImplementation })} />
+                    <AccessoryConfigChoices label="Load convention" value={setup.loadConvention} values={['total_external_load', 'per_hand', 'machine_stack_display', 'bodyweight_only', 'added_bodyweight', 'assistance_load', 'no_external_load', 'unknown']} onSelect={(loadConvention) => patchSetup({ loadConvention })} />
+                    <AccessoryConfigChoices label="Measurement" value={setup.measurementType} values={['load_reps', 'bodyweight_reps', 'added_weight_reps', 'assisted_reps', 'duration', 'unknown']} onSelect={(measurementType) => patchSetup({ measurementType })} />
+                    <AccessoryConfigChoices label="Sidedness" value={setup.sidedness} values={['bilateral', 'unilateral', 'alternating', 'unknown']} onSelect={(sidedness) => patchSetup({ sidedness })} />
+                  </TrainingLiftSection>
+                ) : null}
+
+                <TrainingLiftSection title="Grouped Set">
+                  <Text style={styles.trainingLiftMuted}>
+                    Leave “None” selected for a standard accessory. Matching letters run together as a superset, tri-set, or giant set.
+                  </Text>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.trainingLiftFamilyRow}
+                  >
+                    {['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((group) => {
+                      const selected = setup.supersetGroup === group;
+                      const label = group || 'None';
                       return (
                         <Pressable
-                          key={group.key}
+                          key={label}
                           accessibilityRole="button"
+                          accessibilityLabel={group ? `Set group ${group}` : 'No grouped set'}
                           accessibilityState={{ selected }}
-                          onPress={() => chooseFamily(group)}
+                          onPress={() => patchSetup({
+                            supersetGroup: group,
+                            supersetPosition: group ? (setup.supersetPosition || '1') : '',
+                          })}
                           style={({ pressed }) => [
                             styles.trainingLiftFamilyButton,
                             selected && styles.trainingLiftFamilyButtonActive,
@@ -1862,48 +1551,28 @@ function AccessoryEditorModal({
                           ]}
                         >
                           <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                            {group.name}
+                            {label}
                           </Text>
                         </Pressable>
                       );
                     })}
                   </ScrollView>
-                  <View style={styles.trainingLiftCardGrid}>
-                    {(activeGroup?.movements || []).slice(0, 18).map((movement) => {
-                      const name = movementPresetName(movement);
-                      const selected = name === setup.movement;
-                      return (
-                        <TrainingLiftOptionCard
-                          key={`${activeGroup?.key}-${name}`}
-                          title={name}
-                          detail={activeGroup?.name || 'Accessory movement'}
-                          selected={selected}
-                          tone="amber"
-                          onPress={() => chooseMovement(movement)}
-                        />
-                      );
-                    })}
-                  </View>
-                  <View style={styles.trainingLiftCustomBlock}>
-                    <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
-                    <TextInput
-                      value={setup.customMovement}
-                      onChangeText={(value) => patchSetup({ customMovement: value })}
-                      placeholder="Type custom accessory"
-                      placeholderTextColor={colors.subtle}
-                      returnKeyType="done"
-                      onSubmitEditing={Keyboard.dismiss}
-                      blurOnSubmit
-                      style={styles.trainingLiftInput}
-                    />
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={useCustomMovement}
-                      style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
-                    >
-                      <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
-                    </Pressable>
-                  </View>
+                  {setup.supersetGroup ? (
+                    <View style={styles.trainingLiftCustomBlock}>
+                      <Text style={styles.trainingLiftFieldLabel}>Order inside group {setup.supersetGroup}</Text>
+                      <TextInput
+                        accessibilityLabel={`Order inside grouped set ${setup.supersetGroup}`}
+                        value={setup.supersetPosition}
+                        onChangeText={(value) => patchSetup({
+                          supersetPosition: value.replace(/[^0-9]/g, '').slice(0, 2),
+                        })}
+                        keyboardType="number-pad"
+                        placeholder="1"
+                        placeholderTextColor={colors.subtle}
+                        style={styles.trainingLiftInput}
+                      />
+                    </View>
+                  ) : null}
                 </TrainingLiftSection>
 
                 <TrainingLiftSection title="Movement Notes">
@@ -1921,26 +1590,26 @@ function AccessoryEditorModal({
 
             {setup ? (
               <View style={[styles.trainingLiftEditorActions, styles.accessoryEditorActions]}>
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={saving}
-                  onPress={onCancel}
-                  style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
-                >
-                  <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={saving || !setup.movement}
-                  onPress={() => onApply(setup)}
-                  style={({ pressed }) => [
-                    styles.trainingLiftActionPrimary,
-                    (saving || !setup.movement) && styles.editorDisabled,
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Changes'}</Text>
-                </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={saving}
+              onPress={onCancel}
+              style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
+            >
+              <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={saving || !setup.movement || (isNewCustomMovement && !customIdentityComplete)}
+              onPress={() => onApply(setup)}
+              style={({ pressed }) => [
+                styles.trainingLiftActionPrimary,
+                (saving || !setup.movement || (isNewCustomMovement && !customIdentityComplete)) && styles.editorDisabled,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Changes'}</Text>
+            </Pressable>
               </View>
             ) : null}
           </Pressable>
@@ -1955,6 +1624,26 @@ function TrainingLiftSection({ title, children }: { title: string; children: Rea
     <View style={styles.trainingLiftSection}>
       <Text style={styles.trainingLiftSectionTitle}>{title}</Text>
       {children}
+    </View>
+  );
+}
+
+function AccessoryConfigChoices({ label, value, values, onSelect }: { label: string; value: string; values: string[]; onSelect: (value: string) => void }) {
+  return (
+    <View style={styles.trainingLiftCustomBlock}>
+      <Text style={styles.trainingLiftFieldLabel}>{label}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
+        {values.map((option) => {
+          const selected = option === value;
+          return (
+            <Pressable key={option} accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={() => onSelect(option)} style={[styles.trainingLiftFamilyButton, selected && styles.trainingLiftFamilyButtonActive]}>
+              <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
+                {equipmentPresentationLabel(option, 'Option')}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -1995,6 +1684,7 @@ function ReorderEditorModal({
   coreItems,
   accessoryItems,
   saving,
+  reduceMotion,
   onChange,
   onCancel,
   onApply,
@@ -2003,6 +1693,7 @@ function ReorderEditorModal({
   coreItems: WorkoutItem[];
   accessoryItems: WorkoutItem[];
   saving: boolean;
+  reduceMotion: boolean;
   onChange: (state: ReorderEditorState) => void;
   onCancel: () => void;
   onApply: (state: ReorderEditorState) => void | Promise<void>;
@@ -2030,7 +1721,7 @@ function ReorderEditorModal({
         <View style={styles.trainingLiftEditorHeader}>
           <View>
             <Text style={styles.trainingLiftEditorEyebrow}>Workspace edit</Text>
-            <Text style={styles.trainingLiftEditorTitle}>Reorder Workout Items</Text>
+            <Text style={styles.trainingLiftEditorTitle}>Reorder Session Items</Text>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -2054,6 +1745,7 @@ function ReorderEditorModal({
             kind="core"
             onMove={moveItem}
             onDraggingChange={setDragging}
+            reduceMotion={reduceMotion}
           />
           <ReorderSection
             title="Accessories"
@@ -2062,6 +1754,7 @@ function ReorderEditorModal({
             kind="accessory"
             onMove={moveItem}
             onDraggingChange={setDragging}
+            reduceMotion={reduceMotion}
           />
         </ScrollView>
 
@@ -2101,6 +1794,7 @@ function ReorderSection({
   kind,
   onMove,
   onDraggingChange,
+  reduceMotion,
 }: {
   title: string;
   ids: number[];
@@ -2108,6 +1802,7 @@ function ReorderSection({
   kind: 'core' | 'accessory';
   onMove: (kind: 'core' | 'accessory', id: number, targetIndex: number) => void;
   onDraggingChange: (dragging: boolean) => void;
+  reduceMotion: boolean;
 }) {
   return (
     <TrainingLiftSection title={title}>
@@ -2115,7 +1810,7 @@ function ReorderSection({
         {ids.length ? ids.map((id, index) => {
           const item = itemsById.get(id);
           if (!item) return null;
-          const name = simplifyMobileMovementName(item.movement || item.original_movement || liftName(item.lift)) || 'Training item';
+          const name = workspaceMovementName(item, kind);
           const meta = kind === 'core'
             ? `${designationLabel(item.designation, 'core')} · ${variantLabel(item.variant) || 'Straight'}`
             : accessoryPrescriptionText(item);
@@ -2130,6 +1825,7 @@ function ReorderSection({
               meta={meta}
               onMove={onMove}
               onDraggingChange={onDraggingChange}
+              reduceMotion={reduceMotion}
             />
           );
         }) : (
@@ -2151,6 +1847,7 @@ function DraggableReorderRow({
   meta,
   onMove,
   onDraggingChange,
+  reduceMotion,
 }: {
   id: number;
   kind: 'core' | 'accessory';
@@ -2160,6 +1857,7 @@ function DraggableReorderRow({
   meta: string;
   onMove: (kind: 'core' | 'accessory', id: number, targetIndex: number) => void;
   onDraggingChange: (dragging: boolean) => void;
+  reduceMotion: boolean;
 }) {
   const translateY = useSharedValue(0);
   const isDragging = useSharedValue(false);
@@ -2176,7 +1874,7 @@ function DraggableReorderRow({
     .onFinalize(() => {
       const rawTarget = index + Math.round(translateY.value / REORDER_ROW_STEP);
       const targetIndex = Math.max(0, Math.min(itemCount - 1, rawTarget));
-      translateY.value = withSpring(0, { damping: 18, stiffness: 220 });
+      translateY.value = reduceMotion ? 0 : withSpring(0, { damping: 18, stiffness: 220 });
       isDragging.value = false;
       runOnJS(onDraggingChange)(false);
       if (targetIndex !== index) {
@@ -2187,9 +1885,9 @@ function DraggableReorderRow({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateY: translateY.value },
-      { scale: withSpring(isDragging.value ? 1.025 : 1, { damping: 18, stiffness: 240 }) },
+      { scale: reduceMotion ? 1 : withSpring(isDragging.value ? 1.025 : 1, { damping: 18, stiffness: 240 }) },
     ],
-    opacity: withSpring(isDragging.value ? 0.96 : 1, { damping: 18, stiffness: 240 }),
+    opacity: reduceMotion ? 1 : withSpring(isDragging.value ? 0.96 : 1, { damping: 18, stiffness: 240 }),
     zIndex: isDragging.value ? 20 : 1,
   }));
 
@@ -2203,77 +1901,121 @@ function DraggableReorderRow({
           <Text style={styles.reorderRowTitle}>{name}</Text>
           <Text style={styles.reorderRowMeta}>{meta}</Text>
         </View>
+        <View style={styles.reorderButtonGroup}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Move ${name} up`}
+            accessibilityState={{ disabled: index === 0 }}
+            disabled={index === 0}
+            onPress={() => onMove(kind, id, index - 1)}
+            style={({ pressed }) => [styles.reorderStepButton, index === 0 && styles.editorDisabled, pressed && styles.pressed]}
+          >
+            <Ionicons name="chevron-up" size={16} color={colors.muted} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Move ${name} down`}
+            accessibilityState={{ disabled: index === itemCount - 1 }}
+            disabled={index === itemCount - 1}
+            onPress={() => onMove(kind, id, index + 1)}
+            style={({ pressed }) => [styles.reorderStepButton, index === itemCount - 1 && styles.editorDisabled, pressed && styles.pressed]}
+          >
+            <Ionicons name="chevron-down" size={16} color={colors.muted} />
+          </Pressable>
+        </View>
       </Animated.View>
     </GestureDetector>
   );
 }
 
-function EmptySection({ label }: { label: string }) {
-  return (
-    <View style={styles.emptySection}>
-      <Text style={styles.emptySectionText}>{label}</Text>
-    </View>
-  );
-}
-
-function SessionActions({
+function CompactSessionActions({
   status,
+  capabilities,
   pendingAction,
+  onlyDelete,
+  onAssign,
   onRevert,
   onCopy,
-  onSaveTemplate,
   onMove,
+  onSaveTemplate,
   onDelete,
 }: {
   status?: string | null;
+  capabilities: WorkspaceCapabilities;
   pendingAction: SessionActionKey | null;
+  onlyDelete?: boolean;
+  onAssign: () => void;
   onRevert: () => void;
   onCopy: () => void;
-  onSaveTemplate: () => void;
   onMove: () => void;
+  onSaveTemplate: () => void;
   onDelete: () => void;
 }) {
   const isDraft = String(status || '').toLowerCase() === 'draft';
-  const actions: Array<{
+  type CompactAction = {
     key: SessionActionKey;
     label: string;
+    icon: keyof typeof Ionicons.glyphMap;
     onPress: () => void;
     disabled?: boolean;
-    wide?: boolean;
     danger?: boolean;
-  }> = [
-    { key: 'revert', label: 'Revert to Draft', onPress: onRevert, disabled: isDraft, wide: true },
-    { key: 'copy', label: 'Copy Session To', onPress: onCopy },
-    { key: 'template', label: 'Save as Template', onPress: onSaveTemplate },
-    { key: 'move', label: 'Move Session', onPress: onMove },
-    { key: 'delete', label: 'Delete', onPress: onDelete, danger: true },
+  };
+  const lifecycleActions: CompactAction[] = onlyDelete ? [] : [
+    ...(isDraft && capabilities.can_assign
+      ? [{ key: 'assign' as const, label: 'Assign', icon: 'checkmark-circle-outline' as const, onPress: onAssign }]
+      : !isDraft && capabilities.can_revert_to_draft
+        ? [{ key: 'revert' as const, label: 'Revert to Draft', icon: 'arrow-undo-outline' as const, onPress: onRevert }]
+        : []),
   ];
+  const reuseActions: CompactAction[] = onlyDelete ? [] : [
+    ...(capabilities.can_copy ? [{ key: 'copy', label: 'Copy Session To', icon: 'copy-outline', onPress: onCopy } as const] : []),
+    ...(capabilities.can_move ? [{ key: 'move', label: 'Move Session', icon: 'move-outline', onPress: onMove } as const] : []),
+    ...(capabilities.can_save_template ? [{ key: 'template', label: 'Save as Template', icon: 'document-text-outline', onPress: onSaveTemplate } as const] : []),
+  ];
+  const dangerActions: CompactAction[] = [
+    ...(capabilities.can_delete ? [{ key: 'delete', label: 'Delete Session', icon: 'trash-outline', onPress: onDelete, danger: true } as const] : []),
+  ];
+  const sections = [
+    { key: 'lifecycle', label: 'Lifecycle', color: SLColors.success, actions: lifecycleActions },
+    { key: 'reuse', label: 'Reuse & Organize', color: SLColors.warning, actions: reuseActions },
+    { key: 'danger', label: 'Danger Zone', color: SLColors.danger, actions: dangerActions },
+  ].filter((section) => section.actions.length > 0);
 
   return (
     <View style={styles.sessionActions}>
-      {actions.map((action) => {
-        const busy = pendingAction === action.key;
-        const disabled = !!pendingAction || !!action.disabled;
-        return (
-        <Pressable
-          key={action.key}
-          disabled={disabled}
-          accessibilityRole="button"
-          accessibilityState={{ disabled }}
-          onPress={action.onPress}
-          style={({ pressed }) => [
-            styles.sessionActionButton,
-            action.wide && styles.sessionActionWide,
-            disabled && styles.sessionActionDisabled,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={[styles.sessionActionText, action.danger && styles.sessionActionDanger]}>
-            {busy ? 'Working...' : action.label}
-          </Text>
-        </Pressable>
-        );
-      })}
+      {sections.map((section, sectionIndex) => (
+        <React.Fragment key={section.key}>
+          {sectionIndex > 0 ? <View style={styles.sessionActionDivider} /> : null}
+          <Text style={[styles.sessionActionSectionLabel, { color: section.color }]}>{section.label}</Text>
+          {section.actions.map((action) => {
+            const busy = pendingAction === action.key;
+            const disabled = !!pendingAction || !!action.disabled;
+            return (
+              <Pressable
+                key={action.key}
+                disabled={disabled}
+                accessibilityRole="button"
+                accessibilityLabel={action.label}
+                accessibilityState={{ disabled }}
+                onPress={action.onPress}
+                style={({ pressed }) => [
+                  styles.sessionActionButton,
+                  action.danger && styles.sessionActionDangerButton,
+                  disabled && styles.sessionActionDisabled,
+                  pressed && styles.pressed,
+                ]}
+              >
+                {busy ? (
+                  <ActivityIndicator size="small" color={section.color} />
+                ) : (
+                  <Ionicons name={action.icon} size={SL_TAB_ROW_CONTROL.iconSize} color={section.color} />
+                )}
+                <Text style={[styles.sessionActionText, action.danger && styles.sessionActionDangerText]}>{action.label}</Text>
+              </Pressable>
+            );
+          })}
+        </React.Fragment>
+      ))}
     </View>
   );
 }
@@ -2390,79 +2132,6 @@ function SessionCalendarModal({
   );
 }
 
-function LoadStyleInfoModal({
-  styleType,
-  onClose,
-}: {
-  styleType: LoadStyleInfo | null;
-  onClose: () => void;
-}) {
-  const content = loadStyleInfoContent(styleType);
-
-  return (
-    <Modal visible={!!styleType} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.modalScrim}>
-        <View style={styles.infoModal}>
-          <View style={styles.infoModalHeader}>
-            <Text style={styles.infoModalTitle}>{content.title}</Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close explanation"
-              onPress={onClose}
-              style={({ pressed }) => [styles.calendarClose, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
-          <Text style={styles.infoModalBody}>{content.body}</Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onClose}
-            style={({ pressed }) => [styles.infoModalAction, pressed && styles.pressed]}
-          >
-            <Text style={styles.infoModalActionText}>Got it</Text>
-          </Pressable>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-function loadStyleInfoContent(styleType: LoadStyleInfo | null) {
-  if (styleType === 'pct') {
-    return {
-      title: 'Percent 1RM',
-      body: 'Percent 1RM uses a percentage of your training max or one-rep max to prescribe load. Strength Ledger calculates the target weight from the percentage and your saved max.',
-    };
-  }
-  if (styleType === 'rir') {
-    return {
-      title: 'RIR',
-      body: 'RIR means Reps In Reserve. It describes how many reps you should have left before failure at the end of the set.',
-    };
-  }
-  return {
-    title: 'RPE',
-    body: 'RPE means Rate of Perceived Exertion. In Strength Ledger, it describes how hard the set should feel based on reps in reserve. For example, RPE 7 usually means about 3 reps left in the tank.',
-  };
-}
-
-function DisabledAction({ label, compact }: { label: string; compact?: boolean }) {
-  return (
-    <Pressable disabled accessibilityState={{ disabled: true }} style={[styles.disabledButton, compact && styles.disabledButtonCompact]}>
-      <Text style={styles.disabledButtonText}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function DisabledIconAction({ icon }: { icon: keyof typeof Ionicons.glyphMap }) {
-  return (
-    <Pressable disabled accessibilityState={{ disabled: true }} style={styles.disabledIconButton}>
-      <Ionicons name={icon} size={16} color={colors.subtle} />
-    </Pressable>
-  );
-}
-
 function firstParam(value?: string | string[]) {
   if (Array.isArray(value)) return value[0] || '';
   return value || '';
@@ -2473,11 +2142,11 @@ function sessionTitle(label?: string | null) {
   return text || 'Session';
 }
 
-function sessionContext(label?: string | null, dateValue?: string | null) {
+function sessionContext(athleteName?: string | null, label?: string | null, dateValue?: string | null) {
+  const athlete = String(athleteName || '').trim();
   const week = weekFromLabel(label);
   const date = formatContextDate(dateValue);
-  if (week && date) return `${week} • ${date}`;
-  return week || date || 'Unscheduled';
+  return [athlete || 'Athlete', week, date || 'Unscheduled'].filter(Boolean).join(' • ');
 }
 
 function weekFromLabel(label?: string | null) {
@@ -2491,13 +2160,6 @@ function humanStatus(value?: string | null) {
   return text
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function executionLabel(value?: string | null) {
-  const status = String(value || '').toLowerCase();
-  if (status === 'in_progress') return 'Continue Workout';
-  if (status === 'completed' || status === 'logged' || status === 'done') return 'View Summary';
-  return 'Start Workout';
 }
 
 function formatContextDate(value?: string | null) {
@@ -2543,7 +2205,7 @@ function calendarDaysForMonth(monthCursor: Date) {
   const first = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
   const firstWeekday = (first.getDay() + 6) % 7;
   const daysInMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 0).getDate();
-  const cells: Array<Date | null> = Array.from({ length: firstWeekday }, () => null);
+  const cells: (Date | null)[] = Array.from({ length: firstWeekday }, () => null);
   for (let day = 1; day <= daysInMonth; day += 1) {
     cells.push(new Date(monthCursor.getFullYear(), monthCursor.getMonth(), day));
   }
@@ -2554,7 +2216,30 @@ function calendarDaysForMonth(monthCursor: Date) {
 function movementPresetName(value?: MovementPreset | string | null) {
   if (!value) return '';
   if (typeof value === 'string') return value;
-  return String(value.name || '').trim();
+  return String(value.name || value.display_name || '').trim();
+}
+
+function accessoryGroupsWithCanonicalIdentity(categories: MovementPresetGroup[], definitions: MovementPreset[], keyPrefix = 'identity') {
+  if (!definitions.length) return categories;
+  const grouped = new Map<string, MovementPresetGroup>();
+  const retained: MovementPresetGroup[] = [];
+  categories.forEach((group) => {
+    if (group.key.startsWith(`${keyPrefix}_`)) {
+      grouped.set(group.key, { ...group, movements: [...(group.movements || [])] });
+    } else {
+      retained.push(group);
+    }
+  });
+  definitions.forEach((definition) => {
+    const familyName = String(definition.family_display_name || definition.family || 'Equipment Catalog').trim();
+    const key = `${keyPrefix}_${String(definition.family || familyName).toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
+    const current = grouped.get(key) || { key, name: familyName, movements: [] };
+    const duplicate = current.movements?.some((movement) => typeof movement === 'object'
+      && ((movement.id && movement.id === definition.id) || movementPresetName(movement).toLowerCase() === movementPresetName(definition).toLowerCase()));
+    if (!duplicate) current.movements?.push(definition);
+    grouped.set(key, current);
+  });
+  return [...retained, ...Array.from(grouped.values())];
 }
 
 function movementPresetFromValue(value: MovementPreset | string | null | undefined, group?: MovementPresetGroup | null) {
@@ -2587,28 +2272,6 @@ function findTrainingPreset(groups: MovementPresetGroup[], movementName: string)
   return null;
 }
 
-function trainingLiftSetupFromItem(item: WorkoutItem, groups: MovementPresetGroup[]): TrainingLiftSetup {
-  const movement = item.movement || item.original_movement || liftName(item.lift) || '';
-  const found = findTrainingPreset(groups, movement);
-  const lift = String(found?.preset.lift || item.lift || 'VR').toUpperCase();
-  const variant = String(item.variant || 'STRAIGHT').toUpperCase();
-  const scheme: TrainingLiftScheme = variant === 'TOP' || variant === 'BK'
-    ? 'TOP_BACKDOWN'
-    : variant === 'FULL_CUSTOM'
-      ? 'FULL_CUSTOM'
-      : 'STRAIGHT';
-  return {
-    movement,
-    family: found?.group.key || (['SQ', 'BN', 'DL'].includes(lift) ? 'competition_lifts' : 'squat_variants'),
-    lift,
-    designation: String(item.designation || '').toUpperCase(),
-    scheme,
-    mode: String(item.mode || 'RPE').toUpperCase() === 'PCT' ? 'PCT' : 'RPE',
-    notes: String(item.notes || ''),
-    customMovement: '',
-  };
-}
-
 function defaultTrainingLiftSetup(existingCount: number, groups: MovementPresetGroup[]): TrainingLiftSetup {
   const fallback = 'Competition Squat';
   const found = findTrainingPreset(groups, fallback);
@@ -2623,6 +2286,8 @@ function defaultTrainingLiftSetup(existingCount: number, groups: MovementPresetG
     mode: 'RPE',
     notes: '',
     customMovement: '',
+    targetLow: '',
+    targetHigh: '',
   };
 }
 
@@ -2633,22 +2298,11 @@ function findAccessoryPreset(groups: MovementPresetGroup[], movementName: string
     for (const movement of group.movements || []) {
       const name = movementPresetName(movement);
       if (name.trim().toLowerCase() === wanted) {
-        return { group, name };
+        return { group, name, definitionId: typeof movement === 'object' ? movement.id || null : null };
       }
     }
   }
   return null;
-}
-
-function accessorySetupFromItem(item: WorkoutItem, groups: MovementPresetGroup[]): AccessorySetup {
-  const movement = item.movement || item.original_movement || 'Chest-Supported Row';
-  const found = findAccessoryPreset(groups, movement);
-  return {
-    movement,
-    family: found?.group.key || groups[0]?.key || 'lats_upper_back',
-    notes: String(item.notes || ''),
-    customMovement: '',
-  };
 }
 
 function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
@@ -2658,9 +2312,17 @@ function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
   const firstMovement = movementPresetName(firstGroup?.movements?.[0] || null);
   return {
     movement: found?.name || firstMovement || fallback,
+    movementDefinitionId: found?.definitionId || (typeof firstGroup?.movements?.[0] === 'object' ? firstGroup.movements[0].id || null : null),
     family: found?.group.key || firstGroup?.key || 'lats_upper_back',
     notes: '',
     customMovement: '',
+    supersetGroup: '',
+    supersetPosition: '',
+    equipmentType: '',
+    loadingImplementation: '',
+    loadConvention: '',
+    measurementType: '',
+    sidedness: '',
   };
 }
 
@@ -2696,6 +2358,15 @@ function designationLabel(value?: string | null, kind?: 'core' | 'accessory') {
   return kind === 'core' ? 'Core Lift' : 'Accessory';
 }
 
+function workspaceMovementName(item: WorkoutItem, kind: EditKind) {
+  const movement = String(item.movement || item.original_movement || liftName(item.lift) || '').trim() || 'Training item';
+  if (kind !== 'core') return movement;
+  const designation = designationLabel(item.designation, kind);
+  return designation && designation !== 'Core Lift'
+    ? `${designation} ${movement}`
+    : movement;
+}
+
 function variantLabel(value?: string | null) {
   const key = String(value || '').toUpperCase();
   if (!key || key === 'ACC') return '';
@@ -2705,119 +2376,6 @@ function variantLabel(value?: string | null) {
     .replace(/_/g, ' ')
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function plannedSetText(set: PlannedSet) {
-  const reps = set.reps != null ? `${set.reps} reps` : 'reps open';
-  const target = set.rpe_target != null
-    ? `@ ${formatNumber(set.rpe_target)} RPE`
-    : set.pct != null
-      ? `@ ${formatNumber(displayPct(set.pct))}%`
-      : '';
-  const load = rangeText(set.manual_target_kg, null) || rangeText(set.suggested_low_kg, set.suggested_high_kg);
-  return [reps, target, load].filter(Boolean).join(' · ');
-}
-
-function targetText(item: WorkoutItem) {
-  return rangeText(item.target_low_kg, item.target_high_kg) || rangeText(item.baseline_low_kg, item.baseline_high_kg);
-}
-
-function loadEditorInfo(item: WorkoutItem) {
-  const lowLb = kgToDisplayLb(item.target_low_kg ?? item.baseline_low_kg);
-  const highLb = kgToDisplayLb(item.target_high_kg ?? item.baseline_high_kg);
-  const hasLow = lowLb != null && lowLb > 0;
-  const hasHigh = highLb != null && highLb > 0;
-  const low = hasLow ? lowLb : hasHigh ? highLb : null;
-  const high = hasHigh ? highLb : hasLow ? lowLb : null;
-  const target = low != null && high != null ? roundPlatformLbs((low + high) / 2) : null;
-  const range = low != null && high != null ? Math.abs(high - low) / 2 : 0;
-  return {
-    suggestedLabel: low != null && high != null ? `${cleanNumber(low)}-${cleanNumber(high)} lb` : '',
-    calculatedLabel: target != null ? `Calculated ${cleanNumber(target)} lb` : '',
-    suggestedTargetDisplay: target != null ? cleanNumber(target) : '',
-    suggestedRangeDisplay: target != null ? cleanNumber(range) : '',
-    targetDisplay: target != null ? cleanNumber(target) : '',
-    rangeDisplay: target != null ? cleanNumber(range) : '',
-  };
-}
-
-function kgToDisplayLb(kg?: number | null) {
-  if (kg == null || !Number.isFinite(Number(kg))) return null;
-  return roundPlatformLbs(Number(kg) / KG_PER_LB);
-}
-
-function parseDisplayNumber(value: string) {
-  const parsed = Number(String(value || '').replace(/[^\d.]/g, ''));
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function notationOptionsFor(kind: HotEditField) {
-  if (kind === 'sets') return Array.from({ length: 10 }, (_, index) => String(index + 1));
-  if (kind === 'accessory_reps') return Array.from({ length: 30 }, (_, index) => String(index + 1));
-  if (kind === 'reps') return Array.from({ length: 12 }, (_, index) => String(index + 1));
-  if (kind === 'rir') return Array.from({ length: 6 }, (_, index) => String(index));
-  if (kind === 'rpe') return Array.from({ length: 13 }, (_, index) => String(4 + index * 0.5).replace(/\.0$/, ''));
-  if (kind === 'pct') return Array.from({ length: 21 }, (_, index) => String(50 + index * 2.5).replace(/\.0$/, ''));
-  return [];
-}
-
-function parseAccessoryRepTarget(value?: string | null): {
-  type: AccessoryRepType;
-  value?: number;
-  low?: number;
-  high?: number;
-} {
-  const raw = String(value || '').trim();
-  if (/^amrap$/i.test(raw)) return { type: 'amrap' };
-  const range = raw.match(/^(\d+)\s*-\s*(\d+)$/);
-  if (range) {
-    const low = clampRepValue(Number(range[1]) || 10);
-    const high = clampRepValue(Number(range[2]) || low);
-    return { type: 'range', low: Math.min(low, high), high: Math.max(low, high) };
-  }
-  const plus = raw.match(/^(\d+)\s*\+$/);
-  if (plus) return { type: 'plus', value: clampRepValue(Number(plus[1]) || 10) };
-  const fixed = raw.match(/^(\d+)$/);
-  if (fixed) return { type: 'fixed', value: clampRepValue(Number(fixed[1]) || 10) };
-  return { type: 'fixed', value: 10 };
-}
-
-function clampRepValue(value: number) {
-  return Math.max(1, Math.min(30, Math.round(value)));
-}
-
-function rangeText(lowKg?: number | null, highKg?: number | null) {
-  if (lowKg == null && highKg == null) return '';
-  if (lowKg != null && highKg != null) {
-    if (Math.abs(Number(lowKg) - Number(highKg)) < 0.01) return `${formatWeight(lowKg)} lb`;
-    return `${formatWeight(lowKg)}-${formatWeight(highKg)} lb`;
-  }
-  const single = lowKg ?? highKg;
-  return single != null ? `${formatWeight(single)} lb` : '';
-}
-
-function formatWeight(kg: number | null | undefined) {
-  if (kg == null || !Number.isFinite(Number(kg))) return '?';
-  const pounds = Number(kg) / KG_PER_LB;
-  return cleanNumber(roundPlatformLbs(pounds));
-}
-
-function roundPlatformLbs(value: number) {
-  const step = value < LBS_INCREMENT_THRESHOLD
-    ? LBS_INCREMENT_BELOW_THRESHOLD
-    : LBS_INCREMENT_AT_OR_ABOVE_THRESHOLD;
-  return Math.floor((value / step) + 0.5) * step;
-}
-
-function cleanNumber(value: number) {
-  if (!Number.isFinite(value)) return '';
-  return value.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-}
-
-function displayPct(value?: number | null) {
-  if (value == null || !Number.isFinite(Number(value))) return 0;
-  const numeric = Number(value);
-  return numeric <= 1 ? numeric * 100 : numeric;
 }
 
 function numberText(value?: number | null) {
@@ -2852,7 +2410,7 @@ const styles = StyleSheet.create({
   },
   stateTitle: {
     color: colors.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   stateBody: {
@@ -2862,15 +2420,72 @@ const styles = StyleSheet.create({
   },
   workspaceHeader: {
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.20)',
-    backgroundColor: 'rgba(30, 24, 38, 0.48)',
-    borderRadius: 20,
+    borderColor: colors.line,
+    backgroundColor: SLColors.surfaceInset,
+    borderRadius: SLRadius.xl,
     padding: 18,
     gap: 10,
-    shadowColor: colors.violet,
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
+    ...SLShadows.raised,
+  },
+  workspaceLockedReason: {
+    color: colors.muted,
+    fontSize: SLTypography.caption.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  sessionNotesPanel: {
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: SLColors.surfaceInset,
+    borderRadius: SLRadius.lg,
+    padding: 14,
+    gap: 10,
+  },
+  sessionNotesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  sessionNotesTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  sessionNotesEditButton: {
+    minHeight: 34,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  sessionNotesEditText: {
+    color: colors.violet,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  sessionNotesBody: {
+    color: colors.muted,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  sessionNotesEmpty: {
+    color: colors.subtle,
+  },
+  sessionNotesInput: {
+    minHeight: 92,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
+    borderRadius: SLRadius.md,
+    color: colors.textStrong,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    textAlignVertical: 'top',
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  sessionNotesActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
   },
   headerTitleRow: {
     flexDirection: 'row',
@@ -2880,9 +2495,6 @@ const styles = StyleSheet.create({
   },
   sessionName: {
     color: colors.textStrong,
-    fontSize: 32,
-    lineHeight: 38,
-    fontFamily: SLFontFamilies.sansBold,
   },
   sessionNameButton: {
     flex: 1,
@@ -2901,11 +2513,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.24)',
     backgroundColor: 'rgba(8, 8, 12, 0.38)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     color: colors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   sessionRenameActions: {
@@ -2917,13 +2529,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(10, 8, 12, 0.24)',
     paddingHorizontal: 12,
   },
   sessionRenameSecondaryText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   sessionRenamePrimary: {
@@ -2931,19 +2543,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.24)',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(167, 203, 181, 0.12)',
     paddingHorizontal: 14,
   },
   sessionRenamePrimaryText: {
     color: colors.green,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   headerMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
     gap: 12,
   },
   headerMetaCopy: {
@@ -2959,10 +2572,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.24)',
     backgroundColor: 'rgba(167, 203, 181, 0.08)',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 12,
     paddingVertical: 5,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     overflow: 'hidden',
   },
@@ -2970,23 +2583,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    flexWrap: 'wrap',
     gap: 8,
-    flexShrink: 0,
+    flexBasis: '100%',
+    flexGrow: 1,
   },
   headerStartButton: {
     minHeight: 38,
+    flexDirection: 'row',
+    gap: 7,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.32)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(167, 203, 181, 0.14)',
     paddingHorizontal: 13,
     paddingVertical: 8,
   },
   headerStartText: {
     color: colors.green,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  headerFullEditorButton: {
+    minHeight: 38,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.canvasRaised,
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+  },
+  headerFullEditorText: {
+    color: colors.muted,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   closeButton: {
@@ -2996,7 +2631,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.18)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(10, 8, 12, 0.36)',
   },
   headerReorderButton: {
@@ -3007,7 +2642,7 @@ const styles = StyleSheet.create({
     gap: 7,
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.22)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(167, 139, 250, 0.10)',
     paddingHorizontal: 13,
     paddingVertical: 8,
@@ -3015,13 +2650,63 @@ const styles = StyleSheet.create({
   },
   headerReorderText: {
     color: colors.violet,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   sessionMeta: {
     color: colors.muted,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
+  },
+  sectionTabs: {
+    minHeight: 50,
+    flexDirection: 'row',
+    gap: 8,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: SLColors.surfaceInset,
+  },
+  sectionTab: {
+    flex: 1,
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'transparent',
+  },
+  sectionTabSelected: {
+    borderColor: 'rgba(167, 139, 250, 0.34)',
+    backgroundColor: SLColors.surfaceSelected,
+  },
+  sectionTabLabel: {
+    color: colors.muted,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  sectionTabLabelSelected: {
+    color: colors.textStrong,
+  },
+  sectionTabCount: {
+    minWidth: 24,
+    color: colors.subtle,
+    textAlign: 'center',
+    fontSize: SLTypography.caption.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  sectionTabCountSelected: {
+    color: colors.violet,
+  },
+  sectionWorkspace: {
+    gap: 12,
+  },
+  sectionWorkspaceHidden: {
+    display: 'none',
   },
   sectionHeader: {
     marginTop: 8,
@@ -3039,7 +2724,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.textStrong,
-    fontSize: 28,
+    fontSize: SLTypography.hero.fontSize,
     lineHeight: 34,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3048,10 +2733,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.22)',
     backgroundColor: 'rgba(167, 139, 250, 0.09)',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     overflow: 'hidden',
   },
@@ -3059,13 +2744,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.24)',
     backgroundColor: 'rgba(167, 139, 250, 0.10)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 11,
     paddingVertical: 7,
   },
   sectionActionText: {
     color: colors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   liftCard: {
@@ -3074,7 +2759,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.10)',
     backgroundColor: 'rgba(20, 18, 22, 0.44)',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingVertical: 16,
     paddingLeft: 18,
     paddingRight: 15,
@@ -3082,20 +2767,6 @@ const styles = StyleSheet.create({
   },
   liftCardAccessory: {
     backgroundColor: 'rgba(18, 20, 20, 0.40)',
-  },
-  liftAccentRail: {
-    position: 'absolute',
-    left: 0,
-    top: 14,
-    bottom: 14,
-    width: 3,
-    borderRadius: 999,
-    backgroundColor: colors.violet,
-    opacity: 0.90,
-  },
-  liftAccentRailAccessory: {
-    backgroundColor: colors.green,
-    opacity: 0.72,
   },
   liftHeader: {
     flexDirection: 'row',
@@ -3121,7 +2792,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.26)',
     backgroundColor: 'rgba(167, 139, 250, 0.14)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
   },
   liftIconShellAccessory: {
     borderColor: 'rgba(167, 203, 181, 0.22)',
@@ -3134,7 +2805,7 @@ const styles = StyleSheet.create({
   },
   liftName: {
     color: colors.textStrong,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     lineHeight: 28,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3148,10 +2819,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(10, 8, 12, 0.28)',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 9,
     paddingVertical: 4,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     overflow: 'hidden',
   },
@@ -3166,13 +2837,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.16)',
     backgroundColor: 'rgba(10, 8, 12, 0.34)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 13,
     paddingVertical: 7,
   },
   inlineEditText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   prescriptionRow: {
@@ -3189,7 +2860,7 @@ const styles = StyleSheet.create({
   },
   tokenJoiner: {
     color: colors.muted,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   prescriptionText: {
@@ -3197,16 +2868,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.18)',
     backgroundColor: 'rgba(12, 12, 18, 0.40)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 9,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     overflow: 'hidden',
   },
   prescriptionTokenText: {
     color: colors.textStrong,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   loadStyleInfoButton: {
@@ -3216,7 +2887,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.18)',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(167, 139, 250, 0.08)',
   },
   targetText: {
@@ -3224,12 +2895,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(10, 8, 12, 0.32)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 9,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
     overflow: 'hidden',
+  },
+  targetTextUnset: {
+    color: colors.subtle,
+    borderStyle: 'dashed',
+    backgroundColor: SLColors.canvasRaised,
   },
   plannedSetList: {
     gap: 5,
@@ -3239,7 +2915,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.24)',
     backgroundColor: 'rgba(22, 18, 28, 0.58)',
-    borderRadius: 17,
+    borderRadius: SLRadius.lg,
     padding: 13,
     gap: 12,
   },
@@ -3260,7 +2936,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(8, 8, 12, 0.30)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
@@ -3273,7 +2949,7 @@ const styles = StyleSheet.create({
     height: 14,
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.24)',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(8, 8, 12, 0.34)',
   },
   repTypeDotActive: {
@@ -3282,7 +2958,7 @@ const styles = StyleSheet.create({
   },
   repTypeText: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   repTypeTextActive: {
@@ -3301,11 +2977,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.30)',
     backgroundColor: 'rgba(167, 139, 250, 0.12)',
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
   },
   amrapSelectedText: {
     color: colors.textStrong,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   wheelFrame: {
@@ -3314,7 +2990,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(8, 8, 12, 0.34)',
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     overflow: 'hidden',
     justifyContent: 'center',
   },
@@ -3328,7 +3004,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.44)',
     backgroundColor: 'rgba(167, 139, 250, 0.20)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     zIndex: 0,
   },
   wheelContent: {
@@ -3342,30 +3018,30 @@ const styles = StyleSheet.create({
   },
   wheelItemText: {
     color: colors.muted,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   wheelItemTextSelected: {
     color: colors.textStrong,
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
   },
   webEditorMeta: {
     gap: 5,
   },
   webEditorMetaLabel: {
     color: colors.subtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.sansBold,
   },
   webEditorMetaValue: {
     color: colors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   webEditorMetaHint: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
   },
   webLoadEditor: {
@@ -3382,7 +3058,7 @@ const styles = StyleSheet.create({
   webLoadStepperLabel: {
     width: 92,
     color: colors.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   webLoadStepButton: {
@@ -3390,14 +3066,14 @@ const styles = StyleSheet.create({
     height: 32,
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.34)',
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(167, 139, 250, 0.10)',
   },
   webLoadStepText: {
-    color: '#C4B5FD',
-    fontSize: 20,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 22,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3409,25 +3085,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(8, 8, 12, 0.34)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 10,
   },
   webLoadPrefix: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     marginRight: 4,
   },
   webLoadInput: {
     flex: 1,
     color: colors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
     paddingVertical: 7,
   },
   webLoadUnit: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   webLoadActions: {
@@ -3439,7 +3115,7 @@ const styles = StyleSheet.create({
     minHeight: 38,
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(10, 8, 12, 0.30)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -3447,7 +3123,7 @@ const styles = StyleSheet.create({
   },
   webLoadActionText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   editorFieldFull: {
@@ -3455,7 +3131,7 @@ const styles = StyleSheet.create({
   },
   editorLabel: {
     color: colors.subtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3464,11 +3140,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(8, 8, 12, 0.34)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     color: colors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   editorNotesInput: {
@@ -3486,13 +3162,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(10, 8, 12, 0.22)',
     paddingHorizontal: 14,
   },
   editorSecondaryText: {
     color: colors.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   editorPrimary: {
@@ -3501,12 +3177,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.24)',
     backgroundColor: 'rgba(167, 203, 181, 0.12)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 16,
   },
   editorPrimaryText: {
     color: colors.green,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   editorDisabled: {
@@ -3514,7 +3190,7 @@ const styles = StyleSheet.create({
   },
   plannedSetText: {
     color: colors.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 19,
     fontFamily: SLFontFamilies.sansMedium,
   },
@@ -3525,7 +3201,7 @@ const styles = StyleSheet.create({
   },
   notesText: {
     color: colors.violet,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   reorderList: {
@@ -3539,13 +3215,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.14)',
     backgroundColor: 'rgba(24, 20, 30, 0.58)',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     padding: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.22,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 2,
+    ...SLShadows.card,
   },
   reorderHandle: {
     width: 36,
@@ -3555,7 +3227,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.22)',
     backgroundColor: 'rgba(167, 139, 250, 0.10)',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
   },
   reorderRowTextWrap: {
     flex: 1,
@@ -3564,24 +3236,38 @@ const styles = StyleSheet.create({
   },
   reorderRowTitle: {
     color: colors.textStrong,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   reorderRowMeta: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
+  },
+  reorderButtonGroup: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  reorderStepButton: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.canvasRaised,
   },
   emptySection: {
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.10)',
     backgroundColor: 'rgba(20, 18, 22, 0.34)',
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     padding: 14,
   },
   emptySectionText: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
   },
   disabledButton: {
@@ -3589,7 +3275,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(10, 8, 12, 0.30)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 9,
   },
@@ -3599,57 +3285,73 @@ const styles = StyleSheet.create({
   },
   disabledButtonText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
-  disabledIconButton: {
-    opacity: 0.55,
-    width: 30,
-    height: 30,
+  removeItemButton: {
+    opacity: 0.86,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.12)',
-    borderRadius: 11,
-    backgroundColor: 'rgba(10, 8, 12, 0.30)',
+    borderColor: 'rgba(185, 104, 104, 0.22)',
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.surfaceDestructive,
   },
   sessionActions: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.10)',
-    backgroundColor: 'rgba(20, 18, 22, 0.44)',
-    borderRadius: 18,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    overflow: 'hidden',
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 2,
+  },
+  sessionActionSectionLabel: {
+    paddingHorizontal: SLSpacing.sm,
+    paddingTop: SLSpacing.xs,
+    paddingBottom: 2,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.technical,
+    fontSize: 11,
+    lineHeight: 15,
+    letterSpacing: 0.5,
+  },
+  sessionActionDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: SLSpacing.xs,
+    backgroundColor: SLColors.borderHairline,
   },
   sessionActionButton: {
-    width: '50%',
-    minHeight: 58,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.08)',
-    backgroundColor: 'rgba(10, 8, 12, 0.24)',
-  },
-  sessionActionWide: {
     width: '100%',
+    minHeight: SLControlSize.minimumTouchTarget,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: SLSpacing.sm,
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: SLSpacing.xs,
+    borderRadius: SL_TAB_ROW_CONTROL.itemRadius,
+    backgroundColor: 'transparent',
+  },
+  sessionActionText: {
+    flex: 1,
+    minWidth: 0,
+    color: SL_TAB_ROW_CONTROL.inactiveColor,
+    fontFamily: SLFontFamilies.sansBold,
+    fontSize: 14,
+    lineHeight: 19,
+  },
+  sessionActionDangerButton: {
+    backgroundColor: 'rgba(74,22,30,0.16)',
+  },
+  sessionActionDangerText: {
+    color: SLColors.danger,
   },
   sessionActionDisabled: {
     opacity: 0.48,
   },
-  sessionActionText: {
-    color: colors.muted,
-    fontSize: 15,
-    fontFamily: SLFontFamilies.sansBold,
-  },
-  sessionActionDanger: {
-    color: '#F0A4A4',
-  },
   trainingLiftEditorScreen: {
     flex: 1,
-    backgroundColor: '#0B080D',
+    backgroundColor: SLColors.surfaceInset,
   },
   accessoryEditorKeyboardWrap: {
     flex: 1,
@@ -3666,14 +3368,10 @@ const styles = StyleSheet.create({
     maxHeight: '92%',
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.14)',
-    borderRadius: 24,
+    borderRadius: SLRadius.xl,
     overflow: 'hidden',
-    backgroundColor: '#0B080D',
-    shadowColor: '#000',
-    shadowOpacity: 0.44,
-    shadowRadius: 28,
-    shadowOffset: { width: 0, height: 18 },
-    elevation: 16,
+    backgroundColor: SLColors.surfaceInset,
+    ...SLShadows.shadowSheet,
   },
   trainingLiftEditorHeader: {
     paddingTop: 58,
@@ -3698,13 +3396,13 @@ const styles = StyleSheet.create({
   },
   trainingLiftEditorEyebrow: {
     color: colors.violet,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftEditorTitle: {
     color: colors.textStrong,
-    fontSize: 28,
+    fontSize: SLTypography.hero.fontSize,
     lineHeight: 34,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3714,12 +3412,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.14)',
     backgroundColor: 'rgba(10, 8, 12, 0.34)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
   },
   trainingLiftCancelText: {
     color: colors.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftEditorScroll: {
@@ -3741,12 +3439,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.10)',
     backgroundColor: 'rgba(20, 18, 22, 0.44)',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     padding: 14,
   },
   trainingLiftSectionTitle: {
     color: colors.textStrong,
-    fontSize: 20,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 26,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3758,7 +3456,7 @@ const styles = StyleSheet.create({
   },
   trainingLiftMuted: {
     color: colors.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
   },
   trainingLiftFamilyRow: {
@@ -3771,7 +3469,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(10, 8, 12, 0.28)',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
   },
   trainingLiftFamilyButtonActive: {
@@ -3780,7 +3478,7 @@ const styles = StyleSheet.create({
   },
   trainingLiftFamilyText: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftFamilyTextActive: {
@@ -3800,7 +3498,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.11)',
     backgroundColor: 'rgba(8, 8, 12, 0.28)',
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
     paddingVertical: 12,
     paddingHorizontal: 13,
     gap: 4,
@@ -3814,16 +3512,16 @@ const styles = StyleSheet.create({
   },
   trainingLiftOptionTitle: {
     color: colors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     lineHeight: 21,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftOptionTitleSelected: {
-    color: '#C4B5FD',
+    color: SLColors.accentViolet,
   },
   trainingLiftOptionDetail: {
     color: colors.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontFamily: SLFontFamilies.sansMedium,
   },
@@ -3833,7 +3531,7 @@ const styles = StyleSheet.create({
   },
   trainingLiftFieldLabel: {
     color: colors.subtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3842,11 +3540,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(8, 8, 12, 0.34)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     color: colors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 9,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftNotesInput: {
@@ -3861,12 +3559,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.12)',
     backgroundColor: 'rgba(10, 8, 12, 0.30)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 13,
   },
   trainingLiftSecondaryText: {
     color: colors.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftEditorActions: {
@@ -3899,11 +3597,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.14)',
     backgroundColor: 'rgba(10, 8, 12, 0.34)',
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
   },
   trainingLiftActionSecondaryText: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftActionPrimary: {
@@ -3914,11 +3612,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.26)',
     backgroundColor: 'rgba(167, 203, 181, 0.16)',
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
   },
   trainingLiftActionPrimaryText: {
     color: colors.green,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   modalScrim: {
@@ -3930,16 +3628,16 @@ const styles = StyleSheet.create({
   calendarModal: {
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.22)',
-    backgroundColor: '#100C11',
-    borderRadius: 22,
+    backgroundColor: SLColors.surface,
+    borderRadius: SLRadius.xl,
     padding: 16,
     gap: 14,
   },
   infoModal: {
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.22)',
-    backgroundColor: '#100C11',
-    borderRadius: 22,
+    backgroundColor: SLColors.surface,
+    borderRadius: SLRadius.xl,
     padding: 16,
     gap: 14,
   },
@@ -3951,13 +3649,13 @@ const styles = StyleSheet.create({
   },
   infoModalTitle: {
     color: colors.textStrong,
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
     lineHeight: 30,
     fontFamily: SLFontFamilies.sansBold,
   },
   infoModalBody: {
     color: colors.muted,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     lineHeight: 23,
     fontFamily: SLFontFamilies.sansMedium,
   },
@@ -3968,11 +3666,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.24)',
     backgroundColor: 'rgba(167, 203, 181, 0.12)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
   },
   infoModalActionText: {
     color: colors.green,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarHeader: {
@@ -3983,13 +3681,13 @@ const styles = StyleSheet.create({
   },
   calendarEyebrow: {
     color: colors.violet,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarTitle: {
     color: colors.textStrong,
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
     lineHeight: 30,
     fontFamily: SLFontFamilies.sansBold,
   },
@@ -3998,7 +3696,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(5, 5, 5, 0.25)',
@@ -4013,14 +3711,14 @@ const styles = StyleSheet.create({
     height: 38,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(8, 8, 8, 0.18)',
   },
   calendarMonthLabel: {
     color: colors.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarWeekdays: {
@@ -4033,7 +3731,7 @@ const styles = StyleSheet.create({
     width: `${100 / 7}%`,
     color: colors.subtle,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarGrid: {
@@ -4045,7 +3743,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
   },
   calendarDaySelected: {
     backgroundColor: 'rgba(167, 139, 250, 0.22)',
@@ -4054,7 +3752,7 @@ const styles = StyleSheet.create({
   },
   calendarDayText: {
     color: colors.muted,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarDayTextSelected: {
@@ -4068,7 +3766,7 @@ const styles = StyleSheet.create({
   },
   calendarSelectedText: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansMedium,
   },
   calendarFooterActions: {
@@ -4080,13 +3778,13 @@ const styles = StyleSheet.create({
     minHeight: 46,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   calendarSecondaryText: {
     color: colors.muted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   calendarPrimary: {
@@ -4095,13 +3793,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(167, 203, 181, 0.26)',
     backgroundColor: 'rgba(167, 203, 181, 0.13)',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   calendarPrimaryText: {
     color: colors.green,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontFamily: SLFontFamilies.sansBold,
   },
   pressed: {

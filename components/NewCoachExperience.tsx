@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLButton } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: SLColors.accentMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   title: {
     color: SLColors.textStrong,
     fontFamily: SLTypography.cardTitle.fontFamily,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     lineHeight: 27,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   description: {
     color: SLColors.textMuted,
     fontFamily: SLTypography.body.fontFamily,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
   },
   previewShell: {
@@ -149,14 +150,14 @@ const styles = StyleSheet.create({
   },
   previewLabel: {
     color: SLColors.accentMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
   exampleLabel: {
     color: SLColors.review,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
   },
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   },
   previewDot: {
     backgroundColor: SLColors.accent,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     height: 6,
     marginTop: 7,
     width: 6,
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
   previewText: {
     color: SLColors.text,
     flex: 1,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   actions: {

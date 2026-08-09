@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
-import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLColors, SLRadius, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type CoachMetric = {
   label: string;
@@ -17,6 +19,7 @@ type CoachMetricStripProps = {
 export function CoachMetricStrip({ metrics, style }: CoachMetricStripProps) {
   return (
     <View style={[styles.strip, style]}>
+      <SLMaterialOverlay compact level={2} />
       {metrics.map((metric) => {
         const tone = metric.tone ? SLStatusTones[metric.tone] : null;
         return (
@@ -40,7 +43,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: 4,
+    overflow: 'hidden',
     padding: 6,
+    position: 'relative',
   },
   metric: {
     alignItems: 'center',
@@ -53,7 +58,7 @@ const styles = StyleSheet.create({
   value: {
     color: SLColors.textStrong,
     fontFamily: SLTypography.kpiNumber.fontFamily,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: SLTypography.kpiNumber.fontWeight,
     letterSpacing: SLTypography.kpiNumber.letterSpacing,
     lineHeight: 22,

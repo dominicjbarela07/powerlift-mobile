@@ -5,21 +5,21 @@ import {
   Keyboard,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 
 import RefreshScreen from '@/components/refresh-screen';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { SLErrorState, SLStatusPill } from '@/components/ui';
 import { ThemedView } from '@/components/themed-view';
 import { fetchJson, getCoachVideoReviewInbox } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
-import { SLColors, SLSpacing, type SLStatusTone } from '@/constants/theme';
+import { SLColors, SLRadius, SLSpacing, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 const REVIEW_TAG_OPTIONS = [
   ['great_set', 'Great Set'],
@@ -116,6 +116,7 @@ export default function CoachVideosQueueScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newCoachExperience, setNewCoachExperience] = useState<NewCoachExperiencePayload | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<SetVideoSummary | null>(null);
   const [feedback, setFeedback] = useState('');
   const [privateNotes, setPrivateNotes] = useState('');
@@ -126,11 +127,12 @@ export default function CoachVideosQueueScreen() {
   const [focusCues, setFocusCues] = useState(['', '', '']);
   const [savingFocus, setSavingFocus] = useState(false);
 
-  const loadQueue = useCallback(async (opts?: { silent?: boolean }) => {
+  const loadQueue = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
     const silent = !!opts?.silent;
     try {
-      if (silent) setRefreshing(true);
-      else setLoading(true);
+      if (silent) {
+        if (opts?.showRefreshIndicator !== false) setRefreshing(true);
+      } else setLoading(true);
       setError(null);
       const res = await getCoachVideoReviewInbox();
       const payload = res.json || {};
@@ -139,8 +141,10 @@ export default function CoachVideosQueueScreen() {
         throw new Error(payload.error || `Could not load videos (${res.status})`);
       }
       setVideos(Array.isArray(payload.videos) ? payload.videos : []);
+      setNewCoachExperience(payload.new_coach_experience || null);
     } catch (err: any) {
       setVideos([]);
+      setNewCoachExperience(null);
       setError(err?.message || 'Could not load videos.');
     } finally {
       if (silent) setRefreshing(false);
@@ -150,7 +154,7 @@ export default function CoachVideosQueueScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadQueue({ silent: true });
+      loadQueue({ silent: true, showRefreshIndicator: false });
     }, [loadQueue]),
   );
 
@@ -472,6 +476,8 @@ export default function CoachVideosQueueScreen() {
                   onPress={() => setSelectedVideo(video)}
                 />
               ))
+            ) : newCoachExperience ? (
+              <NewCoachExperience experience={newCoachExperience} />
             ) : (
               <View style={styles.inlineEmpty}>
                 <Ionicons name="checkmark-circle-outline" size={18} color={SLColors.success} />
@@ -596,31 +602,31 @@ const styles = StyleSheet.create({
   },
   title: {
     color: SLColors.textStrong,
-    fontSize: 28,
+    fontSize: SLTypography.hero.fontSize,
     fontWeight: '700',
     letterSpacing: 0,
     lineHeight: 32,
   },
   countLine: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
   archiveButton: {
     alignItems: 'center',
-    borderColor: 'rgba(167,139,250,0.28)',
-    borderRadius: 8,
+    borderColor: SLColors.borderSelected,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     flexDirection: 'row',
     gap: 6,
     minHeight: 34,
     paddingHorizontal: 11,
-    backgroundColor: 'rgba(20,16,28,0.34)',
+    backgroundColor: SLColors.surfaceEmbedded,
   },
   archiveButtonText: {
-    color: '#DDD6FE',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   sectionHeader: {
@@ -628,21 +634,19 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: SLColors.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   queueList: {
     borderTopWidth: 1,
-    borderTopColor: 'rgba(185,176,163,0.1)',
+    borderTopColor: SLColors.borderHairline,
   },
   videoRow: {
-    backgroundColor: 'rgba(6,6,8,0.32)',
-    borderBottomColor: 'rgba(185,176,163,0.1)',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderBottomColor: SLColors.borderHairline,
     borderBottomWidth: 1,
-    borderLeftColor: 'rgba(139,92,246,0.28)',
-    borderLeftWidth: 2,
     flexDirection: 'row',
     gap: 10,
     paddingVertical: 10,
@@ -650,15 +654,15 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   videoRowPriority: {
-    backgroundColor: 'rgba(76,29,149,0.16)',
-    borderLeftColor: 'rgba(167,139,250,0.44)',
+    backgroundColor: SLColors.accentVioletSoft,
+    borderLeftColor: SLColors.borderSelected,
   },
   pressed: {
     opacity: 0.78,
   },
   thumbWrap: {
-    backgroundColor: 'rgba(6,6,8,0.52)',
-    borderRadius: 8,
+    backgroundColor: SLColors.surfaceInset,
+    borderRadius: SLRadius.sm,
     height: 94,
     overflow: 'hidden',
     width: 70,
@@ -686,18 +690,18 @@ const styles = StyleSheet.create({
   rowTitle: {
     color: SLColors.textStrong,
     flex: 1,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
     minWidth: 0,
   },
   rowMeta: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
   },
   rowDetail: {
     color: SLColors.text,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
   },
   rowDetailLabel: {
@@ -714,7 +718,7 @@ const styles = StyleSheet.create({
   rowFooterText: {
     color: SLColors.textSubtle,
     flex: 1,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
   },
   inlineEmpty: {
@@ -723,12 +727,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 9,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(185,176,163,0.1)',
+    borderBottomColor: SLColors.borderHairline,
     paddingVertical: 11,
   },
   inlineEmptyText: {
     color: SLColors.textMuted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
   },
   stateCard: {
@@ -742,27 +746,27 @@ const styles = StyleSheet.create({
   },
   reviewLabel: {
     color: SLColors.textStrong,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   feedbackInput: {
     minHeight: 92,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: SLColors.borderStrong,
-    backgroundColor: 'rgba(6,6,8,0.42)',
+    backgroundColor: SLColors.surfaceInset,
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 19,
     paddingHorizontal: 12,
     paddingVertical: 11,
     textAlignVertical: 'top',
   },
   privateNotesSection: {
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: SLColors.border,
-    backgroundColor: 'rgba(6,6,8,0.34)',
+    backgroundColor: SLColors.surfaceEmbedded,
     overflow: 'hidden',
   },
   privateNotesToggle: {
@@ -774,18 +778,18 @@ const styles = StyleSheet.create({
   },
   privateNotesTitle: {
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   privateNotesHelp: {
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
   privateNotesChevron: {
     color: SLColors.review,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '900',
   },
   privateNotesInput: {
@@ -800,31 +804,31 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   chip: {
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: SLColors.borderStrong,
-    backgroundColor: 'rgba(6,6,8,0.38)',
+    backgroundColor: SLColors.surfaceInset,
     paddingHorizontal: 10,
     paddingVertical: 7,
   },
   chipActive: {
-    borderColor: 'rgba(167,139,250,0.66)',
-    backgroundColor: 'rgba(139,92,246,0.28)',
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.accentVioletSoft,
   },
   chipText: {
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   chipTextActive: {
-    color: '#DDD6FE',
+    color: SLColors.review,
   },
   focusPanel: {
     gap: 11,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(185,176,163,0.1)',
-    backgroundColor: 'rgba(18,14,18,0.36)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.surfaceEmbedded,
     paddingVertical: 13,
   },
   focusHeader: {
@@ -832,12 +836,12 @@ const styles = StyleSheet.create({
   },
   focusTitle: {
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   focusHelp: {
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '600',
     lineHeight: 15,
   },
@@ -846,18 +850,18 @@ const styles = StyleSheet.create({
   },
   focusInput: {
     minHeight: 40,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: SLColors.border,
-    backgroundColor: 'rgba(6,6,8,0.38)',
+    backgroundColor: SLColors.surfaceInset,
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     paddingHorizontal: 11,
     paddingVertical: 9,
   },
   focusSaveButton: {
     flex: 0,
-    backgroundColor: 'rgba(109,40,217,0.58)',
+    backgroundColor: SLColors.reviewSoft,
   },
   reviewActions: {
     flexDirection: 'row',
@@ -865,8 +869,8 @@ const styles = StyleSheet.create({
   },
   reviewButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(109,40,217,0.82)',
-    borderRadius: 9,
+    backgroundColor: SLColors.reviewSoft,
+    borderRadius: SLRadius.sm,
     flex: 1,
     justifyContent: 'center',
     minHeight: 44,
@@ -880,7 +884,7 @@ const styles = StyleSheet.create({
   },
   reviewButtonText: {
     color: SLColors.textStrong,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
 });

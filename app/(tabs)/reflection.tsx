@@ -9,17 +9,16 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 
+import { SLMotionEntrance } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 
 type FocusCue = {
@@ -85,21 +84,21 @@ type ReflectionPayload = {
 };
 
 const colors = {
-  text: '#ECE5DA',
-  textStrong: '#F9FAFB',
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  line: 'rgba(222, 198, 166, 0.13)',
-  lineSoft: 'rgba(222, 198, 166, 0.08)',
-  surface: 'rgba(20, 14, 18, 0.48)',
-  surfaceStrong: 'rgba(24, 18, 30, 0.72)',
+  text: SLColors.text,
+  textStrong: SLColors.textStrong,
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  line: SLColors.borderSubtle,
+  lineSoft: SLColors.borderHairline,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
   violet: SLColors.accentViolet,
-  violetStrong: '#9B6CFF',
-  violetSoft: 'rgba(155, 108, 255, 0.18)',
-  amber: '#F3BE55',
-  green: '#63D9B2',
-  pink: '#F06A8B',
-  cyan: '#55D6CF',
+  violetStrong: SLColors.accent,
+  violetSoft: SLColors.accentVioletSoft,
+  amber: SLColors.warning,
+  green: SLColors.success,
+  pink: SLColors.danger,
+  cyan: SLColors.info,
 };
 
 const SBD_LIFTS: Array<{ lift: 'SQ' | 'BN' | 'DL'; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
@@ -110,7 +109,12 @@ const SBD_LIFTS: Array<{ lift: 'SQ' | 'BN' | 'DL'; label: string; icon: keyof ty
 
 const reflectionAtmosphere = require('@/assets/images/reflection.jpeg');
 
-export default function ReflectionScreen() {
+export default function LegacyReflectionRoute() {
+  if (__DEV__) return <Redirect href="/(tabs)/training-focus" />;
+  return <TrainingFocusScreen />;
+}
+
+export function TrainingFocusScreen({ focusOnly = false }: { focusOnly?: boolean } = {}) {
   const router = useRouter();
   const { user } = useAuth();
   const isIndividual =
@@ -132,7 +136,10 @@ export default function ReflectionScreen() {
     async function run() {
       setLoading(true);
       setFocusError(null);
-      const response = await fetchJson<ReflectionPayload>('/athletes/mobile/reflection', { method: 'GET', auth: true });
+      const response = await fetchJson<ReflectionPayload>(
+        focusOnly ? '/athletes/mobile/reflection?focus_only=1' : '/athletes/mobile/reflection',
+        { method: 'GET', auth: true }
+      );
       if (cancelled) return;
       if (!response.ok || !response.json?.ok) {
         setFocusError(response.json?.error || 'Unable to load Reflection.');
@@ -143,15 +150,15 @@ export default function ReflectionScreen() {
         return;
       }
       setFocusLifts(response.json.reflection?.current_coaching_focus?.lifts || []);
-      setTrainingHistory(response.json.reflection?.training_history || []);
-      setFilmRooms(response.json.reflection?.film_study?.rooms || []);
+      setTrainingHistory(focusOnly ? [] : response.json.reflection?.training_history || []);
+      setFilmRooms(focusOnly ? [] : response.json.reflection?.film_study?.rooms || []);
       setLoading(false);
     }
     run();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [focusOnly]);
 
   useFocusEffect(loadReflection);
 
@@ -245,31 +252,15 @@ export default function ReflectionScreen() {
           imageStyle={styles.headerImageAsset}
         >
           <View style={styles.headerImageDim} />
-          <LinearGradient
-            pointerEvents="none"
-            colors={[
-              'rgba(5, 7, 12, 0.18)',
-              'rgba(9, 8, 15, 0.54)',
-              'rgba(9, 8, 15, 0.86)',
-              'rgba(2, 3, 6, 0.98)',
-            ]}
-            locations={[0, 0.42, 0.72, 1]}
-            style={styles.headerGradient}
-          />
-          <LinearGradient
-            pointerEvents="none"
-            colors={['rgba(2,3,6,0.96)', 'rgba(2,3,6,0.58)', 'rgba(2,3,6,0.08)']}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.headerSideFade}
-          />
+          <View pointerEvents="none" style={styles.headerScrim} />
           <View style={styles.headerCopy}>
-            <Text style={styles.title}>Reflection</Text>
-            <Text style={styles.subtitle}>Look back. Learn. Build forward.</Text>
+            <Text style={styles.title}>{focusOnly ? 'Training Focus' : 'Reflection'}</Text>
+            <Text style={styles.subtitle}>{focusOnly ? 'Keep today’s coaching priorities close.' : 'Look back. Learn. Build forward.'}</Text>
           </View>
         </ImageBackground>
       </View>
 
+      <SLMotionEntrance motionKey={`focus-${loading}-${focusLifts.length}`} distance={6}>
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
           <View style={styles.panelTitleRow}>
@@ -307,7 +298,9 @@ export default function ReflectionScreen() {
           />
         )}
       </View>
+      </SLMotionEntrance>
 
+      {focusOnly ? null : <SLMotionEntrance motionKey={`history-${trainingHistory.length}`} delay={42} distance={6}>
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
           <View style={styles.panelTitleRow}>
@@ -341,11 +334,13 @@ export default function ReflectionScreen() {
         ) : (
           <EmptyState
             title="Your completed sessions will appear here."
-            body="Finish workouts and they will become part of your training history."
+            body="Finish Training Sessions and they will become part of your training history."
           />
         )}
       </View>
+      </SLMotionEntrance>}
 
+      {focusOnly ? null : <SLMotionEntrance motionKey={`film-${filmRooms.length}`} delay={84} distance={6}>
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
           <View style={styles.panelTitleRow}>
@@ -376,6 +371,7 @@ export default function ReflectionScreen() {
           />
         </View>
       </View>
+      </SLMotionEntrance>}
 
       <FocusEditorModal
         draft={focusDraft}
@@ -427,12 +423,12 @@ function TrainingHistoryCard({
     <TouchableOpacity style={[styles.historyCard, { borderColor: tone.color }]} activeOpacity={0.82} onPress={onPress}>
       <View style={[styles.historyMemory, { backgroundColor: tone.bg }]}>
         <View style={[styles.historyIcon, { backgroundColor: tone.color }]}>
-          <Ionicons name="calendar-outline" size={22} color="#120B18" />
+          <Ionicons name="calendar-outline" size={22} color={SLColors.textInverted} />
         </View>
         <View style={styles.historySignalLine} />
       </View>
       <View style={styles.historyCardCopy}>
-        <Text style={styles.historyTitle} numberOfLines={2}>{session.title || 'Training Session'}</Text>
+        <Text typographyRole="workoutName" style={styles.historyTitle} numberOfLines={2}>{session.title || 'Training Session'}</Text>
         <Text style={styles.historyDate}>{formatDisplayDate(session.date)}</Text>
         {details ? <Text style={styles.historyDetails}>{details}</Text> : null}
       </View>
@@ -622,9 +618,9 @@ function FocusEditorModal({
 }
 
 function focusTone(lift: string) {
-  if (lift === 'BN') return { color: colors.cyan, bg: 'rgba(85, 214, 207, 0.14)' };
-  if (lift === 'DL') return { color: colors.pink, bg: 'rgba(240, 106, 139, 0.14)' };
-  return { color: colors.violetStrong, bg: 'rgba(155, 108, 255, 0.18)' };
+  if (lift === 'BN') return { color: colors.cyan, bg: SLColors.infoSoft };
+  if (lift === 'DL') return { color: colors.pink, bg: SLColors.dangerSoft };
+  return { color: colors.violetStrong, bg: SLColors.accentSoft };
 }
 
 function focusIcon(lift: string): keyof typeof Ionicons.glyphMap {
@@ -635,10 +631,10 @@ function focusIcon(lift: string): keyof typeof Ionicons.glyphMap {
 
 function historyTone(index: number) {
   const tones = [
-    { color: colors.violetStrong, bg: 'rgba(155,108,255,0.25)' },
-    { color: colors.cyan, bg: 'rgba(85,214,207,0.18)' },
-    { color: colors.pink, bg: 'rgba(240,106,139,0.18)' },
-    { color: colors.amber, bg: 'rgba(243,190,85,0.18)' },
+    { color: colors.violetStrong, bg: SLColors.surfaceMuted },
+    { color: colors.cyan, bg: SLColors.infoSoft },
+    { color: colors.pink, bg: SLColors.dangerSoft },
+    { color: colors.amber, bg: SLColors.warningSoft },
   ];
   return tones[index % tones.length];
 }
@@ -665,7 +661,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(155,108,255,0.18)',
+    borderColor: colors.line,
     backgroundColor: colors.surfaceStrong,
   },
   headerImage: {
@@ -673,21 +669,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   headerImageAsset: {
-    opacity: 0.64,
+    opacity: 0.48,
   },
   headerImageDim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(3,4,8,0.38)',
+    backgroundColor: 'rgba(11,10,9,0.46)',
   },
-  headerGradient: {
+  headerScrim: {
     ...StyleSheet.absoluteFillObject,
-  },
-  headerSideFade: {
-    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,5,8,0.62)',
   },
   headerCopy: {
     gap: 6,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 28,
     paddingBottom: 20,
   },
@@ -700,15 +694,15 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.muted,
   },
   panel: {
     gap: 16,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: SLRadius.radiusCard,
+    padding: 18,
     backgroundColor: colors.surface,
   },
   panelHeader: {
@@ -725,7 +719,7 @@ const styles = StyleSheet.create({
   sectionIcon: {
     width: 34,
     height: 34,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -737,7 +731,7 @@ const styles = StyleSheet.create({
   },
   panelKicker: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.text,
     letterSpacing: 0.25,
@@ -749,7 +743,7 @@ const styles = StyleSheet.create({
   },
   textButtonText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     color: colors.violetStrong,
   },
   loadingRow: {
@@ -782,12 +776,12 @@ const styles = StyleSheet.create({
   },
   focusTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   focusBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 20,
     color: colors.muted,
   },
@@ -797,12 +791,12 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   emptyBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     color: colors.muted,
   },
@@ -813,15 +807,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
-    backgroundColor: colors.violetSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.accent,
     borderWidth: 1,
-    borderColor: 'rgba(155,108,255,0.42)',
+    borderColor: SLColors.accent,
   },
   emptyButtonText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
-    color: colors.violetStrong,
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textInverted,
   },
   historyRail: {
     gap: 12,
@@ -831,7 +825,7 @@ const styles = StyleSheet.create({
     width: 190,
     minHeight: 244,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     overflow: 'hidden',
     backgroundColor: colors.surfaceStrong,
   },
@@ -843,7 +837,7 @@ const styles = StyleSheet.create({
   historyIcon: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -858,19 +852,19 @@ const styles = StyleSheet.create({
   },
   historyTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 23,
     color: colors.textStrong,
   },
   historyDate: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     color: colors.muted,
   },
   historyDetails: {
     marginTop: 2,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.text,
   },
   filmRows: {
@@ -895,7 +889,7 @@ const styles = StyleSheet.create({
   filmIcon: {
     width: 52,
     height: 52,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.violetSoft,
@@ -906,12 +900,12 @@ const styles = StyleSheet.create({
   },
   filmTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   filmSubtitle: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     color: colors.muted,
   },
@@ -925,14 +919,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 11,
-    borderRadius: 11,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
     borderColor: colors.lineSoft,
   },
   folderChipText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.text,
   },
   modalScrim: {
@@ -946,7 +940,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: '#110D13',
+    backgroundColor: SLColors.surfaceInset,
     overflow: 'hidden',
   },
   editorHeader: {
@@ -964,19 +958,19 @@ const styles = StyleSheet.create({
   },
   editorTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     color: colors.textStrong,
   },
   editorBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     color: colors.muted,
   },
   editorIconButton: {
     width: 40,
     height: 40,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -997,7 +991,7 @@ const styles = StyleSheet.create({
   editorLiftTab: {
     flex: 1,
     minHeight: 42,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: colors.lineSoft,
     alignItems: 'center',
@@ -1005,12 +999,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.03)',
   },
   editorLiftTabActive: {
-    borderColor: 'rgba(155,108,255,0.55)',
-    backgroundColor: colors.violetSoft,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.surfaceSelected,
   },
   editorLiftTabText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.muted,
   },
   editorLiftTabTextActive: {
@@ -1029,26 +1023,26 @@ const styles = StyleSheet.create({
   },
   editorLiftLabel: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.text,
     textTransform: 'uppercase',
   },
   focusInput: {
     minHeight: 50,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: colors.line,
     paddingHorizontal: 14,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     color: colors.textStrong,
     backgroundColor: 'rgba(255,255,255,0.04)',
   },
   editorError: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
-    color: '#FCA5A5',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.danger,
   },
   editorActions: {
     flexDirection: 'row',
@@ -1062,13 +1056,13 @@ const styles = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: colors.line,
   },
   editorSecondaryText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     color: colors.text,
   },
   editorPrimaryButton: {
@@ -1076,13 +1070,13 @@ const styles = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     backgroundColor: colors.violetStrong,
   },
   editorPrimaryText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
-    color: '#120B18',
+    fontSize: SLTypography.body.fontSize,
+    color: SLColors.textInverted,
   },
   editorButtonDisabled: {
     opacity: 0.58,

@@ -1,14 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  Pressable,
   StyleSheet,
   type GestureResponderEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
 
-import { SLColors, SLRadius, SLStatusTones, type SLStatusTone } from '@/constants/theme';
+import { SLColors, SLRadius, SLShadows, SLStatusTones, type SLStatusTone } from '@/constants/theme';
+import { SLMotionPressable } from './sl-motion';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type IconButtonVariant = 'solid' | 'soft' | 'ghost';
@@ -44,12 +45,23 @@ export function SLIconButton({
   const sizing = sizes[size];
   const palette = SLStatusTones[tone];
   const backgroundColor =
-    variant === 'ghost' ? 'transparent' : variant === 'solid' ? palette.icon : palette.background;
+    variant === 'ghost'
+      ? 'transparent'
+      : variant === 'solid'
+        ? palette.icon
+        : tone === 'neutral'
+          ? SLColors.object
+          : palette.background;
   const iconColor = variant === 'solid' ? SLColors.textInverted : palette.icon;
-  const borderColor = variant === 'ghost' ? 'transparent' : palette.border;
+  const borderColor =
+    variant === 'ghost'
+      ? 'transparent'
+      : tone === 'neutral'
+        ? SLColors.borderStandard
+        : palette.border;
 
   return (
-    <Pressable
+    <SLMotionPressable
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       disabled={disabled}
@@ -57,18 +69,24 @@ export function SLIconButton({
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor,
+          backgroundColor: pressed && variant !== 'ghost' ? SLColors.surfacePressed : backgroundColor,
           borderColor,
           borderRadius: sizing.radius,
           height: sizing.box,
-          opacity: disabled ? 0.45 : pressed ? 0.78 : 1,
+          opacity: disabled ? 0.45 : 1,
           width: sizing.box,
         },
+        variant === 'ghost' ? null : SLShadows.level2,
         style,
       ]}
     >
-      <Ionicons color={iconColor} name={icon} size={sizing.icon} />
-    </Pressable>
+      {({ pressed }: { pressed: boolean }) => (
+        <>
+          {variant !== 'ghost' ? <SLMaterialOverlay compact level={variant === 'solid' ? 3 : 2} pressed={pressed} /> : null}
+          <Ionicons color={iconColor} name={icon} size={sizing.icon} />
+        </>
+      )}
+    </SLMotionPressable>
   );
 }
 
@@ -77,5 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     justifyContent: 'center',
+    overflow: 'hidden',
+    position: 'relative',
   },
 });

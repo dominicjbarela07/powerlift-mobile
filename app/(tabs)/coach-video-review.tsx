@@ -1,5 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, Modal, Pressable, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Keyboard,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 
@@ -9,6 +19,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { fetchJson, getCoachVideoReviewInbox } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 const REVIEW_TAG_OPTIONS = [
   ['great_set', 'Great Set'],
@@ -103,11 +114,12 @@ export default function CoachVideoReviewScreen() {
     setSavingAction(null);
   }, [selectedVideo?.id]);
 
-  const loadInbox = useCallback(async (opts?: { silent?: boolean }) => {
+  const loadInbox = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
     const silent = !!opts?.silent;
     try {
-      if (silent) setRefreshing(true);
-      else setLoading(true);
+      if (silent) {
+        if (opts?.showRefreshIndicator !== false) setRefreshing(true);
+      } else setLoading(true);
       setError(null);
       const res = await getCoachVideoReviewInbox();
       const payload = res.json || {};
@@ -127,7 +139,7 @@ export default function CoachVideoReviewScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadInbox({ silent: true });
+      loadInbox({ silent: true, showRefreshIndicator: false });
     }, [loadInbox]),
   );
 
@@ -206,7 +218,7 @@ export default function CoachVideoReviewScreen() {
           value={feedback}
           onChangeText={setFeedback}
           placeholder="Leave a quick coaching cue..."
-          placeholderTextColor="#64748B"
+          placeholderTextColor={SLColors.textSubtle}
           multiline
         />
       </View>
@@ -229,7 +241,7 @@ export default function CoachVideoReviewScreen() {
             value={privateNotes}
             onChangeText={setPrivateNotes}
             placeholder="Private programming thoughts..."
-            placeholderTextColor="#64748B"
+            placeholderTextColor={SLColors.textSubtle}
             multiline
           />
         ) : null}
@@ -311,7 +323,7 @@ export default function CoachVideoReviewScreen() {
     <ThemedView style={styles.screen}>
       {loading && !videos.length ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator color="#C4B5FD" />
+          <ActivityIndicator color={SLColors.accentViolet} />
         </View>
       ) : (
         <RefreshScreen
@@ -335,7 +347,7 @@ export default function CoachVideoReviewScreen() {
               accessibilityRole="button"
               accessibilityLabel="Open video review menu"
             >
-              <Ionicons name="ellipsis-horizontal" size={24} color="#C4B5FD" />
+              <Ionicons name="ellipsis-horizontal" size={24} color={SLColors.accentViolet} />
             </TouchableOpacity>
           </View>
 
@@ -345,13 +357,13 @@ export default function CoachVideoReviewScreen() {
             onPress={() => router.push('/(tabs)/coach-video-archive' as any)}
           >
             <View style={styles.archiveActionIcon}>
-              <Ionicons name="albums-outline" size={19} color="#C4B5FD" />
+              <Ionicons name="albums-outline" size={19} color={SLColors.accentViolet} />
             </View>
             <View style={styles.archiveActionCopy}>
               <ThemedText style={styles.archiveActionTitle}>Video Archive</ThemedText>
               <ThemedText style={styles.archiveActionBody}>Search roster video history</ThemedText>
             </View>
-            <Ionicons name="chevron-forward" size={17} color="#94A3B8" />
+            <Ionicons name="chevron-forward" size={17} color={SLColors.textMuted} />
           </TouchableOpacity>
 
           {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
@@ -377,7 +389,7 @@ export default function CoachVideoReviewScreen() {
                           <Image source={{ uri: video.thumbnail_url }} style={styles.thumbnail} resizeMode="cover" />
                         ) : (
                           <View style={styles.thumbnailPlaceholder}>
-                            <Ionicons name="play" size={18} color="#A7F3D0" />
+                            <Ionicons name="play" size={18} color={SLColors.success} />
                           </View>
                         )}
                       </View>
@@ -385,7 +397,7 @@ export default function CoachVideoReviewScreen() {
                         <View style={styles.cardTopRow}>
                           <View style={styles.cardTitleBlock}>
                             <ThemedText style={styles.cardTitle} numberOfLines={1}>{movement} · {setLabel}</ThemedText>
-                            <ThemedText style={styles.cardMeta} numberOfLines={1}>
+                            <ThemedText typographyRole="caption" style={styles.cardMeta} numberOfLines={1}>
                               {context.athlete_name || 'Athlete'} · {formatDate(context.session_date)}
                             </ThemedText>
                           </View>
@@ -455,13 +467,13 @@ export default function CoachVideoReviewScreen() {
               onPress={() => setMenuOpen(false)}
             >
               <View style={styles.menuIcon}>
-                <Ionicons name="list-outline" size={18} color="#A7F3D0" />
+                <Ionicons name="list-outline" size={18} color={SLColors.success} />
               </View>
               <View style={styles.menuCopy}>
                 <ThemedText style={styles.menuTitle}>Review Queue</ThemedText>
                 <ThemedText style={styles.menuBody}>Pending and follow-up submissions</ThemedText>
               </View>
-              <Ionicons name="checkmark" size={17} color="#A7F3D0" />
+              <Ionicons name="checkmark" size={17} color={SLColors.success} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
@@ -472,13 +484,13 @@ export default function CoachVideoReviewScreen() {
               }}
             >
               <View style={styles.menuIcon}>
-                <Ionicons name="albums-outline" size={18} color="#C4B5FD" />
+                <Ionicons name="albums-outline" size={18} color={SLColors.accentViolet} />
               </View>
               <View style={styles.menuCopy}>
                 <ThemedText style={styles.menuTitle}>Video Archive</ThemedText>
                 <ThemedText style={styles.menuBody}>Search roster video history</ThemedText>
               </View>
-              <Ionicons name="chevron-forward" size={17} color="#94A3B8" />
+              <Ionicons name="chevron-forward" size={17} color={SLColors.textMuted} />
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -490,7 +502,7 @@ export default function CoachVideoReviewScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: 'transparent',
   },
   loadingBox: {
     flex: 1,
@@ -512,28 +524,28 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   kicker: {
-    color: '#A7F3D0',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   title: {
-    color: '#F8FAFC',
-    fontSize: 28,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.hero.fontSize,
     fontWeight: '900',
     marginTop: 2,
   },
   subtitle: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
   headerIcon: {
     width: 46,
     height: 46,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.24)',
     backgroundColor: 'rgba(91,79,207,0.16)',
@@ -542,7 +554,7 @@ const styles = StyleSheet.create({
   },
   archiveActionCard: {
     minHeight: 58,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.2)',
     backgroundColor: 'rgba(91,79,207,0.12)',
@@ -556,7 +568,7 @@ const styles = StyleSheet.create({
   archiveActionIcon: {
     width: 36,
     height: 36,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.22)',
     backgroundColor: 'rgba(15,23,42,0.62)',
@@ -568,13 +580,13 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   archiveActionTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   archiveActionBody: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
@@ -587,21 +599,17 @@ const styles = StyleSheet.create({
   },
   menuCard: {
     width: 286,
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.16)',
     backgroundColor: 'rgba(8,12,22,0.96)',
     padding: 8,
     gap: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 10,
+    ...SLShadows.shadowSheet,
   },
   menuItem: {
     minHeight: 58,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -611,7 +619,7 @@ const styles = StyleSheet.create({
   menuIcon: {
     width: 34,
     height: 34,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.16)',
     backgroundColor: 'rgba(15,23,42,0.76)',
@@ -623,19 +631,19 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   menuTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   menuBody: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
   errorText: {
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     marginBottom: 12,
   },
@@ -643,7 +651,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.16)',
     backgroundColor: 'rgba(15,23,42,0.78)',
@@ -656,9 +664,9 @@ const styles = StyleSheet.create({
   thumbWrap: {
     width: 76,
     height: 102,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     overflow: 'hidden',
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.background,
   },
   thumbnail: {
     width: '100%',
@@ -684,18 +692,18 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   cardTitle: {
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   cardMeta: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     marginTop: 2,
   },
   statusPill: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.28)',
     backgroundColor: 'rgba(91,79,207,0.18)',
@@ -703,7 +711,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   statusText: {
-    color: '#DDD6FE',
+    color: SLColors.review,
     fontSize: 10,
     fontWeight: '900',
   },
@@ -712,29 +720,29 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   detailLine: {
-    color: '#E2E8F0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   detailLabel: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontWeight: '900',
   },
   emptyCard: {
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.14)',
     backgroundColor: 'rgba(15,23,42,0.62)',
     padding: 18,
   },
   emptyTitle: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   emptyBody: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     lineHeight: 18,
     marginTop: 4,
@@ -746,20 +754,20 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   reviewLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     letterSpacing: 0.7,
     textTransform: 'uppercase',
   },
   feedbackInput: {
     minHeight: 88,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.82)',
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
     lineHeight: 19,
     paddingHorizontal: 12,
@@ -774,7 +782,7 @@ const styles = StyleSheet.create({
   },
   privateNotesToggle: {
     minHeight: 42,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.14)',
     backgroundColor: 'rgba(15,23,42,0.48)',
@@ -786,19 +794,19 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   privateNotesTitle: {
-    color: '#E2E8F0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   privateNotesHelp: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
   privateNotesChevron: {
-    color: '#C4B5FD',
-    fontSize: 20,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '900',
   },
   privateNotesInput: {
@@ -813,7 +821,7 @@ const styles = StyleSheet.create({
   },
   chip: {
     minHeight: 30,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.82)',
@@ -826,12 +834,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(91,79,207,0.34)',
   },
   chipText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   chipTextActive: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   reviewActions: {
     flexDirection: 'row',
@@ -840,10 +848,10 @@ const styles = StyleSheet.create({
   },
   reviewButton: {
     minHeight: 36,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.36)',
-    backgroundColor: '#5B4FCF',
+    backgroundColor: SLColors.railViolet,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,
@@ -856,8 +864,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(180,83,9,0.26)',
   },
   reviewButtonText: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
 });

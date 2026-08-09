@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { getAthleteCoachReviews } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 type AthleteReview = Omit<SetVideoSummary, 'review_tags'> & {
   review_tags?: SetVideoReviewTag[] | null;
@@ -104,11 +105,12 @@ export default function CoachReviewsScreen() {
     return Number.isFinite(id) && id > 0 ? id : null;
   }, [params.videoId]);
 
-  const loadReviews = useCallback(async (opts?: { silent?: boolean }) => {
+  const loadReviews = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
     const silent = !!opts?.silent;
     try {
-      if (silent) setRefreshing(true);
-      else setLoading(true);
+      if (silent) {
+        if (opts?.showRefreshIndicator !== false) setRefreshing(true);
+      } else setLoading(true);
       setError(null);
       const res = await getAthleteCoachReviews();
       const payload = res.json || {};
@@ -139,7 +141,7 @@ export default function CoachReviewsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadReviews({ silent: true });
+      loadReviews({ silent: true, showRefreshIndicator: false });
     }, [loadReviews]),
   );
 
@@ -152,7 +154,7 @@ export default function CoachReviewsScreen() {
     <ThemedView style={styles.screen}>
       {loading && !reviews.length ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator color="#A7F3D0" />
+          <ActivityIndicator color={SLColors.success} />
         </View>
       ) : (
         <RefreshScreen
@@ -170,7 +172,7 @@ export default function CoachReviewsScreen() {
               </ThemedText>
             </View>
             <View style={styles.headerIcon}>
-              <Ionicons name="sparkles-outline" size={24} color="#A7F3D0" />
+              <Ionicons name="sparkles-outline" size={24} color={SLColors.success} />
             </View>
           </View>
 
@@ -196,7 +198,7 @@ export default function CoachReviewsScreen() {
                   >
                     <View style={styles.cardTopRow}>
                       <View style={[styles.playBadge, isFollowup && styles.followupPlayBadge]}>
-                        <Ionicons name={isFollowup ? 'alert' : 'play'} size={15} color={isFollowup ? '#FEF3C7' : '#DCFCE7'} />
+                        <Ionicons name={isFollowup ? 'alert' : 'play'} size={15} color={isFollowup ? SLColors.warning : SLColors.success} />
                       </View>
                       <View style={styles.cardTitleBlock}>
                         <ThemedText style={styles.cardTitle}>{movement} · {setLabel}</ThemedText>
@@ -275,7 +277,7 @@ export default function CoachReviewsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: 'transparent',
   },
   loadingBox: {
     flex: 1,
@@ -301,37 +303,37 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   kicker: {
-    color: '#A7F3D0',
-    fontSize: 11,
+    ...SLTypography.utilityLabel,
+    color: SLColors.success,
     fontWeight: '900',
     letterSpacing: 1.1,
     textTransform: 'uppercase',
   },
   title: {
-    color: '#F8FAFC',
-    fontSize: 28,
+    ...SLTypography.hero,
+    color: SLColors.textStrong,
     fontWeight: '900',
     marginTop: 2,
   },
   subtitle: {
-    color: '#94A3B8',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
     fontWeight: '700',
     marginTop: 2,
   },
   headerIcon: {
     width: 46,
     height: 46,
-    borderRadius: 16,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(167,243,208,0.24)',
-    backgroundColor: 'rgba(20,184,166,0.14)',
+    borderColor: SLColors.success,
+    backgroundColor: SLColors.successSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   errorText: {
-    color: '#FECACA',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.danger,
     fontWeight: '800',
     marginBottom: 12,
   },
@@ -339,15 +341,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    borderRadius: 16,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.16)',
-    backgroundColor: 'rgba(15,23,42,0.78)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surface,
     padding: 14,
   },
   followupCard: {
-    borderColor: 'rgba(251,191,36,0.34)',
-    backgroundColor: 'rgba(69,40,12,0.42)',
+    borderColor: SLColors.warning,
+    backgroundColor: SLColors.warningSoft,
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -357,55 +359,55 @@ const styles = StyleSheet.create({
   playBadge: {
     width: 34,
     height: 34,
-    borderRadius: 17,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(167,243,208,0.28)',
-    backgroundColor: 'rgba(22,101,52,0.26)',
+    borderColor: SLColors.success,
+    backgroundColor: SLColors.successSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   followupPlayBadge: {
-    borderColor: 'rgba(251,191,36,0.36)',
-    backgroundColor: 'rgba(180,83,9,0.36)',
+    borderColor: SLColors.warning,
+    backgroundColor: SLColors.warningSoft,
   },
   cardTitleBlock: {
     flex: 1,
     minWidth: 0,
   },
   cardTitle: {
-    color: '#F8FAFC',
-    fontSize: 15,
+    ...SLTypography.bodyStrong,
+    color: SLColors.textStrong,
     fontWeight: '900',
   },
   cardMeta: {
-    color: '#94A3B8',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.textMuted,
     fontWeight: '800',
     marginTop: 2,
   },
   statusPill: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(129,140,248,0.28)',
-    backgroundColor: 'rgba(91,79,207,0.18)',
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.reviewSoft,
     paddingHorizontal: 8,
     paddingVertical: 5,
   },
   followupPill: {
-    borderColor: 'rgba(251,191,36,0.38)',
-    backgroundColor: 'rgba(180,83,9,0.30)',
+    borderColor: SLColors.warning,
+    backgroundColor: SLColors.warningSoft,
   },
   statusText: {
-    color: '#DDD6FE',
-    fontSize: 10,
+    ...SLTypography.micro,
+    color: SLColors.review,
     fontWeight: '900',
   },
   followupStatusText: {
-    color: '#FEF3C7',
+    color: SLColors.warning,
   },
   feedbackPreview: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    ...SLTypography.note,
+    color: SLColors.textStrong,
     fontWeight: '800',
     lineHeight: 20,
     marginTop: 12,
@@ -415,12 +417,12 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   detailLine: {
-    color: '#E2E8F0',
-    fontSize: 12,
+    ...SLTypography.caption,
+    color: SLColors.text,
     fontWeight: '700',
   },
   detailLabel: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontWeight: '900',
   },
   tagRow: {
@@ -430,34 +432,34 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   tagPill: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.18)',
-    backgroundColor: 'rgba(15,23,42,0.52)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceFlat,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   tagText: {
-    color: '#CBD5E1',
-    fontSize: 10,
+    ...SLTypography.micro,
+    color: SLColors.text,
     fontWeight: '900',
     textTransform: 'capitalize',
   },
   emptyCard: {
-    borderRadius: 16,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.14)',
-    backgroundColor: 'rgba(15,23,42,0.62)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surface,
     padding: 18,
   },
   emptyTitle: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    ...SLTypography.cardTitle,
+    color: SLColors.textStrong,
     fontWeight: '900',
   },
   emptyBody: {
-    color: '#94A3B8',
-    fontSize: 13,
+    ...SLTypography.label,
+    color: SLColors.textMuted,
     fontWeight: '700',
     lineHeight: 18,
     marginTop: 4,

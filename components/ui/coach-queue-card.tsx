@@ -1,5 +1,6 @@
 import React, { type ReactNode } from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLCard } from './sl-card';
 import { SLStatusPill } from './sl-status-pill';
@@ -27,7 +28,7 @@ export function CoachQueueCard({
   style,
 }: CoachQueueCardProps) {
   return (
-    <SLCard contentStyle={styles.cardContent} onPress={onPress} style={style} variant="command">
+    <SLCard contentStyle={styles.cardContent} onPress={onPress} style={style}>
       <View style={styles.header}>
         <View style={styles.copy}>
           <Text style={styles.title}>{title}</Text>

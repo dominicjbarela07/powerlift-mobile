@@ -12,6 +12,12 @@ import * as SecureStore from 'expo-secure-store';
 import { AppState } from 'react-native';
 
 import { fetchJson, subscribeAccountStateBlocks, type AccountStatePayload } from '@/lib/api';
+import {
+  isProductionIdealStateActive,
+  productionIdealAuthUser,
+  useDevLiveScreenSession,
+} from '@/lib/release-preview-stubs';
+import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
 
 // Shape of the authenticated user coming from your Flask API
@@ -41,6 +47,8 @@ export type AuthUser = {
   dev_onboarding_simulation_enabled?: boolean;
   has_linked_athlete: boolean;
   athlete_id: number | null;
+  profilePhotoUrl?: string | null;
+  profilePhotoVersion?: string | null;
 };
 
 const TOKEN_KEY = 'auth_token';
@@ -55,6 +63,7 @@ type AuthContextValue = {
   logout: () => Promise<void>;
   refreshAccountState: () => Promise<AuthUser | null>;
   applyAccountStatePayload: (payload: AccountStatePayload) => Promise<AuthUser | null>;
+  updateProfilePhoto: (payload: unknown) => Promise<AuthUser | null>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -93,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const mergeAccountStatePayload = useCallback((base: AuthUser, payload: AccountStatePayload = {}): AuthUser => {
     const payloadUser = (payload.user || {}) as Record<string, any>;
+    const profilePhoto = normalizeProfilePhotoPayload(payloadUser);
     const accountState = payloadUser.account_state ?? payload.account_state ?? base.account_state ?? null;
     const payloadVerificationRequired =
       payloadUser.verification_required !== undefined
@@ -104,8 +114,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       accountState === 'EMAIL_VERIFICATION_REQUIRED' ||
       accountState === 'ACTIVATION_REQUIRED' ||
       accountState === 'LINK_COACH_REQUIRED';
-    const payloadRole = payloadUser.role ?? payload.role;
-    const role = payloadRole === 'coach' || payloadRole === 'athlete' ? payloadRole : base.role;
+    const role = payloadUser.role === 'coach' || payload.role === 'coach' ? 'coach' : base.role;
     const isCoach = role === 'coach';
     const hasLinkedAthlete =
       payload.link_coach_required === true || payloadUser.link_coach_required === true
@@ -200,8 +209,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
           : payloadUser.athlete_id !== undefined
           ? payloadUser.athlete_id
           : base.athlete_id,
+      profilePhotoUrl: profilePhoto.hasProfilePhotoValue
+        ? profilePhoto.profilePhotoUrl
+        : base.profilePhotoUrl ?? null,
+      profilePhotoVersion: profilePhoto.hasProfilePhotoValue
+        ? profilePhoto.profilePhotoVersion
+        : base.profilePhotoVersion ?? null,
     };
   }, []);
+
+  const updateProfilePhoto = useCallback(
+    async (payload: unknown) => {
+      const current = userRef.current;
+      if (!current) return null;
+      const profilePhoto = normalizeProfilePhotoPayload(payload);
+      if (!profilePhoto.hasProfilePhotoValue) return current;
+      const nextUser: AuthUser = {
+        ...current,
+        profilePhotoUrl: profilePhoto.profilePhotoUrl,
+        profilePhotoVersion: profilePhoto.profilePhotoVersion,
+      };
+      await persistUser(nextUser);
+      return nextUser;
+    },
+    [persistUser]
+  );
 
   const applyAccountStatePayload = useCallback(
     async (payload: AccountStatePayload = {}) => {
@@ -257,7 +289,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [applyAccountStatePayload, mergeAccountStatePayload, persistUser]);
 
   async function login(payload: { user: AuthUser; token: string | null }) {
-    await persistUser(payload.user);
+    const profilePhoto = normalizeProfilePhotoPayload(payload.user);
+    await persistUser({
+      ...payload.user,
+      profilePhotoUrl: profilePhoto.hasProfilePhotoValue
+        ? profilePhoto.profilePhotoUrl
+        : payload.user.profilePhotoUrl ?? null,
+      profilePhotoVersion: profilePhoto.hasProfilePhotoValue
+        ? profilePhoto.profilePhotoVersion
+        : payload.user.profilePhotoVersion ?? null,
+    });
     setToken(payload.token);
     tokenRef.current = payload.token;
 
@@ -298,19 +339,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const profile = await fetchJson<any>('/mobile/me', { method: 'GET' });
           const profileUser = profile.json?.user;
           if (profile.ok && profileUser) {
+            const profilePhoto = normalizeProfilePhotoPayload(profileUser);
             const refreshedUser: AuthUser = {
               email: String(profileUser.email || restoredUser?.email || ''),
               user_name: profileUser.name ?? restoredUser?.user_name ?? null,
               role: profileUser.role === 'coach' ? 'coach' : 'athlete',
               is_coach: profileUser.role === 'coach',
               workspace_mode: profileUser.workspace_mode,
-              available_mobile_modes: Array.isArray(profileUser.available_mobile_modes)
-                ? profileUser.available_mobile_modes
-                : restoredUser?.available_mobile_modes,
-              mobile_mode: profileUser.mobile_mode ?? restoredUser?.mobile_mode ?? null,
-              can_access_internal_self_coach_mobile_mode:
-                profileUser.can_access_internal_self_coach_mobile_mode === true ||
-                restoredUser?.can_access_internal_self_coach_mobile_mode === true,
               is_individual_workspace: profileUser.is_individual_workspace === true,
               is_self_coached: profileUser.is_self_coached === true,
               self_athlete_id: profileUser.self_athlete_id ?? null,
@@ -342,6 +377,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 restoredUser?.dev_onboarding_simulation_enabled === true,
               has_linked_athlete: !!profile.json?.athlete?.coach_id,
               athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
+              profilePhotoUrl: profilePhoto.hasProfilePhotoValue
+                ? profilePhoto.profilePhotoUrl
+                : restoredUser?.profilePhotoUrl ?? null,
+              profilePhotoVersion: profilePhoto.hasProfilePhotoValue
+                ? profilePhoto.profilePhotoVersion
+                : restoredUser?.profilePhotoVersion ?? null,
             };
             await persistUser(refreshedUser);
           } else if (restoredUser && (profile.status === 402 || profile.status === 403)) {
@@ -414,6 +455,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     refreshAccountState,
     applyAccountStatePayload,
+    updateProfilePhoto,
   };
 
   return (
@@ -426,8 +468,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
 // Hook to read auth state anywhere in the app
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
+  useDevLiveScreenSession();
   if (!ctx) {
     throw new Error('useAuth must be used within an AuthProvider');
+  }
+  if (
+    typeof __DEV__ !== 'undefined'
+    && __DEV__
+    && isProductionIdealStateActive()
+  ) {
+    const idealUser = productionIdealAuthUser();
+    if (idealUser !== undefined) {
+      const currentIdealUser = () => Promise.resolve(idealUser);
+      return {
+        user: idealUser,
+        token: idealUser ? 'dev-ideal-state-token' : null,
+        authReady: true,
+        login: async () => undefined,
+        logout: async () => undefined,
+        refreshAccountState: currentIdealUser,
+        applyAccountStatePayload: currentIdealUser,
+        updateProfilePhoto: currentIdealUser,
+      };
+    }
   }
   return ctx;
 }

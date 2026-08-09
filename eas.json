@@ -4,29 +4,20 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "channel": "production",
+    "testflight": {
+      "channel": "testflight",
       "autoIncrement": true,
-      "ios": {
-        "distribution": "store"
+      "env": {
+        "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit"
       },
-      "android": {
+      "ios": {
         "distribution": "store"
       }
     }
   },
   "submit": {
-    "production": {
-      "android": {
-        "track": "internal"
-      }
+    "testflight": {
+      "ios": {}
     }
   }
 }

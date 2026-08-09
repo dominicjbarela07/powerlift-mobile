@@ -1,17 +1,19 @@
 // @ts-nocheck
 
 import React from 'react';
+import { BlurView } from 'expo-blur';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
-  Text,
-  TextInput,
+  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLColors } from '@/constants/theme';
 
 const REST_TIMER_OPTIONS = Array.from({ length: 12 }, (_, idx) => (idx + 1) * 30);
 const REST_TIMER_ROW_HEIGHT = 44;
@@ -47,7 +49,7 @@ export function TardyReasonModal({
   styles,
 }: any) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => onClose('dismissed')}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.modalBackdrop}
@@ -61,7 +63,7 @@ export function TardyReasonModal({
             value={tardyReason}
             onChangeText={setTardyReason}
             placeholder="Reason"
-            placeholderTextColor="#64748b"
+            placeholderTextColor={SLColors.textSubtle}
             style={[styles.modalInput, { minHeight: 90, textAlignVertical: 'top' }]}
             multiline
             autoFocus
@@ -69,7 +71,7 @@ export function TardyReasonModal({
           <View style={styles.modalActionsRow}>
             <TouchableOpacity
               style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-              onPress={onClose}
+              onPress={() => onClose('dismissed')}
             >
               <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
             </TouchableOpacity>
@@ -99,10 +101,34 @@ export function CancelResumeModal({
       <View style={styles.modalBackdrop}>
         <View style={styles.modalCard}>
           <Text style={styles.postSessionTitle}>
-            {workoutStatus === 'completed' ? 'Resume this workout?' : 'Cancel this workout?'}
+            {workoutStatus === 'completed' ? 'Resume this training session?' : 'Cancel this training session?'}
           </Text>
 
+          {workoutStatus !== 'completed' ? (
+            <Text style={styles.postSessionSubtitle}>
+              This will discard this training session, remove all logged sets, clear the session timer, and return the session to its assigned state.
+            </Text>
+          ) : null}
+
           <View style={styles.modalActionsRow}>
+            <TouchableOpacity
+              style={[
+                styles.actionButton,
+                styles.actionSecondary,
+                { flex: 1 },
+              ]}
+              onPress={onClose}
+            >
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  styles.actionSecondaryText,
+                ]}
+              >
+                Keep Session
+              </Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={[
                 styles.actionButton,
@@ -111,23 +137,9 @@ export function CancelResumeModal({
               ]}
               onPress={onConfirm}
             >
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  workoutStatus === 'completed'
-                    ? styles.actionPrimaryText
-                    : styles.actionDangerText,
-                ]}
-              >
-                {workoutStatus === 'completed' ? 'Resume' : 'Yes, Cancel'}
+              <Text style={[styles.actionButtonText, workoutStatus === 'completed' ? styles.actionPrimaryText : styles.actionDangerText]}>
+                {workoutStatus === 'completed' ? 'Resume Session' : 'Cancel Session'}
               </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-              onPress={onClose}
-            >
-              <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -142,9 +154,15 @@ export function RestTimerPickerModal({
   timerPickerValue,
   setTimerPickerValue,
   startRestTimer,
+  saveConfirmationVisible,
+  onMounted,
   onClose,
   styles,
 }: any) {
+  React.useEffect(() => {
+    if (visible) onMounted?.();
+  }, [onMounted, visible]);
+
   const dragSettleTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInteracting = React.useRef(false);
   const centerPadding = REST_TIMER_ROW_HEIGHT * Math.floor(REST_TIMER_VISIBLE_ROWS / 2);
@@ -187,14 +205,23 @@ export function RestTimerPickerModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.coreWheelBackdrop}>
-        <View style={styles.coreWheelBackdropHit} />
-        <View style={styles.coreWheelSheet}>
+      <View style={[styles.coreWheelBackdrop, styles.restTimerPickerBackdrop]}>
+        <BlurView
+          experimentalBlurMethod="dimezisBlurView"
+          intensity={28}
+          pointerEvents="none"
+          style={StyleSheet.absoluteFill}
+          tint="dark"
+        />
+        <View style={[styles.coreWheelBackdropHit, styles.restTimerPickerBackdropHit]} />
+        <View style={[styles.coreWheelSheet, styles.restTimerPickerSheet]}>
           <View style={styles.coreWheelHandle} />
           <View style={styles.coreWheelHeaderRow}>
             <View style={styles.coreWheelHeaderCopy}>
               <Text style={styles.coreWheelTitle}>Rest Timer</Text>
-              <Text style={styles.coreWheelSubtitle}>Choose your next rest window.</Text>
+              <Text style={styles.coreWheelSubtitle}>
+                {saveConfirmationVisible ? 'Set logged · Choose your next rest window.' : 'Choose your next rest window.'}
+              </Text>
             </View>
           </View>
           <View style={styles.timerWheelWrap}>
@@ -248,7 +275,7 @@ export function RestTimerPickerModal({
           <View style={styles.coreWheelActions}>
             <TouchableOpacity
               style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-              onPress={onClose}
+              onPress={() => onClose('dismissed')}
             >
               <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
             </TouchableOpacity>
@@ -257,7 +284,7 @@ export function RestTimerPickerModal({
               style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
               onPress={() => {
                 startRestTimer(REST_TIMER_OPTIONS[nearestRestTimerIndex(timerPickerValue)]);
-                onClose();
+                onClose('selected');
               }}
             >
               <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>

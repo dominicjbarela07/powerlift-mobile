@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLColors, SLSpacing, SLTypography } from '@/constants/theme';
 
@@ -27,12 +28,15 @@ export function SLSectionHeader({
   compact = false,
   style,
 }: SLSectionHeaderProps) {
+  const actionRole = actionLabel && (/\s/.test(actionLabel.trim()) || actionLabel.length > 10)
+    ? 'longButtonLabel'
+    : 'shortButtonLabel';
   return (
     <View style={[styles.wrap, compact && styles.wrapCompact, style]}>
       <View style={styles.copy}>
-        {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
-        <Text style={[styles.title, compact && styles.titleCompact]}>{title}</Text>
-        {subtitle ? <Text style={[styles.subtitle, compact && styles.subtitleCompact]}>{subtitle}</Text> : null}
+        {eyebrow ? <Text typographyRole="shortTechnicalLabel" style={styles.eyebrow}>{eyebrow}</Text> : null}
+        <Text typographyRole={compact ? 'shortTechnicalLabel' : 'sectionTitle'} style={[styles.title, compact && styles.titleCompact]}>{title}</Text>
+        {subtitle ? <Text typographyRole={compact ? 'caption' : 'supportingBody'} style={[styles.subtitle, compact && styles.subtitleCompact]}>{subtitle}</Text> : null}
       </View>
       {actionLabel && onActionPress ? (
         <Pressable
@@ -41,7 +45,7 @@ export function SLSectionHeader({
           onPress={onActionPress}
           style={({ pressed }) => [styles.action, { opacity: pressed ? 0.72 : 1 }]}
         >
-          <Text style={styles.actionText}>{actionLabel}</Text>
+          <Text typographyRole={actionRole} style={styles.actionText}>{actionLabel}</Text>
           <Ionicons color={SLColors.accent} name={actionIcon} size={15} />
         </Pressable>
       ) : null}

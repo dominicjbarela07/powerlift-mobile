@@ -12,10 +12,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/AuthContext';
@@ -30,6 +29,7 @@ import {
   setAnnouncementPinned,
   updateAnnouncement,
 } from '@/lib/api';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 type AnnouncementAudienceMode = 'all_roster' | 'selected_athletes';
 
@@ -303,7 +303,7 @@ function CoachAnnouncementHub() {
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#8B7CFF" />
+        <ActivityIndicator size="large" color={SLColors.accentViolet} />
         <Text style={styles.loadingText}>Loading announcements...</Text>
       </ThemedView>
     );
@@ -316,25 +316,25 @@ function CoachAnnouncementHub() {
           onPress={() => router.replace('/(tabs)/messages' as any)}
           style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
         >
-          <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+          <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
         </Pressable>
 
         <View style={styles.headerTextWrap}>
-          <Text style={styles.headerTitle}>Announcements</Text>
+          <Text typographyRole="pageTitle" style={styles.headerTitle}>Announcements</Text>
         </View>
 
         <Pressable
           onPress={openCreate}
           style={({ pressed }) => [styles.headerIconButton, pressed && styles.backButtonPressed]}
         >
-          <Ionicons name="add" size={22} color="#F8FAFC" />
+          <Ionicons name="add" size={22} color={SLColors.textStrong} />
         </Pressable>
       </View>
 
       {!!error && (
         <View style={styles.errorCard}>
-          <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Ionicons name="warning-outline" size={16} color={SLColors.danger} />
+          <Text typographyRole="errorText" style={styles.errorText}>{error}</Text>
         </View>
       )}
 
@@ -346,27 +346,27 @@ function CoachAnnouncementHub() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#8B7CFF"
+            tintColor={SLColors.accentViolet}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyCard}>
-            <Ionicons name="megaphone-outline" size={30} color="#64748B" />
-            <Text style={styles.emptyTitle}>No announcements</Text>
+            <Ionicons name="megaphone-outline" size={30} color={SLColors.textSubtle} />
+            <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>No announcements</Text>
           </View>
         }
         renderItem={({ item }) => (
           <View style={[styles.announcementCard, item.pinned && styles.announcementCardPinned]}>
             <View style={styles.cardMainRow}>
               <View style={styles.titleRow}>
-                <Text style={styles.announcementTitle} numberOfLines={2}>
+                <Text typographyRole="bodyStrong" style={styles.announcementTitle} numberOfLines={2}>
                   {item.title}
                 </Text>
               </View>
 
               {!!item.pinned && (
                 <View style={styles.pinnedBadge}>
-                  <Ionicons name="pin" size={11} color="#D6CCFF" />
+                  <Ionicons name="pin" size={11} color={SLColors.review} />
                 </View>
               )}
             </View>
@@ -378,7 +378,7 @@ function CoachAnnouncementHub() {
               {item.audience_summary || (item.audience_mode === 'selected_athletes' ? 'Selected athletes' : 'All athletes')}
             </Text>
 
-            <Text style={styles.coachAnnouncementBody} numberOfLines={3}>
+            <Text typographyRole="messageText" style={styles.coachAnnouncementBody} numberOfLines={3}>
               {item.body}
             </Text>
 
@@ -391,7 +391,7 @@ function CoachAnnouncementHub() {
                   pressed && styles.iconActionPressed,
                 ]}
               >
-                <Ionicons name={item.pinned ? 'pin' : 'pin-outline'} size={16} color={item.pinned ? '#D6CCFF' : '#CBD5E1'} />
+                <Ionicons name={item.pinned ? 'pin' : 'pin-outline'} size={16} color={item.pinned ? SLColors.review : SLColors.text} />
                 <Text style={[styles.compactActionText, item.pinned && styles.compactActionTextPinned]}>
                   {item.pinned ? 'Pinned' : 'Pin'}
                 </Text>
@@ -401,7 +401,7 @@ function CoachAnnouncementHub() {
                 onPress={() => openEdit(item)}
                 style={({ pressed }) => [styles.compactActionButton, pressed && styles.iconActionPressed]}
               >
-                <Ionicons name="create-outline" size={16} color="#CBD5E1" />
+                <Ionicons name="create-outline" size={16} color={SLColors.text} />
                 <Text style={styles.compactActionText}>Edit</Text>
               </Pressable>
 
@@ -409,7 +409,7 @@ function CoachAnnouncementHub() {
                 onPress={() => confirmDelete(item)}
                 style={({ pressed }) => [styles.compactActionButton, styles.iconActionDanger, pressed && styles.iconActionPressed]}
               >
-                <Ionicons name="trash-outline" size={16} color="#FCA5A5" />
+                <Ionicons name="trash-outline" size={16} color={SLColors.danger} />
                 <Text style={[styles.compactActionText, styles.compactActionTextDanger]}>Delete</Text>
               </Pressable>
             </View>
@@ -428,10 +428,10 @@ function CoachAnnouncementHub() {
             <View style={styles.editorCard}>
               <View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
-                  <Text style={styles.modalTitle}>{editingAnnouncement ? 'Edit Announcement' : 'New Announcement'}</Text>
+                  <Text typographyRole="modalTitle" style={styles.modalTitle}>{editingAnnouncement ? 'Edit Announcement' : 'New Announcement'}</Text>
                 </View>
                 <Pressable onPress={closeComposer} style={styles.modalClose}>
-                  <Ionicons name="close" size={18} color="#CBD5E1" />
+                  <Ionicons name="close" size={18} color={SLColors.text} />
                 </Pressable>
               </View>
 
@@ -444,7 +444,7 @@ function CoachAnnouncementHub() {
                   value={title}
                   onChangeText={setTitle}
                   placeholder="Title"
-                  placeholderTextColor="#64748B"
+                  placeholderTextColor={SLColors.textSubtle}
                   style={styles.editorInput}
                   maxLength={160}
                   returnKeyType="next"
@@ -454,7 +454,7 @@ function CoachAnnouncementHub() {
                   value={body}
                   onChangeText={setBody}
                   placeholder="Body"
-                  placeholderTextColor="#64748B"
+                  placeholderTextColor={SLColors.textSubtle}
                   style={[styles.editorInput, styles.editorBody]}
                   multiline
                   textAlignVertical="top"
@@ -465,7 +465,7 @@ function CoachAnnouncementHub() {
                   style={styles.pinToggleRow}
                 >
                   <View style={[styles.pinToggleIcon, pinned && styles.pinToggleIconActive]}>
-                    <Ionicons name={pinned ? 'pin' : 'pin-outline'} size={14} color={pinned ? '#D6CCFF' : '#94A3B8'} />
+                    <Ionicons name={pinned ? 'pin' : 'pin-outline'} size={14} color={pinned ? SLColors.review : SLColors.textMuted} />
                   </View>
                   <Text style={styles.pinToggleText}>{pinned ? 'Pinned' : 'Pin announcement'}</Text>
                 </Pressable>
@@ -498,7 +498,7 @@ function CoachAnnouncementHub() {
                         value={athleteSearch}
                         onChangeText={setAthleteSearch}
                         placeholder="Search athletes"
-                        placeholderTextColor="#64748B"
+                        placeholderTextColor={SLColors.textSubtle}
                         style={styles.athleteSearchInput}
                       />
                       <ScrollView style={styles.athletePickerList} keyboardShouldPersistTaps="handled" nestedScrollEnabled>
@@ -510,10 +510,10 @@ function CoachAnnouncementHub() {
                               style={[styles.athleteOptionRow, active && styles.athleteOptionRowActive]}
                               onPress={() => toggleSelectedAthlete(athlete.id)}
                             >
-                              <Text style={[styles.athleteOptionText, active && styles.athleteOptionTextActive]} numberOfLines={1}>
+                              <Text typographyRole="dynamicName" style={[styles.athleteOptionText, active && styles.athleteOptionTextActive]} numberOfLines={1}>
                                 {athlete.name}
                               </Text>
-                              {active ? <Ionicons name="checkmark" size={16} color="#A7F3D0" /> : null}
+                              {active ? <Ionicons name="checkmark" size={16} color={SLColors.success} /> : null}
                             </Pressable>
                           );
                         })}
@@ -537,7 +537,7 @@ function CoachAnnouncementHub() {
                   ]}
                 >
                   {saving ? (
-                    <ActivityIndicator size="small" color="#F8FAFC" />
+                    <ActivityIndicator size="small" color={SLColors.textStrong} />
                   ) : (
                     <Text style={styles.saveButtonText}>{editingAnnouncement ? 'Save' : 'Post'}</Text>
                   )}
@@ -618,7 +618,7 @@ function AthleteAnnouncementsScreen() {
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#8B7CFF" />
+        <ActivityIndicator size="large" color={SLColors.accentViolet} />
         <Text style={styles.loadingText}>Loading announcements...</Text>
       </ThemedView>
     );
@@ -631,11 +631,11 @@ function AthleteAnnouncementsScreen() {
           onPress={() => router.replace('/(tabs)/messages' as any)}
           style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
         >
-          <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+          <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
         </Pressable>
 
         <View style={styles.headerTextWrap}>
-          <Text style={styles.headerTitle}>Announcements</Text>
+          <Text typographyRole="pageTitle" style={styles.headerTitle}>Announcements</Text>
         </View>
 
         <View style={styles.headerSpacer} />
@@ -643,8 +643,8 @@ function AthleteAnnouncementsScreen() {
 
       {!!error && (
         <View style={styles.errorCard}>
-          <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
-          <Text style={styles.errorText}>{error}</Text>
+          <Ionicons name="warning-outline" size={16} color={SLColors.danger} />
+          <Text typographyRole="errorText" style={styles.errorText}>{error}</Text>
         </View>
       )}
 
@@ -656,13 +656,13 @@ function AthleteAnnouncementsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#8B7CFF"
+            tintColor={SLColors.accentViolet}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyCard}>
-            <Ionicons name="megaphone-outline" size={30} color="#64748B" />
-            <Text style={styles.emptyTitle}>No announcements</Text>
+            <Ionicons name="megaphone-outline" size={30} color={SLColors.textSubtle} />
+            <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>No announcements</Text>
           </View>
         }
         renderItem={({ item }) => {
@@ -698,14 +698,14 @@ function AthleteAnnouncementsScreen() {
               <View style={styles.cardMainRow}>
                 <View style={styles.titleRow}>
                   {unread && <View style={styles.unreadDot} />}
-                  <Text style={styles.announcementTitle} numberOfLines={2}>
+                  <Text typographyRole="bodyStrong" style={styles.announcementTitle} numberOfLines={2}>
                     {item.title}
                   </Text>
                 </View>
 
                 {!!item.pinned && (
                   <View style={styles.pinnedBadge}>
-                    <Ionicons name="pin" size={11} color="#D6CCFF" />
+                    <Ionicons name="pin" size={11} color={SLColors.review} />
                   </View>
                 )}
               </View>
@@ -752,14 +752,14 @@ function AthleteAnnouncementsScreen() {
                 ) : (
                   <Text style={styles.modalEyebrow}>Announcement</Text>
                 )}
-                <Text style={styles.modalTitle}>{selectedAnnouncement.title}</Text>
+                <Text typographyRole="modalTitle" style={styles.modalTitle}>{selectedAnnouncement.title}</Text>
               </View>
 
               <Pressable
                 onPress={() => setSelectedAnnouncement(null)}
                 style={styles.modalClose}
               >
-                <Ionicons name="close" size={18} color="#CBD5E1" />
+                <Ionicons name="close" size={18} color={SLColors.text} />
               </Pressable>
             </View>
 
@@ -768,7 +768,7 @@ function AthleteAnnouncementsScreen() {
             </Text>
 
             <ScrollView style={styles.modalBodyScroll}>
-              <Text style={styles.modalBody}>{selectedAnnouncement.body}</Text>
+              <Text typographyRole="modalBody" style={styles.modalBody}>{selectedAnnouncement.body}</Text>
               {!!selectedAnnouncement.link_url && !!selectedAnnouncement.link_label && (
                 <Pressable
                   onPress={() => {
@@ -809,8 +809,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 14,
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
   header: {
     flexDirection: 'row',
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 38,
     height: 38,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(15,23,42,0.92)',
@@ -837,10 +837,10 @@ const styles = StyleSheet.create({
   headerIconButton: {
     width: 38,
     height: 38,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#5B4FCF',
+    backgroundColor: SLColors.railViolet,
   },
   headerTextWrap: {
     flex: 1,
@@ -848,13 +848,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   headerTitle: {
-    color: '#F8FAFC',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   headerSub: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
     marginTop: 2,
   },
@@ -872,8 +872,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(6,6,8,0.3)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(185,176,163,0.1)',
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(185,176,163,0.14)',
   },
   announcementCardPinned: {
     borderLeftColor: 'rgba(196,181,253,0.44)',
@@ -902,7 +900,7 @@ const styles = StyleSheet.create({
   platformMark: {
     width: 24,
     height: 24,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(214,182,109,0.16)',
@@ -910,7 +908,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(214,182,109,0.32)',
   },
   platformMarkText: {
-    color: '#F5D38C',
+    color: SLColors.warning,
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 0.4,
@@ -918,15 +916,15 @@ const styles = StyleSheet.create({
   platformSourceText: {
     flex: 1,
     minWidth: 0,
-    color: '#F5D38C',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     letterSpacing: 0.3,
     textTransform: 'uppercase',
   },
   platformCategoryBadge: {
     flexShrink: 0,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.56)',
@@ -934,7 +932,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   platformCategoryText: {
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontSize: 10,
     fontWeight: '800',
   },
@@ -953,15 +951,15 @@ const styles = StyleSheet.create({
   unreadDot: {
     width: 8,
     height: 8,
-    borderRadius: 999,
-    backgroundColor: '#7C6CFF',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.review,
     marginRight: 8,
     flexShrink: 0,
   },
   announcementTitle: {
     flex: 1,
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
     lineHeight: 19,
     marginRight: 10,
@@ -969,25 +967,25 @@ const styles = StyleSheet.create({
   pinnedBadge: {
     width: 22,
     height: 22,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(124,108,255,0.16)',
   },
   announcementDate: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   announcementAudience: {
-    color: '#C4B5FD',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 4,
   },
   coachAnnouncementBody: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     marginTop: 8,
   },
@@ -999,7 +997,7 @@ const styles = StyleSheet.create({
   },
   compactActionButton: {
     minHeight: 30,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -1010,20 +1008,20 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(148,163,184,0.12)',
   },
   compactActionText: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   compactActionTextPinned: {
-    color: '#D6CCFF',
+    color: SLColors.review,
   },
   compactActionTextDanger: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   iconActionButton: {
     width: 34,
     height: 34,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.38)',
@@ -1053,21 +1051,21 @@ const styles = StyleSheet.create({
     gap: 9,
   },
   emptyTitle: {
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '600',
     marginTop: 0,
   },
   emptyBody: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     display: 'none',
     textAlign: 'center',
   },
   errorCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginTop: 10,
@@ -1078,8 +1076,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     marginLeft: 10,
   },
   modalOverlay: {
@@ -1100,7 +1098,7 @@ const styles = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxHeight: '72%',
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     padding: 18,
     backgroundColor: 'rgba(7,7,9,0.95)',
     borderWidth: 1,
@@ -1143,7 +1141,7 @@ const styles = StyleSheet.create({
   platformModalMark: {
     width: 34,
     height: 34,
-    borderRadius: 11,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(214,182,109,0.17)',
@@ -1155,8 +1153,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   platformModalSourceLabel: {
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   platformModalBadgeRow: {
@@ -1167,9 +1165,9 @@ const styles = StyleSheet.create({
   },
   platformModalBadge: {
     overflow: 'hidden',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(214,182,109,0.17)',
-    color: '#F5D38C',
+    color: SLColors.warning,
     fontSize: 10,
     fontWeight: '900',
     paddingHorizontal: 8,
@@ -1178,32 +1176,32 @@ const styles = StyleSheet.create({
   },
   platformModalCategory: {
     overflow: 'hidden',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(148,163,184,0.12)',
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontSize: 10,
     fontWeight: '800',
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
   modalEyebrow: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom: 6,
   },
   modalTitle: {
-    color: '#F8FAFC',
-    fontSize: 18,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
     lineHeight: 23,
   },
   modalClose: {
     width: 34,
     height: 34,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.42)',
@@ -1211,8 +1209,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(148,163,184,0.12)',
   },
   modalDate: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginBottom: 14,
   },
@@ -1220,14 +1218,14 @@ const styles = StyleSheet.create({
     maxHeight: 360,
   },
   modalBody: {
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 22,
   },
   modalLinkButton: {
     alignSelf: 'flex-start',
     marginTop: 16,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(214, 204, 255, 0.36)',
     backgroundColor: 'rgba(139, 124, 255, 0.16)',
@@ -1242,18 +1240,18 @@ const styles = StyleSheet.create({
     opacity: 0.78,
   },
   modalLinkButtonText: {
-    color: '#D6CCFF',
+    color: SLColors.review,
     fontWeight: '800',
   },
   editorInput: {
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.12)',
     backgroundColor: 'rgba(6,6,8,0.38)',
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     marginTop: 10,
   },
   editorBody: {
@@ -1269,7 +1267,7 @@ const styles = StyleSheet.create({
   pinToggleIcon: {
     width: 30,
     height: 30,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(2,6,23,0.36)',
@@ -1282,8 +1280,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(124,108,255,0.24)',
   },
   pinToggleText: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
   },
   audienceBlock: {
@@ -1291,8 +1289,8 @@ const styles = StyleSheet.create({
     gap: 9,
   },
   audienceLabel: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   audienceModeRow: {
@@ -1301,7 +1299,7 @@ const styles = StyleSheet.create({
   },
   audienceModeChip: {
     minHeight: 34,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.14)',
     backgroundColor: 'rgba(2,6,23,0.30)',
@@ -1314,15 +1312,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124,108,255,0.18)',
   },
   audienceModeText: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   audienceModeTextActive: {
-    color: '#EDE9FE',
+    color: SLColors.textStrong,
   },
   athletePicker: {
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.12)',
     backgroundColor: 'rgba(2,6,23,0.24)',
@@ -1330,14 +1328,14 @@ const styles = StyleSheet.create({
   },
   athleteSearchInput: {
     minHeight: 38,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.12)',
     backgroundColor: 'rgba(6,6,8,0.42)',
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
   },
   athletePickerList: {
     maxHeight: 168,
@@ -1345,7 +1343,7 @@ const styles = StyleSheet.create({
   },
   athleteOptionRow: {
     minHeight: 38,
-    borderRadius: 11,
+    borderRadius: SLRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -1359,12 +1357,12 @@ const styles = StyleSheet.create({
   },
   athleteOptionText: {
     flex: 1,
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
   },
   athleteOptionTextActive: {
-    color: '#D1FAE5',
+    color: SLColors.success,
     fontWeight: '900',
   },
   athleteOptionEmpty: {
@@ -1372,13 +1370,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   athleteOptionEmptyText: {
-    color: '#64748B',
-    fontSize: 12,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   saveButton: {
     height: 44,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(109,40,217,0.82)',
@@ -1388,8 +1386,8 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   saveButtonText: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
 });

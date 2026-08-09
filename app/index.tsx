@@ -1,12 +1,17 @@
 // app/index.tsx
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
-import { cancelPendingTeamCoachUpgrade, devSimulateStripeActivation, startMobileBillingCheckout } from '@/lib/api';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import {
+  cancelPendingTeamCoachUpgrade,
+  devSimulateStripeActivation,
+  startMobileBillingCheckout,
+} from '@/lib/api';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 
 function AccountAccessGate({
   title,
@@ -170,7 +175,9 @@ function AccountAccessGate({
             try {
               const result = await cancelPendingTeamCoachUpgrade();
               const payload = result.json || {};
-              if (!result.ok || payload.ok === false) throw new Error(payload.reason || payload.error || 'Could not cancel the upgrade.');
+              if (!result.ok || payload.ok === false) {
+                throw new Error(payload.reason || payload.error || 'Could not cancel the upgrade.');
+              }
               await refreshAccountState();
               router.replace('/');
             } catch (err: any) {
@@ -190,7 +197,6 @@ function AccountAccessGate({
       await Linking.openURL(actionUrl);
     } catch (err) {
       console.warn('Could not open account action URL', err);
-      setError('Could not open activation. Please try again.');
     }
   };
 
@@ -230,7 +236,7 @@ function AccountAccessGate({
           disabled={showDevSimulation ? simulating : activating}
         >
           {simulating || activating ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={SLColors.white} />
           ) : (
             <Text style={styles.gatePrimaryText}>
               {showDevSimulation ? 'Dev: Simulate Stripe Activation' : actionLabel}
@@ -294,7 +300,11 @@ export default function IndexGate() {
     return (
       <AccountAccessGate
         title={isIndividual ? 'Activate Individual' : 'Activate Team Coach'}
-        body={isIndividual ? 'Activate Stripe membership before entering your Individual workspace.' : 'Complete Team Coach membership activation before entering coach tools.'}
+        body={
+          isIndividual
+            ? 'Activate Stripe membership before entering your Individual workspace.'
+            : 'Complete Team Coach membership activation before entering coach tools.'
+        }
         actionLabel={isIndividual ? 'Open Individual activation' : 'Open Team Coach activation'}
         actionUrl={user.billing_url}
       />
@@ -316,15 +326,14 @@ export default function IndexGate() {
   }
 
   // ✅ Logged in coach → send to tabs home (the file app/(tabs)/index.tsx)
-  return <Redirect href="/(tabs)/coach-dashboard" />;
+  return <Redirect href="/(tabs)/coach-roster" />;
 }
 
 const styles = StyleSheet.create({
   gateScreen: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    backgroundColor: '#070707',
+    backgroundColor: 'transparent',
   },
   gateLogo: {
     alignSelf: 'center',
@@ -341,29 +350,29 @@ const styles = StyleSheet.create({
   },
   gateEyebrow: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: '#F0BF63',
+    color: SLColors.warning,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   gateTitle: {
     fontFamily: SLTypography.commandTitle.fontFamily,
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: SLTypography.title.fontSize,
+    lineHeight: SLTypography.title.lineHeight,
     fontWeight: SLTypography.commandTitle.fontWeight,
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   gateBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 22,
-    color: '#B8ACA1',
+    color: SLColors.textMuted,
   },
   gatePrimary: {
     minHeight: 52,
     marginTop: 6,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -373,29 +382,29 @@ const styles = StyleSheet.create({
   gatePrimaryText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
-    color: '#F5F3FF',
+    color: SLColors.textStrong,
   },
   disabledButton: {
     opacity: 0.62,
   },
   gateError: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    color: '#FCA5A5',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   gateOutline: {
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.28)',
   },
   gateOutlineText: {
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
-    color: '#DDD6FE',
+    color: SLColors.review,
   },
   gateSecondary: {
     minHeight: 46,

@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 type PillSize = 'sm' | 'md';
@@ -32,9 +34,11 @@ export function SLStatusPill({ label, tone = 'neutral', icon, size = 'sm', style
         style,
       ]}
     >
+      <SLMaterialOverlay compact level={2} />
       {icon ? <Ionicons color={palette.icon} name={icon} size={isSmall ? 12 : 14} /> : null}
       <Text
         numberOfLines={1}
+        typographyRole="badge"
         style={[
           styles.label,
           {
@@ -58,6 +62,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SLSpacing.xs,
     maxWidth: '100%',
+    overflow: 'hidden',
+    position: 'relative',
   },
   label: {
     fontFamily: SLTypography.chipLabel.fontFamily,

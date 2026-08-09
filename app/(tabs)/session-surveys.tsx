@@ -1,12 +1,8 @@
 
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -264,11 +260,10 @@ export default function SessionSurveysScreen() {
     const isPending = !!opts?.pending;
     return (
       <View key={`${isPending ? 'pending' : 'archive'}-${row.workout_id}`} style={[styles.queueRow, !isPending && styles.archiveRow]}>
-        <View style={styles.rowRail} />
         <View style={styles.cardTopRow}>
           <View style={styles.cardTitleCol}>
             <View style={styles.titleLine}>
-              <Text style={styles.athleteName} numberOfLines={1}>{row.athlete_name}</Text>
+              <Text typographyRole="dynamicName" style={styles.athleteName} numberOfLines={1}>{row.athlete_name}</Text>
               <SLStatusPill label="Pending" tone="review" icon="clipboard-outline" />
             </View>
             <Text style={styles.sessionMeta} numberOfLines={1}>
@@ -330,7 +325,7 @@ export default function SessionSurveysScreen() {
               <SLButton
                 fullWidth
                 iconLeft="open-outline"
-                label="Open Workout"
+                label="Open Session"
                 onPress={() => openWorkout(row.workout_id)}
                 size="sm"
                 variant="secondary"
@@ -439,7 +434,7 @@ const styles = StyleSheet.create({
     borderTopColor: SLColors.shellHairline,
   },
   queueRow: {
-    backgroundColor: 'rgba(10,11,11,0.20)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderBottomWidth: 1,
     borderBottomColor: SLColors.shellHairline,
     gap: SLSpacing.sm,
@@ -448,7 +443,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   archiveRow: {
-    backgroundColor: 'rgba(10,11,11,0.12)',
+    backgroundColor: SLColors.surfaceInset,
   },
   rowRail: {
     backgroundColor: SLColors.railViolet,
@@ -521,9 +516,7 @@ const styles = StyleSheet.create({
     lineHeight: SLTypography.body.lineHeight,
   },
   notesPreview: {
-    backgroundColor: 'rgba(10,11,11,0.22)',
-    borderLeftWidth: 2,
-    borderLeftColor: SLColors.borderSelected,
+    backgroundColor: SLColors.surfaceEmbedded,
     paddingHorizontal: SLSpacing.md,
     paddingVertical: SLSpacing.sm,
   },

@@ -1,15 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  type GestureResponderEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { StyleSheet, type GestureResponderEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
-import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLColors, SLControlSize, SLOpacity, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMotionPressable } from './sl-motion';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -40,7 +36,7 @@ export function SLActionChip({
   const color = selected ? palette.text : SLColors.text;
 
   return (
-    <Pressable
+    <SLMotionPressable
       accessibilityLabel={label}
       accessibilityRole="button"
       disabled={disabled}
@@ -49,18 +45,23 @@ export function SLActionChip({
         styles.chip,
         shape === 'pill' ? styles.pillChip : styles.controlChip,
         {
-          backgroundColor,
+          backgroundColor: pressed ? SLColors.surfacePressed : backgroundColor,
           borderColor,
-          opacity: disabled ? 0.45 : pressed ? 0.78 : 1,
+          opacity: disabled ? SLOpacity.disabled : 1,
         },
         style,
       ]}
     >
-      {icon ? <Ionicons color={selected ? palette.icon : SLColors.textMuted} name={icon} size={15} /> : null}
-      <Text numberOfLines={1} style={[styles.label, { color }]}>
-        {label}
-      </Text>
-    </Pressable>
+      {({ pressed }: { pressed: boolean }) => (
+        <>
+          <SLMaterialOverlay compact level={selected ? 3 : 2} pressed={pressed} />
+          {icon ? <Ionicons color={selected ? palette.icon : SLColors.textMuted} name={icon} size={15} /> : null}
+          <Text numberOfLines={1} typographyRole="badge" style={[styles.label, { color }]}>
+            {label}
+          </Text>
+        </>
+      )}
+    </SLMotionPressable>
   );
 }
 
@@ -70,8 +71,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     gap: SLSpacing.xs,
-    minHeight: 36,
+    minHeight: SLControlSize.compact,
+    overflow: 'hidden',
     paddingHorizontal: SLSpacing.md,
+    position: 'relative',
   },
   pillChip: {
     borderRadius: SLRadius.pill,

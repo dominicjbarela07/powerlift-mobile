@@ -7,10 +7,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 
@@ -148,6 +147,7 @@ export default function CoachVideoArchiveScreen() {
 
   const loadArchive = useCallback(async (opts?: {
     silent?: boolean;
+    showRefreshIndicator?: boolean;
     filters?: {
       query?: string;
       athleteId?: string;
@@ -169,7 +169,7 @@ export default function CoachVideoArchiveScreen() {
     const nextNeedsFollowupOnly = opts?.filters?.needsFollowupOnly ?? needsFollowupOnly;
     const nextHasFeedback = opts?.filters?.hasFeedback ?? hasFeedback;
     try {
-      if (silent) setRefreshing(true);
+      if (silent && opts?.showRefreshIndicator !== false) setRefreshing(true);
       else setLoading(true);
       setError(null);
       const res = await getCoachVideoArchive({
@@ -201,7 +201,7 @@ export default function CoachVideoArchiveScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadArchive({ silent: true });
+      loadArchive({ silent: true, showRefreshIndicator: false });
     }, [loadArchive]),
   );
 
@@ -359,7 +359,6 @@ export default function CoachVideoArchiveScreen() {
                     style={({ pressed }) => [styles.card, isFollowup && styles.followupCard, pressed && styles.cardPressed]}
                     onPress={() => setSelectedVideo(video)}
                   >
-                    <View style={[styles.rowRail, isFollowup && styles.followupRail]} />
                     <View style={styles.thumbWrap}>
                       {video.thumbnail_url ? (
                         <Image source={{ uri: video.thumbnail_url }} style={styles.thumbnail} resizeMode="cover" />
@@ -376,7 +375,7 @@ export default function CoachVideoArchiveScreen() {
                           <Text style={[styles.statusText, isFollowup && styles.followupStatusText]}>{statusLabel(video.review_status)}</Text>
                         </View>
                       </View>
-                      <Text style={styles.cardMeta} numberOfLines={1}>
+                      <Text typographyRole="caption" style={styles.cardMeta} numberOfLines={1}>
                         {video.athlete_name || context.athlete_name || 'Athlete'} · {formatDate(context.session_date)}
                       </Text>
                       <Text style={styles.detailLine} numberOfLines={1}>
@@ -464,7 +463,7 @@ export default function CoachVideoArchiveScreen() {
                               setAthleteSearch('');
                             }}
                           >
-                            <Text style={[styles.athleteOptionText, active && styles.athleteOptionTextActive]} numberOfLines={1}>
+                            <Text typographyRole="dynamicName" style={[styles.athleteOptionText, active && styles.athleteOptionTextActive]} numberOfLines={1}>
                               {athlete.name}
                             </Text>
                             {active ? <Ionicons name="checkmark" size={16} color={palette.green} /> : null}
@@ -589,7 +588,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  kicker: { color: palette.violet, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
+  kicker: { color: palette.violet, fontSize: SLTypography.micro.fontSize, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
   title: {
     color: palette.text,
     fontFamily: SLTypography.title.fontFamily,
@@ -598,21 +597,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 0,
   },
-  subtitle: { color: palette.muted, fontSize: 12, fontWeight: '600', marginTop: 2 },
+  subtitle: { color: palette.muted, fontSize: SLTypography.caption.fontSize, fontWeight: '600', marginTop: 2 },
   headerIcon: {
     width: 38,
     height: 38,
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: SLColors.borderSelected,
-    backgroundColor: 'rgba(126,101,255,0.08)',
+    backgroundColor: SLColors.accentVioletSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   filterPanel: {
     borderBottomWidth: 1,
     borderColor: SLColors.shellHairline,
-    backgroundColor: 'rgba(10,11,11,0.18)',
+    backgroundColor: SLColors.surfaceEmbedded,
     paddingHorizontal: 16,
     paddingTop: 6,
     paddingBottom: 6,
@@ -625,20 +624,20 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: SLColors.borderHairline,
-    backgroundColor: 'rgba(10,11,11,0.26)',
+    backgroundColor: SLColors.surfaceEmbedded,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     gap: 8,
   },
-  searchInput: { flex: 1, color: palette.text, fontSize: 14, paddingVertical: 6 },
+  searchInput: { flex: 1, color: palette.text, fontSize: SLTypography.rowTitle.fontSize, paddingVertical: 6 },
   filtersButton: {
     width: 36,
     height: 36,
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: SLColors.borderSelected,
-    backgroundColor: 'rgba(126,101,255,0.08)',
+    backgroundColor: SLColors.accentVioletSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -648,7 +647,7 @@ const styles = StyleSheet.create({
     right: -5,
     minWidth: 17,
     height: 17,
-    borderRadius: 9,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     borderColor: SLColors.shellCanvas,
     backgroundColor: palette.amber,
@@ -656,8 +655,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filterBadgeText: { color: SLColors.textInverted, fontSize: 10, fontWeight: '900' },
-  filterSummary: { color: palette.muted, fontSize: 11, fontWeight: '700' },
-  errorText: { color: SLColors.danger, fontSize: 13, fontWeight: '700', marginTop: 10 },
+  filterSummary: { color: palette.muted, fontSize: SLTypography.micro.fontSize, fontWeight: '700' },
+  errorText: { color: SLColors.danger, fontSize: SLTypography.label.fontSize, fontWeight: '700', marginTop: 10 },
   list: { borderTopWidth: 1, borderTopColor: SLColors.shellHairline, paddingTop: 0 },
   card: {
     flexDirection: 'row',
@@ -671,7 +670,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   cardPressed: { opacity: 0.78 },
-  followupCard: { backgroundColor: 'rgba(251,191,36,0.055)' },
+  followupCard: { backgroundColor: SLColors.warningSoft },
   rowRail: {
     backgroundColor: SLColors.railViolet,
     bottom: 12,
@@ -683,21 +682,21 @@ const styles = StyleSheet.create({
   followupRail: {
     backgroundColor: SLColors.railWarning,
   },
-  thumbWrap: { width: 70, height: 94, borderRadius: SLRadius.radiusControl, overflow: 'hidden', backgroundColor: 'rgba(10,11,11,0.38)' },
+  thumbWrap: { width: 70, height: 94, borderRadius: SLRadius.radiusControl, overflow: 'hidden', backgroundColor: SLColors.surfaceInset },
   thumbnail: { width: '100%', height: '100%' },
-  thumbnailPlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(6,6,8,0.48)' },
+  thumbnailPlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.surfaceInset },
   cardBody: { flex: 1, minWidth: 0, gap: 4 },
   cardTopRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
-  cardTitle: { flex: 1, minWidth: 0, color: palette.text, fontSize: 14, fontWeight: '700' },
-  statusPill: { borderRadius: SLRadius.radiusSharp, backgroundColor: 'rgba(126,101,255,0.10)', paddingHorizontal: 7, paddingVertical: 3 },
-  followupPill: { backgroundColor: 'rgba(251,191,36,0.18)' },
+  cardTitle: { flex: 1, minWidth: 0, color: palette.text, fontSize: SLTypography.rowTitle.fontSize, fontWeight: '700' },
+  statusPill: { borderRadius: SLRadius.radiusSharp, backgroundColor: SLColors.accentVioletSoft, paddingHorizontal: 7, paddingVertical: 3 },
+  followupPill: { backgroundColor: SLColors.warningSoft },
   statusText: { color: palette.violet, fontSize: 10, fontWeight: '700' },
   followupStatusText: { color: palette.amber },
-  cardMeta: { color: palette.muted, fontSize: 12, fontWeight: '600' },
-  detailLine: { color: SLColors.text, fontSize: 12, fontWeight: '600' },
+  cardMeta: { color: palette.muted, fontSize: SLTypography.caption.fontSize, fontWeight: '600' },
+  detailLine: { color: SLColors.text, fontSize: SLTypography.caption.fontSize, fontWeight: '600' },
   detailLabel: { color: palette.muted, fontWeight: '700' },
   cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 2 },
-  footerText: { flex: 1, color: palette.muted, fontSize: 11, fontWeight: '700' },
+  footerText: { flex: 1, color: palette.muted, fontSize: SLTypography.micro.fontSize, fontWeight: '700' },
   emptyCard: {
     minHeight: 42,
     flexDirection: 'row',
@@ -708,24 +707,24 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     gap: 9,
   },
-  emptyTitle: { color: palette.muted, fontSize: 13, fontWeight: '600' },
-  emptyBody: { display: 'none', color: palette.muted, fontSize: 13, textAlign: 'center' },
+  emptyTitle: { color: palette.muted, fontSize: SLTypography.label.fontSize, fontWeight: '600' },
+  emptyBody: { display: 'none', color: palette.muted, fontSize: SLTypography.label.fontSize, textAlign: 'center' },
   modalBackdrop: { flex: 1, justifyContent: 'flex-end' },
-  modalScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(2,2,3,0.54)' },
+  modalScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: SLColors.surfaceScrim },
   filterSheet: {
     maxHeight: '82%',
     borderTopLeftRadius: SLRadius.radiusCard,
     borderTopRightRadius: SLRadius.radiusCard,
     borderWidth: 1,
     borderColor: SLColors.borderHairline,
-    backgroundColor: 'rgba(9,10,11,0.88)',
+    backgroundColor: SLColors.surfaceCommand,
     paddingTop: 8,
   },
   filterSheetHandle: {
     width: 42,
     height: 4,
     borderRadius: SLRadius.radiusSharp,
-    backgroundColor: 'rgba(205,194,176,0.28)',
+    backgroundColor: SLColors.borderStrong,
     alignSelf: 'center',
     marginBottom: 10,
   },
@@ -737,12 +736,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  filterSheetTitle: { color: palette.text, fontSize: 17, fontWeight: '900' },
-  filterSheetSubtitle: { color: palette.muted, fontSize: 12, marginTop: 2 },
+  filterSheetTitle: { color: palette.text, fontSize: SLTypography.cardTitle.fontSize, fontWeight: '900' },
+  filterSheetSubtitle: { color: palette.muted, fontSize: SLTypography.caption.fontSize, marginTop: 2 },
   sheetCloseButton: {
     width: 34,
     height: 34,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: palette.border,
     alignItems: 'center',
@@ -751,13 +750,13 @@ const styles = StyleSheet.create({
   filterSheetScroll: { maxHeight: 520 },
   filterSheetContent: { paddingHorizontal: 16, paddingBottom: 16, gap: 10 },
   filterGroup: { gap: 8 },
-  filterGroupTitle: { color: SLColors.text, fontSize: 12, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.7 },
+  filterGroupTitle: { color: SLColors.text, fontSize: SLTypography.caption.fontSize, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.7 },
   athleteSelect: {
     minHeight: 48,
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: palette.border,
-    backgroundColor: 'rgba(10,11,11,0.28)',
+    backgroundColor: SLColors.surfaceEmbedded,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -770,12 +769,12 @@ const styles = StyleSheet.create({
   },
   athleteSelectLabel: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   athleteSelectValue: {
     color: palette.text,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
     marginTop: 2,
   },
@@ -783,7 +782,7 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: SLColors.borderHairline,
-    backgroundColor: 'rgba(10,11,11,0.30)',
+    backgroundColor: SLColors.surfaceEmbedded,
     padding: 8,
     gap: 8,
   },
@@ -792,7 +791,7 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: SLColors.borderHairline,
-    backgroundColor: 'rgba(10,11,11,0.34)',
+    backgroundColor: SLColors.surfaceInset,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -801,7 +800,7 @@ const styles = StyleSheet.create({
   athleteSearchInput: {
     flex: 1,
     color: palette.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     paddingVertical: 6,
   },
   athleteOptionList: {
@@ -818,13 +817,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   athleteOptionActive: {
-    backgroundColor: 'rgba(124,58,237,0.18)',
+    backgroundColor: SLColors.accentVioletSoft,
   },
   athleteOptionText: {
     flex: 1,
     minWidth: 0,
     color: SLColors.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   athleteOptionTextActive: {
@@ -837,7 +836,7 @@ const styles = StyleSheet.create({
   },
   athleteOptionEmptyText: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   modalChipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -845,12 +844,12 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: palette.border,
-    backgroundColor: 'rgba(10,11,11,0.26)',
+    backgroundColor: SLColors.surfaceEmbedded,
     paddingHorizontal: 11,
     paddingVertical: 8,
   },
-  filterChipActive: { borderColor: 'rgba(196,181,253,0.62)', backgroundColor: 'rgba(124,58,237,0.22)' },
-  filterChipText: { color: palette.muted, fontSize: 12, fontWeight: '800' },
+  filterChipActive: { borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentVioletSoft },
+  filterChipText: { color: palette.muted, fontSize: SLTypography.caption.fontSize, fontWeight: '800' },
   filterChipTextActive: { color: palette.text },
   followupToggle: {
     flexDirection: 'row',
@@ -859,10 +858,10 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,
     borderColor: palette.border,
-    backgroundColor: 'rgba(10,11,11,0.26)',
+    backgroundColor: SLColors.surfaceEmbedded,
     padding: 10,
   },
-  followupToggleActive: { borderColor: 'rgba(251,191,36,0.58)', backgroundColor: 'rgba(251,191,36,0.14)' },
+  followupToggleActive: { borderColor: SLColors.warning, backgroundColor: SLColors.warningSoft },
   followupToggleIcon: {
     width: 22,
     height: 22,
@@ -874,9 +873,9 @@ const styles = StyleSheet.create({
   },
   followupToggleIconActive: { backgroundColor: palette.amber, borderColor: palette.amber },
   followupToggleTextWrap: { flex: 1 },
-  followupToggleTitle: { color: palette.text, fontSize: 13, fontWeight: '900' },
+  followupToggleTitle: { color: palette.text, fontSize: SLTypography.label.fontSize, fontWeight: '900' },
   followupToggleTitleActive: { color: palette.amber },
-  followupToggleBody: { display: 'none', color: palette.muted, fontSize: 12, marginTop: 2 },
+  followupToggleBody: { display: 'none', color: palette.muted, fontSize: SLTypography.caption.fontSize, marginTop: 2 },
   filterSheetActions: {
     flexDirection: 'row',
     gap: 10,
@@ -894,14 +893,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
   },
-  resetButtonText: { color: palette.text, fontSize: 13, fontWeight: '900' },
+  resetButtonText: { color: palette.text, fontSize: SLTypography.label.fontSize, fontWeight: '900' },
   applyFiltersButton: {
     flex: 1.4,
     borderRadius: SLRadius.radiusControl,
-    backgroundColor: 'rgba(109,40,217,0.82)',
+    backgroundColor: SLColors.reviewSoft,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
   },
-  applyFiltersText: { color: SLColors.textStrong, fontSize: 13, fontWeight: '900' },
+  applyFiltersText: { color: SLColors.textStrong, fontSize: SLTypography.label.fontSize, fontWeight: '900' },
 });

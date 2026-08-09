@@ -1,22 +1,61 @@
 // app/(tabs)/_layout.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  AppState,
+  Platform,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  useWindowDimensions,
+} from 'react-native';
 import { Tabs, usePathname, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import {
+  GlassView,
+  isGlassEffectAPIAvailable,
+  isLiquidGlassAvailable,
+} from 'expo-glass-effect';
+import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
-import { SLAtmosphere } from '@/components/ui';
+import { useFloatingNavigationMotion } from '@/components/navigation/floating-navigation-motion';
+import {
+  SL_TAB_ROW_CONTROL,
+  SL_TAB_ROW_FALLBACK_SHEEN,
+  SL_TAB_ROW_SELECTED_LENS,
+} from '@/components/navigation/sl-tab-row-control';
+import { SLCanonicalIcon, SLMotionPressable, SLTrophy } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
+import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { getUnreadSummary } from '@/lib/api';
-import { SLColors, SLTypography } from '@/constants/theme';
+import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import { useSLReducedMotion } from '@/lib/motion';
 import {
   getMobileViewMode,
   subscribeMobileViewModeChanged,
   type MobileViewMode,
 } from '@/lib/mobileViewMode';
+import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
+import {
+  SHIPPING_TAB_PRESENTATION,
+  shippingTabRouteNames,
+} from '@/lib/shipping-navigation';
+
+function supportsNativeLiquidGlass() {
+  if (Platform.OS !== 'ios') return false;
+  try {
+    return isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
+  } catch {
+    return false;
+  }
+}
 
 function FilteredTabBar({
   state,
@@ -29,6 +68,8 @@ function FilteredTabBar({
   hasMeetDate,
   hasMessageNotifications,
   onMessagesTabPress,
+  collapseTabRowRef,
+  onTabBarInteractionStart,
   bottomInset,
 }: BottomTabBarProps & {
   isCoach: boolean;
@@ -38,24 +79,28 @@ function FilteredTabBar({
   hasMeetDate: boolean;
   hasMessageNotifications: boolean;
   onMessagesTabPress: () => void;
+  collapseTabRowRef: React.MutableRefObject<(() => void) | null>;
+  onTabBarInteractionStart: () => void;
   bottomInset: number;
 }) {
   const router = useRouter();
-  const allowedNames =
-    isUnlinkedAthlete
-      ? ['link-coach', 'settings']
-      : isIndividual
-      ? ['athlete-dashboard', 'workout/index', 'athlete-calendar', 'athlete-progression', 'reflection']
-      : isCoach && viewMode === 'coach'
-      ? ['coach-dashboard', 'coach-roster', 'coach-calendar', 'coach-videos', 'messages/index']
-      : [
-          'athlete-dashboard',
-          'workout/index',
-          'athlete-calendar',
-          'athlete-progression',
-          'reflection',
-          ...(hasMeetDate ? ['athlete-meet-plan'] : []),
-        ];
+  const pathname = usePathname();
+  const { width: viewportWidth } = useWindowDimensions();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [reduceTransparency, setReduceTransparency] = useState(false);
+  const nativeLiquidGlassAvailable = supportsNativeLiquidGlass();
+  const usesNativeLiquidGlass = nativeLiquidGlassAvailable && !reduceTransparency;
+  const reduceMotion = useSLReducedMotion();
+  const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
+  const previousTabIndexRef = useRef(state.index);
+  const openedOnPressInRef = useRef(false);
+  const allowedNames = shippingTabRouteNames({
+    isCoach,
+    isIndividual,
+    isUnlinkedAthlete,
+    viewMode,
+    hasMeetDate,
+  });
 
   const messagesRoute =
     state.routes.find((route) => route.name === 'messages') ||
@@ -82,19 +127,13 @@ function FilteredTabBar({
 
   const trainingTabLabel = isIndividual ? 'Programming' : 'Training';
   const tabConfig: Record<string, { label: string; icon: keyof typeof Ionicons.glyphMap }> = {
-    'coach-dashboard': { label: 'Today', icon: 'home-outline' },
-    'coach-roster': { label: 'Roster', icon: 'people-outline' },
-    'coach-calendar': { label: 'Calendar', icon: 'calendar-outline' },
-    'coach-videos': { label: 'Videos', icon: 'videocam-outline' },
+    ...SHIPPING_TAB_PRESENTATION,
     workout: { label: trainingTabLabel, icon: 'barbell-outline' },
     'workout/index': { label: trainingTabLabel, icon: 'barbell-outline' },
     workouts: { label: trainingTabLabel, icon: 'barbell-outline' },
-    'athlete-calendar': { label: 'Calendar', icon: 'calendar-outline' },
     'athlete-progression': { label: 'Progression', icon: 'trending-up-outline' },
     reflection: { label: 'Reflection', icon: 'sparkles-outline' },
     messages: { label: 'Messages', icon: 'chatbubbles-outline' },
-    'messages/index': { label: 'Messages', icon: 'chatbubbles-outline' },
-    'athlete-dashboard': { label: 'Today', icon: 'home-outline' },
     'check-ins': { label: 'Check-Ins', icon: 'clipboard-outline' },
     'video-archive': { label: 'Video Archive', icon: 'videocam-outline' },
     'athlete-meet-plan': { label: 'Meet', icon: 'trophy-outline' },
@@ -102,34 +141,199 @@ function FilteredTabBar({
     'link-coach': { label: 'Invite', icon: 'mail-outline' },
   };
 
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return undefined;
+    let mounted = true;
+    AccessibilityInfo.isReduceTransparencyEnabled()
+      .then((enabled) => {
+        if (mounted) setReduceTransparency(enabled);
+      })
+      .catch(() => undefined);
+    const subscription = AccessibilityInfo.addEventListener(
+      'reduceTransparencyChanged',
+      setReduceTransparency,
+    );
+    return () => {
+      mounted = false;
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (previousTabIndexRef.current !== state.index) {
+      previousTabIndexRef.current = state.index;
+      setIsExpanded(false);
+    }
+  }, [state.index]);
+
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const collapseTabRow = () => setIsExpanded(false);
+    collapseTabRowRef.current = collapseTabRow;
+
+    return () => {
+      if (collapseTabRowRef.current === collapseTabRow) {
+        collapseTabRowRef.current = null;
+      }
+    };
+  }, [collapseTabRowRef]);
+
+  const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+  const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
+  const isBottomTabGlassPreviewPath = __DEV__ && normalizedPathname === '/dev-mocks/navigation-bottom-tab-glass';
+  const usesCalendarPreviewSelection = isCalendarPreviewPath || isBottomTabGlassPreviewPath;
+  const activeRoute = (usesCalendarPreviewSelection
+    ? visibleRoutes.find((route) => route.name === 'athlete-calendar')
+    : null) ?? visibleRoutes.find((route) => {
+    const routeIndex = state.routes.findIndex((candidate) => candidate.key === route.key);
+    return routeIndex === state.index;
+  }) ?? visibleRoutes[0];
+  const activeTopLevelPath = activeRoute
+    ? `/${activeRoute.name.replace(/\/index$/, '')}`
+    : null;
+  const isLedgerDestinationPath = activeRoute?.name === 'ledger'
+    && normalizedPathname.startsWith('/ledger/');
+  const isActiveTopLevelTab = activeTopLevelPath === normalizedPathname || isLedgerDestinationPath || usesCalendarPreviewSelection;
+  const showsExpandedTabRow = isExpanded || isBottomTabGlassPreviewPath;
+  const displayedRoutes = showsExpandedTabRow ? visibleRoutes : activeRoute ? [activeRoute] : [];
+  const expandedWidth = Math.max(
+    SLLayout.collapsedTabWidth,
+    viewportWidth - (SLLayout.screenGutter * 2),
+  );
+  const { animatedWidth, expandedItemsOpacity, collapsedAnchorOpacity } = useFloatingNavigationMotion({
+    expanded: showsExpandedTabRow,
+    collapsedWidth: SLLayout.collapsedTabWidth,
+    expandedWidth,
+    reduceMotion,
+  });
+  const activeRouteCfg = activeRoute
+    ? tabConfig[activeRoute.name] ?? { label: activeRoute.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap }
+    : null;
+  const collapsedAnchorCfg = !isActiveTopLevelTab
+    ? { label: 'Open navigation', icon: 'ellipsis-horizontal' as keyof typeof Ionicons.glyphMap }
+    : activeRouteCfg;
+  const collapsedAnchorIcon = collapsedAnchorCfg?.icon.endsWith('-outline')
+    ? collapsedAnchorCfg.icon.replace('-outline', '') as keyof typeof Ionicons.glyphMap
+    : collapsedAnchorCfg?.icon;
+  const usesFlowingNavigationDock = __DEV__ && normalizedPathname === '/dev-mocks/milestones';
+  const hidesNavigationForSessionEditor = normalizedPathname.startsWith('/workout/session-workspace/')
+    && sessionEditorOverlayOpen;
+
+  if (hidesNavigationForSessionEditor) return null;
+
   return (
-    <View style={[styles.tabBar, { height: 56 + bottomInset, paddingBottom: bottomInset }]}>
-      {visibleRoutes.map((route) => {
-        const routeIndex = state.routes.findIndex((r) => r.key === route.key);
-        const isFocused = state.index === routeIndex;
-        const color = isFocused ? SLColors.accentViolet : '#C8D0D8';
-        const cfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
+    <View
+      pointerEvents="box-none"
+      onTouchStart={onTabBarInteractionStart}
+      style={[
+        styles.tabBarDock,
+        usesFlowingNavigationDock && styles.tabBarDockFlow,
+        { height: 58 + bottomInset, paddingBottom: bottomInset + SLSpacing.xs },
+      ]}
+    >
+      <Animated.View
+        style={[
+          styles.tabBar,
+          usesNativeLiquidGlass && styles.tabBarNativeMaterial,
+          showsExpandedTabRow && styles.tabBarExpanded,
+          { width: animatedWidth },
+        ]}
+      >
+        <View pointerEvents="none" style={styles.tabBarMaterialClip}>
+          {usesNativeLiquidGlass ? (
+            <GlassView
+              colorScheme="dark"
+              glassEffectStyle="regular"
+              style={[StyleSheet.absoluteFillObject, styles.tabBarNativeGlass]}
+              tintColor="rgba(103, 82, 132, 0.045)"
+            />
+          ) : Platform.OS === 'ios' && !reduceTransparency ? (
+            <BlurView
+              intensity={72}
+              style={StyleSheet.absoluteFillObject}
+              tint="systemThinMaterialDark"
+            />
+          ) : (
+            <View
+              style={[
+                StyleSheet.absoluteFillObject,
+                reduceTransparency
+                  ? styles.tabBarReducedTransparency
+                  : styles.tabBarTranslucentFallback,
+              ]}
+            />
+          )}
+          {!usesNativeLiquidGlass ? (
+            <>
+              <View style={styles.tabBarFallbackTint} />
+              <LinearGradient
+                colors={SL_TAB_ROW_FALLBACK_SHEEN}
+                end={{ x: 0.72, y: 1 }}
+                locations={[0, 0.48, 1]}
+                start={{ x: 0.12, y: 0 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+            </>
+          ) : null}
+        </View>
+        {showsExpandedTabRow && collapsedAnchorIcon ? (
+          <Animated.View pointerEvents="none" style={[styles.expandingAnchor, { opacity: collapsedAnchorOpacity }]}>
+            <SLCanonicalIcon name={collapsedAnchorIcon} size={SL_TAB_ROW_CONTROL.collapsedAnchorIconSize} color={SLColors.textStrong} trophyTier="bronze" />
+          </Animated.View>
+        ) : null}
+        {displayedRoutes.map((route) => {
+        const isFocused = route.key === activeRoute?.key;
+        const color = isFocused ? SLColors.review : SLColors.textMuted;
+        const routeCfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
+        const isNestedMenuTrigger = !showsExpandedTabRow && !isActiveTopLevelTab;
+        const cfg = isNestedMenuTrigger
+          ? { label: 'Open navigation', icon: 'ellipsis-horizontal' as keyof typeof Ionicons.glyphMap }
+          : routeCfg;
         const isMessagesRoute = route.name === 'messages' || route.name === 'messages/index';
         const isTrainingRoute = route.name === 'workout' || route.name === 'workout/index';
+        const isLedgerHomeRoute = route.name === 'ledger';
         const iconName = isFocused
           ? (cfg.icon.endsWith('-outline')
               ? (cfg.icon.replace('-outline', '') as keyof typeof Ionicons.glyphMap)
               : cfg.icon)
           : cfg.icon;
 
+        const onPressIn = () => {
+          openedOnPressInRef.current = !showsExpandedTabRow;
+          if (!showsExpandedTabRow) {
+            void Haptics.selectionAsync().catch(() => undefined);
+            setIsExpanded(true);
+          }
+        };
+
         const onPress = () => {
+          if (openedOnPressInRef.current) {
+            openedOnPressInRef.current = false;
+            return;
+          }
+
+          void Haptics.selectionAsync().catch(() => undefined);
+
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
+          if (isLedgerHomeRoute && !event.defaultPrevented) {
+            router.navigate('/(tabs)/ledger/home' as any);
+            setIsExpanded(false);
+          } else if (!isFocused && !event.defaultPrevented) {
             if (isTrainingRoute) {
               router.navigate('/(tabs)/workout');
             } else {
               navigation.navigate(route.name as never);
             }
+          } else if (isFocused && !event.defaultPrevented) {
+            setIsExpanded(false);
           }
 
           if (isMessagesRoute) {
@@ -145,25 +349,44 @@ function FilteredTabBar({
         };
 
         return (
-          <TouchableOpacity
+          <Animated.View
             key={route.key}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={styles.tabBarItem}
-            activeOpacity={0.85}
+            style={[styles.tabBarSlot, showsExpandedTabRow && { opacity: expandedItemsOpacity }]}
           >
-            <View style={styles.tabBarIconRow}>
-              <Ionicons name={iconName} size={24} color={color} />
-              {isMessagesRoute && hasMessageNotifications && (
-                <View style={styles.messageNotificationDot} />
-              )}
-            </View>
-            <ThemedText style={[styles.tabBarLabel, { color }]}>{cfg.label}</ThemedText>
-          </TouchableOpacity>
+            {isFocused ? (
+              // Keep one native glass plane. Apple advises that selected
+              // content above Liquid Glass use tint/transparency, not a
+              // second stacked glass effect.
+              <LinearGradient
+                colors={SL_TAB_ROW_SELECTED_LENS}
+                end={{ x: 1, y: 1 }}
+                pointerEvents="none"
+                start={{ x: 0, y: 0 }}
+                style={styles.activeTabMarker}
+              />
+            ) : null}
+            <SLMotionPressable
+              accessibilityLabel={cfg.label}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              hitSlop={SL_TAB_ROW_CONTROL.hitSlop}
+              onPress={onPress}
+              onPressIn={onPressIn}
+              onLongPress={onLongPress}
+              style={[styles.tabBarItem, isFocused && styles.tabBarItemActive]}
+              pressScale={SLMotion.prominentPressScale}
+            >
+              <View style={styles.tabBarIconRow}>
+              <SLCanonicalIcon name={iconName} size={SL_TAB_ROW_CONTROL.iconSize} color={color} trophyTier="bronze" />
+                {isMessagesRoute && hasMessageNotifications && (
+                  <View style={styles.messageNotificationDot} />
+                )}
+              </View>
+            </SLMotionPressable>
+          </Animated.View>
         );
-      })}
+        })}
+      </Animated.View>
     </View>
   );
 }
@@ -173,10 +396,30 @@ export default function TabsLayout() {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const devPreviewSession = useDevLiveScreenSession();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [mobileViewModeLoaded, setMobileViewModeLoaded] = useState(false);
   const unreadPollingRef = useRef(false);
+  const collapseTabRowRef = useRef<(() => void) | null>(null);
+  const pendingTabRowCollapseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelPendingTabRowCollapse = useCallback(() => {
+    if (pendingTabRowCollapseRef.current) {
+      clearTimeout(pendingTabRowCollapseRef.current);
+      pendingTabRowCollapseRef.current = null;
+    }
+  }, []);
+
+  const requestTabRowCollapse = useCallback(() => {
+    cancelPendingTabRowCollapse();
+    pendingTabRowCollapseRef.current = setTimeout(() => {
+      pendingTabRowCollapseRef.current = null;
+      collapseTabRowRef.current?.();
+    }, 0);
+  }, [cancelPendingTabRowCollapse]);
+
+  useEffect(() => cancelPendingTabRowCollapse, [cancelPendingTabRowCollapse]);
 
   const isCoach = !!user?.is_coach;
   const accountState = user?.account_state;
@@ -201,16 +444,26 @@ export default function TabsLayout() {
     );
   const viewMode: MobileViewMode = isIndividual ? 'individual' : isCoach ? mobileViewMode : 'athlete';
   const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
+  // A single dev-only mock-library boundary is deliberately allowed alongside
+  // Settings for authenticated accounts in every account state. It has no APIs
+  // or production product data and is removed from the UI in release builds.
+  const isDevMockRoute = __DEV__ && pathname.includes('/dev-mocks');
+  const isIdealStatePreview = __DEV__ && devPreviewSession?.mode === 'ideal';
+  const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+  const usesRouteOwnedHorizontalLayout =
+    normalizedPathname.endsWith('/athlete-calendar') ||
+    normalizedPathname.includes('/dev-mocks/calendar-') ||
+    normalizedPathname.includes('/workout/session-workspace/');
 
   useEffect(() => {
     if (!user) {
       router.replace('/login');
-    } else if (accessBlocked && !pathname.includes('/settings')) {
+    } else if (accessBlocked && !pathname.includes('/settings') && !isDevMockRoute) {
       router.replace('/');
-    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach')) {
+    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute) {
       router.replace('/(tabs)/link-coach');
     }
-  }, [accessBlocked, isUnlinkedAthlete, pathname, router, user]);
+  }, [accessBlocked, isDevMockRoute, isUnlinkedAthlete, pathname, router, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -248,7 +501,7 @@ export default function TabsLayout() {
   useEffect(() => {
     if (!isCoach || !mobileViewModeLoaded) return;
     if (isUnlinkedAthlete) return;
-    if (pathname.includes('/settings')) return;
+    if (pathname.includes('/settings') || isDevMockRoute) return;
 
     if (isIndividual) {
       const isTeamFacingPath =
@@ -277,17 +530,18 @@ export default function TabsLayout() {
     const isCoachFacingPath =
       pathname.includes('/coach-dashboard') ||
       pathname.includes('/coach-roster') ||
+      pathname.includes('/coach-athlete') ||
       pathname.includes('/coach-calendar') ||
       pathname.includes('/coach-videos') ||
       pathname.includes('/coach-video-review') ||
       pathname.includes('/coach-video-archive');
 
     if (viewMode === 'coach' && isAthleteFacingPath) {
-      router.replace('/coach-dashboard');
+      router.replace('/(tabs)/coach-roster');
     } else if (viewMode === 'athlete' && isCoachFacingPath) {
       router.replace('/(tabs)/athlete-dashboard');
     }
-  }, [isCoach, isIndividual, isUnlinkedAthlete, mobileViewModeLoaded, pathname, router, viewMode]);
+  }, [isCoach, isDevMockRoute, isIndividual, isUnlinkedAthlete, mobileViewModeLoaded, pathname, router, viewMode]);
 
   const refreshMessageNotifications = useCallback(async () => {
     if (!user || isIndividual || isUnlinkedAthlete || unreadPollingRef.current) {
@@ -340,81 +594,90 @@ export default function TabsLayout() {
     return null;
   }
 
-  if ((accessBlocked && !pathname.includes('/settings')) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach'))) {
+  if ((accessBlocked && !pathname.includes('/settings') && !isDevMockRoute) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute)) {
     return null;
   }
 
   return (
-    <View style={styles.safeArea}>
-      <SLAtmosphere />
+    <View
+      style={styles.safeArea}
+      onStartShouldSetResponderCapture={() => {
+        requestTabRowCollapse();
+        return false;
+      }}
+    >
       <Tabs
         screenOptions={{
           header: () => (
             <ThemedView style={[styles.headerShell, { paddingTop: insets.top }]}>
               <View style={styles.headerRow}>
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push('/(tabs)/settings');
-                  }}
-                  style={styles.headerSideButton}
-                >
-                  <Ionicons name="settings-outline" size={22} color="#E5E7EB" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    if (isUnlinkedAthlete) {
-                      router.replace('/(tabs)/link-coach');
-                    } else if (isIndividual) {
-                      router.replace('/(tabs)/athlete-dashboard');
-                    } else if (isCoach && viewMode === 'coach') {
-                      router.replace('/coach-dashboard');
-                    } else {
-                      router.replace('/(tabs)/athlete-dashboard');
-                    }
-                  }}
-                  style={styles.headerTitleWrap}
-                >
-                  <Image
-                    source={require('@/assets/images/16:9.png')}
-                    style={{ width: 200, height: 32, resizeMode: 'contain' }}
-                  />
-                </TouchableOpacity>
-
-                {isIndividual ? (
                   <TouchableOpacity
                     onPress={() => {
-                      router.push('/create-workout');
+                      router.push('/(tabs)/settings');
                     }}
                     style={styles.headerSideButton}
                   >
-                    <Ionicons name="add-circle-outline" size={23} color="#E5E7EB" />
+                    <Ionicons name="settings-outline" size={22} color={SLColors.text} />
                   </TouchableOpacity>
-                ) : (
+
                   <TouchableOpacity
                     onPress={() => {
-                      if (viewMode === 'athlete') {
-                        refreshMessageNotifications();
-                        router.push('/(tabs)/messages');
+                      if (isUnlinkedAthlete) {
+                        router.replace('/(tabs)/link-coach');
+                      } else if (isIndividual) {
+                        router.replace('/(tabs)/athlete-dashboard');
+                      } else if (isCoach && viewMode === 'coach') {
+                        router.replace('/(tabs)/coach-roster');
+                      } else {
+                        router.replace('/(tabs)/athlete-dashboard');
                       }
                     }}
-                    style={styles.headerSideButton}
+                    style={styles.headerTitleWrap}
                   >
-                    <Ionicons
-                      name={viewMode === 'athlete' ? 'chatbubbles-outline' : 'notifications-outline'}
-                      size={viewMode === 'athlete' ? 21 : 20}
-                      color="#E5E7EB"
+                    <Image
+                      source={require('@/assets/images/16:9.png')}
+                      style={{ width: 110, height: 22, resizeMode: 'contain' }}
                     />
-                    {viewMode === 'athlete' && hasMessageNotifications ? (
-                      <View style={styles.messageNotificationDot} />
-                    ) : null}
                   </TouchableOpacity>
-                )}
+
+                  {isIndividual ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        router.push('/create-workout');
+                      }}
+                      style={styles.headerSideButton}
+                    >
+                      <Ionicons name="add-circle-outline" size={23} color={SLColors.text} />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      accessibilityLabel={viewMode === 'coach' ? 'Open Team Brief' : 'Open messages'}
+                      accessibilityRole="button"
+                      onPress={() => {
+                        if (viewMode === 'athlete') {
+                          refreshMessageNotifications();
+                          router.push('/(tabs)/messages');
+                        } else if (viewMode === 'coach') {
+                          router.push('/coach-team-brief' as any);
+                        }
+                      }}
+                      style={styles.headerSideButton}
+                    >
+                      <Ionicons
+                        name={viewMode === 'athlete' ? 'chatbubbles-outline' : 'reader-outline'}
+                        size={viewMode === 'athlete' ? 21 : 20}
+                        color={SLColors.text}
+                      />
+                      {viewMode === 'athlete' && hasMessageNotifications ? (
+                        <View style={styles.messageNotificationDot} />
+                      ) : null}
+                    </TouchableOpacity>
+                  )}
               </View>
             </ThemedView>
           ),
-          headerShown: true,
-          sceneStyle: styles.tabScene,
+          headerShown: !isIdealStatePreview,
+          sceneStyle: usesRouteOwnedHorizontalLayout ? styles.fullBleedTabScene : styles.tabScene,
           tabBarHideOnKeyboard: true,
         }}
         tabBar={(props) => (
@@ -427,6 +690,8 @@ export default function TabsLayout() {
             hasMeetDate={hasMeetDate}
             hasMessageNotifications={hasMessageNotifications}
             onMessagesTabPress={refreshMessageNotifications}
+            collapseTabRowRef={collapseTabRowRef}
+            onTabBarInteractionStart={cancelPendingTabRowCollapse}
             bottomInset={insets.bottom}
           />
         )}
@@ -435,7 +700,7 @@ export default function TabsLayout() {
           name="coach-dashboard"
           options={{
             title: 'Today',
-            href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-dashboard' : null,
+            href: null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'home' : 'home-outline'}
@@ -473,6 +738,14 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="coach-athlete/[athleteId]"
+          options={{
+            href: null,
+            title: 'Athlete',
           }}
         />
 
@@ -533,7 +806,7 @@ export default function TabsLayout() {
           name="athlete-progression"
           options={{
             title: 'Progression',
-            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/athlete-progression' : null,
+            href: null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'trending-up' : 'trending-up-outline'}
@@ -609,7 +882,7 @@ export default function TabsLayout() {
           name="reflection"
           options={{
             title: 'Reflection',
-            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/reflection' : null,
+            href: null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'sparkles' : 'sparkles-outline'}
@@ -617,6 +890,14 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="training-focus"
+          options={{
+            title: 'Training Focus',
+            href: null,
           }}
         />
 
@@ -720,11 +1001,7 @@ export default function TabsLayout() {
             title: 'Meet',
             href: hasMeetDate ? '/(tabs)/athlete-meet-plan' : null,
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? 'trophy' : 'trophy-outline'}
-                size={22}
-                color={color}
-              />
+              <SLTrophy size={22} tier="bronze" muted={!focused} />
             ),
           }}
         />
@@ -744,6 +1021,13 @@ export default function TabsLayout() {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="ledger"
+          options={{
+            title: 'The Ledger',
+            href: viewMode === 'athlete' || isIndividual ? '/(tabs)/ledger/home' : null,
+          }}
+        />
       </Tabs>
     </View>
   );
@@ -752,25 +1036,31 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: SLColors.shellCanvas,
+    backgroundColor: 'transparent',
   },
   headerShell: {
     backgroundColor: 'transparent',
-    paddingHorizontal: 0,
+    borderBottomColor: SLColors.shellHairline,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: SLLayout.screenGutter,
     paddingTop: 0,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: 1,
   },
   headerSideButton: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+    borderRadius: SLRadius.radiusRow,
+    backgroundColor: SLColors.surfaceFlat,
+    borderWidth: 1,
+    borderColor: SLColors.borderHairline,
   },
   headerTitleWrap: {
     flex: 1,
@@ -778,37 +1068,118 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerBrand: {
-    fontSize: 20,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     letterSpacing: 0.5,
     textAlign: 'center',
   },
   tabScene: {
     backgroundColor: 'transparent',
-    paddingHorizontal: 16,
+    // The shell owns horizontal screen gutters. Routes must not add page-level horizontal padding.
+    paddingHorizontal: SLLayout.screenGutter,
     paddingTop: 0,
   },
+  fullBleedTabScene: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingTop: 0,
+  },
+  tabBarDock: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    paddingHorizontal: SLLayout.screenGutter,
+    backgroundColor: 'transparent',
+    zIndex: 20,
+  },
+  tabBarDockFlow: {
+    position: 'relative',
+    flexShrink: 0,
+  },
   tabBar: {
-    height: 56,
+    height: SL_TAB_ROW_CONTROL.shellHeight,
     flexDirection: 'row',
-    alignItems: 'stretch',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: SLColors.shellTabSurface,
-    borderTopWidth: 1,
-    borderTopColor: SLColors.shellHairline,
-    paddingTop: 8,
+    backgroundColor: 'transparent',
+    borderWidth: SL_TAB_ROW_CONTROL.shellBorderWidth,
+    borderColor: SL_TAB_ROW_CONTROL.shellBorderColor,
+    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
+    padding: SL_TAB_ROW_CONTROL.shellPadding,
+    position: 'relative',
+    ...SLShadows.level2,
+  },
+  tabBarMaterialClip: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
+    overflow: 'hidden',
+  },
+  tabBarNativeMaterial: {
+    borderColor: 'transparent',
+  },
+  tabBarNativeGlass: {
+    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
+  },
+  tabBarFallbackTint: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: SL_TAB_ROW_CONTROL.materialTint,
+  },
+  tabBarTranslucentFallback: {
+    backgroundColor: SL_TAB_ROW_CONTROL.translucentFallback,
+  },
+  tabBarReducedTransparency: {
+    backgroundColor: SL_TAB_ROW_CONTROL.reducedTransparencyFallback,
+  },
+  tabBarExpanded: {
+    paddingHorizontal: SL_TAB_ROW_CONTROL.expandedPaddingHorizontal,
   },
   tabBarItem: {
+    width: SL_TAB_ROW_CONTROL.itemSize,
+    height: SL_TAB_ROW_CONTROL.itemSize,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SL_TAB_ROW_CONTROL.itemRadius,
+    overflow: 'hidden',
+    zIndex: 1,
+  },
+  tabBarSlot: {
     flex: 1,
+    minWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabBarIconRow: {
+  tabBarItemActive: {
+    backgroundColor: 'transparent',
+  },
+  activeTabMarker: {
+    position: 'absolute',
+    width: SL_TAB_ROW_CONTROL.indicatorSize,
+    height: SL_TAB_ROW_CONTROL.indicatorSize,
+    borderRadius: SL_TAB_ROW_CONTROL.indicatorRadius,
+    borderColor: SL_TAB_ROW_CONTROL.indicatorBorderColor,
+    borderWidth: SL_TAB_ROW_CONTROL.indicatorBorderWidth,
+    ...SLShadows.level1,
+  },
+  expandingAnchor: {
+    position: 'absolute',
+    right: 4,
+    top: 4,
+    width: SL_TAB_ROW_CONTROL.itemSize,
+    height: SL_TAB_ROW_CONTROL.itemSize,
+    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
-    minHeight: 26,
+    zIndex: 3,
+  },
+  tabBarIconRow: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
   },
   messageNotificationDot: {
@@ -817,22 +1188,14 @@ const styles = StyleSheet.create({
     right: -2,
     width: 8,
     height: 8,
-    borderRadius: 999,
-    backgroundColor: '#FB7185',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.danger,
     borderWidth: 1,
     borderColor: SLColors.shellCanvas,
   },
-  tabBarLabel: {
-    fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
-    fontWeight: SLTypography.utilityLabel.fontWeight,
-    letterSpacing: 0.25,
-    lineHeight: 14,
-    textAlign: 'center',
-  },
   menuCard: {
-    backgroundColor: '#020617',
-    borderRadius: 18,
+    backgroundColor: SLColors.background,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.4)',
     marginTop: 12,
@@ -844,12 +1207,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   menuItemText: {
-    fontSize: 14,
-    color: '#E5E7EB',
+    fontSize: SLTypography.rowTitle.fontSize,
+    color: SLColors.text,
     fontWeight: '500',
   },
   menuDanger: {
-    color: '#f97373',
+    color: SLColors.danger,
   },
   menuFooter: {
     borderTopWidth: 1,
@@ -858,7 +1221,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   menuFooterText: {
-    fontSize: 13,
-    color: '#9CA3AF',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textMuted,
   },
 });

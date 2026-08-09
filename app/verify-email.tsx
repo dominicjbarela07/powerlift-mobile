@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -8,11 +7,11 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLButton } from '@/components/ui/sl-button';
 import { useFocusEffect } from '@react-navigation/native';
 import { Redirect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,7 +22,7 @@ import {
   verifyEmailVerificationCode,
 } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLOpacity, SLRadius, SLTypography } from '@/constants/theme';
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
@@ -240,7 +239,7 @@ export default function VerifyEmailScreen() {
                 autoComplete="one-time-code"
                 maxLength={6}
                 placeholder="123456"
-                placeholderTextColor="rgba(236,230,222,0.32)"
+                placeholderTextColor={SLColors.textSubtle}
                 style={styles.codeInput}
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
@@ -249,35 +248,29 @@ export default function VerifyEmailScreen() {
               {error ? <Text style={styles.error}>{error}</Text> : null}
               {message ? <Text style={styles.message}>{message}</Text> : null}
 
-              <Pressable
-                style={[styles.primaryButton, submitting && styles.disabledButton]}
+              <SLButton
+                fullWidth
+                label="Verify Email"
+                loading={submitting}
                 onPress={handleVerify}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.primaryButtonText}>Verify Email</Text>
-                )}
-              </Pressable>
+                size="lg"
+              />
 
-              <Pressable
-                style={[styles.secondaryButton, resending && styles.disabledButton]}
+              <SLButton
+                fullWidth
+                label="Resend code"
+                loading={resending}
                 onPress={handleResend}
-                disabled={resending}
-              >
-                <Text style={styles.secondaryButtonText}>
-                  {resending ? 'Sending...' : 'Resend code'}
-                </Text>
-              </Pressable>
+                variant="secondary"
+              />
 
-              <Pressable
-                style={[styles.secondaryButton, checking && styles.disabledButton]}
+              <SLButton
+                fullWidth
+                label="Check again"
+                loading={checking}
                 onPress={() => refreshVerificationState({ showMessage: true })}
-                disabled={checking}
-              >
-                <Text style={styles.secondaryButtonText}>Check again</Text>
-              </Pressable>
+                variant="secondary"
+              />
 
               {showDevSimulation ? (
                 <Pressable
@@ -291,9 +284,7 @@ export default function VerifyEmailScreen() {
                 </Pressable>
               ) : null}
 
-              <Pressable style={styles.logoutButton} onPress={logout}>
-                <Text style={styles.logoutText}>Log out</Text>
-              </Pressable>
+              <SLButton fullWidth label="Log out" onPress={logout} variant="ghost" />
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
@@ -305,7 +296,7 @@ export default function VerifyEmailScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#070707',
+    backgroundColor: 'transparent',
   },
   flex: {
     flex: 1,
@@ -326,112 +317,73 @@ const styles = StyleSheet.create({
     gap: 14,
     padding: 22,
     borderWidth: 1,
-    borderColor: 'rgba(126, 104, 255, 0.22)',
-    borderRadius: 18,
-    backgroundColor: 'rgba(12, 10, 18, 0.96)',
+    borderColor: SLColors.borderSelected,
+    borderRadius: SLRadius.radiusHero,
+    backgroundColor: SLColors.surfaceCommand,
   },
   eyebrow: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: '#F0BF63',
+    color: SLColors.warning,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   title: {
     fontFamily: SLTypography.commandTitle.fontFamily,
-    fontSize: 31,
-    lineHeight: 35,
+    fontSize: SLTypography.title.fontSize,
+    lineHeight: SLTypography.title.lineHeight,
     fontWeight: SLTypography.commandTitle.fontWeight,
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   body: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 22,
-    color: '#B8ACA1',
+    color: SLColors.textMuted,
   },
   codeInput: {
     minHeight: 62,
     borderWidth: 1,
-    borderColor: 'rgba(139, 116, 255, 0.62)',
-    borderRadius: 12,
+    borderColor: SLColors.borderSelected,
+    borderRadius: SLRadius.radiusCard,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(255,255,255,0.035)',
+    backgroundColor: SLColors.surfaceInset,
     color: SLColors.text,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 28,
+    fontSize: SLTypography.hero.fontSize,
     fontWeight: '800',
     letterSpacing: 9,
     textAlign: 'center',
   },
   error: {
-    color: '#FF8B8B',
+    color: SLColors.danger,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   message: {
-    color: '#9EE6B2',
+    color: SLColors.success,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
-  },
-  primaryButton: {
-    minHeight: 52,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#6C2BD9',
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  secondaryButton: {
-    minHeight: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 116, 255, 0.42)',
-    backgroundColor: 'rgba(139, 116, 255, 0.10)',
-  },
-  secondaryButtonText: {
-    color: '#D9CEFF',
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
-    fontWeight: '800',
   },
   devButton: {
     minHeight: 46,
-    borderRadius: 12,
+    borderRadius: SLRadius.radiusCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(240, 191, 99, 0.42)',
-    backgroundColor: 'rgba(240, 191, 99, 0.12)',
+    borderColor: SLColors.warning,
+    backgroundColor: SLColors.warningSoft,
   },
   devButtonText: {
-    color: '#F0BF63',
+    color: SLColors.warning,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
-  logoutButton: {
-    minHeight: 42,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoutText: {
-    color: '#938A9F',
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 14,
-    fontWeight: '700',
-  },
   disabledButton: {
-    opacity: 0.62,
+    opacity: SLOpacity.disabled,
   },
 });

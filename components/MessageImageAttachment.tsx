@@ -7,11 +7,12 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { MessengerAttachment, getAttachmentDownloadUrl } from '@/lib/api';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 export function MessageImageAttachment({
   attachment,
@@ -84,9 +85,9 @@ export function MessageImageAttachment({
         ) : (
           <View style={styles.placeholder}>
             {loading ? (
-              <ActivityIndicator size="small" color="#C4B5FD" />
+              <ActivityIndicator size="small" color={SLColors.accentViolet} />
             ) : (
-              <Ionicons name={failed ? 'image-outline' : 'image'} size={22} color="#94A3B8" />
+              <Ionicons name={failed ? 'image-outline' : 'image'} size={22} color={SLColors.textMuted} />
             )}
           </View>
         )}
@@ -104,7 +105,7 @@ export function MessageImageAttachment({
             onPress={() => setPreviewOpen(false)}
             style={styles.previewClose}
           >
-            <Ionicons name="close" size={24} color="#F8FAFC" />
+            <Ionicons name="close" size={24} color={SLColors.textStrong} />
           </Pressable>
           {!!downloadUrl && <Image source={{ uri: downloadUrl }} style={styles.previewImage} resizeMode="contain" />}
         </SafeAreaView>
@@ -118,17 +119,17 @@ const styles = StyleSheet.create({
     width: 238,
     maxWidth: '100%',
     marginTop: 9,
-    borderRadius: 14,
+    borderRadius: SLRadius.radiusCard,
     overflow: 'hidden',
     borderWidth: 1,
   },
   wrapMine: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: SLColors.surfaceMuted,
+    borderColor: SLColors.borderSubtle,
   },
   wrapTheirs: {
-    backgroundColor: 'rgba(2,6,23,0.50)',
-    borderColor: 'rgba(148,163,184,0.14)',
+    backgroundColor: SLColors.surfaceInset,
+    borderColor: SLColors.borderSubtle,
   },
   pressed: {
     opacity: 0.88,
@@ -136,25 +137,25 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio: 1.25,
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.background,
   },
   placeholder: {
     width: '100%',
     aspectRatio: 1.25,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(2,6,23,0.78)',
+    backgroundColor: SLColors.surfaceScrim,
   },
   filename: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
   preview: {
     flex: 1,
-    backgroundColor: 'rgba(2,6,23,0.96)',
+    backgroundColor: SLColors.background,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -166,12 +167,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(15,23,42,0.78)',
+    borderRadius: SLRadius.radiusSheet,
+    backgroundColor: SLColors.surfaceCommand,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.28)',
+    borderColor: SLColors.borderStrong,
   },
   previewImage: {
     width: '100%',

@@ -1,6 +1,6 @@
 // app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -9,26 +9,16 @@ import * as Updates from 'expo-updates';
 import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import {
-  Geist_400Regular,
-  Geist_500Medium,
-  Geist_600SemiBold,
-  Geist_700Bold,
-} from '@expo-google-fonts/geist';
-import {
-  GeistMono_400Regular,
-  GeistMono_600SemiBold,
-} from '@expo-google-fonts/geist-mono';
-import { ActivityIndicator, Alert, AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, Modal, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { API_BASE, registerPushToken } from '@/lib/api';
-import { bootLog } from '@/lib/bootLogger';
 import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
+import { SLColors, SLFontFamilies } from '@/constants/theme';
+import { Text } from '@/components/ui/sl-text';
+import { AppShell } from '@/components/AppShell';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
-bootLog('app_start', { platform: Platform.OS });
 
 type ExpoNotificationsModule = typeof import('expo-notifications');
 
@@ -53,16 +43,13 @@ function OtaUpdateController() {
     checkingRef.current = true;
     lastCheckRef.current = now;
     setRequiredError(null);
-    bootLog('updates_check_start');
 
     let policyForce = false;
     try {
       const revision = Number((Constants.expoConfig?.extra as any)?.appRevision || 0);
       try {
         const policyResponse = await fetch(`${API_BASE}/mobile/release-policy`, {
-          headers: {
-            'X-Strength-Ledger-Client-Revision': String(revision),
-          },
+          headers: { 'X-Strength-Ledger-Client-Revision': String(revision) },
         });
         if (policyResponse.ok) {
           const policy = await policyResponse.json();
@@ -77,15 +64,10 @@ function OtaUpdateController() {
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
         setUpdateReady(true);
-        bootLog('updates_check_done', { available: true, fetched: true });
-      } else {
-        if (policyForce) {
-          setRequiredError('The required update is not available yet. Please try again.');
-        }
-        bootLog('updates_check_done', { available: false });
+      } else if (policyForce) {
+        setRequiredError('The required update is not available yet. Please try again.');
       }
     } catch (error) {
-      bootLog('updates_check_done', { error: 'failed' });
       setRequiredError('Could not download the update. Check your connection and try again.');
       console.log('EAS update check failed', error);
     } finally {
@@ -149,11 +131,11 @@ function OtaUpdateController() {
   return (
     <Modal visible={showRequiredGate} animationType="fade" presentationStyle="fullScreen">
       <View style={styles.updateGate}>
-        <Text style={styles.updateGateTitle}>Update Required</Text>
-        <Text style={styles.updateGateBody}>
+        <Text typographyRole="pageTitle" style={styles.updateGateTitle}>Update Required</Text>
+        <Text typographyRole="supportingBody" style={styles.updateGateBody}>
           {requiredError || (updateReady ? 'Restarting Strength Ledger…' : 'Downloading the latest version…')}
         </Text>
-        {!updateReady ? <ActivityIndicator color="#C4B5FD" style={styles.updateGateSpinner} /> : null}
+        {!updateReady ? <ActivityIndicator color={SLColors.accentViolet} style={styles.updateGateSpinner} /> : null}
         {requiredError ? (
           <TouchableOpacity
             style={styles.updateGateButton}
@@ -167,7 +149,7 @@ function OtaUpdateController() {
               }
             }}
           >
-            <Text style={styles.updateGateButtonText}>Try Again</Text>
+            <Text typographyRole="buttonLabel" style={styles.updateGateButtonText}>Try Again</Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -175,12 +157,33 @@ function OtaUpdateController() {
   );
 }
 
+const appNavigationFonts = {
+  regular: { fontFamily: SLFontFamilies.body, fontWeight: '400' as const },
+  medium: { fontFamily: SLFontFamilies.bodyMedium, fontWeight: '400' as const },
+  bold: { fontFamily: SLFontFamilies.bodyBold, fontWeight: '400' as const },
+  heavy: { fontFamily: SLFontFamilies.bodyBold, fontWeight: '400' as const },
+};
+
+const appOLEDTheme = {
+  ...DarkTheme,
+  fonts: appNavigationFonts,
+  colors: {
+    ...DarkTheme.colors,
+    primary: SLColors.accent,
+    background: SLColors.canvas,
+    card: SLColors.plane,
+    text: SLColors.textPrimary,
+    border: SLColors.borderSubtle,
+    notification: SLColors.accentMagenta,
+  },
+};
+
 function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) {
   return (
     <View style={styles.startupScreen}>
-      <Text style={styles.startupTitle}>Strength Ledger</Text>
-      <ActivityIndicator color="#C4B5FD" style={styles.startupSpinner} />
-      <Text style={styles.startupMessage}>{message}</Text>
+      <Text typographyRole="pageTitle" style={styles.startupTitle}>Strength Ledger</Text>
+      <ActivityIndicator color={SLColors.accentViolet} style={styles.startupSpinner} />
+      <Text typographyRole="supportingBody" style={styles.startupMessage}>{message}</Text>
     </View>
   );
 }
@@ -199,31 +202,17 @@ function RootStack() {
 
   useEffect(() => {
     if (authReady) {
-      bootLog('navigation_complete', {
-        route_state: user
-          ? user.verification_required === true && user.email_verified === false
-            ? 'verify_email'
-            : user.is_coach && user.billing_required === true
-            ? 'billing_activation'
-            : user.is_coach
-            ? 'coach_or_individual'
-            : user.has_linked_athlete && user.athlete_id
-            ? 'linked_athlete'
-            : 'unlinked_athlete'
-          : 'logged_out',
-      });
       setAuthWaitExpired(false);
       return undefined;
     }
 
     const timer = setTimeout(() => {
-      bootLog('auth_wait_timeout', { timeout_ms: STARTUP_TIMEOUT_MS });
       console.warn('Auth bootstrap timed out; continuing to login shell.');
       setAuthWaitExpired(true);
     }, STARTUP_TIMEOUT_MS);
 
     return () => clearTimeout(timer);
-  }, [authReady, user]);
+  }, [authReady]);
 
   useEffect(() => {
     if (!authReady || !user || isIndividual || Platform.OS === 'web') return;
@@ -231,7 +220,6 @@ function RootStack() {
     let cancelled = false;
 
     async function registerForPushNotifications() {
-      bootLog('push_registration_start');
       try {
         const Notifications = await import('expo-notifications');
         const ConstantsModule = await import('expo-constants');
@@ -265,7 +253,6 @@ function RootStack() {
         }
 
         if (status !== 'granted' || cancelled) {
-          bootLog('push_registration_done', { status, registered: false });
           console.log('Push notification permission not granted');
           return;
         }
@@ -294,20 +281,16 @@ function RootStack() {
             if (cancelled) return;
             if (res.ok) {
               registeredPushTokenRef.current = expoPushToken;
-              bootLog('push_registration_done', { registered: true });
               console.log('Push token backend registration response:', res);
               return;
             }
 
-            bootLog('push_registration_done', { registered: false, error: res.error || 'unknown' });
             console.warn('Push token registration skipped:', res.error || 'unknown error');
           })
           .catch((err) => {
-            bootLog('push_registration_done', { registered: false, error: 'network' });
             console.warn('Push token registration skipped:', err);
           });
       } catch (err) {
-        bootLog('push_registration_done', { registered: false, error: 'exception' });
         console.warn('Push notification registration skipped:', err);
       }
     }
@@ -381,7 +364,7 @@ function RootStack() {
               } as any);
               return;
             }
-            router.push('/(tabs)/reflection' as any);
+            router.push('/(tabs)/ledger/archive' as any);
             return;
           }
 
@@ -417,65 +400,72 @@ function RootStack() {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ contentStyle: styles.transparentScene }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="verify-email" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="coach-team-brief"
+        options={{
+          animation: 'slide_from_bottom',
+          contentStyle: styles.modalScene,
+          gestureEnabled: true,
+          headerShown: false,
+          presentation: 'fullScreenModal',
+        }}
+      />
     </Stack>
   );
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontWaitExpired, setFontWaitExpired] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
-    Geist_400Regular,
-    Geist_500Medium,
-    Geist_600SemiBold,
-    Geist_700Bold,
-    GeistMono_400Regular,
-    GeistMono_600SemiBold,
+    Michroma: require('@/assets/fonts/Michroma-Regular.ttf'),
+    'Exo2-Regular': require('@/assets/fonts/Exo2-Regular.ttf'),
+    'Exo2-Medium': require('@/assets/fonts/Exo2-Medium.ttf'),
+    'Exo2-SemiBold': require('@/assets/fonts/Exo2-SemiBold.ttf'),
+    'Exo2-Bold': require('@/assets/fonts/Exo2-Bold.ttf'),
   });
 
   useEffect(() => {
+    if (__DEV__ && fontError) {
+      console.warn('Bundled Strength Ledger font loading failed; continuing with platform fallback.', fontError);
+    }
+  }, [fontError]);
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) return undefined;
+
     const timer = setTimeout(() => {
-      bootLog('font_load_timeout', { timeout_ms: STARTUP_TIMEOUT_MS });
       console.warn('Font loading timed out; continuing with fallback fonts.');
       setFontWaitExpired(true);
     }, STARTUP_TIMEOUT_MS);
 
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    void SplashScreen.hideAsync().catch(() => {});
-  }, []);
+  }, [fontError, fontsLoaded]);
 
   useEffect(() => {
     if (fontsLoaded || fontError || fontWaitExpired) {
-      bootLog('font_load_done', {
-        loaded: fontsLoaded,
-        error: !!fontError,
-        timeout: fontWaitExpired,
-      });
       void SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontError, fontWaitExpired, fontsLoaded]);
 
-  if (!fontsLoaded && !fontError && !fontWaitExpired) {
-    return <StartupLoadingScreen message="Starting Strength Ledger..." />;
-  }
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <RootStack />
-          <OtaUpdateController />
-          <StatusBar style="light" />
-        </ThemeProvider>
-      </AuthProvider>
+    <GestureHandlerRootView style={styles.gestureRoot}>
+      <AppShell>
+        {!fontsLoaded && !fontError && !fontWaitExpired ? (
+          <StartupLoadingScreen message="Starting Strength Ledger..." />
+        ) : (
+          <AuthProvider>
+            <ThemeProvider value={appOLEDTheme}>
+              <RootStack />
+              <OtaUpdateController />
+              <StatusBar style="light" />
+            </ThemeProvider>
+          </AuthProvider>
+        )}
+      </AppShell>
     </GestureHandlerRootView>
   );
 }
@@ -485,20 +475,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#050505',
+    backgroundColor: SLColors.canvas,
     paddingHorizontal: 28,
   },
   updateGateTitle: {
-    color: '#F8FAFC',
-    fontSize: 28,
-    fontWeight: '800',
+    color: SLColors.textStrong,
     textAlign: 'center',
   },
   updateGateBody: {
     marginTop: 12,
-    color: '#B8ACA1',
-    fontSize: 16,
-    lineHeight: 23,
+    color: SLColors.textMuted,
     textAlign: 'center',
   },
   updateGateSpinner: {
@@ -511,25 +497,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6D28D9',
+    backgroundColor: SLColors.accentViolet,
   },
   updateGateButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
+    color: SLColors.textStrong,
+  },
+  gestureRoot: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  transparentScene: {
+    backgroundColor: 'transparent',
+  },
+  modalScene: {
+    backgroundColor: SLColors.canvas,
   },
   startupScreen: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#050505',
-    paddingHorizontal: 24,
+    backgroundColor: 'transparent',
   },
   startupTitle: {
-    color: '#F8FAFC',
-    fontSize: 24,
-    fontWeight: '800',
-    letterSpacing: 0,
+    color: SLColors.textStrong,
     textAlign: 'center',
   },
   startupSpinner: {
@@ -537,51 +527,7 @@ const styles = StyleSheet.create({
   },
   startupMessage: {
     marginTop: 12,
-    color: '#B8ACA1',
-    fontSize: 14,
+    color: SLColors.textMuted,
     textAlign: 'center',
-  },
-  recoverableTitle: {
-    marginTop: 18,
-    color: '#F8FAFC',
-    fontSize: 22,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  recoverableBody: {
-    marginTop: 10,
-    maxWidth: 320,
-    color: '#B8ACA1',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
-  recoverablePrimary: {
-    minWidth: 220,
-    minHeight: 50,
-    marginTop: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(124, 58, 237, 0.74)',
-  },
-  recoverableDisabled: {
-    opacity: 0.65,
-  },
-  recoverablePrimaryText: {
-    color: '#F5F3FF',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  recoverableSecondary: {
-    minHeight: 44,
-    marginTop: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recoverableSecondaryText: {
-    color: '#A3A3A3',
-    fontSize: 14,
-    fontWeight: '700',
   },
 });

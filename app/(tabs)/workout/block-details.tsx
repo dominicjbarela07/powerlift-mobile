@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLPageHeader } from '@/components/ui';
 
 type HubSession = {
   id: number;
@@ -83,17 +85,19 @@ export default function BlockDetailsScreen() {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.muted} />}
       >
-        <ReturnControl onPress={() => router.push('/(tabs)/workout' as any)} />
-        <Header title="Block Details" />
+        <SLPageHeader
+          title="Block Details"
+          backLabel="Return to Training Hub"
+          onBack={() => router.push('/(tabs)/workout' as any)}
+        />
         {loading ? <StateLine title="Loading block" /> : error ? <StateLine title={error} tone="danger" /> : !block ? (
           <Text style={styles.quietLine}>No active block.</Text>
         ) : (
           <>
             <View style={styles.anchor}>
-              <View style={styles.anchorRail} />
               <View style={styles.anchorBody}>
                 <Text style={styles.kicker}>Current Block</Text>
-                <Text style={styles.blockName}>{block.name || 'Training Block'}</Text>
+                <Text typographyRole="workoutName" style={styles.blockName}>{block.name || 'Training Block'}</Text>
                 <Text style={styles.meta}>{[block.week_label || block.phase, block.date_range_label].filter(Boolean).join(' / ')}</Text>
                 <View style={styles.progressLine}>
                   <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
@@ -124,23 +128,6 @@ export default function BlockDetailsScreen() {
   );
 }
 
-function ReturnControl({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable style={({ pressed }) => [styles.returnControl, pressed && styles.pressed]} onPress={onPress}>
-      <Ionicons name="arrow-back" size={15} color={colors.muted} />
-      <Text style={styles.returnText}>Return to Training Hub</Text>
-    </Pressable>
-  );
-}
-
-function Header({ title }: { title: string }) {
-  return (
-    <View style={styles.header}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-}
-
 function StateLine({ title, tone }: { title: string; tone?: 'danger' }) {
   return (
     <View style={styles.stateLine}>
@@ -163,9 +150,8 @@ function SessionRow({ session, onPress }: { session: HubSession; onPress: () => 
   const tone = toneForKind(session.kind || session.status);
   return (
     <Pressable style={({ pressed }) => [styles.row, pressed && styles.pressed]} onPress={onPress}>
-      <View style={[styles.rowRail, { backgroundColor: tone }]} />
       <View style={styles.rowCopy}>
-        <Text style={styles.rowTitle} numberOfLines={1}>{session.title || session.label || 'Training Session'}</Text>
+        <Text typographyRole="workoutName" style={styles.rowTitle} numberOfLines={1}>{session.title || session.label || 'Training Session'}</Text>
         <Text style={styles.rowMeta} numberOfLines={1}>{[formatShortDate(session.date), focusLine(session.focus)].filter(Boolean).join(' / ')}</Text>
       </View>
       <Text style={[styles.status, { color: tone }]}>{labelForKind(session.kind || session.status)}</Text>
@@ -208,21 +194,17 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
-  header: { paddingTop: 2 },
-  title: { fontFamily: SLFontFamilies.sansBold, fontSize: 28, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
-  returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
-  returnText: { ...SLTypography.label, color: colors.muted },
   kicker: { ...SLTypography.label, color: colors.subtle, textTransform: 'uppercase' },
   anchor: { flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
   anchorRail: { width: 3, backgroundColor: colors.violet },
   anchorBody: { flex: 1, paddingVertical: 20, paddingLeft: 16, gap: 10 },
-  blockName: { fontFamily: SLFontFamilies.sansBold, fontSize: 24, lineHeight: 30, color: colors.textStrong, letterSpacing: 0 },
+  blockName: { fontFamily: SLFontFamilies.sansBold, fontSize: SLTypography.screenTitle.fontSize, lineHeight: 30, color: colors.textStrong, letterSpacing: 0 },
   meta: { ...SLTypography.caption, color: colors.muted },
   progressLine: { height: 2, backgroundColor: colors.lineSoft, overflow: 'hidden' },
   progressFill: { height: 2, backgroundColor: colors.violet },
   summaryRow: { flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft },
   summaryItem: { flex: 1, paddingVertical: 12, gap: 3 },
-  summaryValue: { fontFamily: SLFontFamilies.monoSemiBold, fontSize: 18, color: colors.textStrong },
+  summaryValue: { fontFamily: SLFontFamilies.monoSemiBold, fontSize: SLTypography.sectionTitle.fontSize, color: colors.textStrong },
   summaryLabel: { ...SLTypography.caption, color: colors.subtle },
   weekGroup: { gap: 10 },
   list: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },

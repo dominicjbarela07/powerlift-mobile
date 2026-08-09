@@ -2,7 +2,6 @@ import React, { type ReactNode } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  View,
   type ScrollViewProps,
   type StyleProp,
   type ViewProps,
@@ -10,7 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SLSpacing } from '@/constants/theme';
+import { SLLayout } from '@/constants/theme';
+import { SLMotionEntrance } from './sl-motion';
 
 type ScreenEdges = 'top' | 'bottom' | 'both' | 'none';
 
@@ -44,8 +44,8 @@ export function SLScreen({
   ...props
 }: SLScreenProps) {
   return (
-    <SafeAreaView edges={safeEdges(edges)} style={[styles.safe, style]} {...props}>
-      <View style={[styles.content, padded ? styles.padded : null, contentStyle]}>{children}</View>
+    <SafeAreaView edges={safeEdges(edges)} style={[style, styles.safe]} {...props}>
+      <SLMotionEntrance style={[styles.content, padded ? styles.padded : null, contentStyle]}>{children}</SLMotionEntrance>
     </SafeAreaView>
   );
 }
@@ -61,8 +61,9 @@ export function SLScrollScreen({
   ...props
 }: SLScrollScreenProps) {
   return (
-    <SafeAreaView edges={safeEdges(edges)} style={[styles.safe, style]}>
+    <SafeAreaView edges={safeEdges(edges)} style={[style, styles.safe]}>
       <ScrollView
+        style={styles.scroll}
         contentContainerStyle={[
           styles.scrollContent,
           padded ? styles.padded : null,
@@ -72,7 +73,7 @@ export function SLScrollScreen({
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         {...props}
       >
-        {children}
+        <SLMotionEntrance style={styles.scrollMotion}>{children}</SLMotionEntrance>
       </ScrollView>
     </SafeAreaView>
   );
@@ -84,12 +85,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    backgroundColor: 'transparent',
     flex: 1,
   },
+  scroll: {
+    backgroundColor: 'transparent',
+  },
   scrollContent: {
+    backgroundColor: 'transparent',
+    flexGrow: 1,
+  },
+  scrollMotion: {
+    backgroundColor: 'transparent',
     flexGrow: 1,
   },
   padded: {
-    paddingVertical: SLSpacing.lg,
+    paddingBottom: SLLayout.screenBottom,
+    paddingTop: SLLayout.screenTop,
   },
 });

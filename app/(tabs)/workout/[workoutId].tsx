@@ -1,32 +1,40 @@
 // app/(tabs)/workout/[workoutId].tsx
 // @ts-nocheck
 
-import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState, useRef } from 'react';
 import {
   View,
-  Text,
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  TextInput,
+  Pressable,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
   Modal,
   AppState,
+  Animated,
+  Easing,
+  AccessibilityInfo,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
   findNodeHandle,
   UIManager,
+  LayoutAnimation,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
+import { resolveAccessoryIconName, SLProfileAvatar, type SLAccessoryIconName } from '@/components/ui';
 let Notifications: any = null;
 if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
 }
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system/legacy';
+import * as Haptics from 'expo-haptics';
+import { useAudioPlayer } from 'expo-audio';
+import { Ionicons } from '@expo/vector-icons';
 let VideoThumbnails: any = null;
 try {
   VideoThumbnails = require('expo-video-thumbnails');
@@ -39,11 +47,17 @@ import SetVideoPlayerModal, {
 } from '@/components/SetVideoPlayerModal';
 import {
   type ActiveMovementDetailRow,
+  type ActiveMovementVisualContext,
   CoreMovementLedgerRow,
   CoreSchemeDetail,
   type MovementLoggerFocusModel,
   type SetRailStep,
 } from '@/components/workout-logger/core-loggers';
+import {
+  SupersetRoundWorkspace,
+  type SupersetWorkspaceItem,
+} from '@/components/workout-logger/superset-round-workspace';
+import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import {
   CancelResumeModal,
   RestTimerPickerModal,
@@ -51,25 +65,163 @@ import {
 } from '@/components/workout-logger/logger-modals';
 import {
   LogSheetUnitToggle,
+  SessionUnitFloatingControl,
 } from '@/components/workout-logger/logger-primitives';
+import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
+import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
+import { LoggerFeedbackSurface } from '@/components/workout-logger/logger-feedback';
+import { PostSessionCoachFeedback } from '@/components/workout-logger/post-session-surfaces';
+import { SessionHighlightsPanel, SessionImpactPanel, type SessionImpactSummary } from '@/components/workout-logger/stage5-impact-summary';
 import {
+  SessionBeginAction,
   SessionCommandStrip,
   SessionIntentPanel,
-  type WorkoutProgressSetSegment,
 } from '@/components/workout-logger/session-shell';
+import {
+  RestTimerFocus,
+  type RestTimerHeaderOrigin,
+} from '@/components/workout-logger/rest-timer-focus';
 import { useAuth } from '@/context/AuthContext';
+import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
 import { API_BASE, fetchJson, removeVideoAttachment } from '@/lib/api';
 import {
   cancelVideoUploadJob,
   enqueueVideoUpload,
   processVideoUploadQueue,
+  retryVideoUploadJob,
   startVideoUploadQueue,
   subscribeVideoUploadQueue,
   type QueuedVideoUploadJob,
 } from '@/lib/videoUploadQueue';
-import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { setUpdateBlocker } from '@/lib/updateSafety';
+import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import {
+  attachTransientRecognitionDelivery,
+  feedbackAnalytics,
+  createCanonicalSetResultGate,
+  createCanonicalSetSubmissionController,
+  createLogSheetHandoffController,
+  createTimerHandoffReleaseController,
+  finalAssignedSetOpportunity,
+  initialLoggerFeedbackState,
+  loggerFeedbackReducer,
+  logSetActionPresentation,
+  recognitionDeliveryId,
+  recognitionVisibleDuration,
+  selectCelebrationEvents,
+  timerHandoffResolution,
+  type LoggerRecognitionEvent,
+} from '@/lib/logger-feedback';
+import {
+  invalidateRecognitionForSet,
+  invalidateRecognitionEvents,
+  loadLoggerFeedbackStorage,
+  markRecognitionConsumed,
+  persistPendingRecognition,
+} from '@/lib/logger-feedback-storage';
+import {
+  hasCompletedSetSwipeTooltipBeenShown,
+  markCompletedSetSwipeTooltipShown,
+} from '@/lib/completed-set-swipe-tooltip';
+import {
+  completedSetSwipeTooltipEnabled,
+  shouldShowCompletedSetSwipeTooltip,
+} from '@/lib/completed-set-swipe-tooltip-core';
+import { triggerAcceptedSetHaptic, triggerSessionCompletionHaptic, triggerSubmissionFailureHaptic } from '@/lib/logger-feedback-haptics';
+import {
+  KG_PER_LB,
+  formatLoggerWeightKg,
+  formatLoggerWeightRangeKg,
+  roundLoggerDisplayWeight,
+  roundToNearestGymIncrementLb,
+} from '@/lib/logger-weight-format';
+import {
+  resolveLoggerPrescribedWeight,
+  type ResolvedLoggerPrescribedWeight,
+} from '@/lib/logger-prescribed-weight';
+import {
+  accessoryPerSetPrescription,
+  accessoryPerSetRepsLabel,
+} from '@/lib/accessory-logger-prescription';
+import { accessoryPrimaryMuscleGroup } from '@/lib/accessory-muscle-group';
+import { movementScrollTarget } from '@/lib/movement-transition';
+import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
+import { createSessionTimeDraft, parseSessionTimeDraft } from '@/lib/post-session-times';
+import { buildReadinessPayload, createReadinessSubmissionGate, normalizeReadinessUnit, persistReadinessThenBegin } from '@/lib/readiness';
 import { ThemedText } from '@/components/themed-text';
+import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import {
+  applyWorkoutDetailMachineIdentity,
+  createWorkoutDetailFixture,
+  hydrateWorkoutDetailEquipmentSelections,
+  normalizeWorkoutDetailLifecycle,
+  rememberWorkoutDetailEquipmentSelection,
+  workoutDetailLifecycleForEntryId,
+  workoutDetailMachineIdentityChoices,
+  workoutDetailMachineVariantIdentity,
+  useDevLiveScreenSession,
+} from '@/lib/release-preview-stubs';
+import {
+  resolveLoggerLiftIdentity,
+  resolveLoggerPlateStack,
+  resolveLoggerProgressContext,
+  type LoggerProgressEvidence,
+} from '@/lib/logger-visual-context';
+import {
+  cueForRestTimerSecond,
+  DEFAULT_REST_TIMER_CUE_CONFIG,
+  REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
+  shouldPromoteRestTimer,
+} from '@/lib/rest-timer-cues';
+import {
+  clearRestTimerExpiry,
+  loadRestTimerExpiry,
+  persistRestTimerExpiry,
+} from '@/lib/rest-timer-storage';
+import { coreSetTimelineLabel } from '@/lib/core-logger-timeline';
+import {
+  buildSupersetRoundModel,
+  missingSupersetRoundItemIds,
+} from '@/lib/superset-rounds';
+import {
+  advanceSequentialGroupStep,
+  createSequentialGroupDraft,
+  previousSequentialGroupStep,
+  skipSequentialGroupStep,
+  updateSequentialGroupDraft,
+  validateSequentialGroupForSave,
+} from '@/lib/sequential-group-logger';
+import {
+  sequentialGroupTransitionConfig,
+  type SequentialGroupTransitionDirection,
+} from '@/lib/sequential-group-transition';
+import {
+  activeEquipmentIdentity,
+  equipmentSnapshotForSet,
+  isMachineAccessoryItem,
+  needsEquipmentSelection,
+  orderEquipmentChoices,
+  type EquipmentSelectionContinuation,
+} from '@/lib/equipment-selection';
+import {
+  equipmentPresentationLabel,
+  equipmentPresentationParts,
+} from '@/lib/equipment-presentation';
+import {
+  MACHINE_EQUIPMENT_TYPES,
+  type MachineEquipmentType,
+} from '@/lib/machine-equipment';
+import { buildSwapMovementGroups } from '@/lib/swap-movement-options';
+
+const WORKOUT_DETAIL_COACH_AVATAR = null;
+const CORE_FAMILY_LIFT_CODE = {
+  squat: 'SQ',
+  bench: 'BN',
+  deadlift: 'DL',
+} as const;
+const REST_TIMER_ZERO_HOLD_MS = 650;
+const REST_TIMER_READY_HOLD_MS = 900;
+const REST_TIMER_RETURN_MS = 250;
 
 type SetLog = {
   id: number;
@@ -78,13 +230,30 @@ type SetLog = {
   actual_reps: number | null;
   actual_rpe: number | null;
   actual_rir: number | null;
+  client_submission_id?: string | null;
+  source_revision?: number;
   has_video?: boolean;
   video_id?: number | null;
   review_status?: string | null;
   upload_status?: string | null;
   video_url?: string | null;
   video?: SetVideoSummary | null;
+  performed_movement_definition_id?: number | null;
+  equipment_manufacturer_id?: number | null;
+  equipment_model_id?: number | null;
+  implementation_key_snapshot?: string | null;
+  performed_label_snapshot?: string | null;
+  identity_source_snapshot?: string | null;
 };
+
+type SetSubmissionAttempt = {
+  id: string;
+  signature: string;
+};
+
+function createSetSubmissionId(): string {
+  return `set-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
 
 type SetVideoPlayerState = {
   visible: boolean;
@@ -113,6 +282,59 @@ type MovementHistory = {
   best_logged_set?: MovementHistorySet | null;
   recent_sets?: MovementHistorySet[];
   recent_sessions?: MovementHistorySet[];
+  identity_scope?: 'exact_identity' | 'legacy_unresolved' | string;
+  movement_definition_id?: number | null;
+  legacy_unresolved_history?: {
+    most_recent_logged_set?: MovementHistorySet | null;
+    best_logged_set?: MovementHistorySet | null;
+    recent_sets?: MovementHistorySet[];
+    recent_sessions?: MovementHistorySet[];
+    identity_scope: 'legacy_unresolved';
+    equipment_label?: string | null;
+    reference_only: true;
+    loads_comparable: false;
+    comparison_allowed: false;
+  } | null;
+  related_reference_history?: {
+    movement_definition_id: number;
+    display_name: string;
+    manufacturer?: string | null;
+    equipment_type?: string | null;
+    equipment_model?: string | null;
+    implementation_key?: string | null;
+    last_performed_on?: string | null;
+    last_set?: MovementHistorySet | null;
+    has_history: boolean;
+    reference_only: true;
+    loads_comparable: false;
+  }[];
+};
+
+type GeneralMovementIdentity = {
+  id: number;
+  key: string;
+  display_name: string;
+  family_id?: number | null;
+  family_display_name?: string | null;
+  identity_specificity?: 'broad' | 'exact' | 'unknown' | string;
+  equipment_type?: string | null;
+  loading_implementation?: string | null;
+  load_convention?: string | null;
+  measurement_type?: string | null;
+  sidedness?: string | null;
+  implementation_key?: string | null;
+  manufacturer?: { id: number; key: string; display_name: string } | null;
+  equipment_model?: { id: number; key: string; display_name: string } | null;
+  material_parameters?: {
+    note?: string | null;
+    custom_manufacturer_name?: string | null;
+  } | null;
+  equipment_context?: {
+    remembered_status?: string | null;
+    last_used_at?: string | null;
+    option_kind?: 'catalog' | 'other' | 'unknown' | string;
+  } | null;
+  comparison_policy?: { confidence: string; comparison_scope: string; recognition_enabled: false } | null;
 };
 
 type PlannedSet = {
@@ -153,6 +375,7 @@ type WorkoutItem = {
   actual_reps: number | null;
   actual_rpe: number | null;
   notes: string | null;
+  progress_context?: LoggerProgressEvidence | null;
   superset_group: string | null;
   superset_pos: number | null;
   set_logs: SetLog[];
@@ -170,21 +393,28 @@ type WorkoutItem = {
   last_best?: WorkoutItem['lookback_best'];
   prev_best?: WorkoutItem['lookback_best'];
   movement_history?: MovementHistory | null;
+  movement_identity?: GeneralMovementIdentity | null;
+  performed_movement_identity?: GeneralMovementIdentity | null;
   parent_item_id?: number | string | null;
+  dev_core_family?: keyof typeof CORE_FAMILY_LIFT_CODE | null;
+  dev_visual_coverage?: string[];
 };
 
 type AccessoryGroup = {
   group: string | null;
   items: WorkoutItem[];
+  dev_execution_hint?: string | null;
 };
 
 type WorkoutPayload = {
   ok: boolean;
+  view_mode?: 'standard' | 'coach_preview' | string;
   permissions?: {
     can_log: boolean;
     can_coach: boolean;
     is_self_coached: boolean;
     can_hot_swap: boolean;
+    view_only?: boolean;
   };
   workout: {
     id: number;
@@ -194,6 +424,10 @@ type WorkoutPayload = {
     status: string | null;
     started_at?: string | null;
     completed_duration_seconds?: number | null;
+    estimated_duration_minutes?: number | null;
+    estimated_duration_low_minutes?: number | null;
+    estimated_duration_high_minutes?: number | null;
+    estimated_duration_model_version?: 'deterministic-v1' | string | null;
     completion_reminder_sent_at?: string | null;
     timeliness?: 'on_time' | 'tardy' | 'missed' | string | null;
     loggable?: boolean | null;
@@ -202,51 +436,55 @@ type WorkoutPayload = {
     block_reason?: string | null;
     training_block_id: number | null;
     programming_notes?: string | null;
+    dev_visual_coverage?: Record<string, readonly string[]> | null;
     post_session_coach_feedback?: string | null;
     post_session_coach_feedback_at?: string | null;
     core_items: WorkoutItem[];
     accessory_groups: AccessoryGroup[];
+    impact_summary?: SessionImpactSummary | null;
+    accomplishment_history?: { items: LoggerRecognitionEvent[]; next_cursor: string | null; has_more: boolean } | null;
   };
+  readiness_survey?: {
+    id: number;
+    bodyweight_kg?: number | null;
+  } | null;
   athlete: {
     id: number;
     name: string;
     preferred_units?: string | null;
+    bodyweight_kg?: number | null;
+    profilePhotoUrl?: string | null;
+    profilePhotoVersion?: string | null;
   };
+  coach?: {
+    id: number;
+    name?: string | null;
+    avatar_url?: string | null;
+    avatar_uploaded_at?: string | null;
+    avatar_fixture?: 'coach-adrien' | string | null;
+  } | null;
 };
 
 
 
 
-const KG_PER_LB = 0.45359237; // 1 lb = 0.45359 kg
 const MAX_ACCESSORY_LOAD_LB = 2000;
 const MAX_ACCESSORY_LOAD_KG = Math.ceil((MAX_ACCESSORY_LOAD_LB * KG_PER_LB) / 2.5) * 2.5;
-const CORE_WHEEL_ROW_HEIGHT = 44;
-const CORE_WHEEL_VISIBLE_ROWS = 5;
-
 function formatWeight(
   kg: number | null | undefined,
   unit: 'kg' | 'lb'
 ): string {
-  if (kg == null) return '?';
-
-  if (unit === 'kg') {
-    const snapped = Math.round(Number(kg) * 4) / 4;
-    if (!Number.isFinite(snapped)) return '?';
-    return snapped.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-  }
-
-  // Convert kg → lb
-  const lbs = kg / KG_PER_LB;
-  const rounded = roundToNearestGymIncrementLb(lbs);
-  return rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1);
+  return formatLoggerWeightKg(kg, unit);
 }
 
-function normalizeMobileLoggerUnit(value?: string | null): 'kg' | 'lb' {
-  const unit = String(value || '').trim().toLowerCase();
-  if (unit === 'lb' || unit === 'lbs' || unit === 'pound' || unit === 'pounds') {
-    return 'lb';
-  }
-  return 'kg';
+function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg') {
+  if (!log) return null;
+  let text = `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
+  if (log.actual_reps === 0) text += ' × Failed';
+  else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
+  if (log.actual_rpe != null) text += ` @ RPE ${log.actual_rpe.toFixed(1)}`;
+  if (log.actual_rir != null) text += ` @ RIR ${log.actual_rir.toFixed(1)}`;
+  return text;
 }
 
 function formatTargetRange(
@@ -257,35 +495,7 @@ function formatTargetRange(
   if (lowKg == null || highKg == null) return null;
   if (lowKg === 0 && highKg === 0) return null;
 
-  const snapKg = (v: number | null | undefined) => {
-    if (v == null) return null;
-    const snapped = Math.round(Number(v) * 4) / 4;
-    return Number.isFinite(snapped) ? snapped : null;
-  };
-
-  const formatTargetWeight = (kg: number | null | undefined) => {
-    if (kg == null) return '?';
-
-    if (unit === 'kg') {
-      const snapped = snapKg(kg);
-      if (snapped == null) return '?';
-      return snapped.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-    }
-
-    const lbs = Number(kg) / KG_PER_LB;
-    const rounded = Math.round(lbs / 2.5) * 2.5;
-    return rounded.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
-  };
-
-  const low = snapKg(lowKg);
-  const high = snapKg(highKg);
-  if (low == null || high == null) return null;
-
-  if (low === high) {
-    return `${formatTargetWeight(low)} ${unit}`;
-  }
-
-  return `${formatTargetWeight(low)}–${formatTargetWeight(high)} ${unit}`;
+  return formatLoggerWeightRangeKg(lowKg, highKg, unit);
 }
 
 function computeManualRangeKg(ps: PlannedSet): { lowKg: number | null; highKg: number | null } {
@@ -331,51 +541,6 @@ function formatPlannedSchemeLine(ps: PlannedSet, mode: string | null): string {
 function roundToNearest5(x: number): number {
   return Math.round(x / 5) * 5;
 }
-
-function roundToNearestGymIncrementLb(x: number): number {
-  return Math.round(x / 2.5) * 2.5;
-}
-
-const STATUS_STYLES: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
-  assigned: {
-    bg: 'rgba(234,179,8,0.12)', // warn
-    text: '#facc15',
-    border: 'rgba(234,179,8,0.4)',
-  },
-  in_progress: {
-    bg: 'rgba(134,239,172,0.055)',
-    text: '#A7CBB5',
-    border: 'rgba(134,239,172,0.16)',
-  },
-  completed: {
-    bg: 'rgba(129,140,248,0.14)', // accent
-    text: '#a5b4fc',
-    border: 'rgba(129,140,248,0.5)',
-  },
-  missed: {
-    bg: 'rgba(239,68,68,0.12)',
-    text: '#f87171',
-    border: 'rgba(239,68,68,0.42)',
-  },
-  tardy: {
-    bg: 'rgba(234,179,8,0.12)',
-    text: '#facc15',
-    border: 'rgba(234,179,8,0.4)',
-  },
-  missed_excused: {
-    bg: 'rgba(148,163,184,0.10)',
-    text: '#cbd5e1',
-    border: 'rgba(148,163,184,0.28)',
-  },
-  incomplete: {
-    bg: 'rgba(234,179,8,0.12)',
-    text: '#facc15',
-    border: 'rgba(234,179,8,0.38)',
-  },
-};
 
 function prettyStatus(status?: string | null) {
   if (!status) return '';
@@ -512,6 +677,185 @@ function formatMovementHistorySet(row: MovementHistorySet | null | undefined, un
   return line;
 }
 
+function formatHistoryMetric(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(Number(value))) return null;
+  const numeric = Number(value);
+  return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1);
+}
+
+function historyPerformanceParts(
+  row: MovementHistorySet | null | undefined,
+  unit: 'kg' | 'lb',
+  assisted?: boolean,
+) {
+  if (!row || row.weight_kg == null || row.reps == null) return null;
+  const effort = row.rir != null
+    ? `RIR ${formatHistoryMetric(row.rir)}`
+    : row.rpe != null
+      ? `RPE ${formatHistoryMetric(row.rpe)}`
+      : null;
+  return {
+    weight: `${formatWeight(row.weight_kg, unit)} ${unit}${assisted ? ' assistance' : ''}`,
+    reps: `×${row.reps}`,
+    effort,
+    date: row.date ? String(row.date).slice(0, 10) : 'Date unavailable',
+  };
+}
+
+function machineHistoryMetadata(value: string | null | undefined) {
+  return equipmentPresentationParts(value, 'Machine');
+}
+
+function machineHistoryDisplayName(
+  displayName: string | null | undefined,
+  manufacturer: string | null | undefined,
+) {
+  const name = String(displayName || '').trim();
+  const brand = String(manufacturer || '').trim().toLocaleLowerCase('en-US');
+  if (!name || !brand) return name || 'Machine';
+  const parts = name.split('·').map((part) => part.trim()).filter(Boolean);
+  const withoutBrand = parts.filter((part) => part.toLocaleLowerCase('en-US') !== brand);
+  return withoutBrand.join(' · ') || name;
+}
+
+function MovementHistorySummaryTile({
+  assisted,
+  kind,
+  label,
+  row,
+  unit,
+}: {
+  assisted: boolean;
+  kind: 'recent' | 'best';
+  label: string;
+  row: MovementHistorySet | null | undefined;
+  unit: 'kg' | 'lb';
+}) {
+  const performance = historyPerformanceParts(row, unit, assisted);
+  return (
+    <View style={[
+      styles.movementHistorySummaryTile,
+      kind === 'best'
+        ? styles.movementHistorySummaryTileBest
+        : styles.movementHistorySummaryTileRecent,
+    ]}>
+      <View style={styles.movementHistorySummaryLabelRow}>
+        <Ionicons
+          color={kind === 'best' ? '#76D6AD' : '#BE8CFF'}
+          name={kind === 'best' ? 'trophy-outline' : 'time-outline'}
+          size={15}
+        />
+        <Text style={[
+          styles.movementHistorySummaryLabel,
+          kind === 'best'
+            ? styles.movementHistorySummaryLabelBest
+            : styles.movementHistorySummaryLabelRecent,
+        ]}>
+          {label}
+        </Text>
+      </View>
+      {performance ? (
+        <>
+          <View style={styles.movementHistorySummaryPerformance}>
+            <Text adjustsFontSizeToFit minimumFontScale={0.78} numberOfLines={1} style={styles.movementHistorySummaryWeight}>
+              {performance.weight}
+            </Text>
+            <Text style={styles.movementHistorySummaryReps}>{performance.reps}</Text>
+          </View>
+          <View style={styles.movementHistorySummaryMeta}>
+            {performance.effort ? (
+              <Text style={styles.movementHistorySummaryEffort}>{performance.effort}</Text>
+            ) : null}
+            <Text style={styles.movementHistorySummaryDate}>{performance.date}</Text>
+          </View>
+        </>
+      ) : (
+        <Text style={styles.movementHistorySummaryEmpty}>No logged set</Text>
+      )}
+    </View>
+  );
+}
+
+function MovementHistoryExactCard({
+  assisted,
+  row,
+  unit,
+}: {
+  assisted: boolean;
+  row: MovementHistorySet;
+  unit: 'kg' | 'lb';
+}) {
+  const performance = historyPerformanceParts(row, unit, assisted);
+  if (!performance) return null;
+  return (
+    <View style={styles.movementHistoryExactCard}>
+      <View style={styles.movementHistoryExactPerformance}>
+        <Text style={styles.movementHistoryExactWeight}>{performance.weight}</Text>
+        <Text style={styles.movementHistoryExactReps}>{performance.reps}</Text>
+        {performance.effort ? (
+          <Text style={styles.movementHistoryExactEffort}>{performance.effort}</Text>
+        ) : null}
+      </View>
+      <Text style={styles.movementHistoryExactDate}>{performance.date}</Text>
+    </View>
+  );
+}
+
+function MovementHistoryRelatedCard({
+  row,
+  unit,
+}: {
+  row: NonNullable<MovementHistory['related_reference_history']>[number];
+  unit: 'kg' | 'lb';
+}) {
+  const performance = historyPerformanceParts(row.last_set, unit, false);
+  const metadata = machineHistoryMetadata(row.equipment_type || row.equipment_model);
+  const machineName = machineHistoryDisplayName(row.display_name, row.manufacturer);
+  return (
+    <View style={styles.movementHistoryEquipmentCard}>
+      <View style={styles.movementHistoryEquipmentIdentity}>
+        <ManufacturerBrandMark hero manufacturerName={row.manufacturer} />
+        <View style={styles.movementHistoryEquipmentCopy}>
+          <Text numberOfLines={2} style={styles.movementHistoryEquipmentName}>
+            {machineName}
+          </Text>
+          <Text numberOfLines={1} style={styles.movementHistoryEquipmentManufacturer}>
+            {row.manufacturer || 'Other'}
+          </Text>
+        </View>
+      </View>
+      {metadata.length ? (
+        <View style={styles.movementHistoryMetadataChips}>
+          {metadata.map((item) => (
+            <View key={item} style={styles.movementHistoryMetadataChip}>
+              <Text numberOfLines={1} style={styles.movementHistoryMetadataChipText}>{item}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      <View style={styles.movementHistoryEquipmentDivider} />
+      {performance ? (
+        <View>
+          <View style={styles.movementHistoryEquipmentPerformance}>
+            <Text adjustsFontSizeToFit minimumFontScale={0.78} numberOfLines={1} style={styles.movementHistoryEquipmentWeight}>
+              {performance.weight}
+            </Text>
+            <Text style={styles.movementHistoryEquipmentReps}>{performance.reps}</Text>
+            {performance.effort ? (
+              <View style={styles.movementHistoryEquipmentEffortBadge}>
+                <Text style={styles.movementHistoryEquipmentEffort}>{performance.effort}</Text>
+              </View>
+            ) : null}
+          </View>
+          <Text style={styles.movementHistoryEquipmentDate}>{performance.date}</Text>
+        </View>
+      ) : (
+        <Text style={styles.movementHistoryEquipmentEmpty}>No history with this equipment</Text>
+      )}
+    </View>
+  );
+}
+
 type SessionScreenMode = 'pre_session' | 'active_session' | 'finished_session';
 type CoreWheelKind = 'straight' | 'top' | 'bk' | 'fc';
 type SelectedSetVideo = {
@@ -526,9 +870,6 @@ type SelectedSetVideo = {
 
 const VIDEO_UPLOAD_CONNECTION_ERROR =
   'Upload failed due to connection instability. Your set was saved, but the video did not upload. Try again on stronger Wi-Fi or cellular.';
-const VIDEO_CHUNKED_UPLOAD_ENABLED =
-  (typeof __DEV__ !== 'undefined' && __DEV__) || process.env.EXPO_PUBLIC_VIDEO_CHUNKED_UPLOAD === '1';
-const VIDEO_CHUNK_UPLOAD_RETRIES = 3;
 
 function videoUploadFailureMessage(error: any) {
   const message = String(error?.message || '').trim();
@@ -545,94 +886,6 @@ function videoUploadFailureMessage(error: any) {
 
 function videoUploadIntent(selectedVideo: SelectedSetVideo) {
   return selectedVideo.submitForReview === false ? 'archive_only' : 'submitted';
-}
-
-function videoSubmitForReviewValue(selectedVideo: SelectedSetVideo) {
-  return selectedVideo.submitForReview === false ? 'false' : 'true';
-}
-
-async function uploadVideoChunkWithRetry(setLogId: number, payload: any) {
-  let lastError: any = null;
-  for (let attempt = 1; attempt <= VIDEO_CHUNK_UPLOAD_RETRIES; attempt += 1) {
-    const { ok, status, json, raw } = await fetchJson(
-      `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/chunk`,
-      {
-        method: 'POST',
-        body: payload,
-        auth: true,
-      }
-    );
-    if (ok && json?.ok) return json;
-    lastError = new Error(json?.error || raw || `Video chunk upload failed (HTTP ${status})`);
-    await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
-  }
-  throw lastError || new Error('Video chunk upload failed.');
-}
-
-async function uploadSetVideoChunked(setLogId: number, selectedVideo: SelectedSetVideo) {
-  if (!VIDEO_CHUNKED_UPLOAD_ENABLED || Platform.OS === 'web') {
-    throw new Error('chunked upload disabled');
-  }
-  const info = await FileSystem.getInfoAsync(selectedVideo.uri, { size: true } as any);
-  const size = Number(selectedVideo.sizeBytes || (info as any)?.size || 0);
-  if (!size) throw new Error('video file required');
-
-  const init = await fetchJson(`${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/init`, {
-    method: 'POST',
-    auth: true,
-    body: {
-      filename: selectedVideo.name || 'set-video.mp4',
-      content_type: selectedVideo.mimeType || 'video/mp4',
-      size,
-      video_angle: selectedVideo.videoAngle || 'unknown',
-      submit_for_review: videoSubmitForReviewValue(selectedVideo),
-      upload_intent: videoUploadIntent(selectedVideo),
-    },
-  });
-  if (!init.ok || !init.json?.ok) {
-    throw new Error(init.json?.error || init.raw || `Chunked upload init failed (HTTP ${init.status})`);
-  }
-  const uploadId = init.json.upload_id;
-  const chunkSize = Number(init.json.chunk_size || 1024 * 1024);
-  const totalChunks = Number(init.json.total_chunks || Math.ceil(size / chunkSize));
-
-  for (let index = 0; index < totalChunks; index += 1) {
-    const position = index * chunkSize;
-    const length = Math.min(chunkSize, size - position);
-    const dataBase64 = await FileSystem.readAsStringAsync(selectedVideo.uri, {
-      encoding: FileSystem.EncodingType.Base64,
-      position,
-      length,
-    } as any);
-    await uploadVideoChunkWithRetry(setLogId, {
-      upload_id: uploadId,
-      index,
-      data_base64: dataBase64,
-    });
-  }
-
-  let thumbnailBase64 = '';
-  if (selectedVideo.thumbnailUri) {
-    thumbnailBase64 = await FileSystem.readAsStringAsync(selectedVideo.thumbnailUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    } as any);
-  }
-
-  const complete = await fetchJson(`${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/complete`, {
-    method: 'POST',
-    auth: true,
-    body: {
-      upload_id: uploadId,
-      total_chunks: totalChunks,
-      thumbnail_base64: thumbnailBase64,
-      thumbnail_filename: thumbnailBase64 ? `set-video-thumbnail-${Date.now()}.jpg` : '',
-      thumbnail_content_type: thumbnailBase64 ? 'image/jpeg' : '',
-    },
-  });
-  if (!complete.ok || !complete.json?.ok) {
-    throw new Error(complete.json?.error || complete.raw || `Chunked upload complete failed (HTTP ${complete.status})`);
-  }
-  return complete.json?.video || null;
 }
 
 const VIDEO_ANGLE_OPTIONS = [
@@ -659,14 +912,10 @@ async function createSetVideoThumbnail(videoUri: string): Promise<string | null>
   }
 }
 
-function videoAngleLabel(value?: string | null) {
-  return VIDEO_ANGLE_OPTIONS.find((option) => option.slug === value)?.label || 'Unknown Angle';
-}
 type PendingCoreWheelLog = {
   kind: CoreWheelKind;
   itemId: number;
   setIndex?: number;
-  selectedVideo?: SelectedSetVideo | null;
 } | null;
 type CoreWheelState = {
   visible: boolean;
@@ -676,13 +925,13 @@ type CoreWheelState = {
   title: string;
   subtitle: string;
   targetLine?: string | null;
+  prescriptionLine?: string | null;
   weight: string;
   reps: string;
   rpe: string;
   weightOptions: string[];
   repsOptions: string[];
   rpeOptions: string[];
-  selectedVideo?: SelectedSetVideo | null;
 };
 type AccessoryWheelState = {
   visible: boolean;
@@ -696,6 +945,29 @@ type AccessoryWheelState = {
   repsOptions: string[];
   rirOptions: string[];
   selectedVideo?: SelectedSetVideo | null;
+};
+type SupersetRoundLoggerEntry = {
+  itemId: number;
+  title: string;
+  prescription: string;
+  weight: string;
+  reps: string;
+  rir: string;
+  requiresRir: boolean;
+  alreadyLogged: boolean;
+  loggedResult?: string | null;
+  validationError?: string | null;
+  weightOptions: string[];
+  repsOptions: string[];
+  rirOptions: string[];
+};
+type SupersetRoundLoggerState = {
+  groupLabel: string;
+  roundIndex: number;
+  roundCount: number;
+  activeIndex: number;
+  saving: boolean;
+  entries: SupersetRoundLoggerEntry[];
 };
 
 function deriveScreenMode(status?: string | null): SessionScreenMode {
@@ -753,13 +1025,6 @@ function isStraightWorkoutItem(item?: WorkoutItem | null): boolean {
   return variant === 'STRAIGHT' || variant === 'VR' || !variant;
 }
 
-function plannedSetCountForItem(item: WorkoutItem) {
-  if (isFullCustomWorkoutItem(item)) {
-    return Array.isArray(item.planned_sets) && item.planned_sets.length ? item.planned_sets.length : positiveInt(item.sets);
-  }
-  return positiveInt(item.sets);
-}
-
 function loggedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
   if (!workout) return 0;
   const core = (workout.core_items || []).reduce((sum, item) => sum + (item.set_logs || []).length, 0);
@@ -772,12 +1037,25 @@ function loggedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
 
 function plannedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
   if (!workout) return 0;
-  const core = (workout.core_items || []).reduce((sum, item) => sum + plannedSetCountForItem(item), 0);
-  const acc = (workout.accessory_groups || []).reduce(
-    (sum, group) => sum + (group.items || []).reduce((inner, item) => inner + plannedSetCountForItem(item), 0),
-    0,
-  );
-  return core + acc;
+  return programmedSetCountForSession({
+    coreItems: workout.core_items,
+    accessoryGroups: workout.accessory_groups,
+  });
+}
+
+function durationEstimateForWorkout(workout?: WorkoutPayload['workout'] | null) {
+  if (!workout) return null;
+  const lowMinutes = Number(workout.estimated_duration_low_minutes);
+  const highMinutes = Number(workout.estimated_duration_high_minutes);
+  if (!Number.isFinite(lowMinutes) || !Number.isFinite(highMinutes) || lowMinutes <= 0 || highMinutes <= lowMinutes) {
+    return null;
+  }
+  return {
+    lowMinutes,
+    highMinutes,
+    label: `${lowMinutes}–${highMinutes}`,
+    modelVersion: workout.estimated_duration_model_version || 'deterministic-v1',
+  };
 }
 
 function missingSetLabelsForWorkout(workout?: WorkoutPayload['workout'] | null): string[] {
@@ -872,38 +1150,6 @@ function missingSetLabelsForWorkout(workout?: WorkoutPayload['workout'] | null):
   return missing;
 }
 
-function progressSegmentsForWorkout(workout?: WorkoutPayload['workout'] | null): WorkoutProgressSetSegment[] {
-  if (!workout) return [];
-  const segments: WorkoutProgressSetSegment[] = [];
-  (workout.core_items || []).forEach((item) => {
-    const total = plannedSetCountForItem(item);
-    const logged = (item.set_logs || []).length;
-    const lift = String(item.lift || '').toUpperCase();
-    const group = lift === 'DL' ? 'secondary' : 'primary';
-    Array.from({ length: total }).forEach((_, setIndex) => {
-      segments.push({
-        key: `core-${item.id}-${setIndex}`,
-        group,
-        logged: setIndex < logged,
-      });
-    });
-  });
-  (workout.accessory_groups || []).forEach((group, groupIndex) => {
-    (group.items || []).forEach((item, itemIndex) => {
-      const total = plannedSetCountForItem(item);
-      const logged = (item.set_logs || []).length;
-      Array.from({ length: total }).forEach((_, setIndex) => {
-        segments.push({
-          key: `acc-${groupIndex}-${item.id || itemIndex}-${setIndex}`,
-          group: 'accessory',
-          logged: setIndex < logged,
-        });
-      });
-    });
-  });
-  return segments;
-}
-
 function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
   const coreItems = (workout?.core_items || []).filter((item) => !isBackdownWorkoutItem(item));
   const accessoryCount = (workout?.accessory_groups || []).reduce(
@@ -932,35 +1178,6 @@ function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
   return parts.length ? parts.join(' • ') : 'Training';
 }
 
-function bestLoggedSet(workout?: WorkoutPayload['workout'] | null) {
-  if (!workout) return null;
-  let best: { item: WorkoutItem; log: SetLog; score: number } | null = null;
-  const items = [
-    ...(workout.core_items || []),
-    ...(workout.accessory_groups || []).flatMap((group) => group.items || []),
-  ];
-  for (const item of items) {
-    for (const log of item.set_logs || []) {
-      if (log.actual_weight_kg == null) continue;
-      const reps = log.actual_reps ?? 0;
-      const coreBonus = item.variant !== 'ACC' ? 1000000 : 0;
-      const score = coreBonus + Number(log.actual_weight_kg) * (1 + Number(reps) / 30);
-      if (!best || score > best.score) best = { item, log, score };
-    }
-  }
-  return best;
-}
-
-function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg') {
-  if (!log) return null;
-  let text = `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
-  if (log.actual_reps === 0) text += ' × Failed';
-  else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
-  if (log.actual_rpe != null) text += ` @ RPE ${log.actual_rpe.toFixed(1)}`;
-  if (log.actual_rir != null) text += ` @ RIR ${log.actual_rir.toFixed(1)}`;
-  return text;
-}
-
 function toWheelWeight(log: SetLog | null | undefined, unit: 'kg' | 'lb') {
   if (log?.actual_weight_kg == null) return '';
   return displayWeightFromKg(log.actual_weight_kg, unit);
@@ -968,11 +1185,7 @@ function toWheelWeight(log: SetLog | null | undefined, unit: 'kg' | 'lb') {
 
 function displayWeightFromKg(kg: number | null | undefined, unit: 'kg' | 'lb') {
   if (kg == null || !Number.isFinite(Number(kg))) return '';
-  const value = unit === 'kg' ? Number(kg) : Number(kg) / KG_PER_LB;
-  const snapped = unit === 'kg'
-    ? snapCoreWheelWeight(value, 'kg')
-    : snapCoreWheelWeight(value, 'lb');
-  return formatWheelNumber(snapped);
+  return formatLoggerWeightKg(Number(kg), unit);
 }
 
 function formatWheelNumber(value: number) {
@@ -981,10 +1194,7 @@ function formatWheelNumber(value: number) {
 
 function snapCoreWheelWeight(value: number, unit: 'kg' | 'lb') {
   if (!Number.isFinite(value)) return unit === 'kg' ? 70 : 150;
-  const step = unit === 'kg'
-    ? (value < 70 ? 1.25 : 2.5)
-    : (value < 150 ? 2.5 : 5);
-  return Math.round(value / step) * step;
+  return roundLoggerDisplayWeight(value, unit);
 }
 
 function weightDisplayToKg(weight: string, fromUnit: 'kg' | 'lb') {
@@ -1035,6 +1245,15 @@ function buildAccessoryWeightOptions(unit: 'kg' | 'lb', defaultValue: string) {
   return options.sort((a, b) => Number(a) - Number(b));
 }
 
+function buildEditWeightOptions(mode: 'rpe' | 'rir', unit: 'kg' | 'lb', value: string) {
+  const options = mode === 'rpe'
+    ? buildCoreWeightOptions(unit, value)
+    : buildAccessoryWeightOptions(unit, value);
+  const exactValue = formatWheelNumber(Number(value));
+  if (Number(value) > 0 && !options.includes(exactValue)) options.push(exactValue);
+  return options.sort((a, b) => Number(a) - Number(b));
+}
+
 function nearestWheelValue(options: string[], value: string, fallback: string) {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
@@ -1048,24 +1267,11 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
 }
 
 function prescribedCoreWeight(item: WorkoutItem, unit: 'kg' | 'lb', planned?: PlannedSet | null) {
-  const manual = planned ? computeManualRangeKg(planned) : null;
-  if (manual?.lowKg != null && manual?.highKg != null) {
-    return displayWeightFromKg((manual.lowKg + manual.highKg) / 2, unit);
-  }
-
-  const plannedAny: any = planned || {};
-  if (plannedAny.target_kg != null) return displayWeightFromKg(plannedAny.target_kg, unit);
-  if (planned?.suggested_low_kg != null && planned?.suggested_high_kg != null) {
-    return displayWeightFromKg((planned.suggested_low_kg + planned.suggested_high_kg) / 2, unit);
-  }
-
-  if (item.target_low_kg != null && item.target_high_kg != null) {
-    return displayWeightFromKg((item.target_low_kg + item.target_high_kg) / 2, unit);
-  }
-  if (item.target_low_kg != null) return displayWeightFromKg(item.target_low_kg, unit);
-  if (item.target_high_kg != null) return displayWeightFromKg(item.target_high_kg, unit);
-
-  return '';
+  return resolveLoggerPrescribedWeight({
+    item,
+    planned,
+    unit,
+  })?.displayValue || '';
 }
 
 function defaultCoreWeight(item: WorkoutItem, unit: 'kg' | 'lb', carriedInput?: string | null, planned?: PlannedSet | null) {
@@ -1106,19 +1312,15 @@ function accessoryTargetLine(item: WorkoutItem) {
 }
 
 function defaultAccessoryWeight(item: WorkoutItem, unit: 'kg' | 'lb', existingInput?: string | null) {
+  if (existingInput && Number.isFinite(Number(existingInput)) && Number(existingInput) > 0) {
+    return existingInput;
+  }
+
   const previousLog = item.set_logs?.length
     ? [...item.set_logs].sort((a, b) => (b.set_index || 0) - (a.set_index || 0))[0]
     : null;
   const previousWeight = toWheelWeight(previousLog, unit);
   if (previousWeight) return previousWeight;
-
-  const best = getLookbackBest(item);
-  const bestWeight = best?.actual_weight_kg ?? best?.weight_kg ?? null;
-  if (bestWeight != null) return displayWeightFromKg(bestWeight, unit);
-
-  if (existingInput && Number.isFinite(Number(existingInput)) && Number(existingInput) > 0) {
-    return existingInput;
-  }
 
   return '0';
 }
@@ -1167,135 +1369,90 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
   };
 }
 
-function WheelColumn({
-  label,
-  value,
-  options,
-  onChange,
-  suffix,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-  suffix?: string;
-}) {
-  const wheelRef = useRef<ScrollView | null>(null);
-  const dragSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isInteracting = useRef(false);
-  const centerPadding = CORE_WHEEL_ROW_HEIGHT * Math.floor(CORE_WHEEL_VISIBLE_ROWS / 2);
-
-  useEffect(() => {
-    if (isInteracting.current) return;
-    const index = Math.max(0, options.indexOf(value));
-    requestAnimationFrame(() => {
-      wheelRef.current?.scrollTo({
-        y: index * CORE_WHEEL_ROW_HEIGHT,
-        animated: false,
-      });
-    });
-  }, [options, value]);
-
-  useEffect(() => () => {
-    if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-  }, []);
-
-  const settleToOffset = (offsetY: number) => {
-    const index = Math.max(0, Math.min(options.length - 1, Math.round(offsetY / CORE_WHEEL_ROW_HEIGHT)));
-    const next = options[index];
-    if (next && next !== value) onChange(next);
-    const targetY = index * CORE_WHEEL_ROW_HEIGHT;
-    if (Math.abs(offsetY - targetY) > 1) {
-      wheelRef.current?.scrollTo({
-        y: targetY,
-        animated: true,
-      });
-    }
-  };
-
-  const settleAfterQuietDrag = (offsetY: number) => {
-    if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-    dragSettleTimer.current = setTimeout(() => {
-      isInteracting.current = false;
-      settleToOffset(offsetY);
-    }, 90);
-  };
-
-  return (
-    <View style={styles.coreWheelColumn}>
-      <Text style={styles.coreWheelColumnLabel}>{label}</Text>
-      <View style={styles.coreWheelScrollFrame}>
-        <View pointerEvents="none" style={styles.coreWheelCenterBand} />
-        <ScrollView
-          ref={wheelRef}
-          style={styles.coreWheelScroll}
-          contentContainerStyle={[
-            styles.coreWheelScrollContent,
-            { paddingTop: centerPadding, paddingBottom: centerPadding },
-          ]}
-          showsVerticalScrollIndicator={false}
-          snapToInterval={CORE_WHEEL_ROW_HEIGHT}
-          snapToAlignment="start"
-          decelerationRate="normal"
-          onScrollBeginDrag={() => {
-            isInteracting.current = true;
-            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-          }}
-          onMomentumScrollBegin={() => {
-            isInteracting.current = true;
-            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-          }}
-          onMomentumScrollEnd={(e) => {
-            isInteracting.current = false;
-            settleToOffset(e.nativeEvent.contentOffset.y);
-          }}
-          onScrollEndDrag={(e) => {
-            settleAfterQuietDrag(e.nativeEvent.contentOffset.y);
-          }}
-          scrollEventThrottle={16}
-        >
-          {options.map((option) => {
-            const selected = option === value;
-            return (
-              <TouchableOpacity
-                key={`${label}-${option}`}
-                style={styles.coreWheelOption}
-                onPress={() => onChange(option)}
-              >
-                <Text style={[styles.coreWheelOptionText, selected && styles.coreWheelOptionTextActive]}>
-                  {option}{suffix ? ` ${suffix}` : ''}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-    </View>
-  );
-}
-
 export default function WorkoutViewerScreen() {
-  const { workoutId } = useLocalSearchParams<{ workoutId?: string }>();
+  const {
+    workoutId,
+    loggerScenario,
+    loggerLifecycle,
+    athleteView,
+    returnSection,
+    coachAthleteId,
+    coachProgrammingBlockId,
+    coachProgrammingWeek,
+    coachProgrammingDay,
+  } = useLocalSearchParams<{
+    workoutId?: string;
+    loggerScenario?: string;
+    loggerLifecycle?: string;
+    athleteView?: string;
+    returnSection?: string;
+    coachAthleteId?: string;
+    coachProgrammingBlockId?: string;
+    coachProgrammingWeek?: string;
+    coachProgrammingDay?: string;
+  }>();
+  const coachPreviewRequested = athleteView === 'coach-preview';
   const router = useRouter();
+  const devPreviewSession = useDevLiveScreenSession();
+  const canonicalLoggerEntryLifecycle = workoutDetailLifecycleForEntryId(
+    devPreviewSession?.entryId,
+  );
+  const isIdealWorkoutDetailPreview =
+    __DEV__ &&
+    devPreviewSession?.mode === 'ideal' &&
+    canonicalLoggerEntryLifecycle != null;
+  const idealWorkoutDetailLifecycle =
+    canonicalLoggerEntryLifecycle
+    || normalizeWorkoutDetailLifecycle(loggerLifecycle)
+    || 'active_session';
   const { user } = useAuth(); // we only need session + role to decide logging availability
-
+  const insets = useSafeAreaInsets();
   const isIndividualUser =
     user?.workspace_mode === 'individual' ||
     user?.is_individual_workspace === true ||
     user?.is_self_coached === true;
 
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
-  const unitSeededWorkoutIdRef = useRef<string | null>(null);
+  const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
-
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
     setUpdateBlocker('workout', isLogging);
     return () => setUpdateBlocker('workout', false);
   }, [data?.workout?.status]);
+  const isRewardLoopDemoV2 = __DEV__ && String(data?.workout?.label || '').startsWith('V2 DEMO');
+  const rewardLoopDemoV2StorageScope = data?.workout
+    ? `${isRewardLoopDemoV2 ? 'mobile-reward-loop-v2:' : ''}${workoutId || data.workout.id}`
+    : null;
+  const rewardLoopDemoV2Log = useCallback((stage: string, details: Record<string, unknown> = {}) => {
+    if (!isRewardLoopDemoV2) return;
+    console.info('[RewardLoopDemoV2]', stage, details);
+  }, [isRewardLoopDemoV2]);
+  const [completedSetSwipeTooltipShown, setCompletedSetSwipeTooltipShown] = useState<boolean | null>(null);
+  const [completedSetSwipeTooltipCandidateSetLogId, setCompletedSetSwipeTooltipCandidateSetLogId] = useState<number | null>(null);
+  const [completedSetSwipeTooltipSetLogId, setCompletedSetSwipeTooltipSetLogId] = useState<number | null>(null);
+  const completedSetSwipeTooltipSessionKey = data?.workout?.started_at
+    ? `${rewardLoopDemoV2StorageScope}:${data.workout.started_at}`
+    : rewardLoopDemoV2StorageScope;
   const [sessionNowMs, setSessionNowMs] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setCompletedSetSwipeTooltipShown(null);
+    setCompletedSetSwipeTooltipCandidateSetLogId(null);
+    setCompletedSetSwipeTooltipSetLogId(null);
+    if (!completedSetSwipeTooltipSessionKey) return () => { cancelled = true; };
+
+    void hasCompletedSetSwipeTooltipBeenShown(completedSetSwipeTooltipSessionKey).then((shown) => {
+      if (!cancelled) setCompletedSetSwipeTooltipShown(shown);
+    }).catch(() => {
+      if (!cancelled) setCompletedSetSwipeTooltipShown(false);
+    });
+
+    return () => { cancelled = true; };
+  }, [completedSetSwipeTooltipSessionKey]);
   const [straightInputs, setStraightInputs] = useState<
     Record<number, { weight: string; reps: string; rpe: string }>
   >({});
@@ -1311,12 +1468,31 @@ export default function WorkoutViewerScreen() {
   const [coreWheel, setCoreWheel] = useState<CoreWheelState | null>(null);
   const [pendingCoreWheelLog, setPendingCoreWheelLog] = useState<PendingCoreWheelLog>(null);
   const [accessoryWheel, setAccessoryWheel] = useState<AccessoryWheelState | null>(null);
+  const [supersetRoundLogger, setSupersetRoundLogger] =
+    useState<SupersetRoundLoggerState | null>(null);
+  const supersetRoundSaveInFlightRef = useRef(false);
+  const supersetRoundTransitionInFlightRef = useRef(false);
+  const supersetRoundTransitionTokenRef = useRef(0);
+  const [supersetRoundTransitioning, setSupersetRoundTransitioning] = useState(false);
+  const [supersetRoundCapturedIndex, setSupersetRoundCapturedIndex] =
+    useState<number | null>(null);
+  const [supersetRoundProgressIndex, setSupersetRoundProgressIndex] =
+    useState<number | null>(null);
+  const supersetRoundStepOpacity = useRef(new Animated.Value(1)).current;
+  const supersetRoundStepTranslateX = useRef(new Animated.Value(0)).current;
+  const supersetRoundProgressFill = useRef(new Animated.Value(1)).current;
+  const supersetRoundCapturedPulse = useRef(new Animated.Value(0)).current;
+  const supersetRoundCapturedCueOpacity = useRef(new Animated.Value(0)).current;
   const [pendingAccessoryLogItemId, setPendingAccessoryLogItemId] = useState<any>(null);
   const [expandedCompletedMovements, setExpandedCompletedMovements] = useState<Record<string, boolean>>({});
   const [expandedCoreDetails, setExpandedCoreDetails] = useState<Record<string, boolean>>({});
+  const [reduceMotion, setReduceMotion] = useState(false);
   const manualMovementSelectionRef = useRef(false);
   const pendingAutoAdvanceRef = useRef<{ fromKey: string | null } | null>(null);
   const autoExpandWorkoutIdRef = useRef<number | null>(null);
+  const movementCardRefs = useRef<Record<string, any>>({});
+  const scrollViewportHeightRef = useRef(0);
+  const scrollContentHeightRef = useRef(0);
   const [setVideoPlayer, setSetVideoPlayer] = useState<SetVideoPlayerState>({
     visible: false,
     videoId: null,
@@ -1469,6 +1645,20 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
+      if (isIdealWorkoutDetailPreview && group.group) {
+        const roundModel = buildSupersetRoundModel(group.items || []);
+        const firstItemId = Number(group.items?.[0]?.id || 0);
+        rows.push({
+          key: `ss:${group.group}`,
+          detailKey: `ss:${group.group}`,
+          kind: 'accessory',
+          id: firstItemId,
+          complete: roundModel.status === 'complete',
+          logged: roundModel.completedRounds,
+          total: roundModel.roundCount,
+        });
+        continue;
+      }
       for (const item of group.items || []) {
         const logs = item.set_logs || [];
         const total = positiveInt(item.sets);
@@ -1486,7 +1676,7 @@ export default function WorkoutViewerScreen() {
     }
 
     return rows;
-  }, []);
+  }, [isIdealWorkoutDetailPreview]);
 
   const findRenderedMovementKeyForItem = useCallback((
     workout: WorkoutPayload['workout'] | null | undefined,
@@ -1511,13 +1701,20 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
+      if (
+        isIdealWorkoutDetailPreview
+        && group.group
+        && group.items.some((item) => item.id === itemId)
+      ) {
+        return `ss:${group.group}`;
+      }
       for (const item of group.items || []) {
         if (item.id === itemId) return `acc:${item.id}`;
       }
     }
 
     return null;
-  }, []);
+  }, [isIdealWorkoutDetailPreview]);
 
   const openMovementCard = useCallback((key: string | null | undefined) => {
     if (!key) return;
@@ -1526,7 +1723,7 @@ export default function WorkoutViewerScreen() {
       setExpandedCoreDetails((prev) => ({ ...prev, [coreDetailExpansionKey(id)]: true }));
       return;
     }
-    if (key.startsWith('acc:')) {
+    if (key.startsWith('acc:') || key.startsWith('ss:')) {
       setExpandedCompletedMovements((prev) => ({ ...prev, [key]: true }));
     }
   }, []);
@@ -1542,7 +1739,7 @@ export default function WorkoutViewerScreen() {
       });
       return;
     }
-    if (key.startsWith('acc:')) {
+    if (key.startsWith('acc:') || key.startsWith('ss:')) {
       setExpandedCompletedMovements((prev) => {
         if (!prev[key]) return prev;
         return { ...prev, [key]: false };
@@ -1569,6 +1766,60 @@ export default function WorkoutViewerScreen() {
   const scrollRef = useRef<any>(null);
   const scrollYRef = useRef(0);
   const pendingRestoreScrollYRef = useRef<number | null>(null);
+
+  const registerMovementCardRef = useCallback((key: string) => (node: any) => {
+    if (node) movementCardRefs.current[key] = node;
+    else delete movementCardRefs.current[key];
+  }, []);
+
+  const scrollMovementIntoView = useCallback((key: string) => {
+    const node = movementCardRefs.current[key];
+    if (!node || !scrollRef.current) return;
+    try {
+      const nodeHandle = findNodeHandle(node);
+      const scrollNode = scrollRef.current.getInnerViewNode?.() || scrollRef.current;
+      const scrollHandle = findNodeHandle(scrollNode);
+      if (!nodeHandle || !scrollHandle) return;
+      UIManager.measureLayout(
+        nodeHandle,
+        scrollHandle,
+        () => {},
+        (_x: number, cardTop: number, _width: number, cardHeight: number) => {
+          const viewportHeight = scrollViewportHeightRef.current;
+          const contentHeight = Math.max(
+            scrollContentHeightRef.current,
+            cardTop + cardHeight,
+            scrollYRef.current + viewportHeight,
+          );
+          const targetY = movementScrollTarget({
+            cardTop,
+            cardHeight,
+            scrollY: scrollYRef.current,
+            viewportHeight,
+            contentHeight,
+          });
+          if (targetY == null) return;
+          scrollRef.current?.scrollTo({ y: targetY, animated: !reduceMotion });
+        },
+      );
+    } catch {}
+  }, [reduceMotion]);
+
+  const scheduleMovementFocus = useCallback((key: string) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollMovementIntoView(key));
+    });
+  }, [scrollMovementIntoView]);
+
+  const configureNextMovementLayoutTransition = useCallback(() => {
+    if (reduceMotion) return;
+    LayoutAnimation.configureNext({
+      duration: SLMotion.spatialMs,
+      create: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+      update: { type: LayoutAnimation.Types.easeInEaseOut },
+      delete: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+    });
+  }, [reduceMotion]);
 
   // --- Keyboard + focus helpers so active log row stays visible ---
   const inputRefs = useRef<Record<string, any>>({});
@@ -1627,6 +1878,240 @@ export default function WorkoutViewerScreen() {
   };
 
   const [savingItemId, setSavingItemId] = useState<number | null>(null);
+  const setSubmissionAttemptsRef = useRef<Record<string, SetSubmissionAttempt>>({});
+  const processedSetResultsRef = useRef(createCanonicalSetResultGate());
+  const canonicalSetSubmissionControllerRef = useRef(createCanonicalSetSubmissionController());
+  const [feedbackState, feedbackDispatch] = useReducer(loggerFeedbackReducer, initialLoggerFeedbackState);
+  const feedbackStateRef = useRef(feedbackState);
+  feedbackStateRef.current = feedbackState;
+  const [animatedCompletionSummaryId, setAnimatedCompletionSummaryId] = useState<string | null>(null);
+  const saveFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const acceptedSheetHandoffControllerRef = useRef(createLogSheetHandoffController());
+  const timerHandoffReleaseControllerRef = useRef(createTimerHandoffReleaseController());
+  const activeTimerHandoffIdentityRef = useRef<string | null>(null);
+  const transientTraceContextRef = useRef({
+    workoutItemId: null as number | null,
+    setLogId: null as number | null,
+    clientSubmissionId: null as string | null,
+    eventId: null as number | null,
+    eventType: null as string | null,
+  });
+  const recognitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const submissionStartedAtRef = useRef<number | null>(null);
+  const lastAcceptedAtRef = useRef<number | null>(null);
+  const timerOverlapReportedRef = useRef(false);
+  const recognitionDisplayTelemetryRef = useRef<Set<string>>(new Set());
+  const recognitionPromotionTraceRef = useRef<string | null>(null);
+  const recognitionReleaseEvaluationTraceRef = useRef<string | null>(null);
+
+  const transientRecognitionTrace = useCallback((checkpoint: number, message: string, details: Record<string, unknown> = {}) => {
+    if (!__DEV__ || !isRewardLoopDemoV2) return;
+    const context = transientTraceContextRef.current;
+    const state = feedbackStateRef.current;
+    console.info('[TransientRecognitionTrace]', {
+      checkpoint,
+      message,
+      workout_id: Number(workoutId || data?.workout?.id || 0) || null,
+      workout_item_id: context.workoutItemId,
+      set_log_id: context.setLogId,
+      client_submission_id: context.clientSubmissionId,
+      event_id: context.eventId,
+      event_type: context.eventType,
+      recognition_lifecycle_state: `submission:${state.submission.status}|timer:${state.timer.status}|recognition:${state.recognition.status}`,
+      ...details,
+    });
+  }, [data?.workout?.id, isRewardLoopDemoV2, workoutId]);
+
+  const beginFeedbackSubmission = useCallback((itemId: number) => {
+    acceptedSheetHandoffControllerRef.current.cancelPending();
+    const now = Date.now();
+    if (lastAcceptedAtRef.current != null) {
+      feedbackAnalytics('time_from_set_acceptance_to_next_log_action', { latency_ms: now - lastAcceptedAtRef.current });
+    }
+    submissionStartedAtRef.current = now;
+    feedbackDispatch({ type: 'SUBMIT_STARTED', itemId });
+  }, []);
+
+  const submissionForAttempt = useCallback((key: string, payload: object) => {
+    const signature = JSON.stringify(payload);
+    const existing = setSubmissionAttemptsRef.current[key];
+    if (existing?.signature === signature) return existing.id;
+    const id = createSetSubmissionId();
+    setSubmissionAttemptsRef.current[key] = { id, signature };
+    return id;
+  }, []);
+
+  const consumeSetResultOnce = useCallback((key: string, clientSubmissionId: string, json: any) => {
+    if (!processedSetResultsRef.current.consume(String(workoutId || ''), clientSubmissionId, json)) return false;
+    delete setSubmissionAttemptsRef.current[key];
+    return true;
+  }, [workoutId]);
+
+  const handleCanonicalSetFeedback = useCallback((json: any) => {
+    const setLogId = Number(json?.set?.id || 0);
+    const clientSubmissionId = String(json?.client_submission_id || json?.set?.client_submission_id || '') || null;
+    const responseEvents = Array.isArray(json?.recognition_events) ? json.recognition_events as LoggerRecognitionEvent[] : [];
+    const rawEvents = attachTransientRecognitionDelivery(responseEvents, {
+      workoutId: String(workoutId || json?.workout_id || ''),
+      clientSubmissionId,
+    });
+    const events = selectCelebrationEvents(rawEvents);
+    const primary = events[0] || null;
+    transientTraceContextRef.current = {
+      workoutItemId: Number(primary?.source?.workout_item_id || feedbackStateRef.current.submission.activeItemId || 0) || null,
+      setLogId: setLogId || null,
+      clientSubmissionId,
+      eventId: primary?.id ?? null,
+      eventType: primary?.event_type ?? null,
+    };
+    transientRecognitionTrace(1, 'canonical set-log response received');
+    transientRecognitionTrace(2, 'canonical response creation state', {
+      created: json?.created === true,
+      replayed: json?.replayed === true,
+    });
+    transientRecognitionTrace(3, 'raw accomplishment events received', {
+      events: rawEvents.map((event) => ({ id: event.id, type: event.event_type })),
+    });
+    transientRecognitionTrace(4, 'eligible transient events after filtering', {
+      events: events.map((event) => ({ id: event.id, type: event.event_type })),
+    });
+    transientRecognitionTrace(5, 'canonical primary event selected', {
+      primary_event_id: primary?.id ?? null,
+      primary_event_type: primary?.event_type ?? null,
+    });
+    transientRecognitionTrace(6, 'secondary event count calculated', {
+      secondary_count: primary?.secondary_highlight_count || 0,
+    });
+    rewardLoopDemoV2Log('canonical_response_received', {
+      created: json?.created === true,
+      replayed: json?.replayed === true,
+      client_submission_id: json?.client_submission_id || json?.set?.client_submission_id || null,
+      eligible_events: rawEvents.map((event) => ({ id: event.id, type: event.event_type })),
+    });
+    rewardLoopDemoV2Log('transient_selection', {
+      primary: events[0] ? { id: events[0].id, type: events[0].event_type } : null,
+      secondary_highlight_count: events[0]?.secondary_highlight_count || 0,
+    });
+    feedbackDispatch({
+      type: 'SUBMIT_SUCCEEDED',
+      setLogId,
+      created: json?.created === true,
+      replayed: json?.replayed === true,
+      events: rawEvents,
+      completionBoundary: json?.completion_boundary?.authority === 'canonical' ? json.completion_boundary : null,
+    });
+    if (events.length && json?.created === true && json?.replayed !== true) {
+      transientRecognitionTrace(7, 'transient recognition enqueued');
+    }
+    transientRecognitionTrace(8, 'durable accomplishment events retained', {
+      durable_event_count: responseEvents.length,
+    });
+    if (json?.created !== true) {
+      feedbackAnalytics('recognition_replay_suppressed', { set_log_id: setLogId, replayed: json?.replayed === true });
+      return;
+    }
+    const acceptedAt = Date.now();
+    lastAcceptedAtRef.current = acceptedAt;
+    feedbackAnalytics('canonical_save_accepted', { set_log_id: setLogId, created: true });
+    feedbackAnalytics('set_save_feedback_latency', {
+      latency_ms: submissionStartedAtRef.current != null ? acceptedAt - submissionStartedAtRef.current : null,
+      set_log_id: setLogId,
+    });
+    if (events.length && rewardLoopDemoV2StorageScope) {
+      void persistPendingRecognition(rewardLoopDemoV2StorageScope, events).then(() => {
+        rewardLoopDemoV2Log('recognition_queued', { count: events.length });
+      }).catch(() => {
+        feedbackAnalytics('recognition_consumption_storage_failed', { count: events.length });
+      });
+      events.forEach((event) => feedbackAnalytics('recognition_event_received', { event_id: event.id, event_type: event.event_type, priority: event.priority }));
+      feedbackAnalytics('recognition_event_queued', { count: events.length, primary_priority: events[0]?.priority });
+    }
+    void triggerAcceptedSetHaptic(events).then((hapticKind) => {
+      feedbackAnalytics('haptic_triggered', { kind: hapticKind, event_count: events.length });
+    });
+    feedbackAnalytics('set_save_feedback_shown', { set_log_id: setLogId, event_count: events.length });
+    if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
+    saveFeedbackTimerRef.current = setTimeout(() => {
+      feedbackDispatch({ type: 'SAVE_CONFIRMATION_FINISHED' });
+    }, SLMotion.saveConfirmationMs);
+  }, [rewardLoopDemoV2Log, rewardLoopDemoV2StorageScope, transientRecognitionTrace, workoutId]);
+
+  const handleCanonicalSetFailure = useCallback((error: any) => {
+    acceptedSheetHandoffControllerRef.current.cancelPending();
+    const message = String(error?.message || error || '');
+    const staleConflict = /stale|already been logged|conflict|refresh/i.test(message);
+    feedbackDispatch({ type: 'SUBMIT_FAILED', staleConflict });
+    void triggerSubmissionFailureHaptic();
+    feedbackAnalytics('set_save_feedback_failure', { stale_conflict: staleConflict });
+    return staleConflict;
+  }, []);
+
+  const submitCanonicalSet = useCallback(async ({
+    itemId,
+    attemptKey,
+    clientSubmissionId,
+    request,
+    fallbackError,
+  }: {
+    itemId: number;
+    attemptKey: string;
+    clientSubmissionId: string;
+    request: () => Promise<any>;
+    fallbackError: string;
+  }) => {
+    const outcome = await canonicalSetSubmissionControllerRef.current.run({
+      onStarted: () => {
+        beginFeedbackSubmission(itemId);
+        setSavingItemId(itemId);
+        setError(null);
+      },
+      request,
+      onAccepted: (json) => {
+        if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {
+          feedbackAnalytics('recognition_replay_suppressed', {
+            set_log_id: Number(json?.set?.id || 0),
+            duplicate_local_result: true,
+          });
+          const replay = { ...json, created: false, replayed: true };
+          handleCanonicalSetFeedback(replay);
+          return replay;
+        }
+        handleCanonicalSetFeedback(json);
+        return json;
+      },
+      onFailure: (error: any) => {
+        handleCanonicalSetFailure(error);
+        setError(error?.message || fallbackError);
+      },
+      onSettled: () => setSavingItemId(null),
+    });
+
+    if (outcome.status === 'failed') {
+      console.log('canonical set submission error', outcome.error);
+      return null;
+    }
+    if (outcome.status !== 'accepted') return null;
+    return outcome.value;
+  }, [beginFeedbackSubmission, consumeSetResultOnce, handleCanonicalSetFailure, handleCanonicalSetFeedback]);
+
+  const intendedSetIndex = useCallback((itemId: number) => {
+    const item = data?.workout?.core_items?.find((row: any) => Number(row?.id) === Number(itemId));
+    const total = Math.max(0, Number(item?.sets || 0));
+    const logged = new Set(
+      (Array.isArray(item?.set_logs) ? item.set_logs : [])
+        .map((row: any) => Number(row?.set_index || 0))
+        .filter((value: number) => value > 0),
+    );
+    if (total > 0) {
+      for (let index = 1; index <= total; index += 1) {
+        if (!logged.has(index)) return index;
+      }
+      return total + 1;
+    }
+    let index = 1;
+    while (logged.has(index)) index += 1;
+    return index;
+  }, [data?.workout?.core_items]);
   const [videoUploadBySetLogId, setVideoUploadBySetLogId] = useState<
     Record<number, { uploading?: boolean; queued?: boolean; uploaded?: boolean; error?: string | null; permanent?: boolean; job?: QueuedVideoUploadJob | null }>
   >({});
@@ -1637,11 +2122,91 @@ export default function WorkoutViewerScreen() {
 
   const [restSeconds, setRestSeconds] = useState(0);
   const [restActive, setRestActive] = useState(false);
+  const [restTimerZeroVisible, setRestTimerZeroVisible] = useState(false);
+  const [restTimerReadyVisible, setRestTimerReadyVisible] = useState(false);
+  const [restTimerHeaderOrigin, setRestTimerHeaderOrigin] =
+    useState<RestTimerHeaderOrigin | null>(null);
+  const restCountdownTickPlayer = useAudioPlayer(
+    require('../../../assets/audio/rest-countdown-tick.wav'),
+  );
+  const restCountdownFinishPlayer = useAudioPlayer(
+    require('../../../assets/audio/rest-countdown-finish.wav'),
+  );
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restEndAtMsRef = useRef<number | null>(null);
+  const lastRestCueSecondRef = useRef<number | null>(null);
+  const restFocusReturnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const restZeroAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const restReadyDismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restNotifIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
   const notifHandlerSetRef = useRef(false);
+  useEffect(() => {
+    restCountdownTickPlayer.volume = 0.72;
+    restCountdownFinishPlayer.volume = 0.78;
+  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
+
+  const playRestCountdownTone = useCallback(async (tone: 'short' | 'finish') => {
+    const player = tone === 'finish' ? restCountdownFinishPlayer : restCountdownTickPlayer;
+    try {
+      await player.seekTo(0);
+      player.play();
+    } catch (error) {
+      console.warn('rest countdown audio failed', error);
+    }
+  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
+
+  const deliverRestTimerCue = useCallback((remaining: number) => {
+    const cue = cueForRestTimerSecond(remaining, DEFAULT_REST_TIMER_CUE_CONFIG);
+    if (cue.tone) void playRestCountdownTone(cue.tone);
+    if (cue.haptic === 'light') {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
+    } else if (cue.haptic === 'strong') {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
+    } else if (cue.haptic === 'success') {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
+    }
+  }, [playRestCountdownTone]);
+
+  const presentRestTimerReady = useCallback(() => {
+    if (restZeroAdvanceTimerRef.current || restReadyDismissTimerRef.current) return;
+    setRestTimerZeroVisible(true);
+    setRestTimerReadyVisible(false);
+    restZeroAdvanceTimerRef.current = setTimeout(() => {
+      setRestTimerZeroVisible(false);
+      setRestTimerReadyVisible(true);
+      restZeroAdvanceTimerRef.current = null;
+    }, REST_TIMER_ZERO_HOLD_MS);
+    restReadyDismissTimerRef.current = setTimeout(() => {
+      setRestTimerReadyVisible(false);
+      restReadyDismissTimerRef.current = null;
+    }, REST_TIMER_ZERO_HOLD_MS + REST_TIMER_READY_HOLD_MS);
+
+    if (restFocusReturnTimerRef.current) {
+      clearTimeout(restFocusReturnTimerRef.current);
+    }
+    restFocusReturnTimerRef.current = setTimeout(() => {
+      const nextMovement = getOrderedWorkoutMovements(dataRef.current?.workout)
+        .find((row) => row.total > 0 && !row.complete);
+      if (nextMovement?.key) scheduleMovementFocus(nextMovement.key);
+      restFocusReturnTimerRef.current = null;
+    }, REST_TIMER_ZERO_HOLD_MS + REST_TIMER_READY_HOLD_MS + REST_TIMER_RETURN_MS);
+  }, [getOrderedWorkoutMovements, scheduleMovementFocus]);
+
+  const handleRestTimerLayout = useCallback((origin: RestTimerHeaderOrigin) => {
+    setRestTimerHeaderOrigin((current) => {
+      if (
+        current &&
+        Math.abs(current.x - origin.x) < 0.5 &&
+        Math.abs(current.y - origin.y) < 0.5 &&
+        Math.abs(current.width - origin.width) < 0.5 &&
+        Math.abs(current.height - origin.height) < 0.5
+      ) {
+        return current;
+      }
+      return origin;
+    });
+  }, []);
   const ensureNotifPerms = async () => {
     if (!Notifications) return false;
     // Only ask once per screen mount
@@ -1707,25 +2272,167 @@ export default function WorkoutViewerScreen() {
   const [tardyReasonVisible, setTardyReasonVisible] = useState(false);
   const [tardyReason, setTardyReason] = useState('');
 
+  const resolveActiveTimerHandoff = useCallback((rawOutcome: unknown) => {
+    const outcome = timerHandoffResolution(rawOutcome);
+    const identity = activeTimerHandoffIdentityRef.current;
+    setTimerPickerVisible(false);
+    if (!identity) return;
+    if (!timerHandoffReleaseControllerRef.current.resolve(identity)) return;
+    activeTimerHandoffIdentityRef.current = null;
+    if (outcome === 'dismissed') feedbackDispatch({ type: 'TIMER_IDLE' });
+    transientRecognitionTrace(13, `timer picker ${outcome}`);
+    transientRecognitionTrace(14, 'timer handoff resolved', { outcome });
+  }, [transientRecognitionTrace]);
+
+  const handleTimerPickerMounted = useCallback(() => {
+    const identity = activeTimerHandoffIdentityRef.current;
+    if (!identity || !timerHandoffReleaseControllerRef.current.mounted(identity)) return;
+    transientRecognitionTrace(13, 'timer picker opened');
+  }, [transientRecognitionTrace]);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
+      setReduceMotion(enabled);
+      if (enabled) feedbackAnalytics('reduced_motion_path', { enabled: true });
+    });
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    if (!rewardLoopDemoV2StorageScope) return;
+    let active = true;
+    loadLoggerFeedbackStorage(rewardLoopDemoV2StorageScope).then(({ pending, consumed }) => {
+      if (!active) return;
+      feedbackDispatch({ type: 'RESTORE_CONSUMED', deliveryIds: consumed });
+      feedbackDispatch({ type: 'RESTORE_PENDING', events: pending });
+      if (pending.length) feedbackAnalytics('recognition_event_queued', { restored: true, count: pending.length });
+    }).catch(() => feedbackAnalytics('recognition_restore_storage_failed', { workout_id: rewardLoopDemoV2StorageScope }));
+    return () => { active = false; };
+  }, [rewardLoopDemoV2StorageScope]);
+
+  useEffect(() => {
+    const blockers = {
+      save_confirmation: feedbackState.recognition.saveConfirmationVisible,
+      active_recognition: !!feedbackState.recognition.currentEvent,
+      empty_queue: !feedbackState.recognition.queuedEvents.length,
+      app_backgrounded: feedbackState.appLifecycle === 'background',
+      timer_pending: feedbackState.timer.status === 'picker_pending',
+      timer_visible: timerPickerVisible,
+    };
+    const releaseBlocked = Object.values(blockers).some(Boolean);
+    const evaluationKey = JSON.stringify({ blockers, first: feedbackState.recognition.queuedEvents[0] ? recognitionDeliveryId(feedbackState.recognition.queuedEvents[0]) : null });
+    if (recognitionReleaseEvaluationTraceRef.current !== evaluationKey) {
+      recognitionReleaseEvaluationTraceRef.current = evaluationKey;
+      transientRecognitionTrace(15, 'recognition release condition evaluated', { released: !releaseBlocked, blockers });
+    }
+    if (releaseBlocked) return;
+    feedbackDispatch({ type: 'DISPLAY_NEXT_RECOGNITION' });
+  }, [feedbackState.appLifecycle, feedbackState.recognition.currentEvent, feedbackState.recognition.queuedEvents, feedbackState.recognition.saveConfirmationVisible, feedbackState.timer.status, timerPickerVisible, transientRecognitionTrace]);
+
+  useEffect(() => {
+    const event = feedbackState.recognition.currentEvent;
+    if (!event) return;
+    const deliveryId = recognitionDeliveryId(event);
+    if (recognitionPromotionTraceRef.current === deliveryId) return;
+    recognitionPromotionTraceRef.current = deliveryId;
+    transientRecognitionTrace(16, 'recognition promoted from queued to active');
+  }, [feedbackState.recognition.currentEvent, transientRecognitionTrace]);
+
+  useEffect(() => {
+    const overlaps = timerPickerVisible && feedbackState.recognition.queuedEvents.length > 0;
+    if (overlaps && !timerOverlapReportedRef.current) {
+      feedbackAnalytics('recognition_timer_overlap', { queued_count: feedbackState.recognition.queuedEvents.length, deferred: true });
+    }
+    timerOverlapReportedRef.current = overlaps;
+  }, [feedbackState.recognition.queuedEvents.length, timerPickerVisible]);
+
+  useEffect(() => {
+    const event = feedbackState.recognition.currentEvent;
+    if (!event || feedbackState.appLifecycle === 'background') return;
+    const deliveryId = recognitionDeliveryId(event);
+    if (!feedbackState.recognition.displayedDeliveryIds.includes(deliveryId)) return;
+    if (recognitionTimerRef.current) clearTimeout(recognitionTimerRef.current);
+    recognitionTimerRef.current = setTimeout(() => {
+      feedbackDispatch({ type: 'CONSUME_CURRENT_RECOGNITION' });
+      if (rewardLoopDemoV2StorageScope) void markRecognitionConsumed(rewardLoopDemoV2StorageScope, deliveryId).catch(() => feedbackAnalytics('recognition_consumption_storage_failed', { event_id: event.id }));
+      feedbackAnalytics('recognition_event_auto_resolved', { event_id: event.id, event_type: event.event_type });
+      transientRecognitionTrace(20, 'recognition completed');
+    }, recognitionVisibleDuration(event));
+    return () => {
+      if (recognitionTimerRef.current) clearTimeout(recognitionTimerRef.current);
+      recognitionTimerRef.current = null;
+    };
+  }, [feedbackState.appLifecycle, feedbackState.recognition.currentEvent, feedbackState.recognition.displayedDeliveryIds, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
+
+  const handleRecognitionPresentationStarted = useCallback((event: LoggerRecognitionEvent) => {
+    const deliveryId = recognitionDeliveryId(event);
+    transientRecognitionTrace(17, 'recognition component mounted');
+    transientRecognitionTrace(18, event.event_type === 'CORE_WEIGHT_PR' ? 'Weight PR choreography started' : 'recognition choreography started');
+    feedbackDispatch({ type: 'RECOGNITION_PRESENTATION_STARTED', deliveryId });
+    transientRecognitionTrace(19, 'recognition marked presented');
+    rewardLoopDemoV2Log('recognition_presentation_started', { event_id: event.id, event_type: event.event_type });
+    if (rewardLoopDemoV2StorageScope) {
+      void markRecognitionConsumed(rewardLoopDemoV2StorageScope, deliveryId).then(() => {
+        rewardLoopDemoV2Log('recognition_marked_presented', { event_id: event.id });
+      }).catch(() => {
+        feedbackAnalytics('recognition_consumption_storage_failed', { event_id: event.id, phase: 'presentation_started' });
+      });
+    }
+    if (recognitionDisplayTelemetryRef.current.has(deliveryId)) return;
+    recognitionDisplayTelemetryRef.current.add(deliveryId);
+    if (recognitionDisplayTelemetryRef.current.size > 100) {
+      const oldest = recognitionDisplayTelemetryRef.current.values().next().value;
+      if (oldest != null) recognitionDisplayTelemetryRef.current.delete(oldest);
+    }
+    feedbackAnalytics('recognition_event_displayed', { event_id: event.id, event_type: event.event_type, priority: event.priority });
+  }, [rewardLoopDemoV2Log, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
+
+  const dismissCurrentRecognition = useCallback(() => {
+    const event = feedbackState.recognition.currentEvent;
+    if (!event) return;
+    const deliveryId = recognitionDeliveryId(event);
+    feedbackDispatch({ type: 'CONSUME_CURRENT_RECOGNITION' });
+    if (rewardLoopDemoV2StorageScope) void markRecognitionConsumed(rewardLoopDemoV2StorageScope, deliveryId).catch(() => feedbackAnalytics('recognition_consumption_storage_failed', { event_id: event.id }));
+    feedbackAnalytics('recognition_event_dismissed', { event_id: event.id, event_type: event.event_type });
+    transientRecognitionTrace(20, 'recognition dismissed');
+  }, [feedbackState.recognition.currentEvent, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
+
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
+  const [endSessionPromptVisible, setEndSessionPromptVisible] = useState(false);
+  const completionPromptRef = useRef({ workoutId: 0, complete: false, prompted: false });
+  const [postSessionTimeError, setPostSessionTimeError] = useState<string | null>(null);
   const [postSessionForm, setPostSessionForm] = useState({
     sessionRpe: null as number | null,
     strengthFeeling: '' as '' | 'much_weaker' | 'slightly_weaker' | 'normal' | 'slightly_stronger' | 'much_stronger',
     fatigueFeeling: '' as '' | 'very_fresh' | 'slightly_fatigued' | 'moderately_fatigued' | 'very_fatigued',
     note: '',
+    sessionStart: '',
+    sessionEnd: '',
   });
+  const [postSessionNotesExpanded, setPostSessionNotesExpanded] = useState(false);
+  const [postSessionEffortRailWidth, setPostSessionEffortRailWidth] = useState(0);
+  const postSessionEffortRailRef = useRef<View>(null);
+  const postSessionEffortRailWindowX = useRef<number | null>(null);
+  const postSessionEffortThumbScale = useRef(new Animated.Value(1)).current;
+  const postSessionEffortRailValueRef = useRef<number | null>(null);
 
   const [editSetVisible, setEditSetVisible] = useState(false);
   const [editSetSubmitting, setEditSetSubmitting] = useState(false);
+  const [setMutationNotice, setSetMutationNotice] = useState<string | null>(null);
+  const setMutationNoticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [editSetCtx, setEditSetCtx] = useState<{
     itemId: number;
     setIndex: number;
     setLogId: number;
-    canUndoDelete: boolean;
     mode: 'rpe' | 'rir';
-    title: string;
+    movementName: string;
+    loggedWeightKg: number | null;
+    loggedReps: number | null;
+    loggedRpe: number | null;
+    loggedRir: number | null;
   } | null>(null);
 
   const [editSetForm, setEditSetForm] = useState({
@@ -1735,83 +2442,127 @@ export default function WorkoutViewerScreen() {
     rir: '',
   });
 
+  const showSetMutationNotice = useCallback((message: string) => {
+    if (setMutationNoticeTimerRef.current) clearTimeout(setMutationNoticeTimerRef.current);
+    setSetMutationNotice(message);
+    setMutationNoticeTimerRef.current = setTimeout(() => {
+      setSetMutationNotice(null);
+      setMutationNoticeTimerRef.current = null;
+    }, 3200);
+  }, []);
+
+  useEffect(() => () => {
+    if (setMutationNoticeTimerRef.current) clearTimeout(setMutationNoticeTimerRef.current);
+  }, []);
+
   // --- Readiness survey (mobile only) ---
   const [readinessVisible, setReadinessVisible] = useState(false);
   const [pendingBeginWorkoutId, setPendingBeginWorkoutId] = useState<number | null>(null);
   const [readinessSubmitting, setReadinessSubmitting] = useState(false);
+  const [readinessError, setReadinessError] = useState<string | null>(null);
+  const readinessSubmissionGateRef = useRef(createReadinessSubmissionGate());
 
-  const [readinessForm, setReadinessForm] = useState({
-    sleep_quality: 3,
-    fatigue: 3,
-    soreness: 3,
-    stress: 3,
-    overall: 3,
+  const [readinessForm, setReadinessForm] = useState<ReadinessModalValues>({
+    bodyweight: '',
+    bodyweightSkipped: false,
+    sleepPosition: 0.5,
+    energyPosition: 0.5,
+    sorenessPosition: 0.5,
+    stressPosition: 0.5,
   });
 
   // If backend provides readiness data, this prevents re-prompting.
   // If it doesn't yet, you'll still get prompted once per begin tap.
   const hasReadinessForWorkout = () => {
-    const wk: any = data?.workout;
-    return !!wk?.readiness_survey;
+    return !!data?.readiness_survey;
   };
 
   const openReadinessThenBegin = (wkId: number) => {
     setPendingBeginWorkoutId(wkId);
+    setReadinessError(null);
+    setReadinessForm({
+      bodyweight: '',
+      bodyweightSkipped: false,
+      sleepPosition: 0.5,
+      energyPosition: 0.5,
+      sorenessPosition: 0.5,
+      stressPosition: 0.5,
+    });
     setReadinessVisible(true);
   };
 
-  // Submit readiness (best-effort) then begin workout either way.
-  const submitReadinessAndBegin = async (opts?: { skipped?: boolean }) => {
+  const cancelReadiness = () => {
+    if (readinessSubmitting) return;
+    setReadinessVisible(false);
+    setPendingBeginWorkoutId(null);
+    setReadinessError(null);
+  };
+
+  // Readiness must save before the session starts. Failure stays actionable.
+  const submitReadinessAndBegin = async () => {
     const wkId = pendingBeginWorkoutId;
     if (!wkId) {
-      setReadinessVisible(false);
+      setReadinessError('This training session is no longer available. Close and try again.');
       return;
     }
 
-    try {
-      setReadinessSubmitting(true);
-      setError(null);
-
-      const skipped = !!opts?.skipped;
-      const body = skipped
-        ? { skipped: true }
-        : {
-            sleep_quality: readinessForm.sleep_quality,
-            soreness: readinessForm.soreness,
-            stress: readinessForm.stress,
-            energy: readinessForm.fatigue, // mapping fatigue -> energy for now
-          };
-
-      // Create this backend route next:
-      // POST /workouts/mobile/<wkId>/readiness
-      await fetchJson(`${API_BASE}/workouts/mobile/${wkId}/readiness`, {
-        method: 'POST',
-        auth: true,
-        body,
-      });
-    } catch (e) {
-      // Don't block beginning the workout if readiness submit fails
-      console.log('readiness submit error', e);
-    } finally {
-      setReadinessSubmitting(false);
-      setReadinessVisible(false);
-      setPendingBeginWorkoutId(null);
-
-      // Now proceed with the existing begin flow
-      requestAnimationFrame(() => beginWorkout());
+    const built = buildReadinessPayload(readinessForm, unit);
+    if (!built.payload) {
+      setReadinessError(built.error || 'Check your readiness values.');
+      return;
     }
+
+    await readinessSubmissionGateRef.current.run(async () => {
+      try {
+        setReadinessSubmitting(true);
+        setReadinessError(null);
+        await persistReadinessThenBegin(
+          async () => {
+            const response = await fetchJson(`${API_BASE}/workouts/mobile/${wkId}/readiness`, {
+              method: 'POST',
+              auth: true,
+              body: built.payload,
+            });
+            if (!response.ok || !response.json?.ok) {
+              throw new Error(response.json?.error || `Unable to save readiness (HTTP ${response.status})`);
+            }
+          },
+          () => {
+            setReadinessVisible(false);
+            setPendingBeginWorkoutId(null);
+            requestAnimationFrame(() => void beginWorkout());
+          },
+        );
+      } catch (e: any) {
+        console.log('readiness submit error', e);
+        setReadinessError(e?.message || 'Could not save your check-in. Try again.');
+      } finally {
+        setReadinessSubmitting(false);
+      }
+    });
   };
 
   // --- Accessory hot-swap (self-coached only) ---
   const [swapAccVisible, setSwapAccVisible] = useState(false);
   const [swapAccItem, setSwapAccItem] = useState<WorkoutItem | null>(null);
   const [movementHistoryItem, setMovementHistoryItem] = useState<WorkoutItem | null>(null);
+  const [identityPickerItem, setIdentityPickerItem] = useState<WorkoutItem | null>(null);
+  const [identityPickerQuery, setIdentityPickerQuery] = useState('');
+  const [identityPickerRows, setIdentityPickerRows] = useState<GeneralMovementIdentity[]>([]);
+  const [identityPickerLoading, setIdentityPickerLoading] = useState(false);
+  const [identityPickerError, setIdentityPickerError] = useState<string | null>(null);
+  const [identityPickerContinuation, setIdentityPickerContinuation] =
+    useState<EquipmentSelectionContinuation>({ kind: 'none' });
+  const [identityPickerManufacturer, setIdentityPickerManufacturer] =
+    useState<GeneralMovementIdentity | null>(null);
+  const identityPickerRequestRef = useRef(0);
   const [swapAccForm, setSwapAccForm] = useState({
     movement: '',
     sets: '',
     reps_text: '',
     rir: '',
   });
+  const [swapAccQuery, setSwapAccQuery] = useState('');
 
   const openSwapAcc = (it: WorkoutItem) => {
     setSwapAccItem(it);
@@ -1821,6 +2572,7 @@ export default function WorkoutViewerScreen() {
       reps_text: it.reps_text || (it.reps != null ? String(it.reps) : ''),
       rir: it.rir_target != null ? String(it.rir_target) : '',
     });
+    setSwapAccQuery('');
     setSwapAccVisible(true);
   };
 
@@ -1895,29 +2647,42 @@ export default function WorkoutViewerScreen() {
   const openEditSet = (
     itemId: number,
     setLog: SetLog,
-    opts: { mode: 'rpe' | 'rir'; title: string; canUndoDelete?: boolean }
+    opts: { mode: 'rpe' | 'rir'; movementName: string }
   ) => {
-    const weightVal =
+    const rawWeight =
       setLog.actual_weight_kg != null
         ? unit === 'kg'
           ? formatWeight(setLog.actual_weight_kg, 'kg')
           : String(roundToNearestGymIncrementLb(setLog.actual_weight_kg / KG_PER_LB))
         : '';
+    const weightOptions = buildEditWeightOptions(opts.mode, unit, rawWeight);
+    const repsOptions = ['0', ...Array.from({ length: opts.mode === 'rpe' ? 20 : 30 }, (_, idx) => String(idx + 1))];
+    const metricOptions = opts.mode === 'rpe'
+      ? Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5))
+      : Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
+    const rawMetric = opts.mode === 'rpe' ? setLog.actual_rpe : setLog.actual_rir;
 
     setEditSetCtx({
       itemId,
       setIndex: setLog.set_index,
       setLogId: setLog.id,
-      canUndoDelete: !!opts.canUndoDelete,
       mode: opts.mode,
-      title: opts.title,
+      movementName: opts.movementName,
+      loggedWeightKg: setLog.actual_weight_kg ?? null,
+      loggedReps: setLog.actual_reps ?? null,
+      loggedRpe: setLog.actual_rpe ?? null,
+      loggedRir: setLog.actual_rir ?? null,
     });
 
     setEditSetForm({
-      weight: weightVal,
-      reps: setLog.actual_reps != null ? String(setLog.actual_reps) : '',
-      rpe: setLog.actual_rpe != null ? String(setLog.actual_rpe) : '',
-      rir: setLog.actual_rir != null ? String(setLog.actual_rir) : '',
+      weight: nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || '0'),
+      reps: nearestWheelValue(repsOptions, setLog.actual_reps != null ? String(setLog.actual_reps) : '', '0'),
+      rpe: opts.mode === 'rpe'
+        ? nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '8')
+        : '',
+      rir: opts.mode === 'rir'
+        ? nearestWheelValue(metricOptions, rawMetric != null ? formatWheelNumber(Number(rawMetric)) : '', '2')
+        : '',
     });
 
     setEditSetVisible(true);
@@ -1971,6 +2736,45 @@ export default function WorkoutViewerScreen() {
       setSavingItemId(editSetCtx.itemId);
       setError(null);
 
+      const isDevFixtureSet = isIdealWorkoutDetailPreview
+        && data?.workout?.accessory_groups?.some((group) =>
+          group.items.some((item) =>
+            item.id === editSetCtx.itemId
+            && (item.set_logs || []).some((log) => log.id === editSetCtx.setLogId),
+          ),
+        );
+      if (isDevFixtureSet) {
+        setData((current) => current ? {
+          ...current,
+          workout: {
+            ...current.workout,
+            accessory_groups: current.workout.accessory_groups.map((group) => ({
+              ...group,
+              items: group.items.map((item) => item.id !== editSetCtx.itemId
+                ? item
+                : {
+                    ...item,
+                    set_logs: (item.set_logs || []).map((log) =>
+                      log.id !== editSetCtx.setLogId
+                        ? log
+                        : {
+                            ...log,
+                            actual_weight_kg: weightKg,
+                            actual_reps: reps,
+                            actual_rpe,
+                            actual_rir,
+                          }),
+                  }),
+            })),
+          },
+        } : current);
+        feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
+        setEditSetVisible(false);
+        setEditSetCtx(null);
+        showSetMutationNotice('Set updated · progress recalculated');
+        return;
+      }
+
       const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/items/${editSetCtx.itemId}/edit_set`,
         {
@@ -1990,10 +2794,20 @@ export default function WorkoutViewerScreen() {
         throw new Error(json?.error || `Failed to update set (HTTP ${status})`);
       }
 
+      feedbackDispatch({ type: 'SET_EDITED', sourceSetLogId: editSetCtx.setLogId });
+      const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
+        ? json.invalidated_recognition_event_ids.map(Number).filter(Number.isFinite)
+        : [];
+      feedbackDispatch({ type: 'INVALIDATE_EVENTS', eventIds: invalidatedEventIds });
+      if (workoutId) void invalidateRecognitionForSet(String(workoutId), editSetCtx.setLogId).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'edit', source_set_log_id: editSetCtx.setLogId }));
+      if (workoutId) void invalidateRecognitionEvents(String(workoutId), invalidatedEventIds).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'edit', count: invalidatedEventIds.length }));
+      feedbackAnalytics('recognition_invalidated_before_display', { source_set_log_id: editSetCtx.setLogId, mutation: 'edit' });
+
       setEditSetVisible(false);
       setEditSetCtx(null);
       rememberScroll();
       await fetchWorkout();
+      showSetMutationNotice('Set updated · progress recalculated');
     } catch (err: any) {
       console.log('saveEditedSet error', err);
       setError(err?.message || 'Error updating set');
@@ -2003,16 +2817,48 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const deleteEditedSet = async () => {
-    if (!workoutId || !editSetCtx?.setLogId) return;
+  const deleteSetLog = async (itemId: number, setLogId: number) => {
+    if (!workoutId || !setLogId) return;
 
     try {
       setEditSetSubmitting(true);
-      setSavingItemId(editSetCtx.itemId);
+      setSavingItemId(itemId);
       setError(null);
 
+      const isDevFixtureSet = isIdealWorkoutDetailPreview
+        && data?.workout?.accessory_groups?.some((group) =>
+          group.items.some((item) =>
+            item.id === itemId
+            && (item.set_logs || []).some((log) => log.id === setLogId),
+          ),
+        );
+      if (isDevFixtureSet) {
+        setData((current) => current ? {
+          ...current,
+          workout: {
+            ...current.workout,
+            accessory_groups: current.workout.accessory_groups.map((group) => ({
+              ...group,
+              items: group.items.map((item) => item.id !== itemId
+                ? item
+                : {
+                    ...item,
+                    set_logs: (item.set_logs || []).filter(
+                      (log) => log.id !== setLogId,
+                    ),
+                  }),
+            })),
+          },
+        } : current);
+        feedbackDispatch({ type: 'SET_DELETED', sourceSetLogId: setLogId });
+        setEditSetVisible(false);
+        setEditSetCtx(null);
+        showSetMutationNotice('Set deleted · progress recalculated');
+        return;
+      }
+
       const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/${workoutId}/setlogs/${editSetCtx.setLogId}`,
+        `${API_BASE}/workouts/mobile/${workoutId}/setlogs/${setLogId}`,
         {
           method: 'DELETE',
           auth: true,
@@ -2023,13 +2869,23 @@ export default function WorkoutViewerScreen() {
         throw new Error(json?.error || `Failed to delete set (HTTP ${status})`);
       }
 
+      feedbackDispatch({ type: 'SET_DELETED', sourceSetLogId: setLogId });
+      const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
+        ? json.invalidated_recognition_event_ids.map(Number).filter(Number.isFinite)
+        : [];
+      feedbackDispatch({ type: 'INVALIDATE_EVENTS', eventIds: invalidatedEventIds });
+      if (workoutId) void invalidateRecognitionForSet(String(workoutId), setLogId).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'delete', source_set_log_id: setLogId }));
+      if (workoutId) void invalidateRecognitionEvents(String(workoutId), invalidatedEventIds).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'delete', count: invalidatedEventIds.length }));
+      feedbackAnalytics('recognition_invalidated_before_display', { source_set_log_id: setLogId, mutation: 'delete' });
+
       setEditSetVisible(false);
       setEditSetCtx(null);
 
       rememberScroll();
       await fetchWorkout();
+      showSetMutationNotice('Set deleted · progress recalculated');
     } catch (err: any) {
-      console.log('deleteEditedSet error', err);
+      console.log('deleteSetLog error', err);
       setError(err?.message || 'Error deleting set');
     } finally {
       setEditSetSubmitting(false);
@@ -2037,15 +2893,34 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const TIMER_OPTIONS = Array.from({ length: 12 }, (_, idx) => (idx + 1) * 30);
+  const confirmDeleteSet = (itemId: number, log: SetLog) => {
+    const metric = log.actual_rpe != null
+      ? ` @ RPE ${formatWheelNumber(log.actual_rpe)}`
+      : log.actual_rir != null
+      ? ` @ ${formatWheelNumber(log.actual_rir)} RIR`
+      : '';
+    const weight = log.actual_weight_kg != null ? `${formatWeight(log.actual_weight_kg, unit)} ${unit}` : 'This set';
+    const reps = log.actual_reps != null ? ` × ${log.actual_reps}` : '';
+    Alert.alert(
+      'Delete this set?',
+      `${weight}${reps}${metric} will be removed from this training session. Any affected accomplishments and history will be recalculated.`,
+      [
+        { text: 'Keep Set', style: 'cancel' },
+        { text: 'Delete Set', style: 'destructive', onPress: () => void deleteSetLog(itemId, log.id) },
+      ],
+    );
+  };
 
-  const openTimerPicker = () => {
+  const TIMER_OPTIONS = useMemo(() => Array.from({ length: 12 }, (_, idx) => (idx + 1) * 30), []);
+
+  const openTimerPicker = useCallback(() => {
     const current = restSeconds || 120;
     const nearest = TIMER_OPTIONS.reduce((best, option) =>
       Math.abs(option - current) < Math.abs(best - current) ? option : best,
     TIMER_OPTIONS[3]);
     setTimerPickerValue(nearest);
     setTimerPickerVisible(true);
+    rewardLoopDemoV2Log('timer_handoff_opened', { default_seconds: nearest });
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -2056,7 +2931,7 @@ export default function WorkoutViewerScreen() {
         });
       });
     });
-  };
+  }, [TIMER_OPTIONS, restSeconds, rewardLoopDemoV2Log]);
 
   const handleTimerSelect = (seconds: number) => {
     startRestTimer(seconds);
@@ -2071,9 +2946,26 @@ export default function WorkoutViewerScreen() {
 
     const endAt = Date.now() + seconds * 1000;
     restEndAtMsRef.current = endAt;
+    void persistRestTimerExpiry(workoutId, endAt).catch(() => undefined);
+    lastRestCueSecondRef.current = null;
+    if (restFocusReturnTimerRef.current) {
+      clearTimeout(restFocusReturnTimerRef.current);
+      restFocusReturnTimerRef.current = null;
+    }
+    if (restReadyDismissTimerRef.current) {
+      clearTimeout(restReadyDismissTimerRef.current);
+      restReadyDismissTimerRef.current = null;
+    }
 
+    if (restZeroAdvanceTimerRef.current) {
+      clearTimeout(restZeroAdvanceTimerRef.current);
+      restZeroAdvanceTimerRef.current = null;
+    }
+    setRestTimerZeroVisible(false);
+    setRestTimerReadyVisible(false);
     setRestSeconds(seconds);
     setRestActive(true);
+    feedbackDispatch({ type: 'TIMER_ACTIVE' });
 
     // Schedule a local notification so the timer "works" while backgrounded
     scheduleRestEndNotification(seconds);
@@ -2085,8 +2977,29 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
+    if (workoutId) {
+      void clearRestTimerExpiry(workoutId).catch(() => undefined);
+    }
+    lastRestCueSecondRef.current = null;
+    if (restReadyDismissTimerRef.current) {
+      clearTimeout(restReadyDismissTimerRef.current);
+      restReadyDismissTimerRef.current = null;
+    }
+    if (restZeroAdvanceTimerRef.current) {
+      clearTimeout(restZeroAdvanceTimerRef.current);
+      restZeroAdvanceTimerRef.current = null;
+    }
+    if (restFocusReturnTimerRef.current) {
+      clearTimeout(restFocusReturnTimerRef.current);
+      restFocusReturnTimerRef.current = null;
+    }
+    restCountdownTickPlayer.pause();
+    restCountdownFinishPlayer.pause();
+    setRestTimerZeroVisible(false);
+    setRestTimerReadyVisible(false);
     setRestActive(false);
     setRestSeconds(0);
+    feedbackDispatch({ type: 'TIMER_IDLE' });
 
     // Cancel any pending rest-end notification
     cancelRestEndNotification();
@@ -2116,10 +3029,24 @@ export default function WorkoutViewerScreen() {
 
       setRestSeconds(remaining);
 
+      if (
+        remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
+        remaining >= 0 &&
+        lastRestCueSecondRef.current !== remaining
+      ) {
+        lastRestCueSecondRef.current = remaining;
+        deliverRestTimerCue(remaining);
+      }
+
       if (remaining <= 0) {
         cancelRestEndNotification();
         setRestActive(false);
         restEndAtMsRef.current = null;
+        if (workoutId) {
+          void clearRestTimerExpiry(workoutId).catch(() => undefined);
+        }
+        feedbackDispatch({ type: 'TIMER_IDLE' });
+        presentRestTimerReady();
 
         if (restTimerRef.current) {
           clearInterval(restTimerRef.current);
@@ -2141,10 +3068,12 @@ export default function WorkoutViewerScreen() {
         restTimerRef.current = null;
       }
     };
-  }, [restActive]);
+  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') feedbackDispatch({ type: 'APP_RESUMED' });
+      else feedbackDispatch({ type: 'APP_BACKGROUNDED' });
       if (state === 'active' && restActive && restEndAtMsRef.current) {
         const remaining = Math.max(
           0,
@@ -2152,15 +3081,49 @@ export default function WorkoutViewerScreen() {
         );
         setRestSeconds(remaining);
 
+        if (
+          remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
+          remaining >= 0 &&
+          lastRestCueSecondRef.current !== remaining
+        ) {
+          lastRestCueSecondRef.current = remaining;
+          deliverRestTimerCue(remaining);
+        }
+
         if (remaining <= 0) {
           setRestActive(false);
           restEndAtMsRef.current = null;
+          if (workoutId) {
+            void clearRestTimerExpiry(workoutId).catch(() => undefined);
+          }
+          presentRestTimerReady();
         }
       }
     });
 
     return () => sub.remove();
-  }, [restActive]);
+  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const status = String(data?.workout?.status || '').toLowerCase();
+    if (!workoutId || status !== 'in_progress') return undefined;
+    void loadRestTimerExpiry(workoutId).then((stored) => {
+      if (cancelled || !stored || restEndAtMsRef.current) return;
+      const remaining = Math.max(
+        0,
+        Math.ceil((stored.endAtMs - Date.now()) / 1000),
+      );
+      if (remaining <= 0) return;
+      restEndAtMsRef.current = stored.endAtMs;
+      setRestSeconds(remaining);
+      setRestActive(true);
+      feedbackDispatch({ type: 'TIMER_ACTIVE' });
+    }).catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.workout?.status, workoutId]);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
@@ -2171,11 +3134,27 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
+    if (workoutId) {
+      void clearRestTimerExpiry(workoutId).catch(() => undefined);
+    }
+    if (restReadyDismissTimerRef.current) {
+      clearTimeout(restReadyDismissTimerRef.current);
+      restReadyDismissTimerRef.current = null;
+    }
+    if (restZeroAdvanceTimerRef.current) {
+      clearTimeout(restZeroAdvanceTimerRef.current);
+      restZeroAdvanceTimerRef.current = null;
+    }
+    setRestTimerZeroVisible(false);
+    setRestTimerReadyVisible(false);
     if (restActive) setRestActive(false);
     if (restSeconds !== 0) setRestSeconds(0);
-    if (timerPickerVisible) setTimerPickerVisible(false);
+    if (timerPickerVisible) {
+      if (feedbackState.timer.status === 'picker_pending') resolveActiveTimerHandoff('dismissed');
+      else setTimerPickerVisible(false);
+    }
     cancelRestEndNotification();
-  }, [data?.workout?.status, restActive, restSeconds, timerPickerVisible]);
+  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId]);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
@@ -2306,8 +3285,277 @@ export default function WorkoutViewerScreen() {
     setPendingAccessoryLogItemId(item.id);
   };
 
-  const openAccessoryWheel = (item: WorkoutItem) => {
-    const rawWeight = defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
+  const loadIdentityPicker = useCallback(async (item: WorkoutItem, query = '') => {
+    const requestId = ++identityPickerRequestRef.current;
+    setIdentityPickerError(null);
+    const family = item.movement_identity?.family_id;
+    if (isIdealWorkoutDetailPreview) {
+      const activeEquipment = activeEquipmentIdentity(item);
+      const rows = orderEquipmentChoices(
+        workoutDetailMachineIdentityChoices(
+          query,
+          family,
+          item.movement_identity?.family_display_name || item.movement,
+        ) as GeneralMovementIdentity[],
+        activeEquipment?.id,
+      ).sort((left, right) => {
+        const activeManufacturerKey = activeEquipment?.manufacturer?.key || null;
+        const activeOther = activeEquipment?.equipment_context?.option_kind === 'other'
+          || activeEquipment?.key.includes('-other-');
+        const isActiveManufacturer = (identity: GeneralMovementIdentity) => (
+          activeOther
+            ? identity.equipment_context?.option_kind === 'other'
+            : Boolean(
+                activeManufacturerKey
+                && identity.manufacturer?.key === activeManufacturerKey,
+              )
+        );
+        return Number(isActiveManufacturer(right)) - Number(isActiveManufacturer(left));
+      });
+      if (requestId === identityPickerRequestRef.current) {
+        setIdentityPickerRows(rows);
+        setIdentityPickerLoading(false);
+      }
+      return;
+    }
+    setIdentityPickerLoading(true);
+    try {
+      const response = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${item.id}/equipment-manufacturers`,
+        { method: 'GET', auth: true },
+      );
+      if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not load equipment choices.');
+      if (requestId !== identityPickerRequestRef.current) return;
+      const needle = query.trim().toLowerCase();
+      setIdentityPickerRows(
+        (response.json.items || []).filter((row: GeneralMovementIdentity) => (
+          !needle
+          || [
+            row.manufacturer?.display_name,
+            row.display_name,
+            item.movement,
+          ].filter(Boolean).join(' ').toLowerCase().includes(needle)
+        )),
+      );
+    } catch (error: any) {
+      if (requestId !== identityPickerRequestRef.current) return;
+      setIdentityPickerError(error?.message || 'Could not load equipment choices.');
+    } finally {
+      if (requestId === identityPickerRequestRef.current) setIdentityPickerLoading(false);
+    }
+  }, [data?.athlete?.id, isIdealWorkoutDetailPreview, workoutId]);
+
+  useEffect(() => {
+    if (!identityPickerItem) {
+      identityPickerRequestRef.current += 1;
+      return undefined;
+    }
+    const timer = setTimeout(
+      () => void loadIdentityPicker(identityPickerItem, identityPickerQuery),
+      identityPickerQuery.trim() ? 220 : 0,
+    );
+    return () => clearTimeout(timer);
+  }, [identityPickerItem, identityPickerQuery, loadIdentityPicker]);
+
+  const closeIdentityPicker = () => {
+    identityPickerRequestRef.current += 1;
+    setIdentityPickerItem(null);
+    setIdentityPickerRows([]);
+    setIdentityPickerError(null);
+    setIdentityPickerContinuation({ kind: 'none' });
+    setIdentityPickerManufacturer(null);
+  };
+
+  const resumeAfterEquipmentSelection = (
+    nextItem: WorkoutItem,
+    continuation: EquipmentSelectionContinuation,
+    nextPayload?: WorkoutPayload | null,
+  ) => {
+    if (continuation.kind === 'accessory_set') {
+      requestAnimationFrame(() => openAccessoryWheel(nextItem, true));
+      return;
+    }
+    if (continuation.kind === 'group_round') {
+      const source = nextPayload || data;
+      const group = source?.workout?.accessory_groups?.find(
+        (candidate) => candidate.group === continuation.groupLabel,
+      );
+      if (group) {
+        requestAnimationFrame(() => {
+          // Re-run the gate so tri-sets/giant sets can resolve the next
+          // machine without discarding the round context.
+          openSupersetRoundLogger(group, continuation.roundIndex);
+        });
+      }
+    }
+  };
+
+  const commitPerformedIdentity = async (
+    identity: GeneralMovementIdentity,
+    equipmentVariant?: MachineEquipmentType,
+  ) => {
+    if (!identityPickerItem || !workoutId) return;
+    const pickerItem = identityPickerItem;
+    const continuation = identityPickerContinuation;
+    const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
+    setIdentityPickerLoading(true);
+    if (isIdealWorkoutDetailPreview) {
+      const itemId = Number(pickerItem.id);
+      const nextItem = applyWorkoutDetailMachineIdentity(
+        pickerItem,
+        Number(identity.id),
+        identity,
+      ) as WorkoutItem;
+      const nextPayload = data ? {
+        ...data,
+        workout: {
+          ...data.workout,
+          accessory_groups: data.workout.accessory_groups.map((group) => ({
+            ...group,
+            items: group.items.map((item) => (
+              Number(item.id) === itemId
+                ? nextItem
+                : item
+            )),
+          })),
+        },
+      } as WorkoutPayload : null;
+      if (nextPayload) setData(nextPayload);
+      rememberWorkoutDetailEquipmentSelection(workoutId, itemId, identity);
+      closeIdentityPicker();
+      setIdentityPickerLoading(false);
+      if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
+        showSetMutationNotice('Equipment updated');
+      }
+      resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
+      return;
+    }
+    const response = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${pickerItem.id}/performed-identity`, {
+      method: 'PUT',
+      auth: true,
+      body: equipmentVariant
+        ? {
+            manufacturer_key: identity.manufacturer?.key || 'other',
+            equipment_type: equipmentVariant,
+          }
+        : { movement_definition_id: identity.id },
+    });
+    if (!response.ok || !response.json?.ok) {
+      setIdentityPickerError(response.json?.error || 'Could not save equipment choice.');
+      setIdentityPickerLoading(false);
+      return;
+    }
+    const nextItem = {
+      ...pickerItem,
+      performed_movement_identity:
+        response.json?.performed_movement_identity || identity,
+    };
+    const nextPayload = data ? {
+      ...data,
+      workout: {
+        ...data.workout,
+        accessory_groups: data.workout.accessory_groups.map((group) => ({
+          ...group,
+          items: group.items.map((item) => (
+            Number(item.id) === Number(nextItem.id)
+              ? nextItem
+              : item
+          )),
+        })),
+      },
+    } as WorkoutPayload : null;
+    if (nextPayload) setData(nextPayload);
+    closeIdentityPicker();
+    await fetchWorkout({ silent: true });
+    setIdentityPickerLoading(false);
+    if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
+      showSetMutationNotice('Equipment updated');
+    }
+    resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
+  };
+
+  const choosePerformedIdentity = async (identity: GeneralMovementIdentity) => {
+    setIdentityPickerManufacturer(identity);
+    setIdentityPickerQuery('');
+    setIdentityPickerError(null);
+  };
+
+  const chooseEquipmentVariant = async (
+    variant: MachineEquipmentType,
+  ) => {
+    if (!identityPickerManufacturer) return;
+    if (isIdealWorkoutDetailPreview) {
+      const identity = workoutDetailMachineVariantIdentity(
+        identityPickerManufacturer,
+        variant,
+      ) as GeneralMovementIdentity | null;
+      if (!identity) {
+        setIdentityPickerError('This equipment variant is unavailable.');
+        return;
+      }
+      await commitPerformedIdentity(identity);
+      return;
+    }
+    await commitPerformedIdentity(identityPickerManufacturer, variant);
+  };
+
+  const openIdentityPicker = (
+    item: WorkoutItem,
+    continuation: EquipmentSelectionContinuation = { kind: 'none' },
+  ) => {
+    const open = () => {
+      const initialRows = isIdealWorkoutDetailPreview
+        ? orderEquipmentChoices(
+            workoutDetailMachineIdentityChoices(
+              '',
+              item.movement_identity?.family_id,
+              item.movement_identity?.family_display_name || item.movement,
+            ) as GeneralMovementIdentity[],
+            activeEquipmentIdentity(item)?.id,
+          )
+        : [];
+      setIdentityPickerItem(item);
+      setIdentityPickerQuery('');
+      setIdentityPickerRows(initialRows);
+      setIdentityPickerLoading(false);
+      setIdentityPickerError(null);
+      setIdentityPickerContinuation(continuation);
+      setIdentityPickerManufacturer(null);
+    };
+    if (
+      continuation.kind === 'none'
+      && activeEquipmentIdentity(item)
+      && (item.set_logs || []).length > 0
+    ) {
+      Alert.alert(
+        'Change equipment for upcoming sets?',
+        'Sets already logged keep their original equipment identity. Your new choice applies only to future sets.',
+        [{ text: 'Cancel', style: 'cancel' }, { text: 'Continue', onPress: open }],
+      );
+      return;
+    }
+    open();
+  };
+
+  const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false) => {
+    if (!skipEquipmentGate && needsEquipmentSelection(item)) {
+      openIdentityPicker(
+        item,
+        {
+          kind: 'accessory_set',
+          itemId: Number(item.id),
+        },
+      );
+      return;
+    }
+    const idealRecommendationWeightKg = isIdealWorkoutDetailPreview
+      ? Number((item as any).dev_accessory_intelligence?.recommendation_weight_kg)
+      : NaN;
+    const idealSuggestedWeight = Number.isFinite(idealRecommendationWeightKg) && idealRecommendationWeightKg > 0
+      ? formatWeight(idealRecommendationWeightKg, unit)
+      : '';
+    const rawWeight = idealSuggestedWeight
+      || defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
@@ -2332,6 +3580,7 @@ export default function WorkoutViewerScreen() {
   const commitAccessoryWheel = () => {
     if (!accessoryWheel) return;
     const itemId = accessoryWheel.itemId;
+    feedbackAnalytics('log_set_pressed', { item_id: itemId, movement_type: 'accessory' });
     setAccInputs((prev) => ({
       ...prev,
       [itemId]: {
@@ -2344,10 +3593,518 @@ export default function WorkoutViewerScreen() {
       itemId,
       selectedVideo: null,
     });
-    setAccessoryWheel(null);
   };
 
-  const switchLogSheetUnit = (nextUnit: 'kg' | 'lb') => {
+  const openSupersetRoundLogger = (
+    group: AccessoryGroup,
+    roundIndex: number,
+  ) => {
+    if (!group.group) return;
+    const model = buildSupersetRoundModel(group.items);
+    const round = model.rounds.find((candidate) => candidate.index === roundIndex);
+    if (!round) return;
+
+    const unresolvedIdentity = round.entries.find(
+      ({ item, log }) =>
+        !log
+        && needsEquipmentSelection(item),
+    );
+    if (unresolvedIdentity) {
+      openIdentityPicker(unresolvedIdentity.item, {
+        kind: 'group_round',
+        groupLabel: group.group,
+        roundIndex,
+      });
+      return;
+    }
+
+    const entries = round.entries.map(({ item, log }) => {
+        const idealRecommendationWeightKg = Number(
+          (item as any).dev_accessory_intelligence?.recommendation_weight_kg,
+        );
+        const suggestedWeight = Number.isFinite(idealRecommendationWeightKg)
+          && idealRecommendationWeightKg > 0
+          ? formatWeight(idealRecommendationWeightKg, unit)
+          : '';
+        const weight = log
+          ? toWheelWeight(log as SetLog, unit)
+          : suggestedWeight
+            || defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
+        const weightOptions = buildAccessoryWeightOptions(unit, weight || '0');
+        const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
+        const rirOptions = Array.from(
+          { length: 11 },
+          (_, idx) => formatWheelNumber(idx * 0.5),
+        );
+        const reps = log?.actual_reps != null
+          ? String(log.actual_reps)
+          : accInputs[item.id]?.reps || accessoryRepsDefault(item);
+        const rir = log?.actual_rir != null
+          ? formatWheelNumber(Number(log.actual_rir))
+          : accInputs[item.id]?.rir || defaultAccessoryRir(item);
+        return {
+          itemId: item.id,
+          title: simplifyMobileMovementName(item.movement) || 'Accessory',
+          prescription: accessoryTargetLine(item),
+          weight: nearestWheelValue(weightOptions, weight || '0', '0'),
+          reps: nearestWheelValue(repsOptions, reps, '10'),
+          rir: nearestWheelValue(rirOptions, rir, '2'),
+          requiresRir: item.rir_target != null,
+          alreadyLogged: Boolean(log),
+          loggedResult: log ? loggedSetText(log as SetLog, unit) : null,
+          validationError: null,
+          weightOptions,
+          repsOptions,
+          rirOptions,
+        };
+      });
+    const draft = createSequentialGroupDraft(entries);
+    supersetRoundSaveInFlightRef.current = false;
+    resetSupersetRoundTransition();
+    setError(null);
+    setSupersetRoundLogger({
+      groupLabel: group.group,
+      roundIndex,
+      roundCount: model.roundCount,
+      activeIndex: draft.activeIndex,
+      saving: false,
+      entries: [...draft.entries],
+    });
+  };
+
+  const updateSupersetRoundEntry = (
+    itemId: number,
+    field: 'weight' | 'reps' | 'rir',
+    nextValue: string,
+  ) => {
+    setSupersetRoundLogger((current) => {
+      if (!current) return current;
+      const next = updateSequentialGroupDraft(
+        {
+          entries: current.entries,
+          activeIndex: current.activeIndex,
+        },
+        itemId,
+        field,
+        String(nextValue || ''),
+      );
+      return {
+        ...current,
+        entries: [...next.entries],
+        activeIndex: next.activeIndex,
+      };
+    });
+  };
+
+  const resetSupersetRoundTransition = () => {
+    supersetRoundTransitionTokenRef.current += 1;
+    supersetRoundTransitionInFlightRef.current = false;
+    supersetRoundStepOpacity.stopAnimation();
+    supersetRoundStepTranslateX.stopAnimation();
+    supersetRoundProgressFill.stopAnimation();
+    supersetRoundCapturedPulse.stopAnimation();
+    supersetRoundCapturedCueOpacity.stopAnimation();
+    supersetRoundStepOpacity.setValue(1);
+    supersetRoundStepTranslateX.setValue(0);
+    supersetRoundProgressFill.setValue(1);
+    supersetRoundCapturedPulse.setValue(0);
+    supersetRoundCapturedCueOpacity.setValue(0);
+    setSupersetRoundTransitioning(false);
+    setSupersetRoundCapturedIndex(null);
+    setSupersetRoundProgressIndex(null);
+  };
+
+  const runSupersetRoundStepTransition = (
+    nextLogger: SupersetRoundLoggerState,
+    direction: SequentialGroupTransitionDirection,
+    capturedIndex: number | null,
+  ) => {
+    if (supersetRoundTransitionInFlightRef.current) return;
+    const transition = sequentialGroupTransitionConfig(direction, reduceMotion);
+    const transitionToken = supersetRoundTransitionTokenRef.current + 1;
+    supersetRoundTransitionTokenRef.current = transitionToken;
+    supersetRoundTransitionInFlightRef.current = true;
+    setSupersetRoundTransitioning(true);
+    setSupersetRoundCapturedIndex(capturedIndex);
+    setSupersetRoundProgressIndex(direction === 'forward' ? nextLogger.activeIndex : null);
+    setError(null);
+
+    supersetRoundCapturedCueOpacity.setValue(0);
+    supersetRoundCapturedPulse.setValue(0);
+    if (direction === 'forward') {
+      void Haptics.selectionAsync().catch(() => undefined);
+      Animated.sequence([
+        Animated.timing(supersetRoundCapturedCueOpacity, {
+          duration: 60,
+          easing: Easing.out(Easing.quad),
+          toValue: 1,
+          useNativeDriver: true,
+        }),
+        Animated.delay(90),
+        Animated.timing(supersetRoundCapturedCueOpacity, {
+          duration: 100,
+          easing: Easing.in(Easing.quad),
+          toValue: 0,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      Animated.sequence([
+        Animated.timing(supersetRoundCapturedPulse, {
+          duration: 90,
+          easing: Easing.out(Easing.quad),
+          toValue: 1,
+          useNativeDriver: true,
+        }),
+        Animated.timing(supersetRoundCapturedPulse, {
+          duration: 120,
+          easing: Easing.out(Easing.quad),
+          toValue: 0,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+
+    Animated.parallel([
+      Animated.timing(supersetRoundStepOpacity, {
+        duration: transition.outgoingDurationMs,
+        easing: Easing.inOut(Easing.quad),
+        toValue: 0.18,
+        useNativeDriver: true,
+      }),
+      Animated.timing(supersetRoundStepTranslateX, {
+        duration: transition.outgoingDurationMs,
+        easing: Easing.inOut(Easing.quad),
+        toValue: transition.outgoingTranslateX,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (!finished || supersetRoundTransitionTokenRef.current !== transitionToken) return;
+      supersetRoundStepOpacity.setValue(0);
+      supersetRoundStepTranslateX.setValue(transition.incomingTranslateX);
+      supersetRoundProgressFill.setValue(direction === 'forward' ? 0 : 1);
+      setSupersetRoundLogger(nextLogger);
+
+      requestAnimationFrame(() => {
+        if (supersetRoundTransitionTokenRef.current !== transitionToken) return;
+        Animated.parallel([
+          Animated.timing(supersetRoundStepOpacity, {
+            duration: transition.incomingDurationMs,
+            easing: Easing.out(Easing.cubic),
+            toValue: 1,
+            useNativeDriver: true,
+          }),
+          Animated.timing(supersetRoundStepTranslateX, {
+            duration: transition.incomingDurationMs,
+            easing: Easing.out(Easing.cubic),
+            toValue: 0,
+            useNativeDriver: true,
+          }),
+          Animated.timing(supersetRoundProgressFill, {
+            duration: transition.incomingDurationMs,
+            easing: Easing.out(Easing.cubic),
+            toValue: 1,
+            useNativeDriver: true,
+          }),
+        ]).start(({ finished: incomingFinished }) => {
+          if (
+            !incomingFinished
+            || supersetRoundTransitionTokenRef.current !== transitionToken
+          ) return;
+          supersetRoundTransitionInFlightRef.current = false;
+          setSupersetRoundTransitioning(false);
+          setSupersetRoundCapturedIndex(null);
+          setSupersetRoundProgressIndex(null);
+          AccessibilityInfo.announceForAccessibility(
+            `Movement ${nextLogger.activeIndex + 1} of ${nextLogger.entries.length}`,
+          );
+        });
+      });
+    });
+  };
+
+  const advanceSupersetRoundLogger = () => {
+    if (!supersetRoundLogger || supersetRoundTransitionInFlightRef.current) return;
+    const result = advanceSequentialGroupStep({
+      entries: supersetRoundLogger.entries,
+      activeIndex: supersetRoundLogger.activeIndex,
+    });
+    setError(result.validation.message);
+    if (!result.validation.valid) return;
+    Keyboard.dismiss();
+    runSupersetRoundStepTransition({
+      ...supersetRoundLogger,
+      entries: [...result.state.entries],
+      activeIndex: result.state.activeIndex,
+    }, 'forward', supersetRoundLogger.activeIndex);
+  };
+
+  const goBackInSupersetRoundLogger = () => {
+    if (!supersetRoundLogger || supersetRoundTransitionInFlightRef.current) return;
+    const previous = previousSequentialGroupStep({
+      entries: supersetRoundLogger.entries,
+      activeIndex: supersetRoundLogger.activeIndex,
+    });
+    setError(null);
+    Keyboard.dismiss();
+    runSupersetRoundStepTransition({
+      ...supersetRoundLogger,
+      entries: [...previous.entries],
+      activeIndex: previous.activeIndex,
+    }, 'backward', null);
+  };
+
+  const skipCurrentSupersetMovement = () => {
+    if (!supersetRoundLogger || supersetRoundTransitionInFlightRef.current) return;
+    const skipped = skipSequentialGroupStep({
+      entries: supersetRoundLogger.entries,
+      activeIndex: supersetRoundLogger.activeIndex,
+    });
+    setError(null);
+    Keyboard.dismiss();
+    const nextLogger = {
+      ...supersetRoundLogger,
+      entries: [...skipped.entries],
+      activeIndex: skipped.activeIndex,
+    };
+    if (skipped.activeIndex !== supersetRoundLogger.activeIndex) {
+      runSupersetRoundStepTransition(nextLogger, 'forward', null);
+    } else {
+      setSupersetRoundLogger(nextLogger);
+    }
+  };
+
+  const logSupersetMovementIndividually = () => {
+    if (!supersetRoundLogger || !data) return;
+    const entry = supersetRoundLogger.entries[supersetRoundLogger.activeIndex];
+    const group = data.workout.accessory_groups.find(
+      (candidate) => candidate.group === supersetRoundLogger.groupLabel,
+    );
+    const item = group?.items.find((candidate) => candidate.id === entry?.itemId);
+    if (!item) return;
+    closeSupersetRoundLogger();
+    requestAnimationFrame(() => openAccessoryWheel(item));
+  };
+
+  const closeSupersetRoundLogger = () => {
+    supersetRoundSaveInFlightRef.current = false;
+    resetSupersetRoundTransition();
+    setError(null);
+    setSupersetRoundLogger(null);
+  };
+
+  const saveSupersetRound = async () => {
+    if (!supersetRoundLogger || !data || !workoutId) return;
+    if (
+      supersetRoundSaveInFlightRef.current
+      || supersetRoundTransitionInFlightRef.current
+      || supersetRoundLogger.saving
+    ) return;
+    const draftValidation = validateSequentialGroupForSave({
+      entries: supersetRoundLogger.entries,
+      activeIndex: supersetRoundLogger.activeIndex,
+    });
+    if (!draftValidation.validation.valid) {
+      setSupersetRoundLogger({
+        ...supersetRoundLogger,
+        entries: [...draftValidation.state.entries],
+        activeIndex: draftValidation.state.activeIndex,
+      });
+      setError(draftValidation.validation.message);
+      return;
+    }
+
+    const group = data.workout.accessory_groups.find(
+      (candidate) => candidate.group === supersetRoundLogger.groupLabel,
+    );
+    if (!group) return;
+    const model = buildSupersetRoundModel(group.items);
+    const missingItemIds = new Set(
+      missingSupersetRoundItemIds(model, supersetRoundLogger.roundIndex),
+    );
+    const skippedItemIds = supersetRoundLogger.entries
+      .filter((entry) => missingItemIds.has(entry.itemId) && entry.skipped)
+      .map((entry) => entry.itemId);
+    const parsedEntries: Array<Omit<SupersetRoundLoggerEntry, 'weight' | 'reps' | 'rir'> & {
+      weight: number;
+      weightKg: number;
+      reps: number;
+      rir: number | null;
+    }> = [];
+    for (const entry of supersetRoundLogger.entries) {
+      if (!missingItemIds.has(entry.itemId) || entry.skipped) continue;
+      let weight = entry.weight.trim() === '' ? 0 : Number(entry.weight);
+      const reps = Number(String(entry.reps).replace(/[^0-9]/g, ''));
+      const rirText = String(entry.rir).trim().replace(/[^0-9.\-]/g, '');
+      const rir = rirText ? Number(rirText) : null;
+      if (unit === 'lb') weight = roundToNearestGymIncrementLb(weight);
+      parsedEntries.push({
+        ...entry,
+        weight,
+        weightKg: unit === 'kg' ? weight : weight * KG_PER_LB,
+        reps,
+        rir,
+      });
+    }
+
+    supersetRoundSaveInFlightRef.current = true;
+    setSupersetRoundLogger({
+      ...supersetRoundLogger,
+      saving: true,
+    });
+    try {
+      if (!parsedEntries.length) {
+        closeSupersetRoundLogger();
+        return;
+      }
+      if (!isIdealWorkoutDetailPreview) {
+        const roundIndex = supersetRoundLogger.roundIndex;
+        const attemptKey = (
+          `superset:${supersetRoundLogger.groupLabel}:${roundIndex}`
+        );
+        const canonicalPayload = {
+          group: supersetRoundLogger.groupLabel,
+          round_index: roundIndex,
+          skipped_item_ids: skippedItemIds,
+          entries: parsedEntries.map((entry) => ({
+            item_id: entry.itemId,
+            actual_weight_kg: entry.weightKg,
+            actual_reps: entry.reps,
+            actual_rir: entry.rir,
+          })),
+        };
+        const roundSubmissionId = submissionForAttempt(
+          attemptKey,
+          canonicalPayload,
+        );
+        const json = await submitCanonicalSet({
+          itemId: parsedEntries[0].itemId,
+          attemptKey,
+          clientSubmissionId: roundSubmissionId,
+          fallbackError: 'Could not save this round.',
+          request: async () => {
+            const response = await fetchJson(
+              `${API_BASE}/workouts/mobile/${workoutId}/superset-rounds/${encodeURIComponent(supersetRoundLogger.groupLabel)}/${roundIndex}`,
+              {
+                method: 'POST',
+                auth: true,
+                body: {
+                  skipped_item_ids: canonicalPayload.skipped_item_ids,
+                  entries: canonicalPayload.entries.map((entry) => ({
+                    ...entry,
+                    client_submission_id:
+                      `${roundSubmissionId}:${entry.item_id}`,
+                  })),
+                },
+              },
+            );
+            if (!response.ok || !response.json?.ok) {
+              throw new Error(
+                response.json?.error
+                || `Could not save this round (HTTP ${response.status})`,
+              );
+            }
+            return response.json;
+          },
+        });
+        if (!json) {
+          supersetRoundSaveInFlightRef.current = false;
+          setSupersetRoundLogger((current) => current ? {
+            ...current,
+            saving: false,
+          } : current);
+          return;
+        }
+        setAccInputs((current) => {
+          const next = { ...current };
+          parsedEntries.forEach((entry) => {
+            next[entry.itemId] = {
+              weight: formatWheelNumber(entry.weight),
+              reps: '',
+              rir: '',
+            };
+          });
+          return next;
+        });
+        feedbackAnalytics('superset_round_logged', {
+          group: supersetRoundLogger.groupLabel,
+          round_index: roundIndex,
+          movement_count: parsedEntries.length,
+          persisted: true,
+        });
+        closeSupersetRoundLogger();
+        await fetchWorkout({ silent: true });
+        return;
+      }
+      const parsedByItemId = new Map(
+        parsedEntries.map((entry) => [entry.itemId, entry]),
+      );
+      const roundIndex = supersetRoundLogger.roundIndex;
+      setData((current) => current ? {
+        ...current,
+        workout: {
+          ...current.workout,
+          accessory_groups: current.workout.accessory_groups.map((candidate) => (
+            candidate.group !== supersetRoundLogger.groupLabel
+              ? candidate
+              : {
+                  ...candidate,
+                  items: candidate.items.map((item) => {
+                    const parsed = parsedByItemId.get(item.id);
+                    const alreadyExists = (item.set_logs || []).some(
+                      (log) => Number(log.set_index || 0) === roundIndex,
+                    );
+                    if (!parsed || alreadyExists) return item;
+                    const mockSet: SetLog = {
+                      id: 9_600_000 + (Number(item.id) * 10) + roundIndex,
+                      set_index: roundIndex,
+                      actual_weight_kg: parsed.weightKg,
+                      actual_reps: parsed.reps,
+                      actual_rpe: null,
+                      actual_rir: parsed.rir,
+                      client_submission_id:
+                        `ideal-superset-${supersetRoundLogger.groupLabel}-${item.id}-${roundIndex}`,
+                      ...equipmentSnapshotForSet(activeEquipmentIdentity(item)),
+                    };
+                    return {
+                      ...item,
+                      set_logs: [...(item.set_logs || []), mockSet],
+                    };
+                  }),
+                }
+          )),
+        },
+      } : current);
+      setAccInputs((current) => {
+        const next = { ...current };
+        parsedEntries.forEach((entry) => {
+          next[entry.itemId] = {
+            weight: formatWheelNumber(entry.weight),
+            reps: '',
+            rir: '',
+          };
+        });
+        return next;
+      });
+      feedbackAnalytics('superset_round_logged', {
+        group: supersetRoundLogger.groupLabel,
+        round_index: roundIndex,
+        movement_count: parsedEntries.length,
+      });
+      closeSupersetRoundLogger();
+      requestAnimationFrame(() => {
+        openTimerPicker();
+      });
+    } catch (error: any) {
+      supersetRoundSaveInFlightRef.current = false;
+      setSupersetRoundLogger((current) => current ? {
+        ...current,
+        saving: false,
+      } : current);
+      setError(error?.message || 'Could not save this round.');
+    }
+  };
+
+  const switchDisplayUnit = (nextUnit: 'kg' | 'lb') => {
     if (nextUnit === unit) return;
     const currentUnit = unit;
 
@@ -2373,6 +4130,34 @@ export default function WorkoutViewerScreen() {
         ...prev,
         weightOptions,
         weight: nearestWheelValue(weightOptions, nextWeightRaw, '0'),
+      };
+    });
+
+    setSupersetRoundLogger((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        entries: prev.entries.map((entry) => {
+          const weightKg = weightDisplayToKg(entry.weight, currentUnit);
+          const nextWeight = displayWeightFromKg(weightKg, nextUnit);
+          const weightOptions = buildAccessoryWeightOptions(nextUnit, nextWeight);
+          return {
+            ...entry,
+            weightOptions,
+            weight: nearestWheelValue(weightOptions, nextWeight, '0'),
+          };
+        }),
+      };
+    });
+
+    setEditSetForm((prev) => {
+      if (!editSetVisible || !editSetCtx) return prev;
+      const weightKg = weightDisplayToKg(prev.weight, currentUnit);
+      const nextWeightRaw = displayWeightFromKg(weightKg, nextUnit);
+      const weightOptions = buildEditWeightOptions(editSetCtx.mode, nextUnit, nextWeightRaw);
+      return {
+        ...prev,
+        weight: nearestWheelValue(weightOptions, nextWeightRaw, weightOptions[0] || '0'),
       };
     });
 
@@ -2418,13 +4203,13 @@ export default function WorkoutViewerScreen() {
       title: `${liftDisplayName(item)}${setIndex ? ` · Set ${setIndex}` : ''}`,
       subtitle: unit.toUpperCase(),
       targetLine,
+      prescriptionLine: targetLine ? `${targetLine} × ${reps} @${rpe}` : null,
       weight,
       reps,
       rpe,
       weightOptions,
       repsOptions,
       rpeOptions,
-      selectedVideo: null,
     });
   };
 
@@ -2460,6 +4245,7 @@ export default function WorkoutViewerScreen() {
   const commitCoreWheel = () => {
     if (!coreWheel) return;
     const weight = coreWheel.weight;
+    feedbackAnalytics('log_set_pressed', { item_id: coreWheel.itemId, movement_type: 'core', set_kind: coreWheel.kind });
     const reps = coreWheel.reps;
     const rpe = reps === '0' ? '' : coreWheel.rpe;
 
@@ -2477,9 +4263,7 @@ export default function WorkoutViewerScreen() {
       kind: coreWheel.kind,
       itemId: coreWheel.itemId,
       setIndex: coreWheel.setIndex,
-      selectedVideo: coreWheel.selectedVideo || null,
     });
-    setCoreWheel(null);
   };
 
   // Helper to ensure reps is initialized in state for controlled TextInput
@@ -2538,15 +4322,16 @@ export default function WorkoutViewerScreen() {
     });
   };
 
-  // Prefill prescribed reps into controlled state once the workout loads.
+  // Prefill prescribed reps into controlled state once the Training Session loads.
   useEffect(() => {
     const wk = data?.workout;
     if (!wk?.id) return;
 
     const coreItems: any[] = Array.isArray(wk.core_items) ? wk.core_items : [];
 
-    // Straight-like items: STRAIGHT and VR
-    const straightLike = coreItems.filter((it) => it && (it.variant === 'STRAIGHT' || it.variant === 'VR' || it.lift === 'VR'));
+    // Straight-like items: STRAIGHT and legacy VR-straight only. VR TOP/BK/FULL_CUSTOM
+    // must stay in their own logging buckets so prescribed sets are not hidden.
+    const straightLike = coreItems.filter((it) => it && isStraightWorkoutItem(it));
     if (straightLike.length) {
       setStraightInputs((prev) => {
         let next = prev;
@@ -2673,29 +4458,75 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const setIndex = intendedSetIndex(itemId);
+    const attemptKey = `straight:${itemId}:${setIndex}`;
+    const canonicalPayload = {
+      intended_set_index: setIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    if (isIdealWorkoutDetailPreview) {
+      const mockSet: SetLog = {
+        id: 9_000_000 + (Number(itemId) * 10) + setIndex,
+        set_index: setIndex,
+        actual_weight_kg: weightKg,
+        actual_reps: reps,
+        actual_rpe: rpe,
+        actual_rir: null,
+        client_submission_id: `ideal-core-${itemId}-${setIndex}`,
+      };
+      setData((current) => current ? {
+        ...current,
+        workout: {
+          ...current.workout,
+          core_items: current.workout.core_items.map((item) => (
+            Number(item.id) === Number(itemId)
+              ? { ...item, set_logs: [...(item.set_logs || []), mockSet] }
+              : item
+          )),
+        },
+      } : current);
+      setCoreWheel(null);
+      setStraightInputs((current) => ({
+        ...current,
+        [itemId]: {
+          weight: formatWheelNumber(weightInUnit),
+          reps: prescribedReps,
+          rpe: '',
+        },
+      }));
+      setError(null);
+      return;
+    }
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+
+    const json = await submitCanonicalSet({
+      itemId,
+      attemptKey,
+      clientSubmissionId,
+      fallbackError: 'Error logging set',
+      request: async () => {
+        const { ok, status, json: responseJson } = await fetchJson(
+          `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_straight`,
+          {
+            method: 'POST',
+            body: {
+              ...canonicalPayload,
+              client_submission_id: clientSubmissionId,
+            },
+            auth: true,
+          }
+        );
+        if (!ok || !responseJson?.ok) {
+          throw new Error(responseJson?.error || `Failed to log set (HTTP ${status})`);
+        }
+        return responseJson;
+      },
+    });
+    if (!json) return;
 
     try {
-      setSavingItemId(itemId);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_straight`,
-        {
-          method: 'POST',
-          body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
-          },
-          auth: true,
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to log set (HTTP ${status})`);
-      }
-
-      setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
@@ -2715,10 +4546,8 @@ export default function WorkoutViewerScreen() {
         [itemId]: { weight: nextWeightStr, reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
-      console.log('logStraightSet error', err);
-      setError(err?.message || 'Error logging set');
-    } finally {
-      setSavingItemId(null);
+      console.log('logStraightSet post-acceptance refresh error', err);
+      setError('Set logged, but the Session refresh did not finish. Pull to refresh.');
     }
   };
 
@@ -2757,29 +4586,42 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const setIndex = intendedSetIndex(itemId);
+    const attemptKey = `top:${itemId}:${setIndex}`;
+    const canonicalPayload = {
+      intended_set_index: setIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+
+    const json = await submitCanonicalSet({
+      itemId,
+      attemptKey,
+      clientSubmissionId,
+      fallbackError: 'Error logging top set',
+      request: async () => {
+        const { ok, status, json: responseJson } = await fetchJson(
+          `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_top`,
+          {
+            method: 'POST',
+            body: {
+              ...canonicalPayload,
+              client_submission_id: clientSubmissionId,
+            },
+            auth: true,
+          }
+        );
+        if (!ok || !responseJson?.ok) {
+          throw new Error(responseJson?.error || `Failed to log top set (HTTP ${status})`);
+        }
+        return responseJson;
+      },
+    });
+    if (!json) return;
 
     try {
-      setSavingItemId(itemId);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_top`,
-        {
-          method: 'POST',
-          body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
-          },
-          auth: true,
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to log top set (HTTP ${status})`);
-      }
-
-      setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
@@ -2791,10 +4633,8 @@ export default function WorkoutViewerScreen() {
         [itemId]: { weight: '', reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
-      console.log('logTopSet error', err);
-      setError(err?.message || 'Error logging top set');
-    } finally {
-      setSavingItemId(null);
+      console.log('logTopSet post-acceptance refresh error', err);
+      setError('Set logged, but the Session refresh did not finish. Pull to refresh.');
     }
   };
 
@@ -2833,29 +4673,42 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const setIndex = intendedSetIndex(itemId);
+    const attemptKey = `backdown:${itemId}:${setIndex}`;
+    const canonicalPayload = {
+      intended_set_index: setIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+
+    const json = await submitCanonicalSet({
+      itemId,
+      attemptKey,
+      clientSubmissionId,
+      fallbackError: 'Error logging backdown set',
+      request: async () => {
+        const { ok, status, json: responseJson } = await fetchJson(
+          `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_bk`,
+          {
+            method: 'POST',
+            body: {
+              ...canonicalPayload,
+              client_submission_id: clientSubmissionId,
+            },
+            auth: true,
+          }
+        );
+        if (!ok || !responseJson?.ok) {
+          throw new Error(responseJson?.error || `Failed to log backdown set (HTTP ${status})`);
+        }
+        return responseJson;
+      },
+    });
+    if (!json) return;
 
     try {
-      setSavingItemId(itemId);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_bk`,
-        {
-          method: 'POST',
-          body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
-          },
-          auth: true,
-        }
-      );
-
-      if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to log backdown set (HTTP ${status})`);
-      }
-
-      setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
@@ -2875,10 +4728,8 @@ export default function WorkoutViewerScreen() {
         [itemId]: { weight: nextWeightStr, reps: prescribedReps, rpe: '' },
       }));
     } catch (err: any) {
-      console.log('logBackdownSet error', err);
-      setError(err?.message || 'Error logging backdown set');
-    } finally {
-      setSavingItemId(null);
+      console.log('logBackdownSet post-acceptance refresh error', err);
+      setError('Set logged, but the Session refresh did not finish. Pull to refresh.');
     }
   };
 
@@ -2900,28 +4751,39 @@ export default function WorkoutViewerScreen() {
     if (unit === 'lb') weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
 
     const weightKg = unit === 'kg' ? weightInUnit : weightInUnit * KG_PER_LB;
+    const attemptKey = `full-custom:${itemId}:${setIndex}`;
+    const canonicalPayload = {
+      set_index: setIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+
+    const json = await submitCanonicalSet({
+      itemId,
+      attemptKey,
+      clientSubmissionId,
+      fallbackError: 'Error logging set',
+      request: async () => {
+        const { ok, status, json: responseJson } = await fetchJson(
+          `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_fc`,
+          {
+            method: 'POST',
+            auth: true,
+            body: {
+              ...canonicalPayload,
+              client_submission_id: clientSubmissionId,
+            },
+          }
+        );
+        if (!ok || !responseJson?.ok) throw new Error(responseJson?.error || `Failed (HTTP ${status})`);
+        return responseJson;
+      },
+    });
+    if (!json) return;
 
     try {
-      setSavingItemId(itemId);
-      setError(null);
-
-      const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}/items/${itemId}/log_fc`,
-        {
-          method: 'POST',
-          auth: true,
-          body: {
-            set_index: setIndex,
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
-          },
-        }
-      );
-
-      if (!ok || !json?.ok) throw new Error(json?.error || `Failed (HTTP ${status})`);
-
-      setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
@@ -2946,10 +4808,8 @@ export default function WorkoutViewerScreen() {
         },
       }));
     } catch (e: any) {
-      console.log('logFullCustomSet error', e);
-      setError(e?.message || 'Error logging set');
-    } finally {
-      setSavingItemId(null);
+      console.log('logFullCustomSet post-acceptance refresh error', e);
+      setError('Set logged, but the Session refresh did not finish. Pull to refresh.');
     }
   };
 
@@ -2959,11 +4819,11 @@ export default function WorkoutViewerScreen() {
     setPendingCoreWheelLog(null);
 
     requestAnimationFrame(() => {
-      if (pending.kind === 'straight') logStraightSet(pending.itemId, pending.selectedVideo || null);
-      else if (pending.kind === 'top') logTopSet(pending.itemId, pending.selectedVideo || null);
-      else if (pending.kind === 'bk') logBackdownSet(pending.itemId, pending.selectedVideo || null);
+      if (pending.kind === 'straight') logStraightSet(pending.itemId);
+      else if (pending.kind === 'top') logTopSet(pending.itemId);
+      else if (pending.kind === 'bk') logBackdownSet(pending.itemId);
       else if (pending.kind === 'fc' && pending.setIndex != null) {
-        logFullCustomSet(pending.itemId, pending.setIndex, pending.selectedVideo || null);
+        logFullCustomSet(pending.itemId, pending.setIndex);
       }
     });
   }, [pendingCoreWheelLog, straightInputs, topInputs, bkInputs, fcInputs]);
@@ -2981,6 +4841,95 @@ export default function WorkoutViewerScreen() {
     });
   }, [pendingAccessoryLogItemId, accInputs]);
 
+  useEffect(() => {
+    const canonicalSetSubmissionController = canonicalSetSubmissionControllerRef.current;
+    const acceptedSheetHandoffController = acceptedSheetHandoffControllerRef.current;
+    const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
+    canonicalSetSubmissionController.reset();
+    processedSetResultsRef.current.reset();
+    setSubmissionAttemptsRef.current = {};
+    activeTimerHandoffIdentityRef.current = null;
+    timerHandoffReleaseController.reset();
+    feedbackDispatch({ type: 'RESET' });
+    return () => {
+      canonicalSetSubmissionController.reset();
+      acceptedSheetHandoffController.reset();
+      timerHandoffReleaseController.reset();
+    };
+  }, [workoutId]);
+
+  useEffect(() => {
+    const acceptedItemId = feedbackState.submission.activeItemId;
+    if (
+      feedbackState.submission.status === 'persisted_new_set' &&
+      (feedbackState.submission.lastSetLogId == null || acceptedItemId == null)
+    ) {
+      feedbackDispatch({ type: 'TIMER_IDLE' });
+      return;
+    }
+    const handoffStarted = acceptedSheetHandoffControllerRef.current.begin(
+      feedbackState.submission.status,
+      feedbackState.submission.lastSetLogId,
+      acceptedItemId,
+      (plan) => {
+        transientRecognitionTrace(10, 'logger sheet close requested');
+        if (coreWheel?.itemId === acceptedItemId) setCoreWheel(null);
+        if (accessoryWheel?.itemId === acceptedItemId) setAccessoryWheel(null);
+        requestAnimationFrame(() => {
+          transientRecognitionTrace(11, 'logger sheet close completed');
+          if (!plan.openTimerPicker) {
+            feedbackDispatch({ type: 'TIMER_IDLE' });
+            return;
+          }
+
+          const handoffIdentity = `${feedbackState.submission.lastSetLogId}:${acceptedItemId}`;
+          activeTimerHandoffIdentityRef.current = handoffIdentity;
+          feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });
+          transientRecognitionTrace(12, 'timer handoff created', { handoff_identity: handoffIdentity });
+          timerHandoffReleaseControllerRef.current.begin(handoffIdentity, () => {
+            if (activeTimerHandoffIdentityRef.current !== handoffIdentity) return;
+            activeTimerHandoffIdentityRef.current = null;
+            setTimerPickerVisible(false);
+            feedbackDispatch({ type: 'TIMER_IDLE' });
+            transientRecognitionTrace(13, 'timer UI unavailable');
+            transientRecognitionTrace(14, 'timer handoff resolved', { outcome: 'unavailable' });
+          });
+          openTimerPicker();
+          if (feedbackState.submission.status === 'persisted_new_set') {
+            setCompletedSetSwipeTooltipCandidateSetLogId(feedbackState.submission.lastSetLogId);
+          }
+        });
+      },
+    );
+    if (handoffStarted && feedbackState.submission.status === 'persisted_new_set') {
+      transientRecognitionTrace(9, 'accepted-state dwell started');
+    }
+  }, [accessoryWheel?.itemId, coreWheel?.itemId, feedbackState.submission.activeItemId, feedbackState.submission.lastSetLogId, feedbackState.submission.status, openTimerPicker, transientRecognitionTrace]);
+
+  useEffect(() => {
+    if (!shouldShowCompletedSetSwipeTooltip({
+      enabled: completedSetSwipeTooltipEnabled,
+      hasBeenShown: completedSetSwipeTooltipShown,
+      isPersistedNewSet: completedSetSwipeTooltipCandidateSetLogId != null,
+      setLogId: completedSetSwipeTooltipCandidateSetLogId,
+    })) return;
+    setCompletedSetSwipeTooltipSetLogId(completedSetSwipeTooltipCandidateSetLogId);
+  }, [completedSetSwipeTooltipCandidateSetLogId, completedSetSwipeTooltipShown]);
+
+  useEffect(() => {
+    if (feedbackState.appLifecycle !== 'background') return;
+    setCompletedSetSwipeTooltipCandidateSetLogId(null);
+    setCompletedSetSwipeTooltipSetLogId(null);
+  }, [feedbackState.appLifecycle]);
+
+  const handleCompletedSetSwipeTooltipStarted = useCallback(() => {
+    if (!completedSetSwipeTooltipSessionKey || completedSetSwipeTooltipSetLogId == null) return;
+    setCompletedSetSwipeTooltipShown(true);
+    setCompletedSetSwipeTooltipCandidateSetLogId(null);
+    setCompletedSetSwipeTooltipSetLogId(null);
+    void markCompletedSetSwipeTooltipShown(completedSetSwipeTooltipSessionKey).catch(() => undefined);
+  }, [completedSetSwipeTooltipSessionKey, completedSetSwipeTooltipSetLogId]);
+
   async function logAccessorySet(
     workoutId: number,
     itemId: number,
@@ -2988,6 +4937,8 @@ export default function WorkoutViewerScreen() {
       actual_weight_kg: number;
       actual_reps: number;
       actual_rir?: number | null;
+      intended_set_index?: number;
+      client_submission_id?: string;
     }
   ) {
     console.log('logAccessorySet payload', { workoutId, itemId, payload });
@@ -3054,22 +5005,79 @@ export default function WorkoutViewerScreen() {
     const weightKg = unit === 'kg'
       ? weightInUnit
       : weightInUnit * KG_PER_LB;
-
-    try {
-      setSavingItemId(itemId);
+    const accessoryItem = (data?.workout?.accessory_groups || [])
+      .flatMap((group: any) => group?.items || [])
+      .find((row: any) => Number(row?.id) === Number(itemId));
+    const loggedIndexes = new Set(
+      (Array.isArray(accessoryItem?.set_logs) ? accessoryItem.set_logs : [])
+        .map((row: any) => Number(row?.set_index || 0))
+        .filter((value: number) => value > 0),
+    );
+    let accessorySetIndex = 1;
+    while (loggedIndexes.has(accessorySetIndex)) accessorySetIndex += 1;
+    const attemptKey = `accessory:${itemId}:${accessorySetIndex}`;
+    const canonicalPayload = {
+      intended_set_index: accessorySetIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: Number(reps),
+      actual_rir: rir ?? undefined,
+    };
+    if (isIdealWorkoutDetailPreview) {
+      const mockSet: SetLog = {
+        id: 9_500_000 + (Number(itemId) * 10) + accessorySetIndex,
+        set_index: accessorySetIndex,
+        actual_weight_kg: weightKg,
+        actual_reps: Number(reps),
+        actual_rpe: null,
+        actual_rir: rir,
+        client_submission_id: `ideal-accessory-${itemId}-${accessorySetIndex}`,
+        ...equipmentSnapshotForSet(activeEquipmentIdentity(accessoryItem)),
+      };
+      setData((current) => current ? {
+        ...current,
+        workout: {
+          ...current.workout,
+          accessory_groups: current.workout.accessory_groups.map((group) => ({
+            ...group,
+            items: group.items.map((item) => (
+              Number(item.id) === Number(itemId)
+                ? { ...item, set_logs: [...(item.set_logs || []), mockSet] }
+                : item
+            )),
+          })),
+        },
+      } : current);
+      setAccessoryWheel(null);
+      setAccInputs((current) => ({
+        ...current,
+        [itemId]: {
+          weight: formatWheelNumber(weightInUnit),
+          reps: '',
+          rir: '',
+        },
+      }));
       setError(null);
+      return;
+    }
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
-      const json = await logAccessorySet(
+    const json = await submitCanonicalSet({
+      itemId,
+      attemptKey,
+      clientSubmissionId,
+      fallbackError: 'Error logging accessory set',
+      request: () => logAccessorySet(
         Number(workoutId),
         itemId,
         {
-          actual_weight_kg: weightKg,
-          actual_reps: Number(reps),
-          actual_rir: rir ?? undefined,
+          ...canonicalPayload,
+          client_submission_id: clientSubmissionId,
         }
-      );
+      ),
+    });
+    if (!json) return;
 
-      setTimerPickerVisible(true);
+    try {
       markAutoAdvanceAfterLog(itemId);
       rememberScroll();
       await fetchWorkout();
@@ -3089,10 +5097,8 @@ export default function WorkoutViewerScreen() {
         [itemId]: { weight: nextWeightStr, reps: '', rir: '' },
       }));
     } catch (err: any) {
-      console.log('handleAccessorySave error', err);
-      setError(err?.message || 'Error logging accessory set');
-    } finally {
-      setSavingItemId(null);
+      console.log('handleAccessorySave post-acceptance refresh error', err);
+      setError('Set logged, but the Session refresh did not finish. Pull to refresh.');
     }
   };
 
@@ -3114,6 +5120,11 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to clear top set (HTTP ${status})`);
       }
+      const invalidatedEventIds = Array.isArray(json?.invalidated_recognition_event_ids)
+        ? json.invalidated_recognition_event_ids.map(Number).filter(Number.isFinite)
+        : [];
+      feedbackDispatch({ type: 'INVALIDATE_EVENTS', eventIds: invalidatedEventIds });
+      void invalidateRecognitionEvents(String(workoutId), invalidatedEventIds).catch(() => feedbackAnalytics('recognition_invalidation_storage_failed', { mutation: 'clear', count: invalidatedEventIds.length }));
       rememberScroll();
       await fetchWorkout();
     } catch (err: any) {
@@ -3145,14 +5156,14 @@ export default function WorkoutViewerScreen() {
       );
 
       if (!ok || !json?.ok) {
-        throw new Error(json?.error || `Failed to update workout status (HTTP ${status})`);
+        throw new Error(json?.error || `Failed to update Session status (HTTP ${status})`);
       }
 
       // pull fresh status + set_logs etc
       await fetchWorkout();
     } catch (err: any) {
       console.log('performStatusAction error', err);
-      setError(err?.message || 'Error updating workout');
+      setError(err?.message || 'Error updating Training Session');
     } finally {
       setActionLoading(null);
     }
@@ -3163,7 +5174,20 @@ export default function WorkoutViewerScreen() {
     const wkId = data.workout.id;
 
     if (!canLogFromServer) {
-      Alert.alert('Read-only', 'You do not have permission to log this workout on mobile.');
+      Alert.alert('Read-only', 'You do not have permission to log this training session on mobile.');
+      return;
+    }
+
+    if (isIdealWorkoutDetailPreview) {
+      setData((current) => current ? {
+        ...current,
+        workout: {
+          ...current.workout,
+          status: 'in_progress',
+          started_at: '2026-07-22T17:00:00Z',
+          tardy_reason: reason || current.workout.tardy_reason,
+        },
+      } : current);
       return;
     }
 
@@ -3171,7 +5195,7 @@ export default function WorkoutViewerScreen() {
       setActionLoading('begin');
       setError(null);
 
-      // Step 1: checkout the workout to this mobile client
+      // Step 1: check out the Training Session to this mobile client.
       const checkout = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/checkout`,
         { method: 'POST', auth: true }
@@ -3179,9 +5203,9 @@ export default function WorkoutViewerScreen() {
 
       if (!checkout.ok || !checkout.json?.ok) {
         Alert.alert(
-          'Unable to begin workout',
+          'Unable to begin session',
           checkout.json?.error ||
-            `Workout is currently checked out by another user or device. (HTTP ${checkout.status})`
+            `Training Session is currently checked out by another user or device. (HTTP ${checkout.status})`
         );
         return;
       }
@@ -3198,15 +5222,15 @@ export default function WorkoutViewerScreen() {
       );
 
       if (!begun.ok || !begun.json?.ok) {
-        Alert.alert('Error', begun.json?.error || `Failed to begin workout (HTTP ${begun.status})`);
+        Alert.alert('Error', begun.json?.error || `Failed to begin session (HTTP ${begun.status})`);
         return;
       }
 
-      // Pull fresh workout data (status, logs, etc.)
+      // Pull fresh Training Session data (status, logs, etc.).
       await fetchWorkout();
     } catch (err) {
       console.error('beginWorkout error', err);
-      Alert.alert('Error', 'Failed to begin workout');
+      Alert.alert('Error', 'Failed to begin session');
     } finally {
       setActionLoading(null);
     }
@@ -3234,7 +5258,7 @@ export default function WorkoutViewerScreen() {
     ) {
       Alert.alert(
         'Resume Session?',
-        'Resuming this completed session will delete the post-session survey for this workout.',
+        'Resuming this completed session will delete its post-session reflection.',
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -3267,7 +5291,13 @@ export default function WorkoutViewerScreen() {
     await beginWorkoutConfirmed(reason);
   };
 
-  const completeWorkout = async ({ skipIncompleteWarning = false }: { skipIncompleteWarning?: boolean } = {}) => {
+  const completeWorkout = async ({
+    skipIncompleteWarning = false,
+    sessionTimes = null,
+  }: {
+    skipIncompleteWarning?: boolean;
+    sessionTimes?: { startedAt: string; endedAt: string } | null;
+  } = {}) => {
     if (!data?.workout) return;
     const wkId = data.workout.id;
 
@@ -3282,16 +5312,37 @@ export default function WorkoutViewerScreen() {
 
       const done = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/complete`,
-        { method: 'POST', auth: true }
+        {
+          method: 'POST',
+          auth: true,
+          body: sessionTimes ? {
+            session_started_at: sessionTimes.startedAt,
+            session_ended_at: sessionTimes.endedAt,
+          } : undefined,
+        }
       );
 
       if (!done.ok || !done.json?.ok) {
-        Alert.alert('Error', done.json?.error || `Failed to complete workout (HTTP ${done.status})`);
+        Alert.alert('Error', done.json?.error || `Failed to complete session (HTTP ${done.status})`);
         return;
+      }
+
+      const completionTransitioned =
+        done.json?.completion_transitioned === true &&
+        done.json?.impact_summary?.canonically_completed === true;
+      if (completionTransitioned) {
+        setAnimatedCompletionSummaryId(done.json.impact_summary.summary_id || null);
+        void triggerSessionCompletionHaptic();
+        feedbackAnalytics('session_impact_summary_completed', { summary_id: done.json.impact_summary.summary_id });
       }
 
       // Refresh local data
       await fetchWorkout();
+      if (completionTransitioned) {
+        requestAnimationFrame(() => {
+          scrollRef.current?.scrollTo({ y: 0, animated: false });
+        });
+      }
 
       // Best-effort checkin: release the lock after completion
       try {
@@ -3304,20 +5355,66 @@ export default function WorkoutViewerScreen() {
       }
     } catch (err) {
       console.error('completeWorkout error', err);
-      Alert.alert('Error', 'Failed to complete workout');
+      Alert.alert('Error', 'Failed to complete session');
     } finally {
       setActionLoading(null);
     }
   };
 
   const openPostSessionSurvey = () => {
+    const timeDraft = createSessionTimeDraft(data?.workout?.started_at);
     setPostSessionForm({
       sessionRpe: null,
       strengthFeeling: '',
       fatigueFeeling: '',
       note: '',
+      sessionStart: timeDraft.start,
+      sessionEnd: timeDraft.end,
     });
+    setPostSessionTimeError(null);
+    setPostSessionNotesExpanded(false);
+    postSessionEffortRailValueRef.current = null;
     setPostSessionVisible(true);
+  };
+
+  const setPostSessionEffort = (value: number) => {
+    const next = Math.max(6, Math.min(10, Math.round(value * 2) / 2));
+    if (postSessionEffortRailValueRef.current !== next) {
+      void Haptics.selectionAsync().catch(() => undefined);
+    }
+    postSessionEffortRailValueRef.current = next;
+    setPostSessionForm((prev) => prev.sessionRpe === next ? prev : { ...prev, sessionRpe: next });
+  };
+
+  const measurePostSessionEffortRail = useCallback(() => {
+    postSessionEffortRailRef.current?.measureInWindow((x) => {
+      postSessionEffortRailWindowX.current = x;
+    });
+  }, []);
+
+  const setPostSessionEffortHeld = (held: boolean) => {
+    if (reduceMotion) {
+      postSessionEffortThumbScale.stopAnimation();
+      postSessionEffortThumbScale.setValue(1);
+      return;
+    }
+    Animated.spring(postSessionEffortThumbScale, {
+      toValue: held ? 1.12 : 1,
+      damping: 18,
+      stiffness: 260,
+      mass: 0.5,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const updatePostSessionEffortFromEvent = (event: any) => {
+    if (!postSessionEffortRailWidth) return;
+    const { locationX, pageX } = event.nativeEvent;
+    const x = postSessionEffortRailWindowX.current != null && Number.isFinite(pageX)
+      ? pageX - postSessionEffortRailWindowX.current
+      : locationX;
+    const ratio = Math.max(0, Math.min(1, Number(x || 0) / postSessionEffortRailWidth));
+    setPostSessionEffort(6 + (ratio * 4));
   };
 
   const requestCompleteWorkout = () => {
@@ -3330,17 +5427,68 @@ export default function WorkoutViewerScreen() {
     openPostSessionSurvey();
   };
 
+  useEffect(() => {
+    const current = data?.workout;
+    if (!current) return;
+    const workoutKey = Number(current.id || 0);
+    if (completionPromptRef.current.workoutId !== workoutKey) {
+      completionPromptRef.current = {
+        workoutId: workoutKey,
+        complete: false,
+        prompted: false,
+      };
+    }
+    const fullyComplete = (
+      String(current.status || '').toLowerCase() === 'in_progress'
+      && programmedSetCountForSession(current) > 0
+      && missingSetLabelsForWorkout(current).length === 0
+    );
+    if (!fullyComplete) {
+      completionPromptRef.current.complete = false;
+      completionPromptRef.current.prompted = false;
+      setEndSessionPromptVisible(false);
+      return;
+    }
+    if (
+      !completionPromptRef.current.complete
+      && !completionPromptRef.current.prompted
+    ) {
+      completionPromptRef.current.prompted = true;
+      setEndSessionPromptVisible(true);
+    }
+    completionPromptRef.current.complete = true;
+  }, [data?.workout]);
+
   const continueToPostSessionWithMissingSets = () => {
     setMissingCompletionSets(null);
     requestAnimationFrame(() => openPostSessionSurvey());
   };
 
   const skipPostSessionAndComplete = async () => {
+    const parsed = parseSessionTimeDraft({
+      start: postSessionForm.sessionStart,
+      end: postSessionForm.sessionEnd,
+    });
+    if (!parsed.value) {
+      setPostSessionTimeError(parsed.error);
+      return;
+    }
     setPostSessionVisible(false);
-    await completeWorkout({ skipIncompleteWarning: true });
+    await completeWorkout({
+      skipIncompleteWarning: true,
+      sessionTimes: parsed.value,
+    });
   };
 
   const submitPostSessionAndComplete = async () => {
+    const parsedTimes = parseSessionTimeDraft({
+      start: postSessionForm.sessionStart,
+      end: postSessionForm.sessionEnd,
+    });
+    if (!parsedTimes.value) {
+      setPostSessionTimeError(parsedTimes.error);
+      return;
+    }
     if (
       postSessionForm.sessionRpe == null ||
       !postSessionForm.strengthFeeling ||
@@ -3351,7 +5499,7 @@ export default function WorkoutViewerScreen() {
     }
 
     if (!workoutId) {
-      setError('Missing workout id');
+      setError('Missing Session id');
       return;
     }
 
@@ -3378,7 +5526,10 @@ export default function WorkoutViewerScreen() {
       }
 
       setPostSessionVisible(false);
-      await completeWorkout({ skipIncompleteWarning: true });
+      await completeWorkout({
+        skipIncompleteWarning: true,
+        sessionTimes: parsedTimes.value,
+      });
     } catch (err: any) {
       console.log('submitPostSessionAndComplete error', err);
       setError(err?.message || 'Failed to submit post-session survey');
@@ -3401,7 +5552,7 @@ export default function WorkoutViewerScreen() {
       );
 
       if (!canceled.ok || !canceled.json?.ok) {
-        Alert.alert('Error', canceled.json?.error || `Failed to cancel workout (HTTP ${canceled.status})`);
+        Alert.alert('Error', canceled.json?.error || `Failed to cancel session (HTTP ${canceled.status})`);
         return;
       }
 
@@ -3419,7 +5570,7 @@ export default function WorkoutViewerScreen() {
       }
     } catch (err) {
       console.error('cancelWorkout error', err);
-      Alert.alert('Error', 'Failed to cancel workout');
+      Alert.alert('Error', 'Failed to cancel session');
     } finally {
       setActionLoading(null);
     }
@@ -3427,10 +5578,10 @@ export default function WorkoutViewerScreen() {
 
   const fetchWorkout = useCallback(async (opts?: { silent?: boolean }) => {
     if (!workoutId) {
-      setError('Missing workout id');
+      setError('Missing Session id');
       setLoading(false);
       setRefreshing(false);
-      return;
+      return false;
     }
 
     const silent = !!opts?.silent;
@@ -3442,25 +5593,55 @@ export default function WorkoutViewerScreen() {
 
       setError(null);
 
+      if (isIdealWorkoutDetailPreview) {
+        const fixturePayload = (
+          loggerScenario
+            ? createWorkoutDetailFixture(loggerScenario, idealWorkoutDetailLifecycle)
+            : createWorkoutDetailFixture('primary-squat', idealWorkoutDetailLifecycle)
+        ) as WorkoutPayload;
+        const payload = hydrateWorkoutDetailEquipmentSelections(
+          fixturePayload as unknown as Record<string, any>,
+        ) as WorkoutPayload;
+        if (!unitPreferenceHydratedRef.current) {
+          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+          unitPreferenceHydratedRef.current = true;
+        }
+        setData(payload);
+        restoreScrollSoon();
+        return true;
+      }
+
       const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}`,
+        `${API_BASE}/workouts/mobile/${workoutId}${coachPreviewRequested ? '?view=coach-preview' : ''}`,
         { method: 'GET', auth: true }
       );
 
       const payload = json as WorkoutPayload;
 
       if (!ok || !payload?.ok) {
-        throw new Error((payload as any)?.error || `Failed to load workout (HTTP ${status})`);
+        throw new Error((payload as any)?.error || `Failed to load Training Session (HTTP ${status})`);
+      }
+      if (
+        coachPreviewRequested
+        && (payload.view_mode !== 'coach_preview' || payload.permissions?.view_only !== true)
+      ) {
+        throw new Error('Athlete View could not be verified as read-only.');
       }
 
+      if (!unitPreferenceHydratedRef.current) {
+        setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+        unitPreferenceHydratedRef.current = true;
+      }
       setData(payload);
       restoreScrollSoon();
+      return true;
     } catch (err: any) {
-      console.log('Workout fetch error', err);
-      setError(err?.message || 'Error loading workout');
+      console.log('Training Session fetch error', err);
+      setError(err?.message || 'Error loading Training Session');
       if (!silent && !dataRef.current) {
         setData(null);
       }
+      return false;
     } finally {
       if (silent) setRefreshing(false);
       else {
@@ -3468,23 +5649,26 @@ export default function WorkoutViewerScreen() {
         setRefreshing(false);
       }
     }
-  }, [workoutId]);
+  }, [
+    idealWorkoutDetailLifecycle,
+    isIdealWorkoutDetailPreview,
+    loggerScenario,
+    coachPreviewRequested,
+    workoutId,
+  ]);
 
-  useEffect(() => {
-    unitSeededWorkoutIdRef.current = null;
-  }, [workoutId]);
-
-  const workoutAthleteId = data?.athlete?.id;
-  const workoutAthletePreferredUnits = data?.athlete?.preferred_units;
-
-  useEffect(() => {
-    if (!workoutId || !workoutAthleteId) return;
-    const key = String(workoutId);
-    if (unitSeededWorkoutIdRef.current === key) return;
-
-    setUnit(normalizeMobileLoggerUnit(workoutAthletePreferredUnits));
-    unitSeededWorkoutIdRef.current = key;
-  }, [workoutAthleteId, workoutAthletePreferredUnits, workoutId]);
+  const refreshAfterStaleConflict = useCallback(async () => {
+    feedbackDispatch({ type: 'STALE_REFRESH_STARTED' });
+    const refreshed = await fetchWorkout({ silent: true });
+    if (!refreshed) {
+      feedbackDispatch({ type: 'STALE_REFRESH_FAILED' });
+      return;
+    }
+    setCoreWheel(null);
+    setAccessoryWheel(null);
+    feedbackDispatch({ type: 'STALE_REFRESH_SUCCEEDED' });
+    feedbackAnalytics('stale_set_refresh_succeeded');
+  }, [fetchWorkout]);
 
   useEffect(() => {
     startVideoUploadQueue();
@@ -3684,10 +5868,10 @@ export default function WorkoutViewerScreen() {
     }
   }, [uploadSelectedVideoToSetLog]);
 
-  const uploadVideoForSetLog = useCallback(async (setLog: SetLog, opts?: { ignoreExistingUpload?: boolean }) => {
+  const uploadVideoForSetLog = useCallback(async (setLog: SetLog) => {
     if (!setLog?.id) return;
     const currentUpload = videoUploadBySetLogId[setLog.id];
-    if (!opts?.ignoreExistingUpload && (currentUpload?.uploading || currentUpload?.queued)) {
+    if (currentUpload?.uploading || currentUpload?.queued) {
       return;
     }
 
@@ -3696,33 +5880,6 @@ export default function WorkoutViewerScreen() {
 
     setPendingRowVideoUpload({ setLogId: setLog.id, selectedVideo });
   }, [pickSetVideo, videoUploadBySetLogId]);
-
-  const clearVideoUploadStateForSetLog = useCallback((setLogId: number) => {
-    setVideoUploadBySetLogId((prev) => {
-      const next = { ...prev };
-      delete next[setLogId];
-      return next;
-    });
-  }, []);
-
-  const cancelQueuedVideoUploadForSetLog = useCallback(async (setLogId: number, jobId?: string | null) => {
-    if (!setLogId || !jobId) return;
-    try {
-      await cancelVideoUploadJob(jobId);
-    } finally {
-      clearVideoUploadStateForSetLog(setLogId);
-    }
-  }, [clearVideoUploadStateForSetLog]);
-
-  const retryFreshVideoUploadForSetLog = useCallback(async (setLog: SetLog, jobId?: string | null) => {
-    if (!setLog?.id) return;
-    if (jobId) {
-      await cancelQueuedVideoUploadForSetLog(setLog.id, jobId);
-    } else {
-      clearVideoUploadStateForSetLog(setLog.id);
-    }
-    await uploadVideoForSetLog(setLog, { ignoreExistingUpload: true });
-  }, [cancelQueuedVideoUploadForSetLog, clearVideoUploadStateForSetLog, uploadVideoForSetLog]);
 
   const confirmPendingRowVideoUpload = useCallback(async () => {
     const pending = pendingRowVideoUpload;
@@ -3799,19 +5956,11 @@ export default function WorkoutViewerScreen() {
     });
   }, []);
 
-  const selectVideoForCoreWheel = useCallback(async () => {
-    const selectedVideo = await pickSetVideo();
-    if (!selectedVideo) return;
-    setCoreWheel((prev) => prev ? { ...prev, selectedVideo } : prev);
-  }, [pickSetVideo]);
-
   const renderSetVideoAction = useCallback((setLog: SetLog, canAttachVideo: boolean) => {
     if (!setLog?.id) return null;
     const state = videoUploadBySetLogId[setLog.id] || {};
     const hasVideo = !!(setLog.has_video || setLog.video_id || setLog.video?.id);
     const queuedJob = state.job || null;
-    const canRetryFresh = !!queuedJob && !!state.error && !state.permanent;
-    const canCancelUpload = !!queuedJob && !hasVideo;
     const label = state.uploading
       ? 'Uploading video...'
       : state.uploaded && !hasVideo
@@ -3823,7 +5972,7 @@ export default function WorkoutViewerScreen() {
       : state.queued
       ? 'Video queued'
       : videoStatusLabel(setLog, false, null);
-    const uploadButtonDisabled = !canAttachVideo || !!state.uploading || !!state.queued || !!(state as any).deleting;
+    const disabled = !canAttachVideo || !!state.uploading || !!state.queued || !!(state as any).deleting;
 
     return (
       <View style={styles.setVideoRow}>
@@ -3867,13 +6016,13 @@ export default function WorkoutViewerScreen() {
             <TouchableOpacity
               style={[
                 styles.setVideoButton,
-                uploadButtonDisabled && styles.setVideoButtonDisabled,
+                disabled && styles.setVideoButtonDisabled,
               ]}
               onPress={() => uploadVideoForSetLog(setLog)}
-              disabled={uploadButtonDisabled}
+              disabled={disabled}
             >
               {state.uploading ? (
-                <ActivityIndicator size="small" color="#E2E8F0" />
+                <ActivityIndicator size="small" color={SLColors.text} />
               ) : (
                 <Text style={styles.setVideoButtonText}>{hasVideo ? 'Replace video' : 'Pick video'}</Text>
               )}
@@ -3883,13 +6032,13 @@ export default function WorkoutViewerScreen() {
                 style={[
                   styles.setVideoButton,
                   styles.setVideoRemoveButton,
-                  uploadButtonDisabled && styles.setVideoButtonDisabled,
+                  disabled && styles.setVideoButtonDisabled,
                 ]}
                 onPress={() => removeVideoForSetLog(setLog)}
-                disabled={uploadButtonDisabled}
+                disabled={disabled}
               >
                 {(state as any).deleting ? (
-                  <ActivityIndicator size="small" color="#FECACA" />
+                  <ActivityIndicator size="small" color={SLColors.danger} />
                 ) : (
                   <Text style={[styles.setVideoButtonText, styles.setVideoRemoveButtonText]}>
                     Remove video
@@ -3900,18 +6049,18 @@ export default function WorkoutViewerScreen() {
             {!hasVideo && queuedJob && state.error && !state.permanent ? (
               <TouchableOpacity
                 style={styles.setVideoButton}
-                onPress={() => retryFreshVideoUploadForSetLog(setLog, queuedJob.id)}
+                onPress={() => retryVideoUploadJob(queuedJob.id)}
               >
-                <Text style={styles.setVideoButtonText}>Retry fresh</Text>
+                <Text style={styles.setVideoButtonText}>Retry upload</Text>
               </TouchableOpacity>
             ) : null}
-            {!hasVideo && queuedJob ? (
+            {!hasVideo && queuedJob && !state.uploading ? (
               <TouchableOpacity
                 style={[styles.setVideoButton, styles.setVideoRemoveButton]}
-                onPress={() => cancelQueuedVideoUploadForSetLog(setLog.id, queuedJob.id)}
+                onPress={() => cancelVideoUploadJob(queuedJob.id)}
               >
                 <Text style={[styles.setVideoButtonText, styles.setVideoRemoveButtonText]}>
-                  Cancel upload
+                  Remove pending
                 </Text>
               </TouchableOpacity>
             ) : null}
@@ -3919,7 +6068,7 @@ export default function WorkoutViewerScreen() {
         ) : null}
       </View>
     );
-  }, [cancelQueuedVideoUploadForSetLog, openSetVideoPlayer, removeVideoForSetLog, retryFreshVideoUploadForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
+  }, [openSetVideoPlayer, removeVideoForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
 
   useEffect(() => {
     if (Platform.OS === 'web' || !Notifications) return;
@@ -3927,17 +6076,26 @@ export default function WorkoutViewerScreen() {
 
     notifHandlerSetRef.current = true;
     Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
+      handleNotification: async (notification: any) => {
+        const isRestEnd = notification?.request?.content?.data?.kind === 'rest_end';
+        return {
+          shouldShowAlert: !isRestEnd,
+          shouldPlaySound: !isRestEnd,
+          shouldSetBadge: false,
+        };
+      },
     });
   }, []);
 
   useEffect(() => {
     dataRef.current = data;
   }, [data]);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental?.(true);
+    }
+  }, []);
 
   useEffect(() => {
     const workout = data?.workout;
@@ -3971,9 +6129,11 @@ export default function WorkoutViewerScreen() {
         : firstIncomplete;
 
       if (fromRow?.complete) {
+        configureNextMovementLayoutTransition();
         collapseMovementCard(fromRow.key);
         if (nextRow?.key && nextRow.key !== fromRow.key) {
           openMovementCard(nextRow.key);
+          scheduleMovementFocus(nextRow.key);
         }
       } else if (fromRow?.key) {
         openMovementCard(fromRow.key);
@@ -3994,7 +6154,9 @@ export default function WorkoutViewerScreen() {
     data?.workout,
     getOrderedWorkoutMovements,
     collapseMovementCard,
+    configureNextMovementLayoutTransition,
     openMovementCard,
+    scheduleMovementFocus,
     expandedCoreDetails,
     expandedCompletedMovements,
   ]);
@@ -4008,9 +6170,22 @@ export default function WorkoutViewerScreen() {
   }, [fetchWorkout]);
 
   useEffect(() => {
+    const acceptedSheetHandoffController = acceptedSheetHandoffControllerRef.current;
+    const canonicalSetSubmissionController = canonicalSetSubmissionControllerRef.current;
+    const processedSetResults = processedSetResultsRef.current;
+    const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
     return () => {
       // Best-effort cleanup so scheduled notifications don't linger
       cancelRestEndNotification();
+      if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
+      canonicalSetSubmissionController.reset();
+      processedSetResults.reset();
+      acceptedSheetHandoffController.reset();
+      timerHandoffReleaseController.reset();
+      if (recognitionTimerRef.current) clearTimeout(recognitionTimerRef.current);
+      if (restFocusReturnTimerRef.current) clearTimeout(restFocusReturnTimerRef.current);
+      if (restZeroAdvanceTimerRef.current) clearTimeout(restZeroAdvanceTimerRef.current);
+      if (restReadyDismissTimerRef.current) clearTimeout(restReadyDismissTimerRef.current);
     };
   }, []);
 
@@ -4019,7 +6194,7 @@ export default function WorkoutViewerScreen() {
       <View style={styles.center}>
         <ActivityIndicator />
         <ThemedText variant="bodyMuted" style={styles.muted}>
-          Loading workout…
+          Loading Training Session…
         </ThemedText>
       </View>
     );
@@ -4036,13 +6211,17 @@ export default function WorkoutViewerScreen() {
   }
 
   const { workout, athlete } = data;
-  const canLogFromServer = !!data.permissions?.can_log;
-  const canHotSwap = !!data.permissions?.can_hot_swap;
-  // Coach viewing an athlete workout in read-only mode
-  const isCoachView = !!data.permissions?.can_coach && !canLogFromServer;
+  const isCoachAthletePreview = coachPreviewRequested
+    && data.view_mode === 'coach_preview'
+    && data.permissions?.view_only === true;
+  const canLogFromServer = !isCoachAthletePreview && !!data.permissions?.can_log;
+  const canHotSwap = !isCoachAthletePreview && !!data.permissions?.can_hot_swap;
+  // Coach viewing an athlete Training Session in read-only mode.
+  const isCoachView = isCoachAthletePreview || (!!data.permissions?.can_coach && !canLogFromServer);
   const canEdit =
+    !isCoachAthletePreview &&
     (!!data.permissions?.can_coach || !!data.permissions?.is_self_coached) &&
-    (workout.status === 'assigned' || workout.status === 'draft');
+    ['assigned', 'draft', 'tardy'].includes(String(workout.status || '').toLowerCase());
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canManageSetVideo = canLogFromServer && !isCoachView;
   const canBegin = canLogFromServer && ['assigned', 'tardy'].includes(String(workout.status || '').toLowerCase());
@@ -4065,19 +6244,144 @@ export default function WorkoutViewerScreen() {
         : null);
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
+  const durationEstimate = durationEstimateForWorkout(workout);
+  const coreMovementCount = workout.core_items.filter(
+    (item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null),
+  ).length;
+  const accessoryMovementOrder = workout.accessory_groups.flatMap((group) => group.items);
   const progressPct = plannedSets ? Math.min(100, Math.round((loggedSets / plannedSets) * 100)) : 0;
-  const workoutProgressSegments = progressSegmentsForWorkout(workout);
-  const topLogged = bestLoggedSet(workout);
   const focusLine = firstSessionFocus(workout);
-
-  const statusStyle =
-    (workout.status && STATUS_STYLES[workout.status]) || STATUS_STYLES.assigned;
+  const sessionNoteAuthor = resolveSessionNoteAuthor({
+    isSelfCoached: Boolean(isIndividualUser || data.permissions?.is_self_coached),
+    coach: data.coach,
+    athlete,
+    selfUser: user,
+  });
+  const sessionNoteAuthorPreviewSource =
+    isIdealWorkoutDetailPreview
+    && sessionNoteAuthor.kind === 'coach'
+    && data.coach?.avatar_fixture === 'coach-adrien'
+      ? WORKOUT_DETAIL_COACH_AVATAR
+      : undefined;
+  const restTimerPromoted = shouldPromoteRestTimer(
+    restActive,
+    restSeconds,
+    DEFAULT_REST_TIMER_CUE_CONFIG,
+  );
+  const restTimerFocusVisible =
+    restTimerPromoted || restTimerZeroVisible || restTimerReadyVisible;
+  const devAccessoryAccentFor = (iconName: SLAccessoryIconName | null) => {
+    switch (iconName) {
+      case 'dumbbell-press':
+      case 'dumbbell-row':
+      case 'lateral-raise':
+        return SLColors.accentMagenta;
+      case 'machine-chest-press':
+      case 'leg-extension':
+      case 'leg-curl':
+      case 'pec-deck':
+        return SLColors.accentOrange;
+      case 'cable-row':
+      case 'pulldown':
+        return SLColors.info;
+      default:
+        return SLColors.accentViolet;
+    }
+  };
+  const movementVisualContextFor = (
+    item: WorkoutItem,
+    prescribedWeight?: ResolvedLoggerPrescribedWeight | null,
+  ): ActiveMovementVisualContext => {
+    const accessoryFixtureContext = isIdealWorkoutDetailPreview
+      ? (item as any).dev_accessory_intelligence
+      : null;
+    const isAccessory =
+      String(item.variant || '').trim().toUpperCase() === 'ACC';
+    const accessoryIconName = isAccessory ? resolveAccessoryIconName(item.movement) : null;
+    const resolvedIdentity = isAccessory
+      ? {
+          key: 'accessory' as const,
+          label: 'Accessory',
+          accentColor: devAccessoryAccentFor(accessoryIconName),
+          iconSource: null,
+        }
+      : resolveLoggerLiftIdentity(item);
+    const isCoreVariant =
+      !isAccessory
+      && String(item.variant || '').trim().toUpperCase() === 'VR'
+      && resolvedIdentity.key in CORE_FAMILY_LIFT_CODE;
+    const identity = resolvedIdentity;
+    const resolvedPlateWeight = prescribedWeight === undefined
+      ? resolveLoggerPrescribedWeight({ item, unit })
+      : prescribedWeight;
+    const plateStack = isAccessory
+      ? null
+      : resolveLoggerPlateStack(
+          item,
+          unit,
+          resolvedPlateWeight,
+        );
+    const baseProgress = resolveLoggerProgressContext(item, unit);
+    const progress = isAccessory && accessoryFixtureContext && baseProgress
+      ? {
+          ...baseProgress,
+          eyebrow: String(accessoryFixtureContext.previous_label || baseProgress.eyebrow),
+          primary: baseProgress.primary.replace(/^Last time:\s*/i, ''),
+          accessibilityLabel: `${accessoryFixtureContext.previous_label || baseProgress.eyebrow}. ${baseProgress.accessibilityLabel}`,
+        }
+      : baseProgress;
+    const coach = data.coach;
+    return {
+      liftLabel: identity.label,
+      liftAccentColor: identity.accentColor,
+      liftIconSource: identity.iconSource,
+      accessoryIconName,
+      accessoryMuscleGroupLabel: isAccessory
+        ? accessoryPrimaryMuscleGroup(item)
+        : null,
+      coreVariantFamily: isCoreVariant
+        ? resolvedIdentity.key as keyof typeof CORE_FAMILY_LIFT_CODE
+        : null,
+      plateStack,
+      progress,
+      coach: coach
+        ? {
+            name: String(coach.name || 'Coach'),
+            profilePhotoUrl: coach.avatar_url || null,
+            profilePhotoVersion: coach.avatar_uploaded_at || null,
+            previewSource:
+              isIdealWorkoutDetailPreview && coach.avatar_fixture === 'coach-adrien'
+                ? WORKOUT_DETAIL_COACH_AVATAR
+                : null,
+          }
+        : null,
+    };
+  };
 
   const handleEditWorkout = () => {
+    if (isIdealWorkoutDetailPreview) return;
     router.push({
-      pathname: '/create-workout',
-      params: { editWorkoutId: String(workout.id) },
+      pathname: '/workout/session-workspace/[workoutId]' as any,
+      params: { workoutId: String(workout.id) },
     });
+  };
+
+  const handleReturnToCoachEditor = () => {
+    router.replace({
+      pathname: '/workout/session-workspace/[workoutId]' as any,
+      params: {
+        workoutId: String(workout.id),
+        section: returnSection === 'accessories' ? 'accessories' : 'core',
+        ...(coachAthleteId ? { athleteId: coachAthleteId } : {}),
+        ...(coachProgrammingBlockId ? { programmingBlockId: coachProgrammingBlockId } : {}),
+        ...(coachProgrammingWeek ? { programmingWeek: coachProgrammingWeek } : {}),
+        ...(coachProgrammingDay ? { programmingDay: coachProgrammingDay } : {}),
+      },
+    });
+  };
+
+  const handleBackToTrainingHub = () => {
+    router.push('/(tabs)/workout' as any);
   };
 
   const handleBeginWorkoutPress = () => {
@@ -4126,6 +6430,7 @@ export default function WorkoutViewerScreen() {
     rail,
     currentSetLabel,
     progressionLabel,
+    heroLoadLabel,
   }: {
     item: WorkoutItem;
     setIndex: number;
@@ -4139,7 +6444,29 @@ export default function WorkoutViewerScreen() {
     rail?: SetRailStep[];
     currentSetLabel?: string;
     progressionLabel?: string;
-  }): MovementLoggerFocusModel => ({
+    heroLoadLabel?: string | null;
+  }): MovementLoggerFocusModel => {
+    const resolvedSetLabel = currentSetLabel || `Set ${setIndex}`;
+    const positionLabel = kind === 'top'
+      ? total > 1 ? `Top Set ${setIndex} of ${total}` : 'Top Set'
+      : kind === 'bk'
+      ? `Backdown Set ${setIndex} of ${total}`
+      : `${resolvedSetLabel} of ${total}`;
+    const repsValue = planned?.reps ?? item.reps;
+    const repsText = repsValue != null
+      ? `${formatWheelNumber(Number(repsValue))} reps`
+      : item.reps_text?.trim()
+      ? `${item.reps_text.trim()} reps`
+      : null;
+    const rpeValue = planned?.rpe_target ?? item.rpe_target;
+    const effortText = rpeValue != null
+      ? `${formatWheelNumber(Number(rpeValue))} RPE`
+      : item.rir_target != null
+      ? `${formatWheelNumber(Number(item.rir_target))} RIR`
+      : null;
+
+    const resolvedRail = rail || railForSets(total, setIndex, completedIndexes);
+    return ({
     itemId: item.id,
     groupItemId: item.parent_item_id || item.id,
     movementName: liftDisplayName(item),
@@ -4152,12 +6479,17 @@ export default function WorkoutViewerScreen() {
         : kind === 'bk'
         ? 'Backdown'
         : 'Straight Sets',
-    currentSetLabel: currentSetLabel || `Set ${setIndex}`,
+    currentSetLabel: resolvedSetLabel,
+    currentSetPositionLabel: positionLabel,
+    currentSetRepsLabel: repsText,
+    currentSetLoadLabel: heroLoadLabel ?? targetLine,
+    currentSetEffortLabel: effortText,
     progressionLabel: progressionLabel || `${completedIndexes.length} / ${total} sets logged`,
     targetLine,
     prescriptionLine,
     recentContext: formatLookbackLine(getLookbackBest(item), unit),
-    rail: rail || railForSets(total, setIndex, completedIndexes),
+    rail: resolvedRail,
+    opportunity: finalAssignedSetOpportunity(liftDisplayName(item), resolvedRail),
     canLog,
     canRepeat: !!previousLog,
     onLogSet: () => openCoreWheel({
@@ -4169,13 +6501,12 @@ export default function WorkoutViewerScreen() {
     }),
     onRepeatLast: previousLog ? () => repeatCoreSet(kind, item, previousLog, setIndex) : undefined,
     onViewHistory: () => setMovementHistoryItem(item),
-  });
+    });
+  };
 
   const completedCoreSetSummary = (
     item: WorkoutItem,
     log: SetLog,
-    title: string,
-    canUndoDelete: boolean,
   ) => {
     const uploadState = videoUploadBySetLogId[log.id] || {};
     const hasVideo = !!(log.has_video || log.video_id || log.video?.id);
@@ -4183,19 +6514,17 @@ export default function WorkoutViewerScreen() {
     const queuedStatus = queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
-    const canCancelUpload = !!queuedJob && !hasVideo;
-    const disabled = !canManageSetVideo || (!!uploadState.uploading && !canCancelUpload) || (!!uploadState.queued && !canRetryUpload && !canCancelUpload) || !!(uploadState as any).deleting;
+    const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
 
     return {
+      setLogId: log.id,
       resultText: loggedSetText(log, unit),
       videoLabel: hasVideo
         ? 'View'
-        : canRetryUpload
-        ? 'Retry fresh'
-        : canCancelUpload
-        ? 'Cancel upload'
         : uploadState.uploading
         ? 'Uploading...'
+        : canRetryUpload
+        ? 'Retry upload'
         : uploadState.queued
         ? 'Queued'
         : 'Add video',
@@ -4205,16 +6534,14 @@ export default function WorkoutViewerScreen() {
         ? () =>
             openEditSet(item.id, log, {
               mode: 'rpe',
-              title,
-              canUndoDelete,
+              movementName: liftDisplayName(item),
             })
         : undefined,
+      onDelete: canLog ? () => confirmDeleteSet(item.id, log) : undefined,
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload
-        ? () => retryFreshVideoUploadForSetLog(log, queuedJob.id)
-        : canCancelUpload
-        ? () => cancelQueuedVideoUploadForSetLog(log.id, queuedJob.id)
+        ? () => retryVideoUploadJob(queuedJob.id)
         : canManageSetVideo
         ? () => uploadVideoForSetLog(log)
         : undefined,
@@ -4242,12 +6569,20 @@ export default function WorkoutViewerScreen() {
   }: any): {
     loggerFocus: MovementLoggerFocusModel | null;
     detailRows: ActiveMovementDetailRow[];
+    renderWeight: ResolvedLoggerPrescribedWeight | null;
   } => {
     const detailRows: ActiveMovementDetailRow[] = [];
     let loggerFocus: MovementLoggerFocusModel | null = null;
+    let renderWeight: ResolvedLoggerPrescribedWeight | null = null;
 
-    const attachFocus = (focus: MovementLoggerFocusModel) => {
-      if (!loggerFocus) loggerFocus = focus;
+    const attachFocus = (
+      focus: MovementLoggerFocusModel,
+      prescribedWeight: ResolvedLoggerPrescribedWeight | null,
+    ) => {
+      if (!loggerFocus) {
+        loggerFocus = focus;
+        renderWeight = prescribedWeight;
+      }
     };
 
     if (isFullCustom && Array.isArray(core.planned_sets) && core.planned_sets.length > 0) {
@@ -4263,6 +6598,11 @@ export default function WorkoutViewerScreen() {
         const existing = fcLogs.find((sl) => (sl.set_index || 0) === setIdx);
         const wt = formatPlannedWeightLine(ps, unit);
         const targetLine = wt.primary || wt.suggested || null;
+        const prescribedWeight = resolveLoggerPrescribedWeight({
+          item: core,
+          planned: ps,
+          unit,
+        });
         const prescriptionLine = formatPlannedSchemeLine(ps, core.mode).replace(/\s×\s/g, '×').replace(/ @ RPE /g, ' @');
         const previousLog = [...fcLogs]
           .filter((sl) => (sl.set_index || 0) < setIdx)
@@ -4280,7 +6620,8 @@ export default function WorkoutViewerScreen() {
             prescriptionLine,
             planned: ps,
             previousLog,
-          }));
+            heroLoadLabel: prescribedWeight?.displayLabel,
+          }), prescribedWeight);
         }
 
         detailRows.push({
@@ -4290,7 +6631,7 @@ export default function WorkoutViewerScreen() {
           target: existing ? null : targetLine,
           prescription: prescriptionLine,
           ...(existing
-            ? completedCoreSetSummary(core, existing, `Edit Set ${setIdx}`, setIdx === fcLatestLoggedIdx)
+            ? completedCoreSetSummary(core, existing)
             : {}),
           onLogSet: isNext && canLog
             ? () => openCoreWheel({
@@ -4304,11 +6645,15 @@ export default function WorkoutViewerScreen() {
         });
       });
 
-      return { loggerFocus, detailRows };
+      return { loggerFocus, detailRows, renderWeight };
     }
 
     if (isStraightLike && totalSets > 0) {
       const completedIndexes = logs.map((log) => log.set_index || 0).filter(Boolean);
+      const prescribedWeight = resolveLoggerPrescribedWeight({
+        item: core,
+        unit,
+      });
       Array.from({ length: totalSets }).forEach((_, idx) => {
         const setIdx = idx + 1;
         const existing = logs.find((sl) => sl.set_index === setIdx);
@@ -4329,7 +6674,8 @@ export default function WorkoutViewerScreen() {
             targetLine,
             prescriptionLine,
             previousLog,
-          }));
+            heroLoadLabel: prescribedWeight?.displayLabel,
+          }), prescribedWeight);
         }
 
         detailRows.push({
@@ -4339,7 +6685,7 @@ export default function WorkoutViewerScreen() {
           target: existing ? null : targetLine,
           prescription: prescriptionLine,
           ...(existing
-            ? completedCoreSetSummary(core, existing, `Edit Set ${setIdx}`, setIdx === latestLoggedIdx)
+            ? completedCoreSetSummary(core, existing)
             : {}),
           onLogSet: isNext && canLog
             ? () => openCoreWheel({
@@ -4352,11 +6698,15 @@ export default function WorkoutViewerScreen() {
         });
       });
 
-      return { loggerFocus, detailRows };
+      return { loggerFocus, detailRows, renderWeight };
     }
 
     if (isTop && totalSets > 0) {
       const completedIndexes = uniqueLoggedSetIndexes(topLogs);
+      const topPrescribedWeight = resolveLoggerPrescribedWeight({
+        item: core,
+        unit,
+      });
       const topBackdownTotal = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
       const fullTopBackdownTotal = totalSets + topBackdownTotal;
       const topBackdownLoggedCount =
@@ -4369,21 +6719,25 @@ export default function WorkoutViewerScreen() {
         const isNextTop = !existing && setIdx === topNextIdx && !hasAllTopActual;
         return {
           key: `top-rail-${core.id}-${setIdx}`,
-          label: totalSets > 1 ? `Top ${setIdx}` : 'Top',
+          label: totalSets > 1 ? `Top Set ${setIdx}` : 'Top Set',
           state: existing ? 'completed' : isNextTop && canLog ? 'active' : 'locked',
         } as SetRailStep;
       });
-      const backdownRailSteps = backdownsForThisTop.flatMap((bd) => {
+      const backdownRailSteps = backdownsForThisTop.flatMap((bd, bdIndex) => {
         const bdLogs = bd.set_logs || [];
         const bdTotal = positiveInt(bd.sets);
         const bdNextIdx = nextMissingSetIndex(bdLogs, bdTotal) || (loggedSetIndexCount(bdLogs) + 1);
+        const backdownOffset = backdownsForThisTop
+          .slice(0, bdIndex)
+          .reduce((sum, item) => sum + positiveInt(item.sets), 0);
         return Array.from({ length: bdTotal }).map((_, idx) => {
           const setIdx = idx + 1;
+          const timelineSetIndex = backdownOffset + setIdx;
           const existing = bdLogs.find((sl) => sl.set_index === setIdx);
           const isNextBackdown = hasAllTopActual && !existing && setIdx === bdNextIdx;
           return {
             key: `bd-rail-${bd.id}-${setIdx}`,
-            label: `BD ${setIdx}`,
+            label: `Backdown Set ${timelineSetIndex}`,
             state: existing ? 'completed' : isNextBackdown && canLog ? 'active' : 'locked',
           } as SetRailStep;
         });
@@ -4411,25 +6765,24 @@ export default function WorkoutViewerScreen() {
             prescriptionLine,
             previousLog,
             rail: topBackdownRail,
-            currentSetLabel: totalSets > 1 ? `Top ${setIdx}` : 'Top',
+            currentSetLabel: totalSets > 1 ? `Top Set ${setIdx}` : 'Top Set',
             progressionLabel: topBackdownProgressLabel,
-          }));
+            heroLoadLabel: topPrescribedWeight?.displayLabel,
+          }), topPrescribedWeight);
         }
 
         detailRows.push({
           key: `top-${core.id}-${setIdx}`,
-          label: `Top ${setIdx}`,
+          label: totalSets > 1 ? `Top Set ${setIdx}` : 'Top Set',
+          timelineLabel: coreSetTimelineLabel('top', setIdx, totalSets),
           state: existing ? 'completed' : isNext && canLog ? 'active' : 'locked',
           target: existing ? null : targetLine,
           prescription: prescriptionLine,
           ...(existing
-            ? completedCoreSetSummary(
-                core,
-                existing,
-                `Edit Top Set ${setIdx}`,
-                setIdx === topLatestLoggedIdx &&
-                  !backdownsForThisTop.some((bd) => loggedSetIndexCount(bd.set_logs || []) > 0),
-              )
+              ? completedCoreSetSummary(
+                  core,
+                  existing,
+                )
             : {}),
           onLogSet: isNext && canLog
             ? () => openCoreWheel({
@@ -4442,16 +6795,24 @@ export default function WorkoutViewerScreen() {
         });
       });
 
-      backdownsForThisTop.forEach((bd) => {
+      backdownsForThisTop.forEach((bd, bdIndex) => {
         const bdLogs = bd.set_logs || [];
         const bdTotal = positiveInt(bd.sets);
         const bdNextIdx = nextMissingSetIndex(bdLogs, bdTotal) || (loggedSetIndexCount(bdLogs) + 1);
         const bdCompletedIndexes = uniqueLoggedSetIndexes(bdLogs);
+        const backdownOffset = backdownsForThisTop
+          .slice(0, bdIndex)
+          .reduce((sum, item) => sum + positiveInt(item.sets), 0);
         const targetLine = formatTargetRange(bd.target_low_kg, bd.target_high_kg, unit);
+        const backdownPrescribedWeight = resolveLoggerPrescribedWeight({
+          item: bd,
+          unit,
+        });
         const prescriptionLine = compactSchemeText(bd, bdTotal);
 
         Array.from({ length: bdTotal }).forEach((_, idx) => {
           const setIdx = idx + 1;
+          const timelineSetIndex = backdownOffset + setIdx;
           const existing = bdLogs.find((sl) => sl.set_index === setIdx);
           const previousLog = [...bdLogs]
             .filter((sl) => (sl.set_index || 0) < setIdx)
@@ -4469,23 +6830,27 @@ export default function WorkoutViewerScreen() {
               prescriptionLine,
               previousLog,
               rail: topBackdownRail,
-              currentSetLabel: `BD ${setIdx}`,
+              currentSetLabel: `Backdown Set ${setIdx}`,
               progressionLabel: topBackdownProgressLabel,
-            }));
+              heroLoadLabel: backdownPrescribedWeight?.displayLabel,
+            }), backdownPrescribedWeight);
           }
 
           detailRows.push({
             key: `bk-${bd.id}-${setIdx}`,
-            label: `Backdown ${setIdx}`,
+            label: `Backdown Set ${timelineSetIndex}`,
+            timelineLabel: coreSetTimelineLabel(
+              'backdown',
+              timelineSetIndex,
+              topBackdownTotal,
+            ),
             state: existing ? 'completed' : isNext && canLog ? 'active' : 'locked',
             target: existing ? null : targetLine,
             prescription: prescriptionLine,
             ...(existing
-              ? completedCoreSetSummary(
-                  bd,
-                  existing,
-                  `Edit Backdown Set ${setIdx}`,
-                  setIdx === bdLogs[bdLogs.length - 1]?.set_index,
+                ? completedCoreSetSummary(
+                    bd,
+                    existing,
                 )
               : {}),
             onLogSet: isNext && canLog
@@ -4500,11 +6865,15 @@ export default function WorkoutViewerScreen() {
         });
       });
 
-      return { loggerFocus, detailRows };
+      return { loggerFocus, detailRows, renderWeight };
     }
 
     if (isBackdown && !hasParent && totalSets > 0) {
       const completedIndexes = uniqueLoggedSetIndexes(logs);
+      const prescribedWeight = resolveLoggerPrescribedWeight({
+        item: core,
+        unit,
+      });
       Array.from({ length: totalSets }).forEach((_, idx) => {
         const setIdx = idx + 1;
         const existing = logs.find((sl) => sl.set_index === setIdx);
@@ -4526,12 +6895,14 @@ export default function WorkoutViewerScreen() {
             targetLine,
             prescriptionLine,
             previousLog,
-          }));
+            heroLoadLabel: prescribedWeight?.displayLabel,
+          }), prescribedWeight);
         }
 
         detailRows.push({
           key: `orphan-bk-${core.id}-${setIdx}`,
-          label: `Backdown ${setIdx}`,
+          label: `Backdown Set ${setIdx}`,
+          timelineLabel: coreSetTimelineLabel('backdown', setIdx, totalSets),
           state: existing ? 'completed' : isNext && canLog ? 'active' : 'locked',
           target: existing ? null : targetLine,
           prescription: prescriptionLine,
@@ -4539,8 +6910,6 @@ export default function WorkoutViewerScreen() {
             ? completedCoreSetSummary(
                 core,
                 existing,
-                `Edit Backdown Set ${setIdx}`,
-                setIdx === logs[logs.length - 1]?.set_index,
               )
             : {}),
           onLogSet: isNext && canLog
@@ -4555,14 +6924,12 @@ export default function WorkoutViewerScreen() {
       });
     }
 
-    return { loggerFocus, detailRows };
+    return { loggerFocus, detailRows, renderWeight };
   };
 
   const completedAccessorySetSummary = (
     item: WorkoutItem,
     log: SetLog,
-    title: string,
-    canUndoDelete: boolean,
   ) => {
     const uploadState = videoUploadBySetLogId[log.id] || {};
     const hasVideo = !!(log.has_video || log.video_id || log.video?.id);
@@ -4570,19 +6937,17 @@ export default function WorkoutViewerScreen() {
     const queuedStatus = queuedVideoStatusLabel(uploadState);
     const status = queuedStatus || videoStatusLabel(log, !!uploadState.uploading, uploadState.error || null);
     const canRetryUpload = !!queuedJob && !!uploadState.error && !uploadState.permanent;
-    const canCancelUpload = !!queuedJob && !hasVideo;
-    const disabled = !canManageSetVideo || (!!uploadState.uploading && !canCancelUpload) || (!!uploadState.queued && !canRetryUpload && !canCancelUpload) || !!(uploadState as any).deleting;
+    const disabled = !canManageSetVideo || !!uploadState.uploading || (!!uploadState.queued && !canRetryUpload) || !!(uploadState as any).deleting;
 
     return {
+      setLogId: log.id,
       resultText: loggedSetText(log, unit),
       videoLabel: hasVideo
         ? 'View'
-        : canRetryUpload
-        ? 'Retry fresh'
-        : canCancelUpload
-        ? 'Cancel upload'
         : uploadState.uploading
         ? 'Uploading...'
+        : canRetryUpload
+        ? 'Retry upload'
         : uploadState.queued
         ? 'Queued'
         : 'Add video',
@@ -4592,21 +6957,45 @@ export default function WorkoutViewerScreen() {
         ? () =>
             openEditSet(item.id, log, {
               mode: 'rir',
-              title,
-              canUndoDelete,
+              movementName: simplifyMobileMovementName(item.movement || item.lift || 'Accessory'),
             })
         : undefined,
+      onDelete: canLog ? () => confirmDeleteSet(item.id, log) : undefined,
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload
-        ? () => retryFreshVideoUploadForSetLog(log, queuedJob.id)
-        : canCancelUpload
-        ? () => cancelQueuedVideoUploadForSetLog(log.id, queuedJob.id)
+        ? () => retryVideoUploadJob(queuedJob.id)
         : canManageSetVideo
         ? () => uploadVideoForSetLog(log)
         : undefined,
     };
   };
+
+  const accessoryLookbackLine = (item: WorkoutItem) => {
+    const line = formatLookbackLine(getLookbackBest(item), unit);
+    const devContext = isIdealWorkoutDetailPreview
+      ? (item as any).dev_accessory_intelligence
+      : null;
+    const label = String(devContext?.previous_label || '').trim();
+    const emptyLabel = String(devContext?.history_empty_label || '').trim();
+    if (line && label) return line.replace(/^Last best:/, `${label}:`);
+    return line || emptyLabel || null;
+  };
+
+  const supersetWorkspaceItems = (
+    items: WorkoutItem[],
+  ): SupersetWorkspaceItem[] => items.map((item) => ({
+    ...item,
+    title: simplifyMobileMovementName(item.movement) || 'Accessory',
+    timelineLabel: simplifyMobileMovementName(item.movement) || 'Accessory',
+    prescription: accessoryTargetLine(item),
+    historyLine: accessoryLookbackLine(item),
+    primaryMuscleGroup: accessoryPrimaryMuscleGroup(item),
+    set_logs: (item.set_logs || []).map((log) => ({
+      ...log,
+      resultLine: loggedSetText(log, unit),
+    })),
+  }));
 
   const buildAccessoryMovementPresentation = ({
     item,
@@ -4626,23 +7015,31 @@ export default function WorkoutViewerScreen() {
     isComplete: boolean;
   }): { loggerFocus: MovementLoggerFocusModel | null; detailRows: ActiveMovementDetailRow[] } => {
     const completedIndexes = logs.map((log) => log.set_index || 0).filter(Boolean);
-    const detailRows: ActiveMovementDetailRow[] = logs
-      .slice()
-      .sort((a, b) => (a.set_index || 0) - (b.set_index || 0))
-      .map((log) => ({
-        key: `acc-${item.id}-${log.set_index || log.id}`,
-        label: `Set ${log.set_index || 1}`,
-        state: 'completed',
-        ...completedAccessorySetSummary(
-          item,
-          log,
-          `Edit Set ${log.set_index || 1}`,
-          (log.set_index || 0) === latestLoggedIdx,
-        ),
-      }));
+    const rowCount = Math.max(totalSets, ...logs.map((log) => Number(log.set_index || 0)), 0);
+    const detailRows: ActiveMovementDetailRow[] = Array.from({ length: rowCount }).map((_, offset) => {
+      const setIndex = offset + 1;
+      const log = logs.find((candidate) => Number(candidate.set_index || 0) === setIndex);
+      const isNext = !log && setIndex === nextIndex;
+      return {
+        key: `acc-${item.id}-${setIndex}`,
+        label: `Set ${setIndex}`,
+        state: log ? 'completed' : isNext && canLog ? 'active' : 'locked',
+        target: log ? null : accessoryPerSetPrescription(item),
+        prescription: null,
+        ...(log
+          ? completedAccessorySetSummary(
+              item,
+              log,
+            )
+          : {}),
+        onLogSet: isNext && canLog && !isCoachView ? () => openAccessoryWheel(item) : undefined,
+      };
+    });
 
     const canLogNext = expanded && !isComplete && canLog && !isCoachView;
-    const loggerFocus: MovementLoggerFocusModel | null = canLogNext
+    const shouldShowPlannedFocus =
+      expanded && !isComplete && (isPreSession || canLogNext);
+    const loggerFocus: MovementLoggerFocusModel | null = shouldShowPlannedFocus
       ? {
           itemId: item.id,
           groupItemId: item.id,
@@ -4650,19 +7047,24 @@ export default function WorkoutViewerScreen() {
           designation: 'Accessory',
           liftType: 'Support Work',
           currentSetLabel: `Set ${nextIndex}`,
+          currentSetPositionLabel: `Set ${nextIndex} of ${totalSets}`,
+          currentSetRepsLabel: accessoryPerSetRepsLabel(item),
+          currentSetLoadLabel: null,
+          currentSetHistoryPlaceholder: false,
+          currentSetEffortLabel: item.rir_target != null ? `${formatWheelNumber(Number(item.rir_target))} RIR` : null,
           progressionLabel: `${logs.length} / ${totalSets || 0} sets logged`,
-          targetLine: accessoryTargetLine(item),
-          prescriptionLine: (() => {
-            const lookback = formatLookbackLine(getLookbackBest(item), unit);
-            return lookback || null;
-          })(),
-          recentContext: formatLookbackLine(getLookbackBest(item), unit),
+          targetLine: `${totalSets} sets`,
+          prescriptionLine: accessoryLookbackLine(item),
+          recentContext: accessoryLookbackLine(item),
           rail: railForSets(totalSets, nextIndex, completedIndexes),
-          canLog: true,
+          canLog: canLogNext,
           canRepeat: logs.length > 0,
-          onLogSet: () => openAccessoryWheel(item),
-          onRepeatLast: logs.length > 0 ? () => repeatAccessoryLastSet(item) : undefined,
+          onLogSet: canLogNext ? () => openAccessoryWheel(item) : undefined,
+          onRepeatLast: canLogNext && logs.length > 0
+            ? () => repeatAccessoryLastSet(item)
+            : undefined,
           onViewHistory: () => setMovementHistoryItem(item),
+          accessoryPresentation: true,
         }
       : null;
 
@@ -4683,7 +7085,7 @@ export default function WorkoutViewerScreen() {
     const accessoryIsExpanded = !!expandedCompletedMovements[accessoryDetailKey];
     const accessorySummary = completedSetSummary(logs, totalSets, unit, 'rir');
     const accessoryState = accessoryIsComplete ? 'complete' : loggedCount > 0 ? 'logged' : 'not_started';
-    const lookbackLine = formatLookbackLine(getLookbackBest(it), unit);
+    const lookbackLine = accessoryLookbackLine(it);
     const movementPresentation = buildAccessoryMovementPresentation({
       item: it,
       logs,
@@ -4694,35 +7096,154 @@ export default function WorkoutViewerScreen() {
       isComplete: accessoryIsComplete,
     });
     const swapLabel = canHotSwap ? 'Swap' : Array.isArray(it.approved_subs) && it.approved_subs.length > 0 ? 'Sub' : null;
+    const machineAccessory = isMachineAccessoryItem(it);
+    const fixtureAccessoryKind = String(
+      (it as any).dev_accessory_intelligence?.kind || '',
+    ).trim();
+    const normalizedAccessoryName = String(it.movement || '').toLowerCase();
+    const accessoryKind = fixtureAccessoryKind
+      || (machineAccessory
+        ? 'machine'
+        : normalizedAccessoryName.includes('cable')
+          ? 'cable'
+          : normalizedAccessoryName.includes('weighted')
+            ? 'weighted_bodyweight'
+            : normalizedAccessoryName.includes('assisted')
+              ? 'assisted_bodyweight'
+              : /(pull-?up|chin-?up|dip|push-?up)/.test(normalizedAccessoryName)
+                ? 'bodyweight'
+                : 'portable');
+    const currentEquipment = activeEquipmentIdentity(it) as GeneralMovementIdentity | null;
+    const currentManufacturer = currentEquipment?.manufacturer?.display_name
+      || (currentEquipment?.equipment_context?.option_kind === 'other'
+        ? 'Other'
+        : currentEquipment?.material_parameters?.custom_manufacturer_name)
+      || null;
+    const currentEquipmentName = currentManufacturer || 'Other';
+    const currentEquipmentVariant = currentEquipment?.equipment_type || null;
+    const currentEquipmentVariantLabel = currentEquipmentVariant
+      ? equipmentPresentationLabel(currentEquipmentVariant, 'Machine')
+      : null;
+    const accessoryVariantLabel = accessoryKind === 'machine'
+      ? currentEquipment
+        ? `${currentManufacturer || 'Custom equipment'} · current equipment`
+        : 'Equipment required before logging'
+      : accessoryKind === 'portable'
+        ? 'Portable identity · no equipment step'
+        : accessoryKind === 'cable'
+          ? 'Common cable identity'
+          : accessoryKind === 'bodyweight'
+            ? 'Bodyweight · no equipment step'
+            : accessoryKind === 'weighted_bodyweight'
+              ? 'Weighted bodyweight'
+              : accessoryKind === 'assisted_bodyweight'
+                ? 'Assisted bodyweight'
+                : accessoryKind === 'timed'
+                  ? 'Timed work'
+                  : accessoryKind === 'carry'
+                    ? 'Distance + load'
+                    : accessoryKind === 'custom'
+                      ? 'Custom equipment · unresolved'
+          : 'Accessory';
 
     return (
-      <CoreMovementLedgerRow
+      <View
         key={it.id}
-        state={accessoryState}
-        title={it.movement || 'Accessory'}
-        variantLabel="Accessory"
-        scheme={accessoryTargetLine(it)}
-        loggerFocus={accessoryIsExpanded ? movementPresentation.loggerFocus : null}
-        expanded={accessoryIsExpanded}
-        detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
-        meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
-        top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
-        movementNote={it.notes}
-        auxAction={
-          swapLabel ? (
-            <TouchableOpacity
-              style={styles.accessoryInlineAction}
-              onPress={() => openSwapAcc(it)}
-              disabled={savingItemId === it.id}
-            >
-              <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
-            </TouchableOpacity>
-          ) : null
-        }
-        onOpen={() => toggleMovementCard(accessoryDetailKey)}
-      />
+        ref={registerMovementCardRef(accessoryDetailKey)}
+        collapsable={false}
+      >
+        <CoreMovementLedgerRow
+          state={accessoryState}
+          title={it.movement || 'Accessory'}
+          designation="Accessory"
+          variantLabel={accessoryVariantLabel}
+          scheme={accessoryTargetLine(it)}
+          headerPrescription={accessoryTargetLine(it)}
+          loggerFocus={
+            (isPreSession || isActiveSession) && accessoryIsExpanded
+              ? movementPresentation.loggerFocus
+              : null
+          }
+          expanded={accessoryIsExpanded}
+          detailRows={accessoryIsExpanded ? movementPresentation.detailRows : undefined}
+          expandedIdentityContext={accessoryIsExpanded && machineAccessory ? (
+            <View style={[
+              styles.currentEquipmentContext,
+              !currentEquipment && styles.currentEquipmentContextRequired,
+            ]}>
+              <ManufacturerBrandMark
+                compact
+                manufacturerName={currentManufacturer}
+              />
+              <View style={styles.currentEquipmentCopy}>
+                <Text style={styles.currentEquipmentEyebrow}>
+                  {currentEquipment ? 'CURRENT EQUIPMENT' : 'EQUIPMENT NEEDED'}
+                </Text>
+                <Text numberOfLines={2} style={styles.currentEquipmentName}>
+                  {currentEquipment ? currentEquipmentName : 'Choose the machine you are using'}
+                </Text>
+                <Text numberOfLines={2} style={styles.currentEquipmentMeta}>
+                  {currentEquipment
+                    ? [currentManufacturer || 'Other', currentEquipmentVariantLabel]
+                        .filter(Boolean)
+                        .join(' · ')
+                    : 'Manufacturer and type keep machine history comparable.'}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+          meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
+          top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
+          movementNote={it.notes}
+          visualContext={movementVisualContextFor(it)}
+          submissionStatus={feedbackState.submission.status}
+          submissionItemId={feedbackState.submission.activeItemId}
+          reduceMotion={reduceMotion}
+          completedSetSwipeTooltipSetLogId={completedSetSwipeTooltipSetLogId}
+          onCompletedSetSwipeTooltipStarted={handleCompletedSetSwipeTooltipStarted}
+          sessionIndex={
+            coreMovementCount +
+            accessoryMovementOrder.findIndex((item) => item.id === it.id) +
+            1
+          }
+          sessionLifecycle={screenMode}
+          auxAction={isCoachAthletePreview ? null : (
+            <View style={styles.accessoryInlineActions}>
+              {machineAccessory ? (
+                <TouchableOpacity
+                  style={styles.accessoryInlineAction}
+                  onPress={() => openIdentityPicker(it)}
+                >
+                  <Ionicons name="barbell-outline" size={18} color={SLColors.textMuted} />
+                  <Text style={styles.accessoryInlineActionText}>Equipment</Text>
+                </TouchableOpacity>
+              ) : null}
+              {swapLabel ? (
+                <TouchableOpacity
+                  style={styles.accessoryInlineAction}
+                  onPress={() => openSwapAcc(it)}
+                  disabled={savingItemId === it.id}
+                >
+                  <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          )}
+          onOpen={() => toggleMovementCard(accessoryDetailKey)}
+        />
+      </View>
     );
   };
+
+  const coreWheelSubmitAction = logSetActionPresentation(
+    feedbackState.submission.status,
+    coreWheel?.itemId != null && feedbackState.submission.activeItemId === coreWheel.itemId,
+  );
+  const coreWheelSubmitLabel = coreWheelSubmitAction.label;
+  const accessoryWheelSubmitAction = logSetActionPresentation(
+    feedbackState.submission.status,
+    accessoryWheel?.itemId != null && feedbackState.submission.activeItemId === accessoryWheel.itemId,
+  );
 
   return (
     <KeyboardAvoidingView
@@ -4731,64 +7252,170 @@ export default function WorkoutViewerScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 92 : 0}
     >
       <SessionCommandStrip
-        unit={unit}
-        setUnit={setUnit}
         restActive={restActive}
         restSeconds={restSeconds}
+        restPromoted={restTimerFocusVisible}
         canLog={canLog}
         openTimerPicker={openTimerPicker}
         stopRestTimer={stopRestTimer}
         formatRestTime={formatRestTime}
         loggedSets={loggedSets}
         plannedSets={plannedSets}
+        progressPct={progressPct}
+        exerciseCount={durationEstimate ? (
+          workout.core_items.filter((item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null)).length +
+          workout.accessory_groups.reduce((total, group) => total + group.items.length, 0)
+        ) : 0}
+        durationEstimate={durationEstimate}
         workoutStatus={workout.status}
+        onRestTimerLayout={handleRestTimerLayout}
+      />
+      <RestTimerFocus
+        visible={restTimerFocusVisible}
+        ready={restTimerReadyVisible}
+        seconds={restSeconds}
+        reduceMotion={reduceMotion}
+        headerOrigin={restTimerHeaderOrigin}
+        onStop={stopRestTimer}
       />
 
-      {/* Scrollable workout content */}
+      <SessionUnitFloatingControl
+        unit={unit}
+        bottom={insets.bottom + 74}
+        onChange={switchDisplayUnit}
+      />
+
+      <LoggerFeedbackSurface
+        saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
+        statusMessage={setMutationNotice}
+        event={feedbackState.recognition.currentEvent}
+        secondaryHighlightCount={feedbackState.recognition.currentEvent?.secondary_highlight_count || 0}
+        reduceMotion={reduceMotion}
+        displayUnit={unit}
+        onPresentationStarted={handleRecognitionPresentationStarted}
+        onDismissEvent={dismissCurrentRecognition}
+      />
+
+      {/* Scrollable Training Session content */}
       <RefreshScreen
         ref={scrollRef}
         style={styles.scrollShell}
         refreshing={refreshing}
         onRefresh={onRefresh}
         contentContainerStyle={{
-          paddingBottom: 32,
+          paddingBottom: SLLayout.tabBarClearance,
           flexGrow: 1,
         }}
         onScroll={(e) => {
           scrollYRef.current = e.nativeEvent.contentOffset.y;
         }}
+        onLayout={(event) => {
+          scrollViewportHeightRef.current = event.nativeEvent.layout.height;
+        }}
+        onContentSizeChange={(_width, height) => {
+          scrollContentHeightRef.current = height;
+        }}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
-        <SessionIntentPanel
-          workout={workout}
-          screenMode={screenMode}
-          statusStyle={statusStyle}
-          statusLabel={prettyStatus(workout.status)}
-          focusLine={focusLine}
-          loggedSets={loggedSets}
-          plannedSets={plannedSets}
-          progressPct={progressPct}
-          progressSegments={workoutProgressSegments}
-          topLoggedText={topLogged ? `${liftDisplayName(topLogged.item)} · ${loggedSetText(topLogged.log, unit)}` : null}
-          sessionDurationLabel={sessionDurationLabel}
-          canBegin={canBegin}
-          canEdit={canEdit}
-          actionLoading={actionLoading}
-          onEditWorkout={handleEditWorkout}
-          onBeginWorkout={handleBeginWorkoutPress}
-        />
+        {isCoachAthletePreview ? (
+          <View accessibilityRole="summary" style={styles.coachAthletePreviewBanner}>
+            <View style={styles.coachAthletePreviewCopy}>
+              <View style={styles.coachAthletePreviewTitleRow}>
+                <Ionicons name="eye-outline" size={18} color={SLColors.success} />
+                <Text style={styles.coachAthletePreviewTitle}>Athlete View</Text>
+              </View>
+              <Text style={styles.coachAthletePreviewBody}>
+                Previewing {athlete.name}&apos;s Session. Logging and lifecycle actions are disabled.
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Back to coach Session editor"
+              onPress={handleReturnToCoachEditor}
+              style={({ pressed }) => [
+                styles.coachAthletePreviewBack,
+                pressed && styles.coachAthletePreviewBackPressed,
+              ]}
+            >
+              <Ionicons name="chevron-back" size={16} color={SLColors.textStrong} />
+              <Text style={styles.coachAthletePreviewBackText}>Coach Editor</Text>
+            </Pressable>
+          </View>
+        ) : null}
+        {(!isFinishedSession || !workout.impact_summary?.canonically_completed) ? (
+          <SessionIntentPanel
+            workout={workout}
+            screenMode={screenMode}
+            statusLabel={prettyStatus(workout.status)}
+            focusLine={focusLine}
+            loggedSets={loggedSets}
+            plannedSets={plannedSets}
+            exerciseCount={
+              workout.core_items.filter((item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null)).length +
+              workout.accessory_groups.reduce((total, group) => total + group.items.length, 0)
+            }
+            durationEstimate={durationEstimate}
+            sessionDurationLabel={sessionDurationLabel}
+            canEdit={canEdit}
+            onBackToTrainingHub={handleBackToTrainingHub}
+            onEditWorkout={handleEditWorkout}
+          />
+        ) : null}
+        {isFinishedSession && workout.impact_summary?.canonically_completed ? (
+          <SessionImpactPanel
+            summary={workout.impact_summary}
+            displayUnit={unit}
+            accomplishmentHistory={workout.accomplishment_history}
+            reduceMotion={reduceMotion}
+            animateEntry={animatedCompletionSummaryId === workout.impact_summary.summary_id}
+          />
+        ) : null}
+        {isActiveSession && workoutId ? (
+          <SessionHighlightsPanel
+            events={workout.accomplishment_history?.items || []}
+            workoutId={Number(workoutId)}
+            displayUnit={unit}
+            onOpen={(count) => feedbackAnalytics('session_highlights_opened', { count })}
+          />
+        ) : null}
         {!!(workout.programming_notes || '').trim() && (
-          <View style={styles.coachFeedbackCard}>
-            <Text style={styles.coachFeedbackEyebrow}>Session Notes</Text>
-            <Text style={styles.coachFeedbackText}>{workout.programming_notes}</Text>
+          <View style={[
+            styles.coachFeedbackCard,
+            (isPreSession || isActiveSession) && styles.preSessionNotesCard,
+            isActiveSession && styles.activeSessionNotesCard,
+          ]}>
+            <SLProfileAvatar
+              accessibilityLabel={`${sessionNoteAuthor.name} session note author profile photo`}
+              name={sessionNoteAuthor.name}
+              previewSource={sessionNoteAuthorPreviewSource}
+              profilePhotoUrl={sessionNoteAuthor.profilePhotoUrl}
+              profilePhotoVersion={sessionNoteAuthor.profilePhotoVersion}
+              size={36}
+            />
+            <View style={styles.preSessionNotesCopy}>
+              <Text maxFontSizeMultiplier={1.3} style={[styles.coachFeedbackEyebrow, (isPreSession || isActiveSession) && styles.preSessionNotesEyebrow]}>Session Notes</Text>
+              <Text maxFontSizeMultiplier={1.35} style={styles.coachFeedbackText}>{workout.programming_notes}</Text>
+            </View>
           </View>
         )}
-        {!!(workout.post_session_coach_feedback || '').trim() && (
-          <View style={styles.coachFeedbackCard}>
-            <Text style={styles.coachFeedbackEyebrow}>{isIndividualUser ? 'Session Feedback' : 'Coach Feedback'}</Text>
-            <Text style={styles.coachFeedbackText}>{workout.post_session_coach_feedback}</Text>
+        {isPreSession && canBegin ? (
+          <View style={styles.preSessionPrimaryBeginAction}>
+            <SessionBeginAction
+              actionLoading={actionLoading}
+              onBeginWorkout={handleBeginWorkoutPress}
+            />
           </View>
+        ) : null}
+        {!!(workout.post_session_coach_feedback || '').trim() && (
+          <PostSessionCoachFeedback
+            authorKind={sessionNoteAuthor.kind}
+            authorName={sessionNoteAuthor.name}
+            feedback={workout.post_session_coach_feedback}
+            previewSource={sessionNoteAuthorPreviewSource}
+            profilePhotoUrl={sessionNoteAuthor.profilePhotoUrl}
+            profilePhotoVersion={sessionNoteAuthor.profilePhotoVersion}
+          />
         )}
         {/* Inline error banner (below header) */}
         {!!error && (
@@ -4812,9 +7439,15 @@ export default function WorkoutViewerScreen() {
           styles={styles}
         />
 
+        <Text style={styles.preSessionPlanTitle}>
+          {isFinishedSession ? 'Completed Work' : 'Session Plan'}
+        </Text>
         {/* Core lifts as peer movement ledger rows. */}
-        <View style={styles.sectionBlock}>
-          {workout.core_items.map((core) => {
+        <View style={[
+          styles.sectionBlock,
+          styles.canonicalMovementList,
+        ]}>
+          {workout.core_items.map((core, coreIndex) => {
             // ... keep the entire core_items.map block exactly as-is ...
             const isStraightLike = isStraightWorkoutItem(core);
 
@@ -4839,7 +7472,7 @@ export default function WorkoutViewerScreen() {
                   )
                 : [];
 
-            // Logging allowed only when server says this user can log AND workout is in progress
+            // Logging is allowed only when the server permits it and the Training Session is in progress.
             const canLog = canLogFromServer && workout.status === 'in_progress';
 
             // straight-style logs (STRAIGHT/VR items only)
@@ -4913,6 +7546,11 @@ export default function WorkoutViewerScreen() {
             ) : (
               `${coreCompletionTotal || 0} planned sets`
             );
+            const headerPrescription = !isTop && !isFullCustom
+              ? compactSchemeText(core, totalSets)
+              : isTop
+              ? [topSchemeText, backdownSchemeText].filter(Boolean).join(' → ')
+              : `${coreCompletionTotal || 0} planned sets`;
             const detailsKey = `core-detail:${core.id}`;
             const detailsExpanded = !!expandedCoreDetails[detailsKey];
             const hasAnyLogs = coreCompletionLoggedCount > 0;
@@ -4943,28 +7581,98 @@ export default function WorkoutViewerScreen() {
             // Expanded athlete UI must render every prescribed API detail row,
             // even for completed sessions. Do not filter to logged/completed rows only.
             return (
-              <CoreMovementLedgerRow
+              <View
                 key={core.id}
-                state={presentationState}
-                title={liftDisplayName(core)}
-                variantLabel={variantLabel}
-                scheme={schemeNode}
-                loggerFocus={detailsExpanded ? movementPresentation.loggerFocus : null}
-                expanded={detailsExpanded}
-                detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
-                meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
-                top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit)}
-                movementNote={core.notes}
-                onOpen={() => toggleMovementCard(`core:${core.id}`)}
-              />
+                ref={registerMovementCardRef(`core:${core.id}`)}
+                collapsable={false}
+              >
+                <CoreMovementLedgerRow
+                  state={presentationState}
+                  title={liftDisplayName(core)}
+                  designation={formatDesignation((core as any).designation) || null}
+                  variantLabel={variantLabel}
+                  scheme={schemeNode}
+                  headerPrescription={headerPrescription}
+                  loggerFocus={
+                    (isPreSession || isActiveSession) && detailsExpanded
+                      ? movementPresentation.loggerFocus
+                      : null
+                  }
+                  expanded={detailsExpanded}
+                  detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
+                  meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
+                  top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit)}
+                  movementNote={core.notes}
+                  visualContext={movementVisualContextFor(
+                    core,
+                    movementPresentation.renderWeight,
+                  )}
+                  submissionStatus={feedbackState.submission.status}
+                  submissionItemId={feedbackState.submission.activeItemId}
+                  reduceMotion={reduceMotion}
+                  completedSetSwipeTooltipSetLogId={completedSetSwipeTooltipSetLogId}
+                  onCompletedSetSwipeTooltipStarted={handleCompletedSetSwipeTooltipStarted}
+                  onOpportunityDisplayed={(opportunity) => feedbackAnalytics('opportunity_context_displayed', {
+                    type: opportunity.eyebrow,
+                    item_id: movementPresentation.loggerFocus?.itemId || core.id,
+                  })}
+                  sessionIndex={coreIndex + 1}
+                  sessionLifecycle={screenMode}
+                  onOpen={() => toggleMovementCard(`core:${core.id}`)}
+                />
+              </View>
             );
           })}
         </View>
 
         {/* Accessories use the same peer movement logger model as core work. */}
-        <View style={[styles.sectionBlock, styles.accessorySectionBlock]}>
+        <View
+          style={[
+            styles.sectionBlock,
+            styles.accessorySectionBlock,
+            styles.canonicalMovementList,
+          ]}
+        >
           {workout.accessory_groups.map((grp, idx) => {
             const isSuperset = !!grp.group;
+
+            if (isSuperset && grp.group) {
+              const detailKey = `ss:${grp.group}`;
+              const workspaceItems = supersetWorkspaceItems(grp.items);
+              const roundModel = buildSupersetRoundModel(workspaceItems);
+              return (
+                <View
+                  collapsable={false}
+                  key={detailKey}
+                  ref={registerMovementCardRef(detailKey)}
+                >
+                  <SupersetRoundWorkspace
+                    canLog={canLog && !isCoachView}
+                    executionHint={grp.dev_execution_hint || 'Alternate continuously'}
+                    expanded={Boolean(expandedCompletedMovements[detailKey])}
+                    groupLabel={grp.group}
+                    model={roundModel}
+                    onDeleteSet={(item, log) =>
+                      confirmDeleteSet(item.id, log as SetLog)}
+                    onEditSet={(item, log) =>
+                      openEditSet(item.id, log as SetLog, {
+                        mode: 'rir',
+                        movementName: item.title,
+                      })}
+                    onLogRound={(roundIndex) =>
+                      openSupersetRoundLogger(grp, roundIndex)}
+                    onOpenHistory={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      if (item) setMovementHistoryItem(item);
+                    }}
+                    reduceMotion={reduceMotion}
+                    onToggle={() => toggleMovementCard(detailKey)}
+                  />
+                </View>
+              );
+            }
 
             if (isSuperset) {
               return (
@@ -4990,6 +7698,14 @@ export default function WorkoutViewerScreen() {
             return grp.items.map((it) => renderAccessoryMovement(it));
           })}
         </View>
+        {isPreSession && canBegin ? (
+          <View style={styles.preSessionBottomBeginAction}>
+            <SessionBeginAction
+              actionLoading={actionLoading}
+              onBeginWorkout={handleBeginWorkoutPress}
+            />
+          </View>
+        ) : null}
         {/* Bottom-of-page actions: Complete / Cancel */}
         {canCompleteOrCancel && (
             <View style={[styles.actionBar, { marginTop: 16, marginBottom: 24 }]}>
@@ -5004,7 +7720,7 @@ export default function WorkoutViewerScreen() {
                   disabled={!!actionLoading}
                 >
                   {actionLoading === 'complete' ? (
-                    <ActivityIndicator size="small" color="#020617" />
+                    <ActivityIndicator size="small" color={SLColors.textInverted} />
                   ) : (
                     <Text
                       style={[
@@ -5012,7 +7728,7 @@ export default function WorkoutViewerScreen() {
                         styles.actionPrimaryText,
                       ]}
                     >
-                      Complete Workout
+                      Complete Session
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -5022,7 +7738,7 @@ export default function WorkoutViewerScreen() {
                 style={[
                   styles.actionButton,
                   workout.status === 'completed'
-                    ? styles.actionPrimary // identical to Begin Workout
+                    ? styles.actionPrimary // Identical to Begin Session.
                     : styles.actionDanger,
                   actionLoading === 'cancel' && { opacity: 0.7 },
                 ]}
@@ -5030,7 +7746,7 @@ export default function WorkoutViewerScreen() {
                 disabled={!!actionLoading}
               >
                 {actionLoading === 'cancel' ? (
-                  <ActivityIndicator size="small" color="#fca5a5" />
+                  <ActivityIndicator size="small" color={SLColors.danger} />
                 ) : (
                   <Text
                     style={[
@@ -5040,7 +7756,7 @@ export default function WorkoutViewerScreen() {
                         : styles.actionDangerText,
                     ]}
                   >
-                    {workout.status === 'completed' ? 'Resume Workout' : 'Cancel Workout'}
+                    {workout.status === 'completed' ? 'Resume Session' : 'Cancel Session'}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -5059,7 +7775,7 @@ export default function WorkoutViewerScreen() {
       <Modal
         visible={!!coreWheel?.visible}
         transparent
-        animationType="slide"
+        animationType={reduceMotion ? 'none' : 'slide'}
         onRequestClose={() => setCoreWheel(null)}
       >
         <View style={styles.coreWheelBackdrop}>
@@ -5072,41 +7788,27 @@ export default function WorkoutViewerScreen() {
               <View style={styles.coreWheelHeaderRow}>
                 <View style={styles.coreWheelHeaderCopy}>
                   <Text style={styles.coreWheelTitle}>
-                    <Text style={styles.coreWheelTitleDot}>• </Text>
                     {coreWheel.title}
                   </Text>
                   <Text style={styles.coreWheelSubtitle}>
-                    {coreWheel.targetLine ? coreWheel.targetLine : 'Select actuals'}
+                    {coreWheel.prescriptionLine
+                      ? `Prescribed: ${coreWheel.prescriptionLine}`
+                      : 'Select actuals'}
                   </Text>
                 </View>
-                <LogSheetUnitToggle unit={unit} onChange={switchLogSheetUnit} />
+                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
               </View>
 
-              <View style={styles.coreWheelColumns}>
-                <WheelColumn
-                  label="Weight"
-                  value={coreWheel.weight}
-                  options={coreWheel.weightOptions}
-                  suffix={unit}
-                  onChange={(value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev)}
-                />
-                <WheelColumn
-                  label="Reps"
-                  value={coreWheel.reps}
-                  options={coreWheel.repsOptions}
-                  onChange={(value) => setCoreWheel((prev) => prev ? { ...prev, reps: value } : prev)}
-                />
-                <WheelColumn
-                  label="RPE"
-                  value={coreWheel.rpe}
-                  options={coreWheel.rpeOptions}
-                  onChange={(value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev)}
-                />
-              </View>
+              <LoggerWheelPicker columns={[
+                { key: 'weight', label: 'Weight', value: coreWheel.weight, options: coreWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev) },
+                { key: 'reps', label: 'Reps', value: coreWheel.reps, options: coreWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, reps: value } : prev) },
+                { key: 'rpe', label: 'RPE', value: coreWheel.rpe, options: coreWheel.rpeOptions, accessibilityValue: (value) => `${value} RPE`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev) },
+              ]} />
 
               <TouchableOpacity
                 style={[
                   styles.failedSetToggle,
+                  styles.coreWheelFailedToggle,
                   coreWheel.reps === '0' && styles.failedSetToggleActive,
                 ]}
                 onPress={() =>
@@ -5120,82 +7822,31 @@ export default function WorkoutViewerScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <View style={styles.logVideoChoice}>
-                <TouchableOpacity
-                  style={styles.logVideoAttachButton}
-                  onPress={selectVideoForCoreWheel}
-                >
-                  <Text style={styles.logVideoAttachText}>
-                    {coreWheel.selectedVideo ? 'Change video' : 'Attach video'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.logVideoSkipButton}
-                  onPress={() => setCoreWheel((prev) => prev ? { ...prev, selectedVideo: null } : prev)}
-                >
-                  <Text style={styles.logVideoSkipText}>Skip for now</Text>
-                </TouchableOpacity>
-                {coreWheel.selectedVideo ? (
-                  <View style={styles.logVideoSelectedBlock}>
-                    <Text style={styles.logVideoSelectedText} numberOfLines={1}>
-                      Video selected · {videoAngleLabel(coreWheel.selectedVideo.videoAngle)}
-                    </Text>
-                    <View style={styles.logVideoAngleChips}>
-                      {VIDEO_ANGLE_OPTIONS.map((option) => (
-                        <TouchableOpacity
-                          key={option.slug}
-                          style={[
-                            styles.logVideoAngleChip,
-                            coreWheel.selectedVideo?.videoAngle === option.slug && styles.logVideoAngleChipActive,
-                          ]}
-                          onPress={() => setCoreWheel((prev) => prev?.selectedVideo ? {
-                            ...prev,
-                            selectedVideo: { ...prev.selectedVideo, videoAngle: option.slug },
-                          } : prev)}
-                        >
-                          <Text
-                            style={[
-                              styles.logVideoAngleChipText,
-                              coreWheel.selectedVideo?.videoAngle === option.slug && styles.logVideoAngleChipTextActive,
-                            ]}
-                          >
-                            {option.label}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                    <View style={styles.logVideoIntentGroup}>
-                      <Text style={styles.logVideoIntentTitle}>What do you want to do with this video?</Text>
-                      {videoIntentOptions.map((option) => {
-                        const active = (coreWheel.selectedVideo?.submitForReview !== false) === option.submitForReview;
-                        return (
-                          <TouchableOpacity
-                            key={option.title}
-                            style={[styles.logVideoIntentOption, active && styles.logVideoIntentOptionActive]}
-                            onPress={() => setCoreWheel((prev) => prev?.selectedVideo ? {
-                              ...prev,
-                              selectedVideo: { ...prev.selectedVideo, submitForReview: option.submitForReview },
-                            } : prev)}
-                          >
-                            <Text style={[styles.logVideoIntentOptionTitle, active && styles.logVideoIntentOptionTitleActive]}>
-                              {option.title}
-                            </Text>
-                            <Text style={styles.logVideoIntentOptionBody}>{option.body}</Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </View>
-                ) : null}
-              </View>
-
               <View style={styles.coreWheelActions}>
-                <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setCoreWheel(null)}>
+                <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setCoreWheel(null)} disabled={feedbackState.submission.status === 'submitting'}>
                   <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]} onPress={commitCoreWheel}>
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Log Set</Text>
-                </TouchableOpacity>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={coreWheelSubmitAction.accessibilityLabel}
+                  accessibilityLiveRegion="polite"
+                  accessibilityState={{ disabled: coreWheelSubmitAction.disabled, busy: ['saving', 'refreshing'].includes(coreWheelSubmitAction.tone) }}
+                  disabled={coreWheelSubmitAction.disabled}
+                  onPress={feedbackState.submission.status === 'stale_conflict' ? refreshAfterStaleConflict : commitCoreWheel}
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    styles.actionPrimary,
+                    styles.logSheetSubmit,
+                    styles.coreWheelSubmit,
+                    coreWheelSubmitAction.tone === 'accepted' && styles.logSheetSubmitAccepted,
+                    coreWheelSubmitAction.tone === 'failure' && styles.logSheetSubmitFailure,
+                    pressed && !reduceMotion && styles.logSheetSubmitPressed,
+                  ]}
+                >
+                  {['saving', 'refreshing'].includes(coreWheelSubmitAction.tone) ? <ActivityIndicator size="small" color={SLColors.textStrong} /> : null}
+                  {coreWheelSubmitAction.tone === 'accepted' ? <Ionicons name="checkmark" size={20} color={SLColors.textStrong} /> : null}
+                  <Text numberOfLines={1} style={[styles.actionButtonText, styles.actionPrimaryText]}>{coreWheelSubmitLabel}</Text>
+                </Pressable>
               </View>
             </View>
           ) : null}
@@ -5205,7 +7856,7 @@ export default function WorkoutViewerScreen() {
       <Modal
         visible={!!accessoryWheel?.visible}
         transparent
-        animationType="slide"
+        animationType={reduceMotion ? 'none' : 'slide'}
         onRequestClose={() => setAccessoryWheel(null)}
       >
         <View style={styles.coreWheelBackdrop}>
@@ -5222,30 +7873,14 @@ export default function WorkoutViewerScreen() {
                     {accessoryWheel.targetLine ? accessoryWheel.targetLine : 'Select actuals'}
                   </Text>
                 </View>
-                <LogSheetUnitToggle unit={unit} onChange={switchLogSheetUnit} />
+                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
               </View>
 
-              <View style={styles.coreWheelColumns}>
-                <WheelColumn
-                  label="Weight"
-                  value={accessoryWheel.weight}
-                  options={accessoryWheel.weightOptions}
-                  suffix={unit}
-                  onChange={(value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev)}
-                />
-                <WheelColumn
-                  label="Reps"
-                  value={accessoryWheel.reps}
-                  options={accessoryWheel.repsOptions}
-                  onChange={(value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev)}
-                />
-                <WheelColumn
-                  label="RIR"
-                  value={accessoryWheel.rir}
-                  options={accessoryWheel.rirOptions}
-                  onChange={(value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev)}
-                />
-              </View>
+              <LoggerWheelPicker columns={[
+                { key: 'weight', label: 'Weight', value: accessoryWheel.weight, options: accessoryWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev) },
+                { key: 'reps', label: 'Reps', value: accessoryWheel.reps, options: accessoryWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev) },
+                { key: 'rir', label: 'RIR', value: accessoryWheel.rir, options: accessoryWheel.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev) },
+              ]} />
 
               <TouchableOpacity
                 style={[
@@ -5264,16 +7899,293 @@ export default function WorkoutViewerScreen() {
               </TouchableOpacity>
 
               <View style={styles.coreWheelActions}>
-                <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setAccessoryWheel(null)}>
+                <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setAccessoryWheel(null)} disabled={feedbackState.submission.status === 'submitting'}>
                   <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]} onPress={commitAccessoryWheel}>
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Log Set</Text>
-                </TouchableOpacity>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={accessoryWheelSubmitAction.accessibilityLabel}
+                  accessibilityLiveRegion="polite"
+                  accessibilityState={{ disabled: accessoryWheelSubmitAction.disabled, busy: ['saving', 'refreshing'].includes(accessoryWheelSubmitAction.tone) }}
+                  disabled={accessoryWheelSubmitAction.disabled}
+                  onPress={feedbackState.submission.status === 'stale_conflict' ? refreshAfterStaleConflict : commitAccessoryWheel}
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    styles.actionPrimary,
+                    styles.logSheetSubmit,
+                    accessoryWheelSubmitAction.tone === 'accepted' && styles.logSheetSubmitAccepted,
+                    accessoryWheelSubmitAction.tone === 'failure' && styles.logSheetSubmitFailure,
+                    pressed && !reduceMotion && styles.logSheetSubmitPressed,
+                  ]}
+                >
+                  {['saving', 'refreshing'].includes(accessoryWheelSubmitAction.tone) ? <ActivityIndicator size="small" color={SLColors.textStrong} /> : null}
+                  {accessoryWheelSubmitAction.tone === 'accepted' ? <Ionicons name="checkmark" size={20} color={SLColors.textStrong} /> : null}
+                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>{accessoryWheelSubmitAction.label}</Text>
+                </Pressable>
               </View>
             </View>
           ) : null}
         </View>
+      </Modal>
+
+      <Modal
+        animationType={reduceMotion ? 'none' : 'slide'}
+        onRequestClose={closeSupersetRoundLogger}
+        transparent
+        visible={Boolean(supersetRoundLogger)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.editSetKeyboardAvoider}
+        >
+          <View style={styles.coreWheelBackdrop}>
+            <TouchableWithoutFeedback onPress={closeSupersetRoundLogger}>
+              <View style={styles.coreWheelBackdropHit} />
+            </TouchableWithoutFeedback>
+            {supersetRoundLogger ? (() => {
+              const activeEntry =
+                supersetRoundLogger.entries[supersetRoundLogger.activeIndex];
+              const isFinalMovement =
+                supersetRoundLogger.activeIndex === supersetRoundLogger.entries.length - 1;
+              const hasCompletedMovement =
+                supersetRoundLogger.entries.some((entry) => entry.alreadyLogged);
+              const finalActionLabel = hasCompletedMovement ? 'Finish Round' : 'Save Round';
+              if (!activeEntry) return null;
+              return (
+                <View style={[styles.coreWheelSheet, styles.supersetRoundSheet]}>
+                  <View style={styles.coreWheelHandle} />
+                  <View style={styles.supersetRoundContextRow}>
+                    <View style={styles.coreWheelHeaderCopy}>
+                      <Text style={styles.supersetRoundContext}>
+                        SUPERSET {supersetRoundLogger.groupLabel} · ROUND {supersetRoundLogger.roundIndex} OF {supersetRoundLogger.roundCount}
+                      </Text>
+                      <View style={styles.supersetRoundStepRow}>
+                        <Text accessibilityLiveRegion="polite" style={styles.supersetRoundStep}>
+                          MOVEMENT {supersetRoundLogger.activeIndex + 1} OF {supersetRoundLogger.entries.length}
+                        </Text>
+                        {supersetRoundCapturedIndex != null ? (
+                          <Animated.View
+                            style={[
+                              styles.supersetRoundCapturedCue,
+                              { opacity: supersetRoundCapturedCueOpacity },
+                            ]}
+                          >
+                            <Ionicons color={SLColors.success} name="checkmark" size={13} />
+                            <Text style={styles.supersetRoundCapturedCueText}>Captured</Text>
+                          </Animated.View>
+                        ) : null}
+                      </View>
+                    </View>
+                    <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
+                  </View>
+
+                  <View
+                    accessibilityLabel={`Movement ${supersetRoundLogger.activeIndex + 1} of ${supersetRoundLogger.entries.length}`}
+                    style={styles.supersetRoundProgress}
+                  >
+                    {supersetRoundLogger.entries.map((entry, index) => (
+                      <Animated.View
+                        key={entry.itemId}
+                        style={[
+                          styles.supersetRoundProgressMark,
+                          supersetRoundCapturedIndex === index && {
+                            transform: [{
+                              scale: supersetRoundCapturedPulse.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [1, 1.16],
+                              }),
+                            }],
+                          },
+                        ]}
+                      >
+                        {entry.alreadyLogged || index <= supersetRoundLogger.activeIndex ? (
+                          <Animated.View
+                            style={[
+                              styles.supersetRoundProgressFill,
+                              supersetRoundProgressIndex === index && {
+                                transform: [{ scaleX: supersetRoundProgressFill }],
+                              },
+                            ]}
+                          />
+                        ) : null}
+                      </Animated.View>
+                    ))}
+                  </View>
+
+                  <Animated.View
+                    pointerEvents={supersetRoundTransitioning ? 'none' : 'auto'}
+                    style={[
+                      styles.supersetRoundStepContent,
+                      {
+                        opacity: supersetRoundStepOpacity,
+                        transform: [{ translateX: supersetRoundStepTranslateX }],
+                      },
+                    ]}
+                  >
+                    <View style={styles.supersetRoundMovementHeader}>
+                      <View style={styles.supersetRoundEntryNumber}>
+                        <Text style={styles.supersetRoundEntryNumberText}>
+                          {supersetRoundLogger.activeIndex + 1}
+                        </Text>
+                      </View>
+                      <View style={styles.supersetRoundEntryCopy}>
+                        <Text style={styles.supersetRoundEntryTitle}>{activeEntry.title}</Text>
+                        <Text style={styles.supersetRoundEntryPrescription}>
+                          {activeEntry.prescription}
+                        </Text>
+                      </View>
+                      {activeEntry.alreadyLogged ? (
+                        <View style={styles.supersetRoundLoggedPill}>
+                          <Ionicons color={SLColors.success} name="checkmark" size={14} />
+                          <Text style={styles.supersetRoundLoggedPillText}>Logged</Text>
+                        </View>
+                      ) : activeEntry.skipped ? (
+                        <View style={styles.supersetRoundSkippedPill}>
+                          <Ionicons color={SLColors.warning} name="play-skip-forward" size={14} />
+                          <Text style={styles.supersetRoundSkippedPillText}>Skipped</Text>
+                        </View>
+                      ) : null}
+                    </View>
+
+                    {activeEntry.alreadyLogged ? (
+                      <View style={styles.supersetRoundLoggedSummary}>
+                        <Text style={styles.supersetRoundLoggedResult}>
+                          {activeEntry.weight} {unit} × {activeEntry.reps}
+                          {activeEntry.rir ? ` · ${activeEntry.rir} RIR` : ''}
+                        </Text>
+                        <Text style={styles.supersetRoundLoggedNotice}>
+                          Already saved. This movement will not be logged again.
+                        </Text>
+                      </View>
+                    ) : activeEntry.skipped ? (
+                      <View style={styles.supersetRoundSkippedSummary}>
+                        <Text style={styles.supersetRoundLoggedResult}>Skipped for now</Text>
+                        <Text style={styles.supersetRoundLoggedNotice}>
+                          This movement stays incomplete and can be logged individually or in a later round attempt.
+                        </Text>
+                      </View>
+                    ) : (
+                      <>
+                        <LoggerWheelPicker columns={[
+                          { key: 'weight', label: 'Weight', value: activeEntry.weight, options: activeEntry.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'weight', value) },
+                          { key: 'reps', label: 'Reps', value: activeEntry.reps, options: activeEntry.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'reps', value) },
+                          { key: 'rir', label: 'RIR', value: activeEntry.rir, options: activeEntry.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'rir', value) },
+                        ]} />
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            updateSupersetRoundEntry(
+                              activeEntry.itemId,
+                              'reps',
+                              activeEntry.reps === '0' ? '1' : '0',
+                            )}
+                          style={[
+                            styles.failedSetToggle,
+                            activeEntry.reps === '0' && styles.failedSetToggleActive,
+                          ]}
+                        >
+                          <Text style={[
+                            styles.failedSetToggleText,
+                            activeEntry.reps === '0' && styles.failedSetToggleTextActive,
+                          ]}>
+                            Failed set / 0 reps
+                          </Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
+
+                    {activeEntry.validationError || error ? (
+                      <Text accessibilityLiveRegion="polite" style={styles.supersetRoundError}>
+                        {activeEntry.validationError || error}
+                      </Text>
+                    ) : null}
+                  </Animated.View>
+
+                  {!activeEntry.alreadyLogged ? (
+                    <View style={styles.supersetRoundEscapeActions}>
+                      <TouchableOpacity
+                        accessibilityLabel={`Skip ${activeEntry.title} for this round`}
+                        disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
+                        onPress={skipCurrentSupersetMovement}
+                        style={styles.supersetRoundEscapeAction}
+                      >
+                        <Ionicons color={SLColors.warning} name="play-skip-forward" size={17} />
+                        <Text style={styles.supersetRoundEscapeActionText}>Skip</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        accessibilityLabel={`Log ${activeEntry.title} individually`}
+                        disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
+                        onPress={logSupersetMovementIndividually}
+                        style={styles.supersetRoundEscapeAction}
+                      >
+                        <Ionicons color={SLColors.accentViolet} name="open-outline" size={17} />
+                        <Text style={styles.supersetRoundEscapeActionText}>Log Individually</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : null}
+
+                  <View style={styles.coreWheelActions}>
+                    <TouchableOpacity
+                      disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
+                      onPress={
+                        supersetRoundLogger.activeIndex === 0
+                          ? closeSupersetRoundLogger
+                          : goBackInSupersetRoundLogger
+                      }
+                      style={[
+                        styles.actionButton,
+                        styles.actionSecondary,
+                        styles.supersetRoundSecondaryAction,
+                        (
+                          supersetRoundLogger.saving
+                          || supersetRoundTransitioning
+                        ) && styles.supersetRoundActionDisabled,
+                      ]}
+                    >
+                      <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
+                        {supersetRoundLogger.activeIndex === 0 ? 'Cancel' : 'Back'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      accessibilityLabel={
+                        isFinalMovement
+                          ? `${finalActionLabel} for superset ${supersetRoundLogger.groupLabel}, round ${supersetRoundLogger.roundIndex}`
+                          : `Continue to movement ${supersetRoundLogger.activeIndex + 2}`
+                      }
+                      accessibilityRole="button"
+                      accessibilityState={{
+                        busy: supersetRoundLogger.saving || supersetRoundTransitioning,
+                        disabled: supersetRoundLogger.saving || supersetRoundTransitioning,
+                      }}
+                      disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
+                      onPress={
+                        isFinalMovement
+                          ? saveSupersetRound
+                          : advanceSupersetRoundLogger
+                      }
+                      style={[
+                        styles.actionButton,
+                        styles.actionPrimary,
+                        styles.supersetRoundSave,
+                        (
+                          supersetRoundLogger.saving
+                          || supersetRoundTransitioning
+                        ) && styles.supersetRoundActionDisabled,
+                      ]}
+                    >
+                      {supersetRoundLogger.saving ? (
+                        <ActivityIndicator color={SLColors.textInverted} size="small" />
+                      ) : null}
+                      <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+                        {isFinalMovement ? finalActionLabel : 'Next Movement'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })() : null}
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal
@@ -5366,11 +8278,33 @@ export default function WorkoutViewerScreen() {
           {movementHistoryItem ? (() => {
             const history = movementHistoryItem.movement_history || null;
             const assisted = history?.loading_behavior === 'assisted';
+            const historyIdentity = movementHistoryItem.performed_movement_identity
+              || movementHistoryItem.movement_identity
+              || null;
+            const exactManufacturerName = historyIdentity?.manufacturer?.display_name
+              || (historyIdentity?.equipment_context?.option_kind === 'other' ? 'Other' : null);
+            const exactMachineName = isIdealWorkoutDetailPreview
+              ? exactManufacturerName || 'Other'
+              : historyIdentity?.family_display_name
+                || movementHistoryItem.movement
+                || historyIdentity?.display_name
+                || 'Machine';
+            const exactEquipmentMetadata = machineHistoryMetadata(historyIdentity?.equipment_type);
             const recent = (history?.recent_sessions && history.recent_sessions.length > 0)
               ? history.recent_sessions
               : ((history?.recent_sets || []).slice(0, 5));
+            const legacyHistory = history?.legacy_unresolved_history || null;
+            const legacyRecent = (legacyHistory?.recent_sessions && legacyHistory.recent_sessions.length > 0)
+              ? legacyHistory.recent_sessions
+              : ((legacyHistory?.recent_sets || []).slice(0, 5));
+            const related = history?.related_reference_history || [];
+            const isMachineHistory = isMachineAccessoryItem(movementHistoryItem);
             return (
-              <View style={styles.movementHistorySheet}>
+              <View style={[
+                styles.movementHistorySheet,
+                styles.movementHistoryFullScreenSheet,
+                { paddingBottom: Math.max(insets.bottom, 18) },
+              ]}>
                 <View style={styles.coreWheelHandle} />
                 <View style={styles.coreWheelHeaderRow}>
                   <View style={styles.coreWheelHeaderCopy}>
@@ -5382,54 +8316,460 @@ export default function WorkoutViewerScreen() {
                       {assisted ? ' · assisted load' : ''}
                     </Text>
                   </View>
+                  <TouchableOpacity
+                    accessibilityLabel="Close movement history"
+                    accessibilityRole="button"
+                    hitSlop={10}
+                    onPress={() => setMovementHistoryItem(null)}
+                    style={styles.movementHistoryCloseIcon}
+                  >
+                    <Ionicons
+                      color={SLColors.textSecondary}
+                      name="close"
+                      size={24}
+                    />
+                  </TouchableOpacity>
                 </View>
 
-                {assisted ? (
-                  <Text style={styles.movementHistoryAssistNote}>
-                    Lower assistance can indicate improvement for this movement.
-                  </Text>
-                ) : null}
-
-                <View style={styles.movementHistoryStats}>
-                  <View style={styles.movementHistoryStatCard}>
-                    <Text style={styles.movementHistoryLabel}>Most Recent</Text>
-                    <Text style={styles.movementHistoryValue}>
-                      {formatMovementHistorySet(history?.most_recent_logged_set, unit, assisted)}
-                    </Text>
-                  </View>
-                  <View style={styles.movementHistoryStatCard}>
-                    <Text style={styles.movementHistoryLabel}>Best</Text>
-                    <Text style={styles.movementHistoryValue}>
-                      {formatMovementHistorySet(history?.best_logged_set, unit, assisted)}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.movementHistorySectionTitle}>Recent History</Text>
-                <ScrollView style={styles.movementHistoryList}>
-                  {recent.length > 0 ? recent.map((row, idx) => (
-                    <View key={`${row.workout_id || 'wk'}-${row.set_index || idx}-${idx}`} style={styles.movementHistoryRow}>
-                      <Text style={styles.movementHistoryDate}>
-                        {row.date ? String(row.date).slice(0, 10) : 'Unknown date'}
-                      </Text>
-                      <Text style={styles.movementHistoryRowValue}>
-                        {formatMovementHistorySet(row, unit, assisted)}
-                      </Text>
+                {isMachineHistory ? (
+                  <ScrollView
+                    contentContainerStyle={styles.movementHistoryDossierContent}
+                    showsVerticalScrollIndicator={false}
+                    style={styles.movementHistoryDossierScroll}
+                  >
+                    <View style={styles.movementHistoryEquipmentHero}>
+                      <View style={styles.movementHistoryEquipmentHeroTopline}>
+                        <Text style={styles.movementHistoryManufacturerEyebrow}>
+                          {isIdealWorkoutDetailPreview ? 'Equipment identity' : 'Exact equipment'}
+                        </Text>
+                        <View style={styles.movementHistoryCurrentBadge}>
+                          <View style={styles.movementHistoryCurrentDot} />
+                          <Text style={styles.movementHistoryCurrentText}>
+                            {isIdealWorkoutDetailPreview ? 'CURRENT' : 'CURRENT MACHINE'}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.movementHistoryEquipmentHeroIdentity}>
+                        <ManufacturerBrandMark hero manufacturerName={exactManufacturerName} />
+                        <View style={styles.movementHistoryManufacturerCopy}>
+                          <Text numberOfLines={2} style={styles.movementHistoryEquipmentHeroName}>
+                            {exactMachineName}
+                          </Text>
+                          <Text style={styles.movementHistoryEquipmentHeroManufacturer}>
+                            {isIdealWorkoutDetailPreview
+                              ? equipmentPresentationLabel(historyIdentity?.equipment_type, 'Machine')
+                              : exactManufacturerName || 'Unknown manufacturer'}
+                          </Text>
+                        </View>
+                      </View>
+                      {exactEquipmentMetadata.length ? (
+                        <View style={styles.movementHistoryMetadataChips}>
+                          {exactEquipmentMetadata.map((item) => (
+                            <View key={item} style={styles.movementHistoryMetadataChip}>
+                              <Text numberOfLines={1} style={styles.movementHistoryMetadataChipText}>{item}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : null}
                     </View>
-                  )) : (
-                    <Text style={styles.movementHistoryEmpty}>No prior matching accessory history yet.</Text>
-                  )}
-                </ScrollView>
 
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.actionSecondary, { marginTop: 12 }]}
-                  onPress={() => setMovementHistoryItem(null)}
-                >
-                  <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Close</Text>
-                </TouchableOpacity>
+                    {assisted ? (
+                      <Text style={styles.movementHistoryAssistNote}>
+                        Lower assistance can indicate improvement for this movement.
+                      </Text>
+                    ) : null}
+
+                    <View style={styles.movementHistoryStats}>
+                      <MovementHistorySummaryTile
+                        assisted={assisted}
+                        kind="recent"
+                        label="Most recent"
+                        row={history?.most_recent_logged_set}
+                        unit={unit}
+                      />
+                      <MovementHistorySummaryTile
+                        assisted={assisted}
+                        kind="best"
+                        label="Best"
+                        row={history?.best_logged_set}
+                        unit={unit}
+                      />
+                    </View>
+
+                    <Text style={styles.movementHistorySectionTitle}>
+                      {isIdealWorkoutDetailPreview ? 'Recent with this equipment' : 'Recent on this machine'}
+                    </Text>
+                    {recent.length > 0 ? (
+                      <ScrollView
+                        contentContainerStyle={styles.movementHistoryExactRail}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                      >
+                        {recent.map((row, idx) => (
+                          <MovementHistoryExactCard
+                            assisted={assisted}
+                            key={`${row.workout_id || 'wk'}-${row.set_index || idx}-${idx}`}
+                            row={row}
+                            unit={unit}
+                          />
+                        ))}
+                      </ScrollView>
+                    ) : (
+                      <Text style={styles.movementHistoryEmpty}>
+                        No prior matching equipment history yet.
+                      </Text>
+                    )}
+
+                    {legacyRecent.length > 0 ? (
+                      <>
+                        <View style={styles.movementHistoryRelatedHeading}>
+                          <Text style={styles.movementHistoryRelatedTitle}>
+                            {equipmentPresentationLabel(
+                              legacyHistory?.equipment_label,
+                              'Unknown equipment',
+                            )}
+                          </Text>
+                          <Text style={styles.movementHistoryRelatedCount}>{legacyRecent.length}</Text>
+                        </View>
+                        <View style={styles.movementHistoryRelatedGuidance}>
+                          <Ionicons color={SLColors.textMuted} name="information-circle-outline" size={16} />
+                          <Text style={styles.movementHistoryRelatedNote}>
+                            Legacy sets recorded before equipment tracking. Reference only; loads may not be comparable to this machine.
+                          </Text>
+                        </View>
+                        <ScrollView
+                          contentContainerStyle={styles.movementHistoryExactRail}
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                        >
+                          {legacyRecent.map((row, idx) => (
+                            <MovementHistoryExactCard
+                              assisted={assisted}
+                              key={`legacy-${row.workout_id || 'import'}-${row.set_index || idx}-${idx}`}
+                              row={row}
+                              unit={unit}
+                            />
+                          ))}
+                        </ScrollView>
+                      </>
+                    ) : null}
+
+                    {related.length > 0 ? (
+                      <>
+                        <View style={styles.movementHistoryRelatedHeading}>
+                          <Text style={styles.movementHistoryRelatedTitle}>Other equipment</Text>
+                          <Text style={styles.movementHistoryRelatedCount}>{related.length}</Text>
+                        </View>
+                        <View style={styles.movementHistoryRelatedGuidance}>
+                          <Ionicons color={SLColors.textMuted} name="information-circle-outline" size={16} />
+                          <Text style={styles.movementHistoryRelatedNote}>
+                            {isIdealWorkoutDetailPreview && (movementHistoryItem as any).dev_accessory_intelligence?.kind === 'machine'
+                              ? 'Reference only. Different manufacturers or types are not used for progression.'
+                              : 'Reference only. Loads are not comparable across equipment implementations.'}
+                          </Text>
+                        </View>
+                        <ScrollView
+                          contentContainerStyle={styles.movementHistoryEquipmentRail}
+                          decelerationRate="fast"
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          snapToInterval={300}
+                        >
+                          {related.map((row) => (
+                            <MovementHistoryRelatedCard
+                              key={`related-${row.movement_definition_id}`}
+                              row={row}
+                              unit={unit}
+                            />
+                          ))}
+                        </ScrollView>
+                      </>
+                    ) : null}
+                  </ScrollView>
+                ) : (
+                  <>
+                    {assisted ? (
+                      <Text style={styles.movementHistoryAssistNote}>
+                        Lower assistance can indicate improvement for this movement.
+                      </Text>
+                    ) : null}
+                    <View style={styles.movementHistoryStats}>
+                      <View style={styles.movementHistoryStatCard}>
+                        <Text style={styles.movementHistoryLabel}>Most Recent</Text>
+                        <Text style={styles.movementHistoryValue}>
+                          {formatMovementHistorySet(history?.most_recent_logged_set, unit, assisted)}
+                        </Text>
+                      </View>
+                      <View style={styles.movementHistoryStatCard}>
+                        <Text style={styles.movementHistoryLabel}>Best</Text>
+                        <Text style={styles.movementHistoryValue}>
+                          {formatMovementHistorySet(history?.best_logged_set, unit, assisted)}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={styles.movementHistorySectionTitle}>Recent History</Text>
+                    <ScrollView
+                      contentContainerStyle={styles.movementHistoryListContent}
+                      showsVerticalScrollIndicator={false}
+                      style={[styles.movementHistoryList, styles.movementHistoryExpandedList]}
+                    >
+                      {recent.length > 0 ? recent.map((row, idx) => (
+                        <View key={`${row.workout_id || 'wk'}-${row.set_index || idx}-${idx}`} style={styles.movementHistoryRow}>
+                          <Text style={styles.movementHistoryDate}>
+                            {row.date ? String(row.date).slice(0, 10) : 'Unknown date'}
+                          </Text>
+                          <Text style={styles.movementHistoryRowValue}>
+                            {formatMovementHistorySet(row, unit, assisted)}
+                          </Text>
+                        </View>
+                      )) : (
+                        <Text style={styles.movementHistoryEmpty}>No prior matching accessory history yet.</Text>
+                      )}
+                      {related.length > 0 ? (
+                        <>
+                          <Text style={styles.movementHistoryRelatedTitle}>Related movement history</Text>
+                          <Text style={styles.movementHistoryRelatedNote}>
+                            Reference only. Loads are not comparable across equipment implementations.
+                          </Text>
+                          {related.map((row) => (
+                            <View key={`related-${row.movement_definition_id}`} style={styles.movementHistoryRelatedRow}>
+                              <ManufacturerBrandMark compact manufacturerName={row.manufacturer} />
+                              <View style={styles.movementHistoryRelatedCopy}>
+                                <Text style={styles.movementHistoryRelatedName}>{row.display_name}</Text>
+                                <Text style={styles.movementHistoryDate}>
+                                  {[row.manufacturer, equipmentPresentationLabel(
+                                    row.equipment_type || row.equipment_model,
+                                    'Equipment',
+                                  )]
+                                    .filter(Boolean)
+                                    .join(' · ') || 'Equipment identity'}
+                                </Text>
+                              </View>
+                              <Text style={styles.movementHistoryRowValue}>
+                                {row.has_history ? formatMovementHistorySet(row.last_set, unit, false) : 'No history'}
+                              </Text>
+                            </View>
+                          ))}
+                        </>
+                      ) : null}
+                    </ScrollView>
+                  </>
+                )}
+
               </View>
             );
           })() : null}
+        </View>
+      </Modal>
+
+      <Modal visible={!!identityPickerItem} transparent animationType="slide" onRequestClose={closeIdentityPicker}>
+        <View style={styles.coreWheelBackdrop}>
+          <TouchableWithoutFeedback onPress={closeIdentityPicker}><View style={styles.coreWheelBackdropHit} /></TouchableWithoutFeedback>
+          <View
+            style={[
+              styles.movementHistorySheet,
+              styles.equipmentPickerSheet,
+            ]}
+          >
+            <View style={styles.coreWheelHandle} />
+            {identityPickerItem ? (
+              <>
+                <View style={styles.equipmentPickerMovementContext}>
+                  <Text style={styles.equipmentPickerMovementKicker}>EQUIPMENT FOR</Text>
+                  <Text style={styles.equipmentPickerMovementTitle}>
+                    {simplifyMobileMovementName(identityPickerItem.movement) || 'Accessory'}
+                  </Text>
+                  <Text style={styles.equipmentPickerMovementMeta}>
+                    {identityPickerContinuation.kind === 'group_round'
+                      ? `Superset ${identityPickerContinuation.groupLabel} · Round ${identityPickerContinuation.roundIndex}`
+                      : 'Upcoming set'}
+                  </Text>
+                </View>
+                {identityPickerManufacturer ? (
+                  <>
+                    <View style={styles.equipmentPickerHeader}>
+                      <TouchableOpacity
+                        style={styles.equipmentPickerHeaderAction}
+                        onPress={() => {
+                          setIdentityPickerManufacturer(null);
+                          setIdentityPickerError(null);
+                        }}
+                        accessibilityLabel="Back to manufacturers"
+                      >
+                        <Ionicons name="arrow-back" size={20} color={SLColors.textStrong} />
+                      </TouchableOpacity>
+                      <View style={styles.equipmentPickerHeaderCopy}>
+                        <Text style={styles.coreWheelTitle}>Which version are you using?</Text>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.equipmentPickerHeaderAction}
+                        onPress={closeIdentityPicker}
+                        accessibilityLabel="Close equipment picker"
+                      >
+                        <Ionicons name="close" size={21} color={SLColors.textStrong} />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.equipmentVariantManufacturer}>
+                      <ManufacturerBrandMark
+                        compact
+                        manufacturerName={
+                          identityPickerManufacturer.manufacturer?.display_name
+                          || 'Other'
+                        }
+                      />
+                      <Text style={styles.equipmentVariantManufacturerName}>
+                        {identityPickerManufacturer.manufacturer?.display_name
+                          || 'Other'}
+                      </Text>
+                    </View>
+                    {identityPickerError ? (
+                      <Text style={styles.movementHistoryEmpty}>
+                        {identityPickerError}
+                      </Text>
+                    ) : null}
+                    <View style={styles.equipmentVariantOptions}>
+                      {MACHINE_EQUIPMENT_TYPES.map((variant) => {
+                        const activeIdentity = activeEquipmentIdentity(identityPickerItem);
+                        const selectedOther = (
+                          identityPickerManufacturer.equipment_context?.option_kind === 'other'
+                          || !identityPickerManufacturer.manufacturer?.key
+                        );
+                        const activeOther = (
+                          activeIdentity?.equipment_context?.option_kind === 'other'
+                          || activeIdentity?.manufacturer?.key === 'other'
+                        );
+                        const sameManufacturer = selectedOther
+                          ? activeOther
+                          : (
+                              identityPickerManufacturer.manufacturer?.key
+                              === activeIdentity?.manufacturer?.key
+                            );
+                        const activeVariant = String(
+                          activeIdentity?.equipment_type || '',
+                        ).toLowerCase().includes('plate')
+                          ? 'plate_loaded'
+                          : 'selectorized';
+                        const current = Boolean(
+                          sameManufacturer
+                          && activeIdentity
+                          && activeVariant === variant.key,
+                        );
+                        return (
+                          <TouchableOpacity
+                            key={variant.key}
+                            style={[
+                              styles.equipmentVariantRow,
+                              current && styles.identityPickerRowCurrent,
+                            ]}
+                            onPress={() => void chooseEquipmentVariant(variant.key)}
+                          >
+                            <Text style={styles.equipmentVariantLabel}>
+                              {variant.label}
+                            </Text>
+                            {current ? (
+                              <Text style={styles.identityPickerCurrent}>CURRENT</Text>
+                            ) : (
+                              <Ionicons
+                                name="chevron-forward"
+                                size={18}
+                                color={SLColors.textMuted}
+                              />
+                            )}
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : (
+                  <>
+                <View style={styles.equipmentPickerHeader}>
+                  <View style={styles.equipmentPickerHeaderCopy}>
+                    <Text style={styles.coreWheelTitle}>Choose Manufacturer</Text>
+                    <Text style={styles.coreWheelSubtitle}>
+                      Which manufacturer&apos;s machine are you using?
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.equipmentPickerHeaderAction}
+                    onPress={closeIdentityPicker}
+                    accessibilityLabel="Close equipment picker"
+                  >
+                    <Ionicons name="close" size={21} color={SLColors.textStrong} />
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  value={identityPickerQuery}
+                  onChangeText={setIdentityPickerQuery}
+                  placeholder="Search manufacturer or machine"
+                  placeholderTextColor={SLColors.textSubtle}
+                  style={styles.identityPickerInput}
+                  autoCorrect={false}
+                />
+                {identityPickerLoading ? <ActivityIndicator color={SLColors.accentViolet} /> : null}
+                {identityPickerError ? <Text style={styles.movementHistoryEmpty}>{identityPickerError}</Text> : null}
+                <ScrollView
+                  style={[styles.movementHistoryList, styles.equipmentPickerList]}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {identityPickerRows.map((row) => {
+                    const other = row.equipment_context?.option_kind === 'other'
+                      || row.key.endsWith('-other');
+                    const activeEquipment = activeEquipmentIdentity(identityPickerItem);
+                    const activeOther = activeEquipment?.equipment_context?.option_kind === 'other'
+                      || activeEquipment?.key.includes('-other-');
+                    const current = other
+                      ? activeOther
+                      : Boolean(
+                          row.manufacturer?.key
+                          && row.manufacturer.key === activeEquipment?.manufacturer?.key,
+                        );
+                    const manufacturerName = row.manufacturer?.display_name
+                      || 'Other';
+                    const rememberedStatus = row.equipment_context?.remembered_status;
+                    const status = current || rememberedStatus === 'current'
+                      ? 'CURRENT'
+                      : rememberedStatus === 'used_before'
+                        || row.equipment_context?.last_used_at
+                        ? 'USED BEFORE'
+                        : 'NEVER USED';
+                    return (
+                      <TouchableOpacity
+                        key={row.id}
+                        style={[
+                          styles.identityPickerRow,
+                          current && styles.identityPickerRowCurrent,
+                        ]}
+                        onPress={() => void choosePerformedIdentity(row)}
+                      >
+                        <ManufacturerBrandMark compact manufacturerName={manufacturerName} />
+                        <View style={styles.identityPickerCopy}>
+                          <Text numberOfLines={1} style={styles.identityPickerManufacturer}>
+                            {manufacturerName}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.identityPickerStatus,
+                              current && styles.identityPickerCurrent,
+                            ]}
+                          >
+                            {status}
+                          </Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} />
+                      </TouchableOpacity>
+                    );
+                  })}
+                  {!identityPickerLoading && identityPickerQuery.trim() && !identityPickerRows.length ? (
+                    <Text style={styles.movementHistoryEmpty}>
+                      No manufacturers match “{identityPickerQuery.trim()}”.
+                    </Text>
+                  ) : null}
+                </ScrollView>
+                  </>
+                )}
+              </>
+            ) : null}
+          </View>
         </View>
       </Modal>
 
@@ -5451,6 +8791,42 @@ export default function WorkoutViewerScreen() {
       />
 
       <Modal
+        animationType="fade"
+        onRequestClose={() => setEndSessionPromptVisible(false)}
+        transparent
+        visible={endSessionPromptVisible}
+      >
+        <View style={styles.modalBackdropCenter}>
+          <View style={[styles.modalCard, styles.incompleteCompleteModal]}>
+            <View style={styles.sessionCompletePromptIcon}>
+              <Ionicons color={SLColors.success} name="checkmark" size={26} />
+            </View>
+            <Text style={styles.postSessionTitle}>End Session?</Text>
+            <Text style={styles.incompleteCompleteCopy}>
+              All prescribed sets are complete. You can finish now or keep logging additional work.
+            </Text>
+            <View style={styles.modalActionsRow}>
+              <TouchableOpacity
+                onPress={() => setEndSessionPromptVisible(false)}
+                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+              >
+                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Continue Logging</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setEndSessionPromptVisible(false);
+                  requestAnimationFrame(openPostSessionSurvey);
+                }}
+                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
+              >
+                <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Finish Session</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
         visible={editSetVisible}
         transparent
         animationType="fade"
@@ -5462,139 +8838,51 @@ export default function WorkoutViewerScreen() {
         }}
       >
         <KeyboardAvoidingView
+          style={styles.editSetKeyboardAvoider}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={0}
-          style={styles.editSetKeyboardRoot}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
         >
-          <View style={[styles.modalBackdrop, styles.editSetModalBackdrop]}>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={StyleSheet.absoluteFillObject}
-              onPress={Keyboard.dismiss}
-              accessibilityLabel="Dismiss keyboard"
-            />
-          <View style={[styles.modalCard, styles.editSetModalWide, styles.editSetModalCard]}>
-            <View style={styles.modalSheetHandle} />
-            <Text style={styles.postSessionTitle}>{editSetCtx?.title || 'Edit Set'}</Text>
-            <Text style={styles.modalSubtitle}>Update the logged values for this set.</Text>
-
-            <ScrollView
-              style={styles.editSetModalScroll}
-              contentContainerStyle={styles.editSetModalScrollContent}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-              showsVerticalScrollIndicator={false}
-            >
-              <View style={styles.loggedSummaryPill}>
-                <View style={styles.loggedSummaryIcon}>
-                  <Text style={styles.loggedSummaryIconText}>✓</Text>
+          <View style={styles.coreWheelBackdrop}>
+            <TouchableWithoutFeedback onPress={() => {
+              if (!editSetSubmitting) {
+                setEditSetVisible(false);
+                setEditSetCtx(null);
+              }
+            }}>
+              <View style={styles.coreWheelBackdropHit} />
+            </TouchableWithoutFeedback>
+            {editSetCtx ? (
+              <View style={[styles.coreWheelSheet, styles.editSetWheelSheet]}>
+              <View style={styles.coreWheelHandle} />
+              <ScrollView
+                style={styles.editSetScroll}
+                contentContainerStyle={[styles.editSetScrollContent, { paddingBottom: Math.max(insets.bottom, SLSpacing.lg) }]}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator
+              >
+              <View style={styles.coreWheelHeaderRow}>
+                <View style={styles.coreWheelHeaderCopy}>
+                  <Text style={styles.coreWheelTitle}>{editSetCtx.movementName} · Set {editSetCtx.setIndex}</Text>
+                  <Text style={styles.coreWheelSubtitle}>
+                    Currently logged: {editSetCtx.loggedWeightKg != null ? formatWeight(editSetCtx.loggedWeightKg, unit) : '—'} {unit} × {editSetCtx.loggedReps ?? '—'}
+                    {editSetCtx.mode === 'rpe'
+                      ? ` @${editSetCtx.loggedRpe != null ? formatWheelNumber(editSetCtx.loggedRpe) : '—'}`
+                      : ` @${editSetCtx.loggedRir != null ? formatWheelNumber(editSetCtx.loggedRir) : '—'} RIR`}
+                  </Text>
                 </View>
-                <Text style={styles.loggedSummaryLabel}>Currently logged</Text>
-                <Text style={styles.loggedSummaryValue}>
-                  {editSetForm.weight || '—'} {unit} × {editSetForm.reps || '—'}
-                  {editSetCtx?.mode === 'rpe'
-                    ? ` @ RPE ${editSetForm.rpe || '—'}`
-                    : ` @ ${editSetForm.rir || '—'} RIR`}
-                </Text>
+                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
               </View>
 
-              <Text style={styles.modalSectionKicker}>Set Details</Text>
-
-              <View style={styles.modalRow}>
-                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                  <Text style={styles.modalLabel}>Weight ({unit})</Text>
-                  <View style={styles.modalValueCard}>
-                    <TextInput
-                      style={styles.modalValueInput}
-                      value={editSetForm.weight}
-                      onChangeText={(txt) =>
-                        setEditSetForm((prev) => ({
-                          ...prev,
-                          weight: txt.replace(/[^0-9.]/g, ''),
-                        }))
-                      }
-                      placeholder="—"
-                      placeholderTextColor="#64748b"
-                      keyboardType="numeric"
-                      returnKeyType="done"
-                      onSubmitEditing={Keyboard.dismiss}
-                    />
-                    <Text style={styles.modalValueUnit}>{unit}</Text>
-                  </View>
-                </View>
-
-                <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                  <Text style={styles.modalLabel}>Reps</Text>
-                  <View style={styles.modalValueCard}>
-                    <TextInput
-                      style={styles.modalValueInput}
-                      value={editSetForm.reps}
-                      onChangeText={(txt) =>
-                        setEditSetForm((prev) => ({
-                          ...prev,
-                          reps: txt.replace(/[^0-9]/g, ''),
-                        }))
-                      }
-                      placeholder="—"
-                      placeholderTextColor="#64748b"
-                      keyboardType="number-pad"
-                      returnKeyType="done"
-                      onSubmitEditing={Keyboard.dismiss}
-                    />
-                    <Text style={styles.modalValueUnit}>reps</Text>
-                  </View>
-                </View>
-
-                {editSetCtx?.mode === 'rpe' ? (
-                  <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                    <Text style={styles.modalLabel}>RPE</Text>
-                    <View style={styles.modalValueCard}>
-                      <TextInput
-                        style={styles.modalValueInput}
-                        value={editSetForm.rpe}
-                        onChangeText={(txt) =>
-                          setEditSetForm((prev) => ({
-                            ...prev,
-                            rpe: txt.replace(/[^0-9.]/g, ''),
-                          }))
-                        }
-                        placeholder="—"
-                        placeholderTextColor="#64748b"
-                        keyboardType="numeric"
-                        returnKeyType="done"
-                        onSubmitEditing={Keyboard.dismiss}
-                      />
-                      <Text style={styles.modalValueUnit}>/10</Text>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={[styles.modalFieldBlock, styles.modalFieldInline]}>
-                    <Text style={styles.modalLabel}>RIR</Text>
-                    <View style={styles.modalValueCard}>
-                      <TextInput
-                        style={styles.modalValueInput}
-                        value={editSetForm.rir}
-                        onChangeText={(txt) =>
-                          setEditSetForm((prev) => ({
-                            ...prev,
-                            rir: txt.replace(/[^0-9.\\-]/g, '').replace(/(?!^)-/g, ''),
-                          }))
-                        }
-                        placeholder="—"
-                        placeholderTextColor="#64748b"
-                        keyboardType="numeric"
-                        returnKeyType="done"
-                        onSubmitEditing={Keyboard.dismiss}
-                      />
-                      <Text style={styles.modalValueUnit}>RIR</Text>
-                    </View>
-                  </View>
-                )}
-              </View>
+              <LoggerWheelPicker columns={[
+                { key: 'weight', label: 'Weight', value: editSetForm.weight, options: buildEditWeightOptions(editSetCtx.mode, unit, editSetForm.weight), suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (weight) => setEditSetForm((prev) => ({ ...prev, weight })) },
+                { key: 'reps', label: 'Reps', value: editSetForm.reps, options: ['0', ...Array.from({ length: editSetCtx.mode === 'rpe' ? 20 : 30 }, (_, idx) => String(idx + 1))], accessibilityValue: (value) => `${value} reps`, onChange: (reps) => setEditSetForm((prev) => ({ ...prev, reps })) },
+                { key: editSetCtx.mode, label: editSetCtx.mode === 'rpe' ? 'RPE' : 'RIR', value: editSetCtx.mode === 'rpe' ? editSetForm.rpe : editSetForm.rir, options: editSetCtx.mode === 'rpe' ? Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5)) : Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5)), accessibilityValue: (value) => `${value} ${editSetCtx.mode.toUpperCase()}`, onChange: (metric) => setEditSetForm((prev) => editSetCtx.mode === 'rpe' ? { ...prev, rpe: metric } : { ...prev, rir: metric }) },
+              ]} />
 
               <TouchableOpacity
                 style={[
                   styles.failedSetToggle,
+                  styles.coreWheelFailedToggle,
                   editSetForm.reps === '0' && styles.failedSetToggleActive,
                 ]}
                 onPress={() =>
@@ -5610,56 +8898,35 @@ export default function WorkoutViewerScreen() {
                   Failed lift / 0 reps
                 </Text>
               </TouchableOpacity>
-            </ScrollView>
 
-            {/* P0 mobile invariant: keyboard must never cover modal composer/action rows. */}
-            <View style={styles.modalActionsRow}>
-              {editSetCtx?.canUndoDelete && (
+              <View style={styles.coreWheelActions}>
                 <TouchableOpacity
-                  style={[styles.actionButton, styles.actionDanger, { flex: 1 }]}
-                  onPress={deleteEditedSet}
+                  style={[styles.actionButton, styles.actionPrimary, styles.coreWheelSubmit]}
+                  onPress={saveEditedSet}
                   disabled={editSetSubmitting}
                 >
                   {editSetSubmitting ? (
-                    <ActivityIndicator size="small" color="#fca5a5" />
+                    <ActivityIndicator size="small" color={SLColors.textInverted} />
                   ) : (
-                    <Text style={[styles.actionButtonText, styles.actionDangerText]}>Undo Set Log</Text>
+                    <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save Changes</Text>
                   )}
                 </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-                onPress={() => {
-                  if (!editSetSubmitting) {
-                    setEditSetVisible(false);
-                    setEditSetCtx(null);
-                  }
-                }}
-                disabled={editSetSubmitting}
-              >
-                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
-                onPress={saveEditedSet}
-                disabled={editSetSubmitting}
-              >
-                {editSetSubmitting ? (
-                  <ActivityIndicator size="small" color="#020617" />
-                ) : (
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                    Save Changes
-                  </Text>
-                )}
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                  onPress={() => {
+                    if (!editSetSubmitting) {
+                      setEditSetVisible(false);
+                      setEditSetCtx(null);
+                    }
+                  }}
+                  disabled={editSetSubmitting}
+                >
+                  <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+              </ScrollView>
             </View>
-
-            <Text style={styles.modalHelperLine}>Changes will update this set across all views.</Text>
-          </View>
+            ) : null}
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -5723,37 +8990,118 @@ export default function WorkoutViewerScreen() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 24 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.modalBackdrop}>
+            <View style={[styles.modalBackdrop, styles.postSessionBackdrop]}>
               <View style={[styles.modalCard, styles.postSessionModal]}>
-                <Text style={styles.postSessionTitle}>Post-Session Survey</Text>
-                <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Session RPE</Text>
-                  <View style={styles.surveyChipRow}>
-                    {[6, 7, 8, 9, 10].map((value) => {
-                      const selected = postSessionForm.sessionRpe === value;
-                      return (
-                        <TouchableOpacity
-                          key={value}
-                          style={[styles.surveyChip, selected && styles.surveyChipActive]}
-                          onPress={() =>
-                            setPostSessionForm((prev) => ({
-                              ...prev,
-                              sessionRpe: value,
-                            }))
-                          }
-                        >
-                          <Text style={[styles.surveyChipText, selected && styles.surveyChipTextActive]}>
-                            {value}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
+                <Text style={[styles.postSessionTitle, styles.postSessionReflectionTitle]}>How did that feel?</Text>
+                <Text style={styles.postSessionReflectionSubtitle}>Capture today&apos;s session while it&apos;s still fresh.</Text>
+
+                <ScrollView
+                  style={styles.postSessionScroll}
+                  contentContainerStyle={styles.postSessionScrollContent}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                >
+                <View style={styles.postSessionTimeSection}>
+                  <Text style={styles.surveyLabel}>Session time</Text>
+                  <Text style={styles.postSessionTimeHint}>Use YYYY-MM-DD HH:MM. Adjust this for late or corrected logs.</Text>
+                  <View style={styles.postSessionTimeRow}>
+                    <View style={styles.postSessionTimeField}>
+                      <Text style={styles.postSessionTimeLabel}>Start</Text>
+                      <TextInput
+                        accessibilityLabel="Session start date and time"
+                        autoCapitalize="none"
+                        onChangeText={(sessionStart) => {
+                          setPostSessionTimeError(null);
+                          setPostSessionForm((prev) => ({ ...prev, sessionStart }));
+                        }}
+                        placeholder="YYYY-MM-DD HH:MM"
+                        placeholderTextColor={SLColors.textSubtle}
+                        style={styles.postSessionTimeInput}
+                        value={postSessionForm.sessionStart}
+                      />
+                    </View>
+                    <View style={styles.postSessionTimeField}>
+                      <Text style={styles.postSessionTimeLabel}>End</Text>
+                      <TextInput
+                        accessibilityLabel="Session end date and time"
+                        autoCapitalize="none"
+                        onChangeText={(sessionEnd) => {
+                          setPostSessionTimeError(null);
+                          setPostSessionForm((prev) => ({ ...prev, sessionEnd }));
+                        }}
+                        placeholder="YYYY-MM-DD HH:MM"
+                        placeholderTextColor={SLColors.textSubtle}
+                        style={styles.postSessionTimeInput}
+                        value={postSessionForm.sessionEnd}
+                      />
+                    </View>
+                  </View>
+                  {postSessionTimeError ? (
+                    <Text accessibilityLiveRegion="polite" style={styles.supersetRoundError}>
+                      {postSessionTimeError}
+                    </Text>
+                  ) : null}
+                </View>
+                <View style={styles.postSessionEffortSection}>
+                  <View style={styles.postSessionEffortHeader}>
+                    <Text style={styles.surveyLabel}>Session RPE</Text>
+                    <Text style={styles.postSessionEffortValue}>{postSessionForm.sessionRpe ?? '—'}</Text>
+                  </View>
+                  <View style={styles.postSessionEffortEndpoints}>
+                    <Text style={styles.postSessionEffortEndpoint}>Easy</Text>
+                    <Text style={styles.postSessionEffortEndpoint}>Max effort</Text>
+                  </View>
+                  <View
+                    ref={postSessionEffortRailRef}
+                    accessible
+                    accessibilityRole="adjustable"
+                    accessibilityLabel="Session RPE. Easy to max effort."
+                    accessibilityValue={{ text: postSessionForm.sessionRpe == null ? 'Not selected' : `${postSessionForm.sessionRpe} RPE` }}
+                    accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+                    onAccessibilityAction={(event) => setPostSessionEffort((postSessionForm.sessionRpe ?? 6) + (event.nativeEvent.actionName === 'increment' ? 0.5 : -0.5))}
+                    onLayout={(event) => {
+                      setPostSessionEffortRailWidth(event.nativeEvent.layout.width);
+                      measurePostSessionEffortRail();
+                    }}
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderGrant={(event) => {
+                      measurePostSessionEffortRail();
+                      setPostSessionEffortHeld(true);
+                      updatePostSessionEffortFromEvent(event);
+                    }}
+                    onResponderMove={updatePostSessionEffortFromEvent}
+                    onResponderRelease={(event) => {
+                      updatePostSessionEffortFromEvent(event);
+                      setPostSessionEffortHeld(false);
+                    }}
+                    onResponderTerminate={() => setPostSessionEffortHeld(false)}
+                    style={styles.postSessionEffortRailTouchTarget}
+                  >
+                    <View style={styles.postSessionEffortRail} />
+                    <View
+                      pointerEvents="none"
+                      style={[
+                        styles.postSessionEffortRailFill,
+                        { width: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * postSessionEffortRailWidth : 0 },
+                      ]}
+                    />
+                    <Animated.View
+                      pointerEvents="none"
+                      style={[
+                        styles.postSessionEffortThumb,
+                        {
+                          left: postSessionEffortRailWidth ? ((postSessionForm.sessionRpe ?? 6) - 6) / 4 * (postSessionEffortRailWidth - 22) : 0,
+                          transform: [{ scale: postSessionEffortThumbScale }],
+                        },
+                      ]}
+                    />
                   </View>
                 </View>
 
                 <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Perceived Strength</Text>
-                  <View style={styles.surveyChoiceStack}>
+                  <Text style={styles.surveyLabel}>Strength</Text>
+                  <View style={styles.postSessionSegmentedControl}>
                     {[
                       ['weaker', 'Weaker'],
                       ['normal', 'Normal'],
@@ -5763,17 +9111,11 @@ export default function WorkoutViewerScreen() {
                       return (
                         <TouchableOpacity
                           key={value}
-                          style={[styles.surveyChoiceButton, selected && styles.surveyChoiceButtonActive]}
-                          onPress={() =>
-                            setPostSessionForm((prev) => ({
-                              ...prev,
-                              strengthFeeling: value as any,
-                            }))
-                          }
+                          style={[styles.postSessionSegment, selected && styles.postSessionSegmentActive]}
+                          onPress={() => setPostSessionForm((prev) => ({ ...prev, strengthFeeling: value as any }))}
+                          disabled={postSessionSubmitting}
                         >
-                          <Text style={[styles.surveyChoiceText, selected && styles.surveyChoiceTextActive]}>
-                            {label}
-                          </Text>
+                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
                         </TouchableOpacity>
                       );
                     })}
@@ -5781,8 +9123,8 @@ export default function WorkoutViewerScreen() {
                 </View>
 
                 <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Perceived Fatigue</Text>
-                  <View style={styles.surveyChoiceStack}>
+                  <Text style={styles.surveyLabel}>Fatigue</Text>
+                  <View style={styles.postSessionSegmentedControl}>
                     {[
                       ['low', 'Low'],
                       ['medium', 'Medium'],
@@ -5792,67 +9134,62 @@ export default function WorkoutViewerScreen() {
                       return (
                         <TouchableOpacity
                           key={value}
-                          style={[styles.surveyChoiceButton, selected && styles.surveyChoiceButtonActive]}
-                          onPress={() =>
-                            setPostSessionForm((prev) => ({
-                              ...prev,
-                              fatigueFeeling: value as any,
-                            }))
-                          }
+                          style={[styles.postSessionSegment, selected && styles.postSessionSegmentActive]}
+                          onPress={() => setPostSessionForm((prev) => ({ ...prev, fatigueFeeling: value as any }))}
+                          disabled={postSessionSubmitting}
                         >
-                          <Text style={[styles.surveyChoiceText, selected && styles.surveyChoiceTextActive]}>
-                            {label}
-                          </Text>
+                          <Text style={[styles.postSessionSegmentText, selected && styles.postSessionSegmentTextActive]}>{label}</Text>
                         </TouchableOpacity>
                       );
                     })}
                   </View>
                 </View>
 
-                <View style={styles.surveySection}>
-                  <Text style={styles.surveyLabel}>Notes</Text>
-                  <TextInput
-                    style={[styles.modalInput, styles.surveyNoteInput]}
-                    value={postSessionForm.note}
-                    onChangeText={(txt) =>
-                      setPostSessionForm((prev) => ({
-                        ...prev,
-                        note: txt,
-                      }))
-                    }
-                    placeholder="Sleep was bad, low back felt tight, bench moved well, etc."
-                    placeholderTextColor="#64748b"
-                    multiline
-                    textAlignVertical="top"
-                    returnKeyType="done"
-                    blurOnSubmit
-                    onSubmitEditing={Keyboard.dismiss}
-                  />
-                </View>
-
-                <View style={styles.modalActionsRow}>
+                <View style={styles.postSessionNotesSection}>
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-                    onPress={skipPostSessionAndComplete}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: postSessionNotesExpanded }}
+                    onPress={() => setPostSessionNotesExpanded((expanded) => !expanded)}
                     disabled={postSessionSubmitting}
+                    style={styles.postSessionNotesToggle}
                   >
-                    <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>
-                      Skip & Complete
-                    </Text>
+                    <View style={styles.postSessionNotesToggleCopy}>
+                      <Text style={styles.postSessionNotesToggleText}>{postSessionNotesExpanded ? 'Hide notes' : 'Add notes'}</Text>
+                      {!postSessionNotesExpanded ? <Text style={styles.postSessionNotesPrompt}>Anything worth remembering today?</Text> : null}
+                    </View>
+                    <Text style={styles.postSessionNotesToggleMark}>{postSessionNotesExpanded ? '−' : '+'}</Text>
                   </TouchableOpacity>
+                  {postSessionNotesExpanded ? (
+                    <TextInput
+                      style={[styles.modalInput, styles.surveyNoteInput]}
+                      value={postSessionForm.note}
+                      onChangeText={(txt) => setPostSessionForm((prev) => ({ ...prev, note: txt }))}
+                      placeholder="Anything worth remembering today?\n\nbench felt explosive\nsleep was poor\nshoulder tightened up\ntechnique clicked today"
+                      placeholderTextColor={SLColors.textSubtle}
+                      multiline
+                      textAlignVertical="top"
+                      returnKeyType="done"
+                      blurOnSubmit
+                      onSubmitEditing={Keyboard.dismiss}
+                    />
+                  ) : null}
+                </View>
+                </ScrollView>
 
+                <View style={[styles.modalActionsRow, styles.postSessionActions, { paddingBottom: Math.max(insets.bottom, SLSpacing.sm) }]}>
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.actionPrimary, { flex: 1.2 }]}
+                    style={[styles.actionButton, styles.actionPrimary, styles.postSessionCompleteAction]}
                     onPress={submitPostSessionAndComplete}
                     disabled={postSessionSubmitting}
                   >
-                    {postSessionSubmitting ? (
-                      <ActivityIndicator size="small" color="#020617" />
-                    ) : (
-                      <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                        Submit & Complete
-                      </Text>
-                    )}
+                    {postSessionSubmitting ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Complete Session</Text>}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.postSessionSkipAction}
+                    onPress={skipPostSessionAndComplete}
+                    disabled={postSessionSubmitting}
+                  >
+                    <Text style={styles.postSessionSkipActionText}>Skip Reflection</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -5868,129 +9205,25 @@ export default function WorkoutViewerScreen() {
         timerPickerValue={timerPickerValue}
         setTimerPickerValue={setTimerPickerValue}
         startRestTimer={startRestTimer}
-        onClose={() => setTimerPickerVisible(false)}
+        saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
+        onMounted={handleTimerPickerMounted}
+        onClose={resolveActiveTimerHandoff}
         styles={styles}
       />
 
-      {/* Readiness survey modal (mobile only, shown on Begin Workout) */}
-      <Modal
+      {/* Readiness survey modal (mobile only, shown on Begin Session). */}
+      <ReadinessModal
         visible={readinessVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => {
-          if (!readinessSubmitting) setReadinessVisible(false);
-        }}
-      >
-        <View style={styles.modalBackdropCenter}>
-          <View style={[styles.modalCard, styles.readinessModal]}>
-            <Text style={styles.postSessionTitle}>Quick readiness check</Text>
-
-            {/* Sleep */}
-            <Text style={styles.readinessQuestionLabel}>
-              Sleep quality (1 = poor, 5 = great)
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-              {[1,2,3,4,5].map((n) => (
-                <TouchableOpacity
-                  key={`sleep-${n}`}
-                  onPress={() => setReadinessForm((p) => ({ ...p, sleep_quality: n }))}
-                  style={[
-                    styles.readinessScalePill,
-                    n === readinessForm.sleep_quality && styles.readinessScalePillActive,
-                  ]}
-                >
-                  <Text style={styles.readinessScalePillText}>{n}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Energy */}
-            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
-              Energy (1 = drained, 5 = energized)
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-              {[1,2,3,4,5].map((n) => (
-                <TouchableOpacity
-                  key={`fatigue-${n}`}
-                  onPress={() => setReadinessForm((p) => ({ ...p, fatigue: n }))}
-                  style={[
-                    styles.readinessScalePill,
-                    n === readinessForm.fatigue && styles.readinessScalePillActive,
-                  ]}
-                >
-                  <Text style={styles.readinessScalePillText}>{n}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Soreness */}
-            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
-              Soreness (1 = fresh, 5 = very sore)
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-              {[1,2,3,4,5].map((n) => (
-                <TouchableOpacity
-                  key={`sore-${n}`}
-                  onPress={() => setReadinessForm((p) => ({ ...p, soreness: n }))}
-                  style={[
-                    styles.readinessScalePill,
-                    n === readinessForm.soreness && styles.readinessScalePillActive,
-                  ]}
-                >
-                  <Text style={styles.readinessScalePillText}>{n}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Stress */}
-            <Text style={[styles.readinessQuestionLabel, styles.readinessQuestionSpaced]}>
-              Stress (1 = relaxed, 5 = high stress)
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-              {[1,2,3,4,5].map((n) => (
-                <TouchableOpacity
-                  key={`stress-${n}`}
-                  onPress={() => setReadinessForm((p) => ({ ...p, stress: n }))}
-                  style={[
-                    styles.readinessScalePill,
-                    n === readinessForm.stress && styles.readinessScalePillActive,
-                  ]}
-                >
-                  <Text style={styles.readinessScalePillText}>{n}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <View style={styles.modalActionsRow}>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
-                onPress={() => submitReadinessAndBegin({ skipped: false })}
-                disabled={readinessSubmitting}
-              >
-                {readinessSubmitting ? (
-                  <ActivityIndicator size="small" color="#0B0F1A" />
-                ) : (
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Submit</Text>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionDanger, { flex: 1 }]}
-                onPress={() => {
-                  if (!readinessSubmitting) {
-                    setReadinessVisible(false);
-                    setPendingBeginWorkoutId(null);
-                  }
-                }}
-                disabled={readinessSubmitting}
-              >
-                <Text style={styles.actionDangerText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        unit={unit}
+        priorBodyweightKg={data?.athlete?.bodyweight_kg}
+        values={readinessForm}
+        error={readinessError}
+        submitting={readinessSubmitting}
+        reduceMotion={reduceMotion}
+        onChange={setReadinessForm}
+        onSubmit={submitReadinessAndBegin}
+        onCancel={cancelReadiness}
+      />
 
       {/* Accessory substitution modal */}
       <Modal
@@ -6020,15 +9253,97 @@ export default function WorkoutViewerScreen() {
                   : 'Select one of the coach-approved substitutions below.'}
             </Text>
 
+            {(() => {
+              const groups = buildSwapMovementGroups({
+                current: swapAccItem?.selected_sub_movement || swapAccItem?.movement,
+                prescribed: swapAccItem?.original_movement || swapAccItem?.movement,
+                approved: swapAccItem?.approved_subs,
+                query: swapAccQuery,
+              });
+              return (
+                <>
+                  <Text style={styles.modalSectionKicker}>Movement</Text>
+                  <View style={styles.swapMovementField}>
+                    <Ionicons color={SLColors.textMuted} name="search" size={18} />
+                    <TextInput
+                      autoCorrect={false}
+                      style={styles.swapMovementInput}
+                      placeholder={canHotSwap ? 'Search or enter a movement' : 'Search approved movements'}
+                      placeholderTextColor={SLColors.textSubtle}
+                      value={swapAccQuery}
+                      onChangeText={(query) => {
+                        setSwapAccQuery(query);
+                        if (canHotSwap) setSwapAccForm((current) => ({ ...current, movement: query }));
+                      }}
+                    />
+                    {swapAccQuery ? (
+                      <TouchableOpacity
+                        accessibilityLabel="Clear movement search"
+                        onPress={() => setSwapAccQuery('')}
+                      >
+                        <Ionicons color={SLColors.textMuted} name="close-circle" size={18} />
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
+                  <ScrollView
+                    contentContainerStyle={styles.swapOptionList}
+                    keyboardShouldPersistTaps="handled"
+                    style={styles.swapOptionScroll}
+                  >
+                    {groups.map((group) => (
+                      <View key={group.title} style={styles.swapOptionGroup}>
+                        <Text style={styles.swapOptionGroupTitle}>{group.title}</Text>
+                        {group.options.map((option) => {
+                          const selected = swapAccForm.movement === option.movement;
+                          return (
+                            <TouchableOpacity
+                              accessibilityRole="radio"
+                              accessibilityState={{ selected }}
+                              key={`${option.kind}:${option.movement}`}
+                              onPress={() => {
+                                setSwapAccForm((current) => ({ ...current, movement: option.movement }));
+                                setSwapAccQuery(option.movement);
+                              }}
+                              style={[
+                                styles.swapOptionButton,
+                                selected && styles.swapOptionButtonActive,
+                              ]}
+                            >
+                              <Text style={[styles.swapOptionText, selected && styles.swapOptionTextActive]}>
+                                {option.movement}
+                              </Text>
+                              {selected ? (
+                                <Ionicons color={SLColors.accentViolet} name="checkmark-circle" size={19} />
+                              ) : (
+                                <Ionicons color={SLColors.textMuted} name="chevron-forward" size={17} />
+                              )}
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    ))}
+                    {!groups.length && swapAccQuery.trim() ? (
+                      <Text style={styles.movementHistoryEmpty}>
+                        {canHotSwap
+                          ? `Use “${swapAccQuery.trim()}” as the movement name.`
+                          : 'No approved movements match this search.'}
+                      </Text>
+                    ) : null}
+                  </ScrollView>
+                </>
+              );
+            })()}
+
             {canHotSwap ? (
               <>
+                <View style={{ display: 'none' }}>
                 <Text style={styles.modalSectionKicker}>Movement</Text>
                 <View style={styles.swapMovementField}>
                   <Text style={styles.swapSearchIcon}>⌕</Text>
                   <TextInput
                     style={styles.swapMovementInput}
                     placeholder="Movement (e.g., Lat Pulldown)"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor={SLColors.textSubtle}
                     value={swapAccForm.movement}
                     onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
                   />
@@ -6038,6 +9353,7 @@ export default function WorkoutViewerScreen() {
                     </TouchableOpacity>
                   ) : null}
                 </View>
+                </View>
 
                 <Text style={styles.modalSectionKicker}>Prescription</Text>
                 <View style={styles.readinessScaleRow}>
@@ -6046,7 +9362,7 @@ export default function WorkoutViewerScreen() {
                     <TextInput
                       style={styles.swapPrescriptionInput}
                       placeholder="—"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={SLColors.textSubtle}
                       keyboardType="number-pad"
                       value={swapAccForm.sets}
                       onChangeText={(t) =>
@@ -6060,7 +9376,7 @@ export default function WorkoutViewerScreen() {
                     <TextInput
                       style={styles.swapPrescriptionInput}
                       placeholder="—"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={SLColors.textSubtle}
                       value={swapAccForm.reps_text}
                       onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
                     />
@@ -6071,7 +9387,7 @@ export default function WorkoutViewerScreen() {
                     <TextInput
                       style={styles.swapPrescriptionInput}
                       placeholder="—"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor={SLColors.textSubtle}
                       keyboardType="numeric"
                       value={swapAccForm.rir}
                       onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
@@ -6094,7 +9410,7 @@ export default function WorkoutViewerScreen() {
               </>
             ) : (
               <>
-                <View style={{ gap: 8, marginTop: 10 }}>
+                <View style={{ display: 'none', gap: 8, marginTop: 10 }}>
                   {(() => {
                     const prescribed = String(
                       swapAccItem?.original_movement || swapAccItem?.movement || ''
@@ -6150,7 +9466,7 @@ export default function WorkoutViewerScreen() {
                 </Text>
               </>
             )}
-            
+
             <View style={styles.modalActionsRow}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
@@ -6164,7 +9480,7 @@ export default function WorkoutViewerScreen() {
                 disabled={savingItemId != null}
               >
                 {savingItemId === swapAccItem?.id ? (
-                  <ActivityIndicator size="small" color="#0B0F1A" />
+                  <ActivityIndicator size="small" color={SLColors.textInverted} />
                 ) : (
                   <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save Changes</Text>
                 )}
@@ -6179,21 +9495,101 @@ export default function WorkoutViewerScreen() {
 
 const styles = StyleSheet.create({
   muted: {
-    color: '#94a3b8',
+    color: SLColors.textMuted,
     marginTop: 4,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
 
   errorText: {
-    color: '#f87171',
+    color: SLColors.danger,
     textAlign: 'center',
     paddingHorizontal: 24,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
+  },
+  coachAthletePreviewBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(143, 178, 154, 0.25)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: SLColors.surfaceInset,
+  },
+  coachAthletePreviewCopy: {
+    flex: 1,
+    minWidth: 210,
+    gap: 5,
+  },
+  coachAthletePreviewTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  coachAthletePreviewTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  coachAthletePreviewBody: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 18,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  coachAthletePreviewBack: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: SLColors.borderStandard,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.canvasRaised,
+  },
+  coachAthletePreviewBackPressed: {
+    opacity: 0.72,
+  },
+  coachAthletePreviewBackText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
   },
 
   // --- section blocks ---
   sectionBlock: {
     marginBottom: 20,
+  },
+  preSessionPlanTitle: {
+    marginTop: 22,
+    marginBottom: 10,
+    paddingHorizontal: 0,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1.1,
+  },
+  preSessionPrimaryBeginAction: {
+    marginTop: 16,
+    width: '100%',
+  },
+  preSessionBottomBeginAction: {
+    marginBottom: 24,
+    width: '100%',
+  },
+  canonicalMovementList: {
+    marginTop: 0,
+    marginBottom: 0,
+    borderWidth: 0,
+    borderRadius: SLRadius.none,
+    overflow: 'visible',
+    backgroundColor: SLColors.background,
   },
 
   accessorySectionBlock: {
@@ -6202,20 +9598,20 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '700',
-    color: '#f9fafb',
+    color: SLColors.textStrong,
     marginBottom: 10,
   },
 
   coreSchemeDetail: {
-    color: '#A5B4FC',
+    color: SLColors.accentViolet,
     fontWeight: '600',
   },
 
   // --- accessories ---
   supersetCard: {
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 12,
     marginBottom: 8,
@@ -6227,15 +9623,15 @@ const styles = StyleSheet.create({
   },
 
   supersetBadge: {
-    color: '#ECE5DA',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     letterSpacing: 0.3,
     textTransform: 'uppercase',
   },
 
   supersetRow: {
-    borderRadius: 9,
+    borderRadius: SLRadius.sm,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginTop: 8,
@@ -6245,7 +9641,7 @@ const styles = StyleSheet.create({
   },
 
   accCard: {
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 12,
     marginBottom: 8,
@@ -6267,25 +9663,25 @@ const styles = StyleSheet.create({
   swapInput: {
     borderWidth: 1,
     borderColor: 'rgba(222,198,166,0.10)',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    color: '#f9fafb',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     backgroundColor: 'rgba(24,16,15,0.42)',
     marginBottom: 8,
   },
 
 
   accMeta: {
-    color: '#B8ACA1',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     marginBottom: 4,
   },
   accProgressText: {
-    color: '#8E84CC',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginBottom: 8,
   },
@@ -6293,7 +9689,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(134,239,172,0.10)',
     backgroundColor: 'rgba(134,239,172,0.025)',
@@ -6306,35 +9702,35 @@ const styles = StyleSheet.create({
   },
   completedMovementTitle: {
     flex: 1,
-    color: '#E2E8F0',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
   },
   completedMovementBadge: {
     paddingHorizontal: 9,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(134,239,172,0.14)',
     backgroundColor: 'rgba(134,239,172,0.045)',
   },
   completedMovementBadgeText: {
-    color: '#A7CBB5',
+    color: SLColors.success,
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
   completedMovementMeta: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '700',
     marginTop: 7,
   },
   completedMovementTop: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
     marginTop: 3,
@@ -6344,52 +9740,74 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.22)',
     backgroundColor: 'rgba(91,79,207,0.09)',
   },
   completedMovementActionText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   coachFeedbackCard: {
-    marginHorizontal: 14,
+    marginHorizontal: 8,
     marginTop: 12,
     marginBottom: 2,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(167,203,181,0.16)',
     backgroundColor: 'rgba(18,32,28,0.58)',
   },
+  preSessionNotesCard: {
+    minHeight: 92,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 13,
+    marginTop: 16,
+    marginHorizontal: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 15,
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceEmbedded,
+  },
+  activeSessionNotesCard: {
+    marginTop: SLSpacing.md,
+  },
+  preSessionNotesCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  preSessionNotesEyebrow: {
+    color: SLColors.accentViolet,
+  },
   coachFeedbackEyebrow: {
-    color: '#A7CBB5',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
   },
   coachFeedbackText: {
-    color: '#E2E8F0',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '600',
   },
   cardMeta: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     marginBottom: 10,
   },
 
 
   lookbackText: {
-    color: '#64748B',
-    fontSize: 13,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     marginTop: 2,
     marginBottom: 8,
@@ -6400,14 +9818,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.24)',
     backgroundColor: 'rgba(91,79,207,0.10)',
   },
   movementHistoryButtonText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
 
@@ -6418,7 +9836,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(10,14,28,0.6)',
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.06)',
@@ -6444,7 +9862,7 @@ const styles = StyleSheet.create({
     bottom: 6,
     width: 3,
     borderRadius: 2,
-    backgroundColor: '#A7CBB5',
+    backgroundColor: SLColors.success,
     opacity: 0.72,
   },
 
@@ -6459,8 +9877,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   logHint: {
-    color: '#64748B',
-    fontSize: 13,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.label.fontSize,
     marginTop: 6,
     lineHeight: 18,
   },
@@ -6473,20 +9891,20 @@ const styles = StyleSheet.create({
   },
   setVideoStatus: {
     flex: 1,
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   setVideoStatusAttached: {
-    color: '#A7F3D0',
+    color: SLColors.success,
   },
   setVideoStatusError: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   setVideoPreviewTile: {
     flex: 1,
     minHeight: 54,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(134,239,172,0.14)',
     backgroundColor: 'rgba(15,23,42,0.72)',
@@ -6499,7 +9917,7 @@ const styles = StyleSheet.create({
   setVideoPlayBadge: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: SLRadius.lg,
     backgroundColor: 'rgba(134,239,172,0.055)',
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.35)',
@@ -6507,8 +9925,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   setVideoPlayText: {
-    color: '#DCFCE7',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
   },
   setVideoMeta: {
@@ -6516,14 +9934,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   setVideoTitle: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     marginBottom: 2,
   },
   setVideoAngleText: {
-    color: '#A5B4FC',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     marginBottom: 2,
   },
@@ -6535,7 +9953,7 @@ const styles = StyleSheet.create({
   setVideoButton: {
     minHeight: 32,
     minWidth: 96,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.32)',
     backgroundColor: 'rgba(129,140,248,0.12)',
@@ -6547,8 +9965,8 @@ const styles = StyleSheet.create({
     opacity: 0.65,
   },
   setVideoButtonText: {
-    color: '#E0E7FF',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   setVideoRemoveButton: {
@@ -6556,7 +9974,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(248,113,113,0.12)',
   },
   setVideoRemoveButtonText: {
-    color: '#FECACA',
+    color: SLColors.danger,
   },
   videoPlayerBackdrop: {
     flex: 1,
@@ -6570,21 +9988,21 @@ const styles = StyleSheet.create({
     maxWidth: 760,
     height: '92%',
     maxHeight: 860,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.22)',
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.background,
     overflow: 'hidden',
   },
   videoPlayerCloseText: {
-    color: '#E2E8F0',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   videoPlayerFrame: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#000',
+    backgroundColor: SLColors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -6596,52 +10014,40 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 10,
     maxWidth: '58%',
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.22)',
     backgroundColor: 'rgba(8,12,22,0.66)',
     paddingHorizontal: 10,
     paddingVertical: 7,
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.level3,
   },
   videoHudBottomLeft: {
     position: 'absolute',
     left: 10,
     bottom: 66,
     maxWidth: '68%',
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.22)',
     backgroundColor: 'rgba(8,12,22,0.68)',
     paddingHorizontal: 10,
     paddingVertical: 7,
     gap: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.level3,
   },
   videoHudCloseButton: {
     position: 'absolute',
     right: 10,
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.22)',
     backgroundColor: 'rgba(8,12,22,0.66)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.level3,
   },
   videoHudHeaderRow: {
     flexDirection: 'row',
@@ -6649,31 +10055,31 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   videoHudKicker: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontSize: 9,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   videoHudTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
     marginTop: 3,
     lineHeight: 17,
   },
   videoHudSubtext: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     marginTop: 2,
     lineHeight: 14,
   },
   videoHudStatusText: {
-    color: '#DCFCE7',
+    color: SLColors.success,
     fontSize: 9,
     fontWeight: '900',
     textAlign: 'center',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.2)',
     backgroundColor: 'rgba(22,101,52,0.28)',
@@ -6682,13 +10088,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   videoHudLine: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     lineHeight: 15,
   },
   videoHudLabel: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontWeight: '900',
   },
   videoPlayerOverlay: {
@@ -6699,21 +10105,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   videoPlayerOverlayText: {
-    color: '#E0E7FF',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     marginTop: 10,
   },
   videoPlayerErrorText: {
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'center',
     lineHeight: 18,
   },
   videoPlayerRetryButton: {
     minHeight: 36,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.36)',
     backgroundColor: 'rgba(129,140,248,0.16)',
@@ -6723,53 +10129,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   videoPlayerRetryText: {
-    color: '#E0E7FF',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
-  },
-  logVideoChoice: {
-    marginTop: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  logVideoAttachButton: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.34)',
-    backgroundColor: 'rgba(139,92,246,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-  },
-  logVideoAttachText: {
-    color: '#E0E7FF',
-    fontSize: 13,
-    fontWeight: '900',
-  },
-  logVideoSkipButton: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.20)',
-    backgroundColor: 'rgba(5,10,20,0.50)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-  },
-  logVideoSkipText: {
-    color: '#CBD5E1',
-    fontSize: 13,
-    fontWeight: '800',
   },
   logVideoSelectedText: {
     flexBasis: '100%',
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   logVideoSelectedBlock: {
@@ -6784,7 +10151,7 @@ const styles = StyleSheet.create({
   logVideoAngleChip: {
     minHeight: 30,
     paddingHorizontal: 9,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.74)',
@@ -6796,24 +10163,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(91,79,207,0.26)',
   },
   logVideoAngleChipText: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   logVideoAngleChipTextActive: {
-    color: '#E0E7FF',
+    color: SLColors.text,
   },
   logVideoIntentGroup: {
     marginTop: 8,
     gap: 8,
   },
   logVideoIntentTitle: {
-    color: '#E5E7EB',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   logVideoIntentOption: {
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.62)',
@@ -6825,16 +10192,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(91,79,207,0.24)',
   },
   logVideoIntentOptionTitle: {
-    color: '#E5E7EB',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   logVideoIntentOptionTitleActive: {
-    color: '#E0E7FF',
+    color: SLColors.text,
   },
   logVideoIntentOptionBody: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 3,
   },
@@ -6846,7 +10213,7 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     minHeight: 50,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -6868,9 +10235,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   timerLabelInline: {
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '600',
-    color: '#e5e7eb',
+    color: SLColors.text,
     minWidth: 44,
     textAlign: 'right',
   },
@@ -6878,7 +10245,7 @@ const styles = StyleSheet.create({
     minWidth: 50,
     height: 36,
     paddingHorizontal: 12,
-    borderRadius: 11,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -6894,9 +10261,9 @@ const styles = StyleSheet.create({
   },
   timerLabel: {
     flex: 1,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '600',
-    color: '#e5e7eb',
+    color: SLColors.text,
   },
   timerButtonsRow: {
     flexDirection: 'row',
@@ -6913,23 +10280,19 @@ const styles = StyleSheet.create({
   timerPicker: {
     width: '92%',
     maxWidth: 420,
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     paddingVertical: 18,
     paddingHorizontal: 18,
     backgroundColor: 'rgba(10,14,28,0.98)',
     borderWidth: 1,
     borderColor: 'rgba(109,91,208,0.10)',
     alignSelf: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.24,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 10,
+    ...SLShadows.shadowSheet,
   },
   timerPickerTitle: {
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
-    color: '#e5e7eb',
+    color: SLColors.text,
     marginBottom: 8,
   },
   timerOptionsGrid: {
@@ -6940,15 +10303,15 @@ const styles = StyleSheet.create({
   timerOptionButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.6)',
-    backgroundColor: '#0f172a',
+    backgroundColor: SLColors.surfaceRaised,
   },
   timerOptionText: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
-    color: '#e5e7eb',
+    color: SLColors.text,
   },
   timerPickerCancel: {
     marginTop: 8,
@@ -6957,7 +10320,7 @@ const styles = StyleSheet.create({
   timerWheelWrap: {
     marginTop: 18,
     marginBottom: 0,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     backgroundColor: 'rgba(24,16,15,0.36)',
     overflow: 'hidden',
     height: 220,
@@ -6965,6 +10328,7 @@ const styles = StyleSheet.create({
   },
   timerWheel: {
     height: 220,
+    zIndex: 1,
   },
   timerWheelContent: {
     paddingVertical: 88,
@@ -6985,7 +10349,7 @@ const styles = StyleSheet.create({
     maxWidth: 520,
   },
   movementHistorySheet: {
-    backgroundColor: '#020617',
+    backgroundColor: SLColors.background,
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
     borderWidth: 1,
@@ -6995,9 +10359,142 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     maxHeight: '82%',
   },
+  movementHistoryFullScreenSheet: {
+    height: '94%',
+    maxHeight: '94%',
+  },
+  equipmentPickerSheet: {
+    height: '90%',
+    maxHeight: '90%',
+  },
+  movementHistoryCloseIcon: {
+    alignItems: 'center',
+    borderColor: SLColors.borderStandard,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
+  },
+  movementHistoryDossierScroll: {
+    flex: 1,
+    minHeight: 0,
+  },
+  movementHistoryDossierContent: {
+    paddingBottom: SLSpacing.md,
+  },
+  movementHistoryEquipmentHero: {
+    backgroundColor: 'rgba(20, 12, 24, 0.96)',
+    borderColor: 'rgba(190, 140, 255, 0.36)',
+    borderRadius: SLRadius.lg,
+    borderWidth: 1,
+    gap: 12,
+    marginTop: 14,
+    overflow: 'hidden',
+    padding: 14,
+  },
+  movementHistoryEquipmentHeroTopline: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  movementHistoryCurrentBadge: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(190, 140, 255, 0.08)',
+    borderColor: 'rgba(190, 140, 255, 0.24)',
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  movementHistoryCurrentDot: {
+    backgroundColor: '#BE8CFF',
+    borderRadius: 3,
+    height: 6,
+    width: 6,
+  },
+  movementHistoryCurrentText: {
+    color: '#D9B8FF',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.45,
+  },
+  movementHistoryEquipmentHeroIdentity: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 14,
+  },
+  movementHistoryEquipmentHeroName: {
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.sansSemiBold,
+    fontSize: 21,
+    fontWeight: '800',
+    lineHeight: 25,
+  },
+  movementHistoryEquipmentHeroManufacturer: {
+    color: '#CDA3FF',
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  movementHistoryMetadataChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  movementHistoryMetadataChip: {
+    backgroundColor: 'rgba(255,255,255,0.035)',
+    borderColor: 'rgba(255,255,255,0.10)',
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    maxWidth: '100%',
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+  },
+  movementHistoryMetadataChipText: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '700',
+  },
+  movementHistoryManufacturerAnchor: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(15,23,42,0.55)',
+    borderColor: 'rgba(167,139,250,0.16)',
+    borderRadius: SLRadius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 14,
+    padding: 10,
+  },
+  movementHistoryManufacturerCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  movementHistoryManufacturerEyebrow: {
+    color: SLColors.primary,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  movementHistoryManufacturerName: {
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+    lineHeight: 18,
+    marginTop: 2,
+  },
+  movementHistoryManufacturerModel: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    marginTop: 1,
+  },
   movementHistoryAssistNote: {
-    color: '#FBBF24',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     marginTop: 8,
   },
@@ -7006,148 +10503,486 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 14,
   },
+  movementHistorySummaryTile: {
+    borderRadius: SLRadius.lg,
+    borderWidth: 1,
+    flex: 1,
+    minHeight: 128,
+    padding: 13,
+  },
+  movementHistorySummaryTileRecent: {
+    backgroundColor: 'rgba(24, 12, 31, 0.92)',
+    borderColor: 'rgba(190, 140, 255, 0.28)',
+  },
+  movementHistorySummaryTileBest: {
+    backgroundColor: 'rgba(7, 22, 18, 0.92)',
+    borderColor: 'rgba(85, 205, 157, 0.28)',
+  },
+  movementHistorySummaryLabelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  movementHistorySummaryLabel: {
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  movementHistorySummaryLabelRecent: { color: '#CDA3FF' },
+  movementHistorySummaryLabelBest: { color: '#76D6AD' },
+  movementHistorySummaryPerformance: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 13,
+  },
+  movementHistorySummaryWeight: {
+    color: SLColors.textStrong,
+    flexShrink: 1,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 25,
+    fontWeight: '700',
+    letterSpacing: -0.6,
+  },
+  movementHistorySummaryReps: {
+    color: SLColors.textSecondary,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  movementHistorySummaryMeta: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 7,
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  movementHistorySummaryEffort: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+  },
+  movementHistorySummaryDate: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '700',
+  },
+  movementHistorySummaryEmpty: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '700',
+    marginTop: 24,
+  },
   movementHistoryStatCard: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.12)',
     backgroundColor: 'rgba(15,23,42,0.72)',
     padding: 12,
   },
   movementHistoryLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     marginBottom: 6,
   },
   movementHistoryValue: {
-    color: '#E2E8F0',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '800',
   },
   movementHistorySectionTitle: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     marginTop: 16,
     marginBottom: 8,
   },
+  movementHistoryExactRail: {
+    gap: 10,
+    paddingRight: 18,
+  },
+  movementHistoryExactCard: {
+    backgroundColor: 'rgba(17, 13, 20, 0.96)',
+    borderColor: 'rgba(255,255,255,0.10)',
+    borderRadius: SLRadius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 7,
+    minHeight: 78,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    width: 228,
+  },
+  movementHistoryExactPerformance: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  movementHistoryExactWeight: {
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  movementHistoryExactReps: {
+    color: SLColors.textSecondary,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  movementHistoryExactEffort: {
+    color: '#CDA3FF',
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+  },
+  movementHistoryExactDate: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '700',
+  },
   movementHistoryList: {
     maxHeight: 260,
   },
+  equipmentPickerList: {
+    flex: 1,
+    maxHeight: '100%',
+    minHeight: 0,
+  },
+  equipmentPickerHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  equipmentPickerHeaderCopy: {
+    flex: 1,
+    gap: 4,
+    minWidth: 0,
+  },
+  equipmentPickerHeaderAction: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surface,
+    borderColor: SLColors.border,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  equipmentVariantManufacturer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 18,
+    paddingBottom: 18,
+  },
+  equipmentVariantManufacturerName: {
+    color: SLColors.textStrong,
+    flex: 1,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontWeight: '900',
+  },
+  equipmentVariantOptions: {
+    gap: 10,
+  },
+  equipmentVariantRow: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surface,
+    borderColor: SLColors.border,
+    borderRadius: SLRadius.lg,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 66,
+    paddingHorizontal: 18,
+  },
+  equipmentVariantLabel: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    fontWeight: '900',
+  },
+  movementHistoryExpandedList: {
+    flex: 1,
+    maxHeight: '100%',
+    minHeight: 0,
+  },
+  movementHistoryListContent: {
+    paddingBottom: SLSpacing.sm,
+  },
   movementHistoryRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.10)',
     backgroundColor: 'rgba(15,23,42,0.55)',
     marginBottom: 8,
   },
+  movementHistoryRowCopy: {
+    flex: 1,
+    gap: 2,
+    minWidth: 0,
+  },
+  movementHistoryRowManufacturer: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '700',
+  },
   movementHistoryDate: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   movementHistoryRowValue: {
     flex: 1,
-    color: '#E2E8F0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '800',
     textAlign: 'right',
   },
   movementHistoryEmpty: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.10)',
     backgroundColor: 'rgba(15,23,42,0.55)',
   },
-  readinessModal: {
-    width: '100%',
-    maxWidth: 420,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  movementHistoryRelatedTitle: {
+    color: SLColors.text,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontWeight: '900',
+  },
+  movementHistoryRelatedHeading: {
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 18,
   },
-  readinessQuestionLabel: {
-    color: '#E2E8F0',
-    fontWeight: '700',
-    marginBottom: 8,
-    fontSize: 13,
-    textAlign: 'center'
-  },
-
-  readinessQuestionSpaced: {
-    marginTop: 14,
-  },
-  readinessScalePill: {
-    minWidth: 36,
-    height: 36,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.18)',
-    backgroundColor: 'rgba(148,163,184,0.08)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  readinessScalePillActive: {
-    borderColor: 'rgba(109,91,208,0.50)',
-    backgroundColor: 'rgba(109,91,208,0.10)',
-  },
-
-  readinessScalePillText: {
-    color: '#E2E8F0',
+  movementHistoryRelatedCount: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
-    fontSize: 13,
+  },
+  movementHistoryRelatedGuidance: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 7,
+    marginTop: 6,
+  },
+  movementHistoryRelatedNote: {
+    color: SLColors.textMuted,
+    flex: 1,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+  },
+  movementHistoryEquipmentRail: {
+    gap: 12,
+    paddingRight: 18,
+    paddingTop: 11,
+  },
+  movementHistoryEquipmentCard: {
+    backgroundColor: 'rgba(14, 11, 17, 0.98)',
+    borderColor: 'rgba(190, 140, 255, 0.22)',
+    borderRadius: SLRadius.lg,
+    borderWidth: 1,
+    gap: 11,
+    minHeight: 222,
+    overflow: 'hidden',
+    padding: 13,
+    width: 288,
+  },
+  movementHistoryEquipmentIdentity: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  movementHistoryEquipmentCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  movementHistoryEquipmentName: {
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.sansSemiBold,
+    fontSize: 17,
+    fontWeight: '800',
+    lineHeight: 20,
+  },
+  movementHistoryEquipmentManufacturer: {
+    color: '#CDA3FF',
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  movementHistoryEquipmentDivider: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    height: StyleSheet.hairlineWidth,
+  },
+  movementHistoryEquipmentPerformance: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  movementHistoryEquipmentWeight: {
+    color: SLColors.textStrong,
+    flexShrink: 1,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 27,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+  },
+  movementHistoryEquipmentReps: {
+    color: SLColors.textSecondary,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: 19,
+    fontWeight: '700',
+  },
+  movementHistoryEquipmentEffortBadge: {
+    backgroundColor: 'rgba(190, 140, 255, 0.08)',
+    borderColor: 'rgba(190, 140, 255, 0.20)',
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  movementHistoryEquipmentEffort: {
+    color: '#D4B1FF',
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '900',
+  },
+  movementHistoryEquipmentDate: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '700',
+    marginTop: 8,
+  },
+  movementHistoryEquipmentEmpty: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '700',
+    marginTop: 8,
+  },
+  movementHistoryRelatedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.10)',
+    backgroundColor: 'rgba(15,23,42,0.38)',
+    marginBottom: 8,
+  },
+  movementHistoryRelatedCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  movementHistoryRelatedName: {
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    fontWeight: '800',
+  },
+  identityPickerInput: {
+    marginTop: 14,
+    marginBottom: 10,
+    minHeight: 46,
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: SLColors.borderStrong,
+    backgroundColor: SLColors.surface,
+    color: SLColors.textStrong,
+    paddingHorizontal: 14,
+    fontSize: SLTypography.body.fontSize,
+  },
+  equipmentPickerMovementContext: {
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginBottom: SLSpacing.md,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
+  },
+  equipmentPickerMovementKicker: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+  },
+  equipmentPickerMovementTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
+    fontWeight: '900',
+    marginTop: 2,
+  },
+  equipmentPickerMovementMeta: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  identityPickerRow: {
+    minHeight: 78,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: SLColors.border,
+  },
+  identityPickerRowCurrent: {
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(167,139,250,0.42)',
+    backgroundColor: 'rgba(124,58,237,0.08)',
+    paddingHorizontal: 10,
+  },
+  identityPickerCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  identityPickerManufacturer: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+  },
+  identityPickerStatus: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  identityPickerCurrent: {
+    color: SLColors.success,
+  },
+  identityPickerTitle: {
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
+  identityPickerMeta: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    marginTop: 3,
   },
   readinessScaleRow: {
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'space-between',
-  },
-
-  readinessHelp: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginBottom: 10,
-  },
-  readinessRow: {
-    marginTop: 10,
-  },
-  readinessLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#e5e7eb',
-    marginBottom: 6,
-  },
-  readinessPills: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  readinessPill: {
-    width: 36,
-    height: 32,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(148,163,184,0.10)',
   },
   // Shared modal form helper styles (used in timer/readiness/edit-set modals)
   modalBackdrop: {
@@ -7164,17 +10999,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modalSubtitle: {
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
-    color: '#C7D2FE',
+    color: SLColors.accentViolet,
     marginBottom: 16,
     textAlign: 'center',
   },
   modalBody: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     marginBottom: 14,
     lineHeight: 20,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     textAlign: 'left',
   },
   modalBtnGhost: {
@@ -7184,27 +11019,9 @@ const styles = StyleSheet.create({
   modalFieldBlock: {
     marginBottom: 10,
   },
-  editSetKeyboardRoot: {
-    flex: 1,
-  },
-  editSetModalBackdrop: {
-    justifyContent: 'flex-end',
-    paddingTop: 18,
-    paddingBottom: Platform.OS === 'ios' ? 18 : 14,
-  },
   editSetModalWide: {
     width: '100%',
     maxWidth: 600,
-    alignSelf: 'center',
-  },
-  editSetModalCard: {
-    maxHeight: '92%',
-  },
-  editSetModalScroll: {
-    maxHeight: 360,
-  },
-  editSetModalScrollContent: {
-    paddingBottom: 4,
   },
   modalRow: {
     flexDirection: 'row',
@@ -7214,9 +11031,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalLabel: {
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
-    color: '#A78BFA',
+    color: SLColors.review,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -7229,7 +11046,202 @@ const styles = StyleSheet.create({
   postSessionModal: {
     width: '95%',
     maxWidth: 520,
-    paddingTop: 4,
+    maxHeight: '88%',
+    alignSelf: 'center',
+    flexShrink: 1,
+    overflow: 'hidden',
+    paddingTop: SLSpacing.lg,
+  },
+  postSessionBackdrop: {
+    alignItems: 'center',
+  },
+  postSessionScroll: {
+    flexShrink: 1,
+  },
+  postSessionScrollContent: {
+    paddingBottom: SLSpacing.sm,
+  },
+  postSessionReflectionTitle: {
+    textAlign: 'left',
+    marginBottom: 2,
+  },
+  postSessionReflectionSubtitle: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 20,
+    fontWeight: '700',
+  },
+  sessionCompletePromptIcon: {
+    alignSelf: 'center',
+    width: 48,
+    height: 48,
+    borderRadius: SLRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(52,211,153,0.52)',
+    backgroundColor: 'rgba(6,78,59,0.30)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SLSpacing.sm,
+  },
+  postSessionTimeSection: {
+    marginTop: SLSpacing.lg,
+    paddingTop: SLSpacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: SLColors.border,
+  },
+  postSessionTimeHint: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 18,
+    marginBottom: SLSpacing.sm,
+  },
+  postSessionTimeRow: {
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+  },
+  postSessionTimeField: {
+    flex: 1,
+  },
+  postSessionTimeLabel: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  postSessionTimeInput: {
+    borderWidth: 1,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.sm,
+    backgroundColor: SLColors.surface,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: 10,
+  },
+  postSessionEffortSection: {
+    marginTop: 22,
+  },
+  postSessionEffortHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+  },
+  postSessionEffortValue: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontWeight: '900',
+  },
+  postSessionEffortEndpoints: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  postSessionEffortEndpoint: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '700',
+  },
+  postSessionEffortRailTouchTarget: {
+    height: 42,
+    justifyContent: 'center',
+  },
+  postSessionEffortRail: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 4,
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.borderStrong,
+  },
+  postSessionEffortRailFill: {
+    position: 'absolute',
+    left: 0,
+    height: 4,
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.accent,
+  },
+  postSessionEffortThumb: {
+    position: 'absolute',
+    width: 22,
+    height: 22,
+    borderRadius: SLRadius.pill,
+    borderWidth: 3,
+    borderColor: SLColors.backgroundRaised,
+    backgroundColor: SLColors.accent,
+  },
+  postSessionSegmentedControl: {
+    minHeight: 50,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.md,
+    overflow: 'hidden',
+    backgroundColor: SLColors.surface,
+  },
+  postSessionSegment: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  postSessionSegmentActive: {
+    backgroundColor: SLColors.surfaceMuted,
+  },
+  postSessionSegmentText: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
+  postSessionSegmentTextActive: {
+    color: SLColors.textStrong,
+  },
+  postSessionNotesSection: {
+    marginTop: 12,
+  },
+  postSessionNotesToggle: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  postSessionNotesToggleCopy: {
+    flex: 1,
+    paddingRight: SLSpacing.md,
+  },
+  postSessionNotesToggleText: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
+  postSessionNotesPrompt: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    marginTop: 2,
+  },
+  postSessionNotesToggleMark: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontWeight: '500',
+  },
+  postSessionActions: {
+    flexDirection: 'column',
+    marginTop: 12,
+  },
+  postSessionCompleteAction: {
+    width: '100%',
+  },
+  postSessionSkipAction: {
+    minHeight: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  postSessionSkipActionText: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
   },
   incompleteCompleteModal: {
     width: '92%',
@@ -7240,7 +11252,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 46,
     height: 46,
-    borderRadius: 23,
+    borderRadius: SLRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(251,191,36,0.58)',
     backgroundColor: 'rgba(120,53,15,0.34)',
@@ -7249,14 +11261,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   incompleteWarningIconText: {
-    color: '#FDE68A',
+    color: SLColors.warning,
     fontSize: 25,
     lineHeight: 29,
     fontWeight: '900',
   },
   incompleteCompleteCopy: {
-    color: '#C7D2FE',
-    fontSize: 14,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '700',
     textAlign: 'center',
@@ -7265,7 +11277,7 @@ const styles = StyleSheet.create({
   incompleteMissingListFrame: {
     maxHeight: 220,
     marginTop: 16,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(251,191,36,0.22)',
     backgroundColor: 'rgba(15,23,42,0.62)',
@@ -7282,15 +11294,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   incompleteMissingBullet: {
-    color: '#FBBF24',
-    fontSize: 15,
+    color: SLColors.warning,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 20,
     fontWeight: '900',
   },
   incompleteMissingText: {
     flex: 1,
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '800',
   },
@@ -7342,21 +11354,21 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(129,140,248,0.09)',
   },
   coreScheme: {
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '500',
     marginBottom: 10,
     lineHeight: 19,
   },
   coreTarget: {
-    fontSize: 13,
-    color: '#8E84CC',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.review,
     marginTop: 4,
   },
 
   actualText: {
-    fontSize: 13,
-    color: '#A7CBB5',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.success,
     marginTop: 4,
   },
   supersetCardSecondary: {
@@ -7367,35 +11379,109 @@ const styles = StyleSheet.create({
   swapPill: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(91,79,207,0.7)',
     backgroundColor: 'rgba(91,79,207,0.12)',
   },
   swapPillText: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
-    color: '#7C3AED',
+    color: SLColors.review,
   },
   accessoryInlineAction: {
-    paddingHorizontal: 7,
-    paddingVertical: 4,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.035)',
+    minHeight: 44,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 12,
+    borderRadius: SLRadius.radiusRow,
+    borderWidth: 1,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: 'transparent',
+  },
+  accessoryInlineActions: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   accessoryInlineActionText: {
-    color: '#AFA4C8',
-    fontSize: 11,
-    fontWeight: '800',
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+  },
+  currentEquipmentContext: {
+    marginTop: 16,
+    marginHorizontal: 26,
+    paddingTop: 14,
+    paddingBottom: 14,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(167,139,250,0.16)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  currentEquipmentContextRequired: {
+    borderColor: 'rgba(251,146,60,0.28)',
+  },
+  currentEquipmentCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  currentEquipmentEyebrow: {
+    color: SLColors.review,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+  },
+  currentEquipmentName: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 20,
+    fontWeight: '900',
+  },
+  currentEquipmentMeta: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
   },
   swapOptionButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.12)',
     backgroundColor: 'rgba(15,20,36,0.55)',
-    justifyContent: 'flex-start',
+  },
+
+  swapOptionScroll: {
+    maxHeight: 230,
+    marginTop: SLSpacing.sm,
+  },
+
+  swapOptionList: {
+    gap: SLSpacing.md,
+    paddingBottom: SLSpacing.sm,
+  },
+
+  swapOptionGroup: {
+    gap: SLSpacing.xs,
+  },
+
+  swapOptionGroupTitle: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+    textTransform: 'uppercase',
   },
 
   swapOptionButtonActive: {
@@ -7404,47 +11490,47 @@ const styles = StyleSheet.create({
   },
 
   swapOptionText: {
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '600',
   },
 
   swapOptionTextActive: {
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   accTitle: {
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '600',
     letterSpacing: -0.1,
     flex: 1,
   },
   accRir: {
-    color: '#F59E0B',
+    color: SLColors.warning,
   },
   setLabel: {
-    color: '#A9A3CF',
-    fontSize: 13,
+    color: SLColors.review,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     marginBottom: 4,
   },
 
   setTargetInline: {
-    color: '#8E84CC',
-    fontSize: 14,
+    color: SLColors.review,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '600',
     marginTop: 2,
   },
   logInput: {
     flex: 1,
     height: 44,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(15,20,36,0.78)',
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.10)',
     paddingHorizontal: 12,
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '600',
   },
 
@@ -7456,27 +11542,23 @@ const styles = StyleSheet.create({
   logButton: {
     height: 44,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(91,79,207,0.22)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#5B4FCF',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
+    ...SLShadows.shadowSoft,
   },
 
   logButtonText: {
-    color: '#F5F3FF',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
     letterSpacing: 0.25,
   },
   coreWheelButton: {
     marginTop: 10,
     minHeight: 50,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -7484,8 +11566,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(91,79,207,0.92)',
   },
   coreWheelButtonText: {
-    color: '#F5F3FF',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
     letterSpacing: 0.2,
   },
@@ -7495,14 +11577,14 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     paddingHorizontal: 10,
     paddingVertical: 7,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.24)',
     backgroundColor: 'rgba(91,79,207,0.10)',
   },
   coreRepeatLastButtonText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   quickActionRow: {
@@ -7519,7 +11601,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   quickActionLabel: {
-    color: '#64748B',
+    color: SLColors.textSubtle,
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
@@ -7528,14 +11610,14 @@ const styles = StyleSheet.create({
   quickChip: {
     paddingHorizontal: 9,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.20)',
     backgroundColor: 'rgba(91,79,207,0.09)',
   },
   quickChipText: {
-    color: '#C4B5FD',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   undoButton: {
@@ -7543,67 +11625,59 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.9)',
     backgroundColor: 'transparent',
   },
   undoButtonText: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
-    color: '#EF4444',
+    color: SLColors.danger,
   },
   actionPrimary: {
-    backgroundColor: '#6D28D9',
-    borderColor: 'rgba(196,181,253,0.32)',
-    shadowColor: '#5B4FCF',
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
+    backgroundColor: SLColors.accent,
+    borderColor: SLColors.accent,
+    ...SLShadows.raised,
   },
   actionButtonText: {
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
     textAlign: 'center',
     includeFontPadding: false,
     textAlignVertical: 'center',
   },
   actionPrimaryText: {
-    color: '#F5F3FF',
+    color: SLColors.textInverted,
   },
   unitTogglePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15,20,36,0.32)',
-    borderRadius: 14,
+    backgroundColor: SLColors.surfaceFlat,
+    borderRadius: SLRadius.md,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
   },
 
   unitToggleOptionActive: {
-    backgroundColor: 'rgba(91,79,207,0.28)',
-    shadowColor: '#5B4FCF',
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 1,
+    backgroundColor: SLColors.accent,
+    ...SLShadows.shadowSoft,
   },
   unitToggleText: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     textTransform: 'lowercase',
   },
 
   unitToggleTextActive: {
-    color: '#E5E7EB',
+    color: SLColors.textInverted,
   },
   timerButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.14)',
     backgroundColor: 'rgba(15,20,36,0.18)',
@@ -7613,17 +11687,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(127,29,29,0.20)',
   },
   timerButtonText: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   timerWheelText: {
-    color: '#B8ACA1',
-    fontSize: 18,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '700',
   },
   timerWheelTextActive: {
-    color: '#F5F3FF',
+    color: SLColors.textStrong,
     fontSize: 23,
     fontWeight: '900',
   },
@@ -7633,19 +11707,19 @@ const styles = StyleSheet.create({
     left: 6,
     right: 6,
     height: 44,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(167,139,250,0.30)',
-    backgroundColor: 'rgba(91,79,207,0.085)',
-    zIndex: 5,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.surfaceSelected,
+    zIndex: 0,
   },
   errorBanner: {
     marginTop: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
     alignSelf: 'stretch',
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.7)',
     backgroundColor: 'rgba(127,29,29,0.35)',
@@ -7656,21 +11730,21 @@ const styles = StyleSheet.create({
   },
   errorBannerText: {
     flex: 1,
-    color: '#EF4444',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
   },
   errorBannerClose: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(239,68,68,0.6)',
     backgroundColor: 'rgba(127,29,29,0.6)',
   },
   errorBannerCloseText: {
-    color: '#EF4444',
-    fontSize: 12,
+    color: SLColors.danger,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   actionSecondary: {
@@ -7680,30 +11754,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(9,14,25,0.70)',
   },
   actionSecondaryText: {
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   inlineEditButton: {
     alignSelf: 'flex-start',
     marginTop: 6,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.35)',
     backgroundColor: 'rgba(129,140,248,0.10)',
   },
   modalCard: {
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.24)',
     backgroundColor: 'rgba(9,14,25,0.98)',
     paddingHorizontal: 18,
     paddingVertical: 18,
-    shadowColor: '#000',
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
+    ...SLShadows.shadowSheet,
   },
   coreWheelBackdrop: {
     flex: 1,
@@ -7712,6 +11782,14 @@ const styles = StyleSheet.create({
   },
   coreWheelBackdropHit: {
     flex: 1,
+  },
+  restTimerPickerBackdrop: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SLSpacing.lg,
+  },
+  restTimerPickerBackdropHit: {
+    ...StyleSheet.absoluteFillObject,
   },
   coreWheelSheet: {
     borderTopLeftRadius: 28,
@@ -7724,11 +11802,239 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 24,
   },
+  restTimerPickerSheet: {
+    alignSelf: 'stretch',
+    maxWidth: 520,
+    borderRadius: SLRadius.radiusSheet,
+    borderBottomWidth: 1,
+  },
+  editSetKeyboardAvoider: {
+    flex: 1,
+  },
+  editSetWheelSheet: {
+    maxHeight: '88%',
+    paddingBottom: 0,
+  },
+  editSetScroll: {
+    flexGrow: 0,
+  },
+  editSetScrollContent: {
+    paddingBottom: SLSpacing.lg,
+  },
+  supersetRoundSheet: {
+    maxHeight: '88%',
+    backgroundColor: SLColors.surfaceFloating,
+    borderColor: SLColors.borderStrong,
+  },
+  supersetRoundContextRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.md,
+  },
+  supersetRoundContext: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.75,
+  },
+  supersetRoundStep: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+    letterSpacing: 0.65,
+  },
+  supersetRoundStepRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    marginTop: 4,
+  },
+  supersetRoundCapturedCue: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 3,
+  },
+  supersetRoundCapturedCueText: {
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+  },
+  supersetRoundProgress: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: SLSpacing.lg,
+  },
+  supersetRoundProgressMark: {
+    backgroundColor: SLColors.surfaceInset,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.pill,
+    borderWidth: 1,
+    height: 7,
+    overflow: 'hidden',
+    width: 22,
+  },
+  supersetRoundProgressFill: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: SLColors.accentViolet,
+    borderRadius: SLRadius.pill,
+  },
+  supersetRoundStepContent: {
+    overflow: 'hidden',
+  },
+  supersetRoundMovementHeader: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    marginTop: SLSpacing.lg,
+    padding: SLSpacing.md,
+  },
+  supersetRoundEntryNumber: {
+    alignItems: 'center',
+    backgroundColor: SLColors.accentSoft,
+    borderColor: SLColors.borderFocus,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 28,
+    justifyContent: 'center',
+    width: 28,
+  },
+  supersetRoundEntryNumberText: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
+  supersetRoundEntryCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  supersetRoundEntryTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
+    fontWeight: '800',
+    lineHeight: 22,
+  },
+  supersetRoundEntryPrescription: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '700',
+    marginTop: 3,
+  },
+  supersetRoundLoggedPill: {
+    alignItems: 'center',
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: 5,
+  },
+  supersetRoundLoggedPillText: {
+    color: SLColors.success,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  supersetRoundSkippedPill: {
+    alignItems: 'center',
+    backgroundColor: SLColors.warningSoft,
+    borderColor: SLColors.warning,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: 5,
+  },
+  supersetRoundSkippedPillText: {
+    color: SLColors.warning,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  supersetRoundLoggedResult: {
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontWeight: '700',
+  },
+  supersetRoundLoggedSummary: {
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.success,
+    borderRadius: SLRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: SLSpacing.xl,
+    padding: SLSpacing.lg,
+  },
+  supersetRoundSkippedSummary: {
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.warning,
+    borderRadius: SLRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: SLSpacing.xl,
+    padding: SLSpacing.lg,
+  },
+  supersetRoundLoggedNotice: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    marginTop: SLSpacing.sm,
+  },
+  supersetRoundSave: {
+    flex: 1.45,
+  },
+  supersetRoundSecondaryAction: {
+    flex: 0.8,
+  },
+  supersetRoundActionDisabled: {
+    opacity: 0.48,
+  },
+  supersetRoundError: {
+    backgroundColor: SLColors.dangerSoft,
+    borderColor: SLColors.danger,
+    borderRadius: SLRadius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+    marginTop: SLSpacing.md,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
+    textAlign: 'left',
+  },
+  supersetRoundEscapeActions: {
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    marginTop: SLSpacing.md,
+  },
+  supersetRoundEscapeAction: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    flexDirection: 'row',
+    gap: SLSpacing.xs,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: SLSpacing.sm,
+  },
+  supersetRoundEscapeActionText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
   coreWheelHandle: {
     alignSelf: 'center',
     width: 42,
     height: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(148,163,184,0.38)',
     marginBottom: 14,
   },
@@ -7743,94 +12049,58 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   coreWheelTitle: {
-    color: '#F8FAFC',
-    fontSize: 22,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.title.fontSize,
     lineHeight: 28,
     fontWeight: '900',
     textAlign: 'left',
   },
-  coreWheelTitleDot: {
-    color: '#8B5CF6',
-  },
   coreWheelSubtitle: {
-    color: '#A5B4FC',
-    fontSize: 13,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '700',
     textAlign: 'left',
     marginTop: 4,
-  },
-  coreWheelColumns: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 18,
-  },
-  coreWheelColumn: {
-    flex: 1,
-    minWidth: 0,
-  },
-  coreWheelColumnLabel: {
-    color: '#64748B',
-    fontSize: 10,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 0.9,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  coreWheelScrollFrame: {
-    height: CORE_WHEEL_ROW_HEIGHT * CORE_WHEEL_VISIBLE_ROWS,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.18)',
-    backgroundColor: 'rgba(5,10,20,0.76)',
-    overflow: 'hidden',
-  },
-  coreWheelCenterBand: {
-    position: 'absolute',
-    left: 5,
-    right: 5,
-    top: CORE_WHEEL_ROW_HEIGHT * Math.floor(CORE_WHEEL_VISIBLE_ROWS / 2),
-    height: CORE_WHEEL_ROW_HEIGHT,
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.76)',
-    backgroundColor: 'rgba(109,40,217,0.76)',
-    zIndex: 4,
-  },
-  coreWheelScroll: {
-    flex: 1,
-  },
-  coreWheelScrollContent: {
-    paddingHorizontal: 0,
-  },
-  coreWheelOption: {
-    height: CORE_WHEEL_ROW_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5,
-  },
-  coreWheelOptionText: {
-    color: '#94A3B8',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  coreWheelOptionTextActive: {
-    color: '#F5F3FF',
-    fontSize: 19,
-    fontWeight: '900',
   },
   coreWheelActions: {
     flexDirection: 'row',
     gap: 10,
     marginTop: 18,
   },
+  coreWheelSubmit: {
+    flex: 1.45,
+    minHeight: 54,
+  },
+  coreWheelFailedToggle: {
+    marginTop: SLSpacing.lg,
+    paddingVertical: 10,
+    backgroundColor: 'transparent',
+    borderColor: 'rgba(248,113,113,0.28)',
+  },
+  logSheetSubmit: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  logSheetSubmitPressed: {
+    transform: [{ scale: 0.975 }],
+    opacity: 0.88,
+  },
+  logSheetSubmitAccepted: {
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
+  },
+  logSheetSubmitFailure: {
+    backgroundColor: SLColors.dangerSoft,
+    borderColor: SLColors.danger,
+  },
   failedSetToggle: {
     marginTop: 14,
     borderWidth: 1,
     borderColor: 'rgba(248,113,113,0.42)',
     backgroundColor: 'rgba(127,29,29,0.24)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     paddingVertical: 13,
     paddingHorizontal: 14,
     alignItems: 'center',
@@ -7840,24 +12110,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(127,29,29,0.46)',
   },
   failedSetToggleText: {
-    color: '#FCA5A5',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   failedSetToggleTextActive: {
-    color: '#FEE2E2',
+    color: SLColors.danger,
   },
   modalSheetHandle: {
     alignSelf: 'center',
     width: 46,
     height: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(148,163,184,0.46)',
     marginBottom: 14,
   },
   modalSectionKicker: {
-    color: '#A78BFA',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -7866,7 +12136,7 @@ const styles = StyleSheet.create({
   },
   loggedSummaryPill: {
     minHeight: 52,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.28)',
     backgroundColor: 'rgba(5,10,20,0.74)',
@@ -7880,32 +12150,32 @@ const styles = StyleSheet.create({
   loggedSummaryIcon: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(45,212,191,0.76)',
   },
   loggedSummaryIconText: {
-    color: '#2DD4BF',
-    fontSize: 14,
+    color: SLColors.accent,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   loggedSummaryLabel: {
-    color: '#34D399',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   loggedSummaryValue: {
     flex: 1,
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     textAlign: 'right',
   },
   modalValueCard: {
     minHeight: 88,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(5,10,20,0.74)',
@@ -7914,7 +12184,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   modalValueInput: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     fontSize: 27,
     lineHeight: 33,
     fontWeight: '900',
@@ -7922,14 +12192,14 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   modalValueUnit: {
-    color: '#A78BFA',
-    fontSize: 14,
+    color: SLColors.review,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
     textAlign: 'right',
   },
   modalHelperLine: {
-    color: '#A78BFA',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
     textAlign: 'center',
@@ -7946,19 +12216,19 @@ const styles = StyleSheet.create({
   swapCloseButton: {
     width: 34,
     height: 34,
-    borderRadius: 17,
+    borderRadius: SLRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   swapCloseText: {
-    color: '#E5E7EB',
-    fontSize: 28,
+    color: SLColors.text,
+    fontSize: SLTypography.hero.fontSize,
     lineHeight: 30,
     fontWeight: '300',
   },
   swapMovementField: {
     minHeight: 54,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.24)',
     backgroundColor: 'rgba(5,10,20,0.74)',
@@ -7969,25 +12239,25 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   swapSearchIcon: {
-    color: '#CBD5E1',
-    fontSize: 24,
+    color: SLColors.text,
+    fontSize: SLTypography.screenTitle.fontSize,
     fontWeight: '500',
   },
   swapMovementInput: {
     flex: 1,
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
     paddingVertical: 0,
   },
   swapClearText: {
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontSize: 25,
     fontWeight: '400',
   },
   swapPrescriptionCard: {
     minHeight: 88,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(5,10,20,0.74)',
@@ -7995,7 +12265,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   swapPrescriptionInput: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     fontSize: 23,
     lineHeight: 29,
     fontWeight: '900',
@@ -8004,7 +12274,7 @@ const styles = StyleSheet.create({
   },
   swapSummaryCard: {
     marginTop: 16,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(45,212,191,0.48)',
     backgroundColor: 'rgba(13,148,136,0.14)',
@@ -8015,7 +12285,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   swapSummaryIcon: {
-    color: '#2DD4BF',
+    color: SLColors.accent,
     fontSize: 25,
     fontWeight: '900',
   },
@@ -8023,23 +12293,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   swapSummaryTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 19,
     fontWeight: '800',
   },
   swapSummaryText: {
-    color: '#C7D2FE',
-    fontSize: 13,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '700',
     marginTop: 3,
   },
   modalTitle: {
-    color: '#E2E8F0',
+    color: SLColors.text,
     marginBottom: 6,
     fontWeight: '700',
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     letterSpacing: -0.2,
     textAlign: 'left',
   },
@@ -8048,76 +12318,76 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(239,68,68,0.32)',
   },
   modalBtnText: {
-    color: '#E2E8F0',
+    color: SLColors.text,
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
   modalInput: {
     borderWidth: 1,
-    borderColor: '#1f2933',
-    borderRadius: 8,
+    borderColor: SLColors.border,
+    borderRadius: SLRadius.sm,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    color: '#CBD5E1',
-    fontSize: 14,
-    backgroundColor: '#0B0F1A',
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
+    backgroundColor: SLColors.surface,
   },
   postSessionTitle: {
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
     lineHeight: 30,
     fontWeight: '900',
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     marginBottom: 8,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
   surveyLabel: {
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
     marginBottom: 8,
   },
   surveyChip: {
     flex: 1,
     height: 36,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
-    borderColor: '#334155',
-    backgroundColor: '#0B0F1A',
+    borderColor: SLColors.borderStrong,
+    backgroundColor: SLColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   surveyChipActive: {
-    backgroundColor: '#CBD5E1',
-    borderColor: '#CBD5E1',
+    backgroundColor: SLColors.text,
+    borderColor: SLColors.text,
   },
   surveyChipText: {
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
   },
   surveyChipTextActive: {
-    color: '#0B0F1A',
+    color: SLColors.surface,
   },
   surveyChoiceButton: {
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
-    borderColor: '#334155',
-    backgroundColor: '#0B0F1A',
+    borderColor: SLColors.borderStrong,
+    backgroundColor: SLColors.surface,
     paddingVertical: 12,
     paddingHorizontal: 14,
   },
   surveyChoiceButtonActive: {
-    borderColor: '#CBD5E1',
-    backgroundColor: '#111c2f',
+    borderColor: SLColors.text,
+    backgroundColor: SLColors.surfaceMuted,
   },
   surveyChoiceText: {
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '600',
   },
   surveyChoiceTextActive: {
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   actionDanger: {
     backgroundColor: 'rgba(239,68,68,0.08)',
@@ -8125,7 +12395,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   actionDangerText: {
-    color: '#FECACA',
+    color: SLColors.danger,
     fontWeight: '700',
   },
 });

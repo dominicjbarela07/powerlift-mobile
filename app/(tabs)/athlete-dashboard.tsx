@@ -2,9 +2,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -13,15 +12,21 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
+import { TodayHomeExperience } from '@/components/home/TodayHomeExperience';
+import { SLButton, SLProfileAvatar } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { fetchJson } from '@/lib/api';
+import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
+import { createLatestRequestManager } from '@/lib/latest-request';
+import { classifyTodayResponse } from '@/lib/today-response';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 type TodayAction = {
   kind?: string | null;
@@ -58,7 +63,8 @@ type TodayPayload = {
   athlete?: {
     id?: number;
     name?: string | null;
-    avatar_url?: string | null;
+    profilePhotoUrl?: string | null;
+    profilePhotoVersion?: string | null;
     bodyweight_kg?: number | null;
   } | null;
   coach?: {
@@ -179,40 +185,50 @@ type CoachConnectionDisplayItem = {
   body?: string | null;
 };
 
-type TodayResponse = {
-  ok?: boolean;
-  error?: string;
-  message?: string;
-  today?: TodayPayload | null;
-};
+function normalizeTodayPayload(payload: TodayPayload): TodayPayload {
+  const photo = normalizeProfilePhotoPayload(payload?.athlete);
+  return {
+    ...payload,
+    athlete: payload?.athlete
+      ? {
+          ...payload.athlete,
+          profilePhotoUrl: photo.profilePhotoUrl,
+          profilePhotoVersion: photo.profilePhotoVersion,
+        }
+      : null,
+  };
+}
 
 const PATCH_NOTE_VERSION = 'strength_ledger_mobile_2_0_athlete_tour_seen';
 const INDIVIDUAL_TODAY_WELCOME_VERSION = 'strength_ledger_individual_today_welcome_seen_v1';
+const TODAY_CACHE_VERSION = 'strength_ledger.today.cache.v1';
 const REST_DAY_IMAGE = require('@/assets/images/chair.png');
 const TRAINING_DAY_IMAGE = require('@/assets/images/gym_vibe.jpg');
 
 const palette = {
-  violet: '#8B5CF6',
-  violetSoft: '#C4B5FD',
-  violetDim: 'rgba(139,92,246,0.14)',
-  steel: '#A69B8D',
-  green: '#A7CBB5',
-  amber: '#D6A75E',
-  red: '#F87171',
-  text: '#ECE5DA',
-  textStrong: '#F9FAFB',
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  rail: 'rgba(222,198,166,0.11)',
-  surface: 'rgba(20,14,13,0.32)',
-  surfaceStrong: 'rgba(24,16,15,0.50)',
-  border: 'rgba(222,198,166,0.085)',
+  violet: SLColors.railViolet,
+  violetSoft: SLColors.accentViolet,
+  violetDim: SLColors.accentVioletSoft,
+  steel: SLColors.accentSteel,
+  green: SLColors.success,
+  amber: SLColors.warning,
+  red: SLColors.danger,
+  text: SLColors.text,
+  textStrong: SLColors.textStrong,
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  rail: SLColors.borderSubtle,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
+  border: SLColors.borderHairline,
 };
 
 export default function AthleteDashboard() {
   const router = useRouter();
   const params = useLocalSearchParams<{ submittedCheckIn?: string }>();
-  const { token, user } = useAuth();
+  const { token, user, applyAccountStatePayload } = useAuth();
+  const requestManagerRef = useRef(createLatestRequestManager<any>());
+  const todayRef = useRef<TodayPayload | null>(null);
   const [today, setToday] = useState<TodayPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -226,6 +242,28 @@ export default function AthleteDashboard() {
   const isAuthenticatedCoach = user?.role === 'coach' || user?.is_coach === true;
   const showCoachCheckIn = !isAuthenticatedCoach && !isIndividual;
   const individualWelcomeKey = `${INDIVIDUAL_TODAY_WELCOME_VERSION}:${user?.email || 'unknown'}`;
+  const todayCacheKey = `${TODAY_CACHE_VERSION}:${user?.athlete_id || user?.email || 'unknown'}`;
+
+  useEffect(() => {
+    todayRef.current = today;
+  }, [today]);
+
+  useEffect(() => {
+    let mounted = true;
+    AsyncStorage.getItem(todayCacheKey)
+      .then((raw) => {
+        if (!mounted || !raw) return;
+        const cached = JSON.parse(raw) as TodayPayload;
+        if (cached?.date) {
+          setToday(normalizeTodayPayload(cached));
+          setLoading(false);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      mounted = false;
+    };
+  }, [todayCacheKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -294,11 +332,11 @@ export default function AthleteDashboard() {
   };
 
   const loadToday = React.useCallback(
-    async (opts?: { silent?: boolean }) => {
+    async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
       const silent = !!opts?.silent;
       try {
         if (silent) {
-          setRefreshing(true);
+          if (opts?.showRefreshIndicator !== false) setRefreshing(true);
         } else {
           setLoading(true);
         }
@@ -306,54 +344,57 @@ export default function AthleteDashboard() {
 
         if (!token) {
           setError('Not authenticated. Please log in again.');
-          setToday(null);
           return;
         }
 
-        const res: any = await fetchJson('/athletes/mobile/dashboard', {
+        const result = await requestManagerRef.current.run((signal) => fetchJson('/athletes/mobile/dashboard', {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
-        });
-        const status = Number(res?.status ?? 0);
-        const payload: TodayResponse = res?.json ?? res;
-
-        if (res?.ok !== true || payload?.ok !== true) {
-          const msg = payload?.error || payload?.message || `Request failed (${status || 'unknown'})`;
-          setError(String(msg));
-          setToday(null);
-          if (status === 401) router.replace('/login');
+          signal,
+        }));
+        if (result.kind === 'cancelled' || result.kind === 'obsolete') return;
+        if (result.kind === 'error') {
+          if (__DEV__) console.warn('Athlete Today request failed', '/athletes/mobile/dashboard', result.error);
+          setError('Network error while loading Today.');
           return;
         }
 
-        if (!payload.today) {
-          setError('Today is not available yet.');
-          setToday(null);
+        const res: any = result.value;
+        const classified = classifyTodayResponse<TodayPayload>(res, isAccountStateBlockedPayload);
+        if (classified.kind === 'account-state-block') {
+          await applyAccountStatePayload(classified.payload);
+          router.replace('/');
+          return;
+        }
+        if (classified.kind === 'unauthorized') {
+          setError(classified.message);
+          router.replace('/login');
+          return;
+        }
+        if (classified.kind === 'api-error' || classified.kind === 'invalid') {
+          setError(classified.message);
           return;
         }
 
-        setToday(payload.today);
-      } catch (err) {
-        console.log('Athlete Today API error', err);
-        setError('Network error while loading Today.');
-        setToday(null);
+        const normalized = normalizeTodayPayload(classified.today);
+        setToday(normalized);
+        setError(null);
+        void AsyncStorage.setItem(todayCacheKey, JSON.stringify(normalized)).catch(() => undefined);
       } finally {
         if (silent) {
-          setRefreshing(false);
+          if (opts?.showRefreshIndicator !== false) setRefreshing(false);
         } else {
           setLoading(false);
         }
       }
     },
-    [router, token]
+    [applyAccountStatePayload, router, todayCacheKey, token]
   );
-
-  useEffect(() => {
-    loadToday();
-  }, [loadToday]);
 
   useFocusEffect(
     React.useCallback(() => {
-      loadToday({ silent: true });
+      void loadToday({ silent: !!todayRef.current, showRefreshIndicator: false });
+      return () => requestManagerRef.current.cancel();
     }, [loadToday])
   );
 
@@ -399,7 +440,7 @@ export default function AthleteDashboard() {
           return;
         }
         if (isIndividual) {
-          router.push('/(tabs)/reflection' as any);
+          router.push('/(tabs)/training-focus' as any);
           return;
         }
         router.push('/(tabs)/coach-reviews' as any);
@@ -413,12 +454,24 @@ export default function AthleteDashboard() {
         router.push('/(tabs)/athlete-meet-plan' as any);
         return;
       }
+      if (action.route === 'session_surveys') {
+        router.push('/(tabs)/session-surveys' as any);
+        return;
+      }
+      if (action.route === 'training_focus') {
+        router.push('/(tabs)/training-focus' as any);
+        return;
+      }
+      if (action.route === 'ledger') {
+        router.push('/(tabs)/ledger/home' as any);
+        return;
+      }
       router.push('/(tabs)/workout' as any);
     },
     [isIndividual, router]
   );
 
-  if (loading) {
+  if (loading && !today) {
     return (
       <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
         <View style={styles.centered}>
@@ -429,11 +482,12 @@ export default function AthleteDashboard() {
     );
   }
 
-  if (error || !today) {
+  if (!today) {
     return (
       <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error || 'Today is unavailable.'}</Text>
+          <SLButton label="Retry" onPress={() => void loadToday()} size="md" />
         </View>
       </SafeAreaView>
     );
@@ -453,19 +507,26 @@ export default function AthleteDashboard() {
           <RefreshControl refreshing={refreshing} onRefresh={() => loadToday({ silent: true })} tintColor={palette.muted} />
         }
       >
-        <PresentState isIndividual={isIndividual} today={today} />
-        {showCoachCheckIn ? <TodaySubmittedCheckIn title={params.submittedCheckIn} /> : null}
-        {showCoachCheckIn ? <TodayCheckInSurface /> : null}
-        <NoActiveProgramGuidance isIndividual={isIndividual} onAction={openAction} today={today} />
-        {!(isIndividual && !hasActiveProgram(today)) ? (
-          <TodayTraining isIndividual={isIndividual} onAction={openAction} today={today} />
+        {error ? (
+          <View style={styles.inlineError}>
+            <Ionicons name="cloud-offline-outline" size={18} color={palette.red} />
+            <Text style={styles.inlineErrorText}>{error}</Text>
+            <Pressable accessibilityRole="button" onPress={() => void loadToday({ silent: true })}>
+              <Text style={styles.inlineRetry}>Retry</Text>
+            </Pressable>
+          </View>
         ) : null}
-        <MeetPlanEntry
-          meet={today.phase?.meet}
-          onPress={() => openAction({ route: 'meet', label: 'View Meet Plan', meet_plan_id: today.phase?.meet?.id })}
+        <TodayHomeExperience
+          isIndividual={isIndividual}
+          onAction={openAction}
+          supplementaryContent={showCoachCheckIn ? (
+            <>
+              <TodaySubmittedCheckIn title={params.submittedCheckIn} />
+              <TodayCheckInSurface />
+            </>
+          ) : null}
+          today={today}
         />
-        <ReadinessLine isIndividual={isIndividual} today={today} />
-        <ContextTray isIndividual={isIndividual} onAction={openAction} today={today} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -484,7 +545,6 @@ function NoActiveProgramGuidance({
 
   return (
     <View style={styles.noProgramGuidance}>
-      <View style={styles.noProgramRail} />
       <View style={styles.noProgramCopy}>
         <Text style={styles.noProgramTitle}>No Active Program</Text>
         <Text style={styles.noProgramBody}>
@@ -510,17 +570,19 @@ function PresentState({ isIndividual, today }: { isIndividual?: boolean; today: 
   return (
     <View style={styles.presentZone}>
       <View style={styles.identityRow}>
-        <View style={styles.avatar}>
-          {today.athlete?.avatar_url ? (
-            <Image source={{ uri: today.athlete.avatar_url }} style={styles.avatarImage} />
-          ) : (
-            <Text style={styles.avatarText}>{initials(athleteName)}</Text>
-          )}
-        </View>
+        <SLProfileAvatar
+          fallbackInitials={initials(athleteName)}
+          name={athleteName}
+          profilePhotoUrl={today.athlete?.profilePhotoUrl}
+          profilePhotoVersion={today.athlete?.profilePhotoVersion}
+          size={64}
+          borderRadius={32}
+          style={styles.avatar}
+        />
         <View style={styles.identityText}>
-          <Text style={styles.todayKicker}>{isIndividual ? 'Good morning' : 'Today'}</Text>
-          <Text style={styles.athleteName}>{athleteName}</Text>
-          <Text style={styles.coachLine}>
+          <Text typographyRole="label" style={styles.todayKicker}>{isIndividual ? 'Good morning' : 'Today'}</Text>
+          <Text typographyRole="dynamicName" numberOfLines={2} style={styles.athleteName}>{athleteName}</Text>
+          <Text typographyRole="supportingBody" numberOfLines={2} style={styles.coachLine}>
             {isIndividual ? 'Self-coached training' : today.coach?.name ? `Coached by ${today.coach.name}` : 'Training companion'}
           </Text>
         </View>
@@ -549,7 +611,6 @@ function MeetPlanEntry({
       accessibilityRole="button"
       accessibilityLabel="View Meet Plan"
     >
-      <View style={styles.meetPlanRail} />
       <View style={styles.meetPlanCopy}>
         <View style={styles.meetPlanTopRow}>
           <Text style={styles.meetPlanKicker}>Meet Plan</Text>
@@ -609,56 +670,34 @@ function TodayTraining({
           style={[styles.restDayImage, hasSession && styles.trainingDayImage]}
           resizeMode="cover"
         />
-        <LinearGradient
-          colors={['rgba(18,18,30,0.94)', 'rgba(18,18,30,0.58)', 'rgba(18,18,30,0.16)']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.restDayImageSideFade}
-        />
-        <LinearGradient
-          colors={['rgba(18,18,30,0.22)', 'rgba(18,18,30,0.72)']}
-          start={{ x: 0.65, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.restDayImageDarken}
-        />
-        <LinearGradient
-          colors={['rgba(214,167,94,0.12)', 'rgba(139,92,246,0.05)', 'rgba(18,18,30,0)']}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.restDayImageWarmth}
-        />
+        <View style={styles.restDayImageScrim} />
         </View>
-      <View style={styles.todayTrainingRail} />
       <View style={[styles.todayTrainingBody, !hasSession && styles.todayTrainingBodyCompact]}>
         <View style={styles.todayTrainingTopRow}>
-          <Text style={styles.todayTrainingKicker}>{isIndividual ? "Today's Focus" : "Today's Training"}</Text>
+          <Text typographyRole="label" style={styles.todayTrainingKicker}>{isIndividual ? "Today's Focus" : "Today's Training"}</Text>
         </View>
 
         <View style={styles.todayFocusContentRow}>
           <View style={[styles.todayFocusCopy, hasSession ? styles.todayFocusCopyTraining : styles.todayFocusCopyRest]}>
-            <Text style={[styles.todayTrainingTitle, !hasSession && styles.todayTrainingTitleCompact]}>{sessionLabel}</Text>
-            <Text style={styles.todayTrainingDate}>{sessionDate}</Text>
-            <Text style={[styles.todayTrainingMovements, !hasSession && styles.todayTrainingMovementsCompact]} numberOfLines={2}>{trainingSummary.mainLine}</Text>
+            <Text typographyRole="workoutName" numberOfLines={2} style={[styles.todayTrainingTitle, !hasSession && styles.todayTrainingTitleCompact]}>{sessionLabel}</Text>
+            <Text typographyRole="supportingBody" style={styles.todayTrainingDate}>{sessionDate}</Text>
+            <Text typographyRole="movementName" style={[styles.todayTrainingMovements, !hasSession && styles.todayTrainingMovementsCompact]} numberOfLines={2}>{trainingSummary.mainLine}</Text>
             {trainingSummary.workLine ? (
-              <Text style={styles.todayTrainingSummary} numberOfLines={1}>{trainingSummary.workLine}</Text>
+              <Text typographyRole="caption" style={styles.todayTrainingSummary} numberOfLines={1}>{trainingSummary.workLine}</Text>
             ) : null}
           </View>
         </View>
 
         {sessionAction ? (
-          <Pressable
+          <SLButton
+            fullWidth
+            iconRight="arrow-forward"
+            iconRightPosition="edge"
+            label={actionLabel}
             onPress={() => onAction(sessionAction)}
-            style={({ pressed }) => [styles.primaryAction, pressed && styles.primaryActionPressed]}
-          >
-            <View style={styles.primaryActionRail} />
-            <View style={styles.primaryActionCopy}>
-              <Text style={styles.primaryActionKicker}>Session</Text>
-              <Text style={styles.primaryActionText}>{actionLabel}</Text>
-            </View>
-            <View style={styles.primaryActionIcon}>
-              <Ionicons name="arrow-forward" size={18} color={palette.violetSoft} />
-            </View>
-          </Pressable>
+            size="lg"
+            style={styles.primaryAction}
+          />
         ) : null}
       </View>
     </View>
@@ -687,20 +726,19 @@ function ReadinessLine({ isIndividual, today }: { isIndividual?: boolean; today:
 
   return (
     <View style={styles.readinessLine}>
-      <View style={styles.readinessRail} />
       <View style={styles.readinessIcon}>
         <Ionicons name="pulse-outline" size={24} color={palette.violetSoft} />
       </View>
       <View style={styles.readinessCopy}>
-        <Text style={styles.readinessKicker}>Readiness</Text>
-        <Text style={styles.readinessTitle}>{hasScore ? 'Ready' : 'Readiness'}</Text>
-        <Text style={styles.readinessMessage}>{readinessMessage}</Text>
-        {metricLine.length > 0 ? <Text style={styles.readinessMetrics}>{metricLine.join(' / ')}</Text> : null}
+        <Text typographyRole="label" style={styles.readinessKicker}>Readiness</Text>
+        <Text typographyRole="cardTitle" style={styles.readinessTitle}>{hasScore ? 'Ready' : 'Readiness'}</Text>
+        <Text typographyRole="supportingBody" style={styles.readinessMessage}>{readinessMessage}</Text>
+        {metricLine.length > 0 ? <Text typographyRole="caption" style={styles.readinessMetrics}>{metricLine.join(' / ')}</Text> : null}
       </View>
       {hasScore ? (
         <View style={styles.readinessScore}>
-          <Text style={styles.readinessScoreValue}>{score}</Text>
-          <Text style={styles.readinessScoreLabel}>Score</Text>
+          <Text typographyRole="displayNumeric" style={styles.readinessScoreValue}>{score}</Text>
+          <Text typographyRole="badge" style={styles.readinessScoreLabel}>Score</Text>
         </View>
       ) : null}
     </View>
@@ -780,7 +818,6 @@ function ContextTray({
         </View>
       ) : (
         <View style={styles.coachEmptyLine}>
-          <View style={styles.contextRail} />
           <Text style={styles.coachEmptyText}>No coach updates right now.</Text>
         </View>
       )}
@@ -870,7 +907,6 @@ function TrainingSignalRow({
 }) {
   const content = (
     <>
-      <View style={styles.contextRail} />
       <View style={styles.trainingSignalIcon}>
         <Ionicons name={icon} size={18} color={palette.violetSoft} />
       </View>
@@ -909,7 +945,6 @@ function CoachConnectionRow({
       onPress={onPress}
       style={({ pressed }) => [styles.coachPocket, pressed && styles.rowPressed]}
     >
-      <View style={styles.contextRail} />
       <View style={styles.contextCopy}>
         <Text style={styles.contextLabel}>{label}</Text>
         <Text style={styles.contextTitle}>{title}</Text>
@@ -1061,7 +1096,7 @@ function PatchNoteModal({
             </View>
           </View>
           <Text style={styles.patchModalBody}>
-            Here's where to go depending on what you need.
+            Here’s where to go depending on what you need.
           </Text>
           <ScrollView
             contentContainerStyle={styles.patchModalTourContent}
@@ -1232,7 +1267,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scrollContent: {
-    paddingHorizontal: 0,
     paddingTop: 12,
     paddingBottom: 104,
     gap: 16,
@@ -1246,13 +1280,34 @@ const styles = StyleSheet.create({
   },
   centeredText: {
     color: palette.muted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
   errorText: {
     color: palette.red,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     textAlign: 'center',
+  },
+  inlineError: {
+    minHeight: 44,
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: `${palette.red}66`,
+    backgroundColor: SLColors.dangerSoft,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  inlineErrorText: {
+    flex: 1,
+    color: palette.text,
+    fontSize: SLTypography.caption.fontSize,
+  },
+  inlineRetry: {
+    color: palette.violetSoft,
+    fontSize: SLTypography.buttonLabel.fontSize,
+    fontWeight: '700',
   },
   presentZone: {
     paddingTop: 8,
@@ -1267,7 +1322,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 64,
     height: 64,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1275,23 +1330,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
   },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-  },
-  avatarText: {
-    color: palette.violetSoft,
-    fontSize: 20,
-    fontWeight: '900',
-    letterSpacing: 0,
-  },
   identityText: {
     flex: 1,
     minWidth: 0,
   },
   todayKicker: {
     color: palette.violetSoft,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1305,7 +1350,7 @@ const styles = StyleSheet.create({
   },
   coachLine: {
     color: palette.muted,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     lineHeight: 22,
     marginTop: 2,
   },
@@ -1338,25 +1383,25 @@ const styles = StyleSheet.create({
   },
   meetPlanKicker: {
     color: palette.amber,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0,
   },
   meetPlanTiming: {
     color: palette.text,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   meetPlanTitle: {
     color: palette.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 23,
     fontWeight: '800',
   },
   meetPlanMeta: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     marginTop: 5,
   },
@@ -1365,27 +1410,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 5,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(214,167,94,0.08)',
   },
   meetPlanActionText: {
     color: palette.violetSoft,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   noProgramGuidance: {
     minHeight: 118,
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'rgba(24,16,15,0.42)',
+    backgroundColor: SLColors.surfaceCommand,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
-    borderRadius: 20,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.xl,
     overflow: 'hidden',
   },
   noProgramRail: {
-    width: 3,
-    backgroundColor: 'rgba(139,92,246,0.68)',
+    width: 0,
   },
   noProgramCopy: {
     flex: 1,
@@ -1404,7 +1446,7 @@ const styles = StyleSheet.create({
   },
   noProgramBody: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     fontWeight: '700',
     marginTop: 6,
@@ -1414,14 +1456,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(196,181,253,0.10)',
-    backgroundColor: 'rgba(139,92,246,0.075)',
+    backgroundColor: SLColors.surfaceMuted,
     paddingHorizontal: 10,
   },
   noProgramButtonText: {
     color: palette.textStrong,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
     fontWeight: '900',
     textAlign: 'center',
@@ -1431,10 +1471,10 @@ const styles = StyleSheet.create({
     minHeight: 248,
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: 'rgba(18,18,30,0.62)',
+    backgroundColor: SLColors.surfaceCommand,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
-    borderRadius: 22,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.xl,
   },
   todayTrainingZoneCompact: {
     minHeight: 0,
@@ -1458,14 +1498,9 @@ const styles = StyleSheet.create({
   trainingDayImage: {
     opacity: 0.58,
   },
-  restDayImageSideFade: {
+  restDayImageScrim: {
     ...StyleSheet.absoluteFillObject,
-  },
-  restDayImageDarken: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  restDayImageWarmth: {
-    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(3,5,8,0.54)',
   },
   todayTrainingRail: {
     width: 4,
@@ -1492,7 +1527,7 @@ const styles = StyleSheet.create({
   },
   todayTrainingKicker: {
     color: palette.amber,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1511,7 +1546,7 @@ const styles = StyleSheet.create({
   todayTrainingDate: {
     marginTop: 7,
     color: palette.muted,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     lineHeight: 18,
     fontWeight: '800',
   },
@@ -1525,14 +1560,14 @@ const styles = StyleSheet.create({
   todayTrainingMovementsCompact: {
     marginTop: 10,
     paddingTop: 10,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 20,
     fontWeight: '800',
     color: palette.muted,
   },
   todayTrainingSummary: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     marginTop: 8,
     fontWeight: '800',
@@ -1559,8 +1594,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.12)',
-    backgroundColor: 'rgba(139,92,246,0.10)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceMuted,
     overflow: 'hidden',
   },
   intentStack: {
@@ -1575,7 +1610,7 @@ const styles = StyleSheet.create({
   },
   intentLabel: {
     color: palette.steel,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1583,7 +1618,7 @@ const styles = StyleSheet.create({
   },
   intentValue: {
     color: palette.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     lineHeight: 24,
     fontWeight: '900',
   },
@@ -1594,19 +1629,19 @@ const styles = StyleSheet.create({
   },
   intentMetaLabel: {
     color: palette.subtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   intentMetaValue: {
     flex: 1,
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   intentDetails: {
     color: 'rgba(229,231,235,0.72)',
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
   },
   readinessLine: {
@@ -1616,31 +1651,31 @@ const styles = StyleSheet.create({
     minHeight: 136,
     paddingVertical: 18,
     paddingRight: 16,
-    backgroundColor: 'rgba(18,18,30,0.54)',
+    backgroundColor: SLColors.surfaceCommand,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
-    borderRadius: 22,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.xl,
     overflow: 'hidden',
   },
   readinessRail: {
-    width: 4,
+    width: 0,
     alignSelf: 'stretch',
     backgroundColor: 'rgba(139,92,246,0.88)',
   },
   readinessIcon: {
     width: 54,
     height: 54,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.14)',
+    backgroundColor: SLColors.surfaceMuted,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.20)',
+    borderColor: SLColors.borderSubtle,
   },
   readinessScore: {
     width: 78,
     height: 78,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
@@ -1649,7 +1684,7 @@ const styles = StyleSheet.create({
   },
   readinessScoreValue: {
     color: palette.textStrong,
-    fontSize: 28,
+    fontSize: SLTypography.hero.fontSize,
     lineHeight: 31,
     fontWeight: '900',
   },
@@ -1666,7 +1701,7 @@ const styles = StyleSheet.create({
   },
   readinessKicker: {
     color: palette.violetSoft,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1681,62 +1716,22 @@ const styles = StyleSheet.create({
   },
   readinessMessage: {
     color: palette.text,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '700',
   },
   readinessMetrics: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     marginTop: 6,
   },
   primaryAction: {
-    minHeight: 62,
     marginTop: 'auto',
-    borderRadius: 6,
-    backgroundColor: 'rgba(24,16,15,0.48)',
-    borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.16)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    overflow: 'hidden',
   },
   primaryActionPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.99 }],
-  },
-  primaryActionText: {
-    color: palette.textStrong,
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: 0,
-  },
-  primaryActionRail: {
-    width: 3,
-    alignSelf: 'stretch',
-    backgroundColor: palette.violet,
-  },
-  primaryActionCopy: {
-    flex: 1,
-    paddingHorizontal: 14,
-  },
-  primaryActionKicker: {
-    color: palette.violetSoft,
-    fontSize: 10,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 0,
-    marginBottom: 2,
-  },
-  primaryActionIcon: {
-    width: 42,
-    height: 42,
-    marginRight: 10,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.10)',
   },
   contextZone: {
     gap: 16,
@@ -1752,10 +1747,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     minHeight: 100,
-    backgroundColor: 'rgba(18,18,30,0.50)',
+    backgroundColor: SLColors.surfaceCommand,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.16)',
-    borderRadius: 20,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.xl,
     paddingVertical: 14,
     paddingRight: 14,
     overflow: 'hidden',
@@ -1771,23 +1766,23 @@ const styles = StyleSheet.create({
   },
   coachEmptyText: {
     color: palette.subtle,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   contextRail: {
-    width: 4,
+    width: 0,
     alignSelf: 'stretch',
     backgroundColor: 'rgba(139,92,246,0.70)',
   },
   trainingSignalIcon: {
     width: 46,
     height: 46,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.10)',
+    backgroundColor: SLColors.surfaceMuted,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.14)',
+    borderColor: SLColors.borderSubtle,
   },
   contextCopy: {
     flex: 1,
@@ -1795,7 +1790,7 @@ const styles = StyleSheet.create({
   },
   contextLabel: {
     color: palette.violetSoft,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1809,7 +1804,7 @@ const styles = StyleSheet.create({
   },
   contextBody: {
     color: palette.text,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 21,
     marginTop: 5,
   },
@@ -1828,7 +1823,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.15)',
-    borderRadius: 20,
+    borderRadius: SLRadius.xl,
     backgroundColor: 'rgba(18,18,30,0.48)',
   },
   glanceDivider: {
@@ -1836,7 +1831,7 @@ const styles = StyleSheet.create({
   },
   glanceLabel: {
     color: palette.muted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0,
@@ -1851,7 +1846,7 @@ const styles = StyleSheet.create({
   },
   glanceMeta: {
     color: palette.subtle,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 6,
   },
@@ -1865,7 +1860,7 @@ const styles = StyleSheet.create({
   patchModalCard: {
     width: '100%',
     maxWidth: 360,
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 22,
     paddingVertical: 22,
     backgroundColor: 'rgba(24,16,15,0.98)',
@@ -1882,7 +1877,7 @@ const styles = StyleSheet.create({
   patchModalIconWrap: {
     width: 42,
     height: 42,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(124,108,255,0.16)',
@@ -1901,20 +1896,20 @@ const styles = StyleSheet.create({
   },
   patchModalSubtitle: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     lineHeight: 17,
     marginTop: 3,
   },
   patchModalBody: {
     color: palette.text,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
     marginBottom: 12,
   },
   patchModalSubtext: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     marginBottom: 18,
   },
@@ -1947,18 +1942,18 @@ const styles = StyleSheet.create({
   },
   patchModalFlowLabel: {
     color: palette.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   patchModalPurpose: {
     color: palette.text,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     lineHeight: 17,
   },
   patchModalFlowDetail: {
     color: palette.muted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     lineHeight: 17,
   },
@@ -1967,14 +1962,14 @@ const styles = StyleSheet.create({
   },
   patchModalButton: {
     minHeight: 46,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: palette.violet,
   },
   patchModalButtonText: {
     color: palette.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   individualWelcomeSecondary: {
@@ -1984,7 +1979,7 @@ const styles = StyleSheet.create({
   },
   individualWelcomeSecondaryText: {
     color: palette.muted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
 });

@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLButton } from './sl-button';
+import { SLMotionEntrance } from './sl-motion';
+import { SLMaterialOverlay } from './sl-workspace';
 import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -65,11 +68,11 @@ export function SLLoadingState({
   const palette = SLStatusTones[tone];
 
   return (
-    <View style={[styles.frame, style]}>
+    <SLMotionEntrance motionKey={`loading-${title}`} distance={SLSpacing.xs} style={[styles.frame, style]}>
       <ActivityIndicator color={palette.icon} size="small" />
-      <Text style={styles.title}>{title}</Text>
-      {message ? <Text style={styles.message}>{message}</Text> : null}
-    </View>
+      <Text typographyRole="emptyStateTitle" style={styles.title}>{title}</Text>
+      {message ? <Text typographyRole="emptyStateBody" style={styles.message}>{message}</Text> : null}
+    </SLMotionEntrance>
   );
 }
 
@@ -84,7 +87,7 @@ function StateFrame({
   const palette = SLStatusTones[tone];
 
   return (
-    <View style={[styles.frame, style]}>
+    <SLMotionEntrance motionKey={`${tone}-${title}`} distance={SLSpacing.xs} style={[styles.frame, style]}>
       {icon ? (
         <View
           style={[
@@ -95,33 +98,34 @@ function StateFrame({
             },
           ]}
         >
+          <SLMaterialOverlay compact level={2} />
           <Ionicons color={palette.icon} name={icon} size={24} />
         </View>
       ) : null}
-      <Text style={styles.title}>{title}</Text>
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      <Text typographyRole="emptyStateTitle" style={styles.title}>{title}</Text>
+      {message ? <Text typographyRole="emptyStateBody" style={styles.message}>{message}</Text> : null}
       {children ? <View style={styles.action}>{children}</View> : null}
-    </View>
+    </SLMotionEntrance>
   );
 }
 
 const styles = StyleSheet.create({
   frame: {
     alignItems: 'center',
-    backgroundColor: SLColors.surface,
-    borderColor: SLColors.border,
-    borderRadius: SLRadius.md,
-    borderWidth: 1,
-    gap: SLSpacing.sm,
-    padding: SLSpacing.xl,
+    backgroundColor: 'transparent',
+    gap: SLSpacing.md,
+    paddingHorizontal: SLSpacing.xl,
+    paddingVertical: SLSpacing.xxxl,
   },
   iconWrap: {
     alignItems: 'center',
-    borderRadius: SLRadius.lg,
-    borderWidth: 1,
-    height: 48,
+    borderRadius: SLRadius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 52,
     justifyContent: 'center',
-    width: 48,
+    overflow: 'hidden',
+    position: 'relative',
+    width: 52,
   },
   title: {
     color: SLColors.textStrong,

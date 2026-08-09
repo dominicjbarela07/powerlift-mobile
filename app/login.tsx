@@ -2,23 +2,21 @@
 import React, { ComponentType, useEffect, useState } from 'react';
 import {
   View,
-  TextInput,
   Pressable,
   StyleSheet,
-  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Text,
   Linking,
 } from 'react-native';
+import { TextInput, Text } from '@/components/ui/sl-text';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginRequest, mobileOAuthRequest, registerMobileRequest, type ApiLoginResponse } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
+import { SLButton } from '@/components/ui';
 
 const PASSWORD_RESET_URL = 'https://app.strengthledger.fit/auth/reset_request';
 
@@ -165,7 +163,7 @@ export default function LoginScreen() {
         params: { athlete_id: String(authUser.athlete_id) },
       });
     } else if (authUser.is_coach) {
-      router.replace('/coach-dashboard');
+      router.replace('/(tabs)/coach-roster');
     } else {
       router.replace('/');
     }
@@ -329,13 +327,6 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.screen}>
-      <LinearGradient
-        colors={['#24172F', '#111016', '#070707', '#050505']}
-        locations={[0, 0.28, 0.68, 1]}
-        start={{ x: 0.25, y: 0 }}
-        end={{ x: 0.75, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -355,7 +346,10 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.header}>
-              <Text style={styles.title}>{authMode === 'signup' ? 'Create account' : 'Welcome back'}</Text>
+              <Text typographyRole="pageTitle" style={styles.title}>{authMode === 'signup' ? 'Create account' : 'Welcome back'}</Text>
+              <Text typographyRole="supportingBody" style={styles.headerSubtitle}>
+                {authMode === 'signup' ? 'Build your training space.' : 'Return to the work.'}
+              </Text>
             </View>
 
             <View style={styles.form}>
@@ -549,22 +543,15 @@ export default function LoginScreen() {
                 </View>
               ) : null}
 
-              <Pressable
-                style={({ pressed }) => [
-                  styles.btnPrimary,
-                  pressed && !loading && styles.btnPrimaryPressed,
-                  loading && styles.btnPrimaryLoading,
-                  authMode === 'signup' && !canSubmitSignup && styles.btnPrimaryDisabled,
-                ]}
+              <SLButton
+                fullWidth
+                label={authMode === 'signup' ? 'Create Account' : 'Sign in'}
                 onPress={authMode === 'signup' ? handleSignup : handleLogin}
                 disabled={loading || (authMode === 'signup' && !canSubmitSignup)}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#F5F3FF" />
-                ) : (
-                  <Text style={styles.btnPrimaryText}>{authMode === 'signup' ? 'Create Account' : 'Sign in'}</Text>
-                )}
-              </Pressable>
+                loading={loading}
+                size="lg"
+                style={styles.authSubmit}
+              />
 
               {authMode === 'login' && pendingOAuth ? (
                 <View style={styles.setupPanel}>
@@ -642,17 +629,14 @@ export default function LoginScreen() {
                       Self-Coach creates an Individual workspace for your own training.
                     </Text>
                   ) : null}
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.btnSecondary,
-                      pressed && !oauthLoading && styles.btnPrimaryPressed,
-                      oauthLoading && styles.btnPrimaryLoading,
-                    ]}
+                  <SLButton
+                    fullWidth
+                    label="Finish setup"
                     onPress={finishOAuthSetup}
                     disabled={!!oauthLoading}
-                  >
-                    <Text style={styles.btnSecondaryText}>Finish setup</Text>
-                  </Pressable>
+                    loading={!!oauthLoading}
+                    variant="secondary"
+                  />
                 </View>
               ) : null}
 
@@ -686,7 +670,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: 'transparent',
   },
   safeArea: {
     flex: 1,
@@ -697,36 +681,44 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 42,
-    paddingBottom: 34,
+    paddingHorizontal: 16,
+    paddingTop: 28,
+    paddingBottom: 28,
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
   },
   brandBlock: {
     alignItems: 'center',
-    marginBottom: 46,
+    marginBottom: 34,
   },
   logo: {
-    width: 240,
-    height: 54,
+    width: 224,
+    height: 50,
   },
   header: {
-    marginBottom: 22,
+    marginBottom: 18,
+    gap: 5,
   },
   title: {
     fontFamily: SLTypography.commandTitle.fontFamily,
-    fontSize: 30,
-    lineHeight: 35,
+    fontSize: SLTypography.hero.fontSize,
+    lineHeight: SLTypography.hero.lineHeight,
     fontWeight: SLTypography.commandTitle.fontWeight,
-    color: '#F8FAFC',
-    letterSpacing: 0,
+    color: SLColors.textStrong,
+    letterSpacing: SLTypography.hero.letterSpacing,
+  },
+  headerSubtitle: {
+    ...SLTypography.body,
+    color: SLColors.textMuted,
   },
   form: {
-    gap: 15,
-    paddingVertical: 18,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.08)',
-    backgroundColor: 'rgba(10, 8, 9, 0.24)',
+    gap: 16,
+    padding: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusHero,
+    backgroundColor: SLColors.surface,
   },
   emailDivider: {
     flexDirection: 'row',
@@ -741,8 +733,8 @@ const styles = StyleSheet.create({
   },
   emailDividerText: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 11,
-    color: '#8F857A',
+    fontSize: SLTypography.micro.fontSize,
+    color: SLColors.textSubtle,
     textTransform: 'uppercase',
     letterSpacing: 0.3,
   },
@@ -758,90 +750,52 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
-    color: '#A69B8D',
+    color: SLColors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.35,
   },
   input: {
     borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.10)',
-    borderRadius: 8,
-    paddingHorizontal: 13,
-    paddingVertical: 13,
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
-    color: '#F8FAFC',
-    backgroundColor: 'rgba(8, 8, 10, 0.58)',
-  },
-  btnPrimary: {
-    marginTop: 4,
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusRow,
     minHeight: 52,
-    backgroundColor: 'rgba(124, 58, 237, 0.58)',
-    borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.28)',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontFamily: SLFontFamilies.sans,
+    fontSize: SLTypography.body.fontSize,
+    color: SLColors.textStrong,
+    backgroundColor: SLColors.surfaceInset,
   },
-  btnPrimaryPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.99 }],
-  },
-  btnPrimaryLoading: {
-    opacity: 0.72,
-  },
-  btnPrimaryDisabled: {
-    opacity: 0.44,
-  },
-  btnPrimaryText: {
-    fontFamily: SLTypography.buttonLabel.fontFamily,
-    color: '#F5F3FF',
-    fontSize: 14,
-    fontWeight: SLTypography.buttonLabel.fontWeight,
-    letterSpacing: 0,
-  },
-  btnSecondary: {
-    minHeight: 48,
-    backgroundColor: 'rgba(28, 24, 20, 0.86)',
-    borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.22)',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnSecondaryText: {
-    fontFamily: SLTypography.buttonLabel.fontFamily,
-    color: '#F8FAFC',
-    fontSize: 14,
-    fontWeight: SLTypography.buttonLabel.fontWeight,
+  authSubmit: {
+    marginTop: 4,
   },
   setupPanel: {
     gap: 12,
     marginTop: 2,
     padding: 14,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
-    borderRadius: 8,
-    backgroundColor: 'rgba(16, 13, 18, 0.72)',
+    borderColor: SLColors.borderSubtle,
+    borderRadius: SLRadius.radiusCard,
+    backgroundColor: SLColors.surfaceRaised,
   },
   setupTitle: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 16,
-    color: '#F8FAFC',
+    fontSize: SLTypography.cardTitle.fontSize,
+    color: SLColors.textStrong,
   },
   setupCopy: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
-    color: '#A69B8D',
+    color: SLColors.textMuted,
   },
   setupHint: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
-    color: '#A69B8D',
+    color: SLColors.textMuted,
   },
   roleGrid: {
     flexDirection: 'row',
@@ -850,24 +804,24 @@ const styles = StyleSheet.create({
   roleOption: {
     flex: 1,
     minHeight: 44,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.13)',
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: SLColors.borderSubtle,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(8, 8, 10, 0.58)',
+    backgroundColor: SLColors.surfaceInset,
   },
   roleOptionActive: {
-    borderColor: 'rgba(196,181,253,0.45)',
-    backgroundColor: 'rgba(124, 58, 237, 0.26)',
+    borderColor: SLColors.accent,
+    backgroundColor: SLColors.accent,
   },
   roleOptionText: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    color: '#A69B8D',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
   },
   roleOptionTextActive: {
-    color: '#F8FAFC',
+    color: SLColors.textInverted,
   },
   linkRail: {
     marginTop: 4,
@@ -883,59 +837,55 @@ const styles = StyleSheet.create({
   linkDivider: {
     width: 3,
     height: 3,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(184, 172, 161, 0.42)',
   },
   linkText: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
-    color: '#A69B8D',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textMuted,
   },
   linkTextStrong: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 13,
-    color: '#C4B5FD',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textStrong,
   },
   errorBox: {
     paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: 'rgba(232, 137, 137, 0.10)',
-    borderLeftWidth: 2,
-    borderLeftColor: '#E88989',
   },
   errorText: {
     fontFamily: SLFontFamilies.sans,
-    color: '#FCA5A5',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   passwordCheck: {
     marginTop: -6,
     paddingVertical: 8,
     paddingHorizontal: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(196, 181, 253, 0.45)',
     backgroundColor: 'rgba(124, 58, 237, 0.08)',
   },
   passwordCheckOk: {
-    borderLeftColor: '#9ED9B2',
+    borderLeftColor: SLColors.success,
     backgroundColor: 'rgba(158, 217, 178, 0.08)',
   },
   passwordCheckError: {
-    borderLeftColor: '#E88989',
+    borderLeftColor: SLColors.danger,
     backgroundColor: 'rgba(232, 137, 137, 0.08)',
   },
   passwordCheckText: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
-    color: '#C4B5FD',
+    color: SLColors.accentViolet,
   },
   passwordCheckTextOk: {
-    color: '#9ED9B2',
+    color: SLColors.success,
   },
   passwordCheckTextError: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   passwordRow: {
     position: 'relative',
@@ -954,7 +904,7 @@ const styles = StyleSheet.create({
   },
   eyeText: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 13,
-    color: '#C4B5FD',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textStrong,
   },
 });

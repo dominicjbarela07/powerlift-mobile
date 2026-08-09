@@ -8,10 +8,9 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { SLScreen } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
@@ -95,8 +94,8 @@ export default function CoachInviteAthleteScreen() {
             </Pressable>
             <View style={styles.headerCopy}>
               <Text style={styles.eyebrow}>Roster invite</Text>
-              <Text style={styles.title}>Invite your first athlete</Text>
-              <Text style={styles.subtitle}>
+              <Text typographyRole="pageTitle" numberOfLines={2} style={styles.title}>Invite your first athlete</Text>
+              <Text typographyRole="supportingBody" style={styles.subtitle}>
                 Send an invite through Strength Ledger so the athlete can accept, verify their email, and join your roster.
               </Text>
             </View>
@@ -122,7 +121,7 @@ export default function CoachInviteAthleteScreen() {
                 style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
               >
                 <Text style={styles.primaryButtonText}>Back to Roster</Text>
-                <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+                <Ionicons name="arrow-forward" size={18} color={SLColors.white} />
               </Pressable>
             </View>
           ) : (
@@ -186,7 +185,7 @@ export default function CoachInviteAthleteScreen() {
                   pressed && canSubmit && styles.pressed,
                 ]}
               >
-                {submitting ? <ActivityIndicator color="#FFFFFF" /> : <Ionicons name="send-outline" size={18} color="#FFFFFF" />}
+                {submitting ? <ActivityIndicator color={SLColors.white} /> : <Ionicons name="send-outline" size={18} color={SLColors.white} />}
                 <Text style={styles.primaryButtonText}>{submitting ? 'Sending Invite...' : 'Send Invite'}</Text>
               </Pressable>
             </View>
@@ -249,24 +248,16 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: SLColors.accentMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
   title: {
     color: SLColors.textStrong,
-    fontFamily: SLTypography.cardTitle.fontFamily,
-    fontSize: 31,
-    fontWeight: '800',
-    letterSpacing: 0,
-    lineHeight: 36,
   },
   subtitle: {
     color: SLColors.textMuted,
-    fontFamily: SLTypography.body.fontFamily,
-    fontSize: 15,
-    lineHeight: 22,
   },
   formCard: {
     backgroundColor: SLColors.surface,
@@ -286,7 +277,7 @@ const styles = StyleSheet.create({
   },
   planTitle: {
     color: SLColors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
   },
@@ -297,9 +288,9 @@ const styles = StyleSheet.create({
   },
   stepNumber: {
     backgroundColor: SLColors.accentVioletSoft,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     color: SLColors.accentMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     height: 22,
     lineHeight: 22,
@@ -310,7 +301,7 @@ const styles = StyleSheet.create({
   stepText: {
     color: SLColors.text,
     flex: 1,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   fields: {
@@ -321,7 +312,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textTransform: 'uppercase',
@@ -332,15 +323,15 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.sm,
     borderWidth: 1,
     color: SLColors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     minHeight: 52,
     paddingHorizontal: SLSpacing.md,
     paddingVertical: 13,
   },
   errorBox: {
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(239, 68, 68, 0.10)',
-    borderColor: 'rgba(239, 68, 68, 0.28)',
+    backgroundColor: SLColors.dangerSoft,
+    borderColor: SLColors.danger,
     borderRadius: SLRadius.sm,
     borderWidth: 1,
     flexDirection: 'row',
@@ -350,12 +341,12 @@ const styles = StyleSheet.create({
   errorText: {
     color: SLColors.textStrong,
     flex: 1,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   warningText: {
     color: SLColors.warning,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     textAlign: 'center',
   },
@@ -370,8 +361,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SLSpacing.lg,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
+    color: SLColors.white,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
   },
   disabledButton: {
@@ -392,8 +383,8 @@ const styles = StyleSheet.create({
   },
   successIcon: {
     alignItems: 'center',
-    backgroundColor: 'rgba(77, 214, 199, 0.12)',
-    borderColor: 'rgba(77, 214, 199, 0.28)',
+    backgroundColor: SLColors.accentSteelSoft,
+    borderColor: SLColors.accentCyanMuted,
     borderRadius: SLRadius.md,
     borderWidth: 1,
     height: 56,
@@ -402,14 +393,14 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     color: SLColors.textStrong,
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '800',
     letterSpacing: 0,
     textAlign: 'center',
   },
   successText: {
     color: SLColors.textMuted,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
     textAlign: 'center',
   },

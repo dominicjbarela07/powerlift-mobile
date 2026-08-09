@@ -10,10 +10,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,8 +20,10 @@ import { useRouter } from 'expo-router';
 
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
+import { SLTrophy } from '@/components/ui';
 import { fetchJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 type LiftKey = 'SQ' | 'BN' | 'DL';
 type MainTab = 'overview' | 'attempts' | 'warmups' | 'notes' | 'summary';
@@ -463,12 +464,12 @@ export default function AthleteMeetPlanScreen() {
   }, []);
 
   const loadMeetPlan = useCallback(
-    async (opts?: { silent?: boolean }) => {
+    async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
       const silent = !!opts?.silent;
 
       try {
         if (silent) {
-          setRefreshing(true);
+          if (opts?.showRefreshIndicator !== false) setRefreshing(true);
         } else {
           setLoading(true);
         }
@@ -520,7 +521,7 @@ export default function AthleteMeetPlanScreen() {
         setPayload(null);
       } finally {
         if (silent) {
-          setRefreshing(false);
+          if (opts?.showRefreshIndicator !== false) setRefreshing(false);
         } else {
           setLoading(false);
         }
@@ -537,7 +538,7 @@ export default function AthleteMeetPlanScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadMeetPlan({ silent: true });
+      loadMeetPlan({ silent: true, showRefreshIndicator: false });
     }, [loadMeetPlan])
   );
 
@@ -926,7 +927,7 @@ export default function AthleteMeetPlanScreen() {
                 pressed && styles.pressed,
               ]}
             >
-              <Ionicons name={tab.icon} size={15} color={active ? '#E9E3FF' : '#94A3B8'} />
+              <Ionicons name={tab.icon} size={15} color={active ? SLColors.accentViolet : SLColors.textMuted} />
               <Text style={[styles.mainTabText, active ? styles.mainTabTextActive : null]}>{tab.label}</Text>
             </Pressable>
           );
@@ -956,9 +957,8 @@ export default function AthleteMeetPlanScreen() {
             <Text style={[styles.liftTabText, active ? styles.liftTabTextActive : null]}>{liftLabels[lift]}</Text>
             <View style={styles.liftTabMetaRow}>
               <Text style={[styles.liftTabMeta, active ? styles.liftTabMetaActive : null]}>{logged}/{total}</Text>
-              {complete ? <Ionicons name="checkmark" size={12} color={active ? '#FDE68A' : '#A7CBB5'} /> : null}
+              {complete ? <Ionicons name="checkmark" size={12} color={active ? SLColors.warning : SLColors.success} /> : null}
             </View>
-            <View style={[styles.liftTabRail, active ? styles.liftTabRailActive : complete ? styles.liftTabRailComplete : null]} />
           </Pressable>
         );
       })}
@@ -1001,7 +1001,6 @@ export default function AthleteMeetPlanScreen() {
     return (
       <View style={styles.packetStack}>
         <View style={styles.packetHero}>
-          <View style={styles.packetHeroRail} />
           <View style={styles.packetHeroBody}>
             <View style={styles.packetHeroTop}>
               <View>
@@ -1012,7 +1011,7 @@ export default function AthleteMeetPlanScreen() {
                 onPress={() => setDetailsModalOpen(true)}
                 style={({ pressed }) => [styles.packetUtilityButton, pressed && styles.pressed]}
               >
-                <Ionicons name="create-outline" size={14} color="#C4B5FD" />
+                <Ionicons name="create-outline" size={14} color={SLColors.accentViolet} />
                 <Text style={styles.packetUtilityText}>Edit</Text>
               </Pressable>
             </View>
@@ -1029,13 +1028,13 @@ export default function AthleteMeetPlanScreen() {
                 style={({ pressed }) => [styles.packetPrimaryButton, pressed && styles.pressed]}
               >
                 <Text style={styles.packetPrimaryText}>Begin Meet</Text>
-                <Ionicons name="arrow-forward" size={16} color="#DCFCE7" />
+                <Ionicons name="arrow-forward" size={16} color={SLColors.success} />
               </Pressable>
             ) : null}
             {meet.status === 'active' ? (
               <View style={styles.packetPrimaryButton}>
                 <Text style={styles.packetPrimaryText}>Log Attempts</Text>
-                <Ionicons name="radio-button-on-outline" size={16} color="#DCFCE7" />
+                <Ionicons name="radio-button-on-outline" size={16} color={SLColors.success} />
               </View>
             ) : null}
             {meet?.can_finish_meet ? (
@@ -1044,7 +1043,7 @@ export default function AthleteMeetPlanScreen() {
                 style={({ pressed }) => [styles.packetPrimaryButton, pressed && styles.pressed]}
               >
                 <Text style={styles.packetPrimaryText}>Finish Meet</Text>
-                <Ionicons name="checkmark-done-outline" size={16} color="#DCFCE7" />
+                <Ionicons name="checkmark-done-outline" size={16} color={SLColors.success} />
               </Pressable>
             ) : null}
           </View>
@@ -1059,7 +1058,7 @@ export default function AthleteMeetPlanScreen() {
             {readinessRows.map((row) => (
               <View key={row.label} style={styles.readinessPacketRow}>
                 <View style={[styles.readinessMark, row.ready ? styles.readinessMarkReady : null]}>
-                  <Ionicons name={row.ready ? 'checkmark' : 'ellipse-outline'} size={13} color={row.ready ? '#DCFCE7' : '#A69B8D'} />
+                  <Ionicons name={row.ready ? 'checkmark' : 'ellipse-outline'} size={13} color={row.ready ? SLColors.success : SLColors.textMuted} />
                 </View>
                 <View style={styles.readinessPacketCopy}>
                   <Text style={styles.readinessPacketLabel}>{row.label}</Text>
@@ -1102,7 +1101,7 @@ export default function AthleteMeetPlanScreen() {
               <Text style={styles.packetSectionLabel}>Warmups</Text>
               <Text style={styles.packetSectionMeta}>{liftLabels[activeLift]} · {warmupsForLift.length} sets</Text>
             </View>
-            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color="#A69B8D" />
+            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color={SLColors.textMuted} />
           </Pressable>
           {renderLiftTabs()}
           {!activeWarmupsCollapsed ? (
@@ -1125,7 +1124,7 @@ export default function AthleteMeetPlanScreen() {
                       <Text style={styles.warmupPacketMeta}>{[warmup.minutes_until_opener != null ? `-${warmup.minutes_until_opener} min` : null, warmup.label].filter(Boolean).join(' / ') || 'Warmup set'}</Text>
                     </View>
                     {canLogMeetResults ? (
-                      <Ionicons name={checkedWarmups[warmup.id] ? 'checkmark-circle' : 'ellipse-outline'} size={20} color={checkedWarmups[warmup.id] ? '#A7CBB5' : '#A69B8D'} />
+                      <Ionicons name={checkedWarmups[warmup.id] ? 'checkmark-circle' : 'ellipse-outline'} size={20} color={checkedWarmups[warmup.id] ? SLColors.success : SLColors.textMuted} />
                     ) : null}
                   </Pressable>
                 ))
@@ -1150,7 +1149,7 @@ export default function AthleteMeetPlanScreen() {
                   onPress={() => setCheckedGear((prev) => ({ ...prev, [item]: !prev[item] }))}
                   style={({ pressed }) => [styles.gearPacketRow, pressed && styles.pressed]}
                 >
-                  <Ionicons name={checked ? 'checkmark-circle' : 'ellipse-outline'} size={20} color={checked ? '#A7CBB5' : '#A69B8D'} />
+                  <Ionicons name={checked ? 'checkmark-circle' : 'ellipse-outline'} size={20} color={checked ? SLColors.success : SLColors.textMuted} />
                   <Text style={[styles.gearText, checked ? styles.gearTextChecked : null]}>{item}</Text>
                 </Pressable>
               );
@@ -1217,7 +1216,7 @@ export default function AthleteMeetPlanScreen() {
                     onPress={() => setDetailsModalOpen(false)}
                     style={({ pressed }) => [styles.modalCloseButton, pressed && styles.pressed]}
                   >
-                    <Ionicons name="close" size={18} color="#CBD5E1" />
+                    <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
                 </View>
 
@@ -1232,11 +1231,11 @@ export default function AthleteMeetPlanScreen() {
                     <View style={styles.meetControlStack}>
                       <View>
                         <Text style={styles.meetFieldLabel}>Location</Text>
-                        <TextInput value={meetForm.location} onChangeText={(value) => updateMeetFormField('location', value)} placeholder="Venue / city" placeholderTextColor="#8B8178" style={styles.meetFieldInput} />
+                        <TextInput value={meetForm.location} onChangeText={(value) => updateMeetFormField('location', value)} placeholder="Venue / city" placeholderTextColor={SLColors.textSubtle} style={styles.meetFieldInput} />
                       </View>
                       <View>
                         <Text style={styles.meetFieldLabel}>Flight / Platform</Text>
-                        <TextInput value={meetForm.flight_platform} onChangeText={(value) => updateMeetFormField('flight_platform', value)} placeholder="A / Platform 1" placeholderTextColor="#8B8178" style={styles.meetFieldInput} />
+                        <TextInput value={meetForm.flight_platform} onChangeText={(value) => updateMeetFormField('flight_platform', value)} placeholder="A / Platform 1" placeholderTextColor={SLColors.textSubtle} style={styles.meetFieldInput} />
                       </View>
                       <View>
                         <View style={styles.selectorLabelRow}>
@@ -1256,7 +1255,7 @@ export default function AthleteMeetPlanScreen() {
                     <Text style={styles.meetDetailsSectionTitle}>Check-in</Text>
                     <View style={styles.compactInputRow}>
                       <Text style={styles.compactInputLabel}>Actual BW</Text>
-                      <TextInput value={meetForm.weigh_in_bodyweight_kg} onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)} placeholder="89.7" placeholderTextColor="#8B8178" keyboardType="decimal-pad" style={styles.compactNumberInput} />
+                      <TextInput value={meetForm.weigh_in_bodyweight_kg} onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)} placeholder="89.7" placeholderTextColor={SLColors.textSubtle} keyboardType="decimal-pad" style={styles.compactNumberInput} />
                       <Text style={styles.compactInputUnit}>kg</Text>
                     </View>
                   </View>
@@ -1287,18 +1286,18 @@ export default function AthleteMeetPlanScreen() {
                     <View style={styles.meetBagEditorList}>
                       {meetBagDraftItems.map((item, index) => (
                         <View key={`${item}-${index}`} style={styles.meetBagEditorRow}>
-                          <Ionicons name="bag-check-outline" size={17} color="#D6A75E" />
+                          <Ionicons name="bag-check-outline" size={17} color={SLColors.warning} />
                           <Text style={styles.meetBagEditorText}>{item}</Text>
                           <Pressable onPress={() => removeMeetBagDraftItem(index)} hitSlop={8} style={({ pressed }) => [styles.meetBagDeleteButton, pressed && styles.pressed]}>
-                            <Ionicons name="close" size={16} color="#B8ACA1" />
+                            <Ionicons name="close" size={16} color={SLColors.textMuted} />
                           </Pressable>
                         </View>
                       ))}
                     </View>
                     <View style={styles.meetBagAddRow}>
-                      <TextInput value={newMeetBagItem} onChangeText={setNewMeetBagItem} placeholder="Add item" placeholderTextColor="#8B8178" style={styles.meetBagAddInput} returnKeyType="done" onSubmitEditing={addMeetBagDraftItem} />
+                      <TextInput value={newMeetBagItem} onChangeText={setNewMeetBagItem} placeholder="Add item" placeholderTextColor={SLColors.textSubtle} style={styles.meetBagAddInput} returnKeyType="done" onSubmitEditing={addMeetBagDraftItem} />
                       <Pressable onPress={addMeetBagDraftItem} style={({ pressed }) => [styles.meetBagAddButton, pressed && styles.pressed]}>
-                        <Ionicons name="add" size={17} color="#C4B5FD" />
+                        <Ionicons name="add" size={17} color={SLColors.accentViolet} />
                         <Text style={styles.meetBagAddText}>Add</Text>
                       </Pressable>
                     </View>
@@ -1360,7 +1359,6 @@ export default function AthleteMeetPlanScreen() {
     return (
       <View style={styles.packetStack}>
         <View style={[styles.packetHero, styles.activeHero]}>
-          <View style={styles.activeHeroRail} />
           <View style={styles.packetHeroBody}>
             <View style={styles.packetHeroTop}>
               <View>
@@ -1389,7 +1387,7 @@ export default function AthleteMeetPlanScreen() {
             {remaining === 0 ? (
               <Pressable onPress={() => updateMeetStatus('finish')} style={({ pressed }) => [styles.packetPrimaryButton, pressed && styles.pressed]}>
                 <Text style={styles.packetPrimaryText}>Finish Meet</Text>
-                <Ionicons name="checkmark-done-outline" size={16} color="#DCFCE7" />
+                <Ionicons name="checkmark-done-outline" size={16} color={SLColors.success} />
               </Pressable>
             ) : null}
           </View>
@@ -1404,7 +1402,6 @@ export default function AthleteMeetPlanScreen() {
             <View style={styles.activeInstructionList}>
               {meetInstructions.map((instruction) => (
                 <View key={instruction.key} style={styles.activeInstructionRow}>
-                  <View style={styles.activeInstructionRail} />
                   <View style={styles.activeInstructionCopy}>
                     <Text style={styles.activeInstructionLabel}>{instruction.label}</Text>
                     <Text style={styles.activeInstructionBody}>{instruction.body}</Text>
@@ -1427,7 +1424,7 @@ export default function AthleteMeetPlanScreen() {
               <Text style={styles.packetSectionLabel}>Warmups</Text>
               <Text style={styles.packetSectionMeta}>{selectedWarmups.length} sets</Text>
             </View>
-            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color="#A69B8D" />
+            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color={SLColors.textMuted} />
           </Pressable>
           {!activeWarmupsCollapsed && selectedWarmups.length ? (
             <View style={styles.activeWarmupList}>
@@ -1444,7 +1441,7 @@ export default function AthleteMeetPlanScreen() {
                     ]}
                   >
                     <View style={[styles.activeWarmupCheck, checkedWarmups[warmup.id] ? styles.activeWarmupCheckDone : null]}>
-                      {checkedWarmups[warmup.id] ? <Ionicons name="checkmark" size={14} color="#DCFCE7" /> : <Text style={styles.activeWarmupIndex}>{index + 1}</Text>}
+                      {checkedWarmups[warmup.id] ? <Ionicons name="checkmark" size={14} color={SLColors.success} /> : <Text style={styles.activeWarmupIndex}>{index + 1}</Text>}
                     </View>
                     <View style={styles.activeWarmupCopy}>
                       <Text style={[styles.activeWarmupValue, checkedWarmups[warmup.id] ? styles.activeWarmupValueDone : null]}>
@@ -1559,7 +1556,7 @@ export default function AthleteMeetPlanScreen() {
         <View style={styles.meetSummaryTopRow}>
             <View style={styles.meetSummaryTopLeft}>
             <View style={styles.heroIconWrap}>
-                <Ionicons name="trophy-outline" size={22} color="#DDD6FE" />
+                <SLTrophy size={22} tier="bronze" />
             </View>
 
             <View style={styles.heroTextCol}>
@@ -1580,7 +1577,7 @@ export default function AthleteMeetPlanScreen() {
                 pressed && styles.pressed,
             ]}
             >
-            <Ionicons name="create-outline" size={14} color="#DDD6FE" />
+            <Ionicons name="create-outline" size={14} color={SLColors.review} />
             <Text style={styles.meetEditButtonCompactText}>
                 Edit Details
             </Text>
@@ -1592,7 +1589,7 @@ export default function AthleteMeetPlanScreen() {
             {shouldShowStartRequirements ? (
             <View style={styles.startMeetRequirementsBox}>
                 <View style={styles.startMeetRequirementsHeader}>
-                <Ionicons name="alert-circle-outline" size={16} color="#FED7AA" />
+                <Ionicons name="alert-circle-outline" size={16} color={SLColors.warning} />
                 <Text style={styles.startMeetRequirementsTitle}>
                     Before you can begin the meet
                 </Text>
@@ -1621,7 +1618,7 @@ export default function AthleteMeetPlanScreen() {
                     pressed && styles.pressed,
                 ]}
                 >
-                <Ionicons name="play-outline" size={15} color="#DCFCE7" />
+                <Ionicons name="play-outline" size={15} color={SLColors.success} />
                 <Text style={styles.meetStatusButtonStartText}>Begin Meet</Text>
                 </Pressable>
             ) : null}
@@ -1637,7 +1634,7 @@ export default function AthleteMeetPlanScreen() {
                 <Ionicons
                     name="checkmark-done-outline"
                     size={15}
-                    color="#F8FAFC"
+                    color={SLColors.textStrong}
                 />
                 <Text style={styles.meetStatusButtonFinishText}>Finish Meet</Text>
                 </Pressable>
@@ -1647,42 +1644,42 @@ export default function AthleteMeetPlanScreen() {
           <View style={styles.meetDetailRows}>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="location-outline" size={15} color="#C7BEE8" />
+                <Ionicons name="location-outline" size={15} color={SLColors.accentViolet} />
               </View>
               <Text style={styles.meetDetailLabel}>Location</Text>
               <Text style={styles.meetDetailValue}>{meet.location || 'TBD'}</Text>
             </View>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="podium-outline" size={15} color="#C7BEE8" />
+                <Ionicons name="podium-outline" size={15} color={SLColors.accentViolet} />
               </View>
               <Text style={styles.meetDetailLabel}>Category</Text>
               <Text style={styles.meetDetailValue}>{meet.meet_category_label || 'TBD'}</Text>
             </View>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="ribbon-outline" size={15} color="#C7BEE8" />
+                <SLTrophy size={15} tier="bronze" />
               </View>
               <Text style={styles.meetDetailLabel}>Division</Text>
               <Text style={styles.meetDetailValue}>{divisionDisplay(meet)}</Text>
             </View>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="time-outline" size={15} color="#C7BEE8" />
+                <Ionicons name="time-outline" size={15} color={SLColors.accentViolet} />
               </View>
               <Text style={styles.meetDetailLabel}>Start time</Text>
               <Text style={styles.meetDetailValue}>{meet.start_time_display || 'TBD'}</Text>
             </View>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="flag-outline" size={15} color="#C7BEE8" />
+                <Ionicons name="flag-outline" size={15} color={SLColors.accentViolet} />
               </View>
               <Text style={styles.meetDetailLabel}>Flight / Platform</Text>
               <Text style={styles.meetDetailValue}>{meet.flight_platform || 'TBD'}</Text>
             </View>
             <View style={styles.meetDetailRow}>
               <View style={styles.meetDetailIconWrap}>
-                <Ionicons name="barbell-outline" size={15} color="#C7BEE8" />
+                <Ionicons name="barbell-outline" size={15} color={SLColors.accentViolet} />
               </View>
               <Text style={styles.meetDetailLabel}>Weight class</Text>
               <Text style={styles.meetDetailValue}>{meet.weight_class || 'TBD'}</Text>
@@ -1693,7 +1690,7 @@ export default function AthleteMeetPlanScreen() {
         <View style={styles.checkInCard}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardTitleRow}>
-              <Ionicons name="clipboard-outline" size={20} color="#C7BEE8" />
+              <Ionicons name="clipboard-outline" size={20} color={SLColors.accentViolet} />
               <ThemedText variant="h3" style={styles.cardTitle}>Check-in</ThemedText>
             </View>
           </View>
@@ -1716,7 +1713,7 @@ export default function AthleteMeetPlanScreen() {
           <View style={styles.rackCard}>
             <View style={styles.cardHeaderRow}>
               <View style={styles.cardTitleRow}>
-                <Ionicons name="options-outline" size={20} color="#C7BEE8" />
+                <Ionicons name="options-outline" size={20} color={SLColors.accentViolet} />
                 <ThemedText variant="h3" style={styles.cardTitle}>Platform Setup</ThemedText>
               </View>
             </View>
@@ -1746,7 +1743,7 @@ export default function AthleteMeetPlanScreen() {
         <View style={styles.gearCard}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardTitleRow}>
-              <Ionicons name="bag-check-outline" size={20} color="#C7BEE8" />
+              <Ionicons name="bag-check-outline" size={20} color={SLColors.accentViolet} />
               <ThemedText variant="h3" style={styles.cardTitle}>Gear Checklist</ThemedText>
             </View>
             <Text style={styles.metaText}>{gearCheckedCount}/{gearItems.length}</Text>
@@ -1766,7 +1763,7 @@ export default function AthleteMeetPlanScreen() {
                   ]}
                 >
                   <View style={[styles.gearCheckCircle, checked ? styles.gearCheckCircleChecked : null]}>
-                    {checked ? <Ionicons name="checkmark" size={14} color="#DCFCE7" /> : null}
+                    {checked ? <Ionicons name="checkmark" size={14} color={SLColors.success} /> : null}
                   </View>
                   <Text style={[styles.gearText, checked ? styles.gearTextChecked : null]}>{item}</Text>
                 </Pressable>
@@ -1796,7 +1793,7 @@ export default function AthleteMeetPlanScreen() {
                     onPress={() => setDetailsModalOpen(false)}
                     style={({ pressed }) => [styles.modalCloseButton, pressed && styles.pressed]}
                   >
-                    <Ionicons name="close" size={18} color="#CBD5E1" />
+                    <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
                 </View>
 
@@ -1814,7 +1811,7 @@ export default function AthleteMeetPlanScreen() {
                           value={meetForm.location}
                           onChangeText={(value) => updateMeetFormField('location', value)}
                           placeholder="Venue / city"
-                          placeholderTextColor="#64748B"
+                          placeholderTextColor={SLColors.textSubtle}
                           style={styles.meetFieldInput}
                         />
                       </View>
@@ -1824,7 +1821,7 @@ export default function AthleteMeetPlanScreen() {
                           value={meetForm.flight_platform}
                           onChangeText={(value) => updateMeetFormField('flight_platform', value)}
                           placeholder="A / Platform 1"
-                          placeholderTextColor="#64748B"
+                          placeholderTextColor={SLColors.textSubtle}
                           style={styles.meetFieldInput}
                         />
                       </View>
@@ -1834,7 +1831,7 @@ export default function AthleteMeetPlanScreen() {
                           value={meetForm.weight_class}
                           onChangeText={(value) => updateMeetFormField('weight_class', value)}
                           placeholder="90kg"
-                          placeholderTextColor="#64748B"
+                          placeholderTextColor={SLColors.textSubtle}
                           style={styles.meetFieldInput}
                         />
                       </View>
@@ -1850,7 +1847,7 @@ export default function AthleteMeetPlanScreen() {
                           value={meetForm.weigh_in_bodyweight_kg}
                           onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)}
                           placeholder="89.7"
-                          placeholderTextColor="#64748B"
+                          placeholderTextColor={SLColors.textSubtle}
                           keyboardType="decimal-pad"
                           style={styles.meetFieldInput}
                         />
@@ -1870,7 +1867,7 @@ export default function AthleteMeetPlanScreen() {
                                 value={meetForm.squat_rack_height}
                                 onChangeText={(value) => updateMeetFormField('squat_rack_height', value)}
                                 placeholder="11"
-                                placeholderTextColor="#64748B"
+                                placeholderTextColor={SLColors.textSubtle}
                                 keyboardType="number-pad"
                                 style={[styles.meetFieldInput, styles.squatRackHeightInput]}
                               />
@@ -1904,7 +1901,7 @@ export default function AthleteMeetPlanScreen() {
                                 value={meetForm.bench_rack_height}
                                 onChangeText={(value) => updateMeetFormField('bench_rack_height', value)}
                                 placeholder="14"
-                                placeholderTextColor="#64748B"
+                                placeholderTextColor={SLColors.textSubtle}
                                 style={styles.meetFieldInput}
                               />
                             </View>
@@ -1914,7 +1911,7 @@ export default function AthleteMeetPlanScreen() {
                                 value={meetForm.bench_safety_height}
                                 onChangeText={(value) => updateMeetFormField('bench_safety_height', value)}
                                 placeholder="8"
-                                placeholderTextColor="#64748B"
+                                placeholderTextColor={SLColors.textSubtle}
                                 style={styles.meetFieldInput}
                               />
                             </View>
@@ -1931,7 +1928,7 @@ export default function AthleteMeetPlanScreen() {
                       value={meetForm.gear_text}
                       onChangeText={(value) => updateMeetFormField('gear_text', value)}
                       placeholder="Singlet\nBelt\nDeadlift socks"
-                      placeholderTextColor="#64748B"
+                      placeholderTextColor={SLColors.textSubtle}
                       style={[styles.meetFieldInput, styles.meetFieldTextArea]}
                       multiline
                     />
@@ -1981,7 +1978,7 @@ export default function AthleteMeetPlanScreen() {
                 <Ionicons
                 name="checkmark-done-outline"
                 size={20}
-                color="#F8FAFC"
+                color={SLColors.textStrong}
                 />
             </View>
 
@@ -2003,7 +2000,7 @@ export default function AthleteMeetPlanScreen() {
         <View style={styles.card}>
         <View style={styles.cardHeaderRow}>
           <View style={styles.cardTitleRow}>
-            <Ionicons name="podium-outline" size={20} color="#C7BEE8" />
+            <Ionicons name="podium-outline" size={20} color={SLColors.accentViolet} />
             <ThemedText variant="h3" style={styles.cardTitle}>{liftLabels[activeLift]} Attempts</ThemedText>
           </View>
         </View>
@@ -2083,7 +2080,7 @@ export default function AthleteMeetPlanScreen() {
                       savingAttemptId === attempt.id ? styles.disabledButton : null,
                     ]}
                   >
-                    <Ionicons name="refresh-outline" size={15} color="#CBD5E1" />
+                    <Ionicons name="refresh-outline" size={15} color={SLColors.text} />
                     <Text style={styles.clearResultText}>Undo result</Text>
                   </Pressable>
                 ) : canLogMeetResults ? (
@@ -2098,7 +2095,7 @@ export default function AthleteMeetPlanScreen() {
                         savingAttemptId === attempt.id ? styles.disabledButton : null,
                       ]}
                     >
-                      <Ionicons name="checkmark-circle-outline" size={16} color="#DCFCE7" />
+                      <Ionicons name="checkmark-circle-outline" size={16} color={SLColors.success} />
                       <Text style={styles.resultButtonGoodText}>Good</Text>
                     </Pressable>
 
@@ -2112,7 +2109,7 @@ export default function AthleteMeetPlanScreen() {
                         savingAttemptId === attempt.id ? styles.disabledButton : null,
                       ]}
                     >
-                      <Ionicons name="close-circle-outline" size={16} color="#FECACA" />
+                      <Ionicons name="close-circle-outline" size={16} color={SLColors.danger} />
                       <Text style={styles.resultButtonMissText}>Miss</Text>
                     </Pressable>
                   </View>
@@ -2133,12 +2130,12 @@ export default function AthleteMeetPlanScreen() {
       <View style={styles.card}>
         <Pressable onPress={toggleActiveWarmups} style={({ pressed }) => [styles.cardHeaderRow, pressed && styles.pressed]}>
           <View style={styles.cardTitleRow}>
-            <Ionicons name="barbell-outline" size={20} color="#C7BEE8" />
+            <Ionicons name="barbell-outline" size={20} color={SLColors.accentViolet} />
             <ThemedText variant="h3" style={styles.cardTitle}>{liftLabels[activeLift]} Warmups</ThemedText>
           </View>
           <View style={styles.warmupCollapseMeta}>
             <Text style={styles.metaText}>{warmupsForLift.length} sets</Text>
-            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color="#A69B8D" />
+            <Ionicons name={activeWarmupsCollapsed ? 'chevron-down' : 'chevron-up'} size={18} color={SLColors.textMuted} />
           </View>
         </Pressable>
 
@@ -2161,7 +2158,7 @@ export default function AthleteMeetPlanScreen() {
             >
               <View style={[styles.warmupIndexBadge, checkedWarmups[warmup.id] ? styles.warmupIndexBadgeChecked : null]}>
                 {checkedWarmups[warmup.id] ? (
-                  <Ionicons name="checkmark" size={16} color="#DCFCE7" />
+                  <Ionicons name="checkmark" size={16} color={SLColors.success} />
                 ) : (
                   <Text style={styles.warmupIndexText}>{index + 1}</Text>
                 )}
@@ -2173,7 +2170,7 @@ export default function AthleteMeetPlanScreen() {
                   </Text>
                   {warmup.minutes_until_opener != null ? (
                     <View style={styles.warmupTimingPill}>
-                      <Ionicons name="time-outline" size={12} color="#DDD6FE" />
+                      <Ionicons name="time-outline" size={12} color={SLColors.review} />
                       <Text style={styles.warmupTimingText}>-{warmup.minutes_until_opener} min</Text>
                     </View>
                   ) : null}
@@ -2186,7 +2183,7 @@ export default function AthleteMeetPlanScreen() {
               </View>
               {canLogMeetResults ? (
                 <View style={[styles.warmupCheckCircle, checkedWarmups[warmup.id] ? styles.warmupCheckCircleChecked : null]}>
-                  {checkedWarmups[warmup.id] ? <Ionicons name="checkmark" size={14} color="#DCFCE7" /> : null}
+                  {checkedWarmups[warmup.id] ? <Ionicons name="checkmark" size={14} color={SLColors.success} /> : null}
                 </View>
               ) : null}
             </Pressable>
@@ -2207,7 +2204,7 @@ export default function AthleteMeetPlanScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeaderRow}>
             <View style={styles.cardTitleRow}>
-              <Ionicons name="reader-outline" size={20} color="#C7BEE8" />
+              <Ionicons name="reader-outline" size={20} color={SLColors.accentViolet} />
               <ThemedText variant="h3" style={styles.cardTitle}>Coach Notes</ThemedText>
             </View>
           </View>
@@ -2215,7 +2212,7 @@ export default function AthleteMeetPlanScreen() {
           {hasMeetNotes ? (
             <View style={styles.noteCardFeatured}>
               <View style={styles.noteFeaturedHeader}>
-                <Ionicons name="megaphone-outline" size={16} color="#DDD6FE" />
+                <Ionicons name="megaphone-outline" size={16} color={SLColors.review} />
                 <Text style={styles.noteFeaturedTitle}>Meet-day notes</Text>
               </View>
               <Text style={styles.noteBody}>{meet?.coach_notes}</Text>
@@ -2246,7 +2243,7 @@ export default function AthleteMeetPlanScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeaderRow}>
               <View style={styles.cardTitleRow}>
-                <Ionicons name="sparkles-outline" size={20} color="#C7BEE8" />
+                <Ionicons name="sparkles-outline" size={20} color={SLColors.accentViolet} />
                 <ThemedText variant="h3" style={styles.cardTitle}>Meet Recap</ThemedText>
               </View>
             </View>
@@ -2260,7 +2257,7 @@ export default function AthleteMeetPlanScreen() {
       <View style={styles.stack}>
         <View style={styles.recapHeroCard}>
           <View style={styles.cardTitleRow}>
-            <Ionicons name="sparkles-outline" size={22} color="#DDD6FE" />
+            <Ionicons name="sparkles-outline" size={22} color={SLColors.review} />
             <ThemedText variant="h3" style={styles.cardTitle}>Meet Recap</ThemedText>
           </View>
           {athleteRecap.headline ? <Text style={styles.recapHeadline}>{athleteRecap.headline}</Text> : null}
@@ -2291,7 +2288,7 @@ export default function AthleteMeetPlanScreen() {
           <View style={styles.recapStoryCard}>
             <View style={styles.cardHeaderRow}>
               <View style={styles.cardTitleRow}>
-                <Ionicons name="journal-outline" size={20} color="#DDD6FE" />
+                <Ionicons name="journal-outline" size={20} color={SLColors.review} />
                 <ThemedText variant="h3" style={styles.cardTitle}>
                   Meet Story
                 </ThemedText>
@@ -2315,7 +2312,7 @@ export default function AthleteMeetPlanScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeaderRow}>
               <View style={styles.cardTitleRow}>
-                <Ionicons name="barbell-outline" size={20} color="#C7BEE8" />
+                <Ionicons name="barbell-outline" size={20} color={SLColors.accentViolet} />
                 <ThemedText variant="h3" style={styles.cardTitle}>Best Lifts</ThemedText>
               </View>
             </View>
@@ -2335,7 +2332,7 @@ export default function AthleteMeetPlanScreen() {
 
         <View style={styles.recapNextStepsCard}>
           <View style={styles.cardTitleRow}>
-            <Ionicons name="chatbubbles-outline" size={20} color="#DCFCE7" />
+            <Ionicons name="chatbubbles-outline" size={20} color={SLColors.success} />
             <ThemedText variant="h3" style={styles.cardTitle}>Next Steps</ThemedText>
           </View>
           <Text style={styles.recapNextStepsText}>{athleteRecap.next_steps || 'Your coach is reviewing the full meet recap. Align with them for next steps in your training.'}</Text>
@@ -2359,7 +2356,7 @@ export default function AthleteMeetPlanScreen() {
     return (
       <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
         <ThemedView style={styles.screenCentered}>
-          <ActivityIndicator size="small" color="#B8B0DA" />
+          <ActivityIndicator size="small" color={SLColors.accentViolet} />
           <ThemedText variant="bodyMuted" style={styles.loadingText}>Loading meet plan…</ThemedText>
         </ThemedView>
       </SafeAreaView>
@@ -2381,11 +2378,11 @@ export default function AthleteMeetPlanScreen() {
       <ThemedView style={styles.screen}>
         <ScrollView
           contentContainerStyle={styles.scroll}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#9CA3AF" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={SLColors.textMuted} />}
         >
           {!hasMeetPlan ? (
             <View style={styles.emptyCardLarge}>
-              <Ionicons name="trophy-outline" size={32} color="#94A3B8" />
+              <SLTrophy size={32} tier="bronze" muted />
               <Text style={styles.emptyTitle}>No meet plan yet</Text>
               <Text style={styles.emptyBody}>When your coach creates a meet plan, it will show here.</Text>
             </View>
@@ -2418,7 +2415,7 @@ export default function AthleteMeetPlanScreen() {
                     </Text>
                   </View>
                   <Pressable onPress={() => setAttemptDraft(null)} style={styles.modalCloseButton}>
-                    <Ionicons name="close" size={18} color="#CBD5E1" />
+                    <Ionicons name="close" size={18} color={SLColors.text} />
                   </Pressable>
                 </View>
 
@@ -2515,7 +2512,7 @@ export default function AthleteMeetPlanScreen() {
                     value={attemptDraft.notes}
                     onChangeText={(value) => setAttemptDraft((prev) => prev ? { ...prev, notes: value } : prev)}
                     placeholder="Optional note for coach"
-                    placeholderTextColor="#64748B"
+                    placeholderTextColor={SLColors.textSubtle}
                     style={[styles.modalInput, styles.modalTextArea]}
                     multiline
                   />
@@ -2721,13 +2718,13 @@ function MeetAttemptLogRow({
               <Text style={styles.meetLogPrimaryText}>Edit Result</Text>
             </Pressable>
             <Pressable disabled={disabled} onPress={onClear} style={({ pressed }) => [styles.meetLogUtilityButton, pressed && styles.pressed, disabled && styles.disabledButton]}>
-              <Ionicons name="refresh-outline" size={15} color="#B8ACA1" />
+              <Ionicons name="refresh-outline" size={15} color={SLColors.textMuted} />
               <Text style={styles.meetLogUtilityText}>Clear</Text>
             </Pressable>
           </>
         ) : lockedReason ? (
           <View style={styles.meetLogLocked}>
-            <Ionicons name="lock-closed-outline" size={14} color="#A69B8D" />
+            <Ionicons name="lock-closed-outline" size={14} color={SLColors.textMuted} />
             <Text style={styles.meetLogLockedText}>{lockedReason}</Text>
           </View>
         ) : (
@@ -2774,12 +2771,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   scroll: {
-    paddingHorizontal: 0,
     paddingTop: 10,
     paddingBottom: 104,
   },
   loadingText: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
   },
   header: {
     width: '100%',
@@ -2787,8 +2783,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   headerEyebrow: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
@@ -2798,14 +2794,14 @@ const styles = StyleSheet.create({
     fontSize: 29,
     lineHeight: 34,
     fontWeight: '900',
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
     letterSpacing: 0,
   },
   subtitle: {
     marginTop: 5,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
-    color: '#B8ACA1',
+    color: SLColors.textMuted,
     fontWeight: '700',
   },
   stack: {
@@ -2839,16 +2835,16 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   packetKicker: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   packetStatusText: {
     marginTop: 3,
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   packetUtilityButton: {
@@ -2857,18 +2853,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 11,
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     backgroundColor: 'rgba(139,92,246,0.12)',
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.16)',
   },
   packetUtilityText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   packetMeetName: {
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
     fontSize: 34,
     lineHeight: 39,
     fontWeight: '900',
@@ -2876,22 +2872,22 @@ const styles = StyleSheet.create({
   },
   packetMeetMeta: {
     marginTop: 10,
-    color: '#D8CFC3',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '800',
   },
   packetMeetSub: {
     marginTop: 5,
-    color: '#A69B8D',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '700',
   },
   packetPrimaryButton: {
     minHeight: 44,
     marginTop: 18,
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -2901,8 +2897,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167,203,181,0.20)',
   },
   packetPrimaryText: {
-    color: '#DCFCE7',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   activeHero: {
@@ -2918,48 +2914,48 @@ const styles = StyleSheet.create({
     minWidth: 58,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     backgroundColor: 'rgba(45,64,49,0.34)',
     borderWidth: 1,
     borderColor: 'rgba(167,203,181,0.20)',
   },
   activeStatusText: {
-    color: '#DCFCE7',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   activeProgressTrack: {
     height: 6,
     marginTop: 18,
     overflow: 'hidden',
-    borderRadius: 999,
-    backgroundColor: 'rgba(6,6,7,0.40)',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.surfaceInset,
   },
   activeProgressFill: {
     height: '100%',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(167,203,181,0.70)',
   },
   activeProgressText: {
     marginTop: 8,
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   activeNextText: {
     marginTop: 8,
-    color: '#D6A75E',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '800',
   },
   activeFocusSection: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'rgba(24,16,15,0.12)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   activeInstructionList: {
     gap: 10,
@@ -2971,7 +2967,7 @@ const styles = StyleSheet.create({
   },
   activeInstructionRail: {
     width: 3,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(214,167,94,0.62)',
   },
   activeInstructionCopy: {
@@ -2979,16 +2975,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   activeInstructionLabel: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
   },
   activeInstructionBody: {
     marginTop: 5,
-    color: '#F6EFE6',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '700',
   },
@@ -2999,15 +2995,15 @@ const styles = StyleSheet.create({
   activeEventSection: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'rgba(24,16,15,0.12)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   activeEventStatus: {
     marginTop: 3,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   activeWarmupList: {
@@ -3020,7 +3016,7 @@ const styles = StyleSheet.create({
     gap: 11,
     paddingVertical: 8,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   activeWarmupRowChecked: {
     backgroundColor: 'rgba(45,64,49,0.18)',
@@ -3028,20 +3024,20 @@ const styles = StyleSheet.create({
   activeWarmupCheck: {
     width: 28,
     height: 28,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.28)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.12)',
+    borderColor: SLColors.borderSubtle,
   },
   activeWarmupCheckDone: {
     backgroundColor: 'rgba(45,64,49,0.44)',
     borderColor: 'rgba(167,203,181,0.30)',
   },
   activeWarmupIndex: {
-    color: '#D6A75E',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textAlign: 'center',
   },
@@ -3050,17 +3046,17 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   activeWarmupValue: {
-    color: '#F6EFE6',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
   activeWarmupValueDone: {
-    color: '#DCFCE7',
+    color: SLColors.success,
   },
   activeWarmupMeta: {
     marginTop: 2,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   warmupCollapseMeta: {
@@ -3071,7 +3067,7 @@ const styles = StyleSheet.create({
   meetLogRow: {
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   meetLogTopRow: {
     flexDirection: 'row',
@@ -3081,16 +3077,16 @@ const styles = StyleSheet.create({
   meetLogAttemptBadge: {
     width: 34,
     height: 34,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.34)',
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.08)',
+    borderColor: SLColors.borderHairline,
   },
   meetLogAttemptBadgeText: {
-    color: '#D6A75E',
-    fontSize: 14,
+    color: SLColors.warning,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   meetLogCopy: {
@@ -3098,30 +3094,30 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   meetLogTitle: {
-    color: '#F6EFE6',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   meetLogMeta: {
     marginTop: 3,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   meetLogStatus: {
-    color: '#A69B8D',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   meetLogStatusGood: {
-    color: '#A7CBB5',
+    color: SLColors.success,
   },
   meetLogStatusMiss: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   meetLogStatusSkipped: {
-    color: '#D6A75E',
+    color: SLColors.warning,
   },
   meetLogStrategyBlock: {
     marginTop: 12,
@@ -3129,21 +3125,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 11,
     backgroundColor: 'rgba(214,167,94,0.10)',
-    borderLeftWidth: 3,
-    borderLeftColor: 'rgba(214,167,94,0.74)',
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
   },
   meetLogStrategyLabel: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.45,
   },
   meetLogStrategyText: {
     marginTop: 6,
-    color: '#FFF7ED',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     fontWeight: '800',
   },
@@ -3157,14 +3151,14 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     backgroundColor: 'rgba(45,64,49,0.34)',
     borderWidth: 1,
     borderColor: 'rgba(167,203,181,0.20)',
   },
   meetLogActionGoodText: {
-    color: '#DCFCE7',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   meetLogActionMiss: {
@@ -3172,14 +3166,14 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     backgroundColor: 'rgba(91,35,35,0.30)',
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.18)',
+    borderColor: SLColors.danger,
   },
   meetLogActionMissText: {
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   meetLogActionSkip: {
@@ -3187,14 +3181,14 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
-    backgroundColor: 'rgba(6,6,7,0.30)',
+    borderRadius: SLRadius.sm,
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.08)',
+    borderColor: SLColors.borderHairline,
   },
   meetLogActionSkipText: {
-    color: '#D8CFC3',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   meetLogChangeWeight: {
@@ -3204,8 +3198,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   meetLogChangeWeightText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   meetLogResultActions: {
@@ -3220,14 +3214,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 14,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     backgroundColor: 'rgba(214,167,94,0.18)',
     borderWidth: 1,
     borderColor: 'rgba(214,167,94,0.24)',
   },
   meetLogPrimaryText: {
-    color: '#FDE68A',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   meetLogLocked: {
@@ -3236,12 +3230,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 10,
-    borderRadius: 7,
-    backgroundColor: 'rgba(6,6,7,0.22)',
+    borderRadius: SLRadius.xs,
+    backgroundColor: SLColors.surfaceEmbedded,
   },
   meetLogLockedText: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   meetLogUtilityButton: {
@@ -3250,21 +3244,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: 'rgba(6,6,7,0.24)',
+    borderRadius: SLRadius.sm,
+    backgroundColor: SLColors.surfaceEmbedded,
   },
   meetLogUtilityText: {
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   packetSection: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'rgba(24,16,15,0.16)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   packetSectionHeader: {
     flexDirection: 'row',
@@ -3274,13 +3268,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   packetSectionLabel: {
-    color: '#F6EFE6',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   packetSectionMeta: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   readinessList: {
@@ -3292,17 +3286,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 11,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   readinessMark: {
     width: 24,
     height: 24,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.24)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.08)',
+    borderColor: SLColors.borderHairline,
   },
   readinessMarkReady: {
     backgroundColor: 'rgba(45,64,49,0.30)',
@@ -3313,24 +3307,24 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   readinessPacketLabel: {
-    color: '#F6EFE6',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
   readinessPacketDetail: {
     marginTop: 2,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   attemptPreviewLift: {
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   attemptPreviewLiftLabel: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
@@ -3345,21 +3339,21 @@ const styles = StyleSheet.create({
     minHeight: 68,
     paddingHorizontal: 9,
     paddingVertical: 10,
-    backgroundColor: 'rgba(6,6,7,0.28)',
-    borderRadius: 6,
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.06)',
+    borderColor: SLColors.borderHairline,
   },
   attemptPreviewLabel: {
-    color: '#A69B8D',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   attemptPreviewValue: {
     marginTop: 7,
-    color: '#F6EFE6',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 20,
     fontWeight: '900',
   },
@@ -3372,15 +3366,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 11,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   warmupPacketRowChecked: {
     backgroundColor: 'rgba(45,64,49,0.16)',
   },
   warmupPacketIndex: {
     width: 24,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textAlign: 'center',
   },
@@ -3389,14 +3383,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   warmupPacketValue: {
-    color: '#F6EFE6',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   warmupPacketMeta: {
     marginTop: 2,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   gearPacketRow: {
@@ -3405,18 +3399,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   packetFocusText: {
-    color: '#D8CFC3',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
     fontWeight: '700',
   },
   focusNoteRow: {
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   mainTabs: {
     flexDirection: 'row',
@@ -3424,8 +3418,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.07)',
-    backgroundColor: 'rgba(24,16,15,0.16)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.surfaceEmbedded,
     marginBottom: 10,
   },
   mainTab: {
@@ -3433,21 +3427,21 @@ const styles = StyleSheet.create({
     minHeight: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     gap: 3,
   },
   mainTabActive: {
-    backgroundColor: 'rgba(139,92,246,0.18)',
+    backgroundColor: SLColors.accentVioletSoft,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.18)',
   },
   mainTabText: {
-    color: '#B8ACA1',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
   },
   mainTabTextActive: {
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
   },
   liftTabs: {
     flexDirection: 'row',
@@ -3455,8 +3449,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.07)',
-    backgroundColor: 'rgba(24,16,15,0.08)',
+    borderColor: SLColors.borderHairline,
+    backgroundColor: SLColors.surfaceEmbedded,
   },
   liftTab: {
     flex: 1,
@@ -3472,12 +3466,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(214,167,94,0.06)',
   },
   liftTabText: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   liftTabTextActive: {
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
   },
   liftTabMetaRow: {
     minHeight: 16,
@@ -3486,12 +3480,12 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   liftTabMeta: {
-    color: '#766B60',
-    fontSize: 11,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   liftTabMetaActive: {
-    color: '#D6A75E',
+    color: SLColors.warning,
   },
   liftTabRail: {
     position: 'absolute',
@@ -3499,8 +3493,8 @@ const styles = StyleSheet.create({
     right: 12,
     bottom: 0,
     height: 2,
-    borderRadius: 999,
-    backgroundColor: 'rgba(222,198,166,0.08)',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.borderHairline,
   },
   liftTabRailActive: {
     height: 3,
@@ -3519,7 +3513,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 12,
     paddingVertical: 9,
     backgroundColor: 'rgba(109,91,208,0.28)',
@@ -3527,24 +3521,24 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(199,190,232,0.30)',
   },
   statusPillPrimaryText: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   statusPillSecondary: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 12,
     paddingVertical: 9,
     backgroundColor: 'rgba(15,23,42,0.82)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.12)',
+    borderColor: SLColors.borderSubtle,
   },
   statusPillSecondaryText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   meetSummaryCard: {
@@ -3590,39 +3584,39 @@ meetSummaryTopLeft: {
     paddingVertical: 8,
     backgroundColor: 'transparent',
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   meetDetailIconWrap: {
     width: 26,
     height: 26,
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.10)',
+    backgroundColor: SLColors.accentVioletSoft,
   },
   meetDetailLabel: {
     flex: 1,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   meetDetailValue: {
     maxWidth: '46%',
-    color: '#F6EFE6',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
     textAlign: 'right',
   },
   checkInCard: {
-    backgroundColor: 'rgba(24,16,15,0.18)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderRadius: 0,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   checkInGrid: {
     flexDirection: 'row',
@@ -3630,16 +3624,16 @@ meetSummaryTopLeft: {
   },
   checkInTile: {
     flex: 1,
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     paddingHorizontal: 12,
     paddingVertical: 14,
-    backgroundColor: 'rgba(6,6,7,0.30)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.06)',
+    borderColor: SLColors.borderHairline,
   },
   checkInTileAccent: {
     flex: 1,
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     paddingHorizontal: 12,
     paddingVertical: 14,
     backgroundColor: 'rgba(32,40,31,0.30)',
@@ -3647,7 +3641,7 @@ meetSummaryTopLeft: {
     borderColor: 'rgba(167,203,181,0.12)',
   },
   checkInLabel: {
-    color: '#A69B8D',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -3655,14 +3649,14 @@ meetSummaryTopLeft: {
   },
   checkInValue: {
     marginTop: 7,
-    color: '#F6EFE6',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   checkInSubValue: {
     marginTop: 3,
-    color: '#B8ACA1',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
   },
   heroLocationBadge: {
@@ -3670,7 +3664,7 @@ meetSummaryTopLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 6,
     backgroundColor: 'rgba(15,23,42,0.78)',
@@ -3679,14 +3673,14 @@ meetSummaryTopLeft: {
   },
   heroLocationText: {
     flexShrink: 1,
-    color: '#E9E3FF',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   heroIconWrap: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(139,92,246,0.24)',
@@ -3698,15 +3692,15 @@ meetSummaryTopLeft: {
     minWidth: 0,
   },
   heroTitle: {
-    fontSize: 22,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '800',
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     letterSpacing: -0.5,
   },
   heroSubtitle: {
     marginTop: 4,
-    fontSize: 13,
-    color: '#94A3B8',
+    fontSize: SLTypography.label.fontSize,
+    color: SLColors.textMuted,
   },
   heroMetaRow: {
     marginTop: 8,
@@ -3722,8 +3716,8 @@ meetSummaryTopLeft: {
   },
   heroMetaText: {
     flex: 1,
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
   },
   heroQuickRow: {
@@ -3737,7 +3731,7 @@ meetSummaryTopLeft: {
   },
   heroQuickPill: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 10,
     paddingVertical: 8,
     backgroundColor: 'rgba(15,23,42,0.72)',
@@ -3747,7 +3741,7 @@ meetSummaryTopLeft: {
   heroQuickPillLarge: {
     width: '48.5%',
     minHeight: 58,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: 'rgba(15,23,42,0.78)',
@@ -3758,7 +3752,7 @@ meetSummaryTopLeft: {
     flex: 1.55,
   },
   heroQuickLabel: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -3766,8 +3760,8 @@ meetSummaryTopLeft: {
   },
   heroQuickValue: {
     marginTop: 3,
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   infoGrid: {
@@ -3778,34 +3772,34 @@ meetSummaryTopLeft: {
   infoTile: {
     width: '48%',
     minHeight: 74,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 12,
     paddingVertical: 12,
     backgroundColor: 'rgba(8,16,38,0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
   },
   infoLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   infoValue: {
     marginTop: 7,
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
   },
   card: {
-    backgroundColor: 'rgba(24,16,15,0.18)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderRadius: 0,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -3822,14 +3816,14 @@ meetSummaryTopLeft: {
     minWidth: 0,
   },
   cardTitle: {
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
     letterSpacing: -0.2,
   },
   bodyText: {
-    color: '#D8CFC3',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   detailRow: {
@@ -3839,54 +3833,54 @@ meetSummaryTopLeft: {
     gap: 12,
     paddingVertical: 8,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(148,163,184,0.08)',
+    borderTopColor: SLColors.borderHairline,
   },
   detailLabel: {
-    color: '#A69B8D',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
   },
   detailValue: {
-    color: '#F6EFE6',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'right',
   },
   metaText: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   // --- Inserted attempt sublabel style ---
   attemptSubLabel: {
     marginTop: 4,
-    color: '#C7BEE8',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   plannedWeightText: {
     marginTop: 3,
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
   },
   attemptCard: {
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 14,
     backgroundColor: 'rgba(30,41,59,0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
     marginTop: 10,
     gap: 10,
   },
   attemptCardGood: {
-    borderColor: 'rgba(74,222,128,0.30)',
-    backgroundColor: 'rgba(22,101,52,0.18)',
+    borderColor: SLColors.success,
+    backgroundColor: SLColors.successSoft,
   },
   attemptCardMiss: {
-    borderColor: 'rgba(248,113,113,0.32)',
-    backgroundColor: 'rgba(127,29,29,0.18)',
+    borderColor: SLColors.danger,
+    backgroundColor: SLColors.dangerSoft,
   },
   attemptTopRow: {
     flexDirection: 'row',
@@ -3895,56 +3889,56 @@ meetSummaryTopLeft: {
     gap: 12,
   },
   attemptLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   attemptWeight: {
     marginTop: 4,
-    color: '#F8FAFC',
-    fontSize: 28,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.hero.fontSize,
     fontWeight: '800',
     letterSpacing: -0.7,
   },
   attemptWeightRange: {
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
   },
   tagPill: {
     overflow: 'hidden',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    color: '#E9E3FF',
+    color: SLColors.accentViolet,
     backgroundColor: 'rgba(109,91,208,0.20)',
     borderWidth: 1,
     borderColor: 'rgba(199,190,232,0.24)',
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   resultPillGood: {
     overflow: 'hidden',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    color: '#DCFCE7',
-    backgroundColor: 'rgba(22,101,52,0.28)',
+    color: SLColors.success,
+    backgroundColor: SLColors.successSoft,
     borderWidth: 1,
-    borderColor: 'rgba(74,222,128,0.30)',
-    fontSize: 11,
+    borderColor: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   resultPillMiss: {
     overflow: 'hidden',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    color: '#FECACA',
-    backgroundColor: 'rgba(127,29,29,0.30)',
+    color: SLColors.danger,
+    backgroundColor: SLColors.dangerSoft,
     borderWidth: 1,
-    borderColor: 'rgba(248,113,113,0.30)',
-    fontSize: 11,
+    borderColor: SLColors.danger,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   resultActionsRow: {
@@ -3955,7 +3949,7 @@ meetSummaryTopLeft: {
   resultButton: {
     flex: 1,
     minHeight: 38,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -3963,31 +3957,31 @@ meetSummaryTopLeft: {
     borderWidth: 1,
   },
   resultButtonGood: {
-    backgroundColor: 'rgba(22,101,52,0.22)',
-    borderColor: 'rgba(74,222,128,0.28)',
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
   },
   resultButtonMiss: {
-    backgroundColor: 'rgba(127,29,29,0.22)',
-    borderColor: 'rgba(248,113,113,0.28)',
+    backgroundColor: SLColors.dangerSoft,
+    borderColor: SLColors.danger,
   },
   resultButtonGoodText: {
-    color: '#DCFCE7',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   resultButtonMissText: {
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   resultContextBox: {
     gap: 7,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: 'rgba(15,23,42,0.58)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
+    borderColor: SLColors.borderHairline,
   },
   resultContextRow: {
     flexDirection: 'row',
@@ -3996,15 +3990,15 @@ meetSummaryTopLeft: {
     gap: 12,
   },
   resultContextLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   resultContextValue: {
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'right',
   },
@@ -4013,33 +4007,33 @@ meetSummaryTopLeft: {
     paddingTop: 2,
   },
   resultContextNoteText: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '600',
   },
   clearResultButton: {
     minHeight: 34,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
     backgroundColor: 'rgba(15,23,42,0.62)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.14)',
+    borderColor: SLColors.borderSubtle,
   },
   clearResultText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   disabledButton: {
     opacity: 0.55,
   },
   noteBody: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
   },
   // --- Inserted warmup hero styles ---
@@ -4047,17 +4041,17 @@ meetSummaryTopLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: 'rgba(120,53,15,0.26)',
+    backgroundColor: SLColors.warningSoft,
     borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.18)',
+    borderColor: SLColors.warning,
   },
   warmupHeroText: {
     flex: 1,
-    color: '#FED7AA',
-    fontSize: 13,
+    color: SLColors.warning,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     lineHeight: 18,
   },
@@ -4065,22 +4059,22 @@ meetSummaryTopLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     backgroundColor: 'rgba(17,24,39,0.84)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
     paddingHorizontal: 12,
     paddingVertical: 12,
     marginTop: 9,
   },
   warmupRowChecked: {
-    backgroundColor: 'rgba(22,101,52,0.18)',
-    borderColor: 'rgba(74,222,128,0.28)',
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
   },
   warmupIndexBadge: {
     width: 30,
     height: 30,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(109,91,208,0.20)',
@@ -4089,11 +4083,11 @@ meetSummaryTopLeft: {
   },
   warmupIndexBadgeChecked: {
     backgroundColor: 'rgba(34,197,94,0.22)',
-    borderColor: 'rgba(74,222,128,0.34)',
+    borderColor: SLColors.success,
   },
   warmupIndexText: {
-    color: '#E9E3FF',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   warmupTextCol: {
@@ -4117,7 +4111,7 @@ meetSummaryTopLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     paddingHorizontal: 8,
     paddingVertical: 3,
     backgroundColor: 'rgba(109,91,208,0.16)',
@@ -4125,26 +4119,26 @@ meetSummaryTopLeft: {
     borderColor: 'rgba(199,190,232,0.22)',
   },
   warmupTimingText: {
-    color: '#DDD6FE',
-    fontSize: 11,
+    color: SLColors.review,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   warmupWeight: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '800',
   },
   warmupWeightChecked: {
-    color: '#DCFCE7',
+    color: SLColors.success,
   },
   warmupCheckCircle: {
     width: 24,
     height: 24,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.28)',
+    borderColor: SLColors.borderStrong,
     backgroundColor: 'rgba(15,23,42,0.72)',
   },
   warmupCheckCircleChecked: {
@@ -4152,7 +4146,7 @@ meetSummaryTopLeft: {
     backgroundColor: 'rgba(34,197,94,0.22)',
   },
   noteCardFeatured: {
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 14,
     backgroundColor: 'rgba(109,91,208,0.14)',
@@ -4167,25 +4161,25 @@ meetSummaryTopLeft: {
     gap: 8,
   },
   noteFeaturedTitle: {
-    color: '#DDD6FE',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
   noteCard: {
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 14,
     backgroundColor: 'rgba(15,23,42,0.60)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
     marginTop: 10,
     gap: 6,
   },
   noteCategory: {
-    color: '#C7BEE8',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -4195,23 +4189,23 @@ meetSummaryTopLeft: {
     alignItems: 'center',
   },
   emptyCardLarge: {
-    borderRadius: 20,
+    borderRadius: SLRadius.xl,
     paddingHorizontal: 22,
     paddingVertical: 26,
     backgroundColor: 'rgba(8,16,38,0.92)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.08)',
+    borderColor: SLColors.borderHairline,
     alignItems: 'center',
     gap: 10,
   },
   emptyTitle: {
-    color: '#F8FAFC',
-    fontSize: 18,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
   },
   emptyBody: {
-    color: '#94A3B8',
-    fontSize: 14,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     textAlign: 'center',
   },
@@ -4242,7 +4236,7 @@ meetSummaryTopLeft: {
     paddingBottom: 42,
     backgroundColor: 'rgba(18,13,12,0.96)',
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.11)',
+    borderColor: SLColors.borderSubtle,
     gap: 14,
   },
   attemptModalHeader: {
@@ -4252,38 +4246,36 @@ meetSummaryTopLeft: {
     gap: 12,
   },
   attemptModalEyebrow: {
-    color: '#D6A75E',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   attemptModalTitle: {
     marginTop: 3,
-    color: '#F6EFE6',
-    fontSize: 22,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.title.fontSize,
     fontWeight: '900',
   },
   modalCloseButton: {
     width: 34,
     height: 34,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.34)',
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
+    borderColor: SLColors.borderSubtle,
   },
   attemptModalStrategy: {
     paddingHorizontal: 12,
     paddingVertical: 11,
-    borderLeftWidth: 3,
-    borderLeftColor: 'rgba(214,167,94,0.72)',
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     backgroundColor: 'rgba(214,167,94,0.08)',
   },
   attemptModalStrategyLabel: {
-    color: '#D6A75E',
+    color: SLColors.warning,
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
@@ -4291,14 +4283,14 @@ meetSummaryTopLeft: {
   },
   attemptModalStrategyText: {
     marginTop: 5,
-    color: '#FFFFFF',
-    fontSize: 18,
+    color: SLColors.white,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '900',
   },
   attemptModalStrategyNote: {
     marginTop: 7,
-    color: '#EDE4D8',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     fontWeight: '700',
   },
@@ -4306,28 +4298,28 @@ meetSummaryTopLeft: {
     gap: 8,
   },
   modalLabel: {
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   modalInput: {
     minHeight: 44,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: '#F6EFE6',
-    backgroundColor: 'rgba(6,6,7,0.34)',
+    color: SLColors.textStrong,
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
-    fontSize: 16,
+    borderColor: SLColors.borderSubtle,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '800',
   },
   modalTextArea: {
     minHeight: 86,
     textAlignVertical: 'top',
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '600',
   },
   optionRow: {
@@ -4341,7 +4333,7 @@ meetSummaryTopLeft: {
   resultChoice: {
     flex: 1,
     minHeight: 50,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -4356,39 +4348,39 @@ meetSummaryTopLeft: {
   },
   resultChoiceMiss: {
     backgroundColor: 'rgba(91,35,35,0.18)',
-    borderColor: 'rgba(248,113,113,0.14)',
+    borderColor: SLColors.danger,
   },
   resultChoiceMissActive: {
     backgroundColor: 'rgba(185,28,28,0.30)',
     borderColor: 'rgba(252,165,165,0.56)',
   },
   resultChoiceSkipped: {
-    backgroundColor: 'rgba(6,6,7,0.28)',
-    borderColor: 'rgba(222,198,166,0.10)',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderSubtle,
   },
   resultChoiceSkippedActive: {
     backgroundColor: 'rgba(120,113,108,0.24)',
     borderColor: 'rgba(214,211,209,0.28)',
   },
   resultChoiceText: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   resultChoiceTextActive: {
-    color: '#FFFFFF',
+    color: SLColors.white,
   },
   resultChoiceGoodText: {
-    color: '#DCFCE7',
+    color: SLColors.success,
   },
   resultChoiceMissText: {
-    color: '#FECACA',
+    color: SLColors.danger,
   },
   resultChoiceSkippedText: {
-    color: '#D8CFC3',
+    color: SLColors.text,
   },
   modalWeightHint: {
-    color: '#A69B8D',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     textAlign: 'center',
   },
@@ -4402,44 +4394,44 @@ meetSummaryTopLeft: {
     minHeight: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 7,
-    backgroundColor: 'rgba(6,6,7,0.30)',
+    borderRadius: SLRadius.xs,
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.09)',
+    borderColor: SLColors.borderSubtle,
   },
   rpeChoiceActive: {
     backgroundColor: 'rgba(124,58,237,0.24)',
     borderColor: 'rgba(196,181,253,0.38)',
   },
   rpeChoiceText: {
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   rpeChoiceTextActive: {
-    color: '#EDE9FE',
+    color: SLColors.review,
   },
   optionPill: {
     flex: 1,
     minHeight: 38,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(15,23,42,0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.12)',
+    borderColor: SLColors.borderSubtle,
   },
   optionPillActive: {
     backgroundColor: 'rgba(109,91,208,0.24)',
     borderColor: 'rgba(199,190,232,0.34)',
   },
   optionPillText: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   optionPillTextActive: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   optionWrap: {
     flexDirection: 'row',
@@ -4447,24 +4439,24 @@ meetSummaryTopLeft: {
     gap: 8,
   },
   reasonPill: {
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     paddingHorizontal: 12,
     paddingVertical: 9,
-    backgroundColor: 'rgba(6,6,7,0.30)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.09)',
+    borderColor: SLColors.borderSubtle,
   },
   reasonPillActive: {
-    backgroundColor: 'rgba(127,29,29,0.34)',
+    backgroundColor: SLColors.dangerSoft,
     borderColor: 'rgba(248,113,113,0.44)',
   },
   reasonPillText: {
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   reasonPillTextActive: {
-    color: '#FECACA',
+    color: SLColors.danger,
   },
   modalActionsRow: {
     flexDirection: 'row',
@@ -4474,32 +4466,32 @@ meetSummaryTopLeft: {
   modalCancelButton: {
     flex: 1,
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.34)',
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
+    borderColor: SLColors.borderSubtle,
   },
   modalCancelText: {
-    color: '#D8CFC3',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   modalSaveButton: {
     flex: 1.35,
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
   },
   modalSaveButtonGood: {
-    backgroundColor: 'rgba(22,101,52,0.34)',
-    borderColor: 'rgba(74,222,128,0.34)',
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
   },
   modalSaveButtonMiss: {
-    backgroundColor: 'rgba(127,29,29,0.34)',
+    backgroundColor: SLColors.dangerSoft,
     borderColor: 'rgba(248,113,113,0.34)',
   },
   modalSaveButtonNeutral: {
@@ -4507,78 +4499,78 @@ meetSummaryTopLeft: {
     borderColor: 'rgba(214,211,209,0.22)',
   },
   modalSaveText: {
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   errorText: {
-    color: '#F87171',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     textAlign: 'center',
   },
     rackCard: {
-    backgroundColor: 'rgba(24,16,15,0.18)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderRadius: 0,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   rackGrid: {
     gap: 10,
   },
   rackTile: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 12,
     paddingVertical: 14,
     backgroundColor: 'rgba(15,23,42,0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
+    borderColor: SLColors.borderHairline,
   },
   rackTileFull: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 12,
     paddingVertical: 14,
     backgroundColor: 'rgba(24,38,28,0.62)',
     borderWidth: 1,
-    borderColor: 'rgba(74,222,128,0.14)',
+    borderColor: SLColors.success,
   },
   rackTileLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   rackTileValue: {
     marginTop: 7,
-    color: '#F8FAFC',
-    fontSize: 20,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '900',
     letterSpacing: -0.3,
   },
   rackLineCard: {
     width: '100%',
-    borderRadius: 6,
+    borderRadius: SLRadius.xs,
     paddingHorizontal: 12,
     paddingVertical: 14,
-    backgroundColor: 'rgba(6,6,7,0.28)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.06)',
+    borderColor: SLColors.borderHairline,
   },
   rackLineText: {
-    color: '#F6EFE6',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
     lineHeight: 22,
   },
   rackLineLabel: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
@@ -4595,10 +4587,10 @@ meetSummaryTopLeft: {
   },
   rackSplitDivider: {
     width: 1,
-    backgroundColor: 'rgba(148,163,184,0.14)',
+    backgroundColor: SLColors.borderSubtle,
   },
   rackSplitLabel: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
     textTransform: 'uppercase',
@@ -4611,16 +4603,16 @@ meetSummaryTopLeft: {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 7,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.28)',
+    borderColor: SLColors.borderSelected,
     backgroundColor: 'rgba(91,33,182,0.16)',
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
   meetEditButtonText: {
-    color: '#DDD6FE',
-    fontSize: 12,
+    color: SLColors.review,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     letterSpacing: 0.3,
   },
@@ -4638,7 +4630,7 @@ meetSummaryTopLeft: {
     borderTopRightRadius: 18,
     overflow: 'hidden',
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
+    borderColor: SLColors.borderSubtle,
     backgroundColor: 'rgba(13,10,10,0.96)',
   },
   meetDetailsModalHeader: {
@@ -4650,17 +4642,17 @@ meetSummaryTopLeft: {
     paddingTop: 18,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(222,198,166,0.08)',
+    borderBottomColor: SLColors.borderHairline,
   },
   meetDetailsModalTitle: {
-    color: '#F6EFE6',
-    fontSize: 20,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '900',
   },
   meetDetailsModalSubtitle: {
     marginTop: 4,
-    color: '#B8ACA1',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     lineHeight: 18,
   },
@@ -4673,12 +4665,12 @@ meetSummaryTopLeft: {
   meetDetailsSection: {
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(222,198,166,0.07)',
+    borderBottomColor: SLColors.borderHairline,
   },
   meetDetailsSectionTitle: {
     marginBottom: 12,
-    color: '#D6A75E',
-    fontSize: 13,
+    color: SLColors.warning,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -4691,8 +4683,8 @@ meetSummaryTopLeft: {
   },
   meetFieldLabel: {
     marginBottom: 5,
-    color: '#A69B8D',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -4701,29 +4693,29 @@ meetSummaryTopLeft: {
     marginBottom: 5,
   },
   selectorContextText: {
-    color: '#8B8178',
-    fontSize: 11,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     lineHeight: 15,
   },
   meetFieldHint: {
     marginTop: -4,
     marginBottom: 10,
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
     lineHeight: 17,
   },
   meetFieldInput: {
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
-    backgroundColor: 'rgba(6,6,7,0.38)',
-    color: '#F6EFE6',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceInset,
+    color: SLColors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
   },
   meetFieldTextArea: {
@@ -4735,10 +4727,10 @@ meetSummaryTopLeft: {
     height: 56,
     overflow: 'hidden',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.25)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.07)',
+    borderColor: SLColors.borderHairline,
   },
   horizontalWheelCenterBand: {
     position: 'absolute',
@@ -4747,8 +4739,8 @@ meetSummaryTopLeft: {
     marginLeft: -HORIZONTAL_WHEEL_ITEM_WIDTH / 2,
     top: 6,
     bottom: 6,
-    borderRadius: 8,
-    backgroundColor: 'rgba(139,92,246,0.16)',
+    borderRadius: SLRadius.sm,
+    backgroundColor: SLColors.accentVioletSoft,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.22)',
   },
@@ -4762,13 +4754,13 @@ meetSummaryTopLeft: {
     justifyContent: 'center',
   },
   horizontalWheelText: {
-    color: '#8B8178',
-    fontSize: 14,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
   horizontalWheelTextActive: {
-    color: '#F6EFE6',
-    fontSize: 18,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '900',
   },
   compactInputRow: {
@@ -4778,31 +4770,31 @@ meetSummaryTopLeft: {
     gap: 10,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   compactInputLabel: {
     flex: 1,
-    color: '#F6EFE6',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
   compactNumberInput: {
     width: 92,
     minHeight: 40,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
-    backgroundColor: 'rgba(6,6,7,0.36)',
-    color: '#F6EFE6',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceInset,
+    color: SLColors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 8,
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },
   compactInputUnit: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   platformWheelGrid: {
@@ -4815,7 +4807,7 @@ meetSummaryTopLeft: {
   },
   platformWheelLabel: {
     minHeight: 30,
-    color: '#A69B8D',
+    color: SLColors.textMuted,
     fontSize: 10,
     lineHeight: 13,
     fontWeight: '900',
@@ -4826,10 +4818,10 @@ meetSummaryTopLeft: {
   platformWheelFrame: {
     height: VERTICAL_WHEEL_ROW_HEIGHT * VERTICAL_WHEEL_VISIBLE_ROWS,
     overflow: 'hidden',
-    backgroundColor: 'rgba(6,6,7,0.28)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.07)',
+    borderColor: SLColors.borderHairline,
   },
   platformWheelCenterBand: {
     position: 'absolute',
@@ -4837,8 +4829,8 @@ meetSummaryTopLeft: {
     right: 3,
     top: VERTICAL_WHEEL_ROW_HEIGHT * 2,
     height: VERTICAL_WHEEL_ROW_HEIGHT,
-    borderRadius: 7,
-    backgroundColor: 'rgba(139,92,246,0.16)',
+    borderRadius: SLRadius.xs,
+    backgroundColor: SLColors.accentVioletSoft,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.20)',
   },
@@ -4851,13 +4843,13 @@ meetSummaryTopLeft: {
     justifyContent: 'center',
   },
   platformWheelText: {
-    color: '#8B8178',
-    fontSize: 13,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   platformWheelTextActive: {
-    color: '#F6EFE6',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   squatRackInputRow: {
@@ -4877,22 +4869,22 @@ meetSummaryTopLeft: {
     minWidth: 58,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
-    backgroundColor: 'rgba(6,6,7,0.38)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceInset,
   },
   squatRackOrientationButtonActive: {
     borderColor: 'rgba(196,181,253,0.28)',
-    backgroundColor: 'rgba(139,92,246,0.18)',
+    backgroundColor: SLColors.accentVioletSoft,
   },
   squatRackOrientationText: {
-    color: '#A69B8D',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   squatRackOrientationTextActive: {
-    color: '#F6EFE6',
+    color: SLColors.textStrong,
   },
   meetDetailsFooter: {
     flexDirection: 'row',
@@ -4901,28 +4893,28 @@ meetSummaryTopLeft: {
     paddingHorizontal: 18,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(222,198,166,0.08)',
+    borderTopColor: SLColors.borderHairline,
     backgroundColor: 'rgba(13,10,10,0.98)',
   },
   meetDetailsSecondaryButton: {
     flex: 1,
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(6,6,7,0.36)',
+    backgroundColor: SLColors.surfaceInset,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
+    borderColor: SLColors.borderSubtle,
   },
   meetDetailsSecondaryText: {
-    color: '#D8CFC3',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   meetDetailsPrimaryButton: {
     flex: 1.25,
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(139,92,246,0.26)',
@@ -4930,13 +4922,13 @@ meetSummaryTopLeft: {
     borderColor: 'rgba(196,181,253,0.28)',
   },
   meetDetailsPrimaryText: {
-    color: '#F6EFE6',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   meetBagEditorList: {
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   meetBagEditorRow: {
     minHeight: 44,
@@ -4944,12 +4936,12 @@ meetSummaryTopLeft: {
     alignItems: 'center',
     gap: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(222,198,166,0.055)',
+    borderBottomColor: SLColors.borderHairline,
   },
   meetBagEditorText: {
     flex: 1,
-    color: '#F6EFE6',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
   },
   meetBagDeleteButton: {
@@ -4967,14 +4959,14 @@ meetSummaryTopLeft: {
   meetBagAddInput: {
     flex: 1,
     minHeight: 42,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(222,198,166,0.10)',
-    backgroundColor: 'rgba(6,6,7,0.36)',
-    color: '#F6EFE6',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceInset,
+    color: SLColors.textStrong,
     paddingHorizontal: 12,
     paddingVertical: 9,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
   },
   meetBagAddButton: {
@@ -4983,25 +4975,25 @@ meetSummaryTopLeft: {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     paddingHorizontal: 12,
-    backgroundColor: 'rgba(139,92,246,0.14)',
+    backgroundColor: SLColors.accentVioletSoft,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.18)',
   },
   meetBagAddText: {
-    color: '#C4B5FD',
-    fontSize: 12,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   gearCard: {
-    backgroundColor: 'rgba(24,16,15,0.18)',
+    backgroundColor: SLColors.surfaceEmbedded,
     borderRadius: 0,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   gearList: {
     gap: 8,
@@ -5016,20 +5008,20 @@ meetSummaryTopLeft: {
     paddingVertical: 10,
     backgroundColor: 'transparent',
     borderTopWidth: 1,
-    borderColor: 'rgba(222,198,166,0.055)',
+    borderColor: SLColors.borderHairline,
   },
   gearRowChecked: {
-    backgroundColor: 'rgba(22,101,52,0.16)',
-    borderColor: 'rgba(74,222,128,0.24)',
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
   },
   gearCheckCircle: {
     width: 22,
     height: 22,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.28)',
+    borderColor: SLColors.borderStrong,
     backgroundColor: 'rgba(15,23,42,0.72)',
   },
   gearCheckCircleChecked: {
@@ -5038,67 +5030,63 @@ meetSummaryTopLeft: {
   },
   gearText: {
     flex: 1,
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   gearTextChecked: {
-    color: '#DCFCE7',
+    color: SLColors.success,
   },
   focusCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    borderRadius: 20,
+    borderRadius: SLRadius.xl,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'rgba(120,53,15,0.20)',
+    backgroundColor: SLColors.warningSoft,
     borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.18)',
+    borderColor: SLColors.warning,
   },
   focusIconWrap: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(251,146,60,0.14)',
     borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.18)',
+    borderColor: SLColors.warning,
   },
   focusTitle: {
-    color: '#FED7AA',
-    fontSize: 14,
+    color: SLColors.warning,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   focusBody: {
     marginTop: 4,
-    color: '#FDBA74',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
   },
   recapHeroCard: {
     gap: 14,
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     paddingHorizontal: 18,
     paddingVertical: 18,
     backgroundColor: 'rgba(20,18,52,0.98)',
     borderWidth: 1,
     borderColor: 'rgba(167,139,250,0.42)',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 4,
+    ...SLShadows.raised,
   },
   recapStoryCard: {
     backgroundColor: 'rgba(12,18,38,0.96)',
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     paddingVertical: 20,
     paddingHorizontal: 18,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.18)',
+    borderColor: SLColors.borderSelected,
   },
 
   recapStoryStack: {
@@ -5107,14 +5095,14 @@ meetSummaryTopLeft: {
   },
 
   recapStoryParagraph: {
-    color: '#E2E8F0',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 25,
     fontWeight: '500',
   },
   recapHeadline: {
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 22,
     fontWeight: '700',
   },
@@ -5125,7 +5113,7 @@ meetSummaryTopLeft: {
   },
   recapMetricTile: {
     width: '48.5%',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 12,
     backgroundColor: 'rgba(15,23,42,0.72)',
@@ -5133,7 +5121,7 @@ meetSummaryTopLeft: {
     borderColor: 'rgba(199,190,232,0.14)',
   },
   recapMetricLabel: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
@@ -5141,8 +5129,8 @@ meetSummaryTopLeft: {
   },
   recapMetricValue: {
     marginTop: 5,
-    color: '#F8FAFC',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   recapListStack: {
@@ -5156,21 +5144,21 @@ meetSummaryTopLeft: {
   recapBulletDot: {
     width: 7,
     height: 7,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     marginTop: 7,
-    backgroundColor: '#A7F3D0',
+    backgroundColor: SLColors.success,
   },
   recapSoftDot: {
     width: 7,
     height: 7,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     marginTop: 7,
-    backgroundColor: '#FED7AA',
+    backgroundColor: SLColors.warning,
   },
   recapBulletText: {
     flex: 1,
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     fontWeight: '600',
   },
@@ -5179,55 +5167,55 @@ meetSummaryTopLeft: {
   },
   recapLiftRow: {
     minHeight: 54,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: 'rgba(15,23,42,0.72)',
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
+    borderColor: SLColors.borderHairline,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 12,
   },
   recapLiftLabel: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   recapLiftSubText: {
     marginTop: 3,
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
   },
   recapLiftValue: {
-    color: '#F8FAFC',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
     textAlign: 'right',
   },
   recapSoftCard: {
     gap: 12,
-    backgroundColor: 'rgba(120,53,15,0.18)',
-    borderRadius: 18,
+    backgroundColor: SLColors.warningSoft,
+    borderRadius: SLRadius.lg,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.16)',
+    borderColor: SLColors.warning,
   },
   recapNextStepsCard: {
     gap: 10,
-    backgroundColor: 'rgba(22,101,52,0.14)',
-    borderRadius: 18,
+    backgroundColor: SLColors.successSoft,
+    borderRadius: SLRadius.lg,
     paddingVertical: 18,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(74,222,128,0.18)',
+    borderColor: SLColors.success,
   },
   recapNextStepsText: {
-    color: '#DCFCE7',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     fontWeight: '700',
   },
@@ -5237,25 +5225,25 @@ meetSummaryTopLeft: {
 
 meetStatusButtonStart: {
   minHeight: 42,
-  borderRadius: 14,
+  borderRadius: SLRadius.md,
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
   gap: 8,
-  backgroundColor: 'rgba(22,101,52,0.24)',
+  backgroundColor: SLColors.successSoft,
   borderWidth: 1,
-  borderColor: 'rgba(74,222,128,0.24)',
+  borderColor: SLColors.success,
 },
 
 meetStatusButtonStartText: {
-  color: '#DCFCE7',
-  fontSize: 13,
+  color: SLColors.success,
+  fontSize: SLTypography.label.fontSize,
   fontWeight: '800',
 },
 
 meetStatusButtonFinish: {
   minHeight: 42,
-  borderRadius: 14,
+  borderRadius: SLRadius.md,
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
@@ -5266,13 +5254,13 @@ meetStatusButtonFinish: {
 },
 
 meetStatusButtonFinishText: {
-  color: '#F8FAFC',
-  fontSize: 13,
+  color: SLColors.textStrong,
+  fontSize: SLTypography.label.fontSize,
   fontWeight: '800',
 },
 meetEditButtonCompact: {
   minHeight: 34,
-  borderRadius: 999,
+  borderRadius: SLRadius.pill,
   paddingHorizontal: 12,
   flexDirection: 'row',
   alignItems: 'center',
@@ -5284,12 +5272,12 @@ meetEditButtonCompact: {
 },
 
 meetEditButtonCompactText: {
-  color: '#DDD6FE',
-  fontSize: 12,
+  color: SLColors.review,
+  fontSize: SLTypography.caption.fontSize,
   fontWeight: '800',
 },
 finishMeetBannerButton: {
-  borderRadius: 18,
+  borderRadius: SLRadius.lg,
   paddingHorizontal: 16,
   paddingVertical: 14,
   backgroundColor: 'rgba(109,91,208,0.22)',
@@ -5306,7 +5294,7 @@ finishMeetBannerContent: {
 finishMeetBannerIconWrap: {
   width: 42,
   height: 42,
-  borderRadius: 14,
+  borderRadius: SLRadius.md,
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: 'rgba(109,91,208,0.30)',
@@ -5320,26 +5308,26 @@ finishMeetBannerTextCol: {
 },
 
 finishMeetBannerTitle: {
-  color: '#F8FAFC',
-  fontSize: 15,
+  color: SLColors.textStrong,
+  fontSize: SLTypography.body.fontSize,
   fontWeight: '800',
 },
 
 finishMeetBannerSubtitle: {
   marginTop: 2,
-  color: '#CBD5E1',
-  fontSize: 12,
+  color: SLColors.text,
+  fontSize: SLTypography.caption.fontSize,
   lineHeight: 17,
   fontWeight: '600',
 },
 startMeetRequirementsBox: {
   gap: 10,
-  borderRadius: 16,
+  borderRadius: SLRadius.lg,
   paddingHorizontal: 12,
   paddingVertical: 12,
-  backgroundColor: 'rgba(120,53,15,0.18)',
+  backgroundColor: SLColors.warningSoft,
   borderWidth: 1,
-  borderColor: 'rgba(251,191,36,0.18)',
+  borderColor: SLColors.warning,
 },
 startMeetRequirementsHeader: {
   flexDirection: 'row',
@@ -5347,8 +5335,8 @@ startMeetRequirementsHeader: {
   gap: 8,
 },
 startMeetRequirementsTitle: {
-  color: '#FED7AA',
-  fontSize: 13,
+  color: SLColors.warning,
+  fontSize: SLTypography.label.fontSize,
   fontWeight: '900',
 },
 startMeetRequirementsList: {
@@ -5362,20 +5350,20 @@ startMeetRequirementRow: {
 startMeetRequirementDot: {
   width: 6,
   height: 6,
-  borderRadius: 999,
+  borderRadius: SLRadius.pill,
   marginTop: 6,
-  backgroundColor: '#FDBA74',
+  backgroundColor: SLColors.warning,
 },
 startMeetRequirementText: {
   flex: 1,
-  color: '#CBD5E1',
-  fontSize: 12,
+  color: SLColors.text,
+  fontSize: SLTypography.caption.fontSize,
   lineHeight: 17,
   fontWeight: '700',
 },
 startMeetRequirementsHint: {
-  color: '#FED7AA',
-  fontSize: 12,
+  color: SLColors.warning,
+  fontSize: SLTypography.caption.fontSize,
   lineHeight: 17,
   fontWeight: '800',
 },

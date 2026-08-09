@@ -1,18 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
+import { Redirect } from 'expo-router';
 
-import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLMotionEntrance, SLMotionPressable } from '@/components/ui';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
@@ -137,26 +132,30 @@ const METRICS: Array<{ key: MetricKey; label: string; icon: keyof typeof Ionicon
 const PROGRESSION_UNIT_KEY = 'strength-ledger.progression.unit';
 
 const colors = {
-  text: '#ECE5DA',
-  textStrong: '#F9FAFB',
-  muted: '#B8ACA1',
-  subtle: '#82766D',
-  line: 'rgba(222, 198, 166, 0.14)',
-  lineSoft: 'rgba(222, 198, 166, 0.08)',
-  surface: 'rgba(20, 14, 18, 0.48)',
-  surfaceStrong: 'rgba(28, 20, 30, 0.72)',
-  surfaceLift: 'rgba(34, 24, 42, 0.74)',
+  text: SLColors.text,
+  textStrong: SLColors.textStrong,
+  muted: SLColors.textMuted,
+  subtle: SLColors.textSubtle,
+  line: SLColors.borderSubtle,
+  lineSoft: SLColors.borderHairline,
+  surface: SLColors.surfaceEmbedded,
+  surfaceStrong: SLColors.focus,
+  surfaceLift: SLColors.surfaceRaised,
   violet: SLColors.accentViolet,
-  violetStrong: '#9B6CFF',
-  violetSoft: 'rgba(155, 108, 255, 0.22)',
-  cyan: '#55D6CF',
-  pink: '#F06A8B',
-  amber: '#F3BE55',
-  green: '#7DE0A3',
-  red: '#E96D78',
+  violetStrong: SLColors.accent,
+  violetSoft: SLColors.accentVioletSoft,
+  cyan: SLColors.info,
+  pink: SLColors.danger,
+  amber: SLColors.warning,
+  green: SLColors.success,
+  red: SLColors.danger,
 };
 
-export default function AthleteProgressionScreen() {
+export default function LegacyProgressionRoute() {
+  return <Redirect href="/(tabs)/ledger/strength" />;
+}
+
+function AthleteProgressionScreen() {
   const [range, setRange] = useState<ProgressionRange>('90d');
   const [unit, setUnit] = useState<DisplayUnit>('kg');
   const [metric, setMetric] = useState<MetricKey>('e1rm');
@@ -245,8 +244,8 @@ export default function AthleteProgressionScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadProgression({ silent: true })} tintColor={colors.violet} />}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Progress</Text>
-        <Text style={styles.subtitle}>Your training story</Text>
+        <Text typographyRole="pageTitle" style={styles.title}>Progress</Text>
+        <Text typographyRole="supportingBody" style={styles.subtitle}>Your training story</Text>
       </View>
 
       <View style={styles.controlRow}>
@@ -254,17 +253,16 @@ export default function AthleteProgressionScreen() {
           {RANGE_OPTIONS.map((option) => {
             const active = option.key === range;
             return (
-              <Pressable
+              <SLMotionPressable
                 key={option.key}
                 onPress={() => setRange(option.key)}
-                style={({ pressed }) => [
+                style={[
                   styles.rangeOption,
                   active && styles.rangeOptionActive,
-                  pressed && styles.pressed,
                 ]}
               >
                 <Text style={[styles.rangeOptionText, active && styles.rangeOptionTextActive]}>{option.label}</Text>
-              </Pressable>
+              </SLMotionPressable>
             );
           })}
         </View>
@@ -272,17 +270,16 @@ export default function AthleteProgressionScreen() {
           {(['kg', 'lb'] as const).map((option) => {
             const active = unit === option;
             return (
-              <Pressable
+              <SLMotionPressable
                 key={option}
                 onPress={() => changeUnit(option)}
-                style={({ pressed }) => [
+                style={[
                   styles.unitOption,
                   active && styles.unitOptionActive,
-                  pressed && styles.pressed,
                 ]}
               >
                 <Text style={[styles.unitOptionText, active && styles.unitOptionTextActive]}>{option}</Text>
-              </Pressable>
+              </SLMotionPressable>
             );
           })}
         </View>
@@ -292,18 +289,17 @@ export default function AthleteProgressionScreen() {
         {METRICS.map((option) => {
           const active = option.key === metric;
           return (
-            <Pressable
+            <SLMotionPressable
               key={option.key}
               onPress={() => setMetric(option.key)}
-              style={({ pressed }) => [
+              style={[
                 styles.metricCard,
                 active && styles.metricCardActive,
-                pressed && styles.pressed,
               ]}
             >
               <Ionicons name={option.icon} size={22} color={metricColor(option.key)} />
               <Text style={[styles.metricCardLabel, active && styles.metricCardLabelActive]}>{option.label}</Text>
-            </Pressable>
+            </SLMotionPressable>
           );
         })}
       </ScrollView>
@@ -315,25 +311,28 @@ export default function AthleteProgressionScreen() {
         </View>
       ) : null}
 
-      <View style={styles.heroCard}>
-        <View style={styles.chartHeader}>
-          <View>
-            <Text style={styles.chartTitle}>{metricTitle(metric)} Trend</Text>
-            <Text style={styles.chartSubtitle}>{metricSubtitle(metric, unit)}</Text>
+      <SLMotionEntrance motionKey={`${metric}-${range}-${unit}`} distance={6}>
+        <View style={styles.heroCard}>
+          <View style={styles.chartHeader}>
+            <View>
+              <Text style={styles.chartTitle}>{metricTitle(metric)} Trend</Text>
+              <Text style={styles.chartSubtitle}>{metricSubtitle(metric, unit)}</Text>
+            </View>
+            <View style={styles.adjustPill}>
+              <Ionicons name="options-outline" size={15} color={colors.text} />
+              <Text style={styles.adjustText}>Adjust View</Text>
+            </View>
           </View>
-          <View style={styles.adjustPill}>
-            <Ionicons name="options-outline" size={15} color={colors.text} />
-            <Text style={styles.adjustText}>Adjust View</Text>
-          </View>
+          <Legend series={chart.series} />
+          <HeroChart series={chart.series} formatValue={chart.formatValue} emptyTitle={chart.emptyTitle} />
         </View>
-        <Legend series={chart.series} />
-        <HeroChart series={chart.series} formatValue={chart.formatValue} emptyTitle={chart.emptyTitle} />
-      </View>
-
-      <InsightCard insight={insight} />
-      <SupportingMetrics payload={payload} selected={metric} unit={unit} />
-      <StrengthStory payload={payload} unit={unit} />
-      <RecentMilestones milestones={payload?.milestones || []} unit={unit} />
+        <InsightCard insight={insight} />
+        <SupportingMetrics payload={payload} selected={metric} unit={unit} />
+      </SLMotionEntrance>
+      <SLMotionEntrance motionKey={`story-${range}-${unit}`} delay={42} distance={6}>
+        <StrengthStory payload={payload} unit={unit} />
+        <RecentMilestones milestones={payload?.milestones || []} unit={unit} />
+      </SLMotionEntrance>
     </ScrollView>
   );
 }
@@ -863,7 +862,7 @@ const styles = StyleSheet.create({
   },
   stateTitle: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.muted,
   },
   stateLine: {
@@ -878,22 +877,16 @@ const styles = StyleSheet.create({
   stateBody: {
     flex: 1,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.muted,
   },
   header: {
     gap: 4,
   },
   title: {
-    fontFamily: SLFontFamilies.sansBold,
-    fontSize: 34,
-    lineHeight: 39,
     color: colors.textStrong,
-    letterSpacing: 0,
   },
   subtitle: {
-    fontFamily: SLFontFamilies.sans,
-    fontSize: 15,
     color: colors.muted,
   },
   controlRow: {
@@ -909,9 +902,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     overflow: 'hidden',
-    backgroundColor: 'rgba(12, 10, 14, 0.44)',
+    backgroundColor: SLColors.surfaceFlat,
   },
   rangeOption: {
     flex: 1,
@@ -924,21 +917,21 @@ const styles = StyleSheet.create({
   },
   rangeOptionText: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.muted,
   },
   rangeOptionTextActive: {
-    color: colors.textStrong,
+    color: SLColors.textInverted,
   },
   unitRail: {
     flexDirection: 'row',
     minHeight: 38,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     overflow: 'hidden',
-    backgroundColor: 'rgba(12, 10, 14, 0.44)',
+    backgroundColor: SLColors.surfaceFlat,
   },
   unitOption: {
     minWidth: 39,
@@ -950,13 +943,13 @@ const styles = StyleSheet.create({
   },
   unitOptionText: {
     fontFamily: SLTypography.utilityLabel.fontFamily,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: SLTypography.utilityLabel.fontWeight,
     color: colors.muted,
     textTransform: 'uppercase',
   },
   unitOptionTextActive: {
-    color: colors.textStrong,
+    color: SLColors.textInverted,
   },
   metricRail: {
     gap: 8,
@@ -970,16 +963,16 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 8,
+    borderRadius: SLRadius.radiusRow,
     backgroundColor: colors.surface,
   },
   metricCardActive: {
-    borderColor: 'rgba(155,108,255,0.65)',
-    backgroundColor: colors.violetSoft,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.surfaceSelected,
   },
   metricCardLabel: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.muted,
     textAlign: 'center',
   },
@@ -990,9 +983,9 @@ const styles = StyleSheet.create({
     gap: 15,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 14,
-    padding: 16,
-    backgroundColor: 'rgba(16, 13, 18, 0.76)',
+    borderRadius: SLRadius.radiusCard,
+    padding: 18,
+    backgroundColor: SLColors.surfaceCommand,
   },
   chartHeader: {
     flexDirection: 'row',
@@ -1002,13 +995,13 @@ const styles = StyleSheet.create({
   },
   chartTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   chartSubtitle: {
     marginTop: 3,
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.muted,
   },
   adjustPill: {
@@ -1019,12 +1012,12 @@ const styles = StyleSheet.create({
     minHeight: 34,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     backgroundColor: 'rgba(0,0,0,0.16)',
   },
   adjustText: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.text,
   },
   legend: {
@@ -1040,11 +1033,11 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 10,
     height: 10,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
   },
   legendText: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.text,
   },
   chartWrap: {
@@ -1068,7 +1061,7 @@ const styles = StyleSheet.create({
   },
   axisLabel: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     color: colors.muted,
   },
   chartEmpty: {
@@ -1079,19 +1072,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderColor: colors.lineSoft,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(255,255,255,0.02)',
   },
   chartEmptyTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     color: colors.textStrong,
   },
   chartEmptyBody: {
     maxWidth: 250,
     textAlign: 'center',
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     color: colors.muted,
   },
@@ -1101,7 +1094,7 @@ const styles = StyleSheet.create({
     gap: 12,
     borderWidth: 1,
     borderColor: 'rgba(243,190,85,0.26)',
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     padding: 15,
     backgroundColor: 'rgba(51, 36, 12, 0.22)',
   },
@@ -1117,12 +1110,12 @@ const styles = StyleSheet.create({
   },
   insightTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     color: colors.amber,
   },
   insightBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     color: colors.text,
   },
@@ -1135,14 +1128,14 @@ const styles = StyleSheet.create({
     gap: 12,
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 12,
+    borderRadius: SLRadius.radiusCard,
     padding: 13,
     backgroundColor: colors.surface,
   },
   supportIcon: {
     width: 34,
     height: 34,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1152,7 +1145,7 @@ const styles = StyleSheet.create({
   },
   supportLabel: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.text,
   },
   supportValue: {
@@ -1162,12 +1155,12 @@ const styles = StyleSheet.create({
   },
   supportMeta: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     color: colors.muted,
   },
   supportChange: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
   },
   section: {
     gap: 10,
@@ -1181,23 +1174,23 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 17,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   sectionMeta: {
     fontFamily: SLFontFamilies.sansMedium,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.muted,
   },
   sectionAction: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.violetStrong,
   },
   storyStack: {
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 13,
+    borderRadius: SLRadius.radiusCard,
     overflow: 'hidden',
     backgroundColor: colors.surface,
   },
@@ -1212,7 +1205,7 @@ const styles = StyleSheet.create({
   liftIcon: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1222,7 +1215,7 @@ const styles = StyleSheet.create({
   },
   liftName: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     color: colors.textStrong,
   },
   liftStatsRow: {
@@ -1240,7 +1233,7 @@ const styles = StyleSheet.create({
   },
   metricColumnValue: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: colors.textStrong,
   },
   sparklineEmpty: {
@@ -1252,7 +1245,7 @@ const styles = StyleSheet.create({
   milestoneCard: {
     borderWidth: 1,
     borderColor: colors.lineSoft,
-    borderRadius: 13,
+    borderRadius: SLRadius.radiusCard,
     overflow: 'hidden',
     backgroundColor: colors.surface,
   },
@@ -1269,7 +1262,7 @@ const styles = StyleSheet.create({
   milestoneIcon: {
     width: 42,
     height: 42,
-    borderRadius: 21,
+    borderRadius: SLRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(243,190,85,0.16)',
@@ -1280,18 +1273,18 @@ const styles = StyleSheet.create({
   },
   milestoneTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     color: colors.textStrong,
   },
   milestoneBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     color: colors.muted,
   },
   milestoneDate: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     color: colors.muted,
   },
   emptyCard: {
@@ -1304,12 +1297,12 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontFamily: SLFontFamilies.sansBold,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     color: colors.textStrong,
   },
   emptyBody: {
     fontFamily: SLFontFamilies.sans,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     color: colors.muted,
   },

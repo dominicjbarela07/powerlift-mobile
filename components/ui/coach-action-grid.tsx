@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 
 import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStatusTone } from '@/constants/theme';
+import { SLMaterialOverlay } from './sl-workspace';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -40,6 +42,7 @@ export function CoachActionGrid({ actions, columns = 2, style }: CoachActionGrid
               },
             ]}
           >
+            <SLMaterialOverlay compact level={2} />
             <View style={[styles.iconWrap, { backgroundColor: tone.background, borderColor: tone.border }]}>
               <Ionicons color={tone.icon} name={action.icon} size={18} />
             </View>
@@ -68,7 +71,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: SLSpacing.sm,
     minHeight: 92,
+    overflow: 'hidden',
     padding: SLSpacing.md,
+    position: 'relative',
   },
   iconWrap: {
     alignItems: 'center',

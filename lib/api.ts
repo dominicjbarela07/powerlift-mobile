@@ -1,9 +1,15 @@
 // app/lib/api.ts
 
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { API_BASE, PRODUCTION_API_BASE, WEB_BASE } from '@/lib/api-base';
+import { resolveProductionIdealRequest } from '@/lib/release-preview-stubs';
+import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+
+export { API_BASE, PRODUCTION_API_BASE, WEB_BASE } from '@/lib/api-base';
 
 const MANUAL_TIMEZONE_KEY = 'athlete_manual_timezone';
 const MOBILE_VIEW_MODE_KEY = 'mobile_view_mode';
@@ -36,54 +42,6 @@ export async function setManualTimezonePreference(timezone: string | null) {
 export async function getResolvedTimezone(): Promise<string> {
   return (await getManualTimezonePreference()) || getDeviceTimezone() || FALLBACK_TIMEZONE;
 }
-
-// API base URL
-// - Dev default: local Flask backend for simulator/device development.
-// - Android emulator reaches the host machine at 10.0.2.2, not 127.0.0.1.
-// - Production/App Store builds must never resolve to localhost.
-export const PRODUCTION_API_BASE = 'https://app.strengthledger.fit';
-const DEV_API_BASE = Platform.OS === 'android'
-  ? 'http://10.0.2.2:5000'
-  : 'http://127.0.0.1:5000';
-
-function normalizeBaseUrl(value: string | undefined | null): string | null {
-  const trimmed = String(value || '').trim().replace(/\/$/, '');
-  return trimmed || null;
-}
-
-function isBlockedProductionBaseUrl(value: string): boolean {
-  try {
-    const parsed = new URL(value);
-    const host = parsed.hostname.toLowerCase();
-    return (
-      host === 'localhost' ||
-      host === '0.0.0.0' ||
-      host === '::1' ||
-      host === '10.0.2.2' ||
-      host.startsWith('127.')
-    );
-  } catch {
-    return false;
-  }
-}
-
-function resolveApiBase(): string {
-  const configured = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE as string | undefined);
-  const fallback = typeof __DEV__ !== 'undefined' && __DEV__ ? DEV_API_BASE : PRODUCTION_API_BASE;
-  const candidate = configured || fallback;
-
-  if (!(typeof __DEV__ !== 'undefined' && __DEV__) && isBlockedProductionBaseUrl(candidate)) {
-    console.warn(
-      `Ignoring unsafe production EXPO_PUBLIC_API_BASE "${candidate}". Falling back to ${PRODUCTION_API_BASE}.`
-    );
-    return PRODUCTION_API_BASE;
-  }
-
-  return candidate;
-}
-
-export const API_BASE = resolveApiBase();
-export const WEB_BASE = API_BASE;
 
 type FetchJsonResult<T> = {
   ok: boolean;
@@ -182,12 +140,17 @@ export async function fetchJson<T = any>(
   path: string,
   init: ApiFetchInit = {}
 ): Promise<FetchJsonResult<T>> {
-  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
-  const { auth: authMode, timeoutMs = FETCH_TIMEOUT_MS, ...fetchInit } = init;
-
   // If callers pass a plain object as `body`, React Native fetch will NOT serialize it.
   // Normalize to a JSON string body when appropriate.
   const method = String(init.method || 'GET').toUpperCase();
+  const idealResult =
+    typeof __DEV__ !== 'undefined' && __DEV__
+      ? resolveProductionIdealRequest<T>(path, init)
+      : null;
+  if (idealResult) return idealResult;
+
+  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+  const { auth: authMode, timeoutMs = FETCH_TIMEOUT_MS, ...fetchInit } = init;
   const rawBody: any = (init as any).body;
   const bodyIsPresent = rawBody !== undefined && rawBody !== null;
 
@@ -263,16 +226,8 @@ export async function fetchJson<T = any>(
   if (!hasTimezoneHeader) {
     mergedHeaders['X-Timezone'] = await getResolvedTimezone();
   }
-
-  // Only set Authorization if caller didn't explicitly set it (any case)
-  const wantsAuth = authMode !== false;
-  const hasAuth = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'authorization');
-  if (wantsAuth && token && !hasAuth) {
-    mergedHeaders.Authorization = `Bearer ${token}`;
-  }
-
   const hasMobileModeHeader = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'x-strength-ledger-mobile-mode');
-  if (wantsAuth && !hasMobileModeHeader) {
+  if (!hasMobileModeHeader) {
     try {
       const mobileMode = String((await AsyncStorage.getItem(MOBILE_VIEW_MODE_KEY)) || '').trim().toLowerCase();
       if (['athlete', 'coach', 'individual'].includes(mobileMode)) {
@@ -281,6 +236,13 @@ export async function fetchJson<T = any>(
     } catch {
       // Mobile mode is only a view hint; requests must continue without it.
     }
+  }
+
+  // Only set Authorization if caller didn't explicitly set it (any case)
+  const wantsAuth = authMode !== false;
+  const hasAuth = Object.keys(mergedHeaders).some((k) => k.toLowerCase() === 'authorization');
+  if (wantsAuth && token && !hasAuth) {
+    mergedHeaders.Authorization = `Bearer ${token}`;
   }
 
   if (__DEV__) {
@@ -334,9 +296,11 @@ export async function fetchJson<T = any>(
       signal: controller.signal,
     });
   } catch (err: any) {
-    if (didTimeout || err?.name === 'AbortError') {
+    if (didTimeout) {
       throw createTimeoutError(timeoutMs);
     }
+    // Caller-driven cancellation is control flow. Preserve AbortError so route
+    // request-generation guards can ignore obsolete work without surfacing it.
     throw err;
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
@@ -363,6 +327,18 @@ export async function fetchJson<T = any>(
 
   if (!res.ok && isAccountStateBlockedPayload(json)) {
     notifyAccountStateBlock(json, { path, status: res.status });
+  }
+
+  if (__DEV__ && !res.ok) {
+    const endpoint = (() => {
+      try {
+        const parsed = new URL(url);
+        return `${parsed.pathname}${parsed.search}`;
+      } catch {
+        return path;
+      }
+    })();
+    console.warn('fetchJson response error', method, endpoint, 'status', res.status);
   }
 
   return {
@@ -831,7 +807,7 @@ export async function getAthleteWorkouts(): Promise<{
     const json = r.json || ({} as any);
 
     if (!r.ok || !json.ok) {
-      console.log('Workouts API not ok:', r.status, json || r.raw?.slice(0, 200));
+      console.log('Training Sessions API not ok:', r.status, json || r.raw?.slice(0, 200));
       return {
         ok: false,
         error: json.error || `HTTP ${r.status}`,
@@ -848,7 +824,7 @@ export async function getAthleteWorkouts(): Promise<{
       unassigned_completed: json.unassigned_completed || [],
     };
   } catch (err) {
-    console.error('Workouts fetch error', err);
+    console.error('Training Sessions fetch error', err);
     return { ok: false, error: 'Network error' };
   }
 }
@@ -868,6 +844,184 @@ export type CreateIndividualProgramPayload = {
   meet_date?: string | null;
   blocks: CreateIndividualProgramBlock[];
 };
+
+export type ProgrammingProgramPayload = CreateIndividualProgramPayload & {
+  athlete_id: number | string;
+  expected_updated_at?: string | null;
+};
+
+export type ProgrammingProgramSummary = {
+  id: number;
+  athlete_id: number;
+  name: string;
+  description?: string | null;
+  status?: 'draft' | 'active' | 'archived' | string | null;
+  program_type?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  meet_date?: string | null;
+  meet_id?: number | null;
+  updated_at?: string | null;
+  blocks?: Array<{
+    id: number;
+    name?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
+    order_idx?: number | null;
+    updated_at?: string | null;
+  }>;
+};
+
+export async function listProgrammingPrograms(
+  athleteId: number | string
+): Promise<{
+  ok: boolean;
+  error?: string;
+  programs?: ProgrammingProgramSummary[];
+}> {
+  try {
+    const r = await fetchJson<any>(
+      `/workouts/mobile/programming/programs?athlete_id=${encodeURIComponent(String(athleteId))}`,
+      { method: 'GET' }
+    );
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return { ok: true, programs: Array.isArray(json.programs) ? json.programs : [] };
+  } catch (err) {
+    console.error('List programming programs error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function createProgrammingProgram(payload: ProgrammingProgramPayload): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>('/workouts/mobile/programming/programs', {
+      method: 'POST',
+      body: payload as any,
+    });
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return { ok: true, program: json.program, blocks: json.blocks || json.program?.blocks || [] };
+  } catch (err) {
+    console.error('Create programming program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function getProgrammingProgram(
+  programId: number | string,
+  athleteId: number | string
+): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>(
+      `/workouts/mobile/programming/programs/${programId}?athlete_id=${encodeURIComponent(String(athleteId))}`,
+      { method: 'GET' }
+    );
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return { ok: true, program: json.program, blocks: json.blocks || json.program?.blocks || [] };
+  } catch (err) {
+    console.error('Get programming program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function updateProgrammingProgram(
+  programId: number | string,
+  payload: ProgrammingProgramPayload
+): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: any;
+  blocks?: any[];
+}> {
+  try {
+    const r = await fetchJson<any>(`/workouts/mobile/programming/programs/${programId}`, {
+      method: 'PATCH',
+      body: payload as any,
+    });
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return { ok: true, program: json.program, blocks: json.blocks || json.program?.blocks || [] };
+  } catch (err) {
+    console.error('Update programming program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function archiveProgrammingProgram(
+  programId: number | string,
+  payload: {
+    athlete_id: number | string;
+    confirmation: string;
+    expected_updated_at?: string | null;
+  }
+): Promise<{
+  ok: boolean;
+  error?: string;
+  program?: ProgrammingProgramSummary;
+  released_sessions?: number;
+  retained_sessions?: number;
+}> {
+  try {
+    const r = await fetchJson<any>(`/workouts/mobile/programming/programs/${programId}/archive`, {
+      method: 'POST',
+      body: payload as any,
+    });
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return {
+      ok: true,
+      program: json.program,
+      released_sessions: Number(json.released_sessions || 0),
+      retained_sessions: Number(json.retained_sessions || 0),
+    };
+  } catch (err) {
+    console.error('Archive programming program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
+
+export async function deleteProgrammingProgram(
+  programId: number | string,
+  payload: {
+    athlete_id: number | string;
+    confirmation: string;
+    expected_updated_at?: string | null;
+  }
+): Promise<{
+  ok: boolean;
+  error?: string;
+  released_sessions?: number;
+  retained_sessions?: number;
+}> {
+  try {
+    const r = await fetchJson<any>(`/workouts/mobile/programming/programs/${programId}`, {
+      method: 'DELETE',
+      body: payload as any,
+    });
+    const json = r.json || ({} as any);
+    if (!r.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${r.status}` };
+    return {
+      ok: true,
+      released_sessions: Number(json.released_sessions || 0),
+      retained_sessions: Number(json.retained_sessions || 0),
+    };
+  } catch (err) {
+    console.error('Delete programming program error', err);
+    return { ok: false, error: 'Network error' };
+  }
+}
 
 export async function createIndividualProgram(payload: CreateIndividualProgramPayload): Promise<{
   ok: boolean;
@@ -1103,6 +1257,8 @@ export type MessengerThread = {
   other_user_name?: string | null;
   other_user_avatar_url?: string | null;
   avatar_url?: string | null;
+  profilePhotoUrl?: string | null;
+  profilePhotoVersion?: string | null;
   status?: string | null;
   last_message_at?: string | null;
   unread_count?: number;
@@ -1137,11 +1293,35 @@ export type CoachRosterAthlete = {
   id: number;
   name: string;
   avatar_url?: string | null;
+  profilePhotoUrl?: string | null;
+  profilePhotoVersion?: string | null;
   is_self?: boolean;
   last_session_primary?: string | null;
   programmed_primary?: string | null;
   status_label?: string | null;
 };
+
+function normalizeMessengerThread(thread: any): MessengerThread {
+  const photo = normalizeProfilePhotoPayload({
+    profilePhotoUrl: thread?.other_user_avatar_url ?? thread?.avatar_url,
+    profilePhotoVersion:
+      thread?.other_user_avatar_uploaded_at ?? thread?.avatar_uploaded_at,
+  });
+  return {
+    ...thread,
+    profilePhotoUrl: photo.profilePhotoUrl,
+    profilePhotoVersion: photo.profilePhotoVersion,
+  };
+}
+
+function normalizeCoachRosterAthlete(athlete: any): CoachRosterAthlete {
+  const photo = normalizeProfilePhotoPayload(athlete);
+  return {
+    ...athlete,
+    profilePhotoUrl: photo.profilePhotoUrl,
+    profilePhotoVersion: photo.profilePhotoVersion,
+  };
+}
 
 export type MessengerUnreadSummary = {
   unread_messages: number;
@@ -1175,7 +1355,10 @@ export async function getCoachRoster(): Promise<{
       return { ok: false, error: json.error || `HTTP ${r.status}` };
     }
 
-    return { ok: true, athletes: json.athletes || [] };
+    return {
+      ok: true,
+      athletes: (json.athletes || []).map(normalizeCoachRosterAthlete),
+    };
   } catch (err) {
     console.error('Coach roster fetch error', err);
     return { ok: false, error: 'Network error' };
@@ -1254,6 +1437,7 @@ export async function getMessengerThreads(): Promise<{
   ok: boolean;
   error?: string;
   threads?: MessengerThread[];
+  new_coach_experience?: any;
 }> {
   try {
     const r = await fetchJson<any>(`/messenger/mobile/threads`, {
@@ -1268,7 +1452,11 @@ export async function getMessengerThreads(): Promise<{
       return { ok: false, error: json.error || `HTTP ${r.status}` };
     }
 
-    return { ok: true, threads: json.threads || [] };
+    return {
+      ok: true,
+      threads: (json.threads || []).map(normalizeMessengerThread),
+      new_coach_experience: json.new_coach_experience || null,
+    };
   } catch (err) {
     console.error('Messenger threads fetch error', err);
     return { ok: false, error: 'Network error' };
@@ -1304,7 +1492,7 @@ export async function getThreadMessages(
 
     return {
       ok: true,
-      thread: json.thread || null,
+      thread: json.thread ? normalizeMessengerThread(json.thread) : null,
       messages: json.messages || [],
     };
   } catch (err) {
@@ -1342,7 +1530,7 @@ export async function sendThreadMessage(
 
     return {
       ok: true,
-      thread: json.thread || null,
+      thread: json.thread ? normalizeMessengerThread(json.thread) : null,
       message: json.message || null,
     };
   } catch (err) {
@@ -1486,7 +1674,7 @@ export async function markThreadRead(threadId: number): Promise<{
     return {
       ok: true,
       marked_read: json.marked_read || 0,
-      thread: json.thread || null,
+      thread: json.thread ? normalizeMessengerThread(json.thread) : null,
     };
   } catch (err) {
     console.error('Mark thread read error', err);

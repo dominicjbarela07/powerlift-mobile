@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 
 import { CheckInFallbackSurface } from '@/components/AthleteCheckInExperience';
 import { useAuth } from '@/context/AuthContext';
-import { SLColors } from '@/constants/theme';
 
 export default function CheckInsScreen() {
   const router = useRouter();
@@ -34,7 +33,7 @@ export default function CheckInsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: SLColors.shellCanvas,
+    backgroundColor: 'transparent',
   },
   scroll: {
     paddingBottom: 42,

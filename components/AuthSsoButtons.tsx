@@ -1,17 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { FontAwesome } from '@expo/vector-icons';
-import * as AppleAuthentication from 'expo-apple-authentication';
 import * as AuthSession from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 
 import { mobileOAuthRequest, type ApiLoginResponse } from '@/lib/api';
-import { SLFontFamilies } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 
 WebBrowser.maybeCompleteAuthSession();
 
 type OAuthProvider = 'google' | 'apple';
+type AppleAuthenticationModule = typeof import('expo-apple-authentication');
 
 type Props = {
   disabled?: boolean;
@@ -88,10 +89,10 @@ function GoogleSsoButton({
       disabled={disabled || !googleRequest || !!oauthLoading}
     >
       {oauthLoading === 'google' ? (
-        <ActivityIndicator color="#111827" />
+        <ActivityIndicator color={SLColors.surfaceRaised} />
       ) : (
         <>
-          <FontAwesome name="google" size={17} color="#111827" />
+          <FontAwesome name="google" size={17} color={SLColors.surfaceRaised} />
           <Text style={styles.ssoTextGoogle}>Continue with Google</Text>
         </>
       )}
@@ -107,6 +108,7 @@ export default function AuthSsoButtons({
   onError,
 }: Props) {
   const [appleAvailable, setAppleAvailable] = useState(false);
+  const [appleAuth, setAppleAuth] = useState<AppleAuthenticationModule | null>(null);
 
   const googleClientIds = useMemo(() => ({
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
@@ -122,12 +124,19 @@ export default function AuthSsoButtons({
 
   useEffect(() => {
     let mounted = true;
-    AppleAuthentication.isAvailableAsync()
-      .then((available) => {
-        if (mounted) setAppleAvailable(available);
+    import('expo-apple-authentication')
+      .then(async (module) => {
+        const available = await module.isAvailableAsync();
+        if (mounted) {
+          setAppleAuth(module);
+          setAppleAvailable(available);
+        }
       })
       .catch(() => {
-        if (mounted) setAppleAvailable(false);
+        if (mounted) {
+          setAppleAuth(null);
+          setAppleAvailable(false);
+        }
       });
     return () => {
       mounted = false;
@@ -135,7 +144,7 @@ export default function AuthSsoButtons({
   }, []);
 
   const handleAppleSignIn = async () => {
-    if (!appleAvailable) {
+    if (!appleAvailable || !appleAuth) {
       onError('Apple sign-in is not available on this device.');
       return;
     }
@@ -143,10 +152,10 @@ export default function AuthSsoButtons({
     onError(null);
     setOauthLoading('apple');
     try {
-      const credential = await AppleAuthentication.signInAsync({
+      const credential = await appleAuth.signInAsync({
         requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+          appleAuth.AppleAuthenticationScope.FULL_NAME,
+          appleAuth.AppleAuthenticationScope.EMAIL,
         ],
       });
       const idToken = credential.identityToken;
@@ -198,10 +207,10 @@ export default function AuthSsoButtons({
           disabled={disabled || !!oauthLoading}
         >
           {oauthLoading === 'apple' ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={SLColors.white} />
           ) : (
             <>
-              <FontAwesome name="apple" size={20} color="#FFFFFF" />
+              <FontAwesome name="apple" size={20} color={SLColors.white} />
               <Text style={styles.ssoTextApple}>Continue with Apple</Text>
             </>
           )}
@@ -217,7 +226,7 @@ const styles = StyleSheet.create({
   },
   ssoButton: {
     minHeight: 50,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -225,11 +234,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   ssoButtonGoogle: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: SLColors.white,
     borderColor: 'rgba(255,255,255,0.72)',
   },
   ssoButtonApple: {
-    backgroundColor: '#000000',
+    backgroundColor: SLColors.black,
     borderColor: 'rgba(255,255,255,0.18)',
   },
   ssoButtonPressed: {
@@ -241,12 +250,12 @@ const styles = StyleSheet.create({
   },
   ssoTextGoogle: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 14,
-    color: '#111827',
+    fontSize: SLTypography.rowTitle.fontSize,
+    color: SLColors.surfaceRaised,
   },
   ssoTextApple: {
     fontFamily: SLFontFamilies.sansSemiBold,
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontSize: SLTypography.rowTitle.fontSize,
+    color: SLColors.white,
   },
 });

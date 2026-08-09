@@ -1,16 +1,9 @@
 import React, { type ReactNode } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  type GestureResponderEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { type GestureResponderEvent, type StyleProp, type ViewStyle } from 'react-native';
 
-import { SLColors, SLRadius, SLShadows, SLSpacing } from '@/constants/theme';
+import { SLSurface, type SLSurfaceLevel } from './sl-workspace';
 
-type CardVariant = 'default' | 'raised' | 'muted' | 'outline' | 'flat' | 'command' | 'hero' | 'inset';
+type CardVariant = 'default' | 'outline' | 'flat' | 'inset';
 
 type SLCardProps = {
   children: ReactNode;
@@ -22,50 +15,11 @@ type SLCardProps = {
   accessibilityLabel?: string;
 };
 
-const variants: Record<CardVariant, ViewStyle> = {
-  default: {
-    backgroundColor: SLColors.surface,
-    borderColor: SLColors.border,
-    borderRadius: SLRadius.radiusCard,
-  },
-  raised: {
-    backgroundColor: SLColors.surfaceRaised,
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.radiusCard,
-    ...SLShadows.card,
-  },
-  muted: {
-    backgroundColor: SLColors.surfaceMuted,
-    borderColor: SLColors.border,
-    borderRadius: SLRadius.radiusCard,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.radiusCard,
-  },
-  flat: {
-    backgroundColor: SLColors.surfaceFlat,
-    borderColor: SLColors.borderSubtle,
-    borderRadius: SLRadius.radiusRow,
-  },
-  command: {
-    backgroundColor: SLColors.surfaceCommand,
-    borderColor: SLColors.borderDefault,
-    borderRadius: SLRadius.radiusHero,
-    ...SLShadows.shadowCommand,
-  },
-  hero: {
-    backgroundColor: SLColors.gradientHeroStart,
-    borderColor: SLColors.borderSelected,
-    borderRadius: SLRadius.radiusHero,
-    ...SLShadows.shadowCommand,
-  },
-  inset: {
-    backgroundColor: SLColors.surfaceInset,
-    borderColor: SLColors.borderHairline,
-    borderRadius: SLRadius.radiusControl,
-  },
+const variantLevels: Record<CardVariant, SLSurfaceLevel> = {
+  default: 2,
+  outline: 2,
+  flat: 1,
+  inset: 1,
 };
 
 export function SLCard({
@@ -77,38 +31,17 @@ export function SLCard({
   contentStyle,
   accessibilityLabel,
 }: SLCardProps) {
-  const body = <View style={[styles.content, contentStyle]}>{children}</View>;
-
-  if (onPress) {
-    return (
-      <Pressable
-        accessibilityLabel={accessibilityLabel}
-        accessibilityRole="button"
-        disabled={disabled}
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.card,
-          variants[variant],
-          {
-            opacity: disabled ? 0.55 : pressed ? 0.82 : 1,
-          },
-          style,
-        ]}
-      >
-        {body}
-      </Pressable>
-    );
-  }
-
-  return <View style={[styles.card, variants[variant], style]}>{body}</View>;
+  return (
+    <SLSurface
+      accessibilityLabel={accessibilityLabel}
+      disabled={disabled}
+      interactive={Boolean(onPress)}
+      level={variantLevels[variant]}
+      onPress={onPress}
+      style={style}
+      contentStyle={contentStyle}
+    >
+      {children}
+    </SLSurface>
+  );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  content: {
-    padding: SLSpacing.lg,
-  },
-});

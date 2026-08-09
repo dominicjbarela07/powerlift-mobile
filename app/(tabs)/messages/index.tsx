@@ -5,7 +5,6 @@ import {
   ActionSheetIOS,
   ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
@@ -13,14 +12,14 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { MessageImageAttachment } from '@/components/MessageImageAttachment';
+import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
 import { ThemedView } from '@/components/themed-view';
-import { SLErrorState } from '@/components/ui';
+import { SLErrorState, SLProfileAvatar } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import {
   CoachAnnouncement,
@@ -45,6 +44,7 @@ import {
   pickPhotoMessagingAttachment,
   uploadMessagingAttachment,
 } from '@/lib/messagingAttachments';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 function parseServerTimestamp(value?: string | null) {
   if (!value) return null;
@@ -110,50 +110,30 @@ function mergeMessagesById(current: MessengerMessage[], incoming: MessengerMessa
   });
 }
 
-function initialsForName(name?: string | null) {
-  return String(name || '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('') || 'A';
-}
-
 function firstParam(value?: string | string[] | null) {
   if (Array.isArray(value)) return value[0] || '';
   return value ? String(value) : '';
 }
 
-function avatarUrlForThread(thread?: MessengerThread | null, role?: 'coach' | 'athlete') {
-  if (!thread) return null;
-
-  if (role === 'coach') {
-    return thread.athlete_avatar_url || thread.other_user_avatar_url || thread.avatar_url || null;
-  }
-
-  return thread.coach_avatar_url || thread.other_user_avatar_url || thread.avatar_url || null;
-}
-
 function MessageAvatar({
   name,
   avatarUrl,
+  avatarVersion,
   size = 46,
 }: {
   name?: string | null;
   avatarUrl?: string | null;
+  avatarVersion?: string | null;
   size?: number;
 }) {
   return (
-    <View style={[styles.avatarBubble, { width: size, height: size, borderRadius: size / 2 }]}>
-      {avatarUrl ? (
-        <Image source={{ uri: avatarUrl }} style={styles.avatarImage} resizeMode="cover" />
-      ) : (
-        <Text style={[styles.avatarText, size <= 42 && styles.avatarTextSmall]}>
-          {initialsForName(name)}
-        </Text>
-      )}
-    </View>
+    <SLProfileAvatar
+      name={name}
+      profilePhotoUrl={avatarUrl}
+      profilePhotoVersion={avatarVersion}
+      size={size}
+      style={styles.avatarBubble}
+    />
   );
 }
 
@@ -169,7 +149,7 @@ function LinkifiedMessageText({
 
   const parts = text.split(/(https?:\/\/[^\s]+)/g);
   return (
-    <Text style={[styles.messageText, mine ? styles.messageTextMine : styles.messageTextTheirs]}>
+    <Text typographyRole="messageText" style={[styles.messageText, mine ? styles.messageTextMine : styles.messageTextTheirs]}>
       {parts.map((part, index) => {
         const isUrl = /^https?:\/\/[^\s]+$/.test(part);
         if (!isUrl) return <Text key={`${index}-text`}>{part}</Text>;
@@ -216,7 +196,7 @@ function MessageAttachmentChip({
       <Ionicons
         name={attachmentIsImage(attachment) ? 'image-outline' : 'document-text-outline'}
         size={16}
-        color={mine ? '#EDE9FE' : '#C4B5FD'}
+        color={mine ? SLColors.textStrong : SLColors.accentViolet}
         style={styles.messageAttachmentIcon}
       />
       <View style={styles.messageAttachmentTextWrap}>
@@ -278,14 +258,14 @@ function AttachmentPreviewChip({
       <Ionicons
         name={attachmentIsImage(attachment) ? 'image-outline' : 'document-text-outline'}
         size={17}
-        color="#C4B5FD"
+        color={SLColors.accentViolet}
       />
       <View style={styles.attachmentPreviewTextWrap}>
         <Text style={styles.attachmentPreviewText} numberOfLines={1}>{attachment.name}</Text>
         <Text style={styles.attachmentPreviewSub}>{formatAttachmentSize(attachment.sizeBytes)}</Text>
       </View>
       <Pressable onPress={onRemove} style={styles.attachmentRemoveButton} hitSlop={8}>
-        <Ionicons name="close" size={15} color="#FECACA" />
+        <Ionicons name="close" size={15} color={SLColors.danger} />
       </Pressable>
     </View>
   );
@@ -325,6 +305,7 @@ function CoachMessagesScreen() {
   const [unreadSummary, setUnreadSummary] = useState<MessengerUnreadSummary | null>(null);
   const [announcementCount, setAnnouncementCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [newCoachExperience, setNewCoachExperience] = useState<NewCoachExperiencePayload | null>(null);
 
   const load = useCallback(async (opts?: { silent?: boolean }) => {
     const silent = !!opts?.silent;
@@ -344,6 +325,7 @@ function CoachMessagesScreen() {
       }
 
       setThreads(threadsRes.threads || []);
+      setNewCoachExperience(threadsRes.new_coach_experience || null);
       if (unreadRes.ok) setUnreadSummary(unreadRes.summary || null);
       if (announcementsRes.ok) setAnnouncementCount((announcementsRes.announcements || []).length);
     } catch (err) {
@@ -409,7 +391,7 @@ function CoachMessagesScreen() {
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#8B7CFF" />
+        <ActivityIndicator size="large" color={SLColors.accentViolet} />
         <Text style={styles.loadingText}>Loading messages...</Text>
       </ThemedView>
     );
@@ -424,12 +406,12 @@ function CoachMessagesScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#8B7CFF"
+            tintColor={SLColors.accentViolet}
           />
         }
       >
         <View style={styles.inboxHeader}>
-          <Text style={styles.coachTitle}>Messages</Text>
+          <Text typographyRole="pageTitle" style={styles.coachTitle}>Messages</Text>
         </View>
 
         {!!error ? (
@@ -455,7 +437,7 @@ function CoachMessagesScreen() {
             ]}
           >
             <View style={styles.inboxAnnouncementIcon}>
-              <Ionicons name="megaphone-outline" size={18} color="#C4B5FD" />
+              <Ionicons name="megaphone-outline" size={18} color={SLColors.accentViolet} />
               {unreadAnnouncements > 0 ? <View style={styles.inboxAnnouncementDot} /> : null}
             </View>
             <View style={styles.inboxAnnouncementCopy}>
@@ -464,7 +446,7 @@ function CoachMessagesScreen() {
                 {unreadAnnouncements > 0 ? `${unreadAnnouncements} unread` : `${announcementCount} total`}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color="#64748B" />
+            <Ionicons name="chevron-forward" size={16} color={SLColors.textSubtle} />
           </Pressable>
         </View>
 
@@ -477,7 +459,8 @@ function CoachMessagesScreen() {
             {orderedThreads.map((thread) => {
               const unreadCount = Number(thread.unread_count || 0);
               const athleteName = thread.athlete_name || thread.other_user_name || 'Athlete';
-              const avatarUrl = avatarUrlForThread(thread, 'coach');
+              const avatarUrl = thread.profilePhotoUrl;
+              const avatarVersion = thread.profilePhotoVersion;
               const timestamp = formatInboxTimestamp(thread.last_message_at || thread.last_message?.created_at);
 
               return (
@@ -491,6 +474,7 @@ function CoachMessagesScreen() {
                         athleteName,
                         displayName: athleteName,
                         avatarUrl: avatarUrl || '',
+                        avatarVersion: avatarVersion || '',
                       },
                     } as any);
                   }}
@@ -500,10 +484,10 @@ function CoachMessagesScreen() {
                     pressed && styles.announcementCardPressed,
                   ]}
                 >
-                  <MessageAvatar name={athleteName} avatarUrl={avatarUrl} size={42} />
+                  <MessageAvatar name={athleteName} avatarUrl={avatarUrl} avatarVersion={avatarVersion} size={42} />
                   <View style={styles.coachConversationText}>
                     <View style={styles.coachConversationTopLine}>
-                      <Text style={styles.coachConversationName} numberOfLines={1}>
+                      <Text typographyRole="bodyStrong" style={styles.coachConversationName} numberOfLines={1}>
                         {athleteName}
                       </Text>
                       {timestamp ? <Text style={styles.coachConversationTime}>{timestamp}</Text> : null}
@@ -520,16 +504,20 @@ function CoachMessagesScreen() {
                       <Text style={styles.unreadBadgeText}>{unreadCount}</Text>
                     </View>
                   )}
-                  <Ionicons name="chevron-forward" size={18} color="#64748B" />
+                  <Ionicons name="chevron-forward" size={18} color={SLColors.textSubtle} />
                 </Pressable>
               );
             })}
           </View>
         ) : (
-          <View style={styles.inlineEmptyRow}>
-            <Ionicons name="chatbubble-ellipses-outline" size={18} color="#94A3B8" />
-            <Text style={styles.inlineEmptyText}>No conversations</Text>
-          </View>
+          newCoachExperience ? (
+            <NewCoachExperience experience={newCoachExperience} />
+          ) : (
+            <View style={styles.inlineEmptyRow}>
+              <Ionicons name="chatbubble-ellipses-outline" size={18} color={SLColors.textMuted} />
+              <Text typographyRole="emptyStateBody" style={styles.inlineEmptyText}>No conversations</Text>
+            </View>
+          )
         )}
       </ScrollView>
     </ThemedView>
@@ -840,7 +828,7 @@ function AthleteMessagesScreen() {
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#8B7CFF" />
+        <ActivityIndicator size="large" color={SLColors.accentViolet} />
         <Text style={styles.loadingText}>Loading messages…</Text>
       </ThemedView>
     );
@@ -856,7 +844,7 @@ function AthleteMessagesScreen() {
         <View style={styles.athletePinnedHeader}>
           {!!error && (
             <View style={styles.errorCard}>
-              <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
+              <Ionicons name="warning-outline" size={16} color={SLColors.danger} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
@@ -869,7 +857,7 @@ function AthleteMessagesScreen() {
             ]}
           >
             <View style={styles.announcementSummaryIcon}>
-              <Ionicons name="megaphone-outline" size={19} color="#D6CCFF" />
+              <Ionicons name="megaphone-outline" size={19} color={SLColors.review} />
               {!!unreadAnnouncementCount && <View style={styles.announcementSummaryDot} />}
             </View>
 
@@ -887,7 +875,7 @@ function AthleteMessagesScreen() {
               <Text style={styles.announcementSummarySubline}>Tap to view coach updates</Text>
             </View>
 
-            <Ionicons name="chevron-forward" size={18} color="#64748B" />
+            <Ionicons name="chevron-forward" size={18} color={SLColors.textSubtle} />
           </Pressable>
 
           <View style={[styles.sectionHeader, styles.athleteConversationTitle]}>
@@ -901,11 +889,12 @@ function AthleteMessagesScreen() {
               <View style={styles.embeddedThreadHeader}>
                 <MessageAvatar
                   name={activeThread.coach_name || activeThread.other_user_name || 'Coach'}
-                  avatarUrl={avatarUrlForThread(activeThread, 'athlete')}
+                  avatarUrl={activeThread.profilePhotoUrl}
+                  avatarVersion={activeThread.profilePhotoVersion}
                 />
 
                 <View style={styles.threadContent}>
-                  <Text style={styles.threadName} numberOfLines={1}>
+                  <Text typographyRole="dynamicName" style={styles.threadName} numberOfLines={1}>
                     {activeThread.coach_name || activeThread.athlete_name || 'Conversation'}
                   </Text>
                   <Text style={styles.threadPreview}>Direct coach conversation</Text>
@@ -928,7 +917,7 @@ function AthleteMessagesScreen() {
                   ]}
                   accessibilityLabel="Open conversation full screen"
                 >
-                  <Ionicons name="expand-outline" size={18} color="#CBD5E1" />
+                  <Ionicons name="expand-outline" size={18} color={SLColors.text} />
                 </Pressable>
               </View>
 
@@ -941,7 +930,7 @@ function AthleteMessagesScreen() {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="#8B7CFF"
+                    tintColor={SLColors.accentViolet}
                   />
                 }
                 onContentSizeChange={() => {
@@ -959,7 +948,8 @@ function AthleteMessagesScreen() {
                     const nextMine = !!next?.is_mine;
                     const showIncomingAvatar = !mine && (!next || nextMine);
                     const coachName = activeThread.coach_name || activeThread.other_user_name || 'Coach';
-                    const coachAvatarUrl = avatarUrlForThread(activeThread, 'athlete');
+                    const coachAvatarUrl = activeThread.profilePhotoUrl;
+                    const coachAvatarVersion = activeThread.profilePhotoVersion;
                     const reviewVideoId = videoReviewIdForMessage(item);
                     const showVideoReviewAction = isVideoReviewFeedbackMessage(item) && !!reviewVideoId;
                     const reviewWorkoutId = workoutIdForSessionReviewMessage(item);
@@ -980,6 +970,7 @@ function AthleteMessagesScreen() {
                                 <MessageAvatar
                                   name={coachName}
                                   avatarUrl={coachAvatarUrl}
+                                  avatarVersion={coachAvatarVersion}
                                   size={28}
                                 />
                               )}
@@ -987,7 +978,7 @@ function AthleteMessagesScreen() {
                           )}
                           <View style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs]}>
                             {!mine && (
-                              <Text style={styles.senderName} numberOfLines={1}>
+                              <Text typographyRole="bodyStrong" style={styles.senderName} numberOfLines={1}>
                                 {item.sender_name || 'Coach'}
                               </Text>
                             )}
@@ -1003,7 +994,7 @@ function AthleteMessagesScreen() {
                                   pressed && styles.videoReviewCtaPressed,
                                 ]}
                               >
-                                <Ionicons name="play-circle-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                                <Ionicons name="play-circle-outline" size={17} color={mine ? SLColors.textStrong : SLColors.success} />
                                 <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
                                   Watch reviewed video
                                 </Text>
@@ -1019,7 +1010,7 @@ function AthleteMessagesScreen() {
                                   pressed && styles.videoReviewCtaPressed,
                                 ]}
                               >
-                                <Ionicons name="barbell-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                                <Ionicons name="barbell-outline" size={17} color={mine ? SLColors.textStrong : SLColors.success} />
                                 <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
                                   View session
                                 </Text>
@@ -1054,18 +1045,18 @@ function AthleteMessagesScreen() {
                   })
                 ) : (
                   <View style={styles.emptyInlineThreadWrap}>
-                    <Ionicons name="chatbubble-ellipses-outline" size={30} color="#64748B" />
-                    <Text style={styles.emptyThreadTitle}>No messages yet</Text>
-                    <Text style={styles.emptyThreadBody}>Start the conversation with your coach.</Text>
+                    <Ionicons name="chatbubble-ellipses-outline" size={30} color={SLColors.textSubtle} />
+                    <Text typographyRole="emptyStateTitle" style={styles.emptyThreadTitle}>No messages yet</Text>
+                    <Text typographyRole="emptyStateBody" style={styles.emptyThreadBody}>Start the conversation with your coach.</Text>
                   </View>
                 )}
               </ScrollView>
             </View>
           ) : (
             <View style={styles.emptyThreadWrap}>
-              <Ionicons name="chatbox-ellipses-outline" size={34} color="#64748B" />
-              <Text style={styles.emptyThreadTitle}>Conversation unavailable</Text>
-              <Text style={styles.emptyThreadBody}>
+              <Ionicons name="chatbox-ellipses-outline" size={34} color={SLColors.textSubtle} />
+              <Text typographyRole="emptyStateTitle" style={styles.emptyThreadTitle}>Conversation unavailable</Text>
+              <Text typographyRole="emptyStateBody" style={styles.emptyThreadBody}>
                 Your coach conversation has not been initialized yet.
               </Text>
             </View>
@@ -1076,7 +1067,7 @@ function AthleteMessagesScreen() {
           <View style={styles.composerWrap}>
             {hasMissedSessionDraft && (
               <View style={styles.contextDraftChip}>
-                <Ionicons name="alert-circle-outline" size={15} color="#FCA5A5" />
+                <Ionicons name="alert-circle-outline" size={15} color={SLColors.danger} />
                 <Text style={styles.contextDraftText}>Missed session context</Text>
               </View>
             )}
@@ -1097,14 +1088,14 @@ function AthleteMessagesScreen() {
                   pressed && !sending && styles.attachmentButtonPressed,
                 ]}
               >
-                <Ionicons name="attach-outline" size={20} color="#CBD5E1" />
+                <Ionicons name="attach-outline" size={20} color={SLColors.text} />
               </Pressable>
 
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
                 placeholder="Message your coach…"
-                placeholderTextColor="#64748B"
+                placeholderTextColor={SLColors.textSubtle}
                 style={styles.composerInput}
                 multiline
                 maxLength={2000}
@@ -1121,9 +1112,9 @@ function AthleteMessagesScreen() {
                 ]}
               >
                 {sending ? (
-                  <ActivityIndicator size="small" color="#F8FAFC" />
+                  <ActivityIndicator size="small" color={SLColors.textStrong} />
                 ) : (
-                  <Ionicons name="send" size={18} color="#F8FAFC" />
+                  <Ionicons name="send" size={18} color={SLColors.textStrong} />
                 )}
               </Pressable>
             </View>
@@ -1154,8 +1145,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 14,
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
   contentContainer: {
     flexGrow: 1,
@@ -1188,14 +1179,14 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   coachTitle: {
-    color: '#F8FAFC',
-    fontSize: 28,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.hero.fontSize,
     fontWeight: '700',
     letterSpacing: -0.5,
   },
   coachSubtitle: {
-    color: '#94A3B8',
-    fontSize: 14,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
     marginTop: 5,
   },
@@ -1216,14 +1207,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   inboxMetricValue: {
-    color: '#F8FAFC',
-    fontSize: 22,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.title.fontSize,
     lineHeight: 26,
     fontWeight: '700',
   },
   inboxMetricLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     marginTop: 2,
     textTransform: 'uppercase',
@@ -1244,7 +1235,7 @@ const styles = StyleSheet.create({
   inboxAnnouncementIcon: {
     width: 36,
     height: 36,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.18)',
     backgroundColor: 'rgba(20,16,28,0.32)',
@@ -1257,23 +1248,23 @@ const styles = StyleSheet.create({
     top: 6,
     width: 8,
     height: 8,
-    borderRadius: 999,
-    backgroundColor: '#A7F3D0',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.success,
     borderWidth: 1,
-    borderColor: '#0F172A',
+    borderColor: SLColors.surfaceRaised,
   },
   inboxAnnouncementCopy: {
     flex: 1,
     minWidth: 0,
   },
   inboxAnnouncementTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
   },
   inboxAnnouncementMeta: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     marginTop: 2,
   },
@@ -1281,8 +1272,8 @@ const styles = StyleSheet.create({
     marginBottom: 9,
   },
   sectionTitle: {
-    color: '#E2E8F0',
-    fontSize: 16,
+    color: SLColors.text,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
     letterSpacing: -0.2,
   },
@@ -1290,7 +1281,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     padding: 16,
     backgroundColor: 'rgba(15,23,42,0.95)',
     borderWidth: 1,
@@ -1299,7 +1290,7 @@ const styles = StyleSheet.create({
   announcementSummaryIcon: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(124,108,255,0.14)',
@@ -1311,10 +1302,10 @@ const styles = StyleSheet.create({
     right: 8,
     width: 8,
     height: 8,
-    borderRadius: 999,
-    backgroundColor: '#7C6CFF',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.review,
     borderWidth: 1,
-    borderColor: '#0F172A',
+    borderColor: SLColors.surfaceRaised,
   },
   announcementSummaryContent: {
     flex: 1,
@@ -1327,22 +1318,22 @@ const styles = StyleSheet.create({
   },
   announcementSummaryTitle: {
     flex: 1,
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
     lineHeight: 20,
     marginRight: 10,
   },
   announcementSummarySubline: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   announcementHubCard: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     padding: 16,
     backgroundColor: 'rgba(15,23,42,0.95)',
     borderWidth: 1,
@@ -1351,7 +1342,7 @@ const styles = StyleSheet.create({
   announcementHubIcon: {
     width: 48,
     height: 48,
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(124,108,255,0.14)',
@@ -1363,14 +1354,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   announcementHubTitle: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
     marginBottom: 5,
   },
   announcementHubSubtitle: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   coachConversationList: {
@@ -1385,8 +1376,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(6,6,8,0.3)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(185,176,163,0.1)',
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(185,176,163,0.14)',
   },
   coachConversationUnread: {
     borderLeftColor: 'rgba(167,139,250,0.44)',
@@ -1406,12 +1395,12 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarText: {
-    color: '#EDE9FE',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
   },
   avatarTextSmall: {
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
   },
   coachConversationText: {
     flex: 1,
@@ -1426,22 +1415,22 @@ const styles = StyleSheet.create({
   coachConversationName: {
     flex: 1,
     minWidth: 0,
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
   },
   coachConversationTime: {
-    color: '#64748B',
-    fontSize: 11,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
   },
   coachConversationSub: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
   },
   coachConversationSubUnread: {
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontWeight: '800',
   },
   coachUnreadBadge: {
@@ -1461,14 +1450,14 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   inlineEmptyText: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
   },
   emptyCoachCard: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingVertical: 46,
     paddingHorizontal: 18,
     backgroundColor: 'rgba(15,23,42,0.90)',
@@ -1478,7 +1467,7 @@ const styles = StyleSheet.create({
   embeddedThreadCard: {
     flex: 1,
     minHeight: 0,
-    borderRadius: 20,
+    borderRadius: SLRadius.xl,
     backgroundColor: 'rgba(6,6,8,0.34)',
     borderWidth: 1,
     borderColor: 'rgba(185,176,163,0.1)',
@@ -1496,20 +1485,20 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   threadName: {
-    color: '#F8FAFC',
-    fontSize: 15,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
     marginBottom: 4,
   },
   threadPreview: {
-    color: '#94A3B8',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
   },
   threadExpandButton: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(2,6,23,0.42)',
@@ -1540,12 +1529,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   datePillText: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(2,6,23,0.55)',
     overflow: 'hidden',
   },
@@ -1567,13 +1556,13 @@ const styles = StyleSheet.create({
   },
   bubble: {
     maxWidth: '82%',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
   },
   bubbleMine: {
-    backgroundColor: '#5B4FCF',
+    backgroundColor: SLColors.railViolet,
     borderColor: 'rgba(255,255,255,0.10)',
     borderTopRightRadius: 6,
   },
@@ -1583,23 +1572,23 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 6,
   },
   senderName: {
-    color: '#C7BEE8',
-    fontSize: 11,
+    color: SLColors.review,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     marginBottom: 4,
   },
   messageText: {
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   messageTextMine: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   messageTextTheirs: {
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   messageLinkText: {
-    color: '#C4B5FD',
+    color: SLColors.accentViolet,
     fontWeight: '800',
     textDecorationLine: 'underline',
   },
@@ -1609,7 +1598,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     gap: 7,
     marginTop: 10,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 11,
     paddingVertical: 9,
     borderWidth: 1,
@@ -1627,19 +1616,19 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
   videoReviewCtaText: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   videoReviewCtaTextMine: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   messageAttachmentChip: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     marginTop: 9,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 10,
     paddingVertical: 9,
     borderWidth: 1,
@@ -1665,8 +1654,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   messageAttachmentName: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     flexShrink: 1,
     minWidth: 0,
@@ -1687,7 +1676,7 @@ const styles = StyleSheet.create({
     color: 'rgba(248,250,252,0.68)',
   },
   messageTimeTheirs: {
-    color: '#64748B',
+    color: SLColors.textSubtle,
   },
   composerWrap: {
     paddingHorizontal: 0,
@@ -1705,14 +1694,14 @@ const styles = StyleSheet.create({
     marginBottom: 9,
     paddingHorizontal: 11,
     paddingVertical: 7,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(127,29,29,0.18)',
     borderWidth: 1,
     borderColor: 'rgba(248,113,113,0.22)',
   },
   contextDraftText: {
-    color: '#FECACA',
-    fontSize: 11,
+    color: SLColors.danger,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
@@ -1723,7 +1712,7 @@ const styles = StyleSheet.create({
   attachmentButton: {
     width: 42,
     height: 42,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.42)',
@@ -1741,7 +1730,7 @@ const styles = StyleSheet.create({
   attachmentPreviewChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 10,
@@ -1755,12 +1744,12 @@ const styles = StyleSheet.create({
     marginLeft: 9,
   },
   attachmentPreviewText: {
-    color: '#E2E8F0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   attachmentPreviewSub: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '700',
     marginTop: 2,
@@ -1768,7 +1757,7 @@ const styles = StyleSheet.create({
   attachmentRemoveButton: {
     width: 28,
     height: 28,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(127,29,29,0.24)',
@@ -1780,20 +1769,20 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 42,
     maxHeight: 110,
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 13,
     paddingVertical: 10,
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     backgroundColor: 'rgba(6,6,8,0.46)',
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.10)',
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   sendButton: {
     width: 42,
     height: 42,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(109,40,217,0.82)',
@@ -1809,15 +1798,15 @@ const styles = StyleSheet.create({
   unreadBadge: {
     minWidth: 22,
     height: 22,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7C6CFF',
+    backgroundColor: SLColors.review,
     paddingHorizontal: 7,
   },
   unreadBadgeText: {
-    color: '#F8FAFC',
-    fontSize: 11,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   emptyThreadWrap: {
@@ -1827,20 +1816,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   emptyThreadTitle: {
-    color: '#CBD5E1',
-    fontSize: 15,
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
     marginTop: 14,
     marginBottom: 6,
   },
   emptyThreadBody: {
-    color: '#64748B',
-    fontSize: 13,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.label.fontSize,
   },
   errorCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 16,
@@ -1850,8 +1839,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     marginLeft: 10,
   },
   announcementCardPressed: {

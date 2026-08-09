@@ -1,31 +1,37 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
-  TextInput,
   useWindowDimensions,
   View,
 } from 'react-native';
+import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import * as Updates from 'expo-updates';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import * as WebBrowser from 'expo-web-browser';
 
 import { ThemedText } from '@/components/themed-text';
-import { SLScreen } from '@/components/ui';
+import { SLProfileAvatar, SLScreen } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
-import { API_BASE, PRODUCTION_API_BASE, WEB_BASE, deleteAccountRequest, fetchJson, getDeviceTimezone, getResolvedTimezone, setManualTimezonePreference } from '@/lib/api';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
+import {
+  API_BASE,
+  PRODUCTION_API_BASE,
+  deleteAccountRequest,
+  fetchJson,
+  getDeviceTimezone,
+  setManualTimezonePreference,
+} from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 
@@ -96,6 +102,12 @@ type TrainingProfileSummary = {
   federation?: string | null;
   weight_class?: string | null;
   context?: TrainingProfileContext | null;
+  training_max_permissions?: {
+    can_direct_edit?: boolean;
+    managed_by_external_coach?: boolean;
+    can_suggest?: boolean;
+    authority_resolved?: boolean;
+  } | null;
 };
 
 type TrainingProfileContext = {
@@ -112,7 +124,8 @@ type TrainingProfileContext = {
   preferred_cues?: string | null;
 };
 
-type ProfileEditor = 'details' | 'maxes' | 'context' | null;
+type ProfileEditor = 'details' | 'units' | 'maxes' | 'context' | null;
+type SettingsPanel = 'coach' | 'notifications' | 'privacy' | 'about' | 'logout' | null;
 
 type AccountTransitionMode = {
   mode?: string | null;
@@ -135,15 +148,11 @@ type AccountTransitionMetadata = {
   posture?: string | null;
   current_mode?: string | null;
   account_state?: string | null;
+  is_owner_admin?: boolean;
   next_action?: string | null;
   available_modes?: AccountTransitionMode[];
   transitions?: AccountTransitionOption[];
   unavailable_transitions?: AccountTransitionOption[];
-  billing?: {
-    applies_to_coaching?: boolean;
-    is_entitled?: boolean;
-    category?: string | null;
-  } | null;
 };
 
 type LinkCoachStatus = {
@@ -198,12 +207,82 @@ const humanizeToken = (value?: string | null) =>
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+const accountAccessLabel = (value?: string | null) => {
+  switch (String(value || '').trim().toUpperCase()) {
+    case 'READY_ATHLETE':
+    case 'READY_INDIVIDUAL':
+    case 'READY_TEAM_COACH':
+    case 'READY_OWNER_ADMIN':
+      return 'Ready';
+    case 'EMAIL_VERIFICATION_REQUIRED':
+      return 'Verify email';
+    case 'LINK_COACH_REQUIRED':
+      return 'Coach link needed';
+    case 'ACTIVATION_REQUIRED':
+      return 'Activation needed';
+    default:
+      return 'Status not loaded';
+  }
+};
+
+const accountActionLabel = (value?: string | null) => {
+  switch (String(value || '').trim().toLowerCase()) {
+    case 'verify_email':
+      return 'Verify your email to continue';
+    case 'activate_billing':
+      return 'Activate membership to continue';
+    case 'link_coach':
+    case 'accept_invite':
+      return 'Connect a coach to continue';
+    case 'confirm_offboarding':
+      return 'Resolve roster and billing first';
+    case 'choose_external_coach':
+      return 'Choose a coach to continue';
+    case 'end_external_relationship':
+      return 'End the active coaching relationship first';
+    case 'enter_beta_code':
+      return 'Enter your Founder Beta code';
+    default:
+      return null;
+  }
+};
+
+const accountRestrictionLabel = (value?: string | null) => {
+  switch (String(value || '').trim().toLowerCase()) {
+    case 'email_verification_required':
+      return 'Verify your email first';
+    case 'billing_required':
+      return 'Membership activation is required';
+    case 'cancelled_billing_requires_offboarding':
+    case 'roster_offboarding_required':
+      return 'Resolve roster athletes and billing first';
+    case 'link_coach_required':
+      return 'Connect a coach first';
+    case 'external_coach_active':
+      return 'End the active coaching relationship first';
+    case 'self_relationship_active':
+      return 'End self-coaching first';
+    case 'owner_admin_explicit':
+      return 'Owner/Admin access cannot be changed here';
+    case 'already_in_target_mode':
+      return 'Already using this mode';
+    case 'mobile_switch_not_enabled':
+      return 'Not enabled for this account';
+    case 'not_current_posture':
+    case 'unsupported_transition':
+    case 'unknown_role':
+      return 'Not available for this account';
+    default:
+      return null;
+  }
+};
+
 type SettingsAccent = 'purple' | 'amber' | 'teal' | 'neutral';
 
 const settingsAccentColor: Record<SettingsAccent, string> = {
   purple: SLColors.accentViolet,
-  amber: '#D6A75E',
-  teal: '#4DD6C7',
+  amber: SLColors.warning,
+  teal: SLColors.accentCyanMuted,
   neutral: SLColors.textMuted,
 };
 
@@ -233,6 +312,7 @@ export default function SettingsScreen() {
   const [timezoneSource, setTimezoneSource] = useState<'manual' | 'device' | 'fallback'>('device');
   const [timezoneLoading, setTimezoneLoading] = useState(false);
   const [timezoneSaving, setTimezoneSaving] = useState(false);
+  const [mobileSettingsLoaded, setMobileSettingsLoaded] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [privacyLoading, setPrivacyLoading] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -243,6 +323,7 @@ export default function SettingsScreen() {
   const [videoMlTrainingConsent, setVideoMlTrainingConsent] = useState<boolean | null>(null);
   const [trainingProfile, setTrainingProfile] = useState<TrainingProfileSummary | null>(null);
   const [profileEditor, setProfileEditor] = useState<ProfileEditor>(null);
+  const [settingsPanel, setSettingsPanel] = useState<SettingsPanel>(null);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [detailsDraft, setDetailsDraft] = useState({
@@ -288,7 +369,6 @@ export default function SettingsScreen() {
   const [upgradeBetaCode, setUpgradeBetaCode] = useState('');
   const [upgradeSubmitting, setUpgradeSubmitting] = useState(false);
   const [upgradeError, setUpgradeError] = useState<string | null>(null);
-  const upgradeBetaCodeInputRef = useRef<TextInput>(null);
   const [downgradeModalOpen, setDowngradeModalOpen] = useState(false);
   const [downgradeError, setDowngradeError] = useState<string | null>(null);
   const [downgradeSubmitting, setDowngradeSubmitting] = useState(false);
@@ -337,7 +417,8 @@ export default function SettingsScreen() {
     auth?.user?.workspace_mode === 'individual' ||
       auth?.user?.is_individual_workspace === true ||
       auth?.user?.is_self_coached === true;
-  const canUseInternalSelfCoachMode = auth?.user?.can_access_internal_self_coach_mobile_mode === true;
+  const canUseInternalSelfCoachMode =
+    auth?.user?.can_access_internal_self_coach_mobile_mode === true;
   const safeBackendMobileModes = useMemo(() => {
     if (isIndividual && !canUseInternalSelfCoachMode) return ['individual'] as MobileViewMode[];
     const raw = Array.isArray(auth?.user?.available_mobile_modes)
@@ -350,7 +431,8 @@ export default function SettingsScreen() {
       .filter((mode: string): mode is MobileViewMode => ['athlete', 'coach', 'individual'].includes(mode));
     return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
   }, [auth?.user?.available_mobile_modes, canUseInternalSelfCoachMode, isCoach, isIndividual]);
-  const activeMobileMode: MobileViewMode = isIndividual ? 'individual' : mobileViewMode;
+  const activeMobileMode: MobileViewMode =
+    isIndividual && !canUseInternalSelfCoachMode ? 'individual' : mobileViewMode;
   const transitionModeOptions = useMemo(() => {
     const transitionModes = Array.isArray(accountTransitions?.available_modes)
       ? accountTransitions.available_modes
@@ -390,10 +472,6 @@ export default function SettingsScreen() {
       nextAction: null,
     }));
   }, [accountTransitions?.available_modes, activeMobileMode, isCoach, safeBackendMobileModes]);
-  const availableMobileModes = useMemo(
-    () => transitionModeOptions.filter((option) => option.switchable).map((option) => option.mode),
-    [transitionModeOptions]
-  );
   const accountTransitionOptions = useMemo(
     () => [
       ...(Array.isArray(accountTransitions?.transitions) ? accountTransitions.transitions : []),
@@ -428,63 +506,38 @@ export default function SettingsScreen() {
       teamCoachUpgradeReason === 'beta_code_required' ||
       teamCoachUpgradeNextAction === 'enter_beta_code'
     );
-  const teamCoachUpgradeSummary = accountTransitionsLoading ? 'Loading...' : 'Team Coach';
   const teamCoachUpgradeDescription = teamCoachUpgradeReason === 'email_verification_required'
     ? 'Verify your email before starting a Team Coach upgrade.'
     : teamCoachUpgradeReason === 'billing_required'
     ? 'Billing activation is required before Team Coach access opens.'
     : 'Founder Beta Team Coach is $10/month forever after the 14-day free trial.';
   const teamCoachDowngradeReason = String(teamCoachDowngradeTransition?.reason || '');
+  const teamCoachDowngradeNextAction = String(teamCoachDowngradeTransition?.next_action || '');
   const pendingTeamCoachUpgrade =
-    isCoach && !isIndividual && String(accountTransitions?.account_state || '').toUpperCase() === 'ACTIVATION_REQUIRED';
+    isCoach &&
+    !isIndividual &&
+    String(accountTransitions?.account_state || '').toUpperCase() === 'ACTIVATION_REQUIRED';
   const showTeamCoachDowngradeEntry =
     !!teamCoachDowngradeTransition &&
     !['not_current_posture', 'unsupported_transition'].includes(teamCoachDowngradeReason);
   const canStartTeamCoachDowngrade =
-    (pendingTeamCoachUpgrade || (showTeamCoachDowngradeEntry && teamCoachDowngradeTransition?.available === true)) &&
+    (pendingTeamCoachUpgrade ||
+      (showTeamCoachDowngradeEntry && teamCoachDowngradeTransition?.available === true)) &&
     !downgradeSubmitting;
-  const teamCoachDowngradeSummary = accountTransitionsLoading ? 'Loading...' : 'Athlete';
   const teamCoachDowngradeDescription = pendingTeamCoachUpgrade
-    ? 'Cancel this incomplete unpaid upgrade and return to Athlete. Your identity, history, and linked coach remain.'
+    ? 'Cancel this incomplete unpaid upgrade and return to Athlete without changing your identity or history.'
     : teamCoachDowngradeReason === 'roster_offboarding_required'
     ? 'Resolve roster athletes before returning to Athlete only.'
     : 'Cancel your coaching subscription and return to Athlete while preserving your identity and history.';
-  const accountTypeTitle = isCoach
-    ? 'Team Coach'
-    : isIndividual
-    ? 'Self-Coach'
-    : 'Athlete';
-  const accountTypeDescription = isCoach
-    ? 'Coach capabilities are active. Your Athlete identity remains available for your own training.'
-    : isIndividual
-    ? 'Self-coach access is active for your own Athlete identity.'
-    : 'Athlete access is active. Coaching upgrades start from this section when available.';
-  const accountStateSummary = (() => {
-    switch (String(accountTransitions?.account_state || '').toUpperCase()) {
-      case 'READY_ATHLETE':
-      case 'READY_TEAM_COACH':
-      case 'READY_INDIVIDUAL':
-      case 'READY_OWNER_ADMIN':
-        return 'Ready';
-      case 'LINK_COACH_REQUIRED':
-        return 'Coach connection needed';
-      case 'ACTIVATION_REQUIRED':
-        return 'Membership activation needed';
-      case 'EMAIL_VERIFICATION_REQUIRED':
-        return 'Email verification needed';
-      default:
-        return accountTransitionsError ? 'Unavailable' : 'Needs attention';
-    }
-  })();
-  const billingStatusSummary = accountTransitions?.billing?.applies_to_coaching
-    ? accountTransitions.billing.is_entitled
-      ? 'Active'
-      : accountTransitions.billing.category === 'intentional_cancellation'
-      ? 'Cancelled'
-      : accountTransitions.billing.category === 'missing'
-      ? 'Not started'
-      : 'Needs attention'
-    : null;
+  const accountPosture = String(accountTransitions?.posture || '').trim().toLowerCase();
+  const accountTypeTitle =
+    accountTransitions?.is_owner_admin === true || accountPosture === 'owner_admin'
+      ? 'Owner/Admin'
+      : accountPosture === 'individual' || isIndividual
+      ? 'Self-Coached'
+      : accountPosture.startsWith('team_coach') || isCoach
+      ? 'Team Coach'
+      : 'Athlete';
   const modeOptions = useMemo(
     () =>
       transitionModeOptions.map((modeOption) => {
@@ -512,7 +565,7 @@ export default function SettingsScreen() {
           mode,
           icon: 'person-outline' as keyof typeof Ionicons.glyphMap,
           label: 'Athlete',
-          description: 'Open your athlete training, calendar, progression, and reflection views.',
+          description: 'Open athlete training, calendar, The Ledger, and current training focus.',
         };
       }),
     [transitionModeOptions]
@@ -539,6 +592,13 @@ export default function SettingsScreen() {
     ? 'Connect your own Athlete identity to a coach'
     : 'Connect your account to a coach';
   const profileUnits = useMemo(() => normalizeUnits(trainingProfile?.preferred_units || trainingProfile?.context?.preferred_units), [trainingProfile]);
+  const trainingMaxPermissions = trainingProfile?.training_max_permissions;
+  const canDirectEditTrainingMaxes =
+    mobileSettingsLoaded &&
+    trainingMaxPermissions?.authority_resolved === true &&
+    trainingMaxPermissions?.can_direct_edit === true;
+  const trainingMaxesManagedByCoach =
+    mobileSettingsLoaded && trainingMaxPermissions?.managed_by_external_coach === true;
 
   const formatProfileWeight = useCallback(
     (value?: number | null) => {
@@ -609,6 +669,8 @@ export default function SettingsScreen() {
   const loadMobileSettings = useCallback(async () => {
     try {
       setTimezoneLoading(true);
+      setMobileSettingsLoaded(false);
+      setProfileEditor(null);
       const resp = await fetchJson<any>('/mobile/settings', { method: 'GET' });
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
@@ -627,6 +689,7 @@ export default function SettingsScreen() {
       );
       setTrainingProfile(json.training_profile || null);
       setLinkCoachStatus(json.link_coach || null);
+      setMobileSettingsLoaded(true);
       if (hasTrainingProfile) {
         setTimezone(json.timezone || deviceTimezone || 'America/Los_Angeles');
         setTimezoneSource(json.timezone_source || 'device');
@@ -634,6 +697,7 @@ export default function SettingsScreen() {
       }
     } catch (err) {
       console.warn('Failed to load mobile settings', err);
+      setMobileSettingsLoaded(false);
       setTrainingProfile(null);
       setLinkCoachStatus(null);
       setTimezone(deviceTimezone || 'America/Los_Angeles');
@@ -642,6 +706,10 @@ export default function SettingsScreen() {
       setTimezoneLoading(false);
     }
   }, [deviceTimezone, hasTrainingProfile]);
+
+  useEffect(() => {
+    loadMobileSettings();
+  }, [loadMobileSettings]);
 
   const loadAccountTransitionMetadata = useCallback(async () => {
     try {
@@ -653,39 +721,23 @@ export default function SettingsScreen() {
       setAccountTransitions(json);
     } catch (err: any) {
       setAccountTransitions(null);
-      setAccountTransitionsError(err?.message || 'Account transition metadata unavailable.');
+      setAccountTransitionsError(err?.message || 'Account transition metadata could not be loaded.');
     } finally {
       setAccountTransitionsLoading(false);
     }
   }, []);
 
-  const refreshSettingsContinuity = useCallback(async () => {
-    await auth?.refreshAccountState?.();
-    await Promise.all([
-      loadMobileSettings(),
-      loadAccountTransitionMetadata(),
-    ]);
-  }, [auth?.refreshAccountState, loadAccountTransitionMetadata, loadMobileSettings]);
-
-  useFocusEffect(
-    useCallback(() => {
-      void refreshSettingsContinuity();
-    }, [refreshSettingsContinuity])
-  );
-
   useEffect(() => {
-    void Promise.all([
-      loadMobileSettings(),
-      loadAccountTransitionMetadata(),
-    ]);
-  }, [auth?.user?.account_state, auth?.user?.role, loadAccountTransitionMetadata, loadMobileSettings]);
+    loadAccountTransitionMetadata();
+  }, [loadAccountTransitionMetadata]);
 
   const openProfileEditor = (editor: Exclude<ProfileEditor, null>) => {
     if (!trainingProfile) return;
+    if (editor === 'maxes' && !canDirectEditTrainingMaxes) return;
     const units = normalizeUnits(trainingProfile.preferred_units || trainingProfile.context?.preferred_units);
     setProfileError(null);
     setSettingsNotice(null);
-    if (editor === 'details') {
+    if (editor === 'details' || editor === 'units') {
       setDetailsDraft({
         name: trainingProfile.name || '',
         email: trainingProfile.email || '',
@@ -717,7 +769,12 @@ export default function SettingsScreen() {
   };
 
   const applyProfilePayload = async (json: any) => {
-    if (json?.training_profile) setTrainingProfile(json.training_profile);
+    if (json?.training_profile) {
+      setTrainingProfile(json.training_profile);
+      if (json.training_profile?.training_max_permissions?.can_direct_edit !== true) {
+        setProfileEditor((current) => (current === 'maxes' ? null : current));
+      }
+    }
     if (json?.timezone) setTimezone(json.timezone);
     if (json?.timezone_source) setTimezoneSource(json.timezone_source);
     if (json?.timezone_source) {
@@ -765,6 +822,36 @@ export default function SettingsScreen() {
     }
   };
 
+  const savePreferredUnits = async () => {
+    const units = normalizeUnits(detailsDraft.preferredUnits);
+    try {
+      setProfileSaving(true);
+      setProfileError(null);
+      const context = trainingProfile?.context || {};
+      const resp = await fetchJson<any>('/mobile/training-profile/context', {
+        method: 'PATCH',
+        body: {
+          relationship_started_at: context.relationship_started_date || '',
+          preferred_units: units,
+          federation: trainingProfile?.federation || context.federation || '',
+          weight_class: trainingProfile?.weight_class || context.weight_class || '',
+          equipment_access: context.equipment_access || '',
+          injury_notes: context.injury_notes || '',
+          mobility_limitations: context.mobility_limitations || '',
+          preferred_cues: context.preferred_cues || '',
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      await applyProfilePayload(json);
+      setProfileEditor(null);
+    } catch (err: any) {
+      setProfileError(err?.message || 'Preferred units could not be saved.');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const saveTrainingMaxes = async () => {
     try {
       setProfileSaving(true);
@@ -778,7 +865,16 @@ export default function SettingsScreen() {
         } as any,
       });
       const json = resp.json || {};
-      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      if (!resp.ok || !json.ok) {
+        if (resp.status === 403 && json.error === 'coach_controlled_training_maxes') {
+          setProfileEditor(null);
+          setProfileError(null);
+          await loadMobileSettings();
+          setSettingsNotice('Your training maxes are now managed by your coach.');
+          return;
+        }
+        throw new Error(json.message || json.error || `HTTP ${resp.status}`);
+      }
       await applyProfilePayload(json);
       setProfileEditor(null);
     } catch (err: any) {
@@ -895,21 +991,8 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleUpdateAvatar = async () => {
+  const chooseAndUploadAvatar = async () => {
     if (!hasTrainingProfile) return;
-
-    const apiUrl = String(API_BASE || '').replace(/\/$/, '');
-    const token = auth?.token;
-
-    if (!apiUrl) {
-      Alert.alert('Upload unavailable', 'Missing API connection. Please restart the app and try again.');
-      return;
-    }
-
-    if (!token) {
-      Alert.alert('Upload unavailable', 'Your session token was not available for upload. Please log out and back in.');
-      return;
-    }
 
     try {
       setUploadingAvatar(true);
@@ -943,22 +1026,17 @@ export default function SettingsScreen() {
         type: mimeType,
       } as any);
 
-      const resp = await fetch(`${apiUrl}/mobile/avatar`, {
+      const response = await fetchJson<any>('/mobile/avatar', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'X-Timezone': await getResolvedTimezone(),
-        },
-        body: formData,
+        body: formData as any,
       });
+      const payload = response.json;
 
-      const json = await resp.json();
-
-      if (!resp.ok || !json?.ok) {
-        throw new Error(json?.error || 'Upload failed');
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.error || 'Upload failed');
       }
 
-      Alert.alert('Success', 'Profile photo updated');
+      await auth.updateProfilePhoto(payload);
     } catch (err) {
       console.error('Avatar upload failed', err);
       Alert.alert('Upload failed', 'Please try again');
@@ -967,9 +1045,41 @@ export default function SettingsScreen() {
     }
   };
 
+  const removeAvatar = async () => {
+    try {
+      setUploadingAvatar(true);
+      const response = await fetchJson<any>('/mobile/avatar', { method: 'DELETE' });
+      const payload = response.json;
+      if (!response.ok || !payload?.ok) throw new Error(payload?.error || 'Delete failed');
+      await auth.updateProfilePhoto(payload);
+    } catch (err) {
+      console.error('Avatar removal failed', err);
+      Alert.alert('Could not remove photo', 'Please try again');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleUpdateAvatar = () => {
+    if (!hasTrainingProfile || uploadingAvatar) return;
+    if (!auth.user?.profilePhotoUrl) {
+      void chooseAndUploadAvatar();
+      return;
+    }
+
+    Alert.alert('Profile photo', undefined, [
+      { text: 'Choose new photo', onPress: () => void chooseAndUploadAvatar() },
+      { text: 'Remove photo', style: 'destructive', onPress: () => void removeAvatar() },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
   const handleLogout = async () => {
     try {
       setLoggingOut(true);
+      setProfileEditor(null);
+      setTrainingProfile(null);
+      setMobileSettingsLoaded(false);
 
       if (typeof auth?.logout === 'function') {
         await auth.logout();
@@ -985,25 +1095,6 @@ export default function SettingsScreen() {
       Alert.alert('Log out failed', 'Please try again.');
     } finally {
       setLoggingOut(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    const deleteUrl = `${String(WEB_BASE || '').replace(/\/$/, '')}/auth/account/delete`;
-    try {
-      await WebBrowser.openBrowserAsync(deleteUrl, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
-      });
-      Alert.alert(
-        'Delete Account',
-        'If the delete page asked you to sign in or did not complete, use the in-app confirmation to permanently delete this account.',
-        [
-          { text: 'Done', style: 'cancel' },
-          { text: 'Use in-app confirmation', style: 'destructive', onPress: () => setDeleteModalOpen(true) },
-        ]
-      );
-    } catch {
-      setDeleteModalOpen(true);
     }
   };
 
@@ -1039,7 +1130,9 @@ export default function SettingsScreen() {
 
   const openTeamCoachUpgrade = () => {
     if (!canOpenTeamCoachUpgrade) {
-      Alert.alert('Become a Team Coach', teamCoachUpgradeDescription);
+      const reason = teamCoachUpgradeReason ? humanizeToken(teamCoachUpgradeReason) : 'This transition is not available.';
+      const nextAction = teamCoachUpgradeNextAction ? `\nNext action: ${humanizeToken(teamCoachUpgradeNextAction)}` : '';
+      Alert.alert('Become a Team Coach', `${reason}${nextAction}`);
       return;
     }
     setUpgradeError(null);
@@ -1051,8 +1144,6 @@ export default function SettingsScreen() {
     const betaCode = upgradeBetaCode.trim();
     if (!betaCode) {
       setUpgradeError('Enter your founder beta access code.');
-      Alert.alert('Founder beta code required', 'Enter your founder beta access code before activating Team Coach.');
-      upgradeBetaCodeInputRef.current?.focus();
       return;
     }
 
@@ -1083,11 +1174,20 @@ export default function SettingsScreen() {
       }
 
       if (json.checkout_url) {
+        if (json.account_state_payload) {
+          await auth?.applyAccountStatePayload?.(json.account_state_payload);
+        }
+        await auth?.refreshAccountState?.();
         setUpgradeModalOpen(false);
         setUpgradeBetaCode('');
         setUpgradeSubmitting(false);
         try {
           await openRecoverableCheckoutBrowser(json.checkout_url);
+        } catch {
+          Alert.alert(
+            'Stripe Checkout could not be opened',
+            'Your Team Coach upgrade is waiting for billing activation. Reopen activation from Account Setup and try again.'
+          );
         } finally {
           setUpgradeModalOpen(false);
           setUpgradeSubmitting(false);
@@ -1107,9 +1207,7 @@ export default function SettingsScreen() {
       setUpgradeBetaCode('');
       Alert.alert('Team Coach mode ready', 'Your account is now ready for Team Coach surfaces. You can switch to Coach mode from Mobile Mode.');
     } catch (err: any) {
-      const message = err?.message || 'Team Coach upgrade failed.';
-      setUpgradeError(message);
-      Alert.alert('Could not open Stripe Checkout', message);
+      setUpgradeError(err?.message || 'Team Coach upgrade failed.');
     } finally {
       setUpgradeSubmitting(false);
     }
@@ -1117,7 +1215,9 @@ export default function SettingsScreen() {
 
   const openTeamCoachDowngrade = () => {
     if (!canStartTeamCoachDowngrade) {
-      Alert.alert('Return to Athlete', teamCoachDowngradeDescription);
+      const reason = teamCoachDowngradeReason ? humanizeToken(teamCoachDowngradeReason) : 'This transition is not available.';
+      const nextAction = teamCoachDowngradeNextAction ? `\nNext action: ${humanizeToken(teamCoachDowngradeNextAction)}` : '';
+      Alert.alert('Return to Athlete', `${reason}${nextAction}`);
       return;
     }
     setDowngradeError(null);
@@ -1157,12 +1257,28 @@ export default function SettingsScreen() {
       await saveMobileViewMode('athlete');
       setMobileViewMode('athlete');
       setDowngradeModalOpen(false);
-      Alert.alert('Athlete account ready', 'Your coaching subscription was cancelled and Team Coach access removed. Your Athlete identity, history, and linked coach relationship remain.');
+      Alert.alert(
+        'Athlete account ready',
+        pendingTeamCoachUpgrade
+          ? 'Your incomplete Team Coach upgrade was cancelled. Your Athlete identity, history, and linked coach relationship remain.'
+          : 'Your coaching subscription was cancelled and Team Coach access removed. Your Athlete identity, history, and linked coach relationship remain.'
+      );
       router.replace('/(tabs)/athlete-dashboard');
     } catch (err: any) {
       setDowngradeError(err?.message || 'Please try again.');
     } finally {
       setDowngradeSubmitting(false);
+    }
+  };
+
+  const canChangeAccountType = canOpenTeamCoachUpgrade || canStartTeamCoachDowngrade;
+  const openAccountTypeTransition = () => {
+    if (canOpenTeamCoachUpgrade) {
+      openTeamCoachUpgrade();
+      return;
+    }
+    if (canStartTeamCoachDowngrade) {
+      openTeamCoachDowngrade();
     }
   };
 
@@ -1176,6 +1292,9 @@ export default function SettingsScreen() {
 
     try {
       setModeSwitching(nextMode);
+      setProfileEditor(null);
+      setTrainingProfile(null);
+      setMobileSettingsLoaded(false);
       const resp = await fetchJson<any>('/mobile/settings/mode', {
         method: 'PATCH',
         body: { mode: nextMode } as any,
@@ -1193,7 +1312,7 @@ export default function SettingsScreen() {
       setMobileViewMode(resolvedMode);
       setModeModalOpen(false);
       loadAccountTransitionMetadata();
-      router.replace(resolvedMode === 'coach' ? '/coach-dashboard' : '/(tabs)/athlete-dashboard');
+      router.replace(resolvedMode === 'coach' ? '/(tabs)/coach-roster' : '/(tabs)/athlete-dashboard');
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
     } finally {
@@ -1243,6 +1362,8 @@ export default function SettingsScreen() {
   const profileEditorTitle =
     profileEditor === 'details'
       ? 'Edit Profile Details'
+      : profileEditor === 'units'
+      ? 'Units'
       : profileEditor === 'maxes'
       ? 'Edit Training Maxes'
       : profileEditor === 'context'
@@ -1251,6 +1372,7 @@ export default function SettingsScreen() {
 
   const saveCurrentProfileEditor = () => {
     if (profileEditor === 'details') return saveProfileDetails();
+    if (profileEditor === 'units') return savePreferredUnits();
     if (profileEditor === 'maxes') return saveTrainingMaxes();
     if (profileEditor === 'context') return saveTrainingContext();
   };
@@ -1310,16 +1432,10 @@ export default function SettingsScreen() {
     auth?.profile?.name ||
     auth?.user?.email ||
     'Strength Ledger';
-  const nameParts = String(profileName).trim().split(/\s+/).filter(Boolean);
-  const initials = nameParts.length >= 2
-    ? `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase()
-    : String(profileName).replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || 'SL';
   const backendCurrentMode = ['athlete', 'coach', 'individual'].includes(String(accountTransitions?.current_mode || ''))
     ? (String(accountTransitions?.current_mode) as MobileViewMode)
     : null;
   const displayMobileMode = backendCurrentMode || activeMobileMode;
-  const accountModeLabel =
-    displayMobileMode === 'individual' ? 'Self-Coached' : displayMobileMode === 'coach' ? 'Coach' : 'Athlete';
   const profileDescriptor =
     displayMobileMode === 'individual'
       ? 'Self-coached training'
@@ -1338,8 +1454,44 @@ export default function SettingsScreen() {
   const trainingMaxTotalSummary = trainingProfile?.total_tm
     ? `T ${kgToDisplayValue(trainingProfile.total_tm, profileUnits)} ${profileUnits}`
     : null;
-  const videoPrivacyStatus =
-    videoMlTrainingConsent === true ? 'Enabled' : videoMlTrainingConsent === false ? 'Disabled' : 'Private';
+  const videoDataUseStatus =
+    !mobileSettingsLoaded ? 'Not loaded' : videoMlTrainingConsent === true ? 'Allowed' : 'Not allowed';
+  const coachName = linkCoachStatus?.coach?.name || linkCoachStatus?.coach?.email || null;
+  const identityDescriptor =
+    displayMobileMode === 'coach'
+      ? 'Coach'
+      : displayMobileMode === 'individual'
+      ? 'Self-coached athlete'
+      : coachName
+      ? `Athlete · Coached by ${coachName}`
+      : 'Athlete';
+  const timezoneSummary = timezoneLoading
+    ? 'Loading…'
+    : String(timezone || '')
+        .split('/')
+        .pop()
+        ?.replace(/_/g, ' ') || 'Not set';
+  const notificationStatus = !mobileSettingsLoaded
+    ? 'Not loaded'
+    : (showVideoFeedbackNotifications && notifyVideoFeedback) ||
+      (showVideoSubmissionNotifications && notifyVideoSubmissions)
+    ? 'On'
+    : 'Off';
+  const accountAccessSummary = accountTransitionsLoading
+    ? 'Loading…'
+    : accountTransitionsError
+    ? 'Status not loaded'
+    : accountTransitions?.account_state
+    ? accountAccessLabel(accountTransitions.account_state)
+    : linkCoachAlreadyLinked
+    ? 'Ready'
+    : 'Not linked';
+  const trainingContextSummary = profileContextRows.length === 1 ? '1 item' : `${profileContextRows.length} items`;
+  const compactTrainingMaxSummary = trainingProfile?.total_tm
+    ? `${kgToDisplayValue(trainingProfile.total_tm, profileUnits)} ${profileUnits} total`
+    : [squatMaxSummary, benchMaxSummary, deadliftMaxSummary].some((value) => value !== '-')
+    ? 'Configured'
+    : 'Not set';
 
   const settingsRow = ({
     icon,
@@ -1354,22 +1506,25 @@ export default function SettingsScreen() {
   }: {
     icon: keyof typeof Ionicons.glyphMap;
     title: string;
-    description: string;
+    description?: string;
     summary?: React.ReactNode;
-    onPress: () => void;
+    onPress?: () => void;
     disabled?: boolean;
     destructive?: boolean;
     warning?: boolean;
     accent?: SettingsAccent;
   }) => (
     <Pressable
+      accessibilityRole={onPress ? 'button' : 'text'}
+      accessibilityLabel={summary ? `${title}, ${typeof summary === 'string' ? summary : ''}` : title}
+      accessibilityHint={!onPress ? 'This setting is read only in the mobile app.' : undefined}
       style={({ pressed }) => [
         styles.settingsRow,
         destructive && styles.settingsRowDestructive,
-        pressed && styles.rowButtonPressed,
+        pressed && onPress && styles.rowButtonPressed,
       ]}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || !onPress}
     >
       <View style={styles.settingsRowLeft}>
         <View
@@ -1389,12 +1544,14 @@ export default function SettingsScreen() {
           />
         </View>
         <View style={styles.settingsRowText}>
-          <ThemedText style={[styles.settingsRowTitle, destructive ? styles.settingsRowTitleDestructive : {}]}>
+          <ThemedText typographyRole="bodyStrong" style={[styles.settingsRowTitle, destructive ? styles.settingsRowTitleDestructive : {}]}>
             {title}
           </ThemedText>
-          <ThemedText style={[styles.settingsRowDescription, destructive ? styles.settingsRowDescriptionDestructive : {}]}>
-            {description}
-          </ThemedText>
+          {description ? (
+            <ThemedText typographyRole="supportingBody" style={[styles.settingsRowDescription, destructive ? styles.settingsRowDescriptionDestructive : {}]}>
+              {description}
+            </ThemedText>
+          ) : null}
         </View>
       </View>
       <View style={styles.settingsRowRight}>
@@ -1414,369 +1571,405 @@ export default function SettingsScreen() {
         ) : summary ? (
           <View style={styles.settingsRowCustomSummary}>{summary}</View>
         ) : null}
-        <Ionicons name="chevron-forward" size={19} color={destructive ? SLColors.danger : SLColors.textSubtle} />
+        {onPress ? <Ionicons name="chevron-forward" size={19} color={destructive ? SLColors.danger : SLColors.textSubtle} /> : null}
       </View>
     </Pressable>
   );
 
   const settingsGroup = (
-    title: string,
-    icon: keyof typeof Ionicons.glyphMap,
     children: React.ReactNode,
-    accent: SettingsAccent = 'purple'
+    label?: string
   ) => (
     <View style={styles.settingsGroup}>
-      <View style={styles.settingsGroupHeader}>
-        <View
-          style={[
-            styles.settingsGroupIcon,
-            accent === 'amber' && styles.settingsGroupIconAmber,
-            accent === 'teal' && styles.settingsGroupIconTeal,
-            accent === 'neutral' && styles.settingsGroupIconNeutral,
-          ]}
-        >
-          <Ionicons name={icon} size={19} color={settingsAccentColor[accent]} />
-        </View>
-        <ThemedText style={styles.settingsGroupTitle}>{title}</ThemedText>
-      </View>
+      {label ? <ThemedText style={styles.settingsGroupLabel}>{label}</ThemedText> : null}
       <View style={styles.settingsGroupRows}>{children}</View>
     </View>
   );
 
+  const settingsToggleRow = ({
+    label,
+    description,
+    value,
+    disabled = false,
+    onChange,
+  }: {
+    label: string;
+    description?: string;
+    value: boolean;
+    disabled?: boolean;
+    onChange: (nextValue: boolean) => void;
+  }) => (
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: value, disabled }}
+      disabled={disabled}
+      onPress={() => onChange(!value)}
+      style={({ pressed }) => [
+        styles.settingsPanelToggleRow,
+        pressed && !disabled && styles.settingsRowPressed,
+        disabled && styles.settingsRowDisabled,
+      ]}
+    >
+      <View style={styles.settingsPanelToggleCopy}>
+        <ThemedText style={styles.settingsPanelToggleLabel}>{label}</ThemedText>
+        {description ? <ThemedText style={styles.settingsPanelToggleDescription}>{description}</ThemedText> : null}
+      </View>
+      <View style={[styles.togglePill, value && styles.togglePillOn]}>
+        <View style={[styles.toggleKnob, value && styles.toggleKnobOn]} />
+      </View>
+    </Pressable>
+  );
+
+  const settingsPanelTitle =
+    settingsPanel === 'coach'
+      ? 'Connected Coach'
+      : settingsPanel === 'notifications'
+        ? 'Notifications'
+        : settingsPanel === 'privacy'
+          ? 'Video Data Use'
+          : settingsPanel === 'about'
+              ? 'About'
+              : settingsPanel === 'logout'
+                ? 'Log Out'
+                : '';
+
+  const closeSettingsPanelThen = (action: () => void) => {
+    setSettingsPanel(null);
+    setTimeout(action, 220);
+  };
+
   return (
     <SLScreen edges="none" padded={false} style={styles.screen}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <View style={styles.header}>
-            <ThemedText variant="h1" style={styles.title}>
-              Settings
-            </ThemedText>
-            <ThemedText style={styles.headerSubtitle}>
-              Manage your profile, training setup, and preferences.
-            </ThemedText>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {settingsNotice ? (
+          <View style={styles.noticeBanner}>
+            <Ionicons name="alert-circle-outline" size={18} color={SLColors.warning} />
+            <ThemedText style={styles.noticeText}>{settingsNotice}</ThemedText>
+            <Pressable onPress={() => setSettingsNotice(null)} style={styles.noticeClose}>
+              <Ionicons name="close" size={16} color={SLColors.textMuted} />
+            </Pressable>
           </View>
+        ) : null}
 
-          {settingsNotice ? (
-            <View style={styles.noticeBanner}>
-              <Ionicons name="alert-circle-outline" size={18} color={SLColors.warning} />
-              <ThemedText style={styles.noticeText}>{settingsNotice}</ThemedText>
-              <Pressable onPress={() => setSettingsNotice(null)} style={styles.noticeClose}>
-                <Ionicons name="close" size={16} color={SLColors.textMuted} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${profileName}, ${identityDescriptor}`}
+          accessibilityHint={hasTrainingProfile ? 'Opens profile settings.' : 'Profile editing is unavailable for this account.'}
+          style={({ pressed }) => [styles.identityCard, pressed && hasTrainingProfile && styles.rowButtonPressed]}
+          onPress={hasTrainingProfile ? () => openProfileEditor('details') : undefined}
+          disabled={!hasTrainingProfile}
+        >
+          <SLProfileAvatar
+            accessibilityLabel={`${profileName} profile photo`}
+            name={profileName}
+            profilePhotoUrl={auth.user?.profilePhotoUrl}
+            profilePhotoVersion={auth.user?.profilePhotoVersion}
+            size={70}
+            borderRadius={35}
+            style={styles.identityAvatar}
+          />
+          <View style={styles.identityCopy}>
+            <ThemedText numberOfLines={2} style={styles.identityName}>{profileName}</ThemedText>
+            <ThemedText numberOfLines={2} style={styles.identityDescriptor}>{identityDescriptor}</ThemedText>
+          </View>
+          {hasTrainingProfile ? <Ionicons name="chevron-forward" size={23} color={SLColors.textSubtle} /> : null}
+        </Pressable>
+
+        {settingsGroup(
+          <>
+            {settingsRow({
+              icon: 'person-outline',
+              title: 'Account Type',
+              description: canOpenTeamCoachUpgrade
+                ? teamCoachUpgradeDescription
+                : canStartTeamCoachDowngrade
+                ? teamCoachDowngradeDescription
+                : undefined,
+              summary: accountTransitionsLoading ? 'Loading…' : accountTypeTitle,
+              onPress: canChangeAccountType ? openAccountTypeTransition : undefined,
+            })}
+            {settingsRow({
+              icon: 'person-add-outline',
+              title: 'Connected Coach',
+              summary: linkCoachAlreadyLinked ? 'Linked' : 'Not linked',
+              onPress: () => setSettingsPanel('coach'),
+              accent: 'amber',
+            })}
+            {settingsRow({
+              icon: 'shield-checkmark-outline',
+              title: 'Account Access',
+              summary: accountAccessSummary,
+              accent: 'amber',
+            })}
+            {modeOptions.length > 1
+              ? settingsRow({
+                  icon: 'swap-horizontal-outline',
+                  title: 'Mobile Mode',
+                  summary: accountTransitionsLoading ? 'Loading…' : mobileModeSummary,
+                  onPress: () => setModeModalOpen(true),
+                })
+              : null}
+          </>
+        , 'Account')}
+
+        {settingsGroup(
+          <>
+            {settingsRow({
+              icon: 'scale-outline',
+              title: 'Units',
+              summary: unitsSummary.toLowerCase(),
+              onPress: trainingProfile ? () => openProfileEditor('units') : undefined,
+            })}
+            {settingsRow({
+              icon: 'barbell-outline',
+              title: 'Training Maxes',
+              description: trainingMaxesManagedByCoach
+                ? 'Managed by your coach'
+                : !mobileSettingsLoaded
+                ? 'Checking edit access…'
+                : undefined,
+              summary: compactTrainingMaxSummary,
+              onPress: trainingProfile && canDirectEditTrainingMaxes ? () => openProfileEditor('maxes') : undefined,
+            })}
+            {settingsRow({
+              icon: 'locate-outline',
+              title: 'Training Context',
+              summary: trainingContextSummary,
+              onPress: trainingProfile ? () => openProfileEditor('context') : undefined,
+              accent: 'amber',
+            })}
+            {settingsRow({
+              icon: 'globe-outline',
+              title: 'Timezone',
+              summary: timezoneSummary,
+              onPress: timezoneSaving || timezoneLoading ? undefined : () => setTimezoneModalOpen(true),
+            })}
+          </>
+        , 'Training')}
+
+        {settingsGroup(
+          <>
+            {showNotificationsSection
+              ? settingsRow({
+                  icon: 'notifications-outline',
+                  title: 'Notifications',
+                  summary: notificationLoading || timezoneLoading ? 'Loading…' : notificationStatus,
+                  onPress: mobileSettingsLoaded ? () => setSettingsPanel('notifications') : undefined,
+                })
+              : null}
+            {settingsRow({
+              icon: 'lock-closed-outline',
+              title: 'Video Data Use',
+              summary: privacyLoading || timezoneLoading ? 'Loading…' : videoDataUseStatus,
+              onPress: mobileSettingsLoaded ? () => setSettingsPanel('privacy') : undefined,
+              accent: 'teal',
+            })}
+          </>
+        , 'Notifications & Privacy')}
+
+        {settingsGroup(
+          <>
+            {settingsRow({
+              icon: 'chatbubble-ellipses-outline',
+              title: 'Send Feedback',
+              onPress: () => setFeedbackModalOpen(true),
+              accent: 'neutral',
+            })}
+            {settingsRow({
+              icon: 'information-circle-outline',
+              title: 'About',
+              onPress: () => setSettingsPanel('about'),
+              accent: 'neutral',
+            })}
+          </>
+        , 'Support')}
+
+        {settingsGroup(
+          <>
+            {settingsRow({
+              icon: 'log-out-outline',
+              title: loggingOut ? 'Logging Out…' : 'Log Out',
+              onPress: loggingOut ? undefined : () => setSettingsPanel('logout'),
+              warning: true,
+              accent: 'neutral',
+            })}
+            {settingsRow({
+              icon: 'trash-outline',
+              title: 'Delete Account',
+              onPress: () => {
+                setDeleteConfirmEmail('');
+                setDeleteModalOpen(true);
+              },
+              destructive: true,
+              accent: 'neutral',
+            })}
+          </>
+        , 'Account Actions')}
+      </ScrollView>
+
+      <Modal
+        visible={settingsPanel !== null}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setSettingsPanel(null)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalSheet, styles.settingsPanelSheet]}>
+            <View style={styles.modalHeader}>
+              <View style={styles.modalTitleWrap}>
+                <ThemedText style={styles.modalTitle}>{settingsPanelTitle}</ThemedText>
+                <ThemedText style={styles.modalSubtitle}>Settings</ThemedText>
+              </View>
+              <Pressable
+                accessibilityLabel="Close settings"
+                accessibilityRole="button"
+                disabled={notificationLoading || privacyLoading || loggingOut}
+                hitSlop={12}
+                onPress={() => setSettingsPanel(null)}
+                style={({ pressed }) => [styles.modalClose, pressed && styles.settingsRowPressed]}
+              >
+                <Ionicons color={SLColors.textSecondary} name="close" size={22} />
               </Pressable>
             </View>
-          ) : null}
 
-          <View style={styles.profileHeroCard}>
-            <View style={styles.profileHeroTop}>
-              <View style={styles.avatarCircle}>
-                <ThemedText style={styles.avatarInitials}>{initials}</ThemedText>
-                {hasTrainingProfile ? (
-                  <Pressable
-                    style={styles.avatarPhotoButton}
-                    onPress={handleUpdateAvatar}
-                    disabled={uploadingAvatar}
-                  >
-                    {uploadingAvatar ? (
-                      <ActivityIndicator size="small" color={SLColors.textStrong} />
-                    ) : (
-                      <Ionicons name="camera-outline" size={15} color={SLColors.textStrong} />
-                    )}
-                  </Pressable>
-                ) : null}
-              </View>
-              <View style={styles.profileHeroCopy}>
-                <ThemedText style={styles.profileHeroName}>
-                  {profileName}
-                </ThemedText>
-                <ThemedText style={styles.profileHeroMode}>{profileDescriptor}</ThemedText>
-              </View>
-              {hasTrainingProfile && trainingProfile ? (
-                <Pressable
-                  style={({ pressed }) => [styles.profileEditHeroButton, pressed && styles.rowButtonPressed]}
-                  onPress={() => openProfileEditor('details')}
-                >
-                  <ThemedText style={styles.profileEditHeroText}>Edit</ThemedText>
-                  <Ionicons name="arrow-forward" size={15} color={SLColors.accentViolet} />
-                </Pressable>
-              ) : null}
-            </View>
-            {trainingProfile ? (
-              <View style={styles.profileHeroStats}>
-                <View style={styles.profileHeroStat}>
-                  <ThemedText style={styles.profileHeroStatLabel}>Bodyweight</ThemedText>
-                  <ThemedText style={styles.profileHeroStatValue}>{bodyweightSummary}</ThemedText>
-                </View>
-                <View style={styles.profileHeroStatDivider} />
-                <View style={styles.profileHeroStat}>
-                  <ThemedText style={styles.profileHeroStatLabel}>Units</ThemedText>
-                  <ThemedText style={styles.profileHeroStatValue}>{unitsSummary}</ThemedText>
-                </View>
-                <View style={styles.profileHeroStatDivider} />
-                <View style={styles.profileHeroStat}>
-                  <ThemedText style={styles.profileHeroStatLabel}>Experience</ThemedText>
-                  <ThemedText style={styles.profileHeroStatValue}>{trainingStartSummary}</ThemedText>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.profileHeroStats}>
-                <View style={styles.profileHeroStat}>
-                  <ThemedText style={styles.profileHeroStatLabel}>Account</ThemedText>
-                  <ThemedText style={styles.profileHeroStatValue}>{accountModeLabel}</ThemedText>
-                </View>
-                <View style={styles.profileHeroStatDivider} />
-                <View style={styles.profileHeroStat}>
-                  <ThemedText style={styles.profileHeroStatLabel}>Email</ThemedText>
-                  <ThemedText style={styles.profileHeroStatValue} numberOfLines={1}>
-                    {auth?.user?.email || 'Not set'}
-                  </ThemedText>
-                </View>
-              </View>
-            )}
-          </View>
-
-          {settingsGroup(
-                'Account Type',
-                'briefcase-outline',
+            <ScrollView
+              contentContainerStyle={styles.settingsPanelContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {settingsPanel === 'coach' ? (
                 <>
-                  {settingsRow({
-                    icon: 'person-circle-outline',
-                    title: accountTransitionsLoading ? 'Loading account type...' : accountTypeTitle,
-                    description: accountTypeDescription,
-                    summary: accountStateSummary,
-                    onPress: () => {},
-                    disabled: true,
-                  })}
-                  {billingStatusSummary
-                    ? settingsRow({
-                        icon: 'card-outline',
-                        title: 'Billing status',
-                        description: 'Your Team Coach membership',
-                        summary: billingStatusSummary,
-                        onPress: () => {},
-                        disabled: true,
-                      })
-                    : null}
-                  {role === 'athlete' && !isIndividual
-                    ? settingsRow({
-                        icon: 'rocket-outline',
-                        title: 'Become a Team Coach',
-                        description: teamCoachUpgradeDescription,
-                        summary: teamCoachUpgradeSummary,
-                        onPress: openTeamCoachUpgrade,
-                        disabled: !canOpenTeamCoachUpgrade,
-                        accent: 'amber',
-                      })
-                    : null}
-                  {isCoach && !isIndividual
-                    ? settingsRow({
-                        icon: 'person-outline',
-                        title: pendingTeamCoachUpgrade ? 'Cancel Team Coach upgrade' : 'Return to Athlete',
-                        description: teamCoachDowngradeDescription,
-                        summary: downgradeSubmitting ? 'Working...' : teamCoachDowngradeSummary,
-                        onPress: openTeamCoachDowngrade,
-                        disabled: !canStartTeamCoachDowngrade,
-                        accent: 'neutral',
-                      })
-                    : null}
-                  {showLinkCoachEntry
-                    ? settingsRow({
-                        icon: 'link-outline',
-                        title: linkCoachAlreadyLinked ? 'Coach linked' : 'Link coach',
-                        description: linkCoachDescription,
-                        summary: linkCoachSummary,
-                        onPress: handleLinkCoach,
-                      })
-                    : null}
-                </>,
-                'purple'
-              )}
-
-          {settingsGroup(
-            'Mobile Mode',
-            'swap-horizontal-outline',
-            <>
-              {settingsRow({
-                icon: 'phone-portrait-outline',
-                title: 'View selector',
-                description: modeOptions.length > 1
-                  ? 'Choose how you use Strength Ledger on this device'
-                  : 'This account currently has one available view',
-                summary: accountTransitionsLoading ? 'Loading...' : mobileModeSummary,
-                onPress: () => setModeModalOpen(true),
-                disabled: modeOptions.length <= 1 || accountTransitionsLoading,
-              })}
-            </>
-          )}
-
-          {showVideoSubmissionNotifications
-            ? settingsGroup(
-                'Coach Preferences',
-                'options-outline',
-                <>
-                  {settingsRow({
-                    icon: 'videocam-outline',
-                    title: 'Video submission notifications',
-                    description: 'When an athlete submits a set video',
-                    summary: notifyVideoSubmissions ? 'On' : 'Off',
-                    onPress: () => saveNotificationPreference('notify_video_submissions', !notifyVideoSubmissions),
-                    disabled: notificationLoading,
-                  })}
+                  <View style={styles.settingsPanelIdentity}>
+                    <View style={[styles.settingsRowIcon, styles.settingsRowIconAmber]}>
+                      <Ionicons color={settingsAccentColor.amber} name="person-add-outline" size={23} />
+                    </View>
+                    <View style={styles.settingsPanelIdentityCopy}>
+                      <ThemedText style={styles.settingsPanelIdentityTitle}>{coachName || 'No coach connected'}</ThemedText>
+                      <ThemedText style={styles.settingsPanelIdentityCaption}>
+                        {linkCoachAlreadyLinked
+                          ? 'Your active coaching relationship controls shared training access.'
+                          : 'Connect through the existing secure account-linking flow.'}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  {linkCoachAlreadyLinked ? (
+                    <View style={styles.editorInfoCard}>
+                      <ThemedText style={styles.editorInfoText}>
+                        This relationship is managed by the account and relationship system. It is read-only here.
+                      </ThemedText>
+                    </View>
+                  ) : (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => closeSettingsPanelThen(handleLinkCoach)}
+                      style={({ pressed }) => [styles.primaryButton, pressed && styles.settingsRowPressed]}
+                    >
+                      <ThemedText style={styles.primaryButtonText}>Connect a coach</ThemedText>
+                    </Pressable>
+                  )}
                 </>
-              )
-            : null}
+              ) : null}
 
-          {settingsGroup(
-            'Profile',
-            'person-circle-outline',
-            <>
-              {settingsRow({
-                icon: 'person-outline',
-                title: 'Personal profile',
-                description: hasTrainingProfile
-                  ? 'Profile details and personal information'
-                  : auth?.user?.email || 'Your Strength Ledger account',
-                summary: profileName,
-                onPress: () => openProfileEditor('details'),
-                disabled: !hasTrainingProfile,
-              })}
-              {hasTrainingProfile
-                ? settingsRow({
-                    icon: 'image-outline',
-                    title: uploadingAvatar ? 'Uploading photo...' : 'Profile Photo',
-                    description: 'Update your training profile photo',
-                    onPress: handleUpdateAvatar,
-                    disabled: uploadingAvatar,
-                  })
-                : null}
-            </>
-          )}
-
-          {hasTrainingProfile
-            ? settingsGroup(
-                'Training Setup',
-                'barbell-outline',
+              {settingsPanel === 'notifications' ? (
                 <>
-                  {trainingProfile
-                    ? settingsRow({
-                        icon: 'barbell-outline',
-                        title: 'Training Maxes',
-                        description: 'Squat, bench, deadlift, and total',
-                        summary: (
-                          <View style={styles.trainingMaxSummary}>
-                            <View style={styles.trainingMaxLine}>
-                              <ThemedText style={[styles.trainingMaxPart, styles.trainingMaxSquat]}>S {squatMaxSummary}</ThemedText>
-                              <ThemedText style={styles.trainingMaxDot}>·</ThemedText>
-                              <ThemedText style={[styles.trainingMaxPart, styles.trainingMaxBench]}>B {benchMaxSummary}</ThemedText>
-                              <ThemedText style={styles.trainingMaxDot}>·</ThemedText>
-                              <ThemedText style={[styles.trainingMaxPart, styles.trainingMaxDeadlift]}>D {deadliftMaxSummary}</ThemedText>
-                            </View>
-                            {trainingMaxTotalSummary ? (
-                              <ThemedText style={styles.trainingMaxTotal}>{trainingMaxTotalSummary}</ThemedText>
-                            ) : null}
-                          </View>
-                        ),
-                        onPress: () => openProfileEditor('maxes'),
-                        accent: 'amber',
+                  {showVideoFeedbackNotifications
+                    ? settingsToggleRow({
+                        label: 'Video feedback',
+                        description: 'Notify me when feedback is added to one of my videos.',
+                        value: notifyVideoFeedback,
+                        disabled: notificationLoading,
+                        onChange: (nextValue) =>
+                          void saveNotificationPreference('notify_video_feedback', nextValue),
                       })
                     : null}
-                  {trainingProfile
-                    ? settingsRow({
-                        icon: 'clipboard-outline',
-                        title: 'Training Context',
-                        description: 'Equipment, limitations, cues, and notes',
-                        summary: profileContextRows.length ? `${profileContextRows.length} items` : 'Not set',
-                        onPress: () => openProfileEditor('context'),
-                        accent: 'amber',
+                  {showVideoSubmissionNotifications
+                    ? settingsToggleRow({
+                        label: 'Video submissions',
+                        description: 'Notify me when an athlete submits a video for review.',
+                        value: notifyVideoSubmissions,
+                        disabled: notificationLoading,
+                        onChange: (nextValue) =>
+                          void saveNotificationPreference('notify_video_submissions', nextValue),
                       })
                     : null}
-                  {settingsRow({
-                    icon: 'time-outline',
-                    title: 'Training Timezone',
-                    description: 'Used for workouts and calendar dates',
-                    summary: timezoneLoading ? 'Loading...' : `${timezone}\n${timezoneSourceLabel}`,
-                    onPress: () => setTimezoneModalOpen(true),
-                    disabled: timezoneSaving || timezoneLoading,
-                    accent: 'amber',
+                </>
+              ) : null}
+
+              {settingsPanel === 'privacy' ? (
+                <>
+                  {settingsToggleRow({
+                    label: 'Video model training',
+                    description: 'Allow eligible training videos to improve Strength Ledger video models.',
+                    value: videoMlTrainingConsent === true,
+                    disabled: privacyLoading,
+                    onChange: (nextValue) => void saveVideoMlTrainingConsent(nextValue),
                   })}
-                </>,
-                'amber'
-              )
-            : null}
+                  <View style={styles.editorInfoCard}>
+                    <ThemedText style={styles.editorInfoText}>
+                      Video visibility still follows the account and relationship authorization rules. This setting
+                      controls model-training consent only.
+                    </ThemedText>
+                  </View>
+                </>
+              ) : null}
 
-          {settingsGroup(
-            'Privacy',
-            'shield-checkmark-outline',
-            <>
-              {settingsRow({
-                icon: 'shield-checkmark-outline',
-                title: 'Video Privacy',
-                description: isIndividual ? 'Your videos stay private to you' : 'Manage how your videos are used',
-                summary: videoPrivacyStatus,
-                onPress: () => saveVideoMlTrainingConsent(videoMlTrainingConsent !== true),
-                disabled: privacyLoading,
-                accent: 'teal',
-              })}
-              {showVideoFeedbackNotifications
-                ? settingsRow({
-                    icon: 'chatbox-ellipses-outline',
-                    title: 'Video feedback notifications',
-                    description: 'When your coach reviews a set video',
-                    summary: notifyVideoFeedback ? 'On' : 'Off',
-                    onPress: () => saveNotificationPreference('notify_video_feedback', !notifyVideoFeedback),
-                    disabled: notificationLoading,
-                    accent: 'teal',
-                  })
-                : null}
-            </>,
-            'teal'
-          )}
+              {settingsPanel === 'about' ? (
+                <View style={styles.settingsPanelAbout}>
+                  <View style={styles.settingsPanelAboutRow}>
+                    <ThemedText style={styles.settingsPanelAboutLabel}>Environment</ThemedText>
+                    <ThemedText style={styles.settingsPanelAboutValue}>Development</ThemedText>
+                  </View>
+                  <View style={styles.settingsPanelAboutRow}>
+                    <ThemedText style={styles.settingsPanelAboutLabel}>Update</ThemedText>
+                    <ThemedText style={styles.settingsPanelAboutValue}>{updateLabel}</ThemedText>
+                  </View>
+                  <View style={styles.settingsPanelAboutRow}>
+                    <ThemedText style={styles.settingsPanelAboutLabel}>Platform</ThemedText>
+                    <ThemedText style={styles.settingsPanelAboutValue}>
+                      {Platform.OS} {String(Platform.Version)}
+                    </ThemedText>
+                  </View>
+                </View>
+              ) : null}
 
-          {settingsGroup(
-            'Feedback',
-            'chatbubble-ellipses-outline',
-            <>
-              {settingsRow({
-                icon: 'chatbubble-ellipses-outline',
-                title: 'Send Feedback',
-                description: 'Report a bug, request a feature, or share feedback',
-                onPress: () => setFeedbackModalOpen(true),
-                accent: 'purple',
-              })}
-            </>,
-            'purple'
-          )}
-
-          {settingsGroup(
-            'Account',
-            'settings-outline',
-            <>
-              {settingsRow({
-                icon: 'log-out-outline',
-                title: loggingOut ? 'Logging out...' : 'Log out',
-                description: 'End your current session',
-                onPress: handleLogout,
-                disabled: loggingOut,
-                warning: true,
-                accent: 'neutral',
-              })}
-              {settingsRow({
-                icon: 'trash-outline',
-                title: 'Delete Account',
-                description: 'Permanently delete your account and data',
-                onPress: handleDeleteAccount,
-                destructive: true,
-                accent: 'neutral',
-              })}
-            </>,
-            'neutral'
-          )}
-          <View style={styles.footer}>
-            <ThemedText variant="bodyMuted" style={styles.footerText}>
-              {updateLabel}
-            </ThemedText>
+              {settingsPanel === 'logout' ? (
+                <>
+                  <View style={styles.editorInfoCard}>
+                    <ThemedText style={styles.editorInfoText}>
+                      You will need to sign in again to access this account on this device.
+                    </ThemedText>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={loggingOut}
+                    onPress={() => void handleLogout()}
+                    style={({ pressed }) => [styles.dangerButton, pressed && styles.settingsRowPressed]}
+                  >
+                    <ThemedText style={styles.dangerButtonText}>{loggingOut ? 'Logging Out…' : 'Log Out'}</ThemedText>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={loggingOut}
+                    onPress={() => setSettingsPanel(null)}
+                    style={({ pressed }) => [styles.secondaryButton, pressed && styles.settingsRowPressed]}
+                  >
+                    <ThemedText style={styles.secondaryButtonText}>Cancel</ThemedText>
+                  </Pressable>
+                </>
+              ) : null}
+            </ScrollView>
           </View>
-        </ScrollView>
+        </View>
+      </Modal>
 
-        <Modal visible={profileEditor !== null} animationType="slide" transparent onRequestClose={() => setProfileEditor(null)}>
+        {profileEditor !== null && (profileEditor !== 'maxes' || canDirectEditTrainingMaxes) ? (
+        <Modal
+          visible
+          animationType="slide"
+          transparent
+          onRequestClose={() => setProfileEditor(null)}
+        >
           <View style={styles.modalBackdrop}>
             <View style={styles.profileEditorSheet}>
               <View style={styles.modalHeader}>
@@ -1801,21 +1994,56 @@ export default function SettingsScreen() {
               <ScrollView style={styles.editorScroll} contentContainerStyle={styles.editorContent} keyboardShouldPersistTaps="handled">
                 {profileEditor === 'details' ? (
                   <>
+                    <View style={styles.profileEditorIdentity}>
+                      <SLProfileAvatar
+                        accessibilityLabel={`${profileName} profile photo`}
+                        name={profileName}
+                        profilePhotoUrl={auth.user?.profilePhotoUrl}
+                        profilePhotoVersion={auth.user?.profilePhotoVersion}
+                        size={68}
+                        borderRadius={34}
+                      />
+                      <View style={styles.profileEditorIdentityCopy}>
+                        <ThemedText style={styles.profileEditorIdentityTitle}>Profile photo</ThemedText>
+                        <ThemedText style={styles.profileEditorIdentityCaption}>
+                          Used anywhere your identity appears.
+                        </ThemedText>
+                      </View>
+                      <Pressable
+                        accessibilityRole="button"
+                        style={({ pressed }) => [styles.profilePhotoAction, pressed && styles.rowButtonPressed]}
+                        onPress={handleUpdateAvatar}
+                        disabled={uploadingAvatar}
+                      >
+                        {uploadingAvatar ? <ActivityIndicator size="small" color={SLColors.accentViolet} /> : null}
+                        <ThemedText style={styles.profilePhotoActionText}>
+                          {uploadingAvatar ? 'Updating…' : auth.user?.profilePhotoUrl ? 'Manage' : 'Add'}
+                        </ThemedText>
+                      </Pressable>
+                    </View>
                     {editorField('Name', detailsDraft.name, (value) => setDetailsDraft((draft) => ({ ...draft, name: value })))}
                     {editorField('Email', detailsDraft.email, () => {}, { readOnly: true, keyboardType: 'email-address' })}
                     {editorChoice('Sex', detailsDraft.sex, [{ label: 'M', value: 'M' }, { label: 'F', value: 'F' }], (value) => setDetailsDraft((draft) => ({ ...draft, sex: value })))}
-                    {editorChoice('Preferred Units', detailsDraft.preferredUnits, [{ label: 'kg', value: 'kg' }, { label: 'lbs', value: 'lbs' }], (value) => {
-                      const oldUnits = normalizeUnits(detailsDraft.preferredUnits);
-                      const rawKg = displayValueToKg(detailsDraft.bodyweight, oldUnits);
-                      setDetailsDraft((draft) => ({
-                        ...draft,
-                        preferredUnits: value,
-                        bodyweight: kgToDisplayValue(rawKg, normalizeUnits(value)),
-                      }));
-                    })}
                     {editorField(`Bodyweight (${normalizeUnits(detailsDraft.preferredUnits)})`, detailsDraft.bodyweight, (value) => setDetailsDraft((draft) => ({ ...draft, bodyweight: value })), { keyboardType: 'numeric' })}
                     {editorField('Federation', detailsDraft.federation, (value) => setDetailsDraft((draft) => ({ ...draft, federation: value })))}
                     {editorField('Weight Class', detailsDraft.weightClass, (value) => setDetailsDraft((draft) => ({ ...draft, weightClass: value })))}
+                  </>
+                ) : null}
+
+                {profileEditor === 'units' ? (
+                  <>
+                    {editorChoice(
+                      'Preferred Units',
+                      detailsDraft.preferredUnits,
+                      [{ label: 'kg', value: 'kg' }, { label: 'lbs', value: 'lbs' }],
+                      (value) => setDetailsDraft((draft) => ({ ...draft, preferredUnits: value })),
+                    )}
+                    <View style={styles.editorInfoCard}>
+                      <Ionicons name="information-circle-outline" size={19} color={SLColors.textMuted} />
+                      <ThemedText style={styles.editorInfoText}>
+                        Units change how weights are displayed. Canonical training data remains stored in kilograms.
+                      </ThemedText>
+                    </View>
                   </>
                 ) : null}
 
@@ -1858,6 +2086,7 @@ export default function SettingsScreen() {
             </View>
           </View>
         </Modal>
+        ) : null}
 
         <Modal visible={feedbackModalOpen} animationType="slide" transparent onRequestClose={() => setFeedbackModalOpen(false)}>
           <KeyboardAvoidingView
@@ -1978,10 +2207,28 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.modeOptionList}>
+                {accountTransitions ? (
+                  <View style={styles.modeMetadataCard}>
+                    <ThemedText style={styles.modeMetadataTitle}>{accountTypeTitle}</ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>
+                      {accountAccessLabel(accountTransitions.account_state)}
+                      {accountActionLabel(accountTransitions.next_action)
+                        ? ` · ${accountActionLabel(accountTransitions.next_action)}`
+                        : ''}
+                    </ThemedText>
+                  </View>
+                ) : accountTransitionsError ? (
+                  <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
+                    <ThemedText style={styles.modeMetadataTitle}>Account access could not be loaded</ThemedText>
+                    <ThemedText style={styles.modeMetadataDescription}>{accountTransitionsError}</ThemedText>
+                  </View>
+                ) : null}
                 {modeOptions.map((option) => {
                   const selected = option.mode === activeMobileMode;
                   const switching = modeSwitching === option.mode;
                   const blocked = !option.switchable;
+                  const reason = accountRestrictionLabel(option.reason);
+                  const nextAction = accountActionLabel(option.nextAction);
                   return (
                     <Pressable
                       key={option.mode}
@@ -2009,7 +2256,10 @@ export default function SettingsScreen() {
                         <ThemedText style={[styles.modeOptionTitle, blocked && styles.modeOptionTitleBlocked]}>{option.label}</ThemedText>
                         <ThemedText style={styles.modeOptionDescription}>{option.description}</ThemedText>
                         {blocked ? (
-                          <ThemedText style={styles.modeOptionReason}>Not available for this account</ThemedText>
+                          <ThemedText style={styles.modeOptionReason}>
+                            {reason || 'Not available for this account'}
+                            {nextAction ? ` · ${nextAction}` : ''}
+                          </ThemedText>
                         ) : null}
                       </View>
                       {selected ? (
@@ -2078,7 +2328,7 @@ export default function SettingsScreen() {
                   </View>
 
                   <ThemedText style={styles.upgradeBillingNote}>
-                    Production activation continues through Stripe billing. Local dev uses simulated billing only. Any linked coach relationship stays active.
+                    Membership activates securely through Stripe. Your account, Athlete identity, history, and linked coach relationship stay intact.
                   </ThemedText>
 
                   {upgradeError ? (
@@ -2093,7 +2343,6 @@ export default function SettingsScreen() {
                     <View style={styles.searchWrap}>
                       <Ionicons name="key-outline" size={18} color={SLColors.textMuted} />
                       <TextInput
-                        ref={upgradeBetaCodeInputRef}
                         value={upgradeBetaCode}
                         onChangeText={(value) => {
                           setUpgradeBetaCode(value);
@@ -2139,9 +2388,13 @@ export default function SettingsScreen() {
             <Pressable style={styles.modalSheet} onPress={(event) => event.stopPropagation()}>
               <View style={styles.modalHeader}>
                 <View style={styles.modalTitleWrap}>
-                  <ThemedText style={styles.modalTitle}>Return to Athlete</ThemedText>
+                  <ThemedText style={styles.modalTitle}>
+                    {pendingTeamCoachUpgrade ? 'Cancel Team Coach upgrade' : 'Return to Athlete'}
+                  </ThemedText>
                   <ThemedText variant="bodyMuted" style={styles.modalSubtitle}>
-                    This cancels your coaching subscription and removes Team Coach access.
+                    {pendingTeamCoachUpgrade
+                      ? 'This cancels the incomplete unpaid upgrade and restores Athlete account access.'
+                      : 'This cancels your coaching subscription and removes Team Coach access.'}
                   </ThemedText>
                 </View>
                 <Pressable style={styles.modalClose} onPress={() => setDowngradeModalOpen(false)} disabled={downgradeSubmitting}>
@@ -2152,7 +2405,9 @@ export default function SettingsScreen() {
               <View style={[styles.modeMetadataCard, styles.modeMetadataCardWarning]}>
                 <ThemedText style={styles.modeMetadataTitle}>Before you continue</ThemedText>
                 <ThemedText style={styles.modeMetadataDescription}>
-                  Your same account, Athlete identity, workouts, history, videos, check-ins, and linked coach relationship remain. Stripe cancellation is confirmed before coach tools are removed.
+                  {pendingTeamCoachUpgrade
+                    ? 'No active subscription will be cancelled. Your reserved founder code is released, while your same Athlete identity, history, and linked coach relationship remain.'
+                    : 'This is available only after any athletes you coach are resolved from your roster. Your same account, Athlete identity, Training Sessions, history, videos, check-ins, and linked coach relationship remain. Stripe cancellation is confirmed before coach tools are removed.'}
                 </ThemedText>
               </View>
 
@@ -2178,7 +2433,13 @@ export default function SettingsScreen() {
                 >
                   {downgradeSubmitting ? <ActivityIndicator color={SLColors.textStrong} /> : <Ionicons name="person-outline" size={18} color={SLColors.textStrong} />}
                   <ThemedText style={styles.dangerButtonText}>
-                    {downgradeSubmitting ? 'Cancelling subscription...' : 'Cancel Subscription & Return'}
+                    {downgradeSubmitting
+                      ? pendingTeamCoachUpgrade
+                        ? 'Cancelling upgrade...'
+                        : 'Cancelling subscription...'
+                      : pendingTeamCoachUpgrade
+                      ? 'Cancel Upgrade & Return'
+                      : 'Cancel Subscription & Return'}
                   </ThemedText>
                 </Pressable>
               </View>
@@ -2319,35 +2580,23 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
-    paddingHorizontal: 0,
     paddingTop: 12,
     paddingBottom: 24,
   },
   scrollContent: {
-    paddingBottom: 28,
-    gap: 14,
-  },
-  header: {
-    marginBottom: 18,
-  },
-  title: {
-    fontFamily: SLTypography.title.fontFamily,
-    fontSize: SLTypography.title.fontSize,
-    lineHeight: SLTypography.title.lineHeight,
-    fontWeight: '800',
-    color: SLColors.textStrong,
-    letterSpacing: 0,
+    paddingBottom: 36,
+    gap: 18,
   },
   headerSubtitle: {
     marginTop: 6,
     color: SLColors.textMuted,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 21,
     fontWeight: '600',
   },
   subtitle: {
     marginTop: 4,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     color: SLColors.textMuted,
   },
   profileHeroCard: {
@@ -2356,10 +2605,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(167,139,250,0.28)',
     backgroundColor: 'rgba(20,17,31,0.72)',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 12 },
+    ...SLShadows.raised,
   },
   profileHeroTop: {
     paddingHorizontal: 16,
@@ -2368,21 +2614,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 12,
   },
-  avatarCircle: {
+  avatarWrap: {
     width: 58,
     height: 58,
+  },
+  avatarCircle: {
     borderRadius: 29,
     borderWidth: 1,
     borderColor: 'rgba(167,139,250,0.38)',
     backgroundColor: 'rgba(126,101,255,0.22)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitials: {
-    color: SLColors.accentViolet,
-    fontSize: 21,
-    fontWeight: '900',
-    letterSpacing: 0,
   },
   avatarPhotoButton: {
     position: 'absolute',
@@ -2390,7 +2630,7 @@ const styles = StyleSheet.create({
     bottom: -3,
     width: 25,
     height: 25,
-    borderRadius: 13,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(205,194,176,0.34)',
     backgroundColor: 'rgba(10,9,15,0.96)',
@@ -2403,14 +2643,14 @@ const styles = StyleSheet.create({
   },
   profileHeroName: {
     color: SLColors.textStrong,
-    fontSize: 24,
+    fontSize: SLTypography.screenTitle.fontSize,
     lineHeight: 29,
     fontWeight: '900',
   },
   profileHeroMode: {
     marginTop: 3,
     color: SLColors.accentViolet,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
   },
   profileEditHeroButton: {
@@ -2424,7 +2664,7 @@ const styles = StyleSheet.create({
   },
   profileEditHeroText: {
     color: SLColors.accentViolet,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   profileHeroStats: {
@@ -2450,19 +2690,59 @@ const styles = StyleSheet.create({
   },
   profileHeroStatLabel: {
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   profileHeroStatValue: {
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
     textAlign: 'center',
   },
   settingsGroup: {
-    gap: 9,
-    marginTop: 12,
+    gap: 8,
+  },
+  settingsGroupLabel: {
+    marginLeft: 16,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.body.fontSize,
+    lineHeight: 21,
+    fontWeight: '700',
+  },
+  identityCard: {
+    minHeight: 112,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.065)',
+    backgroundColor: 'rgba(28,28,30,0.92)',
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    overflow: 'hidden',
+  },
+  identityAvatar: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+  },
+  identityCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 4,
+  },
+  identityName: {
+    color: SLColors.textStrong,
+    fontSize: 22,
+    lineHeight: 27,
+    fontWeight: '800',
+  },
+  identityDescriptor: {
+    color: SLColors.textMuted,
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '600',
   },
   settingsGroupHeader: {
     flexDirection: 'row',
@@ -2472,7 +2752,7 @@ const styles = StyleSheet.create({
   settingsGroupIcon: {
     width: 30,
     height: 30,
-    borderRadius: 15,
+    borderRadius: SLRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(167,139,250,0.25)',
     backgroundColor: 'rgba(126,101,255,0.10)',
@@ -2492,29 +2772,36 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(205,194,176,0.055)',
   },
   settingsGroupTitle: {
+    flexShrink: 1,
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
   },
   settingsGroupRows: {
-    borderRadius: SLRadius.radiusCard,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.20)',
-    backgroundColor: 'rgba(18,16,27,0.62)',
+    borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(28,28,30,0.92)',
     overflow: 'hidden',
   },
   settingsRow: {
-    minHeight: 78,
+    minHeight: 68,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: SLColors.shellHairline,
+    borderTopColor: 'rgba(255,255,255,0.075)',
+  },
+  settingsRowPressed: {
+    opacity: 0.82,
+  },
+  settingsRowDisabled: {
+    opacity: 0.58,
   },
   settingsRowDestructive: {
     backgroundColor: 'rgba(239,68,68,0.035)',
@@ -2529,24 +2816,24 @@ const styles = StyleSheet.create({
   settingsRowIcon: {
     width: 44,
     height: 44,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
-    borderColor: 'rgba(167,139,250,0.18)',
-    backgroundColor: 'rgba(126,101,255,0.11)',
+    borderColor: 'rgba(194,146,255,0.42)',
+    backgroundColor: 'rgba(126,58,220,0.76)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   settingsRowIconAmber: {
-    borderColor: 'rgba(214,167,94,0.22)',
-    backgroundColor: 'rgba(214,167,94,0.085)',
+    borderColor: 'rgba(255,204,74,0.44)',
+    backgroundColor: 'rgba(215,150,20,0.78)',
   },
   settingsRowIconTeal: {
-    borderColor: 'rgba(77,214,199,0.20)',
-    backgroundColor: 'rgba(77,214,199,0.075)',
+    borderColor: 'rgba(111,223,231,0.42)',
+    backgroundColor: 'rgba(42,132,142,0.78)',
   },
   settingsRowIconNeutral: {
-    borderColor: 'rgba(205,194,176,0.14)',
-    backgroundColor: 'rgba(205,194,176,0.045)',
+    borderColor: 'rgba(242,89,181,0.34)',
+    backgroundColor: 'rgba(147,25,105,0.70)',
   },
   settingsRowIconWarning: {
     borderColor: 'rgba(245,158,11,0.24)',
@@ -2562,7 +2849,7 @@ const styles = StyleSheet.create({
   },
   settingsRowTitle: {
     color: SLColors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '800',
   },
   settingsRowTitleDestructive: {
@@ -2571,7 +2858,7 @@ const styles = StyleSheet.create({
   settingsRowDescription: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
   },
@@ -2587,10 +2874,10 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   settingsRowSummary: {
-    color: SLColors.accentViolet,
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '800',
+    color: SLColors.textMuted,
+    fontSize: SLTypography.body.fontSize,
+    lineHeight: 20,
+    fontWeight: '600',
     textAlign: 'right',
   },
   settingsRowCustomSummary: {
@@ -2598,10 +2885,10 @@ const styles = StyleSheet.create({
     maxWidth: 142,
   },
   settingsRowSummaryAmber: {
-    color: '#D6A75E',
+    color: SLColors.textMuted,
   },
   settingsRowSummaryTeal: {
-    color: '#4DD6C7',
+    color: SLColors.textMuted,
   },
   settingsRowSummaryNeutral: {
     color: SLColors.textMuted,
@@ -2619,27 +2906,27 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   trainingMaxPart: {
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
     fontWeight: '900',
   },
   trainingMaxSquat: {
-    color: SLColors.accentViolet,
+    color: SLColors.textMuted,
   },
   trainingMaxBench: {
-    color: '#4DD6C7',
+    color: SLColors.textMuted,
   },
   trainingMaxDeadlift: {
-    color: '#D6A75E',
+    color: SLColors.textMuted,
   },
   trainingMaxDot: {
     color: SLColors.textSubtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   trainingMaxTotal: {
-    color: '#D6A75E',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
     fontWeight: '900',
     textAlign: 'right',
@@ -2690,7 +2977,7 @@ const styles = StyleSheet.create({
   timezoneDescription: {
     marginTop: 8,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 18,
   },
   timezoneStatus: {
@@ -2705,8 +2992,6 @@ const styles = StyleSheet.create({
   modeStatus: {
     marginHorizontal: 16,
     marginBottom: 14,
-    borderLeftWidth: 3,
-    borderLeftColor: SLColors.railViolet,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: SLColors.borderHairline,
@@ -2739,13 +3024,13 @@ const styles = StyleSheet.create({
   },
   profileCardTitle: {
     color: SLColors.textStrong,
-    fontSize: 16,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
   },
   profileCardSubtitle: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
   },
   profileEditButton: {
@@ -2762,7 +3047,7 @@ const styles = StyleSheet.create({
   },
   profileEditText: {
     color: SLColors.accentViolet,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   profileSummaryRow: {
@@ -2778,14 +3063,14 @@ const styles = StyleSheet.create({
   },
   profileSummaryLabel: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   profileSummaryValue: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'right',
   },
@@ -2795,13 +3080,13 @@ const styles = StyleSheet.create({
   },
   profileEmptyTitle: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   profileEmptyCopy: {
     marginTop: 4,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 18,
   },
   noticeBanner: {
@@ -2818,7 +3103,7 @@ const styles = StyleSheet.create({
   noticeText: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '700',
   },
@@ -2841,21 +3126,21 @@ const styles = StyleSheet.create({
   },
   timezoneLabel: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   timezoneValue: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'right',
   },
   modeValue: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
     textAlign: 'right',
   },
@@ -2877,7 +3162,7 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: SLColors.accentViolet,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   primaryButton: {
@@ -2894,7 +3179,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   rowLeft: {
@@ -2930,13 +3215,13 @@ const styles = StyleSheet.create({
   },
   rowTitle: {
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
   },
   rowSubtitle: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
   },
   togglePill: {
     width: 48,
@@ -2969,7 +3254,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: SLColors.textSubtle,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     letterSpacing: 0.3,
   },
   modalBackdrop: {
@@ -2991,6 +3276,106 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingTop: 16,
     paddingBottom: 22,
+  },
+  settingsPanelSheet: {
+    minHeight: 0,
+    maxHeight: '72%',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(28,28,30,0.98)',
+  },
+  settingsPanelContent: {
+    paddingBottom: 8,
+    gap: 12,
+  },
+  settingsPanelIdentity: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(12,12,14,0.52)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  settingsPanelIdentityCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  settingsPanelIdentityTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 21,
+    fontWeight: '800',
+  },
+  settingsPanelIdentityCaption: {
+    marginTop: 3,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 18,
+    fontWeight: '600',
+  },
+  settingsPanelToggleRow: {
+    minHeight: 72,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(12,12,14,0.52)',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 14,
+  },
+  settingsPanelToggleCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  settingsPanelToggleLabel: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 21,
+    fontWeight: '800',
+  },
+  settingsPanelToggleDescription: {
+    marginTop: 3,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 18,
+    fontWeight: '600',
+  },
+  settingsPanelAbout: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(12,12,14,0.52)',
+    overflow: 'hidden',
+  },
+  settingsPanelAboutRow: {
+    minHeight: 52,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.07)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  settingsPanelAboutLabel: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '700',
+  },
+  settingsPanelAboutValue: {
+    flex: 1,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '600',
+    textAlign: 'right',
   },
   feedbackModalSheet: {
     width: '100%',
@@ -3026,6 +3411,51 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 22,
   },
+  profileEditorIdentity: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(28,28,30,0.82)',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  profileEditorIdentityCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  profileEditorIdentityTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 21,
+    fontWeight: '800',
+  },
+  profileEditorIdentityCaption: {
+    marginTop: 3,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    fontWeight: '600',
+  },
+  profilePhotoAction: {
+    minHeight: 36,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: 'rgba(126,101,255,0.12)',
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  profilePhotoActionText: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -3045,7 +3475,7 @@ const styles = StyleSheet.create({
   modalSubtitle: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
   },
   modalClose: {
     width: 38,
@@ -3082,7 +3512,7 @@ const styles = StyleSheet.create({
   modeOptionIcon: {
     width: 44,
     height: 44,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(167,139,250,0.20)',
     backgroundColor: 'rgba(126,101,255,0.11)',
@@ -3099,7 +3529,7 @@ const styles = StyleSheet.create({
   },
   modeOptionTitle: {
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     lineHeight: 20,
     fontWeight: '900',
   },
@@ -3109,14 +3539,14 @@ const styles = StyleSheet.create({
   modeOptionDescription: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
   },
   modeOptionReason: {
     marginTop: 5,
     color: SLColors.warning,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     lineHeight: 15,
     fontWeight: '800',
   },
@@ -3135,12 +3565,12 @@ const styles = StyleSheet.create({
   },
   modeMetadataTitle: {
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   modeMetadataDescription: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
   },
@@ -3167,13 +3597,13 @@ const styles = StyleSheet.create({
   },
   upgradePlanEyebrow: {
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
   },
   upgradePlanBadge: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(51,211,190,0.13)',
     borderWidth: 1,
     borderColor: 'rgba(51,211,190,0.28)',
@@ -3182,7 +3612,7 @@ const styles = StyleSheet.create({
   },
   upgradePlanBadgeText: {
     color: SLColors.accent,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
   },
   upgradePriceRow: {
@@ -3199,13 +3629,13 @@ const styles = StyleSheet.create({
   },
   upgradePriceMeta: {
     color: SLColors.textMuted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   upgradeHeroDescription: {
     marginTop: 5,
     color: SLColors.textMuted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '700',
   },
@@ -3227,7 +3657,7 @@ const styles = StyleSheet.create({
   upgradeBenefitIcon: {
     width: 32,
     height: 32,
-    borderRadius: 9,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(51,211,190,0.10)',
@@ -3235,13 +3665,13 @@ const styles = StyleSheet.create({
   upgradeBenefitText: {
     flex: 1,
     color: SLColors.text,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 18,
     fontWeight: '800',
   },
   upgradeBillingNote: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '600',
   },
@@ -3250,7 +3680,7 @@ const styles = StyleSheet.create({
   },
   upgradeCodeLabel: {
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.4,
@@ -3270,7 +3700,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     minHeight: 42,
   },
   timezoneDeviceButton: {
@@ -3288,13 +3718,13 @@ const styles = StyleSheet.create({
   },
   timezoneDeviceTitle: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   timezoneDeviceSubtitle: {
     marginTop: 2,
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 16,
   },
   editorScroll: {
@@ -3311,9 +3741,23 @@ const styles = StyleSheet.create({
   editorField: {
     gap: 7,
   },
+  editorInfoCard: {
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(12,12,14,0.52)',
+    paddingHorizontal: 13,
+    paddingVertical: 12,
+  },
+  editorInfoText: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 20,
+    fontWeight: '600',
+  },
   editorLabel: {
     color: SLColors.textMuted,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
@@ -3324,7 +3768,7 @@ const styles = StyleSheet.create({
     borderColor: SLColors.borderHairline,
     backgroundColor: 'rgba(4,6,9,0.58)',
     color: SLColors.textStrong,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '800',
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -3358,7 +3802,7 @@ const styles = StyleSheet.create({
   },
   editorChoiceText: {
     color: SLColors.textMuted,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   editorChoiceTextSelected: {
@@ -3379,7 +3823,7 @@ const styles = StyleSheet.create({
   editorErrorText: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 17,
     fontWeight: '700',
   },
@@ -3407,7 +3851,7 @@ const styles = StyleSheet.create({
   deleteWarningText: {
     flex: 1,
     color: SLColors.textStrong,
-    fontSize: 13,
+    fontSize: SLTypography.label.fontSize,
     lineHeight: 19,
     fontWeight: '700',
   },
@@ -3428,7 +3872,7 @@ const styles = StyleSheet.create({
   },
   dangerButtonText: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   timezoneList: {
@@ -3453,12 +3897,12 @@ const styles = StyleSheet.create({
   },
   timezoneOptionText: {
     color: SLColors.textStrong,
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '800',
   },
   timezoneOptionSub: {
     marginTop: 3,
     color: SLColors.textMuted,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
   },
 });

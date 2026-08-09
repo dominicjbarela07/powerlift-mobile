@@ -6,19 +6,18 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Linking,
   Platform,
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 
 import { MessageImageAttachment } from '@/components/MessageImageAttachment';
 import { ThemedView } from '@/components/themed-view';
+import { SLProfileAvatar } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import {
   MessengerMessage,
@@ -38,6 +37,7 @@ import {
   pickPhotoMessagingAttachment,
   uploadMessagingAttachment,
 } from '@/lib/messagingAttachments';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 function parseServerTimestamp(value?: string | null) {
   if (!value) return null;
@@ -64,32 +64,6 @@ function formatMessageDate(value?: string | null) {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
-function initialsForName(name?: string | null) {
-  return String(name || '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('') || 'A';
-}
-
-function avatarUrlForThread(
-  thread?: MessengerThread | null,
-  role?: 'coach' | 'athlete',
-  fallback?: string | string[] | null
-) {
-  const fallbackUrl = Array.isArray(fallback) ? fallback[0] : fallback;
-
-  if (!thread) return fallbackUrl || null;
-
-  if (role === 'coach') {
-    return thread.athlete_avatar_url || thread.other_user_avatar_url || thread.avatar_url || fallbackUrl || null;
-  }
-
-  return thread.coach_avatar_url || thread.other_user_avatar_url || thread.avatar_url || fallbackUrl || null;
-}
-
 function LinkifiedMessageText({
   body,
   mine,
@@ -102,7 +76,7 @@ function LinkifiedMessageText({
 
   const parts = text.split(/(https?:\/\/[^\s]+)/g);
   return (
-    <Text style={[styles.messageText, mine ? styles.messageTextMine : styles.messageTextTheirs]}>
+    <Text typographyRole="messageText" style={[styles.messageText, mine ? styles.messageTextMine : styles.messageTextTheirs]}>
       {parts.map((part, index) => {
         const isUrl = /^https?:\/\/[^\s]+$/.test(part);
         if (!isUrl) return <Text key={`${index}-text`}>{part}</Text>;
@@ -150,7 +124,7 @@ function MessageAttachmentChip({
       <Ionicons
         name={iconName as any}
         size={16}
-        color={mine ? '#EDE9FE' : '#C4B5FD'}
+        color={mine ? SLColors.textStrong : SLColors.accentViolet}
         style={styles.messageAttachmentIcon}
       />
       <View style={styles.messageAttachmentTextWrap}>
@@ -212,14 +186,14 @@ function AttachmentPreviewChip({
       <Ionicons
         name={attachmentIsImage(attachment) ? 'image-outline' : 'document-text-outline'}
         size={17}
-        color="#C4B5FD"
+        color={SLColors.accentViolet}
       />
       <View style={styles.attachmentPreviewTextWrap}>
         <Text style={styles.attachmentPreviewText} numberOfLines={1}>{attachment.name}</Text>
         <Text style={styles.attachmentPreviewSub}>{formatAttachmentSize(attachment.sizeBytes)}</Text>
       </View>
       <Pressable onPress={onRemove} style={styles.attachmentRemoveButton} hitSlop={8}>
-        <Ionicons name="close" size={15} color="#FECACA" />
+        <Ionicons name="close" size={15} color={SLColors.danger} />
       </Pressable>
     </View>
   );
@@ -266,22 +240,22 @@ function mergeMessages(
 function MessageAvatar({
   name,
   avatarUrl,
+  avatarVersion,
   size = 42,
 }: {
   name?: string | null;
   avatarUrl?: string | null;
+  avatarVersion?: string | null;
   size?: number;
 }) {
   return (
-    <View style={[styles.avatarBubble, { width: size, height: size, borderRadius: size / 2 }]}>
-      {avatarUrl ? (
-        <Image source={{ uri: avatarUrl }} style={styles.avatarImage} resizeMode="cover" />
-      ) : (
-        <Text style={[styles.avatarText, size <= 30 && styles.avatarTextTiny]}>
-          {initialsForName(name)}
-        </Text>
-      )}
-    </View>
+    <SLProfileAvatar
+      name={name}
+      profilePhotoUrl={avatarUrl}
+      profilePhotoVersion={avatarVersion}
+      size={size}
+      style={styles.avatarBubble}
+    />
   );
 }
 
@@ -313,9 +287,10 @@ export default function MessageThreadScreen() {
 
 function CoachConversationPlaceholderScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ athleteName?: string; displayName?: string; avatarUrl?: string; threadId?: string }>();
+  const params = useLocalSearchParams<{ athleteName?: string; displayName?: string; avatarUrl?: string; avatarVersion?: string; threadId?: string }>();
   const athleteName = String(params.displayName || params.athleteName || 'Athlete');
   const avatarUrl = Array.isArray(params.avatarUrl) ? params.avatarUrl[0] : params.avatarUrl;
+  const avatarVersion = Array.isArray(params.avatarVersion) ? params.avatarVersion[0] : params.avatarVersion;
 
   return (
     <ThemedView style={styles.screen}>
@@ -324,13 +299,13 @@ function CoachConversationPlaceholderScreen() {
           onPress={() => router.replace('/(tabs)/messages' as any)}
           style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
         >
-          <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+          <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
         </Pressable>
 
-          <MessageAvatar name={athleteName} avatarUrl={avatarUrl || null} size={42} />
+          <MessageAvatar name={athleteName} avatarUrl={avatarUrl || null} avatarVersion={avatarVersion || null} size={42} />
 
         <View style={styles.headerTextWrap}>
-          <Text style={styles.headerTitle} numberOfLines={1}>{athleteName}</Text>
+          <Text typographyRole="dynamicName" style={styles.headerTitle} numberOfLines={1}>{athleteName}</Text>
           <Text style={styles.headerSub}>Athlete conversation</Text>
         </View>
 
@@ -339,10 +314,10 @@ function CoachConversationPlaceholderScreen() {
 
       <View style={styles.emptyWrap}>
         <View style={styles.emptyIconWrap}>
-          <Ionicons name="chatbubble-ellipses-outline" size={32} color="#94A3B8" />
+          <Ionicons name="chatbubble-ellipses-outline" size={32} color={SLColors.textMuted} />
         </View>
-        <Text style={styles.emptyTitle}>Conversation coming soon</Text>
-        <Text style={styles.emptyBody}>Coach-to-athlete mobile messaging will open here.</Text>
+        <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>Conversation coming soon</Text>
+        <Text typographyRole="emptyStateBody" style={styles.emptyBody}>Coach-to-athlete mobile messaging will open here.</Text>
       </View>
     </ThemedView>
   );
@@ -356,6 +331,7 @@ function ThreadScreen() {
     athleteName?: string;
     displayName?: string;
     avatarUrl?: string;
+    avatarVersion?: string;
     athleteEmbedded?: string;
     returnTo?: string;
   }>();
@@ -392,12 +368,13 @@ function ThreadScreen() {
   }, []);
 
   const headerAvatarUrl = useMemo(() => {
-    return avatarUrlForThread(
-      thread,
-      user?.is_coach ? 'coach' : 'athlete',
-      params.avatarUrl
-    );
-  }, [params.avatarUrl, thread, user?.is_coach]);
+    const fallback = Array.isArray(params.avatarUrl) ? params.avatarUrl[0] : params.avatarUrl;
+    return thread?.profilePhotoUrl || fallback || null;
+  }, [params.avatarUrl, thread?.profilePhotoUrl]);
+  const headerAvatarVersion = useMemo(() => {
+    const fallback = Array.isArray(params.avatarVersion) ? params.avatarVersion[0] : params.avatarVersion;
+    return thread?.profilePhotoVersion || fallback || null;
+  }, [params.avatarVersion, thread?.profilePhotoVersion]);
 
   const handleBack = useCallback(() => {
     const athleteEmbedded = Array.isArray(params.athleteEmbedded)
@@ -642,7 +619,7 @@ function ThreadScreen() {
   if (loading) {
     return (
       <ThemedView style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#8B7CFF" />
+        <ActivityIndicator size="large" color={SLColors.accentViolet} />
         <Text style={styles.loadingText}>Loading conversation…</Text>
       </ThemedView>
     );
@@ -660,13 +637,13 @@ function ThreadScreen() {
             onPress={handleBack}
             style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
           >
-            <Ionicons name="chevron-back" size={22} color="#F8FAFC" />
+            <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
           </Pressable>
 
-          <MessageAvatar name={title} avatarUrl={headerAvatarUrl} size={42} />
+          <MessageAvatar name={title} avatarUrl={headerAvatarUrl} avatarVersion={headerAvatarVersion} size={42} />
 
           <View style={styles.headerTextWrap}>
-            <Text style={styles.headerTitle} numberOfLines={1}>{title}</Text>
+            <Text typographyRole="dynamicName" style={styles.headerTitle} numberOfLines={1}>{title}</Text>
             <Text style={styles.headerSub}>Direct message</Text>
           </View>
 
@@ -675,8 +652,8 @@ function ThreadScreen() {
 
         {!!error && (
           <View style={styles.errorCard}>
-            <Ionicons name="warning-outline" size={16} color="#FCA5A5" />
-            <Text style={styles.errorText}>{error}</Text>
+            <Ionicons name="warning-outline" size={16} color={SLColors.danger} />
+            <Text typographyRole="errorText" style={styles.errorText}>{error}</Text>
           </View>
         )}
 
@@ -700,10 +677,10 @@ function ThreadScreen() {
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <View style={styles.emptyIconWrap}>
-                <Ionicons name="chatbubble-ellipses-outline" size={32} color="#94A3B8" />
+                <Ionicons name="chatbubble-ellipses-outline" size={32} color={SLColors.textMuted} />
               </View>
-              <Text style={styles.emptyTitle}>No messages yet</Text>
-              <Text style={styles.emptyBody}>Start the conversation with your coach.</Text>
+              <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>No messages yet</Text>
+              <Text typographyRole="emptyStateBody" style={styles.emptyBody}>Start the conversation with your coach.</Text>
             </View>
           }
           renderItem={({ item, index }) => {
@@ -737,6 +714,7 @@ function ThreadScreen() {
                         <MessageAvatar
                           name={title}
                           avatarUrl={headerAvatarUrl}
+                          avatarVersion={headerAvatarVersion}
                           size={30}
                         />
                       )}
@@ -750,7 +728,7 @@ function ThreadScreen() {
                     item.failed && styles.bubbleFailed,
                   ]}>
                     {!mine && (
-                      <Text style={styles.senderName} numberOfLines={1}>
+                      <Text typographyRole="bodyStrong" style={styles.senderName} numberOfLines={1}>
                         {item.sender_name || 'Coach'}
                       </Text>
                     )}
@@ -766,7 +744,7 @@ function ThreadScreen() {
                           pressed && styles.videoReviewCtaPressed,
                         ]}
                       >
-                        <Ionicons name="play-circle-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                        <Ionicons name="play-circle-outline" size={17} color={mine ? SLColors.textStrong : SLColors.success} />
                         <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
                           Watch reviewed video
                         </Text>
@@ -782,7 +760,7 @@ function ThreadScreen() {
                           pressed && styles.videoReviewCtaPressed,
                         ]}
                       >
-                        <Ionicons name="barbell-outline" size={17} color={mine ? '#F8FAFC' : '#A7F3D0'} />
+                        <Ionicons name="barbell-outline" size={17} color={mine ? SLColors.textStrong : SLColors.success} />
                         <Text style={[styles.videoReviewCtaText, mine && styles.videoReviewCtaTextMine]}>
                           View session
                         </Text>
@@ -843,14 +821,14 @@ function ThreadScreen() {
                 pressed && !sending && styles.attachmentButtonPressed,
               ]}
             >
-              <Ionicons name="attach-outline" size={20} color="#CBD5E1" />
+              <Ionicons name="attach-outline" size={20} color={SLColors.text} />
             </Pressable>
 
             <TextInput
               value={draft}
               onChangeText={setDraft}
               placeholder={user?.is_coach ? 'Message athlete…' : 'Message your coach…'}
-              placeholderTextColor="#64748B"
+              placeholderTextColor={SLColors.textSubtle}
               style={styles.composerInput}
               multiline
               maxLength={2000}
@@ -867,9 +845,9 @@ function ThreadScreen() {
               ]}
             >
               {sending ? (
-                <ActivityIndicator size="small" color="#F8FAFC" />
+                <ActivityIndicator size="small" color={SLColors.textStrong} />
               ) : (
-                <Ionicons name="send" size={18} color="#F8FAFC" />
+                <Ionicons name="send" size={18} color={SLColors.textStrong} />
               )}
             </Pressable>
           </View>
@@ -898,8 +876,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 14,
-    color: '#CBD5E1',
-    fontSize: 14,
+    color: SLColors.text,
+    fontSize: SLTypography.rowTitle.fontSize,
   },
   header: {
     flexDirection: 'row',
@@ -914,7 +892,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 38,
     height: 38,
-    borderRadius: 8,
+    borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.38)',
@@ -943,22 +921,22 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarText: {
-    color: '#EDE9FE',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
   },
   avatarTextTiny: {
     fontSize: 10,
   },
   headerTitle: {
-    color: '#F8FAFC',
-    fontSize: 17,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
     letterSpacing: -0.3,
   },
   headerSub: {
-    color: '#64748B',
-    fontSize: 12,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
     marginTop: 2,
   },
@@ -970,7 +948,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 16,
     marginTop: 12,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     backgroundColor: 'rgba(127,29,29,0.22)',
@@ -979,8 +957,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     marginLeft: 10,
   },
   messageList: {
@@ -998,7 +976,7 @@ const styles = StyleSheet.create({
   emptyIconWrap: {
     width: 64,
     height: 64,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.34)',
@@ -1007,26 +985,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyTitle: {
-    color: '#CBD5E1',
-    fontSize: 16,
+    color: SLColors.text,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '700',
     marginBottom: 6,
   },
   emptyBody: {
-    color: '#64748B',
-    fontSize: 13,
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.label.fontSize,
   },
   datePillWrap: {
     alignItems: 'center',
     marginVertical: 10,
   },
   datePillText: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     backgroundColor: 'rgba(6,6,8,0.4)',
     overflow: 'hidden',
   },
@@ -1048,7 +1026,7 @@ const styles = StyleSheet.create({
   },
   bubble: {
     maxWidth: '82%',
-    borderRadius: 18,
+    borderRadius: SLRadius.lg,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
@@ -1071,23 +1049,23 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 6,
   },
   senderName: {
-    color: '#C7BEE8',
-    fontSize: 11,
+    color: SLColors.review,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     marginBottom: 4,
   },
   messageText: {
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   messageTextMine: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   messageTextTheirs: {
-    color: '#E2E8F0',
+    color: SLColors.text,
   },
   messageLinkText: {
-    color: '#C4B5FD',
+    color: SLColors.accentViolet,
     fontWeight: '800',
     textDecorationLine: 'underline',
   },
@@ -1097,7 +1075,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     gap: 7,
     marginTop: 10,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 11,
     paddingVertical: 9,
     borderWidth: 1,
@@ -1115,19 +1093,19 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
   videoReviewCtaText: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   videoReviewCtaTextMine: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   messageAttachmentChip: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     marginTop: 9,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 10,
     paddingVertical: 9,
     borderWidth: 1,
@@ -1153,8 +1131,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   messageAttachmentName: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     flexShrink: 1,
     minWidth: 0,
@@ -1175,7 +1153,7 @@ const styles = StyleSheet.create({
     color: 'rgba(248,250,252,0.68)',
   },
   messageTimeTheirs: {
-    color: '#64748B',
+    color: SLColors.textSubtle,
   },
   messageStatus: {
     color: 'rgba(248,250,252,0.62)',
@@ -1185,7 +1163,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   messageStatusFailed: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
   },
   composerWrap: {
     paddingHorizontal: 0,
@@ -1202,7 +1180,7 @@ const styles = StyleSheet.create({
   attachmentButton: {
     width: 44,
     height: 44,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(6,6,8,0.42)',
@@ -1220,7 +1198,7 @@ const styles = StyleSheet.create({
   attachmentPreviewChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 10,
@@ -1234,12 +1212,12 @@ const styles = StyleSheet.create({
     marginLeft: 9,
   },
   attachmentPreviewText: {
-    color: '#E2E8F0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   attachmentPreviewSub: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '700',
     marginTop: 2,
@@ -1247,7 +1225,7 @@ const styles = StyleSheet.create({
   attachmentRemoveButton: {
     width: 28,
     height: 28,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(127,29,29,0.24)',
@@ -1259,20 +1237,20 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 44,
     maxHeight: 120,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 11,
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     backgroundColor: 'rgba(6,6,8,0.46)',
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.10)',
-    fontSize: 14,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 20,
   },
   sendButton: {
     width: 44,
     height: 44,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(109,40,217,0.82)',

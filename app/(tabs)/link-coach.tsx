@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -15,8 +16,7 @@ import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { SLAtmosphere } from '@/components/ui';
-import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
+import { SLColors, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
 import {
   acceptPendingCoachInvite,
@@ -28,8 +28,16 @@ import {
 type InviteState = {
   alreadyLinked: boolean;
   invites: PendingCoachInvite[];
-  coach?: { id?: number | null; name?: string | null; email?: string | null } | null;
-  athlete?: { id?: number | null; name?: string | null; coach_id?: number | null } | null;
+  coach?: {
+    id?: number | null;
+    name?: string | null;
+    email?: string | null;
+  } | null;
+  athlete?: {
+    id?: number | null;
+    name?: string | null;
+    coach_id?: number | null;
+  } | null;
 };
 
 function authUserFromPayload(payload: any, fallbackEmail: string): AuthUser {
@@ -122,6 +130,13 @@ export default function PendingCoachInviteScreen() {
     await loadInvites({ quiet: true });
   };
 
+  const openPendingMessagesNotice = () => {
+    Alert.alert(
+      'Messages unlock with your coach',
+      'Once your coach invitation is accepted, coach messages and announcements will appear in Strength Ledger.',
+    );
+  };
+
   const acceptInvite = (invite: PendingCoachInvite) => {
     Alert.alert(
       'Accept coach invite?',
@@ -142,7 +157,6 @@ export default function PendingCoachInviteScreen() {
                 token: payload.token || auth.token,
                 user: authUserFromPayload(payload, auth.user?.email || ''),
               });
-              await refreshAccountState();
               router.replace(isCoachAccount ? '/(tabs)/settings' as any : '/(tabs)/athlete-dashboard' as any);
             } catch (err: any) {
               Alert.alert('Invite not accepted', err?.message || 'Please try again.');
@@ -185,33 +199,60 @@ export default function PendingCoachInviteScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
       <ThemedView style={styles.screen}>
-        <SLAtmosphere />
         <ScrollView
           contentContainerStyle={styles.content}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={checkForInvite}
-              tintColor="#D8B76A"
+              tintColor={SLColors.warning}
             />
           }
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.statusCard}>
-            <View style={styles.statusTopRow}>
+          <View style={styles.topBar}>
+            <Pressable
+              accessibilityLabel="Open Settings"
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={() => router.push('/(tabs)/settings' as any)}
+              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
+            >
+              <Ionicons name="settings-outline" size={25} color={SLColors.text} />
+            </Pressable>
+            <Image
+              source={require('../../assets/images/app_logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Pressable
+              accessibilityLabel="Messages unlock after coach invite"
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={openPendingMessagesNotice}
+              style={({ pressed }) => [styles.topIconButton, pressed && styles.pressed]}
+            >
+              <Ionicons name="chatbubble-ellipses-outline" size={25} color={SLColors.text} />
+            </Pressable>
+          </View>
+
+          <View style={styles.heroCard}>
+            <View style={styles.heroGlow} />
+            <View style={styles.heroTopRow}>
               <View style={styles.statusPill}>
                 <View style={styles.statusDot} />
                 <ThemedText style={styles.statusPillText}>Account ready</ThemedText>
               </View>
-              <View style={styles.statusIcon}>
-                <Ionicons name="mail-unread-outline" size={19} color={SLColors.accentViolet} />
+              <View style={styles.iconBadge}>
+                <Ionicons name="barbell-outline" size={20} color={SLColors.accentViolet} />
               </View>
             </View>
-            <ThemedText style={styles.title}>Pending coach invite</ThemedText>
+            <ThemedText variant="h1" numberOfLines={2} style={styles.title}>Pending coach invite</ThemedText>
+            <ThemedText style={styles.heroLead}>You’re all set.</ThemedText>
             <ThemedText style={styles.body}>
-              We’ve created your athlete account. Once your coach sends an invitation, you’ll be able to immediately begin training.
+              Your account has been created successfully. Once your coach sends an invitation, it will appear below and you’ll immediately gain access to your training.
             </ThemedText>
 
             <View style={styles.actionRow}>
@@ -228,25 +269,36 @@ export default function PendingCoachInviteScreen() {
                 )}
                 <ThemedText style={styles.primaryButtonText}>Check for Invite</ThemedText>
               </Pressable>
+
+              <Pressable
+                accessibilityRole="button"
+                style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
+                onPress={() => router.push('/(tabs)/settings' as any)}
+              >
+                <Ionicons name="settings-outline" size={17} color={SLColors.text} />
+                <ThemedText style={styles.secondaryButtonText}>Settings</ThemedText>
+              </Pressable>
             </View>
           </View>
 
           {loading ? (
             <View style={styles.panel}>
-              <ActivityIndicator size="small" color="#D8B76A" />
+              <ActivityIndicator size="small" color={SLColors.warning} />
               <ThemedText style={styles.mutedText}>Checking for invites…</ThemedText>
             </View>
           ) : error ? (
             <View style={styles.panel}>
-              <Ionicons name="alert-circle-outline" size={22} color="#FCA5A5" />
+              <Ionicons name="alert-circle-outline" size={22} color={SLColors.danger} />
               <ThemedText style={styles.errorText}>{error}</ThemedText>
             </View>
           ) : state.alreadyLinked ? (
             <View style={styles.panel}>
-              <Ionicons name="link-outline" size={22} color={SLColors.accentViolet} />
+              <View style={styles.emptyIcon}>
+                <Ionicons name="link-outline" size={24} color={SLColors.accentViolet} />
+              </View>
               <ThemedText style={styles.emptyTitle}>Coach linked</ThemedText>
               <ThemedText style={styles.mutedText}>
-                You’re linked to {state.coach?.name || state.coach?.email || 'your coach'} through your Athlete identity.
+                You’re linked to {state.coach?.name || state.coach?.email || 'your coach'}.
               </ThemedText>
             </View>
           ) : state.invites.length ? (
@@ -266,7 +318,7 @@ export default function PendingCoachInviteScreen() {
                       </View>
                       <View style={styles.inviteTitleBlock}>
                         <ThemedText style={styles.inviteKicker}>Coach invite</ThemedText>
-                        <ThemedText style={styles.coachName}>{invite.coach_name || 'Coach'}</ThemedText>
+                        <ThemedText typographyRole="dynamicName" style={styles.coachName}>{invite.coach_name || 'Coach'}</ThemedText>
                         {invite.coach_email ? (
                           <ThemedText style={styles.coachEmail}>{invite.coach_email}</ThemedText>
                         ) : null}
@@ -292,7 +344,7 @@ export default function PendingCoachInviteScreen() {
                         onPress={() => declineInvite(invite)}
                         disabled={isWorking}
                       >
-                        <Ionicons name="close-outline" size={17} color="#FCA5A5" />
+                        <Ionicons name="close-outline" size={17} color={SLColors.danger} />
                         <ThemedText style={styles.declineButtonText}>Decline</ThemedText>
                       </Pressable>
                     </View>
@@ -320,35 +372,60 @@ export default function PendingCoachInviteScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: SLColors.shellCanvas,
+    backgroundColor: 'transparent',
   },
   screen: {
     flex: 1,
-    backgroundColor: SLColors.shellCanvas,
+    backgroundColor: 'transparent',
   },
   content: {
     flexGrow: 1,
-    paddingHorizontal: SLSpacing.lg,
-    paddingTop: SLSpacing.lg,
-    paddingBottom: 104,
-    gap: SLSpacing.md,
+    paddingHorizontal: SLSpacing.xl,
+    paddingTop: SLSpacing.md,
+    paddingBottom: 44,
+    gap: SLSpacing.lg,
   },
-  statusCard: {
+  topBar: {
+    minHeight: 76,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topIconButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(8, 10, 13, 0.34)',
+    borderWidth: 1,
+    borderColor: 'rgba(205, 194, 176, 0.08)',
+  },
+  logo: {
+    width: 178,
+    height: 66,
+  },
+  heroCard: {
     position: 'relative',
     overflow: 'hidden',
-    borderRadius: 22,
+    borderRadius: 28,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
-    backgroundColor: 'rgba(18,18,30,0.62)',
+    borderColor: 'rgba(167, 139, 250, 0.22)',
+    backgroundColor: 'rgba(12, 13, 17, 0.76)',
     padding: SLSpacing.xl,
     gap: SLSpacing.md,
-    shadowColor: '#000',
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 5,
+    ...SLShadows.shadowSheet,
   },
-  statusTopRow: {
+  heroGlow: {
+    position: 'absolute',
+    top: -70,
+    right: -60,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(167, 139, 250, 0.16)',
+  },
+  heroTopRow: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -360,76 +437,91 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(52, 211, 153, 0.08)',
+    backgroundColor: 'rgba(126, 166, 184, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(52, 211, 153, 0.22)',
+    borderColor: 'rgba(126, 166, 184, 0.24)',
   },
   statusDot: {
     width: 7,
     height: 7,
-    borderRadius: 4,
+    borderRadius: SLRadius.radiusSharp,
     backgroundColor: SLColors.success,
   },
   statusPillText: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: 0,
+    letterSpacing: 0.6,
   },
-  statusIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 8,
+  iconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: SLRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139,92,246,0.10)',
+    backgroundColor: 'rgba(167, 139, 250, 0.14)',
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.18)',
+    borderColor: 'rgba(167, 139, 250, 0.26)',
   },
   title: {
     color: SLColors.textStrong,
-    fontSize: 34,
-    lineHeight: 39,
-    fontFamily: SLTypography.commandTitle.fontFamily,
-    fontWeight: '900',
-    letterSpacing: 0,
+  },
+  heroLead: {
+    color: SLColors.warning,
+    fontSize: SLTypography.cardTitle.fontSize,
+    lineHeight: 22,
+    fontWeight: '800',
   },
   body: {
-    color: '#B8ACA1',
-    fontSize: 16,
-    lineHeight: 23,
-    fontWeight: '600',
+    color: SLColors.text,
+    fontSize: SLTypography.body.fontSize,
+    lineHeight: 22,
   },
   actionRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: SLSpacing.sm,
     paddingTop: SLSpacing.sm,
   },
   primaryButton: {
-    flex: 1,
     minHeight: 46,
-    paddingHorizontal: SLSpacing.md,
+    paddingHorizontal: SLSpacing.lg,
     borderRadius: SLRadius.radiusControl,
-    backgroundColor: '#A69B8D',
+    backgroundColor: SLColors.accentSteel,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SLSpacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(214, 167, 94, 0.20)',
+    borderColor: 'rgba(126, 166, 184, 0.92)',
   },
   primaryButtonText: {
     color: SLColors.textInverted,
     fontWeight: '800',
-    fontSize: 13,
+  },
+  secondaryButton: {
+    minHeight: 46,
+    paddingHorizontal: SLSpacing.lg,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: SLColors.borderStrong,
+    backgroundColor: 'rgba(17,24,39,0.74)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SLSpacing.sm,
+  },
+  secondaryButtonText: {
+    color: SLColors.text,
+    fontWeight: '700',
   },
   panel: {
-    minHeight: 142,
-    borderRadius: 20,
+    minHeight: 178,
+    borderRadius: SLRadius.radiusSheet,
     borderWidth: 1,
-    borderColor: 'rgba(205, 194, 176, 0.07)',
-    backgroundColor: 'rgba(10, 11, 13, 0.50)',
+    borderColor: 'rgba(205, 194, 176, 0.08)',
+    backgroundColor: 'rgba(10, 11, 13, 0.68)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SLSpacing.xl,
@@ -447,19 +539,19 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     color: SLColors.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
     textAlign: 'center',
   },
   mutedText: {
-    color: '#B8AEA1',
-    fontSize: 14,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
     textAlign: 'center',
   },
   errorText: {
-    color: '#FCA5A5',
-    fontSize: 14,
+    color: SLColors.danger,
+    fontSize: SLTypography.rowTitle.fontSize,
     lineHeight: 21,
     textAlign: 'center',
   },
@@ -472,14 +564,14 @@ const styles = StyleSheet.create({
   },
   sectionKicker: {
     color: SLColors.accentViolet,
-    fontSize: 12,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   sectionTitle: {
     color: SLColors.textStrong,
-    fontSize: 18,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
   },
   inviteCard: {
@@ -511,19 +603,19 @@ const styles = StyleSheet.create({
   },
   inviteKicker: {
     color: SLColors.textSubtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
   coachName: {
     color: SLColors.textStrong,
-    fontSize: 20,
+    fontSize: SLTypography.sectionTitle.fontSize,
     fontWeight: '800',
   },
   coachEmail: {
-    color: '#B8AEA1',
-    fontSize: 13,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.label.fontSize,
   },
   inviteMeta: {
     borderRadius: SLRadius.radiusRow,
@@ -535,13 +627,13 @@ const styles = StyleSheet.create({
   },
   metaLabel: {
     color: SLColors.textSubtle,
-    fontSize: 11,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
   metaValue: {
     color: SLColors.text,
-    fontSize: 15,
+    fontSize: SLTypography.body.fontSize,
     fontWeight: '700',
   },
   inviteActions: {
@@ -577,7 +669,7 @@ const styles = StyleSheet.create({
     gap: SLSpacing.xs,
   },
   declineButtonText: {
-    color: '#FCA5A5',
+    color: SLColors.danger,
     fontWeight: '800',
   },
   pressed: {

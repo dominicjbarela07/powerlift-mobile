@@ -1,11 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
+import { SLPageHeader } from '@/components/ui';
+import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } from '@/components/core-accomplishments';
+import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
+import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
+import { MovementHistoryRequestGuard, emptyMovementHistoryPageState } from '@/lib/movement-history-request-guard';
 
 type MovementSession = {
   workout_id: number;
@@ -21,12 +36,14 @@ type MovementSession = {
 
 type MovementRow = {
   key: string;
+  core_movement_key?: string | null;
   label: string;
   movement_type?: string | null;
   last_trained_date?: string | null;
   movement?: string | null;
   top_work?: string | null;
   sessions?: MovementSession[];
+  current_bests?: CoreCurrentBest[];
 };
 
 type FilterOption = {
@@ -60,6 +77,8 @@ const colors = {
 
 export default function MovementHistoryScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ athleteId?: string }>();
+  const athleteId = params.athleteId ? String(params.athleteId) : null;
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,9 +94,19 @@ export default function MovementHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
+  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
+  const [accomplishments, setAccomplishments] = useState<LoggerRecognitionEvent[]>([]);
+  const [accomplishmentCursor, setAccomplishmentCursor] = useState<string | null>(null);
+  const [hasMoreAccomplishments, setHasMoreAccomplishments] = useState(false);
+  const [loadingMoreAccomplishments, setLoadingMoreAccomplishments] = useState(false);
+  const [accomplishmentError, setAccomplishmentError] = useState<string | null>(null);
+  const [accomplishmentContextToken, setAccomplishmentContextToken] = useState<string | null>(null);
+  const requestGuardRef = useRef(new MovementHistoryRequestGuard());
+  const requestGuard = requestGuardRef.current;
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
+    if (athleteId) params.set('athlete_id', athleteId);
     if (q.trim()) params.set('q', q.trim());
     if (startDate.trim()) params.set('start_date', startDate.trim());
     if (endDate.trim()) params.set('end_date', endDate.trim());
@@ -88,26 +117,96 @@ export default function MovementHistoryScreen() {
     if (designations.length) params.set('designations', designations.join(','));
     const raw = params.toString();
     return raw ? `?${raw}` : '';
-  }, [accessories, blockIds, coreLifts, designations, endDate, movementTypes, q, startDate]);
+  }, [accessories, athleteId, blockIds, coreLifts, designations, endDate, movementTypes, q, startDate]);
 
   const load = useCallback(async (silent = false) => {
-    if (silent) setRefreshing(true);
-    else setLoading(true);
+    const requestIdentity = requestGuard.beginFull(queryString);
+    setLoadingMoreAccomplishments(false);
+    setAccomplishmentError(null);
+    if (silent) {
+      setLoading(false);
+      setRefreshing(true);
+    }
+    else {
+      const emptyPage = emptyMovementHistoryPageState<LoggerRecognitionEvent>();
+      setLoading(true);
+      setRefreshing(false);
+      setMovements([]);
+      setOptions({});
+      setDisplayUnit('kg');
+      setAccomplishments(emptyPage.items);
+      setAccomplishmentCursor(emptyPage.cursor);
+      setHasMoreAccomplishments(emptyPage.hasMore);
+      setAccomplishmentContextToken(emptyPage.contextToken);
+    }
     setError(null);
     try {
       const resp = await fetchJson(`/workouts/mobile/training-hub/movement-history${queryString}`, { method: 'GET' });
+      if (!requestGuard.isCurrent(requestIdentity)) return;
       const json: any = resp.json || {};
+      if (resp.status === 401 || resp.status === 403) feedbackAnalytics('historical_accomplishment_authorization_denied', { surface: 'movement_history', status: resp.status });
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      setMovements(Array.isArray(json.movement_history?.movements) ? json.movement_history.movements : []);
+      const nextMovements = Array.isArray(json.movement_history?.movements) ? json.movement_history.movements : [];
+      const accomplishmentPage = json.movement_history?.accomplishment_timeline || {};
+      setMovements(nextMovements);
+      setAccomplishments(Array.isArray(accomplishmentPage.items) ? accomplishmentPage.items : []);
+      setAccomplishmentCursor(accomplishmentPage.next_cursor || null);
+      setHasMoreAccomplishments(Boolean(accomplishmentPage.has_more));
+      setAccomplishmentContextToken(accomplishmentPage.query?.continuation_token || null);
+      setAccomplishmentError(null);
       setOptions(json.movement_history?.options || {});
+      setDisplayUnit(json.movement_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
+      feedbackAnalytics('historical_accomplishment_timeline_loaded', {
+        surface: 'movement_history',
+        movement_count: nextMovements.length,
+        event_count: Array.isArray(accomplishmentPage.items) ? accomplishmentPage.items.length : 0,
+      });
+      feedbackAnalytics('movement_history_opened', { canonical_movement_count: nextMovements.filter((row: MovementRow) => !!row.core_movement_key).length });
+      if (silent) feedbackAnalytics('historical_accomplishment_refresh', { surface: 'movement_history' });
     } catch (err: any) {
+      if (!requestGuard.isCurrent(requestIdentity)) return;
       setError(err?.message || 'Movement history could not load.');
       setMovements([]);
+      setAccomplishments([]);
+      feedbackAnalytics('historical_accomplishment_timeline_failed', { surface: 'movement_history' });
     } finally {
+      if (!requestGuard.isCurrent(requestIdentity)) return;
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
-  }, [queryString]);
+  }, [queryString, requestGuard]);
+
+  const loadMoreAccomplishments = useCallback(async () => {
+    if (!accomplishmentCursor || loadingMoreAccomplishments) return;
+    const pageAnchor = { cursor: accomplishmentCursor, contextToken: accomplishmentContextToken };
+    const requestIdentity = requestGuard.beginPage(queryString, pageAnchor);
+    setLoadingMoreAccomplishments(true);
+    setAccomplishmentError(null);
+    try {
+      const params = new URLSearchParams({ cursor: accomplishmentCursor, limit: '50' });
+      if (athleteId) params.set('athlete_id', athleteId);
+      if (accomplishmentContextToken) params.set('context_token', accomplishmentContextToken);
+      const response = await fetchJson(`/workouts/mobile/accomplishments?${params.toString()}`, { method: 'GET' });
+      if (!requestGuard.isCurrent(requestIdentity, pageAnchor)) return;
+      const page: any = response.json?.accomplishment_timeline;
+      if (!response.ok || !response.json?.ok || !page) throw new Error(response.json?.error || `HTTP ${response.status}`);
+      setAccomplishments((current) => [...new Map([...current, ...(page.items || [])].map((event) => [event.id, event])).values()]);
+      setAccomplishmentCursor(page.next_cursor || null);
+      setHasMoreAccomplishments(Boolean(page.has_more));
+      setAccomplishmentContextToken(page.query?.continuation_token || accomplishmentContextToken);
+    } catch (err: any) {
+      if (!requestGuard.isCurrent(requestIdentity, pageAnchor)) return;
+      setAccomplishmentError(err?.message || 'Older accomplishments could not load.');
+    } finally {
+      if (!requestGuard.isCurrent(requestIdentity, pageAnchor)) return;
+      setLoadingMoreAccomplishments(false);
+    }
+  }, [accomplishmentContextToken, accomplishmentCursor, athleteId, loadingMoreAccomplishments, queryString, requestGuard]);
+
+  useEffect(() => {
+    requestGuard.mount();
+    return () => requestGuard.unmount();
+  }, [requestGuard]);
 
   useEffect(() => {
     load();
@@ -141,8 +240,11 @@ export default function MovementHistoryScreen() {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.muted} />}
       >
-        <ReturnControl onPress={() => router.push('/(tabs)/workout' as any)} />
-        <Text style={styles.title}>Movement History</Text>
+        <SLPageHeader
+          title="Movement History"
+          backLabel="Return to Training Hub"
+          onBack={() => router.push('/(tabs)/workout' as any)}
+        />
 
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
@@ -171,16 +273,34 @@ export default function MovementHistoryScreen() {
           </View>
         ) : null}
 
+        {!loading && !error ? (
+          <HistoricalAccomplishmentList
+            events={accomplishments}
+            displayUnit={displayUnit}
+            emptyMessage="No recognized core accomplishments yet."
+            error={accomplishmentError}
+            hasMore={hasMoreAccomplishments}
+            loadingMore={loadingMoreAccomplishments}
+            onLoadMore={loadMoreAccomplishments}
+            onOpenSource={(workoutId) => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(workoutId) } })}
+          />
+        ) : null}
+
         {loading ? <StateLine title="Loading movements" /> : error ? <StateLine title={error} tone="danger" /> : movements.length ? (
           movements.map((movement) => (
             <View key={movement.key} style={styles.group}>
               <View style={styles.groupHeader}>
                 <View style={styles.groupTitleWrap}>
                   <Text style={styles.kicker}>{movement.movement_type === 'accessory' ? 'Accessory' : 'Core'}</Text>
-                  <Text style={styles.groupTitle}>{movement.label}</Text>
+                  <Text typographyRole="movementName" style={styles.groupTitle}>{movement.label}</Text>
                 </View>
                 <Text style={styles.meta}>{formatShortDate(movement.last_trained_date)}</Text>
               </View>
+              {movement.core_movement_key ? (
+                <View style={styles.accomplishments}>
+                  <CurrentBestList items={movement.current_bests || []} displayUnit={displayUnit} />
+                </View>
+              ) : null}
               <View style={styles.list}>
                 {(movement.sessions || []).map((session) => (
                   <Pressable
@@ -188,9 +308,8 @@ export default function MovementHistoryScreen() {
                     style={({ pressed }) => [styles.row, pressed && styles.pressed]}
                     onPress={() => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(session.workout_id) } })}
                   >
-                    <View style={[styles.rail, { backgroundColor: movement.movement_type === 'accessory' ? colors.amber : colors.green }]} />
                     <View style={styles.copy}>
-                      <Text style={styles.rowTitle} numberOfLines={1}>{session.movement || movement.label}</Text>
+                      <Text typographyRole="movementName" style={styles.rowTitle} numberOfLines={1}>{session.movement || movement.label}</Text>
                       <Text style={styles.meta} numberOfLines={1}>{[formatShortDate(session.date), session.title, session.block_name].filter(Boolean).join(' / ')}</Text>
                       {session.top_work ? <Text style={styles.recap} numberOfLines={1}>{session.top_work}</Text> : null}
                     </View>
@@ -392,15 +511,6 @@ function FilterSheet({
   );
 }
 
-function ReturnControl({ onPress }: { onPress: () => void }) {
-  return (
-    <Pressable style={({ pressed }) => [styles.returnControl, pressed && styles.pressed]} onPress={onPress}>
-      <Ionicons name="arrow-back" size={15} color={colors.muted} />
-      <Text style={styles.returnText}>Return to Training Hub</Text>
-    </Pressable>
-  );
-}
-
 function DatePickerControl({ label, value, onOpen, onClear }: { label: string; value: string; onOpen: () => void; onClear: () => void }) {
   return (
     <View style={styles.dateInputWrap}>
@@ -516,20 +626,21 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
-  title: { fontFamily: SLFontFamilies.sansBold, fontSize: 28, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
-  returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
+  title: { fontFamily: SLFontFamilies.sansBold, fontSize: SLTypography.hero.fontSize, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
+  returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
   returnText: { ...SLTypography.label, color: colors.muted },
   searchControlRow: { flexDirection: 'row', alignItems: 'stretch', gap: 10 },
   searchRow: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, backgroundColor: 'rgba(10, 11, 11, 0.18)', paddingHorizontal: 10 },
-  searchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: 14, paddingVertical: 10 },
-  filterButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.28)', paddingHorizontal: 11 },
+  searchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: SLTypography.rowTitle.fontSize, paddingVertical: 10 },
+  filterButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: 'rgba(10, 11, 11, 0.28)', paddingHorizontal: 11 },
   filterButtonText: { ...SLTypography.label, color: colors.textStrong },
   activeSummary: { minHeight: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, paddingVertical: 9 },
   summaryText: { ...SLTypography.caption, color: colors.subtle, flex: 1 },
-  clearButton: { paddingVertical: 6, paddingHorizontal: 8, borderLeftWidth: 2, borderLeftColor: colors.violet },
+  clearButton: { paddingVertical: 6, paddingHorizontal: 8 },
   clearText: { ...SLTypography.label, color: colors.textStrong },
   group: { gap: 10 },
   groupHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 },
+  accomplishments: { gap: 10 },
   groupTitleWrap: { flex: 1, gap: 2 },
   kicker: { ...SLTypography.caption, color: colors.subtle, textTransform: 'uppercase' },
   groupTitle: { ...SLTypography.sectionTitle, color: colors.textStrong },
@@ -570,11 +681,11 @@ const styles = StyleSheet.create({
   chipText: { ...SLTypography.label, color: colors.muted },
   chipTextSelected: { color: colors.textStrong },
   accessorySearch: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, paddingHorizontal: 9 },
-  accessorySearchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: 14, paddingVertical: 8 },
+  accessorySearchInput: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sans, fontSize: SLTypography.rowTitle.fontSize, paddingVertical: 8 },
   sheetActions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 12, borderTopWidth: 1, borderColor: colors.lineSoft, paddingTop: 12, paddingHorizontal: 18 },
   sheetSecondary: { paddingVertical: 10, paddingHorizontal: 10 },
   sheetSecondaryText: { ...SLTypography.label, color: colors.muted },
-  sheetPrimary: { borderLeftWidth: 2, borderLeftColor: colors.violet, backgroundColor: 'rgba(10, 11, 11, 0.36)', paddingVertical: 10, paddingHorizontal: 14 },
+  sheetPrimary: { backgroundColor: 'rgba(10, 11, 11, 0.36)', paddingVertical: 10, paddingHorizontal: 14 },
   sheetPrimaryText: { ...SLTypography.label, color: colors.textStrong },
   pressed: { opacity: 0.72 },
 });

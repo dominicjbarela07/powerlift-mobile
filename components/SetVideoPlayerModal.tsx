@@ -15,14 +15,15 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/sl-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { API_BASE, fetchJson, getSetVideoDownloadExportsStatus, getSetVideoExportStatus, type SetVideoExportOptions } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 const STRENGTH_LEDGER_LOGO = require('@/assets/images/Instagram Profile.png');
 
@@ -913,7 +914,7 @@ export default function SetVideoPlayerModal({
             </TouchableOpacity>
             {isLoading ? (
               <View style={styles.overlay}>
-                <ActivityIndicator size="large" color="#E0E7FF" />
+                <ActivityIndicator size="large" color={SLColors.text} />
                 <Text style={styles.overlayText}>Loading video...</Text>
               </View>
             ) : null}
@@ -1097,7 +1098,7 @@ export default function SetVideoPlayerModal({
                           <View pointerEvents="none" style={[styles.exportStartPreviewBubble, { left: previewBubbleX }]}>
                             <View style={styles.exportStartPreviewFrame}>
                               {exportStartPreviewLoading ? (
-                                <ActivityIndicator color="#EDE9FE" size="small" />
+                                <ActivityIndicator color={SLColors.textStrong} size="small" />
                               ) : exportStartPreviewUri ? (
                                 <Image source={{ uri: exportStartPreviewUri }} style={styles.exportStartPreviewImage} resizeMode="cover" />
                               ) : (
@@ -1143,7 +1144,7 @@ export default function SetVideoPlayerModal({
                   </View>
                   {exportStatus !== 'idle' ? (
                     <View style={styles.exportStatusBox}>
-                      {['queued', 'processing'].includes(exportStatus) ? <ActivityIndicator color="#A7F3D0" /> : null}
+                      {['queued', 'processing'].includes(exportStatus) ? <ActivityIndicator color={SLColors.success} /> : null}
                       <Text style={styles.exportStatusText}>
                         {downloadFailed ? 'Download unavailable' : readyDownloadUnits.length ? 'Ready' : 'Preparing download'}
                       </Text>
@@ -1151,7 +1152,7 @@ export default function SetVideoPlayerModal({
                   ) : null}
                   {exporting ? (
                     <View style={styles.exportLoadingRow}>
-                      <ActivityIndicator color="#A7F3D0" />
+                      <ActivityIndicator color={SLColors.success} />
                       <Text style={styles.exportLoadingText}>Preparing download...</Text>
                     </View>
                   ) : null}
@@ -1300,22 +1301,18 @@ export default function SetVideoPlayerModal({
   );
 }
 
-const glass = {
-  borderRadius: 10,
-  borderWidth: 1,
-  borderColor: 'rgba(226,232,240,0.22)',
-  backgroundColor: 'rgba(8,12,22,0.68)',
-  shadowColor: '#000',
-  shadowOpacity: 0.3,
-  shadowRadius: 18,
-  shadowOffset: { width: 0, height: 8 },
-  elevation: 10,
+const mediaObject = {
+  borderRadius: SLRadius.radiusRow,
+  borderWidth: StyleSheet.hairlineWidth,
+  borderColor: SLColors.borderStandard,
+  backgroundColor: SLColors.surfaceFloating,
+  ...SLShadows.level2,
 } as const;
 
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(2,6,23,0.92)',
+    backgroundColor: SLColors.surfaceScrim,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
@@ -1325,16 +1322,18 @@ const styles = StyleSheet.create({
     maxWidth: 760,
     height: '92%',
     maxHeight: 860,
-    borderRadius: 14,
+    borderRadius: SLRadius.radiusHero,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.22)',
-    backgroundColor: '#020617',
+    borderColor: SLColors.borderStrong,
+    borderTopColor: SLColors.borderFocus,
+    backgroundColor: SLColors.surfaceFloating,
+    ...SLShadows.level3,
     overflow: 'hidden',
   },
   frame: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#000',
+    backgroundColor: SLColors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1357,23 +1356,19 @@ const styles = StyleSheet.create({
   },
   toolLauncherButton: {
     minHeight: 36,
-    borderRadius: 10,
+    borderRadius: SLRadius.radiusRow,
     borderWidth: 1,
-    borderColor: 'rgba(196,181,253,0.28)',
-    backgroundColor: 'rgba(8,12,22,0.72)',
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.focus,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 13,
     paddingVertical: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 7 },
-    elevation: 10,
+    ...SLShadows.shadowCommand,
   },
   toolLauncherText: {
-    color: '#F8FAFC',
-    fontSize: 11,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textAlign: 'center',
   },
@@ -1382,16 +1377,12 @@ const styles = StyleSheet.create({
     right: 10,
     bottom: 110,
     width: 188,
-    borderRadius: 12,
+    borderRadius: SLRadius.radiusCard,
     borderWidth: 1,
-    borderColor: 'rgba(226,232,240,0.18)',
-    backgroundColor: 'rgba(8,12,22,0.88)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceCommand,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.34,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 16,
+    ...SLShadows.shadowSheet,
     zIndex: 16,
   },
   toolMenuHeader: {
@@ -1402,11 +1393,11 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 11,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148,163,184,0.14)',
+    borderBottomColor: SLColors.borderSubtle,
   },
   toolMenuTitle: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   toolMenuClose: {
@@ -1414,8 +1405,8 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   toolMenuCloseText: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
   },
   toolMenuActions: {
@@ -1431,31 +1422,27 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(148,163,184,0.08)',
   },
   toolMenuActionText: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   toolMenuActionMeta: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
   },
   reviewToolsButton: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(8,12,22,0.76)',
     paddingHorizontal: 14,
     paddingVertical: 9,
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.shadowCommand,
   },
   reviewToolsButtonText: {
-    color: '#F8FAFC',
-    fontSize: 11,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textAlign: 'center',
   },
@@ -1463,43 +1450,35 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 12,
     bottom: 78,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.32)',
     backgroundColor: 'rgba(8,12,22,0.76)',
     paddingHorizontal: 14,
     paddingVertical: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.shadowCommand,
   },
   coachFeedbackButtonText: {
-    color: '#DCFCE7',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   exportButton: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
     backgroundColor: 'rgba(8,12,22,0.76)',
     paddingHorizontal: 14,
     paddingVertical: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    ...SLShadows.shadowCommand,
   },
   exportButtonText: {
-    color: '#EDE9FE',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   reviewToolsUnsaved: {
-    color: '#FDE68A',
+    color: SLColors.warning,
     fontSize: 9,
     fontWeight: '900',
     marginTop: 2,
@@ -1517,32 +1496,28 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(226,232,240,0.18)',
     backgroundColor: 'rgba(8,12,22,0.82)',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.34,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 12,
+    ...SLShadows.shadowSheet,
   },
   coachFeedbackStatus: {
-    color: '#A7F3D0',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     marginTop: 2,
   },
   coachFeedbackMeta: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
   },
   coachFeedbackBody: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
     lineHeight: 20,
   },
   coachFeedbackBodyMuted: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '700',
     lineHeight: 19,
   },
@@ -1558,22 +1533,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(226,232,240,0.18)',
     backgroundColor: 'rgba(8,12,22,0.84)',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.34,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 12,
+    ...SLShadows.shadowSheet,
     paddingBottom: 14,
   },
   exportSheetMeta: {
-    color: '#A7F3D0',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     marginTop: 2,
   },
   exportSheetBody: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     lineHeight: 18,
     fontWeight: '700',
   },
@@ -1590,11 +1561,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: 212,
     aspectRatio: EXPORT_PREVIEW_ASPECT,
-    borderRadius: 18,
+    borderRadius: SLRadius.radiusHero,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(226,232,240,0.18)',
-    backgroundColor: '#020617',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.background,
   },
   exportPreviewImage: {
     width: '100%',
@@ -1605,11 +1576,11 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(15,23,42,0.9)',
+    backgroundColor: SLColors.surfaceCommand,
   },
   exportPreviewFallbackText: {
-    color: '#94A3B8',
-    fontSize: 12,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
@@ -1629,7 +1600,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(8,12,22,0.76)',
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.32)',
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     padding: 3,
   },
   exportPreviewLogoImage: {
@@ -1641,7 +1612,7 @@ const styles = StyleSheet.create({
     bottom: '6.7%',
     left: EXPORT_OVERLAY.topHud.left,
     width: EXPORT_OVERLAY.topHud.width,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(8,12,22,0.56)',
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.16)',
@@ -1649,13 +1620,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   exportPreviewTitle: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
     fontSize: 9,
     fontWeight: '900',
   },
   exportPreviewLog: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     marginTop: 3,
   },
@@ -1664,7 +1635,7 @@ const styles = StyleSheet.create({
     left: EXPORT_OVERLAY.bottomHud.left,
     right: EXPORT_OVERLAY.bottomHud.right,
     bottom: EXPORT_OVERLAY.bottomHud.bottom,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     backgroundColor: 'rgba(8,12,22,0.44)',
     borderWidth: 1,
     borderColor: 'rgba(226,232,240,0.14)',
@@ -1673,7 +1644,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   exportPreviewMeta: {
-    color: '#EDE9FE',
+    color: SLColors.textStrong,
     fontSize: 9,
     fontWeight: '800',
   },
@@ -1681,8 +1652,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   exportUnitLabel: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     textTransform: 'uppercase',
   },
@@ -1693,7 +1664,7 @@ const styles = StyleSheet.create({
   exportUnitButton: {
     minWidth: 58,
     alignItems: 'center',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.24)',
     backgroundColor: 'rgba(15,23,42,0.68)',
@@ -1705,13 +1676,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(16,185,129,0.2)',
   },
   exportUnitButtonText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   exportUnitButtonTextActive: {
-    color: '#A7F3D0',
+    color: SLColors.success,
   },
   exportOptionList: {
     gap: 8,
@@ -1725,7 +1696,7 @@ const styles = StyleSheet.create({
   exportOptionCheck: {
     width: 22,
     height: 22,
-    borderRadius: 7,
+    borderRadius: SLRadius.xs,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.32)',
     backgroundColor: 'rgba(15,23,42,0.7)',
@@ -1737,13 +1708,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(20,184,166,0.22)',
   },
   exportOptionCheckText: {
-    color: '#A7F3D0',
-    fontSize: 13,
+    color: SLColors.success,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   exportOptionText: {
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   exportLoadingRow: {
@@ -1754,18 +1725,18 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   exportLoadingText: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   exportErrorText: {
-    color: '#FDE68A',
-    fontSize: 12,
+    color: SLColors.warning,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     lineHeight: 17,
   },
   exportComingSoon: {
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(250,204,21,0.24)',
     backgroundColor: 'rgba(250,204,21,0.10)',
@@ -1774,18 +1745,18 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   exportComingSoonTitle: {
-    color: '#FEF3C7',
-    fontSize: 13,
+    color: SLColors.warning,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   exportComingSoonText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '700',
     lineHeight: 17,
   },
   exportDurationBlock: {
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.64)',
@@ -1797,13 +1768,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   exportDurationTitle: {
-    color: '#F8FAFC',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   exportDurationHint: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '700',
     lineHeight: 15,
   },
@@ -1818,7 +1789,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   exportDurationBadge: {
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.42)',
     backgroundColor: 'rgba(124,58,237,0.24)',
@@ -1826,12 +1797,12 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   exportDurationBadgeText: {
-    color: '#EDE9FE',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   exportTrimSummary: {
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.14)',
     backgroundColor: 'rgba(2,6,23,0.28)',
@@ -1840,17 +1811,17 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   exportStartText: {
-    color: '#EDE9FE',
-    fontSize: 13,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   exportClipText: {
-    color: '#A7F3D0',
-    fontSize: 11,
+    color: SLColors.success,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
   },
   exportTrimTimeText: {
-    color: '#CBD5E1',
+    color: SLColors.text,
     fontSize: 10,
     fontWeight: '800',
   },
@@ -1863,7 +1834,7 @@ const styles = StyleSheet.create({
   exportTimelineFilmstrip: {
     height: 42,
     marginTop: 72,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.22)',
     backgroundColor: 'rgba(15,23,42,0.92)',
@@ -1893,7 +1864,7 @@ const styles = StyleSheet.create({
   exportStartPreviewFrame: {
     width: 108,
     height: 58,
-    borderRadius: 12,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(216,180,254,0.58)',
     backgroundColor: 'rgba(15,23,42,0.96)',
@@ -1906,13 +1877,13 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   exportStartPreviewFallback: {
-    color: '#94A3B8',
+    color: SLColors.textMuted,
     fontSize: 10,
     fontWeight: '800',
   },
   exportStartPreviewText: {
     marginTop: 3,
-    color: '#EDE9FE',
+    color: SLColors.textStrong,
     fontSize: 10,
     fontWeight: '900',
     textShadowColor: 'rgba(2,6,23,0.9)',
@@ -1932,10 +1903,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(216,180,254,0.78)',
     backgroundColor: 'rgba(124,58,237,0.18)',
-    shadowColor: '#A78BFA',
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    ...SLShadows.level2,
   },
   exportTimelineStartMarker: {
     position: 'absolute',
@@ -1951,7 +1919,7 @@ const styles = StyleSheet.create({
   exportTimelineStartLabel: {
     position: 'absolute',
     top: 0,
-    color: '#EDE9FE',
+    color: SLColors.textStrong,
     fontSize: 9,
     fontWeight: '900',
     textTransform: 'uppercase',
@@ -1961,31 +1929,28 @@ const styles = StyleSheet.create({
     top: 19,
     width: 3,
     height: 44,
-    borderRadius: 999,
-    backgroundColor: '#A78BFA',
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.review,
   },
   exportTimelineStartKnob: {
     position: 'absolute',
     top: 55,
     width: 18,
     height: 18,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 2,
-    borderColor: '#EDE9FE',
-    backgroundColor: '#7C3AED',
-    shadowColor: '#A78BFA',
-    shadowOpacity: 0.34,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    borderColor: SLColors.textStrong,
+    backgroundColor: SLColors.review,
+    ...SLShadows.level2,
   },
   exportTrimHint: {
-    color: '#A78BFA',
+    color: SLColors.review,
     fontSize: 10,
     fontWeight: '800',
   },
   exportStatusBox: {
     minHeight: 40,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.22)',
     backgroundColor: 'rgba(20,184,166,0.12)',
@@ -1995,8 +1960,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   exportStatusText: {
-    color: '#D1FAE5',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   exportActions: {
@@ -2006,7 +1971,7 @@ const styles = StyleSheet.create({
   exportActionButton: {
     flex: 1,
     minHeight: 40,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.22)',
     backgroundColor: 'rgba(15,23,42,0.86)',
@@ -2022,12 +1987,12 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   exportActionText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   exportActionTextPrimary: {
-    color: '#DCFCE7',
+    color: SLColors.success,
   },
   reviewKeyboardAvoider: {
     position: 'absolute',
@@ -2046,14 +2011,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(226,232,240,0.18)',
-    backgroundColor: 'rgba(8,12,22,0.82)',
+    borderColor: SLColors.borderSubtle,
+    backgroundColor: SLColors.surfaceCommand,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.34,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 12,
+    ...SLShadows.shadowSheet,
   },
   reviewSheetKeyboardOpen: {
     maxHeight: '76%',
@@ -2072,13 +2033,13 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(148,163,184,0.14)',
   },
   reviewSheetTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   reviewSheetUnsaved: {
-    color: '#FDE68A',
-    fontSize: 11,
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     marginTop: 2,
   },
@@ -2089,7 +2050,7 @@ const styles = StyleSheet.create({
   },
   reviewSheetKeyboardButton: {
     minHeight: 32,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.24)',
     backgroundColor: 'rgba(20,184,166,0.14)',
@@ -2098,13 +2059,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   reviewSheetKeyboardButtonText: {
-    color: '#A7F3D0',
-    fontSize: 12,
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   reviewSheetClose: {
     minHeight: 32,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(148,163,184,0.18)',
     backgroundColor: 'rgba(15,23,42,0.82)',
@@ -2113,16 +2074,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   reviewSheetCloseText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   speedSection: {
     gap: 8,
   },
   sectionLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
+    color: SLColors.textMuted,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     letterSpacing: 0.7,
     textTransform: 'uppercase',
@@ -2133,25 +2094,25 @@ const styles = StyleSheet.create({
   },
   speedButton: {
     minHeight: 32,
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.18)',
-    backgroundColor: 'rgba(15,23,42,0.82)',
+    borderColor: SLColors.borderStandard,
+    backgroundColor: SLColors.object,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,
   },
   speedButtonActive: {
-    borderColor: 'rgba(196,181,253,0.46)',
-    backgroundColor: 'rgba(91,79,207,0.38)',
+    borderColor: SLColors.borderFocus,
+    backgroundColor: SLColors.surfaceSelected,
   },
   speedButtonText: {
-    color: '#CBD5E1',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
   speedButtonTextActive: {
-    color: '#F8FAFC',
+    color: SLColors.textStrong,
   },
   video: {
     width: '100%',
@@ -2163,7 +2124,7 @@ const styles = StyleSheet.create({
     maxWidth: '62%',
     paddingHorizontal: 10,
     paddingVertical: 7,
-    ...glass,
+    ...mediaObject,
   },
   hudBottomLeft: {
     position: 'absolute',
@@ -2173,7 +2134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 7,
     gap: 2,
-    ...glass,
+    ...mediaObject,
   },
   closeButton: {
     position: 'absolute',
@@ -2182,12 +2143,12 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    ...glass,
-    borderRadius: 16,
+    ...mediaObject,
+    borderRadius: SLRadius.lg,
   },
   closeText: {
-    color: '#E2E8F0',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
   },
   hudHeaderRow: {
@@ -2196,31 +2157,31 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   hudKicker: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontSize: 9,
     fontWeight: '900',
     textTransform: 'uppercase',
   },
   hudTitle: {
-    color: '#F8FAFC',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
     marginTop: 3,
     lineHeight: 17,
   },
   hudSubtext: {
-    color: '#CBD5E1',
-    fontSize: 11,
+    color: SLColors.text,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '800',
     marginTop: 2,
     lineHeight: 14,
   },
   hudStatusText: {
-    color: '#DCFCE7',
+    color: SLColors.success,
     fontSize: 9,
     fontWeight: '900',
     textAlign: 'center',
-    borderRadius: 999,
+    borderRadius: SLRadius.pill,
     borderWidth: 1,
     borderColor: 'rgba(167,243,208,0.2)',
     backgroundColor: 'rgba(22,101,52,0.28)',
@@ -2229,13 +2190,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   hudLine: {
-    color: '#F8FAFC',
-    fontSize: 12,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '800',
     lineHeight: 15,
   },
   hudLabel: {
-    color: '#A7F3D0',
+    color: SLColors.success,
     fontWeight: '900',
   },
   exportUnitChoiceBackdrop: {
@@ -2249,23 +2210,23 @@ const styles = StyleSheet.create({
   exportUnitChoiceCard: {
     width: '100%',
     maxWidth: 360,
-    borderRadius: 22,
+    borderRadius: SLRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(196,181,253,0.26)',
     backgroundColor: 'rgba(15,23,42,0.97)',
     padding: 18,
   },
   exportUnitChoiceKicker: {
-    color: '#C4B5FD',
-    fontSize: 11,
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.micro.fontSize,
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 1.1,
     marginBottom: 8,
   },
   exportUnitChoiceTitle: {
-    color: '#F8FAFC',
-    fontSize: 16,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
     fontWeight: '900',
     lineHeight: 22,
     marginBottom: 14,
@@ -2275,7 +2236,7 @@ const styles = StyleSheet.create({
   },
   exportUnitChoiceButton: {
     minHeight: 46,
-    borderRadius: 14,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(167,139,250,0.36)',
     backgroundColor: 'rgba(124,58,237,0.2)',
@@ -2283,8 +2244,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   exportUnitChoiceButtonText: {
-    color: '#EDE9FE',
-    fontSize: 14,
+    color: SLColors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '900',
   },
   exportUnitChoiceCancel: {
@@ -2294,8 +2255,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   exportUnitChoiceCancelText: {
-    color: '#CBD5E1',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
   },
   overlay: {
@@ -2306,21 +2267,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   overlayText: {
-    color: '#E0E7FF',
-    fontSize: 13,
+    color: SLColors.text,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     marginTop: 10,
   },
   errorText: {
-    color: '#FECACA',
-    fontSize: 13,
+    color: SLColors.danger,
+    fontSize: SLTypography.label.fontSize,
     fontWeight: '800',
     textAlign: 'center',
     lineHeight: 18,
   },
   retryButton: {
     minHeight: 36,
-    borderRadius: 10,
+    borderRadius: SLRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(129,140,248,0.36)',
     backgroundColor: 'rgba(129,140,248,0.16)',
@@ -2330,8 +2291,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   retryText: {
-    color: '#E0E7FF',
-    fontSize: 12,
+    color: SLColors.text,
+    fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
   },
 });

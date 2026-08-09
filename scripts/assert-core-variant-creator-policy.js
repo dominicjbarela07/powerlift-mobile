@@ -6,38 +6,22 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const sourcePath = path.join(root, 'app', '(tabs)', 'create-workout.tsx');
-const source = fs.readFileSync(sourcePath, 'utf8');
+const bootstrap = fs.readFileSync(path.join(root, 'app', '(tabs)', 'create-workout.tsx'), 'utf8');
+const workspaceRoute = fs.readFileSync(path.join(root, 'app', '(tabs)', 'workout', 'session-workspace', '[workoutId].tsx'), 'utf8');
+const workspace = fs.readFileSync(path.join(root, 'components', 'coach-mobile', 'SessionEditingWorkspace.tsx'), 'utf8');
 
-function fail(message) {
-  console.error(`[core-variant-creator-policy] ${message}`);
-  process.exit(1);
+function assertMatch(source, pattern, message) {
+  if (!pattern.test(source)) {
+    console.error(`[adaptive-session-workspace-policy] ${message}`);
+    process.exit(1);
+  }
 }
 
-function requireIncludes(snippet, message) {
-  if (!source.includes(snippet)) fail(message);
-}
+assertMatch(bootstrap, /status: 'draft'[\s\S]*core_items: \[\][\s\S]*acc_items: \[\]/, 'creation must bootstrap a server-backed draft instead of a local movement builder.');
+assertMatch(bootstrap, /pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'created and legacy edit Sessions must enter the Adaptive Session Workspace.');
+assertMatch(workspaceRoute, /TOP_BACKDOWN[\s\S]*FULL_CUSTOM/, 'the Adaptive Session Workspace must own Core pattern selection.');
+assertMatch(workspace, /function FullCustomSetEditor/, 'Full Custom planned-set editing must remain in the persistent movement workspace.');
+assertMatch(workspace, /function SessionEditorModeSelector[\s\S]*label="Athlete View"[\s\S]*label="Reorder"/, 'the workspace must expose only valid mode actions.');
+assertMatch(workspaceRoute, /\/core-lifts/, 'Core movement creation must remain wired to the authoritative Session API.');
 
-const addMatch = source.match(/const addCoreVariant = \(\) => \{([\s\S]*?)\n  \};/);
-if (!addMatch) fail('Could not locate addCoreVariant.');
-
-const addBody = addMatch[1];
-if (!addBody.includes("setPendingCoreVariant(createPendingCoreVariantDraft('STRAIGHT'))")) {
-  fail('Core Variant selection must open pending setup state.');
-}
-if (/\bsetCore\s*\(/.test(addBody)) {
-  fail('Core Variant selection must not insert a committed core row before confirmation.');
-}
-if (/\bsetCoreEditorOpen\s*\(/.test(addBody) || /\bopenMovementPicker\s*\(/.test(addBody)) {
-  fail('Core Variant selection must not bypass setup by opening editor/picker on a placeholder row.');
-}
-
-requireIncludes('type PendingCoreVariantDraft', 'Pending Core Variant setup state is missing.');
-requireIncludes('validateCoreVariantDraft', 'Pending Core Variant confirmation validator is missing.');
-requireIncludes('validateCoreVariantCoreForSave', 'Save-time Core Variant validator is missing.');
-requireIncludes('commitPendingCoreVariant', 'Pending Core Variant commit path is missing.');
-requireIncludes("openMovementPicker('pendingVariant', -1)", 'Pending Core Variant movement picker path is missing.');
-requireIncludes('manual target load is required', 'Core Variant manual target requirement is not locked down.');
-requireIncludes('setCore((p) => [...p, ...rows])', 'Confirmed Core Variant rows must be appended only from commit path.');
-
-console.log('[core-variant-creator-policy] ok');
+console.log('[adaptive-session-workspace-policy] ok');
