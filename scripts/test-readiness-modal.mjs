@@ -11,6 +11,7 @@ import {
   normalizeReadinessUnit,
   persistReadinessThenBegin,
   readinessBoundary,
+  readinessPositionFromRailX,
   normalizedReadinessToCanonical,
   shouldAnimateReadinessThumb,
   sleepHoursFromPosition,
@@ -50,6 +51,10 @@ assert.equal(sleepHoursFromPosition(0.5), 7.5);
 assert.equal(sleepHoursFromPosition(0.37), 6.5, 'duration persists in half-hour increments');
 assert.equal(sleepPositionFromHours(7.5), 0.5);
 assert.equal(clampReadinessPosition(0.37), 0.37, 'the visual position must remain continuous');
+assert.equal(readinessPositionFromRailX(0, 320), 0, 'touching the rail start selects its minimum');
+assert.equal(readinessPositionFromRailX(160, 320), 0.5, 'touching anywhere on the rail maps immediately');
+assert.equal(readinessPositionFromRailX(400, 320), 1, 'dragging past the rail clamps to its maximum');
+assert.equal(readinessPositionFromRailX(-20, 320), 0, 'dragging before the rail clamps to its minimum');
 assert.equal(normalizedReadinessToCanonical(0), 1);
 assert.equal(normalizedReadinessToCanonical(0.5), 3);
 assert.equal(normalizedReadinessToCanonical(1), 5);
@@ -62,8 +67,9 @@ const hapticTransitions = [0.11, 0.19, 0.21, 0.39, 0.41].reduce((count, next, in
   count + Number(crossedReadinessBoundary(index ? values[index - 1] : 0.1, next))
 ), 0);
 assert.equal(hapticTransitions, 2);
-assert.equal(readinessBoundary(0.21), readinessBoundary(0.39));
-assert.equal(crossedReadinessBoundary(0.21, 0.39), false, 'no haptic within one canonical boundary');
+assert.equal(readinessBoundary(0.19), readinessBoundary(0.36));
+assert.equal(crossedReadinessBoundary(0.19, 0.36), false, 'no haptic within one canonical value');
+assert.equal(crossedReadinessBoundary(0.36, 0.38), true, 'haptics follow the displayed value boundary');
 assert.equal(shouldAnimateReadinessThumb(false), true);
 assert.equal(shouldAnimateReadinessThumb(true), false, 'Reduce Motion disables thumb scaling and release settling');
 const skipped = buildReadinessPayload({ ...base, bodyweight: '', bodyweightSkipped: true }, 'lb');
@@ -115,7 +121,13 @@ for (const copy of [
 assert.ok(component.includes('accessibilityRole="adjustable"'));
 assert.ok(component.includes('valueText={`${sleepHoursFromPosition(values.sleepPosition).toFixed(1)} hr`}'));
 assert.ok(component.includes('hapticBoundaries && crossedReadinessBoundary'));
-assert.ok(component.includes('measureInWindow'));
+assert.ok(component.includes('Gesture.Pan()'));
+assert.ok(component.includes('.minDistance(0)'));
+assert.ok(component.includes('.shouldCancelWhenOutside(false)'));
+assert.ok(component.includes('.onBegin(({ x })'));
+assert.ok(component.includes('.onUpdate(({ x })'));
+assert.ok(component.includes('<GestureDetector gesture={railGesture}>'));
+assert.ok(!component.includes('onStartShouldSetResponder'), 'the rail must not compete with its ScrollView through the legacy responder API');
 assert.ok(component.includes('accessibilityState={{ busy: submitting, disabled: submitting }}'));
 assert.ok(component.includes('animationType={reduceMotion'));
 

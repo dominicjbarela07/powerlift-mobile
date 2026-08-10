@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   KeyboardAvoidingView,
@@ -14,6 +14,7 @@ import { SLButton } from '@/components/ui/sl-button';
 import { SLMaterialOverlay } from '@/components/ui/sl-workspace';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { SLColors, SLMotion, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import {
@@ -21,6 +22,7 @@ import {
   clampReadinessPosition,
   crossedReadinessBoundary,
   normalizedReadinessToCanonical,
+  readinessPositionFromRailX,
   shouldAnimateReadinessThumb,
   sleepHoursFromPosition,
   type ReadinessDisplayUnit,
@@ -38,6 +40,7 @@ export type ReadinessScaleProps = {
   reduceMotion: boolean;
   hapticBoundaries?: boolean;
   hapticsEnabled?: boolean;
+  accessibilityStep?: number;
   onChange: (position: number) => void;
 };
 
@@ -52,11 +55,10 @@ export function ReadinessScale({
   reduceMotion,
   hapticBoundaries = false,
   hapticsEnabled = true,
+  accessibilityStep = 0.25,
   onChange,
 }: ReadinessScaleProps) {
   const [railWidth, setRailWidth] = useState(0);
-  const railRef = useRef<View>(null);
-  const railWindowX = useRef<number | null>(null);
   const heldScale = useRef(new Animated.Value(1)).current;
   const previewMotion = useSLMotionPreviewOverrides();
   const lastPosition = useRef(position);
@@ -65,26 +67,16 @@ export function ReadinessScale({
     lastPosition.current = position;
   }, [position]);
 
-  const measureRail = useCallback(() => {
-    railRef.current?.measureInWindow((x) => {
-      railWindowX.current = x;
-    });
-  }, []);
-
-  const updateFromEvent = (event: any) => {
+  const updateFromRailX = useCallback((x: number) => {
     if (!railWidth) return;
-    const { locationX, pageX } = event.nativeEvent;
-    const x = railWindowX.current != null && Number.isFinite(pageX)
-      ? pageX - railWindowX.current
-      : locationX;
-    const next = clampReadinessPosition(x / railWidth);
+    const next = readinessPositionFromRailX(x, railWidth);
     if (hapticsEnabled && hapticBoundaries && crossedReadinessBoundary(lastPosition.current, next)) {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
     }
     lastPosition.current = next;
     onChange(next);
-  };
-  const setHeld = (held: boolean) => {
+  }, [hapticBoundaries, hapticsEnabled, onChange, railWidth]);
+  const setHeld = useCallback((held: boolean) => {
     heldScale.stopAnimation();
     if (!shouldAnimateReadinessThumb(reduceMotion)) {
       heldScale.stopAnimation();
@@ -96,7 +88,29 @@ export function ReadinessScale({
       ...(previewMotion?.spring ?? SLMotion.directSpring),
       useNativeDriver: true,
     }).start();
+  }, [heldScale, previewMotion?.spring, reduceMotion]);
+  const railGesture = useMemo(
+    () => Gesture.Pan()
+      .minDistance(0)
+      .shouldCancelWhenOutside(false)
+      .runOnJS(true)
+      .onBegin(({ x }) => {
+        setHeld(true);
+        updateFromRailX(x);
+      })
+      .onUpdate(({ x }) => updateFromRailX(x))
+      .onEnd(({ x }) => updateFromRailX(x))
+      .onFinalize(() => setHeld(false)),
+    [setHeld, updateFromRailX],
+  );
+  const accessibilityPosition = (delta: number) => {
+    const next = clampReadinessPosition(position + delta);
+    if (hapticsEnabled && hapticBoundaries && crossedReadinessBoundary(position, next)) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
+    }
+    onChange(next);
   };
+  const canonicalValue = normalizedReadinessToCanonical(position);
 
   return (
     <View style={styles.scaleGroup}>
@@ -109,42 +123,38 @@ export function ReadinessScale({
         <Text typographyRole="caption" style={styles.endpoint}>{low}</Text>
         <Text typographyRole="caption" style={styles.endpoint}>{high}</Text>
       </View>
-      <View
-        ref={railRef}
-        accessible
-        accessibilityRole="adjustable"
-        accessibilityLabel={`${label}. ${low} to ${high}`}
-        accessibilityValue={{ min: 0, max: 100, now: Math.round(position * 100), text: valueText || descriptor }}
-        accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-        onAccessibilityAction={(event) => onChange(clampReadinessPosition(position + (event.nativeEvent.actionName === 'increment' ? 0.05 : -0.05)))}
-        onLayout={(event) => {
-          setRailWidth(event.nativeEvent.layout.width);
-          measureRail();
-        }}
-        onStartShouldSetResponder={() => true}
-        onMoveShouldSetResponder={() => true}
-        onResponderGrant={(event) => { measureRail(); setHeld(true); updateFromEvent(event); }}
-        onResponderMove={updateFromEvent}
-        onResponderRelease={(event) => { updateFromEvent(event); setHeld(false); }}
-        onResponderTerminate={() => setHeld(false)}
-        style={styles.railTouchTarget}
-      >
-        <View style={styles.rail} />
+      <GestureDetector gesture={railGesture}>
         <View
-          pointerEvents="none"
-          style={[
-            styles.railFill,
-            { width: railWidth ? position * railWidth : 0 },
-          ]}
-        />
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.thumb,
-            { left: railWidth ? position * (railWidth - 22) : 0, transform: [{ scale: heldScale }] },
-          ]}
-        />
-      </View>
+          accessible
+          accessibilityRole="adjustable"
+          accessibilityLabel={`${label}. ${low} to ${high}`}
+          accessibilityValue={valueText
+            ? { text: valueText }
+            : { min: 1, max: 5, now: canonicalValue, text: descriptor }}
+          accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+          onAccessibilityAction={(event) => accessibilityPosition(
+            event.nativeEvent.actionName === 'increment' ? accessibilityStep : -accessibilityStep,
+          )}
+          onLayout={(event) => setRailWidth(event.nativeEvent.layout.width)}
+          style={styles.railTouchTarget}
+        >
+          <View style={styles.rail} />
+          <View
+            pointerEvents="none"
+            style={[
+              styles.railFill,
+              { width: railWidth ? position * railWidth : 0 },
+            ]}
+          />
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.thumb,
+              { left: railWidth ? position * (railWidth - 22) : 0, transform: [{ scale: heldScale }] },
+            ]}
+          />
+        </View>
+      </GestureDetector>
     </View>
   );
 }
@@ -270,6 +280,7 @@ export function ReadinessModal({
               position={values.sleepPosition}
               valueText={`${sleepHoursFromPosition(values.sleepPosition).toFixed(1)} hr`}
               reduceMotion={reduceMotion}
+              accessibilityStep={1 / 18}
               onChange={(value) => update('sleepPosition', value)}
             />
             <ReadinessScale label="ENERGY" low="Drained" high="Fired up" position={values.energyPosition} descriptors={['Drained', 'Low', 'Ready', 'Strong', 'Fired up']} reduceMotion={reduceMotion} hapticBoundaries onChange={(value) => update('energyPosition', value)} />

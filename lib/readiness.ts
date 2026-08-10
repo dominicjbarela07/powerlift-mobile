@@ -28,6 +28,11 @@ export function clampReadinessPosition(value: number): number {
   return Math.max(0, Math.min(1, Number(value)));
 }
 
+export function readinessPositionFromRailX(x: number, railWidth: number): number {
+  if (!Number.isFinite(x) || !Number.isFinite(railWidth) || railWidth <= 0) return 0;
+  return clampReadinessPosition(x / railWidth);
+}
+
 export function normalizedReadinessToCanonical(value: number): number {
   return Math.round(clampReadinessPosition(value) * 4) + 1;
 }
@@ -47,7 +52,7 @@ export function sleepPositionFromHours(hours: number): number {
 }
 
 export function readinessBoundary(value: number): number {
-  return Math.min(4, Math.floor(clampReadinessPosition(value) * 5));
+  return normalizedReadinessToCanonical(value) - 1;
 }
 
 export function crossedReadinessBoundary(previous: number, next: number): boolean {
