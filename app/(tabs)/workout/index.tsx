@@ -29,6 +29,7 @@ import {
   type AthleteTrainingWeek,
 } from '@/components/training-hub/AthleteTrainingHubExperience';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
+import { ProgrammingSessionMoveModal } from '@/components/coach-mobile/ProgrammingSessionMoveModal';
 import { useAuth } from '@/context/AuthContext';
 import {
   archiveProgrammingProgram,
@@ -47,12 +48,16 @@ import {
 } from '@/lib/training-hub-session-labels';
 import { resolveTrainingProgramProgress } from '@/lib/training-program-progress';
 import {
+  isSameProgrammingDate,
+  programmingMoveDestination,
+} from '@/lib/programming-session-move';
+import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
 import { SLColors, SLFontFamilies, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
-const SESSION_SWIPE_ACTIONS_WIDTH = 164;
+const SESSION_SWIPE_ACTIONS_WIDTH = 116;
 
 type SessionFocus = {
   primary?: string[];
@@ -129,6 +134,20 @@ type SessionAddState = {
   date: string;
   mode: 'choose' | 'templates' | 'adopt';
 } | null;
+
+type QuickMoveSessionState = {
+  sessionId: number;
+  title: string;
+  currentDate: string;
+  blockId: number;
+} | null;
+
+type QuickMoveFollowTarget = {
+  blockId: number;
+  week: number;
+  date: string;
+  sessionId: number;
+};
 
 type MovementLift = {
   key: 'squat' | 'bench' | 'deadlift' | string;
@@ -696,7 +715,6 @@ export default function TrainingIndexScreen() {
         pendingMap={visiblePendingMap}
         completedMap={visibleCompletedMap}
         onOpenSession={openSessionWorkspace}
-        onViewSession={openWorkout}
         onAddSession={addSessionForDate}
         initialBlockId={Number.isFinite(returnBlockId || NaN) ? returnBlockId : null}
         initialWeek={Number.isFinite(returnWeek || NaN) ? returnWeek : null}
@@ -761,7 +779,6 @@ function IndividualProgrammingHome({
   pendingMap,
   completedMap,
   onOpenSession,
-  onViewSession,
   onAddSession,
   initialBlockId,
   initialWeek,
@@ -775,12 +792,11 @@ function IndividualProgrammingHome({
   loading: boolean;
   error: string | null;
   refreshing: boolean;
-  onRefresh: () => void;
+  onRefresh: () => void | Promise<void>;
   blocks: ProgramBlockPayload[];
   pendingMap: SessionMap;
   completedMap: SessionMap;
   onOpenSession: (id?: number | null, context?: ProgrammingReturnContext) => void;
-  onViewSession: (id?: number | null) => void;
   onAddSession: (date?: string | null) => void;
   initialBlockId?: number | null;
   initialWeek?: number | null;
@@ -794,6 +810,13 @@ function IndividualProgrammingHome({
   const activeProgram = hub?.active_program || null;
   const currentBlock = hub?.current_block || null;
   const [programLibraryOpen, setProgramLibraryOpen] = useState(false);
+  const programmingScrollRef = useRef<ScrollView>(null);
+  const followProgrammingOffset = useCallback((offsetY: number) => {
+    programmingScrollRef.current?.scrollTo({
+      y: Math.max(0, offsetY - 12),
+      animated: true,
+    });
+  }, []);
 
   const handleProgramPress = () => {
     router.push({
@@ -819,6 +842,7 @@ function IndividualProgrammingHome({
   return (
     <View style={styles.screen}>
       <ScrollView
+        ref={programmingScrollRef}
         style={styles.scrollView}
         contentContainerStyle={styles.programmingScroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.muted} />}
@@ -836,7 +860,6 @@ function IndividualProgrammingHome({
             pendingMap={pendingMap}
             completedMap={completedMap}
             onOpenSession={onOpenSession}
-            onViewSession={onViewSession}
             onAddSession={onAddSession}
             onManageProgram={(programId) => router.push({
               pathname: '/(tabs)/workout/create-program',
@@ -849,6 +872,7 @@ function IndividualProgrammingHome({
             } as any)}
             onCreateProgram={handleProgramPress}
             onRefresh={onRefresh}
+            onFollowOffset={followProgrammingOffset}
             athleteId={managedAthleteId || hub?.athlete?.id || null}
             initialBlockId={initialBlockId}
             initialWeek={initialWeek}
@@ -900,11 +924,11 @@ function ActiveProgrammingRoadmap({
   pendingMap,
   completedMap,
   onOpenSession,
-  onViewSession,
   onAddSession,
   onManageProgram,
   onCreateProgram,
   onRefresh,
+  onFollowOffset,
   athleteId,
   initialBlockId,
   initialWeek,
@@ -920,11 +944,11 @@ function ActiveProgrammingRoadmap({
   pendingMap: SessionMap;
   completedMap: SessionMap;
   onOpenSession: (id?: number | null, context?: ProgrammingReturnContext) => void;
-  onViewSession: (id?: number | null) => void;
   onAddSession: (date?: string | null) => void;
   onManageProgram: (programId: number) => void;
   onCreateProgram: () => void;
   onRefresh: () => void | Promise<void>;
+  onFollowOffset: (offsetY: number) => void;
   athleteId?: number | null;
   initialBlockId?: number | null;
   initialWeek?: number | null;
@@ -953,6 +977,14 @@ function ActiveProgrammingRoadmap({
   const [blockActionConfirmed, setBlockActionConfirmed] = useState(false);
   const [programActionsOpen, setProgramActionsOpen] = useState(false);
   const [sessionAdd, setSessionAdd] = useState<SessionAddState>(null);
+  const [quickMoveSession, setQuickMoveSession] = useState<QuickMoveSessionState>(null);
+  const [quickMoveBusy, setQuickMoveBusy] = useState(false);
+  const [quickMoveError, setQuickMoveError] = useState('');
+  const [quickMoveFollowTarget, setQuickMoveFollowTarget] = useState<QuickMoveFollowTarget | null>(null);
+  const quickMoveSubmittingRef = useRef(false);
+  const sessionSwipeRefs = useRef<Record<number, Swipeable | null>>({});
+  const weekListOffset = useRef(0);
+  const weekLayoutOffsets = useRef<Record<string, number>>({});
 
   useEffect(() => {
     if (!orderedBlocks.length) {
@@ -969,6 +1001,9 @@ function ActiveProgrammingRoadmap({
   }, [currentBlockId, initialBlockId, orderedBlocks]);
 
   const selectedBlock = orderedBlocks.find((block) => block.id === selectedBlockId) || orderedBlocks[0] || null;
+  const quickMoveBlock = quickMoveSession
+    ? orderedBlocks.find((block) => block.id === quickMoveSession.blockId) || null
+    : null;
 
   useEffect(() => {
     const restoredWeek = selectedBlock?.id === initialBlockId && initialWeek
@@ -983,6 +1018,28 @@ function ActiveProgrammingRoadmap({
     [selectedBlock, pendingMap, completedMap]
   );
   const visibleWeeks = weeks;
+
+  useEffect(() => {
+    if (
+      !quickMoveFollowTarget
+      || quickMoveFollowTarget.blockId !== selectedBlock?.id
+      || quickMoveFollowTarget.week !== expandedWeek
+    ) return;
+
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        const key = `${quickMoveFollowTarget.blockId}:${quickMoveFollowTarget.week}`;
+        const offset = weekLayoutOffsets.current[key];
+        if (Number.isFinite(offset)) onFollowOffset(offset);
+        setQuickMoveFollowTarget(null);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
+    };
+  }, [expandedWeek, onFollowOffset, quickMoveFollowTarget, selectedBlock?.id, visibleWeeks]);
   const currentBlockIndex = Math.max(0, orderedBlocks.findIndex((block) => block.id === currentBlockId));
   const selectedBlockIndex = Math.max(0, orderedBlocks.findIndex((block) => block.id === selectedBlock?.id));
   const selectedBlockState: MovementCardMaterialState = selectedBlock?.id === currentBlockId
@@ -1019,6 +1076,77 @@ function ActiveProgrammingRoadmap({
     setBlockAction({ action, block });
     setBlockActionWarning('');
     setBlockActionConfirmed(false);
+  };
+
+  const openQuickMoveSession = (session: HubSession) => {
+    if (!selectedBlock?.id || !session.id || !session.date) {
+      Alert.alert('Move Session unavailable', 'This Session does not have complete scheduling context.');
+      return;
+    }
+    sessionSwipeRefs.current[session.id]?.close();
+    setQuickMoveError('');
+    setQuickMoveSession({
+      sessionId: session.id,
+      title: sessionTitle(session),
+      currentDate: session.date,
+      blockId: selectedBlock.id,
+    });
+  };
+
+  const closeQuickMoveSession = () => {
+    if (quickMoveBusy) return;
+    setQuickMoveSession(null);
+    setQuickMoveError('');
+  };
+
+  const executeQuickMoveSession = async (targetDate: string) => {
+    const move = quickMoveSession;
+    if (!move || quickMoveSubmittingRef.current) return;
+    if (isSameProgrammingDate(move.currentDate, targetDate)) {
+      closeQuickMoveSession();
+      return;
+    }
+
+    const destination = programmingMoveDestination(visibleWeeks, targetDate);
+    if (!destination) {
+      setQuickMoveError('Choose a date within this Training Block.');
+      return;
+    }
+
+    quickMoveSubmittingRef.current = true;
+    setQuickMoveBusy(true);
+    setQuickMoveError('');
+    try {
+      const resp = await fetchJson<any>(`/workouts/mobile/${move.sessionId}/programming-actions`, {
+        method: 'POST',
+        body: {
+          action: 'move',
+          target_date: targetDate,
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) {
+        throw new Error(json.error || `HTTP ${resp.status}`);
+      }
+
+      const destinationKey = `${move.blockId}:${destination.week}`;
+      setSelectedBlockId(move.blockId);
+      setExpandedWeek(destination.week);
+      setSelectedDayKeys((current) => ({ ...current, [destinationKey]: targetDate }));
+      setQuickMoveFollowTarget({
+        blockId: move.blockId,
+        week: destination.week,
+        date: targetDate,
+        sessionId: move.sessionId,
+      });
+      setQuickMoveSession(null);
+      await onRefresh();
+    } catch (err: any) {
+      setQuickMoveError(err?.message || 'Session could not be moved. Please try again.');
+    } finally {
+      quickMoveSubmittingRef.current = false;
+      setQuickMoveBusy(false);
+    }
   };
 
   const executeWeekAction = async (action: WeekActionKey, week: RoadmapWeek, extra?: Record<string, any>) => {
@@ -1294,7 +1422,12 @@ function ActiveProgrammingRoadmap({
         </TrainingHubMaterialSurface>
       ) : null}
 
-      <View style={styles.weekCardList}>
+      <View
+        style={styles.weekCardList}
+        onLayout={(event) => {
+          weekListOffset.current = event.nativeEvent.layout.y;
+        }}
+      >
         {visibleWeeks.length ? visibleWeeks.map((week) => {
           const expanded = week.index === expandedWeek;
           const weekKey = `${selectedBlock?.id || 'fallback'}:${week.index}`;
@@ -1303,13 +1436,20 @@ function ActiveProgrammingRoadmap({
           const selectedDay = week.days.find((day) => day.key === selectedDayKey) || week.days[0] || null;
           const weekState = programmingWeekMaterialState(week.index, currentWeek);
           return (
-            <TrainingHubMaterialSurface
+            <View
               key={`${selectedBlock?.id || 'fallback'}-${week.index}`}
-              accentColor={movementCardStateAccent(weekState)}
-              expanded={expanded}
-              state={weekState}
-              style={[styles.programmingWeekSurface, expanded && styles.programmingWeekSurfaceExpanded]}
+              onLayout={(event) => {
+                weekLayoutOffsets.current[weekKey] = (
+                  weekListOffset.current + event.nativeEvent.layout.y
+                );
+              }}
             >
+              <TrainingHubMaterialSurface
+                accentColor={movementCardStateAccent(weekState)}
+                expanded={expanded}
+                state={weekState}
+                style={[styles.programmingWeekSurface, expanded && styles.programmingWeekSurfaceExpanded]}
+              >
               <View style={styles.weekCardHeader}>
                 <Pressable
                   accessibilityRole="button"
@@ -1405,13 +1545,15 @@ function ActiveProgrammingRoadmap({
                           week: week.index,
                           day: selectedDay?.key || null,
                         });
-                        const viewSessionAsAthlete = () => onViewSession(preview.sessionId);
                         return (
                           <Swipeable
+                            ref={(node) => {
+                              sessionSwipeRefs.current[session.id] = node;
+                            }}
                             key={session.id}
                             friction={1}
                             overshootRight={false}
-                            rightThreshold={82}
+                            rightThreshold={58}
                             dragOffsetFromRightEdge={8}
                             renderRightActions={(progress, dragX) => {
                               const revealTranslateX = dragX.interpolate({
@@ -1437,28 +1579,15 @@ function ActiveProgrammingRoadmap({
                                 >
                                   <Pressable
                                     accessibilityRole="button"
-                                    accessibilityLabel={`Edit ${preview.code}`}
-                                    onPress={openSession}
+                                    accessibilityLabel={`Move ${preview.code}`}
+                                    onPress={() => openQuickMoveSession(session)}
                                     style={({ pressed }) => [
                                       styles.sessionSwipeAction,
                                       pressed && styles.sessionSwipeActionPressed,
                                     ]}
                                   >
-                                    <Ionicons name="create-outline" size={19} color={colors.textStrong} />
-                                    <Text style={styles.sessionSwipeActionText}>Edit</Text>
-                                  </Pressable>
-                                  <Pressable
-                                    accessibilityRole="button"
-                                    accessibilityLabel={`Open ${preview.code} athlete view`}
-                                    onPress={viewSessionAsAthlete}
-                                    style={({ pressed }) => [
-                                      styles.sessionSwipeAction,
-                                      styles.sessionSwipeAthViewAction,
-                                      pressed && styles.sessionSwipeAthViewActionPressed,
-                                    ]}
-                                  >
-                                    <Ionicons name="eye-outline" size={19} color={colors.textStrong} />
-                                    <Text style={styles.sessionSwipeActionText}>Ath View</Text>
+                                    <Ionicons name="calendar-outline" size={19} color={colors.textStrong} />
+                                    <Text style={styles.sessionSwipeActionText}>Move Session</Text>
                                   </Pressable>
                                 </Animated.View>
                               );
@@ -1467,14 +1596,14 @@ function ActiveProgrammingRoadmap({
                             <Pressable
                               accessibilityRole="button"
                               accessibilityLabel={`Edit ${preview.code}. ${preview.status}.`}
-                              accessibilityHint="Opens the Session editor. Swipe left for Edit or athlete view."
+                              accessibilityHint="Opens the Session editor. Swipe left to move this Session."
                               accessibilityActions={[
                                 { name: 'edit', label: 'Edit Session' },
-                                { name: 'view', label: 'Open athlete view' },
+                                { name: 'move', label: 'Move Session' },
                               ]}
                               onAccessibilityAction={(event) => {
                                 if (event.nativeEvent.actionName === 'edit') openSession();
-                                if (event.nativeEvent.actionName === 'view') viewSessionAsAthlete();
+                                if (event.nativeEvent.actionName === 'move') openQuickMoveSession(session);
                               }}
                               onPress={openSession}
                               style={({ pressed }) => [
@@ -1555,7 +1684,8 @@ function ActiveProgrammingRoadmap({
                   ) : null}
                 </>
               ) : null}
-            </TrainingHubMaterialSurface>
+              </TrainingHubMaterialSurface>
+            </View>
           );
         }) : (
           <View style={styles.weekEmptyBlock}>
@@ -1629,6 +1759,17 @@ function ActiveProgrammingRoadmap({
           onAddSession(date);
         }}
         onRefresh={onRefresh}
+      />
+      <ProgrammingSessionMoveModal
+        visible={!!quickMoveSession}
+        sessionTitle={quickMoveSession?.title || 'Training Session'}
+        currentDate={quickMoveSession?.currentDate || ''}
+        minimumDate={quickMoveBlock?.start_date || null}
+        maximumDate={quickMoveBlock?.end_date || null}
+        busy={quickMoveBusy}
+        error={quickMoveError}
+        onCancel={closeQuickMoveSession}
+        onConfirm={executeQuickMoveSession}
       />
     </View>
   );
@@ -4491,12 +4632,6 @@ const styles = StyleSheet.create({
   },
   sessionSwipeActionPressed: {
     backgroundColor: 'rgba(143, 79, 218, 0.82)',
-  },
-  sessionSwipeAthViewAction: {
-    backgroundColor: 'rgba(77, 68, 96, 0.88)',
-  },
-  sessionSwipeAthViewActionPressed: {
-    backgroundColor: 'rgba(101, 88, 126, 0.94)',
   },
   sessionSwipeActionText: {
     ...SLTypography.utilityLabel,
