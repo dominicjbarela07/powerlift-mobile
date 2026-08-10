@@ -1,0 +1,184 @@
+const PHOTO_URL_FIELDS = [
+  'profilePhotoUrl',
+  'profile_photo_url',
+  'avatarUrl',
+  'avatar_url',
+  'photoUrl',
+  'photo_url',
+  'imageUrl',
+  'image_url',
+] as const;
+
+const PHOTO_VERSION_FIELDS = [
+  'profilePhotoVersion',
+  'profile_photo_version',
+  'avatarUploadedAt',
+  'avatar_uploaded_at',
+  'updatedAt',
+  'updated_at',
+] as const;
+
+export type CanonicalProfilePhoto = {
+  profilePhotoUrl: string | null;
+  profilePhotoVersion: string | null;
+  hasProfilePhotoValue: boolean;
+};
+
+function normalizedOptionalString(value: unknown): string | null {
+  const normalized = String(value ?? '').trim();
+  return normalized || null;
+}
+
+function firstUsableValue(
+  input: Record<string, unknown>,
+  fields: readonly string[]
+): { present: boolean; value: string | null } {
+  let present = false;
+  for (const field of fields) {
+    if (Object.prototype.hasOwnProperty.call(input, field)) {
+      present = true;
+      const value = normalizedOptionalString(input[field]);
+      if (value) return { present: true, value };
+    }
+  }
+  return { present, value: null };
+}
+
+/**
+ * Profile-photo response aliases are normalized here, at the mobile model
+ * boundary. Screens consume only profilePhotoUrl/profilePhotoVersion.
+ */
+export function normalizeProfilePhotoPayload(input: unknown): CanonicalProfilePhoto {
+  const record =
+    input && typeof input === 'object'
+      ? (input as Record<string, unknown>)
+      : {};
+  const photo = firstUsableValue(record, PHOTO_URL_FIELDS);
+  const version = firstUsableValue(record, PHOTO_VERSION_FIELDS);
+
+  return {
+    profilePhotoUrl: photo.value,
+    profilePhotoVersion: version.value,
+    hasProfilePhotoValue: photo.present,
+  };
+}
+
+function encodeUrlPath(pathname: string): string {
+  return pathname
+    .split('/')
+    .map((segment) => {
+      if (!segment) return segment;
+      try {
+        return encodeURIComponent(decodeURIComponent(segment));
+      } catch {
+        return encodeURIComponent(segment);
+      }
+    })
+    .join('/');
+}
+
+function hasSignedMediaQuery(url: URL): boolean {
+  const signedFields = new Set([
+    'x-amz-algorithm',
+    'x-amz-credential',
+    'x-amz-date',
+    'x-amz-expires',
+    'x-amz-signature',
+    'x-goog-algorithm',
+    'x-goog-credential',
+    'x-goog-date',
+    'x-goog-expires',
+    'x-goog-signature',
+  ]);
+
+  for (const key of url.searchParams.keys()) {
+    if (signedFields.has(key.toLowerCase())) return true;
+  }
+  return false;
+}
+
+export function resolveProfilePhotoUrl(
+  value: string | null | undefined,
+  apiBase = 'https://app.strengthledger.fit'
+): string | null {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) && !/^https?:\/\//i.test(raw)) {
+    return null;
+  }
+
+  try {
+    const absolute = raw.startsWith('//')
+      ? `https:${raw}`
+      : /^https?:\/\//i.test(raw)
+      ? raw
+      : `${String(apiBase || '').replace(/\/+$/, '')}/${raw.replace(/^\/+/, '')}`;
+    const url = new URL(absolute);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+
+    // R2/S3/GCS query parameters are part of the request signature. Even
+    // harmless URL rewriting can invalidate them, so preserve signed URLs
+    // byte-for-byte after validating their protocol.
+    if (hasSignedMediaQuery(url)) return absolute;
+
+    url.pathname = encodeUrlPath(url.pathname);
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+export function versionProfilePhotoUrl(
+  value: string | null | undefined,
+  version: string | null | undefined,
+  apiBase = 'https://app.strengthledger.fit'
+): string | null {
+  const resolved = resolveProfilePhotoUrl(value, apiBase);
+  if (!resolved) return null;
+  const normalizedVersion = normalizedOptionalString(version);
+  if (!normalizedVersion) return resolved;
+
+  const url = new URL(resolved);
+  if (hasSignedMediaQuery(url)) return resolved;
+  url.searchParams.set('sl_avatar_v', normalizedVersion);
+  return url.toString();
+}
+
+/**
+ * Expo Image can invalidate an avatar independently from its request URL.
+ * This is essential for signed object-storage URLs: cache busting belongs in
+ * `cacheKey`, never in the signed query string.
+ */
+export function profilePhotoCacheKey(
+  value: string | null | undefined,
+  version: string | null | undefined,
+  apiBase = 'https://app.strengthledger.fit'
+): string | null {
+  const resolved = resolveProfilePhotoUrl(value, apiBase);
+  if (!resolved) return null;
+
+  try {
+    const url = new URL(resolved);
+    const identity = `${url.origin}${url.pathname}`;
+    const normalizedVersion = normalizedOptionalString(version);
+    return normalizedVersion
+      ? `${identity}#sl_avatar_v=${encodeURIComponent(normalizedVersion)}`
+      : identity;
+  } catch {
+    return null;
+  }
+}
+
+export function profilePhotoNeedsAuth(
+  value: string | null | undefined,
+  apiBase = 'https://app.strengthledger.fit'
+): boolean {
+  const resolved = resolveProfilePhotoUrl(value, apiBase);
+  if (!resolved) return false;
+
+  try {
+    return new URL(resolved).origin === new URL(apiBase).origin;
+  } catch {
+    return false;
+  }
+}
