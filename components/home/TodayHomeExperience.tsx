@@ -13,6 +13,7 @@ import {
 import { SLButton, SLProfileAvatar, SLSurface } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius } from '@/constants/theme';
+import { buildAthleteHomeWeek, type AthleteHomeWeekSession } from '@/lib/athlete-home-week';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const TRAINING_IMAGE = require('@/assets/images/gym_vibe.jpg');
@@ -93,6 +94,7 @@ export type TodayHomeData = {
   latest_announcement?: CoachItem | null;
   latest_message?: CoachItem | null;
   recent_glance?: { title?: string | null; date?: string | null; status?: string | null; workout_id?: number | null } | null;
+  week_preview?: AthleteHomeWeekSession[] | null;
   yesterday?: DaySummary | null;
   next_glance?: {
     title?: string | null;
@@ -324,17 +326,26 @@ function WeekRail({ today, empty = false }: { today: TodayHomeData; empty?: bool
       </View>
       <View style={styles.weekRail}>
         {days.map((day) => (
-          <View key={day.date} style={[styles.dayCell, day.isToday && styles.dayCellToday]}>
+          <View
+            accessibilityLabel={day.accessibilityLabel}
+            accessible
+            key={day.date}
+            style={[styles.dayCell, day.isToday && styles.dayCellToday]}
+          >
             <Text style={[styles.dayName, day.isToday && styles.dayTodayText]}>{day.day}</Text>
-            {day.isToday ? (
-              <Text style={styles.todayLabel}>TODAY</Text>
-            ) : day.state === 'complete' ? (
-              <Ionicons color={SLColors.success} name="checkmark-circle" size={17} />
-            ) : day.state === 'session' ? (
-              <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={17} />
-            ) : (
-              <Text style={styles.dayDash}>—</Text>
-            )}
+            <View style={styles.dayState}>
+              {day.isToday ? <Text style={styles.todayLabel}>TODAY</Text> : null}
+              {day.state === 'complete' ? (
+                <Ionicons color={SLColors.success} name="checkmark-circle" size={15} />
+              ) : day.state === 'session' ? (
+                <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={15} />
+              ) : day.state === 'missed' ? (
+                <Ionicons color={SLColors.danger} name="alert-circle" size={15} />
+              ) : !day.isToday ? (
+                <Text style={styles.dayDash}>—</Text>
+              ) : null}
+              {day.sessionCount > 1 ? <Text style={styles.dayCount}>{day.sessionCount}</Text> : null}
+            </View>
             <Text style={styles.dayDate}>{day.label}</Text>
           </View>
         ))}
@@ -581,36 +592,19 @@ function readinessWord(value: number, inverse: boolean) {
 }
 
 function buildWeek(today: TodayHomeData, empty: boolean) {
-  const current = parseDate(today.date) ?? new Date();
-  const dayIndex = (current.getDay() + 6) % 7;
-  const monday = new Date(current);
-  monday.setDate(current.getDate() - dayIndex);
-  const known = [today.yesterday, today.tomorrow, today.next_glance, today.recent_glance]
-    .filter(Boolean)
-    .reduce<Record<string, { state: string }>>((acc, item) => {
-      if (!item?.date) return acc;
-      const candidate = item as { status?: string | null; kind?: string | null };
-      const normalized = String(candidate.status || candidate.kind || '').toLowerCase();
-      acc[item.date] = { state: normalized.includes('complete') || normalized.includes('logged') ? 'complete' : normalized.includes('session') || Boolean(item.workout_id) ? 'session' : 'empty' };
-      return acc;
-    }, {});
+  const fallbackSessions: AthleteHomeWeekSession[] = [
+    today.yesterday,
+    today.tomorrow,
+    today.next_glance,
+    today.recent_glance,
+    today.mission?.session,
+  ].filter((item): item is AthleteHomeWeekSession => Boolean(item?.date));
 
-  if (today.mission?.session?.date) {
-    const status = String(today.mission.session.status || '').toLowerCase();
-    known[today.mission.session.date] = { state: status.includes('complete') || status.includes('logged') ? 'complete' : 'session' };
-  }
-
-  return Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + index);
-    const key = isoDate(date);
-    return {
-      date: key,
-      day: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
-      label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      isToday: key === today.date,
-      state: empty ? 'empty' : known[key]?.state || 'empty',
-    };
+  return buildAthleteHomeWeek({
+    todayDate: today.date,
+    sessions: today.week_preview,
+    fallbackSessions,
+    empty,
   });
 }
 
@@ -627,11 +621,6 @@ function parseDate(value?: string | null) {
   if (!value) return null;
   const date = new Date(`${value}T12:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function isoDate(date: Date) {
-  const year = date.getFullYear();
-  return `${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 function formatLongDate(value?: string | null) {
@@ -704,7 +693,9 @@ const styles = StyleSheet.create({
   dayCellToday: { borderColor: SLColors.borderFocus, backgroundColor: SLColors.accentSoft },
   dayName: { color: SLColors.textMuted, fontSize: 10, lineHeight: 13 },
   dayTodayText: { color: SLColors.textSecondary },
-  todayLabel: { color: SLColors.accentViolet, fontSize: 9, fontWeight: '700' },
+  dayState: { minHeight: 17, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  todayLabel: { color: SLColors.accentViolet, fontSize: 8, fontWeight: '700' },
+  dayCount: { color: SLColors.textMuted, fontSize: 8, fontWeight: '800' },
   dayDash: { color: SLColors.textSubtle, fontSize: 14 },
   dayDate: { color: SLColors.textMuted, fontSize: 9 },
   emptyWeekCopy: { color: SLColors.textMuted, fontSize: 12, paddingHorizontal: 4 },

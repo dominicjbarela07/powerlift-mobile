@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
   Image,
   Modal,
   Pressable,
@@ -22,6 +23,7 @@ import { TodayHomeExperience } from '@/components/home/TodayHomeExperience';
 import { SLButton, SLProfileAvatar } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
+import { mergeAthleteHomeWeekPreview } from '@/lib/athlete-home-week';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
@@ -135,6 +137,7 @@ type TodayPayload = {
     status?: string | null;
     workout_id?: number | null;
   } | null;
+  week_preview?: TodaySession[] | null;
   yesterday?: DayTrainingState | null;
   next_glance?: {
     title?: string | null;
@@ -376,7 +379,9 @@ export default function AthleteDashboard() {
           return;
         }
 
-        const normalized = normalizeTodayPayload(classified.today);
+        const normalized = normalizeTodayPayload(
+          mergeAthleteHomeWeekPreview(classified.today, res?.json),
+        );
         setToday(normalized);
         setError(null);
         void AsyncStorage.setItem(todayCacheKey, JSON.stringify(normalized)).catch(() => undefined);
@@ -397,6 +402,17 @@ export default function AthleteDashboard() {
       return () => requestManagerRef.current.cancel();
     }, [loadToday])
   );
+
+  useEffect(() => {
+    let previousState = AppState.currentState;
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (/inactive|background/.test(previousState) && nextState === 'active') {
+        void loadToday({ silent: !!todayRef.current, showRefreshIndicator: false });
+      }
+      previousState = nextState;
+    });
+    return () => subscription.remove();
+  }, [loadToday]);
 
   const openAction = React.useCallback(
     (action?: TodayAction | null) => {
