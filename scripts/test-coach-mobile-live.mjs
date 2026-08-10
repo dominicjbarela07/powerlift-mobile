@@ -99,7 +99,8 @@ assert(
 assert(source.athlete.includes('accountKeyRef.current === requestAccountKey'));
 assert(source.athlete.includes('useFocusEffect'));
 assert(source.athlete.includes("(reason.reason_type || '').includes('readiness')"));
-assert(source.athlete.includes('Array.isArray(payload.operational_status?.reasons)'));
+assert(source.athlete.includes('normalizeCoachAttentionReasons('));
+assert(source.athlete.includes('threadId: payload.unread_messages?.thread_id'));
 assert(source.athlete.includes('Array.isArray(payload.pending_session_reviews?.items)'));
 
 assert(source.brief.includes("fetchJson<CoachTeamBriefResponse>('/coach/mobile/team-brief'"));

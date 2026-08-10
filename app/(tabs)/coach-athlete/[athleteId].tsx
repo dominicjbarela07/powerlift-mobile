@@ -17,6 +17,7 @@ import { SLColors, SLRadius, SLSpacing, SLStatusTones, SLTypography, type SLStat
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 import {
+  normalizeCoachAttentionReasons,
   openCoachDestination,
   type CoachAttentionReason,
   type CoachTrainingContext,
@@ -270,6 +271,13 @@ export default function CoachAthleteWorkspace() {
         }
 
         const payload = resp.json;
+        const actionableReasons = normalizeCoachAttentionReasons(
+          payload.operational_status?.reasons,
+          {
+            athleteId: payload.athlete?.id || athleteId,
+            threadId: payload.unread_messages?.thread_id,
+          },
+        );
         setSummary({
           ...payload,
           athlete: {
@@ -279,9 +287,7 @@ export default function CoachAthleteWorkspace() {
           operational_status: {
             ...payload.operational_status,
             label: payload.operational_status?.label || 'Status unavailable',
-            reasons: Array.isArray(payload.operational_status?.reasons)
-              ? payload.operational_status.reasons
-              : [],
+            reasons: actionableReasons,
           },
           programming_horizon: payload.programming_horizon || {},
           pending_video_reviews: {
@@ -619,11 +625,11 @@ export default function CoachAthleteWorkspace() {
                         <Text numberOfLines={1} style={styles.attentionDetailTitle}>
                           {reason.title}
                         </Text>
-                        {reason.supporting_text ? (
-                          <Text numberOfLines={1} style={styles.attentionDetailText}>
-                            {reason.supporting_text}
-                          </Text>
-                        ) : null}
+                        <Text numberOfLines={1} style={styles.attentionDetailText}>
+                          {reason.supporting_text
+                            ? `${summary.athlete.name} · ${reason.supporting_text}`
+                            : summary.athlete.name}
+                        </Text>
                       </View>
                       <View style={styles.queueActions}>
                         <Pressable

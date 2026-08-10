@@ -74,6 +74,7 @@
     "test:logger-wheel-picker": "node --import tsx scripts/test-logger-wheel-picker.mjs",
     "test:coach-roster-first": "node --import tsx scripts/test-coach-roster-first.mjs",
     "test:coach-mobile-live": "node --import tsx scripts/test-coach-mobile-live.mjs",
+    "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",
     "test:coach-mobile-presentation-parity": "node --import tsx scripts/test-coach-mobile-presentation-parity.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",

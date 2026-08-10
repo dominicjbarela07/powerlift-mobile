@@ -369,8 +369,8 @@ export default function CoachRosterScreen() {
 
   const openReviews = useCallback((athlete: CoachRosterAthlete) => {
     const reason = athlete.attention_reasons.find((item) => item.category === 'reviews');
-    if (reason) openCoachDestination(router, reason.destination);
-    else router.push({ pathname: '/(tabs)/coach-videos', params: { athleteId: String(athlete.id) } } as any);
+    if (reason && openCoachDestination(router, reason.destination)) return;
+    router.push({ pathname: '/(tabs)/coach-videos', params: { athleteId: String(athlete.id) } } as any);
   }, [router]);
 
   const showAthleteActions = useCallback((
