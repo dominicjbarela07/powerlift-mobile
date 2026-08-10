@@ -63,13 +63,18 @@ const MACHINE_EQUIPMENT_TERMS = [
   'plate loaded',
   'plate-loaded',
   'leverage',
+  'cable',
+  'cable stack',
+  'pulley',
 ] as const;
 
-const PORTABLE_OR_COMMON_EQUIPMENT_TERMS = [
+const PORTABLE_EQUIPMENT_TERMS = [
   'dumbbell',
   'barbell',
+  'free weight',
   'bodyweight',
-  'common cable',
+  'kettlebell',
+  'band',
   'farmer handle',
 ] as const;
 
@@ -77,6 +82,8 @@ const LEGACY_MACHINE_MOVEMENT_TERMS = [
   'machine',
   'cable',
   'pulldown',
+  'pushdown',
+  'pressdown',
   'pec deck',
   'hack squat',
   'leg press',
@@ -134,48 +141,92 @@ function isLegacyMachineMovementLabel(movement?: string | null): boolean {
   ));
 }
 
+type EquipmentClassification = 'machine' | 'portable' | 'unknown';
+
+function equipmentClassification(
+  identity: EquipmentIdentityLike | null | undefined,
+): EquipmentClassification {
+  const text = normalized(identityEquipmentText(identity));
+  if (!text) return 'unknown';
+
+  // Cable stations are fixed equipment. This check intentionally precedes the
+  // portable-equipment check so legacy values such as "Common cable" cannot
+  // bypass the same equipment workflow used by other machines.
+  if (
+    MACHINE_EQUIPMENT_TERMS.some((term) => (
+      containsNormalizedTerm(text, normalized(term))
+    ))
+  ) {
+    return 'machine';
+  }
+  if (
+    PORTABLE_EQUIPMENT_TERMS.some((term) => (
+      containsNormalizedTerm(text, normalized(term))
+    ))
+  ) {
+    return 'portable';
+  }
+  return 'unknown';
+}
+
 export function isMachineEquipmentIdentity(
   identity: EquipmentIdentityLike | null | undefined,
 ): boolean {
-  const text = normalized(identityEquipmentText(identity));
-  if (!text) return false;
-  if (PORTABLE_OR_COMMON_EQUIPMENT_TERMS.some((term) => text.includes(term))) {
-    return false;
-  }
-  return MACHINE_EQUIPMENT_TERMS.some((term) => text.includes(term));
+  return equipmentClassification(identity) === 'machine';
 }
 
 export function isMachineAccessoryItem(
   item: EquipmentAwareWorkoutItem | null | undefined,
 ): boolean {
   if (!item) return false;
-  if (normalized(item.dev_accessory_intelligence?.kind) === 'machine') return true;
-  if (
-    isMachineEquipmentIdentity(item.performed_movement_identity)
-    || isMachineEquipmentIdentity(item.movement_identity)
-  ) {
-    return true;
+  const performedClassification = equipmentClassification(
+    item.performed_movement_identity,
+  );
+  if (performedClassification !== 'unknown') {
+    return performedClassification === 'machine';
   }
+  const prescribedClassification = equipmentClassification(item.movement_identity);
+  if (prescribedClassification !== 'unknown') {
+    return prescribedClassification === 'machine';
+  }
+
+  const developmentKind = normalized(item.dev_accessory_intelligence?.kind);
+  if (developmentKind === 'machine' || developmentKind === 'cable') return true;
+  if (isLegacyMachineMovementLabel(item.movement)) return true;
   if (
-    normalized(identityEquipmentText(item.performed_movement_identity))
-    || normalized(identityEquipmentText(item.movement_identity))
+    developmentKind === 'portable'
+    || developmentKind === 'free weight'
+    || developmentKind === 'bodyweight'
   ) {
     return false;
   }
-  return isLegacyMachineMovementLabel(item.movement);
+  return false;
+}
+
+function isConfiguredMachineIdentity(
+  identity: EquipmentIdentityLike | null | undefined,
+): identity is EquipmentIdentityLike {
+  if (
+    !identity
+    || identity.identity_specificity !== 'exact'
+    || !isMachineEquipmentIdentity(identity)
+    || identity.equipment_context?.option_kind === 'unknown'
+    || normalized(identity.loading_implementation).includes('unknown')
+  ) {
+    return false;
+  }
+  return Boolean(identity.manufacturer?.id || identity.implementation_key);
 }
 
 export function activeEquipmentIdentity(
   item: EquipmentAwareWorkoutItem | null | undefined,
 ): EquipmentIdentityLike | null {
   if (!item || !isMachineAccessoryItem(item)) return null;
-  if (item.performed_movement_identity) return item.performed_movement_identity;
+  if (isConfiguredMachineIdentity(item.performed_movement_identity)) {
+    return item.performed_movement_identity;
+  }
   const prescribed = item.movement_identity;
-  if (
-    prescribed
-    && prescribed.identity_specificity === 'exact'
-    && isMachineEquipmentIdentity(prescribed)
-  ) return prescribed;
+  if (isConfiguredMachineIdentity(prescribed)) return prescribed;
   return null;
 }
 

@@ -53,14 +53,29 @@ const freeWeight = accessoryItems(fixture).find(
 const highRow = accessoryItems(fixture).find(
   (item) => item.movement === 'Iso-Lateral High Row with Independent Converging Arms',
 );
+const cable = accessoryItems(fixture).find(
+  (item) => item.movement === 'Cable Row',
+);
 assert.ok(machine);
 assert.ok(freeWeight);
 assert.ok(highRow);
+assert.ok(cable);
 assert.equal(isMachineAccessoryItem(machine), true);
 assert.equal(isMachineAccessoryItem(freeWeight), false);
 assert.equal(activeEquipmentIdentity(machine)?.manufacturer?.display_name, 'Hammer Strength');
 assert.equal(needsEquipmentSelection(machine), false);
 assert.equal(needsEquipmentSelection(freeWeight), false);
+assert.equal(
+  isMachineAccessoryItem(cable),
+  true,
+  'Structured Common cable metadata must enter the machine-equipment workflow.',
+);
+assert.equal(activeEquipmentIdentity(cable), null);
+assert.equal(
+  needsEquipmentSelection(cable),
+  true,
+  'An unresolved cable identity must require equipment selection before logging.',
+);
 
 for (const executionContext of [
   'real-athlete-assigned-session',
