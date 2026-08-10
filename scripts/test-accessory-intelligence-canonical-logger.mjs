@@ -152,13 +152,13 @@ assert.equal(
 );
 assert.match(
   workoutRouteSource,
-  /import \{ accessoryPrimaryMuscleGroup \} from '@\/lib\/accessory-muscle-group'/,
-  'The shared logger must resolve the primary muscle group for Accessory cards.',
+  /import \{ accessoryMuscleRegion \} from '@\/lib\/accessory-muscle-group'/,
+  'The shared logger must resolve the canonical muscle region for Accessory cards.',
 );
 assert.match(
   workoutRouteSource,
-  /accessoryMuscleGroupLabel: isAccessory[\s\S]*?accessoryPrimaryMuscleGroup\(/,
-  'Every accessory card must receive a primary muscle-group label.',
+  /accessoryMuscleRegion: isAccessory[\s\S]*?accessoryMuscleRegion\(item\)\.key/,
+  'Every accessory card must receive a canonical muscle-region asset key.',
 );
 assert.match(
   workoutRouteSource,
@@ -167,8 +167,8 @@ assert.match(
 );
 assert.match(
   coreLoggerSource,
-  /visualContext\?\.accessoryMuscleGroupLabel \? \([\s\S]*?accessibilityLabel=\{`\$\{visualContext\.accessoryMuscleGroupLabel\} primary muscle group`\}[\s\S]*?: visualContext\?\.coreVariantFamily && visualContext\.liftIconSource \? \([\s\S]*?<CoreVariantBadge/,
-  'Accessories must render the primary muscle-group label while variants use the integrated parent-family badge.',
+  /visualContext\?\.accessoryMuscleRegion \? \([\s\S]*?<AccessoryMuscleRegionMedallion[\s\S]*?regionKey=\{visualContext\.accessoryMuscleRegion\}[\s\S]*?: visualContext\?\.coreVariantFamily && visualContext\.liftIconSource \? \([\s\S]*?<CoreVariantBadge/,
+  'Accessories must render the canonical muscle-region medallion while variants use the integrated parent-family badge.',
 );
 assert.match(
   coreVariantBadgeSource,

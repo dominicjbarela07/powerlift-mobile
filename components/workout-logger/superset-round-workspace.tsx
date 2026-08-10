@@ -9,6 +9,7 @@ import {
 import { Text } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
 import { CompletedSetSwipeRow } from '@/components/workout-logger/core-loggers';
+import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import {
   SLColors,
@@ -23,6 +24,10 @@ import {
   type SupersetRoundSourceItem,
 } from '@/lib/superset-rounds';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
+import {
+  combineAccessoryMuscleRegions,
+  type AccessoryMuscleRegionKey,
+} from '@/lib/accessory-muscle-group';
 
 export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
   id: number;
@@ -38,7 +43,7 @@ export type SupersetWorkspaceItem = SupersetRoundSourceItem & Readonly<{
   prescription: string;
   historyLine?: string | null;
   timelineLabel?: string | null;
-  primaryMuscleGroup?: string | null;
+  primaryMuscleRegion?: AccessoryMuscleRegionKey | null;
   set_logs?: readonly SupersetWorkspaceLog[] | null;
 }>;
 
@@ -94,6 +99,9 @@ export function SupersetRoundWorkspace({
       ? 'in_progress' as const
       : 'not_started' as const;
   const stateAccent = movementCardStateAccent(materialState);
+  const combinedMuscleRegion = combineAccessoryMuscleRegions(
+    model.items.map((item) => item.primaryMuscleRegion),
+  );
 
   return (
     <View style={styles.card}>
@@ -108,14 +116,11 @@ export function SupersetRoundWorkspace({
         onPress={onToggle}
         style={styles.header}
       >
-        <View
-          accessibilityLabel={`${Array.from(new Set(model.items.map((item) => item.primaryMuscleGroup).filter(Boolean))).join(' and ') || 'Accessory'} primary muscle group`}
-          style={styles.muscleGroupBadge}
-        >
-          <Text numberOfLines={2} style={styles.muscleGroupBadgeText}>
-            {Array.from(new Set(model.items.map((item) => item.primaryMuscleGroup).filter(Boolean))).slice(0, 2).join(' + ') || 'Accessory'}
-          </Text>
-        </View>
+        <AccessoryMuscleRegionMedallion
+          accessibilityLabel={`${combinedMuscleRegion.label} primary muscle group for superset ${groupLabel}`}
+          containerStyle={styles.muscleGroupMedallion}
+          regionKey={combinedMuscleRegion.key}
+        />
         <View style={styles.headerCopy}>
           <View style={styles.eyebrowRow}>
             <Text style={styles.eyebrow}>SUPERSET {groupLabel}</Text>
@@ -302,26 +307,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SLSpacing.lg,
     paddingVertical: SLSpacing.lg,
   },
-  muscleGroupBadge: {
-    alignItems: 'center',
+  muscleGroupMedallion: {
     alignSelf: 'center',
-    backgroundColor: SLColors.surfaceFloating,
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    justifyContent: 'center',
-    minHeight: 58,
-    paddingHorizontal: SLSpacing.xs,
     width: 78,
-  },
-  muscleGroupBadgeText: {
-    color: SLColors.accentViolet,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '900',
-    letterSpacing: 0.45,
-    lineHeight: 15,
-    textAlign: 'center',
-    textTransform: 'uppercase',
   },
   headerCopy: {
     flex: 1,
