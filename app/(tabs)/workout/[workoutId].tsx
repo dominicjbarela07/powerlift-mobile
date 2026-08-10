@@ -7083,10 +7083,10 @@ export default function WorkoutViewerScreen() {
       (it as any).dev_accessory_intelligence?.kind || '',
     ).trim();
     const normalizedAccessoryName = String(it.movement || '').toLowerCase();
-    const accessoryKind = fixtureAccessoryKind
-      || (machineAccessory
-        ? 'machine'
-        : normalizedAccessoryName.includes('cable')
+    const accessoryKind = machineAccessory
+      ? 'machine'
+      : fixtureAccessoryKind
+        || (normalizedAccessoryName.includes('cable')
           ? 'cable'
           : normalizedAccessoryName.includes('weighted')
             ? 'weighted_bodyweight'
@@ -7124,9 +7124,9 @@ export default function WorkoutViewerScreen() {
                   ? 'Timed work'
                   : accessoryKind === 'carry'
                     ? 'Distance + load'
-                    : accessoryKind === 'custom'
-                      ? 'Custom equipment · unresolved'
-          : 'Accessory';
+                  : accessoryKind === 'custom'
+                    ? 'Custom equipment · unresolved'
+                    : 'Accessory';
 
     return (
       <View
