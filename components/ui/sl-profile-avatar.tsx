@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { API_BASE } from '@/lib/api-base';
 import {
+  profilePhotoCacheKey,
   profilePhotoNeedsAuth,
   versionProfilePhotoUrl,
 } from '@/lib/profile-photo';
@@ -57,6 +58,10 @@ export function SLProfileAvatar({
     () => versionProfilePhotoUrl(profilePhotoUrl, profilePhotoVersion, API_BASE),
     [profilePhotoUrl, profilePhotoVersion]
   );
+  const cacheKey = useMemo(
+    () => profilePhotoCacheKey(profilePhotoUrl, profilePhotoVersion, API_BASE),
+    [profilePhotoUrl, profilePhotoVersion]
+  );
   const [failed, setFailed] = useState(previewState === 'failure');
   const hasImage = Boolean(uri || previewSource);
   const [loading, setLoading] = useState(hasImage);
@@ -74,8 +79,8 @@ export function SLProfileAvatar({
       token && profilePhotoNeedsAuth(uri, API_BASE)
         ? { Authorization: `Bearer ${token}` }
         : undefined;
-    return { uri, headers };
-  }, [previewSource, token, uri]);
+    return { uri, headers, cacheKey: cacheKey || undefined };
+  }, [cacheKey, previewSource, token, uri]);
 
   const showInitials = !hasImage || failed;
   const showLoading = hasImage && !failed && (loading || previewState === 'loading');

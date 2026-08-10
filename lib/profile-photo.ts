@@ -77,6 +77,26 @@ function encodeUrlPath(pathname: string): string {
     .join('/');
 }
 
+function hasSignedMediaQuery(url: URL): boolean {
+  const signedFields = new Set([
+    'x-amz-algorithm',
+    'x-amz-credential',
+    'x-amz-date',
+    'x-amz-expires',
+    'x-amz-signature',
+    'x-goog-algorithm',
+    'x-goog-credential',
+    'x-goog-date',
+    'x-goog-expires',
+    'x-goog-signature',
+  ]);
+
+  for (const key of url.searchParams.keys()) {
+    if (signedFields.has(key.toLowerCase())) return true;
+  }
+  return false;
+}
+
 export function resolveProfilePhotoUrl(
   value: string | null | undefined,
   apiBase = 'https://app.strengthledger.fit'
@@ -95,6 +115,12 @@ export function resolveProfilePhotoUrl(
       : `${String(apiBase || '').replace(/\/+$/, '')}/${raw.replace(/^\/+/, '')}`;
     const url = new URL(absolute);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+
+    // R2/S3/GCS query parameters are part of the request signature. Even
+    // harmless URL rewriting can invalidate them, so preserve signed URLs
+    // byte-for-byte after validating their protocol.
+    if (hasSignedMediaQuery(url)) return absolute;
+
     url.pathname = encodeUrlPath(url.pathname);
     return url.toString();
   } catch {
@@ -113,8 +139,34 @@ export function versionProfilePhotoUrl(
   if (!normalizedVersion) return resolved;
 
   const url = new URL(resolved);
+  if (hasSignedMediaQuery(url)) return resolved;
   url.searchParams.set('sl_avatar_v', normalizedVersion);
   return url.toString();
+}
+
+/**
+ * Expo Image can invalidate an avatar independently from its request URL.
+ * This is essential for signed object-storage URLs: cache busting belongs in
+ * `cacheKey`, never in the signed query string.
+ */
+export function profilePhotoCacheKey(
+  value: string | null | undefined,
+  version: string | null | undefined,
+  apiBase = 'https://app.strengthledger.fit'
+): string | null {
+  const resolved = resolveProfilePhotoUrl(value, apiBase);
+  if (!resolved) return null;
+
+  try {
+    const url = new URL(resolved);
+    const identity = `${url.origin}${url.pathname}`;
+    const normalizedVersion = normalizedOptionalString(version);
+    return normalizedVersion
+      ? `${identity}#sl_avatar_v=${encodeURIComponent(normalizedVersion)}`
+      : identity;
+  } catch {
+    return null;
+  }
 }
 
 export function profilePhotoNeedsAuth(

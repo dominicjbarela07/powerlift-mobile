@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   normalizeProfilePhotoPayload,
+  profilePhotoCacheKey,
   profilePhotoNeedsAuth,
   resolveProfilePhotoUrl,
   versionProfilePhotoUrl,
@@ -65,6 +66,19 @@ assert.equal(
   versionProfilePhotoUrl('/avatar.jpg?size=large', 'replacement-2', apiBase),
   'https://api.strengthledger.test/avatar.jpg?size=large&sl_avatar_v=replacement-2'
 );
+
+const signedAvatar =
+  'https://r2.example.test/avatars/users/7/avatar.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=credential%2Fscope&X-Amz-Date=20260809T230000Z&X-Amz-Expires=3600&X-Amz-Signature=signature';
+assert.equal(resolveProfilePhotoUrl(signedAvatar, apiBase), signedAvatar);
+assert.equal(versionProfilePhotoUrl(signedAvatar, 'replacement-3', apiBase), signedAvatar);
+assert.equal(
+  profilePhotoCacheKey(signedAvatar, 'replacement-3', apiBase),
+  'https://r2.example.test/avatars/users/7/avatar.webp#sl_avatar_v=replacement-3'
+);
+assert.equal(
+  profilePhotoCacheKey('/avatar.jpg', 'replacement-2', apiBase),
+  'https://api.strengthledger.test/avatar.jpg#sl_avatar_v=replacement-2'
+);
 assert.equal(profilePhotoNeedsAuth('/avatar.jpg', apiBase), true);
 assert.equal(profilePhotoNeedsAuth('https://cdn.example.test/avatar.jpg', apiBase), false);
 
@@ -76,6 +90,7 @@ assert.match(sharedAvatarSource, /cachePolicy="memory-disk"/);
 assert.match(sharedAvatarSource, /Authorization: `Bearer \$\{token\}`/);
 assert.match(sharedAvatarSource, /onError=\{\(\) =>/);
 assert.match(sharedAvatarSource, /profilePhotoVersion/);
+assert.match(sharedAvatarSource, /cacheKey: cacheKey \|\| undefined/);
 
 for (const source of [
   'app/(tabs)/settings.tsx',
@@ -85,7 +100,12 @@ for (const source of [
   'app/(tabs)/messages/[threadId].tsx',
   'app/(tabs)/coach-roster.tsx',
   'app/(tabs)/coach-athlete/[athleteId].tsx',
-  'app/(tabs)/coach-roster.tsx',
+  'app/(tabs)/create-workout.tsx',
+  'app/(tabs)/workout/index.tsx',
+  'app/(tabs)/workout/[workoutId].tsx',
+  'components/coach-mobile/SessionEditingWorkspace.tsx',
+  'components/workout-logger/core-loggers.tsx',
+  'components/workout-logger/post-session-surfaces.tsx',
 ]) {
   const contents = fs.readFileSync(path.join(root, source), 'utf8');
   assert.match(
