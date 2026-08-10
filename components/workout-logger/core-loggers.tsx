@@ -27,6 +27,7 @@ import {
   SLMovementCardMaterial,
   SLMotion,
   SLRadius,
+  SLSpacing,
   SLTypography,
 } from '@/constants/theme';
 import {
