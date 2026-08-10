@@ -9,13 +9,23 @@ import {
   REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
   shouldPromoteRestTimer,
 } from '../lib/rest-timer-cues.ts';
+import {
+  RestTimerAudioSequenceGate,
+  RestTimerCompletionGate,
+  isActiveSessionLoggerPath,
+  resolveRestTimerCompletionDelivery,
+  restTimerCompletionId,
+} from '../lib/rest-timer-runtime.ts';
 
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 const workoutRoute = read('app/(tabs)/workout/[workoutId].tsx');
 const sessionShell = read('components/workout-logger/session-shell.tsx');
 const focusSurface = read('components/workout-logger/rest-timer-focus.tsx');
+const loggerModals = read('components/workout-logger/logger-modals.tsx');
 const restTimerStorage = read('lib/rest-timer-storage.ts');
+const restTimerProvider = read('context/RestTimerContext.tsx');
+const rootLayout = read('app/_layout.tsx');
 
 assert.equal(REST_TIMER_ANTICIPATION_START_SECONDS, 10);
 assert.equal(REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS, 3);
@@ -48,31 +58,75 @@ assert.deepEqual(
   { tone: null, haptic: null },
 );
 
-assert.match(workoutRoute, /useAudioPlayer\([\s\S]*rest-countdown-tick\.wav/);
-assert.match(workoutRoute, /useAudioPlayer\([\s\S]*rest-countdown-finish\.wav/);
+const sequenceId = restTimerCompletionId('42', 1_234_567);
+assert.equal(sequenceId, '42:1234567');
+assert.equal(isActiveSessionLoggerPath('/workout/42', '42'), true);
+assert.equal(isActiveSessionLoggerPath('/(tabs)/workout/42', '42'), true);
+assert.equal(isActiveSessionLoggerPath('/workout/41', '42'), false);
+assert.equal(resolveRestTimerCompletionDelivery({
+  appState: 'active', pathname: '/workout/42', workoutId: '42',
+}), 'logger');
+assert.equal(resolveRestTimerCompletionDelivery({
+  appState: 'active', pathname: '/(tabs)/athlete-dashboard', workoutId: '42',
+}), 'modal');
+assert.equal(resolveRestTimerCompletionDelivery({
+  appState: 'background', pathname: '/workout/42', workoutId: '42',
+}), 'notification');
+assert.equal(resolveRestTimerCompletionDelivery({
+  appState: 'inactive', pathname: '/(tabs)/athlete-dashboard', workoutId: '42',
+}), 'notification');
+assert.equal(resolveRestTimerCompletionDelivery({
+  appState: 'active', pathname: '/workout/42', workoutId: '42', completedWhileBackgrounded: true,
+}), 'notification');
+
+const audioGate = new RestTimerAudioSequenceGate();
+assert.deepEqual(audioGate.cue(sequenceId, 'short'), { acquire: true, play: 'short', release: false });
+assert.deepEqual(audioGate.cue(sequenceId, 'short'), { acquire: false, play: 'short', release: false });
+assert.deepEqual(audioGate.cue(sequenceId, 'short'), { acquire: false, play: 'short', release: false });
+assert.deepEqual(audioGate.cue(sequenceId, 'finish'), { acquire: false, play: 'finish', release: false });
+assert.deepEqual(audioGate.finalToneFinished(sequenceId), { acquire: false, play: null, release: true });
+assert.deepEqual(audioGate.finalToneFinished(sequenceId), { acquire: false, play: null, release: false });
+const cancelledAudioGate = new RestTimerAudioSequenceGate();
+assert.equal(cancelledAudioGate.cue('cancelled', 'short').acquire, true);
+assert.equal(cancelledAudioGate.cancel('cancelled').release, true);
+assert.equal(cancelledAudioGate.cancel('cancelled').release, false);
+const completionGate = new RestTimerCompletionGate();
+assert.equal(completionGate.claim(sequenceId), true);
+assert.equal(completionGate.claim(sequenceId), false);
+
+assert.match(restTimerProvider, /useAudioPlayer\([\s\S]*rest-countdown-tick\.wav[\s\S]*keepAudioSessionActive: true/);
+assert.match(restTimerProvider, /useAudioPlayer\([\s\S]*rest-countdown-finish\.wav[\s\S]*keepAudioSessionActive: true/);
 assert.match(
-  workoutRoute,
-  /remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)/,
+  restTimerProvider,
+  /remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverCue\(timer, remaining\)/,
 );
-assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Light/);
-assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Medium/);
-assert.match(workoutRoute, /Haptics\.NotificationFeedbackType\.Success/);
+assert.match(restTimerProvider, /Haptics\.ImpactFeedbackStyle\.Light/);
+assert.match(restTimerProvider, /Haptics\.ImpactFeedbackStyle\.Medium/);
+assert.match(restTimerProvider, /Haptics\.NotificationFeedbackType\.Success/);
+assert.match(restTimerProvider, /interruptionMode: 'doNotMix'/);
+assert.match(restTimerProvider, /finalToneFinished\(completionId\)/);
+assert.match(restTimerProvider, /setIsAudioActiveAsync\(false\)/);
+assert.doesNotMatch(workoutRoute, /useAudioPlayer|scheduleNotificationAsync|setNotificationHandler/);
 assert.match(workoutRoute, /restTimerPromoted \|\| restTimerZeroVisible \|\| restTimerReadyVisible/);
 assert.match(workoutRoute, /<RestTimerFocus[\s\S]*visible=\{restTimerFocusVisible\}[\s\S]*ready=\{restTimerReadyVisible\}/);
 assert.match(workoutRoute, /REST_TIMER_ZERO_HOLD_MS = 650/);
 assert.match(workoutRoute, /REST_TIMER_READY_HOLD_MS = 900/);
 assert.match(workoutRoute, /REST_TIMER_RETURN_MS = 250/);
 assert.match(workoutRoute, /presentRestTimerReady\(\)/);
-assert.match(workoutRoute, /remaining <= 0[\s\S]*presentRestTimerReady\(\)/);
-assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)[\s\S]*remaining <= 0[\s\S]*presentRestTimerReady\(\)/);
+assert.match(workoutRoute, /timerCompletion\.delivery !== 'logger'[\s\S]*presentRestTimerReady\(\)[\s\S]*acknowledgeCompletion/);
 assert.match(workoutRoute, /restReadyDismissTimerRef\.current/);
 assert.match(workoutRoute, /restZeroAdvanceTimerRef\.current/);
 assert.match(workoutRoute, /onRestTimerLayout=\{handleRestTimerLayout\}/);
-assert.match(workoutRoute, /data\?\.kind === 'rest_end'[\s\S]*shouldShowAlert: !isRestEnd/);
-assert.match(workoutRoute, /persistRestTimerExpiry\(workoutId, endAt\)/);
-assert.match(workoutRoute, /loadRestTimerExpiry\(workoutId\)[\s\S]*restEndAtMsRef\.current = stored\.endAtMs/);
-assert.match(workoutRoute, /clearRestTimerExpiry\(workoutId\)/);
+assert.match(restTimerProvider, /kind: 'rest_end'[\s\S]*workout_id: timer\.workoutId[\s\S]*completion_id: timer\.completionId/);
+assert.match(restTimerProvider, /shouldShowAlert: !isRestEnd[\s\S]*shouldShowBanner: !isRestEnd/);
+assert.match(restTimerProvider, /delivery !== 'notification'[\s\S]*cancelScheduledNotification/);
+assert.match(restTimerProvider, /completion\?\.delivery === 'modal'/);
+assert.match(restTimerProvider, /data\.kind !== 'rest_end'[\s\S]*pathname: '\/\(tabs\)\/workout\/\[workoutId\]'/);
+assert.match(rootLayout, /<RestTimerProvider>[\s\S]*<RootStack \/>/);
+assert.match(workoutRoute, /restTimer\.restoreTimer\(workoutId\)/);
+assert.match(workoutRoute, /restTimer\.cancelTimer\(workoutId\)/);
 assert.match(restTimerStorage, /REST_TIMER_STORAGE_PREFIX = 'strength-ledger:rest-timer:v1'/);
+assert.match(restTimerStorage, /notificationId: string \| null/);
 assert.match(restTimerStorage, /endAtMs <= nowMs[\s\S]*AsyncStorage\.removeItem\(key\)/);
 
 assert.match(focusSurface, /StyleSheet\.absoluteFillObject/);
@@ -100,6 +154,13 @@ assert.match(
 );
 assert.doesNotMatch(focusSurface, /particle|confetti|firework|lens.?flare/i);
 assert.doesNotMatch(focusSurface, /<Modal|Alert\.alert|flash/i);
+
+assert.match(loggerModals, /import \{ BlurView \} from 'expo-blur'/);
+assert.match(
+  loggerModals,
+  /function RestTimerPickerModal[\s\S]*<Modal visible=\{visible\}[\s\S]*<BlurView[\s\S]*intensity=\{28\}[\s\S]*tint="dark"/,
+  'the rest-duration picker must blur the surrounding logger without changing timer behavior',
+);
 
 assert.match(sessionShell, /measureInWindow/);
 assert.match(sessionShell, /collapsable=\{false\}/);
@@ -220,7 +281,6 @@ assert.doesNotMatch(
 );
 assert.match(stopTimerBody, /setRestTimerZeroVisible\(false\)/);
 assert.match(stopTimerBody, /setRestTimerReadyVisible\(false\)/);
-assert.match(stopTimerBody, /setRestActive\(false\)/);
-assert.match(stopTimerBody, /setRestSeconds\(0\)/);
+assert.match(stopTimerBody, /restTimer\.cancelTimer\(workoutId\)/);
 
 console.log('Training Session Logger progress typography and rest-timer refinement tests passed.');

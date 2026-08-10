@@ -17,6 +17,7 @@ import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import { Text } from '@/components/ui/sl-text';
 import { AppShell } from '@/components/AppShell';
+import { RestTimerProvider } from '@/context/RestTimerContext';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -225,16 +226,6 @@ function RootStack() {
         const ConstantsModule = await import('expo-constants');
         const Constants = ConstantsModule.default;
         notificationModuleRef.current = Notifications;
-
-        Notifications.setNotificationHandler({
-          handleNotification: async () => ({
-            shouldShowAlert: true,
-            shouldPlaySound: true,
-            shouldSetBadge: false,
-            shouldShowBanner: true,
-            shouldShowList: true,
-          }),
-        });
 
         if (Platform.OS === 'android') {
           await Notifications.setNotificationChannelAsync('default', {
@@ -459,9 +450,11 @@ export default function RootLayout() {
         ) : (
           <AuthProvider>
             <ThemeProvider value={appOLEDTheme}>
-              <RootStack />
-              <OtaUpdateController />
-              <StatusBar style="light" />
+              <RestTimerProvider>
+                <RootStack />
+                <OtaUpdateController />
+                <StatusBar style="light" />
+              </RestTimerProvider>
             </ThemeProvider>
           </AuthProvider>
         )}

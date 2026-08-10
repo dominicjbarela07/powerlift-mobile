@@ -5,6 +5,7 @@ const REST_TIMER_STORAGE_PREFIX = 'strength-ledger:rest-timer:v1';
 export type RestTimerExpiry = Readonly<{
   workoutId: string;
   endAtMs: number;
+  notificationId: string | null;
 }>;
 
 function storageKey(workoutId: string | number): string {
@@ -14,6 +15,7 @@ function storageKey(workoutId: string | number): string {
 export async function persistRestTimerExpiry(
   workoutId: string | number,
   endAtMs: number,
+  notificationId: string | null = null,
 ): Promise<void> {
   if (!Number.isFinite(endAtMs) || endAtMs <= Date.now()) {
     await clearRestTimerExpiry(workoutId);
@@ -22,6 +24,7 @@ export async function persistRestTimerExpiry(
   const payload: RestTimerExpiry = {
     workoutId: String(workoutId),
     endAtMs,
+    notificationId,
   };
   await AsyncStorage.setItem(storageKey(workoutId), JSON.stringify(payload));
 }
@@ -47,6 +50,9 @@ export async function loadRestTimerExpiry(
     return Object.freeze({
       workoutId: String(workoutId),
       endAtMs,
+      notificationId: typeof parsed.notificationId === 'string'
+        ? parsed.notificationId
+        : null,
     });
   } catch {
     await AsyncStorage.removeItem(key);
