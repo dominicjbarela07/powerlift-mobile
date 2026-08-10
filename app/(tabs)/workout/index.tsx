@@ -40,6 +40,7 @@ import {
 } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { scopeProgrammingPayload } from '@/lib/programming-program-scope';
 import { compactProgrammingWeekdayLabel } from '@/lib/programming-weekday-label';
 import { formatSessionContentSnapshot } from '@/lib/session-content-snapshot';
 import {
@@ -535,10 +536,18 @@ export default function TrainingIndexScreen() {
         setLoadedTrainingScopeKey(requestScopeKey);
         return;
       }
-      setHub(res.training_hub || null);
-      setProgramBlocks(res.blocks || []);
-      setPendingMap(res.pending_map || {});
-      setCompletedMap(res.completed_map || {});
+      const responseHub: TrainingHubPayload | null = res.training_hub || null;
+      const scoped = scopeProgrammingPayload<ProgramBlockPayload, HubSession, NonNullable<TrainingHubPayload['current_block']>>({
+        activeProgramId: responseHub?.active_program?.id,
+        blocks: res.blocks,
+        pendingMap: res.pending_map,
+        completedMap: res.completed_map,
+        currentBlock: responseHub?.current_block || null,
+      });
+      setHub(responseHub ? { ...responseHub, current_block: scoped.currentBlock } : null);
+      setProgramBlocks(scoped.blocks);
+      setPendingMap(scoped.pendingMap);
+      setCompletedMap(scoped.completedMap);
       setLoadedTrainingScopeKey(requestScopeKey);
     } catch (err: any) {
       if (
@@ -959,8 +968,11 @@ function ActiveProgrammingRoadmap({
   onExitAthleteWorkspace?: () => void;
 }) {
   const orderedBlocks = useMemo(() => {
-    return [...blocks].sort((a, b) => Number(a.order_idx || 0) - Number(b.order_idx || 0));
-  }, [blocks]);
+    const activeProgramId = Number(activeProgram.id);
+    return blocks
+      .filter((block) => Number(block.training_program_id) === activeProgramId)
+      .sort((a, b) => Number(a.order_idx || 0) - Number(b.order_idx || 0));
+  }, [activeProgram.id, blocks]);
   const currentBlockId = currentBlock?.id || orderedBlocks[0]?.id || null;
   const [selectedBlockId, setSelectedBlockId] = useState<number | null>(initialBlockId || currentBlockId);
   const [expandedWeek, setExpandedWeek] = useState(Math.max(1, Number(initialWeek || 1)));
@@ -3663,12 +3675,9 @@ function buildAthleteTrainingHubData(
   const athletePhoto = normalizeProfilePhotoPayload(hub?.athlete);
   const coachPhoto = normalizeProfilePhotoPayload(hub?.connected_coach);
   const program = hub?.active_program || null;
-  const blocksWithProgramIdentity = blocks.filter((block) => block.training_program_id != null);
   const activeBlocks = !program
     ? []
-    : blocksWithProgramIdentity.length
-      ? blocksWithProgramIdentity.filter((block) => block.training_program_id === program.id)
-      : blocks;
+    : blocks.filter((block) => Number(block.training_program_id) === Number(program.id));
   const currentBlockId = hub?.current_block?.id ?? null;
   const currentIndex = Math.max(0, activeBlocks.findIndex((block) => block.id === currentBlockId));
 
