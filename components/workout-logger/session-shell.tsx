@@ -23,7 +23,7 @@ function SessionProgressRing({ progressPct, loggedSets, plannedSets }: {
   loggedSets: number;
   plannedSets: number;
 }) {
-  const size = 80;
+  const size = 92;
   const stroke = 7;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -64,12 +64,11 @@ function SessionProgressRing({ progressPct, loggedSets, plannedSets }: {
           <Text
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
-            minimumFontScale={0.5}
+            minimumFontScale={0.68}
             numberOfLines={1}
-            style={styles.progressRingCount}
+            style={styles.progressRingFraction}
           >
-            <Text style={styles.progressRingCompleted}>{loggedSets}</Text>
-            <Text style={styles.progressRingTotal}>/{plannedSets || '—'}</Text>
+            {loggedSets}/{plannedSets || '—'}
           </Text>
         </SLAnimatedMetric>
         <Text typographyRole="shortTechnicalLabel" style={styles.progressRingLabel}>sets</Text>
@@ -430,7 +429,7 @@ const styles = StyleSheet.create({
   commandStrip: {
     marginHorizontal: 0,
     backgroundColor: 'transparent',
-    minHeight: 88,
+    minHeight: 96,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 4,
@@ -440,8 +439,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   commandProgressBlock: {
-    width: 92,
-    minHeight: 88,
+    width: 100,
+    minHeight: 96,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -785,8 +784,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1.1,
   },
   progressRingWrap: {
-    width: 88,
-    height: 88,
+    width: 96,
+    height: 96,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -799,29 +798,18 @@ const styles = StyleSheet.create({
   },
   progressRingMetric: {
     alignItems: 'center',
-    width: 64,
+    width: 78,
   },
-  progressRingCount: {
-    lineHeight: 26,
-    textAlign: 'center',
-    width: '100%',
-  },
-  progressRingCompleted: {
+  progressRingFraction: {
     color: SLColors.textStrong,
     fontFamily: SLFontFamilies.numeric,
-    fontSize: 22,
-    lineHeight: 26,
-    fontWeight: '400',
-    letterSpacing: -0.45,
+    fontSize: 25,
+    lineHeight: 29,
+    fontWeight: '600',
+    letterSpacing: -0.7,
     fontVariant: ['tabular-nums'],
-  },
-  progressRingTotal: {
-    color: SLColors.textMuted,
-    fontFamily: SLFontFamilies.bodyMedium,
-    fontSize: 17,
-    lineHeight: 22,
-    fontWeight: '400',
-    fontVariant: ['tabular-nums'],
+    textAlign: 'center',
+    width: '100%',
   },
   progressRingLabel: {
     color: SLColors.textSubtle,

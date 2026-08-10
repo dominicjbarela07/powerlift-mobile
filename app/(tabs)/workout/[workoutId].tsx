@@ -212,6 +212,11 @@ import {
   type MachineEquipmentType,
 } from '@/lib/machine-equipment';
 import { buildSwapMovementGroups } from '@/lib/swap-movement-options';
+import {
+  accessoryRepeatDraft,
+  coreRepeatDraft,
+  latestRepeatableSet,
+} from '@/lib/repeat-last-set';
 
 const WORKOUT_DETAIL_COACH_AVATAR = require('@/assets/images/dev-fixtures/coach-adrien-avatar.png');
 const CORE_FAMILY_LIFT_CODE = {
@@ -961,6 +966,11 @@ type SupersetRoundLoggerEntry = {
   weightOptions: string[];
   repsOptions: string[];
   rirOptions: string[];
+  repeatLast: {
+    weight: string;
+    reps: string;
+    rir: string;
+  } | null;
 };
 type SupersetRoundLoggerState = {
   groupLabel: string;
@@ -3215,9 +3225,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const lastLogForItem = (item?: WorkoutItem | null) => {
-    const logs = item?.set_logs || [];
-    if (!logs.length) return null;
-    return [...logs].sort((a, b) => (b.set_index || 0) - (a.set_index || 0))[0];
+    return latestRepeatableSet(item?.set_logs || []);
   };
 
   const prefillCoreInput = (
@@ -3256,34 +3264,6 @@ export default function WorkoutViewerScreen() {
         },
       };
     });
-  };
-
-  const prefillAccessoryInput = (
-    item: WorkoutItem,
-    values: { weight?: string; reps?: string; rir?: string },
-  ) => {
-    setAccInputs((prev) => {
-      const cur = prev[item.id] || { weight: '', reps: '', rir: '' };
-      return {
-        ...prev,
-        [item.id]: {
-          weight: values.weight ?? cur.weight,
-          reps: values.reps ?? cur.reps,
-          rir: values.rir ?? cur.rir,
-        },
-      };
-    });
-  };
-
-  const repeatAccessoryLastSet = (item: WorkoutItem) => {
-    const last = lastLogForItem(item);
-    if (!last) return;
-    prefillAccessoryInput(item, {
-      weight: toWheelWeight(last, unit),
-      reps: last.actual_reps != null ? String(last.actual_reps) : '',
-      rir: last.actual_rir != null ? String(last.actual_rir) : '',
-    });
-    setPendingAccessoryLogItemId(item.id);
   };
 
   const loadIdentityPicker = useCallback(async (item: WorkoutItem, query = '') => {
@@ -3643,6 +3623,14 @@ export default function WorkoutViewerScreen() {
         const rir = log?.actual_rir != null
           ? formatWheelNumber(Number(log.actual_rir))
           : accInputs[item.id]?.rir || defaultAccessoryRir(item);
+        const previousLog = latestRepeatableSet(
+          (item.set_logs || []).filter(
+            (candidate) => Number(candidate.set_index || 0) < roundIndex,
+          ),
+        );
+        const repeatDraft = previousLog
+          ? accessoryRepeatDraft(previousLog, toWheelWeight(previousLog, unit))
+          : null;
         return {
           itemId: item.id,
           title: simplifyMobileMovementName(item.movement) || 'Accessory',
@@ -3657,6 +3645,11 @@ export default function WorkoutViewerScreen() {
           weightOptions,
           repsOptions,
           rirOptions,
+          repeatLast: repeatDraft ? {
+            weight: nearestWheelValue(weightOptions, repeatDraft.weight, '0'),
+            reps: nearestWheelValue(repsOptions, repeatDraft.reps, '10'),
+            rir: nearestWheelValue(rirOptions, repeatDraft.rir, '2'),
+          } : null,
         };
       });
     const draft = createSequentialGroupDraft(entries);
@@ -3693,6 +3686,25 @@ export default function WorkoutViewerScreen() {
         ...current,
         entries: [...next.entries],
         activeIndex: next.activeIndex,
+      };
+    });
+  };
+
+  const repeatLastIntoSupersetEntry = (itemId: number) => {
+    setSupersetRoundLogger((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        entries: current.entries.map((entry) => (
+          entry.itemId === itemId && !entry.alreadyLogged && entry.repeatLast
+            ? {
+                ...entry,
+                ...entry.repeatLast,
+                skipped: false,
+                validationError: null,
+              }
+            : entry
+        )),
       };
     });
   };
@@ -4211,35 +4223,6 @@ export default function WorkoutViewerScreen() {
       weightOptions,
       repsOptions,
       rpeOptions,
-    });
-  };
-
-  const repeatCoreSet = (
-    kind: CoreWheelKind,
-    item: WorkoutItem,
-    previousLog: SetLog | null,
-    setIndex?: number,
-  ) => {
-    if (!previousLog) return;
-
-    const weight = toWheelWeight(previousLog, unit);
-    const reps = previousLog.actual_reps != null ? String(previousLog.actual_reps) : '';
-    const rpe = previousLog.actual_rpe != null ? formatWheelNumber(Number(previousLog.actual_rpe)) : '';
-
-    if (kind === 'straight') {
-      prefillCoreInput('straight', item, { weight, reps, rpe });
-    } else if (kind === 'top') {
-      prefillCoreInput('top', item, { weight, reps, rpe });
-    } else if (kind === 'bk') {
-      prefillCoreInput('bk', item, { weight, reps, rpe });
-    } else {
-      prefillFcInput(`${item.id}:${setIndex}`, { weight, reps, rpe });
-    }
-
-    setPendingCoreWheelLog({
-      kind,
-      itemId: item.id,
-      setIndex,
     });
   };
 
@@ -6492,7 +6475,7 @@ export default function WorkoutViewerScreen() {
     rail: resolvedRail,
     opportunity: finalAssignedSetOpportunity(liftDisplayName(item), resolvedRail),
     canLog,
-    canRepeat: !!previousLog,
+    canRepeat: false,
     onLogSet: () => openCoreWheel({
       kind,
       item,
@@ -6500,7 +6483,7 @@ export default function WorkoutViewerScreen() {
       planned: planned || undefined,
       targetLine,
     }),
-    onRepeatLast: previousLog ? () => repeatCoreSet(kind, item, previousLog, setIndex) : undefined,
+    onRepeatLast: undefined,
     onViewHistory: () => setMovementHistoryItem(item),
     });
   };
@@ -7059,11 +7042,9 @@ export default function WorkoutViewerScreen() {
           recentContext: accessoryLookbackLine(item),
           rail: railForSets(totalSets, nextIndex, completedIndexes),
           canLog: canLogNext,
-          canRepeat: logs.length > 0,
+          canRepeat: false,
           onLogSet: canLogNext ? () => openAccessoryWheel(item) : undefined,
-          onRepeatLast: canLogNext && logs.length > 0
-            ? () => repeatAccessoryLastSet(item)
-            : undefined,
+          onRepeatLast: undefined,
           onViewHistory: () => setMovementHistoryItem(item),
           accessoryPresentation: true,
         }
@@ -7245,6 +7226,42 @@ export default function WorkoutViewerScreen() {
     feedbackState.submission.status,
     accessoryWheel?.itemId != null && feedbackState.submission.activeItemId === accessoryWheel.itemId,
   );
+  const coreWheelItem = coreWheel
+    ? data?.workout?.core_items.find((item) => item.id === coreWheel.itemId) || null
+    : null;
+  const coreWheelLastLog = lastLogForItem(coreWheelItem);
+  const accessoryWheelItem = accessoryWheel
+    ? data?.workout?.accessory_groups
+        .flatMap((group) => group.items)
+        .find((item) => item.id === accessoryWheel.itemId) || null
+    : null;
+  const accessoryWheelLastLog = lastLogForItem(accessoryWheelItem);
+
+  const repeatLastIntoCoreWheel = () => {
+    if (!coreWheelLastLog) return;
+    const draft = coreRepeatDraft(coreWheelLastLog, toWheelWeight(coreWheelLastLog, unit));
+    setCoreWheel((current) => current ? {
+      ...current,
+      weight: nearestWheelValue(current.weightOptions, draft.weight, current.weight),
+      reps: nearestWheelValue(current.repsOptions, draft.reps, current.reps),
+      rpe: nearestWheelValue(current.rpeOptions, draft.rpe, current.rpe),
+    } : current);
+  };
+
+  const repeatLastIntoAccessoryWheel = () => {
+    if (!accessoryWheelLastLog) return;
+    const draft = accessoryRepeatDraft(
+      accessoryWheelLastLog,
+      toWheelWeight(accessoryWheelLastLog, unit),
+    );
+    setAccessoryWheel((current) => current ? {
+      ...current,
+      weight: nearestWheelValue(current.weightOptions, draft.weight, current.weight),
+      reps: nearestWheelValue(current.repsOptions, draft.reps, current.reps),
+      rir: nearestWheelValue(current.rirOptions, draft.rir, current.rir),
+      selectedVideo: null,
+    } : current);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -7806,6 +7823,22 @@ export default function WorkoutViewerScreen() {
                 { key: 'rpe', label: 'RPE', value: coreWheel.rpe, options: coreWheel.rpeOptions, accessibilityValue: (value) => `${value} RPE`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, rpe: value } : prev) },
               ]} />
 
+              {coreWheelLastLog ? (
+                <TouchableOpacity
+                  accessibilityHint="Copies the previous set's load, reps, and RPE into this logger"
+                  accessibilityLabel="Repeat Last Set"
+                  accessibilityRole="button"
+                  onPress={repeatLastIntoCoreWheel}
+                  style={styles.repeatLastSetAction}
+                >
+                  <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                  <View style={styles.repeatLastSetCopy}>
+                    <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
+                    <Text style={styles.repeatLastSetSubtitle}>Use the last load, reps, and RPE</Text>
+                  </View>
+                </TouchableOpacity>
+              ) : null}
+
               <TouchableOpacity
                 style={[
                   styles.failedSetToggle,
@@ -7882,6 +7915,22 @@ export default function WorkoutViewerScreen() {
                 { key: 'reps', label: 'Reps', value: accessoryWheel.reps, options: accessoryWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, reps: value } : prev) },
                 { key: 'rir', label: 'RIR', value: accessoryWheel.rir, options: accessoryWheel.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, rir: value } : prev) },
               ]} />
+
+              {accessoryWheelLastLog ? (
+                <TouchableOpacity
+                  accessibilityHint="Copies the previous set's load, reps, and RIR into this logger"
+                  accessibilityLabel="Repeat Last Set"
+                  accessibilityRole="button"
+                  onPress={repeatLastIntoAccessoryWheel}
+                  style={styles.repeatLastSetAction}
+                >
+                  <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                  <View style={styles.repeatLastSetCopy}>
+                    <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
+                    <Text style={styles.repeatLastSetSubtitle}>Use the last load, reps, and RIR</Text>
+                  </View>
+                </TouchableOpacity>
+              ) : null}
 
               <TouchableOpacity
                 style={[
@@ -8072,6 +8121,22 @@ export default function WorkoutViewerScreen() {
                           { key: 'reps', label: 'Reps', value: activeEntry.reps, options: activeEntry.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'reps', value) },
                           { key: 'rir', label: 'RIR', value: activeEntry.rir, options: activeEntry.rirOptions, accessibilityValue: (value) => `${value} RIR`, onChange: (value) => updateSupersetRoundEntry(activeEntry.itemId, 'rir', value) },
                         ]} />
+
+                        {activeEntry.repeatLast ? (
+                          <TouchableOpacity
+                            accessibilityHint={`Copies ${activeEntry.title}'s previous load, reps, and RIR into this logger`}
+                            accessibilityLabel={`Repeat Last Set for ${activeEntry.title}`}
+                            accessibilityRole="button"
+                            onPress={() => repeatLastIntoSupersetEntry(activeEntry.itemId)}
+                            style={styles.repeatLastSetAction}
+                          >
+                            <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                            <View style={styles.repeatLastSetCopy}>
+                              <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
+                              <Text style={styles.repeatLastSetSubtitle}>Use this movement's last load, reps, and RIR</Text>
+                            </View>
+                          </TouchableOpacity>
+                        ) : null}
 
                         <TouchableOpacity
                           onPress={() =>
@@ -12006,6 +12071,34 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: 'transparent',
     borderColor: 'rgba(248,113,113,0.28)',
+  },
+  repeatLastSetAction: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderSelected,
+    borderRadius: SLRadius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    marginTop: SLSpacing.md,
+    minHeight: 52,
+    paddingHorizontal: SLSpacing.md,
+    paddingVertical: SLSpacing.sm,
+  },
+  repeatLastSetCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  repeatLastSetTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+  },
+  repeatLastSetSubtitle: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 17,
+    marginTop: 2,
   },
   logSheetSubmit: {
     flex: 1,

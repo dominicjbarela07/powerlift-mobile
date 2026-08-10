@@ -113,7 +113,7 @@ assert.match(sessionShell, /measureInWindow/);
 assert.match(sessionShell, /collapsable=\{false\}/);
 assert.match(sessionShell, /restPromoted && styles\.commandTimerBlockPromoted/);
 
-assert.match(sessionShell, /progressRingCompleted/);
+assert.match(sessionShell, /progressRingFraction/);
 assert.match(sessionShell, /\{loggedSets\}/);
 assert.match(sessionShell, /\/\{plannedSets \|\| '—'\}/);
 assert.doesNotMatch(sessionShell, /\{Math\.round\(clampedProgress\)\}%/);
@@ -129,18 +129,18 @@ assert.match(
 );
 assert.match(
   sessionShell,
-  /<SLAnimatedMetric value=\{loggedSets\} style=\{styles\.progressRingMetric\}>[\s\S]*adjustsFontSizeToFit[\s\S]*minimumFontScale=\{0\.5\}[\s\S]*numberOfLines=\{1\}[\s\S]*\{loggedSets\}[\s\S]*\/\{plannedSets \|\| '—'\}/,
+  /<SLAnimatedMetric value=\{loggedSets\} style=\{styles\.progressRingMetric\}>[\s\S]*adjustsFontSizeToFit[\s\S]*minimumFontScale=\{0\.68\}[\s\S]*numberOfLines=\{1\}[\s\S]*\{loggedSets\}\/\{plannedSets \|\| '—'\}/,
   'multi-digit completed and planned counts must scale together inside one bounded line',
 );
 assert.doesNotMatch(
   sessionShell,
-  /typographyRole="numeric" style=\{styles\.progressRingCompleted\}/,
+  /typographyRole="numeric" style=\{styles\.progressRingFraction\}/,
   'the global numeric role must not override the progress ring’s bounded local size',
 );
 assert.match(
   sessionShell,
-  /progressRingMetric:\s*\{[\s\S]*?width: 64/,
-  'the count must stay within the ring’s 66px inner diameter',
+  /progressRingMetric:\s*\{[\s\S]*?width: 78/,
+  'the count must stay within the enlarged ring’s inner diameter',
 );
 assert.match(
   sessionShell,
@@ -174,12 +174,12 @@ assert.match(
 );
 assert.match(
   sessionShell,
-  /commandStripWrap: \{[\s\S]*paddingVertical: 0[\s\S]*commandStrip: \{[\s\S]*minHeight: 88/,
+  /commandStripWrap: \{[\s\S]*paddingVertical: 0[\s\S]*commandStrip: \{[\s\S]*minHeight: 96/,
   'the sticky utility row must not exceed the natural progress-ring height',
 );
 assert.match(
   sessionShell,
-  /progressRingWrap: \{[\s\S]*width: 88,[\s\S]*height: 88/,
+  /progressRingWrap: \{[\s\S]*width: 96,[\s\S]*height: 96/,
   'vertical compression must preserve the progress-ring dimensions',
 );
 assert.doesNotMatch(
