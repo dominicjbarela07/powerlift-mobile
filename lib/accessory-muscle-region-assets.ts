@@ -1,0 +1,35 @@
+import type { ImageSourcePropType } from 'react-native';
+
+import type { AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+
+export type AccessoryMuscleRegionAsset = Readonly<{
+  label: string;
+  source: ImageSourcePropType;
+}>;
+
+export const ACCESSORY_MUSCLE_REGION_ASSETS: Readonly<
+  Record<AccessoryMuscleRegionKey, AccessoryMuscleRegionAsset>
+> = {
+  chest: { label: 'Chest', source: require('../assets/images/muscle-regions/chest.png') },
+  shoulders: { label: 'Shoulders', source: require('../assets/images/muscle-regions/shoulders.png') },
+  biceps: { label: 'Biceps', source: require('../assets/images/muscle-regions/biceps.png') },
+  triceps: { label: 'Triceps', source: require('../assets/images/muscle-regions/triceps.png') },
+  forearms: { label: 'Forearms', source: require('../assets/images/muscle-regions/forearms.png') },
+  lats: { label: 'Lats', source: require('../assets/images/muscle-regions/lats.png') },
+  upper_back: { label: 'Upper back', source: require('../assets/images/muscle-regions/upper-back.png') },
+  lower_back: { label: 'Lower back', source: require('../assets/images/muscle-regions/lower-back.png') },
+  core: { label: 'Core', source: require('../assets/images/muscle-regions/core.png') },
+  quads: { label: 'Quads', source: require('../assets/images/muscle-regions/quads.png') },
+  hamstrings: { label: 'Hamstrings', source: require('../assets/images/muscle-regions/hamstrings.png') },
+  glutes: { label: 'Glutes', source: require('../assets/images/muscle-regions/glutes.png') },
+  adductors: { label: 'Adductors', source: require('../assets/images/muscle-regions/adductors.png') },
+  calves: { label: 'Calves', source: require('../assets/images/muscle-regions/calves.png') },
+  arms: { label: 'Arms', source: require('../assets/images/muscle-regions/arms.png') },
+  full_body: { label: 'Full body', source: require('../assets/images/muscle-regions/full-body.png') },
+};
+
+export function accessoryMuscleRegionAsset(
+  key?: AccessoryMuscleRegionKey | null,
+): AccessoryMuscleRegionAsset {
+  return ACCESSORY_MUSCLE_REGION_ASSETS[key || 'full_body'];
+}

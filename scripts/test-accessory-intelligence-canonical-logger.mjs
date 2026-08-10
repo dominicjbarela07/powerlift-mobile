@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { PNG } from 'pngjs';
 
 import {
   applyWorkoutDetailMachineIdentity,
@@ -26,10 +24,6 @@ const workoutRouteSource = fs.readFileSync(
   path.join(process.cwd(), 'app/(tabs)/workout/[workoutId].tsx'),
   'utf8',
 );
-const accessoryCategoryArtworkPath = path.join(
-  process.cwd(),
-  'assets/images/movement-category-artwork-v5/accessory-wordmark-coin-seal.png',
-);
 const rejectedArtworkPaths = [
   'assets/images/movement-category-artwork-v1/accessory-category.png',
   'assets/images/movement-category-artwork-v1/core-variant-category.png',
@@ -40,18 +34,6 @@ const rejectedArtworkPaths = [
   'assets/images/movement-category-artwork-v3/accessory-mechanical.png',
   'assets/images/movement-category-artwork-v3/accessory-plate.png',
 ];
-
-function assertTransparentRasterAsset(filePath, label) {
-  const image = PNG.sync.read(fs.readFileSync(filePath));
-  assert.ok(image.width >= 500 && image.height >= 500, `${label} must remain Retina-ready.`);
-  const cornerAlphas = [
-    image.data[3],
-    image.data[(image.width - 1) * 4 + 3],
-    image.data[((image.height - 1) * image.width) * 4 + 3],
-    image.data[(image.width * image.height - 1) * 4 + 3],
-  ];
-  assert.deepEqual(cornerAlphas, [0, 0, 0, 0], `${label} must retain transparent corners.`);
-}
 
 assert.equal(
   workout.core_items.length,
@@ -130,17 +112,6 @@ assert.equal(freeWeight.movement_identity.identity_specificity, 'exact');
 assert.equal(freeWeight.performed_movement_identity, null);
 assert.equal(freeWeight.target_low_kg, null, 'Accessory recommendations must not populate prescribed load fields.');
 assert.equal(freeWeight.target_high_kg, null, 'Accessory recommendations must not populate prescribed load fields.');
-assert.equal(
-  fs.existsSync(accessoryCategoryArtworkPath),
-  true,
-  'The Accessory category artwork must remain available.',
-);
-assertTransparentRasterAsset(accessoryCategoryArtworkPath, 'Strength Ledger Accessory medal');
-assert.equal(
-  crypto.createHash('sha256').update(fs.readFileSync(accessoryCategoryArtworkPath)).digest('hex'),
-  '27c37e001227459b7ca343494a6283d49417dccca4f50540e8053f4a33f03209',
-  'The approved Accessory medal must not be regenerated or reinterpreted.',
-);
 for (const rejectedPath of rejectedArtworkPaths) {
   assert.equal(
     fs.existsSync(path.join(process.cwd(), rejectedPath)),
@@ -177,17 +148,17 @@ for (const expectedClass of [
 assert.equal(
   accessories.every((item) => Boolean(item.dev_accessory_intelligence)),
   true,
-  'Every canonical accessory class must route through the same approved medal.',
+  'Every canonical accessory class must retain its structured movement intelligence.',
 );
 assert.match(
   workoutRouteSource,
-  /const ACCESSORY_CATEGORY_ARTWORK = require\(\s*'@\/assets\/images\/movement-category-artwork-v5\/accessory-wordmark-coin-seal\.png',?\s*\)/,
-  'The shared logger must load the approved Strength Ledger Accessory medal.',
+  /import \{ accessoryMuscleRegion \} from '@\/lib\/accessory-muscle-group'/,
+  'The shared logger must resolve the canonical muscle region for Accessory cards.',
 );
 assert.match(
   workoutRouteSource,
-  /const categoryArtworkSource = isAccessory\s*\? ACCESSORY_CATEGORY_ARTWORK\s*: null/,
-  'Every accessory card must receive the same canonical category seal.',
+  /accessoryMuscleRegion: isAccessory[\s\S]*?accessoryMuscleRegion\(item\)\.key/,
+  'Every accessory card must receive a canonical muscle-region asset key.',
 );
 assert.match(
   workoutRouteSource,
@@ -196,8 +167,8 @@ assert.match(
 );
 assert.match(
   coreLoggerSource,
-  /visualContext\?\.categoryArtworkSource \? \([\s\S]*?: visualContext\?\.coreVariantFamily && visualContext\.liftIconSource \? \([\s\S]*?<CoreVariantBadge[\s\S]*?family=\{visualContext\.coreVariantFamily\}[\s\S]*?liftArtworkSource=\{visualContext\.liftIconSource\}/,
-  'Accessories must render the approved medal while variants use the integrated parent-family badge.',
+  /visualContext\?\.accessoryMuscleRegion \? \([\s\S]*?<AccessoryMuscleRegionMedallion[\s\S]*?regionKey=\{visualContext\.accessoryMuscleRegion\}[\s\S]*?: visualContext\?\.coreVariantFamily && visualContext\.liftIconSource \? \([\s\S]*?<CoreVariantBadge/,
+  'Accessories must render the canonical muscle-region medallion while variants use the integrated parent-family badge.',
 );
 assert.match(
   coreVariantBadgeSource,

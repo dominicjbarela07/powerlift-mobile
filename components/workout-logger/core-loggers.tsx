@@ -34,6 +34,7 @@ import {
   CoreVariantBadge,
   type CoreVariantFamily,
 } from '@/components/workout-logger/core-variant-badge';
+import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
@@ -46,6 +47,7 @@ import {
   coreLoggerVisibleMovementNote,
 } from '@/lib/core-logger-header';
 import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';
+import type { AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 
 export type SetRailStep = {
   key: string;
@@ -84,7 +86,7 @@ export type ActiveMovementVisualContext = {
   liftAccentColor: string;
   liftIconSource?: ImageSourcePropType | null;
   accessoryIconName?: SLAccessoryIconName | null;
-  accessoryMuscleGroupLabel?: string | null;
+  accessoryMuscleRegion?: AccessoryMuscleRegionKey | null;
   coreVariantFamily?: CoreVariantFamily | null;
   plateStack?: LoggerPlateStack | null;
   progress?: LoggerProgressContext | null;
@@ -408,19 +410,15 @@ export function CoreMovementLedgerRow({
         ]}>
           <View style={[
             styles.activeMovementLiftArtwork,
-            visualContext?.accessoryMuscleGroupLabel && styles.activeMovementAccessoryArtwork,
+            visualContext?.accessoryMuscleRegion && styles.activeMovementAccessoryArtwork,
             compactMovementLayout && styles.activeMovementLiftArtworkCompact,
-            compactMovementLayout && visualContext?.accessoryMuscleGroupLabel && styles.activeMovementAccessoryArtworkCompact,
+            compactMovementLayout && visualContext?.accessoryMuscleRegion && styles.activeMovementAccessoryArtworkCompact,
           ]}>
-            {visualContext?.accessoryMuscleGroupLabel ? (
-              <View
-                accessibilityLabel={`${visualContext.accessoryMuscleGroupLabel} primary muscle group`}
-                style={styles.activeMovementMuscleGroup}
-              >
-                <Text numberOfLines={2} style={styles.activeMovementMuscleGroupText}>
-                  {visualContext.accessoryMuscleGroupLabel}
-                </Text>
-              </View>
+            {visualContext?.accessoryMuscleRegion ? (
+              <AccessoryMuscleRegionMedallion
+                compact={compactMovementLayout}
+                regionKey={visualContext.accessoryMuscleRegion}
+              />
             ) : visualContext?.coreVariantFamily && visualContext.liftIconSource ? (
               <CoreVariantBadge
                 accentColor={visualContext.liftAccentColor}
@@ -1216,26 +1214,6 @@ const styles = StyleSheet.create({
   activeMovementCategoryArtwork: {
     width: '100%',
     height: '100%',
-  },
-  activeMovementMuscleGroup: {
-    alignItems: 'center',
-    backgroundColor: SLColors.surfaceFloating,
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    justifyContent: 'center',
-    minHeight: 54,
-    paddingHorizontal: SLSpacing.xs,
-    width: 72,
-  },
-  activeMovementMuscleGroupText: {
-    color: SLColors.accentViolet,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.45,
-    lineHeight: 15,
-    textAlign: 'center',
-    textTransform: 'uppercase',
   },
   activeMovementHeadingCopy: {
     flex: 1,

@@ -143,7 +143,7 @@ import {
   accessoryPerSetPrescription,
   accessoryPerSetRepsLabel,
 } from '@/lib/accessory-logger-prescription';
-import { accessoryPrimaryMuscleGroup } from '@/lib/accessory-muscle-group';
+import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { movementScrollTarget } from '@/lib/movement-transition';
 import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
 import { createSessionTimeDraft, parseSessionTimeDraft } from '@/lib/post-session-times';
@@ -6336,8 +6336,8 @@ export default function WorkoutViewerScreen() {
       liftAccentColor: identity.accentColor,
       liftIconSource: identity.iconSource,
       accessoryIconName,
-      accessoryMuscleGroupLabel: isAccessory
-        ? accessoryPrimaryMuscleGroup(item)
+      accessoryMuscleRegion: isAccessory
+        ? accessoryMuscleRegion(item).key
         : null,
       coreVariantFamily: isCoreVariant
         ? resolvedIdentity.key as keyof typeof CORE_FAMILY_LIFT_CODE
@@ -6990,7 +6990,7 @@ export default function WorkoutViewerScreen() {
     timelineLabel: simplifyMobileMovementName(item.movement) || 'Accessory',
     prescription: accessoryTargetLine(item),
     historyLine: accessoryLookbackLine(item),
-    primaryMuscleGroup: accessoryPrimaryMuscleGroup(item),
+    primaryMuscleRegion: accessoryMuscleRegion(item).key,
     set_logs: (item.set_logs || []).map((log) => ({
       ...log,
       resultLine: loggedSetText(log, unit),
