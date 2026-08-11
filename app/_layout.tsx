@@ -17,7 +17,6 @@ import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import { Text } from '@/components/ui/sl-text';
 import { AppShell } from '@/components/AppShell';
-import { RestTimerProvider } from '@/context/RestTimerContext';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -450,11 +449,9 @@ export default function RootLayout() {
         ) : (
           <AuthProvider>
             <ThemeProvider value={appOLEDTheme}>
-              <RestTimerProvider>
-                <RootStack />
-                <OtaUpdateController />
-                <StatusBar style="light" />
-              </RestTimerProvider>
+              <RootStack />
+              <OtaUpdateController />
+              <StatusBar style="light" />
             </ThemeProvider>
           </AuthProvider>
         )}
