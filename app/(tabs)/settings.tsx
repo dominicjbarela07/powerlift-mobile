@@ -35,6 +35,7 @@ import {
 } from '@/lib/api';
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
+import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -1792,6 +1793,19 @@ export default function SettingsScreen() {
             })}
           </>
         , 'Support')}
+
+        {canAccessAccessoryCatalogReview(auth.user)
+          ? settingsGroup(
+              settingsRow({
+                icon: 'albums-outline',
+                title: 'Accessory Catalog Review',
+                description: 'Review canonical movement taxonomy',
+                summary: `${ACCESSORY_REVIEW_CATALOG.total_movements} movements`,
+                onPress: () => router.push('/(tabs)/accessory-catalog-review' as any),
+              }),
+              'Catalog Review'
+            )
+          : null}
 
         {settingsGroup(
           <>

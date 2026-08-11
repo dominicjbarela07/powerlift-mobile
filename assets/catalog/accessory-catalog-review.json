@@ -1,0 +1,6146 @@
+{
+  "schema_version": 1,
+  "catalog_version": "sha256:72b7c1e56d6ce0fc64ad2c92060cadd34b995e128718767e53e589eddefc4e40",
+  "source": "app/services/accessory_catalog.py",
+  "total_movements": 583,
+  "muscle_groups": [
+    {
+      "key": "chest",
+      "label": "Chest",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "front_delts",
+      "label": "Front Delts",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "side_delts",
+      "label": "Side Delts",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "rear_delts",
+      "label": "Rear Delts",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "lats",
+      "label": "Lats",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "upper_back",
+      "label": "Upper Back",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "traps",
+      "label": "Traps",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "biceps",
+      "label": "Biceps",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "triceps",
+      "label": "Triceps",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "forearms",
+      "label": "Forearms",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "quads",
+      "label": "Quads",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "hamstrings",
+      "label": "Hamstrings",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "glutes",
+      "label": "Glutes",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "adductors",
+      "label": "Adductors",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "abductors",
+      "label": "Abductors",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "calves",
+      "label": "Calves",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "abs",
+      "label": "Abs",
+      "body_region": "trunk"
+    },
+    {
+      "key": "obliques",
+      "label": "Obliques",
+      "body_region": "trunk"
+    },
+    {
+      "key": "lower_back",
+      "label": "Lower Back",
+      "body_region": "trunk"
+    },
+    {
+      "key": "serratus",
+      "label": "Serratus",
+      "body_region": "upper_body"
+    },
+    {
+      "key": "hip_flexors",
+      "label": "Hip Flexors",
+      "body_region": "lower_body"
+    },
+    {
+      "key": "neck",
+      "label": "Neck",
+      "body_region": "upper_body"
+    }
+  ],
+  "execution_families": [
+    {
+      "key": "FREE_WEIGHT",
+      "label": "Free Weight",
+      "requires_equipment_configuration": false
+    },
+    {
+      "key": "MACHINE",
+      "label": "Machine",
+      "requires_equipment_configuration": true
+    },
+    {
+      "key": "CABLE",
+      "label": "Cable",
+      "requires_equipment_configuration": true
+    },
+    {
+      "key": "BODYWEIGHT",
+      "label": "Bodyweight",
+      "requires_equipment_configuration": false
+    },
+    {
+      "key": "BAND",
+      "label": "Band",
+      "requires_equipment_configuration": false
+    },
+    {
+      "key": "OTHER_PORTABLE",
+      "label": "Other Portable",
+      "requires_equipment_configuration": false
+    }
+  ],
+  "movements": [
+    {
+      "id": "accessory_flat_dumbbell_bench_press",
+      "canonical_name": "Flat Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_dumbbell_bench_press",
+      "canonical_name": "Incline Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_decline_dumbbell_bench_press",
+      "canonical_name": "Decline Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_neutral_grip_dumbbell_bench_press",
+      "canonical_name": "Neutral-Grip Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_floor_press",
+      "canonical_name": "Dumbbell Floor Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_squeeze_press",
+      "canonical_name": "Dumbbell Squeeze Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_hex_press",
+      "canonical_name": "Dumbbell Hex Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_flye",
+      "canonical_name": "Dumbbell Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_dumbbell_flye",
+      "canonical_name": "Incline Dumbbell Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_decline_dumbbell_flye",
+      "canonical_name": "Decline Dumbbell Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_floor_press",
+      "canonical_name": "Barbell Floor Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_spoto_press",
+      "canonical_name": "Spoto Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_larsen_press",
+      "canonical_name": "Larsen Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_guillotine_press",
+      "canonical_name": "Guillotine Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_grip_bench_press",
+      "canonical_name": "Reverse-Grip Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cambered_bar_bench_press",
+      "canonical_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_machine_chest_press",
+      "canonical_name": "Machine Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_incline_machine_chest_press",
+      "canonical_name": "Incline Machine Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_decline_machine_chest_press",
+      "canonical_name": "Decline Machine Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_chest_press",
+      "canonical_name": "Plate-Loaded Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_chest_press",
+      "canonical_name": "Selectorized Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_chest_flye",
+      "canonical_name": "Machine Chest Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_pec_deck",
+      "canonical_name": "Pec Deck",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_converging_chest_press",
+      "canonical_name": "Converging Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_iso_lateral_chest_press",
+      "canonical_name": "Iso-Lateral Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_machine_chest_press",
+      "canonical_name": "Single-Arm Machine Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_bench_press",
+      "canonical_name": "Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_incline_smith_machine_bench_press",
+      "canonical_name": "Incline Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_decline_smith_machine_bench_press",
+      "canonical_name": "Decline Smith-Machine Bench Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_chest_press",
+      "canonical_name": "Standing Cable Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_chest_press",
+      "canonical_name": "Single-Arm Cable Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_chest_flye",
+      "canonical_name": "Cable Chest Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_low_to_high_cable_flye",
+      "canonical_name": "Low-to-High Cable Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_high_to_low_cable_flye",
+      "canonical_name": "High-to-Low Cable Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_mid_cable_flye",
+      "canonical_name": "Mid-Cable Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_flye",
+      "canonical_name": "Single-Arm Cable Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_squeeze_press",
+      "canonical_name": "Cable Squeeze Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_push_up",
+      "canonical_name": "Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_deficit_push_up",
+      "canonical_name": "Deficit Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ring_push_up",
+      "canonical_name": "Ring Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_push_up",
+      "canonical_name": "Wide-Grip Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_decline_push_up",
+      "canonical_name": "Decline Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_push_up",
+      "canonical_name": "Incline Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_push_up",
+      "canonical_name": "Weighted Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_dip",
+      "canonical_name": "Chest Dip",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ring_dip",
+      "canonical_name": "Ring Dip",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_chest_press",
+      "canonical_name": "Band Chest Press",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_chest_flye",
+      "canonical_name": "Band Chest Flye",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_push_up",
+      "canonical_name": "Band Push-Up",
+      "primary_muscle_group": "chest",
+      "secondary_muscle_groups": [
+        "front_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_dumbbell_shoulder_press",
+      "canonical_name": "Seated Dumbbell Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_dumbbell_shoulder_press",
+      "canonical_name": "Standing Dumbbell Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_arnold_press",
+      "canonical_name": "Arnold Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_front_raise",
+      "canonical_name": "Dumbbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_alternating_dumbbell_front_raise",
+      "canonical_name": "Alternating Dumbbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_front_raise",
+      "canonical_name": "Plate Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_front_raise",
+      "canonical_name": "Barbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_landmine_press",
+      "canonical_name": "Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_half_kneeling_landmine_press",
+      "canonical_name": "Half-Kneeling Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_arm_landmine_press",
+      "canonical_name": "Single-Arm Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_z_press",
+      "canonical_name": "Z Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bradford_press",
+      "canonical_name": "Bradford Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_machine_shoulder_press",
+      "canonical_name": "Machine Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_shoulder_press",
+      "canonical_name": "Plate-Loaded Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_shoulder_press",
+      "canonical_name": "Selectorized Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_iso_lateral_shoulder_press",
+      "canonical_name": "Iso-Lateral Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_shoulder_press",
+      "canonical_name": "Smith-Machine Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_front_raise",
+      "canonical_name": "Machine Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_front_raise",
+      "canonical_name": "Cable Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_front_raise",
+      "canonical_name": "Single-Arm Cable Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_shoulder_press",
+      "canonical_name": "Cable Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_shoulder_press",
+      "canonical_name": "Single-Arm Cable Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_front_raise",
+      "canonical_name": "Band Front Raise",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_shoulder_press",
+      "canonical_name": "Band Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_pike_push_up",
+      "canonical_name": "Pike Push-Up",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_handstand_push_up",
+      "canonical_name": "Handstand Push-Up",
+      "primary_muscle_group": "front_delts",
+      "secondary_muscle_groups": [
+        "side_delts",
+        "triceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_lateral_raise",
+      "canonical_name": "Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_dumbbell_lateral_raise",
+      "canonical_name": "Seated Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_dumbbell_lateral_raise",
+      "canonical_name": "Incline Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lean_away_dumbbell_lateral_raise",
+      "canonical_name": "Lean-Away Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lying_dumbbell_lateral_raise",
+      "canonical_name": "Lying Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_dumbbell_lateral_raise",
+      "canonical_name": "Chest-Supported Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_partial_dumbbell_lateral_raise",
+      "canonical_name": "Partial Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lu_raise",
+      "canonical_name": "Lu Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_upright_row",
+      "canonical_name": "Dumbbell Upright Row",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_barbell_upright_row",
+      "canonical_name": "Wide-Grip Barbell Upright Row",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_lateral_raise",
+      "canonical_name": "Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_lateral_raise",
+      "canonical_name": "Single-Arm Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_lean_away_cable_lateral_raise",
+      "canonical_name": "Lean-Away Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_behind_the_back_cable_lateral_raise",
+      "canonical_name": "Behind-the-Back Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cuffed_cable_lateral_raise",
+      "canonical_name": "Cuffed Cable Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_y_raise",
+      "canonical_name": "Single-Arm Cable Y-Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_dual_cable_y_raise",
+      "canonical_name": "Dual Cable Y-Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_upright_row",
+      "canonical_name": "Cable Upright Row",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "front_delts",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_lateral_raise",
+      "canonical_name": "Machine Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_lateral_raise",
+      "canonical_name": "Selectorized Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_lateral_raise",
+      "canonical_name": "Plate-Loaded Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_y_raise",
+      "canonical_name": "Machine Y-Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_lateral_raise",
+      "canonical_name": "Band Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_y_raise",
+      "canonical_name": "Band Y-Raise",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_upright_row",
+      "canonical_name": "Band Upright Row",
+      "primary_muscle_group": "side_delts",
+      "secondary_muscle_groups": [
+        "traps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bent_over_dumbbell_reverse_flye",
+      "canonical_name": "Bent-Over Dumbbell Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_dumbbell_reverse_flye",
+      "canonical_name": "Chest-Supported Dumbbell Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_bench_rear_delt_flye",
+      "canonical_name": "Incline-Bench Rear-Delt Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_rear_delt_dumbbell_row",
+      "canonical_name": "Rear-Delt Dumbbell Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_elbow_dumbbell_row",
+      "canonical_name": "Wide-Elbow Dumbbell Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_rear_delt_barbell_row",
+      "canonical_name": "Rear-Delt Barbell Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_chest_supported_rear_delt_row",
+      "canonical_name": "Wide-Grip Chest-Supported Rear-Delt Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_prone_rear_delt_swing",
+      "canonical_name": "Prone Rear-Delt Swing",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_pec_deck",
+      "canonical_name": "Reverse Pec Deck",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_reverse_flye",
+      "canonical_name": "Machine Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rear_delt_row_machine",
+      "canonical_name": "Rear-Delt Row Machine",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_chest_supported_rear_delt_machine_row",
+      "canonical_name": "Chest-Supported Rear-Delt Machine Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_reverse_flye",
+      "canonical_name": "Cable Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_reverse_flye",
+      "canonical_name": "Single-Arm Cable Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cross_body_cable_rear_delt_flye",
+      "canonical_name": "Cross-Body Cable Rear-Delt Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_rear_delt_row",
+      "canonical_name": "Cable Rear-Delt Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_high_cable_rear_delt_row",
+      "canonical_name": "High Cable Rear-Delt Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_face_pull",
+      "canonical_name": "Cable Face Pull",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_face_pull",
+      "canonical_name": "Rope Face Pull",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_face_pull_with_external_rotation",
+      "canonical_name": "Rope Face Pull with External Rotation",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "traps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_pull_apart",
+      "canonical_name": "Band Pull-Apart",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_reverse_flye",
+      "canonical_name": "Band Reverse Flye",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_face_pull",
+      "canonical_name": "Band Face Pull",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_w_raise",
+      "canonical_name": "Band W-Raise",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_archer_row",
+      "canonical_name": "Dumbbell Archer Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "lats"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_archer_row",
+      "canonical_name": "Cable Archer Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "lats"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_archer_row",
+      "canonical_name": "Archer Row",
+      "primary_muscle_group": "rear_delts",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "lats"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_meadows_row",
+      "canonical_name": "Meadows Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_one_arm_dumbbell_row",
+      "canonical_name": "One-Arm Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_pullover",
+      "canonical_name": "Dumbbell Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_pullover",
+      "canonical_name": "Barbell Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_kroc_row",
+      "canonical_name": "Kroc Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_three_point_dumbbell_row",
+      "canonical_name": "Three-Point Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_landmine_row",
+      "canonical_name": "Landmine Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_one_arm_landmine_row",
+      "canonical_name": "One-Arm Landmine Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lat_biased_dumbbell_row",
+      "canonical_name": "Lat-Biased Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lat_biased_chest_supported_dumbbell_row",
+      "canonical_name": "Lat-Biased Chest-Supported Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "upper_back",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_lat_pulldown",
+      "canonical_name": "Wide-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_neutral_grip_lat_pulldown",
+      "canonical_name": "Neutral-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_close_grip_lat_pulldown",
+      "canonical_name": "Close-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_supinated_grip_lat_pulldown",
+      "canonical_name": "Supinated-Grip Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_lat_pulldown",
+      "canonical_name": "Single-Arm Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_half_kneeling_single_arm_lat_pulldown",
+      "canonical_name": "Half-Kneeling Single-Arm Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_kneeling_cable_lat_pulldown",
+      "canonical_name": "Kneeling Cable Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_straight_arm_cable_pulldown",
+      "canonical_name": "Straight-Arm Cable Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_straight_arm_pulldown",
+      "canonical_name": "Rope Straight-Arm Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_pullover",
+      "canonical_name": "Cable Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_pullover",
+      "canonical_name": "Single-Arm Cable Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_lat_prayer",
+      "canonical_name": "Cable Lat Prayer",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_low_row",
+      "canonical_name": "Single-Arm Cable Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_elbow_tucked_cable_row",
+      "canonical_name": "Elbow-Tucked Cable Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cross_bench_cable_pulldown",
+      "canonical_name": "Cross-Bench Cable Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_pullover",
+      "canonical_name": "Machine Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_pullover",
+      "canonical_name": "Plate-Loaded Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_pullover",
+      "canonical_name": "Selectorized Pullover",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_iso_lateral_lat_pulldown",
+      "canonical_name": "Iso-Lateral Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_lat_pulldown",
+      "canonical_name": "Machine Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_lat_pulldown",
+      "canonical_name": "Plate-Loaded Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_iso_lateral_low_row",
+      "canonical_name": "Iso-Lateral Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_low_row",
+      "canonical_name": "Machine Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_machine_low_row",
+      "canonical_name": "Single-Arm Machine Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_low_row",
+      "canonical_name": "Plate-Loaded Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hammer_strength_low_row",
+      "canonical_name": "Hammer Strength Low Row",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_pull_up",
+      "canonical_name": "Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_neutral_grip_pull_up",
+      "canonical_name": "Neutral-Grip Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_pull_up",
+      "canonical_name": "Wide-Grip Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chin_up",
+      "canonical_name": "Chin-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_sternum_chin_up",
+      "canonical_name": "Sternum Chin-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_assisted_pull_up",
+      "canonical_name": "Assisted Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_pull_up",
+      "canonical_name": "Weighted Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_scapular_pull_up",
+      "canonical_name": "Scapular Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps",
+        "upper_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_lat_pulldown",
+      "canonical_name": "Band Lat Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_straight_arm_pulldown",
+      "canonical_name": "Band Straight-Arm Pulldown",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_assisted_pull_up",
+      "canonical_name": "Band-Assisted Pull-Up",
+      "primary_muscle_group": "lats",
+      "secondary_muscle_groups": [
+        "biceps"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bent_over_barbell_row",
+      "canonical_name": "Bent-Over Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_pendlay_row",
+      "canonical_name": "Pendlay Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seal_row",
+      "canonical_name": "Seal Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_dumbbell_row",
+      "canonical_name": "Chest-Supported Dumbbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_barbell_row",
+      "canonical_name": "Chest-Supported Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_bench_dumbbell_row",
+      "canonical_name": "Incline-Bench Dumbbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_t_bar_row",
+      "canonical_name": "T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_grip_t_bar_row",
+      "canonical_name": "Wide-Grip T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_t_bar_row",
+      "canonical_name": "Chest-Supported T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_helms_row",
+      "canonical_name": "Helms Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_batwing_row",
+      "canonical_name": "Batwing Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_gorilla_row",
+      "canonical_name": "Gorilla Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_snatch_grip_barbell_row",
+      "canonical_name": "Snatch-Grip Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wide_elbow_barbell_row",
+      "canonical_name": "Wide-Elbow Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_kelso_row",
+      "canonical_name": "Chest-Supported Kelso Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_high_row",
+      "canonical_name": "Dumbbell High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_cable_row",
+      "canonical_name": "Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_wide_grip_seated_cable_row",
+      "canonical_name": "Wide-Grip Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_neutral_grip_seated_cable_row",
+      "canonical_name": "Neutral-Grip Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_seated_cable_row",
+      "canonical_name": "Single-Arm Seated Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_high_row",
+      "canonical_name": "Cable High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_cable_row",
+      "canonical_name": "Rope Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_chest_supported_cable_row",
+      "canonical_name": "Chest-Supported Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_row",
+      "canonical_name": "Standing Cable Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_scapular_row",
+      "canonical_name": "Cable Scapular Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_chest_supported_machine_row",
+      "canonical_name": "Chest-Supported Machine Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_high_row",
+      "canonical_name": "Plate-Loaded High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_high_row",
+      "canonical_name": "Selectorized High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_iso_lateral_high_row",
+      "canonical_name": "Iso-Lateral High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_machine_high_row",
+      "canonical_name": "Single-Arm Machine High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_t_bar_row",
+      "canonical_name": "Machine T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_t_bar_row",
+      "canonical_name": "Plate-Loaded T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_mid_row",
+      "canonical_name": "Machine Mid Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_seated_row",
+      "canonical_name": "Selectorized Seated Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_seated_row",
+      "canonical_name": "Plate-Loaded Seated Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_chest_supported_high_row",
+      "canonical_name": "Chest-Supported High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_wide_elbow_machine_row",
+      "canonical_name": "Wide-Elbow Machine Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_inverted_row",
+      "canonical_name": "Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_feet_elevated_inverted_row",
+      "canonical_name": "Feet-Elevated Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ring_row",
+      "canonical_name": "Ring Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_suspension_trainer_row",
+      "canonical_name": "Suspension-Trainer Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_scapular_inverted_row",
+      "canonical_name": "Scapular Inverted Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts",
+        "biceps"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_row",
+      "canonical_name": "Band Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_high_row",
+      "canonical_name": "Band High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_scapular_row",
+      "canonical_name": "Band Scapular Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "lats",
+        "rear_delts"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_arm_cable_high_row",
+      "canonical_name": "Single-Arm Cable High Row",
+      "primary_muscle_group": "upper_back",
+      "secondary_muscle_groups": [
+        "rear_delts",
+        "lats"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_barbell_shrug",
+      "canonical_name": "Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_shrug",
+      "canonical_name": "Dumbbell Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_trap_bar_shrug",
+      "canonical_name": "Trap-Bar Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_behind_the_back_barbell_shrug",
+      "canonical_name": "Behind-the-Back Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_snatch_grip_shrug",
+      "canonical_name": "Snatch-Grip Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_overhead_barbell_shrug",
+      "canonical_name": "Overhead Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_farmer_carry",
+      "canonical_name": "Farmer Carry",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_chest_supported_kelso_shrug",
+      "canonical_name": "Chest-Supported Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_kelso_shrug",
+      "canonical_name": "Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "forearms",
+        "upper_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_machine_shrug",
+      "canonical_name": "Machine Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_shrug",
+      "canonical_name": "Plate-Loaded Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_shrug",
+      "canonical_name": "Selectorized Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_shrug",
+      "canonical_name": "Smith-Machine Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_kelso_shrug",
+      "canonical_name": "Machine Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_shrug",
+      "canonical_name": "Cable Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_shrug",
+      "canonical_name": "Single-Arm Cable Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_kelso_shrug",
+      "canonical_name": "Cable Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_shrug",
+      "canonical_name": "Band Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_overhead_shrug",
+      "canonical_name": "Band Overhead Shrug",
+      "primary_muscle_group": "traps",
+      "secondary_muscle_groups": [
+        "upper_back"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_curl",
+      "canonical_name": "Barbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ez_bar_curl",
+      "canonical_name": "EZ-Bar Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_curl",
+      "canonical_name": "Dumbbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_alternating_dumbbell_curl",
+      "canonical_name": "Alternating Dumbbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_dumbbell_curl",
+      "canonical_name": "Seated Dumbbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_dumbbell_curl",
+      "canonical_name": "Standing Dumbbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_dumbbell_curl",
+      "canonical_name": "Incline Dumbbell Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_spider_curl",
+      "canonical_name": "Spider Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_arm_preacher_curl",
+      "canonical_name": "Single-Arm Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_preacher_curl",
+      "canonical_name": "Dumbbell Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ez_bar_preacher_curl",
+      "canonical_name": "EZ-Bar Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_concentration_curl",
+      "canonical_name": "Concentration Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hammer_curl",
+      "canonical_name": "Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cross_body_hammer_curl",
+      "canonical_name": "Cross-Body Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_zottman_curl",
+      "canonical_name": "Zottman Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_drag_curl",
+      "canonical_name": "Drag Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_curl",
+      "canonical_name": "Reverse Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cheat_curl",
+      "canonical_name": "Cheat Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_curl",
+      "canonical_name": "Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_cable_curl",
+      "canonical_name": "Rope Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_bayesian_cable_curl",
+      "canonical_name": "Bayesian Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_bayesian_cable_curl",
+      "canonical_name": "Single-Arm Bayesian Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_preacher_curl",
+      "canonical_name": "Cable Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_preacher_curl",
+      "canonical_name": "Single-Arm Cable Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_high_cable_curl",
+      "canonical_name": "High Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_dual_high_cable_curl",
+      "canonical_name": "Dual High Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hercules_cable_curl",
+      "canonical_name": "Hercules Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_curl",
+      "canonical_name": "Single-Arm Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_hammer_curl",
+      "canonical_name": "Cable Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_behind_the_back_cable_curl",
+      "canonical_name": "Behind-the-Back Cable Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_preacher_curl",
+      "canonical_name": "Machine Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_machine_preacher_curl",
+      "canonical_name": "Single-Arm Machine Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_biceps_curl",
+      "canonical_name": "Selectorized Biceps Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_biceps_curl",
+      "canonical_name": "Plate-Loaded Biceps Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_curl",
+      "canonical_name": "Band Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_hammer_curl",
+      "canonical_name": "Band Hammer Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_preacher_curl",
+      "canonical_name": "Band Preacher Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bodyweight_curl",
+      "canonical_name": "Bodyweight Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ring_curl",
+      "canonical_name": "Ring Curl",
+      "primary_muscle_group": "biceps",
+      "secondary_muscle_groups": [
+        "forearms"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_close_grip_bench_press",
+      "canonical_name": "Close-Grip Bench Press",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_jm_press",
+      "canonical_name": "JM Press",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_skull_crusher",
+      "canonical_name": "Barbell Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ez_bar_skull_crusher",
+      "canonical_name": "EZ-Bar Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_skull_crusher",
+      "canonical_name": "Dumbbell Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_incline_skull_crusher",
+      "canonical_name": "Incline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_decline_skull_crusher",
+      "canonical_name": "Decline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_overhead_triceps_extension",
+      "canonical_name": "Dumbbell Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+      "canonical_name": "Single-Arm Dumbbell Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_tate_press",
+      "canonical_name": "Tate Press",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_rolling_dumbbell_triceps_extension",
+      "canonical_name": "Rolling Dumbbell Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_pjr_pullover",
+      "canonical_name": "PJR Pullover",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_triceps_pressdown",
+      "canonical_name": "Cable Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_triceps_pressdown",
+      "canonical_name": "Rope Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_straight_bar_triceps_pressdown",
+      "canonical_name": "Straight-Bar Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_v_bar_triceps_pressdown",
+      "canonical_name": "V-Bar Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_reverse_grip_triceps_pressdown",
+      "canonical_name": "Reverse-Grip Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_pressdown",
+      "canonical_name": "Single-Arm Cable Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_overhead_triceps_extension",
+      "canonical_name": "Cable Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rope_overhead_triceps_extension",
+      "canonical_name": "Rope Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_overhead_triceps_extension",
+      "canonical_name": "Single-Arm Cable Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cross_body_cable_triceps_extension",
+      "canonical_name": "Cross-Body Cable Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_skull_crusher",
+      "canonical_name": "Cable Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_kickback",
+      "canonical_name": "Cable Kickback",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_triceps_extension",
+      "canonical_name": "Machine Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_dip",
+      "canonical_name": "Machine Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_plate_loaded_dip",
+      "canonical_name": "Plate-Loaded Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_selectorized_dip",
+      "canonical_name": "Selectorized Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_bench_dip",
+      "canonical_name": "Bench Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_triceps_dip",
+      "canonical_name": "Triceps Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_diamond_push_up",
+      "canonical_name": "Diamond Push-Up",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bodyweight_skull_crusher",
+      "canonical_name": "Bodyweight Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ring_triceps_extension",
+      "canonical_name": "Ring Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_assisted_dip",
+      "canonical_name": "Assisted Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_dip",
+      "canonical_name": "Weighted Dip",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [
+        "chest",
+        "front_delts"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_triceps_pressdown",
+      "canonical_name": "Band Triceps Pressdown",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_overhead_triceps_extension",
+      "canonical_name": "Band Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_kickback",
+      "canonical_name": "Band Kickback",
+      "primary_muscle_group": "triceps",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_wrist_curl",
+      "canonical_name": "Barbell Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_wrist_curl",
+      "canonical_name": "Dumbbell Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_behind_the_back_wrist_curl",
+      "canonical_name": "Behind-the-Back Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_wrist_curl",
+      "canonical_name": "Reverse Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_reverse_wrist_curl",
+      "canonical_name": "Dumbbell Reverse Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wrist_roller",
+      "canonical_name": "Wrist Roller",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_pinch",
+      "canonical_name": "Plate Pinch",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_fat_grip_hold",
+      "canonical_name": "Fat-Grip Hold",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_finger_curl",
+      "canonical_name": "Barbell Finger Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lever_bar_pronation",
+      "canonical_name": "Lever Bar Pronation",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lever_bar_supination",
+      "canonical_name": "Lever Bar Supination",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_radial_deviation",
+      "canonical_name": "Radial Deviation",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ulnar_deviation",
+      "canonical_name": "Ulnar Deviation",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_wrist_curl",
+      "canonical_name": "Cable Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_reverse_wrist_curl",
+      "canonical_name": "Cable Reverse Wrist Curl",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_pronation",
+      "canonical_name": "Cable Pronation",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_supination",
+      "canonical_name": "Cable Supination",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hand_gripper",
+      "canonical_name": "Hand Gripper",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "OTHER_PORTABLE",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_towel_grip_hold",
+      "canonical_name": "Towel Grip Hold",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "OTHER_PORTABLE",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_rice_bucket_hand_drill",
+      "canonical_name": "Rice-Bucket Hand Drill",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "OTHER_PORTABLE",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dead_hang",
+      "canonical_name": "Dead Hang",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_towel_dead_hang",
+      "canonical_name": "Towel Dead Hang",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_false_grip_hang",
+      "canonical_name": "False-Grip Hang",
+      "primary_muscle_group": "forearms",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_front_squat",
+      "canonical_name": "Front Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_high_bar_squat",
+      "canonical_name": "High-Bar Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_zercher_squat",
+      "canonical_name": "Zercher Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_goblet_squat",
+      "canonical_name": "Goblet Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cyclist_squat",
+      "canonical_name": "Cyclist Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_heel_elevated_goblet_squat",
+      "canonical_name": "Heel-Elevated Goblet Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bulgarian_split_squat",
+      "canonical_name": "Bulgarian Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_front_foot_elevated_split_squat",
+      "canonical_name": "Front-Foot-Elevated Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_heel_elevated_split_squat",
+      "canonical_name": "Heel-Elevated Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_lunge",
+      "canonical_name": "Reverse Lunge",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_walking_lunge",
+      "canonical_name": "Walking Lunge",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_forward_lunge",
+      "canonical_name": "Forward Lunge",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lateral_lunge",
+      "canonical_name": "Lateral Lunge",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_step_up",
+      "canonical_name": "Step-Up",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_peterson_step_up",
+      "canonical_name": "Peterson Step-Up",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_step_down",
+      "canonical_name": "Dumbbell Step-Down",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_spanish_squat_with_weight",
+      "canonical_name": "Spanish Squat with Weight",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_leg_extension",
+      "canonical_name": "Leg Extension",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_leg_extension",
+      "canonical_name": "Single-Leg Leg Extension",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_leg_press",
+      "canonical_name": "Leg Press",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_leg_press",
+      "canonical_name": "Single-Leg Leg Press",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hack_squat",
+      "canonical_name": "Hack Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_pendulum_squat",
+      "canonical_name": "Pendulum Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_belt_squat",
+      "canonical_name": "Belt Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_v_squat",
+      "canonical_name": "V-Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_split_squat",
+      "canonical_name": "Machine Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_sissy_squat",
+      "canonical_name": "Machine Sissy Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_squat",
+      "canonical_name": "Smith-Machine Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_split_squat",
+      "canonical_name": "Smith-Machine Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes",
+        "adductors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_sissy_squat",
+      "canonical_name": "Sissy Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_nordic",
+      "canonical_name": "Reverse Nordic",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bodyweight_split_squat",
+      "canonical_name": "Bodyweight Split Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bodyweight_walking_lunge",
+      "canonical_name": "Bodyweight Walking Lunge",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wall_sit",
+      "canonical_name": "Wall Sit",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_spanish_squat",
+      "canonical_name": "Spanish Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_step_down",
+      "canonical_name": "Step-Down",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_leg_extension",
+      "canonical_name": "Band Leg Extension",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_spanish_squat",
+      "canonical_name": "Band Spanish Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_assisted_sissy_squat",
+      "canonical_name": "Band-Assisted Sissy Squat",
+      "primary_muscle_group": "quads",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_romanian_deadlift",
+      "canonical_name": "Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_romanian_deadlift",
+      "canonical_name": "Dumbbell Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_leg_romanian_deadlift",
+      "canonical_name": "Single-Leg Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_b_stance_romanian_deadlift",
+      "canonical_name": "B-Stance Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_stiff_leg_deadlift",
+      "canonical_name": "Stiff-Leg Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_snatch_grip_romanian_deadlift",
+      "canonical_name": "Snatch-Grip Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_good_morning",
+      "canonical_name": "Barbell Good Morning",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_good_morning",
+      "canonical_name": "Seated Good Morning",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_good_morning",
+      "canonical_name": "Dumbbell Good Morning",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_glute_ham_raise_with_weight",
+      "canonical_name": "Glute-Ham Raise with Weight",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_leg_curl",
+      "canonical_name": "Seated Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_lying_leg_curl",
+      "canonical_name": "Lying Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_single_leg_curl",
+      "canonical_name": "Standing Single-Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_kneeling_leg_curl",
+      "canonical_name": "Kneeling Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_seated_leg_curl",
+      "canonical_name": "Single-Leg Seated Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_lying_leg_curl",
+      "canonical_name": "Single-Leg Lying Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_glute_ham_raise",
+      "canonical_name": "Glute-Ham Raise",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_leg_curl",
+      "canonical_name": "Cable Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_leg_curl",
+      "canonical_name": "Standing Cable Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_romanian_deadlift",
+      "canonical_name": "Cable Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_cable_romanian_deadlift",
+      "canonical_name": "Single-Leg Cable Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_nordic_hamstring_curl",
+      "canonical_name": "Nordic Hamstring Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_assisted_nordic_hamstring_curl",
+      "canonical_name": "Assisted Nordic Hamstring Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_sliding_leg_curl",
+      "canonical_name": "Sliding Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_stability_ball_leg_curl",
+      "canonical_name": "Stability-Ball Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bodyweight_glute_ham_raise",
+      "canonical_name": "Bodyweight Glute-Ham Raise",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_razor_curl",
+      "canonical_name": "Razor Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_45_degree_back_extension_hamstring_bias",
+      "canonical_name": "45-Degree Back Extension (Hamstring Bias)",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes",
+        "lower_back"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_leg_curl",
+      "canonical_name": "Band Leg Curl",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_romanian_deadlift",
+      "canonical_name": "Band Romanian Deadlift",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_good_morning",
+      "canonical_name": "Band Good Morning",
+      "primary_muscle_group": "hamstrings",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_hip_thrust",
+      "canonical_name": "Barbell Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_hip_thrust",
+      "canonical_name": "Dumbbell Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_glute_bridge",
+      "canonical_name": "Barbell Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_glute_bridge",
+      "canonical_name": "Dumbbell Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_leg_hip_thrust",
+      "canonical_name": "Single-Leg Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_b_stance_hip_thrust",
+      "canonical_name": "B-Stance Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_kas_glute_bridge",
+      "canonical_name": "Kas Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_sumo_romanian_deadlift",
+      "canonical_name": "Sumo Romanian Deadlift",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_deficit_reverse_lunge",
+      "canonical_name": "Deficit Reverse Lunge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_long_stride_reverse_lunge",
+      "canonical_name": "Long-Stride Reverse Lunge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_glute_biased_step_up",
+      "canonical_name": "Glute-Biased Step-Up",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_long_stride_bulgarian_split_squat",
+      "canonical_name": "Long-Stride Bulgarian Split Squat",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_frog_pump",
+      "canonical_name": "Dumbbell Frog Pump",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_machine_hip_thrust",
+      "canonical_name": "Machine Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_glute_bridge",
+      "canonical_name": "Machine Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_glute_drive_machine",
+      "canonical_name": "Glute Drive Machine",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_machine_glute_kickback",
+      "canonical_name": "Machine Glute Kickback",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_reverse_hyperextension",
+      "canonical_name": "Reverse Hyperextension",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_hip_thrust",
+      "canonical_name": "Smith-Machine Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_glute_kickback",
+      "canonical_name": "Cable Glute Kickback",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_hip_extension",
+      "canonical_name": "Standing Cable Hip Extension",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_pull_through",
+      "canonical_name": "Cable Pull-Through",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_step_back_lunge",
+      "canonical_name": "Cable Step-Back Lunge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_hip_thrust",
+      "canonical_name": "Cable Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_bodyweight_glute_bridge",
+      "canonical_name": "Bodyweight Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_leg_glute_bridge",
+      "canonical_name": "Single-Leg Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_frog_pump",
+      "canonical_name": "Frog Pump",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_quadruped_hip_extension",
+      "canonical_name": "Quadruped Hip Extension",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_45_degree_back_extension_glute_bias",
+      "canonical_name": "45-Degree Back Extension (Glute Bias)",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_glute_bridge",
+      "canonical_name": "Band Glute Bridge",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_hip_thrust",
+      "canonical_name": "Band Hip Thrust",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_glute_kickback",
+      "canonical_name": "Band Glute Kickback",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_frog_pump",
+      "canonical_name": "Band Frog Pump",
+      "primary_muscle_group": "glutes",
+      "secondary_muscle_groups": [
+        "hamstrings"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_adductor_machine",
+      "canonical_name": "Adductor Machine",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_adductor_machine",
+      "canonical_name": "Single-Leg Adductor Machine",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_hip_adduction",
+      "canonical_name": "Standing Cable Hip Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_side_lying_cable_hip_adduction",
+      "canonical_name": "Side-Lying Cable Hip Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_copenhagen_adduction",
+      "canonical_name": "Copenhagen Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_short_lever_copenhagen_adduction",
+      "canonical_name": "Short-Lever Copenhagen Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_long_lever_copenhagen_adduction",
+      "canonical_name": "Long-Lever Copenhagen Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_side_lying_hip_adduction",
+      "canonical_name": "Side-Lying Hip Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_adductor_slide",
+      "canonical_name": "Adductor Slide",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_sumo_squat_hold",
+      "canonical_name": "Sumo Squat Hold",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [
+        "obliques"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_hip_adduction",
+      "canonical_name": "Band Hip Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_copenhagen_adduction",
+      "canonical_name": "Band Copenhagen Adduction",
+      "primary_muscle_group": "adductors",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hip_abductor_machine",
+      "canonical_name": "Hip Abductor Machine",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_hip_abductor_machine",
+      "canonical_name": "Standing Hip Abductor Machine",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_hip_abduction",
+      "canonical_name": "Standing Cable Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_side_lying_cable_hip_abduction",
+      "canonical_name": "Side-Lying Cable Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_side_lying_hip_abduction",
+      "canonical_name": "Side-Lying Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_fire_hydrant",
+      "canonical_name": "Fire Hydrant",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lateral_step_down",
+      "canonical_name": "Lateral Step-Down",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_side_plank_hip_abduction",
+      "canonical_name": "Side Plank Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_hip_abduction",
+      "canonical_name": "Band Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lateral_band_walk",
+      "canonical_name": "Lateral Band Walk",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_monster_walk",
+      "canonical_name": "Monster Walk",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_clamshell",
+      "canonical_name": "Clamshell",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_band_hip_abduction",
+      "canonical_name": "Standing Band Hip Abduction",
+      "primary_muscle_group": "abductors",
+      "secondary_muscle_groups": [
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_dumbbell_calf_raise",
+      "canonical_name": "Standing Dumbbell Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_leg_dumbbell_calf_raise",
+      "canonical_name": "Single-Leg Dumbbell Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_calf_raise",
+      "canonical_name": "Barbell Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_dumbbell_calf_raise",
+      "canonical_name": "Seated Dumbbell Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_donkey_calf_raise_with_weight",
+      "canonical_name": "Donkey Calf Raise with Weight",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_calf_raise_machine",
+      "canonical_name": "Standing Calf Raise Machine",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_seated_calf_raise_machine",
+      "canonical_name": "Seated Calf Raise Machine",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_leg_press_calf_raise",
+      "canonical_name": "Leg-Press Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hack_squat_calf_raise",
+      "canonical_name": "Hack-Squat Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_smith_machine_calf_raise",
+      "canonical_name": "Smith-Machine Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_leg_calf_raise_machine",
+      "canonical_name": "Single-Leg Calf Raise Machine",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_tibialis_raise_machine",
+      "canonical_name": "Tibialis Raise Machine",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_calf_raise",
+      "canonical_name": "Standing Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_single_leg_calf_raise",
+      "canonical_name": "Single-Leg Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bent_knee_calf_raise",
+      "canonical_name": "Bent-Knee Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_donkey_calf_raise",
+      "canonical_name": "Donkey Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_tibialis_raise",
+      "canonical_name": "Tibialis Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_calf_raise",
+      "canonical_name": "Band Calf Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_tibialis_raise",
+      "canonical_name": "Band Tibialis Raise",
+      "primary_muscle_group": "calves",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_crunch",
+      "canonical_name": "Weighted Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_sit_up",
+      "canonical_name": "Dumbbell Sit-Up",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_sit_up",
+      "canonical_name": "Plate Sit-Up",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_decline_sit_up",
+      "canonical_name": "Weighted Decline Sit-Up",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_rollout",
+      "canonical_name": "Barbell Rollout",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_dead_bug",
+      "canonical_name": "Dumbbell Dead Bug",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_crunch",
+      "canonical_name": "Cable Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_kneeling_cable_crunch",
+      "canonical_name": "Kneeling Cable Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_cable_crunch",
+      "canonical_name": "Standing Cable Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_reverse_crunch",
+      "canonical_name": "Cable Reverse Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_abdominal_crunch_machine",
+      "canonical_name": "Abdominal Crunch Machine",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_rotary_ab_crunch_machine",
+      "canonical_name": "Rotary Ab Crunch Machine",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_crunch",
+      "canonical_name": "Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_reverse_crunch",
+      "canonical_name": "Reverse Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_decline_sit_up",
+      "canonical_name": "Decline Sit-Up",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hanging_knee_raise",
+      "canonical_name": "Hanging Knee Raise",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hanging_leg_raise",
+      "canonical_name": "Hanging Leg Raise",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_captain_s_chair_knee_raise",
+      "canonical_name": "Captain's-Chair Knee Raise",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lying_leg_raise",
+      "canonical_name": "Lying Leg Raise",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ab_wheel_rollout",
+      "canonical_name": "Ab Wheel Rollout",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_body_saw",
+      "canonical_name": "Body Saw",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dead_bug",
+      "canonical_name": "Dead Bug",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hollow_body_hold",
+      "canonical_name": "Hollow-Body Hold",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_v_up",
+      "canonical_name": "V-Up",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_toe_touch",
+      "canonical_name": "Toe Touch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_crunch",
+      "canonical_name": "Band Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_reverse_crunch",
+      "canonical_name": "Band Reverse Crunch",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_dead_bug",
+      "canonical_name": "Band Dead Bug",
+      "primary_muscle_group": "abs",
+      "secondary_muscle_groups": [
+        "hip_flexors"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_side_bend",
+      "canonical_name": "Dumbbell Side Bend",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_suitcase_march",
+      "canonical_name": "Suitcase March",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_suitcase_carry",
+      "canonical_name": "Suitcase Carry",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_landmine_rotation",
+      "canonical_name": "Landmine Rotation",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_russian_twist_with_weight",
+      "canonical_name": "Russian Twist with Weight",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_windshield_wiper",
+      "canonical_name": "Barbell Windshield Wiper",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_pallof_press",
+      "canonical_name": "Pallof Press",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_half_kneeling_pallof_press",
+      "canonical_name": "Half-Kneeling Pallof Press",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_wood_chop",
+      "canonical_name": "Cable Wood Chop",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_high_to_low_cable_chop",
+      "canonical_name": "High-to-Low Cable Chop",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_low_to_high_cable_chop",
+      "canonical_name": "Low-to-High Cable Chop",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_side_bend",
+      "canonical_name": "Cable Side Bend",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_lift",
+      "canonical_name": "Cable Lift",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_side_plank",
+      "canonical_name": "Side Plank",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_copenhagen_side_plank",
+      "canonical_name": "Copenhagen Side Plank",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bicycle_crunch",
+      "canonical_name": "Bicycle Crunch",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cross_body_mountain_climber",
+      "canonical_name": "Cross-Body Mountain Climber",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_windshield_wiper",
+      "canonical_name": "Windshield Wiper",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bird_dog",
+      "canonical_name": "Bird Dog",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_pallof_press",
+      "canonical_name": "Band Pallof Press",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_wood_chop",
+      "canonical_name": "Band Wood Chop",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_anti_rotation_hold",
+      "canonical_name": "Band Anti-Rotation Hold",
+      "primary_muscle_group": "obliques",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_barbell_back_extension",
+      "canonical_name": "Barbell Back Extension",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_good_morning",
+      "canonical_name": "Good Morning",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_jefferson_curl",
+      "canonical_name": "Jefferson Curl",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_zercher_good_morning",
+      "canonical_name": "Zercher Good Morning",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_weighted_sorenson_hold",
+      "canonical_name": "Weighted Sorenson Hold",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_45_degree_back_extension_lower_back_bias",
+      "canonical_name": "45-Degree Back Extension (Lower-Back Bias)",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_horizontal_back_extension",
+      "canonical_name": "Horizontal Back Extension",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_sorenson_hold",
+      "canonical_name": "Sorenson Hold",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_bird_dog_back_extension",
+      "canonical_name": "Bird Dog Back Extension",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_superman_hold",
+      "canonical_name": "Superman Hold",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_lumbar_extension_machine",
+      "canonical_name": "Lumbar Extension Machine",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_reverse_hyperextension_machine",
+      "canonical_name": "Reverse Hyperextension Machine",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_good_morning",
+      "canonical_name": "Cable Good Morning",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_cable_pull_through_back_extension",
+      "canonical_name": "Cable Pull-Through Back Extension",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_band_back_extension",
+      "canonical_name": "Band Back Extension",
+      "primary_muscle_group": "lower_back",
+      "secondary_muscle_groups": [
+        "hamstrings",
+        "glutes"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_serratus_punch",
+      "canonical_name": "Dumbbell Serratus Punch",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_pullover_serratus_reach",
+      "canonical_name": "Dumbbell Pullover Serratus Reach",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_cable_serratus_punch",
+      "canonical_name": "Cable Serratus Punch",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_single_arm_cable_serratus_punch",
+      "canonical_name": "Single-Arm Cable Serratus Punch",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_push_up_plus",
+      "canonical_name": "Push-Up Plus",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_scapular_push_up",
+      "canonical_name": "Scapular Push-Up",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_wall_slide_with_reach",
+      "canonical_name": "Wall Slide with Reach",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_serratus_punch",
+      "canonical_name": "Band Serratus Punch",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_wall_slide",
+      "canonical_name": "Band Wall Slide",
+      "primary_muscle_group": "serratus",
+      "secondary_muscle_groups": [
+        "chest"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_dumbbell_psoas_march",
+      "canonical_name": "Dumbbell Psoas March",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_ankle_weight_hip_flexion",
+      "canonical_name": "Ankle-Weight Hip Flexion",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_standing_cable_hip_flexion",
+      "canonical_name": "Standing Cable Hip Flexion",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_supine_cable_hip_flexion",
+      "canonical_name": "Supine Cable Hip Flexion",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "CABLE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_hip_flexion_machine",
+      "canonical_name": "Hip Flexion Machine",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_standing_hip_flexor_march",
+      "canonical_name": "Standing Hip-Flexor March",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_seated_leg_lift",
+      "canonical_name": "Seated Leg Lift",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_l_sit",
+      "canonical_name": "L-Sit",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_hanging_knee_raise_iso_hold",
+      "canonical_name": "Hanging Knee Raise Iso-Hold",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_psoas_march",
+      "canonical_name": "Band Psoas March",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_hip_flexion",
+      "canonical_name": "Band Hip Flexion",
+      "primary_muscle_group": "hip_flexors",
+      "secondary_muscle_groups": [
+        "abs"
+      ],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_neck_flexion",
+      "canonical_name": "Plate Neck Flexion",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_neck_extension",
+      "canonical_name": "Plate Neck Extension",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_plate_lateral_neck_flexion",
+      "canonical_name": "Plate Lateral Neck Flexion",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "FREE_WEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_neck_flexion_machine",
+      "canonical_name": "Neck Flexion Machine",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_neck_extension_machine",
+      "canonical_name": "Neck Extension Machine",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_four_way_neck_machine",
+      "canonical_name": "Four-Way Neck Machine",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "MACHINE",
+      "requires_equipment_configuration": true
+    },
+    {
+      "id": "accessory_neck_bridge",
+      "canonical_name": "Neck Bridge",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_isometric_neck_flexion",
+      "canonical_name": "Isometric Neck Flexion",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_isometric_neck_extension",
+      "canonical_name": "Isometric Neck Extension",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BODYWEIGHT",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_neck_flexion",
+      "canonical_name": "Band Neck Flexion",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_neck_extension",
+      "canonical_name": "Band Neck Extension",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    },
+    {
+      "id": "accessory_band_lateral_neck_flexion",
+      "canonical_name": "Band Lateral Neck Flexion",
+      "primary_muscle_group": "neck",
+      "secondary_muscle_groups": [],
+      "execution_family": "BAND",
+      "requires_equipment_configuration": false
+    }
+  ]
+}

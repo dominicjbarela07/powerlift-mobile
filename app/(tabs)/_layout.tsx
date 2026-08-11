@@ -43,6 +43,7 @@ import {
   type MobileViewMode,
 } from '@/lib/mobileViewMode';
 import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
+import { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
 import {
   SHIPPING_TAB_PRESENTATION,
   shippingTabRouteNames,
@@ -448,6 +449,8 @@ export default function TabsLayout() {
   // Settings for authenticated accounts in every account state. It has no APIs
   // or production product data and is removed from the UI in release builds.
   const isDevMockRoute = __DEV__ && pathname.includes('/dev-mocks');
+  const isAccessoryCatalogReviewRoute = pathname.includes('/accessory-catalog-review');
+  const canUseAccessoryCatalogReview = canAccessAccessoryCatalogReview(user);
   const isIdealStatePreview = __DEV__ && devPreviewSession?.mode === 'ideal';
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
   const usesRouteOwnedHorizontalLayout =
@@ -458,12 +461,12 @@ export default function TabsLayout() {
   useEffect(() => {
     if (!user) {
       router.replace('/login');
-    } else if (accessBlocked && !pathname.includes('/settings') && !isDevMockRoute) {
+    } else if (accessBlocked && !pathname.includes('/settings') && !isDevMockRoute && !(isAccessoryCatalogReviewRoute && canUseAccessoryCatalogReview)) {
       router.replace('/');
-    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute) {
+    } else if (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute && !(isAccessoryCatalogReviewRoute && canUseAccessoryCatalogReview)) {
       router.replace('/(tabs)/link-coach');
     }
-  }, [accessBlocked, isDevMockRoute, isUnlinkedAthlete, pathname, router, user]);
+  }, [accessBlocked, canUseAccessoryCatalogReview, isAccessoryCatalogReviewRoute, isDevMockRoute, isUnlinkedAthlete, pathname, router, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -594,7 +597,7 @@ export default function TabsLayout() {
     return null;
   }
 
-  if ((accessBlocked && !pathname.includes('/settings') && !isDevMockRoute) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute)) {
+  if (((accessBlocked && !pathname.includes('/settings') && !isDevMockRoute) || (isUnlinkedAthlete && !pathname.includes('/settings') && !pathname.includes('/link-coach') && !isDevMockRoute)) && !(isAccessoryCatalogReviewRoute && canUseAccessoryCatalogReview)) {
     return null;
   }
 
@@ -1020,6 +1023,10 @@ export default function TabsLayout() {
             title: 'Settings',
             href: null,
           }}
+        />
+        <Tabs.Screen
+          name="accessory-catalog-review"
+          options={{ href: null, title: 'Accessory Catalog Review' }}
         />
         <Tabs.Screen
           name="ledger"

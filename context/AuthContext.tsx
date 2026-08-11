@@ -22,6 +22,8 @@ import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQu
 
 // Shape of the authenticated user coming from your Flask API
 export type AuthUser = {
+  id?: number | null;
+  user_id?: number | null;
   email: string;
   user_name: string | null;
   role: 'coach' | 'athlete';
@@ -125,6 +127,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     return {
       ...base,
+      id: payloadUser.id ?? payloadUser.user_id ?? base.id ?? base.user_id ?? null,
+      user_id: payloadUser.user_id ?? payloadUser.id ?? base.user_id ?? base.id ?? null,
       email: String(payloadUser.email || base.email || ''),
       user_name: payloadUser.name ?? payloadUser.user_name ?? base.user_name ?? null,
       role,
@@ -341,6 +345,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (profile.ok && profileUser) {
             const profilePhoto = normalizeProfilePhotoPayload(profileUser);
             const refreshedUser: AuthUser = {
+              id: profileUser.id ?? profileUser.user_id ?? restoredUser?.id ?? restoredUser?.user_id ?? null,
+              user_id: profileUser.user_id ?? profileUser.id ?? restoredUser?.user_id ?? restoredUser?.id ?? null,
               email: String(profileUser.email || restoredUser?.email || ''),
               user_name: profileUser.name ?? restoredUser?.user_name ?? null,
               role: profileUser.role === 'coach' ? 'coach' : 'athlete',
