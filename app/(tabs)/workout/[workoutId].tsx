@@ -227,6 +227,7 @@ import {
   accessoryRepeatDraft,
   coreRepeatDraft,
   latestRepeatableSet,
+  repeatSetPreview,
 } from '@/lib/repeat-last-set';
 
 const WORKOUT_DETAIL_COACH_AVATAR = null;
@@ -981,6 +982,7 @@ type SupersetRoundLoggerEntry = {
     weight: string;
     reps: string;
     rir: string;
+    preview: string;
   } | null;
 };
 type SupersetRoundLoggerState = {
@@ -1203,6 +1205,30 @@ function firstSessionFocus(workout?: WorkoutPayload['workout'] | null) {
 function toWheelWeight(log: SetLog | null | undefined, unit: 'kg' | 'lb') {
   if (log?.actual_weight_kg == null) return '';
   return displayWeightFromKg(log.actual_weight_kg, unit);
+}
+
+function repeatLoadLabel(
+  item: WorkoutItem | null | undefined,
+  log: SetLog,
+  unit: 'kg' | 'lb',
+): string {
+  const identity = item?.performed_movement_identity || item?.movement_identity || null;
+  const convention = String(identity?.load_convention || '').trim().toLowerCase();
+  const loadingBehavior = String(item?.movement_history?.loading_behavior || '').trim().toLowerCase();
+  const displayedWeight = toWheelWeight(log, unit) || '0';
+
+  if (convention === 'bodyweight_only' || convention === 'no_external_load') {
+    return 'BW';
+  }
+  if (convention === 'added_bodyweight') {
+    return Number(log.actual_weight_kg || 0) > 0
+      ? `BW + ${displayedWeight} ${unit}`
+      : 'BW';
+  }
+  if (convention === 'assistance_load' || loadingBehavior === 'assisted') {
+    return `${displayedWeight} ${unit} assistance`;
+  }
+  return `${displayedWeight} ${unit}`;
 }
 
 function displayWeightFromKg(kg: number | null | undefined, unit: 'kg' | 'lb') {
@@ -3591,22 +3617,26 @@ export default function WorkoutViewerScreen() {
     });
   };
 
-  const commitAccessoryWheel = () => {
-    if (!accessoryWheel) return;
-    const itemId = accessoryWheel.itemId;
+  const queueAccessoryWheelLog = (wheel: AccessoryWheelState) => {
+    const itemId = wheel.itemId;
     feedbackAnalytics('log_set_pressed', { item_id: itemId, movement_type: 'accessory' });
     setAccInputs((prev) => ({
       ...prev,
       [itemId]: {
-        weight: accessoryWheel.weight,
-        reps: accessoryWheel.reps,
-        rir: accessoryWheel.reps === '0' ? '' : accessoryWheel.rir,
+        weight: wheel.weight,
+        reps: wheel.reps,
+        rir: wheel.reps === '0' ? '' : wheel.rir,
       },
     }));
     setPendingAccessoryLogItemId({
       itemId,
       selectedVideo: null,
     });
+  };
+
+  const commitAccessoryWheel = () => {
+    if (!accessoryWheel) return;
+    queueAccessoryWheelLog(accessoryWheel);
   };
 
   const openSupersetRoundLogger = (
@@ -3682,6 +3712,10 @@ export default function WorkoutViewerScreen() {
             weight: nearestWheelValue(weightOptions, repeatDraft.weight, '0'),
             reps: nearestWheelValue(repsOptions, repeatDraft.reps, '10'),
             rir: nearestWheelValue(rirOptions, repeatDraft.rir, '2'),
+            preview: repeatSetPreview(previousLog as SetLog, {
+              loadLabel: repeatLoadLabel(item, previousLog as SetLog, unit),
+              effort: 'RIR',
+            }),
           } : null,
         };
       });
@@ -3724,21 +3758,12 @@ export default function WorkoutViewerScreen() {
   };
 
   const repeatLastIntoSupersetEntry = (itemId: number) => {
-    setSupersetRoundLogger((current) => {
-      if (!current) return current;
-      return {
-        ...current,
-        entries: current.entries.map((entry) => (
-          entry.itemId === itemId && !entry.alreadyLogged && entry.repeatLast
-            ? {
-                ...entry,
-                ...entry.repeatLast,
-                validationError: null,
-              }
-            : entry
-        )),
-      };
-    });
+    if (
+      supersetRoundSaveInFlightRef.current
+      || supersetRoundTransitionInFlightRef.current
+      || canonicalSetSubmissionControllerRef.current.isInFlight()
+    ) return;
+    void saveSupersetRound(itemId);
   };
 
   const resetSupersetRoundTransition = () => {
@@ -3937,25 +3962,43 @@ export default function WorkoutViewerScreen() {
     setSupersetRoundLogger(null);
   };
 
-  const saveSupersetRound = async () => {
+  async function saveSupersetRound(repeatItemId?: number) {
     if (!supersetRoundLogger || !data || !workoutId) return;
     if (
       supersetRoundSaveInFlightRef.current
       || supersetRoundTransitionInFlightRef.current
       || supersetRoundLogger.saving
     ) return;
-    const draftValidation = validateSequentialGroupForSave({
-      entries: supersetRoundLogger.entries,
-      activeIndex: supersetRoundLogger.activeIndex,
-    });
-    if (!draftValidation.validation.valid) {
-      setSupersetRoundLogger({
-        ...supersetRoundLogger,
-        entries: [...draftValidation.state.entries],
-        activeIndex: draftValidation.state.activeIndex,
+    let workingEntries = supersetRoundLogger.entries.map((entry) => (
+      repeatItemId === entry.itemId && !entry.alreadyLogged && entry.repeatLast
+        ? {
+            ...entry,
+            ...entry.repeatLast,
+            skipped: false,
+            validationError: null,
+          }
+        : entry
+    ));
+    if (repeatItemId != null) {
+      const repeatEntry = workingEntries.find(
+        (entry) => entry.itemId === repeatItemId && !entry.alreadyLogged && entry.repeatLast,
+      );
+      if (!repeatEntry) return;
+    } else {
+      const draftValidation = validateSequentialGroupForSave({
+        entries: workingEntries,
+        activeIndex: supersetRoundLogger.activeIndex,
       });
-      setError(draftValidation.validation.message);
-      return;
+      if (!draftValidation.validation.valid) {
+        setSupersetRoundLogger({
+          ...supersetRoundLogger,
+          entries: [...draftValidation.state.entries],
+          activeIndex: draftValidation.state.activeIndex,
+        });
+        setError(draftValidation.validation.message);
+        return;
+      }
+      workingEntries = [...draftValidation.state.entries];
     }
 
     const group = data.workout.accessory_groups.find(
@@ -3966,17 +4009,20 @@ export default function WorkoutViewerScreen() {
     const missingItemIds = new Set(
       missingSupersetRoundItemIds(model, supersetRoundLogger.roundIndex),
     );
-    const skippedItemIds = supersetRoundLogger.entries
-      .filter((entry) => missingItemIds.has(entry.itemId) && entry.skipped)
-      .map((entry) => entry.itemId);
+    const skippedItemIds = repeatItemId != null
+      ? [...missingItemIds].filter((itemId) => itemId !== repeatItemId)
+      : workingEntries
+          .filter((entry) => missingItemIds.has(entry.itemId) && entry.skipped)
+          .map((entry) => entry.itemId);
     const parsedEntries: Array<Omit<SupersetRoundLoggerEntry, 'weight' | 'reps' | 'rir'> & {
       weight: number;
       weightKg: number;
       reps: number;
       rir: number | null;
     }> = [];
-    for (const entry of supersetRoundLogger.entries) {
+    for (const entry of workingEntries) {
       if (!missingItemIds.has(entry.itemId) || entry.skipped) continue;
+      if (repeatItemId != null && entry.itemId !== repeatItemId) continue;
       let weight = entry.weight.trim() === '' ? 0 : Number(entry.weight);
       const reps = Number(String(entry.reps).replace(/[^0-9]/g, ''));
       const rirText = String(entry.rir).trim().replace(/[^0-9.\-]/g, '');
@@ -3994,6 +4040,7 @@ export default function WorkoutViewerScreen() {
     supersetRoundSaveInFlightRef.current = true;
     setSupersetRoundLogger({
       ...supersetRoundLogger,
+      entries: workingEntries,
       saving: true,
     });
     try {
@@ -4147,7 +4194,7 @@ export default function WorkoutViewerScreen() {
       } : current);
       setError(error?.message || 'Could not save this round.');
     }
-  };
+  }
 
   const switchDisplayUnit = (nextUnit: 'kg' | 'lb') => {
     if (nextUnit === unit) return;
@@ -4258,28 +4305,32 @@ export default function WorkoutViewerScreen() {
     });
   };
 
-  const commitCoreWheel = () => {
-    if (!coreWheel) return;
-    const weight = coreWheel.weight;
-    feedbackAnalytics('log_set_pressed', { item_id: coreWheel.itemId, movement_type: 'core', set_kind: coreWheel.kind });
-    const reps = coreWheel.reps;
-    const rpe = reps === '0' ? '' : coreWheel.rpe;
+  const queueCoreWheelLog = (wheel: CoreWheelState) => {
+    const weight = wheel.weight;
+    feedbackAnalytics('log_set_pressed', { item_id: wheel.itemId, movement_type: 'core', set_kind: wheel.kind });
+    const reps = wheel.reps;
+    const rpe = reps === '0' ? '' : wheel.rpe;
 
-    if (coreWheel.kind === 'straight') {
-      prefillCoreInput('straight', { id: coreWheel.itemId } as WorkoutItem, { weight, reps, rpe });
-    } else if (coreWheel.kind === 'top') {
-      prefillCoreInput('top', { id: coreWheel.itemId } as WorkoutItem, { weight, reps, rpe });
-    } else if (coreWheel.kind === 'bk') {
-      prefillCoreInput('bk', { id: coreWheel.itemId } as WorkoutItem, { weight, reps, rpe });
+    if (wheel.kind === 'straight') {
+      prefillCoreInput('straight', { id: wheel.itemId } as WorkoutItem, { weight, reps, rpe });
+    } else if (wheel.kind === 'top') {
+      prefillCoreInput('top', { id: wheel.itemId } as WorkoutItem, { weight, reps, rpe });
+    } else if (wheel.kind === 'bk') {
+      prefillCoreInput('bk', { id: wheel.itemId } as WorkoutItem, { weight, reps, rpe });
     } else {
-      prefillFcInput(`${coreWheel.itemId}:${coreWheel.setIndex}`, { weight, reps, rpe });
+      prefillFcInput(`${wheel.itemId}:${wheel.setIndex}`, { weight, reps, rpe });
     }
 
     setPendingCoreWheelLog({
-      kind: coreWheel.kind,
-      itemId: coreWheel.itemId,
-      setIndex: coreWheel.setIndex,
+      kind: wheel.kind,
+      itemId: wheel.itemId,
+      setIndex: wheel.setIndex,
     });
+  };
+
+  const commitCoreWheel = () => {
+    if (!coreWheel) return;
+    queueCoreWheelLog(coreWheel);
   };
 
   // Helper to ensure reps is initialized in state for controlled TextInput
@@ -7345,31 +7396,67 @@ export default function WorkoutViewerScreen() {
         .find((item) => item.id === accessoryWheel.itemId) || null
     : null;
   const accessoryWheelLastLog = lastLogForItem(accessoryWheelItem);
+  const coreWheelRepeatPreview = coreWheelLastLog
+    ? repeatSetPreview(coreWheelLastLog, {
+        loadLabel: repeatLoadLabel(coreWheelItem, coreWheelLastLog, unit),
+        effort: 'RPE',
+      })
+    : null;
+  const accessoryWheelRepeatPreview = accessoryWheelLastLog
+    ? repeatSetPreview(accessoryWheelLastLog, {
+        loadLabel: repeatLoadLabel(accessoryWheelItem, accessoryWheelLastLog, unit),
+        effort: 'RIR',
+      })
+    : null;
+  const coreRepeatBusy = Boolean(
+    pendingCoreWheelLog
+    || (feedbackState.submission.status === 'submitting'
+      && feedbackState.submission.activeItemId === coreWheel?.itemId),
+  );
+  const accessoryRepeatBusy = Boolean(
+    pendingAccessoryLogItemId
+    || (feedbackState.submission.status === 'submitting'
+      && feedbackState.submission.activeItemId === accessoryWheel?.itemId),
+  );
 
   const repeatLastIntoCoreWheel = () => {
-    if (!coreWheelLastLog) return;
+    if (
+      !coreWheel
+      || !coreWheelLastLog
+      || coreRepeatBusy
+      || canonicalSetSubmissionControllerRef.current.isInFlight()
+    ) return;
     const draft = coreRepeatDraft(coreWheelLastLog, toWheelWeight(coreWheelLastLog, unit));
-    setCoreWheel((current) => current ? {
-      ...current,
-      weight: nearestWheelValue(current.weightOptions, draft.weight, current.weight),
-      reps: nearestWheelValue(current.repsOptions, draft.reps, current.reps),
-      rpe: nearestWheelValue(current.rpeOptions, draft.rpe, current.rpe),
-    } : current);
+    const repeatedWheel = {
+      ...coreWheel,
+      weight: nearestWheelValue(coreWheel.weightOptions, draft.weight, coreWheel.weight),
+      reps: nearestWheelValue(coreWheel.repsOptions, draft.reps, coreWheel.reps),
+      rpe: nearestWheelValue(coreWheel.rpeOptions, draft.rpe, coreWheel.rpe),
+    };
+    setCoreWheel(repeatedWheel);
+    queueCoreWheelLog(repeatedWheel);
   };
 
   const repeatLastIntoAccessoryWheel = () => {
-    if (!accessoryWheelLastLog) return;
+    if (
+      !accessoryWheel
+      || !accessoryWheelLastLog
+      || accessoryRepeatBusy
+      || canonicalSetSubmissionControllerRef.current.isInFlight()
+    ) return;
     const draft = accessoryRepeatDraft(
       accessoryWheelLastLog,
       toWheelWeight(accessoryWheelLastLog, unit),
     );
-    setAccessoryWheel((current) => current ? {
-      ...current,
-      weight: nearestWheelValue(current.weightOptions, draft.weight, current.weight),
-      reps: nearestWheelValue(current.repsOptions, draft.reps, current.reps),
-      rir: nearestWheelValue(current.rirOptions, draft.rir, current.rir),
+    const repeatedWheel = {
+      ...accessoryWheel,
+      weight: nearestWheelValue(accessoryWheel.weightOptions, draft.weight, accessoryWheel.weight),
+      reps: nearestWheelValue(accessoryWheel.repsOptions, draft.reps, accessoryWheel.reps),
+      rir: nearestWheelValue(accessoryWheel.rirOptions, draft.rir, accessoryWheel.rir),
       selectedVideo: null,
-    } : current);
+    };
+    setAccessoryWheel(repeatedWheel);
+    queueAccessoryWheelLog(repeatedWheel);
   };
 
   return (
@@ -7934,16 +8021,22 @@ export default function WorkoutViewerScreen() {
 
               {coreWheelLastLog ? (
                 <TouchableOpacity
-                  accessibilityHint="Copies the previous set's load, reps, and RPE into this logger"
-                  accessibilityLabel="Repeat Last Set"
+                  accessibilityHint="Logs a new set immediately through the standard set logger"
+                  accessibilityLabel={`Repeat Last Set${coreWheelRepeatPreview ? `: ${coreWheelRepeatPreview}` : ''}`}
                   accessibilityRole="button"
+                  accessibilityState={{ busy: coreRepeatBusy, disabled: coreRepeatBusy }}
+                  disabled={coreRepeatBusy}
                   onPress={repeatLastIntoCoreWheel}
-                  style={styles.repeatLastSetAction}
+                  style={[styles.repeatLastSetAction, coreRepeatBusy && styles.repeatLastSetActionDisabled]}
                 >
-                  <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                  {coreRepeatBusy
+                    ? <ActivityIndicator color={SLColors.accentViolet} size="small" />
+                    : <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />}
                   <View style={styles.repeatLastSetCopy}>
-                    <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
-                    <Text style={styles.repeatLastSetSubtitle}>Use the last load, reps, and RPE</Text>
+                    <Text style={styles.repeatLastSetTitle}>
+                      {coreRepeatBusy ? 'Repeating Last Set…' : 'Repeat Last Set'}
+                    </Text>
+                    <Text style={styles.repeatLastSetSubtitle}>{coreWheelRepeatPreview}</Text>
                   </View>
                 </TouchableOpacity>
               ) : null}
@@ -8027,16 +8120,22 @@ export default function WorkoutViewerScreen() {
 
               {accessoryWheelLastLog ? (
                 <TouchableOpacity
-                  accessibilityHint="Copies the previous set's load, reps, and RIR into this logger"
-                  accessibilityLabel="Repeat Last Set"
+                  accessibilityHint="Logs a new set immediately through the standard set logger"
+                  accessibilityLabel={`Repeat Last Set${accessoryWheelRepeatPreview ? `: ${accessoryWheelRepeatPreview}` : ''}`}
                   accessibilityRole="button"
+                  accessibilityState={{ busy: accessoryRepeatBusy, disabled: accessoryRepeatBusy }}
+                  disabled={accessoryRepeatBusy}
                   onPress={repeatLastIntoAccessoryWheel}
-                  style={styles.repeatLastSetAction}
+                  style={[styles.repeatLastSetAction, accessoryRepeatBusy && styles.repeatLastSetActionDisabled]}
                 >
-                  <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                  {accessoryRepeatBusy
+                    ? <ActivityIndicator color={SLColors.accentViolet} size="small" />
+                    : <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />}
                   <View style={styles.repeatLastSetCopy}>
-                    <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
-                    <Text style={styles.repeatLastSetSubtitle}>Use the last load, reps, and RIR</Text>
+                    <Text style={styles.repeatLastSetTitle}>
+                      {accessoryRepeatBusy ? 'Repeating Last Set…' : 'Repeat Last Set'}
+                    </Text>
+                    <Text style={styles.repeatLastSetSubtitle}>{accessoryWheelRepeatPreview}</Text>
                   </View>
                 </TouchableOpacity>
               ) : null}
@@ -8233,16 +8332,29 @@ export default function WorkoutViewerScreen() {
 
                         {activeEntry.repeatLast ? (
                           <TouchableOpacity
-                            accessibilityHint={`Copies ${activeEntry.title}'s previous load, reps, and RIR into this logger`}
-                            accessibilityLabel={`Repeat Last Set for ${activeEntry.title}`}
+                            accessibilityHint={`Logs a new set for ${activeEntry.title} immediately through the standard superset logger`}
+                            accessibilityLabel={`Repeat Last Set for ${activeEntry.title}: ${activeEntry.repeatLast.preview}`}
                             accessibilityRole="button"
+                            accessibilityState={{
+                              busy: supersetRoundLogger.saving,
+                              disabled: supersetRoundLogger.saving || supersetRoundTransitioning,
+                            }}
+                            disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
                             onPress={() => repeatLastIntoSupersetEntry(activeEntry.itemId)}
-                            style={styles.repeatLastSetAction}
+                            style={[
+                              styles.repeatLastSetAction,
+                              (supersetRoundLogger.saving || supersetRoundTransitioning)
+                                && styles.repeatLastSetActionDisabled,
+                            ]}
                           >
-                            <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />
+                            {supersetRoundLogger.saving
+                              ? <ActivityIndicator color={SLColors.accentViolet} size="small" />
+                              : <Ionicons color={SLColors.accentViolet} name="copy-outline" size={20} />}
                             <View style={styles.repeatLastSetCopy}>
-                              <Text style={styles.repeatLastSetTitle}>Repeat Last Set</Text>
-                              <Text style={styles.repeatLastSetSubtitle}>Use this movement's last load, reps, and RIR</Text>
+                              <Text style={styles.repeatLastSetTitle}>
+                                {supersetRoundLogger.saving ? 'Repeating Last Set…' : 'Repeat Last Set'}
+                              </Text>
+                              <Text style={styles.repeatLastSetSubtitle}>{activeEntry.repeatLast.preview}</Text>
                             </View>
                           </TouchableOpacity>
                         ) : null}
@@ -8335,7 +8447,7 @@ export default function WorkoutViewerScreen() {
                       disabled={supersetRoundLogger.saving || supersetRoundTransitioning}
                       onPress={
                         isFinalMovement
-                          ? saveSupersetRound
+                          ? () => { void saveSupersetRound(); }
                           : advanceSupersetRoundLogger
                       }
                       style={[
@@ -12427,6 +12539,9 @@ const styles = StyleSheet.create({
     minHeight: 52,
     paddingHorizontal: SLSpacing.md,
     paddingVertical: SLSpacing.sm,
+  },
+  repeatLastSetActionDisabled: {
+    opacity: 0.62,
   },
   repeatLastSetCopy: {
     flex: 1,
