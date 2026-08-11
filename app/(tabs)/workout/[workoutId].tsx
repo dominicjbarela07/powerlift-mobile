@@ -25,15 +25,10 @@ import {
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { resolveAccessoryIconName, SLProfileAvatar, type SLAccessoryIconName } from '@/components/ui';
-let Notifications: any = null;
-if (Platform.OS !== 'web') {
-  Notifications = require('expo-notifications');
-}
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
-import { useAudioPlayer } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 let VideoThumbnails: any = null;
 try {
@@ -82,6 +77,7 @@ import {
   type RestTimerHeaderOrigin,
 } from '@/components/workout-logger/rest-timer-focus';
 import { useAuth } from '@/context/AuthContext';
+import { useRestTimer } from '@/context/RestTimerContext';
 import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
 import { API_BASE, fetchJson, removeVideoAttachment } from '@/lib/api';
 import {
@@ -168,16 +164,8 @@ import {
   type LoggerProgressEvidence,
 } from '@/lib/logger-visual-context';
 import {
-  cueForRestTimerSecond,
-  DEFAULT_REST_TIMER_CUE_CONFIG,
-  REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
   shouldPromoteRestTimer,
 } from '@/lib/rest-timer-cues';
-import {
-  clearRestTimerExpiry,
-  loadRestTimerExpiry,
-  persistRestTimerExpiry,
-} from '@/lib/rest-timer-storage';
 import { coreSetTimelineLabel } from '@/lib/core-logger-timeline';
 import {
   buildSupersetRoundModel,
@@ -2131,53 +2119,17 @@ export default function WorkoutViewerScreen() {
     null | 'begin' | 'complete' | 'cancel'
   >(null);
 
-  const [restSeconds, setRestSeconds] = useState(0);
-  const [restActive, setRestActive] = useState(false);
+  const restTimer = useRestTimer();
+  const restActive = restTimer.active && restTimer.activeWorkoutId === String(workoutId);
+  const restSeconds = restActive ? restTimer.remainingSeconds : 0;
   const [restTimerZeroVisible, setRestTimerZeroVisible] = useState(false);
   const [restTimerReadyVisible, setRestTimerReadyVisible] = useState(false);
   const [restTimerHeaderOrigin, setRestTimerHeaderOrigin] =
     useState<RestTimerHeaderOrigin | null>(null);
-  const restCountdownTickPlayer = useAudioPlayer(
-    require('../../../assets/audio/rest-countdown-tick.wav'),
-  );
-  const restCountdownFinishPlayer = useAudioPlayer(
-    require('../../../assets/audio/rest-countdown-finish.wav'),
-  );
-  const restTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const restEndAtMsRef = useRef<number | null>(null);
-  const lastRestCueSecondRef = useRef<number | null>(null);
+  const handledRestCompletionIdRef = useRef<string | null>(null);
   const restFocusReturnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restZeroAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restReadyDismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const restNotifIdRef = useRef<string | null>(null);
-  const notifPermCheckedRef = useRef(false);
-  const notifHandlerSetRef = useRef(false);
-  useEffect(() => {
-    restCountdownTickPlayer.volume = 0.72;
-    restCountdownFinishPlayer.volume = 0.78;
-  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
-
-  const playRestCountdownTone = useCallback(async (tone: 'short' | 'finish') => {
-    const player = tone === 'finish' ? restCountdownFinishPlayer : restCountdownTickPlayer;
-    try {
-      await player.seekTo(0);
-      player.play();
-    } catch (error) {
-      console.warn('rest countdown audio failed', error);
-    }
-  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
-
-  const deliverRestTimerCue = useCallback((remaining: number) => {
-    const cue = cueForRestTimerSecond(remaining, DEFAULT_REST_TIMER_CUE_CONFIG);
-    if (cue.tone) void playRestCountdownTone(cue.tone);
-    if (cue.haptic === 'light') {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
-    } else if (cue.haptic === 'strong') {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
-    } else if (cue.haptic === 'success') {
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
-    }
-  }, [playRestCountdownTone]);
 
   const presentRestTimerReady = useCallback(() => {
     if (restZeroAdvanceTimerRef.current || restReadyDismissTimerRef.current) return;
@@ -2204,6 +2156,21 @@ export default function WorkoutViewerScreen() {
     }, REST_TIMER_ZERO_HOLD_MS + REST_TIMER_READY_HOLD_MS + REST_TIMER_RETURN_MS);
   }, [getOrderedWorkoutMovements, scheduleMovementFocus]);
 
+  useEffect(() => {
+    const timerCompletion = restTimer.completion;
+    if (
+      !timerCompletion
+      || timerCompletion.delivery !== 'logger'
+      || timerCompletion.workoutId !== String(workoutId)
+      || handledRestCompletionIdRef.current === timerCompletion.id
+    ) {
+      return;
+    }
+    handledRestCompletionIdRef.current = timerCompletion.id;
+    presentRestTimerReady();
+    restTimer.acknowledgeCompletion(timerCompletion.id);
+  }, [presentRestTimerReady, restTimer, workoutId]);
+
   const handleRestTimerLayout = useCallback((origin: RestTimerHeaderOrigin) => {
     setRestTimerHeaderOrigin((current) => {
       if (
@@ -2218,62 +2185,6 @@ export default function WorkoutViewerScreen() {
       return origin;
     });
   }, []);
-  const ensureNotifPerms = async () => {
-    if (!Notifications) return false;
-    // Only ask once per screen mount
-    if (notifPermCheckedRef.current) {
-      const existing = await Notifications.getPermissionsAsync();
-      return existing.status === 'granted';
-    }
-
-    notifPermCheckedRef.current = true;
-
-    const existing = await Notifications.getPermissionsAsync();
-    if (existing.status === 'granted') return true;
-
-    const req = await Notifications.requestPermissionsAsync();
-    return req.status === 'granted';
-  };
-
-  const cancelRestEndNotification = async () => {
-    if (!Notifications) return;
-    const id = restNotifIdRef.current;
-    if (!id) return;
-    try {
-      await Notifications.cancelScheduledNotificationAsync(id);
-    } catch (e) {
-      // best-effort
-      console.log('cancelRestEndNotification error', e);
-    } finally {
-      restNotifIdRef.current = null;
-    }
-  };
-
-  const scheduleRestEndNotification = async (seconds: number) => {
-    if (!Notifications) return;
-    // Replace any existing scheduled rest notification
-    await cancelRestEndNotification();
-
-    const granted = await ensureNotifPerms();
-    if (!granted) return;
-
-    try {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Rest over',
-          body: 'Time for the next set.',
-          data: { kind: 'rest_end' },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds,
-        },
-      });
-      restNotifIdRef.current = id;
-    } catch (e) {
-      console.log('scheduleRestEndNotification error', e);
-    }
-  };
 
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
@@ -2950,15 +2861,6 @@ export default function WorkoutViewerScreen() {
   };
 
   const startRestTimer = (seconds: number) => {
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
-    }
-
-    const endAt = Date.now() + seconds * 1000;
-    restEndAtMsRef.current = endAt;
-    void persistRestTimerExpiry(workoutId, endAt).catch(() => undefined);
-    lastRestCueSecondRef.current = null;
     if (restFocusReturnTimerRef.current) {
       clearTimeout(restFocusReturnTimerRef.current);
       restFocusReturnTimerRef.current = null;
@@ -2974,24 +2876,11 @@ export default function WorkoutViewerScreen() {
     }
     setRestTimerZeroVisible(false);
     setRestTimerReadyVisible(false);
-    setRestSeconds(seconds);
-    setRestActive(true);
+    restTimer.startTimer(workoutId, seconds);
     feedbackDispatch({ type: 'TIMER_ACTIVE' });
-
-    // Schedule a local notification so the timer "works" while backgrounded
-    scheduleRestEndNotification(seconds);
   };
 
   const stopRestTimer = () => {
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
-    }
-    restEndAtMsRef.current = null;
-    if (workoutId) {
-      void clearRestTimerExpiry(workoutId).catch(() => undefined);
-    }
-    lastRestCueSecondRef.current = null;
     if (restReadyDismissTimerRef.current) {
       clearTimeout(restReadyDismissTimerRef.current);
       restReadyDismissTimerRef.current = null;
@@ -3004,16 +2893,10 @@ export default function WorkoutViewerScreen() {
       clearTimeout(restFocusReturnTimerRef.current);
       restFocusReturnTimerRef.current = null;
     }
-    restCountdownTickPlayer.pause();
-    restCountdownFinishPlayer.pause();
     setRestTimerZeroVisible(false);
     setRestTimerReadyVisible(false);
-    setRestActive(false);
-    setRestSeconds(0);
+    restTimer.cancelTimer(workoutId);
     feedbackDispatch({ type: 'TIMER_IDLE' });
-
-    // Cancel any pending rest-end notification
-    cancelRestEndNotification();
   };
 
   const formatRestTime = (totalSeconds: number) => {
@@ -3023,131 +2906,30 @@ export default function WorkoutViewerScreen() {
   };
 
   useEffect(() => {
-    // If timer isn't active or has no end timestamp, ensure interval is cleared
-    if (!restActive || !restEndAtMsRef.current) {
-      if (restTimerRef.current) {
-        clearInterval(restTimerRef.current);
-        restTimerRef.current = null;
-      }
-      return;
-    }
-
-    const tick = () => {
-      const remaining = Math.max(
-        0,
-        Math.ceil((restEndAtMsRef.current! - Date.now()) / 1000)
-      );
-
-      setRestSeconds(remaining);
-
-      if (
-        remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
-        remaining >= 0 &&
-        lastRestCueSecondRef.current !== remaining
-      ) {
-        lastRestCueSecondRef.current = remaining;
-        deliverRestTimerCue(remaining);
-      }
-
-      if (remaining <= 0) {
-        cancelRestEndNotification();
-        setRestActive(false);
-        restEndAtMsRef.current = null;
-        if (workoutId) {
-          void clearRestTimerExpiry(workoutId).catch(() => undefined);
-        }
-        feedbackDispatch({ type: 'TIMER_IDLE' });
-        presentRestTimerReady();
-
-        if (restTimerRef.current) {
-          clearInterval(restTimerRef.current);
-          restTimerRef.current = null;
-        }
-      }
-    };
-
-    // Immediate sync so UI is correct right away
-    tick();
-
-    // Update frequently for smooth UI; uses end timestamp so background is fine
-    const id = setInterval(tick, 250);
-    restTimerRef.current = id as any;
-
-    return () => {
-      if (restTimerRef.current) {
-        clearInterval(restTimerRef.current);
-        restTimerRef.current = null;
-      }
-    };
-  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
-
-  useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') feedbackDispatch({ type: 'APP_RESUMED' });
       else feedbackDispatch({ type: 'APP_BACKGROUNDED' });
-      if (state === 'active' && restActive && restEndAtMsRef.current) {
-        const remaining = Math.max(
-          0,
-          Math.ceil((restEndAtMsRef.current - Date.now()) / 1000)
-        );
-        setRestSeconds(remaining);
-
-        if (
-          remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
-          remaining >= 0 &&
-          lastRestCueSecondRef.current !== remaining
-        ) {
-          lastRestCueSecondRef.current = remaining;
-          deliverRestTimerCue(remaining);
-        }
-
-        if (remaining <= 0) {
-          setRestActive(false);
-          restEndAtMsRef.current = null;
-          if (workoutId) {
-            void clearRestTimerExpiry(workoutId).catch(() => undefined);
-          }
-          presentRestTimerReady();
-        }
-      }
     });
 
     return () => sub.remove();
-  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (!workoutId || status !== 'in_progress') return undefined;
-    void loadRestTimerExpiry(workoutId).then((stored) => {
-      if (cancelled || !stored || restEndAtMsRef.current) return;
-      const remaining = Math.max(
-        0,
-        Math.ceil((stored.endAtMs - Date.now()) / 1000),
-      );
-      if (remaining <= 0) return;
-      restEndAtMsRef.current = stored.endAtMs;
-      setRestSeconds(remaining);
-      setRestActive(true);
-      feedbackDispatch({ type: 'TIMER_ACTIVE' });
-    }).catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, [data?.workout?.status, workoutId]);
+    void restTimer.restoreTimer(workoutId).catch(() => undefined);
+    return undefined;
+  }, [data?.workout?.status, restTimer.restoreTimer, workoutId]);
+
+  useEffect(() => {
+    feedbackDispatch({ type: restActive ? 'TIMER_ACTIVE' : 'TIMER_IDLE' });
+  }, [restActive]);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
     if (status === 'in_progress') return;
 
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
-    }
-    restEndAtMsRef.current = null;
-    if (workoutId) {
-      void clearRestTimerExpiry(workoutId).catch(() => undefined);
-    }
+    restTimer.cancelTimer(workoutId);
     if (restReadyDismissTimerRef.current) {
       clearTimeout(restReadyDismissTimerRef.current);
       restReadyDismissTimerRef.current = null;
@@ -3158,14 +2940,11 @@ export default function WorkoutViewerScreen() {
     }
     setRestTimerZeroVisible(false);
     setRestTimerReadyVisible(false);
-    if (restActive) setRestActive(false);
-    if (restSeconds !== 0) setRestSeconds(0);
     if (timerPickerVisible) {
       if (feedbackState.timer.status === 'picker_pending') resolveActiveTimerHandoff('dismissed');
       else setTimerPickerVisible(false);
     }
-    cancelRestEndNotification();
-  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId]);
+  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restTimer.cancelTimer, timerPickerVisible, workoutId]);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
@@ -6055,23 +5834,6 @@ export default function WorkoutViewerScreen() {
   }, [openSetVideoPlayer, removeVideoForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
 
   useEffect(() => {
-    if (Platform.OS === 'web' || !Notifications) return;
-    if (notifHandlerSetRef.current) return;
-
-    notifHandlerSetRef.current = true;
-    Notifications.setNotificationHandler({
-      handleNotification: async (notification: any) => {
-        const isRestEnd = notification?.request?.content?.data?.kind === 'rest_end';
-        return {
-          shouldShowAlert: !isRestEnd,
-          shouldPlaySound: !isRestEnd,
-          shouldSetBadge: false,
-        };
-      },
-    });
-  }, []);
-
-  useEffect(() => {
     dataRef.current = data;
   }, [data]);
 
@@ -6159,8 +5921,6 @@ export default function WorkoutViewerScreen() {
     const processedSetResults = processedSetResultsRef.current;
     const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
     return () => {
-      // Best-effort cleanup so scheduled notifications don't linger
-      cancelRestEndNotification();
       if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
       canonicalSetSubmissionController.reset();
       processedSetResults.reset();
