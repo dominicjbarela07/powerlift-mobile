@@ -106,6 +106,11 @@ assert.match(restTimerProvider, /Haptics\.NotificationFeedbackType\.Success/);
 assert.match(restTimerProvider, /interruptionMode: 'doNotMix'/);
 assert.match(restTimerProvider, /finalToneFinished\(completionId\)/);
 assert.match(restTimerProvider, /setIsAudioActiveAsync\(false\)/);
+assert.doesNotMatch(restTimerProvider, /\.addListener\('playbackStatusUpdate'/);
+assert.doesNotMatch(restTimerProvider, /countdownPlayer\.volume\s*=/);
+assert.doesNotMatch(restTimerProvider, /finishPlayer\.volume\s*=/);
+assert.doesNotMatch(restTimerProvider, /countdownPlayer\.pause\(\)/);
+assert.doesNotMatch(restTimerProvider, /finishPlayer\.pause\(\)/);
 assert.doesNotMatch(workoutRoute, /useAudioPlayer|scheduleNotificationAsync|setNotificationHandler/);
 assert.match(workoutRoute, /restTimerPromoted \|\| restTimerZeroVisible \|\| restTimerReadyVisible/);
 assert.match(workoutRoute, /<RestTimerFocus[\s\S]*visible=\{restTimerFocusVisible\}[\s\S]*ready=\{restTimerReadyVisible\}/);
@@ -120,7 +125,11 @@ assert.match(workoutRoute, /onRestTimerLayout=\{handleRestTimerLayout\}/);
 assert.match(restTimerProvider, /kind: 'rest_end'[\s\S]*workout_id: timer\.workoutId[\s\S]*completion_id: timer\.completionId/);
 assert.match(restTimerProvider, /shouldShowAlert: !isRestEnd[\s\S]*shouldShowBanner: !isRestEnd/);
 assert.match(restTimerProvider, /delivery !== 'notification'[\s\S]*cancelScheduledNotification/);
-assert.match(restTimerProvider, /completion\?\.delivery === 'modal'/);
+assert.match(
+  restTimerProvider,
+  /completion\?\.delivery === 'modal' \? \([\s\S]*<Modal[\s\S]*visible[\s\S]*\) : null/,
+  'the native completion modal must not mount until there is a modal delivery to present',
+);
 assert.match(restTimerProvider, /data\.kind !== 'rest_end'[\s\S]*pathname: '\/\(tabs\)\/workout\/\[workoutId\]'/);
 assert.match(rootLayout, /<RestTimerProvider>[\s\S]*<RootStack \/>/);
 assert.match(workoutRoute, /restTimer\.restoreTimer\(workoutId\)/);

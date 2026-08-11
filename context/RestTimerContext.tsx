@@ -90,6 +90,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
   const completionGateRef = useRef(new RestTimerCompletionGate());
   const audioActivationRef = useRef<Promise<void> | null>(null);
   const activeAudioCompletionIdRef = useRef<string | null>(null);
+  const audioReleaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [activeTimer, setActiveTimer] = useState<ActiveRestTimer | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
@@ -107,11 +108,6 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     pathnameRef.current = pathname;
   }, [pathname]);
-
-  useEffect(() => {
-    countdownPlayer.volume = 0.72;
-    finishPlayer.volume = 0.78;
-  }, [countdownPlayer, finishPlayer]);
 
   useEffect(() => {
     if (!Notifications) return undefined;
@@ -148,9 +144,11 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
   const releaseAudioFocus = useCallback(async (completionId?: string) => {
     const action = audioSequenceGateRef.current.cancel(completionId);
     if (!action.release) return;
+    if (audioReleaseTimerRef.current) {
+      clearTimeout(audioReleaseTimerRef.current);
+      audioReleaseTimerRef.current = null;
+    }
     activeAudioCompletionIdRef.current = null;
-    countdownPlayer.pause();
-    finishPlayer.pause();
     try {
       await audioActivationRef.current;
     } catch {
@@ -158,7 +156,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
     }
     audioActivationRef.current = null;
     await setIsAudioActiveAsync(false).catch(() => undefined);
-  }, [countdownPlayer, finishPlayer]);
+  }, []);
 
   const acquireAudioFocus = useCallback(async (completionId: string) => {
     activeAudioCompletionIdRef.current = completionId;
@@ -209,6 +207,23 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
       try {
         await player.seekTo(0);
         player.play();
+        if (action.play === 'finish') {
+          if (audioReleaseTimerRef.current) clearTimeout(audioReleaseTimerRef.current);
+          audioReleaseTimerRef.current = setTimeout(() => {
+            audioReleaseTimerRef.current = null;
+            const completionId = activeAudioCompletionIdRef.current;
+            if (!completionId) return;
+            const finishAction = audioSequenceGateRef.current.finalToneFinished(completionId);
+            if (!finishAction.release) return;
+            activeAudioCompletionIdRef.current = null;
+            const activation = audioActivationRef.current;
+            audioActivationRef.current = null;
+            void (async () => {
+              await activation?.catch(() => undefined);
+              await setIsAudioActiveAsync(false).catch(() => undefined);
+            })();
+          }, 900);
+        }
       } catch (error) {
         console.warn('rest countdown audio failed', error);
         if (action.play === 'finish') {
@@ -224,23 +239,6 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
     }
   }, [acquireAudioFocus, countdownPlayer, finishPlayer, releaseAudioFocus]);
-
-  useEffect(() => {
-    const subscription = finishPlayer.addListener('playbackStatusUpdate', (status) => {
-      const completionId = activeAudioCompletionIdRef.current;
-      if (!status.didJustFinish || !completionId) return;
-      const action = audioSequenceGateRef.current.finalToneFinished(completionId);
-      if (!action.release) return;
-      activeAudioCompletionIdRef.current = null;
-      const activation = audioActivationRef.current;
-      audioActivationRef.current = null;
-      void (async () => {
-        await activation?.catch(() => undefined);
-        await setIsAudioActiveAsync(false).catch(() => undefined);
-      })();
-    });
-    return () => subscription.remove();
-  }, [finishPlayer]);
 
   const cancelScheduledNotification = useCallback(async () => {
     if (!Notifications || !notificationIdRef.current) return;
@@ -438,28 +436,30 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
   return (
     <RestTimerContext.Provider value={value}>
       {children}
-      <Modal
-        animationType="fade"
-        transparent
-        visible={completion?.delivery === 'modal'}
-        onRequestClose={() => undefined}
-      >
-        <View style={styles.modalBackdrop}>
-          <View accessibilityViewIsModal style={styles.modalCard}>
-            <Text typographyRole="sectionTitle" style={styles.modalTitle}>Rest Complete</Text>
-            <Text typographyRole="body" style={styles.modalBody}>
-              Your next set is ready.
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              style={styles.modalButton}
-              onPress={() => completion && acknowledgeCompletion(completion.id)}
-            >
-              <Text typographyRole="button" style={styles.modalButtonText}>Got It</Text>
-            </Pressable>
+      {completion?.delivery === 'modal' ? (
+        <Modal
+          animationType="fade"
+          transparent
+          visible
+          onRequestClose={() => acknowledgeCompletion(completion.id)}
+        >
+          <View style={styles.modalBackdrop}>
+            <View accessibilityViewIsModal style={styles.modalCard}>
+              <Text typographyRole="sectionTitle" style={styles.modalTitle}>Rest Complete</Text>
+              <Text typographyRole="body" style={styles.modalBody}>
+                Your next set is ready.
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.modalButton}
+                onPress={() => acknowledgeCompletion(completion.id)}
+              >
+                <Text typographyRole="button" style={styles.modalButtonText}>Got It</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
     </RestTimerContext.Provider>
   );
 }
