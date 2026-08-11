@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   createSessionTimeDraft,
   formatSessionTimeLabel,
@@ -21,6 +22,18 @@ assert.equal(parsed.value?.durationSeconds, 4320);
 
 const completedDraft = createSessionTimeDraft('2026-08-10T15:01:00', new Date('2026-08-12T16:13:00.000Z'), 4320);
 assert.equal(completedDraft.end.toISOString(), '2026-08-10T16:13:00.000Z');
+
+// Missing/zero duration is not an authoritative end. Number(null) used to
+// become zero and incorrectly rendered START === END.
+const transitionNow = new Date('2026-08-10T16:13:00.000Z');
+assert.equal(
+  createSessionTimeDraft('2026-08-10T15:01:00', transitionNow, null).end.toISOString(),
+  transitionNow.toISOString(),
+);
+assert.equal(
+  createSessionTimeDraft('2026-08-10T15:01:00', transitionNow, 0).end.toISOString(),
+  transitionNow.toISOString(),
+);
 
 assert.equal(formatSessionTimeLabel(draft.start, {
   sessionDate: '2026-08-10',
@@ -62,4 +75,16 @@ assert.match(parseSessionTimeDraft({
   end: new Date('2026-08-11T20:00:01.000Z'),
 }).error || '', /cannot exceed 24 hours/);
 
-console.log('[post-session-times] lifecycle UTC, picker round-trip, display, and validation passed');
+const workoutSource = readFileSync(
+  new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url),
+  'utf8',
+);
+assert.match(workoutSource, /postSessionTimePickerDraft/);
+assert.match(workoutSource, /postSessionTimeRow/);
+assert.match(workoutSource, /display="spinner"/);
+assert.match(workoutSource, /session_started_at: sessionTimes\.startedAt/);
+assert.match(workoutSource, /session_ended_at: sessionTimes\.endedAt/);
+assert.match(workoutSource, /const completed = await completeWorkout/);
+assert.match(workoutSource, /if \(completed\) \{[\s\S]*?setPostSessionVisible\(false\)/);
+
+console.log('[post-session-times] lifecycle defaults, picker workflow, persistence payload, display, and validation passed');

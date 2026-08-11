@@ -137,7 +137,7 @@ function dateKey(value: Date, timeZone: string): string | null {
   return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
 }
 
-export function formatSessionTimeLabel(value: Date, options: SessionTimeDisplayOptions): string {
+export function formatSessionTimeLabel(value: Date | null | undefined, options: SessionTimeDisplayOptions): string {
   if (!isValidDate(value)) return 'Choose time';
   const locale = options.locale || 'en-US';
   const selectedDate = dateKey(value, options.timeZone);
@@ -166,8 +166,9 @@ export function createSessionTimeDraft(
   const safeNow = isValidDate(now) ? new Date(now.getTime()) : new Date();
   const fallbackStart = new Date(safeNow.getTime() - (60 * 60 * 1000));
   const start = parsedStart || fallbackStart;
-  const completedDuration = Number(completedDurationSeconds);
-  const end = Number.isFinite(completedDuration) && completedDuration >= 0
+  const hasRecordedDuration = completedDurationSeconds != null;
+  const completedDuration = hasRecordedDuration ? Number(completedDurationSeconds) : Number.NaN;
+  const end = Number.isFinite(completedDuration) && completedDuration > 0
     ? new Date(start.getTime() + (completedDuration * 1000))
     : safeNow;
   return Object.freeze({ start: new Date(start.getTime()), end: new Date(end.getTime()) });
