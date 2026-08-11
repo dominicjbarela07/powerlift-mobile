@@ -20,9 +20,10 @@ import {
 import { usePathname, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import {
+  createAudioPlayer,
   setAudioModeAsync,
   setIsAudioActiveAsync,
-  useAudioPlayer,
+  type AudioPlayer,
 } from 'expo-audio';
 
 import { Text } from '@/components/ui/sl-text';
@@ -91,23 +92,37 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
   const audioActivationRef = useRef<Promise<void> | null>(null);
   const activeAudioCompletionIdRef = useRef<string | null>(null);
   const audioReleaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownPlayerRef = useRef<AudioPlayer | null>(null);
+  const finishPlayerRef = useRef<AudioPlayer | null>(null);
 
   const [activeTimer, setActiveTimer] = useState<ActiveRestTimer | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [completion, setCompletion] = useState<RestTimerCompletion | null>(null);
 
-  const countdownPlayer = useAudioPlayer(
-    require('../assets/audio/rest-countdown-tick.wav'),
-    { keepAudioSessionActive: true, updateInterval: 50 },
-  );
-  const finishPlayer = useAudioPlayer(
-    require('../assets/audio/rest-countdown-finish.wav'),
-    { keepAudioSessionActive: true, updateInterval: 50 },
-  );
-
   useEffect(() => {
     pathnameRef.current = pathname;
   }, [pathname]);
+
+  useEffect(() => () => {
+    if (audioReleaseTimerRef.current) {
+      clearTimeout(audioReleaseTimerRef.current);
+      audioReleaseTimerRef.current = null;
+    }
+    const countdownPlayer = countdownPlayerRef.current;
+    const finishPlayer = finishPlayerRef.current;
+    countdownPlayerRef.current = null;
+    finishPlayerRef.current = null;
+    try {
+      countdownPlayer?.remove();
+    } catch {
+      // The native player may already have been released during application teardown.
+    }
+    try {
+      finishPlayer?.remove();
+    } catch {
+      // The native player may already have been released during application teardown.
+    }
+  }, []);
 
   useEffect(() => {
     if (!Notifications) return undefined;
@@ -203,8 +218,18 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
         await audioActivationRef.current.catch(() => undefined);
       }
       if (!audioSequenceGateRef.current.isActiveSequence(timer.completionId)) return;
-      const player = action.play === 'finish' ? finishPlayer : countdownPlayer;
       try {
+        const playerRef = action.play === 'finish' ? finishPlayerRef : countdownPlayerRef;
+        let player = playerRef.current;
+        if (!player) {
+          player = createAudioPlayer(
+            action.play === 'finish'
+              ? require('../assets/audio/rest-countdown-finish.wav')
+              : require('../assets/audio/rest-countdown-tick.wav'),
+            { keepAudioSessionActive: false, updateInterval: 500 },
+          );
+          playerRef.current = player;
+        }
         await player.seekTo(0);
         player.play();
         if (action.play === 'finish') {
@@ -238,7 +263,7 @@ export function RestTimerProvider({ children }: { children: ReactNode }) {
     } else if (cue.haptic === 'success') {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
     }
-  }, [acquireAudioFocus, countdownPlayer, finishPlayer, releaseAudioFocus]);
+  }, [acquireAudioFocus, releaseAudioFocus]);
 
   const cancelScheduledNotification = useCallback(async () => {
     if (!Notifications || !notificationIdRef.current) return;

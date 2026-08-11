@@ -94,8 +94,20 @@ const completionGate = new RestTimerCompletionGate();
 assert.equal(completionGate.claim(sequenceId), true);
 assert.equal(completionGate.claim(sequenceId), false);
 
-assert.match(restTimerProvider, /useAudioPlayer\([\s\S]*rest-countdown-tick\.wav[\s\S]*keepAudioSessionActive: true/);
-assert.match(restTimerProvider, /useAudioPlayer\([\s\S]*rest-countdown-finish\.wav[\s\S]*keepAudioSessionActive: true/);
+assert.doesNotMatch(
+  restTimerProvider,
+  /useAudioPlayer/,
+  'mounting the global provider must not construct native audio players',
+);
+assert.match(
+  restTimerProvider,
+  /if \(!player\) \{[\s\S]*createAudioPlayer\([\s\S]*rest-countdown-finish\.wav[\s\S]*rest-countdown-tick\.wav[\s\S]*keepAudioSessionActive: false/,
+  'audio players must be created lazily only when a countdown cue is delivered',
+);
+assert.match(restTimerProvider, /const countdownPlayerRef = useRef<AudioPlayer \| null>\(null\)/);
+assert.match(restTimerProvider, /const finishPlayerRef = useRef<AudioPlayer \| null>\(null\)/);
+assert.match(restTimerProvider, /countdownPlayer\?\.remove\(\)/);
+assert.match(restTimerProvider, /finishPlayer\?\.remove\(\)/);
 assert.match(
   restTimerProvider,
   /remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverCue\(timer, remaining\)/,
