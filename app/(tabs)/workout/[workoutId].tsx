@@ -1819,6 +1819,18 @@ export default function WorkoutViewerScreen() {
     };
   }, [findRenderedMovementKeyForItem]);
 
+  const markAutoAdvanceAfterAcceptedLog = useCallback((itemId: number, result: any) => {
+    if (isNewCanonicalSessionFinalSet({
+      created: result?.created,
+      replayed: result?.replayed,
+      completionBoundary: result?.completion_boundary,
+    })) {
+      pendingAutoAdvanceRef.current = null;
+      return;
+    }
+    markAutoAdvanceAfterLog(itemId);
+  }, [markAutoAdvanceAfterLog]);
+
   const scrollRef = useRef<any>(null);
   const scrollYRef = useRef(0);
   const pendingRestoreScrollYRef = useRef<number | null>(null);
@@ -1945,10 +1957,6 @@ export default function WorkoutViewerScreen() {
   const acceptedSheetHandoffControllerRef = useRef(createLogSheetHandoffController());
   const timerHandoffReleaseControllerRef = useRef(createTimerHandoffReleaseController());
   const activeTimerHandoffIdentityRef = useRef<string | null>(null);
-  const pendingSessionCompletionPromptRef = useRef<{
-    workoutId: number;
-    setLogId: number;
-  } | null>(null);
   const transientTraceContextRef = useRef({
     workoutItemId: null as number | null,
     setLogId: null as number | null,
@@ -2064,16 +2072,6 @@ export default function WorkoutViewerScreen() {
       events: rawEvents,
       completionBoundary: json?.completion_boundary?.authority === 'canonical' ? json.completion_boundary : null,
     });
-    if (isNewCanonicalSessionFinalSet({
-      created: json?.created,
-      replayed: json?.replayed,
-      completionBoundary: json?.completion_boundary,
-    })) {
-      pendingSessionCompletionPromptRef.current = {
-        workoutId: Number(workoutId || json?.workout_id || 0),
-        setLogId,
-      };
-    }
     if (events.length && json?.created === true && json?.replayed !== true) {
       transientRecognitionTrace(7, 'transient recognition enqueued');
     }
@@ -4620,7 +4618,7 @@ export default function WorkoutViewerScreen() {
     if (!json) return;
 
     try {
-      markAutoAdvanceAfterLog(itemId);
+      markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -4715,7 +4713,7 @@ export default function WorkoutViewerScreen() {
     if (!json) return;
 
     try {
-      markAutoAdvanceAfterLog(itemId);
+      markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -4802,7 +4800,7 @@ export default function WorkoutViewerScreen() {
     if (!json) return;
 
     try {
-      markAutoAdvanceAfterLog(itemId);
+      markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -4877,7 +4875,7 @@ export default function WorkoutViewerScreen() {
     if (!json) return;
 
     try {
-      markAutoAdvanceAfterLog(itemId);
+      markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -4942,7 +4940,6 @@ export default function WorkoutViewerScreen() {
     processedSetResultsRef.current.reset();
     setSubmissionAttemptsRef.current = {};
     activeTimerHandoffIdentityRef.current = null;
-    pendingSessionCompletionPromptRef.current = null;
     timerHandoffReleaseController.reset();
     feedbackDispatch({ type: 'RESET' });
     return () => {
@@ -4961,11 +4958,10 @@ export default function WorkoutViewerScreen() {
       feedbackDispatch({ type: 'TIMER_IDLE' });
       return;
     }
-    const pendingSessionCompletion = pendingSessionCompletionPromptRef.current;
-    const isSessionFinalSet = Boolean(
-      pendingSessionCompletion
-      && pendingSessionCompletion.workoutId === Number(workoutId)
-      && pendingSessionCompletion.setLogId === feedbackState.submission.lastSetLogId,
+    const isSessionFinalSet = (
+      feedbackState.submission.status === 'persisted_new_set'
+      && feedbackState.completionBoundary.authority === 'canonical'
+      && feedbackState.completionBoundary.status === 'session_final_set'
     );
     if (isSessionFinalSet) {
       activeTimerHandoffIdentityRef.current = null;
@@ -4984,9 +4980,25 @@ export default function WorkoutViewerScreen() {
         requestAnimationFrame(() => {
           transientRecognitionTrace(11, 'logger sheet close completed');
           if (isSessionFinalSet) {
+            const acceptedWorkoutId = Number(workoutId || dataRef.current?.workout?.id || 0);
+            pendingAutoAdvanceRef.current = null;
             activeTimerHandoffIdentityRef.current = null;
             timerHandoffReleaseControllerRef.current.reset();
             setTimerPickerVisible(false);
+            stopRestTimer();
+            if (completionPromptRef.current.workoutId !== acceptedWorkoutId) {
+              completionPromptRef.current = {
+                workoutId: acceptedWorkoutId,
+                complete: true,
+                prompted: false,
+              };
+            }
+            completionPromptRef.current.complete = true;
+            if (!completionPromptRef.current.prompted) {
+              completionPromptRef.current.prompted = true;
+              setEndSessionPromptVisible(true);
+            }
+            feedbackDispatch({ type: 'TIMER_IDLE' });
             return;
           }
           if (!plan.openTimerPicker) {
@@ -5016,7 +5028,7 @@ export default function WorkoutViewerScreen() {
     if (handoffStarted && feedbackState.submission.status === 'persisted_new_set') {
       transientRecognitionTrace(9, 'accepted-state dwell started');
     }
-  }, [accessoryWheel?.itemId, coreWheel?.itemId, feedbackState.submission.activeItemId, feedbackState.submission.lastSetLogId, feedbackState.submission.status, openTimerPicker, transientRecognitionTrace, workoutId]);
+  }, [accessoryWheel?.itemId, coreWheel?.itemId, feedbackState.completionBoundary.authority, feedbackState.completionBoundary.status, feedbackState.submission.activeItemId, feedbackState.submission.lastSetLogId, feedbackState.submission.status, openTimerPicker, transientRecognitionTrace, workoutId]);
 
   useEffect(() => {
     if (!shouldShowCompletedSetSwipeTooltip({
@@ -5190,7 +5202,7 @@ export default function WorkoutViewerScreen() {
     if (!json) return;
 
     try {
-      markAutoAdvanceAfterLog(itemId);
+      markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
       await fetchWorkout();
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
@@ -5606,23 +5618,6 @@ export default function WorkoutViewerScreen() {
       completionPromptRef.current.prompted = false;
       setEndSessionPromptVisible(false);
       return;
-    }
-    const pendingSessionCompletion = pendingSessionCompletionPromptRef.current;
-    const canonicalFinalSetReconciled = Boolean(
-      pendingSessionCompletion
-      && pendingSessionCompletion.workoutId === workoutKey,
-    );
-    if (!canonicalFinalSetReconciled) {
-      completionPromptRef.current.complete = true;
-      return;
-    }
-    if (
-      !completionPromptRef.current.complete
-      && !completionPromptRef.current.prompted
-    ) {
-      completionPromptRef.current.prompted = true;
-      pendingSessionCompletionPromptRef.current = null;
-      setEndSessionPromptVisible(true);
     }
     completionPromptRef.current.complete = true;
   }, [data?.workout]);
@@ -9129,9 +9124,9 @@ export default function WorkoutViewerScreen() {
             <View style={styles.sessionCompletePromptIcon}>
               <Ionicons color={SLColors.success} name="checkmark" size={26} />
             </View>
-            <Text style={styles.postSessionTitle}>End Session?</Text>
+            <Text style={styles.postSessionTitle}>All Sets Completed</Text>
             <Text style={styles.incompleteCompleteCopy}>
-              All prescribed sets are complete. You can finish now or keep logging additional work.
+              You&apos;ve logged every prescribed set in this Session. Ready to finish the Session?
             </Text>
             <View style={styles.modalActionsRow}>
               <TouchableOpacity

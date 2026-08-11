@@ -95,8 +95,8 @@ assert.match(source, /convention === 'bodyweight_only' \|\| convention === 'no_e
 assert.match(source, /convention === 'assistance_load' \|\| loadingBehavior === 'assisted'/);
 assert.match(source, /if \(!skipEquipmentGate && needsEquipmentSelection\(item\)\)/);
 assert.match(source, /\.\.\.equipmentSnapshotForSet\(activeEquipmentIdentity\(item\)\)/);
-assert.match(source, /if \(!json\) return;[\s\S]*markAutoAdvanceAfterLog\(itemId\)/);
-assert.match(source, /pendingSessionCompletionPromptRef\.current[\s\S]*if \(isSessionFinalSet\)[\s\S]*setTimerPickerVisible\(false\)[\s\S]*stopRestTimer\(\)/);
+assert.match(source, /if \(!json\) return;[\s\S]*markAutoAdvanceAfterAcceptedLog\(itemId, json\)/);
+assert.match(source, /completionBoundary\.status === 'session_final_set'[\s\S]*if \(isSessionFinalSet\)[\s\S]*setTimerPickerVisible\(false\)[\s\S]*stopRestTimer\(\)/);
 assert.match(source, /setEndSessionPromptVisible\(true\)/);
 assert.doesNotMatch(source, /const repeatCoreSet =/);
 assert.doesNotMatch(source, /const repeatAccessoryLastSet =/);
