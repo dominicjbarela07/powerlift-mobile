@@ -83,6 +83,10 @@ import {
 } from '@/components/workout-logger/rest-timer-focus';
 import { useAuth } from '@/context/AuthContext';
 import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
+import {
+  accessorySwapActionForSession,
+  sessionHasPersistedSetLogs,
+} from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, removeVideoAttachment } from '@/lib/api';
 import {
   cancelVideoUploadJob,
@@ -1453,6 +1457,10 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+  const [acceptedSessionSetEvidence, setAcceptedSessionSetEvidence] = useState<{
+    workoutId: number;
+    setLogId: number;
+  } | null>(null);
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
     setUpdateBlocker('workout', isLogging);
@@ -1987,6 +1995,10 @@ export default function WorkoutViewerScreen() {
 
   const handleCanonicalSetFeedback = useCallback((json: any) => {
     const setLogId = Number(json?.set?.id || 0);
+    const acceptedWorkoutId = Number(workoutId || json?.workout_id || 0);
+    if (setLogId > 0 && acceptedWorkoutId > 0) {
+      setAcceptedSessionSetEvidence({ workoutId: acceptedWorkoutId, setLogId });
+    }
     const clientSubmissionId = String(json?.client_submission_id || json?.set?.client_submission_id || '') || null;
     const responseEvents = Array.isArray(json?.recognition_events) ? json.recognition_events as LoggerRecognitionEvent[] : [];
     const rawEvents = attachTransientRecognitionDelivery(responseEvents, {
@@ -2599,6 +2611,20 @@ export default function WorkoutViewerScreen() {
   const [swapAccQuery, setSwapAccQuery] = useState('');
 
   const openSwapAcc = (it: WorkoutItem) => {
+    const currentWorkout = data?.workout;
+    const swapAction = accessorySwapActionForSession({
+      canHotSwap: !coachPreviewRequested && !!data?.permissions?.can_hot_swap,
+      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
+      isCoachPreview:
+        coachPreviewRequested
+        && data?.view_mode === 'coach_preview'
+        && data?.permissions?.view_only === true,
+      sessionLifecycle: deriveScreenMode(currentWorkout?.status),
+      sessionHasSetLogs: sessionHasPersistedSetLogs(currentWorkout),
+      acceptedPersistedSetLog:
+        acceptedSessionSetEvidence?.workoutId === Number(currentWorkout?.id || workoutId || 0),
+    });
+    if (!swapAction) return;
     setSwapAccItem(it);
     setSwapAccForm({
       movement: it.selected_sub_movement || it.movement || it.original_movement || '',
@@ -5644,6 +5670,9 @@ export default function WorkoutViewerScreen() {
           setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
           unitPreferenceHydratedRef.current = true;
         }
+        if (!sessionHasPersistedSetLogs(payload.workout)) {
+          setAcceptedSessionSetEvidence(null);
+        }
         setData(payload);
         restoreScrollSoon();
         return true;
@@ -5669,6 +5698,9 @@ export default function WorkoutViewerScreen() {
       if (!unitPreferenceHydratedRef.current) {
         setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
         unitPreferenceHydratedRef.current = true;
+      }
+      if (!sessionHasPersistedSetLogs(payload.workout)) {
+        setAcceptedSessionSetEvidence(null);
       }
       setData(payload);
       restoreScrollSoon();
@@ -6281,6 +6313,9 @@ export default function WorkoutViewerScreen() {
         ? formatSessionDuration(workout.completed_duration_seconds)
         : null);
   const loggedSets = loggedSetCountForWorkout(workout);
+  const sessionHasAnyPersistedSetLogs =
+    sessionHasPersistedSetLogs(workout)
+    || acceptedSessionSetEvidence?.workoutId === Number(workout.id);
   const plannedSets = plannedSetCountForWorkout(workout);
   const durationEstimate = durationEstimateForWorkout(workout);
   const coreMovementCount = workout.core_items.filter(
@@ -7131,7 +7166,13 @@ export default function WorkoutViewerScreen() {
       expanded: accessoryIsExpanded,
       isComplete: accessoryIsComplete,
     });
-    const swapLabel = canHotSwap ? 'Swap' : Array.isArray(it.approved_subs) && it.approved_subs.length > 0 ? 'Sub' : null;
+    const swapLabel = accessorySwapActionForSession({
+      canHotSwap,
+      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
+      isCoachPreview: isCoachAthletePreview,
+      sessionLifecycle: screenMode,
+      sessionHasSetLogs: sessionHasAnyPersistedSetLogs,
+    });
     const machineAccessory = isMachineAccessoryItem(it);
     const fixtureAccessoryKind = String(
       (it as any).dev_accessory_intelligence?.kind || '',
