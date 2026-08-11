@@ -9,6 +9,7 @@ import {
 import {
   resolveLoggerPrescribedWeight,
   type ResolvedLoggerPrescribedWeight,
+  type ResolvedLoggerPrescribedWeightEndpoint,
 } from '@/lib/logger-prescribed-weight';
 import {
   type PlateClubLiftKey,
@@ -73,6 +74,18 @@ export type LoggerPlateStack = {
   accessibilityLabel: string;
   presentationStyle?: ImageStyle;
 };
+
+export type LoggerPlateStackEndpoint = Readonly<{
+  requestedWeight: number;
+  requestedUnit: 'kg' | 'lb';
+  displayLabel: string;
+  plateStack: LoggerPlateStack | null;
+}>;
+
+export type LoggerPlateStackPresentation = Readonly<{
+  mode: 'single' | 'range';
+  endpoints: readonly LoggerPlateStackEndpoint[];
+}>;
 
 type LoggerVisualItem = {
   lift?: string | null;
@@ -214,36 +227,57 @@ export function resolveLoggerProgressContext(
   };
 }
 
+function resolveLoggerPlateStackEndpoint(
+  identity: LoggerLiftIdentity,
+  endpoint: ResolvedLoggerPrescribedWeightEndpoint,
+): LoggerPlateStackEndpoint {
+  const render = resolvePlateStackRender({
+    weight: endpoint.requestedWeight,
+    unit: endpoint.requestedUnit,
+  });
+
+  return Object.freeze({
+    requestedWeight: endpoint.requestedWeight,
+    requestedUnit: endpoint.requestedUnit,
+    displayLabel: endpoint.displayLabel,
+    plateStack: render
+      ? {
+          imageSource: render.imageSource,
+          requestedWeight: endpoint.requestedWeight,
+          requestedUnit: endpoint.requestedUnit,
+          catalogKeyLb: render.catalogKeyLb,
+          accessibilityLabel: `${endpoint.requestedWeight} ${endpoint.requestedUnit === 'kg' ? 'kilogram' : 'pound'} ${identity.label.toLowerCase()} plate stack`,
+        }
+      : null,
+  });
+}
+
 export function resolveLoggerPlateStack(
   item: LoggerVisualItem,
   unit: 'kg' | 'lb',
   prescribedWeight: ResolvedLoggerPrescribedWeight | null =
     resolveLoggerPrescribedWeight({ item, unit }),
-): LoggerPlateStack | null {
+): LoggerPlateStackPresentation | null {
   const identity = resolveLoggerLiftIdentity(item);
   if (identity.key === 'accessory') return null;
 
   if (!prescribedWeight || prescribedWeight.requestedUnit !== unit) return null;
-  const render = resolvePlateStackRender({
-    weight: prescribedWeight.requestedWeight,
-    unit: prescribedWeight.requestedUnit,
-  });
-  if (!render) return null;
+  const endpoints = prescribedWeight.endpoints.map((endpoint) =>
+    resolveLoggerPlateStackEndpoint(identity, endpoint));
 
-  return {
-    imageSource: render.imageSource,
-    requestedWeight: prescribedWeight.requestedWeight,
-    requestedUnit: prescribedWeight.requestedUnit,
-    catalogKeyLb: render.catalogKeyLb,
-    accessibilityLabel: `${prescribedWeight.requestedWeight} ${unit === 'kg' ? 'kilogram' : 'pound'} ${identity.label.toLowerCase()} plate stack`,
-  };
+  if (endpoints.length === 1 && !endpoints[0]?.plateStack) return null;
+
+  return Object.freeze({
+    mode: endpoints.length > 1 ? 'range' : 'single',
+    endpoints: Object.freeze(endpoints),
+  });
 }
 
 export function resolveLoggerPlateStackForDisplayWeight(
   item: LoggerVisualItem,
   weight: number,
   unit: 'kg' | 'lb',
-): LoggerPlateStack | null {
+): LoggerPlateStackPresentation | null {
   if (!Number.isFinite(weight) || weight <= 0) return null;
   const canonicalWeightKg = unit === 'kg' ? weight : weight * KG_PER_LB;
   const prescribedWeight = resolveLoggerPrescribedWeight({

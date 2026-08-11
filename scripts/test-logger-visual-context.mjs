@@ -61,8 +61,9 @@ for (const asset of ['squat.png', 'bench.png', 'deadlift.png']) {
 }
 assert.match(visualContext, /resolvePlateStackRender/);
 assert.match(visualContext, /resolveLoggerPrescribedWeight/);
-assert.match(visualContext, /prescribedWeight\.requestedWeight/);
-assert.match(visualContext, /prescribedWeight\.requestedUnit/);
+assert.match(visualContext, /prescribedWeight\.endpoints\.map/);
+assert.match(visualContext, /endpoint\.requestedWeight/);
+assert.match(visualContext, /endpoint\.requestedUnit/);
 assert.match(visualContext, /catalogKeyLb: render\.catalogKeyLb/);
 assert.doesNotMatch(visualContext, /resolveLoggerPlateRenderAsset/);
 assert.match(visualContext, /qualification === 'qualified'/);
@@ -79,14 +80,16 @@ assert.doesNotMatch(
   /LOGGER_PLATE_RENDER_ORIENTATION_STYLE/,
   'the logger component must not force one orientation onto every render generation',
 );
-assert.match(movementComponent, /visualContext\.plateStack\.presentationStyle/);
+assert.match(movementComponent, /visualContext\.plateStack\.mode === 'range'/);
+assert.match(movementComponent, /visualContext\.plateStack\.endpoints\.map/);
+assert.match(movementComponent, /endpoint\.plateStack\.presentationStyle/);
 assert.doesNotMatch(movementComponent, /movementProgressPlate/);
 assert.match(movementComponent, /activeNextSetPlateStage/);
 assert.match(loggerRenderAssets, /LOGGER_PLATE_RENDER_ORIENTATION_STYLE[\s\S]*scaleX: -1/);
 assert.doesNotMatch(loggerRenderAssets, /LOGGER_PLATE_RENDER_ORIENTATION_STYLE[\s\S]*scaleY/);
 assert.match(loggerRenderAssets, /blender-cycles-poc-v1\/mobile-hero-240x160@3x\/squat\/405\.png/);
 assert.match(loggerRenderAssets, /source: 'canonical-blender-cycles-poc-v1'/);
-assert.match(visualContext, /requestedUnit: prescribedWeight\.requestedUnit/);
+assert.match(visualContext, /requestedUnit: endpoint\.requestedUnit/);
 assert.doesNotMatch(movementComponent, /activeNextSetPlate(KeyLight|Backlight|FloorReflection|ContactShadow|SleeveHighlight)/);
 assert.doesNotMatch(movementComponent, /LinearGradient/);
 assert.doesNotMatch(movementComponent, /activeMovementLiftMark/);

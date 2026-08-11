@@ -17,6 +17,14 @@ nodeRequire.extensions['.png'] = (module, filename) => {
 const { resolvePlateStackRender } = await import(
   '../lib/barbell/plate-stack-render-resolver.ts'
 );
+const resolveEndpointRenders = (prescribed) =>
+  prescribed.endpoints.map((endpoint) => ({
+    ...endpoint,
+    plateStack: resolvePlateStackRender({
+      weight: endpoint.requestedWeight,
+      unit: endpoint.requestedUnit,
+    }),
+  }));
 
 const itemForLbBounds = (lowLb, highLb = lowLb) => ({
   target_low_kg: lowLb * KG_PER_LB,
@@ -24,28 +32,28 @@ const itemForLbBounds = (lowLb, highLb = lowLb) => ({
 });
 
 for (const weightLb of [135, 225, 315, 405, 495]) {
-  const prescribed = resolveLoggerPrescribedWeight({
-    item: itemForLbBounds(weightLb),
-    unit: 'lb',
-  });
+  const item = { ...itemForLbBounds(weightLb), lift: 'SQ' };
+  const prescribed = resolveLoggerPrescribedWeight({ item, unit: 'lb' });
   assert.ok(prescribed, `${weightLb} lb must produce a prescribed render value`);
   assert.equal(prescribed.resolution, 'exact');
   assert.equal(prescribed.displayValue, String(weightLb));
   assert.equal(prescribed.displayLabel, `${weightLb} lb`);
   assert.equal(prescribed.requestedWeight, weightLb);
+  assert.deepEqual(
+    prescribed.endpoints.map((endpoint) => endpoint.requestedWeight),
+    [weightLb],
+  );
 
   const render = resolvePlateStackRender({
     weight: prescribed.requestedWeight,
     unit: prescribed.requestedUnit,
   });
   assert.ok(render, `${weightLb} lb must have a canonical render`);
-  assert.equal(render.requestedWeight, prescribed.requestedWeight);
-  assert.equal(render.requestedUnit, prescribed.requestedUnit);
-  assert.equal(
-    render.catalogKeyLb,
-    weightLb,
-    `displayed ${weightLb} lb must resolve to the ${weightLb} lb catalog entry`,
-  );
+  assert.equal(render.catalogKeyLb, weightLb);
+
+  const endpoints = resolveEndpointRenders(prescribed);
+  assert.equal(endpoints.length, 1);
+  assert.equal(endpoints[0].plateStack?.catalogKeyLb, weightLb);
 }
 
 for (const [lowLb, highLb] of [
@@ -53,26 +61,22 @@ for (const [lowLb, highLb] of [
   [405, 425],
   [455, 475],
 ]) {
-  const prescribed = resolveLoggerPrescribedWeight({
-    item: itemForLbBounds(lowLb, highLb),
-    unit: 'lb',
-  });
-  assert.ok(prescribed, `${lowLb}–${highLb} lb must resolve deterministically`);
-  assert.equal(prescribed.resolution, 'range_lower_bound');
-  assert.equal(prescribed.displayLabel, `${lowLb} lb`);
+  const item = { ...itemForLbBounds(lowLb, highLb), lift: 'SQ' };
+  const prescribed = resolveLoggerPrescribedWeight({ item, unit: 'lb' });
+  assert.ok(prescribed, `${lowLb}–${highLb} lb must preserve both endpoints`);
+  assert.equal(prescribed.resolution, 'range');
+  assert.equal(prescribed.displayLabel, `${lowLb}–${highLb} lb`);
   assert.equal(prescribed.requestedWeight, lowLb);
+  assert.deepEqual(
+    prescribed.endpoints.map((endpoint) => endpoint.requestedWeight),
+    [lowLb, highLb],
+  );
 
-  const render = resolvePlateStackRender({
-    weight: prescribed.requestedWeight,
-    unit: prescribed.requestedUnit,
-  });
-  assert.ok(render);
-  assert.equal(render.requestedWeight, prescribed.requestedWeight);
-  assert.equal(render.requestedUnit, prescribed.requestedUnit);
-  assert.equal(
-    render.catalogKeyLb,
-    lowLb,
-    `${lowLb}–${highLb} lb must render its ${lowLb} lb lower bound`,
+  const endpoints = resolveEndpointRenders(prescribed);
+  assert.deepEqual(
+    endpoints.map((endpoint) => endpoint.plateStack?.catalogKeyLb),
+    [lowLb, highLb],
+    `${lowLb}–${highLb} lb must resolve two independent catalog renders`,
   );
 }
 
@@ -83,24 +87,26 @@ for (const [lowKg, highKg] of [
   [180, 190],
   [220, 230],
 ]) {
-  const prescribed = resolveLoggerPrescribedWeight({
-    item: {
-      target_low_kg: lowKg,
-      target_high_kg: highKg,
-    },
-    unit: 'kg',
-  });
+  const item = {
+    target_low_kg: lowKg,
+    target_high_kg: highKg,
+    lift: 'DL',
+  };
+  const prescribed = resolveLoggerPrescribedWeight({ item, unit: 'kg' });
   assert.ok(prescribed, `${lowKg}–${highKg} kg must resolve deterministically`);
-  assert.equal(prescribed.displayLabel, `${lowKg} kg`);
+  assert.equal(
+    prescribed.displayLabel,
+    lowKg === highKg ? `${lowKg} kg` : `${lowKg}–${highKg} kg`,
+  );
   assert.equal(prescribed.requestedWeight, lowKg);
+  assert.deepEqual(
+    prescribed.endpoints.map((endpoint) => endpoint.requestedWeight),
+    lowKg === highKg ? [lowKg] : [lowKg, highKg],
+  );
 
-  const render = resolvePlateStackRender({
-    weight: prescribed.requestedWeight,
-    unit: prescribed.requestedUnit,
-  });
-  assert.ok(render, `${lowKg} kg must resolve through kg plate geometry`);
-  assert.equal(render.requestedWeight, lowKg);
-  assert.equal(render.requestedUnit, 'kg');
+  const endpoints = resolveEndpointRenders(prescribed);
+  assert.ok(endpoints.every((endpoint) => endpoint.plateStack));
+  assert.ok(endpoints.every((endpoint) => endpoint.requestedUnit === 'kg'));
 }
 
 const fullCustomExact = resolveLoggerPrescribedWeight({
@@ -125,8 +131,12 @@ const fullCustomRange = resolveLoggerPrescribedWeight({
 });
 assert.ok(fullCustomRange);
 assert.equal(fullCustomRange.source, 'planned_manual');
-assert.equal(fullCustomRange.resolution, 'range_lower_bound');
-assert.equal(fullCustomRange.displayLabel, '455 lb');
+assert.equal(fullCustomRange.resolution, 'range');
+assert.equal(fullCustomRange.displayLabel, '455–475 lb');
+assert.deepEqual(
+  fullCustomRange.endpoints.map((endpoint) => endpoint.requestedWeight),
+  [455, 475],
+);
 
 const plannedSuggestedRange = resolveLoggerPrescribedWeight({
   item: itemForLbBounds(495),
@@ -138,29 +148,39 @@ const plannedSuggestedRange = resolveLoggerPrescribedWeight({
 });
 assert.ok(plannedSuggestedRange);
 assert.equal(plannedSuggestedRange.source, 'planned_suggested');
-assert.equal(plannedSuggestedRange.displayLabel, '225 lb');
+assert.equal(plannedSuggestedRange.displayLabel, '225–245 lb');
+assert.deepEqual(
+  plannedSuggestedRange.endpoints.map((endpoint) => endpoint.requestedWeight),
+  [225, 245],
+);
+
+const partiallyUnresolvedRange = resolveLoggerPrescribedWeight({
+  item: itemForLbBounds(225, 2000),
+  unit: 'lb',
+});
+assert.ok(partiallyUnresolvedRange);
+const partiallyUnresolvedEndpoints = resolveEndpointRenders(partiallyUnresolvedRange);
+assert.ok(partiallyUnresolvedEndpoints[0].plateStack);
+assert.equal(partiallyUnresolvedEndpoints[1].plateStack, null);
+assert.equal(partiallyUnresolvedEndpoints[1].displayLabel, '2000 lb');
 
 assert.equal(
-  resolveLoggerPrescribedWeight({
-    item: {},
-    unit: 'lb',
-  }),
+  resolveLoggerPrescribedWeight({ item: {}, unit: 'lb' }),
   null,
-  'a movement without a deterministic prescribed weight must not request a render',
+  'a movement without a prescribed weight must not request a render',
 );
 assert.equal(
   resolveLoggerPrescribedWeight({
-    item: {
-      target_high_kg: 245 * KG_PER_LB,
-    },
+    item: { target_high_kg: 245 * KG_PER_LB },
     unit: 'lb',
   }),
   null,
-  'an upper bound without an exact value or lower bound must not request a render',
+  'an upper bound without a lower bound must not request a render',
 );
 
 const routeSource = read('app/(tabs)/workout/[workoutId].tsx');
 const visualContextSource = read('lib/logger-visual-context.ts');
+const coreLoggerSource = read('components/workout-logger/core-loggers.tsx');
 assert.match(
   routeSource,
   /heroLoadLabel:\s*prescribedWeight\?\.displayLabel/,
@@ -169,13 +189,19 @@ assert.match(
 assert.match(
   routeSource,
   /movementVisualContextFor\(\s*core,\s*movementPresentation\.renderWeight/,
-  'the hero render must consume the same canonical prescribed resolution object',
+  'the hero render must consume the same structured prescribed resolution object',
 );
 assert.match(
   visualContextSource,
-  /prescribedWeight\.requestedWeight[\s\S]*prescribedWeight\.requestedUnit/,
-  'plate lookup must use the same unit-native value used by the hero label',
+  /prescribedWeight\.endpoints\.map[\s\S]*resolveLoggerPlateStackEndpoint/,
+  'plate lookup must resolve every structured prescription endpoint',
 );
+assert.match(coreLoggerSource, /visualContext\.plateStack\.mode === 'range'/);
+assert.match(coreLoggerSource, /visualContext\.plateStack\.endpoints\.map/);
+assert.match(coreLoggerSource, /endpoint\.displayLabel/);
+assert.match(coreLoggerSource, /endpoint\.plateStack \?/);
+assert.doesNotMatch(coreLoggerSource, />\s*(MIN|MAX|LOW|HIGH)\s*</i);
+assert.match(routeSource, /topPrescribedWeight[\s\S]*backdownPrescribedWeight/);
 assert.doesNotMatch(
   visualContextSource,
   /progress_context\?\.targetWeightKg/,
@@ -183,5 +209,5 @@ assert.doesNotMatch(
 );
 
 console.log(
-  '[logger-prescribed-render-weight] exact loads, range lower bounds, Full Custom precedence, and kg geometry resolution passed',
+  '[logger-prescribed-render-weight] single loads, dual-endpoint ranges, partial fallbacks, Full Custom, Top/Backdown, and kg resolution passed',
 );

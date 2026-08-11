@@ -39,7 +39,7 @@ import { MovementCardMaterial } from '@/components/workout-logger/movement-card-
 import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
 import { logSetActionPresentation, type LoggerFeedbackState, type PrescribedOpportunity } from '@/lib/logger-feedback';
-import type { LoggerPlateStack, LoggerProgressContext } from '@/lib/logger-visual-context';
+import type { LoggerPlateStackPresentation, LoggerProgressContext } from '@/lib/logger-visual-context';
 import {
   coreLoggerHeaderMetadataLines,
   coreLoggerMovementStateLabel,
@@ -88,7 +88,7 @@ export type ActiveMovementVisualContext = {
   accessoryIconName?: SLAccessoryIconName | null;
   accessoryMuscleRegion?: AccessoryMuscleRegionKey | null;
   coreVariantFamily?: CoreVariantFamily | null;
-  plateStack?: LoggerPlateStack | null;
+  plateStack?: LoggerPlateStackPresentation | null;
   progress?: LoggerProgressContext | null;
   coach?: {
     name: string;
@@ -610,7 +610,7 @@ export function CoreMovementLedgerRow({
                         <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetHistoryKicker}>Movement history</Text>
                         <Text typographyRole="supportingBody" style={styles.activeNextSetHistoryCopy}>History coming soon</Text>
                       </View>
-                    ) : loggerFocus.currentSetLoadLabel ? (() => {
+                    ) : loggerFocus.currentSetLoadLabel && visualContext?.plateStack?.mode !== 'range' ? (() => {
                       const load = splitLoadLabel(loggerFocus.currentSetLoadLabel);
                       const loadLayout = coreLoggerHeroLoadLayout(
                         load.value,
@@ -685,12 +685,55 @@ export function CoreMovementLedgerRow({
                     })() : null}
                   </View>
                   {visualContext?.plateStack ? (
-                    <View style={styles.activeNextSetPlateStage}>
-                      <LoggerPlateStackVisual
-                        plateStack={visualContext.plateStack}
-                        style={[styles.activeNextSetPlate, visualContext.plateStack.presentationStyle]}
-                      />
-                    </View>
+                    visualContext.plateStack.mode === 'range' ? (
+                      <View style={[styles.activeNextSetPlateStage, styles.activeNextSetPlateRangeStage]}>
+                        <View style={styles.activeNextSetPlateRangeRow}>
+                          {visualContext.plateStack.endpoints.map((endpoint, endpointIndex) => (
+                            <View
+                              key={`${endpoint.displayLabel}-${endpointIndex}`}
+                              style={styles.activeNextSetPlateEndpoint}
+                            >
+                              <Text
+                                adjustsFontSizeToFit
+                                maxFontSizeMultiplier={1.15}
+                                minimumFontScale={0.78}
+                                numberOfLines={1}
+                                style={styles.activeNextSetPlateEndpointLabel}
+                              >
+                                {endpoint.displayLabel}
+                              </Text>
+                              {endpoint.plateStack ? (
+                                <LoggerPlateStackVisual
+                                  plateStack={endpoint.plateStack}
+                                  style={[
+                                    styles.activeNextSetPlateRange,
+                                    endpoint.plateStack.presentationStyle,
+                                  ]}
+                                />
+                              ) : (
+                                <View
+                                  accessibilityLabel={`${endpoint.displayLabel} plate stack unavailable`}
+                                  style={styles.activeNextSetPlateUnavailable}
+                                >
+                                  <Ionicons name="barbell-outline" size={32} color={SLColors.textSubtle} />
+                                  <Text style={styles.activeNextSetPlateUnavailableText}>Stack unavailable</Text>
+                                </View>
+                              )}
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    ) : visualContext.plateStack.endpoints[0]?.plateStack ? (
+                      <View style={styles.activeNextSetPlateStage}>
+                        <LoggerPlateStackVisual
+                          plateStack={visualContext.plateStack.endpoints[0].plateStack}
+                          style={[
+                            styles.activeNextSetPlate,
+                            visualContext.plateStack.endpoints[0].plateStack.presentationStyle,
+                          ]}
+                        />
+                      </View>
+                    ) : null
                   ) : null}
                 </View>
                 <View style={styles.activeNextSetMetricRow}>
@@ -1425,6 +1468,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
+  },
+  activeNextSetPlateRangeStage: {
+    top: 18,
+    left: 0,
+    right: 0,
+    height: 238,
+  },
+  activeNextSetPlateRangeRow: {
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  activeNextSetPlateEndpoint: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  activeNextSetPlateEndpointLabel: {
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: SLTypography.title.fontSize * 1.05,
+    lineHeight: SLTypography.title.lineHeight * 1.05,
+    fontWeight: '800',
+    letterSpacing: -0.8,
+    textAlign: 'center',
+    zIndex: 2,
+  },
+  activeNextSetPlateRange: {
+    width: '100%',
+    height: 204,
+    marginTop: -5,
+  },
+  activeNextSetPlateUnavailable: {
+    flex: 1,
+    minHeight: 178,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+  activeNextSetPlateUnavailableText: {
+    color: SLColors.textSubtle,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: SLTypography.micro.lineHeight,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   activeNextSetKicker: {
     color: SLColors.accentViolet,

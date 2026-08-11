@@ -158,7 +158,7 @@ assert.doesNotMatch(
 assert.match(milestonesSource, /plateStackCatalogKeyForWeight\(totalWeightKg, 'kg'\)/);
 assert.match(
   loggerSource,
-  /resolvePlateStackRender\(\{[\s\S]*weight: prescribedWeight\.requestedWeight,[\s\S]*unit: prescribedWeight\.requestedUnit/,
+  /resolvePlateStackRender\(\{[\s\S]*weight: endpoint\.requestedWeight,[\s\S]*unit: endpoint\.requestedUnit/,
 );
 assert.match(
   loggerRouteSource,

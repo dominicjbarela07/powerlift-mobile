@@ -77,7 +77,8 @@ assert.doesNotMatch(registry, /LOGGER_PLATE_RENDER_ORIENTATION_STYLE[\s\S]*scale
 assert.match(registry, /source: 'canonical-blender-cycles-poc-v1'/);
 assert.match(registry, /blender-cycles-poc-v1\/mobile-hero-240x160@3x\/squat\/405\.png/);
 assert.match(visualContext, /catalogKeyLb: render\.catalogKeyLb/);
-assert.match(movementComponent, /visualContext\.plateStack\.presentationStyle/);
+assert.match(movementComponent, /visualContext\.plateStack\.mode === 'range'/);
+assert.match(movementComponent, /endpoint\.plateStack\.presentationStyle/);
 assert.doesNotMatch(movementComponent, /activeNextSetPlate(KeyLight|Backlight|FloorReflection|ContactShadow|SleeveHighlight)/);
 assert.doesNotMatch(movementComponent, /LinearGradient/);
 assert.match(movementComponent, /activeNextSetHero:[\s\S]*position: 'relative'[\s\S]*width: '100%'[\s\S]*overflow: 'visible'/);

@@ -13,14 +13,28 @@ export type LoggerPlannedWeight = Readonly<{
   suggested_high_kg?: number | null;
 }>;
 
+export type ResolvedLoggerPrescribedWeightEndpoint = Readonly<{
+  canonicalWeightKg: number;
+  requestedWeight: number;
+  requestedUnit: 'kg' | 'lb';
+  displayValue: string;
+  displayLabel: string;
+}>;
+
 export type ResolvedLoggerPrescribedWeight = Readonly<{
   canonicalWeightKg: number;
   requestedWeight: number;
   requestedUnit: 'kg' | 'lb';
   displayValue: string;
   displayLabel: string;
-  resolution: 'exact' | 'range_lower_bound';
+  resolution: 'exact' | 'range';
+  endpoints: readonly ResolvedLoggerPrescribedWeightEndpoint[];
   source: 'planned_manual' | 'planned_target' | 'planned_suggested' | 'item_target';
+}>;
+
+type ResolvedLoggerPrescribedWeightBounds = Readonly<{
+  lowerWeightKg: number;
+  upperWeightKg: number;
 }>;
 
 function positiveFinite(value: unknown): number | null {
@@ -31,43 +45,68 @@ function positiveFinite(value: unknown): number | null {
 function resolveBounds(
   lowValue: unknown,
   highValue: unknown,
-): Pick<ResolvedLoggerPrescribedWeight, 'canonicalWeightKg' | 'resolution'> | null {
+): ResolvedLoggerPrescribedWeightBounds | null {
   const low = positiveFinite(lowValue);
   const high = positiveFinite(highValue);
 
   if (low == null) return null;
   if (high == null) {
     return {
-      canonicalWeightKg: low,
-      resolution: 'exact',
+      lowerWeightKg: low,
+      upperWeightKg: low,
     };
   }
 
-  const lowerBound = Math.min(low, high);
   return {
-    canonicalWeightKg: Math.abs(low - high) <= 0.01 ? ((low + high) / 2) : lowerBound,
-    resolution: Math.abs(low - high) <= 0.01 ? 'exact' : 'range_lower_bound',
+    lowerWeightKg: Math.min(low, high),
+    upperWeightKg: Math.max(low, high),
   };
 }
 
-function finalizeResolution(
-  resolved: Pick<ResolvedLoggerPrescribedWeight, 'canonicalWeightKg' | 'resolution'>,
+function resolveEndpoint(
+  canonicalWeightKg: number,
   requestedUnit: 'kg' | 'lb',
-  source: ResolvedLoggerPrescribedWeight['source'],
-): ResolvedLoggerPrescribedWeight | null {
-  const displayValue = formatLoggerWeightKg(
-    resolved.canonicalWeightKg,
-    requestedUnit,
-  );
+): ResolvedLoggerPrescribedWeightEndpoint | null {
+  const displayValue = formatLoggerWeightKg(canonicalWeightKg, requestedUnit);
   const requestedWeight = Number(displayValue);
   if (!Number.isFinite(requestedWeight) || requestedWeight <= 0) return null;
 
   return Object.freeze({
-    ...resolved,
+    canonicalWeightKg,
     requestedWeight,
     requestedUnit,
     displayValue,
     displayLabel: `${displayValue} ${requestedUnit}`,
+  });
+}
+
+function finalizeResolution(
+  bounds: ResolvedLoggerPrescribedWeightBounds,
+  requestedUnit: 'kg' | 'lb',
+  source: ResolvedLoggerPrescribedWeight['source'],
+): ResolvedLoggerPrescribedWeight | null {
+  const lower = resolveEndpoint(bounds.lowerWeightKg, requestedUnit);
+  const upper = resolveEndpoint(bounds.upperWeightKg, requestedUnit);
+  if (!lower || !upper) return null;
+
+  // Canonical gym-increment rounding can make near-identical source bounds
+  // resolve to one visible load. Do not render duplicate stacks in that case.
+  const endpoints = lower.requestedWeight === upper.requestedWeight
+    ? Object.freeze([lower])
+    : Object.freeze([lower, upper]);
+  const resolution = endpoints.length === 1 ? 'exact' : 'range';
+  const displayLabel = resolution === 'exact'
+    ? lower.displayLabel
+    : `${lower.displayValue}–${upper.displayValue} ${requestedUnit}`;
+
+  return Object.freeze({
+    canonicalWeightKg: lower.canonicalWeightKg,
+    requestedWeight: lower.requestedWeight,
+    requestedUnit: lower.requestedUnit,
+    displayValue: lower.displayValue,
+    displayLabel,
+    resolution,
+    endpoints,
     source,
   });
 }
@@ -94,7 +133,7 @@ export function resolveLoggerPrescribedWeight({
   const plannedTarget = positiveFinite(planned?.target_kg);
   if (plannedTarget != null) {
     return finalizeResolution(
-      { canonicalWeightKg: plannedTarget, resolution: 'exact' },
+      { lowerWeightKg: plannedTarget, upperWeightKg: plannedTarget },
       unit,
       'planned_target',
     );
