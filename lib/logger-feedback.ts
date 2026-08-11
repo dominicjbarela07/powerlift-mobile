@@ -48,6 +48,17 @@ export type CompletionBoundaryMetadata = {
   workout_evidence_revision?: number | null;
 };
 
+export function isNewCanonicalSessionFinalSet(result: {
+  created?: boolean;
+  replayed?: boolean;
+  completionBoundary?: CompletionBoundaryMetadata | null;
+}): boolean {
+  return result.created === true
+    && result.replayed !== true
+    && result.completionBoundary?.authority === 'canonical'
+    && result.completionBoundary.session_final_set === true;
+}
+
 export type LoggerFeedbackState = {
   submission: { status: 'idle' | 'submitting' | 'failure' | 'stale_conflict' | 'refreshing_stale' | 'persisted_new_set' | 'idempotent_replay'; activeItemId: number | null; lastSetLogId: number | null; accomplishmentCount: number };
   recognition: { status: 'idle' | 'queued' | 'displayed' | 'consumed'; saveConfirmationVisible: boolean; currentEvent: LoggerRecognitionEvent | null; queuedEvents: LoggerRecognitionEvent[]; displayedDeliveryIds: string[]; consumedDeliveryIds: string[] };

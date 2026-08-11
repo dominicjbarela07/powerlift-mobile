@@ -8,6 +8,7 @@ import {
   createLogSheetHandoffController,
   feedbackMotionDuration,
   initialLoggerFeedbackState,
+  isNewCanonicalSessionFinalSet,
   loggerFeedbackReducer,
 } from '../lib/logger-feedback.ts';
 
@@ -41,6 +42,28 @@ const deferred = () => {
   });
   return { promise, resolve, reject };
 };
+
+const canonicalFinalBoundary = {
+  authority: 'canonical',
+  movement_final_set: true,
+  session_final_set: true,
+  workout_evidence_revision: 3,
+};
+assert.equal(isNewCanonicalSessionFinalSet({
+  created: true,
+  replayed: false,
+  completionBoundary: canonicalFinalBoundary,
+}), true);
+assert.equal(isNewCanonicalSessionFinalSet({
+  created: true,
+  replayed: false,
+  completionBoundary: { ...canonicalFinalBoundary, session_final_set: false },
+}), false, 'movement completion alone is not Session completion');
+assert.equal(isNewCanonicalSessionFinalSet({
+  created: false,
+  replayed: true,
+  completionBoundary: canonicalFinalBoundary,
+}), false, 'an idempotent replay cannot create a second completion prompt');
 
 // A demo reset can reuse a numeric set-log ID. The request identity, not that
 // database-local integer, determines whether a response is a duplicate.

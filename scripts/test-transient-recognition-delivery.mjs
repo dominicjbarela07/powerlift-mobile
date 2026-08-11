@@ -90,9 +90,9 @@ for (const timerResolution of ['TIMER_IDLE', 'TIMER_ACTIVE']) {
   assert.equal(timerState.recognition.currentEvent.event_type, 'CORE_WEIGHT_PR');
 }
 
-// A session-final set uses the same handoff: canonical workout completion may
-// become available while the timer decision is pending, but it cannot erase or
-// outrank the primary recognition event from that accepted set submission.
+// A session-final set bypasses the timer decision entirely. Canonical workout
+// completion still cannot erase or outrank the primary recognition event from
+// that accepted set submission.
 let sessionFinal = loggerFeedbackReducer(initialLoggerFeedbackState, { type: 'SUBMIT_STARTED', itemId: 8 });
 sessionFinal = loggerFeedbackReducer(sessionFinal, {
   type: 'SUBMIT_SUCCEEDED',
@@ -100,11 +100,6 @@ sessionFinal = loggerFeedbackReducer(sessionFinal, {
   created: true,
   replayed: false,
   events: responseEvents,
-});
-sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'TIMER_PICKER_PENDING' });
-sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'SAVE_CONFIRMATION_FINISHED' });
-sessionFinal = loggerFeedbackReducer(sessionFinal, {
-  type: 'CANONICAL_COMPLETION_CONFIRMED',
   completionBoundary: {
     authority: 'canonical',
     movement_final_set: true,
@@ -112,12 +107,10 @@ sessionFinal = loggerFeedbackReducer(sessionFinal, {
     workout_evidence_revision: 3,
   },
 });
-sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'DISPLAY_NEXT_RECOGNITION' });
-assert.equal(sessionFinal.recognition.currentEvent, null);
-assert.equal(sessionFinal.recognition.queuedEvents[0].event_type, 'CORE_WEIGHT_PR');
-sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'TIMER_IDLE' });
+sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'SAVE_CONFIRMATION_FINISHED' });
 sessionFinal = loggerFeedbackReducer(sessionFinal, { type: 'DISPLAY_NEXT_RECOGNITION' });
 assert.equal(sessionFinal.recognition.currentEvent.event_type, 'CORE_WEIGHT_PR');
+assert.equal(sessionFinal.timer.status, 'idle');
 
 // React Native passes the press event to a bare `onPress={onClose}` callback.
 // That supported cancel path must still resolve the picker as dismissed rather
