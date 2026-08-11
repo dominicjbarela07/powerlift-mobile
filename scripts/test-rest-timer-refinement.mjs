@@ -49,8 +49,11 @@ assert.deepEqual(
   { tone: null, haptic: null },
 );
 
-assert.match(workoutRoute, /useAudioPlayer\([\s\S]*rest-countdown-tick\.wav/);
-assert.match(workoutRoute, /useAudioPlayer\([\s\S]*rest-countdown-finish\.wav/);
+assert.doesNotMatch(workoutRoute, /useAudioPlayer/);
+assert.match(workoutRoute, /createAudioPlayer\([\s\S]*rest-countdown-sequence\.wav/);
+assert.match(workoutRoute, /keepAudioSessionActive: false/);
+assert.match(workoutRoute, /new RestTimerCountdownAudioWindow/);
+assert.doesNotMatch(workoutRoute, /setAudioModeAsync|setIsAudioActiveAsync/);
 assert.match(
   workoutRoute,
   /remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)/,
@@ -205,13 +208,13 @@ assert.match(
 assert.match(workoutRoute, /const loggedSets = loggedSetCountForWorkout\(workout\)/);
 assert.match(workoutRoute, /const plannedSets = plannedSetCountForWorkout\(workout\)/);
 
-const tick = fs.readFileSync(path.join(root, 'assets/audio/rest-countdown-tick.wav'));
-const finish = fs.readFileSync(path.join(root, 'assets/audio/rest-countdown-finish.wav'));
-for (const [label, file] of [['tick', tick], ['finish', finish]]) {
-  assert.equal(file.subarray(0, 4).toString(), 'RIFF', `${label} cue is not a WAV file.`);
-  assert.equal(file.subarray(8, 12).toString(), 'WAVE', `${label} cue is not a WAV file.`);
-}
-assert.ok(finish.length > tick.length * 3, 'The finish cue must be materially longer than the short countdown cue.');
+const sequence = fs.readFileSync(path.join(root, 'assets/audio/rest-countdown-sequence.wav'));
+assert.equal(sequence.subarray(0, 4).toString(), 'RIFF', 'countdown sequence is not a WAV file.');
+assert.equal(sequence.subarray(8, 12).toString(), 'WAVE', 'countdown sequence is not a WAV file.');
+assert.equal(sequence.readUInt32LE(24), 44_100, 'countdown sequence must remain 44.1 kHz.');
+assert.equal(sequence.readUInt16LE(22), 1, 'countdown sequence must remain mono.');
+assert.equal(sequence.readUInt16LE(34), 16, 'countdown sequence must remain 16-bit PCM.');
+assert.ok(sequence.length > 320_000, 'countdown sequence must contain the complete 3-2-1-0 cue.');
 
 const startTimerBody = workoutRoute.slice(
   workoutRoute.indexOf('const startRestTimer'),

@@ -33,7 +33,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
-import { useAudioPlayer } from 'expo-audio';
+import { createAudioPlayer } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 let VideoThumbnails: any = null;
 try {
@@ -173,6 +173,7 @@ import {
   REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
   shouldPromoteRestTimer,
 } from '@/lib/rest-timer-cues';
+import { RestTimerCountdownAudioWindow } from '@/lib/rest-timer-countdown-audio';
 import {
   clearRestTimerExpiry,
   loadRestTimerExpiry,
@@ -2137,12 +2138,7 @@ export default function WorkoutViewerScreen() {
   const [restTimerReadyVisible, setRestTimerReadyVisible] = useState(false);
   const [restTimerHeaderOrigin, setRestTimerHeaderOrigin] =
     useState<RestTimerHeaderOrigin | null>(null);
-  const restCountdownTickPlayer = useAudioPlayer(
-    require('../../../assets/audio/rest-countdown-tick.wav'),
-  );
-  const restCountdownFinishPlayer = useAudioPlayer(
-    require('../../../assets/audio/rest-countdown-finish.wav'),
-  );
+  const restCountdownAudioRef = useRef<RestTimerCountdownAudioWindow | null>(null);
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restEndAtMsRef = useRef<number | null>(null);
   const lastRestCueSecondRef = useRef<number | null>(null);
@@ -2152,24 +2148,25 @@ export default function WorkoutViewerScreen() {
   const restNotifIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
   const notifHandlerSetRef = useRef(false);
-  useEffect(() => {
-    restCountdownTickPlayer.volume = 0.72;
-    restCountdownFinishPlayer.volume = 0.78;
-  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
-
-  const playRestCountdownTone = useCallback(async (tone: 'short' | 'finish') => {
-    const player = tone === 'finish' ? restCountdownFinishPlayer : restCountdownTickPlayer;
-    try {
-      await player.seekTo(0);
-      player.play();
-    } catch (error) {
-      console.warn('rest countdown audio failed', error);
+  const startRestCountdownAudio = useCallback((remaining: number) => {
+    if (!restCountdownAudioRef.current) {
+      restCountdownAudioRef.current = new RestTimerCountdownAudioWindow({
+        createPlayer: () => createAudioPlayer(
+          require('../../../assets/audio/rest-countdown-sequence.wav'),
+          {
+            updateInterval: 1_000,
+            keepAudioSessionActive: false,
+          },
+        ),
+        onError: (error) => console.warn('rest countdown audio failed', error),
+      });
     }
-  }, [restCountdownFinishPlayer, restCountdownTickPlayer]);
+    restCountdownAudioRef.current.startAt(remaining);
+  }, []);
 
   const deliverRestTimerCue = useCallback((remaining: number) => {
     const cue = cueForRestTimerSecond(remaining, DEFAULT_REST_TIMER_CUE_CONFIG);
-    if (cue.tone) void playRestCountdownTone(cue.tone);
+    if (cue.tone) startRestCountdownAudio(remaining);
     if (cue.haptic === 'light') {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
     } else if (cue.haptic === 'strong') {
@@ -2177,7 +2174,7 @@ export default function WorkoutViewerScreen() {
     } else if (cue.haptic === 'success') {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
     }
-  }, [playRestCountdownTone]);
+  }, [startRestCountdownAudio]);
 
   const presentRestTimerReady = useCallback(() => {
     if (restZeroAdvanceTimerRef.current || restReadyDismissTimerRef.current) return;
@@ -2950,6 +2947,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const startRestTimer = (seconds: number) => {
+    restCountdownAudioRef.current?.reset();
     if (restTimerRef.current) {
       clearInterval(restTimerRef.current);
       restTimerRef.current = null;
@@ -3004,8 +3002,7 @@ export default function WorkoutViewerScreen() {
       clearTimeout(restFocusReturnTimerRef.current);
       restFocusReturnTimerRef.current = null;
     }
-    restCountdownTickPlayer.pause();
-    restCountdownFinishPlayer.pause();
+    restCountdownAudioRef.current?.reset();
     setRestTimerZeroVisible(false);
     setRestTimerReadyVisible(false);
     setRestActive(false);
@@ -3140,6 +3137,8 @@ export default function WorkoutViewerScreen() {
     const status = String(data?.workout?.status || '').toLowerCase();
     if (status === 'in_progress') return;
 
+    restCountdownAudioRef.current?.reset();
+
     if (restTimerRef.current) {
       clearInterval(restTimerRef.current);
       restTimerRef.current = null;
@@ -3166,6 +3165,11 @@ export default function WorkoutViewerScreen() {
     }
     cancelRestEndNotification();
   }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId]);
+
+  useEffect(() => () => {
+    restCountdownAudioRef.current?.dispose();
+    restCountdownAudioRef.current = null;
+  }, []);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
