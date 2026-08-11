@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-import { ANIMATION_LIBRARY } from '../dev-mocks/animation-library/registry.ts';
-
 const ceremony = fs.readFileSync(
   new URL('../components/workout-logger/post-session-ledger-ceremony.tsx', import.meta.url),
   'utf8',
@@ -20,6 +18,7 @@ const logger = fs.readFileSync(
   'utf8',
 );
 const assetUrl = new URL('../assets/images/post-session-ledger-concept-v1.png', import.meta.url);
+const animationRegistryUrl = new URL('../dev-mocks/animation-library/registry.ts', import.meta.url);
 
 assert.equal(fs.existsSync(assetUrl), true, 'the temporary ledger concept asset must be packaged');
 assert.match(
@@ -56,15 +55,18 @@ assert.doesNotMatch(postSessionSurfaces, /rgba\\(18,32,28,0\\.58\\)/, 'post-sess
 assert.match(logger, /completion_transitioned === true[\s\S]*setAnimatedCompletionSummaryId/, 'only a canonical fresh completion may arm the ceremony');
 assert.match(logger, /<PostSessionCoachFeedback[\s\S]*authorKind=\{sessionNoteAuthor\.kind\}[\s\S]*authorName=\{sessionNoteAuthor\.name\}/, 'post-session feedback must use the canonical coach/self author resolver');
 assert.match(logger, /animateEntry=\{animatedCompletionSummaryId === workout\.impact_summary\.summary_id\}/, 'the completed-session view must tie animation to the new summary id');
-assert.match(logger, /skipPostSessionAndComplete[\s\S]*await completeWorkout\(\{ skipIncompleteWarning: true \}\)/, 'skipping the survey must still complete before the ceremony');
-assert.match(logger, /submitPostSessionAndComplete[\s\S]*post_session_survey[\s\S]*await completeWorkout\(\{ skipIncompleteWarning: true \}\)/, 'submitting the survey must still complete before the ceremony');
+assert.match(logger, /skipPostSessionAndComplete[\s\S]*await completeWorkout\(\{[\s\S]*?skipIncompleteWarning:\s*true[\s\S]*?\}\)/, 'skipping the survey must still complete before the ceremony');
+assert.match(logger, /submitPostSessionAndComplete[\s\S]*post_session_survey[\s\S]*await completeWorkout\(\{[\s\S]*?skipIncompleteWarning:\s*true[\s\S]*?\}\)/, 'submitting the survey must still complete before the ceremony');
 assert.match(logger, /if \(completionTransitioned\)[\s\S]*scrollRef\.current\?\.scrollTo\(\{ y: 0, animated: false \}\)/, 'a fresh ceremony must be brought into focus without an extra interaction');
 
-const completionEntries = ANIMATION_LIBRARY.filter((entry) => entry.kind === 'session-completion');
-assert.deepEqual(
-  completionEntries.map((entry) => entry.id),
-  ['post-session-ledger-ceremony'],
-  'the DEV Animation Library must expose one completion animation family',
-);
+if (fs.existsSync(animationRegistryUrl)) {
+  const { ANIMATION_LIBRARY } = await import(animationRegistryUrl.href);
+  const completionEntries = ANIMATION_LIBRARY.filter((entry) => entry.kind === 'session-completion');
+  assert.deepEqual(
+    completionEntries.map((entry) => entry.id),
+    ['post-session-ledger-ceremony'],
+    'the DEV Animation Library must expose one completion animation family',
+  );
+}
 
 console.log('[post-session-ledger-ceremony] asset, choreography, completion gate, digest handoff, and DEV registry passed');

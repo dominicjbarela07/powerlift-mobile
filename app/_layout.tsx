@@ -19,7 +19,6 @@ import { Text } from '@/components/ui/sl-text';
 import { DevLiveScreenReturnControl } from '@/dev-mocks/DevLiveScreenReturnControl';
 import { IdealStateMockShell } from '@/dev-mocks/IdealStateMockHeader';
 import { AppShell } from '@/components/AppShell';
-import { RestTimerProvider } from '@/context/RestTimerContext';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -453,14 +452,12 @@ export default function RootLayout() {
         ) : (
           <AuthProvider>
             <ThemeProvider value={appOLEDTheme}>
-              <RestTimerProvider>
-                <IdealStateMockShell>
-                  <RootStack />
-                </IdealStateMockShell>
-                <DevLiveScreenReturnControl />
-                <OtaUpdateController />
-                <StatusBar style="light" />
-              </RestTimerProvider>
+              <IdealStateMockShell>
+                <RootStack />
+              </IdealStateMockShell>
+              <DevLiveScreenReturnControl />
+              <OtaUpdateController />
+              <StatusBar style="light" />
             </ThemeProvider>
           </AuthProvider>
         )}
