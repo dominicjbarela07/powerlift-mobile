@@ -192,8 +192,15 @@ import { RestTimerCountdownAudioWindow } from '@/lib/rest-timer-countdown-audio'
 import {
   clearRestTimerExpiry,
   loadRestTimerExpiry,
-  persistRestTimerExpiry,
 } from '@/lib/rest-timer-storage';
+import {
+  attachGlobalRestTimerNotification,
+  beginGlobalRestTimer,
+  getRestTimerCompletionState,
+  hydrateRestTimerCompletion,
+  reconcileGlobalRestTimerCompletion,
+  stopGlobalRestTimer,
+} from '@/lib/rest-timer-completion';
 import { coreSetTimelineLabel } from '@/lib/core-logger-timeline';
 import {
   buildSupersetRoundModel,
@@ -2215,8 +2222,8 @@ export default function WorkoutViewerScreen() {
   const restZeroAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restReadyDismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restNotifIdRef = useRef<string | null>(null);
+  const restTimerIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
-  const notifHandlerSetRef = useRef(false);
   const startRestCountdownAudio = useCallback((remaining: number) => {
     if (!restCountdownAudioRef.current) {
       restCountdownAudioRef.current = new RestTimerCountdownAudioWindow({
@@ -2244,31 +2251,6 @@ export default function WorkoutViewerScreen() {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
     }
   }, [startRestCountdownAudio]);
-
-  const presentRestTimerReady = useCallback(() => {
-    if (restZeroAdvanceTimerRef.current || restReadyDismissTimerRef.current) return;
-    setRestTimerZeroVisible(true);
-    setRestTimerReadyVisible(false);
-    restZeroAdvanceTimerRef.current = setTimeout(() => {
-      setRestTimerZeroVisible(false);
-      setRestTimerReadyVisible(true);
-      restZeroAdvanceTimerRef.current = null;
-    }, REST_TIMER_ZERO_HOLD_MS);
-    restReadyDismissTimerRef.current = setTimeout(() => {
-      setRestTimerReadyVisible(false);
-      restReadyDismissTimerRef.current = null;
-    }, REST_TIMER_ZERO_HOLD_MS + REST_TIMER_READY_HOLD_MS);
-
-    if (restFocusReturnTimerRef.current) {
-      clearTimeout(restFocusReturnTimerRef.current);
-    }
-    restFocusReturnTimerRef.current = setTimeout(() => {
-      const nextMovement = getOrderedWorkoutMovements(dataRef.current?.workout)
-        .find((row) => row.total > 0 && !row.complete);
-      if (nextMovement?.key) scheduleMovementFocus(nextMovement.key);
-      restFocusReturnTimerRef.current = null;
-    }, REST_TIMER_ZERO_HOLD_MS + REST_TIMER_READY_HOLD_MS + REST_TIMER_RETURN_MS);
-  }, [getOrderedWorkoutMovements, scheduleMovementFocus]);
 
   const handleRestTimerLayout = useCallback((origin: RestTimerHeaderOrigin) => {
     setRestTimerHeaderOrigin((current) => {
@@ -2315,7 +2297,7 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const scheduleRestEndNotification = async (seconds: number) => {
+  const scheduleRestEndNotification = async (seconds: number, timerId: string) => {
     if (!Notifications) return;
     // Replace any existing scheduled rest notification
     await cancelRestEndNotification();
@@ -2328,13 +2310,24 @@ export default function WorkoutViewerScreen() {
         content: {
           title: 'Rest over',
           body: 'Time for the next set.',
-          data: { kind: 'rest_end' },
+          data: {
+            kind: 'rest_end',
+            type: 'rest_timer_complete',
+            workout_id: String(workoutId),
+            timer_id: timerId,
+            owner_user_id: String(user?.id ?? user?.user_id ?? ''),
+          },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds,
         },
       });
+      const attached = await attachGlobalRestTimerNotification(timerId, id);
+      if (!attached) {
+        await Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined);
+        return;
+      }
       restNotifIdRef.current = id;
     } catch (e) {
       console.log('scheduleRestEndNotification error', e);
@@ -3043,7 +3036,16 @@ export default function WorkoutViewerScreen() {
 
     const endAt = Date.now() + seconds * 1000;
     restEndAtMsRef.current = endAt;
-    void persistRestTimerExpiry(workoutId, endAt).catch(() => undefined);
+    const globalTimer = beginGlobalRestTimer({
+      workoutId,
+      ownerUserId: user?.id ?? user?.user_id ?? '',
+      endAtMs: endAt,
+    });
+    restTimerIdRef.current = globalTimer.timerId;
+    if (globalTimer.replacedNotificationId && Notifications) {
+      void Notifications.cancelScheduledNotificationAsync(globalTimer.replacedNotificationId)
+        .catch(() => undefined);
+    }
     lastRestCueSecondRef.current = null;
     if (restFocusReturnTimerRef.current) {
       clearTimeout(restFocusReturnTimerRef.current);
@@ -3065,7 +3067,7 @@ export default function WorkoutViewerScreen() {
     feedbackDispatch({ type: 'TIMER_ACTIVE' });
 
     // Schedule a local notification so the timer "works" while backgrounded
-    scheduleRestEndNotification(seconds);
+    scheduleRestEndNotification(seconds, globalTimer.timerId);
   };
 
   const stopRestTimer = () => {
@@ -3074,6 +3076,17 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
+    const activeGlobalTimer = getRestTimerCompletionState().active;
+    const timerId = restTimerIdRef.current
+      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null);
+    restTimerIdRef.current = null;
+    if (timerId) {
+      void stopGlobalRestTimer(timerId).then((notificationId) => {
+        if (notificationId && Notifications) {
+          void Notifications.cancelScheduledNotificationAsync(notificationId).catch(() => undefined);
+        }
+      });
+    }
     if (workoutId) {
       void clearRestTimerExpiry(workoutId).catch(() => undefined);
     }
@@ -3142,7 +3155,7 @@ export default function WorkoutViewerScreen() {
           void clearRestTimerExpiry(workoutId).catch(() => undefined);
         }
         feedbackDispatch({ type: 'TIMER_IDLE' });
-        presentRestTimerReady();
+        void reconcileGlobalRestTimerCompletion();
 
         if (restTimerRef.current) {
           clearInterval(restTimerRef.current);
@@ -3164,7 +3177,7 @@ export default function WorkoutViewerScreen() {
         restTimerRef.current = null;
       }
     };
-  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
+  }, [deliverRestTimerCue, restActive, workoutId]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
@@ -3192,18 +3205,22 @@ export default function WorkoutViewerScreen() {
           if (workoutId) {
             void clearRestTimerExpiry(workoutId).catch(() => undefined);
           }
-          presentRestTimerReady();
+          void reconcileGlobalRestTimerCompletion();
         }
       }
     });
 
     return () => sub.remove();
-  }, [deliverRestTimerCue, presentRestTimerReady, restActive, workoutId]);
+  }, [deliverRestTimerCue, restActive, workoutId]);
 
   useEffect(() => {
     let cancelled = false;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (!workoutId || status !== 'in_progress') return undefined;
+    void hydrateRestTimerCompletion().then((snapshot) => {
+      if (cancelled || snapshot.active?.workoutId !== String(workoutId)) return;
+      restTimerIdRef.current = snapshot.active.timerId;
+    }).catch(() => undefined);
     void loadRestTimerExpiry(workoutId).then((stored) => {
       if (cancelled || !stored || restEndAtMsRef.current) return;
       const remaining = Math.max(
@@ -3222,6 +3239,7 @@ export default function WorkoutViewerScreen() {
   }, [data?.workout?.status, workoutId]);
 
   useEffect(() => {
+    if (!data?.workout) return;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (status === 'in_progress') return;
 
@@ -3232,6 +3250,17 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
+    const activeGlobalTimer = getRestTimerCompletionState().active;
+    const timerId = restTimerIdRef.current
+      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null);
+    restTimerIdRef.current = null;
+    if (timerId) {
+      void stopGlobalRestTimer(timerId).then((notificationId) => {
+        if (notificationId && Notifications) {
+          void Notifications.cancelScheduledNotificationAsync(notificationId).catch(() => undefined);
+        }
+      });
+    }
     if (workoutId) {
       void clearRestTimerExpiry(workoutId).catch(() => undefined);
     }
@@ -6291,23 +6320,6 @@ export default function WorkoutViewerScreen() {
   }, [openSetVideoPlayer, removeVideoForSetLog, uploadVideoForSetLog, videoUploadBySetLogId]);
 
   useEffect(() => {
-    if (Platform.OS === 'web' || !Notifications) return;
-    if (notifHandlerSetRef.current) return;
-
-    notifHandlerSetRef.current = true;
-    Notifications.setNotificationHandler({
-      handleNotification: async (notification: any) => {
-        const isRestEnd = notification?.request?.content?.data?.kind === 'rest_end';
-        return {
-          shouldShowAlert: !isRestEnd,
-          shouldPlaySound: !isRestEnd,
-          shouldSetBadge: false,
-        };
-      },
-    });
-  }, []);
-
-  useEffect(() => {
     dataRef.current = data;
   }, [data]);
 
@@ -6395,8 +6407,8 @@ export default function WorkoutViewerScreen() {
     const processedSetResults = processedSetResultsRef.current;
     const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
     return () => {
-      // Best-effort cleanup so scheduled notifications don't linger
-      cancelRestEndNotification();
+      // Do not cancel the active rest completion notification here. The global
+      // serializable timer owns it after the Logger unmounts.
       if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
       canonicalSetSubmissionController.reset();
       processedSetResults.reset();
