@@ -71,6 +71,7 @@ import {
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { LoggerFeedbackSurface } from '@/components/workout-logger/logger-feedback';
+import { FinalSessionCompletionPresenter } from '@/components/workout-logger/final-session-completion-presenter';
 import { PostSessionCoachFeedback } from '@/components/workout-logger/post-session-surfaces';
 import { SessionHighlightsPanel, SessionImpactPanel, type SessionImpactSummary } from '@/components/workout-logger/stage5-impact-summary';
 import {
@@ -150,6 +151,11 @@ import {
   accessoryPerSetPrescription,
   accessoryPerSetRepsLabel,
 } from '@/lib/accessory-logger-prescription';
+import {
+  canPresentFinalSessionCompletion,
+  finalSessionCompletionReducer,
+  initialFinalSessionCompletionState,
+} from '@/lib/final-session-completion';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { movementScrollTarget } from '@/lib/movement-transition';
 import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
@@ -2471,8 +2477,11 @@ export default function WorkoutViewerScreen() {
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
-  const [endSessionPromptVisible, setEndSessionPromptVisible] = useState(false);
-  const completionPromptRef = useRef({ workoutId: 0, complete: false, prompted: false });
+  const [finalSessionCompletion, finalSessionCompletionDispatch] = useReducer(
+    finalSessionCompletionReducer,
+    initialFinalSessionCompletionState,
+  );
+  const finalSessionEndTransitionRef = useRef(false);
   const [postSessionTimeError, setPostSessionTimeError] = useState<string | null>(null);
   const [postSessionFallbackTimeZone, setPostSessionFallbackTimeZone] = useState(
     () => getDeviceTimezone() || 'America/Los_Angeles',
@@ -5019,23 +5028,17 @@ export default function WorkoutViewerScreen() {
           transientRecognitionTrace(11, 'logger sheet close completed');
           if (isSessionFinalSet) {
             const acceptedWorkoutId = Number(workoutId || dataRef.current?.workout?.id || 0);
+            const completionEventId = `${acceptedWorkoutId}:${feedbackState.submission.lastSetLogId}`;
             pendingAutoAdvanceRef.current = null;
             activeTimerHandoffIdentityRef.current = null;
             timerHandoffReleaseControllerRef.current.reset();
             setTimerPickerVisible(false);
             stopRestTimer();
-            if (completionPromptRef.current.workoutId !== acceptedWorkoutId) {
-              completionPromptRef.current = {
-                workoutId: acceptedWorkoutId,
-                complete: true,
-                prompted: false,
-              };
-            }
-            completionPromptRef.current.complete = true;
-            if (!completionPromptRef.current.prompted) {
-              completionPromptRef.current.prompted = true;
-              setEndSessionPromptVisible(true);
-            }
+            finalSessionCompletionDispatch({
+              type: 'QUEUE_CANONICAL_FINAL_SET',
+              workoutId: acceptedWorkoutId,
+              eventId: completionEventId,
+            });
             feedbackDispatch({ type: 'TIMER_IDLE' });
             return;
           }
@@ -5067,6 +5070,27 @@ export default function WorkoutViewerScreen() {
       transientRecognitionTrace(9, 'accepted-state dwell started');
     }
   }, [accessoryWheel?.itemId, coreWheel?.itemId, feedbackState.completionBoundary.authority, feedbackState.completionBoundary.status, feedbackState.submission.activeItemId, feedbackState.submission.lastSetLogId, feedbackState.submission.status, openTimerPicker, transientRecognitionTrace, workoutId]);
+
+  useEffect(() => {
+    if (!canPresentFinalSessionCompletion({
+      state: finalSessionCompletion,
+      saveConfirmationVisible: feedbackState.recognition.saveConfirmationVisible,
+      recognitionActive: feedbackState.recognition.currentEvent != null,
+      recognitionQueueLength: feedbackState.recognition.queuedEvents.length,
+      appBackgrounded: feedbackState.appLifecycle === 'background',
+      timerPending: feedbackState.timer.status === 'picker_pending',
+      timerVisible: timerPickerVisible,
+    })) return;
+    finalSessionCompletionDispatch({ type: 'PRESENT_PENDING' });
+  }, [
+    feedbackState.appLifecycle,
+    feedbackState.recognition.currentEvent,
+    feedbackState.recognition.queuedEvents.length,
+    feedbackState.recognition.saveConfirmationVisible,
+    feedbackState.timer.status,
+    finalSessionCompletion,
+    timerPickerVisible,
+  ]);
 
   useEffect(() => {
     if (!shouldShowCompletedSetSwipeTooltip({
@@ -5671,29 +5695,33 @@ export default function WorkoutViewerScreen() {
   };
 
   useEffect(() => {
-    const current = data?.workout;
-    if (!current) return;
-    const workoutKey = Number(current.id || 0);
-    if (completionPromptRef.current.workoutId !== workoutKey) {
-      completionPromptRef.current = {
-        workoutId: workoutKey,
-        complete: false,
-        prompted: false,
-      };
-    }
-    const fullyComplete = (
-      String(current.status || '').toLowerCase() === 'in_progress'
-      && programmedSetCountForSession(current) > 0
-      && missingSetLabelsForWorkout(current).length === 0
-    );
-    if (!fullyComplete) {
-      completionPromptRef.current.complete = false;
-      completionPromptRef.current.prompted = false;
-      setEndSessionPromptVisible(false);
-      return;
-    }
-    completionPromptRef.current.complete = true;
-  }, [data?.workout]);
+    const workoutKey = Number(data?.workout?.id || workoutId || 0);
+    finalSessionEndTransitionRef.current = false;
+    finalSessionCompletionDispatch({ type: 'RESET_WORKOUT', workoutId: workoutKey });
+  }, [data?.workout?.id, workoutId]);
+
+  const dismissFinalSessionCompletion = useCallback(() => {
+    if (finalSessionCompletion.phase !== 'visible') return;
+    finalSessionCompletionDispatch({ type: 'NOT_YET' });
+  }, [finalSessionCompletion.phase]);
+
+  const endSessionFromFinalSet = useCallback(() => {
+    if (finalSessionCompletion.phase !== 'visible' || finalSessionEndTransitionRef.current) return;
+    finalSessionEndTransitionRef.current = true;
+    finalSessionCompletionDispatch({ type: 'BEGIN_END_SESSION' });
+    requestAnimationFrame(() => {
+      try {
+        openPostSessionSurvey();
+        finalSessionCompletionDispatch({ type: 'END_SESSION_TRANSITION_SUCCEEDED' });
+      } catch (transitionError) {
+        console.error('open final-set post-session flow error', transitionError);
+        finalSessionCompletionDispatch({ type: 'END_SESSION_TRANSITION_FAILED' });
+        setError('Unable to open Session completion. Try End Session again.');
+      } finally {
+        finalSessionEndTransitionRef.current = false;
+      }
+    });
+  }, [finalSessionCompletion.phase]);
 
   const continueToPostSessionWithMissingSets = () => {
     setMissingCompletionSets(null);
@@ -9171,41 +9199,12 @@ export default function WorkoutViewerScreen() {
         styles={styles}
       />
 
-      <Modal
-        animationType="fade"
-        onRequestClose={() => setEndSessionPromptVisible(false)}
-        transparent
-        visible={endSessionPromptVisible}
-      >
-        <View style={styles.modalBackdropCenter}>
-          <View style={[styles.modalCard, styles.incompleteCompleteModal]}>
-            <View style={styles.sessionCompletePromptIcon}>
-              <Ionicons color={SLColors.success} name="checkmark" size={26} />
-            </View>
-            <Text style={styles.postSessionTitle}>All Sets Completed</Text>
-            <Text style={styles.incompleteCompleteCopy}>
-              You&apos;ve logged every prescribed set in this Session. Ready to finish the Session?
-            </Text>
-            <View style={styles.modalActionsRow}>
-              <TouchableOpacity
-                onPress={() => setEndSessionPromptVisible(false)}
-                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-              >
-                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Not Yet</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setEndSessionPromptVisible(false);
-                  requestAnimationFrame(openPostSessionSurvey);
-                }}
-                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
-              >
-                <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>End Session</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <FinalSessionCompletionPresenter
+        visible={finalSessionCompletion.phase === 'visible' || finalSessionCompletion.phase === 'ending'}
+        ending={finalSessionCompletion.phase === 'ending'}
+        onEndSession={endSessionFromFinalSet}
+        onNotYet={dismissFinalSessionCompletion}
+      />
 
       <Modal
         visible={editSetVisible}
