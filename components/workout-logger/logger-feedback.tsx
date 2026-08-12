@@ -9,12 +9,21 @@ import {
   MajorVolumeMilestoneRecognition,
   type MajorVolumeMilestonePhase,
 } from '@/components/workout-logger/major-volume-milestone-recognition';
+import {
+  CanonicalRecordRecognition,
+  type CanonicalRecordRecognitionPhase,
+} from '@/components/workout-logger/canonical-record-recognition';
 import { SLColors, SLIconSize, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import { feedbackMotionDuration, recognitionPresentation, recognitionVisibleDuration, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
-import { triggerMajorVolumeMilestoneHaptic } from '@/lib/logger-feedback-haptics';
+import {
+  triggerMajorVolumeMilestoneHaptic,
+  triggerRecognitionImpactHaptic,
+  triggerRecognitionSettleHaptic,
+} from '@/lib/logger-feedback-haptics';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format';
 import { SLEasing } from '@/lib/motion';
 import { useSLMotionPreviewOverrides } from '@/lib/motion-preview';
+import { recognitionMotionConfig } from '@/lib/recognition-motion-registry';
 
 type LoggerFeedbackSurfaceProps = {
   saveConfirmationVisible: boolean;
@@ -32,6 +41,7 @@ type LoggerFeedbackSurfaceProps = {
 
 export type RecognitionReplacementPhase =
   | MajorVolumeMilestonePhase
+  | CanonicalRecordRecognitionPhase
   | 'Current Best'
   | 'Displacement'
   | 'New Best'
@@ -123,151 +133,43 @@ export function RecordReplacementHero({
   reduceMotion,
   playbackRate = 1,
   onPhaseChange,
+  onImpact,
+  onSettle,
 }: {
   animationKey: number;
   eyebrow: string;
   movementLabel: string;
-  previousValue: string;
+  previousValue: string | null;
   nextValue: string;
-  progression: string;
+  progression: string | null;
   delta: string | null;
   recordCategory?: string | null;
   reduceMotion: boolean;
   playbackRate?: number;
   onPhaseChange?: (phase: RecognitionReplacementPhase) => void;
+  onImpact?: () => void;
+  onSettle?: () => void;
 }) {
-  const previewMotion = useSLMotionPreviewOverrides();
-  const headerOpacity = useRef(new Animated.Value(0)).current;
-  const priorContextOpacity = useRef(new Animated.Value(0)).current;
-  const nextContextOpacity = useRef(new Animated.Value(0)).current;
-  const priorOpacity = useRef(new Animated.Value(0)).current;
-  const priorTranslateX = useRef(new Animated.Value(0)).current;
-  const nextOpacity = useRef(new Animated.Value(0)).current;
-  const nextTranslateX = useRef(new Animated.Value(320)).current;
-  const evidenceOpacity = useRef(new Animated.Value(0)).current;
-  const formerRecordCategory = `FORMER ${recordCategory}`;
-  const nextRecordCategory = `NEW ${recordCategory}`;
-
-  useEffect(() => {
-    const phaseTimers: ReturnType<typeof setTimeout>[] = [];
-    [headerOpacity, priorContextOpacity, nextContextOpacity, priorOpacity, priorTranslateX, nextOpacity, nextTranslateX, evidenceOpacity].forEach((value) => value.stopAnimation());
-
-    if (reduceMotion) {
-      headerOpacity.setValue(recordCategory ? 0 : 1);
-      priorContextOpacity.setValue(0);
-      nextContextOpacity.setValue(1);
-      priorOpacity.setValue(0);
-      priorTranslateX.setValue(-320);
-      nextOpacity.setValue(1);
-      nextTranslateX.setValue(0);
-      evidenceOpacity.setValue(1);
-      onPhaseChange?.('Evidence');
-      return undefined;
-    }
-
-    headerOpacity.setValue(0);
-    priorContextOpacity.setValue(0);
-    nextContextOpacity.setValue(0);
-    priorOpacity.setValue(0);
-    priorTranslateX.setValue(0);
-    nextOpacity.setValue(0);
-    nextTranslateX.setValue(320);
-    evidenceOpacity.setValue(0);
-    onPhaseChange?.('Current Best');
-
-    const phaseAt = (delay: number, phase: RecognitionReplacementPhase) => {
-      phaseTimers.push(setTimeout(() => onPhaseChange?.(phase), atPlaybackRate(delay, playbackRate)));
-    };
-    const stateMs = previewMotion?.stateMs ?? SLMotion.stateMs;
-    const displacementMs = previewMotion?.spatialMs ?? SLMotion.componentMs;
-    const phaseDelayMs = previewMotion?.phaseDelayMs ?? 440;
-    const establishMs = stateMs + phaseDelayMs;
-    phaseAt(establishMs, 'Displacement');
-    phaseAt(establishMs + Math.max(displacementMs, stateMs), 'New Best');
-    phaseAt(establishMs + Math.max(displacementMs, stateMs) + stateMs, 'Evidence');
-
-    const replacement = Animated.sequence([
-      // Stage 1: establish the current best as the record being replaced.
-      Animated.parallel([
-        Animated.timing(headerOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-        Animated.timing(priorContextOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-        Animated.timing(priorOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-      ]),
-      Animated.delay(atPlaybackRate(phaseDelayMs, playbackRate)),
-      // Stages 2–3: old evidence leaves its pedestal as the stronger value takes it.
-      Animated.parallel([
-        Animated.timing(priorTranslateX, { toValue: -320, duration: atPlaybackRate(displacementMs, playbackRate), easing: SLEasing.exit, useNativeDriver: true }),
-        Animated.timing(priorContextOpacity, { toValue: 0, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.exit, useNativeDriver: true }),
-        Animated.timing(nextContextOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-        Animated.timing(nextOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-        Animated.timing(nextTranslateX, { toValue: 0, duration: atPlaybackRate(displacementMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-      ]),
-      // Stage 4: leave the factual comparison in the durable resting state.
-      Animated.parallel([
-        Animated.timing(evidenceOpacity, { toValue: 1, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.enter, useNativeDriver: true }),
-        ...(recordCategory
-          ? [Animated.timing(headerOpacity, { toValue: 0, duration: atPlaybackRate(stateMs, playbackRate), easing: SLEasing.exit, useNativeDriver: true })]
-          : []),
-      ]),
-    ]);
-    replacement.start();
-    return () => {
-      replacement.stop();
-      phaseTimers.forEach(clearTimeout);
-    };
-  }, [animationKey, evidenceOpacity, headerOpacity, nextContextOpacity, nextOpacity, nextTranslateX, onPhaseChange, playbackRate, previewMotion?.phaseDelayMs, previewMotion?.spatialMs, previewMotion?.stateMs, priorContextOpacity, priorOpacity, priorTranslateX, recordCategory, reduceMotion]);
-
   return (
-    <View style={styles.recordReplacementBody}>
-      <Animated.View style={[styles.headerRow, { opacity: headerOpacity }]}>
-        <View style={styles.trophyMark}>
-          <SLTrophy size={40} />
-        </View>
-        <View style={styles.headerCopy}>
-          <Text adjustsFontSizeToFit numberOfLines={1} style={[styles.eyebrow, recordCategory ? styles.repMaxEyebrow : null]}>{eyebrow}</Text>
-          <Text style={styles.movement}>{movementLabel}</Text>
-        </View>
-      </Animated.View>
-      <View style={styles.recordMetricPanel}>
-        <View style={styles.recordContextViewport}>
-          {recordCategory ? (
-            <Animated.Text adjustsFontSizeToFit numberOfLines={1} style={[styles.recordContext, styles.repMaxRecordContext, { opacity: priorContextOpacity }]}>{formerRecordCategory}</Animated.Text>
-          ) : (
-            <Animated.Text adjustsFontSizeToFit numberOfLines={1} style={[styles.recordContext, { opacity: priorContextOpacity }]}>Current Best</Animated.Text>
-          )}
-          {recordCategory ? (
-            <Animated.Text adjustsFontSizeToFit numberOfLines={1} style={[styles.recordContext, styles.recordContextIncoming, styles.repMaxRecordContextIncoming, { opacity: nextContextOpacity }]}>{nextRecordCategory}</Animated.Text>
-          ) : (
-            <Animated.Text adjustsFontSizeToFit numberOfLines={1} style={[styles.recordContext, styles.recordContextIncoming, { opacity: nextContextOpacity }]}>New Best</Animated.Text>
-          )}
-        </View>
-        <View style={styles.recordHeroViewport}>
-          <Animated.Text
-            adjustsFontSizeToFit
-            numberOfLines={1}
-            style={[styles.primaryValue, styles.recordHeroValue, { opacity: priorOpacity, transform: [{ translateX: priorTranslateX }] }]}
-          >
-            {previousValue}
-          </Animated.Text>
-          <Animated.Text
-            adjustsFontSizeToFit
-            numberOfLines={1}
-            style={[styles.primaryValue, styles.recordHeroValue, styles.recordHeroIncoming, { opacity: nextOpacity, transform: [{ translateX: nextTranslateX }] }]}
-          >
-            {nextValue}
-          </Animated.Text>
-        </View>
-        <Animated.View style={[styles.recordEvidence, recordCategory ? styles.repMaxRecordEvidence : null, { opacity: evidenceOpacity }]}>
-          {recordCategory ? <Text adjustsFontSizeToFit numberOfLines={1} style={styles.repMaxEvidenceTitle}>{recordCategory}</Text> : null}
-          <Text adjustsFontSizeToFit numberOfLines={1} style={[styles.progression, recordCategory ? styles.repMaxProgression : null]}>{progression}</Text>
-          {delta ? <Text style={styles.delta}>{delta}</Text> : null}
-          {recordCategory ? <Text numberOfLines={1} style={styles.repMaxEvidenceMovement}>{movementLabel}</Text> : null}
-        </Animated.View>
-      </View>
-    </View>
+    <CanonicalRecordRecognition
+      animationKey={animationKey}
+      movementLabel={movementLabel}
+      previousValue={previousValue}
+      nextValue={nextValue}
+      delta={delta}
+      recordTitle={eyebrow}
+      formerLabel={recordCategory ? `FORMER ${recordCategory}` : 'CURRENT BEST'}
+      newLabel={recordCategory ? `NEW ${recordCategory}` : 'NEW BEST'}
+      evidenceLabel={progression || recordCategory || 'RECORD REPLACED'}
+      accessibilityLabel={`${eyebrow}. ${movementLabel}. ${previousValue ? `Previous ${previousValue}.` : 'No prior mark.'} New ${nextValue}.`}
+      reduceMotion={reduceMotion}
+      playbackRate={playbackRate}
+      onPhaseChange={onPhaseChange}
+      onImpact={onImpact}
+      onSettle={onSettle}
+    />
   );
 }
-
 export function RpeEfficiencyHero({
   animationKey,
   movementLabel,
@@ -278,6 +180,8 @@ export function RpeEfficiencyHero({
   reduceMotion,
   playbackRate = 1,
   onPhaseChange,
+  onImpact,
+  onSettle,
 }: {
   animationKey: number;
   movementLabel: string;
@@ -288,6 +192,8 @@ export function RpeEfficiencyHero({
   reduceMotion: boolean;
   playbackRate?: number;
   onPhaseChange?: (phase: RecognitionReplacementPhase) => void;
+  onImpact?: () => void;
+  onSettle?: () => void;
 }) {
   const previewMotion = useSLMotionPreviewOverrides();
   const [phaseLabel, setPhaseLabel] = React.useState('FORMER EFFORT');
@@ -362,7 +268,10 @@ export function RpeEfficiencyHero({
       setPhaseLabel('NEW ATTEMPT');
       onPhaseChange?.('2 · New attempt');
     }, approachAt));
-    timers.push(setTimeout(() => onPhaseChange?.('3 · Better execution takes over'), displacementAt));
+    timers.push(setTimeout(() => {
+      onPhaseChange?.('3 · Better execution takes over');
+      onImpact?.();
+    }, displacementAt));
     timers.push(setTimeout(() => {
       setPhaseLabel('MORE EFFICIENT');
       onPhaseChange?.('4 · More efficient');
@@ -373,7 +282,10 @@ export function RpeEfficiencyHero({
       onPhaseChange?.('6 · Evidence transition');
     }, transitionAt));
     timers.push(setTimeout(() => onPhaseChange?.('7 · Final evidence'), evidenceAt));
-    timers.push(setTimeout(() => onPhaseChange?.('8 · Complete'), completeAt));
+    timers.push(setTimeout(() => {
+      onPhaseChange?.('8 · Complete');
+      onSettle?.();
+    }, completeAt));
 
     const sequence = Animated.sequence([
       Animated.delay(establishMs),
@@ -425,7 +337,7 @@ export function RpeEfficiencyHero({
       sequence.stop();
       timers.forEach(clearTimeout);
     };
-  }, [animationKey, atmosphereOpacity, challengerOpacity, challengerScale, challengerTranslateY, evidenceOpacity, evidenceTranslateY, formerOpacity, formerTranslateY, groundOpacity, groundScale, heroOpacity, onPhaseChange, playbackRate, previewMotion?.entranceMs, previewMotion?.phaseDelayMs, previewMotion?.spatialMs, previewMotion?.stateMs, reduceMotion, trophyScale, trophyTranslateY]);
+  }, [animationKey, atmosphereOpacity, challengerOpacity, challengerScale, challengerTranslateY, evidenceOpacity, evidenceTranslateY, formerOpacity, formerTranslateY, groundOpacity, groundScale, heroOpacity, onImpact, onPhaseChange, onSettle, playbackRate, previewMotion?.entranceMs, previewMotion?.phaseDelayMs, previewMotion?.spatialMs, previewMotion?.stateMs, reduceMotion, trophyScale, trophyTranslateY]);
 
   return (
     <View style={styles.rpeBody}>
@@ -466,6 +378,27 @@ export function RpeEfficiencyHero({
   );
 }
 
+function CompletionEvidenceRecognition({
+  presentation,
+  movementLabel,
+}: {
+  presentation: NonNullable<ReturnType<typeof recognitionPresentation>>;
+  movementLabel?: string | null;
+}) {
+  return (
+    <View style={styles.completionBody} accessibilityLabel={presentation.accessibilityLabel}>
+      <View style={styles.completionMark}>
+        <Ionicons name="checkmark" size={SLIconSize.prominent} color={SLColors.success} />
+      </View>
+      <View style={styles.completionCopy}>
+        <Text style={styles.completionEyebrow}>{presentation.eyebrow}</Text>
+        {movementLabel ? <Text typographyRole="movementName" style={styles.completionMovement}>{movementLabel}</Text> : null}
+        <Text style={styles.completionValue}>{presentation.value}</Text>
+      </View>
+    </View>
+  );
+}
+
 export function LoggerFeedbackSurface({
   saveConfirmationVisible,
   statusMessage,
@@ -497,19 +430,15 @@ export function LoggerFeedbackSurface({
   const surfaceScale = useRef(new Animated.Value(0.985)).current;
   const activeAnimationEventId = useRef<number | null>(null);
   const presentation = useMemo(() => event ? recognitionPresentation(event, displayUnit) : null, [displayUnit, event]);
+  const motionConfig = recognitionMotionConfig(event?.event_type);
   const repCount = Number(event?.evidence?.rep_count ?? event?.evidence?.actual_reps ?? String(event?.comparison_bucket || '').replace(/^reps:/, ''));
   const recordCategory = event?.event_type === 'CORE_REP_MAX_PR' && Number.isInteger(repCount) && repCount > 0
     ? `${repCount} REP MAX`
     : null;
-  const isStrengthPrReplacement = ['CORE_WEIGHT_PR', 'CORE_REP_MAX_PR'].includes(event?.event_type || '')
-    && presentation?.detail != null
-    && presentation.progression != null;
-  const isRpeEfficiency = event?.event_type === 'CORE_RPE_PR'
-    && presentation?.detail != null
-    && presentation.progression != null
-    && presentation.workload != null
-    && presentation.delta != null;
-  const isMajorVolumeMilestone = isMajorVolumeMilestoneEvent(event);
+  const isStrengthPrReplacement = motionConfig?.primitive === 'record-takeover' && presentation != null;
+  const isRpeEfficiency = motionConfig?.primitive === 'movement-efficiency' && presentation != null;
+  const isMajorVolumeMilestone = motionConfig?.primitive === 'major-volume' && isMajorVolumeMilestoneEvent(event);
+  const isKnownCompletion = motionConfig?.primitive === 'completion-evidence';
   const visible = saveConfirmationVisible || !!statusMessage || !!presentation;
 
   useEffect(() => {
@@ -559,7 +488,7 @@ export function LoggerFeedbackSurface({
       return;
     }
 
-    if (isStrengthPrReplacement || isMajorVolumeMilestone) {
+    if (isStrengthPrReplacement || isRpeEfficiency || isMajorVolumeMilestone || isKnownCompletion) {
       activeAnimationEventId.current = event.id;
       trophyOpacity.setValue(0);
       trophyScale.setValue(1);
@@ -665,7 +594,7 @@ export function LoggerFeedbackSurface({
       activeAnimationEventId.current = null;
       reveal.stop();
     };
-  }, [contentOpacity, evidenceOpacity, event, isMajorVolumeMilestone, isStrengthPrReplacement, labelOpacity, playbackRate, presentation, previewMotion?.spring, reduceMotion, spatialMs, staggerMs, stateMs, trophyOpacity, trophyRotate, trophyScale, valueOpacity, valueTranslateY]);
+  }, [contentOpacity, evidenceOpacity, event, isKnownCompletion, isMajorVolumeMilestone, isRpeEfficiency, isStrengthPrReplacement, labelOpacity, playbackRate, presentation, previewMotion?.spring, reduceMotion, spatialMs, staggerMs, stateMs, trophyOpacity, trophyRotate, trophyScale, valueOpacity, valueTranslateY]);
 
   useEffect(() => {
     if (presentation && event) onPresentationStarted(event);
@@ -697,7 +626,7 @@ export function LoggerFeedbackSurface({
               <Ionicons name="close" size={SLIconSize.standard} color={SLColors.textMuted} />
             </TouchableOpacity>
 
-            {!isStrengthPrReplacement && !isRpeEfficiency && !isMajorVolumeMilestone ? <Animated.View
+            {!motionConfig ? <Animated.View
               pointerEvents="none"
               style={[
                 styles.trophyIntro,
@@ -722,14 +651,14 @@ export function LoggerFeedbackSurface({
                 reduceMotion={reduceMotion}
                 playbackRate={playbackRate}
                 onPhaseChange={onRecognitionPhaseChange}
-                onImpact={() => { void triggerMajorVolumeMilestoneHaptic(); }}
+                onImpact={motionConfig.haptics[0] === 'heavy-impact' ? () => { void triggerMajorVolumeMilestoneHaptic(); } : undefined}
               />
-            ) : isStrengthPrReplacement && event && presentation?.detail && presentation.progression ? (
+            ) : isStrengthPrReplacement && event ? (
               <RecordReplacementHero
                 animationKey={event.id}
                 eyebrow={presentation.eyebrow}
                 movementLabel={event.movement_label || 'Core movement'}
-                previousValue={presentation.detail.replace(/^Previous\s+/, '')}
+                previousValue={presentation.detail?.replace(/^Previous\s+/, '') ?? null}
                 nextValue={presentation.value}
                 progression={presentation.progression}
                 delta={presentation.delta}
@@ -737,18 +666,27 @@ export function LoggerFeedbackSurface({
                 reduceMotion={reduceMotion}
                 playbackRate={playbackRate}
                 onPhaseChange={onRecognitionPhaseChange}
+                onImpact={motionConfig.haptics[0] === 'medium-impact' ? () => { void triggerRecognitionImpactHaptic(); } : undefined}
+                onSettle={motionConfig.haptics[1] === 'success-settle' ? () => { void triggerRecognitionSettleHaptic(); } : undefined}
               />
-            ) : isRpeEfficiency && event && presentation?.detail && presentation.progression && presentation.workload && presentation.delta ? (
+            ) : isRpeEfficiency && event ? (
               <RpeEfficiencyHero
                 animationKey={event.id}
                 movementLabel={event.movement_label || 'Core movement'}
-                workload={presentation.workload}
-                previousRpe={presentation.detail.replace(/^Previous\s+/, '')}
+                workload={presentation.workload ?? presentation.progression ?? 'Matched workload'}
+                previousRpe={presentation.detail?.replace(/^Previous\s+/, '') ?? 'Previous effort'}
                 nextRpe={presentation.value}
-                delta={presentation.delta}
+                delta={presentation.delta ?? 'Improved efficiency'}
                 reduceMotion={reduceMotion}
                 playbackRate={playbackRate}
                 onPhaseChange={onRecognitionPhaseChange}
+                onImpact={motionConfig.haptics[0] === 'medium-impact' ? () => { void triggerRecognitionImpactHaptic(); } : undefined}
+                onSettle={motionConfig.haptics[1] === 'success-settle' ? () => { void triggerRecognitionSettleHaptic(); } : undefined}
+              />
+            ) : isKnownCompletion || motionConfig ? (
+              <CompletionEvidenceRecognition
+                presentation={presentation}
+                movementLabel={event?.movement_label}
               />
             ) : <Animated.View style={[styles.celebrationBody, { opacity: contentOpacity }]}>
                 <Animated.View style={[styles.headerRow, { opacity: labelOpacity }]}>
@@ -827,6 +765,12 @@ const styles = {
   recordReplacementBody: { flex: 1, paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.xl, paddingBottom: SLSpacing.lg },
   savedRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: SLSpacing.sm, paddingHorizontal: SLSpacing.lg, paddingVertical: SLSpacing.md },
   savedText: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  completionBody: { minHeight: 206, flexDirection: 'row' as const, alignItems: 'center' as const, gap: SLSpacing.md, paddingHorizontal: SLSpacing.lg, paddingVertical: SLSpacing.xl },
+  completionMark: { width: 52, height: 52, borderRadius: 26, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: 'rgba(73, 201, 127, 0.12)', borderWidth: 1, borderColor: 'rgba(73, 201, 127, 0.34)' },
+  completionCopy: { flex: 1, gap: SLSpacing.xs },
+  completionEyebrow: { ...SLTypography.sectionLabel, color: SLColors.success, textTransform: 'uppercase' as const },
+  completionMovement: { ...SLTypography.caption, color: SLColors.textMuted },
+  completionValue: { ...SLTypography.sectionTitle, color: SLColors.textStrong },
   headerRow: { flexDirection: 'row' as const, alignItems: 'center' as const, paddingRight: SLSpacing.xl, gap: SLSpacing.md },
   trophyMark: { width: 46, height: 46, alignItems: 'center' as const, justifyContent: 'center' as const },
   headerCopy: { flex: 1 },

@@ -27,3 +27,11 @@ export async function triggerSessionCompletionHaptic() {
 export async function triggerMajorVolumeMilestoneHaptic() {
   return safelyRunHaptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy));
 }
+
+export async function triggerRecognitionImpactHaptic() {
+  return safelyRunHaptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium));
+}
+
+export async function triggerRecognitionSettleHaptic() {
+  return safelyRunHaptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
+}

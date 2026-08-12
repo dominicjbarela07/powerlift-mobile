@@ -1,4 +1,7 @@
 import { formatLoggerWeightDeltaKg, formatLoggerWeightKg, type LoggerDisplayUnit } from './logger-weight-format.js';
+import { LOGGER_RECOGNITION_EVENT_TYPES } from './logger-recognition-event-types.js';
+
+export { LOGGER_RECOGNITION_EVENT_TYPES } from './logger-recognition-event-types.js';
 
 const KG_PER_VOLUME_LB = 0.45359237;
 const volumeDisplayValue = (valueLb: number, unit: LoggerDisplayUnit) => Math.round(unit === 'lb' ? valueLb : valueLb * KG_PER_VOLUME_LB);
@@ -10,22 +13,6 @@ const formatCompactVolumeLb = (valueLb: number, unit: LoggerDisplayUnit) => {
   if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
   return formatVolumeValue(value);
 };
-
-export const LOGGER_RECOGNITION_EVENT_TYPES = [
-  'CORE_WEIGHT_PR',
-  'CORE_REP_MAX_PR',
-  'CORE_RPE_PR',
-  'CORE_SAME_WEIGHT_REP_PR',
-  'CORE_E1RM_PR',
-  'CORE_BLOCK_WEIGHT_BEST',
-  'CORE_BLOCK_REP_MAX_BEST',
-  'CORE_BLOCK_SAME_WEIGHT_REP_BEST',
-  'CORE_BLOCK_E1RM_BEST',
-  'CORE_PRESCRIPTION_COMPLETED',
-  'CORE_MOVEMENT_SESSION_COMPLETED',
-  'CORE_LIFETIME_VOLUME_MILESTONE',
-  'TOTAL_LIFETIME_VOLUME_MILESTONE',
-] as const;
 
 export type LoggerRecognitionEvent = {
   id: number; event_type: string; priority: number; core_movement_key: string; movement_label: string;
