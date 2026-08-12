@@ -85,8 +85,9 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
 import {
-  accessorySwapActionForSession,
-  sessionHasPersistedSetLogs,
+  accessorySwapActionForItem,
+  itemHasPersistedSetLogs,
+  persistedSetLogItemIds,
 } from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
 import {
@@ -1467,10 +1468,9 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
-  const [acceptedSessionSetEvidence, setAcceptedSessionSetEvidence] = useState<{
-    workoutId: number;
-    setLogId: number;
-  } | null>(null);
+  const [acceptedSetEvidenceItemIds, setAcceptedSetEvidenceItemIds] = useState<
+    ReadonlySet<number>
+  >(() => new Set());
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
     setUpdateBlocker('workout', isLogging);
@@ -2015,11 +2015,20 @@ export default function WorkoutViewerScreen() {
     return true;
   }, [workoutId]);
 
-  const handleCanonicalSetFeedback = useCallback((json: any) => {
+  const handleCanonicalSetFeedback = useCallback((json: any, submittedItemId?: number) => {
     const setLogId = Number(json?.set?.id || 0);
-    const acceptedWorkoutId = Number(workoutId || json?.workout_id || 0);
-    if (setLogId > 0 && acceptedWorkoutId > 0) {
-      setAcceptedSessionSetEvidence({ workoutId: acceptedWorkoutId, setLogId });
+    const acceptedItemId = Number(
+      json?.set?.item_id
+      || json?.item_id
+      || submittedItemId
+      || feedbackStateRef.current.submission.activeItemId
+      || 0,
+    );
+    if (setLogId > 0 && acceptedItemId > 0) {
+      setAcceptedSetEvidenceItemIds((current) => {
+        if (current.has(acceptedItemId)) return current;
+        return new Set([...current, acceptedItemId]);
+      });
     }
     const clientSubmissionId = String(json?.client_submission_id || json?.set?.client_submission_id || '') || null;
     const responseEvents = Array.isArray(json?.recognition_events) ? json.recognition_events as LoggerRecognitionEvent[] : [];
@@ -2145,10 +2154,10 @@ export default function WorkoutViewerScreen() {
             duplicate_local_result: true,
           });
           const replay = { ...json, created: false, replayed: true };
-          handleCanonicalSetFeedback(replay);
+          handleCanonicalSetFeedback(replay, itemId);
           return replay;
         }
-        handleCanonicalSetFeedback(json);
+        handleCanonicalSetFeedback(json, itemId);
         return json;
       },
       onFailure: (error: any) => {
@@ -2640,7 +2649,7 @@ export default function WorkoutViewerScreen() {
 
   const openSwapAcc = (it: WorkoutItem) => {
     const currentWorkout = data?.workout;
-    const swapAction = accessorySwapActionForSession({
+    const swapAction = accessorySwapActionForItem({
       canHotSwap: !coachPreviewRequested && !!data?.permissions?.can_hot_swap,
       hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
       isCoachPreview:
@@ -2648,9 +2657,8 @@ export default function WorkoutViewerScreen() {
         && data?.view_mode === 'coach_preview'
         && data?.permissions?.view_only === true,
       sessionLifecycle: deriveScreenMode(currentWorkout?.status),
-      sessionHasSetLogs: sessionHasPersistedSetLogs(currentWorkout),
-      acceptedPersistedSetLog:
-        acceptedSessionSetEvidence?.workoutId === Number(currentWorkout?.id || workoutId || 0),
+      targetItemHasSetLogs: itemHasPersistedSetLogs(it),
+      acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     if (!swapAction) return;
     setSwapAccItem(it);
@@ -5816,9 +5824,7 @@ export default function WorkoutViewerScreen() {
           setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
           unitPreferenceHydratedRef.current = true;
         }
-        if (!sessionHasPersistedSetLogs(payload.workout)) {
-          setAcceptedSessionSetEvidence(null);
-        }
+        setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
         setData(payload);
         restoreScrollSoon();
         return true;
@@ -5845,9 +5851,7 @@ export default function WorkoutViewerScreen() {
         setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
         unitPreferenceHydratedRef.current = true;
       }
-      if (!sessionHasPersistedSetLogs(payload.workout)) {
-        setAcceptedSessionSetEvidence(null);
-      }
+      setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
       setData(payload);
       restoreScrollSoon();
       return true;
@@ -6459,9 +6463,6 @@ export default function WorkoutViewerScreen() {
         ? formatSessionDuration(workout.completed_duration_seconds)
         : null);
   const loggedSets = loggedSetCountForWorkout(workout);
-  const sessionHasAnyPersistedSetLogs =
-    sessionHasPersistedSetLogs(workout)
-    || acceptedSessionSetEvidence?.workoutId === Number(workout.id);
   const plannedSets = plannedSetCountForWorkout(workout);
   const durationEstimate = durationEstimateForWorkout(workout);
   const coreMovementCount = workout.core_items.filter(
@@ -7312,12 +7313,13 @@ export default function WorkoutViewerScreen() {
       expanded: accessoryIsExpanded,
       isComplete: accessoryIsComplete,
     });
-    const swapLabel = accessorySwapActionForSession({
+    const swapLabel = accessorySwapActionForItem({
       canHotSwap,
       hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
       isCoachPreview: isCoachAthletePreview,
       sessionLifecycle: screenMode,
-      sessionHasSetLogs: sessionHasAnyPersistedSetLogs,
+      targetItemHasSetLogs: itemHasPersistedSetLogs(it),
+      acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     const machineAccessory = isMachineAccessoryItem(it);
     const fixtureAccessoryKind = String(
