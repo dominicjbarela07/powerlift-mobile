@@ -241,8 +241,9 @@ function optionPriority(
   activeIdentityId: number | null,
 ): number {
   if (Number(identity.id) === Number(activeIdentityId)) return 0;
-  if (identity.equipment_context?.remembered_status) return 2;
-  if (identity.equipment_context?.last_used_at) return 3;
+  const rememberedStatus = identity.equipment_context?.remembered_status;
+  if (rememberedStatus === 'current') return 1;
+  if (rememberedStatus === 'used_before') return 2;
   if (identity.equipment_context?.option_kind === 'other') return 90;
   if (
     identity.equipment_context?.option_kind === 'unknown'
