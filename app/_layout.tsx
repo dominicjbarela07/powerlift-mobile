@@ -9,6 +9,7 @@ import * as Updates from 'expo-updates';
 import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import type { NotificationResponse } from 'expo-notifications';
 import { ActivityIndicator, Alert, AppState, Modal, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -19,6 +20,9 @@ import { Text } from '@/components/ui/sl-text';
 import { DevLiveScreenReturnControl } from '@/dev-mocks/DevLiveScreenReturnControl';
 import { IdealStateMockShell } from '@/dev-mocks/IdealStateMockHeader';
 import { AppShell } from '@/components/AppShell';
+import { RestTimerCompletionPresenter } from '@/components/rest-timer-completion-presenter';
+import { isRestTimerNotification } from '@/lib/rest-timer-completion-core';
+import { acknowledgeGlobalRestTimerCompletion } from '@/lib/rest-timer-completion';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -306,8 +310,23 @@ function RootStack() {
         if (!mounted) return;
         notificationModuleRef.current = Notifications;
 
-        subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+        const handleNotificationResponse = (response: NotificationResponse) => {
           const data = response.notification.request.content.data || {};
+          if (isRestTimerNotification(data)) {
+            const workoutId = data.workout_id ? String(data.workout_id) : '';
+            const timerId = data.timer_id ? String(data.timer_id) : '';
+            const ownerUserId = data.owner_user_id ? String(data.owner_user_id) : '';
+            const currentUserId = String(user?.id ?? user?.user_id ?? '');
+            if (ownerUserId && ownerUserId !== currentUserId) return;
+            void acknowledgeGlobalRestTimerCompletion(timerId || undefined);
+            if (workoutId) {
+              router.push({
+                pathname: '/(tabs)/workout/[workoutId]',
+                params: { workoutId },
+              } as any);
+            }
+            return;
+          }
           if (
             isIndividual &&
             (data.type === 'announcement' ||
@@ -372,7 +391,14 @@ function RootStack() {
           }
 
           router.push('/(tabs)/messages/index' as any);
-        });
+        };
+
+        subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+        const initialResponse = await Notifications.getLastNotificationResponseAsync();
+        if (mounted && initialResponse) {
+          handleNotificationResponse(initialResponse);
+          Notifications.clearLastNotificationResponse();
+        }
       } catch (err) {
         console.log('Push notification response listener failed', err);
       }
@@ -384,7 +410,7 @@ function RootStack() {
       mounted = false;
       if (subscription) subscription.remove();
     };
-  }, [isIndividual, router, user?.is_coach]);
+  }, [isIndividual, router, user?.id, user?.is_coach, user?.user_id]);
 
   // Prevent login/dashboard flicker while SecureStore rehydrates, but never stay blank forever.
   if (!authReady && !authWaitExpired) {
@@ -392,22 +418,25 @@ function RootStack() {
   }
 
   return (
-    <Stack screenOptions={{ contentStyle: styles.transparentScene }}>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="coach-team-brief"
-        options={{
-          animation: 'slide_from_bottom',
-          contentStyle: styles.modalScene,
-          gestureEnabled: true,
-          headerShown: false,
-          presentation: 'fullScreenModal',
-        }}
-      />
-      <Stack.Screen name="workspace-system" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      <Stack screenOptions={{ contentStyle: styles.transparentScene }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="coach-team-brief"
+          options={{
+            animation: 'slide_from_bottom',
+            contentStyle: styles.modalScene,
+            gestureEnabled: true,
+            headerShown: false,
+            presentation: 'fullScreenModal',
+          }}
+        />
+        <Stack.Screen name="workspace-system" options={{ headerShown: false }} />
+      </Stack>
+      <RestTimerCompletionPresenter userId={user?.id ?? user?.user_id} />
+    </>
   );
 }
 
