@@ -9099,7 +9099,6 @@ export default function WorkoutViewerScreen() {
                     const status = current || rememberedStatus === 'current'
                       ? 'CURRENT'
                       : rememberedStatus === 'used_before'
-                        || row.equipment_context?.last_used_at
                         ? 'USED BEFORE'
                         : 'NEVER USED';
                     return (
