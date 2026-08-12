@@ -10,6 +10,7 @@ import {
   type AthleteCalendarAction,
   type AthleteCalendarConflict,
   type AthleteCalendarDay,
+  type AthleteCalendarDayDetail,
   type AthleteCalendarExperienceData,
   type AthleteCalendarImportantDate,
   type AthleteCalendarPersonalEvent,
@@ -48,6 +49,40 @@ type ApiDay = {
   personal_events?: ApiPersonalEvent[];
   check_ins?: { submission_id: number; title?: string | null; status?: string | null }[];
   meets?: { meet_plan_id: number; name?: string | null; date?: string | null; status?: string | null }[];
+};
+type ApiReadiness = {
+  id: number; date: string; workout_id?: number | null; score?: number | null;
+  sleep_quality?: number | null; sleep_hours?: number | null; soreness?: number | null;
+  stress?: number | null; energy?: number | null; bodyweight_kg?: number | null;
+  submitted_at?: string | null;
+};
+type ApiDayDetailSession = {
+  workout_id: number; title?: string | null; date: string; status?: string | null;
+  scheduled_start_time?: string | null; scheduled_timezone?: string | null;
+  block_id?: number | null; block_name?: string | null; programming_notes?: string | null;
+  planned?: { movement_count?: number; movement_labels?: string[]; planned_sets?: number; label?: string | null } | null;
+  performance?: { completed_sets?: number; total_reps?: number; total_volume_kg?: number; actual_duration_minutes?: number | null; best_set?: { weight_kg?: number; reps?: number; rpe?: number | null; rir?: number | null } | null } | null;
+  estimated_duration_minutes?: number | null;
+  reflection?: { session_rpe?: number | null; strength?: string | null; fatigue?: string | null; note?: string | null; submitted_at?: string | null } | null;
+  readiness?: ApiReadiness | null;
+  accomplishment?: {
+    count?: number;
+    movement_labels?: string[];
+    highest_priority?: {
+      id?: number | string | null; event_type?: string | null; movement_label?: string | null;
+      current_value?: number | null; prior_value?: number | null; delta?: number | null;
+      unit?: string | null; presentation_mode?: string | null;
+    } | null;
+  } | null;
+  missed_context?: { reason?: string | null; comment?: string | null } | null;
+};
+type ApiDayDetail = {
+  date: string; timezone?: string | null; is_today?: boolean; state?: AthleteCalendarDayDetail['state'];
+  sessions?: ApiDayDetailSession[]; readiness?: ApiReadiness | null; personal_events?: ApiPersonalEvent[];
+  conflicts?: ApiConflict[];
+  block_context?: { block_id: number; name?: string | null; start_date?: string | null; end_date?: string | null; week_number?: number | null; total_weeks?: number | null } | null;
+  next_up?: { workout_id: number; title?: string | null; date: string; status?: string | null; planned_summary?: string | null; block_name?: string | null } | null;
+  capabilities?: { can_add_personal_item?: boolean; can_create_session?: boolean };
 };
 type ApiUpcoming = { date?: string | null; kind?: string | null; title?: string | null; workout_id?: number | null; meet_plan_id?: number | null; block_id?: number | null };
 type ApiConflict = { conflict_id: string; certainty: 'confirmed' | 'potential'; reason: string; date: string; event_id: number; event_title: string; workout_id: number; workout_title: string };
@@ -111,6 +146,13 @@ export default function AthleteCalendarScreen() {
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleFieldError, setScheduleFieldError] = useState<string | null>(null);
   const [currentToday, setCurrentToday] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState(() => toYmd(new Date()));
+  const [dayDetail, setDayDetail] = useState<AthleteCalendarDayDetail | null>(null);
+  const [dayDetailLoading, setDayDetailLoading] = useState(false);
+  const [dayDetailError, setDayDetailError] = useState<string | null>(null);
+  const dayDetailCacheRef = useRef(new Map<string, AthleteCalendarDayDetail>());
+  const dayDetailAbortRef = useRef<AbortController | null>(null);
+  const dayDetailRequestRef = useRef(0);
   const visiblePayload = payloadOwnerScope === calendarIdentityScope ? payload : null;
 
   const { start: rangeStart, end: rangeEnd } = useMemo(
@@ -153,6 +195,50 @@ export default function AthleteCalendarScreen() {
 
   useEffect(() => () => requestManagerRef.current?.cancelAll(), []);
 
+  const loadDayDetail = useCallback(async (date: string, force = false) => {
+    if (!force) {
+      const cached = dayDetailCacheRef.current.get(date);
+      if (cached) {
+        setDayDetail(cached);
+        setDayDetailError(null);
+        return;
+      }
+    }
+    dayDetailAbortRef.current?.abort();
+    const controller = new AbortController();
+    dayDetailAbortRef.current = controller;
+    const requestRevision = ++dayDetailRequestRef.current;
+    setDayDetailLoading(true);
+    setDayDetailError(null);
+    try {
+      const query = new URLSearchParams({ date });
+      const response = await fetchJson(`/athletes/mobile/calendar/day?${query.toString()}`, {
+        method: 'GET',
+        signal: controller.signal,
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
+      if (!response.ok || response.json?.ok !== true) {
+        throw new Error(response.json?.error || 'Day details could not load.');
+      }
+      if (requestRevision !== dayDetailRequestRef.current || controller.signal.aborted) return;
+      const mapped = mapDayDetail(response.json.calendar_day || {});
+      dayDetailCacheRef.current.set(date, mapped);
+      setDayDetail(mapped);
+    } catch (caught: any) {
+      if (isAbortError(caught)) return;
+      if (requestRevision !== dayDetailRequestRef.current) return;
+      setDayDetailError(caught?.message || 'Day details could not load.');
+    } finally {
+      if (requestRevision === dayDetailRequestRef.current) setDayDetailLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadDayDetail(selectedDate);
+    return () => dayDetailAbortRef.current?.abort();
+  }, [loadDayDetail, selectedDate]);
+
   useEffect(() => {
     if (requestScopeRef.current === calendarIdentityScope) return;
     requestManagerRef.current?.cancelAll();
@@ -167,6 +253,10 @@ export default function AthleteCalendarScreen() {
     setPayloadOwnerScope(calendarIdentityScope);
     setLoadedRangeEnd(null);
     setCurrentToday(null);
+    dayDetailAbortRef.current?.abort();
+    dayDetailCacheRef.current.clear();
+    setDayDetail(null);
+    setDayDetailError(null);
     setError(null);
     setPaginationError(null);
     setLoading(true);
@@ -261,6 +351,8 @@ export default function AthleteCalendarScreen() {
       }
       setEditor((current) => ({ ...current, visible: false }));
       await load(true, true);
+      dayDetailCacheRef.current.delete(editor.date);
+      if (editor.date === selectedDate) await loadDayDetail(selectedDate, true);
     } catch (caught: any) {
       setEventMutationError(caught?.message || 'Event could not be saved. Try again.');
     } finally {
@@ -275,6 +367,8 @@ export default function AthleteCalendarScreen() {
       if (!response.ok || response.json?.ok !== true) { Alert.alert('Event not deleted', response.json?.error || 'Try again.'); return; }
       setEditor((current) => ({ ...current, visible: false }));
       await load(true, true);
+      dayDetailCacheRef.current.delete(editor.date);
+      if (editor.date === selectedDate) await loadDayDetail(selectedDate, true);
     } catch (caught: any) {
       Alert.alert('Event not deleted', caught?.message || 'Try again.');
     } finally { setMutationBusy(false); }
@@ -282,6 +376,17 @@ export default function AthleteCalendarScreen() {
 
   const handleAction = (action: AthleteCalendarAction) => {
     if (action.type === 'session') { router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.id) } }); return; }
+    if (action.type === 'create-session') {
+      const athleteId = user?.self_athlete_id || user?.athlete_id;
+      router.push({
+        pathname: '/create-workout',
+        params: {
+          date: action.date,
+          ...(athleteId ? { athleteId: String(athleteId) } : {}),
+        },
+      } as any);
+      return;
+    }
     if (action.type === 'schedule-session') {
       setScheduleError(null);
       setScheduleFieldError(null);
@@ -305,6 +410,7 @@ export default function AthleteCalendarScreen() {
       && targetMonth.getMonth() === anchorMonth.getMonth();
     userMovedAnchorRef.current = true;
     setCurrentToday(target.date);
+    setSelectedDate(target.date);
     setAnchorMonth(targetMonth);
     setNavigationRevision((current) => current + 1);
     if (rangeMissingToday) {
@@ -337,6 +443,8 @@ export default function AthleteCalendarScreen() {
       }
       setScheduleEditor(null);
       await load(true, true);
+      dayDetailCacheRef.current.delete(scheduleEditor.date || selectedDate);
+      if ((scheduleEditor.date || selectedDate) === selectedDate) await loadDayDetail(selectedDate, true);
     } catch (caught: any) {
       if (!isAbortError(caught)) setScheduleError(caught?.message || 'Training time could not be saved.');
     } finally {
@@ -363,16 +471,22 @@ export default function AthleteCalendarScreen() {
         anchorMonth={anchorMonth}
         canManagePersonalEvents={user?.role === 'athlete'}
         data={data}
+        dayDetail={dayDetail?.date === selectedDate ? dayDetail : null}
+        dayDetailError={dayDetailError}
+        dayDetailLoading={dayDetailLoading}
         loadingMore={loadingMore}
         onAction={handleAction}
         onLoadMore={() => void loadMore()}
         onMonthChange={changeMonth}
+        onRetryDayDetail={() => void loadDayDetail(selectedDate, true)}
+        onSelectedDateChange={setSelectedDate}
         onRefresh={() => void load(true, true)}
         onRetryLoadMore={() => void loadMore()}
         onToday={goToday}
         navigationRevision={navigationRevision}
         paginationError={paginationError}
         refreshing={refreshing}
+        selectedDate={selectedDate}
       />
       <CalendarEventSheet busy={mutationBusy} event={editor.event} initialDate={editor.date} onClose={closeEditor} onDelete={editor.event ? deleteEvent : undefined} onSave={saveEvent} saveError={eventMutationError} serverErrors={fieldErrors} timezone={data.timezone} visible={editor.visible} />
       <TrainingScheduleSheet
@@ -403,6 +517,107 @@ function mapDay(day: ApiDay): AthleteCalendarDay {
     personalEvents: (day.personal_events || []).map(mapEvent),
     meets: (day.meets || []).map((meet) => ({ id: meet.meet_plan_id, name: meet.name, date: meet.date, status: meet.status })),
     checkIns: (day.check_ins || []).map((checkIn) => ({ id: checkIn.submission_id, title: checkIn.title, status: checkIn.status })),
+  };
+}
+function mapDayDetail(day: ApiDayDetail): AthleteCalendarDayDetail {
+  return {
+    date: day.date,
+    timezone: day.timezone,
+    isToday: day.is_today === true,
+    state: day.state || 'rest',
+    sessions: (day.sessions || []).map((session) => ({
+      id: session.workout_id,
+      title: session.title,
+      date: session.date,
+      status: session.status,
+      scheduledStartTime: session.scheduled_start_time,
+      scheduledTimezone: session.scheduled_timezone,
+      blockId: session.block_id,
+      blockName: session.block_name,
+      programmingNotes: session.programming_notes,
+      planned: {
+        movementCount: session.planned?.movement_count || 0,
+        movementLabels: session.planned?.movement_labels || [],
+        plannedSets: session.planned?.planned_sets || 0,
+        label: session.planned?.label,
+      },
+      performance: session.performance ? {
+        completedSets: session.performance.completed_sets || 0,
+        totalReps: session.performance.total_reps || 0,
+        totalVolumeKg: session.performance.total_volume_kg || 0,
+        actualDurationMinutes: session.performance.actual_duration_minutes,
+        bestSet: session.performance.best_set ? {
+          weightKg: session.performance.best_set.weight_kg || 0,
+          reps: session.performance.best_set.reps || 0,
+          rpe: session.performance.best_set.rpe,
+          rir: session.performance.best_set.rir,
+        } : null,
+      } : null,
+      estimatedDurationMinutes: session.estimated_duration_minutes,
+      reflection: session.reflection ? {
+        sessionRpe: session.reflection.session_rpe,
+        strength: session.reflection.strength,
+        fatigue: session.reflection.fatigue,
+        note: session.reflection.note,
+      } : null,
+      readiness: mapReadiness(session.readiness),
+      accomplishment: session.accomplishment ? {
+        count: session.accomplishment.count || 0,
+        movementLabels: session.accomplishment.movement_labels || [],
+        highestPriority: session.accomplishment.highest_priority ? {
+          id: session.accomplishment.highest_priority.id,
+          eventType: session.accomplishment.highest_priority.event_type,
+          movementLabel: session.accomplishment.highest_priority.movement_label,
+          currentValue: session.accomplishment.highest_priority.current_value,
+          priorValue: session.accomplishment.highest_priority.prior_value,
+          delta: session.accomplishment.highest_priority.delta,
+          unit: session.accomplishment.highest_priority.unit,
+          presentationMode: session.accomplishment.highest_priority.presentation_mode,
+        } : null,
+      } : null,
+      missedContext: session.missed_context ? {
+        reason: session.missed_context.reason,
+        comment: session.missed_context.comment,
+      } : null,
+    })),
+    readiness: mapReadiness(day.readiness),
+    personalEvents: (day.personal_events || []).map(mapEvent),
+    conflicts: (day.conflicts || []).map(mapConflict),
+    blockContext: day.block_context ? {
+      id: day.block_context.block_id,
+      name: day.block_context.name,
+      startDate: day.block_context.start_date,
+      endDate: day.block_context.end_date,
+      weekNumber: day.block_context.week_number,
+      totalWeeks: day.block_context.total_weeks,
+    } : null,
+    nextUp: day.next_up ? {
+      id: day.next_up.workout_id,
+      title: day.next_up.title,
+      date: day.next_up.date,
+      status: day.next_up.status,
+      plannedSummary: day.next_up.planned_summary,
+      blockName: day.next_up.block_name,
+    } : null,
+    capabilities: {
+      canAddPersonalItem: day.capabilities?.can_add_personal_item === true,
+      canCreateSession: day.capabilities?.can_create_session === true,
+    },
+  };
+}
+function mapReadiness(row?: ApiReadiness | null): AthleteCalendarDayDetail['readiness'] {
+  if (!row) return null;
+  return {
+    id: row.id,
+    date: row.date,
+    workoutId: row.workout_id,
+    score: row.score,
+    sleepQuality: row.sleep_quality,
+    sleepHours: row.sleep_hours,
+    soreness: row.soreness,
+    stress: row.stress,
+    energy: row.energy,
+    bodyweightKg: row.bodyweight_kg,
   };
 }
 function mapSession(session: ApiSession): AthleteCalendarSession { return { id: session.workout_id, title: session.title, date: session.date, status: session.status, blockId: session.block_id, blockName: session.block_name, plannedSummary: session.planned_summary, primaryLifts: session.primary_lifts, accessoryCount: session.accessory_count, estimatedDurationMinutes: session.estimated_duration_minutes, scheduledStartTime: session.scheduled_start_time, scheduledEndTime: session.scheduled_end_time, scheduledTimezone: session.scheduled_timezone, presentation: /heavy|top|peak|test|max/i.test(session.title || '') ? 'heavy' : null }; }

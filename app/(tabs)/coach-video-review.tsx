@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import { TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import RefreshScreen from '@/components/refresh-screen';
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { fetchJson, getCoachVideoReviewInbox } from '@/lib/api';
+import { fetchJson, getCoachVideoReviewAttachment, getCoachVideoReviewInbox } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
@@ -91,6 +91,8 @@ function compactActual(video: SetVideoSummary) {
 
 export default function CoachVideoReviewScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ videoId?: string }>();
+  const requestedVideoId = Number(params.videoId);
   const [videos, setVideos] = useState<SetVideoSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -142,6 +144,24 @@ export default function CoachVideoReviewScreen() {
       loadInbox({ silent: true, showRefreshIndicator: false });
     }, [loadInbox]),
   );
+
+  useEffect(() => {
+    if (!Number.isFinite(requestedVideoId) || requestedVideoId <= 0) return;
+    let active = true;
+    getCoachVideoReviewAttachment(requestedVideoId)
+      .then((res) => {
+        if (!active) return;
+        const payload = res.json || {};
+        if (!res.ok || !payload.ok || !payload.video) {
+          throw new Error(payload.error || 'Could not open this video review.');
+        }
+        setSelectedVideo(payload.video as SetVideoSummary);
+      })
+      .catch((caught: any) => {
+        if (active) setError(caught?.message || 'Could not open this video review.');
+      });
+    return () => { active = false; };
+  }, [requestedVideoId]);
 
   const pendingCount = useMemo(
     () => videos.filter((video) => video.review_status === 'pending').length,

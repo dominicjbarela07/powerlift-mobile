@@ -536,6 +536,9 @@ export default function TabsLayout() {
       pathname.includes('/coach-athlete') ||
       pathname.includes('/coach-calendar') ||
       pathname.includes('/coach-videos') ||
+      pathname.includes('/coach-review-queue') ||
+      pathname.includes('/coach-review-history') ||
+      pathname.includes('/coach-session-review') ||
       pathname.includes('/coach-video-review') ||
       pathname.includes('/coach-video-archive');
 
@@ -823,16 +826,31 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="coach-videos"
           options={{
-            title: 'Videos',
+            title: 'Reviews',
             href: isCoach && viewMode === 'coach' ? '/(tabs)/coach-videos' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? 'videocam' : 'videocam-outline'}
+                name={focused ? 'clipboard' : 'clipboard-outline'}
                 size={22}
                 color={color}
               />
             ),
           }}
+        />
+
+        <Tabs.Screen
+          name="coach-review-queue"
+          options={{ href: null, title: 'Review Queue' }}
+        />
+
+        <Tabs.Screen
+          name="coach-review-history"
+          options={{ href: null, title: 'Past Review Work' }}
+        />
+
+        <Tabs.Screen
+          name="coach-session-review"
+          options={{ href: null, title: 'Session Review' }}
         />
 
         <Tabs.Screen

@@ -34,6 +34,12 @@ import {
 } from '@/constants/theme';
 import type { CalendarRepeatRule } from '@/lib/calendar-event-form';
 import {
+  calendarDayMatchesFilter,
+  primaryCalendarDayTone,
+  resolveCalendarLensState,
+  type CalendarDayTone,
+} from '@/lib/athlete-calendar-lens';
+import {
   resolveCalendarSessionStatus,
   type CalendarSessionStatusPresentation,
 } from '@/lib/calendar-session-status';
@@ -126,8 +132,92 @@ export type AthleteCalendarExperienceData = {
   weekSummaries?: AthleteCalendarWeekSummary[];
 };
 
+export type AthleteCalendarLensState =
+  | 'assigned'
+  | 'in_progress'
+  | 'completed'
+  | 'rest'
+  | 'personal'
+  | 'needs_attention';
+
+export type AthleteCalendarReadiness = {
+  id: number;
+  date: string;
+  workoutId?: number | null;
+  score?: number | null;
+  sleepQuality?: number | null;
+  sleepHours?: number | null;
+  soreness?: number | null;
+  stress?: number | null;
+  energy?: number | null;
+  bodyweightKg?: number | null;
+};
+
+export type AthleteCalendarAccomplishment = {
+  count: number;
+  movementLabels: string[];
+  highestPriority?: {
+    id?: number | string | null;
+    eventType?: string | null;
+    movementLabel?: string | null;
+    currentValue?: number | null;
+    priorValue?: number | null;
+    delta?: number | null;
+    unit?: string | null;
+    presentationMode?: string | null;
+  } | null;
+};
+
+export type AthleteCalendarDayDetailSession = AthleteCalendarSession & {
+  programmingNotes?: string | null;
+  planned?: {
+    movementCount: number;
+    movementLabels: string[];
+    plannedSets: number;
+    label?: string | null;
+  } | null;
+  performance?: {
+    completedSets: number;
+    totalReps: number;
+    totalVolumeKg: number;
+    actualDurationMinutes?: number | null;
+    bestSet?: { weightKg: number; reps: number; rpe?: number | null; rir?: number | null } | null;
+  } | null;
+  reflection?: {
+    sessionRpe?: number | null;
+    strength?: string | null;
+    fatigue?: string | null;
+    note?: string | null;
+  } | null;
+  readiness?: AthleteCalendarReadiness | null;
+  accomplishment?: AthleteCalendarAccomplishment | null;
+  missedContext?: { reason?: string | null; comment?: string | null } | null;
+};
+
+export type AthleteCalendarDayDetail = {
+  date: string;
+  timezone?: string | null;
+  isToday?: boolean;
+  state: AthleteCalendarLensState;
+  sessions: AthleteCalendarDayDetailSession[];
+  readiness?: AthleteCalendarReadiness | null;
+  personalEvents: AthleteCalendarPersonalEvent[];
+  conflicts: AthleteCalendarConflict[];
+  blockContext?: {
+    id: number;
+    name?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    weekNumber?: number | null;
+    totalWeeks?: number | null;
+  } | null;
+  nextUp?: AthleteCalendarSession | null;
+  capabilities: { canAddPersonalItem: boolean; canCreateSession: boolean };
+};
+
 export type AthleteCalendarAction =
   | { type: 'session'; id: number }
+  | { type: 'create-session'; date: string }
   | { type: 'schedule-session'; session: AthleteCalendarSession }
   | { type: 'meet'; id: number }
   | { type: 'check-in'; id: number }
@@ -157,6 +247,12 @@ export function AthleteCalendarExperience({
   onRefresh,
   refreshing = false,
   navigationRevision = 0,
+  dayDetail,
+  dayDetailError,
+  dayDetailLoading = false,
+  onRetryDayDetail,
+  onSelectedDateChange,
+  selectedDate: controlledSelectedDate,
 }: {
   anchorMonth: Date;
   data: AthleteCalendarExperienceData;
@@ -174,12 +270,20 @@ export function AthleteCalendarExperience({
   onRefresh?: () => void;
   refreshing?: boolean;
   navigationRevision?: number;
+  dayDetail?: AthleteCalendarDayDetail | null;
+  dayDetailError?: string | null;
+  dayDetailLoading?: boolean;
+  onRetryDayDetail?: () => void;
+  onSelectedDateChange?: (date: string) => void;
+  selectedDate?: string;
 }) {
   const insets = useSafeAreaInsets();
   const [view, setView] = useState<CalendarView>(initialView);
-  const [selectedDate, setSelectedDate] = useState(initialSelectedDate || data.today);
+  const [internalSelectedDate, setInternalSelectedDate] = useState(initialSelectedDate || data.today);
+  const selectedDate = controlledSelectedDate || internalSelectedDate;
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<CalendarFilter>('all');
   const [reduceMotion, setReduceMotion] = useState(false);
   const previousTodayRef = useRef(data.today);
 
@@ -195,14 +299,20 @@ export function AthleteCalendarExperience({
     // Loading can initially render before the server-provided athlete timezone
     // arrives. Advance only an untouched automatic selection; never pull a
     // date the athlete deliberately selected back to Today.
-    setSelectedDate((current) => current === previousToday ? data.today : current);
+    if (!controlledSelectedDate) {
+      setInternalSelectedDate((current) => current === previousToday ? data.today : current);
+    }
   }, [data.today]);
+
+  const setSelectedDate = useCallback((date: string) => {
+    if (!controlledSelectedDate) setInternalSelectedDate(date);
+    onSelectedDateChange?.(date);
+  }, [controlledSelectedDate, onSelectedDateChange]);
 
   const openDay = useCallback((date: string) => {
     setSelectedDate(date);
-    setView('day');
     void Haptics.selectionAsync();
-  }, []);
+  }, [setSelectedDate]);
 
   const selectAgendaDate = useCallback((date: string) => {
     setSelectedDate(date);
@@ -225,20 +335,11 @@ export function AthleteCalendarExperience({
     void Haptics.selectionAsync();
   };
 
-  const pinch = useMemo(
-    () => Gesture.Pinch()
-      .runOnJS(true)
-      .onEnd(({ scale }) => {
-        if (scale > 1.12 && view !== 'day') openDay(selectedDate);
-        if (scale < 0.88 && view === 'day') setView('month');
-      }),
-    [openDay, selectedDate, view],
-  );
-
   const filteredDays = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return data.days;
     return data.days.filter((day) => {
+      if (!dayMatchesFilter(day, filter)) return false;
+      if (!normalized) return true;
       const values = [
         ...day.sessions.map((session) => session.title || ''),
         ...(day.personalEvents || []).map((event) => `${event.title} ${event.location || ''}`),
@@ -247,33 +348,9 @@ export function AthleteCalendarExperience({
       ];
       return values.some((value) => value.toLowerCase().includes(normalized));
     });
-  }, [data.days, query]);
-
-  const body = view === 'day' ? (
-    <DayView
-      data={data}
-      selectedDate={selectedDate}
-      onAction={onAction}
-      onDateChange={selectAgendaDate}
-      navigationRevision={navigationRevision}
-      reduceMotion={reduceMotion}
-    />
-  ) : (
-    <MonthView
-      anchorMonth={anchorMonth}
-      data={{ ...data, days: filteredDays }}
-      onAction={onAction}
-      onLoadMore={onLoadMore}
-      onSelectDate={openDay}
-      navigationRevision={navigationRevision}
-      selectedDate={selectedDate}
-      refreshing={refreshing}
-      onRefresh={onRefresh}
-    />
-  );
+  }, [data.days, filter, query]);
 
   return (
-    <GestureDetector gesture={pinch}>
       <View style={styles.root}>
         <CalendarToolbar
           anchorMonth={anchorMonth}
@@ -304,7 +381,30 @@ export function AthleteCalendarExperience({
             </Pressable>
           </View>
         ) : null}
-        <View style={styles.body}>{body}</View>
+        <View style={styles.body}>
+          <AthleteCalendarV2Content
+            anchorMonth={anchorMonth}
+            canManagePersonalEvents={canManagePersonalEvents}
+            data={data}
+            dayDetail={dayDetail}
+            dayDetailError={dayDetailError}
+            dayDetailLoading={dayDetailLoading}
+            expanded={view === 'day'}
+            filter={filter}
+            navigationRevision={navigationRevision}
+            onAction={onAction}
+            onExpand={() => setView('day')}
+            onCollapse={() => setView('month')}
+            onFilter={setFilter}
+            onLoadMore={onLoadMore}
+            onRefresh={onRefresh}
+            onRetryDayDetail={onRetryDayDetail}
+            onSelectDate={selectAgendaDate}
+            refreshing={refreshing}
+            selectedDate={selectedDate}
+            visibleDays={filteredDays}
+          />
+        </View>
         {loadingMore ? <ActivityIndicator color={SLColors.accentMagenta} style={[styles.paginationSpinner, { bottom: 132 + insets.bottom }]} /> : null}
         {paginationError ? (
           <Pressable onPress={onRetryLoadMore} style={[styles.paginationError, { bottom: 132 + insets.bottom }]}>
@@ -319,7 +419,6 @@ export function AthleteCalendarExperience({
         />
         {reduceMotion ? <View accessibilityLabel="Reduced motion enabled" /> : null}
       </View>
-    </GestureDetector>
   );
 }
 
@@ -368,6 +467,414 @@ function CalendarToolbar({
           />
         ) : null}
       </SLTabRowControlShell>
+    </View>
+  );
+}
+
+type CalendarFilter = 'all' | 'sessions' | 'personal' | 'completed' | 'attention';
+
+const CALENDAR_FILTERS: { id: CalendarFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'sessions', label: 'Sessions' },
+  { id: 'personal', label: 'Personal' },
+  { id: 'completed', label: 'Completed' },
+  { id: 'attention', label: 'Attention' },
+];
+
+function AthleteCalendarV2Content({
+  anchorMonth,
+  canManagePersonalEvents,
+  data,
+  dayDetail,
+  dayDetailError,
+  dayDetailLoading,
+  expanded,
+  filter,
+  navigationRevision,
+  onAction,
+  onCollapse,
+  onExpand,
+  onFilter,
+  onLoadMore,
+  onRefresh,
+  onRetryDayDetail,
+  onSelectDate,
+  refreshing,
+  selectedDate,
+  visibleDays,
+}: {
+  anchorMonth: Date;
+  canManagePersonalEvents: boolean;
+  data: AthleteCalendarExperienceData;
+  dayDetail?: AthleteCalendarDayDetail | null;
+  dayDetailError?: string | null;
+  dayDetailLoading: boolean;
+  expanded: boolean;
+  filter: CalendarFilter;
+  navigationRevision: number;
+  onAction: (action: AthleteCalendarAction) => void;
+  onCollapse: () => void;
+  onExpand: () => void;
+  onFilter: (filter: CalendarFilter) => void;
+  onLoadMore?: () => void;
+  onRefresh?: () => void;
+  onRetryDayDetail?: () => void;
+  onSelectDate: (date: string) => void;
+  refreshing: boolean;
+  selectedDate: string;
+  visibleDays: AthleteCalendarDay[];
+}) {
+  const scrollRef = useRef<ScrollView>(null);
+  const resolvedDetail = dayDetail?.date === selectedDate
+    ? dayDetail
+    : fallbackDayDetail(data, selectedDate, canManagePersonalEvents);
+  const pullGesture = useMemo(
+    () => Gesture.Pan()
+      .runOnJS(true)
+      .activeOffsetY([-12, 12])
+      .failOffsetX([-18, 18])
+      .onEnd(({ translationY, velocityY }) => {
+        if (!expanded && (translationY < -44 || velocityY < -520)) onExpand();
+        if (expanded && (translationY > 44 || velocityY > 520)) onCollapse();
+      }),
+    [expanded, onCollapse, onExpand],
+  );
+
+  useEffect(() => {
+    if (navigationRevision > 0) scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }, [navigationRevision]);
+
+  return (
+    <ScrollView
+      ref={scrollRef}
+      contentContainerStyle={styles.v2ScrollContent}
+      onMomentumScrollEnd={({ nativeEvent }) => {
+        const remaining = nativeEvent.contentSize.height - nativeEvent.layoutMeasurement.height - nativeEvent.contentOffset.y;
+        if (!expanded && remaining < 240) onLoadMore?.();
+      }}
+      refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} /> : undefined}
+      showsVerticalScrollIndicator={false}
+    >
+      {expanded ? (
+        <FocusedWeekStrip data={data} onSelectDate={onSelectDate} selectedDate={selectedDate} />
+      ) : (
+        <>
+          <FilterRow filter={filter} onFilter={onFilter} />
+          <MonthSection
+            data={{ ...data, days: visibleDays }}
+            month={anchorMonth}
+            onAction={onAction}
+            onSelectDate={onSelectDate}
+            selectedDate={selectedDate}
+          />
+        </>
+      )}
+      <GestureDetector gesture={pullGesture}>
+        <View>
+          <Pressable
+            accessibilityLabel={expanded ? 'Collapse Training Lens to month' : 'Expand Training Lens to week'}
+            accessibilityRole="button"
+            onPress={expanded ? onCollapse : onExpand}
+            style={styles.lensHandleButton}
+          >
+            <View style={styles.lensHandle} />
+            <Text style={styles.lensHandleLabel}>{expanded ? 'MONTH OVERVIEW' : 'PULL UP FOR DAY DETAIL'}</Text>
+          </Pressable>
+          <TrainingLens
+            canManagePersonalEvents={canManagePersonalEvents}
+            data={data}
+            detail={resolvedDetail}
+            error={dayDetailError}
+            loading={dayDetailLoading && !dayDetail}
+            onAction={onAction}
+            onRetry={onRetryDayDetail}
+            selectedDate={selectedDate}
+          />
+        </View>
+      </GestureDetector>
+      <View style={styles.v2BottomClearance} />
+    </ScrollView>
+  );
+}
+
+function FilterRow({ filter, onFilter }: { filter: CalendarFilter; onFilter: (filter: CalendarFilter) => void }) {
+  return (
+    <ScrollView contentContainerStyle={styles.filterRow} horizontal showsHorizontalScrollIndicator={false}>
+      {CALENDAR_FILTERS.map((item) => (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ selected: filter === item.id }}
+          key={item.id}
+          onPress={() => onFilter(item.id)}
+          style={[styles.filterChip, filter === item.id && styles.filterChipSelected]}
+        >
+          <Text style={[styles.filterChipText, filter === item.id && styles.filterChipTextSelected]}>{item.label}</Text>
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+}
+
+function FocusedWeekStrip({
+  data,
+  onSelectDate,
+  selectedDate,
+}: {
+  data: AthleteCalendarExperienceData;
+  onSelectDate: (date: string) => void;
+  selectedDate: string;
+}) {
+  const selected = parseYmd(selectedDate) || new Date();
+  const week = weekContaining(selected);
+  const byDate = new Map(data.days.map((day) => [day.date, day]));
+  return (
+    <View style={styles.focusedWeekSection}>
+      <Text style={styles.focusedWeekTitle}>{monthShort(week[0])} {week[0].getDate()} – {monthShort(week[6])} {week[6].getDate()}</Text>
+      <View style={styles.focusedWeekStrip}>
+        {week.map((date, index) => {
+          const ymd = toYmd(date);
+          const day = byDate.get(ymd);
+          const selectedCell = ymd === selectedDate;
+          const tone = primaryDayTone(day);
+          return (
+            <Pressable key={ymd} onPress={() => onSelectDate(ymd)} style={styles.focusedWeekDay}>
+              <Text style={styles.focusedWeekWeekday}>{WEEKDAYS[index]}</Text>
+              <View style={[styles.focusedWeekNumber, selectedCell && styles.focusedWeekNumberSelected]}>
+                <Text style={[styles.focusedWeekNumberText, selectedCell && styles.selectedDayNumber]}>{date.getDate()}</Text>
+              </View>
+              <View style={[styles.focusedWeekMarker, { backgroundColor: toneColor(tone) }]} />
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+function TrainingLens({
+  canManagePersonalEvents,
+  data,
+  detail,
+  error,
+  loading,
+  onAction,
+  onRetry,
+  selectedDate,
+}: {
+  canManagePersonalEvents: boolean;
+  data: AthleteCalendarExperienceData;
+  detail: AthleteCalendarDayDetail;
+  error?: string | null;
+  loading: boolean;
+  onAction: (action: AthleteCalendarAction) => void;
+  onRetry?: () => void;
+  selectedDate: string;
+}) {
+  const date = parseYmd(selectedDate) || new Date();
+  const state = detail.state;
+  const tone = lensTone(state);
+  const sessions = detail.sessions;
+  const readiness = detail.readiness || sessions.find((item) => item.readiness)?.readiness || null;
+  const allowPersonalItem = canManagePersonalEvents && detail.capabilities.canAddPersonalItem;
+  const allowCreateSession = detail.capabilities.canCreateSession;
+  return (
+    <View style={[styles.trainingLens, { borderColor: colorWithAlpha(tone, 0.58) }]}>
+      <LinearGradient
+        colors={[colorWithAlpha(tone, 0.15), 'rgba(0,0,0,0)']}
+        end={{ x: 0.9, y: 0.8 }}
+        pointerEvents="none"
+        start={{ x: 0, y: 0 }}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <View style={styles.lensDateRow}>
+        <View style={styles.flex}>
+          <Text style={[styles.lensEyebrow, { color: tone }]}>{date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase()}</Text>
+          <Text style={styles.lensStateTitle}>{lensStateLabel(state, detail.isToday)}</Text>
+        </View>
+        <View style={[styles.lensStateBadge, { borderColor: colorWithAlpha(tone, 0.55) }]}>
+          <View style={[styles.lensStateDot, { backgroundColor: tone }]} />
+          <Text style={[styles.lensStateBadgeText, { color: tone }]}>{lensStateBadge(state)}</Text>
+        </View>
+      </View>
+      {loading ? (
+        <View style={styles.lensLoading}><ActivityIndicator color={tone} /><Text style={styles.lensMuted}>Loading day context…</Text></View>
+      ) : null}
+      {error ? (
+        <Pressable onPress={onRetry} style={styles.lensError}>
+          <Ionicons color={SLColors.danger} name="cloud-offline-outline" size={18} />
+          <View style={styles.flex}><Text style={styles.lensCardTitle}>Day context unavailable</Text><Text style={styles.lensMuted}>The month remains available. Tap to retry this date.</Text></View>
+        </Pressable>
+      ) : null}
+      {!loading && !error ? (
+        <>
+          {sessions.map((session) => (
+            <SessionLensCard key={session.id} onAction={onAction} session={session} state={state} tone={tone} />
+          ))}
+          {state === 'rest' && !sessions.length ? <RestLensCard detail={detail} readiness={readiness} /> : null}
+          {detail.personalEvents.map((event) => (
+            <PersonalLensCard conflicts={detail.conflicts.filter((item) => item.eventId === event.id)} event={event} key={event.id} onAction={onAction} />
+          ))}
+          {readiness && state !== 'completed' ? <ReadinessCard readiness={readiness} /> : null}
+          {detail.nextUp ? <NextUpCard nextUp={detail.nextUp} onAction={onAction} /> : null}
+          {!sessions.length && !detail.personalEvents.length && state !== 'rest' ? <RestLensCard detail={detail} readiness={readiness} /> : null}
+        </>
+      ) : null}
+      {allowPersonalItem || allowCreateSession ? (
+        <View style={styles.quickAddActions}>
+          {allowCreateSession ? (
+            <Pressable onPress={() => onAction({ type: 'create-session', date: selectedDate })} style={({ pressed }) => [styles.quickAddButton, styles.quickAddButtonFlexible, pressed && styles.pressed]}>
+              <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={21} />
+              <Text style={styles.quickAddText}>Create Session</Text>
+            </Pressable>
+          ) : null}
+          {allowPersonalItem ? (
+            <Pressable onPress={() => onAction({ type: 'add-event', date: selectedDate })} style={({ pressed }) => [styles.quickAddButton, styles.quickAddButtonFlexible, pressed && styles.pressed]}>
+              <Ionicons color={SLColors.accentViolet} name="calendar-outline" size={21} />
+              <Text style={styles.quickAddText}>Add Personal Item</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function SessionLensCard({
+  onAction,
+  session,
+  state,
+  tone,
+}: {
+  onAction: (action: AthleteCalendarAction) => void;
+  session: AthleteCalendarDayDetailSession;
+  state: AthleteCalendarLensState;
+  tone: string;
+}) {
+  const status = resolveCalendarSessionStatus(session.status);
+  const completed = status.lifecycle === 'completed' || state === 'completed';
+  const attention = status.lifecycle === 'missed' || state === 'needs_attention';
+  const accomplishment = session.accomplishment?.highestPriority;
+  const bestSet = session.performance?.bestSet;
+  return (
+    <View style={styles.lensCard}>
+      <View style={styles.lensCardHeader}>
+        <View style={styles.flex}>
+          <Text style={styles.lensCardTitle}>{session.title || 'Training Session'}</Text>
+          <Text style={styles.lensMeta}>{trainingContextLabel(session)}</Text>
+        </View>
+        <Text style={[styles.lensCardStatus, { color: tone }]}>{status.label.toUpperCase()}</Text>
+      </View>
+      {attention ? (
+        <View style={styles.attentionCopy}>
+          <Ionicons color={SLColors.danger} name="alert-circle-outline" size={18} />
+          <Text style={styles.lensBody}>{session.missedContext?.comment || session.missedContext?.reason || 'This Session still needs your attention.'}</Text>
+        </View>
+      ) : null}
+      {completed ? (
+        <>
+          <View style={styles.metricGrid}>
+            <Metric label="SETS" value={String(session.performance?.completedSets || 0)} />
+            <Metric label="REPS" value={String(session.performance?.totalReps || 0)} />
+            <Metric label="DURATION" value={session.performance?.actualDurationMinutes ? `${session.performance.actualDurationMinutes} min` : '—'} />
+            <Metric label="SESSION RPE" value={formatNumber(session.reflection?.sessionRpe)} />
+          </View>
+          {bestSet ? (
+            <EvidenceRow icon="barbell-outline" label="PERFORMANCE HIGHLIGHT" value={`${formatWeight(bestSet.weightKg)} × ${bestSet.reps}${bestSet.rpe ? ` @ RPE ${formatNumber(bestSet.rpe)}` : ''}`} />
+          ) : null}
+          {accomplishment ? (
+            <EvidenceRow icon="trophy-outline" label="ACCOMPLISHMENT" value={accomplishmentLabel(accomplishment)} tone={SLColors.success} />
+          ) : null}
+          {reflectionCopy(session) ? <EvidenceRow icon="chatbubble-ellipses-outline" label="HOW YOU FELT" value={reflectionCopy(session)!} /> : null}
+        </>
+      ) : (
+        <View style={styles.metricGrid}>
+          <Metric label="MOVEMENTS" value={String(session.planned?.movementCount || session.primaryLifts?.length || 0)} />
+          <Metric label="WORKING SETS" value={String(session.planned?.plannedSets || 0)} />
+          <Metric label="EST. TIME" value={session.estimatedDurationMinutes ? `${session.estimatedDurationMinutes} min` : '—'} />
+        </View>
+      )}
+      {session.programmingNotes ? <EvidenceRow icon="document-text-outline" label="COACH CONTEXT" value={session.programmingNotes} /> : null}
+      <Pressable onPress={() => onAction({ type: 'session', id: session.id })} style={({ pressed }) => [styles.lensPrimaryButton, { borderColor: colorWithAlpha(tone, 0.65) }, pressed && styles.pressed]}>
+        <Text style={[styles.lensPrimaryButtonText, { color: tone }]}>{sessionActionLabel(session, completed)}</Text>
+        <Ionicons color={tone} name="chevron-forward" size={18} />
+      </Pressable>
+    </View>
+  );
+}
+
+function RestLensCard({ detail, readiness }: { detail: AthleteCalendarDayDetail; readiness: AthleteCalendarReadiness | null }) {
+  return (
+    <View style={styles.lensCard}>
+      <EvidenceRow icon="moon-outline" label="FOCUS" value="Recovery and mobility" />
+      {detail.blockContext ? (
+        <EvidenceRow
+          icon="layers-outline"
+          label="CURRENT BLOCK"
+          value={`${detail.blockContext.name || 'Training Block'}${detail.blockContext.weekNumber ? ` · Week ${detail.blockContext.weekNumber}${detail.blockContext.totalWeeks ? ` of ${detail.blockContext.totalWeeks}` : ''}` : ''}`}
+        />
+      ) : null}
+      <EvidenceRow icon="pulse-outline" label="READINESS" value={readiness ? readinessSummary(readiness) : 'Not submitted'} />
+    </View>
+  );
+}
+
+function PersonalLensCard({
+  conflicts,
+  event,
+  onAction,
+}: {
+  conflicts: AthleteCalendarConflict[];
+  event: AthleteCalendarPersonalEvent;
+  onAction: (action: AthleteCalendarAction) => void;
+}) {
+  return (
+    <Pressable onPress={() => onAction({ type: 'edit-event', event })} style={({ pressed }) => [styles.lensCard, styles.personalCard, pressed && styles.pressed]}>
+      <View style={styles.lensCardHeader}>
+        <View style={styles.flex}>
+          <Text style={styles.lensCardTitle}>{event.title}</Text>
+          <Text style={styles.lensMeta}>{event.location || event.category || 'Personal item'} · {event.allDay ? 'All Day' : eventTimeLabel(event)}</Text>
+        </View>
+        <Ionicons color={SLColors.info} name="calendar-outline" size={22} />
+      </View>
+      {conflicts.map((conflict) => (
+        <Pressable key={conflict.id} onPress={() => onAction({ type: 'review-conflict', conflict })} style={styles.conflictCallout}>
+          <Ionicons color={SLColors.warning} name="warning-outline" size={18} />
+          <View style={styles.flex}><Text style={styles.conflictTitle}>Schedule impact</Text><Text style={styles.lensBody}>{conflict.workoutTitle} is also scheduled on this date.</Text></View>
+          <Ionicons color={SLColors.textMuted} name="chevron-forward" size={17} />
+        </Pressable>
+      ))}
+    </Pressable>
+  );
+}
+
+function ReadinessCard({ readiness }: { readiness: AthleteCalendarReadiness }) {
+  return (
+    <View style={styles.compactContextCard}>
+      <Ionicons color={SLColors.success} name="pulse-outline" size={22} />
+      <View style={styles.flex}><Text style={styles.contextLabel}>READINESS</Text><Text style={styles.contextValue}>{readinessSummary(readiness)}</Text></View>
+    </View>
+  );
+}
+
+function NextUpCard({ nextUp, onAction }: { nextUp: AthleteCalendarSession; onAction: (action: AthleteCalendarAction) => void }) {
+  return (
+    <Pressable onPress={() => onAction({ type: 'session', id: nextUp.id })} style={({ pressed }) => [styles.compactContextCard, pressed && styles.pressed]}>
+      <Ionicons color={SLColors.accentViolet} name="arrow-forward-circle-outline" size={22} />
+      <View style={styles.flex}><Text style={styles.contextLabel}>NEXT UP</Text><Text style={styles.contextValue}>{nextUp.title || 'Training Session'} · {formatDayReference(nextUp.date)}</Text></View>
+      <Ionicons color={SLColors.textMuted} name="chevron-forward" size={17} />
+    </Pressable>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return <View style={styles.metric}><Text style={styles.metricLabel}>{label}</Text><Text style={styles.metricValue}>{value}</Text></View>;
+}
+
+function EvidenceRow({ icon, label, tone = SLColors.accentViolet, value }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; tone?: string; value: string }) {
+  return (
+    <View style={styles.evidenceRow}>
+      <View style={[styles.evidenceIcon, { borderColor: colorWithAlpha(tone, 0.5) }]}><Ionicons color={tone} name={icon} size={18} /></View>
+      <View style={styles.flex}><Text style={[styles.evidenceLabel, { color: tone }]}>{label}</Text><Text style={styles.evidenceValue}>{value}</Text></View>
     </View>
   );
 }
@@ -463,30 +970,7 @@ function MonthSection({
         <ProgramChapterDivider program={data.programContext} />
       ) : null}
       {monthBlocks.length ? (
-        <View style={styles.trainingStructureContext}>
-          {monthBlocks.map((block) => {
-            const isCurrent = block.start <= data.today && block.end >= data.today;
-            const accent = isCurrent
-              ? SLMovementCardMaterial.stateAccent.in_progress
-              : SLColors.accentViolet;
-            return (
-              <View key={`${block.id || block.label}:${block.start}:${block.end}`} style={styles.blockContextRow}>
-                <View style={styles.blockContextCopy}>
-                  <View style={styles.blockContextIdentity}>
-                    <View style={[styles.blockContextDot, { backgroundColor: accent }]} />
-                    <Text style={[styles.blockContextKind, { color: accent }]}>
-                      {isCurrent ? 'CURRENT BLOCK' : 'TRAINING BLOCK'}
-                    </Text>
-                    <Text style={styles.blockContextName}>{block.label}</Text>
-                  </View>
-                  <Text style={styles.blockContextRange}>
-                    {formatCalendarStructureRange(block.start, block.end)}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
-        </View>
+        <TrainingJourneyBar blocks={monthBlocks} today={data.today} />
       ) : null}
       <View style={styles.weekHeader}>{WEEKDAYS.map((day, index) => <Text key={`${day}-${index}`} style={styles.weekday}>{day}</Text>)}</View>
       <View style={styles.monthGrid}>
@@ -495,7 +979,9 @@ function MonthSection({
           const day = dayByDate.get(ymd);
           const inMonth = date.getFullYear() === month.getFullYear() && date.getMonth() === month.getMonth();
           const selected = ymd === selectedDate;
+          const today = ymd === data.today || day?.isToday === true;
           const hasTrainingSession = Boolean(day?.sessions.length);
+          const semanticTone = toneColor(primaryDayTone(day));
           const block = calendarTrainingRangeForDate(monthBlocks, ymd);
           const isCurrentBlock = Boolean(block && block.start <= data.today && block.end >= data.today);
           const blockAccent = isCurrentBlock
@@ -533,14 +1019,71 @@ function MonthSection({
                   style={styles.sessionDayUnderglow}
                 />
               ) : null}
-              <View style={[styles.dayNumberWrap, selected && styles.selectedDay]}>
-                <Text style={[styles.dayNumber, selected && styles.selectedDayNumber]}>{date.getDate()}</Text>
+              <View
+                style={[
+                  styles.dayNumberWrap,
+                  today && styles.todayDay,
+                  today && { borderColor: semanticTone },
+                  selected && styles.selectedDay,
+                  selected && { backgroundColor: semanticTone },
+                ]}
+              >
+                <Text style={[styles.dayNumber, selected && styles.selectedDayNumber, today && !selected && { color: semanticTone, fontWeight: '700' }]}>{date.getDate()}</Text>
               </View>
               <DaySignals day={day} onAction={onAction} />
             </Pressable>
           );
         })}
       </View>
+      <MonthSummary data={data} month={month} />
+    </View>
+  );
+}
+
+function TrainingJourneyBar({ blocks, today }: { blocks: AthleteCalendarRange[]; today: string }) {
+  return (
+    <View style={styles.journeyWrap}>
+      <View style={styles.journeyHeader}>
+        <Text style={styles.journeyEyebrow}>TRAINING JOURNEY</Text>
+        <Text style={styles.journeyHint}>Your position in the current program</Text>
+      </View>
+      <View style={styles.journeyTrack}>
+        {blocks.map((block) => {
+          const isCurrent = block.start <= today && block.end >= today;
+          const blockKind = isCurrent ? 'CURRENT BLOCK' : 'TRAINING BLOCK';
+          return (
+            <View key={`${block.id || block.label}:${block.start}`} style={[styles.journeySegment, isCurrent && styles.journeySegmentCurrent]}>
+              <Text style={[styles.journeySegmentKind, isCurrent && styles.journeySegmentKindCurrent]}>{blockKind}</Text>
+              <Text numberOfLines={1} style={[styles.journeySegmentName, isCurrent && styles.journeySegmentNameCurrent]}>{block.label}</Text>
+              <Text style={styles.journeySegmentDate}>{formatCalendarStructureRange(block.start, block.end)}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+function MonthSummary({ data, month }: { data: AthleteCalendarExperienceData; month: Date }) {
+  const monthPrefix = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}-`;
+  const days = data.days.filter((day) => day.date.startsWith(monthPrefix));
+  const sessions = days.flatMap((day) => day.sessions);
+  const completed = sessions.filter((session) => resolveCalendarSessionStatus(session.status).lifecycle === 'completed').length;
+  const upcoming = sessions.filter((session) => ['not_started', 'in_progress'].includes(resolveCalendarSessionStatus(session.status).lifecycle)).length;
+  const personal = days.reduce((total, day) => total + (day.personalEvents?.length || 0), 0);
+  const planned = sessions.filter((session) => resolveCalendarSessionStatus(session.status).lifecycle !== 'canceled').length;
+  const completion = planned ? Math.min(100, Math.round((completed / planned) * 100)) : 0;
+  return (
+    <View style={styles.monthSummary}>
+      <Text style={styles.monthSummaryEyebrow}>{month.toLocaleDateString(undefined, { month: 'long' }).toUpperCase()} SUMMARY</Text>
+      <View style={styles.monthSummaryMetrics}>
+        <Metric label="SESSIONS" value={String(sessions.length)} />
+        <Metric label="COMPLETED" value={String(completed)} />
+        <Metric label="UPCOMING" value={String(upcoming)} />
+        <Metric label="PERSONAL" value={String(personal)} />
+      </View>
+      <View style={styles.completionHeader}><Text style={styles.completionLabel}>PLANNED SESSION COMPLETION</Text><Text style={styles.completionValue}>{completed} / {planned}</Text></View>
+      <View style={styles.completionTrack}><View style={[styles.completionFill, { width: `${completion}%` }]} /></View>
     </View>
   );
 }
@@ -978,6 +1521,147 @@ export function toYmd(date: Date) { return `${date.getFullYear()}-${String(date.
 export function formatCalendarWeekRange(week: AthleteCalendarWeekSummary) { return `${shortDate(week.startDate)}–${shortDate(week.endDate)}`; }
 export function calendarWeeksForMonth(weeks: AthleteCalendarWeekSummary[], month: Date) { const start = toYmd(new Date(month.getFullYear(), month.getMonth(), 1)); const end = toYmd(new Date(month.getFullYear(), month.getMonth() + 1, 0)); return weeks.filter((week) => week.endDate >= start && week.startDate <= end); }
 function shortDate(value: string) { const date = parseYmd(value) || new Date(); return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
+function dayStateInput(day?: AthleteCalendarDay) {
+  return {
+    sessionStatuses: day?.sessions.map((session) => session.status) || [],
+    personalItemCount: day?.personalEvents?.length || 0,
+    checkInCount: day?.checkIns?.length || 0,
+    meetCount: day?.meets?.length || 0,
+  };
+}
+function dayMatchesFilter(day: AthleteCalendarDay, filter: CalendarFilter) {
+  return calendarDayMatchesFilter(dayStateInput(day), filter);
+}
+function primaryDayTone(day?: AthleteCalendarDay): CalendarDayTone {
+  return primaryCalendarDayTone(dayStateInput(day));
+}
+function fallbackDayDetail(
+  data: AthleteCalendarExperienceData,
+  date: string,
+  canManagePersonalEvents: boolean,
+): AthleteCalendarDayDetail {
+  const day = data.days.find((candidate) => candidate.date === date);
+  const sessions: AthleteCalendarDayDetailSession[] = (day?.sessions || []).map((session) => ({
+    ...session,
+    planned: {
+      movementCount: (session.primaryLifts?.length || 0) + (session.accessoryCount || 0),
+      movementLabels: session.primaryLifts || [],
+      plannedSets: 0,
+      label: session.plannedSummary || null,
+    },
+  }));
+  const sortedFutureSessions = data.days
+    .filter((candidate) => candidate.date > date)
+    .flatMap((candidate) => candidate.sessions)
+    .filter((session) => resolveCalendarSessionStatus(session.status).lifecycle !== 'canceled')
+    .sort((left, right) => String(left.date || '').localeCompare(String(right.date || '')));
+  const block = calendarTrainingRangeForDate(data.ranges || [], date);
+  return {
+    date,
+    timezone: data.timezone || null,
+    isToday: date === data.today,
+    state: resolveCalendarLensState(dayStateInput(day)),
+    sessions,
+    readiness: null,
+    personalEvents: day?.personalEvents || [],
+    conflicts: (data.conflicts || []).filter((conflict) => conflict.date === date),
+    blockContext: block ? {
+      id: Number(block.id) || 0,
+      name: block.label,
+      startDate: block.start,
+      endDate: block.end,
+    } : null,
+    nextUp: sortedFutureSessions[0] || null,
+    capabilities: { canAddPersonalItem: canManagePersonalEvents, canCreateSession: false },
+  };
+}
+function toneColor(tone: CalendarDayTone) {
+  if (tone === 'pink') return SLColors.accentMagenta;
+  if (tone === 'gold') return SLColors.warning;
+  if (tone === 'green') return SLColors.success;
+  if (tone === 'red') return SLColors.danger;
+  if (tone === 'slate') return SLColors.info;
+  return SLColors.accentViolet;
+}
+function lensTone(state: AthleteCalendarLensState) {
+  if (state === 'needs_attention') return SLColors.danger;
+  if (state === 'in_progress') return SLColors.warning;
+  if (state === 'completed') return SLColors.success;
+  if (state === 'personal') return SLColors.info;
+  if (state === 'rest') return SLColors.textMuted;
+  return SLColors.accentViolet;
+}
+function lensStateLabel(state: AthleteCalendarLensState, isToday?: boolean) {
+  if (state === 'needs_attention') return 'Needs Attention';
+  if (state === 'in_progress') return 'Session In Progress';
+  if (state === 'completed') return 'Completed Day';
+  if (state === 'personal') return 'Personal Schedule';
+  if (state === 'rest') return 'Rest Day';
+  return isToday ? "Today's Training" : 'Planned Training';
+}
+function lensStateBadge(state: AthleteCalendarLensState) {
+  if (state === 'needs_attention') return 'ATTENTION';
+  if (state === 'in_progress') return 'IN PROGRESS';
+  if (state === 'completed') return 'COMPLETE';
+  if (state === 'personal') return 'PERSONAL';
+  if (state === 'rest') return 'RECOVERY';
+  return 'ASSIGNED';
+}
+function trainingContextLabel(session: AthleteCalendarDayDetailSession) {
+  return [
+    session.blockName,
+    session.planned?.label || session.plannedSummary,
+    session.planned?.movementLabels?.length ? session.planned.movementLabels.join(' + ') : null,
+  ].filter(Boolean).join(' · ') || 'Training Session';
+}
+function formatNumber(value?: number | null) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+  return Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10);
+}
+function formatWeight(value?: number | null) {
+  return value === null || value === undefined ? '—' : `${formatNumber(value)} kg`;
+}
+function accomplishmentLabel(accomplishment: NonNullable<AthleteCalendarAccomplishment['highestPriority']>) {
+  const label = String(accomplishment.eventType || 'personal record')
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(' ');
+  const evidence = accomplishment.currentValue === null || accomplishment.currentValue === undefined
+    ? null
+    : `${formatNumber(accomplishment.currentValue)}${accomplishment.unit ? ` ${accomplishment.unit}` : ''}`;
+  return [accomplishment.movementLabel, label, evidence].filter(Boolean).join(' · ');
+}
+function reflectionCopy(session: AthleteCalendarDayDetailSession) {
+  const reflection = session.reflection;
+  if (!reflection) return '';
+  return [reflection.strength, reflection.fatigue, reflection.note].filter(Boolean).join(' · ');
+}
+function sessionActionLabel(session: AthleteCalendarDayDetailSession, completed: boolean) {
+  if (completed) return 'View Recap';
+  const lifecycle = resolveCalendarSessionStatus(session.status).lifecycle;
+  if (lifecycle === 'in_progress') return 'Resume Session';
+  if (lifecycle === 'missed') return 'Review Session';
+  return 'Begin Session';
+}
+function readinessSummary(readiness: AthleteCalendarReadiness) {
+  const values = [
+    readiness.score != null ? `${formatNumber(readiness.score)}/10` : null,
+    readiness.energy != null ? `Energy ${formatNumber(readiness.energy)}` : null,
+    readiness.soreness != null ? `Soreness ${formatNumber(readiness.soreness)}` : null,
+  ].filter(Boolean);
+  return values.join(' · ') || 'Submitted';
+}
+function eventTimeLabel(event: AthleteCalendarPersonalEvent) {
+  const start = new Date(event.startsAt);
+  const end = new Date(event.endsAt);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 'Time unavailable';
+  return `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}–${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+}
+function formatDayReference(value?: string | null) {
+  const date = value ? parseYmd(value) : null;
+  return date ? date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : 'Upcoming';
+}
 function colorWithAlpha(color: string, alpha: number) {
   const normalized = color.replace('#', '');
   const value = normalized.length === 3
@@ -996,9 +1680,77 @@ const styles = StyleSheet.create({
   toolbarPeriodLabel: { paddingHorizontal: SLSpacing.xs },
   searchRow: { position: 'absolute', top: SL_TAB_ROW_CONTROL.itemSize + SLSpacing.xs, left: SLLayout.screenGutter, right: SLLayout.screenGutter, zIndex: 31, height: 48, borderRadius: 24, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: 'rgba(18,14,23,0.96)', paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, color: SLColors.textStrong, fontSize: 17 },
+  v2ScrollContent: { width: '100%', paddingTop: SLSpacing.sm },
+  filterRow: { paddingHorizontal: SLLayout.screenGutter, paddingBottom: SLSpacing.sm, gap: SLSpacing.sm },
+  filterChip: { minHeight: 36, borderRadius: 18, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, paddingHorizontal: SLSpacing.lg, alignItems: 'center', justifyContent: 'center' },
+  filterChipSelected: { backgroundColor: SLColors.surfaceSelected, borderColor: SLColors.borderSelected },
+  filterChipText: { ...SLTypography.chipLabel, color: SLColors.textMuted },
+  filterChipTextSelected: { color: SLColors.textStrong },
+  focusedWeekSection: { marginHorizontal: SLLayout.screenGutter, marginBottom: SLSpacing.sm, borderRadius: 18, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat, padding: SLSpacing.md, gap: SLSpacing.sm },
+  focusedWeekTitle: { ...SLTypography.cardTitle, color: SLColors.textStrong, textAlign: 'center' },
+  focusedWeekStrip: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  focusedWeekDay: { flex: 1, minHeight: 72, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  focusedWeekWeekday: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700' },
+  focusedWeekNumber: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  focusedWeekNumberSelected: { backgroundColor: SLColors.surfaceSelected, borderWidth: 1, borderColor: SLColors.borderSelected },
+  focusedWeekNumberText: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  focusedWeekMarker: { width: 6, height: 6, borderRadius: 3 },
+  lensHandleButton: { minHeight: 48, marginHorizontal: SLLayout.screenGutter, alignItems: 'center', justifyContent: 'center', gap: 5 },
+  lensHandle: { width: 54, height: 5, borderRadius: 3, backgroundColor: SLColors.borderStrong },
+  lensHandleLabel: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700', letterSpacing: 0.8 },
+  trainingLens: { position: 'relative', overflow: 'hidden', marginHorizontal: SLLayout.screenGutter, borderRadius: 22, borderWidth: 1, backgroundColor: SLColors.surfaceFlat, padding: SLSpacing.lg, gap: SLSpacing.md },
+  lensDateRow: { flexDirection: 'row', alignItems: 'flex-start', gap: SLSpacing.md },
+  lensEyebrow: { ...SLTypography.label, fontWeight: '700', letterSpacing: 0.8 },
+  lensStateTitle: { ...SLTypography.sectionTitle, color: SLColors.textStrong, marginTop: 2 },
+  lensStateBadge: { minHeight: 28, borderRadius: 14, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10 },
+  lensStateDot: { width: 6, height: 6, borderRadius: 3 },
+  lensStateBadgeText: { ...SLTypography.micro, fontWeight: '700', letterSpacing: 0.5 },
+  lensLoading: { minHeight: 72, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SLSpacing.md },
+  lensMuted: { ...SLTypography.rowMeta, color: SLColors.textMuted },
+  lensError: { minHeight: 70, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.md, borderRadius: 14, borderWidth: 1, borderColor: colorWithAlpha(SLColors.danger, 0.35), backgroundColor: SLColors.dangerSoft, padding: SLSpacing.md },
+  lensCard: { borderRadius: 18, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, padding: SLSpacing.md, gap: SLSpacing.md },
+  lensCardHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: SLSpacing.md },
+  lensCardTitle: { ...SLTypography.cardTitle, color: SLColors.textStrong },
+  lensMeta: { ...SLTypography.rowMeta, color: SLColors.textMuted, marginTop: 2 },
+  lensCardStatus: { ...SLTypography.micro, fontWeight: '700', letterSpacing: 0.45 },
+  attentionCopy: { flexDirection: 'row', alignItems: 'flex-start', gap: SLSpacing.sm, borderRadius: 12, backgroundColor: SLColors.dangerSoft, padding: SLSpacing.md },
+  lensBody: { ...SLTypography.body, color: SLColors.textSecondary, flex: 1 },
+  metricGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SLSpacing.sm },
+  metric: { minWidth: '22%', flexGrow: 1, borderRadius: 12, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: SLColors.surfaceFlat, paddingHorizontal: SLSpacing.sm, paddingVertical: SLSpacing.md, gap: 3 },
+  metricLabel: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700', letterSpacing: 0.5 },
+  metricValue: { ...SLTypography.metricValue, color: SLColors.textStrong },
+  evidenceRow: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.md },
+  evidenceIcon: { width: 38, height: 38, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.surfaceFlat },
+  evidenceLabel: { ...SLTypography.micro, fontWeight: '700', letterSpacing: 0.6 },
+  evidenceValue: { ...SLTypography.body, color: SLColors.textSecondary, marginTop: 2 },
+  lensPrimaryButton: { minHeight: 48, borderRadius: 14, borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SLSpacing.lg },
+  lensPrimaryButtonText: { ...SLTypography.buttonLabel, fontWeight: '700' },
+  personalCard: { borderColor: colorWithAlpha(SLColors.info, 0.45) },
+  conflictCallout: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm, borderRadius: 12, borderWidth: 1, borderColor: colorWithAlpha(SLColors.warning, 0.35), backgroundColor: SLColors.warningSoft, padding: SLSpacing.md },
+  conflictTitle: { ...SLTypography.bodyStrong, color: SLColors.warning },
+  compactContextCard: { minHeight: 62, borderRadius: 16, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.md, padding: SLSpacing.md },
+  contextLabel: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700', letterSpacing: 0.6 },
+  contextValue: { ...SLTypography.bodyStrong, color: SLColors.textStrong, marginTop: 2 },
+  quickAddActions: { flexDirection: 'row', alignItems: 'stretch', gap: SLSpacing.sm },
+  quickAddButton: { minHeight: 50, borderRadius: 15, borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: SLColors.surfaceSelected, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SLSpacing.sm },
+  quickAddButtonFlexible: { flex: 1, paddingHorizontal: SLSpacing.sm },
+  quickAddText: { ...SLTypography.buttonLabel, color: SLColors.accentMuted, fontWeight: '700' },
+  v2BottomClearance: { height: SLLayout.bottomActionClearance + SLSpacing.xxl },
   monthScrollContent: { width: '100%' },
   monthSection: { width: '100%', marginBottom: 10 },
   monthHeading: { fontSize: 40, lineHeight: 46, fontWeight: '700', color: SLColors.textStrong, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 },
+  journeyWrap: { marginHorizontal: SLLayout.screenGutter, marginBottom: SLSpacing.sm, borderRadius: 14, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset, padding: SLSpacing.md, gap: SLSpacing.sm },
+  journeyHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.md },
+  journeyEyebrow: { ...SLTypography.micro, color: SLColors.accentViolet, fontWeight: '700', letterSpacing: 0.65 },
+  journeyHint: { ...SLTypography.micro, color: SLColors.textMuted },
+  journeyTrack: { flexDirection: 'row', overflow: 'hidden', borderRadius: 10, borderWidth: 1, borderColor: SLColors.borderSubtle },
+  journeySegment: { flex: 1, minHeight: 58, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.surfaceFlat, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: SLColors.borderSubtle, paddingHorizontal: 5 },
+  journeySegmentCurrent: { backgroundColor: SLColors.surfaceSelected },
+  journeySegmentKind: { fontSize: 7, lineHeight: 9, color: SLColors.textSubtle, fontWeight: '700', letterSpacing: 0.35, marginBottom: 2 },
+  journeySegmentKindCurrent: { color: SLColors.accentViolet },
+  journeySegmentName: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700' },
+  journeySegmentNameCurrent: { color: SLColors.textStrong },
+  journeySegmentDate: { fontSize: 8, lineHeight: 10, color: SLColors.textSubtle, marginTop: 2 },
   programChapter: { width: '100%', minHeight: 60, paddingHorizontal: SLLayout.screenGutter, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
   programChapterRule: { flex: 1, height: StyleSheet.hairlineWidth },
   programChapterCopy: { maxWidth: '62%', alignItems: 'center', gap: 1 },
@@ -1020,6 +1772,7 @@ const styles = StyleSheet.create({
   blockDayAtmosphere: { ...StyleSheet.absoluteFillObject },
   sessionDayUnderglow: { position: 'absolute', bottom: 0, left: 2, right: 2, height: 58 },
   dayNumberWrap: { minWidth: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  todayDay: { borderWidth: 2, backgroundColor: SLColors.surfaceInset },
   selectedDay: { backgroundColor: SLColors.accentMagenta, shadowColor: SLColors.accentViolet, shadowOpacity: 0.48, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
   dayNumber: { fontSize: 22, color: SLColors.textStrong },
   selectedDayNumber: { color: SLColors.white, fontWeight: '700' },
@@ -1029,6 +1782,14 @@ const styles = StyleSheet.create({
   signalStack: { width: '76%', gap: 3, marginTop: 2 },
   signalBar: { minHeight: 7, borderRadius: 5, justifyContent: 'center', paddingHorizontal: 4 },
   signalText: { fontSize: 8, lineHeight: 10, color: SLColors.textStrong },
+  monthSummary: { marginHorizontal: SLLayout.screenGutter, marginTop: SLSpacing.lg, borderRadius: 18, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat, padding: SLSpacing.lg, gap: SLSpacing.md },
+  monthSummaryEyebrow: { ...SLTypography.label, color: SLColors.accentViolet, fontWeight: '700', letterSpacing: 0.7 },
+  monthSummaryMetrics: { flexDirection: 'row', gap: SLSpacing.sm },
+  completionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  completionLabel: { ...SLTypography.micro, color: SLColors.textMuted, fontWeight: '700' },
+  completionValue: { ...SLTypography.caption, color: SLColors.textStrong, fontWeight: '700' },
+  completionTrack: { height: 7, borderRadius: 4, overflow: 'hidden', backgroundColor: SLColors.surfaceInset },
+  completionFill: { height: '100%', borderRadius: 4, backgroundColor: SLColors.success },
   toneViolet: { backgroundColor: SLColors.accentViolet },
   tonePink: { backgroundColor: SLColors.accentMagenta },
   toneGold: { backgroundColor: SLColors.warning },

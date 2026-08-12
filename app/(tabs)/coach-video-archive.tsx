@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -17,6 +17,7 @@ import SetVideoPlayerModal, { type SetVideoReviewTag, type SetVideoSummary } fro
 import { SLScreen } from '@/components/ui';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { getCoachVideoArchive } from '@/lib/api';
+import { createLatestRequestManager } from '@/lib/latest-request';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 
 const palette = {
@@ -34,6 +35,16 @@ type ArchiveVideo = SetVideoSummary & {
   review_tags?: SetVideoReviewTag[] | null;
   upload_date?: string | null;
   reviewed_date?: string | null;
+  pinned?: boolean;
+};
+
+type ArchivePagination = {
+  page: number;
+  per_page: number;
+  total: number;
+  pages: number;
+  has_next: boolean;
+  has_prev: boolean;
 };
 
 type AthleteOption = {
@@ -123,7 +134,9 @@ export default function CoachVideoArchiveScreen() {
   const [videos, setVideos] = useState<ArchiveVideo[]>([]);
   const [athletes, setAthletes] = useState<AthleteOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [pagination, setPagination] = useState<ArchivePagination | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [athleteId, setAthleteId] = useState('');
@@ -133,6 +146,9 @@ export default function CoachVideoArchiveScreen() {
   const [setType, setSetType] = useState('');
   const [needsFollowupOnly, setNeedsFollowupOnly] = useState(false);
   const [hasFeedback, setHasFeedback] = useState('');
+  const [pinned, setPinned] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [draftAthleteId, setDraftAthleteId] = useState('');
   const [draftLift, setDraftLift] = useState('');
@@ -141,13 +157,21 @@ export default function CoachVideoArchiveScreen() {
   const [draftSetType, setDraftSetType] = useState('');
   const [draftNeedsFollowupOnly, setDraftNeedsFollowupOnly] = useState(false);
   const [draftHasFeedback, setDraftHasFeedback] = useState('');
+  const [draftPinned, setDraftPinned] = useState('');
+  const [draftDateFrom, setDraftDateFrom] = useState('');
+  const [draftDateTo, setDraftDateTo] = useState('');
   const [athleteSelectOpen, setAthleteSelectOpen] = useState(false);
   const [athleteSearch, setAthleteSearch] = useState('');
   const [selectedVideo, setSelectedVideo] = useState<ArchiveVideo | null>(null);
+  const requests = useRef(createLatestRequestManager<Awaited<ReturnType<typeof getCoachVideoArchive>>>()).current;
+
+  useEffect(() => () => requests.cancel(), [requests]);
 
   const loadArchive = useCallback(async (opts?: {
     silent?: boolean;
     showRefreshIndicator?: boolean;
+    page?: number;
+    append?: boolean;
     filters?: {
       query?: string;
       athleteId?: string;
@@ -157,9 +181,14 @@ export default function CoachVideoArchiveScreen() {
       setType?: string;
       needsFollowupOnly?: boolean;
       hasFeedback?: string;
+      pinned?: string;
+      dateFrom?: string;
+      dateTo?: string;
     };
   }) => {
     const silent = !!opts?.silent;
+    const append = !!opts?.append;
+    const page = opts?.page || 1;
     const nextQuery = opts?.filters?.query ?? query;
     const nextAthleteId = opts?.filters?.athleteId ?? athleteId;
     const nextLift = opts?.filters?.lift ?? lift;
@@ -168,11 +197,14 @@ export default function CoachVideoArchiveScreen() {
     const nextSetType = opts?.filters?.setType ?? setType;
     const nextNeedsFollowupOnly = opts?.filters?.needsFollowupOnly ?? needsFollowupOnly;
     const nextHasFeedback = opts?.filters?.hasFeedback ?? hasFeedback;
-    try {
-      if (silent && opts?.showRefreshIndicator !== false) setRefreshing(true);
-      else setLoading(true);
-      setError(null);
-      const res = await getCoachVideoArchive({
+    const nextPinned = opts?.filters?.pinned ?? pinned;
+    const nextDateFrom = opts?.filters?.dateFrom ?? dateFrom;
+    const nextDateTo = opts?.filters?.dateTo ?? dateTo;
+    if (append) setLoadingMore(true);
+    else if (silent && opts?.showRefreshIndicator !== false) setRefreshing(true);
+    else setLoading(true);
+    setError(null);
+    const result = await requests.run((signal) => getCoachVideoArchive({
         q: nextQuery,
         athlete_id: nextAthleteId,
         lift: nextLift,
@@ -181,23 +213,34 @@ export default function CoachVideoArchiveScreen() {
         set_type: nextSetType,
         needs_followup: nextNeedsFollowupOnly ? 'yes' : '',
         has_feedback: nextHasFeedback,
+        pinned: nextPinned,
+        date_from: nextDateFrom,
+        date_to: nextDateTo,
+        page,
         per_page: 25,
-      });
+      }, signal));
+    if (result.kind === 'cancelled' || result.kind === 'obsolete') return;
+    if (result.kind === 'error') {
+      setError((result.error as any)?.message || 'Could not load coach video archive.');
+    } else {
+      const res = result.value;
       const payload = res.json || {};
       if (!res.ok || !payload.ok) {
         if (res.status === 401) router.replace('/login');
-        throw new Error(payload.error || `Could not load coach video archive (${res.status})`);
+        setError(payload.error || `Could not load coach video archive (${res.status})`);
+      } else {
+        const nextVideos = Array.isArray(payload.videos) ? payload.videos : [];
+        setVideos((current) => append
+          ? [...current, ...nextVideos.filter((row: ArchiveVideo) => !current.some((existing) => existing.id === row.id))]
+          : nextVideos);
+        setAthletes(Array.isArray(payload.athletes) ? payload.athletes : []);
+        setPagination(payload.pagination || null);
       }
-      setVideos(Array.isArray(payload.videos) ? payload.videos : []);
-      setAthletes(Array.isArray(payload.athletes) ? payload.athletes : []);
-    } catch (err: any) {
-      setVideos([]);
-      setError(err?.message || 'Could not load coach video archive.');
-    } finally {
-      if (silent) setRefreshing(false);
-      setLoading(false);
     }
-  }, [athleteId, hasFeedback, lift, needsFollowupOnly, query, reviewStatus, router, setType, videoAngle]);
+    if (append) setLoadingMore(false);
+    else if (silent) setRefreshing(false);
+    setLoading(false);
+  }, [athleteId, dateFrom, dateTo, hasFeedback, lift, needsFollowupOnly, pinned, query, requests, reviewStatus, router, setType, videoAngle]);
 
   useFocusEffect(
     useCallback(() => {
@@ -211,8 +254,8 @@ export default function CoachVideoArchiveScreen() {
   );
 
   const activeFilterCount = useMemo(
-    () => [athleteId, lift, reviewStatus, videoAngle, setType, needsFollowupOnly ? 'needs_followup' : '', hasFeedback].filter(Boolean).length,
-    [athleteId, hasFeedback, lift, needsFollowupOnly, reviewStatus, setType, videoAngle],
+    () => [athleteId, lift, reviewStatus, videoAngle, setType, needsFollowupOnly ? 'needs_followup' : '', hasFeedback, pinned, dateFrom, dateTo].filter(Boolean).length,
+    [athleteId, dateFrom, dateTo, hasFeedback, lift, needsFollowupOnly, pinned, reviewStatus, setType, videoAngle],
   );
 
   const filterSummary = useMemo(() => {
@@ -227,9 +270,11 @@ export default function CoachVideoArchiveScreen() {
       angleOptions.find((option) => option.value === videoAngle)?.value ? angleOptions.find((option) => option.value === videoAngle)?.label : null,
       setTypeOptions.find((option) => option.value === setType)?.value ? setTypeOptions.find((option) => option.value === setType)?.label : null,
       hasFeedback === 'yes' ? 'Has feedback' : hasFeedback === 'no' ? 'No feedback' : null,
+      pinned === 'pinned' ? 'Pinned' : pinned === 'unpinned' ? 'Not pinned' : null,
+      dateFrom || dateTo ? `${dateFrom || 'Any date'}–${dateTo || 'Today'}` : null,
     ].filter(Boolean);
     return parts.length ? `Filters: ${parts.join(' · ')}` : '';
-  }, [athleteId, athletes, hasFeedback, lift, needsFollowupOnly, reviewStatus, setType, videoAngle]);
+  }, [athleteId, athletes, dateFrom, dateTo, hasFeedback, lift, needsFollowupOnly, pinned, reviewStatus, setType, videoAngle]);
 
   const draftAthleteLabel = useMemo(() => {
     if (!draftAthleteId) return 'All Athletes';
@@ -253,10 +298,13 @@ export default function CoachVideoArchiveScreen() {
     setDraftSetType(setType);
     setDraftNeedsFollowupOnly(needsFollowupOnly);
     setDraftHasFeedback(hasFeedback);
+    setDraftPinned(pinned);
+    setDraftDateFrom(dateFrom);
+    setDraftDateTo(dateTo);
     setAthleteSearch('');
     setAthleteSelectOpen(false);
     setFilterSheetOpen(true);
-  }, [athleteId, hasFeedback, lift, needsFollowupOnly, reviewStatus, setType, videoAngle]);
+  }, [athleteId, dateFrom, dateTo, hasFeedback, lift, needsFollowupOnly, pinned, reviewStatus, setType, videoAngle]);
 
   const resetDraftFilters = useCallback(() => {
     setDraftAthleteId('');
@@ -266,6 +314,9 @@ export default function CoachVideoArchiveScreen() {
     setDraftSetType('');
     setDraftNeedsFollowupOnly(false);
     setDraftHasFeedback('');
+    setDraftPinned('');
+    setDraftDateFrom('');
+    setDraftDateTo('');
     setAthleteSearch('');
     setAthleteSelectOpen(false);
   }, []);
@@ -279,6 +330,9 @@ export default function CoachVideoArchiveScreen() {
     setSetType(draftSetType);
     setNeedsFollowupOnly(draftNeedsFollowupOnly);
     setHasFeedback(draftHasFeedback);
+    setPinned(draftPinned);
+    setDateFrom(draftDateFrom);
+    setDateTo(draftDateTo);
     setFilterSheetOpen(false);
     loadArchive({
       silent: true,
@@ -290,9 +344,12 @@ export default function CoachVideoArchiveScreen() {
         setType: draftSetType,
         needsFollowupOnly: draftNeedsFollowupOnly,
         hasFeedback: draftHasFeedback,
+        pinned: draftPinned,
+        dateFrom: draftDateFrom,
+        dateTo: draftDateTo,
       },
     });
-  }, [draftAthleteId, draftHasFeedback, draftLift, draftNeedsFollowupOnly, draftReviewStatus, draftSetType, draftVideoAngle, loadArchive]);
+  }, [draftAthleteId, draftDateFrom, draftDateTo, draftHasFeedback, draftLift, draftNeedsFollowupOnly, draftPinned, draftReviewStatus, draftSetType, draftVideoAngle, loadArchive]);
 
   return (
     <SLScreen edges="none" padded={false} style={styles.screen}>
@@ -310,7 +367,7 @@ export default function CoachVideoArchiveScreen() {
           <View style={styles.header}>
             <View>
               <Text style={styles.title}>Archive</Text>
-              <Text style={styles.subtitle}>{videos.length} clip{videos.length === 1 ? '' : 's'} · {followupCount} follow-up</Text>
+              <Text style={styles.subtitle}>{pagination?.total ?? videos.length} clip{(pagination?.total ?? videos.length) === 1 ? '' : 's'} · {followupCount} follow-up on this page</Text>
             </View>
             <Pressable style={styles.headerIcon} onPress={() => loadArchive({ silent: true })}>
               <Ionicons name="albums-outline" size={24} color={palette.violet} />
@@ -388,7 +445,7 @@ export default function CoachVideoArchiveScreen() {
                       </Text>
                       <View style={styles.cardFooter}>
                         <Text style={styles.footerText} numberOfLines={1}>
-                          {video.video_angle_label || 'Unknown Angle'}{tags.length ? ` · ${tags.join(' · ')}` : ''}
+                          {video.pinned ? 'Pinned · ' : ''}{video.video_angle_label || 'Unknown Angle'}{tags.length ? ` · ${tags.join(' · ')}` : ''}
                         </Text>
                         <Ionicons name="chevron-forward" size={16} color={palette.muted} />
                       </View>
@@ -403,6 +460,17 @@ export default function CoachVideoArchiveScreen() {
                 <Text style={styles.emptyBody}>Submitted athlete videos will appear here for archive browsing.</Text>
               </View>
             )}
+            {pagination?.has_next ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Load more videos"
+                disabled={loadingMore}
+                onPress={() => loadArchive({ silent: true, append: true, page: pagination.page + 1 })}
+                style={({ pressed }) => [styles.loadMoreButton, pressed && styles.cardPressed]}
+              >
+                {loadingMore ? <ActivityIndicator color={palette.violet} /> : <Text style={styles.loadMoreText}>Load More</Text>}
+              </Pressable>
+            ) : null}
           </View>
         </ScrollView>
       )}
@@ -516,6 +584,38 @@ export default function CoachVideoArchiveScreen() {
                   <FilterChip key={option.value || 'any-feedback'} label={option.label} active={draftHasFeedback === option.value} onPress={() => setDraftHasFeedback(option.value)} />
                 ))}
               </FilterGroup>
+              <FilterGroup title="Evidence">
+                {[
+                  { value: '', label: 'Any evidence' },
+                  { value: 'pinned', label: 'Pinned' },
+                  { value: 'unpinned', label: 'Not pinned' },
+                ].map((option) => (
+                  <FilterChip key={option.value || 'any-evidence'} label={option.label} active={draftPinned === option.value} onPress={() => setDraftPinned(option.value)} />
+                ))}
+              </FilterGroup>
+              <View style={styles.filterGroup}>
+                <Text style={styles.filterGroupTitle}>Session date</Text>
+                <View style={styles.dateRow}>
+                  <TextInput
+                    accessibilityLabel="Session date from"
+                    value={draftDateFrom}
+                    onChangeText={setDraftDateFrom}
+                    placeholder="From YYYY-MM-DD"
+                    placeholderTextColor={SLColors.textSubtle}
+                    autoCapitalize="none"
+                    style={styles.dateInput}
+                  />
+                  <TextInput
+                    accessibilityLabel="Session date to"
+                    value={draftDateTo}
+                    onChangeText={setDraftDateTo}
+                    placeholder="To YYYY-MM-DD"
+                    placeholderTextColor={SLColors.textSubtle}
+                    autoCapitalize="none"
+                    style={styles.dateInput}
+                  />
+                </View>
+              </View>
               <FilterGroup title="Priority">
                 <Pressable
                   style={[styles.followupToggle, draftNeedsFollowupOnly && styles.followupToggleActive]}
@@ -709,6 +809,18 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { color: palette.muted, fontSize: SLTypography.label.fontSize, fontWeight: '600' },
   emptyBody: { display: 'none', color: palette.muted, fontSize: SLTypography.label.fontSize, textAlign: 'center' },
+  loadMoreButton: {
+    minHeight: 48,
+    marginHorizontal: 16,
+    marginTop: 14,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.accentVioletSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadMoreText: { color: palette.text, fontSize: SLTypography.label.fontSize, fontWeight: '900' },
   modalBackdrop: { flex: 1, justifyContent: 'flex-end' },
   modalScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: SLColors.surfaceScrim },
   filterSheet: {
@@ -840,6 +952,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   modalChipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  dateRow: { flexDirection: 'row', gap: 8 },
+  dateInput: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 44,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: 1,
+    borderColor: palette.border,
+    backgroundColor: SLColors.surfaceEmbedded,
+    color: palette.text,
+    fontSize: SLTypography.caption.fontSize,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
   filterChip: {
     borderRadius: SLRadius.radiusControl,
     borderWidth: 1,

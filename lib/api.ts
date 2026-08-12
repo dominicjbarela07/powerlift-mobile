@@ -382,9 +382,10 @@ export async function getCoachVideoArchive(params?: {
   has_feedback?: string;
   date_from?: string;
   date_to?: string;
+  pinned?: string;
   page?: string | number;
   per_page?: string | number;
-}): Promise<FetchJsonResult<any>> {
+}, signal?: AbortSignal): Promise<FetchJsonResult<any>> {
   const query = new URLSearchParams();
   Object.entries(params || {}).forEach(([key, value]) => {
     const trimmed = String(value || '').trim();
@@ -394,6 +395,107 @@ export async function getCoachVideoArchive(params?: {
   return fetchJson(`/video-review/mobile/coach/archive${suffix}`, {
     method: 'GET',
     auth: true,
+    signal,
+  });
+}
+
+export type CoachReviewType = 'all' | 'session' | 'video';
+
+export type CoachReviewAthlete = {
+  id: number;
+  name: string;
+};
+
+export type CoachReviewItem = {
+  key: string;
+  review_type: 'session' | 'video';
+  source_id: number;
+  athlete_id: number;
+  athlete_name: string;
+  title: string;
+  date?: string | null;
+  submitted_at?: string | null;
+  reviewed_at?: string | null;
+  status: string;
+  summary?: string | null;
+  actual?: string | null;
+  video_angle?: string | null;
+  needs_followup?: boolean;
+  thumbnail_url?: string | null;
+  reviewer_name?: string | null;
+};
+
+export type CoachReviewPagination = {
+  page: number;
+  per_page: number;
+  total: number;
+  pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+};
+
+function reviewHubQuery(params?: Record<string, string | number | undefined | null>) {
+  const query = new URLSearchParams();
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim()) {
+      query.set(key, String(value));
+    }
+  });
+  return query.toString() ? `?${query.toString()}` : '';
+}
+
+export async function getCoachReviewHub(
+  params?: { athlete_id?: string | number },
+  signal?: AbortSignal,
+) {
+  return fetchJson(`/coach/mobile/review-hub${reviewHubQuery(params)}`, {
+    method: 'GET',
+    auth: true,
+    signal,
+  });
+}
+
+export async function getCoachReviewQueue(params?: {
+  athlete_id?: string | number;
+  review_type?: CoachReviewType;
+  page?: string | number;
+  per_page?: string | number;
+}, signal?: AbortSignal) {
+  return fetchJson(`/coach/mobile/review-hub/queue${reviewHubQuery(params)}`, {
+    method: 'GET',
+    auth: true,
+    signal,
+  });
+}
+
+export async function getCoachReviewHistory(params?: {
+  athlete_id?: string | number;
+  review_type?: CoachReviewType;
+  page?: string | number;
+  per_page?: string | number;
+}, signal?: AbortSignal) {
+  return fetchJson(`/coach/mobile/review-hub/history${reviewHubQuery(params)}`, {
+    method: 'GET',
+    auth: true,
+    signal,
+  });
+}
+
+export async function getCoachSessionReview(workoutId: number) {
+  return fetchJson(`/coach/mobile/review-hub/sessions/${workoutId}`, {
+    method: 'GET',
+    auth: true,
+  });
+}
+
+export async function saveCoachSessionReview(
+  workoutId: number,
+  payload: Record<string, unknown>,
+) {
+  return fetchJson(`/coach/mobile/review-hub/sessions/${workoutId}`, {
+    method: 'POST',
+    auth: true,
+    body: payload as any,
   });
 }
 
