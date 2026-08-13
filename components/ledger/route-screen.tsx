@@ -2,31 +2,30 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 
 import AchievementsExperience from './AchievementsExperience';
+import { LedgerFiltersExperience, MovementCollectionExperience, MuscleGroupsExperience } from './exploration-experiences';
+
+import { ExperienceForScreen } from './experiences';
 import { LedgerFrame } from './primitives';
-import { ledgerHrefFor, LEDGER_DESTINATION_BY_KEY, type LedgerScreen } from './routing';
-import { LedgerArchiveV2Screen } from './v2/archive-screen';
-import { LedgerCatalogV2Screen } from './v2/catalog-screen';
-import { LedgerV2IndexScreen } from './v2/index-screen';
-import { LedgerJourneyV2Screen } from './v2/journey-screen';
-import { LedgerMusclesV2Screen } from './v2/muscle-screen';
-import { LedgerStrengthV2Screen } from './v2/strength-screen';
+import { ledgerHrefFor, LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
 
 export function LedgerRouteScreen({ screen }: { screen: LedgerScreen }) {
   if (screen === 'achievements') return <LedgerAchievementsRoom />;
+  if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><MovementCollectionExperience kind="accessories" /></LedgerSpecializedRoom>;
+  if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><MovementCollectionExperience kind="variants" /></LedgerSpecializedRoom>;
+  if (screen === 'muscle-groups') return <LedgerSpecializedRoom active="muscle-groups"><MuscleGroupsExperience /></LedgerSpecializedRoom>;
+  if (screen === 'filters') return <LedgerSpecializedRoom active="filters"><LedgerFiltersExperience /></LedgerSpecializedRoom>;
 
-  const destination = LEDGER_DESTINATION_BY_KEY[screen];
+  const destination = LEDGER_DESTINATION_BY_KEY[screen as LedgerRoom];
   if (!destination) return null;
   return (
     <LedgerFrame active={destination.key}>
-      {screen === 'home' ? <LedgerV2IndexScreen /> : null}
-      {screen === 'journey' ? <LedgerJourneyV2Screen /> : null}
-      {screen === 'strength' ? <LedgerStrengthV2Screen /> : null}
-      {screen === 'accessories' ? <LedgerCatalogV2Screen kind="accessory" /> : null}
-      {screen === 'variants' ? <LedgerCatalogV2Screen kind="variant" /> : null}
-      {screen === 'muscles' ? <LedgerMusclesV2Screen /> : null}
-      {screen === 'archive' ? <LedgerArchiveV2Screen /> : null}
+      <ExperienceForScreen screen={destination.key} />
     </LedgerFrame>
   );
+}
+
+function LedgerSpecializedRoom({ active, children }: React.PropsWithChildren<{ active: LedgerRoom }>) {
+  return <LedgerFrame active={active}>{children}</LedgerFrame>;
 }
 
 function LedgerAchievementsRoom() {

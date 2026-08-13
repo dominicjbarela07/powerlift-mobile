@@ -18,7 +18,6 @@ export type ArchiveItem = {
   status?: string | null;
   movement?: Record<string, unknown> | null;
   performance?: Record<string, unknown> | null;
-  equipment?: Record<string, unknown> | null;
   media?: Record<string, unknown> | null;
   program_context?: Record<string, unknown> | null;
   meet_context?: Record<string, unknown> | null;

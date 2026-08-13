@@ -11,8 +11,19 @@ import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { canonicalLiftKey, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
 import { ArchiveRequestError, archiveDetailHref } from '@/lib/ledger-archive';
+import {
+  fetchJourneyBootstrap,
+  fetchJourneyTimelinePage,
+  JourneyRequestError,
+  type JourneyBlock,
+  type JourneyEntry,
+  type JourneyOverview,
+} from '@/lib/ledger-journey';
+import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
+import { CORE_LIFT_MILESTONE_THRESHOLDS } from '@/lib/ledger-rewards';
+import { canRenderGymTotal, displayWeightFromCanonicalLb, plateClubLabel, readablePlateClubLabel } from '@/lib/milestones-layout';
 import { Segmented, ledgerStyles } from './primitives';
-import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference } from './model';
+import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
 import { ArchiveFoundationExperience } from './archive-foundation';
 import { useLedgerLiveData } from './use-ledger-live-data';
@@ -262,85 +273,229 @@ export function LegacyCanonicalCuratorExperience() {
 
 export function JourneyExperience() {
   const router = useRouter();
+  const [view, setView] = useState<'Overview' | 'Blocks' | 'Timeline'>('Overview');
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [expanded, setExpanded] = useState('');
-  const [filterActive, setFilterActive] = useState(false);
+  const [includeSessions, setIncludeSessions] = useState(false);
+  const [overview, setOverview] = useState<JourneyOverview | null>(null);
+  const [blocks, setBlocks] = useState<JourneyBlock[]>([]);
   const [allMoments, setAllMoments] = useState<JourneyEvent[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
   const [journeyLoading, setJourneyLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [journeyErrorKind, setJourneyErrorKind] = useState<LedgerRequestFailureKind | null>(null);
-  const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort(), [allMoments]);
+  const unit: LedgerUnit = overview?.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort().reverse(), [allMoments]);
   const activeYear = selectedYear && availableYears.includes(selectedYear)
     ? selectedYear
-    : availableYears.at(-1) ?? String(new Date().getFullYear());
-  const moments = useMemo(() => allMoments.filter((event) => event.year === activeYear && (!filterActive || event.importance !== 'supporting')), [activeYear, allMoments, filterActive]);
+    : availableYears[0] ?? String(new Date().getFullYear());
+  const moments = useMemo(() => allMoments.filter((event) => event.year === activeYear), [activeYear, allMoments]);
   const combinedError = journeyError;
   const combinedErrorKind = journeyErrorKind || 'error';
 
-  useEffect(() => {
+  const loadJourney = useCallback(() => {
     let active = true;
     setJourneyLoading(true);
-    fetchJourneyArchiveEvents()
-      .then((events) => {
+    setSelectedYear(null);
+    fetchJourneyBootstrap({ limit: 24, includeSessions })
+      .then((bootstrap) => {
         if (!active) return;
-        setAllMoments(events);
+        const nextOverview = bootstrap;
+        const nextBlocks = bootstrap.blocks.items;
+        const page = bootstrap.timeline;
+        setOverview(nextOverview);
+        setBlocks(nextBlocks);
+        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, nextOverview.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg')));
+        setNextCursor(page.next_cursor ?? null);
+        setHasMore(page.has_more);
         setJourneyError(null);
         setJourneyErrorKind(null);
       })
       .catch((error: unknown) => {
         if (!active) return;
+        setOverview(null);
+        setBlocks([]);
         setAllMoments([]);
-        console.warn('Journey source evidence request failed', error);
-        const kind = error instanceof ArchiveRequestError && (error.status === 401 || error.status === 403)
+        console.warn('Journey historical projection request failed', error);
+        const kind = error instanceof JourneyRequestError && (error.status === 401 || error.status === 403)
           ? 'unauthorized'
-          : error instanceof ArchiveRequestError && (error.status === 404 || error.status === 410)
+          : error instanceof JourneyRequestError && (error.status === 404 || error.status === 410)
             ? 'unavailable'
             : 'error';
         setJourneyErrorKind(kind);
-        setJourneyError(kind === 'unauthorized' ? 'Journey is not available to this account.' : kind === 'unavailable' ? 'Journey source evidence is unavailable.' : 'Journey source evidence could not be loaded.');
+        setJourneyError(kind === 'unauthorized' ? 'Journey is not available to this account.' : kind === 'unavailable' ? 'Journey history is unavailable.' : 'Journey history could not be loaded.');
       })
       .finally(() => {
         if (active) setJourneyLoading(false);
       });
     return () => { active = false; };
-  }, []);
+  }, [includeSessions]);
 
-  const reloadJourney = () => {
-    setJourneyLoading(true);
-    fetchJourneyArchiveEvents()
-      .then((events) => { setAllMoments(events); setJourneyError(null); setJourneyErrorKind(null); })
-      .catch(() => { setJourneyError('Journey source evidence could not be loaded.'); setJourneyErrorKind('error'); })
-      .finally(() => setJourneyLoading(false));
-  };
+  useEffect(() => loadJourney(), [loadJourney]);
+
+  const loadMore = useCallback(async () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const page = await fetchJourneyTimelinePage({ limit: 24, cursor: nextCursor, includeSessions });
+      setAllMoments((current) => [...current, ...page.items.map((entry) => journeyMomentFromEntry(entry, unit))]);
+      setNextCursor(page.next_cursor ?? null);
+      setHasMore(page.has_more);
+    } catch (error) {
+      console.warn('Journey continuation request failed', error);
+      setJourneyError('More Journey history could not be loaded.');
+      setJourneyErrorKind('error');
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [includeSessions, loadingMore, nextCursor, unit]);
 
   if (journeyLoading) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind="loading" message="Loading preserved career evidence." /></View>;
-  if (combinedError && allMoments.length === 0) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => void reloadJourney()} /></View>;
-  if (allMoments.length === 0) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind="empty" message="No recorded career moments yet." /></View>;
+  if (combinedError && !overview) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => loadJourney()} /></View>;
+  if (!overview?.earliest_record) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind="empty" message="No recorded career evidence yet." /></View>;
 
   return (
     <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience">
-      <View style={styles.journeyYearRail} accessibilityRole="tablist">
-        {(availableYears.length ? availableYears : [activeYear]).map((year) => {
-          const selected = year === activeYear;
-          return <Pressable key={year} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => { setSelectedYear(year); setExpanded(''); }} style={[styles.journeyYearNode, selected && styles.journeyYearNodeActive]}><Text style={[styles.journeyYearText, selected && styles.journeyYearTextActive]}>{year}</Text><View style={[styles.journeyYearDot, selected && styles.journeyYearDotActive]}>{selected ? <View style={styles.journeyYearDotCore} /> : null}</View></Pressable>;
-        })}
+      <View style={styles.journeyIntro}>
+        <Kicker>YOUR COMPLETE RECORD</Kicker>
+        <Text style={styles.journeyIntroTitle}>Journey</Text>
+        <Text style={styles.journeyIntroBody}>From {formatJourneyDate(overview.earliest_record.date)} to today. Reconstructed from your preserved Strength Ledger evidence.</Text>
       </View>
+      <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
-      <View style={styles.journeySectionHeader}>
-        <View style={styles.journeySectionLead}><Ionicons name="time-outline" size={17} color={SLColors.accentMuted} /><Text style={styles.journeySectionTitle}>Career timeline</Text></View>
-        <Pressable accessibilityLabel="Filter journey events" accessibilityState={{ selected: filterActive }} onPress={() => setFilterActive((value) => !value)} style={({ pressed }) => [styles.journeyFilter, pressed && styles.pressed]}><Ionicons name="filter-outline" size={17} color={SLColors.accentMuted} /><Text style={styles.journeyFilterText}>Filters</Text></Pressable>
-      </View>
+      {view === 'Overview' ? <JourneyOverviewView overview={overview} /> : null}
+      {view === 'Blocks' ? <JourneyBlocksView blocks={blocks} /> : null}
+      {view === 'Timeline' ? <>
+        <View style={styles.journeyYearRail} accessibilityRole="tablist">
+          {(availableYears.length ? availableYears : [activeYear]).map((year) => {
+            const selected = year === activeYear;
+            return <Pressable key={year} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => { setSelectedYear(year); setExpanded(''); }} style={[styles.journeyYearNode, selected && styles.journeyYearNodeActive]}><Text style={[styles.journeyYearText, selected && styles.journeyYearTextActive]}>{year}</Text><View style={[styles.journeyYearDot, selected && styles.journeyYearDotActive]}>{selected ? <View style={styles.journeyYearDotCore} /> : null}</View></Pressable>;
+          })}
+        </View>
 
-      <View style={styles.journeyTimeline}>
-        {combinedError ? <LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => void reloadJourney()} /> : null}
-        {!combinedError && moments.length === 0 ? <LedgerRoomState kind="empty" message="No career moments match this view." /> : null}
-        {moments.map((moment, index) => {
-          return <JourneyMoment key={moment.id} event={moment} expanded={expanded === moment.id} isLast={index === moments.length - 1} onPress={() => setExpanded(expanded === moment.id ? '' : moment.id)} onOpenEvidence={(reference) => router.push(reference.href as any)} />;
-        })}
-      </View>
+        <View style={styles.journeySectionHeader}>
+          <View style={styles.journeySectionLead}><Ionicons name="time-outline" size={17} color={SLColors.accentMuted} /><Text style={styles.journeySectionTitle}>Career timeline</Text></View>
+          <Pressable accessibilityLabel="Include every completed Training Session" accessibilityState={{ selected: includeSessions }} onPress={() => setIncludeSessions((value) => !value)} style={({ pressed }) => [styles.journeyFilter, pressed && styles.pressed]}><Ionicons name="filter-outline" size={17} color={SLColors.accentMuted} /><Text style={styles.journeyFilterText}>{includeSessions ? 'All sessions' : 'Major events'}</Text></Pressable>
+        </View>
+
+        <View style={styles.journeyTimeline}>
+          {combinedError ? <LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => loadJourney()} /> : null}
+          {!combinedError && moments.length === 0 ? <LedgerRoomState kind="empty" message="No career moments match this year." /> : null}
+          {moments.map((moment, index) => {
+            return <JourneyMoment key={moment.id} event={moment} expanded={expanded === moment.id} isLast={index === moments.length - 1} onPress={() => setExpanded(expanded === moment.id ? '' : moment.id)} onOpenEvidence={(reference) => router.push(reference.href as any)} />;
+          })}
+          {hasMore ? <Pressable accessibilityRole="button" disabled={loadingMore} onPress={() => void loadMore()} style={({ pressed }) => [styles.journeyLoadMore, pressed && styles.pressed]}><Text style={styles.journeyLoadMoreText}>{loadingMore ? 'Loading earlier history…' : 'Load earlier history'}</Text><Ionicons name="arrow-down" size={15} color="#B999F1" /></Pressable> : null}
+        </View>
+      </> : null}
 
     </View>
   );
+}
+
+function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
+  const summary = overview.lifetime;
+  return <View testID="ledger-journey-overview" style={styles.journeyOverview}>
+    <View style={styles.journeyMetricGrid}>
+      {[
+        [String(summary.sessions_completed), 'SESSIONS'],
+        [String(summary.total_sets), 'SETS'],
+        [String(summary.pr_count), 'HISTORICAL PRS'],
+        [String(summary.block_count), 'BLOCKS'],
+      ].map(([value, label]) => <View key={label} style={styles.journeyMetricCard}><Text style={styles.journeyMetricValue}>{value}</Text><Text style={styles.journeyMetricLabel}>{label}</Text></View>)}
+    </View>
+    <View style={styles.journeyRecordCard}>
+      <Kicker>EARLIEST TRUSTWORTHY RECORD</Kicker>
+      <Text style={styles.journeyRecordDate}>{formatJourneyDate(overview.earliest_record?.date)}</Text>
+      <Text style={styles.journeyRecordBody}>Your lifetime summary uses the complete preserved record—not a feature-launch date.</Text>
+    </View>
+    {overview.current_block ? <View style={styles.journeyCurrentBlock}><View><Kicker>CURRENT BLOCK</Kicker><Text style={styles.journeyCurrentBlockTitle}>{overview.current_block.name}</Text></View><Text style={styles.journeyCurrentBlockDate}>{formatJourneyRange(overview.current_block.start_date, overview.current_block.end_date)}</Text></View> : null}
+  </View>;
+}
+
+function JourneyBlocksView({ blocks }: { blocks: JourneyBlock[] }) {
+  if (!blocks.length) return <LedgerRoomState kind="empty" message="No recoverable program blocks are recorded yet." />;
+  return <View testID="ledger-journey-blocks" style={styles.journeyBlocks}>
+    {blocks.map((block) => <View key={block.id} style={[styles.journeyBlockCard, block.state === 'current' && styles.journeyBlockCardCurrent]}>
+      <View style={styles.journeyBlockHeader}><View style={styles.journeyBlockCopy}><Kicker tone={block.state === 'current' ? '#B993FF' : '#7F8999'}>{block.state === 'current' ? 'CURRENT BLOCK' : block.program?.name?.toUpperCase() || 'TRAINING BLOCK'}</Kicker><Text style={styles.journeyBlockTitle}>{block.name}</Text></View><Ionicons name="layers-outline" size={22} color={block.state === 'current' ? '#B993FF' : '#7F8999'} /></View>
+      <Text style={styles.journeyBlockRange}>{formatJourneyRange(block.start_date, block.end_date)}</Text>
+      <View style={styles.journeyBlockStats}><Text style={styles.journeyBlockStat}>{block.session_count} Sessions</Text><Text style={styles.journeyBlockStat}>{block.pr_count} PRs</Text><Text style={styles.journeyBlockStat}>{block.state === 'historical_range' ? 'Historical range' : block.state}</Text></View>
+    </View>)}
+  </View>;
+}
+
+function formatJourneyDate(value?: string | null): string {
+  if (!value) return 'Date unavailable';
+  return new Date(`${value}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatJourneyRange(start?: string | null, end?: string | null): string {
+  if (!start && !end) return 'Dates unavailable';
+  if (!end) return `Started ${formatJourneyDate(start)}`;
+  return `${formatJourneyDate(start)} – ${formatJourneyDate(end)}`;
+}
+
+function formatJourneyWeight(valueKg: number, unit: LedgerUnit): string {
+  const converted = kgToDisplay(valueKg, unit);
+  const rounded = Math.round(converted * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyEvent {
+  const date = new Date(`${entry.occurred_on}T12:00:00`);
+  const presentation: Record<string, { type: JourneyMomentType; icon: keyof typeof Ionicons.glyphMap; tone: string; label: string }> = {
+    FIRST_WORKOUT: { type: 'first-workout', icon: 'barbell-outline', tone: '#A86BFF', label: 'FIRST SESSION' },
+    SESSION_COMPLETED: { type: 'session-completed', icon: 'checkmark-circle-outline', tone: '#7F8999', label: 'SESSION' },
+    PROGRAM_STARTED: { type: 'program-started', icon: 'map-outline', tone: '#42D5C2', label: 'PROGRAM' },
+    PROGRAM_COMPLETED: { type: 'program-completed', icon: 'flag-outline', tone: '#42D5C2', label: 'PROGRAM COMPLETE' },
+    BLOCK_STARTED: { type: 'block-started', icon: 'layers-outline', tone: '#B993FF', label: 'BLOCK' },
+    COMPETITION: { type: 'competition', icon: 'trophy-outline', tone: '#E4A624', label: 'MEET' },
+    VOLUME_MILESTONE: { type: 'volume-milestone', icon: 'ribbon-outline', tone: '#E4A624', label: 'MILESTONE' },
+    IMPORTED_HISTORY: { type: 'imported-history', icon: 'time-outline', tone: '#7FA7D8', label: 'HISTORICAL' },
+    SIGNIFICANT_VIDEO: { type: 'significant-video', icon: 'videocam-outline', tone: '#55D9CC', label: 'COACH REVIEW' },
+    MOVEMENT_ADDED: { type: 'movement-added', icon: 'add-circle-outline', tone: '#55D9CC', label: 'ACCESSORY' },
+    VARIANT_INTRODUCED: { type: 'variant-introduced', icon: 'git-branch-outline', tone: '#FF8799', label: 'VARIANT' },
+    WEIGHT_PR: { type: 'major-pr', icon: 'trophy-outline', tone: '#A86BFF', label: 'WEIGHT PR' },
+    REP_PR: { type: 'major-pr', icon: 'trophy-outline', tone: '#C289FF', label: 'REP PR' },
+    E1RM_PR: { type: 'major-pr', icon: 'trending-up-outline', tone: '#FF8799', label: 'E1RM PR' },
+    ACHIEVEMENT_EARNED: { type: 'volume-milestone', icon: 'ribbon-outline', tone: '#E4A624', label: 'ACHIEVEMENT' },
+  };
+  const visual = presentation[entry.event_type] ?? presentation.IMPORTED_HISTORY;
+  const performance = entry.performance;
+  let detail = entry.detail;
+  if (entry.event_type === 'E1RM_PR' && performance?.e1rm_kg != null) {
+    detail = `${formatJourneyWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
+  } else if ((entry.event_type === 'WEIGHT_PR' || entry.event_type === 'REP_PR') && performance?.weight_kg != null) {
+    detail = `${formatJourneyWeight(performance.weight_kg, unit)} ${unit}${performance.reps ? ` × ${performance.reps}` : ''}`;
+  }
+  const sourceHref = entry.source.href;
+  const sourceKind: JourneyEvidenceReference['kind'] = entry.source.type === 'set_video_attachment'
+    ? 'video'
+    : entry.source.type === 'meet_plan'
+    ? 'meet'
+    : entry.source.type === 'historical_performance'
+      ? 'historical-performance'
+      : entry.source.set_log_id
+        ? 'set'
+        : 'workout';
+  return {
+    id: entry.id,
+    type: visual.type,
+    importance: entry.importance,
+    presentationPriority: entry.importance === 'landmark' ? 300 : entry.importance === 'major' ? 200 : 100,
+    year: String(date.getFullYear()),
+    date: date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase(),
+    occurredAt: entry.occurred_at || entry.occurred_on,
+    title: entry.title,
+    detail,
+    expandedDetail: `${entry.source_kind === 'persisted' ? 'Persisted canonical evidence' : 'Deterministically reconstructed historical evidence'} from ${formatJourneyDate(entry.occurred_on)}.`,
+    icon: visual.icon,
+    tone: visual.tone,
+    tags: [{ label: visual.label, tone: visual.tone }, { label: entry.source_kind.toUpperCase(), tone: '#8D98A9' }],
+    evidence: sourceHref ? [{ id: `source:${entry.source.type}:${entry.source.id}`, kind: sourceKind, label: 'Open source evidence', href: sourceHref }] : [],
+    href: sourceHref ?? undefined,
+  };
 }
 
 function JourneyMoment({ event, expanded, isLast, onPress, onOpenEvidence }: { event: JourneyEvent; expanded: boolean; isLast: boolean; onPress: () => void; onOpenEvidence: (reference: JourneyEvidenceReference) => void }) {
@@ -433,6 +588,9 @@ export function StrengthExperience() {
     const e1rmBest = currentBests
       .filter((item) => canonicalLiftKey(item.core_movement_key || item.movement_label) === key && item.metric === 'e1rm')
       .sort((left, right) => right.best_value - left.best_value)[0];
+    const weightBest = currentBests
+      .filter((item) => canonicalLiftKey(item.core_movement_key || item.movement_label) === key && item.metric === 'weight')
+      .sort((left, right) => right.best_value - left.best_value)[0];
     const currentKg = live?.current_e1rm_kg ?? e1rmBest?.best_value;
     const peakKg = live?.best_e1rm_kg ?? e1rmBest?.best_value;
     const livePoints = (live?.points ?? [])
@@ -471,6 +629,7 @@ export function StrengthExperience() {
       priorReps: typeof repEvent?.prior_value === 'number' ? repEvent.prior_value : null,
       currentReps: typeof repEvent?.current_value === 'number' ? repEvent.current_value : null,
       topHistory,
+      canonicalWeightBestKg: weightBest?.best_value ?? null,
       sourceSetLogId: e1rmBest?.event?.source_set_log_id ?? repEvent?.source_set_log_id ?? weightEvents[0]?.source_set_log_id ?? null,
     };
   }), [accomplishments, baseProfile, currentBests, progression, unit]);
@@ -478,6 +637,16 @@ export function StrengthExperience() {
   const focusedProfile = profile[focusLiftIndex];
   const exactEvidenceHref = focusedProfile.sourceSetLogId ? archiveDetailHref('set', focusedProfile.sourceSetLogId) : null;
   const liftKey = canonicalLiftKey(focusLift.key);
+  const canonicalWeightLb = focusedProfile.canonicalWeightBestKg == null
+    ? null
+    : Math.round((focusedProfile.canonicalWeightBestKg * 2.2046226218) / 5) * 5;
+  const milestoneCurrent = canonicalWeightLb == null ? null : displayWeightFromCanonicalLb(canonicalWeightLb, unit);
+  const milestoneThresholds = liftKey ? CORE_LIFT_MILESTONE_THRESHOLDS[liftKey][unit] : [];
+  const currentMilestone = milestoneCurrent == null ? null : milestoneThresholds.filter((threshold) => threshold <= milestoneCurrent).at(-1) ?? null;
+  const nextStrengthMilestone = milestoneCurrent == null ? milestoneThresholds[0] ?? null : milestoneThresholds.find((threshold) => threshold > milestoneCurrent) ?? null;
+  const strengthPlateRender = milestoneCurrent != null && canRenderGymTotal(milestoneCurrent, unit)
+    ? resolvePlateStackRender({ weight: milestoneCurrent, unit })
+    : null;
   const topWeightKg = progression?.metric_trends?.top_weight?.summary?.current;
   const avgRpe = progression?.metric_trends?.avg_rpe?.summary?.current;
   const liftVolumeKg = liftKey ? progression?.metric_trends?.volume?.by_lift_kg?.[liftKey] : null;
@@ -520,6 +689,21 @@ export function StrengthExperience() {
         {trendDateLabels.length ? <View style={styles.strengthCurrentDates}>{trendDateLabels.map((label, index) => <Text key={`${label}-${index}`} style={[styles.strengthCurrentDate, index === trendDateLabels.length - 1 && { color: focusedProfile.color }]}>{label}</Text>)}</View> : null}
         <View style={styles.strengthCurrentRead}><View style={[styles.strengthStatusDot, { backgroundColor: focusedProfile.color }]} /><Text style={styles.strengthCurrentReadText}>{focusLift.points.length >= 2 ? `${focusLift.points.length} source-backed estimates define this range.` : 'More qualifying sets are needed before a trustworthy trend is available.'}</Text></View>
       </View>
+
+      <Pressable
+        testID="ledger-strength-milestone-link"
+        accessibilityRole="link"
+        onPress={() => router.push(`/(tabs)/ledger/achievements?section=milestones&unit=${unit}` as any)}
+        style={({ pressed }) => [styles.strengthMilestoneLink, { borderColor: `${focusedProfile.color}66` }, pressed && styles.pressed]}
+      >
+        <View style={styles.strengthMilestoneCopy}>
+          <Kicker tone={focusedProfile.color}>WEIGHT MILESTONES</Kicker>
+          <Text style={styles.strengthMilestoneTitle}>{currentMilestone == null ? 'No earned plate club yet.' : readablePlateClubLabel(plateClubLabel(currentMilestone, unit))}</Text>
+          <Text style={styles.strengthMilestoneMeta}>{milestoneCurrent == null ? 'A canonical Weight PR establishes milestone progress.' : nextStrengthMilestone == null ? `${milestoneCurrent} ${unit.toUpperCase()} · highest approved threshold reached` : `${milestoneCurrent} ${unit.toUpperCase()} current PR · ${nextStrengthMilestone - milestoneCurrent} ${unit.toUpperCase()} to next`}</Text>
+          <View style={styles.strengthMilestoneAction}><Text style={[styles.strengthMilestoneActionText, { color: focusedProfile.color }]}>Open milestone progression</Text><Ionicons name="arrow-forward" size={14} color={focusedProfile.color} /></View>
+        </View>
+        <View style={styles.strengthMilestoneArtifact}>{strengthPlateRender?.imageSource ? <Image source={strengthPlateRender.imageSource} resizeMode="contain" style={styles.strengthMilestonePlate} /> : <Ionicons name="barbell-outline" size={37} color="#596371" />}</View>
+      </Pressable>
 
       <View style={styles.strengthSectionLead}><Kicker>PROGRESSION</Kicker><Text style={styles.strengthSectionTitle}>The same weight feels different now.</Text></View>
       <View style={styles.strengthEffortStory}><Text style={styles.strengthEffortConclusion}>RPE-at-fixed-task progression is shown only when two identity-matched source sets carry comparable load, reps, and effort. This range does not yet expose that complete comparison.</Text></View>
@@ -584,7 +768,8 @@ export function ExperienceForScreen({ screen }: { screen: LedgerScreen }) {
     case 'achievements': return null;
     case 'accessories': return null;
     case 'variants': return null;
-    case 'muscles': return null;
+    case 'muscle-groups': return null;
+    case 'filters': return null;
     case 'archive': return <ArchiveExperience />;
     default: return assertUnreachable(screen);
   }
@@ -599,6 +784,29 @@ const styles = StyleSheet.create({
   ledgerRoomStateTitle: { color: SLColors.textMuted, fontSize: 15, lineHeight: 22, textAlign: 'center' },
   page: { gap: SLSpacing.md },
   journeyPage: { gap: 0 },
+  journeyIntro: { gap: 6, paddingTop: 2, paddingBottom: 18 },
+  journeyIntroTitle: { color: '#F7F5FA', fontSize: 34, lineHeight: 39, fontWeight: '700', letterSpacing: -0.8 },
+  journeyIntroBody: { maxWidth: 430, color: '#929AA7', fontSize: 13, lineHeight: 19 },
+  journeyOverview: { gap: 14, paddingTop: 18 },
+  journeyMetricGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  journeyMetricCard: { width: '48%', minHeight: 94, justifyContent: 'center', gap: 4, paddingHorizontal: 16, borderRadius: 16, borderWidth: 1, borderColor: '#30283D', backgroundColor: '#0B0D13' },
+  journeyMetricValue: { color: '#F6F2FA', fontSize: 31, lineHeight: 35, fontWeight: '500', letterSpacing: -0.5 },
+  journeyMetricLabel: { color: '#A98ACF', fontSize: 8.5, lineHeight: 11, fontWeight: '700', letterSpacing: 0.8 },
+  journeyRecordCard: { minHeight: 164, justifyContent: 'center', gap: 9, padding: 20, borderRadius: 20, borderWidth: 1, borderColor: '#49355F', backgroundColor: '#0D0B12' },
+  journeyRecordDate: { color: '#F5F0FA', fontSize: 28, lineHeight: 33, fontWeight: '700', letterSpacing: -0.45 },
+  journeyRecordBody: { maxWidth: 410, color: '#9E96A8', fontSize: 12.5, lineHeight: 18 },
+  journeyCurrentBlock: { minHeight: 96, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: 17, borderRadius: 16, borderWidth: 1, borderColor: '#2C4B46', backgroundColor: '#0A1011' },
+  journeyCurrentBlockTitle: { marginTop: 5, color: '#F0F5F4', fontSize: 18, lineHeight: 23, fontWeight: '600' },
+  journeyCurrentBlockDate: { maxWidth: '42%', color: '#8FA49F', fontSize: 10, lineHeight: 14, textAlign: 'right' },
+  journeyBlocks: { gap: 10, paddingTop: 18 },
+  journeyBlockCard: { gap: 10, padding: 17, borderRadius: 17, borderWidth: 1, borderColor: '#2C333E', backgroundColor: '#0A0D12' },
+  journeyBlockCardCurrent: { borderColor: '#62458A', backgroundColor: '#0E0B14' },
+  journeyBlockHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  journeyBlockCopy: { flex: 1, minWidth: 0, gap: 4 },
+  journeyBlockTitle: { color: '#F3F1F5', fontSize: 19, lineHeight: 24, fontWeight: '600' },
+  journeyBlockRange: { color: '#939BA8', fontSize: 11, lineHeight: 15 },
+  journeyBlockStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, paddingTop: 9, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#303640' },
+  journeyBlockStat: { color: '#AFA6BC', fontSize: 9.5, lineHeight: 13, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10, backgroundColor: '#12151B' },
   pressed: { opacity: 0.72, transform: [{ scale: 0.985 }] },
   mediaBody: { color: '#D7DDE5', lineHeight: 21 },
   darkScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(5, 7, 11, 0.57)' },
@@ -682,8 +890,8 @@ const styles = StyleSheet.create({
   archiveRoom: { minHeight: 360, alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 18 },
   archiveTitle: { color: SLColors.textStrong },
   archiveBody: { maxWidth: 430, color: SLColors.textSecondary },
-  journeyYearRail: { height: 54, flexDirection: 'row', alignItems: 'stretch', marginHorizontal: -10, paddingHorizontal: 18, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#333B48' },
-  journeyYearNode: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 5, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  journeyYearRail: { minHeight: 54, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'stretch', marginTop: 14, marginHorizontal: -10, paddingHorizontal: 18, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#333B48' },
+  journeyYearNode: { flex: 1, minWidth: 64, alignItems: 'center', justifyContent: 'center', gap: 5, borderBottomWidth: 2, borderBottomColor: 'transparent' },
   journeyYearNodeActive: { borderBottomColor: '#A86BFF' },
   journeyYearText: { color: '#768193', fontSize: 13.5, lineHeight: 17, fontWeight: '500' },
   journeyYearTextActive: { color: '#C9A8FF' },
@@ -717,6 +925,8 @@ const styles = StyleSheet.create({
   journeyEvidenceLink: { minHeight: 30, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 8, borderRadius: 7, borderWidth: StyleSheet.hairlineWidth, borderColor: '#303846', backgroundColor: '#0F141C' },
   journeyEvidenceText: { flex: 1, color: '#C5CBD5', fontSize: 9, lineHeight: 12, fontWeight: '500' },
   journeyChevron: { flexShrink: 0, marginLeft: 1 },
+  journeyLoadMore: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, borderRadius: 14, borderWidth: 1, borderColor: '#4B3A5F', backgroundColor: '#0C0A11' },
+  journeyLoadMoreText: { color: '#B999F1', fontSize: 11, lineHeight: 15, fontWeight: '600' },
   journeyMedia: { width: 76, height: 54, flexShrink: 0, overflow: 'hidden', borderRadius: 5, backgroundColor: '#141922' },
   journeyMediaImage: { width: '100%', height: '100%' },
   journeyPlay: { position: 'absolute', left: 25, top: 14, width: 27, height: 27, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(3,5,8,0.62)', borderWidth: 1, borderColor: '#FFFFFF' },
@@ -753,6 +963,14 @@ const styles = StyleSheet.create({
   strengthLiveError: { minHeight: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 12, borderWidth: 1, borderColor: '#7B3D49', backgroundColor: '#190E12' },
   strengthLiveErrorText: { color: '#F19AA7', fontSize: 10.5, lineHeight: 14, textAlign: 'center' },
   strengthCurrent: { overflow: 'hidden', gap: 2, paddingHorizontal: 19, paddingTop: 21, paddingBottom: 17, borderRadius: 23, borderWidth: 1, borderColor: '#3A304D', backgroundColor: '#0A0C12' },
+  strengthMilestoneLink: { minHeight: 142, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 18, borderWidth: 1, backgroundColor: '#0A0C11' },
+  strengthMilestoneCopy: { flex: 1, minWidth: 0, gap: 5, paddingVertical: 17, paddingLeft: 17 },
+  strengthMilestoneTitle: { color: '#EFF0F3', fontSize: 17, lineHeight: 21, fontWeight: '600' },
+  strengthMilestoneMeta: { color: '#9099A6', fontSize: 10, lineHeight: 14 },
+  strengthMilestoneAction: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5 },
+  strengthMilestoneActionText: { fontSize: 10, lineHeight: 13, fontWeight: '600' },
+  strengthMilestoneArtifact: { width: 148, height: 134, alignItems: 'center', justifyContent: 'center', marginRight: -7 },
+  strengthMilestonePlate: { width: 154, height: 124 },
   strengthCurrentHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
   strengthCurrentValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 4 },
   strengthCurrentValue: { color: '#F9F7FC', fontSize: 69, lineHeight: 74, fontWeight: '400', letterSpacing: -3 },

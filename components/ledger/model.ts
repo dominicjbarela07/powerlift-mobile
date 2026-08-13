@@ -22,12 +22,20 @@ export type JourneyTag = Readonly<{ label: string; tone?: string }>;
 
 export type JourneyMomentType =
   | 'first-workout'
+  | 'session-completed'
   | 'training-anniversary'
   | 'major-pr'
   | 'biggest-pr-jump'
+  | 'volume-milestone'
   | 'competition'
   | 'first-meet'
-  | 'imported-history';
+  | 'imported-history'
+  | 'significant-video'
+  | 'program-started'
+  | 'program-completed'
+  | 'block-started'
+  | 'movement-added'
+  | 'variant-introduced';
 
 export type JourneyMomentImportance = 'landmark' | 'major' | 'supporting';
 

@@ -178,7 +178,7 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 }
 
 export function ArchiveFoundationExperience() {
-  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; block_id?: string; block_name?: string }>();
+  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string }>();
   const router = useRouter();
   const requestedCollection = first(params.collection) as ArchiveCollection | undefined;
   const initialScope: ArchiveScope = COLLECTIONS.includes(requestedCollection as ArchiveCollection) ? requestedCollection! : 'overview';
@@ -191,12 +191,7 @@ export function ArchiveFoundationExperience() {
   const [toolsOpen, setToolsOpen] = useState(Boolean(initialQuery || initialScope !== 'overview' || first(params.date_from) || first(params.date_to)));
   const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS, dateFrom: first(params.date_from) || '', dateTo: first(params.date_to) || '' });
   const [movementFilter, setMovementFilter] = useState<{ id: number; name: string } | null>(null);
-  const initialBlockId = Number(first(params.block_id)) || undefined;
-  const [naturalAlbumFilter, setNaturalAlbumFilter] = useState<NaturalAlbum | null>(() => initialBlockId ? {
-    key: `block:${initialBlockId}`,
-    label: first(params.block_name) || `Block ${initialBlockId}`,
-    blockId: initialBlockId,
-  } : null);
+  const [naturalAlbumFilter, setNaturalAlbumFilter] = useState<NaturalAlbum | null>(null);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<number, string>>({});
   const [landing, setLanding] = useState<ArchiveLanding | null>(null);
   const [previews, setPreviews] = useState<PreviewPages>({ training: null, media: null, competition: null });

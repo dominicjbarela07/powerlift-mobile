@@ -26,7 +26,7 @@ export const SHIPPING_TAB_PRESENTATION = {
   ledger: { label: 'Ledger', icon: 'book-outline' },
   'coach-roster': { label: 'Roster', icon: 'people-outline' },
   'coach-calendar': { label: 'Calendar', icon: 'calendar-outline' },
-  'coach-videos': { label: 'Videos', icon: 'videocam-outline' },
+  'coach-videos': { label: 'Reviews', icon: 'clipboard-outline' },
   'messages/index': { label: 'Messages', icon: 'chatbubbles-outline' },
 } as const;
 

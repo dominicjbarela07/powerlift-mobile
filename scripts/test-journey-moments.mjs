@@ -139,6 +139,35 @@ const repOnly = buildJourneyMoments(bundle({
 assert.equal(repOnly[0].type, 'major-pr');
 assert.match(repOnly[0].detail, /205 kg 5 REP MAX/);
 
+// Major volume threshold crossings are their own canonical Journey moments.
+// Their stored timestamp and source references are preserved; no chronology is
+// derived from current accumulated volume.
+const volumeMoment = buildJourneyMoments(bundle({
+  archiveHistoryComplete: false,
+  accomplishments: [accomplishment(41, 41, '2026-04-12', {
+    event_type: 'CORE_LIFETIME_VOLUME_MILESTONE',
+    current_value: 250000,
+    prior_value: 249700,
+    delta: 300,
+    unit: 'lb',
+    evidence: { threshold_lb: 250000, lift_family: 'squat', milestone_scope: 'lift' },
+  })],
+}))[0];
+assert.equal(volumeMoment.type, 'volume-milestone');
+assert.equal(volumeMoment.occurredAt, '2026-04-12T18:00:00Z');
+assert.match(volumeMoment.title, /Squat lifetime volume medallion/);
+assert.deepEqual(new Set(volumeMoment.evidence.map((item) => item.kind)), new Set(['workout', 'set', 'achievement']));
+
+// Current totals or malformed/unknown thresholds cannot manufacture a dated
+// Journey reward.
+assert.deepEqual(buildJourneyMoments(bundle({
+  archiveHistoryComplete: false,
+  accomplishments: [accomplishment(42, 42, '2026-04-13', {
+    event_type: 'TOTAL_LIFETIME_VOLUME_MILESTONE',
+    evidence: { threshold_lb: 123456, milestone_scope: 'total' },
+  })],
+})), []);
+
 // Completed meets are moments, with first-meet semantics and nested canonical
 // result-summary totals.
 const meets = buildJourneyMoments(bundle({

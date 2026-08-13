@@ -155,6 +155,20 @@ function normalizeFamily(value?: string | null): string {
     .replace(/^_+|_+$/g, '');
 }
 
+function regionFromGovernedKey(value?: string | null): AccessoryMuscleRegionKey | null {
+  const normalized = normalizeFamily(value).replace(/^accessory_/, '');
+  if ((ACCESSORY_MUSCLE_REGION_KEYS as readonly string[]).includes(normalized)) {
+    return normalized as AccessoryMuscleRegionKey;
+  }
+  return GOVERNED_FAMILY_REGIONS[normalized] || null;
+}
+
+export function canonicalAccessoryMuscleRegionKey(
+  value?: string | null,
+): AccessoryMuscleRegionKey {
+  return regionFromGovernedKey(value) || 'full_body';
+}
+
 function presentation(key: AccessoryMuscleRegionKey): AccessoryMuscleRegionPresentation {
   return { key, label: REGION_LABELS[key] };
 }
@@ -172,8 +186,8 @@ function regionFromLegacyText(value?: string | null): AccessoryMuscleRegionKey |
  */
 export function accessoryMuscleRegion(item: AccessoryMovement): AccessoryMuscleRegionPresentation {
   const identity = item.movement_identity;
-  const governedFamily = GOVERNED_FAMILY_REGIONS[normalizeFamily(identity?.primary_muscle_group)]
-    || GOVERNED_FAMILY_REGIONS[normalizeFamily(identity?.family)];
+  const governedFamily = regionFromGovernedKey(identity?.primary_muscle_group)
+    || regionFromGovernedKey(identity?.family);
   if (governedFamily) return presentation(governedFamily);
 
   const identityDisplayRegion = regionFromLegacyText(identity?.family_display_name);

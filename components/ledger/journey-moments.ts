@@ -1,5 +1,6 @@
 import type { ArchiveItem, ArchiveItemType } from '@/lib/ledger-archive';
 import type { AccomplishmentEvent } from '@/lib/ledger-data';
+import { canonicalMajorVolumeMedallions } from '../../lib/ledger-rewards';
 import type {
   JourneyEvidenceReference,
   JourneyMoment,
@@ -8,6 +9,7 @@ import type {
 } from './model';
 
 const ACHIEVEMENTS_HREF = '/(tabs)/ledger/achievements';
+const MEDALLIONS_HREF = '/(tabs)/ledger/achievements?section=medallions';
 const STRENGTH_HREF = '/(tabs)/ledger/strength';
 const CAREER_PR_TYPES = new Set([
   'CORE_WEIGHT_PR',
@@ -210,6 +212,7 @@ function presentation(type: JourneyMomentType): { icon: string; tone: string; ta
     case 'first-workout': return { icon: 'barbell-outline', tone: '#A86BFF', tag: 'FIRST TRAINING SESSION' };
     case 'training-anniversary': return { icon: 'calendar-outline', tone: '#42D5C2', tag: 'ANNIVERSARY' };
     case 'biggest-pr-jump': return { icon: 'trending-up-outline', tone: '#E4A624', tag: 'CAREER PR' };
+    case 'volume-milestone': return { icon: 'ribbon-outline', tone: '#B66CFF', tag: 'VOLUME MEDALLION' };
     default: return { icon: 'trophy-outline', tone: '#A86BFF', tag: 'CAREER PR' };
   }
 }
@@ -407,6 +410,37 @@ export function buildJourneyMoments({
         evidence,
       }));
     }
+  }
+
+  for (const medallion of canonicalMajorVolumeMedallions(accomplishments)) {
+    const familyLabel = medallion.family === 'total'
+      ? 'Total'
+      : medallion.family[0].toUpperCase() + medallion.family.slice(1);
+    const evidence: JourneyEvidenceReference[] = [
+      ...(medallion.event.workout_id ? [{
+        id: `archive:session:${medallion.event.workout_id}`,
+        kind: 'workout' as const,
+        label: 'Training Session',
+        href: archiveDetailHref('session', medallion.event.workout_id),
+      }] : []),
+      ...(setEvidenceReference(medallion.event) ? [setEvidenceReference(medallion.event) as JourneyEvidenceReference] : []),
+      {
+        id: `achievement:${medallion.event.id}`,
+        kind: 'achievement',
+        label: 'Volume medallion',
+        href: MEDALLIONS_HREF,
+      },
+    ];
+    moments.push(makeMoment({
+      id: `journey:volume-medallion:${medallion.event.id}`,
+      type: 'volume-milestone',
+      importance: 'landmark',
+      occurredAt: medallion.occurredAt,
+      title: `${familyLabel} lifetime volume medallion`,
+      detail: `${medallion.thresholdLb.toLocaleString('en-US')} lb accumulated volume`,
+      expandedDetail: 'A canonical lifetime-volume threshold crossing preserved by the accomplishment platform.',
+      evidence,
+    }));
   }
 
   const firstWorkoutDate = archiveHistoryComplete && sessions[0]

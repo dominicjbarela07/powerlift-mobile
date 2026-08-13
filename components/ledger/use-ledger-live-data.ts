@@ -12,7 +12,12 @@ import {
   type LedgerRequestFailureKind,
 } from '@/lib/ledger-data';
 
-export function useLedgerLiveData(range: LedgerRange = '90d') {
+type LedgerLiveDataOptions = Readonly<{
+  allowPartial?: boolean;
+}>;
+
+export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiveDataOptions = {}) {
+  const allowPartial = Boolean(options.allowPartial);
   const [progression, setProgression] = useState<LedgerProgression | null>(null);
   const [currentBests, setCurrentBests] = useState<CurrentBest[]>([]);
   const [accomplishments, setAccomplishments] = useState<AccomplishmentEvent[]>([]);
@@ -25,14 +30,31 @@ export function useLedgerLiveData(range: LedgerRange = '90d') {
     setError(null);
     setErrorKind(null);
     try {
-      const [nextProgression, nextCurrentBests, nextAccomplishments] = await Promise.all([
+      const requests = [
         fetchLedgerProgression(range),
         fetchLedgerCurrentBests(),
         fetchLedgerAccomplishments(32),
-      ]);
-      setProgression(nextProgression);
-      setCurrentBests(nextCurrentBests);
-      setAccomplishments(nextAccomplishments);
+      ] as const;
+      if (allowPartial) {
+        const [progressionResult, currentBestsResult, accomplishmentsResult] = await Promise.allSettled(requests);
+        const failures = [progressionResult, currentBestsResult, accomplishmentsResult]
+          .filter((result): result is PromiseRejectedResult => result.status === 'rejected');
+        if (failures.length === requests.length) {
+          const authorizationFailure = failures.find((result) => result.reason instanceof LedgerRequestError && result.reason.kind === 'unauthorized');
+          throw authorizationFailure?.reason ?? failures[0]?.reason;
+        }
+        if (progressionResult.status === 'fulfilled') setProgression(progressionResult.value);
+        if (currentBestsResult.status === 'fulfilled') setCurrentBests(currentBestsResult.value);
+        if (accomplishmentsResult.status === 'fulfilled') setAccomplishments(accomplishmentsResult.value);
+        if (failures.length) {
+          console.warn('Ledger Index loaded with partial canonical data', failures.map((result) => result.reason instanceof LedgerRequestError ? { kind: result.reason.kind, status: result.reason.status } : { kind: 'error' }));
+        }
+      } else {
+        const [nextProgression, nextCurrentBests, nextAccomplishments] = await Promise.all(requests);
+        setProgression(nextProgression);
+        setCurrentBests(nextCurrentBests);
+        setAccomplishments(nextAccomplishments);
+      }
     } catch (caught) {
       console.warn('Ledger canonical data request failed', caught);
       if (caught instanceof LedgerRequestError) {
@@ -49,7 +71,7 @@ export function useLedgerLiveData(range: LedgerRange = '90d') {
     } finally {
       setLoading(false);
     }
-  }, [range]);
+  }, [allowPartial, range]);
 
   useEffect(() => {
     void reload();
