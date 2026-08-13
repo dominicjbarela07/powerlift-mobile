@@ -48,6 +48,7 @@
     "test:other-milestones": "node scripts/test-other-milestones.mjs",
     "test:streak-achievements": "node scripts/test-streak-achievements.mjs",
     "test:ledger-explorations": "node --import tsx scripts/test-ledger-explorations.mjs",
+    "test:ledger-v2-storyboard": "node --import tsx scripts/test-ledger-v2-storyboard.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
     "test:ui-mock-library": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
