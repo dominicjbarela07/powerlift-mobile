@@ -380,7 +380,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    paddingHorizontal: SLSpacing.xl,
     paddingTop: SLSpacing.md,
     paddingBottom: 44,
     gap: SLSpacing.lg,
@@ -390,6 +389,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: SLSpacing.xl,
   },
   topIconButton: {
     width: 46,

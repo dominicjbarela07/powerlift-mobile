@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   backRow: { minHeight: 52, justifyContent: 'center', alignItems: 'flex-start' },
   backButton: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.object, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
-  content: { paddingHorizontal: SLLayout.screenGutter, paddingBottom: SLLayout.tabBarClearance + 34 },
+  content: { paddingBottom: SLLayout.tabBarClearance + 34 },
   pressed: { opacity: 0.74, transform: [{ scale: 0.985 }] },
   mediaHero: { overflow: 'hidden', justifyContent: 'flex-end', borderRadius: SLRadius.radiusCard, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset },
   mediaHeroImage: { borderRadius: SLRadius.radiusCard },

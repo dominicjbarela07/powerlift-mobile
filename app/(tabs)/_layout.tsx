@@ -452,12 +452,6 @@ export default function TabsLayout() {
   const isAccessoryCatalogReviewRoute = pathname.includes('/accessory-catalog-review');
   const canUseAccessoryCatalogReview = canAccessAccessoryCatalogReview(user);
   const isIdealStatePreview = __DEV__ && devPreviewSession?.mode === 'ideal';
-  const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
-  const usesRouteOwnedHorizontalLayout =
-    normalizedPathname.endsWith('/athlete-calendar') ||
-    normalizedPathname.includes('/dev-mocks/calendar-') ||
-    normalizedPathname.includes('/workout/session-workspace/');
-
   useEffect(() => {
     if (!user) {
       router.replace('/login');
@@ -683,7 +677,7 @@ export default function TabsLayout() {
             </ThemedView>
           ),
           headerShown: !isIdealStatePreview,
-          sceneStyle: usesRouteOwnedHorizontalLayout ? styles.fullBleedTabScene : styles.tabScene,
+          sceneStyle: styles.tabScene,
           tabBarHideOnKeyboard: true,
         }}
         tabBar={(props) => (
@@ -1101,13 +1095,7 @@ const styles = StyleSheet.create({
   },
   tabScene: {
     backgroundColor: 'transparent',
-    // The shell owns horizontal screen gutters. Routes must not add page-level horizontal padding.
-    paddingHorizontal: SLLayout.screenGutter,
-    paddingTop: 0,
-  },
-  fullBleedTabScene: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
+    // Mobile routes always receive a full-width canvas. Child surfaces own any intentional inset.
     paddingTop: 0,
   },
   tabBarDock: {

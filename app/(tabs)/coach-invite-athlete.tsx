@@ -227,11 +227,12 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: SLSpacing.lg,
-    padding: SLSpacing.lg,
+    paddingTop: SLSpacing.lg,
     paddingBottom: 36,
   },
   header: {
     gap: SLSpacing.md,
+    paddingHorizontal: SLSpacing.lg,
   },
   backButton: {
     alignItems: 'center',

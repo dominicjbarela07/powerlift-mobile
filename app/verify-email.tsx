@@ -218,6 +218,7 @@ export default function VerifyEmailScreen() {
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
           >
+            <View style={styles.verificationPane}>
             <Image
               source={require('@/assets/images/16:9.png')}
               style={styles.logo}
@@ -286,6 +287,7 @@ export default function VerifyEmailScreen() {
 
               <SLButton fullWidth label="Log out" onPress={logout} variant="ghost" />
             </View>
+            </View>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -304,8 +306,11 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
     paddingVertical: 32,
+  },
+  verificationPane: {
+    width: '100%',
+    paddingHorizontal: 24,
   },
   logo: {
     alignSelf: 'center',

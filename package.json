@@ -10,6 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
+    "test:review-hub-canonical": "node scripts/test-review-hub-canonical-parity.mjs",
     "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js",
     "test:adaptive-session-workspace-canonical": "node scripts/test-adaptive-session-workspace-canonical.mjs",
     "test:logger-feedback": "node scripts/test-logger-feedback.mjs",
@@ -59,6 +60,8 @@
     "test:calendar-pagination": "node --import tsx scripts/test-calendar-pagination.mjs",
     "test:calendar-integration": "node --import tsx scripts/test-calendar-today-and-today-lifecycle.mjs",
     "test:calendar-event-modal": "node --import tsx scripts/test-calendar-event-modal.mjs",
+    "test:coach-calendar-v2": "node --import tsx scripts/test-coach-calendar-v2.mjs",
+    "test:athlete-calendar-v2": "node --import tsx scripts/test-athlete-calendar-v2.mjs",
     "test:profile-photo": "node --import tsx scripts/test-profile-photo.mjs",
     "test:home-training-hero": "node scripts/test-home-training-hero.mjs",
     "test:settings-trustworthiness": "node scripts/test-settings-trustworthiness.mjs",
@@ -79,8 +82,9 @@
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",
     "audit:ui-mock-library-routes": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
-    "audit:ui-constitution": "node scripts/audit-ui-constitution.js && node scripts/audit-transparent-screen-roots.js",
+    "audit:ui-constitution": "node scripts/audit-ui-constitution.js && node scripts/audit-transparent-screen-roots.js && node scripts/audit-mobile-horizontal-layout.mjs",
     "audit:transparent-screen-roots": "node scripts/audit-transparent-screen-roots.js",
+    "audit:mobile-horizontal-layout": "node scripts/audit-mobile-horizontal-layout.mjs",
     "audit:workspace-system": "node scripts/audit-workspace-system.mjs"
   },
   "dependencies": {

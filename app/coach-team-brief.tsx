@@ -348,9 +348,7 @@ function BriefSection({
 }
 
 const styles = StyleSheet.create({
-  screenContent: {
-    paddingHorizontal: SLLayout.screenGutter,
-  },
+  screenContent: {},
   header: {
     alignItems: 'center',
     borderBottomColor: SLColors.borderHairline,
@@ -358,6 +356,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SLSpacing.sm,
     minHeight: 62,
+    paddingHorizontal: SLLayout.screenGutter,
   },
   headerTitleWrap: { flex: 1, minWidth: 0 },
   coachModeLabel: { color: SLColors.accentMuted, letterSpacing: 1.2 },

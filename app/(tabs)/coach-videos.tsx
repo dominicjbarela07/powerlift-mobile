@@ -266,8 +266,11 @@ export default function CoachReviewHubScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: SLSpacing.lg, padding: SLSpacing.lg, paddingBottom: 120 },
-  headerRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  screen: { gap: SLSpacing.lg, paddingBottom: 120 },
+  headerRow: {
+    alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
+    paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.sm,
+  },
   heading: { color: SLColors.textStrong, fontSize: 34, fontWeight: '800' },
   subtitle: { color: SLColors.textMuted, fontSize: 16, marginTop: 3 },
   headerAction: {

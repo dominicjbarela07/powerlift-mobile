@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
     backgroundColor: 'transparent',
   },
   link: {

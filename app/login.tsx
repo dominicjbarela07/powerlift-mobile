@@ -337,6 +337,7 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
+            <View style={styles.authPane}>
             <View style={styles.brandBlock}>
               <Image
                 source={require('../assets/images/16:9.png')}
@@ -660,6 +661,7 @@ export default function LoginScreen() {
                 </Pressable>
               </View>
             </View>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -681,12 +683,15 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 16,
     paddingTop: 28,
     paddingBottom: 28,
     width: '100%',
+  },
+  authPane: {
+    width: '100%',
     maxWidth: 520,
     alignSelf: 'center',
+    paddingHorizontal: 16,
   },
   brandBlock: {
     alignItems: 'center',

@@ -2115,7 +2115,7 @@ function formatDate(value?: string | null) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: palette.canvas },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: GUTTER, paddingTop: 6, paddingBottom: 160 },
+  content: { paddingTop: 6, paddingBottom: 160 },
   contentEditing: { paddingBottom: 148 },
   contentAccessibility: { paddingBottom: 260 },
   identityCard: { position: 'relative', minHeight: 154, overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, backgroundColor: palette.object, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 10 },

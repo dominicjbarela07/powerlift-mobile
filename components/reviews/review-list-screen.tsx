@@ -169,8 +169,11 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: SLSpacing.md, padding: SLSpacing.lg, paddingBottom: 120 },
-  header: { alignItems: 'flex-start', flexDirection: 'row', gap: SLSpacing.sm },
+  screen: { gap: SLSpacing.md, paddingBottom: 120 },
+  header: {
+    alignItems: 'flex-start', flexDirection: 'row', gap: SLSpacing.sm,
+    paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.sm,
+  },
   backButton: {
     alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStandard,
     borderRadius: SLRadius.md, borderWidth: 1, height: 42, justifyContent: 'center', width: 42,

@@ -407,7 +407,7 @@ export default function AccessoryCatalogReviewScreen() {
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: SLColors.canvas, flex: 1 },
-  content: { padding: 20, paddingBottom: 64, gap: 16 },
+  content: { paddingTop: 20, paddingBottom: 64, gap: 16 },
   pageHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pageHeaderCopy: { flex: 1 },
   eyebrow: { color: SLColors.accentMuted, fontSize: 13, letterSpacing: 1.5 },

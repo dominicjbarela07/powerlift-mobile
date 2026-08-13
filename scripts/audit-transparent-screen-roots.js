@@ -30,7 +30,6 @@ const transparentExpressions = new Set(["'transparent'", '"transparent"']);
 const backgroundOwner = 'components/ui/sl-workspace.tsx::workspace';
 const gutterOwners = new Set([
   'app/(tabs)/_layout.tsx::headerShell',
-  'app/(tabs)/_layout.tsx::tabScene',
 ]);
 const prohibitedHorizontalInsetProperties = new Set([
   'marginHorizontal',
