@@ -30,7 +30,7 @@ let Notifications: any = null;
 if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
 }
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Tabs, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
@@ -7589,13 +7589,17 @@ export default function WorkoutViewerScreen() {
 
   if (isFinishedSession && workout.completed_recap) {
     return (
-      <CompletedSessionRecap
-        recap={workout.completed_recap}
-        preferredUnits={athlete.preferred_units}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        onClose={isCoachAthletePreview ? handleReturnToCoachEditor : handleBackToTrainingHub}
-      />
+      <>
+        <Tabs.Screen options={{ headerShown: false }} />
+        <CompletedSessionRecap
+          recap={workout.completed_recap}
+          impactSummary={workout.impact_summary}
+          preferredUnits={athlete.preferred_units}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          onClose={isCoachAthletePreview ? handleReturnToCoachEditor : handleBackToTrainingHub}
+        />
+      </>
     );
   }
 

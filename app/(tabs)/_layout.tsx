@@ -222,8 +222,11 @@ function FilteredTabBar({
   const usesFlowingNavigationDock = __DEV__ && normalizedPathname === '/dev-mocks/milestones';
   const hidesNavigationForSessionEditor = normalizedPathname.startsWith('/workout/session-workspace/')
     && sessionEditorOverlayOpen;
+  const hidesNavigationForCompletedRecap = normalizedPathname.startsWith('/workout/')
+    && sessionEditorOverlayOpen;
 
   if (hidesNavigationForSessionEditor) return null;
+  if (hidesNavigationForCompletedRecap) return null;
 
   return (
     <View

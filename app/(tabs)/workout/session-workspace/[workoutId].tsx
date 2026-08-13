@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -39,6 +39,7 @@ import {
 } from '@/components/coach-mobile/SessionEditingWorkspace';
 import {
   CompletedSessionRecap,
+  type CompletedRecapImpactSummary,
   type CompletedSessionRecapPayload,
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
@@ -110,6 +111,7 @@ type WorkoutPayload = {
     core_items?: WorkoutItem[];
     accessory_groups?: AccessoryGroup[];
     completed_recap?: CompletedSessionRecapPayload | null;
+    impact_summary?: CompletedRecapImpactSummary | null;
   } | null;
   athlete?: {
     id?: number | null;
@@ -969,13 +971,17 @@ export default function MobileSessionWorkspaceScreen() {
 
   if (loadedCompletedSession && workout.completed_recap) {
     return (
-      <CompletedSessionRecap
-        recap={workout.completed_recap}
-        preferredUnits={payload?.athlete?.preferred_units}
-        refreshing={refreshing}
-        onRefresh={() => { void loadSession(true); }}
-        onClose={closeToProgrammingHome}
-      />
+      <>
+        <Tabs.Screen options={{ headerShown: false }} />
+        <CompletedSessionRecap
+          recap={workout.completed_recap}
+          impactSummary={workout.impact_summary}
+          preferredUnits={payload?.athlete?.preferred_units}
+          refreshing={refreshing}
+          onRefresh={() => { void loadSession(true); }}
+          onClose={closeToProgrammingHome}
+        />
+      </>
     );
   }
 
