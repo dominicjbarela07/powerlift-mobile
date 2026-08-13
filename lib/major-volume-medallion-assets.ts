@@ -1,18 +1,16 @@
 import type { ImageSourcePropType } from 'react-native';
+import {
+  isMajorVolumeMedallionThresholdLb,
+  type MajorVolumeMedallionFamily,
+  type MajorVolumeMedallionThresholdLb,
+} from '@/lib/major-volume-milestones';
 
-export const MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB = [
-  100_000,
-  250_000,
-  500_000,
-  1_000_000,
-  2_000_000,
-  5_000_000,
-  10_000_000,
-] as const;
-
-export type MajorVolumeMedallionThresholdLb =
-  (typeof MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB)[number];
-export type MajorVolumeMedallionFamily = 'total' | 'squat' | 'bench' | 'deadlift';
+export {
+  MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB,
+  isMajorVolumeMedallionThresholdLb,
+  type MajorVolumeMedallionFamily,
+  type MajorVolumeMedallionThresholdLb,
+} from '@/lib/major-volume-milestones';
 
 type MajorVolumeMedallionRegistry = Record<
   MajorVolumeMedallionFamily,
@@ -64,12 +62,6 @@ export const MAJOR_VOLUME_MEDALLION_ASSETS: MajorVolumeMedallionRegistry = {
     10_000_000: require('@/assets/images/major-volume-medallions/deadlift/deadlift-10m.png'),
   },
 };
-
-export function isMajorVolumeMedallionThresholdLb(
-  thresholdLb: number,
-): thresholdLb is MajorVolumeMedallionThresholdLb {
-  return MAJOR_VOLUME_MEDALLION_THRESHOLDS_LB.some((threshold) => threshold === thresholdLb);
-}
 
 export function majorVolumeMedallionAsset(
   family: MajorVolumeMedallionFamily,

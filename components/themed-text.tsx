@@ -1,6 +1,8 @@
 import React from 'react';
-import { Text, type TextProps, TextStyle } from 'react-native';
+import { type TextProps, TextStyle } from 'react-native';
 import { typography } from '@/theme';
+import { Text } from '@/components/ui/sl-text';
+import type { SLTypographyRole } from '@/constants/theme';
 
 export type Variant =
   | 'h1'
@@ -16,9 +18,23 @@ export type Variant =
 
 export type ThemedTextProps = TextProps & {
   variant?: Variant;
+  typographyRole?: SLTypographyRole;
   style?: TextStyle | TextStyle[];
   lightColor?: string;
   darkColor?: string;
+};
+
+const variantRoles: Record<Variant, SLTypographyRole> = {
+  h1: 'pageTitle',
+  h2: 'sectionTitle',
+  h3: 'cardTitle',
+  body: 'body',
+  bodyMuted: 'supportingBody',
+  label: 'shortTechnicalLabel',
+  small: 'caption',
+  kpi: 'numeric',
+  badge: 'badge',
+  error: 'errorText',
 };
 
 function stripColor(style?: TextStyle | TextStyle[]): TextStyle | TextStyle[] | undefined {
@@ -37,19 +53,21 @@ function stripColor(style?: TextStyle | TextStyle[]): TextStyle | TextStyle[] | 
 }
 
 export function ThemedText({
-  variant = 'body',
+  variant,
+  typographyRole,
   style,
   lightColor,
   darkColor,
   ...rest
 }: ThemedTextProps) {
-  const base = typography[variant] ?? typography.body;
+  const base = typography[variant ?? 'body'] ?? typography.body;
 
   const safeStyle = stripColor(style);
 
   return (
     <Text
       {...rest}
+      typographyRole={typographyRole ?? (variant ? variantRoles[variant] : undefined)}
       style={[
         base,
         safeStyle,
