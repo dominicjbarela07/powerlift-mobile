@@ -33,7 +33,7 @@ export function LedgerAchievementsV2Screen() {
   const { back, push } = useLedgerV2Navigation();
   const events = useMemo(() => snapshot ? snapshot.accomplishments.filter((event) => matchesFilter(event, filter)) : [], [filter, snapshot]);
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening Achievements" body="Gathering canonical accomplishment events." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Achievements are unavailable" body={error || 'No canonical accomplishments were returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Achievements are unavailable" body={error || 'No canonical accomplishments were returned.'} onRetry={() => void reload()} />;
   const unit = unitFor(snapshot);
   const milestoneCount = snapshot.accomplishments.filter((item) => item.event_type.includes('BLOCK')).length;
 
@@ -53,7 +53,7 @@ export function LedgerAchievementDetailV2Screen({ eventId }: { eventId: string }
   const { back, push } = useLedgerV2Navigation();
   const event = snapshot?.accomplishments.find((item) => item.id === Number(eventId));
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening achievement" body="Gathering the canonical event and source SetLog." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Achievement is unavailable" body={error || 'No canonical accomplishment evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Achievement is unavailable" body={error || 'No canonical accomplishment evidence was returned.'} onRetry={() => void reload()} />;
   if (!event) return <LedgerV2PageState title="Achievement not found" body="This event is outside the loaded canonical accomplishment window." />;
   const unit = unitFor(snapshot);
   const tone = accomplishmentTone(event);

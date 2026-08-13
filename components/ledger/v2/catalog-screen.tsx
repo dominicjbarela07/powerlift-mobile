@@ -58,7 +58,7 @@ export function LedgerCatalogV2Screen({ kind }: { kind: CatalogKind }) {
   );
 
   if (loading && !snapshot) return <LedgerV2PageState loading title={`Opening ${presentation.title}`} body="Gathering performed movement evidence." />;
-  if (error || !snapshot) return <LedgerV2PageState title={`${presentation.title} are unavailable`} body={error || 'No canonical movement evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title={`${presentation.title} are unavailable`} body={error || 'No canonical movement evidence was returned.'} onRetry={() => void reload()} />;
   const unit = unitFor(snapshot);
   const route = kind === 'accessory' ? 'accessories' : 'variants';
 
@@ -88,7 +88,7 @@ export function LedgerCatalogDetailV2Screen({ kind, movementId }: { kind: Catalo
     : null, [kind, movementId, snapshot]);
 
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening movement record" body="Gathering exact performed sets." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Movement evidence is unavailable" body={error || 'No canonical movement evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Movement evidence is unavailable" body={error || 'No canonical movement evidence was returned.'} onRetry={() => void reload()} />;
   if (!record) return <LedgerV2PageState title="Movement record not found" body="This identity has no qualifying evidence in the selected period." />;
   const unit = unitFor(snapshot);
   const weights = [...record.sets]

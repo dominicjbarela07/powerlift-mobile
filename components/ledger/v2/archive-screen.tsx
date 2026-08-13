@@ -78,7 +78,7 @@ function FixtureArchive() {
     });
   }, [snapshot, tab]);
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening Archive" body="Gathering preserved source records." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Archive is unavailable" body={error || 'No preserved evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Archive is unavailable" body={error || 'No preserved evidence was returned.'} onRetry={() => void reload()} />;
   return <View testID="ledger-v2-archive" style={styles.page}>
     <LedgerV2Header back onBack={back} title="Archive" subtitle="Every Session, set, movement, and preserved source record." />
     <View style={styles.search}><Ionicons name="search-outline" size={18} color={LEDGER_V2_COLORS.subtle} /><Text style={styles.searchText}>Search your complete record</Text><Ionicons name="options-outline" size={18} color={LEDGER_V2_COLORS.violet} /></View>

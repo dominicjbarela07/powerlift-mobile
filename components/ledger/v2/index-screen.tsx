@@ -50,7 +50,7 @@ export function LedgerV2IndexScreen() {
   }, [snapshot]);
 
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening The Ledger" body="Gathering your canonical training record." />;
-  if (error || !snapshot || !model) return <LedgerV2PageState title="The Ledger is unavailable" body={error || 'No canonical evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot || !model) return <LedgerV2PageState title="Couldn't load The Ledger" body={error || 'No canonical evidence was returned.'} onRetry={() => void reload()} />;
 
   const latest = model.latest;
   const latestTone = latest ? accomplishmentTone(latest) : LEDGER_V2_COLORS.violet;
@@ -72,6 +72,11 @@ export function LedgerV2IndexScreen() {
 
   return <View testID="ledger-v2-index" style={styles.page}>
     <LedgerV2Header title="The Ledger" subtitle="Your training, written in results." />
+
+    {snapshot.issues?.length ? <Pressable onPress={() => void reload()} style={styles.partialState}>
+      <Ionicons name="cloud-offline-outline" size={17} color={LEDGER_V2_COLORS.gold} />
+      <View style={styles.partialCopy}><Text style={styles.partialTitle}>Some deeper evidence is catching up.</Text><Text style={styles.partialBody}>Your available record is shown. Tap to try the missing sections again.</Text></View>
+    </Pressable> : null}
 
     <View style={styles.careerSnapshot}>
       <Text style={styles.careerEyebrow}>CAREER SNAPSHOT</Text>
@@ -113,6 +118,10 @@ export function LedgerV2IndexScreen() {
 
 const styles = StyleSheet.create({
   page: { gap: 0, paddingBottom: 24 },
+  partialState: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: 1, borderColor: '#3B3020', backgroundColor: '#110E08', paddingHorizontal: 14, paddingVertical: 10 },
+  partialCopy: { flex: 1, minWidth: 0 },
+  partialTitle: { color: LEDGER_V2_COLORS.text, fontSize: 11, lineHeight: 15, fontWeight: '700' },
+  partialBody: { marginTop: 2, color: LEDGER_V2_COLORS.muted, fontSize: 9, lineHeight: 13 },
   careerSnapshot: { minHeight: 228, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#30273A', backgroundColor: '#08060B', paddingHorizontal: 18, paddingVertical: 18 },
   careerEyebrow: { color: LEDGER_V2_COLORS.muted, fontSize: 9, fontWeight: '700', letterSpacing: 1.2 },
   careerNumber: { color: LEDGER_V2_COLORS.text, fontSize: 64, lineHeight: 69, fontWeight: '700', letterSpacing: -2.5, fontVariant: ['tabular-nums'] },

@@ -48,7 +48,7 @@ export function LedgerStrengthV2Screen() {
   const { back, push } = useLedgerV2Navigation();
 
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening Strength" body="Gathering qualifying performance evidence." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Strength is unavailable" body={error || 'No qualifying performance evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Strength is unavailable" body={error || 'No qualifying performance evidence was returned.'} onRetry={() => void reload()} />;
   const unit = unitFor(snapshot);
   const estimatedTotal = snapshot.progression.big_three_arc?.estimated_total_kg;
   const events = snapshot.accomplishments.filter((item) => coreLiftKey(item.core_movement_key || item.movement_label) !== null);
@@ -96,7 +96,7 @@ export function LedgerLiftDetailV2Screen({ movementKey }: { movementKey: string 
   const presentation = LIFTS.find((item) => item.key === key)!;
 
   if (loading && !snapshot) return <LedgerV2PageState loading title={`Opening ${presentation.label}`} body="Gathering exact source evidence." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Lift evidence is unavailable" body={error || 'No canonical lift evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Lift evidence is unavailable" body={error || 'No canonical lift evidence was returned.'} onRetry={() => void reload()} />;
   const unit = unitFor(snapshot);
   const profile = snapshot.progression.big_three_arc?.lifts?.find((item) => canonicalLiftKey(item.key || item.label) === key);
   const weightBest = bestForLift(snapshot.currentBests, key, 'weight');

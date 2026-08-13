@@ -20,6 +20,21 @@ export type LedgerV2Snapshot = Readonly<{
   landing: ArchiveLanding;
   sessions: ArchiveItem[];
   evidence: ArchiveItem[];
+  issues?: LedgerV2DataIssue[];
+}>;
+
+export type LedgerV2DataSource =
+  | 'progression'
+  | 'current_bests'
+  | 'accomplishments'
+  | 'archive_landing'
+  | 'archive_training'
+  | 'archive_search';
+
+export type LedgerV2DataIssue = Readonly<{
+  source: LedgerV2DataSource;
+  status: number | null;
+  kind: 'unauthorized' | 'unavailable' | 'error';
 }>;
 
 export type LedgerMovementEvidence = Readonly<{

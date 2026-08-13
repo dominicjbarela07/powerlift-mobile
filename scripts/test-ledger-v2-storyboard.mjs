@@ -12,6 +12,7 @@ const read = (relative) => readFileSync(path.join(root, relative), 'utf8');
 const routeScreen = read('components/ledger/route-screen.tsx');
 const index = read('components/ledger/v2/index-screen.tsx');
 const data = read('components/ledger/v2/data.ts');
+const assemble = read('components/ledger/v2/assemble.ts');
 const ui = read('components/ledger/v2/ui.tsx');
 const archive = read('components/ledger/archive-foundation.tsx');
 const navigation = read('components/ledger/v2/navigation.ts');
@@ -59,11 +60,13 @@ assert.match(ui, /function LedgerBookIcon/, 'The Ledger must use bound-record ic
 assert.doesNotMatch(newRuntime, /["'`]([^"'`]*\bWorkout\b[^"'`]*)["'`]/, 'V2 user-facing literals may not use Workout');
 assert.doesNotMatch(newRuntime, /crushing it|taking off|dominating|hard work is paying off|undertrained|need more work/i, 'V2 may not ship bogus or prescriptive insights');
 
-assert.match(data, /fetchLedgerProgression\(range\)/, 'index/strength evidence comes from canonical progression');
-assert.match(data, /fetchLedgerCurrentBests\(\)/, 'current records come from canonical current bests');
+assert.match(data, /progression: fetchLedgerProgression/, 'index/strength evidence comes from canonical progression');
+assert.match(data, /currentBests: fetchLedgerCurrentBests/, 'current records come from canonical current bests');
 assert.match(data, /fetchLedgerAccomplishmentPage\(50\)/, 'accomplishments are canonical and bounded');
 assert.match(data, /fetchArchiveCollection\('training', \{ date_from: dateFrom, limit: 24 \}\)/, 'Session history is date scoped and bounded');
 assert.match(data, /searchArchive\(\{ date_from: dateFrom, limit: 50 \}\)/, 'performed evidence uses bounded server search');
+assert.match(assemble, /Promise\.allSettled/, 'a secondary evidence failure must not collapse the whole Ledger');
+assert.doesNotMatch(index, /if \(error \|\| !snapshot/, 'a refresh error must not hide an available Ledger snapshot');
 assert.match(archive, /cursor: nextCursor/, 'production Archive uses server cursor pagination');
 assert.match(archive, /block_id: naturalAlbumFilter\?\.blockId/, 'block chapter links apply an actual server filter');
 assert.match(navigation, /router\.canGoBack\(\)/, 'deep navigation preserves logical back stack');

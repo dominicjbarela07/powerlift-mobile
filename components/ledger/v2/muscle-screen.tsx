@@ -32,7 +32,7 @@ export function LedgerMusclesV2Screen() {
   const { back, push } = useLedgerV2Navigation();
   const records = useMemo(() => snapshot ? muscleRecords(snapshot) : [], [snapshot]);
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening Muscle Groups" body="Classifying accessory evidence through governed movement identity." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Muscle groups are unavailable" body={error || 'No canonical accessory evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Muscle groups are unavailable" body={error || 'No canonical accessory evidence was returned.'} onRetry={() => void reload()} />;
   const unit = unitFor(snapshot);
   const maxVolume = Math.max(1, ...records.map((item) => item.volumeKg));
   return <View testID="ledger-v2-muscles" style={styles.page}>
@@ -52,7 +52,7 @@ export function LedgerMuscleDetailV2Screen({ muscleKey }: { muscleKey: string })
   const records = useMemo(() => snapshot ? muscleRecords(snapshot) : [], [snapshot]);
   const record = records.find((item) => item.key === muscleKey);
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening muscle record" body="Gathering performed accessory evidence." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Muscle evidence is unavailable" body={error || 'No accessory evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Muscle evidence is unavailable" body={error || 'No accessory evidence was returned.'} onRetry={() => void reload()} />;
   if (!record) return <LedgerV2PageState title="Muscle record not found" body="This region has no qualifying evidence in the selected period." />;
   const unit = unitFor(snapshot);
   const sets = record.movements.flatMap((movement) => movement.sets).sort((left, right) => String(right.occurred_at || right.occurred_on).localeCompare(String(left.occurred_at || left.occurred_on)));

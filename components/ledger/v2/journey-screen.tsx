@@ -50,7 +50,7 @@ export function LedgerJourneyV2Screen() {
   }, [snapshot]);
 
   if (loading && !snapshot) return <LedgerV2PageState loading title="Opening Journey" body="Ordering your training chapters." />;
-  if (error || !snapshot) return <LedgerV2PageState title="Journey is unavailable" body={error || 'No chronological evidence was returned.'} onRetry={() => void reload()} />;
+  if (!snapshot) return <LedgerV2PageState title="Journey is unavailable" body={error || 'No chronological evidence was returned.'} onRetry={() => void reload()} />;
   const current = blocks[0];
   const completedSessions = snapshot.progression.consistency?.sessions_completed ?? snapshot.sessions.length;
   const totalSets = snapshot.sessions.reduce((sum, item) => sum + (recordNumber(item.performance, 'set_count') || 0), 0);
