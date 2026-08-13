@@ -47,6 +47,10 @@ import SetVideoPlayerModal, {
   type SetVideoSummary,
 } from '@/components/SetVideoPlayerModal';
 import {
+  CompletedSessionRecap,
+  type CompletedSessionRecapPayload,
+} from '@/components/coach-mobile/CompletedSessionRecap';
+import {
   type ActiveMovementDetailRow,
   type ActiveMovementVisualContext,
   CoreMovementLedgerRow,
@@ -479,6 +483,7 @@ type WorkoutPayload = {
     accessory_groups: AccessoryGroup[];
     impact_summary?: SessionImpactSummary | null;
     accomplishment_history?: { items: LoggerRecognitionEvent[]; next_cursor: string | null; has_more: boolean } | null;
+    completed_recap?: CompletedSessionRecapPayload | null;
   };
   readiness_survey?: {
     id: number;
@@ -7581,6 +7586,18 @@ export default function WorkoutViewerScreen() {
     setAccessoryWheel(repeatedWheel);
     queueAccessoryWheelLog(repeatedWheel);
   };
+
+  if (isFinishedSession && workout.completed_recap) {
+    return (
+      <CompletedSessionRecap
+        recap={workout.completed_recap}
+        preferredUnits={athlete.preferred_units}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        onClose={isCoachAthletePreview ? handleReturnToCoachEditor : handleBackToTrainingHub}
+      />
+    );
+  }
 
   return (
     <KeyboardAvoidingView

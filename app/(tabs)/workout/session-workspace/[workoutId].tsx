@@ -37,6 +37,10 @@ import {
   type SessionMovementItem,
   type SessionWorkspaceSavePlan,
 } from '@/components/coach-mobile/SessionEditingWorkspace';
+import {
+  CompletedSessionRecap,
+  type CompletedSessionRecapPayload,
+} from '@/components/coach-mobile/CompletedSessionRecap';
 import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
 
 type PlannedSet = {
@@ -105,6 +109,7 @@ type WorkoutPayload = {
     workspace_capabilities?: WorkspaceCapabilities | null;
     core_items?: WorkoutItem[];
     accessory_groups?: AccessoryGroup[];
+    completed_recap?: CompletedSessionRecapPayload | null;
   } | null;
   athlete?: {
     id?: number | null;
@@ -306,7 +311,9 @@ export default function MobileSessionWorkspaceScreen() {
   const addCoreCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
   const addAccessoryCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
   const reorderCompletionRef = useRef<((order: ReorderEditorState) => void) | null>(null);
-  const redirectingToLogger = authReady && user?.role !== 'coach';
+  const loadedStatus = String(payload?.workout?.raw_status || payload?.workout?.status || '').trim().toLowerCase();
+  const loadedCompletedSession = ['completed', 'logged', 'done'].includes(loadedStatus);
+  const redirectingToLogger = authReady && user?.role !== 'coach' && !!payload && !loadedCompletedSession;
 
   const loadSession = useCallback(async (silent?: boolean) => {
     if (!workoutId) {
@@ -957,6 +964,18 @@ export default function MobileSessionWorkspaceScreen() {
           {error ? <Text style={styles.stateBody}>{error}</Text> : null}
         </View>
       </View>
+    );
+  }
+
+  if (loadedCompletedSession && workout.completed_recap) {
+    return (
+      <CompletedSessionRecap
+        recap={workout.completed_recap}
+        preferredUnits={payload?.athlete?.preferred_units}
+        refreshing={refreshing}
+        onRefresh={() => { void loadSession(true); }}
+        onClose={closeToProgrammingHome}
+      />
     );
   }
 
