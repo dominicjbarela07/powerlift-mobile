@@ -55,14 +55,22 @@ assert.match(releaseConfig, /"runtimeVersion"\s*:\s*\{\s*"policy"\s*:\s*"appVers
 
 const explicitExclusions = [
   'app/(tabs)/dev-mocks',
-  'dev-mocks',
   'components/barbell/LoadedSleeve3D.tsx',
   'lib/accessory-picker-artwork.ts',
 ];
 
+const allowedReleaseSupport = new Set([
+  'dev-mocks/animation-library/preview-card.tsx',
+  'dev-mocks/animation-library/registry.ts',
+  'dev-mocks/animation-library/tuning-model.ts',
+]);
+
 if (root !== sourceRoot) {
   for (const excluded of explicitExclusions) {
     assert.ok(!existsSync(resolve(root, excluded)), `explicit DEV-only scope leaked into the release projection: ${excluded}`);
+  }
+  for (const path of allowedReleaseSupport) {
+    assert.ok(existsSync(resolve(root, path)), `shared animation support is missing from the release projection: ${path}`);
   }
 } else {
   const shippingComposition = [routeScreen, index, routing, source('app/_layout.tsx'), source('app/(tabs)/_layout.tsx')].join('\n');
