@@ -16,11 +16,13 @@ const assemble = read('components/ledger/v2/assemble.ts');
 const ui = read('components/ledger/v2/ui.tsx');
 const archive = read('components/ledger/archive-foundation.tsx');
 const navigation = read('components/ledger/v2/navigation.ts');
+const restoredAchievements = read('components/ledger/AchievementsExperience.tsx');
 const newRuntime = [
   index,
   read('components/ledger/v2/journey-screen.tsx'),
   read('components/ledger/v2/strength-screen.tsx'),
   read('components/ledger/v2/achievements-screen.tsx'),
+  restoredAchievements,
   read('components/ledger/v2/catalog-screen.tsx'),
   read('components/ledger/v2/muscle-screen.tsx'),
   read('components/ledger/v2/archive-screen.tsx'),
@@ -47,7 +49,8 @@ for (const route of [
 assert.match(routeScreen, /LedgerV2IndexScreen/);
 assert.match(routeScreen, /LedgerJourneyV2Screen/);
 assert.match(routeScreen, /LedgerStrengthV2Screen/);
-assert.match(routeScreen, /LedgerAchievementsV2Screen/);
+assert.match(routeScreen, /AchievementsExperience/);
+assert.match(routeScreen, /LedgerAchievementsRoom/);
 assert.match(routeScreen, /LedgerCatalogV2Screen kind="accessory"/);
 assert.match(routeScreen, /LedgerCatalogV2Screen kind="variant"/);
 assert.match(routeScreen, /LedgerMusclesV2Screen/);
