@@ -582,6 +582,9 @@ export function ExperienceForScreen({ screen }: { screen: LedgerScreen }) {
     case 'journey': return <JourneyExperience />;
     case 'strength': return <StrengthExperience />;
     case 'achievements': return null;
+    case 'accessories': return null;
+    case 'variants': return null;
+    case 'muscles': return null;
     case 'archive': return <ArchiveExperience />;
     default: return assertUnreachable(screen);
   }

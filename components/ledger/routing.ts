@@ -3,6 +3,9 @@ export type LedgerRoom =
   | 'journey'
   | 'strength'
   | 'achievements'
+  | 'accessories'
+  | 'variants'
+  | 'muscles'
   | 'archive';
 
 export type LedgerScreen = LedgerRoom;
@@ -20,10 +23,13 @@ export type LedgerDestination = Readonly<{
 }>;
 
 export const LEDGER_DESTINATIONS: readonly LedgerDestination[] = [
-  { key: 'home', entryId: 'ledger-home', entryTitle: 'The Ledger — Home', title: 'The Ledger', label: 'Home', icon: 'sparkles-outline', description: 'A curated entry point into the authenticated athlete’s evidence and history.', route: '/(tabs)/ledger/home', validationMarker: 'What deserves your attention today' },
+  { key: 'home', entryId: 'ledger-home', entryTitle: 'The Ledger — Index', title: 'The Ledger', label: 'Index', icon: 'book-outline', description: 'The authenticated athlete’s complete evidence index.', route: '/(tabs)/ledger/home', validationMarker: 'Ledger index' },
   { key: 'journey', entryId: 'ledger-journey', entryTitle: 'Journey', title: 'Journey', label: 'Journey', icon: 'map-outline', description: 'Chronological career chapters and turning points.', route: '/(tabs)/ledger/journey', validationMarker: 'Career timeline' },
   { key: 'strength', entryId: 'ledger-strength', entryTitle: 'Strength', title: 'Strength', label: 'Strength', icon: 'barbell-outline', description: 'Current strength, progression, evidence, and historical context.', route: '/(tabs)/ledger/strength', validationMarker: 'Current strength' },
   { key: 'achievements', entryId: 'ledger-achievements', entryTitle: 'Achievements Overview', title: 'Achievements', label: 'Achievements', icon: 'trophy-outline', description: 'A separate overview of earned accomplishments.', route: '/(tabs)/ledger/achievements', validationMarker: 'Latest accomplishment' },
+  { key: 'accessories', entryId: 'ledger-accessories', entryTitle: 'Accessories', title: 'Accessories', label: 'Accessories', icon: 'body-outline', description: 'Performed accessory records and volume evidence.', route: '/(tabs)/ledger/accessories', validationMarker: 'Exercise record' },
+  { key: 'variants', entryId: 'ledger-variants', entryTitle: 'Variants', title: 'Variants', label: 'Variants', icon: 'git-branch-outline', description: 'Independent histories for governed core-lift variants.', route: '/(tabs)/ledger/variants', validationMarker: 'Variant record' },
+  { key: 'muscles', entryId: 'ledger-muscles', entryTitle: 'Muscle Groups', title: 'Muscle Groups', label: 'Muscle Groups', icon: 'accessibility-outline', description: 'Observed accessory volume through governed muscle taxonomy.', route: '/(tabs)/ledger/muscles', validationMarker: 'Volume balance' },
   { key: 'archive', entryId: 'ledger-archive', entryTitle: 'Archive', title: 'Archive', label: 'Archive', icon: 'archive-outline', description: 'The durable source repository for preserved athlete records.', route: '/(tabs)/ledger/archive', validationMarker: 'Preserved source material' },
 ] as const;
 

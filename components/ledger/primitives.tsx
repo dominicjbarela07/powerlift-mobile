@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -17,20 +17,16 @@ import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon } from '@/components/ui/sl-trophy';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
-import { ledgerHrefFor, type LedgerRoom } from './routing';
+import { useSLReducedMotion } from '@/lib/motion';
+import { type LedgerRoom } from './routing';
 
 export function LedgerFrame({ active, children }: React.PropsWithChildren<{ active: LedgerRoom }>) {
-  const router = useRouter();
-  const isIndex = active === 'home';
-
+  const pathname = usePathname();
+  const scrollRef = useRef<ScrollView>(null);
+  useEffect(() => scrollRef.current?.scrollTo({ y: 0, animated: false }), [pathname]);
   return (
     <SLScreen edges="none" padded={false} style={styles.screen}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        {!isIndex ? <View style={styles.backRow}>
-          <Pressable accessibilityLabel="Back to The Ledger" onPress={() => router.replace(ledgerHrefFor('home') as any)} style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <Ionicons name="chevron-back" size={23} color={SLColors.iconPrimary} />
-          </Pressable>
-        </View> : null}
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         <AnimatedEntrance key={active}>{children}</AnimatedEntrance>
       </ScrollView>
     </SLScreen>
@@ -38,14 +34,22 @@ export function LedgerFrame({ active, children }: React.PropsWithChildren<{ acti
 }
 
 function AnimatedEntrance({ children }: React.PropsWithChildren) {
+  const reduceMotion = useSLReducedMotion();
   const opacity = useRef(new Animated.Value(0)).current;
   const translate = useRef(new Animated.Value(10)).current;
   useEffect(() => {
-    Animated.parallel([
+    if (reduceMotion) {
+      opacity.setValue(1);
+      translate.setValue(0);
+      return;
+    }
+    const animation = Animated.parallel([
       Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
       Animated.spring(translate, { toValue: 0, damping: 22, stiffness: 250, mass: 0.72, useNativeDriver: true }),
-    ]).start();
-  }, [opacity, translate]);
+    ]);
+    animation.start();
+    return () => animation.stop();
+  }, [opacity, reduceMotion, translate]);
   return <Animated.View style={{ opacity, transform: [{ translateY: translate }] }}>{children}</Animated.View>;
 }
 
@@ -124,9 +128,7 @@ export const ledgerStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: 'transparent' },
-  backRow: { minHeight: 52, justifyContent: 'center', alignItems: 'flex-start' },
-  backButton: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.object, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
+  screen: { flex: 1, backgroundColor: '#020204' },
   content: { paddingBottom: SLLayout.tabBarClearance + 34 },
   pressed: { opacity: 0.74, transform: [{ scale: 0.985 }] },
   mediaHero: { overflow: 'hidden', justifyContent: 'flex-end', borderRadius: SLRadius.radiusCard, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset },
