@@ -1,6 +1,6 @@
 import type { ArchiveItem, ArchiveItemType } from '@/lib/ledger-archive';
 import type { AccomplishmentEvent } from '@/lib/ledger-data';
-import { canonicalMajorVolumeMedallions } from '@/lib/ledger-rewards';
+import { canonicalMajorVolumeMedallions } from '../../lib/ledger-rewards';
 import type {
   JourneyEvidenceReference,
   JourneyMoment,
