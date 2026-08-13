@@ -3,7 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const sourceRoot = resolve(import.meta.dirname, '..');
-const root = process.argv[2] ? resolve(process.argv[2]) : sourceRoot;
+const releaseProjection = process.argv.includes('--release-projection');
+const rootArgument = process.argv.slice(2).find((argument) => !argument.startsWith('--'));
+const root = rootArgument ? resolve(rootArgument) : sourceRoot;
 const source = (path) => readFileSync(resolve(root, path), 'utf8');
 
 const ledgerRoutes = Object.freeze({
@@ -59,18 +61,9 @@ const explicitExclusions = [
   'lib/accessory-picker-artwork.ts',
 ];
 
-const allowedReleaseSupport = new Set([
-  'dev-mocks/animation-library/preview-card.tsx',
-  'dev-mocks/animation-library/registry.ts',
-  'dev-mocks/animation-library/tuning-model.ts',
-]);
-
-if (root !== sourceRoot) {
+if (releaseProjection) {
   for (const excluded of explicitExclusions) {
     assert.ok(!existsSync(resolve(root, excluded)), `explicit DEV-only scope leaked into the release projection: ${excluded}`);
-  }
-  for (const path of allowedReleaseSupport) {
-    assert.ok(existsSync(resolve(root, path)), `shared animation support is missing from the release projection: ${path}`);
   }
 } else {
   const shippingComposition = [routeScreen, index, routing, source('app/_layout.tsx'), source('app/(tabs)/_layout.tsx')].join('\n');

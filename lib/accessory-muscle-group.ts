@@ -23,6 +23,8 @@ export const ACCESSORY_MUSCLE_REGION_KEYS = [
   'abductors',
   'hip_flexors',
   'calves',
+  'serratus',
+  'neck',
   'full_body',
 ] as const;
 
@@ -36,6 +38,7 @@ export type AccessoryMuscleRegionPresentation = Readonly<{
 type AccessoryIdentity = Readonly<{
   family?: string | null;
   family_display_name?: string | null;
+  primary_muscle_group?: string | null;
 }>;
 
 type AccessoryMovement = Readonly<{
@@ -68,6 +71,8 @@ const REGION_LABELS: Record<AccessoryMuscleRegionKey, string> = {
   abductors: 'Abductors',
   hip_flexors: 'Hip flexors',
   calves: 'Calves',
+  serratus: 'Serratus',
+  neck: 'Neck',
   full_body: 'Full body',
 };
 
@@ -108,6 +113,8 @@ const GOVERNED_FAMILY_REGIONS: Readonly<Record<string, AccessoryMuscleRegionKey>
   abductors: 'abductors',
   hip_flexors: 'hip_flexors',
   calves: 'calves',
+  serratus: 'serratus',
+  neck: 'neck',
   arms: 'arms',
   full_body: 'full_body',
 };
@@ -148,6 +155,20 @@ function normalizeFamily(value?: string | null): string {
     .replace(/^_+|_+$/g, '');
 }
 
+function regionFromGovernedKey(value?: string | null): AccessoryMuscleRegionKey | null {
+  const normalized = normalizeFamily(value).replace(/^accessory_/, '');
+  if ((ACCESSORY_MUSCLE_REGION_KEYS as readonly string[]).includes(normalized)) {
+    return normalized as AccessoryMuscleRegionKey;
+  }
+  return GOVERNED_FAMILY_REGIONS[normalized] || null;
+}
+
+export function canonicalAccessoryMuscleRegionKey(
+  value?: string | null,
+): AccessoryMuscleRegionKey {
+  return regionFromGovernedKey(value) || 'full_body';
+}
+
 function presentation(key: AccessoryMuscleRegionKey): AccessoryMuscleRegionPresentation {
   return { key, label: REGION_LABELS[key] };
 }
@@ -165,7 +186,8 @@ function regionFromLegacyText(value?: string | null): AccessoryMuscleRegionKey |
  */
 export function accessoryMuscleRegion(item: AccessoryMovement): AccessoryMuscleRegionPresentation {
   const identity = item.movement_identity;
-  const governedFamily = GOVERNED_FAMILY_REGIONS[normalizeFamily(identity?.family)];
+  const governedFamily = regionFromGovernedKey(identity?.primary_muscle_group)
+    || regionFromGovernedKey(identity?.family);
   if (governedFamily) return presentation(governedFamily);
 
   const identityDisplayRegion = regionFromLegacyText(identity?.family_display_name);
