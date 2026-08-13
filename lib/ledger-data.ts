@@ -90,6 +90,10 @@ export type CurrentBest = {
   core_movement_key: string;
   movement_label: string;
   metric: 'weight' | 'e1rm' | string;
+  comparison_bucket?: string | null;
+  scope?: string | null;
+  training_block_id?: number | null;
+  training_block_label?: string | null;
   best_value: number;
   unit: string;
   event: AccomplishmentEvent;
