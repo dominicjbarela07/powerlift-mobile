@@ -52,6 +52,8 @@ import {
   movementProgrammingPatch,
   storedRangeFromManualTarget,
 } from '@/lib/coach-session-editor';
+import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
+import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
@@ -71,10 +73,6 @@ import {
   type AccessoryRepTargetMemory,
   type AccessoryRepTargetMode,
 } from '@/lib/prescription-wheel-options';
-
-const ACCESSORY_CATEGORY_ARTWORK = require(
-  '@/assets/images/movement-category-artwork-v5/accessory-wordmark-coin-seal.png',
-);
 
 export type SessionWorkspaceSection = 'core' | 'accessories';
 export type MovementKind = 'core' | 'accessory';
@@ -110,7 +108,10 @@ export type SessionMovementItem = {
   approved_subs?: string[];
   planned_sets?: Record<string, unknown>[];
   movement_identity?: {
+    family?: string | null;
+    family_display_name?: string | null;
     display_name?: string | null;
+    primary_muscle_group?: string | null;
     equipment_type?: string | null;
     loading_implementation?: string | null;
     manufacturer?: { display_name?: string | null } | null;
@@ -1156,7 +1157,11 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
 
 function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | null; kind: MovementKind; size: number }) {
   if (!item) return <View style={[styles.artworkFallback, { width: size, height: size }]}><Ionicons name="barbell-outline" size={Math.round(size * 0.46)} color={palette.violet} /></View>;
-  if (kind === 'accessory') return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${movementName(item)} accessory category artwork`} resizeMode="contain" source={ACCESSORY_CATEGORY_ARTWORK} style={[styles.movementArtworkImage, { width: size, height: size }]} />;
+  if (kind === 'accessory') {
+    const muscle = accessoryMuscleRegion(item);
+    const artwork = accessoryMuscleRegionAsset(muscle.key);
+    return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${movementName(item)} ${artwork.label} primary muscle artwork`} resizeMode="contain" source={artwork.source} style={[styles.movementArtworkImage, { width: size, height: size }]} />;
+  }
   const identity = resolveLoggerLiftIdentity(item);
   if (identity.iconSource) return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${identity.label} movement artwork`} resizeMode="contain" source={identity.iconSource} style={[styles.movementArtworkImage, { width: size, height: size, shadowColor: identity.accentColor }]} />;
   return <View style={[styles.artworkFallback, { width: size, height: size }]}><Ionicons name="barbell-outline" size={Math.round(size * 0.46)} color={palette.violet} /></View>;

@@ -34,6 +34,8 @@ export const ACCESSORY_MUSCLE_REGION_ASSETS: Readonly<
   abductors: { label: 'Abductors', source: require('../assets/images/muscle-regions/abductors.png') },
   hip_flexors: { label: 'Hip flexors', source: require('../assets/images/muscle-regions/hip-flexors.png') },
   calves: { label: 'Calves', source: require('../assets/images/muscle-regions/calves.png') },
+  serratus: { label: 'Serratus', source: require('../assets/images/muscle-regions/chest.png') },
+  neck: { label: 'Neck', source: require('../assets/images/muscle-regions/traps.png') },
   full_body: { label: 'Full body', source: require('../assets/images/muscle-regions/full-body.png') },
 };
 

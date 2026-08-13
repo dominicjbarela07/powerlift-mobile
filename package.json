@@ -76,6 +76,7 @@
     "test:mobile-programming-manager-visual-family": "node --import tsx scripts/test-mobile-programming-manager-visual-family.mjs",
     "test:coach-session-editor-production-pass": "node --import tsx scripts/test-coach-session-editor-production-pass.mjs",
     "test:session-workspace-draft-state": "node scripts/test-session-workspace-draft-state.mjs",
+    "test:session-workspace-accessory-artwork": "node --import tsx scripts/test-session-workspace-accessory-artwork.mjs",
     "test:movement-quick-editor": "node --import tsx scripts/test-movement-quick-editor.mjs",
     "test:accessory-prescription-editor": "node --import tsx scripts/test-accessory-prescription-editor.mjs",
     "test:logger-wheel-picker": "node --import tsx scripts/test-logger-wheel-picker.mjs",
