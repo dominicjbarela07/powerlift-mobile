@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Alert, AppState, StyleSheet, View } from 'react-native';
 
 import {
-  AthleteCalendarExperience,
   parseYmd,
   toYmd,
   type AthleteCalendarAction,
@@ -17,8 +16,10 @@ import {
   type AthleteCalendarSession,
   type AthleteCalendarWeekSummary,
 } from '@/components/calendar/AthleteCalendarExperience';
+import { AthleteCalendarStoryboardV2 } from '@/components/calendar/AthleteCalendarStoryboardV2';
 import { CalendarEventSheet, type CalendarEventMutation } from '@/components/calendar/CalendarEventSheet';
 import { TrainingScheduleSheet, type TrainingScheduleMutation } from '@/components/calendar/TrainingScheduleSheet';
+import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLTypography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
@@ -26,16 +27,25 @@ import { fetchJson, getDeviceTimezone } from '@/lib/api';
 import type { CalendarRepeatRule } from '@/lib/calendar-event-form';
 import { rangeContainsDate, resolveCalendarToday } from '@/lib/calendar-today';
 import {
+  buildReadinessPayload,
+  bodyweightKgToDisplay,
+  normalizeReadinessUnit,
+  readinessPositionFromCanonical,
+  sleepPositionFromHours,
+} from '@/lib/readiness';
+import {
   canonicalCalendarRangeForMonth,
   calendarRangeKey,
   createCalendarRangeRequestManager,
   nextCalendarRange,
+  previousCalendarRange,
 } from '@/lib/calendar-range-pagination';
 
 type ApiSession = {
   workout_id: number; title?: string | null; date?: string | null; status?: string | null;
   block_id?: number | null; block_name?: string | null; planned_summary?: string | null;
   primary_lifts?: string[]; accessory_count?: number | null; estimated_duration_minutes?: number | null;
+  pr_count?: number | null;
   scheduled_start_time?: string | null; scheduled_end_time?: string | null;
   scheduled_timezone?: string | null;
 };
@@ -87,11 +97,18 @@ type ApiDayDetail = {
 type ApiUpcoming = { date?: string | null; kind?: string | null; title?: string | null; workout_id?: number | null; meet_plan_id?: number | null; block_id?: number | null };
 type ApiConflict = { conflict_id: string; certainty: 'confirmed' | 'potential'; reason: string; date: string; event_id: number; event_title: string; workout_id: number; workout_title: string };
 type ApiWeekSummary = { start_date: string; end_date: string; session_count: number; completed_count: number; missed_count: number; heavy_count: number; personal_event_count: number; is_current: boolean; load_label: string };
+type ApiMonthSummary = {
+  month: string; session_count: number; completed_count: number; upcoming_count: number;
+  planned_count: number; completion_percent: number; total_volume_kg: number; pr_count: number;
+  reported_bodyweight?: { start_kg: number; latest_kg: number; observation_count: number } | null;
+  block_names?: string[];
+};
 type ApiRange = { id?: number | string; start: string; end: string; label: string };
 type ApiProgramContext = { id?: number | string; name?: string | null; start: string; end: string };
 type CalendarPayload = {
   today?: string | null; days?: ApiDay[]; upcoming?: ApiUpcoming[]; conflicts?: ApiConflict[];
   week_summaries?: ApiWeekSummary[]; ranges?: ApiRange[]; can_edit_programming?: boolean;
+  month_summaries?: ApiMonthSummary[];
   program_context?: ApiProgramContext | null;
   range?: { start_date?: string | null; end_date?: string | null; timezone?: string | null };
 };
@@ -125,6 +142,7 @@ export default function AthleteCalendarScreen() {
   if (!requestManagerRef.current) requestManagerRef.current = makeCalendarRequestManager(calendarIdentityScope);
   const activeCanonicalRangeRef = useRef('');
   const pageRequestActiveRef = useRef(false);
+  const previousPageRequestActiveRef = useRef(false);
   const didSyncInitialAthleteTodayRef = useRef(false);
   const userMovedAnchorRef = useRef(false);
   const [anchorMonth, setAnchorMonth] = useState(() => startOfMonth(new Date()));
@@ -133,8 +151,10 @@ export default function AthleteCalendarScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingPrevious, setLoadingPrevious] = useState(false);
   const [paginationError, setPaginationError] = useState<string | null>(null);
   const [loadedRangeEnd, setLoadedRangeEnd] = useState<string | null>(null);
+  const [loadedRangeStart, setLoadedRangeStart] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editor, setEditor] = useState<{ visible: boolean; date: string; event?: AthleteCalendarPersonalEvent | null }>({ visible: false, date: toYmd(new Date()) });
   const [mutationBusy, setMutationBusy] = useState(false);
@@ -150,10 +170,23 @@ export default function AthleteCalendarScreen() {
   const [dayDetail, setDayDetail] = useState<AthleteCalendarDayDetail | null>(null);
   const [dayDetailLoading, setDayDetailLoading] = useState(false);
   const [dayDetailError, setDayDetailError] = useState<string | null>(null);
+  const [dailyReadinessVisible, setDailyReadinessVisible] = useState(false);
+  const [dailyReadinessSubmitting, setDailyReadinessSubmitting] = useState(false);
+  const [dailyReadinessError, setDailyReadinessError] = useState<string | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [dailyReadinessValues, setDailyReadinessValues] = useState<ReadinessModalValues>({
+    bodyweight: '',
+    bodyweightSkipped: true,
+    sleepPosition: 0.5,
+    energyPosition: 0.5,
+    sorenessPosition: 0.5,
+    stressPosition: 0.5,
+  });
   const dayDetailCacheRef = useRef(new Map<string, AthleteCalendarDayDetail>());
   const dayDetailAbortRef = useRef<AbortController | null>(null);
   const dayDetailRequestRef = useRef(0);
   const visiblePayload = payloadOwnerScope === calendarIdentityScope ? payload : null;
+  const preferredUnits = (user as any)?.preferred_units;
 
   const { start: rangeStart, end: rangeEnd } = useMemo(
     () => canonicalCalendarRangeForMonth(anchorMonth),
@@ -176,6 +209,7 @@ export default function AthleteCalendarScreen() {
       if (requestScopeRef.current !== requestScope || activeCanonicalRangeRef.current !== result.key) return;
       setPayload(result.value);
       setPayloadOwnerScope(requestScope);
+      setLoadedRangeStart(rangeStart);
       setLoadedRangeEnd(rangeEnd);
       setPaginationError(null);
     } catch (caught: any) {
@@ -247,11 +281,13 @@ export default function AthleteCalendarScreen() {
     requestScopeRef.current = calendarIdentityScope;
     activeCanonicalRangeRef.current = '';
     pageRequestActiveRef.current = false;
+    previousPageRequestActiveRef.current = false;
     didSyncInitialAthleteTodayRef.current = false;
     userMovedAnchorRef.current = false;
     setPayload(null);
     setPayloadOwnerScope(calendarIdentityScope);
     setLoadedRangeEnd(null);
+    setLoadedRangeStart(null);
     setCurrentToday(null);
     dayDetailAbortRef.current?.abort();
     dayDetailCacheRef.current.clear();
@@ -261,6 +297,12 @@ export default function AthleteCalendarScreen() {
     setPaginationError(null);
     setLoading(true);
   }, [calendarIdentityScope]);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => undefined);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => subscription.remove();
+  }, []);
 
   useFocusEffect(useCallback(() => { void load(true, false); }, [load]));
 
@@ -298,10 +340,35 @@ export default function AthleteCalendarScreen() {
     }
   }, [calendarIdentityScope, loadedRangeEnd, visiblePayload]);
 
+  const loadPrevious = useCallback(async () => {
+    if (!visiblePayload || previousPageRequestActiveRef.current || !loadedRangeStart) return;
+    const requestScope = calendarIdentityScope;
+    previousPageRequestActiveRef.current = true;
+    setLoadingPrevious(true);
+    setPaginationError(null);
+    try {
+      const previousRange = previousCalendarRange(loadedRangeStart);
+      const result = await requestManagerRef.current!.request(previousRange);
+      if (requestScopeRef.current !== requestScope) return;
+      setPayload((current) => mergeCalendarPayload(current, result.value));
+      setLoadedRangeStart(previousRange.start);
+    } catch (caught: any) {
+      if (isAbortError(caught)) return;
+      if (requestScopeRef.current !== requestScope) return;
+      setPaginationError(caught?.message || 'Earlier dates could not load.');
+    } finally {
+      if (requestScopeRef.current === requestScope) {
+        previousPageRequestActiveRef.current = false;
+        setLoadingPrevious(false);
+      }
+    }
+  }, [calendarIdentityScope, loadedRangeStart, visiblePayload]);
+
   const data = useMemo<AthleteCalendarExperienceData>(() => ({
     today: currentToday || visiblePayload?.today || toYmd(new Date()),
     timezone: visiblePayload?.range?.timezone,
     athleteName: user?.user_name || 'Athlete',
+    preferredUnits: normalizeReadinessUnit(preferredUnits),
     days: (visiblePayload?.days || []).map(mapDay),
     ranges: visiblePayload?.ranges || [],
     programContext: visiblePayload?.program_context
@@ -315,7 +382,8 @@ export default function AthleteCalendarScreen() {
     importantDates: importantDates(visiblePayload),
     conflicts: (visiblePayload?.conflicts || []).map(mapConflict),
     weekSummaries: (visiblePayload?.week_summaries || []).map(mapWeekSummary),
-  }), [currentToday, user?.user_name, visiblePayload]);
+    monthSummaries: (visiblePayload?.month_summaries || []).map(mapMonthSummary),
+  }), [currentToday, preferredUnits, user?.user_name, visiblePayload]);
 
   useEffect(() => {
     if (!visiblePayload?.today) return;
@@ -374,6 +442,55 @@ export default function AthleteCalendarScreen() {
     } finally { setMutationBusy(false); }
   };
 
+  const openDailyReadiness = () => {
+    const readiness = dayDetail?.date === selectedDate ? dayDetail.readiness : null;
+    const unit = data.preferredUnits || 'kg';
+    const existingBodyweight = bodyweightKgToDisplay(readiness?.bodyweightKg, unit) || '';
+    setDailyReadinessValues({
+      bodyweight: existingBodyweight,
+      bodyweightSkipped: !existingBodyweight,
+      sleepPosition: readiness?.sleepHours != null ? sleepPositionFromHours(readiness.sleepHours) : 0.5,
+      energyPosition: readinessPositionFromCanonical(readiness?.energy),
+      sorenessPosition: readinessPositionFromCanonical(readiness?.soreness),
+      stressPosition: readinessPositionFromCanonical(readiness?.stress),
+    });
+    setDailyReadinessError(null);
+    setDailyReadinessVisible(true);
+  };
+
+  const submitDailyReadiness = async () => {
+    const unit = data.preferredUnits || 'kg';
+    const built = buildReadinessPayload(dailyReadinessValues, unit);
+    if (!built.payload) {
+      setDailyReadinessError(built.error || 'Check the readiness values and try again.');
+      return;
+    }
+    setDailyReadinessSubmitting(true);
+    setDailyReadinessError(null);
+    try {
+      const response = await fetchJson('/athletes/mobile/readiness/daily', {
+        method: 'POST',
+        body: built.payload as any,
+      });
+      if (response.status === 409 && response.json?.workout_id) {
+        setDailyReadinessVisible(false);
+        router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(response.json.workout_id) } });
+        return;
+      }
+      if (!response.ok || response.json?.ok !== true) {
+        setDailyReadinessError(response.json?.error || 'Check-in could not be saved.');
+        return;
+      }
+      setDailyReadinessVisible(false);
+      dayDetailCacheRef.current.delete(selectedDate);
+      await Promise.all([loadDayDetail(selectedDate, true), load(true, true)]);
+    } catch (caught: any) {
+      if (!isAbortError(caught)) setDailyReadinessError(caught?.message || 'Check-in could not be saved.');
+    } finally {
+      setDailyReadinessSubmitting(false);
+    }
+  };
+
   const handleAction = (action: AthleteCalendarAction) => {
     if (action.type === 'session') { router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(action.id) } }); return; }
     if (action.type === 'create-session') {
@@ -395,6 +512,10 @@ export default function AthleteCalendarScreen() {
     }
     if (action.type === 'meet' || (action.type === 'important-date' && action.item.kind === 'meet')) { router.push('/(tabs)/athlete-meet-plan' as any); return; }
     if (action.type === 'check-in') { router.push({ pathname: '/(tabs)/check-in/[submissionId]', params: { submissionId: String(action.id), returnTo: 'calendar' } } as any); return; }
+    if (action.type === 'daily-readiness') {
+      if (action.date === (currentToday || data.today)) openDailyReadiness();
+      return;
+    }
     if (action.type === 'add-event') { setFieldErrors(null); setEventMutationError(null); setEditor({ visible: true, date: action.date }); return; }
     if (action.type === 'edit-event') { setFieldErrors(null); setEventMutationError(null); setEditor({ visible: true, date: action.event.startsAt.slice(0, 10), event: action.event }); return; }
     if (action.type === 'review-conflict') { showConflict(action.conflict, router, () => setEditor({ visible: true, date: action.conflict.date, event: findEvent(data.days, action.conflict.eventId) })); return; }
@@ -467,7 +588,7 @@ export default function AthleteCalendarScreen() {
           <Text onPress={() => void load(true, true)} style={styles.inlineRetry}>Retry</Text>
         </View>
       ) : null}
-      <AthleteCalendarExperience
+      <AthleteCalendarStoryboardV2
         anchorMonth={anchorMonth}
         canManagePersonalEvents={user?.role === 'athlete'}
         data={data}
@@ -475,8 +596,10 @@ export default function AthleteCalendarScreen() {
         dayDetailError={dayDetailError}
         dayDetailLoading={dayDetailLoading}
         loadingMore={loadingMore}
+        loadingPrevious={loadingPrevious}
         onAction={handleAction}
         onLoadMore={() => void loadMore()}
+        onLoadPrevious={() => void loadPrevious()}
         onMonthChange={changeMonth}
         onRetryDayDetail={() => void loadDayDetail(selectedDate, true)}
         onSelectedDateChange={setSelectedDate}
@@ -487,6 +610,19 @@ export default function AthleteCalendarScreen() {
         paginationError={paginationError}
         refreshing={refreshing}
         selectedDate={selectedDate}
+      />
+      <ReadinessModal
+        context="daily"
+        error={dailyReadinessError}
+        onCancel={() => { if (!dailyReadinessSubmitting) setDailyReadinessVisible(false); }}
+        onChange={setDailyReadinessValues}
+        onSubmit={() => void submitDailyReadiness()}
+        priorBodyweightKg={dayDetail?.date === selectedDate ? dayDetail.readiness?.bodyweightKg : null}
+        reduceMotion={reduceMotion}
+        submitting={dailyReadinessSubmitting}
+        unit={data.preferredUnits || 'kg'}
+        values={dailyReadinessValues}
+        visible={dailyReadinessVisible}
       />
       <CalendarEventSheet busy={mutationBusy} event={editor.event} initialDate={editor.date} onClose={closeEditor} onDelete={editor.event ? deleteEvent : undefined} onSave={saveEvent} saveError={eventMutationError} serverErrors={fieldErrors} timezone={data.timezone} visible={editor.visible} />
       <TrainingScheduleSheet
@@ -620,10 +756,11 @@ function mapReadiness(row?: ApiReadiness | null): AthleteCalendarDayDetail['read
     bodyweightKg: row.bodyweight_kg,
   };
 }
-function mapSession(session: ApiSession): AthleteCalendarSession { return { id: session.workout_id, title: session.title, date: session.date, status: session.status, blockId: session.block_id, blockName: session.block_name, plannedSummary: session.planned_summary, primaryLifts: session.primary_lifts, accessoryCount: session.accessory_count, estimatedDurationMinutes: session.estimated_duration_minutes, scheduledStartTime: session.scheduled_start_time, scheduledEndTime: session.scheduled_end_time, scheduledTimezone: session.scheduled_timezone, presentation: /heavy|top|peak|test|max/i.test(session.title || '') ? 'heavy' : null }; }
+function mapSession(session: ApiSession): AthleteCalendarSession { return { id: session.workout_id, title: session.title, date: session.date, status: session.status, blockId: session.block_id, blockName: session.block_name, plannedSummary: session.planned_summary, primaryLifts: session.primary_lifts, accessoryCount: session.accessory_count, prCount: session.pr_count, estimatedDurationMinutes: session.estimated_duration_minutes, scheduledStartTime: session.scheduled_start_time, scheduledEndTime: session.scheduled_end_time, scheduledTimezone: session.scheduled_timezone, presentation: /heavy|top|peak|test|max/i.test(session.title || '') ? 'heavy' : null }; }
 function mapEvent(event: ApiPersonalEvent): AthleteCalendarPersonalEvent { return { id: event.event_id, title: event.title, startsAt: event.starts_at, endsAt: event.ends_at, allDay: event.all_day, timezone: event.timezone, category: event.category, location: event.location, notes: event.notes, repeatRule: event.repeat_rule || 'none', alertOffsetMinutes: event.alert_offset_minutes ?? null, unavailableForTraining: event.unavailable_for_training }; }
 function mapConflict(item: ApiConflict): AthleteCalendarConflict { return { id: item.conflict_id, certainty: item.certainty, reason: item.reason, date: item.date, eventId: item.event_id, eventTitle: item.event_title, workoutId: item.workout_id, workoutTitle: item.workout_title }; }
 function mapWeekSummary(item: ApiWeekSummary): AthleteCalendarWeekSummary { return { startDate: item.start_date, endDate: item.end_date, sessionCount: item.session_count, completedCount: item.completed_count, missedCount: item.missed_count, heavyCount: item.heavy_count, personalEventCount: item.personal_event_count, isCurrent: item.is_current, loadLabel: item.load_label }; }
+function mapMonthSummary(item: ApiMonthSummary) { return { month: item.month, sessionCount: item.session_count || 0, completedCount: item.completed_count || 0, upcomingCount: item.upcoming_count || 0, plannedCount: item.planned_count || 0, completionPercent: item.completion_percent || 0, totalVolumeKg: item.total_volume_kg || 0, prCount: item.pr_count || 0, reportedBodyweight: item.reported_bodyweight ? { startKg: item.reported_bodyweight.start_kg, latestKg: item.reported_bodyweight.latest_kg, observationCount: item.reported_bodyweight.observation_count } : null, blockNames: item.block_names || [] }; }
 function findEvent(days: AthleteCalendarDay[], id: number) { for (const day of days) { const event = day.personalEvents?.find((item) => item.id === id); if (event) return event; } return null; }
 function showConflict(conflict: AthleteCalendarConflict, router: ReturnType<typeof useRouter>, editEvent: () => void) { Alert.alert(conflict.certainty === 'confirmed' ? 'Schedule conflict' : 'Potential conflict', `${conflict.eventTitle} conflicts with ${conflict.workoutTitle}.\n\n${conflict.reason}`, [{ text: 'Edit Event', onPress: editEvent }, { text: 'Open Training', onPress: () => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(conflict.workoutId) } }) }, { text: 'Close', style: 'cancel' }]); }
 function importantDates(payload: CalendarPayload | null): AthleteCalendarImportantDate[] { const seen = new Set<string>(); const items: AthleteCalendarImportantDate[] = []; for (const item of payload?.upcoming || []) { if (!item.date || !['meet', 'block_marker', 'session'].includes(item.kind || '')) continue; if (item.kind === 'session' && !/test|heavy|peak|max/i.test(item.title || '')) continue; const kind = item.kind === 'meet' ? 'meet' : item.kind === 'block_marker' ? 'block' : 'session'; const targetId = item.meet_plan_id || item.block_id || item.workout_id; const id = `${kind}:${targetId || item.date}:${item.date}`; if (!seen.has(id)) { seen.add(id); items.push({ id, date: item.date, label: item.title || 'Important date', kind, targetId }); } } return items.slice(0, 3); }
@@ -642,6 +779,7 @@ function mergeCalendarPayload(current: CalendarPayload | null, next: CalendarPay
     upcoming: mergeBy(current.upcoming, next.upcoming, (item) => `${item.kind}:${item.date}:${item.workout_id || item.meet_plan_id || item.block_id || item.title}`),
     conflicts: mergeBy(current.conflicts, next.conflicts, (item) => item.conflict_id),
     week_summaries: mergeBy(current.week_summaries, next.week_summaries, (item) => item.start_date).sort((a, b) => a.start_date.localeCompare(b.start_date)),
+    month_summaries: mergeBy(current.month_summaries, next.month_summaries, (item) => item.month).sort((a, b) => a.month.localeCompare(b.month)),
     ranges: mergeBy(current.ranges, next.ranges, (item) => `${item.id || item.label}:${item.start}:${item.end}`),
   };
 }
