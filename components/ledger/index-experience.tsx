@@ -15,7 +15,7 @@ import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLSpacing } from '@/constants/theme';
-import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import {
   canonicalLiftKey,
@@ -348,10 +348,19 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
   </Pressable>;
 }
 
-function LatestEntryArtwork({ movement }: { movement?: LedgerMovementProgress | null }) {
-  const region = canonicalAccessoryMuscleRegionKey(movement?.primary_muscle_group || movement?.body_region || movement?.family);
-  const source = movement ? accessoryMuscleRegionAsset(region).source : LEDGER_INDEX_ASSETS.latestEntryFallback;
-  return <View accessibilityLabel={movement ? `${movement.name} muscle focus` : 'Latest movement'} style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
+function LatestEntryArtwork({ movement, entry }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null }) {
+  const movementLabel = movement?.name || entry?.movement?.label;
+  const hasMovementIdentity = Boolean(movementLabel || movement?.family || movement?.primary_muscle_group || entry?.movement?.family);
+  const region = accessoryMuscleRegion({
+    movement: movementLabel,
+    movement_identity: {
+      family: movement?.family || movement?.body_region || entry?.movement?.family,
+      family_display_name: movementLabel,
+      primary_muscle_group: movement?.primary_muscle_group,
+    },
+  }).key;
+  const source = hasMovementIdentity ? accessoryMuscleRegionAsset(region).source : LEDGER_INDEX_ASSETS.latestEntryFallback;
+  return <View accessibilityLabel={movementLabel ? `${movementLabel} muscle focus` : 'Latest movement'} style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
 }
 
 export function LedgerIndexExperience() {
@@ -477,7 +486,7 @@ export function LedgerIndexExperience() {
 
       <Text style={styles.sectionKicker}>LATEST ENTRY</Text>
       <Pressable disabled={!latestJourneyEntry && !model.latest} accessibilityRole="button" accessibilityLabel={`Latest Ledger entry: ${latestTitle}, ${latestValue}`} onPress={() => latestHref ? router.push(latestHref as any) : model.latest?.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.latest.source_set_log_id}` as any) : openRoom('journey')} style={({ pressed }) => [styles.latestEntry, pressed && styles.pressed]}>
-        <LatestEntryArtwork movement={latestMovement} />
+        <LatestEntryArtwork movement={latestMovement} entry={latestJourneyEntry} />
         <View style={styles.latestCopy}><View style={styles.latestTopLine}><Text style={styles.latestTitle}>{latestTitle.toUpperCase()}</Text>{latestIsPr ? <View style={styles.latestPrBadge}><Text style={styles.latestPrBadgeText}>PR</Text></View> : null}</View><Text numberOfLines={1} style={styles.latestContext}>{latestContext}</Text><Text style={styles.latestValue}>{latestValue}</Text><Text numberOfLines={1} style={styles.latestDate}>{latestFooter}</Text></View>
         <Ionicons name="arrow-forward" size={20} color="#B99AF0" />
       </Pressable>
