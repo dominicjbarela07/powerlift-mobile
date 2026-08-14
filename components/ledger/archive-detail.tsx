@@ -97,6 +97,7 @@ export function ArchiveDetailExperience() {
       <View style={styles.integrity}><Ionicons name="finger-print-outline" size={21} color={SLColors.accentMuted} /><View style={styles.integrityCopy}><Text typographyRole="bodyStrong" style={styles.integrityTitle}>Preserved source truth</Text><Text typographyRole="caption" style={styles.integrityBody}>{item.invalidation_state === 'valid' || !item.invalidation_state ? 'Current authorized evidence with provenance intact.' : `Evidence state: ${item.invalidation_state}`}</Text></View></View>
 
       <DetailSection icon="speedometer-outline" title="Performance" value={item.performance} />
+      {item.reported_bodyweight ? <DetailSection icon="scale-outline" title="Reported bodyweight" value={{ reported_bodyweight_kg: item.reported_bodyweight.reported_bodyweight_kg, training_date: item.reported_bodyweight.training_date, source: 'Pre-Session readiness' }} /> : null}
       <DetailSection icon="git-branch-outline" title="Movement identity" value={item.movement} />
       <DetailSection icon="albums-outline" title="Program context" value={item.program_context} />
       <MeetSection value={item.meet_context} />
