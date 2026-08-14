@@ -47,6 +47,7 @@ export type JourneyEntry = Readonly<{
     weight_kg?: number | null;
     reps?: number | null;
     rpe?: number | null;
+    rir?: number | null;
     e1rm_kg?: number | null;
     current_value?: number | null;
     prior_value?: number | null;
