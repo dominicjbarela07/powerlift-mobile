@@ -6,6 +6,12 @@ import {
   addCalendarDays,
   calendarRange,
   calendarSessionMatchesStatus,
+  COACH_CALENDAR_WEEK_DAYS,
+  COACH_CALENDAR_WEEK_WINDOW_WEEKS,
+  coachCalendarRequestRange,
+  coachCalendarWeekIndex,
+  coachCalendarWeekWindow,
+  coachCalendarWindowNeedsShift,
   fromLocalYMD,
   isCalendarSessionMovable,
   monthGridRows,
@@ -26,6 +32,20 @@ assert.equal(toLocalYMD(addCalendarDays(monday, 7)), '2026-08-17');
 const week = calendarRange('week', monday);
 assert.equal(toLocalYMD(week.start), '2026-08-09');
 assert.equal(toLocalYMD(week.end), '2026-08-16');
+assert.equal(COACH_CALENDAR_WEEK_DAYS, 7);
+
+const weekWindow = coachCalendarWeekWindow(monday);
+assert.equal(COACH_CALENDAR_WEEK_WINDOW_WEEKS, 5);
+assert.equal(toLocalYMD(weekWindow.start), '2026-07-26');
+assert.equal(toLocalYMD(weekWindow.end), '2026-08-30');
+assert.equal(Math.round((weekWindow.end.getTime() - weekWindow.start.getTime()) / 86_400_000), 35);
+assert.deepEqual(coachCalendarRequestRange('week', monday), weekWindow);
+assert.equal(coachCalendarWeekIndex(monday, weekWindow.start), 2);
+assert.equal(coachCalendarWindowNeedsShift(monday, weekWindow.start), false);
+assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-03'), weekWindow.start), true);
+assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-17'), weekWindow.start), true);
+assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-07-27'), weekWindow.start), true);
+assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-24'), weekWindow.start), true);
 
 const month = calendarRange('month', fromLocalYMD('2026-08-11'));
 assert.equal(monthGridRows(Array.from({ length: 42 }, (_, index) => index)).length, 6);
@@ -58,6 +78,16 @@ assert.match(routeSource, /useState<CoachCalendarView>\('week'\)/);
 assert.match(routeSource, /function WeekBoard/);
 assert.match(routeSource, /React\.memo\(function WeekAthleteRow/);
 assert.match(routeSource, /<FlatList/);
+assert.match(routeSource, /coachCalendarRequestRange/);
+assert.match(routeSource, /coachCalendarWindowNeedsShift/);
+assert.match(routeSource, /preservedCenterDate/);
+assert.match(routeSource, /onVisibleWeekSettled/);
+assert.match(routeSource, /onMomentumScrollEnd/);
+assert.match(routeSource, /SLTabRowControlShell/);
+assert.match(routeSource, /SLTabRowControlItem/);
+assert.match(routeSource, /useSafeAreaInsets/);
+assert.match(routeSource, /insets\.bottom \+ SLSpacing\.xs \+ SL_TAB_ROW_CONTROL\.shellHeight \+ SLSpacing\.md/);
+assert.doesNotMatch(routeSource, /style=\{styles\.fab\}/);
 assert.match(routeSource, /\.slice\(0, 2\)/);
 assert.doesNotMatch(routeSource, /customItems\.slice\(0, 1\)/);
 assert.doesNotMatch(routeSource, /meets\.slice\(0, 1\)/);

@@ -6,6 +6,10 @@ export type CalendarDateRange = {
   end: Date;
 };
 
+export const COACH_CALENDAR_WEEK_DAYS = 7;
+export const COACH_CALENDAR_WEEK_WINDOW_WEEKS = 5;
+export const COACH_CALENDAR_WEEK_BUFFER_WEEKS = 2;
+
 export function toLocalYMD(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -39,7 +43,7 @@ export function startOfCalendarMonth(date: Date) {
 export function calendarRange(view: CoachCalendarView, anchor: Date): CalendarDateRange {
   if (view === 'week') {
     const start = startOfCalendarWeek(anchor);
-    return { start, end: addCalendarDays(start, 7) };
+    return { start, end: addCalendarDays(start, COACH_CALENDAR_WEEK_DAYS) };
   }
   if (view === 'month') {
     const start = startOfCalendarWeek(startOfCalendarMonth(anchor));
@@ -47,6 +51,42 @@ export function calendarRange(view: CoachCalendarView, anchor: Date): CalendarDa
   }
   const start = new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate(), 12, 0, 0, 0);
   return { start, end: addCalendarDays(start, 42) };
+}
+
+/**
+ * Week mode keeps a bounded five-week surface mounted around the authoritative
+ * week. This stays below the backend's 42-day range ceiling while ensuring an
+ * adjacent week is already available before either ordinary edge is reached.
+ */
+export function coachCalendarWeekWindow(anchor: Date): CalendarDateRange {
+  const authoritativeWeek = startOfCalendarWeek(anchor);
+  const start = addCalendarDays(
+    authoritativeWeek,
+    -COACH_CALENDAR_WEEK_BUFFER_WEEKS * COACH_CALENDAR_WEEK_DAYS,
+  );
+  return {
+    start,
+    end: addCalendarDays(start, COACH_CALENDAR_WEEK_WINDOW_WEEKS * COACH_CALENDAR_WEEK_DAYS),
+  };
+}
+
+export function coachCalendarRequestRange(view: CoachCalendarView, anchor: Date): CalendarDateRange {
+  return view === 'week' ? coachCalendarWeekWindow(anchor) : calendarRange(view, anchor);
+}
+
+export function coachCalendarWeekIndex(visibleDate: Date, windowStart: Date) {
+  const visibleWeek = startOfCalendarWeek(visibleDate);
+  const firstWeek = startOfCalendarWeek(windowStart);
+  return Math.round(
+    (visibleWeek.getTime() - firstWeek.getTime())
+      / (COACH_CALENDAR_WEEK_DAYS * 86_400_000),
+  );
+}
+
+export function coachCalendarWindowNeedsShift(visibleDate: Date, windowStart: Date) {
+  const weekIndex = coachCalendarWeekIndex(visibleDate, windowStart);
+  return weekIndex < COACH_CALENDAR_WEEK_BUFFER_WEEKS
+    || weekIndex >= COACH_CALENDAR_WEEK_WINDOW_WEEKS - COACH_CALENDAR_WEEK_BUFFER_WEEKS;
 }
 
 export function formatCalendarDate(value: string, options?: Intl.DateTimeFormatOptions) {
