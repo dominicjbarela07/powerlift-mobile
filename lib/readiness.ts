@@ -37,6 +37,13 @@ export function normalizedReadinessToCanonical(value: number): number {
   return Math.round(clampReadinessPosition(value) * 4) + 1;
 }
 
+export function readinessPositionFromCanonical(value: number | null | undefined, fallback = 0.5): number {
+  if (value == null) return clampReadinessPosition(fallback);
+  const canonical = Number(value);
+  if (!Number.isFinite(canonical)) return clampReadinessPosition(fallback);
+  return clampReadinessPosition((canonical - 1) / 4);
+}
+
 export function continuousReadinessFromPosition(value: number): number {
   const raw = 1 + clampReadinessPosition(value) * 4;
   return Math.round(raw * 10) / 10;

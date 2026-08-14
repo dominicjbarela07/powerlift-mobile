@@ -56,5 +56,20 @@ assert.match(
   /<View style=\{styles\.heroCta\}>[\s\S]*<SLButton[\s\S]*label=\{actionLabel\}[\s\S]*onPress=\{\(\) => onAction\(today\.primary_action \?\? \{ route: 'workout', workout_id: session\?\.id \}\)\}/,
   'The unchanged primary action must remain in a foreground CTA layer.',
 );
+assert.match(
+  source,
+  /\{hasSession \? \([\s\S]*<View style=\{styles\.heroCta\}>/,
+  'Begin, Resume, and Recap actions must only render when a Session exists.',
+);
+assert.match(
+  source,
+  /!hasSession && canDailyCheckIn[\s\S]*OPTIONAL CHECK-IN[\s\S]*daily_readiness/,
+  'Recovery days must expose only the secondary optional daily check-in action.',
+);
+assert.match(
+  source,
+  /TODAY\\'S CHECK-IN[\s\S]*dailyCheckIn\.detail/,
+  'A completed daily check-in must rehydrate as a readiness summary.',
+);
 
 console.log('Home training hero layering contract passed.');

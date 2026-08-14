@@ -12,6 +12,7 @@ import {
   persistReadinessThenBegin,
   readinessBoundary,
   readinessPositionFromRailX,
+  readinessPositionFromCanonical,
   normalizedReadinessToCanonical,
   shouldAnimateReadinessThumb,
   sleepHoursFromPosition,
@@ -59,6 +60,10 @@ assert.equal(normalizedReadinessToCanonical(0), 1);
 assert.equal(normalizedReadinessToCanonical(0.5), 3);
 assert.equal(normalizedReadinessToCanonical(1), 5);
 assert.equal(normalizedReadinessToCanonical(0.37), 2, 'arbitrary positions map only on submission');
+assert.equal(readinessPositionFromCanonical(1), 0);
+assert.equal(readinessPositionFromCanonical(3), 0.5);
+assert.equal(readinessPositionFromCanonical(5), 1);
+assert.equal(readinessPositionFromCanonical(null), 0.5);
 assert.equal(continuousReadinessFromPosition(0.37), 2.5, 'submission keeps analog readiness at 0.1 precision');
 assert.equal(continuousReadinessFromPosition(0.675), 3.7);
 
@@ -118,6 +123,12 @@ for (const copy of [
   'Relaxed',
   'High stress',
 ]) assert.ok(component.includes(copy), `missing modal copy: ${copy}`);
+for (const copy of [
+  'How are you feeling today?',
+  'Record readiness, recovery, and optional body weight.',
+  'Save Check-In',
+]) assert.ok(component.includes(copy), `missing daily check-in copy: ${copy}`);
+assert.ok(component.includes("context?: 'session' | 'daily'"));
 assert.ok(component.includes('accessibilityRole="adjustable"'));
 assert.ok(component.includes('valueText={`${sleepHoursFromPosition(values.sleepPosition).toFixed(1)} hr`}'));
 assert.ok(component.includes('hapticBoundaries && crossedReadinessBoundary'));

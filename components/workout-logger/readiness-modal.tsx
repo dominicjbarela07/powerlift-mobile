@@ -170,6 +170,7 @@ export type ReadinessModalValues = {
 
 type Props = {
   visible: boolean;
+  context?: 'session' | 'daily';
   unit: ReadinessDisplayUnit;
   priorBodyweightKg?: number | null;
   values: ReadinessModalValues;
@@ -183,6 +184,7 @@ type Props = {
 
 export function ReadinessModal({
   visible,
+  context = 'session',
   unit,
   priorBodyweightKg,
   values,
@@ -193,6 +195,7 @@ export function ReadinessModal({
   onSubmit,
   onCancel,
 }: Props) {
+  const isDaily = context === 'daily';
   const priorDisplay = bodyweightKgToDisplay(priorBodyweightKg, unit);
   const update = <K extends keyof ReadinessModalValues>(key: K, value: ReadinessModalValues[K]) => {
     onChange({ ...values, [key]: value });
@@ -213,8 +216,12 @@ export function ReadinessModal({
           <SLMaterialOverlay level={3} />
           <View style={styles.headerRow}>
             <View style={styles.headerCopy}>
-              <Text typographyRole="modalTitle" style={styles.title}>How are we feeling?</Text>
-              <Text typographyRole="modalBody" style={styles.subtitle}>Take a quick moment to check in before we begin.</Text>
+              <Text typographyRole="modalTitle" style={styles.title}>{isDaily ? 'How are you feeling today?' : 'How are we feeling?'}</Text>
+              <Text typographyRole="modalBody" style={styles.subtitle}>
+                {isDaily
+                  ? 'Record readiness, recovery, and optional body weight.'
+                  : 'Take a quick moment to check in before we begin.'}
+              </Text>
             </View>
             <Pressable
               accessibilityRole="button"
@@ -292,11 +299,13 @@ export function ReadinessModal({
             ) : null}
 
             <SLButton
-              accessibilityLabel={submitting ? 'Beginning session' : 'Begin Session'}
+              accessibilityLabel={submitting
+                ? (isDaily ? 'Saving check-in' : 'Beginning session')
+                : (isDaily ? 'Save Check-In' : 'Begin Session')}
               accessibilityState={{ busy: submitting, disabled: submitting }}
               disabled={submitting}
               fullWidth
-              label="Begin Session"
+              label={isDaily ? 'Save Check-In' : 'Begin Session'}
               loading={submitting}
               onPress={onSubmit}
               size="lg"
