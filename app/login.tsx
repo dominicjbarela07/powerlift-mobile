@@ -163,7 +163,7 @@ export default function LoginScreen() {
         params: { athlete_id: String(authUser.athlete_id) },
       });
     } else if (authUser.is_coach) {
-      router.replace('/(tabs)/coach-roster');
+      router.replace('/(tabs)/coach-dashboard');
     } else {
       router.replace('/');
     }

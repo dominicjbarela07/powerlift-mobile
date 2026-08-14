@@ -186,7 +186,11 @@ function FilteredTabBar({
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
   const isBottomTabGlassPreviewPath = __DEV__ && normalizedPathname === '/dev-mocks/navigation-bottom-tab-glass';
   const usesCalendarPreviewSelection = isCalendarPreviewPath || isBottomTabGlassPreviewPath;
-  const activeRoute = (usesCalendarPreviewSelection
+  const usesCoachAthleteSelection = normalizedPathname.startsWith('/coach-athlete/')
+    || normalizedPathname.startsWith('/coach-attention/');
+  const activeRoute = (usesCoachAthleteSelection
+    ? visibleRoutes.find((route) => route.name === 'coach-roster')
+    : usesCalendarPreviewSelection
     ? visibleRoutes.find((route) => route.name === 'athlete-calendar')
     : null) ?? visibleRoutes.find((route) => {
     const routeIndex = state.routes.findIndex((candidate) => candidate.key === route.key);
@@ -198,7 +202,8 @@ function FilteredTabBar({
   const isLedgerDestinationPath = activeRoute?.name === 'ledger'
     && normalizedPathname.startsWith('/ledger/');
   const isActiveTopLevelTab = activeTopLevelPath === normalizedPathname || isLedgerDestinationPath || usesCalendarPreviewSelection;
-  const showsExpandedTabRow = isExpanded || isBottomTabGlassPreviewPath;
+  const forceExpandedCoachNavigation = isCoach && !isIndividual && viewMode === 'coach';
+  const showsExpandedTabRow = forceExpandedCoachNavigation || isExpanded || isBottomTabGlassPreviewPath;
   const displayedRoutes = showsExpandedTabRow ? visibleRoutes : activeRoute ? [activeRoute] : [];
   const expandedWidth = Math.max(
     SLLayout.collapsedTabWidth,
@@ -290,6 +295,7 @@ function FilteredTabBar({
         ) : null}
         {displayedRoutes.map((route) => {
         const isFocused = route.key === activeRoute?.key;
+        const isStateFocused = route.key === state.routes[state.index]?.key;
         const color = isFocused ? SLColors.review : SLColors.textMuted;
         const routeCfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
         const isNestedMenuTrigger = !showsExpandedTabRow && !isActiveTopLevelTab;
@@ -330,13 +336,13 @@ function FilteredTabBar({
           if (isLedgerHomeRoute && !event.defaultPrevented) {
             router.navigate('/(tabs)/ledger/home' as any);
             setIsExpanded(false);
-          } else if (!isFocused && !event.defaultPrevented) {
+          } else if (!isStateFocused && !event.defaultPrevented) {
             if (isTrainingRoute) {
               router.navigate('/(tabs)/workout');
             } else {
               navigation.navigate(route.name as never);
             }
-          } else if (isFocused && !event.defaultPrevented) {
+          } else if (isStateFocused && !event.defaultPrevented) {
             setIsExpanded(false);
           }
 
@@ -531,6 +537,8 @@ export default function TabsLayout() {
       pathname.includes('/coach-dashboard') ||
       pathname.includes('/coach-roster') ||
       pathname.includes('/coach-athlete') ||
+      pathname.includes('/coach-attention') ||
+      pathname.includes('/coach-more') ||
       pathname.includes('/coach-calendar') ||
       pathname.includes('/coach-videos') ||
       pathname.includes('/coach-review-queue') ||
@@ -540,7 +548,7 @@ export default function TabsLayout() {
       pathname.includes('/coach-video-archive');
 
     if (viewMode === 'coach' && isAthleteFacingPath) {
-      router.replace('/(tabs)/coach-roster');
+      router.replace('/(tabs)/coach-dashboard');
     } else if (viewMode === 'athlete' && isCoachFacingPath) {
       router.replace('/(tabs)/athlete-dashboard');
     }
@@ -630,7 +638,7 @@ export default function TabsLayout() {
                       } else if (isIndividual) {
                         router.replace('/(tabs)/athlete-dashboard');
                       } else if (isCoach && viewMode === 'coach') {
-                        router.replace('/(tabs)/coach-roster');
+                        router.replace('/(tabs)/coach-dashboard');
                       } else {
                         router.replace('/(tabs)/athlete-dashboard');
                       }
@@ -702,8 +710,9 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="coach-dashboard"
           options={{
-            title: 'Today',
-            href: null,
+            title: 'Home',
+            headerShown: false,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-dashboard' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'home' : 'home-outline'}
@@ -732,7 +741,8 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="coach-roster"
           options={{
-            title: 'Roster',
+            title: 'Athletes',
+            headerShown: false,
             href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-roster' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
@@ -748,7 +758,26 @@ export default function TabsLayout() {
           name="coach-athlete/[athleteId]"
           options={{
             href: null,
+            headerShown: false,
             title: 'Athlete',
+          }}
+        />
+
+        <Tabs.Screen
+          name="coach-attention/[athleteId]"
+          options={{
+            href: null,
+            headerShown: false,
+            title: 'Needs Attention',
+          }}
+        />
+
+        <Tabs.Screen
+          name="coach-more"
+          options={{
+            title: 'More',
+            headerShown: false,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/(tabs)/coach-more' as any : null,
           }}
         />
 

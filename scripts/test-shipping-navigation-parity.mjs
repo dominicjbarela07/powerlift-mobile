@@ -20,8 +20,8 @@ assert.deepEqual(
 );
 assert.deepEqual(
   SHIPPING_COACH_TAB_ROUTES,
-  ['coach-roster', 'coach-calendar', 'coach-videos', 'messages/index'],
-  'the shipping coach tab tree must preserve the approved coach workspace',
+  ['coach-dashboard', 'coach-roster', 'messages/index', 'coach-more'],
+  'the shipping coach tab tree must preserve the athlete-first coaching workspace',
 );
 assert.deepEqual(
   SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES,

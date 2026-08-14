@@ -39,6 +39,7 @@ export type CoachRosterAthlete = {
   avatar_uploaded_at?: string | null;
   profilePhotoUrl?: string | null;
   profilePhotoVersion?: string | null;
+  preferred_units?: string | null;
   is_self: boolean;
   relationship_state: string;
   stable_sort_key: string;
@@ -51,10 +52,47 @@ export type CoachRosterAthlete = {
   primary_attention_reason?: CoachAttentionReason | null;
   queue_membership: string[];
   current_training: CoachTrainingContext;
+  programming_horizon?: {
+    programmed_through_date?: string | null;
+    days_remaining?: number | null;
+    sessions_remaining?: number;
+  };
   unread_messages: { thread_id?: number | null; count: number; last_message_at?: string | null };
   pending_video_reviews: { count: number; oldest?: string | null };
   pending_session_reviews: { count: number; oldest?: string | null };
-  readiness: { score?: number | null; date?: string | null; label: string };
+  readiness: {
+    score?: number | null;
+    date?: string | null;
+    label: string;
+    delta?: number | null;
+    comparison_policy?: string | null;
+    history?: { date: string; score: number }[];
+  };
+  reported_bodyweight?: {
+    latest?: {
+      date: string;
+      reported_at?: string | null;
+      reported_bodyweight_kg: number;
+      source: 'PRE_SESSION_READINESS';
+    } | null;
+    delta_kg?: number | null;
+    recent_observations?: {
+      date: string;
+      reported_at?: string | null;
+      reported_bodyweight_kg: number;
+      source: 'PRE_SESSION_READINESS';
+    }[];
+    interpolated: false;
+    source: 'PRE_SESSION_READINESS';
+  };
+  week_summary?: {
+    start_date: string;
+    end_date: string;
+    completed_sessions: number;
+    scheduled_sessions: number;
+    pr_count: number;
+  };
+  recent_training?: CoachRecentTrainingSession[];
   last_completed_session?: CoachSessionReference | null;
   next_assigned_session?: CoachSessionReference | null;
   coach_context?: {
@@ -72,6 +110,14 @@ export type CoachRosterAthlete = {
     meet_date?: string | null;
     days_until_meet?: number | null;
   } | null;
+};
+
+export type CoachRecentTrainingSession = CoachSessionReference & {
+  set_count: number;
+  movement_count: number;
+  total_volume_kg?: number | null;
+  pr_count: number;
+  evidence_mode: 'performed' | 'planned';
 };
 
 export type CoachSessionReference = {
@@ -105,6 +151,79 @@ export type CoachRosterResponse = {
     athlete_email: string;
     status: string;
   }[];
+  error?: string;
+};
+
+export type CoachHomeResponse = {
+  ok: boolean;
+  generated_at: string;
+  summary: {
+    needs_you: number;
+    reviews: number;
+    programming: number;
+    check_ins: number;
+  };
+  attention_athletes: CoachRosterAthlete[];
+  attention_total: number;
+  recent_activity: {
+    athlete: {
+      id: number;
+      name: string;
+      avatar_url?: string | null;
+      avatar_uploaded_at?: string | null;
+    };
+    session: CoachRecentTrainingSession;
+  }[];
+  roster_total: number;
+  error?: string;
+};
+
+export type CoachAthleteSummaryResponse = {
+  ok: boolean;
+  generated_at?: string;
+  athlete: {
+    id: number;
+    name: string;
+    avatar_url?: string | null;
+    avatar_uploaded_at?: string | null;
+    profilePhotoUrl?: string | null;
+    profilePhotoVersion?: string | null;
+    preferred_units?: string | null;
+    is_self?: boolean;
+  };
+  operational_status: {
+    primary_status: string;
+    label: string;
+    tone: 'success' | 'warning' | 'danger';
+    reasons: CoachAttentionReason[];
+  };
+  programming_horizon: {
+    programmed_through_date?: string | null;
+    days_remaining?: number | null;
+    sessions_remaining?: number;
+    status?: string;
+    status_label?: string;
+  };
+  current_training?: CoachTrainingContext;
+  readiness?: CoachRosterAthlete['readiness'];
+  reported_bodyweight?: CoachRosterAthlete['reported_bodyweight'];
+  week_summary?: CoachRosterAthlete['week_summary'];
+  recent_training?: CoachRecentTrainingSession[];
+  last_completed_session?: CoachSessionReference | null;
+  next_assigned_session?: CoachSessionReference | null;
+  pending_video_reviews: { count: number; items?: unknown[] };
+  pending_session_reviews: { count: number; items?: unknown[] };
+  unread_messages?: { thread_id?: number | null; count: number; last_message_at?: string | null } | null;
+  coach_context: {
+    pinned_note?: {
+      id: number;
+      title?: string | null;
+      body_preview?: string | null;
+      note_type?: string | null;
+      updated_at?: string | null;
+    } | null;
+  };
+  quick_actions: Record<string, boolean>;
   error?: string;
 };
 

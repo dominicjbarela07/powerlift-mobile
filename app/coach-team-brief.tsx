@@ -157,8 +157,7 @@ export default function CoachTeamBriefScreen() {
     }
 
     // A cold/deep-link launch has no underlying screen to reveal.
-    // Fall back to the coach's canonical landing surface, never Home.
-    router.replace('/(tabs)/coach-roster');
+    router.replace('/(tabs)/coach-dashboard');
   }, [router]);
 
   return (

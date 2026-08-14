@@ -1,148 +1,119 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const files = {
-  roster: 'app/(tabs)/coach-roster.tsx',
-  athlete: 'app/(tabs)/coach-athlete/[athleteId].tsx',
-  brief: 'app/coach-team-brief.tsx',
-  rootLayout: 'app/_layout.tsx',
-  legacyToday: 'app/(tabs)/coach-dashboard.tsx',
-  layout: 'app/(tabs)/_layout.tsx',
-  index: 'app/index.tsx',
-  login: 'app/login.tsx',
-  settings: 'app/(tabs)/settings.tsx',
+import {
+  deriveCoachHomeFromRoster,
+  filterCoachRosterV2,
+} from '../lib/coach-mobile-v2.ts';
+
+const paths = {
+  homeRoute: 'app/(tabs)/coach-dashboard.tsx',
+  home: 'components/coach-mobile/CoachHomeV2.tsx',
+  rosterRoute: 'app/(tabs)/coach-roster.tsx',
+  roster: 'components/coach-mobile/CoachRosterV2.tsx',
+  hubRoute: 'app/(tabs)/coach-athlete/[athleteId].tsx',
+  hub: 'components/coach-mobile/CoachAthleteHubV2.tsx',
+  detailRoute: 'app/(tabs)/coach-attention/[athleteId].tsx',
+  detail: 'components/coach-mobile/CoachAttentionDetailV2.tsx',
+  more: 'app/(tabs)/coach-more.tsx',
+  tabs: 'app/(tabs)/_layout.tsx',
+  shipping: 'lib/shipping-navigation.ts',
   contract: 'lib/coach-mobile.ts',
-  shippingNavigation: 'lib/shipping-navigation.ts',
 };
+const source = Object.fromEntries(await Promise.all(Object.entries(paths).map(async ([key, path]) => [
+  key,
+  await readFile(new URL(`../${path}`, import.meta.url), 'utf8'),
+])));
+const backend = await readFile(new URL('../../app/blueprints/main.py', import.meta.url), 'utf8');
+const operatingModel = await readFile(new URL('../../app/services/coach_mobile_operating_model.py', import.meta.url), 'utf8');
 
-const source = Object.fromEntries(
-  await Promise.all(
-    Object.entries(files).map(async ([key, path]) => [
-      key,
-      await readFile(new URL(`../${path}`, import.meta.url), 'utf8'),
-    ]),
-  ),
-);
-
-function versionAtLeast(rawVersion, minimumVersion) {
-  const parse = (value) => String(value || '').split('.').map((part) => Number(part));
-  const version = parse(rawVersion);
-  const minimum = parse(minimumVersion);
-  if (version.some((part) => !Number.isInteger(part)) || minimum.some((part) => !Number.isInteger(part))) return false;
-  for (let index = 0; index < Math.max(version.length, minimum.length); index += 1) {
-    const left = version[index] || 0;
-    const right = minimum[index] || 0;
-    if (left !== right) return left > right;
-  }
-  return true;
-}
-
-const appConfig = JSON.parse(await readFile(new URL('../app.json', import.meta.url), 'utf8'));
-const backendMain = await readFile(new URL('../../app/blueprints/main.py', import.meta.url), 'utf8');
-const minimumRosterVersion = backendMain.match(/COACH_ROSTER_OPERATING_MODEL_MIN_VERSION\s*=\s*["']([^"']+)["']/)?.[1];
-assert(minimumRosterVersion, 'Backend coach Roster minimum app version must remain explicit.');
-assert(
-  versionAtLeast(appConfig.expo?.version, minimumRosterVersion),
-  `Mobile app ${appConfig.expo?.version || 'unknown'} cannot consume the coach Roster contract gated at ${minimumRosterVersion}.`,
-);
-
-for (const name of ['roster', 'athlete', 'brief', 'legacyToday', 'contract']) {
+for (const name of ['homeRoute', 'home', 'rosterRoute', 'roster', 'hubRoute', 'hub', 'detailRoute', 'detail', 'more']) {
   const value = source[name];
-  assert(
-    !value.includes("from '@/dev-mocks") && !value.includes('from "@/dev-mocks'),
-    `${name} must not import DEV fixture data.`,
-  );
+  assert.doesNotMatch(value, /@\/dev-mocks\//, `${name} must not import DEV fixtures.`);
 }
 
-assert(source.roster.includes("fetchJson('/coach/mobile/roster'"));
-assert(source.roster.includes('<FlatList'));
-assert(source.roster.includes('initialNumToRender={12}'));
-assert(source.roster.includes('windowSize={9}'));
-assert(source.roster.includes('accountKeyRef.current === requestAccountKey'));
-assert(source.roster.includes('requestSequenceRef.current === requestSequence'));
-assert(source.roster.includes('useFocusEffect'));
-assert(source.roster.includes("AppState.addEventListener('change'"));
-assert(source.roster.includes('onLongPress'));
-assert(source.roster.includes('<Swipeable'));
-assert(source.roster.includes('accessibilityLabel={`More actions for ${athlete.name}`}'));
-assert(source.roster.includes("fetchJson('/coach-utility-dock/notes'"));
-assert(source.roster.includes("pathname: '/(tabs)/coach-athlete/[athleteId]'"));
-assert(source.roster.includes("pathname: '/(tabs)/messages/[threadId]'"));
-assert(source.roster.includes("pathname: '/(tabs)/coach-videos'"));
-assert(source.roster.includes("pathname: '/(tabs)/workout'"));
-assert(source.roster.includes("pathname: '/(tabs)/workout/[workoutId]'"));
-assert(source.roster.includes("pathname: '/(tabs)/check-ins'"));
-assert(source.roster.includes("filter === 'all'"));
-assert(source.roster.includes('stable_sort_key.localeCompare'));
-assert(source.roster.includes("'Remaining Athletes'"));
-assert(source.roster.includes('!workingSetIds.has(athlete.id)'));
-assert(source.roster.includes("filter !== 'all' || visibleRoster.length > 0"));
-assert(source.roster.includes("!error && filter !== 'all'"));
-assert.deepEqual(
-  [...source.roster.matchAll(/key: '(all|needs_attention|programming|reviews|messages|check_ins)'/g)]
-    .map((match) => match[1]),
-  ['all', 'needs_attention', 'programming', 'reviews', 'messages', 'check_ins'],
-);
+assert.match(source.homeRoute, /<CoachHomeV2/);
+assert.match(source.home, /fetchJson\('\/coach\/mobile\/home'/);
+assert.match(source.home, /deriveCoachHomeFromRoster/);
+assert.match(source.home, /Needs Your Attention/);
+assert.match(source.home, /Recent Activity/);
+for (const label of ['Need You', 'Review', 'Programming', 'Check-In']) assert.match(source.home, new RegExp(label));
+assert.match(source.home, /pathname: '\/\(tabs\)\/coach-athlete\/\[athleteId\]'/);
+assert.match(source.home, /pathname: '\/\(tabs\)\/coach-attention\/\[athleteId\]'/);
+assert.match(source.home, /accountKeyRef\.current === requestAccount/);
 
-assert(source.athlete.includes('fetchJson<AthleteCommandSummary>(`/coach/mobile/athletes/${athleteId}/summary`'));
-assert(source.athlete.includes('title="Active Coaching Queue"'));
-assert(source.athlete.includes('title="Coaching Tools"'));
-assert(source.athlete.includes('title="Athlete Context"'));
-assert(
-  source.athlete.indexOf('title="Active Coaching Queue"')
-    < source.athlete.indexOf('title="Coaching Tools"'),
-);
-assert(
-  source.athlete.indexOf('title="Coaching Tools"')
-    < source.athlete.indexOf('title="Athlete Context"'),
-);
-assert(source.athlete.includes('accountKeyRef.current === requestAccountKey'));
-assert(source.athlete.includes('useFocusEffect'));
-assert(source.athlete.includes("(reason.reason_type || '').includes('readiness')"));
-assert(source.athlete.includes('normalizeCoachAttentionReasons('));
-assert(source.athlete.includes('threadId: payload.unread_messages?.thread_id'));
-assert(source.athlete.includes('Array.isArray(payload.pending_session_reviews?.items)'));
+assert.match(source.rosterRoute, /<CoachRosterV2/);
+assert.match(source.roster, /fetchJson\('\/coach\/mobile\/roster'/);
+assert.match(source.roster, /<FlatList/);
+assert.match(source.roster, /initialNumToRender=\{12\}/);
+assert.match(source.roster, /windowSize=\{9\}/);
+assert.match(source.roster, /Alphabetical athlete navigation/);
+assert.doesNotMatch(source.roster, /Swipeable|onLongPress/, 'Primary roster navigation must be tap-first.');
+for (const filter of ["'all'", "'needs_attention'", "'programming'", "'active'"]) assert.match(source.roster, new RegExp(filter));
 
-assert(source.brief.includes("fetchJson<CoachTeamBriefResponse>('/coach/mobile/team-brief'"));
-assert(source.brief.includes('openCoachDestination(router, item.destination)'));
-assert(source.brief.includes('accountKeyRef.current === requestAccountKey'));
-assert(source.brief.includes('useFocusEffect'));
-assert(source.brief.includes('router.canGoBack()'));
-assert(source.brief.includes('router.back()'));
-assert(source.brief.includes("router.replace('/(tabs)/coach-roster')"));
-assert(source.rootLayout.includes("presentation: 'fullScreenModal'"));
-assert(source.rootLayout.includes('name="coach-team-brief"'));
-assert(source.layout.includes("router.push('/coach-team-brief' as any)"));
-assert(!source.layout.includes('name="coach-team-brief"'));
+assert.match(source.hubRoute, /<CoachAthleteHubV2/);
+assert.match(source.hub, /\/coach\/mobile\/athletes\/\$\{athleteId\}\/summary/);
+for (const section of ['What Needs You', 'Current Training', 'Recent Signals', 'Recent Training']) assert.match(source.hub, new RegExp(section));
+for (const action of ['Message', 'Program', 'Review', 'More']) assert.match(source.hub, new RegExp(`label: '${action}'`));
+assert.ok(source.hub.indexOf('What Needs You') < source.hub.indexOf('Current Training'));
+assert.ok(source.hub.indexOf('Current Training') < source.hub.indexOf('Recent Signals'));
+assert.ok(source.hub.indexOf('Recent Signals') < source.hub.indexOf('Recent Training'));
+assert.match(source.hub, /reported_bodyweight/);
+assert.match(source.hub, /week_summary/);
 
-assert(source.legacyToday.includes('<Redirect href="/(tabs)/coach-roster"'));
-assert(!source.legacyToday.includes('fetchJson'));
+assert.match(source.detailRoute, /<CoachAttentionDetailV2/);
+assert.match(source.detail, /Recommended Action/);
+assert.match(source.detail, /Recent Readiness Trend/);
+assert.match(source.detail, /Last Session/);
+assert.match(source.detail, /openCoachDestination\(router, reason\.destination\)/);
 
-for (const entry of ['index', 'login', 'settings']) {
-  assert(
-    source[entry].includes('/(tabs)/coach-roster'),
-    `${entry} must route coach entry to Roster.`,
-  );
-}
+assert.match(source.shipping, /'coach-dashboard',[\s\S]*'coach-roster',[\s\S]*'messages\/index',[\s\S]*'coach-more'/);
+assert.match(source.tabs, /forceExpandedCoachNavigation/);
+assert.match(source.tabs, /name="coach-attention\/\[athleteId\]"/);
+assert.match(source.tabs, /name="coach-more"/);
 
-for (const expected of [
-  "'coach-roster': { label: 'Roster'",
-  "'coach-calendar': { label: 'Calendar'",
-  "'coach-videos': { label: 'Videos'",
-  "'messages/index': { label: 'Messages'",
-]) {
-  assert(source.shippingNavigation.includes(expected), `Missing coach shipping navigation contract: ${expected}`);
-}
+assert.match(backend, /@main_bp\.route\("\/coach\/mobile\/home"/);
+assert.match(backend, /if user\.role != "coach"/);
+assert.match(backend, /_filtered_coach_athlete_query\(user\.id, coach_preferences\)/);
+assert.match(backend, /build_coach_mobile_home\(model\)/);
+assert.match(operatingModel, /HOME_ATTENTION_LIMIT = 3/);
+assert.match(operatingModel, /HOME_ACTIVITY_LIMIT = 4/);
+assert.match(operatingModel, /PRE_SESSION_READINESS/);
+assert.match(operatingModel, /evidence_mode/);
 
-for (const expected of [
-  'name="coach-dashboard"',
-  'href: null',
-]) {
-  assert(source.layout.includes(expected), `Missing coach navigation contract: ${expected}`);
-}
+const sampleAthletes = [
+  {
+    id: 1,
+    name: 'Amanda Athlete',
+    status: { classification: 'needs_attention' },
+    queue_membership: ['all', 'needs_attention', 'programming'],
+    current_training: { status: 'active' },
+    recent_training: [{ workout_id: 9, date: '2026-08-13', evidence_mode: 'performed' }],
+  },
+  {
+    id: 2,
+    name: 'Blake Athlete',
+    status: { classification: 'on_track' },
+    queue_membership: ['all'],
+    current_training: { status: 'no_active_program' },
+    recent_training: [],
+  },
+];
+assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'programming').map((row) => row.id), [1]);
+assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'active').map((row) => row.id), [1]);
+assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'all', 'blake').map((row) => row.id), [2]);
 
-assert(source.contract.includes('export type CoachAttentionReason'));
-assert(source.contract.includes('resolution_policy: string'));
-assert(source.contract.includes('export function openCoachDestination'));
+const home = deriveCoachHomeFromRoster({
+  ok: true,
+  athletes: sampleAthletes,
+  counts: { all: 2, needs_attention: 1, programming: 1, reviews: 0, messages: 0, check_ins: 0 },
+  needs_attention: [{ athlete_id: 1, reason: {} }],
+  needs_attention_total: 1,
+  attention_cap: 6,
+  generated_at: '2026-08-14T00:00:00',
+});
+assert.equal(home.attention_athletes.length, 1);
+assert.equal(home.recent_activity.length, 1);
+assert.equal(home.summary.needs_you, 1);
 
-console.log('coach mobile live contract: PASS');
+console.log('coach mobile athlete-first V2 live contract: PASS');

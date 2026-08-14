@@ -1321,7 +1321,7 @@ export default function SettingsScreen() {
       setMobileViewMode(resolvedMode);
       setModeModalOpen(false);
       loadAccountTransitionMetadata();
-      router.replace(resolvedMode === 'coach' ? '/(tabs)/coach-roster' : '/(tabs)/athlete-dashboard');
+      router.replace(resolvedMode === 'coach' ? '/(tabs)/coach-dashboard' : '/(tabs)/athlete-dashboard');
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
     } finally {

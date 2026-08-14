@@ -326,7 +326,7 @@ export default function IndexGate() {
   }
 
   // ✅ Logged in coach → send to tabs home (the file app/(tabs)/index.tsx)
-  return <Redirect href="/(tabs)/coach-roster" />;
+  return <Redirect href="/(tabs)/coach-dashboard" />;
 }
 
 const styles = StyleSheet.create({
