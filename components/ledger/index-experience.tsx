@@ -348,15 +348,16 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
   </Pressable>;
 }
 
-function LatestEntryArtwork({ movement, entry }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null }) {
-  const movementLabel = movement?.name || entry?.movement?.label;
-  const hasMovementIdentity = Boolean(movementLabel || movement?.family || movement?.primary_muscle_group || entry?.movement?.family);
-  const coreLift = canonicalLiftKey(movement?.core_family || movementLabel || entry?.movement?.family);
+function LatestEntryArtwork({ movement, entry, fallbackEvent }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null; fallbackEvent?: AccomplishmentEvent }) {
+  const movementLabel = movement?.name || entry?.movement?.label || fallbackEvent?.movement_label;
+  const fallbackFamily = entry?.movement?.family || fallbackEvent?.core_movement_key || fallbackEvent?.movement_family;
+  const hasMovementIdentity = Boolean(movementLabel || movement?.family || movement?.primary_muscle_group || fallbackFamily);
+  const coreLift = canonicalLiftKey(movement?.core_family || movementLabel || fallbackFamily);
   const coreRegion = coreLift === 'squat' ? 'quads' : coreLift === 'bench' ? 'chest' : coreLift === 'deadlift' ? 'hamstrings' : null;
   const region = coreRegion || accessoryMuscleRegion({
     movement: movementLabel,
     movement_identity: {
-      family: movement?.family || movement?.body_region || entry?.movement?.family,
+      family: movement?.family || movement?.body_region || fallbackFamily,
       family_display_name: movementLabel,
       primary_muscle_group: movement?.primary_muscle_group,
     },
@@ -488,7 +489,7 @@ export function LedgerIndexExperience() {
 
       <Text style={styles.sectionKicker}>LATEST ENTRY</Text>
       <Pressable disabled={!latestJourneyEntry && !model.latest} accessibilityRole="button" accessibilityLabel={`Latest Ledger entry: ${latestTitle}, ${latestValue}`} onPress={() => latestHref ? router.push(latestHref as any) : model.latest?.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.latest.source_set_log_id}` as any) : openRoom('journey')} style={({ pressed }) => [styles.latestEntry, pressed && styles.pressed]}>
-        <LatestEntryArtwork movement={latestMovement} entry={latestJourneyEntry} />
+        <LatestEntryArtwork movement={latestMovement} entry={latestJourneyEntry} fallbackEvent={model.latest} />
         <View style={styles.latestCopy}><View style={styles.latestTopLine}><Text style={styles.latestTitle}>{latestTitle.toUpperCase()}</Text>{latestIsPr ? <View style={styles.latestPrBadge}><Text style={styles.latestPrBadgeText}>PR</Text></View> : null}</View><Text numberOfLines={1} style={styles.latestContext}>{latestContext}</Text><Text style={styles.latestValue}>{latestValue}</Text><Text numberOfLines={1} style={styles.latestDate}>{latestFooter}</Text></View>
         <Ionicons name="arrow-forward" size={20} color="#B99AF0" />
       </Pressable>
