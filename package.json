@@ -28,6 +28,8 @@
     "test:post-session-ledger-ceremony": "node scripts/test-post-session-ledger-ceremony.mjs",
     "test:movement-history-race": "node scripts/test-movement-history-request-race.mjs",
     "test:rest-timer-refinement": "node --import tsx scripts/test-rest-timer-refinement.mjs",
+    "test:rest-timer-last-used": "node --import tsx scripts/test-rest-timer-last-used.mjs",
+    "test:session-logger-three-zone-header": "node --import tsx scripts/test-session-logger-three-zone-header.mjs",
     "test:logger-visual-context": "node --import tsx scripts/test-logger-visual-context.mjs",
     "test:logger-canonical-weight": "node --import tsx scripts/test-logger-canonical-weight.mjs",
     "test:logger-prescribed-render-weight": "node --import tsx scripts/test-logger-prescribed-render-weight.mjs",
