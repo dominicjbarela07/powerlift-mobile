@@ -59,6 +59,22 @@ type CoachItem = {
   route?: string | null;
 };
 
+export type TodayReadinessObservation = {
+  id?: number | null;
+  date?: string | null;
+  training_date?: string | null;
+  workout_id?: number | null;
+  context?: 'session_check_in' | 'daily_check_in' | string | null;
+  submitted_at?: string | null;
+  sleep_quality?: number | null;
+  sleep_hours?: number | null;
+  energy?: number | null;
+  soreness?: number | null;
+  stress?: number | null;
+  bodyweight_kg?: number | null;
+  readiness_score?: number | null;
+};
+
 export type TodayHomeData = {
   date: string;
   athlete?: {
@@ -66,6 +82,7 @@ export type TodayHomeData = {
     name?: string | null;
     profilePhotoUrl?: string | null;
     profilePhotoVersion?: string | null;
+    preferred_units?: string | null;
     bodyweight_kg?: number | null;
   } | null;
   coach?: { id?: number; name?: string | null; email?: string | null } | null;
@@ -87,9 +104,17 @@ export type TodayHomeData = {
   readiness?: {
     score?: number | null;
     message?: string | null;
-    latest?: { sleep_quality?: number | null; energy?: number | null; soreness?: number | null; stress?: number | null } | null;
+    latest?: TodayReadinessObservation | null;
     metrics?: { sleep?: number | null; energy?: number | null; soreness?: number | null; stress?: number | null } | null;
   } | null;
+  daily_check_in?: TodayReadinessObservation | null;
+  capabilities?: {
+    can_begin_session?: boolean;
+    can_resume_session?: boolean;
+    can_daily_check_in?: boolean;
+    has_daily_check_in?: boolean;
+  } | null;
+  daily_check_in_action?: TodayHomeAction | null;
   coach_guidance?: { source?: string | null; title?: string | null; body?: string | null; created_at?: string | null; route?: string | null; workout_id?: number | null } | null;
   latest_announcement?: CoachItem | null;
   latest_message?: CoachItem | null;
@@ -202,19 +227,34 @@ function TrainingHero({
 }) {
   const { width } = useWindowDimensions();
   const compact = width < 410;
+  const hasSession = Boolean(session?.id);
   const duration = session?.estimated_duration_minutes ?? session?.preview?.estimated_duration_minutes;
   const status = String(session?.status ?? today.mission?.status ?? '').toLowerCase();
-  const actionLabel = status.includes('progress')
+  const canResume = today.capabilities?.can_resume_session ?? status.includes('progress');
+  const canBegin = today.capabilities?.can_begin_session ?? (
+    hasSession && !canResume && !status.includes('complete') && !status.includes('logged') && !status.includes('done')
+  );
+  const completed = status.includes('complete') || status.includes('logged') || status.includes('done');
+  const actionLabel = canResume
     ? 'Resume Session'
-    : status.includes('complete') || status.includes('logged') || status.includes('done')
+    : canBegin
+      ? 'Begin Session'
+      : completed
       ? 'View Recap'
-      : 'Begin Session';
+      : 'View Session';
   const programLine = buildProgramLine(today);
   const movementLine = buildMovementLine(session);
   const responsiveMovementLine = compact
     ? movementLine.replace(/ · (?=\d+\s+accessor)/i, '\n')
     : movementLine;
   const readiness = readinessPresentation(today.readiness);
+  const dailyCheckIn = dailyCheckInPresentation(today.daily_check_in);
+  const dailyAction = today.daily_check_in_action ?? {
+    kind: 'daily_check_in',
+    label: dailyCheckIn ? "Today's Check-In" : 'Check In',
+    route: 'daily_readiness',
+  };
+  const canDailyCheckIn = today.capabilities?.can_daily_check_in ?? !hasSession;
 
   return (
     <SLSurface
@@ -253,7 +293,7 @@ function TrainingHero({
           </ImageBackground>
         </View>
         <View style={[styles.heroCopy, compact && styles.heroCopyCompact]}>
-          <Text style={styles.sectionEyebrow}>TODAY&apos;S TRAINING</Text>
+          <Text style={styles.sectionEyebrow}>{hasSession ? "TODAY'S TRAINING" : 'RECOVERY DAY'}</Text>
           <Text numberOfLines={2} style={styles.heroTitle}>{session?.label || today.mission?.title || 'Training session'}</Text>
           {programLine ? <Text numberOfLines={1} style={styles.supporting}>{programLine}</Text> : null}
           {duration ? (
@@ -262,13 +302,13 @@ function TrainingHero({
               <Text style={styles.supporting}>{`About ${Math.round(duration)} min`}</Text>
             </View>
           ) : null}
-          {responsiveMovementLine ? <Text numberOfLines={2} style={styles.movementSummary}>{responsiveMovementLine}</Text> : null}
+          {hasSession && responsiveMovementLine ? <Text numberOfLines={2} style={styles.movementSummary}>{responsiveMovementLine}</Text> : null}
         </View>
-        {readiness ? (
+        {hasSession && readiness ? (
           <Pressable
             accessibilityLabel={`Readiness ${readiness.title}. ${readiness.detail}`}
             accessibilityRole="button"
-            onPress={() => onAction({ route: 'session_surveys', label: 'Open readiness' })}
+            onPress={() => onAction(today.primary_action ?? { route: 'workout', workout_id: session?.id })}
             style={({ pressed }) => [styles.readinessRow, pressed && styles.pressed]}
           >
             <View style={styles.readinessIcon}>
@@ -281,16 +321,38 @@ function TrainingHero({
             <Ionicons color={SLColors.iconPrimary} name="arrow-forward" size={18} />
           </Pressable>
         ) : null}
+        {!hasSession && canDailyCheckIn ? (
+          <Pressable
+            accessibilityLabel={dailyCheckIn
+              ? `${dailyCheckIn.title}. ${dailyCheckIn.detail}. Open today's check-in.`
+              : 'Optional daily check-in. Record readiness, recovery, and body weight.'}
+            accessibilityRole="button"
+            onPress={() => onAction(dailyAction)}
+            style={({ pressed }) => [styles.dailyCheckIn, pressed && styles.pressed]}
+          >
+            <View style={styles.dailyCheckInIcon}>
+              <Ionicons color={SLColors.accentViolet} name={dailyCheckIn ? 'checkmark' : 'pulse-outline'} size={19} />
+            </View>
+            <View style={styles.rowCopy}>
+              <Text style={styles.dailyCheckInEyebrow}>{dailyCheckIn ? 'TODAY\'S CHECK-IN' : 'OPTIONAL CHECK-IN'}</Text>
+              <Text style={styles.rowTitle}>{dailyCheckIn?.title || 'Record readiness, recovery & bodyweight'}</Text>
+              {dailyCheckIn ? <Text numberOfLines={1} style={styles.rowDetail}>{dailyCheckIn.detail}</Text> : null}
+            </View>
+            <Ionicons color={SLColors.iconMuted} name="chevron-forward" size={18} />
+          </Pressable>
+        ) : null}
       </View>
-      <View style={styles.heroCta}>
-        <SLButton
-          fullWidth
-          iconRight="arrow-forward"
-          iconRightPosition="edge"
-          label={actionLabel}
-          onPress={() => onAction(today.primary_action ?? { route: 'workout', workout_id: session?.id })}
-        />
-      </View>
+      {hasSession ? (
+        <View style={styles.heroCta}>
+          <SLButton
+            fullWidth
+            iconRight="arrow-forward"
+            iconRightPosition="edge"
+            label={actionLabel}
+            onPress={() => onAction(today.primary_action ?? { route: 'workout', workout_id: session?.id })}
+          />
+        </View>
+      ) : null}
     </SLSurface>
   );
 }
@@ -452,7 +514,12 @@ function NewAthleteContent({ today, isIndividual, onAction }: { today: TodayHome
         <Text style={styles.sectionEyebrow}>{`SET YOUR STARTING POINT · ${completed} OF 3`}</Text>
         <SetupRow active={!hasCoach} complete={hasCoach} detail={hasCoach ? 'You’re all set' : 'Choose how you want to train'} index="1" label={hasCoach ? 'Coach connected' : 'Choose your coaching setup'} onPress={() => onAction({ route: hasCoach ? 'messages' : 'training', label: 'Coaching setup' })} />
         <SetupRow active={hasCoach} detail="Tell your coach what matters" index="2" label="Add training goals" onPress={() => onAction({ route: 'training_focus', label: 'Add training goals' })} />
-        <SetupRow detail="Help your coach get the full picture" index="3" label="Complete first check-in" onPress={() => onAction({ route: 'session_surveys', label: 'Complete first check-in' })} />
+        <SetupRow
+          detail="Help your coach get the full picture"
+          index="3"
+          label="Complete first check-in"
+          onPress={() => onAction(today.daily_check_in_action ?? { route: 'daily_readiness', label: 'Complete first check-in' })}
+        />
       </SLSurface>
 
       <WeekRail empty today={today} />
@@ -584,6 +651,22 @@ function readinessPresentation(readiness?: TodayHomeData['readiness']) {
   return { title: `Ready ${displayScore}/10`, detail: detail || readiness?.message || 'Readiness recorded' };
 }
 
+function dailyCheckInPresentation(observation?: TodayReadinessObservation | null) {
+  if (!observation) return null;
+  const score = Number(observation.readiness_score);
+  const displayScore = Number.isFinite(score)
+    ? Math.round((score <= 5 ? score * 2 : score) * 10) / 10
+    : null;
+  const detail = [
+    observation.energy != null ? `Energy ${readinessWord(observation.energy, false)}` : '',
+    observation.soreness != null ? `Soreness ${readinessWord(observation.soreness, true)}` : '',
+  ].filter(Boolean).join(' · ');
+  return {
+    title: displayScore == null ? 'Readiness recorded' : `Ready ${displayScore}/10`,
+    detail: detail || 'Readiness and recovery recorded',
+  };
+}
+
 function readinessWord(value: number, inverse: boolean) {
   const high = value >= 4;
   const low = value <= 2;
@@ -677,6 +760,9 @@ const styles = StyleSheet.create({
   movementSummary: { color: SLColors.textSecondary, fontSize: 13, lineHeight: 18, marginTop: 2 },
   readinessRow: { minHeight: 49, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, paddingVertical: 7 },
   readinessIcon: { width: 36, height: 36, borderRadius: 9, backgroundColor: SLColors.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  dailyCheckIn: { minHeight: 64, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, paddingVertical: 9 },
+  dailyCheckInIcon: { width: 36, height: 36, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderFocus, backgroundColor: SLColors.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  dailyCheckInEyebrow: { color: SLColors.accentViolet, fontSize: 9, lineHeight: 12, letterSpacing: 0.6, fontWeight: '800', marginBottom: 1 },
   rowCopy: { flex: 1, minWidth: 0 },
   rowTitle: { color: SLColors.textPrimary, fontSize: 15, lineHeight: 20, fontWeight: '600' },
   rowDetail: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17 },

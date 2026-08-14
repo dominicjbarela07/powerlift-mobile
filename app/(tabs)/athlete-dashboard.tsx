@@ -19,8 +19,9 @@ import { Text } from '@/components/ui/sl-text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
-import { TodayHomeExperience } from '@/components/home/TodayHomeExperience';
+import { TodayHomeExperience, type TodayReadinessObservation } from '@/components/home/TodayHomeExperience';
 import { SLButton, SLProfileAvatar } from '@/components/ui';
+import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
 import { mergeAthleteHomeWeekPreview } from '@/lib/athlete-home-week';
@@ -28,6 +29,15 @@ import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import {
+  bodyweightKgToDisplay,
+  buildReadinessPayload,
+  createReadinessSubmissionGate,
+  normalizeReadinessUnit,
+  readinessPositionFromCanonical,
+  sleepPositionFromHours,
+} from '@/lib/readiness';
+import { useSLReducedMotion } from '@/lib/motion';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 type TodayAction = {
@@ -67,6 +77,7 @@ type TodayPayload = {
     name?: string | null;
     profilePhotoUrl?: string | null;
     profilePhotoVersion?: string | null;
+    preferred_units?: string | null;
     bodyweight_kg?: number | null;
   } | null;
   coach?: {
@@ -108,12 +119,7 @@ type TodayPayload = {
   readiness?: {
     score?: number | null;
     message?: string | null;
-    latest?: {
-      sleep_quality?: number | null;
-      energy?: number | null;
-      soreness?: number | null;
-      stress?: number | null;
-    } | null;
+    latest?: TodayReadinessObservation | null;
     metrics?: {
       sleep?: number | null;
       energy?: number | null;
@@ -121,6 +127,14 @@ type TodayPayload = {
       stress?: number | null;
     } | null;
   } | null;
+  daily_check_in?: TodayReadinessObservation | null;
+  capabilities?: {
+    can_begin_session?: boolean;
+    can_resume_session?: boolean;
+    can_daily_check_in?: boolean;
+    has_daily_check_in?: boolean;
+  } | null;
+  daily_check_in_action?: TodayAction | null;
   coach_guidance?: {
     source?: string | null;
     title?: string | null;
@@ -188,6 +202,17 @@ type CoachConnectionDisplayItem = {
   body?: string | null;
 };
 
+function emptyDailyReadinessForm(): ReadinessModalValues {
+  return {
+    bodyweight: '',
+    bodyweightSkipped: true,
+    sleepPosition: 0.5,
+    energyPosition: 0.5,
+    sorenessPosition: 0.5,
+    stressPosition: 0.5,
+  };
+}
+
 function normalizeTodayPayload(payload: TodayPayload): TodayPayload {
   const photo = normalizeProfilePhotoPayload(payload?.athlete);
   return {
@@ -238,6 +263,12 @@ export default function AthleteDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [showPatchNote, setShowPatchNote] = useState(false);
   const [showIndividualWelcome, setShowIndividualWelcome] = useState(false);
+  const [dailyReadinessVisible, setDailyReadinessVisible] = useState(false);
+  const [dailyReadinessSubmitting, setDailyReadinessSubmitting] = useState(false);
+  const [dailyReadinessError, setDailyReadinessError] = useState<string | null>(null);
+  const [dailyReadinessForm, setDailyReadinessForm] = useState<ReadinessModalValues>(() => emptyDailyReadinessForm());
+  const dailyReadinessSubmissionGateRef = useRef(createReadinessSubmissionGate());
+  const reduceMotion = useSLReducedMotion();
   const isIndividual =
     user?.workspace_mode === 'individual' ||
       user?.is_individual_workspace === true ||
@@ -414,9 +445,81 @@ export default function AthleteDashboard() {
     return () => subscription.remove();
   }, [loadToday]);
 
+  const openDailyReadiness = React.useCallback(() => {
+    const current = todayRef.current;
+    const canDailyCheckIn = current?.capabilities?.can_daily_check_in
+      ?? !current?.mission?.session?.id;
+    if (!current || !canDailyCheckIn) return;
+    const observation = current.daily_check_in;
+    const unit = normalizeReadinessUnit(current.athlete?.preferred_units);
+    const bodyweight = bodyweightKgToDisplay(observation?.bodyweight_kg, unit) || '';
+    setDailyReadinessForm({
+      bodyweight,
+      bodyweightSkipped: !bodyweight,
+      sleepPosition: observation?.sleep_hours != null
+        ? sleepPositionFromHours(Number(observation.sleep_hours))
+        : 0.5,
+      energyPosition: readinessPositionFromCanonical(observation?.energy),
+      sorenessPosition: readinessPositionFromCanonical(observation?.soreness),
+      stressPosition: readinessPositionFromCanonical(observation?.stress),
+    });
+    setDailyReadinessError(null);
+    setDailyReadinessVisible(true);
+  }, []);
+
+  const cancelDailyReadiness = React.useCallback(() => {
+    if (dailyReadinessSubmitting) return;
+    setDailyReadinessVisible(false);
+    setDailyReadinessError(null);
+  }, [dailyReadinessSubmitting]);
+
+  const submitDailyReadiness = React.useCallback(async () => {
+    const current = todayRef.current;
+    const unit = normalizeReadinessUnit(current?.athlete?.preferred_units);
+    const built = buildReadinessPayload(dailyReadinessForm, unit);
+    if (!built.payload) {
+      setDailyReadinessError(built.error || 'Check your readiness values.');
+      return;
+    }
+
+    await dailyReadinessSubmissionGateRef.current.run(async () => {
+      try {
+        setDailyReadinessSubmitting(true);
+        setDailyReadinessError(null);
+        const response = await fetchJson('/athletes/mobile/readiness/daily', {
+          method: 'POST',
+          auth: true,
+          body: built.payload as any,
+        });
+        if (response.status === 409 && response.json?.workout_id) {
+          setDailyReadinessVisible(false);
+          await loadToday({ silent: true, showRefreshIndicator: false });
+          router.push({
+            pathname: '/workout/[workoutId]',
+            params: { workoutId: String(response.json.workout_id) },
+          });
+          return;
+        }
+        if (!response.ok || !response.json?.ok) {
+          throw new Error(response.json?.error || `Unable to save check-in (HTTP ${response.status})`);
+        }
+        setDailyReadinessVisible(false);
+        await loadToday({ silent: true, showRefreshIndicator: false });
+      } catch (submissionError: any) {
+        setDailyReadinessError(submissionError?.message || 'Could not save your check-in. Try again.');
+      } finally {
+        setDailyReadinessSubmitting(false);
+      }
+    });
+  }, [dailyReadinessForm, loadToday, router]);
+
   const openAction = React.useCallback(
     (action?: TodayAction | null) => {
       if (!action) return;
+      if (action.route === 'daily_readiness') {
+        openDailyReadiness();
+        return;
+      }
       if (isIndividual && action.route === 'programming') {
         router.push('/(tabs)/workout' as any);
         return;
@@ -484,7 +587,7 @@ export default function AthleteDashboard() {
       }
       router.push('/(tabs)/workout' as any);
     },
-    [isIndividual, router]
+    [isIndividual, openDailyReadiness, router]
   );
 
   if (loading && !today) {
@@ -517,6 +620,19 @@ export default function AthleteDashboard() {
         onNotNow={dismissIndividualWelcome}
         visible={showIndividualWelcome}
       />
+      <ReadinessModal
+        context="daily"
+        visible={dailyReadinessVisible}
+        unit={normalizeReadinessUnit(today.athlete?.preferred_units)}
+        priorBodyweightKg={today.athlete?.bodyweight_kg}
+        values={dailyReadinessForm}
+        error={dailyReadinessError}
+        submitting={dailyReadinessSubmitting}
+        reduceMotion={reduceMotion}
+        onChange={setDailyReadinessForm}
+        onSubmit={submitDailyReadiness}
+        onCancel={cancelDailyReadiness}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -542,6 +658,7 @@ export default function AthleteDashboard() {
             </>
           ) : null}
           today={today}
+          trainingImage={today.mission?.session?.id ? TRAINING_DAY_IMAGE : REST_DAY_IMAGE}
         />
       </ScrollView>
     </SafeAreaView>
