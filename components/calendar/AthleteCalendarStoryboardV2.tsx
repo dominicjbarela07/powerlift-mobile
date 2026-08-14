@@ -35,10 +35,10 @@ import {
   type AthleteCalendarRange,
 } from '@/components/calendar/AthleteCalendarExperience';
 import { primaryCalendarDayTone, resolveCalendarLensState } from '@/lib/athlete-calendar-lens';
+import { ATHLETE_CALENDAR_WEEKDAYS, athleteCalendarWeeksForMonth } from '@/lib/athlete-calendar-grid';
 import { createCalendarBoundaryGuard } from '@/lib/calendar-range-pagination';
 import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
 
-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const CALENDAR_MONTH_HEIGHT = 511;
 const CALENDAR_INITIAL_MONTHS = 1;
 const CALENDAR_RENDER_BATCH = 1;
@@ -364,7 +364,7 @@ function MonthSection({
   selectedDate: string;
   summary?: AthleteCalendarMonthSummary;
 }) {
-  const grid = monthGrid(month);
+  const weeks = athleteCalendarWeeksForMonth(month);
   const context = contextForDate(data.ranges || [], month, data.today);
   const completion = summary?.completionPercent ?? completionFromDays(data.days, month);
   const completed = summary?.completedCount ?? countCompleted(data.days, month);
@@ -383,26 +383,32 @@ function MonthSection({
         </Pressable>
       </View>
       <View style={styles.weekdayRow}>
-        {WEEKDAYS.map((weekday, index) => <Text key={`${weekday}-${index}`} style={styles.weekday}>{weekday}</Text>)}
+        {ATHLETE_CALENDAR_WEEKDAYS.map((weekday, index) => (
+          <Text key={`${weekday}-${index}`} style={[styles.calendarColumn, styles.weekday]}>{weekday}</Text>
+        ))}
       </View>
       <View style={styles.monthGrid}>
-        {grid.map((date) => {
-          const dateKey = toYmd(date);
-          const day = daysByDate.get(dateKey);
-          const inMonth = date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear();
-          return (
-            <DayCell
-              day={day}
-              filtered={day ? !dayMatchesActiveFilters(day, filters) : false}
-              inMonth={inMonth}
-              isToday={dateKey === data.today}
-              key={dateKey}
-              onPress={() => onSelectDate(dateKey)}
-              selected={dateKey === selectedDate}
-              value={date.getDate()}
-            />
-          );
-        })}
+        {weeks.map((week) => (
+          <View key={toYmd(week[0])} style={styles.weekRow}>
+            {week.map((date) => {
+              const dateKey = toYmd(date);
+              const day = daysByDate.get(dateKey);
+              const inMonth = date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear();
+              return (
+                <DayCell
+                  day={day}
+                  filtered={day ? !dayMatchesActiveFilters(day, filters) : false}
+                  inMonth={inMonth}
+                  isToday={dateKey === data.today}
+                  key={dateKey}
+                  onPress={() => onSelectDate(dateKey)}
+                  selected={dateKey === selectedDate}
+                  value={date.getDate()}
+                />
+              );
+            })}
+          </View>
+        ))}
       </View>
       <View style={styles.transitionRow}>
         {transitionLabel ? <>
@@ -444,7 +450,7 @@ function DayCell({ day, filtered, inMonth, isToday, onPress, selected, value }: 
     <Pressable
       accessibilityLabel={`${value}. ${label || (hasEvidence ? 'Calendar items' : 'Recovery day')}`}
       onPress={onPress}
-      style={[styles.dayCell, selected && styles.dayCellSelected, !inMonth && styles.dayCellOutside, filtered && styles.dayCellFiltered]}
+      style={[styles.calendarColumn, styles.dayCell, selected && styles.dayCellSelected, !inMonth && styles.dayCellOutside, filtered && styles.dayCellFiltered]}
     >
       {selected ? <LinearGradient colors={['rgba(153,82,255,0.28)', 'rgba(41,20,59,0.10)']} style={StyleSheet.absoluteFillObject} /> : null}
       <View style={styles.dayNumberRow}>
@@ -776,15 +782,6 @@ function monthsForDays(days: AthleteCalendarDay[], anchorMonth: Date) {
   return months;
 }
 
-function monthGrid(month: Date) {
-  const first = startOfMonth(month);
-  const start = new Date(first.getFullYear(), first.getMonth(), 1 - first.getDay());
-  return Array.from(
-    { length: 42 },
-    (_, index) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + index),
-  );
-}
-
 function contextForDate(ranges: AthleteCalendarRange[], date: Date, today: string) {
   const key = toYmd(new Date(date.getFullYear(), date.getMonth(), Math.min(15, new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate())));
   const range = ranges.find((item) => item.start <= key && item.end >= key) || ranges.find((item) => item.start.startsWith(monthKey(date)));
@@ -856,10 +853,12 @@ const styles = StyleSheet.create({
   summaryBadge: { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#6D49A2', backgroundColor: '#0C0912' },
   summaryRatio: { fontSize: 13, lineHeight: 15, color: SLColors.textStrong, fontFamily: SLFontFamilies.bodySemiBold },
   summaryPercent: { fontSize: 9, lineHeight: 11, color: SLColors.success, fontFamily: SLFontFamilies.technical },
-  weekdayRow: { flexDirection: 'row', paddingHorizontal: 8, marginTop: 8, marginBottom: 3 },
-  weekday: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 11, lineHeight: 15, color: SLColors.textMuted, fontFamily: SLFontFamilies.technical },
-  monthGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 4 },
-  dayCell: { width: `${100 / 7}%`, height: 63, paddingHorizontal: 3, paddingTop: 4, borderRadius: 10, overflow: 'hidden', alignItems: 'center' },
+  calendarColumn: { flex: 1, minWidth: 0 },
+  weekdayRow: { flexDirection: 'row', paddingHorizontal: 4, marginTop: 8, marginBottom: 3 },
+  weekday: { textAlign: 'center', fontSize: 11, lineHeight: 15, color: SLColors.textMuted, fontFamily: SLFontFamilies.technical },
+  monthGrid: { paddingHorizontal: 4 },
+  weekRow: { flexDirection: 'row' },
+  dayCell: { height: 63, paddingHorizontal: 3, paddingTop: 4, borderRadius: 10, overflow: 'hidden', alignItems: 'center' },
   dayCellSelected: { borderWidth: 1, borderColor: SLColors.borderFocus, backgroundColor: 'rgba(83,36,123,0.18)' },
   dayCellOutside: { opacity: 0.32 },
   dayCellFiltered: { opacity: 0.24 },

@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+import {
+  ATHLETE_CALENDAR_DAYS_PER_WEEK,
+  ATHLETE_CALENDAR_WEEKDAYS,
+  athleteCalendarWeeksForMonth,
+} from '../lib/athlete-calendar-grid.ts';
+
 const [storyboard, route, model] = await Promise.all([
   readFile(new URL('../components/calendar/AthleteCalendarStoryboardV2.tsx', import.meta.url), 'utf8'),
   readFile(new URL('../app/(tabs)/athlete-calendar.tsx', import.meta.url), 'utf8'),
@@ -15,7 +21,11 @@ assert.match(storyboard, /maxToRenderPerBatch=\{CALENDAR_RENDER_BATCH\}/, 'Calen
 assert.match(storyboard, /windowSize=\{CALENDAR_WINDOW_SIZE\}/, 'Calendar keeps a bounded native render window');
 assert.match(storyboard, /getItemLayout=/, 'Calendar has deterministic month geometry for Fabric scrolling');
 assert.doesNotMatch(storyboard, /onScrollToIndexFailed/, 'Calendar has no unbounded scroll-to-index retry loop');
-assert.match(storyboard, /length: 42/, 'Every month uses a fixed six-week grid');
+assert.match(storyboard, /athleteCalendarWeeksForMonth\(month\)/, 'Every month uses the canonical week matrix');
+assert.match(storyboard, /weeks\.map\(\(week\)/, 'Calendar renders explicit week rows');
+assert.match(storyboard, /calendarColumn:\s*\{\s*flex: 1,\s*minWidth: 0\s*\}/, 'header and body share one equal-width column primitive');
+assert.doesNotMatch(storyboard, /width:\s*`\$\{100 \/ 7\}%`/, 'Calendar does not depend on fractional percentage widths');
+assert.doesNotMatch(storyboard, /monthGrid:\s*\{[^}]*flexWrap:\s*'wrap'/, 'Calendar never wraps a flattened month grid');
 assert.match(storyboard, /lensVisible \? \([\s\S]*?<DayLens/, 'Day Lens content mounts only when requested');
 assert.match(storyboard, /onOpenSummary=\{\(\) => setSummaryMonth\(item\)\}/, 'month headers open summaries on demand');
 assert.match(storyboard, /<MonthSummarySheet/, 'month summary is a dedicated contextual surface');
@@ -43,5 +53,52 @@ assert.match(route, /month_summaries/, 'route maps backend month summaries');
 assert.match(route, /\{visiblePayload \? <AthleteCalendarStoryboardV2/, 'the full Calendar tree does not mount before its canonical payload');
 assert.match(model, /workoutId\?: number \| null/, 'readiness continues to model nullable Session association');
 assert.match(model, /type: 'daily-readiness'/, 'Calendar action contract models recovery readiness explicitly');
+
+assert.equal(ATHLETE_CALENDAR_WEEKDAYS.length, 7, 'weekday header has seven columns');
+assert.equal(ATHLETE_CALENDAR_DAYS_PER_WEEK, 7, 'canonical week size is seven');
+
+const monthFixtures = [
+  ['August 2026', new Date(2026, 7, 1)],
+  ['February 2026', new Date(2026, 1, 1)],
+  ['February 2028', new Date(2028, 1, 1)],
+  ['January 2027', new Date(2027, 0, 1)],
+  ['December 2026', new Date(2026, 11, 1)],
+  ['April 2026', new Date(2026, 3, 1)],
+  ['July 2026', new Date(2026, 6, 1)],
+];
+
+for (const [label, month] of monthFixtures) {
+  const weeks = athleteCalendarWeeksForMonth(month);
+  assert.equal(weeks.length, 6, `${label} has six complete rows`);
+  for (const week of weeks) {
+    assert.equal(week.length, 7, `${label} week has seven cells`);
+    week.forEach((date, weekdayIndex) => {
+      assert.equal(date.getDay(), weekdayIndex, `${label} body aligns with header index ${weekdayIndex}`);
+    });
+  }
+  const flatDates = weeks.flat();
+  assert.equal(flatDates.length, 42, `${label} has 42 cells`);
+  flatDates.slice(1).forEach((date, index) => {
+    const previous = flatDates[index];
+    assert.equal(
+      Math.round((date.getTime() - previous.getTime()) / 86_400_000),
+      1,
+      `${label} has no omitted or duplicated dates`,
+    );
+  });
+}
+
+for (let year = 1900; year <= 2100; year += 1) {
+  for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
+    const weeks = athleteCalendarWeeksForMonth(new Date(year, monthIndex, 1));
+    assert.equal(weeks.length, 6, `${year}-${monthIndex + 1} has six complete rows`);
+    weeks.forEach((week) => {
+      assert.equal(week.length, 7, `${year}-${monthIndex + 1} week has seven cells`);
+      week.forEach((date, weekdayIndex) => {
+        assert.equal(date.getDay(), weekdayIndex, `${year}-${monthIndex + 1} aligns weekday ${weekdayIndex}`);
+      });
+    });
+  }
+}
 
 console.log('Athlete Calendar storyboard V2 architecture and recovery/session-state contracts passed.');
