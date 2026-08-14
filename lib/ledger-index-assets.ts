@@ -25,7 +25,7 @@ export const LEDGER_INDEX_ASSETS = Object.freeze({
     archive: require('../assets/images/ledger-index-v2/ledger-chapter-archive-v1.png') as ImageSourcePropType,
   } satisfies Readonly<Record<LedgerIndexChapterVisualKey, ImageSourcePropType>>),
   muscleGroups: require('../assets/images/muscle-regions/full-body.png') as ImageSourcePropType,
-  record: require('../assets/images/st_ledger_icon.png') as ImageSourcePropType,
+  record: require('../assets/images/iOS_icon.png') as ImageSourcePropType,
   prMedallion: require('../assets/images/plate-stack-catalog/blender-cycles-catalog-v1/lb/135.png') as ImageSourcePropType,
   fallbackPlate: require('../assets/images/plate-stack-catalog/blender-cycles-catalog-v1/lb/45.png') as ImageSourcePropType,
 });
