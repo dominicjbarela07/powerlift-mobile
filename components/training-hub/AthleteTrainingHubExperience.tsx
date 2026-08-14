@@ -14,6 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
+import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import {
@@ -89,6 +90,7 @@ export type AthleteTrainingSession = {
   id: number;
   title: string;
   date?: string | null;
+  lifecycleStatus?: string | null;
   status: 'completed' | 'in_progress' | 'today' | 'upcoming' | 'missed' | 'moved';
   contentSummary?: string | null;
   dayLabel?: string | null;
@@ -211,6 +213,17 @@ export function AthleteTrainingHubExperience({
   );
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(initialSessionId ?? null);
   const selectedSession = allSessions.find((session) => session.id === selectedSessionId) || null;
+  const selectedSessionContext = useMemo(() => {
+    if (!selectedSessionId) return null;
+    for (const block of data.activeProgram?.blocks || []) {
+      for (const week of block.weeks) {
+        if (week.days.some((day) => day.sessions.some((session) => session.id === selectedSessionId))) {
+          return { blockName: block.name, weekNumber: week.number };
+        }
+      }
+    }
+    return null;
+  }, [data.activeProgram, selectedSessionId]);
 
   useEffect(() => setSelectedBlockId(currentBlock?.id ?? null), [currentBlock?.id]);
   useEffect(() => {
@@ -277,9 +290,15 @@ export function AthleteTrainingHubExperience({
         </View>
       ) : null}
 
-      <SessionPreviewSheet
+      <TrainingHubSessionPreviewBottomSheet
+        context={selectedSessionContext}
         onClose={() => setSelectedSessionId(null)}
-        onOpen={() => selectedSession && onAction({ type: 'session', id: selectedSession.id })}
+        onOpen={() => {
+          if (!selectedSession) return;
+          const sessionId = selectedSession.id;
+          setSelectedSessionId(null);
+          requestAnimationFrame(() => onAction({ type: 'session', id: sessionId }));
+        }}
         program={program}
         session={selectedSession}
         unit={data.preferredUnits || 'kg'}
