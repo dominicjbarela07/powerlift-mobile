@@ -14,6 +14,8 @@ import {
   TextInput,
   View,
   type ListRenderItemInfo,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   type ViewToken,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,9 +35,14 @@ import {
   type AthleteCalendarRange,
 } from '@/components/calendar/AthleteCalendarExperience';
 import { primaryCalendarDayTone, resolveCalendarLensState } from '@/lib/athlete-calendar-lens';
+import { createCalendarBoundaryGuard } from '@/lib/calendar-range-pagination';
 import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const CALENDAR_MONTH_HEIGHT = 511;
+const CALENDAR_INITIAL_MONTHS = 1;
+const CALENDAR_RENDER_BATCH = 1;
+const CALENDAR_WINDOW_SIZE = 3;
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/gym_vibe.jpg');
 
@@ -95,6 +102,8 @@ export function AthleteCalendarStoryboardV2({
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<Date>>(null);
   const positionedAnchorRef = useRef('');
+  const previousBoundaryRef = useRef(createCalendarBoundaryGuard()).current;
+  const nextBoundaryRef = useRef(createCalendarBoundaryGuard()).current;
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(anchorMonth));
   const [lensVisible, setLensVisible] = useState(initialLensVisible);
   const [summaryMonth, setSummaryMonth] = useState<Date | null>(initialSummaryMonth);
@@ -107,6 +116,10 @@ export function AthleteCalendarStoryboardV2({
   const [jumpError, setJumpError] = useState<string | null>(null);
 
   const months = useMemo(() => monthsForDays(data.days, anchorMonth), [anchorMonth, data.days]);
+  const anchorIndex = useMemo(
+    () => Math.max(0, months.findIndex((month) => monthKey(month) === monthKey(anchorMonth))),
+    [anchorMonth, months],
+  );
   const daysByDate = useMemo(() => new Map(data.days.map((day) => [day.date, day])), [data.days]);
   const summariesByMonth = useMemo(
     () => new Map((data.monthSummaries || []).map((summary) => [summary.month, summary])),
@@ -117,16 +130,36 @@ export function AthleteCalendarStoryboardV2({
   useEffect(() => {
     setVisibleMonth(startOfMonth(anchorMonth));
     if (!months.length || positionedAnchorRef.current === anchorKey) return;
-    const index = Math.max(0, months.findIndex((month) => monthKey(month) === anchorKey));
     positionedAnchorRef.current = anchorKey;
-    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index, animated: navigationRevision > 0, viewPosition: 0 }));
-  }, [anchorKey, anchorMonth, months, navigationRevision]);
+    requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: anchorIndex, animated: navigationRevision > 0, viewPosition: 0 }));
+  }, [anchorIndex, anchorKey, anchorMonth, months.length, navigationRevision]);
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 52, minimumViewTime: 80 }).current;
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
     const first = viewableItems.find((item) => item.isViewable)?.item;
-    if (first instanceof Date) setVisibleMonth(startOfMonth(first));
+    if (first instanceof Date) {
+      setVisibleMonth((current) => monthKey(current) === monthKey(first) ? current : startOfMonth(first));
+    }
   }).current;
+
+  const beginTimelineGesture = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = Math.max(0, event.nativeEvent.contentOffset.y);
+    previousBoundaryRef.begin(-offsetY);
+    nextBoundaryRef.begin(offsetY);
+  }, [nextBoundaryRef, previousBoundaryRef]);
+
+  const updateTimelineBoundaries = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const offsetY = Math.max(0, contentOffset.y);
+    const remaining = Math.max(0, contentSize.height - layoutMeasurement.height - offsetY);
+    if (previousBoundaryRef.update({ offsetY: -offsetY, remaining: offsetY })) onLoadPrevious?.();
+    if (nextBoundaryRef.update({ offsetY, remaining })) onLoadMore?.();
+  }, [nextBoundaryRef, onLoadMore, onLoadPrevious, previousBoundaryRef]);
+
+  const endTimelineGesture = useCallback(() => {
+    previousBoundaryRef.end();
+    nextBoundaryRef.end();
+  }, [nextBoundaryRef, previousBoundaryRef]);
 
   const selectDate = useCallback((date: string) => {
     onSelectedDateChange?.(date);
@@ -239,24 +272,27 @@ export function AthleteCalendarStoryboardV2({
 
       <FlatList
         data={months}
-        initialNumToRender={3}
+        getItemLayout={(_, index) => ({ index, length: CALENDAR_MONTH_HEIGHT, offset: CALENDAR_MONTH_HEIGHT * index })}
+        initialNumToRender={CALENDAR_INITIAL_MONTHS}
+        initialScrollIndex={anchorIndex}
         keyExtractor={monthKey}
         maintainVisibleContentPosition={{ minIndexForVisible: 0, autoscrollToTopThreshold: 24 }}
-        maxToRenderPerBatch={4}
-        onEndReached={onLoadMore}
-        onEndReachedThreshold={0.55}
+        maxToRenderPerBatch={CALENDAR_RENDER_BATCH}
+        onMomentumScrollBegin={beginTimelineGesture}
+        onMomentumScrollEnd={endTimelineGesture}
         onRefresh={onRefresh}
-        onScrollToIndexFailed={({ index }) => setTimeout(() => listRef.current?.scrollToIndex({ index, animated: false }), 80)}
-        onStartReached={onLoadPrevious}
-        onStartReachedThreshold={0.35}
+        onScroll={updateTimelineBoundaries}
+        onScrollBeginDrag={beginTimelineGesture}
+        onScrollEndDrag={endTimelineGesture}
         onViewableItemsChanged={onViewableItemsChanged}
         refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} /> : undefined}
         ref={listRef}
         renderItem={renderMonth}
+        scrollEventThrottle={32}
         showsVerticalScrollIndicator={false}
         style={styles.monthList}
         viewabilityConfig={viewabilityConfig}
-        windowSize={5}
+        windowSize={CALENDAR_WINDOW_SIZE}
         ListHeaderComponent={loadingPrevious ? <ActivityIndicator color={SLColors.accentViolet} style={styles.pageSpinner} /> : null}
         ListFooterComponent={(
           <View style={styles.listFooter}>
@@ -277,31 +313,35 @@ export function AthleteCalendarStoryboardV2({
         </Pressable>
       </View>
 
-      <DayLens
-        detail={resolvedDetail}
-        error={dayDetailError}
-        loading={dayDetailLoading && dayDetail?.date !== selectedDate}
-        onAction={onAction}
-        onClose={() => setLensVisible(false)}
-        onRetry={onRetryDayDetail}
-        preferredUnits={data.preferredUnits}
-        visible={lensVisible}
-      />
+      {lensVisible ? (
+        <DayLens
+          detail={resolvedDetail}
+          error={dayDetailError}
+          loading={dayDetailLoading && dayDetail?.date !== selectedDate}
+          onAction={onAction}
+          onClose={() => setLensVisible(false)}
+          onRetry={onRetryDayDetail}
+          preferredUnits={data.preferredUnits}
+          visible
+        />
+      ) : null}
       <MonthSummarySheet
         month={summaryMonth}
         onClose={() => setSummaryMonth(null)}
         preferredUnits={data.preferredUnits}
         summary={summaryMonth ? summariesByMonth.get(monthKey(summaryMonth)) : undefined}
       />
-      <FilterSheet filters={filters} onChange={setFilters} onClose={() => setFiltersOpen(false)} visible={filtersOpen} />
-      <JumpSheet
-        error={jumpError}
-        onChange={setJumpValue}
-        onClose={() => { setJumpOpen(false); setJumpError(null); }}
-        onSubmit={jumpToDate}
-        value={jumpValue}
-        visible={jumpOpen}
-      />
+      {filtersOpen ? <FilterSheet filters={filters} onChange={setFilters} onClose={() => setFiltersOpen(false)} visible /> : null}
+      {jumpOpen ? (
+        <JumpSheet
+          error={jumpError}
+          onChange={setJumpValue}
+          onClose={() => { setJumpOpen(false); setJumpError(null); }}
+          onSubmit={jumpToDate}
+          value={jumpValue}
+          visible
+        />
+      ) : null}
     </View>
   );
 }
@@ -330,6 +370,7 @@ function MonthSection({
   const completion = summary?.completionPercent ?? completionFromDays(data.days, month);
   const completed = summary?.completedCount ?? countCompleted(data.days, month);
   const planned = summary?.plannedCount ?? countPlanned(data.days, month);
+  const transitionLabel = monthTransitionLabel(data.ranges || [], month);
   return (
     <View style={styles.monthSection}>
       <View style={styles.monthSectionHeader}>
@@ -364,13 +405,13 @@ function MonthSection({
           );
         })}
       </View>
-      {monthTransitionLabel(data.ranges || [], month) ? (
-        <View style={styles.transitionRow}>
+      <View style={styles.transitionRow}>
+        {transitionLabel ? <>
           <View style={styles.transitionRule} />
-          <Text style={styles.transitionText}>{monthTransitionLabel(data.ranges || [], month)}</Text>
+          <Text style={styles.transitionText}>{transitionLabel}</Text>
           <View style={styles.transitionRule} />
-        </View>
-      ) : null}
+        </> : null}
+      </View>
     </View>
   );
 }
@@ -739,12 +780,10 @@ function monthsForDays(days: AthleteCalendarDay[], anchorMonth: Date) {
 function monthGrid(month: Date) {
   const first = startOfMonth(month);
   const start = new Date(first.getFullYear(), first.getMonth(), 1 - first.getDay());
-  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
-  const trailing = 6 - last.getDay();
-  const end = new Date(last.getFullYear(), last.getMonth(), last.getDate() + trailing);
-  const result: Date[] = [];
-  for (let cursor = new Date(start); cursor <= end; cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1)) result.push(cursor);
-  return result;
+  return Array.from(
+    { length: 42 },
+    (_, index) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + index),
+  );
 }
 
 function contextForDate(ranges: AthleteCalendarRange[], date: Date, today: string) {
@@ -811,7 +850,7 @@ const styles = StyleSheet.create({
   emptySearch: { ...SLTypography.body, color: SLColors.textMuted, padding: 16, textAlign: 'center' },
   monthList: { flex: 1 },
   pageSpinner: { paddingVertical: 10 },
-  monthSection: { paddingTop: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },
+  monthSection: { height: CALENDAR_MONTH_HEIGHT, paddingTop: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },
   monthSectionHeader: { minHeight: 58, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   sectionMonth: { ...SLTypography.sectionTitle, color: SLColors.textStrong, fontFamily: SLFontFamilies.display },
   sectionContext: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 2 },

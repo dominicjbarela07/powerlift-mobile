@@ -588,7 +588,7 @@ export default function AthleteCalendarScreen() {
           <Text onPress={() => void load(true, true)} style={styles.inlineRetry}>Retry</Text>
         </View>
       ) : null}
-      <AthleteCalendarStoryboardV2
+      {visiblePayload ? <AthleteCalendarStoryboardV2
         anchorMonth={anchorMonth}
         canManagePersonalEvents={user?.role === 'athlete'}
         data={data}
@@ -610,7 +610,7 @@ export default function AthleteCalendarScreen() {
         paginationError={paginationError}
         refreshing={refreshing}
         selectedDate={selectedDate}
-      />
+      /> : null}
       <ReadinessModal
         context="daily"
         error={dailyReadinessError}
