@@ -460,13 +460,13 @@ assert.deepEqual(resolveCalendarSessionStatus('cancelled'), { lifecycle: 'cancel
   );
   assert.match(
     tabLayoutSource,
-    /normalizedPathname\.endsWith\('\/athlete-calendar'\)[\s\S]*?normalizedPathname\.includes\('\/dev-mocks\/calendar-'\)/,
-    'live and DEV Calendar routes opt out of the global page gutter',
+    /tabScene:\s*\{[\s\S]*?Mobile routes always receive a full-width canvas/,
+    'live and DEV Calendar routes inherit the global full-width mobile canvas',
   );
-  assert.match(
-    tabLayoutSource,
-    /fullBleedTabScene:\s*\{[\s\S]*?paddingHorizontal:\s*0/,
-    'the Calendar scene removes page-level horizontal padding',
+  assert.doesNotMatch(
+    tabLayoutSource.match(/tabScene:\s*\{[^}]*\}/)?.[0] || '',
+    /paddingHorizontal:\s*SLLayout\.screenGutter/,
+    'the Calendar scene has no page-level horizontal gutter',
   );
   assert.match(
     tabLayoutSource,

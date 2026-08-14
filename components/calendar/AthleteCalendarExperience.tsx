@@ -63,6 +63,7 @@ export type AthleteCalendarSession = {
   plannedSummary?: string | null;
   primaryLifts?: string[];
   accessoryCount?: number | null;
+  prCount?: number | null;
   presentation?: 'heavy' | 'moved' | null;
   estimatedDurationMinutes?: number | null;
   scheduledStartTime?: string | null;
@@ -119,17 +120,35 @@ export type AthleteCalendarWeekSummary = {
   isCurrent: boolean;
   loadLabel: string;
 };
+export type AthleteCalendarMonthSummary = {
+  month: string;
+  sessionCount: number;
+  completedCount: number;
+  upcomingCount: number;
+  plannedCount: number;
+  completionPercent: number;
+  totalVolumeKg: number;
+  prCount: number;
+  reportedBodyweight?: {
+    startKg: number;
+    latestKg: number;
+    observationCount: number;
+  } | null;
+  blockNames: string[];
+};
 export type AthleteCalendarExperienceData = {
   today: string;
   timezone?: string | null;
   athleteName?: string | null;
   avatarUrl?: string | null;
+  preferredUnits?: 'kg' | 'lb';
   days: AthleteCalendarDay[];
   ranges?: AthleteCalendarRange[];
   programContext?: CalendarProgramContext | null;
   importantDates?: AthleteCalendarImportantDate[];
   conflicts?: AthleteCalendarConflict[];
   weekSummaries?: AthleteCalendarWeekSummary[];
+  monthSummaries?: AthleteCalendarMonthSummary[];
 };
 
 export type AthleteCalendarLensState =
@@ -221,6 +240,7 @@ export type AthleteCalendarAction =
   | { type: 'schedule-session'; session: AthleteCalendarSession }
   | { type: 'meet'; id: number }
   | { type: 'check-in'; id: number }
+  | { type: 'daily-readiness'; date: string }
   | { type: 'add-event'; date: string }
   | { type: 'edit-event'; event: AthleteCalendarPersonalEvent }
   | { type: 'review-conflict'; conflict: AthleteCalendarConflict }
