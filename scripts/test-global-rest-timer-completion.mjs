@@ -10,6 +10,8 @@ import {
   beginRestTimerState,
   canPresentRestTimerCompletion,
   createActiveRestTimer,
+  isCanonicalSessionLoggerRoute,
+  isRestTimerCompletionOwnedByCurrentLogger,
   isRestTimerNotification,
   reconcileRestTimerCompletionState,
   stopRestTimerState,
@@ -44,15 +46,48 @@ assert.deepEqual(pending.pending, {
   notificationId: 'notification-a',
 });
 
-for (const routeName of ['Home', 'Calendar', 'Messages', 'Training Hub', 'Settings']) {
+for (const [routeName, segments] of [
+  ['Home', ['(tabs)', 'athlete-dashboard']],
+  ['Calendar', ['(tabs)', 'athlete-calendar']],
+  ['Messages', ['(tabs)', 'messages']],
+  ['Training Hub', ['(tabs)', 'workout']],
+  ['Settings', ['(tabs)', 'settings']],
+  ['Ledger', ['(tabs)', 'ledger', 'home']],
+]) {
   assert.equal(
-    canPresentRestTimerCompletion(pending, 7, 'active'),
+    canPresentRestTimerCompletion(pending, 7, 'active', { segments, workoutId: undefined }),
     true,
-    `completion must be route-independent on ${routeName}`,
+    `completion must remain globally visible on ${routeName}`,
   );
 }
 assert.equal(canPresentRestTimerCompletion(pending, 7, 'background'), false);
 assert.equal(canPresentRestTimerCompletion(pending, 8, 'active'), false);
+
+const sameSessionLogger = {
+  segments: ['(tabs)', 'workout', '[workoutId]'],
+  workoutId: '682',
+};
+const differentSessionLogger = {
+  segments: ['(tabs)', 'workout', '[workoutId]'],
+  workoutId: '900',
+};
+const sessionWorkspace = {
+  segments: ['(tabs)', 'workout', 'session-workspace', '[workoutId]'],
+  workoutId: '682',
+};
+assert.equal(isCanonicalSessionLoggerRoute(sameSessionLogger), true);
+assert.equal(isCanonicalSessionLoggerRoute(sessionWorkspace), false);
+assert.equal(isRestTimerCompletionOwnedByCurrentLogger(pending.pending, sameSessionLogger), true);
+assert.equal(isRestTimerCompletionOwnedByCurrentLogger(pending.pending, differentSessionLogger), false);
+assert.equal(canPresentRestTimerCompletion(pending, 7, 'active', sameSessionLogger), false);
+assert.equal(canPresentRestTimerCompletion(pending, 7, 'active', differentSessionLogger), true);
+assert.equal(canPresentRestTimerCompletion(pending, 7, 'active', sessionWorkspace), true);
+assert.equal(canPresentRestTimerCompletion(pending, 7, 'background', sameSessionLogger), false);
+assert.equal(
+  canPresentRestTimerCompletion(pending, 7, 'active', { segments: ['(tabs)', 'ledger', 'home'], workoutId: undefined }),
+  true,
+  'a background expiry must present after foregrounding away from the logger',
+);
 
 const dismissed = acknowledgeRestTimerCompletionState(pending, 'timer-a');
 assert.equal(dismissed.pending, null);
@@ -114,6 +149,10 @@ assert.match(presenter, /Your rest period is over\./);
 assert.match(presenter, /Return to Session/);
 assert.match(presenter, />Dismiss</);
 assert.match(presenter, /AppState\.addEventListener\('change'/);
+assert.match(presenter, /useSegments\(\)/);
+assert.match(presenter, /useGlobalSearchParams/);
+assert.match(presenter, /isRestTimerCompletionOwnedByCurrentLogger/);
+assert.match(presenter, /acknowledgeGlobalRestTimerCompletion\(completedTimer\.timerId\)/);
 assert.match(presenter, /AppState\.currentState === 'active'[\s\S]*isRestTimerNotification/);
 assert.match(presenter, /shouldShowBanner: !suppressRestEnd/);
 assert.match(presenter, /shouldPlaySound: !suppressRestEnd/);

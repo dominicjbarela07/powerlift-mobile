@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useGlobalSearchParams, useRouter, useSegments } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppState, Platform, Pressable, StyleSheet, View } from 'react-native';
 
@@ -6,6 +6,7 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import {
   canPresentRestTimerCompletion,
+  isRestTimerCompletionOwnedByCurrentLogger,
   isRestTimerNotification,
   type RestTimerCompletionState,
 } from '@/lib/rest-timer-completion-core';
@@ -31,6 +32,10 @@ async function cancelCompletionNotification(notificationId: string | null): Prom
 
 export function RestTimerCompletionPresenter({ userId }: Props) {
   const router = useRouter();
+  const segments = useSegments() as readonly string[];
+  const { workoutId: routeWorkoutId } = useGlobalSearchParams<{
+    workoutId?: string | string[];
+  }>();
   const [snapshot, setSnapshot] = useState<RestTimerCompletionState>(
     getRestTimerCompletionState(),
   );
@@ -84,8 +89,28 @@ export function RestTimerCompletionPresenter({ userId }: Props) {
     };
   }, []);
 
-  const visible = canPresentRestTimerCompletion(snapshot, userId, applicationState);
+  const presentationRoute = {
+    segments,
+    workoutId: routeWorkoutId,
+  } as const;
+  const loggerOwnsCompletion = isRestTimerCompletionOwnedByCurrentLogger(
+    snapshot.pending,
+    presentationRoute,
+  );
+  const visible = canPresentRestTimerCompletion(
+    snapshot,
+    userId,
+    applicationState,
+    presentationRoute,
+  );
   const pending = visible ? snapshot.pending : null;
+
+  useEffect(() => {
+    const completedTimer = snapshot.pending;
+    if (!completedTimer || !loggerOwnsCompletion) return;
+    void cancelCompletionNotification(completedTimer.notificationId);
+    void acknowledgeGlobalRestTimerCompletion(completedTimer.timerId);
+  }, [loggerOwnsCompletion, snapshot.pending?.notificationId, snapshot.pending?.timerId]);
 
   useEffect(() => {
     if (!pending) return;
