@@ -22,6 +22,11 @@ export type RestTimerCompletionState = Readonly<{
   pending: PendingRestTimerCompletion | null;
 }>;
 
+export type RestTimerPresentationRoute = Readonly<{
+  segments: readonly string[];
+  workoutId: string | number | readonly string[] | null | undefined;
+}>;
+
 export const EMPTY_REST_TIMER_COMPLETION_STATE: RestTimerCompletionState = Object.freeze({
   active: null,
   pending: null,
@@ -29,6 +34,32 @@ export const EMPTY_REST_TIMER_COMPLETION_STATE: RestTimerCompletionState = Objec
 
 function cleanIdentifier(value: unknown): string {
   return String(value ?? '').trim();
+}
+
+function cleanRouteIdentifier(value: RestTimerPresentationRoute['workoutId']): string {
+  return cleanIdentifier(Array.isArray(value) ? value[0] : value);
+}
+
+export function isCanonicalSessionLoggerRoute(
+  route: RestTimerPresentationRoute | null | undefined,
+): boolean {
+  const routeSegments = (route?.segments ?? [])
+    .map((segment) => cleanIdentifier(segment))
+    .filter((segment) => !/^\(.+\)$/.test(segment));
+  return routeSegments.length === 2
+    && routeSegments[0] === 'workout'
+    && routeSegments[1] === '[workoutId]';
+}
+
+export function isRestTimerCompletionOwnedByCurrentLogger(
+  pending: PendingRestTimerCompletion | null,
+  route: RestTimerPresentationRoute | null | undefined,
+): boolean {
+  return Boolean(
+    pending
+      && isCanonicalSessionLoggerRoute(route)
+      && cleanRouteIdentifier(route?.workoutId) === pending.workoutId,
+  );
 }
 
 export function createActiveRestTimer(input: {
@@ -119,12 +150,14 @@ export function canPresentRestTimerCompletion(
   state: RestTimerCompletionState,
   ownerUserId: string | number | null | undefined,
   appState: string,
+  route?: RestTimerPresentationRoute | null,
 ): boolean {
   return Boolean(
     state.pending
       && appState === 'active'
       && cleanIdentifier(ownerUserId)
-      && state.pending.ownerUserId === cleanIdentifier(ownerUserId),
+      && state.pending.ownerUserId === cleanIdentifier(ownerUserId)
+      && !isRestTimerCompletionOwnedByCurrentLogger(state.pending, route),
   );
 }
 
