@@ -280,7 +280,6 @@ export function AthleteCalendarStoryboardV2({
         maxToRenderPerBatch={CALENDAR_RENDER_BATCH}
         onMomentumScrollBegin={beginTimelineGesture}
         onMomentumScrollEnd={endTimelineGesture}
-        onRefresh={onRefresh}
         onScroll={updateTimelineBoundaries}
         onScrollBeginDrag={beginTimelineGesture}
         onScrollEndDrag={endTimelineGesture}
