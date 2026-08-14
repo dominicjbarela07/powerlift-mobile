@@ -43,7 +43,7 @@ for (const path of [
 ]) assert.ok(existsSync(resolve(root, path)), `shipping parity source is missing: ${path}`);
 
 const index = source('components/ledger/index-experience.tsx');
-for (const contract of ['CAREER SNAPSHOT', 'CORE LIFTS · LATEST RESULTS', 'LATEST ENTRY', 'AT A GLANCE', 'CONTEXT MATTERS', 'FULL LEDGER INDEX']) {
+for (const contract of ['CAREER SNAPSHOT', 'CORE LIFTS · LATEST BESTS', 'LATEST ENTRY', 'AT A GLANCE', 'CONTEXT MATTERS', 'FULL LEDGER INDEX']) {
   assert.match(index, new RegExp(contract.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Ledger Index contract is missing: ${contract}`);
 }
 
