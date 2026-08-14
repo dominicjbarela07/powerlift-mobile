@@ -20,9 +20,10 @@ assert.deepEqual(
 );
 assert.deepEqual(
   SHIPPING_COACH_TAB_ROUTES,
-  ['coach-dashboard', 'coach-roster', 'messages/index', 'coach-more'],
-  'the shipping coach tab tree must preserve the athlete-first coaching workspace',
+  ['coach-dashboard', 'coach-calendar', 'messages/index', 'coach-more'],
+  'the shipping coach tab tree must expose Home, the canonical Coach Calendar, Messages, and More',
 );
+assert.ok(!SHIPPING_COACH_TAB_ROUTES.includes('coach-roster'), 'All Athletes must remain a secondary Coach Home destination');
 assert.deepEqual(
   SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES,
   ['link-coach', 'settings'],
@@ -53,6 +54,8 @@ assert.deepEqual(
 assert.equal(SHIPPING_TAB_PRESENTATION['athlete-dashboard'].label, 'Today');
 assert.equal(SHIPPING_TAB_PRESENTATION.ledger.label, 'Ledger');
 assert.equal(SHIPPING_TAB_PRESENTATION.ledger.icon, 'book-outline');
+assert.equal(SHIPPING_TAB_PRESENTATION['coach-calendar'].label, 'Calendar');
+assert.equal(SHIPPING_TAB_PRESENTATION['coach-calendar'].icon, 'calendar-outline');
 
 for (const routeFile of [
   'app/(tabs)/ledger/_layout.tsx',
@@ -80,6 +83,9 @@ const canonicalSources = [
 ].map(read).join('\n');
 
 assert.match(tabs, /shippingTabRouteNames\(/, 'tab rendering must consume one shipping route policy');
+assert.match(tabs, /name="coach-roster"[\s\S]*?href: null/, 'All Athletes must stay routable without occupying a coach tab');
+assert.match(tabs, /name="coach-calendar"[\s\S]*?href: isCoach && !isIndividual && viewMode === 'coach' \? '\/\(tabs\)\/coach-calendar'/, 'the coach Calendar tab must open the canonical Coach Calendar');
+assert.match(tabs, /usesCoachHomeSelection[\s\S]*?route\.name === 'coach-dashboard'/, 'secondary athlete-management routes must retain Coach Home tab context');
 assert.match(tabs, /name="ledger"/, 'the shipping Ledger route must be registered');
 assert.match(tabs, /router\.navigate\('\/\(tabs\)\/ledger\/home'/, 'Ledger tab presses must open the canonical home');
 assert.match(tabs, /name="athlete-progression"[\s\S]*?href: null/, 'legacy Progression must not appear as a shipping tab');

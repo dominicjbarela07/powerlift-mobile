@@ -9,7 +9,7 @@ export const SHIPPING_ATHLETE_TAB_ROUTES = [
 
 export const SHIPPING_COACH_TAB_ROUTES = [
   'coach-dashboard',
-  'coach-roster',
+  'coach-calendar',
   'messages/index',
   'coach-more',
 ] as const;
@@ -25,7 +25,6 @@ export const SHIPPING_TAB_PRESENTATION = {
   'athlete-calendar': { label: 'Calendar', icon: 'calendar-outline' },
   ledger: { label: 'Ledger', icon: 'book-outline' },
   'coach-dashboard': { label: 'Home', icon: 'home-outline' },
-  'coach-roster': { label: 'Athletes', icon: 'people-outline' },
   'coach-calendar': { label: 'Calendar', icon: 'calendar-outline' },
   'coach-videos': { label: 'Reviews', icon: 'clipboard-outline' },
   'messages/index': { label: 'Messages', icon: 'chatbubbles-outline' },

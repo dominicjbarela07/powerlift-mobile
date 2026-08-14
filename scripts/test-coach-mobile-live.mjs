@@ -67,7 +67,12 @@ assert.match(source.detail, /Recent Readiness Trend/);
 assert.match(source.detail, /Last Session/);
 assert.match(source.detail, /openCoachDestination\(router, reason\.destination\)/);
 
-assert.match(source.shipping, /'coach-dashboard',[\s\S]*'coach-roster',[\s\S]*'messages\/index',[\s\S]*'coach-more'/);
+assert.match(source.shipping, /'coach-dashboard',[\s\S]*'coach-calendar',[\s\S]*'messages\/index',[\s\S]*'coach-more'/);
+assert.doesNotMatch(source.shipping, /SHIPPING_COACH_TAB_ROUTES\s*=\s*\[[\s\S]*?'coach-roster'/);
+assert.match(source.home, /View all athletes[\s\S]*?coach-roster/);
+assert.match(source.roster, /router\.canGoBack\(\)[\s\S]*?router\.back\(\)[\s\S]*?coach-dashboard/);
+assert.match(source.tabs, /name="coach-roster"[\s\S]*?href: null/);
+assert.match(source.tabs, /name="coach-calendar"[\s\S]*?\/\(tabs\)\/coach-calendar/);
 assert.match(source.tabs, /forceExpandedCoachNavigation/);
 assert.match(source.tabs, /name="coach-attention\/\[athleteId\]"/);
 assert.match(source.tabs, /name="coach-more"/);

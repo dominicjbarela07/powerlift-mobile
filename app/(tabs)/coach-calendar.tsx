@@ -315,9 +315,9 @@ export default function CoachCalendarScreen() {
   );
   const visibleDays = useMemo(() => (data?.days || []).map((day) => ({
     ...day,
-    sessions: day.sessions.filter((session) => athleteVisible(session.athlete_id) && calendarSessionMatchesStatus(session, statusFilter)),
-    meets: day.meets.filter((meet) => athleteVisible(meet.athlete_id)),
-    custom_items: day.custom_items.filter((item) => athleteVisible(item.athlete_id)),
+    sessions: (day.sessions || []).filter((session) => athleteVisible(session.athlete_id) && calendarSessionMatchesStatus(session, statusFilter)),
+    meets: (day.meets || []).filter((meet) => athleteVisible(meet.athlete_id)),
+    custom_items: (day.custom_items || []).filter((item) => athleteVisible(item.athlete_id)),
   })), [athleteVisible, data?.days, statusFilter]);
   const rangeStartKey = toLocalYMD(range.start);
   const rangeEndKey = toLocalYMD(range.end);

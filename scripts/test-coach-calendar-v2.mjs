@@ -104,6 +104,9 @@ assert.match(routeSource, /pathname: '\/workout\/session-workspace\/\[workoutId\
 assert.match(routeSource, /scheduled_time/);
 assert.match(routeSource, /orderedDayItems/);
 assert.match(routeSource, /coach-calendar:athlete-filter:v1/);
+assert.match(routeSource, /\(day\.sessions \|\| \[\]\)\.filter/);
+assert.match(routeSource, /\(day\.meets \|\| \[\]\)\.filter/);
+assert.match(routeSource, /\(day\.custom_items \|\| \[\]\)\.filter/);
 for (const category of ['Reminder', 'Weigh-in', 'Travel', 'Team Check-in', 'Programming Day', 'Personal Note', 'Do Not Schedule']) {
   assert.ok(routeSource.includes(`'${category}'`), `Missing canonical calendar category: ${category}`);
 }

@@ -134,7 +134,10 @@ export function CoachRosterV2({ previewAthletes }: { previewAthletes?: CoachRost
   return (
     <SLScreen edges="top" padded={false} style={styles.screen}>
       <CoachMobileHeader
-        onBack={() => router.replace('/(tabs)/coach-dashboard')}
+        onBack={() => {
+          if (router.canGoBack()) router.back();
+          else router.replace('/(tabs)/coach-dashboard');
+        }}
         onPrimary={() => router.push('/(tabs)/coach-invite-athlete' as any)}
         primaryIcon="add"
         primaryLabel="Add athlete"

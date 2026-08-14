@@ -27,10 +27,13 @@ assert.match(roster, /size=\{48\}/);
 assert.match(hub, /size=\{70\}/);
 assert.match(home, /View all athletes/);
 assert.match(roster, /title="All Athletes"/);
+assert.match(roster, /router\.canGoBack\(\)[\s\S]*router\.back\(\)/);
 assert.match(hub, /label: 'Message'[\s\S]*label: 'Program'[\s\S]*label: 'Review'[\s\S]*label: 'More'/);
 assert.match(detail, /styles\.primaryButton/);
 assert.match(detail, /styles\.secondaryButton/);
 assert.match(shell, /forceExpandedCoachNavigation/);
+assert.match(shell, /name="coach-roster"[\s\S]*?href: null/);
+assert.match(shell, /name="coach-calendar"[\s\S]*?\/\(tabs\)\/coach-calendar/);
 
 const hierarchy = ['What Needs You', 'Current Training', 'Recent Signals', 'Recent Training'];
 for (let index = 1; index < hierarchy.length; index += 1) {

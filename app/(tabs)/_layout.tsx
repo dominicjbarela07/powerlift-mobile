@@ -186,10 +186,11 @@ function FilteredTabBar({
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
   const isBottomTabGlassPreviewPath = __DEV__ && normalizedPathname === '/dev-mocks/navigation-bottom-tab-glass';
   const usesCalendarPreviewSelection = isCalendarPreviewPath || isBottomTabGlassPreviewPath;
-  const usesCoachAthleteSelection = normalizedPathname.startsWith('/coach-athlete/')
+  const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')
+    || normalizedPathname.startsWith('/coach-athlete/')
     || normalizedPathname.startsWith('/coach-attention/');
-  const activeRoute = (usesCoachAthleteSelection
-    ? visibleRoutes.find((route) => route.name === 'coach-roster')
+  const activeRoute = (usesCoachHomeSelection
+    ? visibleRoutes.find((route) => route.name === 'coach-dashboard')
     : usesCalendarPreviewSelection
     ? visibleRoutes.find((route) => route.name === 'athlete-calendar')
     : null) ?? visibleRoutes.find((route) => {
@@ -201,7 +202,10 @@ function FilteredTabBar({
     : null;
   const isLedgerDestinationPath = activeRoute?.name === 'ledger'
     && normalizedPathname.startsWith('/ledger/');
-  const isActiveTopLevelTab = activeTopLevelPath === normalizedPathname || isLedgerDestinationPath || usesCalendarPreviewSelection;
+  const isActiveTopLevelTab = activeTopLevelPath === normalizedPathname
+    || isLedgerDestinationPath
+    || usesCalendarPreviewSelection
+    || usesCoachHomeSelection;
   const forceExpandedCoachNavigation = isCoach && !isIndividual && viewMode === 'coach';
   const showsExpandedTabRow = forceExpandedCoachNavigation || isExpanded || isBottomTabGlassPreviewPath;
   const displayedRoutes = showsExpandedTabRow ? visibleRoutes : activeRoute ? [activeRoute] : [];
@@ -741,16 +745,9 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="coach-roster"
           options={{
-            title: 'Athletes',
+            title: 'All Athletes',
             headerShown: false,
-            href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-roster' : null,
-            tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? 'people' : 'people-outline'}
-                size={22}
-                color={color}
-              />
-            ),
+            href: null,
           }}
         />
 
@@ -793,7 +790,7 @@ export default function TabsLayout() {
           name="coach-calendar"
           options={{
             title: 'Calendar',
-            href: isCoach && viewMode === 'coach' ? '/(tabs)/coach-calendar' : null,
+            href: isCoach && !isIndividual && viewMode === 'coach' ? '/(tabs)/coach-calendar' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'calendar' : 'calendar-outline'}
