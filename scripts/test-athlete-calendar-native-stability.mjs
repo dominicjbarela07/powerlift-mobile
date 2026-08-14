@@ -15,6 +15,16 @@ assert.match(storyboard, /CALENDAR_WINDOW_SIZE = 3/);
 assert.doesNotMatch(storyboard, /onStartReached=|onEndReached=|onScrollToIndexFailed/);
 assert.match(storyboard, /initialScrollIndex=\{anchorIndex\}/);
 assert.match(storyboard, /getItemLayout=/);
+assert.doesNotMatch(
+  storyboard,
+  /^\s+onRefresh=\{onRefresh\}$/m,
+  'FlatList must not combine its native onRefresh prop with a custom RefreshControl',
+);
+assert.match(
+  storyboard,
+  /refreshControl=\{onRefresh \? <RefreshControl refreshing=\{refreshing\} onRefresh=\{onRefresh\}/,
+  'pull-to-refresh keeps one controlled boolean RefreshControl',
+);
 assert.match(storyboard, /lensVisible \? \([\s\S]*?<DayLens/);
 assert.match(storyboard, /filtersOpen \? <FilterSheet/);
 assert.match(storyboard, /jumpOpen \? \([\s\S]*?<JumpSheet/);
