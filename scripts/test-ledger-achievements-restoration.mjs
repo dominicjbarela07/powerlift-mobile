@@ -37,7 +37,8 @@ assert.doesNotMatch(rewards, /Date\.now|new Date\(\)/, 'reward projection does n
 
 assert.match(index, /room: 'achievements'/);
 assert.match(index, /chapter\.room === 'achievements'/);
-assert.match(index, /majorVolumeMedallionAsset/);
+assert.match(index, /LEDGER_INDEX_ASSETS\.careerPr/, 'Index PR count uses its distinct record artifact rather than a volume medallion');
+assert.match(index, /openRoom\('achievements'\)/, 'Index still links into the complete restored achievement system');
 assert.match(journey, /type: 'volume-milestone'/);
 assert.match(journey, /MEDALLIONS_HREF/);
 assert.match(strength, /ledger-strength-milestone-link/);

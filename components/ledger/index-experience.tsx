@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -12,23 +13,23 @@ import {
 } from 'react-native';
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
+import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLSpacing } from '@/constants/theme';
-import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
+import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
+import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import {
   canonicalLiftKey,
   displayWeight,
-  fetchLedgerAccomplishmentHistory,
-  kgToDisplay,
   type AccomplishmentEvent,
   type CurrentBest,
   type LedgerUnit,
 } from '@/lib/ledger-data';
-import { fetchLedgerExplorationIndex, type LedgerExplorationIndex } from '@/lib/ledger-exploration';
-import { LEDGER_INDEX_ASSETS, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
-import { fetchJourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
-import { canonicalMajorVolumeMedallions, canonicalTotal, totalClubState } from '@/lib/ledger-rewards';
-import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
+import { fetchLedgerExplorationIndex, type LedgerExplorationIndex, type LedgerMovementProgress } from '@/lib/ledger-exploration';
+import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
+import { fetchJourneyBootstrap, type JourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
+import { canonicalTotal, totalClubState } from '@/lib/ledger-rewards';
 import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
@@ -49,8 +50,35 @@ const CHAPTERS: readonly {
   { number: '06', room: 'archive', title: 'ARCHIVE', detail: 'Complete session and set history.', tone: '#EC7067' },
 ];
 
-const PR_EVENT_TYPES = new Set(['CORE_WEIGHT_PR', 'CORE_E1RM_PR', 'CORE_REP_MAX_PR']);
+const PR_EVENT_TYPES = new Set([
+  'CORE_E1RM_PR',
+  'CORE_WEIGHT_PR',
+  'CORE_REP_MAX_PR',
+  'CORE_RPE_PR',
+  'CORE_SAME_WEIGHT_REP_PR',
+  'CORE_BLOCK_E1RM_BEST',
+  'CORE_BLOCK_WEIGHT_BEST',
+  'CORE_BLOCK_REP_MAX_BEST',
+  'CORE_BLOCK_SAME_WEIGHT_REP_BEST',
+]);
 const RAW_COMPLETION_EVENT_TYPES = new Set(['SESSION_COMPLETED', 'CORE_MOVEMENT_SESSION_COMPLETED', 'CORE_PRESCRIPTION_COMPLETED']);
+const PR_SIGNIFICANCE: Readonly<Record<string, number>> = Object.freeze({
+  CORE_REP_MAX_PR: 0,
+  CORE_WEIGHT_PR: 1,
+  CORE_E1RM_PR: 2,
+  CORE_SAME_WEIGHT_REP_PR: 3,
+  CORE_RPE_PR: 4,
+  CORE_BLOCK_REP_MAX_BEST: 5,
+  CORE_BLOCK_WEIGHT_BEST: 6,
+  CORE_BLOCK_E1RM_BEST: 7,
+  CORE_BLOCK_SAME_WEIGHT_REP_BEST: 8,
+});
+
+type RecentPrPerformance = Readonly<{
+  key: string;
+  primary: AccomplishmentEvent;
+  badges: string[];
+}>;
 
 function dateLabel(value?: string | null) {
   if (!value) return 'Date unavailable';
@@ -60,29 +88,75 @@ function dateLabel(value?: string | null) {
     : parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function eventTypeLabel(value: string) {
-  return value.replace(/^CORE_/, '').replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
+function eventTypeLabel(value: string, reps?: number | null) {
+  if (value.includes('REP_MAX')) return reps ? `${reps}RM PR` : 'REP MAX PR';
+  if (value.includes('SAME_WEIGHT_REP')) return value.includes('BLOCK') ? 'BLOCK REP BEST' : 'REP PR';
+  if (value.includes('WEIGHT')) return value.includes('BLOCK') ? 'BLOCK WEIGHT BEST' : 'WEIGHT PR';
+  if (value.includes('E1RM')) return value.includes('BLOCK') ? 'BLOCK e1RM BEST' : 'e1RM PR';
+  if (value.includes('RPE')) return 'RPE PR';
+  return 'PERSONAL RECORD';
 }
 
-function eventPerformance(event?: AccomplishmentEvent, unit: LedgerUnit = 'lb') {
-  if (!event || typeof event.current_value !== 'number') return '—';
-  const eventUnit = (event.unit || '').toLowerCase();
-  if (eventUnit === 'kg' || eventUnit === 'lb') {
-    const kilograms = eventUnit === 'kg' ? event.current_value : event.current_value / 2.2046226218;
-    const reps = event.event_type.includes('REP') && typeof event.evidence?.reps === 'number'
-      ? ` × ${event.evidence.reps}`
-      : '';
-    return `${displayWeight(kilograms, unit)} ${unit.toUpperCase()}${reps}`;
+function evidenceNumber(event: AccomplishmentEvent | undefined, ...keys: string[]) {
+  for (const key of keys) {
+    const value = event?.evidence?.[key];
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
   }
-  return `${event.current_value.toLocaleString()}${event.unit ? ` ${event.unit}` : ''}`;
+  return null;
 }
 
-function eventWeightKg(event?: AccomplishmentEvent) {
+function eventReps(event?: AccomplishmentEvent) {
+  return evidenceNumber(event, 'actual_reps', 'rep_count', 'reps');
+}
+
+function eventPerformedWeightKg(event?: AccomplishmentEvent) {
+  const evidenceWeight = evidenceNumber(event, 'actual_weight_kg');
+  if (evidenceWeight != null) return evidenceWeight;
   if (!event || typeof event.current_value !== 'number' || !Number.isFinite(event.current_value)) return null;
   const eventUnit = (event.unit || '').toLowerCase();
   if (eventUnit === 'kg') return event.current_value;
   if (eventUnit === 'lb') return event.current_value / 2.2046226218;
   return null;
+}
+
+function eventPerformance(event?: AccomplishmentEvent, unit: LedgerUnit = 'lb') {
+  const weightKg = eventPerformedWeightKg(event);
+  if (weightKg != null) {
+    const reps = eventReps(event);
+    return `${displayWeight(weightKg, unit)} ${unit.toUpperCase()}${reps ? ` × ${reps}` : ''}`;
+  }
+  if (!event || typeof event.current_value !== 'number') return '—';
+  return `${event.current_value.toLocaleString()}${event.unit ? ` ${event.unit}` : ''}`;
+}
+
+function displayVolume(valueKg: number | null | undefined, unit: LedgerUnit) {
+  if (valueKg == null || !Number.isFinite(valueKg)) return '—';
+  const value = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
+  if (value >= 10_000) return `${(value / 1000).toFixed(1)}K ${unit.toUpperCase()}`;
+  return `${Math.round(value).toLocaleString()} ${unit.toUpperCase()}`;
+}
+
+function eventComparison(event: AccomplishmentEvent, unit: LedgerUnit) {
+  const reps = eventReps(event);
+  const delta = typeof event.delta === 'number' && Number.isFinite(event.delta) ? event.delta : null;
+  const priorValue = typeof event.prior_value === 'number' && Number.isFinite(event.prior_value) ? event.prior_value : null;
+  if (priorValue != null && delta != null && delta > 0 && (event.unit === 'kg' || event.unit === 'lb')) {
+    const deltaKg = event.unit === 'kg' ? delta : delta / 2.2046226218;
+    const amount = `+${displayWeight(deltaKg, unit)} ${unit.toUpperCase()}`;
+    if (event.event_type.includes('REP_MAX')) return `${amount} · VS PRIOR ${reps ? `${reps}RM` : 'REP MAX'}`;
+    if (event.event_type.includes('E1RM')) return `e1RM ${amount}`;
+    return `${amount} · VS PRIOR BEST`;
+  }
+  if (event.event_type.includes('REP_MAX') && reps) return `NEW ${reps}RM`;
+  if (event.event_type.includes('BLOCK')) return 'BLOCK BEST';
+  return 'NEW PERSONAL RECORD';
+}
+
+function journeyLoadConvention(entry: JourneyEntry | null) {
+  const equipment = entry?.evidence?.equipment;
+  if (!equipment || typeof equipment !== 'object') return null;
+  const convention = (equipment as Record<string, unknown>).load_convention;
+  return typeof convention === 'string' ? convention : null;
 }
 
 function journeyPerformance(entry: JourneyEntry | null, unit: LedgerUnit) {
@@ -94,23 +168,84 @@ function journeyPerformance(entry: JourneyEntry | null, unit: LedgerUnit) {
     : typeof performance.rir === 'number'
       ? ` @ ${performance.rir} RIR`
       : '';
-  return `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}${reps}${effort}`;
+  const loadConvention = journeyLoadConvention(entry);
+  const assistance = loadConvention === 'assistance_load' ? ' ASSIST' : '';
+  return `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}${assistance}${reps}${effort}`;
 }
 
-function plateArtwork(weightKg: number | null | undefined, unit: LedgerUnit): ImageSourcePropType {
-  if (typeof weightKg !== 'number' || !Number.isFinite(weightKg)) return LEDGER_INDEX_ASSETS.fallbackPlate;
-  return resolvePlateStackRender({ weight: kgToDisplay(weightKg, unit), unit })?.imageSource
-    ?? LEDGER_INDEX_ASSETS.fallbackPlate;
+function comparePrEvents(left: AccomplishmentEvent, right: AccomplishmentEvent) {
+  const time = Date.parse(right.occurred_at || right.workout_date || '') - Date.parse(left.occurred_at || left.workout_date || '');
+  if (Number.isFinite(time) && time !== 0) return time;
+  const significance = (PR_SIGNIFICANCE[left.event_type] ?? 99) - (PR_SIGNIFICANCE[right.event_type] ?? 99);
+  if (significance !== 0) return significance;
+  return (left.priority ?? 999) - (right.priority ?? 999) || right.id - left.id;
+}
+
+function recentPrPerformances(events: readonly AccomplishmentEvent[]): RecentPrPerformance[] {
+  const grouped = new Map<string, AccomplishmentEvent[]>();
+  [...events].filter((event) => PR_EVENT_TYPES.has(event.event_type)).sort(comparePrEvents).forEach((event) => {
+    const key = event.source_set_log_id ? `set:${event.source_set_log_id}` : `event:${event.id}`;
+    grouped.set(key, [...(grouped.get(key) || []), event]);
+  });
+  return [...grouped.entries()].map(([key, related]) => {
+    const sorted = [...related].sort((left, right) => {
+      const significance = (PR_SIGNIFICANCE[left.event_type] ?? 99) - (PR_SIGNIFICANCE[right.event_type] ?? 99);
+      return significance || (left.priority ?? 999) - (right.priority ?? 999) || right.id - left.id;
+    });
+    return {
+      key,
+      primary: sorted[0],
+      badges: sorted.map((event) => eventTypeLabel(event.event_type, eventReps(event))).filter((value, index, values) => values.indexOf(value) === index),
+    };
+  }).sort((left, right) => comparePrEvents(left.primary, right.primary));
 }
 
 function CareerBars({ values }: { values: readonly number[] }) {
   const chart = values.slice(-12);
   const max = Math.max(1, ...chart);
-  if (!chart.length) return <View accessible accessibilityLabel="No weekly session history yet" style={styles.careerChart}><Text style={styles.careerChartLabel}>COMPLETED / WEEK</Text><View style={styles.careerBarsEmpty}><Text style={styles.careerBarsEmptyText}>HISTORY BUILDS HERE</Text></View></View>;
+  if (!chart.some((value) => value > 0)) return <View accessible accessibilityLabel="No weekly session history yet" style={styles.careerChart}><Text style={styles.careerChartLabel}>COMPLETED / WEEK</Text><View style={styles.careerBarsEmpty}><Text style={styles.careerBarsEmptyText}>HISTORY BUILDS HERE</Text></View></View>;
   return <View accessible accessibilityLabel={`Canonical sessions completed by week: ${chart.join(', ')}`} style={styles.careerChart}>
     <Text style={styles.careerChartLabel}>COMPLETED / WEEK</Text>
     <View style={styles.careerBars}>{chart.map((value, index) => <View key={`${index}-${value}`} style={[styles.careerBar, { height: 7 + (value / max) * 39, opacity: 0.42 + (index / Math.max(1, chart.length - 1)) * 0.58 }]} />)}</View>
   </View>;
+}
+
+function isoDay(value: Date) {
+  return value.toISOString().slice(0, 10);
+}
+
+function currentWeekStart() {
+  const now = new Date();
+  const mondayOffset = (now.getUTCDay() + 6) % 7;
+  now.setUTCDate(now.getUTCDate() - mondayOffset);
+  now.setUTCHours(0, 0, 0, 0);
+  return now;
+}
+
+function completedTrainingWeeks(weeks: readonly { week_start?: string | null; completed?: number | null }[], count = 8) {
+  const currentMonday = currentWeekStart();
+  const byStart = new Map(weeks.map((week) => [week.week_start, Math.max(0, week.completed ?? 0)]));
+  return Array.from({ length: count }, (_, index) => {
+    const start = new Date(currentMonday);
+    start.setUTCDate(start.getUTCDate() - 7 * (count - index));
+    const weekStart = isoDay(start);
+    return { weekStart, completed: byStart.get(weekStart) ?? 0 };
+  });
+}
+
+function completedVolumeWeeks(points: readonly { date?: string | null; value_kg?: number | null }[]) {
+  const currentMonday = isoDay(currentWeekStart());
+  return points
+    .filter((point): point is { date: string; value_kg: number } => Boolean(point.date && point.date < currentMonday && typeof point.value_kg === 'number' && Number.isFinite(point.value_kg)))
+    .sort((left, right) => left.date.localeCompare(right.date))
+    .slice(-8);
+}
+
+function shortWeekLabel(value?: string | null) {
+  if (!value) return 'Completed week';
+  const parsed = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return 'Completed week';
+  return `Week of ${parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}`;
 }
 
 function MiniLine({ values, tone, label }: { values: readonly number[]; tone: string; label: string }) {
@@ -134,11 +269,10 @@ function MiniLine({ values, tone, label }: { values: readonly number[]; tone: st
   </View>;
 }
 
-function MiniBars({ values }: { values: readonly number[] }) {
-  const chart = values.slice(-8);
-  const max = Math.max(1, ...chart);
-  return <View accessible accessibilityLabel={`Weekly completed sessions: ${chart.join(', ')}`} style={styles.frequencyBars}>
-    {chart.map((value, index) => <View key={`${index}-${value}`} style={[styles.frequencyBar, { height: 7 + (value / max) * 38 }]} />)}
+function ContextBars({ values, tone = '#9D63E8' }: { values: readonly number[]; tone?: string }) {
+  const max = Math.max(...values, 1);
+  return <View accessibilityLabel={`Trend: ${values.join(', ') || 'not enough evidence'}`} style={styles.contextBars}>
+    {values.some((value) => value > 0) ? values.map((value, index) => <View key={`${index}-${value}`} style={[styles.contextBar, { height: `${Math.max(10, Math.round((Math.max(0, value) / max) * 100))}%`, backgroundColor: tone }]} />) : <View style={styles.contextBarsEmpty} />}
   </View>;
 }
 
@@ -166,9 +300,9 @@ function SnapshotStat({ value, label, tone, image, assetShape = 'wide' }: { valu
 }
 
 function LiftResult({ lift, best, unit, onPress }: { lift: typeof CORE_LIFT_PRESENTATION[number]; best?: CurrentBest; unit: LedgerUnit; onPress: () => void }) {
-  const artwork = plateArtwork(best?.best_value, unit);
+  const artwork = ledgerCoreLiftAsset(best?.core_movement_key || lift.key);
   return <Pressable accessibilityRole="button" accessibilityLabel={`Open ${lift.key} strength history`} onPress={onPress} style={({ pressed }) => [styles.liftResult, pressed && styles.pressed]}>
-    <Image accessible={false} source={artwork} resizeMode="cover" style={styles.liftArtwork} />
+    {artwork ? <Image accessible={false} source={artwork} resizeMode="contain" style={styles.liftArtwork} /> : <View accessible={false} style={styles.liftArtworkFallback}><Ionicons name="barbell-outline" size={37} color={lift.color} /></View>}
     <View style={styles.liftScrim} />
     <View style={styles.liftResultCopy}>
       <Text style={[styles.liftResultLabel, { color: lift.color }]}>{lift.key.toUpperCase()}</Text>
@@ -194,70 +328,99 @@ function ChapterRow({ chapter, onPress, image }: { chapter: typeof CHAPTERS[numb
   </Pressable>;
 }
 
-function RecentPrCard({ event, unit, onPress, wide = false }: { event: AccomplishmentEvent; unit: LedgerUnit; onPress: () => void; wide?: boolean }) {
+function RecentPrCard({ performance, unit, onPress, hero = false }: { performance: RecentPrPerformance; unit: LedgerUnit; onPress: () => void; hero?: boolean }) {
+  const event = performance.primary;
   const tone = canonicalLiftKey(event.core_movement_key || event.movement_label) === 'bench'
     ? '#F06C7B'
     : canonicalLiftKey(event.core_movement_key || event.movement_label) === 'deadlift'
       ? '#EF695B'
       : '#A66FF1';
-  return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.prCard, wide && styles.prCardWide, pressed && styles.pressed]}>
-    {wide ? <Image accessible={false} source={plateArtwork(eventWeightKg(event), unit)} resizeMode="cover" style={styles.prArtwork} /> : null}
-    <View style={[styles.prCardCopy, wide && styles.prCardCopyWide]}><View style={styles.prCardTop}><Text numberOfLines={1} style={styles.prMovement}>{event.movement_label || 'Movement'}</Text><View style={[styles.prMiniSeal, { backgroundColor: tone }]}><Text style={styles.prMiniSealText}>PR</Text></View></View>
-      <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.prValue}>{eventPerformance(event, unit)}</Text>
-      <Text style={styles.prKind}>{eventTypeLabel(event.event_type)}</Text>
+  const artwork = ledgerCoreLiftAsset(event.core_movement_key || event.movement_label) || LEDGER_INDEX_ASSETS.careerPr;
+  return <Pressable accessibilityRole="button" accessibilityLabel={`${event.movement_label || 'Movement'} ${eventPerformance(event, unit)}, ${eventTypeLabel(event.event_type, eventReps(event))}`} onPress={onPress} style={({ pressed }) => [styles.prCard, hero && styles.prCardHero, pressed && styles.pressed]}>
+    {hero ? <LinearGradient colors={['rgba(74,19,105,0.96)', 'rgba(28,8,38,0.97)', 'rgba(8,7,12,0.99)']} end={{ x: 1, y: 1 }} start={{ x: 0, y: 0 }} style={StyleSheet.absoluteFillObject} /> : null}
+    {hero ? <View pointerEvents="none" style={styles.prParticles}>{[0, 1, 2, 3, 4, 5, 6, 7].map((dot) => <View key={dot} style={[styles.prParticle, { left: `${8 + ((dot * 17) % 86)}%`, top: `${9 + ((dot * 29) % 73)}%`, opacity: 0.25 + (dot % 3) * 0.17 }]} />)}</View> : null}
+    <View style={[styles.prArtworkFrame, hero && styles.prArtworkFrameHero]}><Image accessible={false} source={artwork} resizeMode="contain" style={styles.prArtwork} /></View>
+    <View style={[styles.prCardCopy, hero && styles.prCardCopyHero]}><View style={styles.prCardTop}><Text numberOfLines={1} style={[styles.prMovement, hero && styles.prMovementHero]}>{event.movement_label || 'Movement'}</Text><View style={[styles.prMiniSeal, { backgroundColor: tone }]}><Text style={styles.prMiniSealText}>PR</Text></View></View>
+      <Text adjustsFontSizeToFit minimumFontScale={0.68} numberOfLines={1} style={[styles.prValue, hero && styles.prValueHero]}>{eventPerformance(event, unit)}</Text>
+      <Text style={[styles.prKind, hero && styles.prKindHero]}>{eventTypeLabel(event.event_type, eventReps(event))}</Text>
+      <Text numberOfLines={1} style={styles.prComparison}>{eventComparison(event, unit)}</Text>
+      {hero && performance.badges.length > 1 ? <View style={styles.prBadges}>{performance.badges.slice(1, 3).map((badge) => <View key={badge} style={styles.prBadge}><Text style={styles.prBadgeText}>{badge}</Text></View>)}</View> : null}
       <Text style={styles.prDate}>{dateLabel(event.occurred_at || event.workout_date)}</Text>
     </View>
   </Pressable>;
 }
 
+function LatestEntryArtwork({ movement }: { movement?: LedgerMovementProgress | null }) {
+  const region = canonicalAccessoryMuscleRegionKey(movement?.primary_muscle_group || movement?.body_region || movement?.family);
+  if (movement && isGovernedMuscleId(region)) {
+    return <View accessibilityLabel={`${movement.name} muscle focus`} style={styles.latestImage}>
+      <MuscleMap anatomy="automatic" primary={[region]} secondary={movement.secondary_muscle_groups} size="thumbnail" style={styles.latestMuscleMap} view="auto" />
+    </View>;
+  }
+  const source = movement ? accessoryMuscleRegionAsset(region).source : LEDGER_INDEX_ASSETS.latestEntryFallback;
+  return <View style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
+}
+
 export function LedgerIndexExperience() {
   const router = useRouter();
-  const { progression, currentBests, accomplishments, loading, error, errorKind, reload } = useLedgerLiveData('all', { allowPartial: true });
-  const [history, setHistory] = useState<AccomplishmentEvent[]>([]);
+  const { progression, currentBests, accomplishments, loading, error, errorKind, reload } = useLedgerLiveData('1y', { allowPartial: true });
   const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
-  const [latestJourneyEntry, setLatestJourneyEntry] = useState<JourneyEntry | null>(null);
+  const [journeyBootstrap, setJourneyBootstrap] = useState<JourneyBootstrap | null>(null);
   const [supportLoading, setSupportLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.allSettled([fetchLedgerAccomplishmentHistory(), fetchLedgerExplorationIndex(), fetchJourneyBootstrap({ limit: 24, includeSessions: true })])
-      .then(([historyResult, explorationResult, journeyResult]) => {
+    Promise.allSettled([fetchLedgerExplorationIndex(), fetchJourneyBootstrap({ limit: 24, includeSessions: true })])
+      .then(([explorationResult, journeyResult]) => {
         if (!active) return;
-        if (historyResult.status === 'fulfilled') setHistory(historyResult.value);
         if (explorationResult.status === 'fulfilled') setExploration(explorationResult.value);
-        if (journeyResult.status === 'fulfilled') {
-          const today = new Date().toISOString().slice(0, 10);
-          setLatestJourneyEntry(journeyResult.value.timeline.items.find((entry) => entry.occurred_on <= today && !RAW_COMPLETION_EVENT_TYPES.has(entry.event_type)) || null);
-        }
+        if (journeyResult.status === 'fulfilled') setJourneyBootstrap(journeyResult.value);
       })
       .finally(() => { if (active) setSupportLoading(false); });
     return () => { active = false; };
   }, []);
 
   const model = useMemo(() => {
-    const events = history.length ? history : accomplishments;
     const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
-    const prs = events.filter((event) => PR_EVENT_TYPES.has(event.event_type));
-    const latest = events.find((event) => !RAW_COMPLETION_EVENT_TYPES.has(event.event_type));
+    const prs = recentPrPerformances(accomplishments);
+    const latest = accomplishments.find((event) => !RAW_COMPLETION_EVENT_TYPES.has(event.event_type));
     const liftBests = CORE_LIFT_PRESENTATION.map((lift) => currentBests
       .filter((best) => canonicalLiftKey(best.core_movement_key || best.movement_label) === canonicalLiftKey(lift.key))
       .sort((left, right) => (left.metric === 'weight' ? -1 : 1) - (right.metric === 'weight' ? -1 : 1) || right.best_value - left.best_value)[0]);
     const completeTotal = canonicalTotal(currentBests);
     const club = totalClubState(completeTotal, unit);
-    const medallion = canonicalMajorVolumeMedallions(events)[0];
     const trophyIndex = Math.max(0, club.earnedTierIndex);
-    return { events, prs, latest, unit, liftBests, medallion, trophyIndex };
-  }, [accomplishments, currentBests, history, progression?.athlete?.preferred_units]);
+    return { prs, latest, unit, liftBests, trophyIndex };
+  }, [accomplishments, currentBests, progression?.athlete?.preferred_units]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
   if (error) return <View testID="ledger-home-experience" style={styles.state}><Ionicons name={errorKind === 'unauthorized' ? 'lock-closed-outline' : 'alert-circle-outline'} size={32} color="#B994F3" /><Text style={styles.stateTitle}>{error}</Text><Pressable onPress={() => void reload()} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable></View>;
 
-  const sessions = Math.max(0, progression?.consistency?.sessions_completed ?? 0);
+  const today = new Date().toISOString().slice(0, 10);
+  const latestJourneyEntry = journeyBootstrap?.timeline.items.find((entry) => entry.occurred_on <= today && !RAW_COMPLETION_EVENT_TYPES.has(entry.event_type)) || null;
+  const latestMovement = exploration?.movements.find((movement) => (
+    Boolean(latestJourneyEntry?.movement?.key && movement.key === latestJourneyEntry.movement.key)
+    || Boolean(latestJourneyEntry?.movement?.label && movement.name === latestJourneyEntry.movement.label)
+  )) || null;
+  const sessions = Math.max(0, journeyBootstrap?.lifetime.sessions_completed ?? progression?.consistency?.sessions_completed ?? 0);
+  const lifetimeSets = journeyBootstrap?.lifetime.total_sets ?? exploration?.context.lifetime_set_count;
+  const lifetimePrs = journeyBootstrap?.lifetime.pr_count;
+  const lifetimeAchievements = journeyBootstrap?.lifetime.major_achievement_count;
   const context = exploration?.context;
-  const frequency = context?.training_frequency_per_week ?? (() => {
-    const weeks = progression?.consistency?.weeks ?? [];
-    return weeks.length ? weeks.reduce((sum, week) => sum + (week.completed ?? 0), 0) / weeks.length : null;
-  })();
+  const completedWeeks = completedTrainingWeeks(progression?.consistency?.weeks ?? []);
+  const frequencyPoints = completedWeeks.map((week) => week.completed);
+  const frequency = completedWeeks.length
+    ? completedWeeks.reduce((sum, week) => sum + week.completed, 0) / completedWeeks.length
+    : null;
+  const volumeWeeks = completedVolumeWeeks(progression?.metric_trends?.volume?.points ?? []);
+  const latestVolumeWeek = volumeWeeks.at(-1) || null;
+  const previousVolumeWeek = volumeWeeks.at(-2) || null;
+  const comparableVolume = latestVolumeWeek && previousVolumeWeek
+    ? (new Date(`${latestVolumeWeek.date}T00:00:00Z`).getTime() - new Date(`${previousVolumeWeek.date}T00:00:00Z`).getTime()) === 7 * 86_400_000
+    : false;
+  const volumeDeltaPct = comparableVolume && previousVolumeWeek && previousVolumeWeek.value_kg > 0
+    ? ((latestVolumeWeek!.value_kg - previousVolumeWeek.value_kg) / previousVolumeWeek.value_kg) * 100
+    : null;
   const bodyweight = context?.reported_bodyweight?.latest?.reported_bodyweight_kg;
   const bodyweightPoints = (context?.reported_bodyweight?.recent_observations ?? []).map((point) => point.reported_bodyweight_kg).filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
   const latestReportedBodyweight = context?.reported_bodyweight?.latest;
@@ -268,10 +431,6 @@ export function LedgerIndexExperience() {
   const bodyweightTrendLine = reportedBodyweightComparison
     ? `${displayWeight(reportedBodyweightComparison.start.reported_bodyweight_kg, model.unit)} → ${displayWeight(reportedBodyweightComparison.end.reported_bodyweight_kg, model.unit)} ${model.unit.toUpperCase()} · ${reportedBodyweightComparison.span_days} days`
     : null;
-  const frequencyPoints = (progression?.consistency?.weeks ?? []).map((week) => week.completed ?? 0);
-  const prArtifact = model.medallion
-    ? majorVolumeMedallionAsset(model.medallion.family, model.medallion.thresholdLb)
-    : LEDGER_INDEX_ASSETS.prMedallion;
   const trophyArtifact = SL_TOTAL_TROPHY_ASSETS[model.trophyIndex];
   const openRoom = (room: LedgerRoom) => router.push(ledgerHrefFor(room) as any);
   const latestTitle = latestJourneyEntry?.movement?.label || model.latest?.movement_label || latestJourneyEntry?.title || 'No entry recorded yet';
@@ -288,11 +447,14 @@ export function LedgerIndexExperience() {
       : model.latest
         ? eventTypeLabel(model.latest.event_type)
         : 'Your next completed performance will appear here.';
-  const latestEquipment = typeof latestJourneyEntry?.evidence?.equipment_label === 'string'
-    ? latestJourneyEntry.evidence.equipment_label
+  const latestEquipmentEvidence = latestJourneyEntry?.evidence?.equipment;
+  const latestEquipment = latestEquipmentEvidence && typeof latestEquipmentEvidence === 'object'
+    ? [
+      (latestEquipmentEvidence as Record<string, unknown>).manufacturer,
+      (latestEquipmentEvidence as Record<string, unknown>).model,
+    ].filter((value): value is string => typeof value === 'string' && Boolean(value)).join(' · ') || null
     : null;
   const latestFooter = [latestEquipment, dateLabel(latestDate)].filter(Boolean).join(' · ');
-  const latestImage = plateArtwork(latestJourneyEntry?.performance?.weight_kg ?? eventWeightKg(model.latest), model.unit);
 
   return <View testID="ledger-home-experience" style={styles.page}>
     <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
@@ -311,9 +473,9 @@ export function LedgerIndexExperience() {
           <CareerBars values={frequencyPoints} />
         </View>
         <View style={styles.snapshotStats}>
-          <SnapshotStat value={context ? context.lifetime_set_count.toLocaleString() : '—'} label="SETS" tone="#64D7DC" image={ledgerIndexChapterAsset('strength')} />
-          <SnapshotStat value={model.prs.length.toLocaleString()} label="PRs" tone="#E1B95B" image={prArtifact} />
-          <SnapshotStat value={model.events.length.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={trophyArtifact} assetShape="tall" />
+          <SnapshotStat value={lifetimeSets == null ? '—' : lifetimeSets.toLocaleString()} label="SETS" tone="#64D7DC" image={LEDGER_INDEX_ASSETS.careerSets} />
+          <SnapshotStat value={lifetimePrs == null ? '—' : lifetimePrs.toLocaleString()} label="PRs" tone="#E1B95B" image={LEDGER_INDEX_ASSETS.careerPr} assetShape="tall" />
+          <SnapshotStat value={lifetimeAchievements == null ? '—' : lifetimeAchievements.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={trophyArtifact} assetShape="tall" />
         </View>
       </View>
 
@@ -322,7 +484,7 @@ export function LedgerIndexExperience() {
 
       <Text style={styles.sectionKicker}>LATEST ENTRY</Text>
       <Pressable disabled={!latestJourneyEntry && !model.latest} accessibilityRole="button" accessibilityLabel={`Latest Ledger entry: ${latestTitle}, ${latestValue}`} onPress={() => latestHref ? router.push(latestHref as any) : model.latest?.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.latest.source_set_log_id}` as any) : openRoom('journey')} style={({ pressed }) => [styles.latestEntry, pressed && styles.pressed]}>
-        <Image accessible={false} source={latestImage} resizeMode="cover" style={styles.latestImage} />
+        <LatestEntryArtwork movement={latestMovement} />
         <View style={styles.latestCopy}><View style={styles.latestTopLine}><Text style={styles.latestTitle}>{latestTitle.toUpperCase()}</Text>{latestIsPr ? <View style={styles.latestPrBadge}><Text style={styles.latestPrBadgeText}>PR</Text></View> : null}</View><Text numberOfLines={1} style={styles.latestContext}>{latestContext}</Text><Text style={styles.latestValue}>{latestValue}</Text><Text numberOfLines={1} style={styles.latestDate}>{latestFooter}</Text></View>
         <Ionicons name="arrow-forward" size={20} color="#B99AF0" />
       </Pressable>
@@ -330,18 +492,20 @@ export function LedgerIndexExperience() {
 
     <View style={styles.sectionInset}>
       <View style={styles.sectionHeading}><Text style={styles.sectionTitle}>AT A GLANCE</Text><Text style={styles.sectionMeta}>CONTEXT MATTERS</Text></View>
-      <View style={styles.contextGrid}>
-        <Pressable onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, styles.blockCard, pressed && styles.pressed]}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.contextRail}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open current block in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, styles.blockCard, pressed && styles.pressed]}>
           <ImageBackground accessible={false} source={ledgerIndexChapterAsset('strength')} resizeMode="cover" style={styles.blockBackdrop} imageStyle={styles.blockBackdropImage}><View style={styles.blockBackdropScrim} /></ImageBackground>
-          <View style={styles.contextCopy}><Text style={styles.contextLabel}>CURRENT BLOCK</Text><Text style={styles.contextValue}>{context?.block?.name || 'No current block'}</Text><Text style={styles.contextDetail}>{context?.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week context'}</Text></View>
-          <ProgressRing value={context?.block_progress ?? 0} />
+          <View style={styles.blockTop}><View style={styles.contextCopy}><Text style={styles.contextLabel}>CURRENT BLOCK</Text><Text numberOfLines={1} style={styles.contextValue}>{context?.block?.name || 'No current block'}</Text><Text style={styles.contextDetail}>{context?.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week context'}</Text></View><ProgressRing value={context?.block_progress ?? 0} /></View>
+          <Text style={styles.blockEvidence}>{context?.block_total_sessions ? `${context.block_completed_sessions}/${context.block_total_sessions} sessions completed` : 'No completed-session evidence yet'}</Text>
         </Pressable>
-        <Pressable onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>REPORTED BODYWEIGHT</Text><Text style={styles.contextMetric}>{bodyweight ? `${displayWeight(bodyweight, model.unit)} ${model.unit.toUpperCase()}` : '—'}</Text><Text style={styles.contextDetail}>{bodyweightContextLine}</Text>{bodyweightTrendLine ? <Text style={styles.contextTrend}>{bodyweightTrendLine}</Text> : null}<MiniLine values={bodyweightPoints.slice(-8)} tone="#76CBD0" label="Reported pre-session bodyweight trend" /></Pressable>
-        <View style={styles.contextCard}><Text style={styles.contextLabel}>TRAINING FREQUENCY</Text><Text style={styles.contextMetric}>{frequency == null ? '—' : Number(frequency).toFixed(1)}</Text><Text style={styles.contextDetail}>Sessions / week</Text><MiniBars values={frequencyPoints} /></View>
-      </View>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open completed training volume in Archive" onPress={() => openRoom('archive')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>VOLUME · COMPLETED WEEK</Text><Text adjustsFontSizeToFit minimumFontScale={0.74} numberOfLines={1} style={styles.contextMetric}>{displayVolume(latestVolumeWeek?.value_kg, model.unit)}</Text><Text style={styles.contextDetail}>{shortWeekLabel(latestVolumeWeek?.date)}</Text>{volumeDeltaPct != null ? <Text style={[styles.contextTrend, volumeDeltaPct < 0 && styles.contextTrendDown]}>{volumeDeltaPct >= 0 ? '+' : ''}{volumeDeltaPct.toFixed(0)}% vs prior week</Text> : <Text style={styles.contextEvidence}>No adjacent-week comparison</Text>}<ContextBars values={volumeWeeks.map((point) => point.value_kg)} tone="#A557F0" /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open training frequency in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>TRAINING FREQUENCY</Text><Text style={styles.contextMetric}>{frequency == null ? '—' : Number(frequency).toFixed(1)}</Text><Text style={styles.contextDetail}>Sessions / week</Text><Text style={styles.contextEvidence}>Last 8 completed weeks</Text><ContextBars values={frequencyPoints} /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open reported bodyweight history in Journey" onPress={() => openRoom('journey')} style={({ pressed }) => [styles.contextCard, pressed && styles.pressed]}><Text style={styles.contextLabel}>REPORTED BODYWEIGHT</Text><Text style={styles.contextMetric}>{bodyweight != null ? `${displayWeight(bodyweight, model.unit)} ${model.unit.toUpperCase()}` : '—'}</Text><Text numberOfLines={2} style={styles.contextDetail}>{bodyweightContextLine}</Text>{bodyweightTrendLine ? <Text numberOfLines={1} style={styles.contextTrend}>{bodyweightTrendLine}</Text> : <Text style={styles.contextEvidence}>No fabricated trend</Text>}<MiniLine values={bodyweightPoints.slice(-8)} tone="#76CBD0" label="Reported pre-session bodyweight trend" /></Pressable>
+        {typeof progression?.readiness?.average === 'number' ? <View accessibilityLabel={`Readiness 7-day average ${progression.readiness.average.toFixed(1)}`} style={styles.contextCard}><Text style={styles.contextLabel}>READINESS TREND</Text><Text style={styles.contextMetric}>{progression.readiness.average.toFixed(1)}</Text><Text style={styles.contextDetail}>7-day average</Text><Text numberOfLines={2} style={styles.contextEvidence}>{progression.readiness.context_line || progression.readiness.trend || 'Reported readiness evidence'}</Text><View style={styles.readinessSignal}><Ionicons name="pulse-outline" size={30} color="#68D16F" /><Text style={styles.readinessSignalText}>{progression.readiness.trend || 'CURRENT'}</Text></View></View> : null}
+      </ScrollView>
 
       <View style={styles.sectionHeading}><Text style={styles.sectionTitle}>RECENT PRs</Text><Pressable onPress={() => openRoom('achievements')}><Text style={styles.sectionMeta}>VIEW ALL</Text></Pressable></View>
-      {model.prs.length === 1 ? <RecentPrCard wide event={model.prs[0]} unit={model.unit} onPress={() => model.prs[0].source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.prs[0].source_set_log_id}` as any) : openRoom('achievements')} /> : model.prs.length > 1 ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.prRail}>{model.prs.slice(0, 8).map((event) => <RecentPrCard key={event.id} event={event} unit={model.unit} onPress={() => event.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${event.source_set_log_id}` as any) : openRoom('achievements')} />)}</ScrollView> : <View style={styles.emptyPrs}><Text style={styles.emptyPrsTitle}>No personal records yet.</Text><Text style={styles.emptyPrsBody}>Qualifying performances will be preserved here.</Text></View>}
+      {model.prs.length ? <><RecentPrCard hero performance={model.prs[0]} unit={model.unit} onPress={() => model.prs[0].primary.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.prs[0].primary.source_set_log_id}` as any) : openRoom('achievements')} />{model.prs.length > 1 ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.prRail}>{model.prs.slice(1, 7).map((performance) => <RecentPrCard key={performance.key} performance={performance} unit={model.unit} onPress={() => performance.primary.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${performance.primary.source_set_log_id}` as any) : openRoom('achievements')} />)}</ScrollView> : null}</> : <View style={styles.emptyPrs}><Text style={styles.emptyPrsTitle}>No personal records yet.</Text><Text style={styles.emptyPrsBody}>Qualifying performances will be preserved here.</Text></View>}
     </View>
 
     <View style={styles.sectionInset}>
@@ -388,14 +552,17 @@ const styles = StyleSheet.create({
   snapshotStatLabel: { fontSize: 9, lineHeight: 12, fontWeight: '700', letterSpacing: 0.5 },
   liftList: { gap: 4 },
   liftResult: { height: 80, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 12, borderWidth: 1, borderColor: '#30343B', backgroundColor: '#080A0E' },
-  liftArtwork: { width: '37%', height: 80 },
-  liftScrim: { position: 'absolute', left: '24%', top: 0, bottom: 0, width: '18%', backgroundColor: 'rgba(8,10,14,0.62)' },
-  liftResultCopy: { flex: 1, minWidth: 0, gap: 0, marginLeft: 14 },
+  liftArtwork: { width: 124, height: 78, marginLeft: 2 },
+  liftArtworkFallback: { width: 124, height: 78, alignItems: 'center', justifyContent: 'center' },
+  liftScrim: { position: 'absolute', left: 103, top: 0, bottom: 0, width: 35, backgroundColor: 'rgba(8,10,14,0.68)' },
+  liftResultCopy: { flex: 1, minWidth: 0, gap: 0, marginLeft: 8 },
   liftResultLabel: { fontSize: 11, lineHeight: 14, fontWeight: '800', letterSpacing: 0.42 },
   liftResultValue: { color: '#F4F2F5', fontSize: 28, lineHeight: 30, fontWeight: '600', letterSpacing: -0.6 },
   liftResultUnit: { color: '#9AA2AD', fontSize: 10, lineHeight: 13, fontWeight: '600', letterSpacing: 0.28 },
   latestEntry: { height: 102, flexDirection: 'row', alignItems: 'center', gap: 11, overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#49325E', backgroundColor: '#0D0A12', paddingRight: 13 },
-  latestImage: { width: 108, height: 102, backgroundColor: '#090A0D' },
+  latestImage: { width: 108, height: 102, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#090A0D' },
+  latestMuscleMap: { width: 106, height: 96 },
+  latestImageFallback: { width: 102, height: 96 },
   latestCopy: { flex: 1, minWidth: 0, gap: 1 },
   latestTopLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   latestTitle: { flexShrink: 1, color: '#C598F5', fontSize: 11, lineHeight: 14, fontWeight: '800', letterSpacing: 0.3 },
@@ -407,9 +574,10 @@ const styles = StyleSheet.create({
   sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 27 },
   sectionTitle: { color: '#BB8CF4', fontSize: 13, lineHeight: 17, fontWeight: '800', letterSpacing: 0.6 },
   sectionMeta: { color: '#B18AE3', fontSize: 10, lineHeight: 13, fontWeight: '700', letterSpacing: 0.45 },
-  contextGrid: { gap: 7 },
-  contextCard: { minHeight: 112, overflow: 'hidden', gap: 3, padding: 14, borderRadius: 14, borderWidth: 1, borderColor: '#2D3742', backgroundColor: '#080D12' },
-  blockCard: { minHeight: 112, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  contextRail: { gap: 7, paddingRight: 14 },
+  contextCard: { width: 170, height: 157, overflow: 'hidden', gap: 3, padding: 12, borderRadius: 14, borderWidth: 1, borderColor: '#2D3742', backgroundColor: '#080D12' },
+  blockCard: { width: 218, justifyContent: 'space-between' },
+  blockTop: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   blockBackdrop: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
   blockBackdropImage: { opacity: 0.46 },
   blockBackdropScrim: { flex: 1, backgroundColor: 'rgba(4,7,10,0.64)' },
@@ -419,23 +587,40 @@ const styles = StyleSheet.create({
   contextMetric: { color: '#F3F0F4', fontSize: 29, lineHeight: 33, fontWeight: '600', letterSpacing: -0.55 },
   contextDetail: { color: '#9AA2AD', fontSize: 10, lineHeight: 14 },
   contextTrend: { color: '#76CBD0', fontSize: 9, lineHeight: 12, fontWeight: '700' },
+  contextTrendDown: { color: '#ED7A83' },
+  contextEvidence: { color: '#697482', fontSize: 8, lineHeight: 11 },
+  blockEvidence: { color: '#BEC5CE', fontSize: 9, lineHeight: 12, fontWeight: '600' },
   progressRing: { width: 70, height: 70, alignItems: 'center', justifyContent: 'center' },
   progressRingValue: { position: 'absolute', color: '#F2EEF5', fontSize: 16, lineHeight: 20, fontWeight: '700' },
-  miniChart: { position: 'absolute', right: 10, bottom: 8, width: 134, height: 52 },
-  emptyChart: { position: 'absolute', right: 10, bottom: 8, width: 134, height: 52, justifyContent: 'flex-end' },
+  miniChart: { position: 'absolute', right: 10, bottom: 7, width: 148, height: 47 },
+  emptyChart: { position: 'absolute', right: 10, bottom: 7, width: 148, height: 47, justifyContent: 'flex-end' },
   emptyChartLine: { height: 1, backgroundColor: '#26303A' },
-  frequencyBars: { position: 'absolute', right: 14, bottom: 12, width: 138, height: 49, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 7 },
-  frequencyBar: { width: 9, minHeight: 7, borderTopLeftRadius: 3, borderTopRightRadius: 3, backgroundColor: '#9D63E8' },
+  contextBars: { position: 'absolute', left: 12, right: 12, bottom: 8, height: 42, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 5, paddingBottom: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#303843' },
+  contextBar: { flex: 1, maxWidth: 14, minHeight: 4, borderTopLeftRadius: 2, borderTopRightRadius: 2 },
+  contextBarsEmpty: { flex: 1, height: 1, backgroundColor: '#26303A' },
+  readinessSignal: { position: 'absolute', left: 12, right: 12, bottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  readinessSignalText: { color: '#68D16F', fontSize: 9, lineHeight: 12, fontWeight: '800', letterSpacing: 0.45 },
   prRail: { gap: 7, paddingRight: 14 },
-  prCard: { width: 143, minHeight: 122, gap: 2, padding: 11, borderRadius: 13, borderWidth: 1, borderColor: '#30343D', backgroundColor: '#090B0F' },
-  prCardWide: { width: '100%', height: 96, flexDirection: 'row', alignItems: 'stretch', gap: 12, padding: 0, paddingRight: 13, overflow: 'hidden' },
-  prArtwork: { width: 112, height: 96, backgroundColor: '#07090C' },
-  prCardCopy: { flex: 1, minWidth: 0, gap: 2 },
-  prCardCopyWide: { paddingVertical: 11 },
+  prCard: { width: 171, height: 160, gap: 4, padding: 9, borderRadius: 13, borderWidth: 1, borderColor: '#30343D', backgroundColor: '#090B0F' },
+  prCardHero: { width: '100%', height: 154, flexDirection: 'row', alignItems: 'stretch', gap: 10, padding: 10, overflow: 'hidden', borderColor: '#643892' },
+  prParticles: { ...StyleSheet.absoluteFillObject },
+  prParticle: { position: 'absolute', width: 5, height: 8, borderRadius: 2, backgroundColor: '#D66DFF', transform: [{ rotate: '28deg' }] },
+  prArtworkFrame: { height: 48, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: 8, backgroundColor: '#08090C' },
+  prArtworkFrameHero: { width: 119, height: 132, alignSelf: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: '#704397', backgroundColor: 'rgba(5,5,8,0.58)' },
+  prArtwork: { width: '100%', height: '100%' },
+  prCardCopy: { flex: 1, minWidth: 0, gap: 1 },
+  prCardCopyHero: { justifyContent: 'center', paddingVertical: 2 },
   prCardTop: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   prMovement: { flex: 1, color: '#B8A9CA', fontSize: 9, lineHeight: 12, fontWeight: '700', textTransform: 'uppercase' },
+  prMovementHero: { color: '#D8A7FF', fontSize: 11, lineHeight: 14 },
   prValue: { marginTop: 6, color: '#F4F2F5', fontSize: 20, lineHeight: 24, fontWeight: '700' },
+  prValueHero: { marginTop: 2, fontSize: 27, lineHeight: 32, letterSpacing: -0.55 },
   prKind: { color: '#ABA2B4', fontSize: 9, lineHeight: 12 },
+  prKindHero: { color: '#D9CAE2', fontSize: 10, lineHeight: 13 },
+  prComparison: { color: '#F091FF', fontSize: 8.5, lineHeight: 11, fontWeight: '700' },
+  prBadges: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 },
+  prBadge: { paddingHorizontal: 5, paddingVertical: 2, borderRadius: 5, backgroundColor: 'rgba(179,91,234,0.18)', borderWidth: StyleSheet.hairlineWidth, borderColor: '#8F52AE' },
+  prBadgeText: { color: '#DDB8F2', fontSize: 7, lineHeight: 9, fontWeight: '700' },
   prDate: { marginTop: 'auto', color: '#7F8792', fontSize: 8, lineHeight: 11 },
   prMiniSeal: { minWidth: 25, height: 22, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
   prMiniSealText: { color: '#FFFFFF', fontSize: 8, lineHeight: 10, fontWeight: '800' },

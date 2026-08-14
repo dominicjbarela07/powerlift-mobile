@@ -7,7 +7,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const source = await readFile(path.join(root, 'components/ledger/index-experience.tsx'), 'utf8');
 
 assert.match(source, /liftResult: \{ height: 80,/, 'Core Lift rows must remain compact at the approved 80-point logical height');
-assert.match(source, /prCardWide/, 'a single recent PR must use the full-width evidence card');
+assert.match(source, /<RecentPrCard hero/, 'the highest-priority recent performance must use the full-width celebratory hero card');
+assert.match(source, /No personal records yet\./, 'the Index must retain a deliberate no-PR state');
 assert.match(source, /latestJourneyEntry\?\.event_type === 'MOVEMENT_ADDED'[\s\S]*latestJourneyEntry\.detail/, 'movement introductions must show athlete-facing performance context');
 assert.doesNotMatch(source, /stable movement identity|canonical identity created|movement identity reconciled/i, 'Ledger Index must not expose internal identity terminology');
 
