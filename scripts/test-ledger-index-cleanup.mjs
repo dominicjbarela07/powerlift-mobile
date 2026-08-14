@@ -26,7 +26,14 @@ const mojibake = /Â·|Ã|â€™|�/u;
 const violations = [];
 
 async function scan(directory) {
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code === 'ENOENT') return;
+    throw error;
+  }
+  for (const entry of entries) {
     const target = path.join(directory, entry.name);
     if (entry.isDirectory()) {
       await scan(target);
