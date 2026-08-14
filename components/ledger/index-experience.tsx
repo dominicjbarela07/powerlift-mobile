@@ -351,7 +351,9 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
 function LatestEntryArtwork({ movement, entry }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null }) {
   const movementLabel = movement?.name || entry?.movement?.label;
   const hasMovementIdentity = Boolean(movementLabel || movement?.family || movement?.primary_muscle_group || entry?.movement?.family);
-  const region = accessoryMuscleRegion({
+  const coreLift = canonicalLiftKey(movement?.core_family || movementLabel || entry?.movement?.family);
+  const coreRegion = coreLift === 'squat' ? 'quads' : coreLift === 'bench' ? 'chest' : coreLift === 'deadlift' ? 'hamstrings' : null;
+  const region = coreRegion || accessoryMuscleRegion({
     movement: movementLabel,
     movement_identity: {
       family: movement?.family || movement?.body_region || entry?.movement?.family,
