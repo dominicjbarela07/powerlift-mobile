@@ -31,7 +31,7 @@ assert.match(index, /source_set_log_id \? router\.push\(`\/\(tabs\)\/ledger\/arc
 assert.match(index, /typeof event\.prior_value === 'number'[\s\S]*priorValue != null && delta != null/, 'comparisons require canonical prior evidence and numeric deltas');
 assert.match(index, /NEW PERSONAL RECORD|BLOCK BEST/, 'missing comparisons use truthful non-comparative language');
 
-assert.match(index, /LatestEntryArtwork[\s\S]*MuscleMap/, 'Latest Entry uses governed movement anatomy');
+assert.match(index, /LatestEntryArtwork[\s\S]*accessoryMuscleRegionAsset/, 'Latest Entry uses governed movement-region anatomy');
 assert.match(index, /loadConvention === 'assistance_load'/, 'assisted loads are labeled from canonical semantics');
 for (const forbidden of ['stable movement identity', 'canonical identity', 'reconciliation', 'movement session completed', 'prescription completed', 'identity snapshot', 'source definition']) {
   assert.doesNotMatch(index, new RegExp(forbidden, 'i'), `athlete-facing Index leaked internal term: ${forbidden}`);

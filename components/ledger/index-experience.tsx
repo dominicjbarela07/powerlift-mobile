@@ -13,12 +13,10 @@ import {
 } from 'react-native';
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLSpacing } from '@/constants/theme';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import {
   canonicalLiftKey,
   displayWeight,
@@ -352,13 +350,8 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
 
 function LatestEntryArtwork({ movement }: { movement?: LedgerMovementProgress | null }) {
   const region = canonicalAccessoryMuscleRegionKey(movement?.primary_muscle_group || movement?.body_region || movement?.family);
-  if (movement && isGovernedMuscleId(region)) {
-    return <View accessibilityLabel={`${movement.name} muscle focus`} style={styles.latestImage}>
-      <MuscleMap anatomy="automatic" primary={[region]} secondary={movement.secondary_muscle_groups} size="thumbnail" style={styles.latestMuscleMap} view="auto" />
-    </View>;
-  }
   const source = movement ? accessoryMuscleRegionAsset(region).source : LEDGER_INDEX_ASSETS.latestEntryFallback;
-  return <View style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
+  return <View accessibilityLabel={movement ? `${movement.name} muscle focus` : 'Latest movement'} style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
 }
 
 export function LedgerIndexExperience() {
@@ -561,7 +554,6 @@ const styles = StyleSheet.create({
   liftResultUnit: { color: '#9AA2AD', fontSize: 10, lineHeight: 13, fontWeight: '600', letterSpacing: 0.28 },
   latestEntry: { height: 102, flexDirection: 'row', alignItems: 'center', gap: 11, overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#49325E', backgroundColor: '#0D0A12', paddingRight: 13 },
   latestImage: { width: 108, height: 102, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#090A0D' },
-  latestMuscleMap: { width: 106, height: 96 },
   latestImageFallback: { width: 102, height: 96 },
   latestCopy: { flex: 1, minWidth: 0, gap: 1 },
   latestTopLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
