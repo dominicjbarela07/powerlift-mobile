@@ -482,6 +482,10 @@ function DayLens({ detail, error, loading, onAction, onClose, onRetry, preferred
   const title = primary?.title || (state === 'personal' ? 'Personal Day' : 'Recovery Day');
   const status = primary ? resolveCalendarSessionStatus(primary.status) : null;
   const blockContext = detail.blockContext;
+  const openSessionAfterClosingLens = (id: number) => {
+    onClose();
+    requestAnimationFrame(() => onAction({ type: 'session', id }));
+  };
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.modalBackdrop}>
@@ -508,7 +512,7 @@ function DayLens({ detail, error, loading, onAction, onClose, onRetry, preferred
               <>
                 {isRecovery ? <RecoveryLens detail={detail} onAction={onAction} preferredUnits={preferredUnits} /> : null}
                 {primary && status?.lifecycle !== 'completed' ? <TrainingLens onAction={onAction} session={primary} /> : null}
-                {primary && status?.lifecycle === 'completed' ? <CompletedLens onAction={onAction} preferredUnits={preferredUnits} session={primary} /> : null}
+                {primary && status?.lifecycle === 'completed' ? <CompletedLens onOpenSession={openSessionAfterClosingLens} preferredUnits={preferredUnits} session={primary} /> : null}
                 {detail.sessions.slice(1).map((session) => <AdditionalSession key={session.id} onAction={onAction} session={session} />)}
                 {detail.personalEvents.length ? <PersonalItems events={detail.personalEvents} onAction={onAction} /> : null}
                 {!detail.sessions.length && !isRecovery && !detail.personalEvents.length ? <EmptyDay /> : null}
@@ -594,7 +598,7 @@ function TrainingLens({ onAction, session }: { onAction: (action: AthleteCalenda
   );
 }
 
-function CompletedLens({ onAction, preferredUnits, session }: { onAction: (action: AthleteCalendarAction) => void; preferredUnits: 'kg' | 'lb'; session: AthleteCalendarDayDetailSession }) {
+function CompletedLens({ onOpenSession, preferredUnits, session }: { onOpenSession: (id: number) => void; preferredUnits: 'kg' | 'lb'; session: AthleteCalendarDayDetailSession }) {
   const performance = session.performance;
   const accomplishment = session.accomplishment;
   const best = performance?.bestSet;
@@ -621,7 +625,7 @@ function CompletedLens({ onAction, preferredUnits, session }: { onAction: (actio
           </View>
         </View>
       ) : null}
-      <PrimaryAction label="View Session Recap" onPress={() => onAction({ type: 'session', id: session.id })} tone="green" />
+      <PrimaryAction label="View Session Recap" onPress={() => onOpenSession(session.id)} tone="green" />
     </>
   );
 }
@@ -745,7 +749,7 @@ function UtilityButton({ badge, icon, label, onPress }: { badge?: number; icon: 
 function EvidenceMetric({ label, value }: { label: string; value: string }) { return <View style={styles.evidenceMetric}><Text style={styles.evidenceValue}>{value}</Text><Text style={styles.evidenceLabel}>{label}</Text></View>; }
 function SummaryMetric({ label, value }: { label: string; value: number | string }) { return <View style={styles.summaryMetric}><Text style={styles.summaryMetricValue}>{value}</Text><Text style={styles.summaryMetricLabel}>{label}</Text></View>; }
 function SummaryFeature({ accent, label, value }: { accent: 'violet' | 'gold'; label: string; value: string }) { const color = accent === 'gold' ? SLColors.warning : SLColors.accentViolet; return <View style={[styles.summaryFeature, { borderColor: `${color}55` }]}><View><Text style={styles.cardEyebrow}>{label}</Text><Text style={[styles.summaryFeatureValue, { color }]}>{value}</Text></View><View style={[styles.featureOrb, { backgroundColor: `${color}22`, borderColor: `${color}88` }]}><Text style={[styles.featureOrbText, { color }]}>{accent === 'gold' ? 'PR' : '∑'}</Text></View></View>; }
-function PrimaryAction({ label, onPress, tone }: { label: string; onPress: () => void; tone: 'gold' | 'violet' | 'green' }) { const colors = tone === 'gold' ? ['#76551E', '#D1A94B'] : tone === 'green' ? ['#274A38', '#527A61'] : ['#3C176F', '#722AC3']; return <Pressable onPress={onPress} style={styles.primaryAction}><LinearGradient colors={colors as [string, string]} end={{ x: 1, y: 0 }} start={{ x: 0, y: 0 }} style={styles.primaryActionFill}><Text style={styles.primaryActionText}>{label}</Text><Ionicons color={SLColors.textStrong} name="arrow-forward" size={19} /></LinearGradient></Pressable>; }
+function PrimaryAction({ label, onPress, tone }: { label: string; onPress: () => void; tone: 'gold' | 'violet' | 'green' }) { const colors = tone === 'gold' ? ['#76551E', '#D1A94B'] : tone === 'green' ? ['#274A38', '#527A61'] : ['#3C176F', '#722AC3']; return <Pressable accessibilityLabel={label} accessibilityRole="button" hitSlop={4} onPress={onPress} style={({ pressed }) => [styles.primaryAction, pressed && styles.primaryActionPressed]}><LinearGradient pointerEvents="none" colors={colors as [string, string]} end={{ x: 1, y: 0 }} start={{ x: 0, y: 0 }} style={styles.primaryActionFill}><Text style={styles.primaryActionText}>{label}</Text><Ionicons color={SLColors.textStrong} name="arrow-forward" size={19} /></LinearGradient></Pressable>; }
 function EmptyDay() { return <View style={styles.noSummary}><Text style={styles.emptyTitle}>Open day</Text><Text style={styles.cardBody}>No Training Session or personal item is recorded.</Text></View>; }
 
 function fallbackDetail(data: AthleteCalendarExperienceData, date: string, canManage: boolean): AthleteCalendarDayDetail {
@@ -926,6 +930,7 @@ const styles = StyleSheet.create({
   notesCard: { marginHorizontal: 14, marginTop: 10, padding: 14, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat },
   notesText: { ...SLTypography.body, color: SLColors.textSecondary, marginTop: 8 },
   primaryAction: { height: 52, marginHorizontal: 14, marginTop: 13, borderRadius: SLRadius.control, overflow: 'hidden' },
+  primaryActionPressed: { opacity: 0.78, transform: [{ scale: 0.995 }] },
   primaryActionFill: { flex: 1, paddingHorizontal: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   primaryActionText: { ...SLTypography.buttonLabel, color: SLColors.textStrong },
   highlightGrid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
