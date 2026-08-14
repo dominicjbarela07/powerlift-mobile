@@ -89,8 +89,12 @@ function journeyPerformance(entry: JourneyEntry | null, unit: LedgerUnit) {
   const performance = entry?.performance;
   if (!entry || typeof performance?.weight_kg !== 'number') return entry?.detail || '—';
   const reps = typeof performance.reps === 'number' ? ` × ${performance.reps}` : '';
-  const rpe = typeof performance.rpe === 'number' ? ` @ RPE ${performance.rpe}` : '';
-  return `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}${reps}${rpe}`;
+  const effort = typeof performance.rpe === 'number'
+    ? ` @ RPE ${performance.rpe}`
+    : typeof performance.rir === 'number'
+      ? ` @ ${performance.rir} RIR`
+      : '';
+  return `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}${reps}${effort}`;
 }
 
 function plateArtwork(weightKg: number | null | undefined, unit: LedgerUnit): ImageSourcePropType {
@@ -102,9 +106,10 @@ function plateArtwork(weightKg: number | null | undefined, unit: LedgerUnit): Im
 function CareerBars({ values }: { values: readonly number[] }) {
   const chart = values.slice(-12);
   const max = Math.max(1, ...chart);
-  if (!chart.length) return <View accessible accessibilityLabel="No weekly session history yet" style={styles.careerBarsEmpty}><Text style={styles.careerBarsEmptyText}>HISTORY BUILDS HERE</Text></View>;
-  return <View accessible accessibilityLabel={`Sessions completed by week: ${chart.join(', ')}`} style={styles.careerBars}>
-    {chart.map((value, index) => <View key={`${index}-${value}`} style={[styles.careerBar, { height: 8 + (value / max) * 45, opacity: 0.42 + (index / Math.max(1, chart.length - 1)) * 0.58 }]} />)}
+  if (!chart.length) return <View accessible accessibilityLabel="No weekly session history yet" style={styles.careerChart}><Text style={styles.careerChartLabel}>COMPLETED / WEEK</Text><View style={styles.careerBarsEmpty}><Text style={styles.careerBarsEmptyText}>HISTORY BUILDS HERE</Text></View></View>;
+  return <View accessible accessibilityLabel={`Canonical sessions completed by week: ${chart.join(', ')}`} style={styles.careerChart}>
+    <Text style={styles.careerChartLabel}>COMPLETED / WEEK</Text>
+    <View style={styles.careerBars}>{chart.map((value, index) => <View key={`${index}-${value}`} style={[styles.careerBar, { height: 7 + (value / max) * 39, opacity: 0.42 + (index / Math.max(1, chart.length - 1)) * 0.58 }]} />)}</View>
   </View>;
 }
 
@@ -152,9 +157,9 @@ function ProgressRing({ value, tone = '#A873F1' }: { value: number; tone?: strin
   </View>;
 }
 
-function SnapshotStat({ value, label, tone, image }: { value: string; label: string; tone: string; image: ImageSourcePropType }) {
+function SnapshotStat({ value, label, tone, image, assetShape = 'wide' }: { value: string; label: string; tone: string; image: ImageSourcePropType; assetShape?: 'wide' | 'tall' }) {
   return <View style={styles.snapshotStat}>
-    <Image accessible={false} source={image} resizeMode="contain" style={styles.snapshotStatImage} />
+    <View style={[styles.snapshotStatArtifact, { borderColor: `${tone}45` }]}><Image accessible={false} source={image} resizeMode="contain" style={assetShape === 'tall' ? styles.snapshotStatImageTall : styles.snapshotStatImageWide} /></View>
     <Text style={styles.snapshotStatValue}>{value}</Text>
     <Text style={[styles.snapshotStatLabel, { color: tone }]}>{label}</Text>
   </View>;
@@ -189,17 +194,19 @@ function ChapterRow({ chapter, onPress, image }: { chapter: typeof CHAPTERS[numb
   </Pressable>;
 }
 
-function RecentPrCard({ event, unit, onPress }: { event: AccomplishmentEvent; unit: LedgerUnit; onPress: () => void }) {
+function RecentPrCard({ event, unit, onPress, wide = false }: { event: AccomplishmentEvent; unit: LedgerUnit; onPress: () => void; wide?: boolean }) {
   const tone = canonicalLiftKey(event.core_movement_key || event.movement_label) === 'bench'
     ? '#F06C7B'
     : canonicalLiftKey(event.core_movement_key || event.movement_label) === 'deadlift'
       ? '#EF695B'
       : '#A66FF1';
-  return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.prCard, pressed && styles.pressed]}>
-    <View style={styles.prCardTop}><Text numberOfLines={1} style={styles.prMovement}>{event.movement_label || 'Movement'}</Text><View style={[styles.prMiniSeal, { backgroundColor: tone }]}><Text style={styles.prMiniSealText}>PR</Text></View></View>
-    <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.prValue}>{eventPerformance(event, unit)}</Text>
-    <Text style={styles.prKind}>{eventTypeLabel(event.event_type)}</Text>
-    <Text style={styles.prDate}>{dateLabel(event.occurred_at || event.workout_date)}</Text>
+  return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.prCard, wide && styles.prCardWide, pressed && styles.pressed]}>
+    {wide ? <Image accessible={false} source={plateArtwork(eventWeightKg(event), unit)} resizeMode="cover" style={styles.prArtwork} /> : null}
+    <View style={[styles.prCardCopy, wide && styles.prCardCopyWide]}><View style={styles.prCardTop}><Text numberOfLines={1} style={styles.prMovement}>{event.movement_label || 'Movement'}</Text><View style={[styles.prMiniSeal, { backgroundColor: tone }]}><Text style={styles.prMiniSealText}>PR</Text></View></View>
+      <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.prValue}>{eventPerformance(event, unit)}</Text>
+      <Text style={styles.prKind}>{eventTypeLabel(event.event_type)}</Text>
+      <Text style={styles.prDate}>{dateLabel(event.occurred_at || event.workout_date)}</Text>
+    </View>
   </Pressable>;
 }
 
@@ -274,11 +281,17 @@ export function LedgerIndexExperience() {
   const latestIsPr = latestJourneyEntry
     ? Boolean(latestJourneyEntry.evidence && Array.isArray(latestJourneyEntry.evidence.accomplishments) && latestJourneyEntry.evidence.accomplishments.length)
     : Boolean(model.latest?.event_type.includes('_PR'));
-  const latestContext = latestJourneyEntry?.title && latestJourneyEntry.title !== latestTitle
-    ? latestJourneyEntry.title
-    : model.latest
-      ? eventTypeLabel(model.latest.event_type)
-      : 'Your next completed performance will appear here.';
+  const latestContext = latestJourneyEntry?.event_type === 'MOVEMENT_ADDED'
+    ? latestJourneyEntry.detail
+    : latestJourneyEntry?.title && latestJourneyEntry.title !== latestTitle
+      ? latestJourneyEntry.title
+      : model.latest
+        ? eventTypeLabel(model.latest.event_type)
+        : 'Your next completed performance will appear here.';
+  const latestEquipment = typeof latestJourneyEntry?.evidence?.equipment_label === 'string'
+    ? latestJourneyEntry.evidence.equipment_label
+    : null;
+  const latestFooter = [latestEquipment, dateLabel(latestDate)].filter(Boolean).join(' · ');
   const latestImage = plateArtwork(latestJourneyEntry?.performance?.weight_kg ?? eventWeightKg(model.latest), model.unit);
 
   return <View testID="ledger-home-experience" style={styles.page}>
@@ -298,9 +311,9 @@ export function LedgerIndexExperience() {
           <CareerBars values={frequencyPoints} />
         </View>
         <View style={styles.snapshotStats}>
-          <SnapshotStat value={context ? context.lifetime_set_count.toLocaleString() : '—'} label="SETS" tone="#64D7DC" image={LEDGER_INDEX_ASSETS.record} />
+          <SnapshotStat value={context ? context.lifetime_set_count.toLocaleString() : '—'} label="SETS" tone="#64D7DC" image={ledgerIndexChapterAsset('strength')} />
           <SnapshotStat value={model.prs.length.toLocaleString()} label="PRs" tone="#E1B95B" image={prArtifact} />
-          <SnapshotStat value={model.events.length.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={trophyArtifact} />
+          <SnapshotStat value={model.events.length.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={trophyArtifact} assetShape="tall" />
         </View>
       </View>
 
@@ -310,7 +323,7 @@ export function LedgerIndexExperience() {
       <Text style={styles.sectionKicker}>LATEST ENTRY</Text>
       <Pressable disabled={!latestJourneyEntry && !model.latest} accessibilityRole="button" accessibilityLabel={`Latest Ledger entry: ${latestTitle}, ${latestValue}`} onPress={() => latestHref ? router.push(latestHref as any) : model.latest?.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.latest.source_set_log_id}` as any) : openRoom('journey')} style={({ pressed }) => [styles.latestEntry, pressed && styles.pressed]}>
         <Image accessible={false} source={latestImage} resizeMode="cover" style={styles.latestImage} />
-        <View style={styles.latestCopy}><View style={styles.latestTopLine}><Text style={styles.latestTitle}>{latestTitle.toUpperCase()}</Text>{latestIsPr ? <View style={styles.latestPrBadge}><Text style={styles.latestPrBadgeText}>PR</Text></View> : null}</View><Text numberOfLines={1} style={styles.latestContext}>{latestContext}</Text><Text style={styles.latestValue}>{latestValue}</Text><Text style={styles.latestDate}>{dateLabel(latestDate)}</Text></View>
+        <View style={styles.latestCopy}><View style={styles.latestTopLine}><Text style={styles.latestTitle}>{latestTitle.toUpperCase()}</Text>{latestIsPr ? <View style={styles.latestPrBadge}><Text style={styles.latestPrBadgeText}>PR</Text></View> : null}</View><Text numberOfLines={1} style={styles.latestContext}>{latestContext}</Text><Text style={styles.latestValue}>{latestValue}</Text><Text numberOfLines={1} style={styles.latestDate}>{latestFooter}</Text></View>
         <Ionicons name="arrow-forward" size={20} color="#B99AF0" />
       </Pressable>
     </View>
@@ -328,7 +341,7 @@ export function LedgerIndexExperience() {
       </View>
 
       <View style={styles.sectionHeading}><Text style={styles.sectionTitle}>RECENT PRs</Text><Pressable onPress={() => openRoom('achievements')}><Text style={styles.sectionMeta}>VIEW ALL</Text></Pressable></View>
-      {model.prs.length ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.prRail}>{model.prs.slice(0, 8).map((event) => <RecentPrCard key={event.id} event={event} unit={model.unit} onPress={() => event.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${event.source_set_log_id}` as any) : openRoom('achievements')} />)}</ScrollView> : <View style={styles.emptyPrs}><Text style={styles.emptyPrsTitle}>No personal records yet.</Text><Text style={styles.emptyPrsBody}>Qualifying performances will be preserved here.</Text></View>}
+      {model.prs.length === 1 ? <RecentPrCard wide event={model.prs[0]} unit={model.unit} onPress={() => model.prs[0].source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${model.prs[0].source_set_log_id}` as any) : openRoom('achievements')} /> : model.prs.length > 1 ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.prRail}>{model.prs.slice(0, 8).map((event) => <RecentPrCard key={event.id} event={event} unit={model.unit} onPress={() => event.source_set_log_id ? router.push(`/(tabs)/ledger/archive/set/${event.source_set_log_id}` as any) : openRoom('achievements')} />)}</ScrollView> : <View style={styles.emptyPrs}><Text style={styles.emptyPrsTitle}>No personal records yet.</Text><Text style={styles.emptyPrsBody}>Qualifying performances will be preserved here.</Text></View>}
     </View>
 
     <View style={styles.sectionInset}>
@@ -345,8 +358,8 @@ export function LedgerIndexExperience() {
 }
 
 const styles = StyleSheet.create({
-  page: { gap: 24, paddingBottom: 22, backgroundColor: '#000000' },
-  sectionInset: { gap: 11, marginHorizontal: 12 },
+  page: { gap: 19, paddingBottom: 20, backgroundColor: '#000000' },
+  sectionInset: { gap: 9, marginHorizontal: 12 },
   hero: { minHeight: 205, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
   heroImage: { opacity: 0.96 },
   heroScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.20)' },
@@ -356,29 +369,33 @@ const styles = StyleSheet.create({
   pageSubtitle: { color: '#D1D2D6', fontSize: 14, lineHeight: 19, fontWeight: '600' },
   sectionKicker: { color: '#B58BEF', fontSize: 11, lineHeight: 15, fontWeight: '700', letterSpacing: 0.72 },
   careerSnapshot: { overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: '#393441', backgroundColor: '#08090C' },
-  careerTop: { minHeight: 134, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 18, paddingTop: 15, paddingBottom: 14 },
+  careerTop: { minHeight: 121, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 12 },
   careerCopy: { flex: 1, minWidth: 0 },
-  sessionValue: { marginTop: 2, color: '#F6F4F6', fontSize: 51, lineHeight: 54, fontWeight: '700', letterSpacing: -2 },
+  sessionValue: { marginTop: 1, color: '#F6F4F6', fontSize: 47, lineHeight: 50, fontWeight: '700', letterSpacing: -1.8 },
   sessionLabel: { color: '#9DA3AD', fontSize: 11, lineHeight: 15, letterSpacing: 0.55 },
-  careerBars: { width: 142, height: 62, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 4, paddingBottom: 2, borderBottomWidth: 1, borderColor: '#333B46' },
+  careerChart: { width: 142, gap: 3, alignItems: 'flex-end' },
+  careerChartLabel: { color: '#737C88', fontSize: 7, lineHeight: 9, fontWeight: '700', letterSpacing: 0.5 },
+  careerBars: { width: 142, height: 51, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 4, paddingBottom: 2, borderBottomWidth: 1, borderColor: '#333B46' },
   careerBar: { width: 7, minHeight: 8, borderTopLeftRadius: 2, borderTopRightRadius: 2, backgroundColor: '#A557F0' },
-  careerBarsEmpty: { width: 142, height: 62, justifyContent: 'flex-end', paddingBottom: 7, borderBottomWidth: 1, borderColor: '#333B46' },
+  careerBarsEmpty: { width: 142, height: 51, justifyContent: 'flex-end', paddingBottom: 7, borderBottomWidth: 1, borderColor: '#333B46' },
   careerBarsEmptyText: { color: '#626A75', fontSize: 8, letterSpacing: 0.5, textAlign: 'right' },
-  snapshotStats: { minHeight: 113, flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#35313A' },
-  snapshotStat: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2, paddingVertical: 9, borderRightWidth: StyleSheet.hairlineWidth, borderColor: '#302E35' },
-  snapshotStatImage: { width: 43, height: 43, marginBottom: 1 },
+  snapshotStats: { minHeight: 101, flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#35313A' },
+  snapshotStat: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2, paddingVertical: 8, borderRightWidth: StyleSheet.hairlineWidth, borderColor: '#302E35' },
+  snapshotStatArtifact: { width: 48, height: 42, alignItems: 'center', justifyContent: 'center', marginBottom: 1, overflow: 'hidden', borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, backgroundColor: '#0D0E12' },
+  snapshotStatImageWide: { width: 50, height: 38 },
+  snapshotStatImageTall: { width: 31, height: 39 },
   snapshotStatValue: { color: '#F2EFF3', fontSize: 19, lineHeight: 22, fontWeight: '700' },
   snapshotStatLabel: { fontSize: 9, lineHeight: 12, fontWeight: '700', letterSpacing: 0.5 },
   liftList: { gap: 4 },
-  liftResult: { minHeight: 92, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 13, borderWidth: 1, borderColor: '#30343B', backgroundColor: '#080A0E' },
-  liftArtwork: { width: 138, alignSelf: 'stretch' },
-  liftScrim: { position: 'absolute', left: 74, top: 0, bottom: 0, width: 76, backgroundColor: 'rgba(8,10,14,0.56)' },
-  liftResultCopy: { flex: 1, minWidth: 0, gap: 0, marginLeft: 17 },
+  liftResult: { height: 80, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 12, borderWidth: 1, borderColor: '#30343B', backgroundColor: '#080A0E' },
+  liftArtwork: { width: '37%', height: 80 },
+  liftScrim: { position: 'absolute', left: '24%', top: 0, bottom: 0, width: '18%', backgroundColor: 'rgba(8,10,14,0.62)' },
+  liftResultCopy: { flex: 1, minWidth: 0, gap: 0, marginLeft: 14 },
   liftResultLabel: { fontSize: 11, lineHeight: 14, fontWeight: '800', letterSpacing: 0.42 },
-  liftResultValue: { color: '#F4F2F5', fontSize: 31, lineHeight: 34, fontWeight: '600', letterSpacing: -0.7 },
+  liftResultValue: { color: '#F4F2F5', fontSize: 28, lineHeight: 30, fontWeight: '600', letterSpacing: -0.6 },
   liftResultUnit: { color: '#9AA2AD', fontSize: 10, lineHeight: 13, fontWeight: '600', letterSpacing: 0.28 },
-  latestEntry: { minHeight: 112, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#49325E', backgroundColor: '#0D0A12', paddingRight: 13 },
-  latestImage: { width: 124, alignSelf: 'stretch', backgroundColor: '#090A0D' },
+  latestEntry: { height: 102, flexDirection: 'row', alignItems: 'center', gap: 11, overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#49325E', backgroundColor: '#0D0A12', paddingRight: 13 },
+  latestImage: { width: 108, height: 102, backgroundColor: '#090A0D' },
   latestCopy: { flex: 1, minWidth: 0, gap: 1 },
   latestTopLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   latestTitle: { flexShrink: 1, color: '#C598F5', fontSize: 11, lineHeight: 14, fontWeight: '800', letterSpacing: 0.3 },
@@ -411,6 +428,10 @@ const styles = StyleSheet.create({
   frequencyBar: { width: 9, minHeight: 7, borderTopLeftRadius: 3, borderTopRightRadius: 3, backgroundColor: '#9D63E8' },
   prRail: { gap: 7, paddingRight: 14 },
   prCard: { width: 143, minHeight: 122, gap: 2, padding: 11, borderRadius: 13, borderWidth: 1, borderColor: '#30343D', backgroundColor: '#090B0F' },
+  prCardWide: { width: '100%', height: 96, flexDirection: 'row', alignItems: 'stretch', gap: 12, padding: 0, paddingRight: 13, overflow: 'hidden' },
+  prArtwork: { width: 112, height: 96, backgroundColor: '#07090C' },
+  prCardCopy: { flex: 1, minWidth: 0, gap: 2 },
+  prCardCopyWide: { paddingVertical: 11 },
   prCardTop: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   prMovement: { flex: 1, color: '#B8A9CA', fontSize: 9, lineHeight: 12, fontWeight: '700', textTransform: 'uppercase' },
   prValue: { marginTop: 6, color: '#F4F2F5', fontSize: 20, lineHeight: 24, fontWeight: '700' },
@@ -422,19 +443,19 @@ const styles = StyleSheet.create({
   emptyPrsTitle: { color: '#E5E1E8', fontSize: 13, lineHeight: 17, fontWeight: '700' },
   emptyPrsBody: { color: '#8C949F', fontSize: 10, lineHeight: 14 },
   chapterIndex: { overflow: 'hidden', borderRadius: 15, borderWidth: 1, borderColor: '#383A42', backgroundColor: '#07090C' },
-  chapterRow: { minHeight: 112, flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 11, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#34363D' },
+  chapterRow: { minHeight: 92, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#34363D' },
   chapterNumber: { width: 28, color: '#939BA6', fontSize: 17, lineHeight: 21, fontWeight: '700' },
-  chapterImageFrame: { width: 91, height: 91, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: 11, borderWidth: 1, backgroundColor: '#0C0D11' },
+  chapterImageFrame: { width: 72, height: 72, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: 10, borderWidth: 1, backgroundColor: '#0C0D11' },
   chapterImage: { width: '100%', height: '100%' },
   chapterImageTint: { ...StyleSheet.absoluteFillObject },
   chapterCopy: { flex: 1, minWidth: 0, gap: 3 },
-  chapterTitle: { color: '#F3F1F4', fontSize: 17, lineHeight: 21, fontWeight: '800' },
-  chapterDetail: { color: '#A2A9B2', fontSize: 11, lineHeight: 16 },
+  chapterTitle: { color: '#F3F1F4', fontSize: 15, lineHeight: 19, fontWeight: '800' },
+  chapterDetail: { color: '#A2A9B2', fontSize: 10.5, lineHeight: 14 },
   quickFilters: { overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#30353D', backgroundColor: '#080B0F' },
-  filterRow: { minHeight: 57, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#30343B' },
+  filterRow: { minHeight: 51, flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#30343B' },
   filterLabel: { flex: 1, color: '#D4D6DA', fontSize: 13, lineHeight: 17, fontWeight: '600' },
-  muscleJump: { minHeight: 139, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 7, overflow: 'hidden', paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, borderColor: '#6E3BA0', backgroundColor: '#120B19' },
-  muscleJumpImage: { width: 132, height: 132, marginLeft: -8 },
+  muscleJump: { minHeight: 126, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 5, overflow: 'hidden', paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, borderColor: '#6E3BA0', backgroundColor: '#120B19' },
+  muscleJumpImage: { width: 118, height: 118, marginLeft: -7 },
   muscleJumpCopy: { flex: 1, gap: 4 },
   muscleJumpTitle: { color: '#C586FA', fontSize: 16, lineHeight: 20, fontWeight: '800' },
   muscleJumpDetail: { color: '#B2B5BE', fontSize: 11, lineHeight: 16 },
