@@ -102,7 +102,7 @@ export function SessionHighlightsPanel({
   );
 }
 
-export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory, reduceMotion = false, animateEntry = false, showSessionTitle = true, playbackRate = 1 }: {
+export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory, reduceMotion = false, animateEntry = false, showSessionTitle = true, playbackRate = 1, ceremonyOnly = false, onCeremonyComplete }: {
   summary: SessionImpactSummary;
   displayUnit: LoggerDisplayUnit;
   accomplishmentHistory?: { items: LoggerRecognitionEvent[]; has_more: boolean; next_cursor?: string | null; query?: { continuation_token?: string | null } } | null;
@@ -110,6 +110,8 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
   animateEntry?: boolean;
   showSessionTitle?: boolean;
   playbackRate?: number;
+  ceremonyOnly?: boolean;
+  onCeremonyComplete?: () => void;
 }) {
   const previewMotion = useSLMotionPreviewOverrides();
   const entranceMs = previewMotion?.entranceMs ?? 420;
@@ -119,6 +121,8 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
   const durationMinutes = summary.completed_duration_seconds == null ? null : Math.max(0, Math.round(summary.completed_duration_seconds / 60));
   const sessionCountDelta = Math.max(0, summary.career_session_count_after - summary.career_session_count_before);
   const ceremonyProgress = useRef(new Animated.Value(animateEntry && !reduceMotion ? 0 : 1)).current;
+  const ceremonyCompleteRef = useRef(onCeremonyComplete);
+  ceremonyCompleteRef.current = onCeremonyComplete;
   const [historicalEvents, setHistoricalEvents] = useState<LoggerRecognitionEvent[]>(observedSessionHighlights(accomplishmentHistory?.items || summary.highlights, summary.workout_id));
   const estimatedStrengthInsights = useMemo(() => {
     const explicit = summary.estimated_strength_insights || [];
@@ -141,12 +145,16 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
     ceremonyProgress.stopAnimation();
     if (!animateEntry || reduceMotion) {
       ceremonyProgress.setValue(1);
-      return undefined;
+      if (!animateEntry) return undefined;
+      const safeStreak = Math.max(1, Math.round(Number(summary.session_streak) || 1));
+      AccessibilityInfo.announceForAccessibility(`${safeStreak} session streak. Today's training is entered in your ledger.`);
+      const reducedMotionHold = setTimeout(() => ceremonyCompleteRef.current?.(), 1100);
+      return () => clearTimeout(reducedMotionHold);
     }
 
-    ceremonyProgress.setValue(0);
     const safeStreak = Math.max(1, Math.round(Number(summary.session_streak) || 1));
     AccessibilityInfo.announceForAccessibility(`${safeStreak} session streak. Today's training is entered in your ledger.`);
+    ceremonyProgress.setValue(0);
     const animation = Animated.sequence([
       Animated.timing(ceremonyProgress, {
         toValue: 0.12,
@@ -187,7 +195,9 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
         useNativeDriver: true,
       }),
     ]);
-    animation.start();
+    animation.start(({ finished }) => {
+      if (finished) ceremonyCompleteRef.current?.();
+    });
     return () => animation.stop();
   }, [animateEntry, ceremonyProgress, entranceMs, holdMs, playbackRate, reduceMotion, spatialMs, stateMs, summary.session_streak, summary.summary_id]);
   const digestOpacity = ceremonyProgress.interpolate({
@@ -235,7 +245,8 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
           showSessionTitle={showSessionTitle}
         />
       </PostSessionSurface>
-      <Animated.View style={[styles.digestEntrance, { opacity: digestOpacity, transform: [{ translateY: digestTranslate }] }]}>
+      {!ceremonyOnly ? (
+        <Animated.View style={[styles.digestEntrance, { opacity: digestOpacity, transform: [{ translateY: digestTranslate }] }]}>
         <PostSessionSurface tone="reflection" contentStyle={styles.digestContent}>
           <View style={styles.digestHeading}>
             <Text style={styles.digestEyebrow}>Entered in your ledger</Text>
@@ -273,7 +284,8 @@ export function SessionImpactPanel({ summary, displayUnit, accomplishmentHistory
           />
           {!summary.all_prescribed_work_logged ? <Text style={styles.incomplete}>Some prescribed work was left incomplete.</Text> : null}
         </PostSessionSurface>
-      </Animated.View>
+        </Animated.View>
+      ) : null}
     </View>
   );
 }

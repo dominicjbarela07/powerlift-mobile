@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { Text } from '@/components/ui/sl-text';
@@ -135,6 +135,7 @@ type Props = {
   refreshing?: boolean;
   onRefresh?: () => void;
   onClose: () => void;
+  onDone?: () => void;
   initialTab?: RecapTab;
   initialShowAllMovements?: boolean;
 };
@@ -418,7 +419,7 @@ function EvidenceButton({ icon, color, value, label, onPress }: {
   );
 }
 
-export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, refreshing, onRefresh, onClose, initialTab = 'performed', initialShowAllMovements = false }: Props) {
+export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, refreshing, onRefresh, onClose, onDone, initialTab = 'performed', initialShowAllMovements = false }: Props) {
   const insets = useSafeAreaInsets();
   const unit: 'kg' | 'lb' = ['lb', 'lbs'].includes(String(preferredUnits || '').toLowerCase()) ? 'lb' : 'kg';
   const [tab, setTab] = useState<RecapTab>(initialTab);
@@ -486,16 +487,16 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const meta = [dateLabel(recap.session.date), durationLabel(recap.session.duration_seconds)].filter(Boolean).join(' · ');
 
   return (
-    <View style={styles.screen}>
-      <View style={[styles.topBar, { paddingTop: Math.max(insets.top, 12) }]}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close completed session recap" onPress={onClose} style={({ pressed }) => [styles.topButton, pressed && styles.pressed]}>
+    <SafeAreaView edges={['top']} style={styles.screen}>
+      <View style={styles.topBar}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Back from completed session recap" onPress={onClose} style={({ pressed }) => [styles.topButton, pressed && styles.pressed]}>
           <Ionicons name="chevron-back" size={24} color={SLColors.textPrimary} />
         </Pressable>
         <View style={styles.topBarCopy}>
           <Text numberOfLines={1} style={styles.topTitle}><Text style={styles.topDot}>• </Text>{recap.session.label}</Text>
           <Text style={styles.topSubtitle}>Session Recap</Text>
         </View>
-        <View style={styles.completeMark}><Ionicons name="checkmark" size={24} color={SLColors.textPrimary} /></View>
+        <Pressable accessibilityRole="button" accessibilityLabel="Done reviewing completed session recap" onPress={onDone || onClose} style={({ pressed }) => [styles.completeMark, pressed && styles.pressed]}><Ionicons name="checkmark" size={24} color={SLColors.textPrimary} /></Pressable>
       </View>
 
       <ScrollView
@@ -658,7 +659,7 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
       </ScrollView>
 
       <SetVideoPlayerModal visible={!!video} videoId={video?.id || null} initialVideo={video?.summary || null} initialUrl={video?.summary?.url || null} onClose={() => setVideo(null)} />
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -1971,6 +1971,7 @@ export default function WorkoutViewerScreen() {
   const feedbackStateRef = useRef(feedbackState);
   feedbackStateRef.current = feedbackState;
   const [animatedCompletionSummaryId, setAnimatedCompletionSummaryId] = useState<string | null>(null);
+  const freshCompletionSummaryIdRef = useRef<string | null>(null);
   const saveFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const acceptedSheetHandoffControllerRef = useRef(createLogSheetHandoffController());
   const timerHandoffReleaseControllerRef = useRef(createTimerHandoffReleaseController());
@@ -5518,11 +5519,17 @@ export default function WorkoutViewerScreen() {
         return false;
       }
 
+      // Completion owns the timer lifecycle. Clear both the local countdown and
+      // persisted/global presenter before entering any post-session surface.
+      stopRestTimer();
+
       const completionTransitioned =
         done.json?.completion_transitioned === true &&
         done.json?.impact_summary?.canonically_completed === true;
       if (completionTransitioned) {
-        setAnimatedCompletionSummaryId(done.json.impact_summary.summary_id || null);
+        const summaryId = done.json.impact_summary.summary_id || null;
+        freshCompletionSummaryIdRef.current = summaryId;
+        setAnimatedCompletionSummaryId(summaryId);
         void triggerSessionCompletionHaptic();
         feedbackAnalytics('session_impact_summary_completed', { summary_id: done.json.impact_summary.summary_id });
       }
@@ -6649,6 +6656,22 @@ export default function WorkoutViewerScreen() {
     router.push('/(tabs)/workout' as any);
   };
 
+  const handleCloseCompletedRecap = () => {
+    if (isCoachAthletePreview) {
+      handleReturnToCoachEditor();
+      return;
+    }
+    if (freshCompletionSummaryIdRef.current) {
+      router.replace('/(tabs)/workout' as any);
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/workout' as any);
+  };
+
   const handleBeginWorkoutPress = () => {
     if (hasReadinessForWorkout()) {
       beginWorkout();
@@ -7588,17 +7611,42 @@ export default function WorkoutViewerScreen() {
   };
 
   if (isFinishedSession && workout.completed_recap) {
+    const completionSummaryId = workout.impact_summary?.summary_id || null;
+    const shouldShowCompletionCeremony = Boolean(
+      completionSummaryId
+      && workout.impact_summary?.canonically_completed
+      && animatedCompletionSummaryId === completionSummaryId,
+    );
     return (
       <>
         <Tabs.Screen options={{ headerShown: false }} />
-        <CompletedSessionRecap
-          recap={workout.completed_recap}
-          impactSummary={workout.impact_summary}
-          preferredUnits={athlete.preferred_units}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          onClose={isCoachAthletePreview ? handleReturnToCoachEditor : handleBackToTrainingHub}
-        />
+        {shouldShowCompletionCeremony ? (
+          <View
+            style={[
+              styles.completionCeremonyScreen,
+              { paddingTop: insets.top, paddingBottom: insets.bottom },
+            ]}
+          >
+            <SessionImpactPanel
+              summary={workout.impact_summary}
+              displayUnit={unit}
+              reduceMotion={reduceMotion}
+              animateEntry
+              ceremonyOnly
+              onCeremonyComplete={() => setAnimatedCompletionSummaryId((current) => current === completionSummaryId ? null : current)}
+            />
+          </View>
+        ) : (
+          <CompletedSessionRecap
+            recap={workout.completed_recap}
+            impactSummary={workout.impact_summary}
+            preferredUnits={athlete.preferred_units}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            onClose={handleCloseCompletedRecap}
+            onDone={handleCloseCompletedRecap}
+          />
+        )}
       </>
     );
   }
@@ -11902,6 +11950,12 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
+  },
+  completionCeremonyScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+    backgroundColor: SLColors.black,
   },
   timerBarWrapper: {
     paddingHorizontal: 16,
