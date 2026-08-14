@@ -32,6 +32,7 @@ assert.match(index, /typeof event\.prior_value === 'number'[\s\S]*priorValue != 
 assert.match(index, /NEW PERSONAL RECORD|BLOCK BEST/, 'missing comparisons use truthful non-comparative language');
 
 assert.match(index, /LatestEntryArtwork[\s\S]*accessoryMuscleRegionAsset/, 'Latest Entry uses governed movement-region anatomy');
+assert.match(index, /entry\?\.movement\?\.family[\s\S]*accessoryMuscleRegion/, 'Latest Entry retains Journey-family semantics when exploration matching is unavailable');
 assert.match(index, /loadConvention === 'assistance_load'/, 'assisted loads are labeled from canonical semantics');
 for (const forbidden of ['stable movement identity', 'canonical identity', 'reconciliation', 'movement session completed', 'prescription completed', 'identity snapshot', 'source definition']) {
   assert.doesNotMatch(index, new RegExp(forbidden, 'i'), `athlete-facing Index leaked internal term: ${forbidden}`);
