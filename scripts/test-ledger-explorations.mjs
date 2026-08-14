@@ -83,13 +83,13 @@ for (const forbiddenRuntimeCopy of ['Jordan Reyes', 'Coach A', 'V2 DEMO', 'one y
 }
 
 assert.match(liveData, /const requests = \[[\s\S]*fetchLedgerProgression[\s\S]*fetchLedgerCurrentBests[\s\S]*fetchLedgerAccomplishments/, 'shared live state must use canonical services');
-assert.match(indexExperience, /useLedgerLiveData\('all', \{ allowPartial: true \}\)/, 'the Index must not collapse when one optional canonical source fails');
+assert.match(indexExperience, /useLedgerLiveData\('1y', \{ allowPartial: true \}\)/, 'the Index must remain bounded and not collapse when one optional canonical source fails');
 assert.match(liveData, /Promise\.allSettled\(requests\)[\s\S]*failures\.length === requests\.length/, 'partial mode fails only when every canonical Index source fails');
 assert.match(liveData, /Ledger Index loaded with partial canonical data/, 'partial release failures retain bounded diagnostic context');
 assert.match(ledgerClient, /class LedgerRequestError extends Error/, 'Ledger requests preserve failure class');
 assert.match(ledgerClient, /status === 401 \|\| status === 403[\s\S]*status === 404 \|\| status === 410/, 'Ledger requests distinguish authorization and unavailable evidence');
 assert.doesNotMatch(liveData, /catch[\s\S]{0,500}(?:LEDGER_|mock|fixture|sample)/i, 'API failure must not substitute fixtures');
-assert.match(indexExperience, /fetchLedgerAccomplishmentHistory/, 'Index chronology uses canonical accomplishment records');
+assert.doesNotMatch(indexExperience, /fetchLedgerAccomplishmentHistory/, 'the summary Index must not download the entire lifetime accomplishment archive');
 assert.match(experiences, /fetchJourneyArchiveEvents/, 'Journey chronology uses Archive source records');
 assert.match(experiences, /fetchJourneyBootstrap/, 'shipping Journey uses the bounded historical projection bootstrap');
 assert.match(journeyClient, /\/mobile\/ledger\/journey/, 'Journey reads the authenticated historical projection namespace');
@@ -100,9 +100,18 @@ assert.match(indexExperience, /fetchLedgerExplorationIndex/, 'Index context uses
 assert.match(indexExperience, /reported_bodyweight\?\.recent_observations/, 'bodyweight charts use reported readiness observations');
 assert.doesNotMatch(indexExperience, /reported_bodyweight\?\.latest\?\.reported_bodyweight_kg\s*\?\?\s*context\?\.bodyweight_kg/, 'Ledger must never substitute profile bodyweight');
 assert.match(indexExperience, /fetchJourneyBootstrap\(\{ limit: 24, includeSessions: true \}\)/, 'Latest Entry must use a bounded contextual Journey projection');
+assert.match(indexExperience, /journeyBootstrap\?\.lifetime\.sessions_completed[\s\S]*journeyBootstrap\?\.lifetime\.total_sets[\s\S]*journeyBootstrap\?\.lifetime\.pr_count/, 'Career Snapshot uses bounded canonical lifetime totals');
+assert.match(indexExperience, /eventReps\(event[\s\S]*actual_reps[\s\S]*rep_count/, 'Rep Max achievements use structured performed reps');
+assert.match(indexExperience, /source_set_log_id \? `set:\$\{event\.source_set_log_id\}`/, 'accomplishments from one SetLog consolidate into one performance');
+assert.match(indexExperience, /comparePrEvents[\s\S]*PR_SIGNIFICANCE/, 'Recent PR hero selection is deterministic');
+assert.match(indexExperience, /eventComparison[\s\S]*typeof event\.delta/, 'Recent PR comparisons require canonical deltas');
+assert.match(indexExperience, /completedTrainingWeeks[\s\S]*Last 8 completed weeks/, 'training frequency uses eight fully completed calendar weeks');
+assert.match(indexExperience, /completedVolumeWeeks[\s\S]*No adjacent-week comparison/, 'volume comparisons require adjacent fully completed weekly evidence');
+assert.match(indexExperience, /progression\?\.readiness\?\.average/, 'Readiness renders only when the governed aggregation exists');
+assert.match(indexExperience, /loadConvention === 'assistance_load'/, 'Latest Entry labels assisted load only from its canonical load convention');
 assert.match(indexExperience, /RAW_COMPLETION_EVENT_TYPES/, 'Latest Entry must reject raw completion event labels');
 assert.doesNotMatch(indexExperience, /const latest = events\[0\]/, 'Latest Entry must not render the first raw accomplishment event');
-assert.match(indexExperience, /majorVolumeMedallionAsset[\s\S]*SL_TOTAL_TROPHY_ASSETS/, 'approved reward assets power the chapter index');
+assert.match(indexExperience, /LEDGER_INDEX_ASSETS\.careerPr[\s\S]*SL_TOTAL_TROPHY_ASSETS/, 'purpose-built PR artwork and approved trophies power distinct Career Snapshot concepts');
 assert.doesNotMatch(indexExperience, /borderLeftWidth/, 'Index hierarchy cannot use colored accent rails');
 assert.match(indexMaturity, /completedWorkouts >= 500[\s\S]*completedWorkouts >= 100[\s\S]*completedWorkouts >= 10/, 'maturity comes from one deterministic canonical-workout resolver');
 assert.match(indexMaturity, /anniversary[\s\S]*major-pr[\s\S]*achievement[\s\S]*meet[\s\S]*reviewed-video[\s\S]*strength-change[\s\S]*rediscovery/, 'daily evidence priority is deterministic');
