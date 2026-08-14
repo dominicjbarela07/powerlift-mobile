@@ -14,8 +14,12 @@ import {
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
+import {
+  normalizeRestTimerSeconds,
+  REST_TIMER_OPTIONS_SECONDS,
+} from '@/lib/rest-timer-preference-core';
 
-const REST_TIMER_OPTIONS = Array.from({ length: 12 }, (_, idx) => (idx + 1) * 30);
+const REST_TIMER_OPTIONS = REST_TIMER_OPTIONS_SECONDS;
 const REST_TIMER_ROW_HEIGHT = 44;
 const REST_TIMER_VISIBLE_ROWS = 5;
 
@@ -27,17 +31,7 @@ function formatRestTimerOption(seconds: number) {
 }
 
 function nearestRestTimerIndex(value?: number | null) {
-  const seconds = Number(value || 120);
-  let bestIndex = REST_TIMER_OPTIONS.indexOf(120);
-  let bestDelta = Number.POSITIVE_INFINITY;
-  REST_TIMER_OPTIONS.forEach((option, index) => {
-    const delta = Math.abs(option - seconds);
-    if (delta < bestDelta) {
-      bestIndex = index;
-      bestDelta = delta;
-    }
-  });
-  return bestIndex;
+  return REST_TIMER_OPTIONS.indexOf(normalizeRestTimerSeconds(value));
 }
 
 export function TardyReasonModal({
@@ -229,6 +223,10 @@ export function RestTimerPickerModal({
             <ScrollView
               ref={timerWheelRef}
               style={styles.timerWheel}
+              contentOffset={{
+                x: 0,
+                y: nearestRestTimerIndex(timerPickerValue) * REST_TIMER_ROW_HEIGHT,
+              }}
               contentContainerStyle={[
                 styles.timerWheelContent,
                 { paddingVertical: centerPadding },

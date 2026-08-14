@@ -200,6 +200,16 @@ import {
 } from '@/lib/rest-timer-cues';
 import { RestTimerCountdownAudioWindow } from '@/lib/rest-timer-countdown-audio';
 import {
+  DEFAULT_REST_TIMER_SECONDS,
+  normalizeRestTimerSeconds,
+  resolveRestTimerPickerInitialSeconds,
+  REST_TIMER_OPTIONS_SECONDS,
+} from '@/lib/rest-timer-preference-core';
+import {
+  loadLastUsedRestTimerSeconds,
+  persistLastUsedRestTimerSeconds,
+} from '@/lib/rest-timer-preference';
+import {
   clearRestTimerExpiry,
   loadRestTimerExpiry,
 } from '@/lib/rest-timer-storage';
@@ -2349,7 +2359,18 @@ export default function WorkoutViewerScreen() {
 
   // Shared timer picker state and helpers
   const [timerPickerVisible, setTimerPickerVisible] = useState(false);
-  const [timerPickerValue, setTimerPickerValue] = useState(120);
+  const [timerPickerValue, setTimerPickerValue] = useState(DEFAULT_REST_TIMER_SECONDS);
+  const [sessionRestTimerSeconds, setSessionRestTimerSeconds] = useState<number | null>(null);
+  const restTimerPreferenceOwnerId = user?.id ?? user?.user_id ?? null;
+  const restTimerPreferenceOwnerKey = String(restTimerPreferenceOwnerId ?? '').trim();
+  const restTimerPreferenceOwnerKeyRef = useRef(restTimerPreferenceOwnerKey);
+  restTimerPreferenceOwnerKeyRef.current = restTimerPreferenceOwnerKey;
+  const lastUsedRestTimerRef = useRef<{ ownerKey: string; seconds: number | null } | null>(null);
+  const lastUsedRestTimerLoadRef = useRef<{
+    ownerKey: string;
+    promise: Promise<number | null>;
+  } | null>(null);
+  const timerPickerOpenRequestRef = useRef(0);
   const timerWheelRef = useRef<ScrollView | null>(null);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
   const [tardyReasonVisible, setTardyReasonVisible] = useState(false);
@@ -2372,6 +2393,39 @@ export default function WorkoutViewerScreen() {
     if (!identity || !timerHandoffReleaseControllerRef.current.mounted(identity)) return;
     transientRecognitionTrace(13, 'timer picker opened');
   }, [transientRecognitionTrace]);
+
+  const loadScopedLastUsedRestTimer = useCallback((): Promise<number | null> => {
+    if (!restTimerPreferenceOwnerKey) return Promise.resolve(null);
+    if (lastUsedRestTimerRef.current?.ownerKey === restTimerPreferenceOwnerKey) {
+      return Promise.resolve(lastUsedRestTimerRef.current.seconds);
+    }
+    if (lastUsedRestTimerLoadRef.current?.ownerKey === restTimerPreferenceOwnerKey) {
+      return lastUsedRestTimerLoadRef.current.promise;
+    }
+
+    const ownerKey = restTimerPreferenceOwnerKey;
+    const promise = loadLastUsedRestTimerSeconds(ownerKey)
+      .catch(() => null)
+      .then((seconds) => {
+        if (restTimerPreferenceOwnerKeyRef.current === ownerKey) {
+          lastUsedRestTimerRef.current = { ownerKey, seconds };
+        }
+        return seconds;
+      });
+    lastUsedRestTimerLoadRef.current = { ownerKey, promise };
+    return promise;
+  }, [restTimerPreferenceOwnerKey]);
+
+  useEffect(() => {
+    timerPickerOpenRequestRef.current += 1;
+    setSessionRestTimerSeconds(null);
+    lastUsedRestTimerRef.current = null;
+    lastUsedRestTimerLoadRef.current = null;
+    void loadScopedLastUsedRestTimer();
+    return () => {
+      timerPickerOpenRequestRef.current += 1;
+    };
+  }, [loadScopedLastUsedRestTimer, workoutId]);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
@@ -3016,32 +3070,39 @@ export default function WorkoutViewerScreen() {
     );
   };
 
-  const TIMER_OPTIONS = useMemo(() => Array.from({ length: 12 }, (_, idx) => (idx + 1) * 30), []);
-
   const openTimerPicker = useCallback(() => {
-    const current = restSeconds || 120;
-    const nearest = TIMER_OPTIONS.reduce((best, option) =>
-      Math.abs(option - current) < Math.abs(best - current) ? option : best,
-    TIMER_OPTIONS[3]);
-    setTimerPickerValue(nearest);
-    setTimerPickerVisible(true);
-    rewardLoopDemoV2Log('timer_handoff_opened', { default_seconds: nearest });
+    const requestId = timerPickerOpenRequestRef.current + 1;
+    timerPickerOpenRequestRef.current = requestId;
+    const activeTimerSeconds = restActive && restSeconds > 0 ? restSeconds : null;
 
-    requestAnimationFrame(() => {
+    const presentPicker = (lastUsedSeconds: number | null) => {
+      if (timerPickerOpenRequestRef.current !== requestId) return;
+      const initialSeconds = resolveRestTimerPickerInitialSeconds({
+        activeTimerSeconds,
+        sessionSelectedSeconds: sessionRestTimerSeconds,
+        lastUsedSeconds,
+      });
+      setTimerPickerValue(initialSeconds);
+      setTimerPickerVisible(true);
+      rewardLoopDemoV2Log('timer_handoff_opened', { default_seconds: initialSeconds });
+
       requestAnimationFrame(() => {
-        const idx = Math.max(0, TIMER_OPTIONS.indexOf(nearest));
-        timerWheelRef.current?.scrollTo({
-          y: idx * 44,
-          animated: false,
+        requestAnimationFrame(() => {
+          const idx = Math.max(0, REST_TIMER_OPTIONS_SECONDS.indexOf(initialSeconds));
+          timerWheelRef.current?.scrollTo({
+            y: idx * 44,
+            animated: false,
+          });
         });
       });
-    });
-  }, [TIMER_OPTIONS, restSeconds, rewardLoopDemoV2Log]);
+    };
 
-  const handleTimerSelect = (seconds: number) => {
-    startRestTimer(seconds);
-    setTimerPickerVisible(false);
-  };
+    if (activeTimerSeconds || sessionRestTimerSeconds) {
+      presentPicker(null);
+      return;
+    }
+    void loadScopedLastUsedRestTimer().then(presentPicker);
+  }, [loadScopedLastUsedRestTimer, restActive, restSeconds, rewardLoopDemoV2Log, sessionRestTimerSeconds]);
 
   const startRestTimer = (seconds: number) => {
     restCountdownAudioRef.current?.reset();
@@ -3084,6 +3145,22 @@ export default function WorkoutViewerScreen() {
 
     // Schedule a local notification so the timer "works" while backgrounded
     scheduleRestEndNotification(seconds, globalTimer.timerId);
+  };
+
+  const confirmRestTimerSelection = (seconds: number) => {
+    const normalizedSeconds = normalizeRestTimerSeconds(seconds);
+    setSessionRestTimerSeconds(normalizedSeconds);
+    if (restTimerPreferenceOwnerKey) {
+      lastUsedRestTimerRef.current = {
+        ownerKey: restTimerPreferenceOwnerKey,
+        seconds: normalizedSeconds,
+      };
+      void persistLastUsedRestTimerSeconds(
+        restTimerPreferenceOwnerKey,
+        normalizedSeconds,
+      ).catch((error) => console.warn('rest timer preference persistence failed', error));
+    }
+    startRestTimer(normalizedSeconds);
   };
 
   const stopRestTimer = () => {
@@ -9768,7 +9845,7 @@ export default function WorkoutViewerScreen() {
         timerWheelRef={timerWheelRef}
         timerPickerValue={timerPickerValue}
         setTimerPickerValue={setTimerPickerValue}
-        startRestTimer={startRestTimer}
+        startRestTimer={confirmRestTimerSelection}
         saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
         onMounted={handleTimerPickerMounted}
         onClose={resolveActiveTimerHandoff}
