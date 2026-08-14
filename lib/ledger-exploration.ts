@@ -48,7 +48,20 @@ export type LedgerExplorationContext = Readonly<{
   block_total_sessions: number;
   block_progress?: number | null;
   bodyweight_kg?: number | null;
-  bodyweight_points: { date?: string | null; value_kg: number }[];
+  bodyweight_points: { date?: string | null; value_kg: number; reported_at?: string | null; workout_id?: number | null; source?: string | null }[];
+  reported_bodyweight?: {
+    point_count: number;
+    latest?: { reported_bodyweight_kg: number; training_date?: string | null; workout_id?: number | null; source: string } | null;
+    recent_observations?: { reported_bodyweight_kg: number; training_date?: string | null; reported_at?: string | null; workout_id?: number | null; source: string }[];
+    comparison?: {
+      start: { reported_bodyweight_kg: number; training_date?: string | null };
+      end: { reported_bodyweight_kg: number; training_date?: string | null };
+      delta_kg: number;
+      span_days: number;
+      policy: string;
+    } | null;
+    interpolated: false;
+  } | null;
   training_frequency_per_week: number;
   lifetime_set_count: number;
 }>;

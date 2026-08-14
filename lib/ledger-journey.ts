@@ -3,6 +3,8 @@ import { fetchJson } from '@/lib/api';
 export type JourneyEventType =
   | 'FIRST_WORKOUT'
   | 'SESSION_COMPLETED'
+  | 'SESSION_SUMMARY'
+  | 'PERFORMANCE'
   | 'PROGRAM_STARTED'
   | 'PROGRAM_COMPLETED'
   | 'BLOCK_STARTED'
@@ -77,9 +79,12 @@ export type JourneyOverview = Readonly<{
   current_block?: { id: number; name: string; start_date?: string | null; end_date?: string | null; training_program_id?: number | null } | null;
   bodyweight_context: {
     point_count: number;
-    earliest?: { date: string; weight_kg: number } | null;
-    latest?: { date: string; weight_kg: number } | null;
+    latest?: ReportedBodyweightObservation | null;
+    comparison?: { start: ReportedBodyweightObservation; end: ReportedBodyweightObservation; delta_kg: number; span_days: number; policy: string } | null;
+    recent_observations: ReportedBodyweightObservation[];
+    interpolated: false;
   };
+  event_consolidation?: { raw_event_count: number; contextual_performance_count: number };
   recent_major: JourneyEntry[];
 }>;
 
@@ -92,6 +97,33 @@ export type JourneyBlock = Readonly<{
   session_count: number;
   pr_count: number;
   program?: { id: number; name: string; status: string } | null;
+  reported_bodyweight?: {
+    start?: ReportedBodyweightObservation | null;
+    end_or_latest?: ReportedBodyweightObservation | null;
+    change_kg?: number | null;
+    boundary_window_days: number;
+    interpolated: false;
+  } | null;
+}>;
+
+export type ReportedBodyweightObservation = Readonly<{
+  id: number;
+  reported_bodyweight_kg: number;
+  weight_kg?: number;
+  reported_at?: string | null;
+  training_date?: string | null;
+  date?: string | null;
+  workout_id?: number | null;
+  session?: { id: number; label: string; date?: string | null } | null;
+  source: 'PRE_SESSION_READINESS' | string;
+}>;
+
+export type ReportedBodyweightPage = Readonly<{
+  ok: true;
+  items: ReportedBodyweightObservation[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  interpolated: false;
 }>;
 
 export type JourneyTimelinePage = Readonly<{
@@ -141,6 +173,12 @@ export function fetchJourneyBootstrap(options: { limit?: number; includeSessions
 export async function fetchJourneyBlocks(): Promise<JourneyBlock[]> {
   const payload = await requirePayload<{ ok: true; items: JourneyBlock[] }>('/mobile/ledger/journey/blocks');
   return payload.items;
+}
+
+export function fetchReportedBodyweightHistory(options: { cursor?: string | null; limit?: number } = {}): Promise<ReportedBodyweightPage> {
+  const params = new URLSearchParams({ limit: String(Math.max(1, Math.min(options.limit ?? 24, 50))) });
+  if (options.cursor) params.set('cursor', options.cursor);
+  return requirePayload<ReportedBodyweightPage>(`/mobile/ledger/journey/reported-bodyweight?${params.toString()}`);
 }
 
 export function fetchJourneyTimelinePage(options: {

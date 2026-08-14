@@ -273,18 +273,22 @@ function formatPrEvent(event: AccomplishmentEvent): { title: string; value: stri
   const value = typeof event.current_value === 'number'
     ? `${number(event.current_value)} ${event.unit || ''}`.trim()
     : 'Recorded PR';
+  const bodyweight = event.reported_bodyweight?.reported_bodyweight_kg;
+  const bodyweightContext = typeof bodyweight === 'number'
+    ? ` · Reported BW ${number(bodyweight)} kg${formatEarnedDate(event.reported_bodyweight?.training_date) ? ` · ${formatEarnedDate(event.reported_bodyweight?.training_date)}` : ''}`
+    : '';
   if (event.event_type === 'CORE_REP_MAX_PR') {
     const reps = typeof event.evidence?.rep_count === 'number'
       ? event.evidence.rep_count
       : typeof event.evidence?.actual_reps === 'number'
         ? event.evidence.actual_reps
         : null;
-    return { title, value, detail: reps == null ? 'Rep max PR' : `${reps}-rep max PR` };
+    return { title, value, detail: `${reps == null ? 'Rep max PR' : `${reps}-rep max PR`}${bodyweightContext}` };
   }
   return {
     title,
     value,
-    detail: event.event_type === 'CORE_E1RM_PR' ? 'Estimated 1RM PR' : 'Weight PR',
+    detail: `${event.event_type === 'CORE_E1RM_PR' ? 'Estimated 1RM PR' : 'Weight PR'}${bodyweightContext}`,
   };
 }
 

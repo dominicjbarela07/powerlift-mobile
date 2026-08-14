@@ -97,7 +97,11 @@ assert.match(journeyAdapter, /buildJourneyMoments/, 'Journey uses a deterministi
 assert.match(journeyMoments, /CAREER_PR_TYPES/, 'Journey explicitly allows high-value career PR evidence');
 assert.doesNotMatch(journeyMoments, /CORE_MOVEMENT_SESSION_COMPLETED|CORE_PRESCRIPTION_COMPLETED/, 'routine evaluator rows are excluded from Journey');
 assert.match(indexExperience, /fetchLedgerExplorationIndex/, 'Index context uses the canonical exploration projection');
-assert.match(indexExperience, /bodyweight_points/, 'bodyweight charts use recorded bodyweight evidence rather than an unrelated metric');
+assert.match(indexExperience, /reported_bodyweight\?\.recent_observations/, 'bodyweight charts use reported readiness observations');
+assert.doesNotMatch(indexExperience, /reported_bodyweight\?\.latest\?\.reported_bodyweight_kg\s*\?\?\s*context\?\.bodyweight_kg/, 'Ledger must never substitute profile bodyweight');
+assert.match(indexExperience, /fetchJourneyBootstrap\(\{ limit: 24, includeSessions: true \}\)/, 'Latest Entry must use a bounded contextual Journey projection');
+assert.match(indexExperience, /RAW_COMPLETION_EVENT_TYPES/, 'Latest Entry must reject raw completion event labels');
+assert.doesNotMatch(indexExperience, /const latest = events\[0\]/, 'Latest Entry must not render the first raw accomplishment event');
 assert.match(indexExperience, /majorVolumeMedallionAsset[\s\S]*SL_TOTAL_TROPHY_ASSETS/, 'approved reward assets power the chapter index');
 assert.doesNotMatch(indexExperience, /borderLeftWidth/, 'Index hierarchy cannot use colored accent rails');
 assert.match(indexMaturity, /completedWorkouts >= 500[\s\S]*completedWorkouts >= 100[\s\S]*completedWorkouts >= 10/, 'maturity comes from one deterministic canonical-workout resolver');
@@ -105,6 +109,7 @@ assert.match(indexMaturity, /anniversary[\s\S]*major-pr[\s\S]*achievement[\s\S]*
 assert.match(experiences, /return <LedgerIndexExperience \/>/, 'the active Home route uses the maturity-aware Index');
 assert.doesNotMatch(experiences, /\?\? 'deadlift'|\|\| 'deadlift'/, 'Strength must not invent a default strongest lift');
 assert.match(experiences, /points\.length < 2[\s\S]*Not enough qualifying evidence to draw a trend/, 'Strength trends require real qualifying points');
+assert.match(experiences, /bodyweightEvent = liftEvents\.find[\s\S]*reportedBodyweight: bodyweightEvent\?\.reported_bodyweight/, 'Strength context uses an exact source event carrying reported bodyweight');
 assert.doesNotMatch(experiences, /\[0,\s*0\]|currentValue, currentValue/, 'Strength trends must not synthesize visual points');
 for (const state of ['loading', 'empty', 'unauthorized', 'unavailable', 'error']) {
   assert.match(experiences, new RegExp(`ledger-\\$\\{kind\\}-state|kind=.${state}`), `Ledger rooms must preserve a ${state} state`);

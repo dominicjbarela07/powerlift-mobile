@@ -74,6 +74,13 @@ export type CompletedSessionRecapPayload = {
     movement_count: number;
     video_count: number;
     total_volume_kg: number;
+    reported_bodyweight?: {
+      reported_bodyweight_kg: number;
+      reported_at?: string | null;
+      training_date?: string | null;
+      source: string;
+      resolution?: string;
+    } | null;
   };
   highlights?: {
     summary_id?: string | null;
@@ -517,6 +524,7 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
               <SummaryMetric icon="stats-chart-outline" value={`${compactVolume(recap.session.total_volume_kg, unit)} ${unit}`} label="Volume" />
               <SummaryMetric icon="pulse-outline" value={numberLabel(recap.reflection.session_rpe)} label="Session RPE" />
             </View>
+            {recap.session.reported_bodyweight ? <View style={styles.reportedBodyweightRow}><Ionicons name="scale-outline" size={17} color="#74D4DE" /><View style={styles.reportedBodyweightCopy}><Text style={styles.reportedBodyweightValue}>{loadLabel(recap.session.reported_bodyweight.reported_bodyweight_kg, unit)}</Text><Text style={styles.reportedBodyweightLabel}>REPORTED BW · PRE-SESSION</Text></View></View> : null}
           </View>
         </View>
 
@@ -674,6 +682,10 @@ const styles = StyleSheet.create({
   notesButton: { flexDirection: 'row', alignItems: 'center', gap: 7, minHeight: 40, paddingHorizontal: 11, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset },
   notesButtonText: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 },
   summaryMetricRow: { flexDirection: 'row', marginTop: 18, paddingTop: 14, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStandard },
+  reportedBodyweightRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12, paddingHorizontal: 12, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: '#28515A', backgroundColor: '#081216' },
+  reportedBodyweightCopy: { gap: 1 },
+  reportedBodyweightValue: { color: '#EAF8FA', fontFamily: SLFontFamilies.bodyBold, fontSize: 15, lineHeight: 19 },
+  reportedBodyweightLabel: { color: '#74AAB0', fontFamily: SLFontFamilies.bodyBold, fontSize: 8, lineHeight: 11, letterSpacing: 0.65 },
   summaryMetric: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'flex-start', gap: 6, paddingHorizontal: 5, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: SLColors.borderSubtle },
   summaryMetricCopy: { flex: 1, minWidth: 0 },
   summaryMetricValue: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 14 },

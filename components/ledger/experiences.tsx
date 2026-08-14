@@ -396,6 +396,15 @@ export function JourneyExperience() {
 
 function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
   const summary = overview.lifetime;
+  const unit: LedgerUnit = overview.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const reported = overview.bodyweight_context;
+  const latestReportedKg = reported.latest?.reported_bodyweight_kg ?? reported.latest?.weight_kg;
+  const latestReportedDate = reported.latest?.training_date ?? reported.latest?.date;
+  const recentReportedObservations = reported.recent_observations?.length
+    ? reported.recent_observations
+    : reported.latest && latestReportedKg != null
+      ? [{ ...reported.latest, reported_bodyweight_kg: latestReportedKg, training_date: latestReportedDate }]
+      : [];
   return <View testID="ledger-journey-overview" style={styles.journeyOverview}>
     <View style={styles.journeyMetricGrid}>
       {[
@@ -410,6 +419,13 @@ function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
       <Text style={styles.journeyRecordDate}>{formatJourneyDate(overview.earliest_record?.date)}</Text>
       <Text style={styles.journeyRecordBody}>Your lifetime summary uses the complete preserved record—not a feature-launch date.</Text>
     </View>
+    <View testID="ledger-reported-bodyweight-history" style={styles.journeyRecordCard}>
+      <Kicker tone="#76CBD0">REPORTED BODYWEIGHT</Kicker>
+      <Text style={styles.journeyRecordDate}>{latestReportedKg != null ? `${formatJourneyWeight(latestReportedKg, unit)} ${unit.toUpperCase()}` : 'No reports yet'}</Text>
+      <Text style={styles.journeyRecordBody}>{latestReportedKg != null ? `Latest reported · ${formatJourneyDate(latestReportedDate)} · pre-Session evidence` : 'No profile weight is substituted.'}</Text>
+      {reported.comparison ? <Text style={styles.journeyBodyweightTrend}>{formatJourneyWeight(reported.comparison.start.reported_bodyweight_kg, unit)} → {formatJourneyWeight(reported.comparison.end.reported_bodyweight_kg, unit)} {unit.toUpperCase()} · {formatJourneyDate(reported.comparison.start.training_date)} – {formatJourneyDate(reported.comparison.end.training_date)}</Text> : null}
+      {recentReportedObservations.map((observation) => <View key={observation.id} style={styles.journeyBodyweightObservation}><Text style={styles.journeyBodyweightDate}>{formatJourneyDate(observation.training_date)}</Text><Text style={styles.journeyBodyweightValue}>{formatJourneyWeight(observation.reported_bodyweight_kg, unit)} {unit.toUpperCase()}</Text><Text style={styles.journeyBodyweightSession}>{observation.session?.label || 'Readiness report'}</Text></View>)}
+    </View>
     {overview.current_block ? <View style={styles.journeyCurrentBlock}><View><Kicker>CURRENT BLOCK</Kicker><Text style={styles.journeyCurrentBlockTitle}>{overview.current_block.name}</Text></View><Text style={styles.journeyCurrentBlockDate}>{formatJourneyRange(overview.current_block.start_date, overview.current_block.end_date)}</Text></View> : null}
   </View>;
 }
@@ -421,6 +437,7 @@ function JourneyBlocksView({ blocks }: { blocks: JourneyBlock[] }) {
       <View style={styles.journeyBlockHeader}><View style={styles.journeyBlockCopy}><Kicker tone={block.state === 'current' ? '#B993FF' : '#7F8999'}>{block.state === 'current' ? 'CURRENT BLOCK' : block.program?.name?.toUpperCase() || 'TRAINING BLOCK'}</Kicker><Text style={styles.journeyBlockTitle}>{block.name}</Text></View><Ionicons name="layers-outline" size={22} color={block.state === 'current' ? '#B993FF' : '#7F8999'} /></View>
       <Text style={styles.journeyBlockRange}>{formatJourneyRange(block.start_date, block.end_date)}</Text>
       <View style={styles.journeyBlockStats}><Text style={styles.journeyBlockStat}>{block.session_count} Sessions</Text><Text style={styles.journeyBlockStat}>{block.pr_count} PRs</Text><Text style={styles.journeyBlockStat}>{block.state === 'historical_range' ? 'Historical range' : block.state}</Text></View>
+      {block.reported_bodyweight?.start && block.reported_bodyweight.end_or_latest && block.reported_bodyweight.change_kg != null ? <Text style={styles.journeyBlockBodyweight}>Reported BW · {block.reported_bodyweight.start.reported_bodyweight_kg.toFixed(1)} → {block.reported_bodyweight.end_or_latest.reported_bodyweight_kg.toFixed(1)} kg · observations within {block.reported_bodyweight.boundary_window_days} days of boundaries</Text> : null}
     </View>)}
   </View>;
 }
@@ -443,10 +460,13 @@ function formatJourneyWeight(valueKg: number, unit: LedgerUnit): string {
 }
 
 function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyEvent {
+  const persistedSource = entry.source_kind === 'persisted';
   const date = new Date(`${entry.occurred_on}T12:00:00`);
   const presentation: Record<string, { type: JourneyMomentType; icon: keyof typeof Ionicons.glyphMap; tone: string; label: string }> = {
     FIRST_WORKOUT: { type: 'first-workout', icon: 'barbell-outline', tone: '#A86BFF', label: 'FIRST SESSION' },
     SESSION_COMPLETED: { type: 'session-completed', icon: 'checkmark-circle-outline', tone: '#7F8999', label: 'SESSION' },
+    SESSION_SUMMARY: { type: 'session-completed', icon: 'reader-outline', tone: '#7F8999', label: 'SESSION SUMMARY' },
+    PERFORMANCE: { type: 'major-pr', icon: 'barbell-outline', tone: '#A86BFF', label: 'PERFORMANCE' },
     PROGRAM_STARTED: { type: 'program-started', icon: 'map-outline', tone: '#42D5C2', label: 'PROGRAM' },
     PROGRAM_COMPLETED: { type: 'program-completed', icon: 'flag-outline', tone: '#42D5C2', label: 'PROGRAM COMPLETE' },
     BLOCK_STARTED: { type: 'block-started', icon: 'layers-outline', tone: '#B993FF', label: 'BLOCK' },
@@ -464,6 +484,12 @@ function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyE
   const visual = presentation[entry.event_type] ?? presentation.IMPORTED_HISTORY;
   const performance = entry.performance;
   let detail = entry.detail;
+  const contextualEvidence = (entry.evidence ?? {}) as Record<string, any>;
+  const reportedBodyweight = contextualEvidence.reported_bodyweight;
+  const accomplishmentTags = Array.isArray(contextualEvidence.accomplishments)
+    ? contextualEvidence.accomplishments.map((row: any) => ({ label: String(row.label || 'Achievement').toUpperCase(), tone: '#C289FF' }))
+    : [];
+  const completion = contextualEvidence.completion;
   if (entry.event_type === 'E1RM_PR' && performance?.e1rm_kg != null) {
     detail = `${formatJourneyWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
   } else if ((entry.event_type === 'WEIGHT_PR' || entry.event_type === 'REP_PR') && performance?.weight_kg != null) {
@@ -489,10 +515,18 @@ function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyE
     occurredAt: entry.occurred_at || entry.occurred_on,
     title: entry.title,
     detail,
-    expandedDetail: `${entry.source_kind === 'persisted' ? 'Persisted canonical evidence' : 'Deterministically reconstructed historical evidence'} from ${formatJourneyDate(entry.occurred_on)}.`,
+    expandedDetail: [
+      detail,
+      completion?.completed_set_count != null ? `${completion.completed_set_count}${completion.prescribed_set_count ? `/${completion.prescribed_set_count}` : ''} prescribed sets completed` : null,
+      reportedBodyweight?.reported_bodyweight_kg != null ? `Reported BW ${formatJourneyWeight(reportedBodyweight.reported_bodyweight_kg, unit)} ${unit}` : null,
+      contextualEvidence.session?.label ? `${contextualEvidence.session.label} · ${formatJourneyDate(entry.occurred_on)}` : formatJourneyDate(entry.occurred_on),
+      contextualEvidence.equipment?.manufacturer || contextualEvidence.equipment?.model ? [contextualEvidence.equipment.manufacturer, contextualEvidence.equipment.model].filter(Boolean).join(' · ') : null,
+      contextualEvidence.video?.attached ? 'Video attached' : null,
+      persistedSource ? 'Persisted canonical evidence' : 'Deterministically reconstructed historical evidence',
+    ].filter(Boolean).join('\n'),
     icon: visual.icon,
     tone: visual.tone,
-    tags: [{ label: visual.label, tone: visual.tone }, { label: entry.source_kind.toUpperCase(), tone: '#8D98A9' }],
+    tags: [{ label: visual.label, tone: visual.tone }, ...accomplishmentTags, { label: entry.source_kind.toUpperCase(), tone: '#8D98A9' }],
     evidence: sourceHref ? [{ id: `source:${entry.source.type}:${entry.source.id}`, kind: sourceKind, label: 'Open source evidence', href: sourceHref }] : [],
     href: sourceHref ?? undefined,
   };
@@ -608,6 +642,7 @@ export function StrengthExperience() {
     const delta = live?.change_kg == null ? null : Math.round(Math.abs(kgToDisplay(live.change_kg, unit)) * (unit === 'kg' ? 2 : 1)) / (unit === 'kg' ? 2 : 1);
     const retention = peakValue != null && peakValue > 0 && best != null ? Math.min(100, Math.round((best / peakValue) * 100)) : null;
     const liftEvents = accomplishments.filter((event) => canonicalLiftKey(event.core_movement_key || event.movement_label) === key);
+    const bodyweightEvent = liftEvents.find((event) => event.reported_bodyweight?.reported_bodyweight_kg != null);
     const repEvent = liftEvents.find((event) => event.event_type.includes('SAME_WEIGHT_REP'));
     const weightEvents = liftEvents.filter((event) => event.event_type === 'CORE_WEIGHT_PR' || event.event_type === 'CORE_BLOCK_WEIGHT_BEST');
     const evidence = (repEvent?.evidence ?? {}) as Record<string, unknown>;
@@ -631,6 +666,7 @@ export function StrengthExperience() {
       topHistory,
       canonicalWeightBestKg: weightBest?.best_value ?? null,
       sourceSetLogId: e1rmBest?.event?.source_set_log_id ?? repEvent?.source_set_log_id ?? weightEvents[0]?.source_set_log_id ?? null,
+      reportedBodyweight: bodyweightEvent?.reported_bodyweight ?? null,
     };
   }), [accomplishments, baseProfile, currentBests, progression, unit]);
   const focusLift = profile[focusLiftIndex];
@@ -730,6 +766,7 @@ export function StrengthExperience() {
           <View style={styles.strengthEvidenceNode}><Ionicons name="shield-checkmark-outline" size={18} color={focusedProfile.color} /><View><Text style={[styles.strengthEvidenceNodeLabel, { color: focusedProfile.color }]}>IDENTITY MATCHED</Text><Text style={styles.strengthEvidenceNodeValue}>canonical core movement evidence</Text></View></View>
           <View style={[styles.strengthEvidenceConnector, { backgroundColor: focusedProfile.color }]} />
           <View style={styles.strengthEvidenceNode}><Ionicons name="analytics-outline" size={18} color={focusedProfile.color} /><View><Text style={[styles.strengthEvidenceNodeLabel, { color: focusedProfile.color }]}>USED IN ESTIMATE</Text><Text style={styles.strengthEvidenceNodeValue}>{focusLift.points.length} weekly estimates in range</Text></View></View>
+          {focusedProfile.reportedBodyweight ? <><View style={[styles.strengthEvidenceConnector, { backgroundColor: '#76CBD0' }]} /><View style={styles.strengthEvidenceNode}><Ionicons name="scale-outline" size={18} color="#76CBD0" /><View><Text style={[styles.strengthEvidenceNodeLabel, { color: '#76CBD0' }]}>REPORTED BODYWEIGHT</Text><Text style={styles.strengthEvidenceNodeValue}>{formatJourneyWeight(focusedProfile.reportedBodyweight.reported_bodyweight_kg, unit)} {unit.toUpperCase()} · {formatJourneyDate(focusedProfile.reportedBodyweight.training_date)}</Text></View></View></> : null}
           {proofExpanded ? <Text style={styles.strengthEvidenceExpanded}>The estimate weights recent movement-matched sets, recorded load, reps, and bounded RPE. Older or lower-confidence evidence contributes less.</Text> : null}
           <View style={styles.strengthEvidenceAction}><Text style={styles.strengthEvidenceActionText}>{proofExpanded && exactEvidenceHref ? 'Open exact source set' : proofExpanded ? 'Hide method' : 'See why this qualifies'}</Text><Ionicons name={proofExpanded && exactEvidenceHref ? 'arrow-forward' : proofExpanded ? 'chevron-up' : 'chevron-down'} size={15} color="#CDBBFF" /></View>
         </View>
@@ -795,6 +832,11 @@ const styles = StyleSheet.create({
   journeyRecordCard: { minHeight: 164, justifyContent: 'center', gap: 9, padding: 20, borderRadius: 20, borderWidth: 1, borderColor: '#49355F', backgroundColor: '#0D0B12' },
   journeyRecordDate: { color: '#F5F0FA', fontSize: 28, lineHeight: 33, fontWeight: '700', letterSpacing: -0.45 },
   journeyRecordBody: { maxWidth: 410, color: '#9E96A8', fontSize: 12.5, lineHeight: 18 },
+  journeyBodyweightTrend: { color: '#76CBD0', fontSize: 11, lineHeight: 15, fontWeight: '600' },
+  journeyBodyweightObservation: { minHeight: 34, flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#28313C' },
+  journeyBodyweightDate: { width: 92, color: '#7F8999', fontSize: 9, lineHeight: 12 },
+  journeyBodyweightValue: { minWidth: 72, color: '#E9F6F7', fontSize: 10, lineHeight: 13, fontWeight: '600' },
+  journeyBodyweightSession: { flex: 1, color: '#818B98', fontSize: 9, lineHeight: 12, textAlign: 'right' },
   journeyCurrentBlock: { minHeight: 96, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: 17, borderRadius: 16, borderWidth: 1, borderColor: '#2C4B46', backgroundColor: '#0A1011' },
   journeyCurrentBlockTitle: { marginTop: 5, color: '#F0F5F4', fontSize: 18, lineHeight: 23, fontWeight: '600' },
   journeyCurrentBlockDate: { maxWidth: '42%', color: '#8FA49F', fontSize: 10, lineHeight: 14, textAlign: 'right' },
@@ -807,6 +849,7 @@ const styles = StyleSheet.create({
   journeyBlockRange: { color: '#939BA8', fontSize: 11, lineHeight: 15 },
   journeyBlockStats: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, paddingTop: 9, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#303640' },
   journeyBlockStat: { color: '#AFA6BC', fontSize: 9.5, lineHeight: 13, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10, backgroundColor: '#12151B' },
+  journeyBlockBodyweight: { color: '#76BFC6', fontSize: 9.5, lineHeight: 14, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#29343B' },
   pressed: { opacity: 0.72, transform: [{ scale: 0.985 }] },
   mediaBody: { color: '#D7DDE5', lineHeight: 21 },
   darkScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(5, 7, 11, 0.57)' },

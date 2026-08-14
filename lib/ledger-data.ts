@@ -83,6 +83,14 @@ export type AccomplishmentEvent = {
   scope?: string | null;
   is_current_best?: boolean | null;
   evidence?: Record<string, unknown> | null;
+  reported_bodyweight?: {
+    reported_bodyweight_kg: number;
+    reported_at?: string | null;
+    training_date?: string | null;
+    workout_id?: number | null;
+    source: 'PRE_SESSION_READINESS' | string;
+    resolution?: 'exact_session' | 'canonical_same_training_date' | string;
+  } | null;
 };
 
 export type CurrentBest = {

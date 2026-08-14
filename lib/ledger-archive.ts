@@ -18,6 +18,12 @@ export type ArchiveItem = {
   status?: string | null;
   movement?: Record<string, unknown> | null;
   performance?: Record<string, unknown> | null;
+  reported_bodyweight?: {
+    reported_bodyweight_kg: number;
+    reported_at?: string | null;
+    training_date?: string | null;
+    source: string;
+  } | null;
   media?: Record<string, unknown> | null;
   program_context?: Record<string, unknown> | null;
   meet_context?: Record<string, unknown> | null;
