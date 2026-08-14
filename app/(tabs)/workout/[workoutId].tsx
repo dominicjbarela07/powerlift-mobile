@@ -164,6 +164,11 @@ import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { movementScrollTarget } from '@/lib/movement-transition';
 import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
 import {
+  canonicalLoggedSetCountForSession,
+  deriveSessionElapsedSeconds,
+  formatSessionElapsed,
+} from '@/lib/session-header-metrics';
+import {
   createSessionTimeDraft,
   formatSessionTimeLabel,
   formatSessionTimeZoneLabel,
@@ -693,24 +698,6 @@ function queuedVideoStatusLabel(uploadState: { uploading?: boolean; queued?: boo
   return null;
 }
 
-function parseTimestampMs(value?: string | null) {
-  if (!value) return null;
-  const normalized = /z$|[+-]\d\d:?\d\d$/i.test(value) ? value : `${value}Z`;
-  const ms = Date.parse(normalized);
-  return Number.isFinite(ms) ? ms : null;
-}
-
-function formatSessionDuration(totalSeconds?: number | null) {
-  const seconds = Math.max(0, Math.floor(Number(totalSeconds || 0)));
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
-
 function formatHistoryPattern(value: any) {
   const text = String(value || 'accessory').replace(/_/g, ' ').trim();
   return text ? text.replace(/\b\w/g, (m) => m.toUpperCase()) : 'Accessory';
@@ -1084,12 +1071,10 @@ function isStraightWorkoutItem(item?: WorkoutItem | null): boolean {
 
 function loggedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
   if (!workout) return 0;
-  const core = (workout.core_items || []).reduce((sum, item) => sum + (item.set_logs || []).length, 0);
-  const acc = (workout.accessory_groups || []).reduce(
-    (sum, group) => sum + (group.items || []).reduce((inner, item) => inner + (item.set_logs || []).length, 0),
-    0,
-  );
-  return core + acc;
+  return canonicalLoggedSetCountForSession({
+    coreItems: workout.core_items,
+    accessoryGroups: workout.accessory_groups,
+  });
 }
 
 function plannedSetCountForWorkout(workout?: WorkoutPayload['workout'] | null) {
@@ -1519,6 +1504,9 @@ export default function WorkoutViewerScreen() {
     ? `${rewardLoopDemoV2StorageScope}:${data.workout.started_at}`
     : rewardLoopDemoV2StorageScope;
   const [sessionNowMs, setSessionNowMs] = useState(() => Date.now());
+  const [sessionClockForeground, setSessionClockForeground] = useState(
+    () => AppState.currentState == null || AppState.currentState === 'active',
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -3273,6 +3261,8 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
+      setSessionClockForeground(state === 'active');
+      if (state === 'active') setSessionNowMs(Date.now());
       if (state === 'active') feedbackDispatch({ type: 'APP_RESUMED' });
       else feedbackDispatch({ type: 'APP_BACKGROUNDED' });
       if (state === 'active' && restActive && restEndAtMsRef.current) {
@@ -3382,12 +3372,16 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
-    if (status !== 'in_progress' || !data?.workout?.started_at) return;
+    if (
+      status !== 'in_progress'
+      || !data?.workout?.started_at
+      || !sessionClockForeground
+    ) return;
 
     setSessionNowMs(Date.now());
     const id = setInterval(() => setSessionNowMs(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [data?.workout?.status, data?.workout?.started_at]);
+  }, [data?.workout?.status, data?.workout?.started_at, sessionClockForeground]);
 
   const updateStraightInput = (
     itemId: number,
@@ -6581,16 +6575,13 @@ export default function WorkoutViewerScreen() {
   const isPreSession = screenMode === 'pre_session';
   const isActiveSession = screenMode === 'active_session';
   const isFinishedSession = screenMode === 'finished_session';
-  const startedAtMs = parseTimestampMs(workout.started_at);
   const liveSessionDurationSeconds =
-    isActiveSession && startedAtMs != null
-      ? Math.max(0, Math.floor((sessionNowMs - startedAtMs) / 1000))
+    isActiveSession
+      ? deriveSessionElapsedSeconds(workout.started_at, sessionNowMs)
       : null;
-  const sessionDurationLabel = isActiveSession
-    ? (liveSessionDurationSeconds != null ? formatSessionDuration(liveSessionDurationSeconds) : null)
-    : (isFinishedSession && workout.completed_duration_seconds != null
-        ? formatSessionDuration(workout.completed_duration_seconds)
-        : null);
+  const sessionElapsedLabel = liveSessionDurationSeconds != null
+    ? formatSessionElapsed(liveSessionDurationSeconds)
+    : '0:00';
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
   const durationEstimate = durationEstimateForWorkout(workout);
@@ -7745,12 +7736,7 @@ export default function WorkoutViewerScreen() {
         loggedSets={loggedSets}
         plannedSets={plannedSets}
         progressPct={progressPct}
-        exerciseCount={durationEstimate ? (
-          workout.core_items.filter((item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null)).length +
-          workout.accessory_groups.reduce((total, group) => total + group.items.length, 0)
-        ) : 0}
-        durationEstimate={durationEstimate}
-        workoutStatus={workout.status}
+        sessionElapsedLabel={sessionElapsedLabel}
         onRestTimerLayout={handleRestTimerLayout}
       />
       <RestTimerFocus
@@ -7839,7 +7825,6 @@ export default function WorkoutViewerScreen() {
               workout.accessory_groups.reduce((total, group) => total + group.items.length, 0)
             }
             durationEstimate={durationEstimate}
-            sessionDurationLabel={sessionDurationLabel}
             canEdit={canEdit}
             onBackToTrainingHub={handleBackToTrainingHub}
             onEditWorkout={handleEditWorkout}

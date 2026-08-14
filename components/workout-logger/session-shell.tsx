@@ -88,9 +88,7 @@ export function SessionCommandStrip({
   loggedSets,
   plannedSets,
   progressPct,
-  exerciseCount,
-  durationEstimate,
-  workoutStatus,
+  sessionElapsedLabel,
   onRestTimerLayout,
 }: {
   restActive: boolean;
@@ -103,9 +101,7 @@ export function SessionCommandStrip({
   loggedSets: number;
   plannedSets: number;
   progressPct: number;
-  exerciseCount: number;
-  durationEstimate: SessionDurationEstimate | null;
-  workoutStatus?: string | null;
+  sessionElapsedLabel: string;
   onRestTimerLayout?: (origin: {
     x: number;
     y: number;
@@ -113,7 +109,6 @@ export function SessionCommandStrip({
     height: number;
   }) => void;
 }) {
-  void workoutStatus;
   const restTimerBlockRef = React.useRef<View>(null);
   const reportRestTimerLayout = React.useCallback(() => {
     requestAnimationFrame(() => {
@@ -125,13 +120,14 @@ export function SessionCommandStrip({
   }, [onRestTimerLayout]);
 
   const showTimerControls = canLog;
+  const restUrgent = restActive && restSeconds <= 10;
 
   if (!showTimerControls) return null;
 
   return (
     <View style={styles.commandStripWrap}>
       <View style={[styles.commandStrip, restActive && styles.commandStripActive]}>
-        <View style={styles.commandProgressBlock}>
+        <View style={styles.commandProgressBlock} testID="session-progress-zone">
           <SessionProgressRing
             progressPct={progressPct}
             loggedSets={loggedSets}
@@ -144,39 +140,85 @@ export function SessionCommandStrip({
         <View style={[
           styles.commandTimerBlock,
           restActive && styles.commandTimerBlockActive,
+          restUrgent && styles.commandTimerBlockUrgent,
           restPromoted && styles.commandTimerBlockPromoted,
         ]}
           collapsable={false}
           onLayout={reportRestTimerLayout}
           ref={restTimerBlockRef}
         >
-          <Text style={[styles.commandTimerDot, !restActive && styles.commandTimerDotIdle]}>●</Text>
-          <View style={styles.commandTimerTextStack}>
-            <Text typographyRole="shortTechnicalLabel" style={[styles.commandTimerMeta, restActive && styles.commandTimerMetaActive]}>
-              Rest Timer
-            </Text>
-            <SLAnimatedMetric value={restActive ? restSeconds : 'idle'}>
-              <Text typographyRole="numeric" style={[styles.commandTimerValue, restActive && styles.commandTimerValueActive]}>
-                {restActive && restSeconds > 0 ? formatRestTime(restSeconds) : '—'}
-              </Text>
-            </SLAnimatedMetric>
-          </View>
+          {!restActive ? (
+            <SLMotionPressable
+              accessibilityLabel="Set rest timer"
+              accessibilityRole="button"
+              onPress={openTimerPicker}
+              style={styles.commandTimerIdleControl}
+              testID="session-rest-timer-idle"
+            >
+              <Ionicons name="timer-outline" size={22} color={SLColors.accentViolet} />
+              <Text typographyRole="longButtonLabel" style={styles.commandTimerIdleText}>Set Timer</Text>
+            </SLMotionPressable>
+          ) : (
+            <>
+              <View style={styles.commandTimerTextStack}>
+                <Text
+                  typographyRole="shortTechnicalLabel"
+                  style={[
+                    styles.commandTimerMeta,
+                    styles.commandTimerMetaActive,
+                    restUrgent && styles.commandTimerMetaUrgent,
+                  ]}
+                >
+                  Rest Timer
+                </Text>
+                <SLAnimatedMetric value={restSeconds}>
+                  <Text
+                    typographyRole="numeric"
+                    style={[
+                      styles.commandTimerValue,
+                      styles.commandTimerValueActive,
+                      restUrgent && styles.commandTimerValueUrgent,
+                    ]}
+                  >
+                    {formatRestTime(Math.max(0, restSeconds))}
+                  </Text>
+                </SLAnimatedMetric>
+              </View>
+              <SLMotionPressable
+                accessibilityLabel="Stop rest timer"
+                accessibilityRole="button"
+                onPress={stopRestTimer}
+                style={styles.commandStopButton}
+                testID="session-rest-timer-stop"
+              >
+                <Text typographyRole="shortButtonLabel" style={styles.commandStopButtonText}>Stop</Text>
+              </SLMotionPressable>
+            </>
+          )}
         </View>
 
         <View style={styles.commandDivider} />
 
-        {!restActive ? (
-          <SLMotionPressable style={styles.commandButton} onPress={openTimerPicker}>
-            <Text typographyRole="longButtonLabel" style={styles.commandButtonText}>Set Timer</Text>
-          </SLMotionPressable>
-        ) : (
-          <SLMotionPressable
-            style={[styles.commandButton, styles.commandButtonDanger]}
-            onPress={stopRestTimer}
-          >
-            <Text typographyRole="shortButtonLabel" style={styles.commandButtonText}>Stop</Text>
-          </SLMotionPressable>
-        )}
+        <View
+          accessible
+          accessibilityLabel={`Elapsed session time ${sessionElapsedLabel}`}
+          style={styles.commandElapsedBlock}
+          testID="session-elapsed-zone"
+        >
+          <Text typographyRole="shortTechnicalLabel" style={styles.commandElapsedMeta}>Elapsed</Text>
+          <SLAnimatedMetric value={sessionElapsedLabel} style={styles.commandElapsedMetric}>
+            <Text
+              adjustsFontSizeToFit
+              maxFontSizeMultiplier={1}
+              minimumFontScale={0.7}
+              numberOfLines={1}
+              typographyRole="numeric"
+              style={styles.commandElapsedValue}
+            >
+              {sessionElapsedLabel}
+            </Text>
+          </SLAnimatedMetric>
+        </View>
       </View>
     </View>
   );
@@ -224,7 +266,6 @@ export function SessionIntentPanel({
   plannedSets,
   exerciseCount,
   durationEstimate,
-  sessionDurationLabel,
   canEdit,
   onBackToTrainingHub,
   onEditWorkout,
@@ -237,7 +278,6 @@ export function SessionIntentPanel({
   plannedSets: number;
   exerciseCount: number;
   durationEstimate: SessionDurationEstimate | null;
-  sessionDurationLabel?: string | null;
   canEdit: boolean;
   onBackToTrainingHub: () => void;
   onEditWorkout: () => void;
@@ -320,11 +360,6 @@ export function SessionIntentPanel({
               <Text typographyRole="shortTechnicalLabel" adjustsFontSizeToFit maxFontSizeMultiplier={1.2} minimumFontScale={0.8} numberOfLines={1} style={styles.preSessionPrepLabel}>Exercises</Text>
               <Text typographyRole="numeric" adjustsFontSizeToFit maxFontSizeMultiplier={1.25} minimumFontScale={0.78} numberOfLines={1} style={styles.preSessionPrepNumber}>{exerciseCount || '—'}</Text>
               <Text typographyRole="unit" maxFontSizeMultiplier={1.25} style={styles.preSessionPrepUnit}>exercises</Text>
-            </View>
-            <View style={styles.preSessionStatDivider} />
-            <View style={styles.preSessionPrepItem}>
-              <Text typographyRole="shortTechnicalLabel" adjustsFontSizeToFit maxFontSizeMultiplier={1.2} minimumFontScale={0.8} numberOfLines={1} style={styles.preSessionPrepLabel}>Elapsed</Text>
-              <Text typographyRole="numeric" adjustsFontSizeToFit maxFontSizeMultiplier={1.25} minimumFontScale={0.72} numberOfLines={1} style={styles.preSessionPrepNumber}>{sessionDurationLabel || '0:00'}</Text>
             </View>
           </View>
         </View>
@@ -433,52 +468,65 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 4,
-    gap: 6,
+    gap: 5,
   },
   commandStripActive: {
     backgroundColor: 'transparent',
   },
   commandProgressBlock: {
-    width: 100,
+    width: 96,
     minHeight: 96,
     alignItems: 'center',
     justifyContent: 'center',
   },
   commandDivider: {
     width: 1,
-    height: 22,
+    height: 48,
     backgroundColor: SLColors.borderSubtle,
   },
   commandTimerBlock: {
     flex: 1,
+    minWidth: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
-    minHeight: 42,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
+    gap: 10,
+    minHeight: 58,
+    paddingHorizontal: 7,
+    paddingVertical: 7,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: SLColors.borderSubtle,
     borderRadius: SLRadius.md,
+    backgroundColor: SLColors.surfaceFlat,
   },
   commandTimerBlockActive: {
     borderColor: 'rgba(143,178,154,0.24)',
     backgroundColor: SLColors.successSoft,
   },
+  commandTimerBlockUrgent: {
+    borderColor: SLColors.danger,
+    backgroundColor: SLColors.dangerSoft,
+  },
   commandTimerBlockPromoted: {
     opacity: 0.16,
   },
-  commandTimerDot: {
-    color: SLColors.success,
-    fontSize: SLTypography.micro.fontSize,
-    textShadowRadius: 0,
+  commandTimerIdleControl: {
+    width: '100%',
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
-  commandTimerDotIdle: {
-    color: SLColors.textSubtle,
-    textShadowRadius: 0,
+  commandTimerIdleText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.45,
   },
   commandTimerTextStack: {
+    flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'center',
     minWidth: 0,
@@ -507,41 +555,59 @@ const styles = StyleSheet.create({
   commandTimerMetaActive: {
     color: SLColors.success,
   },
-  commandButton: {
-    minWidth: 88,
-    height: 38,
-    paddingHorizontal: 10,
-    borderRadius: SLRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: SLColors.surfaceMuted,
-    borderWidth: 1,
-    borderColor: SLColors.borderSubtle,
+  commandTimerMetaUrgent: {
+    color: SLColors.danger,
   },
-  commandButtonDanger: {
-    borderColor: SLColors.danger,
-    backgroundColor: SLColors.dangerSoft,
+  commandTimerValueUrgent: {
+    color: SLColors.danger,
   },
-  commandButtonText: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '700',
-  },
-  commandButtonGhost: {
-    minWidth: 84,
+  commandStopButton: {
+    minWidth: 52,
     height: 34,
-    paddingHorizontal: 12,
+    paddingHorizontal: 9,
     borderRadius: SLRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: SLColors.surfaceFlat,
     borderWidth: 1,
-    borderColor: SLColors.borderHairline,
+    borderColor: SLColors.danger,
+    backgroundColor: SLColors.dangerSoft,
   },
-  commandButtonGhostText: {
-    color: SLColors.textSubtle,
-    fontSize: SLTypography.rowTitle.fontSize,
-    fontWeight: '600',
+  commandStopButtonText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  commandElapsedBlock: {
+    width: 94,
+    minWidth: 0,
+    minHeight: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  commandElapsedMeta: {
+    color: SLColors.textMuted,
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+  },
+  commandElapsedMetric: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  commandElapsedValue: {
+    width: '100%',
+    color: SLColors.textStrong,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    lineHeight: 25,
+    fontWeight: '700',
+    letterSpacing: -0.6,
+    fontVariant: ['tabular-nums'],
+    textAlign: 'center',
   },
   sessionIdentityShell: {
     flexDirection: 'row',

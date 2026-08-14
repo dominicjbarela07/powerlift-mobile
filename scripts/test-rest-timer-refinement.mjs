@@ -167,7 +167,7 @@ assert.match(
 );
 assert.match(
   sessionShell,
-  /commandTimerBlock: \{[\s\S]*flex: 1[\s\S]*minHeight: 42/,
+  /commandTimerBlock: \{[\s\S]*flex: 1[\s\S]*minWidth: 0[\s\S]*minHeight: 58/,
   'the timer control must retain flexible width beside the fixed progress ring on narrow screens',
 );
 assert.match(
@@ -187,8 +187,8 @@ assert.doesNotMatch(
 );
 assert.match(
   sessionShell,
-  /commandButton: \{[\s\S]*minWidth: 88,[\s\S]*height: 38/,
-  'vertical compression must preserve the Set Timer button size',
+  /commandTimerIdleControl: \{[\s\S]*width: '100%'[\s\S]*minHeight: 42/,
+  'the idle center zone must preserve a full-width, accessible Set Timer target',
 );
 assert.match(
   sessionShell,
