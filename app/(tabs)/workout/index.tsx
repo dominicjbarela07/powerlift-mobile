@@ -26,6 +26,7 @@ import {
   type AthleteTrainingBlock,
   type AthleteTrainingDay,
   type AthleteTrainingHubData,
+  type AthleteTrainingSession,
   type AthleteTrainingWeek,
 } from '@/components/training-hub/AthleteTrainingHubExperience';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
@@ -68,6 +69,25 @@ type SessionFocus = {
 
 type SessionRecap = {
   top_work?: string | null;
+  movement_count?: number | null;
+  logged_set_count?: number | null;
+  planned_set_count?: number | null;
+  completion_percent?: number | null;
+  total_volume_kg?: number | null;
+  pr_count?: number | null;
+  average_rpe?: number | null;
+  session_rpe?: number | null;
+  top_lifts?: Array<{
+    workout_item_id?: number | null;
+    movement?: string | null;
+    weight_kg?: number | null;
+    reps?: number | null;
+    rpe?: number | null;
+    has_pr?: boolean;
+    pr_delta?: number | null;
+    pr_unit?: string | null;
+    pr_event_type?: string | null;
+  }>;
   execution_summary?: string | null;
   feedback_preview?: string | null;
 };
@@ -79,6 +99,21 @@ type SessionPreviewPayload = {
     load?: string | null;
   }>;
   accessory_count?: number | null;
+  movement_count?: number | null;
+  focus_muscles?: string[];
+  movements?: Array<{
+    movement?: string | null;
+    kind?: 'core' | 'accessory' | string | null;
+    sets?: number | null;
+    reps?: number | null;
+    reps_text?: string | null;
+    prescription?: string | null;
+    load?: string | null;
+    primary_muscle_group?: string | null;
+    secondary_muscle_groups?: string[];
+    movement_family?: string | null;
+    equipment_type?: string | null;
+  }>;
 };
 
 type HubSession = {
@@ -246,6 +281,8 @@ type TrainingHubPayload = {
       completed?: number | null;
     } | null;
     videos_reviewed?: number | null;
+    pr_count?: number | null;
+    total_volume_kg?: number | null;
   } | null;
 };
 
@@ -599,8 +636,9 @@ export default function TrainingIndexScreen() {
       visibleProgramBlocks,
       visiblePendingMap,
       visibleCompletedMap,
+      ['lb', 'lbs'].includes(String((user as any)?.preferred_units || '').toLowerCase()) ? 'lb' : 'kg',
     ),
-    [visibleCompletedMap, visibleHub, visiblePendingMap, visibleProgramBlocks]
+    [user, visibleCompletedMap, visibleHub, visiblePendingMap, visibleProgramBlocks]
   );
 
   const openWorkout = (workoutId?: number | null) => {
@@ -3671,6 +3709,7 @@ function buildAthleteTrainingHubData(
   blocks: ProgramBlockPayload[],
   pendingMap: SessionMap,
   completedMap: SessionMap,
+  preferredUnits: 'kg' | 'lb' = 'kg',
 ): AthleteTrainingHubData {
   const athletePhoto = normalizeProfilePhotoPayload(hub?.athlete);
   const coachPhoto = normalizeProfilePhotoPayload(hub?.connected_coach);
@@ -3688,6 +3727,9 @@ function buildAthleteTrainingHubData(
     currentWeek: block.id === currentBlockId ? block.current_week : null,
     totalWeeks: block.total_weeks,
     purpose: block.id === currentBlockId ? program?.description || null : null,
+    phase: block.id === currentBlockId ? hub?.current_block?.phase || null : null,
+    dateRangeLabel: block.date_range_label || null,
+    progress: block.id === currentBlockId ? hub?.current_block?.progress?.percent ?? null : index < currentIndex ? 1 : 0,
     coachContext: null,
     weeks: (block.total_weeks || inclusiveWeekCount(block.start_date, block.end_date)
       ? buildRoadmapWeeks(block, pendingMap, completedMap)
@@ -3700,7 +3742,7 @@ function buildAthleteTrainingHubData(
       tag: week.tag ? { key: week.tag.key, label: week.tag.label } : null,
       objective: week.objective,
       days: week.days.map((day): AthleteTrainingDay => {
-        const sessions = day.sessions.map((session) => {
+        const sessions: AthleteTrainingSession[] = day.sessions.map((session): AthleteTrainingSession => {
           const previewMovements = (session.preview?.core || [])
             .map((item) => fullMovementName(item.movement))
             .filter(Boolean);
@@ -3712,6 +3754,44 @@ function buildAthleteTrainingHubData(
             title: sessionTitle(session),
             date: session.date,
             status: athleteSessionStatus(session, day.date, hub?.today),
+            movementCount: session.preview?.movement_count ?? session.preview?.movements?.length ?? null,
+            accessoryCount: session.preview?.accessory_count ?? session.focus?.accessory_count ?? null,
+            movements: (session.preview?.movements || []).map((movement) => ({
+              label: fullMovementName(movement.movement) || 'Movement',
+              kind: movement.kind === 'accessory' ? 'accessory' : 'core',
+              sets: movement.sets,
+              reps: movement.reps,
+              repsText: movement.reps_text,
+              prescription: movement.prescription,
+              load: movement.load,
+              primaryMuscleGroup: movement.primary_muscle_group,
+              secondaryMuscleGroups: movement.secondary_muscle_groups || [],
+              movementFamily: movement.movement_family,
+              equipmentType: movement.equipment_type,
+            })),
+            focusMuscles: session.preview?.focus_muscles || [],
+            recap: session.recap ? {
+              movementCount: session.recap.movement_count,
+              loggedSetCount: session.recap.logged_set_count,
+              plannedSetCount: session.recap.planned_set_count,
+              completionPercent: session.recap.completion_percent,
+              totalVolumeKg: session.recap.total_volume_kg,
+              prCount: session.recap.pr_count,
+              averageRpe: session.recap.average_rpe,
+              sessionRpe: session.recap.session_rpe,
+              topWork: session.recap.top_work,
+              topLifts: (session.recap.top_lifts || []).map((lift) => ({
+                workoutItemId: lift.workout_item_id,
+                movement: fullMovementName(lift.movement) || 'Movement',
+                weightKg: lift.weight_kg,
+                reps: lift.reps,
+                rpe: lift.rpe,
+                hasPr: lift.has_pr,
+                prDelta: lift.pr_delta,
+                prUnit: lift.pr_unit,
+                prEventType: lift.pr_event_type,
+              })),
+            } : null,
             contentSummary: formatSessionContentSnapshot({
               movements: previewMovements.length ? previewMovements : focusMovements,
               accessoryCount: session.preview?.accessory_count ?? session.focus?.accessory_count,
@@ -3722,6 +3802,7 @@ function buildAthleteTrainingHubData(
         });
         return {
           key: day.key,
+          date: day.date,
           weekday: day.label.slice(0, 2),
           dayNumber: day.date ? String(parseDate(day.date)?.getDate() || '') : null,
           status: sessions[0]?.status || (day.date === hub?.today ? 'today' : 'rest'),
@@ -3747,9 +3828,12 @@ function buildAthleteTrainingHubData(
     connectedCoachName: hub?.connected_coach?.name || program?.coach?.name || null,
     connectedCoachPhotoUrl: coachPhoto.profilePhotoUrl,
     connectedCoachPhotoVersion: coachPhoto.profilePhotoVersion,
+    preferredUnits,
     activeProgram: program ? {
       id: Number(program.id || 0),
       name: program.name || 'Current program',
+      programType: program.program_type || null,
+      description: program.description || null,
       coachName: program.coach?.name || null,
       blockCount: program.block_count || activeBlocks.length || null,
       totalWeeks,
@@ -3776,13 +3860,16 @@ function buildAthleteTrainingHubData(
       setsCompleted: hub.previous_week_recap.sets?.completed ?? null,
       setsPlanned: hub.previous_week_recap.sets?.planned ?? null,
       videosReviewed: hub.previous_week_recap.videos_reviewed ?? null,
+      prCount: hub.previous_week_recap.pr_count ?? null,
+      totalVolumeKg: hub.previous_week_recap.total_volume_kg ?? null,
     } : null,
   };
 }
 
-function athleteSessionStatus(session: HubSession, date?: string | null, today?: string | null): 'completed' | 'today' | 'upcoming' | 'missed' | 'moved' {
+function athleteSessionStatus(session: HubSession, date?: string | null, today?: string | null): 'completed' | 'in_progress' | 'today' | 'upcoming' | 'missed' | 'moved' {
   const status = normalizedKind(session);
   if (status === 'completed' || status === 'logged' || status === 'done') return 'completed';
+  if (status === 'in_progress' || status === 'started') return 'in_progress';
   if (status === 'missed' || status === 'past_due' || status === 'incomplete') return 'missed';
   if (String(session.timeliness || '').toLowerCase().includes('moved')) return 'moved';
   if (date && today && date === today) return 'today';
