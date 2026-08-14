@@ -1440,6 +1440,7 @@ export default function WorkoutViewerScreen() {
     workoutId,
     loggerScenario,
     loggerLifecycle,
+    returnTo,
     athleteView,
     returnSection,
     coachAthleteId,
@@ -1450,6 +1451,7 @@ export default function WorkoutViewerScreen() {
     workoutId?: string;
     loggerScenario?: string;
     loggerLifecycle?: string;
+    returnTo?: string;
     athleteView?: string;
     returnSection?: string;
     coachAthleteId?: string;
@@ -6721,7 +6723,11 @@ export default function WorkoutViewerScreen() {
   };
 
   const handleBackToTrainingHub = () => {
-    router.push('/(tabs)/workout' as any);
+    if (returnTo === 'training-hub' && router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/workout' as any);
   };
 
   const handleCloseCompletedRecap = () => {

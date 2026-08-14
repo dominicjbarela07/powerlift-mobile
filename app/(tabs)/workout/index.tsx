@@ -647,6 +647,7 @@ export default function TrainingIndexScreen() {
       pathname: '/workout/[workoutId]',
       params: {
         workoutId: String(workoutId),
+        returnTo: 'training-hub',
         ...(rosterAthleteId ? {
           athleteView: 'coach-preview',
           coachAthleteId: rosterAthleteId,
@@ -3753,6 +3754,7 @@ function buildAthleteTrainingHubData(
             id: session.id,
             title: sessionTitle(session),
             date: session.date,
+            lifecycleStatus: session.status || session.kind || null,
             status: athleteSessionStatus(session, day.date, hub?.today),
             movementCount: session.preview?.movement_count ?? session.preview?.movements?.length ?? null,
             accessoryCount: session.preview?.accessory_count ?? session.focus?.accessory_count ?? null,
