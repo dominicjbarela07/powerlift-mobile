@@ -360,7 +360,7 @@ export function LedgerIndexExperience() {
 const styles = StyleSheet.create({
   page: { gap: 19, paddingBottom: 20, backgroundColor: '#000000' },
   sectionInset: { gap: 9, marginHorizontal: 12 },
-  hero: { minHeight: 205, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
+  hero: { minHeight: 160, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
   heroImage: { opacity: 0.96 },
   heroScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.20)' },
   heroCopy: { gap: 4, paddingHorizontal: 18, paddingBottom: 25 },

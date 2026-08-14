@@ -50,5 +50,8 @@ for (const [filename, [expectedWidth, expectedHeight]] of expectedAssets) {
 assert.match(resolver, /full-body\.png/, 'Muscle Groups must retain governed anatomy artwork');
 assert.match(resolver, /plate-stack-catalog\/blender-cycles-catalog-v1\/lb\/455\.png/, 'Strength chapter must use equipment-led imagery');
 assert.match(resolver, /plate-stack-catalog\/blender-cycles-catalog-v1\/lb\/45\.png/, 'Lift fallback must remain equipment-led');
+assert.match(source, /hero: \{ minHeight: 160, justifyContent: 'flex-end'/, 'Ledger hero must not restore the oversized top dead space');
+assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'Ledger hero must preserve the breathing room before Career Snapshot');
+assert.match(source, /heroCopy: \{ gap: 4, paddingHorizontal: 18, paddingBottom: 25 \}/, 'Ledger hero copy must preserve its intentional bottom breathing room');
 
 console.log('[ledger-index-visual] composition, routes, governed artwork, and raster dimensions passed');
