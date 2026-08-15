@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -18,18 +19,24 @@ export type TrainingScheduleMutation = { start_time: string | null };
 
 export function TrainingScheduleSheet({
   busy = false,
+  canRescheduleDate = false,
   error,
   fieldError,
+  minimumDate,
   onClose,
+  onMoveDate,
   onOpenSession,
   onSave,
   session,
   visible,
 }: {
   busy?: boolean;
+  canRescheduleDate?: boolean;
   error?: string | null;
   fieldError?: string | null;
+  minimumDate?: string | null;
   onClose: () => void;
+  onMoveDate?: (date: string) => void;
   onOpenSession: () => void;
   onSave: (payload: TrainingScheduleMutation) => void;
   session?: AthleteCalendarSession | null;
@@ -37,12 +44,14 @@ export function TrainingScheduleSheet({
 }) {
   const [allDay, setAllDay] = useState(true);
   const [startTime, setStartTime] = useState('17:30');
+  const [moveDate, setMoveDate] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) return;
     setAllDay(!session?.scheduledStartTime);
     setStartTime(session?.scheduledStartTime || '17:30');
+    setMoveDate(session?.date || '');
     setLocalError(null);
   }, [session, visible]);
 
@@ -118,6 +127,35 @@ export function TrainingScheduleSheet({
             ) : null}
           </View>
 
+          {canRescheduleDate && session?.date && moveDate ? (
+            <View style={styles.dateSection}>
+              <View style={styles.dateHeading}>
+                <View style={styles.flex}>
+                  <Text style={styles.kicker}>SESSION DATE</Text>
+                  <Text style={styles.dateHelp}>Use this date control when drag-and-drop is not accessible or convenient.</Text>
+                </View>
+                <Ionicons color={SLColors.accentViolet} name="calendar-outline" size={21} />
+              </View>
+              <DateTimePicker
+                accessibilityLabel="Choose a new Session date"
+                display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                minimumDate={minimumDate ? parseDateOnly(minimumDate) : undefined}
+                mode="date"
+                onChange={(_event, date) => { if (date) setMoveDate(formatDateOnly(date)); }}
+                themeVariant="dark"
+                value={parseDateOnly(moveDate)}
+              />
+              <Pressable
+                accessibilityRole="button"
+                disabled={busy || moveDate === session.date}
+                onPress={() => onMoveDate?.(moveDate)}
+                style={[styles.moveButton, (busy || moveDate === session.date) && styles.disabled]}
+              >
+                <Text style={styles.moveButtonText}>{busy ? 'Moving…' : 'Move Session'}</Text>
+              </Pressable>
+            </View>
+          ) : null}
+
           {localError || fieldError || error ? (
             <Text style={styles.error}>{localError || fieldError || error}</Text>
           ) : null}
@@ -161,6 +199,18 @@ function formatDate(value?: string | null) {
   });
 }
 
+function parseDateOnly(value: string) {
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+function formatDateOnly(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: SLColors.canvas },
   header: { minHeight: 86, paddingHorizontal: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderStandard },
@@ -174,6 +224,11 @@ const styles = StyleSheet.create({
   sessionTitle: { ...SLTypography.screenTitle, color: SLColors.textStrong, marginBottom: 9 },
   meta: { ...SLTypography.note, color: SLColors.textMuted, marginTop: 3 },
   options: { borderRadius: SLRadius.lg, backgroundColor: SLColors.object, overflow: 'hidden', paddingHorizontal: 16 },
+  dateSection: { borderRadius: SLRadius.lg, backgroundColor: SLColors.object, borderWidth: 1, borderColor: SLColors.borderStandard, padding: 16, gap: 13 },
+  dateHeading: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  dateHelp: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 3 },
+  moveButton: { minHeight: 48, borderRadius: SLRadius.control, backgroundColor: SLColors.accentViolet, alignItems: 'center', justifyContent: 'center' },
+  moveButtonText: { ...SLTypography.buttonLabel, color: SLColors.textStrong },
   optionRow: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12 },
   optionLabel: { ...SLTypography.rowTitle, color: SLColors.textStrong },
   optionDetail: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 2 },

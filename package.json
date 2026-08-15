@@ -68,6 +68,7 @@
     "test:calendar-event-modal": "node --import tsx scripts/test-calendar-event-modal.mjs",
     "test:coach-calendar-v2": "node --import tsx scripts/test-coach-calendar-v2.mjs",
     "test:athlete-calendar-v2": "node --import tsx scripts/test-athlete-calendar-v2.mjs",
+    "test:athlete-calendar-reschedule": "node --import tsx scripts/test-athlete-calendar-reschedule.mjs",
     "test:profile-photo": "node --import tsx scripts/test-profile-photo.mjs",
     "test:home-training-hero": "node scripts/test-home-training-hero.mjs",
     "test:recovery-day-check-in-state": "node --import tsx scripts/test-recovery-day-check-in-state.mjs",
