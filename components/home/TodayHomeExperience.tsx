@@ -15,6 +15,7 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius } from '@/constants/theme';
 import { buildAthleteHomeWeek, type AthleteHomeWeekSession } from '@/lib/athlete-home-week';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { bodyweightKgToDisplay, normalizeReadinessUnit } from '@/lib/readiness';
 
 const TRAINING_IMAGE = require('@/assets/images/gym_vibe.jpg');
 
@@ -248,7 +249,10 @@ function TrainingHero({
     ? movementLine.replace(/ · (?=\d+\s+accessor)/i, '\n')
     : movementLine;
   const readiness = readinessPresentation(today.readiness);
-  const dailyCheckIn = dailyCheckInPresentation(today.daily_check_in);
+  const dailyCheckIn = dailyCheckInPresentation(
+    today.daily_check_in,
+    today.athlete?.preferred_units,
+  );
   const dailyAction = today.daily_check_in_action ?? {
     kind: 'daily_check_in',
     label: dailyCheckIn ? "Today's Check-In" : 'Check In',
@@ -324,19 +328,24 @@ function TrainingHero({
         {!hasSession && canDailyCheckIn ? (
           <Pressable
             accessibilityLabel={dailyCheckIn
-              ? `${dailyCheckIn.title}. ${dailyCheckIn.detail}. Open today's check-in.`
+              ? `${dailyCheckIn.title}. ${dailyCheckIn.detail}. ${dailyCheckIn.meta}. Open today's check-in.`
               : 'Optional daily check-in. Record readiness, recovery, and body weight.'}
             accessibilityRole="button"
             onPress={() => onAction(dailyAction)}
-            style={({ pressed }) => [styles.dailyCheckIn, pressed && styles.pressed]}
+            style={({ pressed }) => [
+              styles.dailyCheckIn,
+              dailyCheckIn && styles.dailyCheckInRecorded,
+              pressed && styles.pressed,
+            ]}
           >
-            <View style={styles.dailyCheckInIcon}>
-              <Ionicons color={SLColors.accentViolet} name={dailyCheckIn ? 'checkmark' : 'pulse-outline'} size={19} />
+            <View style={[styles.dailyCheckInIcon, dailyCheckIn && styles.dailyCheckInIconRecorded]}>
+              <Ionicons color={dailyCheckIn ? SLColors.success : SLColors.accentViolet} name={dailyCheckIn ? 'checkmark' : 'pulse-outline'} size={19} />
             </View>
             <View style={styles.rowCopy}>
-              <Text style={styles.dailyCheckInEyebrow}>{dailyCheckIn ? 'TODAY\'S CHECK-IN' : 'OPTIONAL CHECK-IN'}</Text>
+              <Text style={[styles.dailyCheckInEyebrow, dailyCheckIn && styles.dailyCheckInEyebrowRecorded]}>{dailyCheckIn ? 'CHECK-IN RECORDED' : 'OPTIONAL CHECK-IN'}</Text>
               <Text style={styles.rowTitle}>{dailyCheckIn?.title || 'Record readiness, recovery & bodyweight'}</Text>
               {dailyCheckIn ? <Text numberOfLines={1} style={styles.rowDetail}>{dailyCheckIn.detail}</Text> : null}
+              {dailyCheckIn?.meta ? <Text numberOfLines={1} style={styles.dailyCheckInMeta}>{dailyCheckIn.meta}</Text> : null}
             </View>
             <Ionicons color={SLColors.iconMuted} name="chevron-forward" size={18} />
           </Pressable>
@@ -651,9 +660,14 @@ function readinessPresentation(readiness?: TodayHomeData['readiness']) {
   return { title: `Ready ${displayScore}/10`, detail: detail || readiness?.message || 'Readiness recorded' };
 }
 
-function dailyCheckInPresentation(observation?: TodayReadinessObservation | null) {
+function dailyCheckInPresentation(
+  observation?: TodayReadinessObservation | null,
+  preferredUnits?: string | null,
+) {
   if (!observation) return null;
-  const score = Number(observation.readiness_score);
+  const score = observation.readiness_score == null
+    ? Number.NaN
+    : Number(observation.readiness_score);
   const displayScore = Number.isFinite(score)
     ? Math.round((score <= 5 ? score * 2 : score) * 10) / 10
     : null;
@@ -661,9 +675,12 @@ function dailyCheckInPresentation(observation?: TodayReadinessObservation | null
     observation.energy != null ? `Energy ${readinessWord(observation.energy, false)}` : '',
     observation.soreness != null ? `Soreness ${readinessWord(observation.soreness, true)}` : '',
   ].filter(Boolean).join(' · ');
+  const unit = normalizeReadinessUnit(preferredUnits);
+  const bodyweight = bodyweightKgToDisplay(observation.bodyweight_kg, unit);
   return {
     title: displayScore == null ? 'Readiness recorded' : `Ready ${displayScore}/10`,
     detail: detail || 'Readiness and recovery recorded',
+    meta: [bodyweight ? `Bodyweight ${bodyweight} ${unit}` : '', 'Saved today'].filter(Boolean).join(' · '),
   };
 }
 
@@ -761,8 +778,12 @@ const styles = StyleSheet.create({
   readinessRow: { minHeight: 49, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, paddingVertical: 7 },
   readinessIcon: { width: 36, height: 36, borderRadius: 9, backgroundColor: SLColors.accentSoft, alignItems: 'center', justifyContent: 'center' },
   dailyCheckIn: { minHeight: 64, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, paddingVertical: 9 },
+  dailyCheckInRecorded: { borderColor: SLColors.success, backgroundColor: SLColors.successSoft },
   dailyCheckInIcon: { width: 36, height: 36, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderFocus, backgroundColor: SLColors.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  dailyCheckInIconRecorded: { borderColor: SLColors.success, backgroundColor: SLColors.successSoft },
   dailyCheckInEyebrow: { color: SLColors.accentViolet, fontSize: 9, lineHeight: 12, letterSpacing: 0.6, fontWeight: '800', marginBottom: 1 },
+  dailyCheckInEyebrowRecorded: { color: SLColors.success },
+  dailyCheckInMeta: { color: SLColors.success, fontSize: 10, lineHeight: 14, marginTop: 1 },
   rowCopy: { flex: 1, minWidth: 0 },
   rowTitle: { color: SLColors.textPrimary, fontSize: 15, lineHeight: 20, fontWeight: '600' },
   rowDetail: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17 },

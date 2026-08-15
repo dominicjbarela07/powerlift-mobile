@@ -25,6 +25,7 @@ import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
 import { mergeAthleteHomeWeekPreview } from '@/lib/athlete-home-week';
+import { mergeCanonicalDailyReadiness } from '@/lib/daily-readiness-home';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
@@ -383,7 +384,8 @@ export default function AthleteDashboard() {
 
         const result = await requestManagerRef.current.run((signal) => fetchJson('/athletes/mobile/dashboard', {
           method: 'GET',
-          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
+          headers: { Authorization: `Bearer ${token}`, 'Cache-Control': 'no-cache' },
           signal,
         }));
         if (result.kind === 'cancelled' || result.kind === 'obsolete') return;
@@ -503,15 +505,31 @@ export default function AthleteDashboard() {
         if (!response.ok || !response.json?.ok) {
           throw new Error(response.json?.error || `Unable to save check-in (HTTP ${response.status})`);
         }
+        const savedObservation = response.json?.readiness_survey as TodayReadinessObservation | null | undefined;
+        const currentToday = todayRef.current;
+        const refreshedToday = currentToday
+          ? mergeCanonicalDailyReadiness(currentToday, savedObservation)
+          : null;
+
+        requestManagerRef.current.cancel();
+        if (refreshedToday && refreshedToday !== currentToday) {
+          todayRef.current = refreshedToday;
+          setToday(refreshedToday);
+          void AsyncStorage.setItem(todayCacheKey, JSON.stringify(refreshedToday)).catch(() => undefined);
+        }
         setDailyReadinessVisible(false);
-        await loadToday({ silent: true, showRefreshIndicator: false });
+        if (refreshedToday && refreshedToday !== currentToday) {
+          void loadToday({ silent: true, showRefreshIndicator: false });
+        } else {
+          await loadToday({ silent: true, showRefreshIndicator: false });
+        }
       } catch (submissionError: any) {
         setDailyReadinessError(submissionError?.message || 'Could not save your check-in. Try again.');
       } finally {
         setDailyReadinessSubmitting(false);
       }
     });
-  }, [dailyReadinessForm, loadToday, router]);
+  }, [dailyReadinessForm, loadToday, router, todayCacheKey]);
 
   const openAction = React.useCallback(
     (action?: TodayAction | null) => {

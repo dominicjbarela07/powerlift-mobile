@@ -68,7 +68,7 @@ assert.match(
 );
 assert.match(
   source,
-  /TODAY\\'S CHECK-IN[\s\S]*dailyCheckIn\.detail/,
+  /CHECK-IN RECORDED[\s\S]*dailyCheckIn\.detail[\s\S]*dailyCheckIn\.meta/,
   'A completed daily check-in must rehydrate as a readiness summary.',
 );
 
