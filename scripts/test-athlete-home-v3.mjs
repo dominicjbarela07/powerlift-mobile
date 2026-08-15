@@ -41,6 +41,14 @@ const recovery = mergeAthleteHomeV3({
 }, {});
 assert.equal(recovery.home_v3.state.kind, 'recovery', 'a legacy empty day only promotes when real recovery evidence exists');
 
+const deployedRecovery = mergeAthleteHomeV3(baseToday, {
+  today_readiness: { readiness_score: 4.2, bodyweight_kg: 89.5 },
+});
+assert.equal(deployedRecovery.home_v3.state.kind, 'recovery', 'the deployed top-level readiness contract hydrates Recovery Day');
+assert.equal(deployedRecovery.daily_check_in.bodyweight_kg, 89.5);
+assert.equal(deployedRecovery.capabilities.has_daily_check_in, true);
+assert.equal(deployedRecovery.daily_check_in_action.route, 'daily_readiness');
+
 const rest = mergeAthleteHomeV3(baseToday, {});
 assert.equal(rest.home_v3.state.kind, 'rest', 'an empty day is not mislabeled Recovery Day');
 assert.equal(rest.home_v3.week.performed.sessions, 2);

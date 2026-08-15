@@ -145,34 +145,48 @@ function latestStrength(root: any) {
  * previous backend useful without inventing performed metrics or history.
  */
 export function mergeAthleteHomeV3(today: any, root: any) {
+  const dailyCheckIn = today?.daily_check_in ?? root?.today_readiness ?? null;
+  const hydratedToday = {
+    ...today,
+    daily_check_in: dailyCheckIn,
+    capabilities: today?.capabilities ?? {
+      can_daily_check_in: !today?.mission?.session?.id,
+      has_daily_check_in: Boolean(dailyCheckIn),
+    },
+    daily_check_in_action: today?.daily_check_in_action ?? (
+      !today?.mission?.session?.id
+        ? { route: 'daily_readiness', label: dailyCheckIn ? "View Today's Check-In" : 'Check In' }
+        : null
+    ),
+  };
   const canonical = root?.home_v3 || today?.home_v3;
-  if (canonical?.projection_version === 'athlete-home-v3') return { ...today, home_v3: canonical };
+  if (canonical?.projection_version === 'athlete-home-v3') return { ...hydratedToday, home_v3: canonical };
 
-  const session = legacySession(today?.mission?.session);
-  const meetToday = lower(today?.phase?.meet?.status) === 'today' || today?.phase?.meet?.date === today?.date;
-  const dailyRecoveryEvidence = !session && Boolean(today?.daily_check_in);
+  const session = legacySession(hydratedToday?.mission?.session);
+  const meetToday = lower(hydratedToday?.phase?.meet?.status) === 'today' || hydratedToday?.phase?.meet?.date === hydratedToday?.date;
+  const dailyRecoveryEvidence = !session && Boolean(hydratedToday?.daily_check_in);
   const state: AthleteHomeState = meetToday ? 'meet' : session ? 'training' : dailyRecoveryEvidence ? 'recovery' : 'rest';
   const recent = (root?.recent_sessions || []).find((item: any) => ['completed', 'logged', 'done'].includes(lower(item?.status)));
-  const legacyWeek = today?.next_glance?.week || root?.consistency?.this_week || {};
+  const legacyWeek = hydratedToday?.next_glance?.week || root?.consistency?.this_week || {};
   const weekDays = Array.isArray(root?.week_preview)
     ? root.week_preview.map((item: any) => ({ date: item.date, kind: lower(item.status) === 'completed' ? 'completed' : lower(item.status) === 'in_progress' ? 'in_progress' : 'session' }))
     : [];
   const readinessPoints = (root?.readiness_trend_7d || []).filter((point: any) => point?.readiness_score != null).map((point: any) => ({ date: point.date, value: point.readiness_score }));
-  const reported = today?.daily_check_in?.bodyweight_kg;
+  const reported = hydratedToday?.daily_check_in?.bodyweight_kg;
   const projection: AthleteHomeV3Projection = {
     projection_version: 'athlete-home-v3-compat',
     state_precedence: ['meet', 'training', 'achievement', 'recovery', 'rest'],
     state: { kind: state, evidence: { legacy_compatibility: true } },
     hero: {
       session,
-      meet: meetToday ? { ...today.phase.meet, action: { route: 'meet', meet_plan_id: today.phase.meet.id } } : null,
+      meet: meetToday ? { ...hydratedToday.phase.meet, action: { route: 'meet', meet_plan_id: hydratedToday.phase.meet.id } } : null,
       achievement: null,
     },
     program: {
-      id: today?.phase?.active_program?.id,
-      name: today?.phase?.active_program?.name,
-      block_id: today?.phase?.block?.id,
-      block_name: today?.phase?.block?.name,
+      id: hydratedToday?.phase?.active_program?.id,
+      name: hydratedToday?.phase?.active_program?.name,
+      block_id: hydratedToday?.phase?.block?.id,
+      block_name: hydratedToday?.phase?.block?.name,
       week_number: null,
     },
     week: {
@@ -182,18 +196,18 @@ export function mergeAthleteHomeV3(today: any, root: any) {
       performed: { sessions: legacyWeek.logged ?? null, sets: null, total_volume_kg: null, pr_count: null },
       action: { route: 'calendar' },
     },
-    next_up: legacySession(root?.next_workout || today?.next_glance),
-    last_session: legacySession(recent || today?.recent_glance),
+    next_up: legacySession(root?.next_workout || hydratedToday?.next_glance),
+    last_session: legacySession(recent || hydratedToday?.recent_glance),
     trends: {
-      readiness: { latest: today?.readiness?.score, average_7d: root?.readiness_summary?.composite, points: readinessPoints, action: { route: 'readiness_history' } },
-      bodyweight: { latest_kg: reported ?? null, delta_kg: null, points: reported != null ? [{ date: today.date, value_kg: reported }] : [], interpolated: false, action: { route: 'ledger_journey' } },
+      readiness: { latest: hydratedToday?.readiness?.score, average_7d: root?.readiness_summary?.composite, points: readinessPoints, action: { route: 'readiness_history' } },
+      bodyweight: { latest_kg: reported ?? null, delta_kg: null, points: reported != null ? [{ date: hydratedToday.date, value_kg: reported }] : [], interpolated: false, action: { route: 'ledger_journey' } },
       volume: { this_week_kg: null, points: [], action: { route: 'training_history' } },
     },
     strength: latestStrength(root),
     achievement: null,
     self_coached_actions: [{ route: 'programming', label: 'Program Training' }, { route: 'calendar', label: 'Open Calendar' }],
   };
-  return { ...today, home_v3: projection };
+  return { ...hydratedToday, home_v3: projection };
 }
 
 export function resolveHomeState(projection?: AthleteHomeV3Projection | null): AthleteHomeState {
