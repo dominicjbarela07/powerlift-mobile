@@ -491,6 +491,10 @@ export default function AthleteDashboard() {
         const response = await fetchJson('/athletes/mobile/readiness/daily', {
           method: 'POST',
           auth: true,
+          // Daily readiness is keyed by the Athlete profile's canonical
+          // training timezone. Do not let the generic device-timezone header
+          // override that server-owned date while the athlete is traveling.
+          headers: { 'X-Timezone': '' },
           body: built.payload as any,
         });
         if (response.status === 409 && response.json?.workout_id) {
