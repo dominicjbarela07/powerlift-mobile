@@ -7,8 +7,6 @@ import {
   Platform,
   View,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   useWindowDimensions,
 } from 'react-native';
 import { Tabs, usePathname, useRouter } from 'expo-router';
@@ -24,7 +22,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
-import { ThemedView } from '@/components/themed-view';
+import { StrengthLedgerAppHeader } from '@/components/navigation/StrengthLedgerAppHeader';
 import { useFloatingNavigationMotion } from '@/components/navigation/floating-navigation-motion';
 import {
   SL_TAB_ROW_CONTROL,
@@ -465,6 +463,7 @@ export default function TabsLayout() {
   const isAccessoryCatalogReviewRoute = pathname.includes('/accessory-catalog-review');
   const canUseAccessoryCatalogReview = canAccessAccessoryCatalogReview(user);
   const isIdealStatePreview = __DEV__ && devPreviewSession?.mode === 'ideal';
+  const isCoachHomePath = viewMode === 'coach' && pathname.includes('/coach-dashboard');
   useEffect(() => {
     if (!user) {
       router.replace('/login');
@@ -624,72 +623,51 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           header: () => (
-            <ThemedView style={[styles.headerShell, { paddingTop: insets.top }]}>
-              <View style={styles.headerRow}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      router.push('/(tabs)/settings');
-                    }}
-                    style={styles.headerSideButton}
-                  >
-                    <Ionicons name="settings-outline" size={22} color={SLColors.text} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (isUnlinkedAthlete) {
-                        router.replace('/(tabs)/link-coach');
-                      } else if (isIndividual) {
-                        router.replace('/(tabs)/athlete-dashboard');
-                      } else if (isCoach && viewMode === 'coach') {
-                        router.replace('/(tabs)/coach-dashboard');
-                      } else {
-                        router.replace('/(tabs)/athlete-dashboard');
-                      }
-                    }}
-                    style={styles.headerTitleWrap}
-                  >
-                    <Image
-                      source={require('@/assets/images/16:9.png')}
-                      style={{ width: 110, height: 22, resizeMode: 'contain' }}
-                    />
-                  </TouchableOpacity>
-
-                  {isIndividual ? (
-                    <TouchableOpacity
-                      onPress={() => {
-                        router.push('/create-workout');
-                      }}
-                      style={styles.headerSideButton}
-                    >
-                      <Ionicons name="add-circle-outline" size={23} color={SLColors.text} />
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      accessibilityLabel={viewMode === 'coach' ? 'Open Team Brief' : 'Open messages'}
-                      accessibilityRole="button"
-                      onPress={() => {
-                        if (viewMode === 'athlete') {
-                          refreshMessageNotifications();
-                          router.push('/(tabs)/messages');
-                        } else if (viewMode === 'coach') {
-                          router.push('/coach-team-brief' as any);
-                        }
-                      }}
-                      style={styles.headerSideButton}
-                    >
-                      <Ionicons
-                        name={viewMode === 'athlete' ? 'chatbubbles-outline' : 'reader-outline'}
-                        size={viewMode === 'athlete' ? 21 : 20}
-                        color={SLColors.text}
-                      />
-                      {viewMode === 'athlete' && hasMessageNotifications ? (
-                        <View style={styles.messageNotificationDot} />
-                      ) : null}
-                    </TouchableOpacity>
-                  )}
-              </View>
-            </ThemedView>
+            <StrengthLedgerAppHeader
+              brandAccessibilityLabel="Open Home"
+              leftAction={{
+                accessibilityLabel: 'Open Settings',
+                icon: 'settings-outline',
+                onPress: () => router.push('/(tabs)/settings'),
+                size: 22,
+              }}
+              onBrandPress={() => {
+                if (isUnlinkedAthlete) {
+                  router.replace('/(tabs)/link-coach');
+                } else if (isIndividual) {
+                  router.replace('/(tabs)/athlete-dashboard');
+                } else if (isCoach && viewMode === 'coach') {
+                  router.replace('/(tabs)/coach-dashboard');
+                } else {
+                  router.replace('/(tabs)/athlete-dashboard');
+                }
+              }}
+              rightAction={isIndividual ? {
+                accessibilityLabel: 'Create Session',
+                icon: 'add-circle-outline',
+                onPress: () => router.push('/create-workout'),
+                size: 23,
+              } : isCoachHomePath ? {
+                accessibilityLabel: 'Open Coach Calendar',
+                icon: 'calendar-outline',
+                onPress: () => router.push('/(tabs)/coach-calendar'),
+                size: 20,
+              } : {
+                accessibilityLabel: viewMode === 'coach' ? 'Open Team Brief' : 'Open messages',
+                icon: viewMode === 'athlete' ? 'chatbubbles-outline' : 'reader-outline',
+                onPress: () => {
+                  if (viewMode === 'athlete') {
+                    refreshMessageNotifications();
+                    router.push('/(tabs)/messages');
+                  } else if (viewMode === 'coach') {
+                    router.push('/coach-team-brief' as any);
+                  }
+                },
+                showNotificationDot: viewMode === 'athlete' && hasMessageNotifications,
+                size: viewMode === 'athlete' ? 21 : 20,
+              }}
+              topInset={insets.top}
+            />
           ),
           headerShown: !isIdealStatePreview,
           sceneStyle: styles.tabScene,
@@ -715,7 +693,6 @@ export default function TabsLayout() {
           name="coach-dashboard"
           options={{
             title: 'Home',
-            headerShown: false,
             href: isCoach && !isIndividual && viewMode === 'coach' ? '/coach-dashboard' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
@@ -1085,42 +1062,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: 'transparent',
-  },
-  headerShell: {
-    backgroundColor: 'transparent',
-    borderBottomColor: SLColors.shellHairline,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: SLLayout.screenGutter,
-    paddingTop: 0,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 1,
-  },
-  headerSideButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    borderRadius: SLRadius.radiusRow,
-    backgroundColor: SLColors.surfaceFlat,
-    borderWidth: 1,
-    borderColor: SLColors.borderHairline,
-  },
-  headerTitleWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerBrand: {
-    fontSize: SLTypography.sectionTitle.fontSize,
-    fontWeight: '800',
-    color: SLColors.textStrong,
-    letterSpacing: 0.5,
-    textAlign: 'center',
   },
   tabScene: {
     backgroundColor: 'transparent',

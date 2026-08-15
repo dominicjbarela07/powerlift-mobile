@@ -58,30 +58,6 @@ export function CoachMobileHeader({
   );
 }
 
-export function CoachBrandHeader({
-  onBrief,
-  onSettings,
-  briefIcon = 'reader-outline',
-  briefLabel = 'Open coaching brief',
-}: {
-  onBrief: () => void;
-  onSettings: () => void;
-  briefIcon?: keyof typeof Ionicons.glyphMap;
-  briefLabel?: string;
-}) {
-  return (
-    <View style={styles.brandHeader}>
-      <Pressable accessibilityLabel="Open Settings" onPress={onSettings} style={styles.headerButton}>
-        <Ionicons color={COACH_V2.text} name="settings-outline" size={21} />
-      </Pressable>
-      <Image source={require('@/assets/images/16:9.png')} style={styles.brand} />
-      <Pressable accessibilityLabel={briefLabel} onPress={onBrief} style={styles.headerButton}>
-        <Ionicons color={COACH_V2.text} name={briefIcon} size={20} />
-      </Pressable>
-    </View>
-  );
-}
-
 export function CoachSectionHeading({ action, onAction, title }: { action?: string; onAction?: () => void; title: string }) {
   return (
     <View style={styles.sectionHeading}>
@@ -190,13 +166,11 @@ export function CoachCardChevron() {
 
 const styles = StyleSheet.create({
   header: { height: 58, flexDirection: 'row', alignItems: 'center', borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth },
-  brandHeader: { height: 62, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth },
   headerButton: { width: 42, height: 42, borderRadius: 10, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, alignItems: 'center', justifyContent: 'center' },
   headerSpacer: { width: 42 },
   headerCopy: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
   headerEyebrow: { color: COACH_V2.violetBright, fontSize: 9, fontWeight: '800', letterSpacing: 0.9, textTransform: 'uppercase' },
   headerTitle: { color: COACH_V2.text, fontSize: 16, lineHeight: 21, fontWeight: '800' },
-  brand: { width: 126, height: 28, resizeMode: 'contain' },
   sectionHeading: { minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   sectionTitle: { color: COACH_V2.text, fontSize: 12, fontWeight: '900', letterSpacing: 0.45, textTransform: 'uppercase' },
   sectionAction: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '700' },

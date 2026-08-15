@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
-const [shell, ui, home, hubSheet, roster, hub, detail] = await Promise.all([
+const [shell, appHeader, ui, home, hubSheet, roster, hub, detail] = await Promise.all([
   read('app/(tabs)/_layout.tsx'),
+  read('components/navigation/StrengthLedgerAppHeader.tsx'),
   read('components/coach-mobile/coach-mobile-v2-ui.tsx'),
   read('components/coach-mobile/CoachHomeV2.tsx'),
   read('components/coach-mobile/CoachAthleteHubSheet.tsx'),
@@ -13,6 +14,18 @@ const [shell, ui, home, hubSheet, roster, hub, detail] = await Promise.all([
 ]);
 
 assert.match(shell, /tabScene:[\s\S]*paddingHorizontal: SLLayout\.screenGutter/);
+assert.match(shell, /<StrengthLedgerAppHeader/);
+assert.match(appHeader, /contentHeight: 42/);
+assert.match(appHeader, /controlSize: 40/);
+assert.match(appHeader, /brandWidth: 110/);
+assert.match(appHeader, /brandHeight: 22/);
+assert.match(appHeader, /paddingTop: Math\.max\(0, topInset\)/);
+const coachDashboardOptions = shell.match(/name="coach-dashboard"[\s\S]*?<Tabs\.Screen/)?.[0] || '';
+assert.doesNotMatch(coachDashboardOptions, /headerShown:\s*false/, 'Coach Home must use the same compact Tabs header as Coach Calendar.');
+assert.match(shell, /isCoachHomePath[\s\S]*accessibilityLabel: 'Open Coach Calendar'[\s\S]*icon: 'calendar-outline'/);
+assert.match(home, /<SLScreen edges="none"/);
+assert.doesNotMatch(home, /CoachBrandHeader/);
+assert.doesNotMatch(ui, /CoachBrandHeader/);
 for (const screen of [home, roster, hub, detail]) {
   assert.doesNotMatch(screen, /content:\s*\{[^}]*paddingHorizontal/s, 'The shared shell must remain the only page-gutter owner.');
   assert.match(screen, /backgroundColor: COACH_V2\.black/, 'Coach V2 screens must retain OLED black.');
