@@ -701,6 +701,7 @@ export default function AthleteDashboard() {
         <AthleteHomeV3
           isIndividual={isIndividual}
           onAction={openAction}
+          preferredUnits={user?.preferred_units}
           supplementaryContent={showCoachCheckIn ? (
             <>
               <TodaySubmittedCheckIn title={params.submittedCheckIn} />

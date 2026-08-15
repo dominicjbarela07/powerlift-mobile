@@ -64,6 +64,7 @@ assert.match(screen, /Resume Session[\s\S]*View Session Recap/, 'Training CTA fo
 assert.match(screen, /isIndividual \? <SelfCoachedActions/, 'management actions are gated to the authenticated self-coached mode');
 assert.doesNotMatch(screen, />[^<{]*\bworkout\b[^<{]*</i, 'user-facing Home copy does not say workout');
 assert.match(route, /mergeAthleteHomeV3[\s\S]*AthleteHomeV3/, 'route merges the projection and renders the canonical V3 architecture');
+assert.match(route, /preferredUnits=\{user\?\.preferred_units\}/, 'Home uses the authenticated preference even on a legacy dashboard response');
 assert.match(route, /ledger_strength[\s\S]*ledger\/strength/, 'strength card has a canonical Ledger destination');
 assert.match(route, /ledger_achievement[\s\S]*ledger\/achievements/, 'achievement card has a canonical Ledger destination');
 
