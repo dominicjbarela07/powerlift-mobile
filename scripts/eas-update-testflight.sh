@@ -51,6 +51,7 @@ if (app.ios?.bundleIdentifier !== expected.bundleIdentifier) failures.push('cano
 if (app.runtimeVersion?.policy !== 'appVersion') failures.push('appVersion runtime policy');
 if (!/^2\.1\.\d+$/.test(String(app.version || ''))) failures.push('2.1.x app version');
 if (!Number.isInteger(app.extra?.appRevision) || app.extra.appRevision < 1) failures.push('positive app revision');
+if (app.extra?.releaseTrack !== 'testflight') failures.push('explicit TestFlight release track');
 if (eas.build?.testflight?.channel !== 'testflight') failures.push('testflight build channel');
 if (eas.build?.testflight?.env?.EXPO_PUBLIC_API_BASE !== expected.apiBase) failures.push('production API base');
 if (eas.build?.testflight?.ios?.distribution !== 'store') failures.push('App Store distribution');
@@ -84,7 +85,10 @@ echo "  project ID: ${EXPECTED_PROJECT_ID}"
 echo "  iOS bundle: ${EXPECTED_BUNDLE_ID}"
 echo "  message: ${release_message}"
 
-read -r -p 'Type PUBLISH TESTFLIGHT to continue: ' confirmation
+confirmation="${TESTFLIGHT_RELEASE_CONFIRM:-}"
+if [[ -z "${confirmation}" ]]; then
+  read -r -p 'Type PUBLISH TESTFLIGHT to continue: ' confirmation
+fi
 if [[ "${confirmation}" != "PUBLISH TESTFLIGHT" ]]; then
   echo "Publish cancelled." >&2
   exit 1

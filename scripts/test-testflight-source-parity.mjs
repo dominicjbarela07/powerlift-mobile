@@ -52,8 +52,18 @@ for (const room of ['home', 'journey', 'strength', 'achievements', 'accessories'
   assert.match(routing, new RegExp(`['\"]${room}['\"]`), `Ledger routing is missing ${room}`);
 }
 
-const releaseConfig = source('app.json');
-assert.match(releaseConfig, /"runtimeVersion"\s*:\s*\{\s*"policy"\s*:\s*"appVersion"/s);
+const releaseConfig = JSON.parse(source('app.json')).expo;
+assert.equal(releaseConfig.runtimeVersion?.policy, 'appVersion');
+assert.equal(releaseConfig.extra?.releaseTrack, 'testflight', 'release projection must identify itself as TestFlight');
+
+const updateController = source('app/_layout.tsx');
+assert.match(updateController, /releaseTrack\?\:\s*string/);
+assert.match(updateController, /releaseTrack === 'testflight'/);
+assert.match(
+  updateController,
+  /\(!forceUpdate && !isTestFlightRelease\)/,
+  'TestFlight must automatically apply a downloaded update when reload is safe',
+);
 
 const explicitExclusions = [
   'app/(tabs)/dev-mocks',

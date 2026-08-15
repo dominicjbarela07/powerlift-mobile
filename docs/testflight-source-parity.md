@@ -16,6 +16,18 @@ Every TestFlight promotion must:
 6. validate backend, schema, runtime, and asset compatibility; and
 7. publish the compatible TestFlight OTA.
 
+Every TestFlight native build must also embed that same approved release
+projection. An OTA may fail to download or be rolled back by the runtime; the
+embedded fallback therefore may never be a Production source checkout. Build
+TestFlight only through `scripts/eas-build-testflight.sh`, which requires the
+canonical release checkout, an explicit `testflight` release track, a clean
+release branch, a pushed HEAD, the canonical Ledger routes, and the TestFlight
+channel/API/bundle configuration.
+
+The TestFlight release track applies a fetched compatible OTA automatically as
+soon as the session/logger safety guard permits. Production retains the normal
+user-controlled update prompt and cannot receive the 2.1.0 TestFlight runtime.
+
 The absence of local visual tooling is pending physical verification, not a
 release failure when deterministic, release-path, and compatibility checks pass
 and no visual/runtime defect is known.

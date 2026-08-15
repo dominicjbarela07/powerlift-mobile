@@ -12,6 +12,12 @@ Completed Strength Ledger development work outside the active accessory-system r
 - protected account-state behavior and adjacent critical workflows pass regression validation; and
 - the TestFlight worktree is clean, synchronized, pushed, and published only through the guarded `testflight` channel wrapper.
 
+Native TestFlight builds must be created only from the canonical clean release
+checkout through `scripts/eas-build-testflight.sh`. The build guard requires an
+explicit TestFlight release track and an already-pushed release HEAD so the
+binary's embedded fallback source is the same approved release projection as
+the OTA channel, never the Production source tree.
+
 Promotion must add the approved change to the current known-good TestFlight head. It must never replace that head with development HEAD or merge the development branch wholesale.
 
 ## Active accessory rebuild exception

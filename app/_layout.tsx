@@ -31,6 +31,8 @@ const UPDATE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
 const UPDATE_PROMPT_DELAY_MS = 15 * 60 * 1000;
 
 function OtaUpdateController() {
+  const isTestFlightRelease =
+    (Constants.expoConfig?.extra as { releaseTrack?: string } | undefined)?.releaseTrack === 'testflight';
   const [updateReady, setUpdateReady] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
   const [requiredError, setRequiredError] = useState<string | null>(null);
@@ -92,7 +94,13 @@ function OtaUpdateController() {
   }, [checkForUpdates]);
 
   useEffect(() => {
-    if (!updateReady || forceUpdate || !isUpdateReloadSafe() || promptOpenRef.current) return;
+    if (
+      !updateReady ||
+      forceUpdate ||
+      isTestFlightRelease ||
+      !isUpdateReloadSafe() ||
+      promptOpenRef.current
+    ) return;
     const delay = Math.max(0, promptAfterRef.current - Date.now());
     const timer = setTimeout(() => {
       if (!isUpdateReloadSafe() || promptOpenRef.current) return;
@@ -122,14 +130,14 @@ function OtaUpdateController() {
       );
     }, delay);
     return () => clearTimeout(timer);
-  }, [forceUpdate, safetyVersion, updateReady]);
+  }, [forceUpdate, isTestFlightRelease, safetyVersion, updateReady]);
 
   useEffect(() => {
-    if (!forceUpdate || !updateReady || !isUpdateReloadSafe()) return;
+    if ((!forceUpdate && !isTestFlightRelease) || !updateReady || !isUpdateReloadSafe()) return;
     void Updates.reloadAsync().catch(() => {
       setRequiredError('The update could not be applied. Please try again.');
     });
-  }, [forceUpdate, safetyVersion, updateReady]);
+  }, [forceUpdate, isTestFlightRelease, safetyVersion, updateReady]);
 
   const showRequiredGate = forceUpdate && isUpdateReloadSafe();
   return (
