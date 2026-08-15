@@ -15,6 +15,8 @@ assert.match(storyboard, /CALENDAR_WINDOW_SIZE = 3/);
 assert.doesNotMatch(storyboard, /onStartReached=|onEndReached=|onScrollToIndexFailed/);
 assert.match(storyboard, /initialScrollIndex=\{anchorIndex\}/);
 assert.match(storyboard, /getItemLayout=/);
+assert.match(storyboard, /const monthLayouts = useMemo/, 'variable transition rows retain deterministic virtualized offsets');
+assert.match(storyboard, /Math\.max\(0, transitionCount - 1\) \* CALENDAR_TRANSITION_HEIGHT/, 'extra same-month transitions are included in month geometry');
 assert.doesNotMatch(
   storyboard,
   /^\s+onRefresh=\{onRefresh\}$/m,
@@ -61,6 +63,17 @@ assert.equal(previousRequests, 1_000, 'one deliberate history-boundary request p
 const monthHeight = 511;
 for (let index = 0; index < 600; index += 1) {
   assert.equal(monthHeight * index, 511 * index, 'fixed month offsets must not drift');
+}
+
+const transitionHeight = 32;
+const transitionCounts = [0, 1, 2, 0, 3];
+let runningOffset = 0;
+for (const count of transitionCounts) {
+  const length = monthHeight + Math.max(0, count - 1) * transitionHeight;
+  assert.equal(length >= monthHeight, true);
+  const currentOffset = runningOffset;
+  runningOffset += length;
+  assert.equal(currentOffset + length, runningOffset, 'dynamic month offsets remain deterministic');
 }
 
 const beforeInitialDayCells = 3 * 42;

@@ -4,7 +4,10 @@ import { readFile } from 'node:fs/promises';
 import {
   ATHLETE_CALENDAR_DAYS_PER_WEEK,
   ATHLETE_CALENDAR_WEEKDAYS,
+  athleteCalendarBlockTransitionsForMonth,
+  athleteCalendarWeekStartYmd,
   athleteCalendarWeeksForMonth,
+  formatAthleteCalendarBlockStartDate,
 } from '../lib/athlete-calendar-grid.ts';
 
 const [storyboard, route, model] = await Promise.all([
@@ -23,6 +26,10 @@ assert.match(storyboard, /getItemLayout=/, 'Calendar has deterministic month geo
 assert.doesNotMatch(storyboard, /onScrollToIndexFailed/, 'Calendar has no unbounded scroll-to-index retry loop');
 assert.match(storyboard, /athleteCalendarWeeksForMonth\(month\)/, 'Every month uses the canonical week matrix');
 assert.match(storyboard, /weeks\.map\(\(week\)/, 'Calendar renders explicit week rows');
+assert.match(storyboard, /transitionsByWeek\.get\(weekStartDate\)/, 'Block transitions resolve against the exact containing week');
+assert.match(storyboard, /key=\{transition\.key\}/, 'Block transitions use canonical Block/start-date identity');
+assert.match(storyboard, /STARTS \{formatAthleteCalendarBlockStartDate\(transition\.startDate\)\}/, 'Block transition UI displays the canonical start date');
+assert.doesNotMatch(storyboard, /monthTransitionLabel/, 'month-bound Block transition heuristic is absent');
 assert.match(storyboard, /calendarColumn:\s*\{\s*flex: 1,\s*minWidth: 0\s*\}/, 'header and body share one equal-width column primitive');
 assert.doesNotMatch(storyboard, /width:\s*`\$\{100 \/ 7\}%`/, 'Calendar does not depend on fractional percentage widths');
 assert.doesNotMatch(storyboard, /monthGrid:\s*\{[^}]*flexWrap:\s*'wrap'/, 'Calendar never wraps a flattened month grid');
@@ -100,5 +107,27 @@ for (let year = 1900; year <= 2100; year += 1) {
     });
   }
 }
+
+const chronologyRanges = [
+  { id: 10, label: 'Week Start', start: '2026-07-05', end: '2026-07-11' },
+  { id: 11, label: 'Midweek', start: '2026-07-15', end: '2026-07-24' },
+  { id: 12, label: 'Saturday', start: '2026-07-25', end: '2026-07-25' },
+  { id: 13, label: 'Offseason', start: '2026-07-27', end: '2026-09-20' },
+  // Simulates the same long Block arriving in overlapping paginated payloads.
+  { id: 13, label: 'Offseason', start: '2026-07-27', end: '2026-09-20' },
+];
+const julyTransitions = athleteCalendarBlockTransitionsForMonth(chronologyRanges, new Date(2026, 6, 1));
+assert.deepEqual(julyTransitions.get('2026-07-05')?.map((item) => item.key), ['block:10:2026-07-05']);
+assert.deepEqual(julyTransitions.get('2026-07-12')?.map((item) => item.key), ['block:11:2026-07-15']);
+assert.deepEqual(julyTransitions.get('2026-07-19')?.map((item) => item.key), ['block:12:2026-07-25']);
+assert.deepEqual(julyTransitions.get('2026-07-26')?.map((item) => item.key), ['block:13:2026-07-27']);
+assert.equal([...julyTransitions.values()].flat().length, 4, 'multiple same-month Blocks render once at their actual weeks');
+
+const augustTransitions = athleteCalendarBlockTransitionsForMonth(chronologyRanges, new Date(2026, 7, 1));
+assert.equal(augustTransitions.size, 0, 'long Block and cross-month week do not repeat at the August boundary');
+assert.equal(athleteCalendarWeekStartYmd('2026-07-27'), '2026-07-26', 'Monday start resolves to Sunday containing week');
+assert.equal(athleteCalendarWeekStartYmd('2026-07-15'), '2026-07-12', 'Wednesday start resolves to containing week');
+assert.equal(athleteCalendarWeekStartYmd('2026-07-25'), '2026-07-19', 'Saturday start resolves to containing week');
+assert.equal(formatAthleteCalendarBlockStartDate('2026-07-27'), 'JUL 27', 'date label stays date-only without UTC shifting');
 
 console.log('Athlete Calendar storyboard V2 architecture and recovery/session-state contracts passed.');

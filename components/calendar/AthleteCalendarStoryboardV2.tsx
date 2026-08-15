@@ -35,11 +35,18 @@ import {
   type AthleteCalendarRange,
 } from '@/components/calendar/AthleteCalendarExperience';
 import { primaryCalendarDayTone, resolveCalendarLensState } from '@/lib/athlete-calendar-lens';
-import { ATHLETE_CALENDAR_WEEKDAYS, athleteCalendarWeeksForMonth } from '@/lib/athlete-calendar-grid';
+import {
+  ATHLETE_CALENDAR_WEEKDAYS,
+  athleteCalendarBlockTransitionsForMonth,
+  athleteCalendarWeeksForMonth,
+  formatAthleteCalendarBlockStartDate,
+  type AthleteCalendarBlockTransition,
+} from '@/lib/athlete-calendar-grid';
 import { createCalendarBoundaryGuard } from '@/lib/calendar-range-pagination';
 import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
 
 const CALENDAR_MONTH_HEIGHT = 511;
+const CALENDAR_TRANSITION_HEIGHT = 32;
 const CALENDAR_INITIAL_MONTHS = 1;
 const CALENDAR_RENDER_BATCH = 1;
 const CALENDAR_WINDOW_SIZE = 3;
@@ -47,6 +54,8 @@ const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/gym_vibe.jpg');
 
 type FilterId = 'sessions' | 'personal' | 'completed' | 'attention';
+
+const EMPTY_BLOCK_TRANSITIONS = new Map<string, AthleteCalendarBlockTransition[]>();
 
 type Props = {
   anchorMonth: Date;
@@ -125,6 +134,27 @@ export function AthleteCalendarStoryboardV2({
     () => new Map((data.monthSummaries || []).map((summary) => [summary.month, summary])),
     [data.monthSummaries],
   );
+  const transitionsByMonth = useMemo(
+    () => new Map(months.map((month) => [
+      monthKey(month),
+      athleteCalendarBlockTransitionsForMonth(data.ranges || [], month),
+    ])),
+    [data.ranges, months],
+  );
+  const monthLayouts = useMemo(() => {
+    let offset = 0;
+    return months.map((month, index) => {
+      const transitions = transitionsByMonth.get(monthKey(month));
+      const transitionCount = transitions
+        ? [...transitions.values()].reduce((total, rows) => total + rows.length, 0)
+        : 0;
+      const length = CALENDAR_MONTH_HEIGHT
+        + Math.max(0, transitionCount - 1) * CALENDAR_TRANSITION_HEIGHT;
+      const layout = { index, length, offset };
+      offset += length;
+      return layout;
+    });
+  }, [months, transitionsByMonth]);
 
   const anchorKey = monthKey(anchorMonth);
   useEffect(() => {
@@ -220,6 +250,7 @@ export function AthleteCalendarStoryboardV2({
       onSelectDate={selectDate}
       selectedDate={selectedDate}
       summary={summariesByMonth.get(monthKey(item))}
+      transitionsByWeek={transitionsByMonth.get(monthKey(item)) || EMPTY_BLOCK_TRANSITIONS}
     />
   );
 
@@ -272,7 +303,7 @@ export function AthleteCalendarStoryboardV2({
 
       <FlatList
         data={months}
-        getItemLayout={(_, index) => ({ index, length: CALENDAR_MONTH_HEIGHT, offset: CALENDAR_MONTH_HEIGHT * index })}
+        getItemLayout={(_, index) => monthLayouts[index] || { index, length: CALENDAR_MONTH_HEIGHT, offset: CALENDAR_MONTH_HEIGHT * index }}
         initialNumToRender={CALENDAR_INITIAL_MONTHS}
         initialScrollIndex={anchorIndex}
         keyExtractor={monthKey}
@@ -354,6 +385,7 @@ function MonthSection({
   onSelectDate,
   selectedDate,
   summary,
+  transitionsByWeek,
 }: {
   data: AthleteCalendarExperienceData;
   daysByDate: Map<string, AthleteCalendarDay>;
@@ -363,15 +395,18 @@ function MonthSection({
   onSelectDate: (date: string) => void;
   selectedDate: string;
   summary?: AthleteCalendarMonthSummary;
+  transitionsByWeek: Map<string, AthleteCalendarBlockTransition[]>;
 }) {
   const weeks = athleteCalendarWeeksForMonth(month);
   const context = contextForDate(data.ranges || [], month, data.today);
   const completion = summary?.completionPercent ?? completionFromDays(data.days, month);
   const completed = summary?.completedCount ?? countCompleted(data.days, month);
   const planned = summary?.plannedCount ?? countPlanned(data.days, month);
-  const transitionLabel = monthTransitionLabel(data.ranges || [], month);
+  const transitionCount = [...transitionsByWeek.values()].reduce((total, rows) => total + rows.length, 0);
+  const monthHeight = CALENDAR_MONTH_HEIGHT
+    + Math.max(0, transitionCount - 1) * CALENDAR_TRANSITION_HEIGHT;
   return (
-    <View style={styles.monthSection}>
+    <View style={[styles.monthSection, { height: monthHeight }]}>
       <View style={styles.monthSectionHeader}>
         <View style={styles.flex}>
           <Text style={styles.sectionMonth}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text>
@@ -388,35 +423,51 @@ function MonthSection({
         ))}
       </View>
       <View style={styles.monthGrid}>
-        {weeks.map((week) => (
-          <View key={toYmd(week[0])} style={styles.weekRow}>
-            {week.map((date) => {
-              const dateKey = toYmd(date);
-              const day = daysByDate.get(dateKey);
-              const inMonth = date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear();
-              return (
-                <DayCell
-                  day={day}
-                  filtered={day ? !dayMatchesActiveFilters(day, filters) : false}
-                  inMonth={inMonth}
-                  isToday={dateKey === data.today}
-                  key={dateKey}
-                  onPress={() => onSelectDate(dateKey)}
-                  selected={dateKey === selectedDate}
-                  value={date.getDate()}
-                />
-              );
-            })}
-          </View>
-        ))}
+        {weeks.map((week) => {
+          const weekStartDate = toYmd(week[0]);
+          const transitions = transitionsByWeek.get(weekStartDate) || [];
+          return (
+            <React.Fragment key={weekStartDate}>
+              {transitions.map((transition) => (
+                <BlockTransitionRow key={transition.key} transition={transition} />
+              ))}
+              <View style={styles.weekRow}>
+                {week.map((date) => {
+                  const dateKey = toYmd(date);
+                  const day = daysByDate.get(dateKey);
+                  const inMonth = date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear();
+                  return (
+                    <DayCell
+                      day={day}
+                      filtered={day ? !dayMatchesActiveFilters(day, filters) : false}
+                      inMonth={inMonth}
+                      isToday={dateKey === data.today}
+                      key={dateKey}
+                      onPress={() => onSelectDate(dateKey)}
+                      selected={dateKey === selectedDate}
+                      value={date.getDate()}
+                    />
+                  );
+                })}
+              </View>
+            </React.Fragment>
+          );
+        })}
       </View>
-      <View style={styles.transitionRow}>
-        {transitionLabel ? <>
-          <View style={styles.transitionRule} />
-          <Text style={styles.transitionText}>{transitionLabel}</Text>
-          <View style={styles.transitionRule} />
-        </> : null}
+      {!transitionCount ? <View style={styles.transitionSpacer} /> : null}
+    </View>
+  );
+}
+
+function BlockTransitionRow({ transition }: { transition: AthleteCalendarBlockTransition }) {
+  return (
+    <View style={styles.transitionRow}>
+      <View style={styles.transitionRule} />
+      <View style={styles.transitionCopy}>
+        <Text numberOfLines={1} style={styles.transitionText}>NEW BLOCK · {transition.blockName.toUpperCase()}</Text>
+        <Text style={styles.transitionDate}>STARTS {formatAthleteCalendarBlockStartDate(transition.startDate)}</Text>
       </View>
+      <View style={styles.transitionRule} />
     </View>
   );
 }
@@ -798,12 +849,6 @@ function contextForDate(ranges: AthleteCalendarRange[], date: Date, today: strin
   return `${range.label}${week ? ` · Week ${week}${total ? ` of ${total}` : ''}` : ''}`;
 }
 
-function monthTransitionLabel(ranges: AthleteCalendarRange[], month: Date) {
-  const key = monthKey(month);
-  const starts = ranges.find((range) => range.start.startsWith(key) && Number(range.start.slice(8, 10)) > 1);
-  return starts ? `NEW BLOCK · ${starts.label.toUpperCase()}` : null;
-}
-
 function cellLabel(title: string | null | undefined, state: string) {
   if (state === 'in_progress') return 'ACTIVE';
   if (state === 'needs_attention') return 'ATTN';
@@ -877,9 +922,12 @@ const styles = StyleSheet.create({
   recoveryDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#79649A', opacity: 0.65, marginTop: 5 },
   multiDot: { position: 'absolute', right: 1, bottom: 2 },
   multiDotText: { fontSize: 8, lineHeight: 10, color: SLColors.textMuted },
-  transitionRow: { height: 32, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16 },
+  transitionRow: { height: CALENDAR_TRANSITION_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12 },
+  transitionSpacer: { height: CALENDAR_TRANSITION_HEIGHT },
   transitionRule: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(167,139,250,0.30)' },
-  transitionText: { fontSize: 9, lineHeight: 12, color: SLColors.accentMuted, fontFamily: SLFontFamilies.technical, letterSpacing: 0.7 },
+  transitionCopy: { maxWidth: '72%', alignItems: 'center' },
+  transitionText: { fontSize: 9, lineHeight: 11, color: SLColors.accentMuted, fontFamily: SLFontFamilies.technical, letterSpacing: 0.7 },
+  transitionDate: { fontSize: 8, lineHeight: 10, color: SLColors.textMuted, fontFamily: SLFontFamilies.technical, letterSpacing: 0.55 },
   listFooter: { minHeight: 20, alignItems: 'center' },
   retryRow: { marginTop: 8, padding: 12 },
   retryText: { ...SLTypography.caption, color: SLColors.accentMuted },
