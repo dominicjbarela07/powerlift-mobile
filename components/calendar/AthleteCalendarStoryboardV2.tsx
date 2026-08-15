@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,6 +18,8 @@ import {
   type NativeSyntheticEvent,
   type ViewToken,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
@@ -33,6 +35,7 @@ import {
   type AthleteCalendarMonthSummary,
   type AthleteCalendarPersonalEvent,
   type AthleteCalendarRange,
+  type AthleteCalendarSession,
 } from '@/components/calendar/AthleteCalendarExperience';
 import { primaryCalendarDayTone, resolveCalendarLensState } from '@/lib/athlete-calendar-lens';
 import {
@@ -43,6 +46,12 @@ import {
   type AthleteCalendarBlockTransition,
 } from '@/lib/athlete-calendar-grid';
 import { createCalendarBoundaryGuard } from '@/lib/calendar-range-pagination';
+import {
+  athleteCalendarDateAtPoint,
+  isAthleteCalendarDropTargetValid,
+  isAthleteCalendarSessionMovable,
+  type AthleteCalendarDropCell,
+} from '@/lib/athlete-calendar-reschedule';
 import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
 
 const CALENDAR_MONTH_HEIGHT = 511;
@@ -64,6 +73,10 @@ type Props = {
   onMonthChange: (month: Date) => void;
   onToday: () => string | void;
   canManagePersonalEvents?: boolean;
+  canRescheduleSessions?: boolean;
+  onMoveSession?: (session: AthleteCalendarSession, date: string) => void;
+  rescheduleBusy?: boolean;
+  reduceMotion?: boolean;
   onLoadMore?: () => void;
   onLoadPrevious?: () => void;
   loadingMore?: boolean;
@@ -86,6 +99,7 @@ type Props = {
 export function AthleteCalendarStoryboardV2({
   anchorMonth,
   canManagePersonalEvents = true,
+  canRescheduleSessions = false,
   data,
   dayDetail,
   dayDetailError,
@@ -97,6 +111,7 @@ export function AthleteCalendarStoryboardV2({
   onLoadMore,
   onLoadPrevious,
   onMonthChange,
+  onMoveSession,
   onRefresh,
   onRetryDayDetail,
   onRetryLoadMore,
@@ -104,6 +119,8 @@ export function AthleteCalendarStoryboardV2({
   onToday,
   paginationError,
   refreshing = false,
+  rescheduleBusy = false,
+  reduceMotion = false,
   selectedDate,
   initialLensVisible = false,
   initialSummaryMonth = null,
@@ -123,6 +140,16 @@ export function AthleteCalendarStoryboardV2({
   const [jumpOpen, setJumpOpen] = useState(false);
   const [jumpValue, setJumpValue] = useState(selectedDate);
   const [jumpError, setJumpError] = useState<string | null>(null);
+  const rootRef = useRef<View | null>(null);
+  const cellRefs = useRef(new Map<string, { date: string; ref: View }>());
+  const cellRects = useRef(new Map<string, AthleteCalendarDropCell>());
+  const rootOrigin = useRef({ x: 0, y: 0 });
+  const latestDragPoint = useRef({ x: 0, y: 0 });
+  const dragStateRef = useRef<AthleteCalendarDragState>(null);
+  const dragX = useSharedValue(0);
+  const dragY = useSharedValue(0);
+  const dragScale = useSharedValue(1);
+  const [dragState, setDragState] = useState<AthleteCalendarDragState>(null);
 
   const months = useMemo(() => monthsForDays(data.days, anchorMonth), [anchorMonth, data.days]);
   const anchorIndex = useMemo(
@@ -240,6 +267,92 @@ export function AthleteCalendarStoryboardV2({
     ? dayDetail
     : fallbackDetail(data, selectedDate, canManagePersonalEvents);
 
+  const updateDropTarget = useCallback((absoluteX: number, absoluteY: number) => {
+    const active = dragStateRef.current;
+    if (!active) return;
+    const hoveredDate = athleteCalendarDateAtPoint(absoluteX, absoluteY, cellRects.current.values());
+    const targetDate = hoveredDate && isAthleteCalendarDropTargetValid({
+      session: active.session,
+      destinationDate: hoveredDate,
+      today: data.today,
+    }) ? hoveredDate : null;
+    if (active.targetDate === targetDate) return;
+    const next = { ...active, targetDate };
+    dragStateRef.current = next;
+    setDragState(next);
+    if (targetDate) void Haptics.selectionAsync();
+  }, [data.today]);
+
+  const refreshDropGeometry = useCallback(() => {
+    rootRef.current?.measureInWindow((x, y) => {
+      rootOrigin.current = { x, y };
+      dragX.value = latestDragPoint.current.x - x;
+      dragY.value = latestDragPoint.current.y - y;
+    });
+    const entries = Array.from(cellRefs.current.entries());
+    if (!entries.length) return;
+    const measured = new Map<string, AthleteCalendarDropCell>();
+    let remaining = entries.length;
+    entries.forEach(([key, entry]) => {
+      entry.ref.measureInWindow((x, y, width, height) => {
+        if (width > 0 && height > 0) measured.set(key, { date: entry.date, x, y, width, height });
+        remaining -= 1;
+        if (remaining === 0) {
+          cellRects.current = measured;
+          updateDropTarget(latestDragPoint.current.x, latestDragPoint.current.y);
+        }
+      });
+    });
+  }, [dragX, dragY, updateDropTarget]);
+
+  useLayoutEffect(() => {
+    const frame = requestAnimationFrame(refreshDropGeometry);
+    return () => cancelAnimationFrame(frame);
+  }, [months, refreshDropGeometry]);
+
+  const registerDropCell = useCallback((key: string, date: string, ref: View | null) => {
+    if (ref) cellRefs.current.set(key, { date, ref });
+    else cellRefs.current.delete(key);
+  }, []);
+
+  const updateDragPoint = useCallback((absoluteX: number, absoluteY: number) => {
+    latestDragPoint.current = { x: absoluteX, y: absoluteY };
+    dragX.value = absoluteX - rootOrigin.current.x;
+    dragY.value = absoluteY - rootOrigin.current.y;
+    updateDropTarget(absoluteX, absoluteY);
+  }, [dragX, dragY, updateDropTarget]);
+
+  const startSessionDrag = useCallback((session: AthleteCalendarSession, absoluteX: number, absoluteY: number) => {
+    latestDragPoint.current = { x: absoluteX, y: absoluteY };
+    const next: AthleteCalendarDragState = { session, targetDate: null };
+    dragStateRef.current = next;
+    setDragState(next);
+    dragScale.value = reduceMotion ? 1 : withSpring(1.03);
+    updateDragPoint(absoluteX, absoluteY);
+    refreshDropGeometry();
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }, [dragScale, reduceMotion, refreshDropGeometry, updateDragPoint]);
+
+  const clearSessionDrag = useCallback(() => {
+    dragStateRef.current = null;
+    setDragState(null);
+    dragScale.value = reduceMotion ? 1 : withSpring(1);
+  }, [dragScale, reduceMotion]);
+
+  const finishSessionDrag = useCallback((session: AthleteCalendarSession) => {
+    const targetDate = dragStateRef.current?.targetDate || null;
+    clearSessionDrag();
+    if (targetDate) onMoveSession?.(session, targetDate);
+  }, [clearSessionDrag, onMoveSession]);
+
+  const ghostStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: dragX.value - 96 },
+      { translateY: dragY.value - 27 },
+      { scale: dragScale.value },
+    ],
+  }));
+
   const renderMonth = ({ item }: ListRenderItemInfo<Date>) => (
     <MonthSection
       data={data}
@@ -247,7 +360,16 @@ export function AthleteCalendarStoryboardV2({
       filters={filters}
       month={item}
       onOpenSummary={() => setSummaryMonth(item)}
+      onCancelSessionDrag={clearSessionDrag}
+      onDragSession={updateDragPoint}
+      onDropSession={finishSessionDrag}
+      onRegisterDropCell={registerDropCell}
       onSelectDate={selectDate}
+      onStartSessionDrag={startSessionDrag}
+      canRescheduleSessions={canRescheduleSessions}
+      dragState={dragState}
+      moving={rescheduleBusy}
+      reduceMotion={reduceMotion}
       selectedDate={selectedDate}
       summary={summariesByMonth.get(monthKey(item))}
       transitionsByWeek={transitionsByMonth.get(monthKey(item)) || EMPTY_BLOCK_TRANSITIONS}
@@ -255,7 +377,7 @@ export function AthleteCalendarStoryboardV2({
   );
 
   return (
-    <View style={styles.root}>
+    <View onLayout={() => requestAnimationFrame(refreshDropGeometry)} ref={rootRef} style={styles.root}>
       <LinearGradient colors={['rgba(109,42,184,0.10)', 'rgba(2,2,5,0)', 'rgba(2,2,5,0)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
       <View style={styles.compactHeader}>
         <Pressable accessibilityRole="button" onPress={() => { setJumpValue(toYmd(visibleMonth)); setJumpOpen(true); }} style={styles.timeHeaderCopy}>
@@ -315,9 +437,10 @@ export function AthleteCalendarStoryboardV2({
         onScrollBeginDrag={beginTimelineGesture}
         onScrollEndDrag={endTimelineGesture}
         onViewableItemsChanged={onViewableItemsChanged}
-        refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} /> : undefined}
+        refreshControl={onRefresh ? <RefreshControl enabled={!dragState} refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} /> : undefined}
         ref={listRef}
         renderItem={renderMonth}
+        scrollEnabled={!dragState}
         scrollEventThrottle={32}
         showsVerticalScrollIndicator={false}
         style={styles.monthList}
@@ -345,6 +468,7 @@ export function AthleteCalendarStoryboardV2({
 
       {lensVisible ? (
         <DayLens
+          canRescheduleSessions={canRescheduleSessions}
           detail={resolvedDetail}
           error={dayDetailError}
           loading={dayDetailLoading && dayDetail?.date !== selectedDate}
@@ -372,17 +496,39 @@ export function AthleteCalendarStoryboardV2({
           visible
         />
       ) : null}
+      {dragState ? (
+        <Animated.View pointerEvents="none" style={[styles.sessionDragPreview, ghostStyle]}>
+          <View style={styles.sessionDragIcon}>
+            <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={18} />
+          </View>
+          <View style={styles.flex}>
+            <Text numberOfLines={1} style={styles.sessionDragTitle}>{dragState.session.title || 'Training Session'}</Text>
+            <Text numberOfLines={1} style={styles.sessionDragMeta}>{dragState.targetDate ? `Move to ${formatShortDate(dragState.targetDate)}` : 'Choose a valid date'}</Text>
+          </View>
+        </Animated.View>
+      ) : null}
     </View>
   );
 }
+
+type AthleteCalendarDragState = { session: AthleteCalendarSession; targetDate: string | null } | null;
 
 function MonthSection({
   data,
   daysByDate,
   filters,
   month,
+  canRescheduleSessions,
+  dragState,
+  moving,
+  onCancelSessionDrag,
+  onDragSession,
+  onDropSession,
   onOpenSummary,
+  onRegisterDropCell,
   onSelectDate,
+  onStartSessionDrag,
+  reduceMotion,
   selectedDate,
   summary,
   transitionsByWeek,
@@ -391,8 +537,17 @@ function MonthSection({
   daysByDate: Map<string, AthleteCalendarDay>;
   filters: Set<FilterId>;
   month: Date;
+  canRescheduleSessions: boolean;
+  dragState: AthleteCalendarDragState;
+  moving: boolean;
+  onCancelSessionDrag: () => void;
+  onDragSession: (absoluteX: number, absoluteY: number) => void;
+  onDropSession: (session: AthleteCalendarSession) => void;
   onOpenSummary: () => void;
+  onRegisterDropCell: (key: string, date: string, ref: View | null) => void;
   onSelectDate: (date: string) => void;
+  onStartSessionDrag: (session: AthleteCalendarSession, absoluteX: number, absoluteY: number) => void;
+  reduceMotion: boolean;
   selectedDate: string;
   summary?: AthleteCalendarMonthSummary;
   transitionsByWeek: Map<string, AthleteCalendarBlockTransition[]>;
@@ -436,15 +591,31 @@ function MonthSection({
                   const dateKey = toYmd(date);
                   const day = daysByDate.get(dateKey);
                   const inMonth = date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear();
+                  const validDropTarget = !!dragState && !!day && isAthleteCalendarDropTargetValid({
+                    session: dragState.session,
+                    destinationDate: dateKey,
+                    today: data.today,
+                  });
                   return (
                     <DayCell
+                      canRescheduleSessions={canRescheduleSessions}
+                      date={dateKey}
                       day={day}
+                      dragState={dragState}
                       filtered={day ? !dayMatchesActiveFilters(day, filters) : false}
                       inMonth={inMonth}
                       isToday={dateKey === data.today}
                       key={dateKey}
+                      moving={moving}
+                      onCancelSessionDrag={onCancelSessionDrag}
+                      onDragSession={onDragSession}
+                      onDropSession={onDropSession}
                       onPress={() => onSelectDate(dateKey)}
+                      onRegister={(ref) => onRegisterDropCell(`${monthKey(month)}:${dateKey}`, dateKey, day ? ref : null)}
+                      onStartSessionDrag={onStartSessionDrag}
+                      reduceMotion={reduceMotion}
                       selected={dateKey === selectedDate}
+                      validDropTarget={validDropTarget}
                       value={date.getDate()}
                     />
                   );
@@ -472,13 +643,24 @@ function BlockTransitionRow({ transition }: { transition: AthleteCalendarBlockTr
   );
 }
 
-function DayCell({ day, filtered, inMonth, isToday, onPress, selected, value }: {
+function DayCell({ canRescheduleSessions, date, day, dragState, filtered, inMonth, isToday, moving, onCancelSessionDrag, onDragSession, onDropSession, onPress, onRegister, onStartSessionDrag, reduceMotion, selected, validDropTarget, value }: {
+  canRescheduleSessions: boolean;
+  date: string;
   day?: AthleteCalendarDay;
+  dragState: AthleteCalendarDragState;
   filtered: boolean;
   inMonth: boolean;
   isToday: boolean;
+  moving: boolean;
+  onCancelSessionDrag: () => void;
+  onDragSession: (absoluteX: number, absoluteY: number) => void;
+  onDropSession: (session: AthleteCalendarSession) => void;
   onPress: () => void;
+  onRegister: (ref: View | null) => void;
+  onStartSessionDrag: (session: AthleteCalendarSession, absoluteX: number, absoluteY: number) => void;
+  reduceMotion: boolean;
   selected: boolean;
+  validDropTarget: boolean;
   value: number;
 }) {
   const state = resolveCalendarLensState({
@@ -497,18 +679,44 @@ function DayCell({ day, filtered, inMonth, isToday, onPress, selected, value }: 
   const prCount = (day?.sessions || []).reduce((total, item) => total + Number(item.prCount || 0), 0);
   const label = cellLabel(session?.title, state);
   const hasEvidence = Boolean(day && (day.sessions.length || day.personalEvents?.length || day.meets?.length || day.checkIns?.length));
+  const movable = !!session && canRescheduleSessions && isAthleteCalendarSessionMovable(session) && !moving;
   return (
     <Pressable
       accessibilityLabel={`${value}. ${label || (hasEvidence ? 'Calendar items' : 'Recovery day')}`}
+      accessibilityHint={movable ? 'Long press, then drag onto today or a future Calendar day to reschedule.' : undefined}
+      accessibilityState={{ disabled: !!dragState && !validDropTarget, selected }}
+      disabled={!!dragState}
       onPress={onPress}
-      style={[styles.calendarColumn, styles.dayCell, selected && styles.dayCellSelected, !inMonth && styles.dayCellOutside, filtered && styles.dayCellFiltered]}
+      ref={onRegister}
+      style={[
+        styles.calendarColumn,
+        styles.dayCell,
+        selected && styles.dayCellSelected,
+        !inMonth && !dragState && styles.dayCellOutside,
+        filtered && !dragState && styles.dayCellFiltered,
+        dragState && !validDropTarget && styles.dayCellDragInvalid,
+        validDropTarget && styles.dayCellDragValid,
+        dragState?.targetDate === date && styles.dayCellDragTarget,
+      ]}
     >
       {selected ? <LinearGradient colors={['rgba(153,82,255,0.28)', 'rgba(41,20,59,0.10)']} style={StyleSheet.absoluteFillObject} /> : null}
       <View style={styles.dayNumberRow}>
         <Text style={[styles.dayNumber, isToday && styles.dayNumberToday, !inMonth && styles.dayNumberOutside]}>{value}</Text>
         {prCount > 0 ? <Text style={styles.prMarker}>✦</Text> : null}
       </View>
-      {label && !filtered ? <View style={[styles.cellPill, { borderColor: `${tone}99`, backgroundColor: `${tone}1C` }]}><Text numberOfLines={1} style={[styles.cellPillText, { color: tone }]}>{label}</Text></View> : null}
+      {label && !filtered && session ? (
+        <DraggableSessionPill
+          movable={movable}
+          onCancel={onCancelSessionDrag}
+          onDrag={onDragSession}
+          onDrop={() => onDropSession(session)}
+          onStart={(absoluteX, absoluteY) => onStartSessionDrag(session, absoluteX, absoluteY)}
+          reduceMotion={reduceMotion}
+          tone={tone}
+        >
+          {label}
+        </DraggableSessionPill>
+      ) : null}
       {!label && day?.personalEvents?.length && !filtered ? <View style={styles.personalRing} /> : null}
       {!hasEvidence && inMonth ? <View style={styles.recoveryDot} /> : null}
       {day && day.sessions.length > 1 && !filtered ? <View style={styles.multiDot}><Text style={styles.multiDotText}>+{day.sessions.length - 1}</Text></View> : null}
@@ -516,7 +724,47 @@ function DayCell({ day, filtered, inMonth, isToday, onPress, selected, value }: 
   );
 }
 
-function DayLens({ detail, error, loading, onAction, onClose, onRetry, preferredUnits = 'kg', visible }: {
+function DraggableSessionPill({ children, movable, onCancel, onDrag, onDrop, onStart, reduceMotion, tone }: {
+  children: string;
+  movable: boolean;
+  onCancel: () => void;
+  onDrag: (absoluteX: number, absoluteY: number) => void;
+  onDrop: () => void;
+  onStart: (absoluteX: number, absoluteY: number) => void;
+  reduceMotion: boolean;
+  tone: string;
+}) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+  const gesture = Gesture.Pan()
+    .enabled(movable)
+    .activateAfterLongPress(320)
+    .minDistance(3)
+    .runOnJS(true)
+    .onStart((event) => {
+      scale.value = reduceMotion ? 1 : withSpring(1.04);
+      opacity.value = 0.3;
+      onStart(event.absoluteX, event.absoluteY);
+    })
+    .onUpdate((event) => onDrag(event.absoluteX, event.absoluteY))
+    .onEnd(onDrop)
+    .onFinalize((_event, success) => {
+      scale.value = reduceMotion ? 1 : withSpring(1);
+      opacity.value = 1;
+      if (!success) onCancel();
+    });
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value, transform: [{ scale: scale.value }] }));
+  return (
+    <GestureDetector gesture={gesture}>
+      <Animated.View style={[styles.cellPill, { borderColor: `${tone}99`, backgroundColor: `${tone}1C` }, animatedStyle]}>
+        <Text numberOfLines={1} style={[styles.cellPillText, { color: tone }]}>{children}</Text>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
+function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onClose, onRetry, preferredUnits = 'kg', visible }: {
+  canRescheduleSessions: boolean;
   detail: AthleteCalendarDayDetail;
   error?: string | null;
   loading: boolean;
@@ -536,6 +784,10 @@ function DayLens({ detail, error, loading, onAction, onClose, onRetry, preferred
   const openSessionAfterClosingLens = (id: number) => {
     onClose();
     requestAnimationFrame(() => onAction({ type: 'session', id }));
+  };
+  const openScheduleAfterClosingLens = (session: AthleteCalendarSession) => {
+    onClose();
+    requestAnimationFrame(() => onAction({ type: 'schedule-session', session }));
   };
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
@@ -563,8 +815,14 @@ function DayLens({ detail, error, loading, onAction, onClose, onRetry, preferred
               <>
                 {isRecovery ? <RecoveryLens detail={detail} onAction={onAction} preferredUnits={preferredUnits} /> : null}
                 {primary && status?.lifecycle !== 'completed' ? <TrainingLens onAction={onAction} session={primary} /> : null}
+                {primary && canRescheduleSessions && isAthleteCalendarSessionMovable(primary) ? (
+                  <Pressable accessibilityRole="button" onPress={() => openScheduleAfterClosingLens(primary)} style={styles.secondaryAction}>
+                    <Ionicons color={SLColors.iconMuted} name="calendar-outline" size={18} />
+                    <Text style={styles.secondaryActionText}>Manage Session schedule</Text>
+                  </Pressable>
+                ) : null}
                 {primary && status?.lifecycle === 'completed' ? <CompletedLens onOpenSession={openSessionAfterClosingLens} preferredUnits={preferredUnits} session={primary} /> : null}
-                {detail.sessions.slice(1).map((session) => <AdditionalSession key={session.id} onAction={onAction} session={session} />)}
+                {detail.sessions.slice(1).map((session) => <AdditionalSession canReschedule={canRescheduleSessions} key={session.id} onAction={onAction} onSchedule={openScheduleAfterClosingLens} session={session} />)}
                 {detail.personalEvents.length ? <PersonalItems events={detail.personalEvents} onAction={onAction} /> : null}
                 {!detail.sessions.length && !isRecovery && !detail.personalEvents.length ? <EmptyDay /> : null}
                 {detail.capabilities.canAddPersonalItem ? (
@@ -592,7 +850,7 @@ function RecoveryLens({ detail, onAction, preferredUnits }: { detail: AthleteCal
           <>
             <View style={styles.readinessHeadline}>
               <Text style={styles.readinessValue}>{readiness.score != null ? `${Math.round(readiness.score * 10) / 10}/10` : 'RECORDED'}</Text>
-              <Text style={styles.readinessState}>TODAY'S CHECK-IN</Text>
+              <Text style={styles.readinessState}>{"TODAY'S CHECK-IN"}</Text>
             </View>
             <View style={styles.readinessGrid}>
               <EvidenceMetric label="ENERGY" value={scoreLabel(readiness.energy)} />
@@ -681,14 +939,17 @@ function CompletedLens({ onOpenSession, preferredUnits, session }: { onOpenSessi
   );
 }
 
-function AdditionalSession({ onAction, session }: { onAction: (action: AthleteCalendarAction) => void; session: AthleteCalendarDayDetailSession }) {
+function AdditionalSession({ canReschedule, onAction, onSchedule, session }: { canReschedule: boolean; onAction: (action: AthleteCalendarAction) => void; onSchedule: (session: AthleteCalendarSession) => void; session: AthleteCalendarDayDetailSession }) {
   const status = resolveCalendarSessionStatus(session.status);
   return (
-    <Pressable onPress={() => onAction({ type: 'session', id: session.id })} style={styles.additionalSession}>
-      <View style={[styles.additionalTone, { backgroundColor: lensColor(status.lifecycle === 'not_started' ? 'assigned' : status.lifecycle as any) }]} />
-      <View style={styles.flex}><Text style={styles.additionalTitle}>{session.title || 'Training Session'}</Text><Text style={styles.cardBody}>{status.label}</Text></View>
-      <Ionicons color={SLColors.iconMuted} name="chevron-forward" size={19} />
-    </Pressable>
+    <View style={styles.additionalSession}>
+      <Pressable accessibilityRole="button" onPress={() => onAction({ type: 'session', id: session.id })} style={styles.additionalSessionOpen}>
+        <View style={[styles.additionalTone, { backgroundColor: lensColor(status.lifecycle === 'not_started' ? 'assigned' : status.lifecycle as any) }]} />
+        <View style={styles.flex}><Text style={styles.additionalTitle}>{session.title || 'Training Session'}</Text><Text style={styles.cardBody}>{status.label}</Text></View>
+        <Ionicons color={SLColors.iconMuted} name="chevron-forward" size={19} />
+      </Pressable>
+      {canReschedule && isAthleteCalendarSessionMovable(session) ? <Pressable accessibilityLabel={`Manage ${session.title || 'Session'} schedule`} accessibilityRole="button" hitSlop={8} onPress={() => onSchedule(session)} style={styles.additionalSchedule}><Ionicons color={SLColors.accentViolet} name="calendar-outline" size={18} /></Pressable> : null}
+    </View>
   );
 }
 
@@ -911,6 +1172,9 @@ const styles = StyleSheet.create({
   dayCellSelected: { borderWidth: 1, borderColor: SLColors.borderFocus, backgroundColor: 'rgba(83,36,123,0.18)' },
   dayCellOutside: { opacity: 0.32 },
   dayCellFiltered: { opacity: 0.24 },
+  dayCellDragInvalid: { opacity: 0.22 },
+  dayCellDragValid: { backgroundColor: 'rgba(129,75,211,0.14)', borderColor: 'rgba(169,112,255,0.62)', borderWidth: 1, opacity: 1 },
+  dayCellDragTarget: { backgroundColor: 'rgba(129,75,211,0.34)', borderColor: SLColors.accentViolet, borderWidth: 2, opacity: 1 },
   dayNumberRow: { height: 22, alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   dayNumber: { fontSize: 15, lineHeight: 19, color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodySemiBold },
   dayNumberToday: { color: SLColors.textStrong, textDecorationLine: 'underline', textDecorationColor: SLColors.accentViolet },
@@ -918,6 +1182,10 @@ const styles = StyleSheet.create({
   prMarker: { position: 'absolute', right: 1, top: 0, fontSize: 9, lineHeight: 12, color: SLColors.accentViolet },
   cellPill: { maxWidth: '100%', height: 17, borderRadius: 5, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center' },
   cellPillText: { maxWidth: '100%', fontSize: 8, lineHeight: 11, fontFamily: SLFontFamilies.technical },
+  sessionDragPreview: { position: 'absolute', left: 0, top: 0, zIndex: 100, width: 192, minHeight: 54, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 10, borderRadius: 13, borderWidth: 1, borderColor: SLColors.accentViolet, backgroundColor: '#0D0A15', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.44, shadowRadius: 14, elevation: 14 },
+  sessionDragIcon: { width: 36, height: 36, borderRadius: 10, borderWidth: 1, borderColor: SLColors.borderFocus, backgroundColor: SLColors.surfaceEmbedded, alignItems: 'center', justifyContent: 'center' },
+  sessionDragTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  sessionDragMeta: { ...SLTypography.caption, color: SLColors.accentMuted, marginTop: 1 },
   personalRing: { width: 8, height: 8, borderRadius: 4, borderWidth: 1.5, borderColor: '#C575D8', marginTop: 4 },
   recoveryDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#79649A', opacity: 0.65, marginTop: 5 },
   multiDot: { position: 'absolute', right: 1, bottom: 2 },
@@ -987,7 +1255,9 @@ const styles = StyleSheet.create({
   bestLiftValue: { ...SLTypography.body, color: SLColors.textSecondary, marginTop: 3 },
   prBadge: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, borderColor: '#D7A942', backgroundColor: 'rgba(215,169,66,0.14)', alignItems: 'center', justifyContent: 'center' },
   prBadgeText: { ...SLTypography.chipLabel, color: '#E7C36C' },
-  additionalSession: { marginHorizontal: 14, marginTop: 9, minHeight: 62, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 11, overflow: 'hidden' },
+  additionalSession: { marginHorizontal: 14, marginTop: 9, minHeight: 62, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
+  additionalSessionOpen: { flex: 1, minHeight: 62, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 11 },
+  additionalSchedule: { width: 48, minHeight: 62, borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: SLColors.borderHairline, alignItems: 'center', justifyContent: 'center' },
   additionalTone: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 3 },
   additionalTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
   personalEventRow: { minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 11, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },

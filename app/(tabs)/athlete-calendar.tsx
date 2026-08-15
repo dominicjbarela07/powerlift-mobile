@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Alert, AppState, StyleSheet, View } from 'react-native';
@@ -24,6 +25,11 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLTypography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, getDeviceTimezone } from '@/lib/api';
+import {
+  canSelfCoachRescheduleSessions,
+  isAthleteCalendarDropTargetValid,
+  withAthleteCalendarSessionDate,
+} from '@/lib/athlete-calendar-reschedule';
 import type { CalendarRepeatRule } from '@/lib/calendar-event-form';
 import { rangeContainsDate, resolveCalendarToday } from '@/lib/calendar-today';
 import {
@@ -165,6 +171,7 @@ export default function AthleteCalendarScreen() {
   const [scheduleBusy, setScheduleBusy] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleFieldError, setScheduleFieldError] = useState<string | null>(null);
+  const [rescheduleBusy, setRescheduleBusy] = useState(false);
   const [currentToday, setCurrentToday] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(() => toYmd(new Date()));
   const [dayDetail, setDayDetail] = useState<AthleteCalendarDayDetail | null>(null);
@@ -187,6 +194,12 @@ export default function AthleteCalendarScreen() {
   const dayDetailRequestRef = useRef(0);
   const visiblePayload = payloadOwnerScope === calendarIdentityScope ? payload : null;
   const preferredUnits = user?.preferred_units;
+  const canRescheduleSessions = canSelfCoachRescheduleSessions({
+    canEditProgramming: visiblePayload?.can_edit_programming,
+    isSelfCoached: user?.is_self_coached === true
+      || user?.is_individual_workspace === true
+      || user?.workspace_mode === 'individual',
+  });
 
   const { start: rangeStart, end: rangeEnd } = useMemo(
     () => canonicalCalendarRangeForMonth(anchorMonth),
@@ -573,6 +586,57 @@ export default function AthleteCalendarScreen() {
     }
   };
 
+  const moveSession = useCallback(async (session: AthleteCalendarSession, date: string) => {
+    const originalDate = session.date || '';
+    const today = currentToday || visiblePayload?.today || toYmd(new Date());
+    if (!canRescheduleSessions || !isAthleteCalendarDropTargetValid({ session, destinationDate: date, today })) return;
+
+    const projectedSession: ApiSession = {
+      workout_id: session.id,
+      title: session.title,
+      date: originalDate,
+      status: session.status,
+      block_id: session.blockId,
+      block_name: session.blockName,
+      planned_summary: session.plannedSummary,
+      primary_lifts: session.primaryLifts,
+      accessory_count: session.accessoryCount,
+      estimated_duration_minutes: session.estimatedDurationMinutes,
+      pr_count: session.prCount,
+      scheduled_start_time: session.scheduledStartTime,
+      scheduled_end_time: session.scheduledEndTime,
+      scheduled_timezone: session.scheduledTimezone,
+    };
+
+    setRescheduleBusy(true);
+    setPayload((current) => withAthleteCalendarSessionDate(current, projectedSession, date));
+    try {
+      const response = await fetchJson<{ ok: boolean; error?: string; noop?: boolean }>(
+        `/coach/mobile/workouts/${session.id}/move`,
+        { method: 'POST', body: { date } as any },
+      );
+      if (!response.ok || response.json?.ok !== true) {
+        setPayload((current) => withAthleteCalendarSessionDate(current, projectedSession, originalDate));
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert('Move failed', response.json?.error || 'The Session remains on its original date.');
+        return;
+      }
+
+      dayDetailCacheRef.current.delete(originalDate);
+      dayDetailCacheRef.current.delete(date);
+      setScheduleEditor(null);
+      await load(true, true);
+      if (selectedDate === originalDate || selectedDate === date) await loadDayDetail(selectedDate, true);
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (caught: any) {
+      setPayload((current) => withAthleteCalendarSessionDate(current, projectedSession, originalDate));
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Move failed', caught?.message || 'The Session remains on its original date.');
+    } finally {
+      setRescheduleBusy(false);
+    }
+  }, [canRescheduleSessions, currentToday, load, loadDayDetail, selectedDate, visiblePayload?.today]);
+
   return (
     <View style={styles.root}>
       {loading && !visiblePayload ? (
@@ -591,6 +655,7 @@ export default function AthleteCalendarScreen() {
       {visiblePayload ? <AthleteCalendarStoryboardV2
         anchorMonth={anchorMonth}
         canManagePersonalEvents={user?.role === 'athlete'}
+        canRescheduleSessions={canRescheduleSessions}
         data={data}
         dayDetail={dayDetail?.date === selectedDate ? dayDetail : null}
         dayDetailError={dayDetailError}
@@ -601,6 +666,7 @@ export default function AthleteCalendarScreen() {
         onLoadMore={() => void loadMore()}
         onLoadPrevious={() => void loadPrevious()}
         onMonthChange={changeMonth}
+        onMoveSession={(session, date) => void moveSession(session, date)}
         onRetryDayDetail={() => void loadDayDetail(selectedDate, true)}
         onSelectedDateChange={setSelectedDate}
         onRefresh={() => void load(true, true)}
@@ -609,6 +675,8 @@ export default function AthleteCalendarScreen() {
         navigationRevision={navigationRevision}
         paginationError={paginationError}
         refreshing={refreshing}
+        rescheduleBusy={rescheduleBusy}
+        reduceMotion={reduceMotion}
         selectedDate={selectedDate}
       /> : null}
       <ReadinessModal
@@ -626,16 +694,19 @@ export default function AthleteCalendarScreen() {
       />
       <CalendarEventSheet busy={mutationBusy} event={editor.event} initialDate={editor.date} onClose={closeEditor} onDelete={editor.event ? deleteEvent : undefined} onSave={saveEvent} saveError={eventMutationError} serverErrors={fieldErrors} timezone={data.timezone} visible={editor.visible} />
       <TrainingScheduleSheet
-        busy={scheduleBusy}
+        busy={scheduleBusy || rescheduleBusy}
+        canRescheduleDate={canRescheduleSessions}
         error={scheduleError}
         fieldError={scheduleFieldError}
-        onClose={() => { if (!scheduleBusy) setScheduleEditor(null); }}
+        minimumDate={data.today}
+        onClose={() => { if (!scheduleBusy && !rescheduleBusy) setScheduleEditor(null); }}
         onOpenSession={() => {
           if (!scheduleEditor) return;
           const workoutId = scheduleEditor.id;
           setScheduleEditor(null);
           router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(workoutId) } });
         }}
+        onMoveDate={(date) => { if (scheduleEditor) void moveSession(scheduleEditor, date); }}
         onSave={saveTrainingSchedule}
         session={scheduleEditor}
         visible={!!scheduleEditor}
