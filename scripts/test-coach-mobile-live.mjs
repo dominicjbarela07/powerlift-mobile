@@ -51,10 +51,22 @@ assert.match(source.home, /signal: controller\.signal/);
 
 assert.match(source.hubSheet, /presentationStyle="overFullScreen"/);
 assert.match(source.hubSheet, /\/coach\/mobile\/athletes\/\$\{athlete\.id\}\/summary/);
+assert.match(source.hubSheet, /\/coach\/mobile\/athletes\/\$\{athlete\.id\}\/sessions\/recent\?limit=30/);
 assert.match(source.hubSheet, /\/workouts\/mobile\/\$\{completedId\}\?view=coach-preview/);
+assert.match(source.hubSheet, /\/coach\/mobile\/review-hub\/sessions\/\$\{lastSession\.workout_id\}/);
+assert.match(source.hubSheet, /cacheRef\.current\.get\(athlete\.id\)/);
+assert.match(source.hubSheet, /requestControllerRef\.current\?\.abort\(\)/);
+assert.match(source.hubSheet, /Promise\.all\(\[/);
 for (const action of ['Message', 'Program', 'Schedule', 'Notes', 'More']) assert.match(source.hubSheet, new RegExp(`label="${action}"|label: '${action}'`));
-for (const section of ['Current Status', 'Last Session', 'Recent Highlights', 'Notes & Next Steps']) assert.match(source.hubSheet, new RegExp(section));
+for (const section of ['Current Status', 'Last Session', 'Upcoming Sessions', 'Recent Activity', 'Recent Highlights', 'Notes & Next Steps']) assert.match(source.hubSheet, new RegExp(section));
 assert.match(source.hubSheet, /performed_movements\.slice\(0, 4\)/);
+assert.match(source.hubSheet, /recap\?\.session\.reported_bodyweight/);
+assert.match(source.hubSheet, /recapFocusNames\(recap\)/);
+assert.match(source.hubSheet, /primary_muscle_group/);
+assert.match(source.hubSheet, /Total Volume/);
+assert.match(source.hubSheet, /movementEquipment\(movement\)/);
+assert.doesNotMatch(source.hubSheet, /focusNames\([^)]*label/);
+assert.doesNotMatch(source.hubSheet, /dragArea/);
 assert.match(source.hubSheet, /openCoachDestination\(router, primaryReason\.destination\)/);
 assert.match(source.hubSheet, /onClose\(\);[\s\S]*router\.push/);
 

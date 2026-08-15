@@ -31,6 +31,41 @@ export function kilogramsToDisplayValue(valueKg: number, unit: DisplayWeightUnit
   return unit === 'lb' ? Number(valueKg) * KG_TO_LB : Number(valueKg);
 }
 
+export function formatWeightFromKg(
+  valueKg?: number | null,
+  unit: DisplayWeightUnit = 'kg',
+  maximumFractionDigits = 1,
+): string | null {
+  if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
+  const value = kilogramsToDisplayValue(Number(valueKg), unit);
+  return `${new Intl.NumberFormat('en-US', {
+    maximumFractionDigits,
+    minimumFractionDigits: 0,
+  }).format(value)} ${unit}`;
+}
+
+export function formatWeightDeltaFromKg(
+  deltaKg?: number | null,
+  unit: DisplayWeightUnit = 'kg',
+): string | null {
+  if (deltaKg == null || !Number.isFinite(Number(deltaKg))) return null;
+  const value = kilogramsToDisplayValue(Math.abs(Number(deltaKg)), unit);
+  const arrow = Number(deltaKg) < 0 ? '↓' : Number(deltaKg) > 0 ? '↑' : '→';
+  return `${arrow} ${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(value)} ${unit}`;
+}
+
+export function formatCompactVolumeValueFromKg(
+  valueKg?: number | null,
+  unit: DisplayWeightUnit = 'kg',
+): string | null {
+  if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
+  const converted = kilogramsToDisplayValue(Number(valueKg), unit);
+  const value = converted >= 1000
+    ? `${(converted / 1000).toFixed(1)}K`
+    : Math.round(converted).toLocaleString('en-US');
+  return `${value} ${unit}`;
+}
+
 export function convertDisplayWeightValue(
   value: number,
   sourceUnit: DisplayWeightUnit,
@@ -56,7 +91,7 @@ export function formatTotalVolumeFromKg(
   valueKg?: number | null,
   unit: DisplayWeightUnit = 'kg',
 ): string | null {
-  const volume = formatCompactWeightFromKg(valueKg, unit);
+  const volume = formatCompactVolumeValueFromKg(valueKg, unit);
   return volume ? `${volume} Total Volume` : null;
 }
 

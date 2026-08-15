@@ -52,6 +52,7 @@ export type CompletedRecapMovement = {
   superset_group?: string | null;
   superset_pos?: number | null;
   primary_muscle_group?: string | null;
+  secondary_muscle_groups?: string[] | null;
   sets: CompletedRecapSet[];
   equipment?: CompletedRecapEquipment[];
   has_pr?: boolean;
@@ -63,7 +64,7 @@ export type CompletedSessionRecapPayload = {
   schema_version: string;
   lifecycle_mode: 'completed_recap';
   workout_id: number;
-  athlete: { id: number; name: string };
+  athlete: { id: number; name: string; sex?: string | null; anatomy_display_preference?: string | null };
   session: {
     label: string;
     date?: string | null;
@@ -96,6 +97,11 @@ export type CompletedSessionRecapPayload = {
     remaining_highlight_count?: number;
   } | null;
   performed_movements: CompletedRecapMovement[];
+  muscle_focus?: {
+    primary?: { muscle_id: string; score: number }[];
+    secondary?: { muscle_id: string; score: number }[];
+    source?: string;
+  } | null;
   accomplishments: Record<string, any>[];
   reflection: {
     session_rpe?: number | null;
