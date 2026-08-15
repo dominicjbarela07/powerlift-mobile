@@ -19,12 +19,14 @@ import { Text } from '@/components/ui/sl-text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/AthleteCheckInExperience';
-import { TodayHomeExperience, type TodayReadinessObservation } from '@/components/home/TodayHomeExperience';
+import { AthleteHomeV3 } from '@/components/home/AthleteHomeV3';
+import { type TodayReadinessObservation } from '@/components/home/TodayHomeExperience';
 import { SLButton, SLProfileAvatar } from '@/components/ui';
 import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
 import { mergeAthleteHomeWeekPreview } from '@/lib/athlete-home-week';
+import { mergeAthleteHomeV3, type AthleteHomeV3Projection } from '@/lib/athlete-home-v3';
 import { mergeCanonicalDailyReadiness } from '@/lib/daily-readiness-home';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
@@ -48,6 +50,8 @@ type TodayAction = {
   workout_id?: number | null;
   thread_id?: number | null;
   meet_plan_id?: number | null;
+  achievement_id?: number | null;
+  lift_family?: string | null;
 };
 
 type MeetPlanSummary = {
@@ -178,6 +182,7 @@ type TodayPayload = {
     body?: string | null;
   } | null;
   primary_action?: TodayAction | null;
+  home_v3?: AthleteHomeV3Projection | null;
 };
 
 type DayTrainingState = {
@@ -413,7 +418,10 @@ export default function AthleteDashboard() {
         }
 
         const normalized = normalizeTodayPayload(
-          mergeAthleteHomeWeekPreview(classified.today, res?.json),
+          mergeAthleteHomeV3(
+            mergeAthleteHomeWeekPreview(classified.today, res?.json),
+            res?.json,
+          ),
         );
         setToday(normalized);
         setError(null);
@@ -607,6 +615,26 @@ export default function AthleteDashboard() {
         router.push('/(tabs)/ledger/home' as any);
         return;
       }
+      if (action.route === 'calendar' || action.route === 'readiness_history') {
+        router.push('/(tabs)/athlete-calendar' as any);
+        return;
+      }
+      if (action.route === 'training_history') {
+        router.push('/(tabs)/workout/session-history' as any);
+        return;
+      }
+      if (action.route === 'ledger_journey') {
+        router.push('/(tabs)/ledger/journey' as any);
+        return;
+      }
+      if (action.route === 'ledger_strength') {
+        router.push('/(tabs)/ledger/strength' as any);
+        return;
+      }
+      if (action.route === 'ledger_achievement') {
+        router.push('/(tabs)/ledger/achievements' as any);
+        return;
+      }
       router.push('/(tabs)/workout' as any);
     },
     [isIndividual, openDailyReadiness, router]
@@ -670,7 +698,7 @@ export default function AthleteDashboard() {
             </Pressable>
           </View>
         ) : null}
-        <TodayHomeExperience
+        <AthleteHomeV3
           isIndividual={isIndividual}
           onAction={openAction}
           supplementaryContent={showCoachCheckIn ? (
@@ -680,7 +708,6 @@ export default function AthleteDashboard() {
             </>
           ) : null}
           today={today}
-          trainingImage={today.mission?.session?.id ? TRAINING_DAY_IMAGE : REST_DAY_IMAGE}
         />
       </ScrollView>
     </SafeAreaView>
