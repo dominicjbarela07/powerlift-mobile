@@ -49,13 +49,18 @@ export function athleteCalendarDateAtPoint(
 export function withAthleteCalendarSessionDate<
   TSession extends { workout_id: number; date?: string | null },
   TDay extends { date: string; sessions?: TSession[] },
-  TPayload extends { days?: TDay[] },
+  TPayload extends { days?: TDay[]; month_summaries?: { month: string }[] },
 >(payload: TPayload | null, session: TSession, destinationDate: string): TPayload | null {
   if (!payload?.days || !destinationDate) return payload;
   const source = payload.days
     .flatMap((day) => day.sessions || [])
     .find((candidate) => Number(candidate.workout_id) === Number(session.workout_id)) || session;
   const projected = { ...source, date: destinationDate };
+  const affectedMonths = new Set(
+    [source.date, destinationDate]
+      .filter((value): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value))
+      .map((value) => value.slice(0, 7)),
+  );
   return {
     ...payload,
     days: payload.days.map((day) => {
@@ -65,5 +70,8 @@ export function withAthleteCalendarSessionDate<
       if (day.date === destinationDate) sessions.push(projected);
       return { ...day, sessions };
     }),
+    ...(payload.month_summaries ? {
+      month_summaries: payload.month_summaries.filter((summary) => !affectedMonths.has(summary.month)),
+    } : {}),
   };
 }

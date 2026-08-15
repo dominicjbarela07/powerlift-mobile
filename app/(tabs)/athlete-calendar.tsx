@@ -104,8 +104,9 @@ type ApiUpcoming = { date?: string | null; kind?: string | null; title?: string 
 type ApiConflict = { conflict_id: string; certainty: 'confirmed' | 'potential'; reason: string; date: string; event_id: number; event_title: string; workout_id: number; workout_title: string };
 type ApiWeekSummary = { start_date: string; end_date: string; session_count: number; completed_count: number; missed_count: number; heavy_count: number; personal_event_count: number; is_current: boolean; load_label: string };
 type ApiMonthSummary = {
-  month: string; session_count: number; completed_count: number; upcoming_count: number;
-  planned_count: number; completion_percent: number; total_volume_kg: number; pr_count: number;
+  month: string; metric_kind?: string | null; session_count: number; completed_count: number; upcoming_count: number;
+  planned_count: number; due_count?: number | null; due_completed_count?: number | null; missed_count?: number | null;
+  completion_percent?: number | null; total_volume_kg: number; pr_count: number;
   reported_bodyweight?: { start_kg: number; latest_kg: number; observation_count: number } | null;
   block_names?: string[];
 };
@@ -590,6 +591,7 @@ export default function AthleteCalendarScreen() {
     const originalDate = session.date || '';
     const today = currentToday || visiblePayload?.today || toYmd(new Date());
     if (!canRescheduleSessions || !isAthleteCalendarDropTargetValid({ session, destinationDate: date, today })) return;
+    const rollbackPayload = visiblePayload;
 
     const projectedSession: ApiSession = {
       workout_id: session.id,
@@ -616,7 +618,7 @@ export default function AthleteCalendarScreen() {
         { method: 'POST', body: { date } as any },
       );
       if (!response.ok || response.json?.ok !== true) {
-        setPayload((current) => withAthleteCalendarSessionDate(current, projectedSession, originalDate));
+        setPayload((current) => rollbackPayload || withAthleteCalendarSessionDate(current, projectedSession, originalDate));
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert('Move failed', response.json?.error || 'The Session remains on its original date.');
         return;
@@ -629,13 +631,13 @@ export default function AthleteCalendarScreen() {
       if (selectedDate === originalDate || selectedDate === date) await loadDayDetail(selectedDate, true);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (caught: any) {
-      setPayload((current) => withAthleteCalendarSessionDate(current, projectedSession, originalDate));
+      setPayload((current) => rollbackPayload || withAthleteCalendarSessionDate(current, projectedSession, originalDate));
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Move failed', caught?.message || 'The Session remains on its original date.');
     } finally {
       setRescheduleBusy(false);
     }
-  }, [canRescheduleSessions, currentToday, load, loadDayDetail, selectedDate, visiblePayload?.today]);
+  }, [canRescheduleSessions, currentToday, load, loadDayDetail, selectedDate, visiblePayload]);
 
   return (
     <View style={styles.root}>
@@ -831,7 +833,7 @@ function mapSession(session: ApiSession): AthleteCalendarSession { return { id: 
 function mapEvent(event: ApiPersonalEvent): AthleteCalendarPersonalEvent { return { id: event.event_id, title: event.title, startsAt: event.starts_at, endsAt: event.ends_at, allDay: event.all_day, timezone: event.timezone, category: event.category, location: event.location, notes: event.notes, repeatRule: event.repeat_rule || 'none', alertOffsetMinutes: event.alert_offset_minutes ?? null, unavailableForTraining: event.unavailable_for_training }; }
 function mapConflict(item: ApiConflict): AthleteCalendarConflict { return { id: item.conflict_id, certainty: item.certainty, reason: item.reason, date: item.date, eventId: item.event_id, eventTitle: item.event_title, workoutId: item.workout_id, workoutTitle: item.workout_title }; }
 function mapWeekSummary(item: ApiWeekSummary): AthleteCalendarWeekSummary { return { startDate: item.start_date, endDate: item.end_date, sessionCount: item.session_count, completedCount: item.completed_count, missedCount: item.missed_count, heavyCount: item.heavy_count, personalEventCount: item.personal_event_count, isCurrent: item.is_current, loadLabel: item.load_label }; }
-function mapMonthSummary(item: ApiMonthSummary) { return { month: item.month, sessionCount: item.session_count || 0, completedCount: item.completed_count || 0, upcomingCount: item.upcoming_count || 0, plannedCount: item.planned_count || 0, completionPercent: item.completion_percent || 0, totalVolumeKg: item.total_volume_kg || 0, prCount: item.pr_count || 0, reportedBodyweight: item.reported_bodyweight ? { startKg: item.reported_bodyweight.start_kg, latestKg: item.reported_bodyweight.latest_kg, observationCount: item.reported_bodyweight.observation_count } : null, blockNames: item.block_names || [] }; }
+function mapMonthSummary(item: ApiMonthSummary) { return { month: item.month, metricKind: item.metric_kind || null, sessionCount: item.session_count || 0, completedCount: item.completed_count || 0, upcomingCount: item.upcoming_count || 0, plannedCount: item.planned_count || 0, dueCount: item.due_count ?? null, dueCompletedCount: item.due_completed_count ?? null, missedCount: item.missed_count ?? null, completionPercent: item.completion_percent ?? null, totalVolumeKg: item.total_volume_kg || 0, prCount: item.pr_count || 0, reportedBodyweight: item.reported_bodyweight ? { startKg: item.reported_bodyweight.start_kg, latestKg: item.reported_bodyweight.latest_kg, observationCount: item.reported_bodyweight.observation_count } : null, blockNames: item.block_names || [] }; }
 function findEvent(days: AthleteCalendarDay[], id: number) { for (const day of days) { const event = day.personalEvents?.find((item) => item.id === id); if (event) return event; } return null; }
 function showConflict(conflict: AthleteCalendarConflict, router: ReturnType<typeof useRouter>, editEvent: () => void) { Alert.alert(conflict.certainty === 'confirmed' ? 'Schedule conflict' : 'Potential conflict', `${conflict.eventTitle} conflicts with ${conflict.workoutTitle}.\n\n${conflict.reason}`, [{ text: 'Edit Event', onPress: editEvent }, { text: 'Open Training', onPress: () => router.push({ pathname: '/workout/[workoutId]', params: { workoutId: String(conflict.workoutId) } }) }, { text: 'Close', style: 'cancel' }]); }
 function importantDates(payload: CalendarPayload | null): AthleteCalendarImportantDate[] { const seen = new Set<string>(); const items: AthleteCalendarImportantDate[] = []; for (const item of payload?.upcoming || []) { if (!item.date || !['meet', 'block_marker', 'session'].includes(item.kind || '')) continue; if (item.kind === 'session' && !/test|heavy|peak|max/i.test(item.title || '')) continue; const kind = item.kind === 'meet' ? 'meet' : item.kind === 'block_marker' ? 'block' : 'session'; const targetId = item.meet_plan_id || item.block_id || item.workout_id; const id = `${kind}:${targetId || item.date}:${item.date}`; if (!seen.has(id)) { seen.add(id); items.push({ id, date: item.date, label: item.title || 'Important date', kind, targetId }); } } return items.slice(0, 3); }
