@@ -186,7 +186,7 @@ export default function AthleteCalendarScreen() {
   const dayDetailAbortRef = useRef<AbortController | null>(null);
   const dayDetailRequestRef = useRef(0);
   const visiblePayload = payloadOwnerScope === calendarIdentityScope ? payload : null;
-  const preferredUnits = (user as any)?.preferred_units;
+  const preferredUnits = user?.preferred_units;
 
   const { start: rangeStart, end: rangeEnd } = useMemo(
     () => canonicalCalendarRangeForMonth(anchorMonth),

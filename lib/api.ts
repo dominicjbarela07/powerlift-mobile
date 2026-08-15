@@ -69,6 +69,7 @@ export type AccountStatePayload = {
   workspace_mode?: 'team' | 'individual' | string | null;
   role?: string | null;
   athlete_id?: number | null;
+  preferred_units?: 'kg' | 'lb' | 'lbs' | null;
   coach_id?: number | null;
   reason?: string | null;
   account_state_detail?: any;
@@ -650,6 +651,7 @@ export type ApiLoginResponse = {
   account_state_detail?: any;
   has_linked_athlete?: boolean;
   athlete_id?: number | null;
+  preferred_units?: 'kg' | 'lb' | 'lbs' | null;
   token?: string;
   billing_required?: boolean;
   billing_url?: string;

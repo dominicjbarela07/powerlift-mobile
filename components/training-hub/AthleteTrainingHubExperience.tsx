@@ -18,6 +18,12 @@ import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import {
+  convertDisplayWeightValue,
+  formatSessionVolumeSummary,
+  formatTotalVolumeFromKg,
+  kilogramsToDisplayValue,
+} from '@/lib/display-units';
+import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
@@ -398,7 +404,7 @@ function LastWeekEvidence({ recap, unit }: { recap: AthletePreviousWeekRecap; un
       <View style={styles.evidenceProgress}><View style={[styles.evidenceProgressFill, { width: `${completion}%` }]} /></View>
       <View style={styles.evidenceFooter}>
         <Text style={styles.evidenceStatement}>{recap.sessionsCompleted >= recap.sessionsAssigned ? 'Every planned session finished.' : `${recap.sessionsCompleted} of ${recap.sessionsAssigned} sessions finished.`}</Text>
-        {recap.totalVolumeKg ? <Text style={styles.evidenceVolume}>{formatVolume(recap.totalVolumeKg, unit)}</Text> : null}
+        {recap.totalVolumeKg ? <Text style={styles.evidenceVolume}>{formatTotalVolumeFromKg(recap.totalVolumeKg, unit)}</Text> : null}
       </View>
     </TrainingHubMaterialSurface>
   );
@@ -460,7 +466,7 @@ function SessionCard({ session, onPress, unit }: { session: AthleteTrainingSessi
   const accent = completed ? SLColors.success : active ? SLColors.warning : SLColors.accentViolet;
   const recap = session.recap;
   const metric = completed && recap
-    ? [recap.loggedSetCount ? `${recap.loggedSetCount} sets` : null, recap.totalVolumeKg ? formatVolume(recap.totalVolumeKg, unit) : null].filter(Boolean).join(' · ')
+    ? formatSessionVolumeSummary({ loggedSetCount: recap.loggedSetCount, totalVolumeKg: recap.totalVolumeKg, unit })
     : session.contentSummary;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionCard, { borderLeftColor: accent }, pressed && styles.pressed]}>
@@ -565,7 +571,7 @@ function CompletedEvidence({ session, unit }: { session: AthleteTrainingSession;
         <EvidenceMetric label="SESSION RPE" value={recap.sessionRpe != null ? String(recap.sessionRpe) : '—'} />
         <EvidenceMetric label="PLANNED SETS" value={recap.completionPercent != null ? `${recap.completionPercent}%` : '—'} />
       </View>
-      {recap.totalVolumeKg ? <Text style={styles.completedVolume}>{formatVolume(recap.totalVolumeKg, unit)} total volume</Text> : null}
+      {recap.totalVolumeKg ? <Text style={styles.completedVolume}>{formatTotalVolumeFromKg(recap.totalVolumeKg, unit)}</Text> : null}
       {recap.topLifts?.length ? (
         <View style={styles.topLiftList}>
           <Text style={styles.sectionKicker}>TOP LIFTS</Text>
@@ -619,10 +625,8 @@ function programMeta(program: AthleteTrainingProgram) { return [program.blockCou
 function formatWeekRangeLabel(value: string) { return String(value || '').replace(/\s+-\s+/g, ' – '); }
 function formatLongDate(value?: string | null) { if (!value) return 'SESSION'; const date = new Date(`${value}T12:00:00`); return Number.isFinite(date.getTime()) ? date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase() : value.toUpperCase(); }
 function formatUpdateAge(value: string) { const elapsed = Date.now() - new Date(value).getTime(); if (!Number.isFinite(elapsed)) return ''; const days = Math.max(0, Math.floor(elapsed / 86400000)); return days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days}d`; }
-function kgToUnit(value: number, unit: 'kg' | 'lb') { return unit === 'lb' ? value * 2.2046226218 : value; }
-function formatVolume(valueKg: number, unit: 'kg' | 'lb') { const value = kgToUnit(valueKg, unit); const suffix = unit === 'lb' ? 'lb' : 'kg'; return value >= 10000 ? `${(value / 1000).toFixed(1)}K ${suffix}` : `${Math.round(value).toLocaleString()} ${suffix}`; }
-function formatSet(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { const load = lift.weightKg != null ? `${Math.round(kgToUnit(lift.weightKg, unit))} ${unit}` : 'Load not recorded'; const reps = lift.reps != null ? ` × ${lift.reps}` : ''; const rpe = lift.rpe != null ? ` @ ${lift.rpe}` : ''; return `${load}${reps}${rpe}`; }
-function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!lift.hasPr || lift.prDelta == null || Number(lift.prDelta) <= 0) return null; const sourceUnit = String(lift.prUnit || '').toLowerCase(); const sourceValue = Number(lift.prDelta); const displayValue = unit === 'lb' && sourceUnit === 'kg' ? sourceValue * 2.2046226218 : unit === 'kg' && sourceUnit.startsWith('lb') ? sourceValue / 2.2046226218 : sourceValue; const suffix = /e1rm/i.test(String(lift.prEventType || '')) ? ' e1RM' : ''; return `+${Math.round(displayValue)} ${unit}${suffix}`; }
+function formatSet(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { const load = lift.weightKg != null ? `${Math.round(kilogramsToDisplayValue(lift.weightKg, unit))} ${unit}` : 'Load not recorded'; const reps = lift.reps != null ? ` × ${lift.reps}` : ''; const rpe = lift.rpe != null ? ` @ ${lift.rpe}` : ''; return `${load}${reps}${rpe}`; }
+function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!lift.hasPr || lift.prDelta == null || Number(lift.prDelta) <= 0) return null; const sourceUnit = String(lift.prUnit || '').toLowerCase(); const sourceValue = Number(lift.prDelta); const normalizedSource = sourceUnit === 'kg' ? 'kg' : sourceUnit.startsWith('lb') ? 'lb' : unit; const displayValue = convertDisplayWeightValue(sourceValue, normalizedSource, unit); const suffix = /e1rm/i.test(String(lift.prEventType || '')) ? ' e1RM' : ''; return `+${Math.round(displayValue)} ${unit}${suffix}`; }
 function colorWithAlpha(color: string, alpha: number) { const match = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); return match ? `rgba(${parseInt(match[1], 16)},${parseInt(match[2], 16)},${parseInt(match[3], 16)},${alpha})` : color; }
 
 const styles = StyleSheet.create({

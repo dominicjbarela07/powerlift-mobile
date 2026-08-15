@@ -41,6 +41,12 @@ import {
 } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import {
+  normalizeDisplayWeightUnit,
+  parseDisplayWeightUnit,
+  preferredUnitFromSettingsPayload,
+  type DisplayWeightUnit,
+} from '@/lib/display-units';
 import { scopeProgrammingPayload } from '@/lib/programming-program-scope';
 import { compactProgrammingWeekdayLabel } from '@/lib/programming-weekday-label';
 import { formatSessionContentSnapshot } from '@/lib/session-content-snapshot';
@@ -200,6 +206,7 @@ type TrainingHubPayload = {
     name?: string | null;
     timezone?: string | null;
     avatar_url?: string | null;
+    preferred_units?: string | null;
   } | null;
   today?: string | null;
   connected_coach?: {
@@ -541,6 +548,9 @@ export default function TrainingIndexScreen() {
   const [attentionComment, setAttentionComment] = useState('');
   const [attentionSubmitting, setAttentionSubmitting] = useState(false);
   const [loadedTrainingScopeKey, setLoadedTrainingScopeKey] = useState<string | null>(null);
+  const [trainingDisplayUnit, setTrainingDisplayUnit] = useState<DisplayWeightUnit>(() =>
+    normalizeDisplayWeightUnit(user?.preferred_units),
+  );
   const hasLoadedTrainingRef = useRef(false);
   const trainingRequestSequenceRef = useRef(0);
 
@@ -558,7 +568,12 @@ export default function TrainingIndexScreen() {
       : '/workouts/my_list/mobile';
 
     try {
-      const resp = await fetchJson(endpoint, { method: 'GET' });
+      const [resp, settingsResp] = await Promise.all([
+        fetchJson(endpoint, { method: 'GET' }),
+        isProgrammingManager
+          ? Promise.resolve(null)
+          : fetchJson<any>('/mobile/settings', { method: 'GET' }),
+      ]);
       const res: any = resp.json;
       if (
         requestSequence !== trainingRequestSequenceRef.current
@@ -574,6 +589,10 @@ export default function TrainingIndexScreen() {
         return;
       }
       const responseHub: TrainingHubPayload | null = res.training_hub || null;
+      const authoritativeDisplayUnit = parseDisplayWeightUnit(responseHub?.athlete?.preferred_units)
+        || preferredUnitFromSettingsPayload(settingsResp?.ok ? settingsResp.json : null)
+        || parseDisplayWeightUnit(user?.preferred_units);
+      if (authoritativeDisplayUnit) setTrainingDisplayUnit(authoritativeDisplayUnit);
       const scoped = scopeProgrammingPayload<ProgramBlockPayload, HubSession, NonNullable<TrainingHubPayload['current_block']>>({
         activeProgramId: responseHub?.active_program?.id,
         blocks: res.blocks,
@@ -605,7 +624,7 @@ export default function TrainingIndexScreen() {
       if (silent && opts?.showRefreshIndicator !== false) setRefreshing(false);
       else setLoading(false);
     }
-  }, [programCreatedNonce, rosterAthleteId, trainingScopeKey]);
+  }, [isProgrammingManager, programCreatedNonce, rosterAthleteId, trainingScopeKey, user?.preferred_units]);
 
   useEffect(() => {
     trainingRequestSequenceRef.current += 1;
@@ -636,9 +655,9 @@ export default function TrainingIndexScreen() {
       visibleProgramBlocks,
       visiblePendingMap,
       visibleCompletedMap,
-      ['lb', 'lbs'].includes(String((user as any)?.preferred_units || '').toLowerCase()) ? 'lb' : 'kg',
+      trainingDisplayUnit,
     ),
-    [user, visibleCompletedMap, visibleHub, visiblePendingMap, visibleProgramBlocks]
+    [trainingDisplayUnit, visibleCompletedMap, visibleHub, visiblePendingMap, visibleProgramBlocks]
   );
 
   const openWorkout = (workoutId?: number | null) => {

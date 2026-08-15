@@ -73,6 +73,7 @@
     "test:settings-trustworthiness": "node scripts/test-settings-trustworthiness.mjs",
     "test:session-content-snapshot": "node --import tsx scripts/test-session-content-snapshot.mjs",
     "test:training-hub-session-labels": "node --import tsx scripts/test-training-hub-session-labels.mjs",
+    "test:preferred-unit-display": "node --import tsx scripts/test-preferred-unit-display.mjs",
     "test:training-program-progress": "node --import tsx scripts/test-training-program-progress.mjs",
     "test:training-hub-coach-context": "node scripts/test-training-hub-coach-context.mjs",
     "test:mobile-programming-manager-visual-family": "node --import tsx scripts/test-mobile-programming-manager-visual-family.mjs",

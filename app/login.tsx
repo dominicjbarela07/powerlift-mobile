@@ -136,6 +136,7 @@ export default function LoginScreen() {
       dev_onboarding_simulation_enabled: res.dev_onboarding_simulation_enabled === true,
       has_linked_athlete: !!res.has_linked_athlete,
       athlete_id: res.athlete_id ?? null,
+      preferred_units: res.preferred_units === 'lbs' ? 'lb' : res.preferred_units ?? null,
     };
     const isIndividual =
       authUser.is_coach &&

@@ -680,7 +680,14 @@ export default function SettingsScreen() {
       setNotifyVideoFeedback(json.notify_video_feedback !== false);
       setNotifyVideoSubmissions(json.notify_video_submissions !== false);
       if (Array.isArray(json.available_mobile_modes) || json.mobile_mode) {
-        await auth?.applyAccountStatePayload?.({ user: json } as any);
+        await auth?.applyAccountStatePayload?.({
+          user: {
+            ...json,
+            preferred_units: normalizeUnits(
+              json.training_profile?.preferred_units || json.training_profile?.context?.preferred_units,
+            ),
+          },
+        } as any);
       }
       if (json.mobile_mode && ['athlete', 'coach', 'individual'].includes(String(json.mobile_mode))) {
         setMobileViewMode(String(json.mobile_mode) as MobileViewMode);
@@ -780,6 +787,13 @@ export default function SettingsScreen() {
   const applyProfilePayload = async (json: any) => {
     if (json?.training_profile) {
       setTrainingProfile(json.training_profile);
+      await auth?.applyAccountStatePayload?.({
+        user: {
+          preferred_units: normalizeUnits(
+            json.training_profile.preferred_units || json.training_profile.context?.preferred_units,
+          ),
+        },
+      } as any);
       if (json.training_profile?.training_max_permissions?.can_direct_edit !== true) {
         setProfileEditor((current) => (current === 'maxes' ? null : current));
       }

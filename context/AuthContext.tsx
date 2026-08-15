@@ -18,6 +18,11 @@ import {
   useDevLiveScreenSession,
 } from '@/lib/release-preview-stubs';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import {
+  parseDisplayWeightUnit,
+  preferredUnitFromSettingsPayload,
+  type DisplayWeightUnit,
+} from '@/lib/display-units';
 import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
 
 // Shape of the authenticated user coming from your Flask API
@@ -49,6 +54,7 @@ export type AuthUser = {
   dev_onboarding_simulation_enabled?: boolean;
   has_linked_athlete: boolean;
   athlete_id: number | null;
+  preferred_units?: DisplayWeightUnit | null;
   profilePhotoUrl?: string | null;
   profilePhotoVersion?: string | null;
 };
@@ -213,6 +219,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           : payloadUser.athlete_id !== undefined
           ? payloadUser.athlete_id
           : base.athlete_id,
+      preferred_units: parseDisplayWeightUnit(payloadUser.preferred_units) ?? base.preferred_units ?? null,
       profilePhotoUrl: profilePhoto.hasProfilePhotoValue
         ? profilePhoto.profilePhotoUrl
         : base.profilePhotoUrl ?? null,
@@ -259,7 +266,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!current || !currentToken) return current;
 
     refreshAccountStatePromiseRef.current = (async () => {
-      const profile = await fetchJson<any>('/mobile/me', { method: 'GET' });
+      const [profile, settings] = await Promise.all([
+        fetchJson<any>('/mobile/me', { method: 'GET' }),
+        fetchJson<any>('/mobile/settings', { method: 'GET' }),
+      ]);
+      const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
       const payload = profile.json || {};
       if (profile.ok && payload?.user) {
         const athlete = payload.athlete || {};
@@ -274,6 +285,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
         nextUser.has_linked_athlete = !!athlete.coach_id;
         nextUser.athlete_id = athlete.coach_id ? athlete.id ?? nextUser.athlete_id ?? null : nextUser.athlete_id ?? null;
+        nextUser.preferred_units = preferredUnits ?? nextUser.preferred_units ?? null;
         await persistUser(nextUser);
         return nextUser;
       }
@@ -308,6 +320,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     if (payload.token) {
       await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
+      const settings = await fetchJson<any>('/mobile/settings', { method: 'GET' });
+      const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
+      if (preferredUnits && userRef.current) {
+        await persistUser({ ...userRef.current, preferred_units: preferredUnits });
+      }
     }
     startVideoUploadQueue();
   }
@@ -340,7 +357,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         if (storedToken) {
-          const profile = await fetchJson<any>('/mobile/me', { method: 'GET' });
+          const [profile, settings] = await Promise.all([
+            fetchJson<any>('/mobile/me', { method: 'GET' }),
+            fetchJson<any>('/mobile/settings', { method: 'GET' }),
+          ]);
+          const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
           const profileUser = profile.json?.user;
           if (profile.ok && profileUser) {
             const profilePhoto = normalizeProfilePhotoPayload(profileUser);
@@ -383,6 +404,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 restoredUser?.dev_onboarding_simulation_enabled === true,
               has_linked_athlete: !!profile.json?.athlete?.coach_id,
               athlete_id: profile.json?.athlete?.coach_id ? profile.json?.athlete?.id ?? null : null,
+              preferred_units: preferredUnits ?? restoredUser?.preferred_units ?? null,
               profilePhotoUrl: profilePhoto.hasProfilePhotoValue
                 ? profilePhoto.profilePhotoUrl
                 : restoredUser?.profilePhotoUrl ?? null,

@@ -846,8 +846,10 @@ function ReadinessLine({ isIndividual, today }: { isIndividual?: boolean; today:
       ? 'Readiness context will appear as you log readiness.'
       : readiness?.message || 'Readiness context will appear after check-ins.';
   const metrics = readiness?.metrics || {};
+  const bodyweightUnit = normalizeReadinessUnit(today.athlete?.preferred_units);
+  const bodyweight = bodyweightKgToDisplay(today.athlete?.bodyweight_kg, bodyweightUnit);
   const metricLine = [
-    ['Bodyweight', today.athlete?.bodyweight_kg != null ? `${formatNumber(today.athlete.bodyweight_kg, 1)} kg` : null],
+    ['Bodyweight', bodyweight ? `${bodyweight} ${bodyweightUnit}` : null],
     ['Sleep', metrics.sleep],
     ['Energy', metrics.energy],
     ['Soreness', metrics.soreness],

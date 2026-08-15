@@ -24,6 +24,7 @@ import {
   SLTypography,
 } from '@/constants/theme';
 import { useSLReducedMotion } from '@/lib/motion';
+import { formatTotalVolumeFromKg, kilogramsToDisplayValue } from '@/lib/display-units';
 import {
   formatTrainingHubPreviewDate,
   resolveTrainingHubSessionPreviewAction,
@@ -307,7 +308,7 @@ function CompletedPreview({ session, unit }: { session: AthleteTrainingSession; 
         <Metric label="PRs" value={String(recap.prCount || 0)} />
         <Metric label="RPE" value={recap.sessionRpe != null ? String(recap.sessionRpe) : '—'} />
       </View>
-      {recap.totalVolumeKg ? <Text style={styles.completedVolume}>{formatVolume(recap.totalVolumeKg, unit)} total volume</Text> : null}
+      {recap.totalVolumeKg ? <Text style={styles.completedVolume}>{formatTotalVolumeFromKg(recap.totalVolumeKg, unit)}</Text> : null}
       {recap.topLifts?.slice(0, 3).map((lift) => (
         <View key={`${lift.workoutItemId}-${lift.movement}`} style={styles.topLiftRow}>
           <View style={styles.movementCopy}>
@@ -336,18 +337,12 @@ function humanizeMuscle(value: string) {
   return String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function formatVolume(valueKg: number, unit: 'kg' | 'lb') {
-  const converted = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
-  const formatted = converted >= 10000 ? `${(converted / 1000).toFixed(1)}K` : Math.round(converted).toLocaleString();
-  return `${formatted} ${unit}`;
-}
-
 function formatTopLift(
   lift: NonNullable<NonNullable<AthleteTrainingSession['recap']>['topLifts']>[number],
   unit: 'kg' | 'lb',
 ) {
   const load = lift.weightKg != null
-    ? `${Math.round(unit === 'lb' ? lift.weightKg * 2.2046226218 : lift.weightKg)} ${unit}`
+    ? `${Math.round(kilogramsToDisplayValue(lift.weightKg, unit))} ${unit}`
     : 'Load not recorded';
   const reps = lift.reps != null ? ` × ${lift.reps}` : '';
   const rpe = lift.rpe != null ? ` @ ${lift.rpe}` : '';
