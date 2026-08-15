@@ -38,6 +38,7 @@ import {
   type AthleteCalendarSession,
 } from '@/components/calendar/AthleteCalendarExperience';
 import { primaryCalendarDayTone, resolveCalendarLensState } from '@/lib/athlete-calendar-lens';
+import { resolveAthleteCalendarMonthIndicator } from '@/lib/athlete-calendar-month-summary';
 import {
   ATHLETE_CALENDAR_WEEKDAYS,
   athleteCalendarBlockTransitionsForMonth,
@@ -554,9 +555,7 @@ function MonthSection({
 }) {
   const weeks = athleteCalendarWeeksForMonth(month);
   const context = contextForDate(data.ranges || [], month, data.today);
-  const completion = summary?.completionPercent ?? completionFromDays(data.days, month);
-  const completed = summary?.completedCount ?? countCompleted(data.days, month);
-  const planned = summary?.plannedCount ?? countPlanned(data.days, month);
+  const indicator = resolveAthleteCalendarMonthIndicator(summary);
   const transitionCount = [...transitionsByWeek.values()].reduce((total, rows) => total + rows.length, 0);
   const monthHeight = CALENDAR_MONTH_HEIGHT
     + Math.max(0, transitionCount - 1) * CALENDAR_TRANSITION_HEIGHT;
@@ -567,9 +566,10 @@ function MonthSection({
           <Text style={styles.sectionMonth}>{month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</Text>
           <Text numberOfLines={1} style={styles.sectionContext}>{context}</Text>
         </View>
-        <Pressable accessibilityLabel={`Open ${month.toLocaleDateString(undefined, { month: 'long' })} summary`} onPress={onOpenSummary} style={styles.summaryBadge}>
-          <Text style={styles.summaryRatio}>{completed}/{planned}</Text>
-          <Text style={styles.summaryPercent}>{completion}%</Text>
+        <Pressable accessibilityLabel={`Open ${month.toLocaleDateString(undefined, { month: 'long' })} summary. ${indicator.accessibilityLabel}`} onPress={onOpenSummary} style={styles.summaryBadge}>
+          <Text style={styles.summaryRatio}>{indicator.primary}</Text>
+          <Text numberOfLines={1} style={styles.summaryLabel}>{indicator.label}</Text>
+          {indicator.percent ? <Text style={styles.summaryPercent}>{indicator.percent}</Text> : null}
         </Pressable>
       </View>
       <View style={styles.weekdayRow}>
@@ -973,6 +973,7 @@ function PersonalItems({ events, onAction }: { events: AthleteCalendarPersonalEv
 
 function MonthSummarySheet({ month, onClose, preferredUnits = 'kg', summary }: { month: Date | null; onClose: () => void; preferredUnits?: 'kg' | 'lb'; summary?: AthleteCalendarMonthSummary }) {
   if (!month) return null;
+  const indicator = resolveAthleteCalendarMonthIndicator(summary);
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible>
       <View style={styles.modalBackdrop}>
@@ -983,10 +984,15 @@ function MonthSummarySheet({ month, onClose, preferredUnits = 'kg', summary }: {
           {summary ? (
             <ScrollView contentContainerStyle={styles.summaryContent} showsVerticalScrollIndicator={false}>
               <View style={styles.summaryMetricGrid}>
-                <SummaryMetric label="SESSIONS" value={summary.sessionCount} />
-                <SummaryMetric label="COMPLETED" value={summary.completedCount} />
-                <SummaryMetric label="UPCOMING" value={summary.upcomingCount} />
-                <SummaryMetric label="COMPLETION" value={`${summary.completionPercent}%`} />
+                <SummaryMetric label="SCHEDULED" value={summary.sessionCount} />
+                <SummaryMetric label="DUE" value={summary.dueCount ?? '—'} />
+                <SummaryMetric label="COMPLETED DUE" value={summary.dueCompletedCount ?? '—'} />
+                <SummaryMetric label="MISSED" value={summary.missedCount ?? '—'} />
+              </View>
+              <View style={styles.completionMeaning}>
+                <Text style={styles.cardEyebrow}>SESSION COMPLETION THROUGH TODAY</Text>
+                <Text style={styles.completionMeaningValue}>{indicator.primary}{indicator.percent ? ` · ${indicator.percent}` : ''}</Text>
+                <Text style={styles.cardBody}>{indicator.accessibilityLabel}. Future Sessions are not counted as incomplete.</Text>
               </View>
               {summary.totalVolumeKg > 0 ? <SummaryFeature label="TOTAL VOLUME" value={formatCompactWeight(summary.totalVolumeKg, preferredUnits)} accent="violet" /> : null}
               {summary.prCount > 0 ? <SummaryFeature label="PERSONAL RECORDS" value={`${summary.prCount}`} accent="gold" /> : null}
@@ -1124,9 +1130,6 @@ function addMonths(date: Date, count: number) { return new Date(date.getFullYear
 function monthKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; }
 function formatFullDate(value: string) { const date = parseYmd(value); return date ? date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : value; }
 function formatShortDate(value: string) { const date = parseYmd(value); return date ? date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : value; }
-function countCompleted(days: AthleteCalendarDay[], month: Date) { return days.filter((day) => day.date.startsWith(monthKey(month))).flatMap((day) => day.sessions).filter((session) => resolveCalendarSessionStatus(session.status).lifecycle === 'completed').length; }
-function countPlanned(days: AthleteCalendarDay[], month: Date) { return days.filter((day) => day.date.startsWith(monthKey(month))).flatMap((day) => day.sessions).filter((session) => resolveCalendarSessionStatus(session.status).lifecycle !== 'canceled').length; }
-function completionFromDays(days: AthleteCalendarDay[], month: Date) { const planned = countPlanned(days, month); return planned ? Math.round((countCompleted(days, month) / planned) * 100) : 0; }
 function toneColor(tone: string) { if (tone === 'green') return '#6FC697'; if (tone === 'gold') return '#E2B64E'; if (tone === 'red') return '#E07171'; if (tone === 'pink') return '#D06ADC'; if (tone === 'violet') return '#9A64FF'; return '#718095'; }
 function lensColor(state: AthleteCalendarDayDetail['state']) { if (state === 'completed') return '#65B787'; if (state === 'assigned') return '#D7A942'; if (state === 'in_progress') return '#9A64FF'; if (state === 'needs_attention') return '#D66E6E'; if (state === 'personal') return '#C575D8'; return '#72A58F'; }
 function scoreLabel(value?: number | null, inverse = false) { if (value == null) return '—'; const rounded = Math.round(value * 10) / 10; if (inverse) return rounded >= 4 ? 'High' : rounded >= 2.5 ? 'Moderate' : 'Low'; return rounded >= 4 ? 'High' : rounded >= 2.5 ? 'Steady' : 'Low'; }
@@ -1161,8 +1164,9 @@ const styles = StyleSheet.create({
   sectionMonth: { ...SLTypography.sectionTitle, color: SLColors.textStrong, fontFamily: SLFontFamilies.display },
   sectionContext: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 2 },
   summaryBadge: { width: 54, height: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#6D49A2', backgroundColor: '#0C0912' },
-  summaryRatio: { fontSize: 13, lineHeight: 15, color: SLColors.textStrong, fontFamily: SLFontFamilies.bodySemiBold },
-  summaryPercent: { fontSize: 9, lineHeight: 11, color: SLColors.success, fontFamily: SLFontFamilies.technical },
+  summaryRatio: { fontSize: 13, lineHeight: 14, color: SLColors.textStrong, fontFamily: SLFontFamilies.bodySemiBold },
+  summaryLabel: { maxWidth: 49, fontSize: 6, lineHeight: 7, letterSpacing: 0.25, textAlign: 'center', color: SLColors.textMuted, fontFamily: SLFontFamilies.technical },
+  summaryPercent: { fontSize: 8, lineHeight: 9, color: SLColors.success, fontFamily: SLFontFamilies.technical },
   calendarColumn: { flex: 1, minWidth: 0 },
   weekdayRow: { flexDirection: 'row', paddingHorizontal: 4, marginTop: 8, marginBottom: 3 },
   weekday: { textAlign: 'center', fontSize: 11, lineHeight: 15, color: SLColors.textMuted, fontFamily: SLFontFamilies.technical },
@@ -1274,6 +1278,8 @@ const styles = StyleSheet.create({
   summaryMetric: { flex: 1, minHeight: 82, alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: SLColors.borderHairline },
   summaryMetricValue: { ...SLTypography.metricValue, color: SLColors.textStrong },
   summaryMetricLabel: { fontSize: 8, lineHeight: 11, color: SLColors.textMuted, fontFamily: SLFontFamilies.technical, marginTop: 4 },
+  completionMeaning: { marginTop: 10, padding: 14, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceFlat },
+  completionMeaningValue: { ...SLTypography.kpiNumber, color: SLColors.success, marginTop: 7 },
   summaryFeature: { minHeight: 94, marginTop: 10, padding: 14, borderRadius: SLRadius.lg, borderWidth: 1, backgroundColor: SLColors.surfaceFlat, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   summaryFeatureValue: { ...SLTypography.kpiNumber, marginTop: 7 },
   featureOrb: { width: 48, height: 48, borderRadius: 24, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },

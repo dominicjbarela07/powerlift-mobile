@@ -43,6 +43,7 @@ import {
   resolveCalendarSessionStatus,
   type CalendarSessionStatusPresentation,
 } from '@/lib/calendar-session-status';
+import { resolveAthleteCalendarMonthIndicator } from '@/lib/athlete-calendar-month-summary';
 import { clockMinutesInTimezone } from '@/lib/calendar-today';
 import {
   calendarProgramStartsInMonth,
@@ -122,11 +123,15 @@ export type AthleteCalendarWeekSummary = {
 };
 export type AthleteCalendarMonthSummary = {
   month: string;
+  metricKind?: 'session_completion_to_date' | string | null;
   sessionCount: number;
   completedCount: number;
   upcomingCount: number;
   plannedCount: number;
-  completionPercent: number;
+  dueCount?: number | null;
+  dueCompletedCount?: number | null;
+  missedCount?: number | null;
+  completionPercent: number | null;
   totalVolumeKg: number;
   prCount: number;
   reportedBodyweight?: {
@@ -1085,25 +1090,20 @@ function TrainingJourneyBar({ blocks, today }: { blocks: AthleteCalendarRange[];
 }
 
 function MonthSummary({ data, month }: { data: AthleteCalendarExperienceData; month: Date }) {
-  const monthPrefix = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}-`;
-  const days = data.days.filter((day) => day.date.startsWith(monthPrefix));
-  const sessions = days.flatMap((day) => day.sessions);
-  const completed = sessions.filter((session) => resolveCalendarSessionStatus(session.status).lifecycle === 'completed').length;
-  const upcoming = sessions.filter((session) => ['not_started', 'in_progress'].includes(resolveCalendarSessionStatus(session.status).lifecycle)).length;
-  const personal = days.reduce((total, day) => total + (day.personalEvents?.length || 0), 0);
-  const planned = sessions.filter((session) => resolveCalendarSessionStatus(session.status).lifecycle !== 'canceled').length;
-  const completion = planned ? Math.min(100, Math.round((completed / planned) * 100)) : 0;
+  const monthId = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
+  const summary = data.monthSummaries?.find((candidate) => candidate.month === monthId);
+  const indicator = resolveAthleteCalendarMonthIndicator(summary);
   return (
     <View style={styles.monthSummary}>
       <Text style={styles.monthSummaryEyebrow}>{month.toLocaleDateString(undefined, { month: 'long' }).toUpperCase()} SUMMARY</Text>
       <View style={styles.monthSummaryMetrics}>
-        <Metric label="SESSIONS" value={String(sessions.length)} />
-        <Metric label="COMPLETED" value={String(completed)} />
-        <Metric label="UPCOMING" value={String(upcoming)} />
-        <Metric label="PERSONAL" value={String(personal)} />
+        <Metric label="SCHEDULED" value={String(summary?.sessionCount ?? '—')} />
+        <Metric label="DUE" value={String(summary?.dueCount ?? '—')} />
+        <Metric label="COMPLETED DUE" value={String(summary?.dueCompletedCount ?? '—')} />
+        <Metric label="FUTURE" value={String(summary?.upcomingCount ?? '—')} />
       </View>
-      <View style={styles.completionHeader}><Text style={styles.completionLabel}>PLANNED SESSION COMPLETION</Text><Text style={styles.completionValue}>{completed} / {planned}</Text></View>
-      <View style={styles.completionTrack}><View style={[styles.completionFill, { width: `${completion}%` }]} /></View>
+      <View style={styles.completionHeader}><Text style={styles.completionLabel}>SESSION COMPLETION THROUGH TODAY</Text><Text style={styles.completionValue}>{indicator.primary}{indicator.percent ? ` · ${indicator.percent}` : ''}</Text></View>
+      {summary?.dueCount ? <View style={styles.completionTrack}><View style={[styles.completionFill, { width: `${summary.completionPercent ?? 0}%` }]} /></View> : null}
     </View>
   );
 }

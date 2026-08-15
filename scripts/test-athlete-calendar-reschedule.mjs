@@ -42,14 +42,23 @@ assert.equal(athleteCalendarDateAtPoint(75, 45, measuredCells), '2026-08-19');
 assert.equal(athleteCalendarDateAtPoint(5, 5, measuredCells), null);
 
 const payload = {
+  month_summaries: [
+    { month: '2026-08', planned_count: 1 },
+    { month: '2026-09', planned_count: 0 },
+  ],
   days: [
     { date: '2026-08-16', sessions: [{ workout_id: 7, date: '2026-08-16', title: 'W3 Back' }] },
     { date: '2026-08-18', sessions: [{ workout_id: 8, date: '2026-08-18', title: 'W3 Push' }] },
+    { date: '2026-09-01', sessions: [] },
   ],
 };
 const moved = withAthleteCalendarSessionDate(payload, payload.days[0].sessions[0], '2026-08-18');
 assert.deepEqual(moved?.days[0].sessions, [], 'source projection removes the Session');
 assert.deepEqual(moved?.days[1].sessions?.map((item) => item.workout_id), [8, 7], 'destination preserves existing Sessions and adds exactly one');
+assert.deepEqual(moved?.month_summaries?.map((item) => item.month), ['2026-09'], 'same-month move invalidates the affected canonical month summary');
+const movedAcrossMonths = withAthleteCalendarSessionDate(payload, payload.days[0].sessions[0], '2026-09-01');
+assert.deepEqual(movedAcrossMonths?.month_summaries, [], 'cross-month move invalidates both affected canonical month summaries');
+assert.deepEqual(movedAcrossMonths?.days[2].sessions?.map((item) => item.workout_id), [7], 'cross-month optimistic projection keeps the Session visible exactly once');
 const rolledBack = withAthleteCalendarSessionDate(moved, payload.days[0].sessions[0], '2026-08-16');
 assert.deepEqual(rolledBack?.days[0].sessions?.map((item) => item.workout_id), [7], 'rollback restores the source exactly once');
 assert.deepEqual(rolledBack?.days[1].sessions?.map((item) => item.workout_id), [8], 'rollback removes the optimistic destination copy');
@@ -63,6 +72,7 @@ assert.match(route, /canSelfCoachRescheduleSessions\(\{[\s\S]*canEditProgramming
 assert.match(route, /\/coach\/mobile\/workouts\/\$\{session\.id\}\/move/, 'Athlete Calendar reuses the canonical scheduling mutation');
 assert.match(route, /withAthleteCalendarSessionDate\(current, projectedSession, date\)/, 'move is projected optimistically');
 assert.match(route, /withAthleteCalendarSessionDate\(current, projectedSession, originalDate\)/, 'failed move rolls back');
+assert.match(route, /rollbackPayload \|\| withAthleteCalendarSessionDate/, 'failed move restores the exact pre-move month summaries');
 assert.match(route, /dayDetailCacheRef\.current\.delete\(originalDate\)[\s\S]*dayDetailCacheRef\.current\.delete\(date\)[\s\S]*await load\(true, true\)/, 'successful move invalidates local Calendar projections');
 assert.match(storyboard, /Manage Session schedule/, 'Day Lens keeps a non-drag scheduling path');
 assert.match(scheduleSheet, /minimumDate[\s\S]*Move Session/, 'accessible date picker enforces today as the minimum destination');
