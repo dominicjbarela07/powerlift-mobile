@@ -77,6 +77,11 @@ assert.match(
   'Dashboard reconciliation must not reuse a cached pre-save response.',
 );
 assert.match(
+  dashboardSource,
+  /fetchJson\('\/athletes\/mobile\/readiness\/daily'[\s\S]*headers: \{ 'X-Timezone': '' \}/,
+  'Daily check-in saves must defer the training date to the Athlete profile timezone.',
+);
+assert.match(
   homeSource,
   /CHECK-IN RECORDED[\s\S]*bodyweightKgToDisplay\(observation\.bodyweight_kg, unit\)[\s\S]*Saved today/,
   'Recorded-state presentation must use the observation bodyweight and show same-day confirmation.',
