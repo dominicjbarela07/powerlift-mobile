@@ -5,7 +5,6 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
-import { SLColors } from '@/constants/theme';
 
 export const COACH_V2 = {
   black: '#000000',
@@ -59,15 +58,25 @@ export function CoachMobileHeader({
   );
 }
 
-export function CoachBrandHeader({ onBrief, onSettings }: { onBrief: () => void; onSettings: () => void }) {
+export function CoachBrandHeader({
+  onBrief,
+  onSettings,
+  briefIcon = 'reader-outline',
+  briefLabel = 'Open coaching brief',
+}: {
+  onBrief: () => void;
+  onSettings: () => void;
+  briefIcon?: keyof typeof Ionicons.glyphMap;
+  briefLabel?: string;
+}) {
   return (
     <View style={styles.brandHeader}>
       <Pressable accessibilityLabel="Open Settings" onPress={onSettings} style={styles.headerButton}>
         <Ionicons color={COACH_V2.text} name="settings-outline" size={21} />
       </Pressable>
       <Image source={require('@/assets/images/16:9.png')} style={styles.brand} />
-      <Pressable accessibilityLabel="Open coaching brief" onPress={onBrief} style={styles.headerButton}>
-        <Ionicons color={COACH_V2.text} name="reader-outline" size={20} />
+      <Pressable accessibilityLabel={briefLabel} onPress={onBrief} style={styles.headerButton}>
+        <Ionicons color={COACH_V2.text} name={briefIcon} size={20} />
       </Pressable>
     </View>
   );
@@ -103,13 +112,30 @@ export function CoachStatusBadge({ label, tone = 'danger' }: { label: string; to
   );
 }
 
-export function CoachMetricTile({ color, icon, label, value }: { color: string; icon: keyof typeof Ionicons.glyphMap; label: string; value: string | number }) {
-  return (
-    <View style={styles.metricTile}>
+export function CoachMetricTile({ color, icon, label, onPress, value }: { color: string; icon: keyof typeof Ionicons.glyphMap; label: string; onPress?: () => void; value: string | number }) {
+  const content = (
+    <>
       <LinearGradient colors={[`${color}18`, 'rgba(5,7,11,0.98)']} style={StyleSheet.absoluteFillObject} />
       <Text style={[styles.metricValue, { color }]}>{value}</Text>
-      <Text style={styles.metricLabel}>{label}</Text>
+      <Text numberOfLines={1} style={styles.metricLabel}>{label}</Text>
       <Ionicons color={`${color}B8`} name={icon} size={15} style={styles.metricIcon} />
+    </>
+  );
+  if (onPress) {
+    return (
+      <Pressable
+        accessibilityLabel={`Open ${label}`}
+        accessibilityRole="button"
+        onPress={onPress}
+        style={({ pressed }) => [styles.metricTile, pressed && styles.metricPressed]}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+  return (
+    <View style={styles.metricTile}>
+      {content}
     </View>
   );
 }
@@ -180,6 +206,7 @@ const styles = StyleSheet.create({
   metricValue: { fontSize: 22, lineHeight: 24, fontWeight: '800' },
   metricLabel: { marginTop: 4, color: COACH_V2.muted, fontSize: 9, fontWeight: '800', letterSpacing: 0.3, textTransform: 'uppercase' },
   metricIcon: { position: 'absolute', right: 8, top: 8 },
+  metricPressed: { opacity: 0.72, transform: [{ scale: 0.98 }] },
   programArtwork: { ...StyleSheet.absoluteFillObject, left: '46%', overflow: 'hidden' },
   programImage: { position: 'absolute', right: -28, top: -14, width: 190, height: 150, opacity: 0.76 },
   sparklineEmpty: { height: 36, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COACH_V2.borderStrong },

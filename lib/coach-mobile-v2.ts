@@ -44,7 +44,65 @@ export function deriveCoachHomeFromRoster(payload: CoachRosterResponse): CoachHo
     attention_total: payload.needs_attention_total || payload.counts?.needs_attention || attention.length,
     recent_activity: recentActivity,
     roster_total: payload.counts?.all || payload.athletes?.length || 0,
+    athletes: payload.athletes || [],
   };
+}
+
+export function mergeCoachHomeWithRoster(
+  home: CoachHomeResponse,
+  roster: CoachRosterResponse,
+): CoachHomeResponse {
+  const derived = deriveCoachHomeFromRoster(roster);
+  return {
+    ...home,
+    athletes: derived.athletes,
+    roster_total: roster.counts?.all || roster.athletes?.length || home.roster_total,
+    // Keep the authoritative Home counters and capped lists, but let the
+    // roster-derived evidence cover rolling backend deployments.
+    attention_athletes: home.attention_athletes?.length
+      ? home.attention_athletes
+      : derived.attention_athletes,
+    recent_activity: home.recent_activity?.length
+      ? home.recent_activity
+      : derived.recent_activity,
+  };
+}
+
+export function sortCoachCommandCenterAthletes(athletes: CoachRosterAthlete[]) {
+  const rank = { needs_attention: 0, monitor: 1, on_track: 2 } as const;
+  return [...athletes].sort((left, right) => {
+    const byStatus = rank[left.status.classification] - rank[right.status.classification];
+    if (byStatus) return byStatus;
+    return (left.stable_sort_key || left.name).localeCompare(right.stable_sort_key || right.name);
+  });
+}
+
+export function coachTodaySessions(athletes: CoachRosterAthlete[], today = new Date()) {
+  const key = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
+  return athletes.flatMap((athlete) => (athlete.recent_training || [])
+    .filter((session) => String(session.date || '').slice(0, 10) === key)
+    .map((session) => ({ athlete, session })))
+    .sort((left, right) => left.athlete.name.localeCompare(right.athlete.name));
+}
+
+export type CoachCommandCenterKpi = 'sessions' | 'reviews' | 'programming' | 'check_ins';
+
+export function coachKpiAthletes(athletes: CoachRosterAthlete[], kind: CoachCommandCenterKpi, today = new Date()) {
+  if (kind === 'sessions') {
+    const ids = new Set(coachTodaySessions(athletes, today).map((item) => item.athlete.id));
+    return athletes.filter((athlete) => ids.has(athlete.id));
+  }
+  if (kind === 'reviews') {
+    return athletes.filter((athlete) => (
+      Number(athlete.pending_video_reviews?.count || 0)
+      + Number(athlete.pending_session_reviews?.count || 0)
+    ) > 0);
+  }
+  return athletes.filter((athlete) => athlete.queue_membership?.includes(kind));
 }
 
 export function filterCoachRosterV2(

@@ -118,6 +118,11 @@ export type CoachRecentTrainingSession = CoachSessionReference & {
   total_volume_kg?: number | null;
   pr_count: number;
   evidence_mode: 'performed' | 'planned';
+  muscle_focus?: {
+    primary?: { muscle_id: string; score?: number }[];
+    secondary?: { muscle_id: string; score?: number }[];
+    source?: 'planned' | 'performed';
+  };
 };
 
 export type CoachSessionReference = {
@@ -175,6 +180,11 @@ export type CoachHomeResponse = {
     session: CoachRecentTrainingSession;
   }[];
   roster_total: number;
+  /**
+   * Optional command-center projection. Older backends omit this; the mobile
+   * client fills it with one relationship-scoped roster request.
+   */
+  athletes?: CoachRosterAthlete[];
   error?: string;
 };
 
