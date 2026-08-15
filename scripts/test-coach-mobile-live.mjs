@@ -45,7 +45,9 @@ assert.doesNotMatch(source.home, /title="Needs Your Attention"/);
 assert.match(source.home, /horizontal showsHorizontalScrollIndicator=\{false\}/);
 assert.match(source.home, /<CoachAthleteHubSheet[\s\S]*?athlete=\{selectedAthlete\}/);
 assert.match(source.home, /<CoachKpiSheet/);
-assert.match(source.home, /accountKeyRef\.current === requestAccount/);
+assert.match(source.home, /contextKeyRef\.current === requestContext/);
+assert.match(source.home, /activeRequestRef/);
+assert.match(source.home, /signal: controller\.signal/);
 
 assert.match(source.hubSheet, /presentationStyle="overFullScreen"/);
 assert.match(source.hubSheet, /\/coach\/mobile\/athletes\/\$\{athlete\.id\}\/summary/);
