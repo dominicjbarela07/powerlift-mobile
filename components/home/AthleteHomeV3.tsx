@@ -62,14 +62,15 @@ type Today = {
 type Props = {
   today: Today;
   isIndividual?: boolean;
+  preferredUnits?: string | null;
   onAction: (action?: HomeAction | null) => void;
   supplementaryContent?: React.ReactNode;
 };
 
-export function AthleteHomeV3({ today, isIndividual = false, onAction, supplementaryContent }: Props) {
+export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
   const state = resolveHomeState(home);
-  const unit = normalizeDisplayWeightUnit(today.athlete?.preferred_units);
+  const unit = normalizeDisplayWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
 
   return (
     <View style={styles.page}>
