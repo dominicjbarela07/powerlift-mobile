@@ -36,6 +36,7 @@ import {
   coachKpiAthletes,
   coachTodaySessions,
   type CoachCommandCenterKpi,
+  coachHomeContextKey,
   deriveCoachHomeFromRoster,
   formatCoachRelativeDate,
   formatCoachVolume,
@@ -94,11 +95,21 @@ export function CoachHomeV2({
 }) {
   const router = useRouter();
   const { user } = useAuth();
-  const accountKey = user?.email || String(user?.athlete_id || '');
-  const accountKeyRef = useRef(accountKey);
+  const contextKey = coachHomeContextKey(user);
+  const contextKeyRef = useRef(contextKey);
   const requestRef = useRef(0);
+  const activeRequestRef = useRef<{
+    contextKey: string;
+    controller: AbortController;
+    mode: 'initial' | 'background' | 'manual';
+    promise: Promise<void>;
+  } | null>(null);
+  const lastBackgroundRefreshAtRef = useRef(0);
+  const appStateRef = useRef(AppState.currentState);
+  const overlayOpenRef = useRef(false);
   const previewMode = Boolean(previewData);
   const [data, setData] = useState<CoachHomeResponse | null>(previewData ? normalizeHome(previewData) : null);
+  const dataRef = useRef<CoachHomeResponse | null>(previewData ? normalizeHome(previewData) : null);
   const [loading, setLoading] = useState(!previewData);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,18 +122,40 @@ export function CoachHomeV2({
   }, [previewCoachName, user?.email, user?.user_name]);
 
   useEffect(() => {
-    accountKeyRef.current = accountKey;
+    if (contextKeyRef.current === contextKey) return;
+    activeRequestRef.current?.controller.abort();
+    activeRequestRef.current = null;
+    contextKeyRef.current = contextKey;
     requestRef.current += 1;
     setSelectedAthlete(null);
-    if (!previewMode) setData(null);
-  }, [accountKey, previewMode]);
+    setSelectedKpi(null);
+    setError(null);
+    setRefreshing(false);
+    if (!previewMode) {
+      dataRef.current = null;
+      setData(null);
+      setLoading(Boolean(contextKey));
+    }
+  }, [contextKey, previewMode]);
 
   useEffect(() => {
     if (previewData) {
-      setData(normalizeHome(previewData));
+      const normalized = normalizeHome(previewData);
+      dataRef.current = normalized;
+      setData(normalized);
       setLoading(false);
     }
   }, [previewData]);
+
+  useEffect(() => {
+    overlayOpenRef.current = Boolean(selectedAthlete || selectedKpi);
+  }, [selectedAthlete, selectedKpi]);
+
+  useEffect(() => () => {
+    requestRef.current += 1;
+    activeRequestRef.current?.controller.abort();
+    activeRequestRef.current = null;
+  }, []);
 
   useEffect(() => {
     if (!previewInitiallySelectedAthleteId || !previewData) return;
@@ -131,69 +164,103 @@ export function CoachHomeV2({
     if (athlete) setSelectedAthlete(normalizeAthlete(athlete));
   }, [previewData, previewInitiallySelectedAthleteId]);
 
-  const load = useCallback(async ({ silent = false }: { silent?: boolean } = {}) => {
-    if (previewMode) return;
-    const requestAccount = accountKey;
-    const sequence = ++requestRef.current;
-    const current = () => accountKeyRef.current === requestAccount && requestRef.current === sequence;
-    if (silent) setRefreshing(true);
-    else setLoading(true);
-    setError(null);
-    try {
-      const homeResponse = await fetchJson('/coach/mobile/home', { method: 'GET' });
-      if (!current()) return;
-      if (homeResponse.status === 401) {
-        router.replace('/login');
-        return;
-      }
+  const load = useCallback((mode: 'initial' | 'background' | 'manual' = 'background'): Promise<void> => {
+    if (previewMode || !contextKey) return Promise.resolve();
 
-      let payload = homeResponse.json as CoachHomeResponse | null;
-      if (homeResponse.status === 404) {
-        const rosterResponse = await fetchJson('/coach/mobile/roster', { method: 'GET' });
-        const roster = rosterResponse.json as CoachRosterResponse | null;
-        if (!current()) return;
-        if (!rosterResponse.ok || !roster?.ok) {
-          setError(roster?.error || `Could not load Coach Home. (${rosterResponse.status})`);
-          return;
-        }
-        payload = deriveCoachHomeFromRoster(roster);
-      } else {
-        if (!homeResponse.ok || !payload?.ok) {
-          setError(payload?.error || `Could not load Coach Home. (${homeResponse.status})`);
-          return;
-        }
-        // Home remains a bounded attention projection. The relationship-scoped
-        // roster supplies the horizontal command-center rail in one batch.
-        const rosterResponse = await fetchJson('/coach/mobile/roster', { method: 'GET' });
-        const roster = rosterResponse.json as CoachRosterResponse | null;
-        if (!current()) return;
-        if (rosterResponse.ok && roster?.ok) payload = mergeCoachHomeWithRoster(payload, roster);
-      }
-
-      if (!current() || !payload?.ok) return;
-      setData(normalizeHome(payload));
-    } catch (loadError) {
-      if (!current()) return;
-      console.warn('Coach Command Center load failed', loadError);
-      setError('Network error. Pull to refresh or try again.');
-    } finally {
-      if (current()) {
-        setLoading(false);
-        setRefreshing(false);
-      }
+    const active = activeRequestRef.current;
+    if (active?.contextKey === contextKey) {
+      if (mode !== 'manual' || active.mode === 'manual') return active.promise;
+      active.controller.abort();
+    } else if (active) {
+      active.controller.abort();
     }
-  }, [accountKey, previewMode, router]);
+
+    const now = Date.now();
+    if (mode === 'background' && now - lastBackgroundRefreshAtRef.current < 1_000) {
+      return Promise.resolve();
+    }
+    if (mode === 'background') lastBackgroundRefreshAtRef.current = now;
+
+    const requestContext = contextKey;
+    const sequence = ++requestRef.current;
+    const controller = new AbortController();
+    const current = () => contextKeyRef.current === requestContext && requestRef.current === sequence;
+    if (mode === 'manual') setRefreshing(true);
+    if (mode === 'initial' && !dataRef.current) setLoading(true);
+    setError(null);
+
+    const promise = (async () => {
+      try {
+        const homeResponse = await fetchJson('/coach/mobile/home', { method: 'GET', signal: controller.signal });
+        if (!current()) return;
+        if (homeResponse.status === 401) {
+          router.replace('/login');
+          return;
+        }
+
+        let payload = homeResponse.json as CoachHomeResponse | null;
+        if (homeResponse.status === 404) {
+          const rosterResponse = await fetchJson('/coach/mobile/roster', { method: 'GET', signal: controller.signal });
+          const roster = rosterResponse.json as CoachRosterResponse | null;
+          if (!current()) return;
+          if (!rosterResponse.ok || !roster?.ok) {
+            setError(roster?.error || `Could not load Coach Home. (${rosterResponse.status})`);
+            return;
+          }
+          payload = deriveCoachHomeFromRoster(roster);
+        } else {
+          if (!homeResponse.ok || !payload?.ok) {
+            setError(payload?.error || `Could not load Coach Home. (${homeResponse.status})`);
+            return;
+          }
+          // Home owns summary/attention/activity. The relationship-scoped
+          // roster owns the athlete rail; prior evidence only fills fields a
+          // rolling/partial projection omitted, never an explicit empty value.
+          const rosterResponse = await fetchJson('/coach/mobile/roster', { method: 'GET', signal: controller.signal });
+          const roster = rosterResponse.json as CoachRosterResponse | null;
+          if (!current()) return;
+          if (!rosterResponse.ok || !roster?.ok) {
+            setError(roster?.error || `Could not refresh the athlete rail. (${rosterResponse.status})`);
+            return;
+          }
+          payload = mergeCoachHomeWithRoster(payload, roster, dataRef.current);
+        }
+
+        if (!current() || !payload?.ok) return;
+        const normalized = normalizeHome(payload);
+        dataRef.current = normalized;
+        setData(normalized);
+      } catch (loadError: any) {
+        if (!current() || loadError?.name === 'AbortError') return;
+        console.warn('Coach Command Center load failed', loadError);
+        setError('Network error. Pull to refresh or try again.');
+      } finally {
+        if (current()) {
+          setLoading(false);
+          if (mode === 'manual') setRefreshing(false);
+          activeRequestRef.current = null;
+        }
+      }
+    })();
+
+    activeRequestRef.current = { contextKey: requestContext, controller, mode, promise };
+    return promise;
+  }, [contextKey, previewMode, router]);
 
   useFocusEffect(useCallback(() => {
-    if (!selectedAthlete && !selectedKpi) void load({ silent: true });
-  }, [load, selectedAthlete, selectedKpi]));
+    if (!overlayOpenRef.current) void load(dataRef.current ? 'background' : 'initial');
+  }, [load]));
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && !selectedAthlete && !selectedKpi) void load({ silent: true });
+      const previous = appStateRef.current;
+      appStateRef.current = state;
+      if (state === 'active' && previous !== 'active' && !overlayOpenRef.current) {
+        void load(dataRef.current ? 'background' : 'initial');
+      }
     });
     return () => subscription.remove();
-  }, [load, selectedAthlete, selectedKpi]);
+  }, [load]);
 
   const athletes = useMemo(() => sortCoachCommandCenterAthletes(data?.athletes?.length ? data.athletes : data?.attention_athletes || []), [data]);
   const todaysSessions = useMemo(() => coachTodaySessions(athletes, today), [athletes, today]);
@@ -222,7 +289,7 @@ export function CoachHomeV2({
       />
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} tintColor={COACH_V2.violet} onRefresh={() => load({ silent: true })} />}
+        refreshControl={<RefreshControl refreshing={refreshing} tintColor={COACH_V2.violet} onRefresh={() => load('manual')} />}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.greetingRow}>

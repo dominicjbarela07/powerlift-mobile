@@ -5,6 +5,30 @@ import type {
   CoachRosterResponse,
 } from '@/lib/coach-mobile';
 
+type CoachHomeIdentity = {
+  id?: number | null;
+  user_id?: number | null;
+  email?: string | null;
+  role?: string | null;
+  is_coach?: boolean;
+  workspace_mode?: string | null;
+  is_individual_workspace?: boolean;
+  is_self_coached?: boolean;
+};
+
+export function coachHomeContextKey(user?: CoachHomeIdentity | null): string | null {
+  if (!user) return null;
+  const identity = String(user.email || '').trim().toLowerCase()
+    || String(user.id ?? user.user_id ?? '').trim();
+  if (!identity) return null;
+  const role = user.is_coach || user.role === 'coach' ? 'coach' : String(user.role || 'athlete');
+  const workspace =
+    user.workspace_mode === 'individual' || user.is_individual_workspace || user.is_self_coached
+      ? 'individual'
+      : 'team';
+  return `${role}:${identity}:${workspace}`;
+}
+
 export type CoachRosterV2Filter = 'all' | 'needs_attention' | 'programming' | 'active';
 
 export function deriveCoachHomeFromRoster(payload: CoachRosterResponse): CoachHomeResponse {
@@ -51,11 +75,51 @@ export function deriveCoachHomeFromRoster(payload: CoachRosterResponse): CoachHo
 export function mergeCoachHomeWithRoster(
   home: CoachHomeResponse,
   roster: CoachRosterResponse,
+  previousHome?: CoachHomeResponse | null,
 ): CoachHomeResponse {
   const derived = deriveCoachHomeFromRoster(roster);
+  const previousById = new Map((previousHome?.athletes || []).map((athlete) => [athlete.id, athlete]));
+  const homeById = new Map((home.attention_athletes || []).map((athlete) => [athlete.id, athlete]));
+  const athletes = (roster.athletes || []).map((athlete) => {
+    const previous = previousById.get(athlete.id);
+    const attention = homeById.get(athlete.id);
+    const fallback = attention || previous;
+    if (!fallback) return athlete;
+
+    // During rolling backend/client transitions, a roster row may omit deeper
+    // evidence even though Home already rendered it. Missing fields must not
+    // erase known-good evidence; explicit empty arrays/nulls still remain
+    // authoritative and correctly clear obsolete values.
+    return {
+      ...previous,
+      ...attention,
+      ...athlete,
+      status: athlete.status ?? attention?.status ?? previous?.status,
+      current_training:
+        athlete.current_training ?? attention?.current_training ?? previous?.current_training,
+      readiness: athlete.readiness ?? attention?.readiness ?? previous?.readiness,
+      recent_training: Array.isArray(athlete.recent_training)
+        ? athlete.recent_training
+        : Array.isArray(attention?.recent_training)
+        ? attention.recent_training
+        : previous?.recent_training,
+      last_completed_session:
+        Object.prototype.hasOwnProperty.call(athlete, 'last_completed_session')
+          ? athlete.last_completed_session
+          : Object.prototype.hasOwnProperty.call(attention || {}, 'last_completed_session')
+          ? attention?.last_completed_session
+          : previous?.last_completed_session,
+      next_assigned_session:
+        Object.prototype.hasOwnProperty.call(athlete, 'next_assigned_session')
+          ? athlete.next_assigned_session
+          : Object.prototype.hasOwnProperty.call(attention || {}, 'next_assigned_session')
+          ? attention?.next_assigned_session
+          : previous?.next_assigned_session,
+    } as CoachRosterAthlete;
+  });
   return {
     ...home,
-    athletes: derived.athletes,
+    athletes,
     roster_total: roster.counts?.all || roster.athletes?.length || home.roster_total,
     // Keep the authoritative Home counters and capped lists, but let the
     // roster-derived evidence cover rolling backend deployments.
