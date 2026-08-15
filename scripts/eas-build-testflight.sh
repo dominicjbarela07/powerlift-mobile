@@ -48,6 +48,7 @@ if (!/^2\.1\.\d+$/.test(String(app.version || ''))) failures.push('2.1.x app ver
 if (eas.build?.testflight?.channel !== 'testflight') failures.push('testflight build channel');
 if (eas.build?.testflight?.env?.EXPO_PUBLIC_API_BASE !== 'https://app.strengthledger.fit') failures.push('production API base');
 if (eas.build?.testflight?.ios?.distribution !== 'store') failures.push('App Store distribution');
+if (eas.submit?.testflight?.ios?.ascAppId !== '6756639297') failures.push('canonical App Store Connect app ID');
 
 if (failures.length) {
   console.error(`Refusing to build: invalid ${failures.join(', ')}.`);

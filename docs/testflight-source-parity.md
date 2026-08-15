@@ -22,7 +22,7 @@ embedded fallback therefore may never be a Production source checkout. Build
 TestFlight only through `scripts/eas-build-testflight.sh`, which requires the
 canonical release checkout, an explicit `testflight` release track, a clean
 release branch, a pushed HEAD, the canonical Ledger routes, and the TestFlight
-channel/API/bundle configuration.
+channel/API/bundle/App Store Connect configuration.
 
 The TestFlight release track applies a fetched compatible OTA automatically as
 soon as the session/logger safety guard permits. Production retains the normal

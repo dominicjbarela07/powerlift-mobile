@@ -55,6 +55,7 @@ if (app.extra?.releaseTrack !== 'testflight') failures.push('explicit TestFlight
 if (eas.build?.testflight?.channel !== 'testflight') failures.push('testflight build channel');
 if (eas.build?.testflight?.env?.EXPO_PUBLIC_API_BASE !== expected.apiBase) failures.push('production API base');
 if (eas.build?.testflight?.ios?.distribution !== 'store') failures.push('App Store distribution');
+if (eas.submit?.testflight?.ios?.ascAppId !== '6756639297') failures.push('canonical App Store Connect app ID');
 
 if (failures.length) {
   console.error(`Refusing to publish: invalid ${failures.join(', ')}.`);
