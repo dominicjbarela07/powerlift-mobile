@@ -17,7 +17,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CoachAthleteHubSheet } from '@/components/coach-mobile/CoachAthleteHubSheet';
 import type { CompletedSessionRecapPayload } from '@/components/coach-mobile/CompletedSessionRecap';
 import {
-  CoachBrandHeader,
   CoachCardChevron,
   CoachMetricTile,
   CoachSectionHeading,
@@ -276,17 +275,11 @@ export function CoachHomeV2({
   }, [router]);
 
   if (loading && !data) {
-    return <SLScreen edges="top" padded={false}><SLLoadingState message="Building today’s coaching command center." title="Loading Coach Home" /></SLScreen>;
+    return <SLScreen edges="none" padded={false}><SLLoadingState message="Building today’s coaching command center." title="Loading Coach Home" /></SLScreen>;
   }
 
   return (
-    <SLScreen edges="top" padded={false} style={styles.screen}>
-      <CoachBrandHeader
-        briefIcon="calendar-outline"
-        briefLabel="Open Coach Calendar"
-        onBrief={() => router.push('/(tabs)/coach-calendar')}
-        onSettings={() => router.push('/(tabs)/settings')}
-      />
+    <SLScreen edges="none" padded={false} style={styles.screen}>
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} tintColor={COACH_V2.violet} onRefresh={() => load('manual')} />}
