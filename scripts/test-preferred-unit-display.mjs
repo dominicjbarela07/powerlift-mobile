@@ -22,6 +22,7 @@ const hub = fs.readFileSync(path.join(root, 'components/training-hub/AthleteTrai
 const sheet = fs.readFileSync(path.join(root, 'components/training-hub/TrainingHubSessionPreviewSheet.tsx'), 'utf8');
 const route = fs.readFileSync(path.join(root, 'app/(tabs)/workout/index.tsx'), 'utf8');
 const auth = fs.readFileSync(path.join(root, 'context/AuthContext.tsx'), 'utf8');
+const settings = fs.readFileSync(path.join(root, 'app/(tabs)/settings.tsx'), 'utf8');
 const dashboard = fs.readFileSync(path.join(root, 'app/(tabs)/athlete-dashboard.tsx'), 'utf8');
 const ledgerExploration = fs.readFileSync(path.join(root, 'components/ledger/exploration-experiences.tsx'), 'utf8');
 const coachAthleteSheet = fs.readFileSync(path.join(root, 'components/coach-mobile/CoachAthleteHubSheet.tsx'), 'utf8');
@@ -81,6 +82,8 @@ assert.match(route, /preferredUnitFromSettingsPayload/);
 assert.match(route, /trainingDisplayUnit/);
 assert.doesNotMatch(route, /authoritativeDisplayUnit = parseDisplayWeightUnit\(responseHub\?\.athlete\?\.preferred_units\)/);
 assert.match(auth, /preferred_units: preferredUnits \?\?/);
+assert.match(settings, /json\.preferred_units\s*\|\|\s*json\.training_profile\?\.preferred_units/);
+assert.match(settings, /fetchJson<any>\('\/mobile\/settings', \{\s*method: 'PATCH',\s*body: \{ preferred_units: units \}/s);
 assert.match(hub, /formatSessionVolumeSummary/);
 assert.match(hub, /formatTotalVolumeFromKg/);
 assert.match(sheet, /formatTotalVolumeFromKg/);

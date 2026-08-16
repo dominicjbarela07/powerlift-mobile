@@ -687,7 +687,9 @@ export default function SettingsScreen() {
           user: {
             ...json,
             preferred_units: normalizeUnits(
-              json.training_profile?.preferred_units || json.training_profile?.context?.preferred_units,
+              json.preferred_units
+                || json.training_profile?.preferred_units
+                || json.training_profile?.context?.preferred_units,
             ),
           },
         } as any);
@@ -788,15 +790,16 @@ export default function SettingsScreen() {
   };
 
   const applyProfilePayload = async (json: any) => {
+    const payloadPreferredUnits = json?.preferred_units
+      || json?.training_profile?.preferred_units
+      || json?.training_profile?.context?.preferred_units;
+    if (payloadPreferredUnits) {
+      await auth?.applyAccountStatePayload?.({
+        user: { preferred_units: normalizeUnits(payloadPreferredUnits) },
+      } as any);
+    }
     if (json?.training_profile) {
       setTrainingProfile(json.training_profile);
-      await auth?.applyAccountStatePayload?.({
-        user: {
-          preferred_units: normalizeUnits(
-            json.training_profile.preferred_units || json.training_profile.context?.preferred_units,
-          ),
-        },
-      } as any);
       if (json.training_profile?.training_max_permissions?.can_direct_edit !== true) {
         setProfileEditor((current) => (current === 'maxes' ? null : current));
       }
@@ -853,19 +856,9 @@ export default function SettingsScreen() {
     try {
       setProfileSaving(true);
       setProfileError(null);
-      const context = trainingProfile?.context || {};
-      const resp = await fetchJson<any>('/mobile/training-profile/context', {
+      const resp = await fetchJson<any>('/mobile/settings', {
         method: 'PATCH',
-        body: {
-          relationship_started_at: context.relationship_started_date || '',
-          preferred_units: units,
-          federation: trainingProfile?.federation || context.federation || '',
-          weight_class: trainingProfile?.weight_class || context.weight_class || '',
-          equipment_access: context.equipment_access || '',
-          injury_notes: context.injury_notes || '',
-          mobility_limitations: context.mobility_limitations || '',
-          preferred_cues: context.preferred_cues || '',
-        } as any,
+        body: { preferred_units: units } as any,
       });
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
