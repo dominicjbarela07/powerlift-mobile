@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { CoachHomeV2 } from '@/components/coach-mobile/CoachHomeV2';
+import { CoachActivityHome } from '@/components/coach-mobile/CoachActivityHome';
 
 export default function CoachHomeRoute() {
-  return <CoachHomeV2 />;
+  return <CoachActivityHome />;
 }

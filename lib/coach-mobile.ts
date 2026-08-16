@@ -3,6 +3,75 @@ export type CoachDestination = {
   params?: Record<string, string | number | null>;
 };
 
+export type CoachHomeActivityType =
+  | 'completed_session'
+  | 'video_submitted'
+  | 'pr_achieved'
+  | 'readiness_check_in'
+  | 'programming_alert'
+  | 'message_feedback';
+
+export type CoachHomeActivity = {
+  key: string;
+  type: CoachHomeActivityType;
+  state: 'active' | 'dismissed' | 'handled' | 'auto_resolved';
+  athlete: {
+    id: number;
+    name: string;
+    avatar_url?: string | null;
+    preferred_units?: string | null;
+  };
+  title: string;
+  subtitle?: string | null;
+  occurred_at?: string | null;
+  cleared_at?: string | null;
+  priority: number;
+  source: { type: string; id?: number | null };
+  destination: CoachDestination;
+  evidence: {
+    set_count?: number;
+    movement_count?: number;
+    total_volume_kg?: number;
+    video_count?: number;
+    pr_count?: number;
+    session_rpe?: number | null;
+    muscle_keys?: string[];
+    set_indexes?: number[];
+    movement_name?: string | null;
+    score?: number;
+    delta?: number | null;
+    history?: { date: string; score: number }[];
+    sleep?: number;
+    fatigue?: number;
+    stress?: number;
+    energy?: number;
+    programmed_through_date?: string | null;
+    days_remaining?: number | null;
+    unread_count?: number;
+    current_value?: number | null;
+    prior_value?: number | null;
+    weight_kg?: number | null;
+    reps?: number | null;
+    unit?: string | null;
+  };
+  artwork?: {
+    kind?: 'performed_anatomy' | 'video_thumbnail' | 'pr_medallion' | 'readiness_chart' | 'programming' | 'message';
+    muscle_keys?: string[];
+    thumbnail_url?: string | null;
+  };
+};
+
+export type CoachHomeUpcomingSession = {
+  key: string;
+  date: string;
+  athlete: CoachHomeActivity['athlete'];
+  title: string;
+  subtitle?: string | null;
+  movement_count?: number;
+  muscle_keys?: string[];
+  destination: CoachDestination;
+};
+
 export type CoachAttentionReason = {
   athlete_id: number;
   reason_type: string;
@@ -185,6 +254,11 @@ export type CoachHomeResponse = {
    * client fills it with one relationship-scoped roster request.
    */
   athletes?: CoachRosterAthlete[];
+  queue?: CoachHomeActivity[];
+  queue_total?: number;
+  queue_counts?: Partial<Record<CoachHomeActivityType, number>>;
+  cleared_activity?: CoachHomeActivity[];
+  coming_up?: CoachHomeUpcomingSession[];
   error?: string;
 };
 
