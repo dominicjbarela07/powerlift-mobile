@@ -74,6 +74,7 @@
     "test:profile-photo": "node --import tsx scripts/test-profile-photo.mjs",
     "test:home-training-hero": "node scripts/test-home-training-hero.mjs",
     "test:athlete-home-v3": "node --import tsx scripts/test-athlete-home-v3.mjs",
+    "test:athlete-home-trends": "node --import tsx scripts/test-athlete-home-trends.mjs",
     "test:recovery-day-check-in-state": "node --import tsx scripts/test-recovery-day-check-in-state.mjs",
     "test:settings-trustworthiness": "node scripts/test-settings-trustworthiness.mjs",
     "test:session-content-snapshot": "node --import tsx scripts/test-session-content-snapshot.mjs",

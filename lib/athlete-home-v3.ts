@@ -28,12 +28,18 @@ export type HomeSessionEvidence = {
   performed_volume_kg?: number | null;
   session_rpe?: number | null;
   pr_count?: number | null;
+  evidence_state?: 'available' | 'absent' | 'unavailable' | string | null;
   muscle_focus?: HomeMuscleFocus | null;
   action?: HomeAction | null;
 };
 
 export type AthleteHomeV3Projection = {
   projection_version?: string | null;
+  data_status?: {
+    state?: 'ready' | 'unavailable' | string | null;
+    source?: string | null;
+    scope?: 'athlete' | 'self_coached' | string | null;
+  } | null;
   state_precedence?: AthleteHomeState[];
   state?: { kind?: AthleteHomeState | string | null; evidence?: Record<string, unknown> | null } | null;
   hero?: {
@@ -59,7 +65,7 @@ export type AthleteHomeV3Projection = {
     start_date?: string | null;
     end_date?: string | null;
     days?: { date?: string | null; kind?: string | null; is_today?: boolean; session_count?: number; achievement?: boolean }[];
-    performed?: { sessions?: number | null; sets?: number | null; total_volume_kg?: number | null; pr_count?: number | null } | null;
+    performed?: { sessions?: number | null; sets?: number | null; total_volume_kg?: number | null; pr_count?: number | null; evidence_state?: string | null } | null;
     action?: HomeAction | null;
   } | null;
   next_up?: HomeSessionEvidence | null;
@@ -71,6 +77,8 @@ export type AthleteHomeV3Projection = {
   } | null;
   strength?: {
     family?: string | null;
+    metric?: string | null;
+    unit?: string | null;
     current_e1rm_kg?: number | null;
     delta_kg?: number | null;
     points?: { date?: string | null; value_kg?: number | null }[];
@@ -79,9 +87,12 @@ export type AthleteHomeV3Projection = {
   } | null;
   achievement?: HomeAchievement | null;
   self_coached_actions?: HomeAction[];
+  diagnostics?: Record<string, unknown> | null;
 };
 
 export type HomeTrend = {
+  metric?: string | null;
+  unit?: string | null;
   latest?: number | null;
   average_7d?: number | null;
   points?: { date?: string | null; value?: number | null; value_kg?: number | null }[];
@@ -175,6 +186,11 @@ export function mergeAthleteHomeV3(today: any, root: any) {
   const reported = hydratedToday?.daily_check_in?.bodyweight_kg;
   const projection: AthleteHomeV3Projection = {
     projection_version: 'athlete-home-v3-compat',
+    data_status: {
+      state: 'unavailable',
+      source: 'canonical_projection_missing',
+      scope: 'athlete',
+    },
     state_precedence: ['meet', 'training', 'achievement', 'recovery', 'rest'],
     state: { kind: state, evidence: { legacy_compatibility: true } },
     hero: {
