@@ -51,14 +51,24 @@ assertIncludes(list, [
 assertIncludes(session, [
   'getCoachSessionReview',
   'saveCoachSessionReview',
-  'Athlete Context',
-  'Execution Evidence',
-  'Athlete Feedback',
-  'Private Coach Note',
-  'Complete Review',
+  'view=coach-preview',
+  'CompletedSessionRecap',
+  'viewerMode="coach"',
+  'coachReview={coachReview}',
+  'followup_adjust_programming',
   'if (saving) return',
   "action: 'save' | 'complete'",
 ], 'Session review workspace');
+
+const completedRecap = read('components/coach-mobile/CompletedSessionRecap.tsx');
+assertIncludes(completedRecap, [
+  'COACH REVIEW TOOLS',
+  'ATHLETE FEEDBACK',
+  'PRIVATE COACH NOTE',
+  'Complete Review',
+  'Performed SetLog targets',
+  'BEST SET TREND · EXACT IDENTITY',
+], 'Canonical completed Session review surface');
 
 assertIncludes(video, [
   'videoId',
