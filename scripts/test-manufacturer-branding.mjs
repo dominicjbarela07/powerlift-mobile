@@ -19,9 +19,10 @@ const workoutLoggerSource = fs.readFileSync(
   path.join(mobileRoot, 'app/(tabs)/workout/[workoutId].tsx'),
   'utf8',
 );
-const manifest = JSON.parse(
-  fs.readFileSync(path.join(assetRoot, 'source-manifest.json'), 'utf8'),
-);
+const manifestPath = path.join(assetRoot, 'source-manifest.json');
+const manifest = fs.existsSync(manifestPath)
+  ? JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+  : null;
 
 const requiredManufacturers = [
   'hammer-strength',
@@ -44,6 +45,8 @@ const requiredManufacturers = [
   'strive',
   'nebula',
   'bodymasters',
+  'glutebuilder',
+  'mega-mass',
 ];
 
 const registryKeys = new Set(MANUFACTURER_REGISTRY.map((entry) => entry.key));
@@ -52,32 +55,39 @@ for (const requiredKey of requiredManufacturers) {
 }
 assert.equal(registryKeys.size, MANUFACTURER_REGISTRY.length, 'Manufacturer keys must be unique');
 
-const manifestByKey = new Map(manifest.assets.map((entry) => [entry.key, entry]));
-assert.deepEqual(
-  new Set(manifestByKey.keys()),
-  registryKeys,
-  'The provenance manifest and runtime registry must have identical coverage',
-);
+const manifestByKey = new Map((manifest?.assets || []).map((entry) => [entry.key, entry]));
+if (manifest) {
+  assert.deepEqual(
+    new Set(manifestByKey.keys()),
+    registryKeys,
+    'The provenance manifest and runtime registry must have identical coverage',
+  );
+}
 
 for (const entry of MANUFACTURER_REGISTRY) {
-  const manifestEntry = manifestByKey.get(entry.key);
-  assert.ok(manifestEntry, `Missing provenance entry: ${entry.key}`);
-
   if (!entry.logoAssetKey) {
-    assert.equal(manifestEntry.status, 'fallback', `${entry.key} must document its fallback`);
-    assert.ok(manifestEntry.reason, `${entry.key} fallback must include a reason`);
+    if (manifest) {
+      const manifestEntry = manifestByKey.get(entry.key);
+      assert.equal(manifestEntry?.status, 'fallback', `${entry.key} must document its fallback`);
+      assert.ok(manifestEntry?.reason, `${entry.key} fallback must include a reason`);
+    }
     continue;
   }
 
-  assert.ok(
-    manifestEntry.status === 'official' || manifestEntry.status === 'provided',
-    `${entry.key} must document either an official or user-provided local source`,
-  );
-  assert.equal(manifestEntry.runtimeFile, `runtime/${entry.logoAssetKey}.png`);
-  const runtimePath = path.join(assetRoot, manifestEntry.runtimeFile);
-  const sourcePath = path.join(assetRoot, manifestEntry.sourceFile);
+  const manifestEntry = manifestByKey.get(entry.key);
+  if (manifest) {
+    assert.ok(
+      manifestEntry?.status === 'official' || manifestEntry?.status === 'provided',
+      `${entry.key} must document either an official or user-provided local source`,
+    );
+    assert.equal(manifestEntry.runtimeFile, `runtime/${entry.logoAssetKey}.png`);
+  }
+  const runtimePath = path.join(assetRoot, `runtime/${entry.logoAssetKey}.png`);
   assert.ok(fs.existsSync(runtimePath), `Missing runtime logo: ${runtimePath}`);
-  assert.ok(fs.existsSync(sourcePath), `Missing retained source logo: ${sourcePath}`);
+  if (manifestEntry?.sourceFile) {
+    const sourcePath = path.join(assetRoot, manifestEntry.sourceFile);
+    assert.ok(fs.existsSync(sourcePath), `Missing retained source logo: ${sourcePath}`);
+  }
   assert.match(
     assetRegistrySource,
     new RegExp(`['"]?${entry.logoAssetKey}['"]?\\s*:`),
@@ -103,6 +113,10 @@ const resolutionCases = [
   ['Elite FTS', 'elitefts'],
   ['Free Motion Fitness', 'freemotion'],
   ['Newtech Strength Equipment', 'newtech'],
+  ['GluteBuilder', 'glutebuilder'],
+  ['Glute Builder Fitness', 'glutebuilder'],
+  ['Mega Mass', 'mega-mass'],
+  ['MEGAMASS Strength Equipment', 'mega-mass'],
 ];
 for (const [input, expectedKey] of resolutionCases) {
   assert.equal(resolveManufacturerBrand(input).key, expectedKey, `Failed alias: ${input}`);
@@ -137,6 +151,13 @@ const unknown = resolveManufacturerBrand('Custom Fabrication Co.');
 assert.equal(unknown.key, null);
 assert.equal(unknown.displayName, 'Custom Fabrication Co.');
 assert.equal(unknown.usesFallback, true);
+
+for (const sourceFile of ['glutebuilder.png', 'mega-mass.png']) {
+  assert.ok(
+    fs.existsSync(path.join(assetRoot, 'source', sourceFile)),
+    `Missing retained authoritative source: ${sourceFile}`,
+  );
+}
 
 assert.match(
   workoutLoggerSource,

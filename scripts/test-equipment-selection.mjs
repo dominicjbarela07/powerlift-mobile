@@ -263,6 +263,22 @@ assert.equal(
   'Prime Fitness',
   'Search must filter the already-populated manufacturer catalog.',
 );
+for (const [query, expected] of [
+  ['Glute', 'GluteBuilder'],
+  ['GluteBuilder', 'GluteBuilder'],
+  ['Mega', 'Mega Mass'],
+  ['Mega Mass', 'Mega Mass'],
+]) {
+  assert.equal(
+    workoutDetailMachineIdentityChoices(
+      query,
+      highRow.movement_identity.family_id,
+      highRow.movement,
+    ).at(0)?.manufacturer?.display_name,
+    expected,
+    `Manufacturer search must find ${expected} using ${query}.`,
+  );
+}
 
 const highRowHammer = highRowChoices.find(
   (choice) => choice.manufacturer?.display_name === 'Hammer Strength',

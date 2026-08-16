@@ -25,7 +25,9 @@ export type ManufacturerLogoAssetKey =
   | 'star-trac'
   | 'torque-fitness'
   | 'sportsart'
-  | 'newtech';
+  | 'newtech'
+  | 'glutebuilder'
+  | 'mega-mass';
 
 export type ManufacturerRegistryEntry = Readonly<{
   key: string;
@@ -255,6 +257,27 @@ export const MANUFACTURER_REGISTRY: readonly ManufacturerRegistryEntry[] = Objec
     aliases: ['newtech strength equipment', 'new tech strength', 'newtech'],
     logoAssetKey: 'newtech',
     logoSurface: 'light',
+    opticalScale: 0.9,
+  },
+  {
+    key: 'glutebuilder',
+    displayName: 'GluteBuilder',
+    aliases: ['glutebuilder', 'glute builder', 'glute builder fitness'],
+    logoAssetKey: 'glutebuilder',
+    opticalScale: 0.9,
+  },
+  {
+    key: 'mega-mass',
+    displayName: 'Mega Mass',
+    aliases: [
+      'mega mass',
+      'megamass',
+      'mega mass fitness',
+      'megamass fitness',
+      'mega mass strength',
+      'megamass strength',
+    ],
+    logoAssetKey: 'mega-mass',
     opticalScale: 0.9,
   },
 ]);
