@@ -84,6 +84,15 @@ function movement(
       metric: 'estimated_1rm', value_kg: weightKg * (1 + reps / 30),
       method: 'epley_rpe_adjusted_v1', source_set_log_id: sets[0].id, label: 'Estimated 1RM',
     },
+    history_diagnostics: {
+      movement_definition_id: 9000 + itemId,
+      canonical_key: `certification-movement-${itemId}`,
+      identity_scope: options.kind === 'core' ? 'exact_core_identity' : 'exact_movement_identity',
+      historical_candidate_count: prior.length,
+      accepted_candidate_count: prior.length,
+      rejected_candidate_count: 0,
+      rejected: [],
+    },
   };
 }
 
@@ -137,7 +146,8 @@ const recap: CompletedSessionRecapPayload = {
 };
 
 export default function SessionRecapCertificationScreen() {
-  const params = useLocalSearchParams<{ mode?: string; units?: string }>();
+  const params = useLocalSearchParams<{ mode?: string; units?: string; offset?: string; expand?: string; tab?: string }>();
+  const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
   if (!__DEV__) return null;
   return <>
     <Stack.Screen options={{ headerShown: false }} />
@@ -145,11 +155,31 @@ export default function SessionRecapCertificationScreen() {
       recap={recap}
       preferredUnits={params.units === 'kg' ? 'kg' : 'lbs'}
       viewerMode={params.mode === 'coach' ? 'coach' : 'athlete'}
+      initialTab={params.tab === 'plan' ? 'plan' : 'performed'}
+      initialScrollOffsetY={initialScrollOffsetY}
+      initialExpandedItemId={Number(params.expand) || undefined}
+      coachReview={params.mode === 'coach' ? {
+        draft: {
+          coach_feedback: recap.coach_feedback.feedback || '',
+          coach_note: 'Posterior-chain loading progressed as intended.',
+          review_outcome: 'on_track',
+          review_priority: 'normal',
+          followup_adjust_programming: false,
+          followup_message_athlete: true,
+          followup_consider_tm: false,
+          followup_monitor_next: true,
+          send_feedback_message: true,
+        },
+        outcomes: [{ value: 'on_track', label: 'On Track' }, { value: 'adjust', label: 'Adjust' }],
+        priorities: [{ value: 'normal', label: 'Normal' }, { value: 'high', label: 'High' }],
+        onSave: () => undefined,
+      } : undefined}
       onClose={() => undefined}
       onDone={() => undefined}
       onViewLedger={() => undefined}
       onViewCalendar={() => undefined}
       onLogNextSession={() => undefined}
+      onOpenProgramming={() => undefined}
     />
   </>;
 }

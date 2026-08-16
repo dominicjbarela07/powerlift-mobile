@@ -10,7 +10,7 @@ const HIGHLIGHT_ASSETS: Readonly<Record<SessionRecapHighlightKind, ImageSourcePr
 
 const VIDEO_FIXTURE_ASSETS: Readonly<Record<string, ImageSourcePropType>> = {
   'competition-squat': require('@/assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png'),
-  hinge: require('@/assets/images/ledger-index-v2/ledger-core-deadlift-platform-v1.png'),
+  hinge: require('@/assets/images/gym_vibe.jpg'),
   machine: require('@/assets/images/gym_vibe.jpg'),
 };
 
