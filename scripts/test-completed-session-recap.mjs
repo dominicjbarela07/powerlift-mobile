@@ -7,6 +7,7 @@ const component = fs.readFileSync(path.join(root, 'components/coach-mobile/Compl
 const athleteRoute = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 const coachRoute = fs.readFileSync(path.join(root, 'app/(tabs)/workout/session-workspace/[workoutId].tsx'), 'utf8');
 const certification = fs.readFileSync(path.join(root, 'app/dev-session-recap-certification.tsx'), 'utf8');
+const recapAssets = fs.readFileSync(path.join(root, 'lib/session-recap-assets.ts'), 'utf8');
 
 assert.match(component, /recap\.performed_movements\.map/, 'performed SetLog projections must drive the primary movement list');
 assert.match(component, /actual_weight_kg/, 'actual load evidence must render');
@@ -30,12 +31,17 @@ assert.match(component, /ManufacturerBrandMark/, 'equipment identity must remain
 assert.match(component, /BEST SET VIDEO/, 'best-set video evidence must be visible in expanded analysis');
 assert.match(component, /VOLUME TREND/, 'Session-level volume analysis must be present');
 assert.match(component, /PERFORMANCE PROJECTIONS/, 'governed projection cards must be present');
+assert.match(component, /kind="streak"/, 'the Session Streak must render through the premium highlight artwork component');
+assert.match(recapAssets, /streak: require\('@\/assets\/images\/session-recap\/session-streak-medallion-v1\.png'\)/, 'the Session Streak must use the canonical Ledger medallion asset');
 assert.match(certification, /const movements = \[/, 'the DEV certification route must use a deterministic full-evidence Session');
 assert.equal((certification.match(/movement\(\d+,/g) || []).length, 6, 'the certification Session must contain six canonical movements');
 assert.equal((certification.match(/video: '(hinge|machine)'/g) || []).length, 2, 'the certification Session must contain two video evidence fixtures');
 assert.match(certification, /volume_trend:/, 'the certification Session must exercise Session volume history');
 assert.match(certification, /readiness_context:/, 'the certification Session must exercise readiness evidence');
 assert.match(certification, /coach_feedback:/, 'the certification Session must exercise coach feedback');
+assert.match(certification, /history_diagnostics:/, 'the certification Session must expose exact-history diagnostics in DEV');
+assert.match(certification, /coachReview=\{params\.mode === 'coach'/, 'the certification route must exercise real coach review tools');
+assert.match(certification, /initialTab=\{params\.tab === 'plan'/, 'the certification route must exercise Plan\/Compare independently');
 
 const athleteBranch = athleteRoute.indexOf('if (isFinishedSession && workout.completed_recap)');
 const athleteLogger = athleteRoute.indexOf('<KeyboardAvoidingView', athleteBranch);
