@@ -93,6 +93,7 @@
     "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",
     "test:coach-mobile-presentation-parity": "node --import tsx scripts/test-coach-mobile-presentation-parity.mjs",
     "test:coach-home-return-state": "node --import tsx scripts/test-coach-home-return-state.mjs",
+    "test:coach-home-activity-first": "node --import tsx scripts/test-coach-home-activity-first.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",
     "audit:ui-mock-library-routes": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
