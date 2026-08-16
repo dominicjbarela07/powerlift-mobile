@@ -1138,7 +1138,6 @@ export default function MobileSessionWorkspaceScreen() {
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
-        ...(plan.metadataPatch.displayUnit !== undefined ? { preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg' } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
