@@ -94,7 +94,7 @@ export default function CoachSessionReviewScreen() {
       refresh ? setRefreshing(true) : setLoading(true);
       setError(null);
       const [detailResult, reviewResult] = await Promise.all([
-        fetchJson<DetailPayload>(`/workouts/mobile/${workoutId}?view=coach-preview`, { method: 'GET', auth: true }),
+        fetchJson<DetailPayload>(`/workouts/mobile/${workoutId}?view=coach-preview${__DEV__ ? '&history_diagnostics=1' : ''}`, { method: 'GET', auth: true }),
         getCoachSessionReview(workoutId),
       ]);
       const nextDetail = detailResult.json as DetailPayload | null;

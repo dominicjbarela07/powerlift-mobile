@@ -1,7 +1,7 @@
 // app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -203,12 +203,15 @@ function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) 
 function RootStack() {
   const { authReady, user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const registeredPushTokenRef = useRef<string | null>(null);
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
   const isIndividual =
     user?.workspace_mode === 'individual' ||
       user?.is_individual_workspace === true ||
       user?.is_self_coached === true;
+  const isDevSessionRecapCertification =
+    __DEV__ && pathname === '/dev-session-recap-certification';
 
   const notificationModuleRef = useRef<ExpoNotificationsModule | null>(null);
 
@@ -419,7 +422,7 @@ function RootStack() {
   }, [isIndividual, router, user?.id, user?.is_coach, user?.user_id]);
 
   // Prevent login/dashboard flicker while SecureStore rehydrates, but never stay blank forever.
-  if (!authReady && !authWaitExpired) {
+  if (!authReady && !authWaitExpired && !isDevSessionRecapCertification) {
     return <StartupLoadingScreen message="Preparing your account..." />;
   }
 
