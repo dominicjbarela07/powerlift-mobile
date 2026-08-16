@@ -26,6 +26,7 @@ function movement(
     reps,
     rir: 2,
     score: Math.max(1, weightKg - (dates.length - index) * 2.26796) * (1 + reps / 30),
+    metric_value: Math.max(1, weightKg - (dates.length - index) * 2.26796) * (1 + reps / 30),
   }));
   const video = options.video ? {
     id: itemId * 1000 + 1,
@@ -56,7 +57,9 @@ function movement(
       manufacturer: (options.equipment || 'Rogue').split(' · ')[0],
       manufacturer_key: (options.equipment || 'rogue').split(' · ')[0].toLowerCase().replaceAll(' ', '-'),
       model: (options.equipment || 'Rogue · Power Bar').split(' · ')[1] || 'Power Bar',
-      implementation_key: options.kind === 'core' ? 'barbell' : 'selectorized',
+      implementation_key: options.kind === 'core'
+        ? 'barbell'
+        : `${(options.equipment || 'equipment').split(' · ')[0].toLowerCase().replaceAll(' ', '_')}:${(options.equipment || '').toLowerCase().includes('plate loaded') ? 'plate_loaded' : 'selectorized'}`,
     }],
     has_pr: !!options.pr,
     measurement: { measurement_type: 'load_reps', comparison_eligible: true, comparison_scope: 'exact_movement_identity' },
@@ -72,12 +75,17 @@ function movement(
     },
     trend: {
       metric: 'estimated_1rm_kg',
+      metric_label: 'Estimated 1RM',
+      metric_unit: 'kg',
+      direction: 'higher_is_better',
       scope: options.kind === 'core' ? 'exact_core_identity' : 'exact_movement_identity',
       state: 'trend',
       delta_kg: 4.53592,
+      delta_value: 4.53592,
       points: [...prior, {
         date: '2026-08-13', workout_id: 742, set_log_id: sets[0].id,
-        weight_kg: weightKg, reps, rir: 2, score: weightKg * (1 + reps / 30), current: true,
+        weight_kg: weightKg, reps, rir: 2, score: weightKg * (1 + reps / 30),
+        metric_value: weightKg * (1 + reps / 30), current: true,
       }],
     },
     projection: {
@@ -98,10 +106,10 @@ function movement(
 
 const movements = [
   movement(1, 'Romanian Deadlift', 'hamstrings', ['glutes', 'lower_back'], 83.9146, 10, { kind: 'core', lift: 'DL', pr: true, video: 'hinge' }),
-  movement(2, 'Single-Leg Press', 'quads', ['glutes'], 142.881, 10, { equipment: 'Prime Fitness · Plate Loaded' }),
+  movement(2, 'Machine Shoulder Press', 'front_delts', ['side_delts', 'triceps'], 70.3068, 10, { equipment: 'Newtech · Plate Loaded' }),
   movement(3, 'Walking Lunge', 'quads', ['glutes'], 61.235, 12, { equipment: 'Rogue · Dumbbells' }),
-  movement(4, 'Seated Leg Curl', 'hamstrings', ['calves'], 36.2874, 13, { equipment: 'Matrix · Selectorized', video: 'machine' }),
-  movement(5, 'Adductor Machine', 'adductors', ['glutes'], 29.4835, 15, { equipment: 'Cybex · Selectorized' }),
+  movement(4, 'Machine Lateral Raise', 'side_delts', ['front_delts'], 36.2874, 13, { equipment: 'Matrix · Selectorized', video: 'machine' }),
+  movement(5, 'Leg Extension', 'quads', [], 29.4835, 15, { equipment: 'Matrix · Selectorized' }),
   movement(6, 'Standing Calf Raise', 'calves', [], 40.8233, 15, { equipment: 'Bodymasters · Selectorized' }),
 ];
 

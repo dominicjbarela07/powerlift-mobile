@@ -28,6 +28,10 @@ assert.match(component, /<MuscleMap athlete=\{recap\.athlete\}/, 'hero and focus
 assert.match(component, /SESSION_RECAP_ARCHIVE_ART/, 'missing anatomy must use an intentional governed fallback');
 assert.match(component, /history_diagnostics/, 'DEV exact-history diagnostics must remain inspectable');
 assert.match(component, /ManufacturerBrandMark/, 'equipment identity must remain a secondary branded layer');
+assert.match(component, /MovementTrendChart/, 'movement cards must use the canonical chart component');
+assert.match(component, /@shopify\/react-native-skia/, 'movement trend plots must use the installed native chart stack');
+assert.doesNotMatch(component, /<Polyline/, 'movement trends must not regress to bare SVG polylines');
+assert.doesNotMatch(component, /implementation_key\.replace/, 'internal equipment keys must never be user-facing copy');
 assert.match(component, /BEST SET VIDEO/, 'best-set video evidence must be visible in expanded analysis');
 assert.match(component, /VOLUME TREND/, 'Session-level volume analysis must be present');
 assert.match(component, /PERFORMANCE PROJECTIONS/, 'governed projection cards must be present');
@@ -40,6 +44,9 @@ assert.match(certification, /volume_trend:/, 'the certification Session must exe
 assert.match(certification, /readiness_context:/, 'the certification Session must exercise readiness evidence');
 assert.match(certification, /coach_feedback:/, 'the certification Session must exercise coach feedback');
 assert.match(certification, /history_diagnostics:/, 'the certification Session must expose exact-history diagnostics in DEV');
+assert.match(certification, /Machine Shoulder Press/, 'certification must prove movement identity above Newtech equipment');
+assert.match(certification, /Machine Lateral Raise/, 'certification must prove movement identity above Matrix equipment');
+assert.match(certification, /Leg Extension/, 'certification must prove separate movement history on shared Matrix equipment');
 assert.match(certification, /coachReview=\{params\.mode === 'coach'/, 'the certification route must exercise real coach review tools');
 assert.match(certification, /initialTab=\{params\.tab === 'plan'/, 'the certification route must exercise Plan\/Compare independently');
 
