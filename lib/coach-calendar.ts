@@ -1,4 +1,4 @@
-export type CoachCalendarView = 'week' | 'month' | 'agenda';
+export type CoachCalendarView = 'month' | 'agenda';
 export type CoachCalendarStatusFilter = 'all' | 'needs' | 'assigned' | 'in_progress' | 'completed' | 'draft';
 
 export type CalendarDateRange = {
@@ -41,10 +41,6 @@ export function startOfCalendarMonth(date: Date) {
 }
 
 export function calendarRange(view: CoachCalendarView, anchor: Date): CalendarDateRange {
-  if (view === 'week') {
-    const start = startOfCalendarWeek(anchor);
-    return { start, end: addCalendarDays(start, COACH_CALENDAR_WEEK_DAYS) };
-  }
   if (view === 'month') {
     const start = startOfCalendarWeek(startOfCalendarMonth(anchor));
     return { start, end: addCalendarDays(start, 42) };
@@ -71,7 +67,7 @@ export function coachCalendarWeekWindow(anchor: Date): CalendarDateRange {
 }
 
 export function coachCalendarRequestRange(view: CoachCalendarView, anchor: Date): CalendarDateRange {
-  return view === 'week' ? coachCalendarWeekWindow(anchor) : calendarRange(view, anchor);
+  return calendarRange(view, anchor);
 }
 
 export function coachCalendarWeekIndex(visibleDate: Date, windowStart: Date) {
