@@ -8,9 +8,9 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Svg, { Polyline } from 'react-native-svg';
 
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { HomeTrendPlot } from '@/components/home/HomeTrendPlot';
 import { SLProfileAvatar } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
@@ -30,6 +30,7 @@ import {
   kilogramsToDisplayValue,
   normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
+import type { HomePlotDatum } from '@/lib/home-trend-plot';
 
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/chair.png');
@@ -81,7 +82,7 @@ export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onA
       {home.next_up ? <SessionCard eyebrow="NEXT UP" onAction={onAction} session={home.next_up} today={today} unit={unit} /> : null}
       {home.last_session ? <LastSessionCard home={home} onAction={onAction} today={today} unit={unit} /> : null}
       <TrendsSection home={home} onAction={onAction} unit={unit} />
-      {home.strength?.family && home.strength.current_e1rm_kg != null ? (
+      {home.strength ? (
         <StrengthCard home={home} onAction={onAction} unit={unit} />
       ) : null}
       {home.achievement ? <AchievementCard achievement={home.achievement} onAction={onAction} unit={unit} /> : null}
@@ -264,6 +265,7 @@ function HeroButton({ accent = '#7C37D9', label, onPress }: { accent?: string; l
 function WeekSection({ home, onAction, today, unit }: { home: AthleteHomeV3Projection; onAction: Props['onAction']; today: Today; unit: 'kg' | 'lb' }) {
   const days = sevenDays(home, today.date);
   const metrics = home.week?.performed || {};
+  const available = projectionAvailable(home);
   return (
     <Pressable accessibilityRole="button" onPress={() => onAction(home.week?.action || { route: 'calendar' })} style={({ pressed }) => [styles.weekSection, pressed && styles.pressed]}>
       <SectionHeader label="THIS WEEK" meta={`${metrics.sessions ?? 0} completed`} />
@@ -271,10 +273,10 @@ function WeekSection({ home, onAction, today, unit }: { home: AthleteHomeV3Proje
         {days.map((day) => <DayCell day={day} key={day.date} />)}
       </View>
       <View style={styles.metricStrip}>
-        <Metric value={metricValue(metrics.sessions)} label="Sessions" />
-        <Metric value={metricValue(metrics.sets)} label="Sets" />
-        <Metric value={formatCompactVolumeValueFromKg(metrics.total_volume_kg, unit) || '—'} label="Total Volume" />
-        <Metric value={metricValue(metrics.pr_count)} label="PRs" />
+        <Metric value={metricValue(metrics.sessions, available)} label="Sessions" />
+        <Metric value={metricValue(metrics.sets, available)} label="Sets" />
+        <Metric value={formatCompactVolumeValueFromKg(metrics.total_volume_kg, unit) || missingMetricLabel(available, metrics.total_volume_kg)} label="Total Volume" />
+        <Metric value={metricValue(metrics.pr_count, available)} label="PRs" />
       </View>
     </Pressable>
   );
@@ -314,15 +316,16 @@ function SessionCard({ eyebrow, onAction, session, today, unit }: { eyebrow: str
 
 function LastSessionCard({ home, onAction, today, unit }: { home: AthleteHomeV3Projection; onAction: Props['onAction']; today: Today; unit: 'kg' | 'lb' }) {
   const session = home.last_session!;
+  const available = projectionAvailable(home);
   return (
     <View>
       <SectionHeader label="LAST SESSION" meta={session.date ? relativeDay(session.date, today.date) : undefined} />
       <SessionCard eyebrow="COMPLETED" onAction={onAction} session={session} today={today} unit={unit} />
       <View style={styles.lastMetrics}>
-        <Metric value={metricValue(session.performed_set_count)} label="Sets" />
-        <Metric value={formatCompactVolumeValueFromKg(session.performed_volume_kg, unit) || '—'} label="Total Volume" />
-        <Metric value={session.session_rpe != null ? String(session.session_rpe) : '—'} label="Session RPE" />
-        <Metric value={metricValue(session.pr_count)} label="PRs" />
+        <Metric value={metricValue(session.performed_set_count, available)} label="Sets" />
+        <Metric value={formatCompactVolumeValueFromKg(session.performed_volume_kg, unit) || missingMetricLabel(available, session.performed_volume_kg)} label="Total Volume" />
+        <Metric value={session.session_rpe != null ? String(session.session_rpe) : available ? 'Not logged' : 'Unavailable'} label="Session RPE" />
+        <Metric value={metricValue(session.pr_count, available)} label="PRs" />
       </View>
     </View>
   );
@@ -334,54 +337,68 @@ function TrendsSection({ home, onAction, unit }: { home: AthleteHomeV3Projection
   const volume = home.trends?.volume;
   const latestBodyweight = formatWeightFromKg(bodyweight?.latest_kg, unit);
   const volumeValue = formatCompactVolumeValueFromKg(volume?.this_week_kg, unit);
+  const available = projectionAvailable(home);
+  const readinessPoints = React.useMemo(
+    () => (readiness?.points || []).map((point) => ({ date: point.date, value: normalizedReadiness(point.value) })),
+    [readiness?.points],
+  );
+  const bodyweightPoints = React.useMemo(
+    () => (bodyweight?.points || []).map((point) => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    [bodyweight?.points, unit],
+  );
+  const volumePoints = React.useMemo(
+    () => (volume?.points || []).map((point) => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    [unit, volume?.points],
+  );
+  const bodyweightDetail = bodyweightPoints.length === 1
+    ? 'First report'
+    : bodyweightPoints.length === 2
+      ? '2 real reports'
+      : bodyweight?.delta_kg != null
+        ? formatWeightDeltaFromKg(bodyweight.delta_kg, unit) || `${bodyweightPoints.length} real reports`
+        : `${bodyweightPoints.length} real reports`;
   return (
     <View style={styles.sectionGap}>
       <SectionHeader label="YOUR TRENDS" />
       <View style={styles.trendRow}>
-        <TrendCard accent="#44D38A" label="READINESS" value={readiness?.average_7d != null ? formatReadiness(readiness.average_7d) : '—'} detail="7-day avg" points={(readiness?.points || []).map(point => Number(point.value))} onPress={() => onAction(readiness?.action)} />
-        <TrendCard accent="#4AB7FF" label="REPORTED BW" value={latestBodyweight || '—'} detail={bodyweight?.delta_kg != null ? formatWeightDeltaFromKg(bodyweight.delta_kg, unit) || 'Recent' : 'Real reports'} points={(bodyweight?.points || []).map(point => kilogramsToDisplayValue(Number(point.value_kg), unit))} onPress={() => onAction(bodyweight?.action)} />
-        <TrendCard accent="#B44CFF" label="VOLUME" value={volumeValue || '—'} detail="This week" points={(volume?.points || []).map(point => kilogramsToDisplayValue(Number(point.value_kg), unit))} onPress={() => onAction(volume?.action)} />
+        <TrendCard accent="#44D38A" emptyLabel={available ? 'No check-ins yet' : 'Refresh unavailable'} label="READINESS" metric="Daily Readiness · 10-point display" value={readiness?.average_7d != null ? formatReadiness(readiness.average_7d) : available ? 'No data' : 'Unavailable'} detail={readinessPoints.length ? '7-day avg' : available ? 'Check in to begin' : 'Refresh to retry'} points={readinessPoints} onPress={() => onAction(readiness?.action)} />
+        <TrendCard accent="#4AB7FF" emptyLabel={available ? 'No reports yet' : 'Refresh unavailable'} label="REPORTED BW" metric={`Reported Bodyweight · ${unit}`} value={latestBodyweight || (available ? 'No reports' : 'Unavailable')} detail={bodyweightPoints.length ? bodyweightDetail : available ? 'Report in readiness' : 'Refresh to retry'} points={bodyweightPoints} onPress={() => onAction(bodyweight?.action)} />
+        <TrendCard accent="#B44CFF" emptyLabel={available ? 'No completed volume' : 'Refresh unavailable'} kind="bar" label="VOLUME" metric={`Weekly Total Volume · ${unit}`} value={volumeValue || (volume?.this_week_kg === 0 && available ? `0 ${unit}` : available ? 'No volume' : 'Unavailable')} detail={volumePoints.length ? 'This week' : available ? 'Log sets to begin' : 'Refresh to retry'} points={volumePoints} onPress={() => onAction(volume?.action)} />
       </View>
     </View>
   );
 }
 
-function TrendCard({ accent, detail, label, onPress, points, value }: { accent: string; detail: string; label: string; onPress: () => void; points: number[]; value: string }) {
+function TrendCard({ accent, detail, emptyLabel, kind = 'line', label, metric, onPress, points, value }: { accent: string; detail: string; emptyLabel: string; kind?: 'line' | 'bar'; label: string; metric: string; onPress: () => void; points: HomePlotDatum[]; value: string }) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.trendCard, pressed && styles.pressed]}>
       <Text style={styles.trendLabel}>{label}</Text>
       <Text numberOfLines={1} adjustsFontSizeToFit style={styles.trendValue}>{value}</Text>
       <Text style={styles.trendDetail}>{detail}</Text>
-      <Sparkline color={accent} points={points} />
+      <HomeTrendPlot accent={accent} emptyLabel={emptyLabel} kind={kind} metric={metric} points={points} />
     </Pressable>
   );
 }
 
-function Sparkline({ color, points }: { color: string; points: number[] }) {
-  const clean = points.filter(Number.isFinite);
-  if (clean.length < 2) return <View style={styles.sparkEmpty}><View style={[styles.sparkDot, { backgroundColor: color }]} /></View>;
-  const min = Math.min(...clean);
-  const max = Math.max(...clean);
-  const span = max - min || 1;
-  const coords = clean.map((value, index) => `${4 + (index * 72 / (clean.length - 1))},${31 - ((value - min) / span) * 24}`).join(' ');
-  return <Svg height={36} width="100%" viewBox="0 0 80 36"><Polyline fill="none" points={coords} stroke={color} strokeWidth={2} /></Svg>;
-}
-
 function StrengthCard({ home, onAction, unit }: { home: AthleteHomeV3Projection; onAction: Props['onAction']; unit: 'kg' | 'lb' }) {
   const strength = home.strength!;
-  const value = formatWeightFromKg(strength.current_e1rm_kg, unit, 0) || '—';
-  const points = (strength.points || []).map(point => kilogramsToDisplayValue(Number(point.value_kg), unit));
+  const available = projectionAvailable(home);
+  const value = formatWeightFromKg(strength.current_e1rm_kg, unit, 0) || (available ? 'No history' : 'Unavailable');
+  const points = React.useMemo(
+    () => (strength.points || []).map(point => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    [strength.points, unit],
+  );
   return (
     <Pressable accessibilityRole="button" onPress={() => onAction(strength.action)} style={({ pressed }) => [styles.strengthCard, pressed && styles.pressed]}>
       <View style={styles.strengthMedallion}><Image source={ACHIEVEMENT_ART} resizeMode="contain" style={styles.strengthImage} /></View>
       <View style={styles.flex}>
         <Text style={styles.sectionEyebrow}>FROM YOUR LEDGER</Text>
         <Text style={styles.strengthLabel}>STRENGTH TREND</Text>
-        <Text style={styles.strengthFamily}>{titleCase(strength.family)}</Text>
-        <Text style={styles.strengthValue}>{value} <Text style={styles.strengthUnit}>e1RM</Text></Text>
+        <Text style={styles.strengthFamily}>{strength.family ? titleCase(strength.family) : 'No governed lift history yet'}</Text>
+        <Text style={styles.strengthValue}>{value} {strength.current_e1rm_kg != null ? <Text style={styles.strengthUnit}>e1RM</Text> : null}</Text>
         {strength.delta_kg != null ? <Text style={styles.strengthDelta}>{formatWeightDeltaFromKg(strength.delta_kg, unit)} from prior marker</Text> : null}
       </View>
-      <View style={styles.strengthSpark}><Sparkline color="#43D38A" points={points} /></View>
+      <View style={styles.strengthSpark}><HomeTrendPlot accent="#43D38A" emptyLabel={available ? 'Log a governed lift' : 'Refresh unavailable'} metric={`${titleCase(strength.family || 'Governed lift')} e1RM · ${unit}`} points={points} /></View>
       <Ionicons color={SLColors.textSecondary} name="chevron-forward" size={18} />
     </Pressable>
   );
@@ -455,7 +472,7 @@ function sevenDays(home: AthleteHomeV3Projection, todayValue: string) {
 }
 
 function sessionEvidenceLine(session: HomeSessionEvidence, completed: boolean, unit: 'kg' | 'lb') {
-  if (completed) return [session.performed_set_count != null ? `${session.performed_set_count} sets` : null, formatCompactVolumeValueFromKg(session.performed_volume_kg, unit), session.pr_count ? `${session.pr_count} PR${session.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded';
+  if (completed) return [session.performed_set_count != null ? `${session.performed_set_count} sets` : null, formatCompactVolumeValueFromKg(session.performed_volume_kg, unit), session.session_rpe != null ? `RPE ${session.session_rpe}` : null, session.pr_count ? `${session.pr_count} PR${session.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'No performed sets logged';
   return [session.movement_count != null ? `${session.movement_count} movements` : null, session.programmed_set_count != null ? `${session.programmed_set_count} sets` : null].filter(Boolean).join(' · ') || 'Session preview';
 }
 
@@ -486,7 +503,9 @@ function achievementLabel(achievement?: HomeAchievement | null) {
 }
 
 function homeContext(_today: Today) { return 'Recovery and mobility'; }
-function metricValue(value?: number | null) { return value == null ? '—' : String(value); }
+function projectionAvailable(home: AthleteHomeV3Projection) { return home.data_status?.state === 'ready' || home.projection_version === 'athlete-home-v3'; }
+function missingMetricLabel(available: boolean, value?: number | null) { return value === 0 && available ? '0' : available ? 'No data' : 'Unavailable'; }
+function metricValue(value: number | null | undefined, available: boolean) { return value == null ? (available ? 'No data' : 'Unavailable') : String(value); }
 function normalizedReadiness(value?: number | null) { if (value == null) return null; const parsed = Number(value); return Math.round((parsed <= 5 ? parsed * 2 : parsed) * 10) / 10; }
 function formatReadiness(value: number) { const parsed = normalizedReadiness(value); return parsed == null ? '—' : String(parsed); }
 function stateColor(state: AthleteHomeState) { return state === 'meet' || state === 'achievement' ? '#F0B84B' : state === 'training' ? '#9C4DFF' : state === 'recovery' ? '#43D38A' : '#4AB7FF'; }
