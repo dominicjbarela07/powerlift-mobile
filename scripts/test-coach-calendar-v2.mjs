@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   addCalendarDays,
   calendarRange,
+  coachCalendarDateAtPoint,
   calendarSessionMatchesStatus,
   COACH_CALENDAR_WEEK_DAYS,
   COACH_CALENDAR_WEEK_WINDOW_WEEKS,
@@ -13,12 +14,14 @@ import {
   coachCalendarWeekWindow,
   coachCalendarWindowNeedsShift,
   fromLocalYMD,
+  isCoachCalendarDropTargetValid,
   isCalendarSessionMovable,
   monthGridRows,
   sameAthleteDateMove,
   selectedAthleteLabel,
   startOfCalendarWeek,
   toLocalYMD,
+  withCoachCalendarSessionDate,
 } from '../lib/coach-calendar.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -64,6 +67,34 @@ assert.equal(sameAthleteDateMove(assigned, '2026-08-11', 7), false);
 assert.equal(isCalendarSessionMovable({ ...assigned, status: 'completed' }), false);
 assert.equal(sameAthleteDateMove({ ...assigned, status: 'completed' }, '2026-08-12', 7), false);
 assert.equal(isCalendarSessionMovable({ ...assigned, status: 'in_progress' }), true);
+assert.equal(isCoachCalendarDropTargetValid({ session: assigned, destinationDate: '2026-08-12', today: '2026-08-10', targetAthleteId: 7 }), true);
+assert.equal(isCoachCalendarDropTargetValid({ session: assigned, destinationDate: '2026-08-09', today: '2026-08-10', targetAthleteId: 7 }), false);
+assert.equal(isCoachCalendarDropTargetValid({ session: assigned, destinationDate: '2026-08-11', today: '2026-08-10', targetAthleteId: 7 }), false);
+assert.equal(isCoachCalendarDropTargetValid({ session: assigned, destinationDate: '2026-08-12', today: '2026-08-10', targetAthleteId: 8 }), false);
+assert.equal(isCoachCalendarDropTargetValid({ session: { ...assigned, status: 'completed' }, destinationDate: '2026-08-12', today: '2026-08-10', targetAthleteId: 7 }), false);
+assert.equal(isCoachCalendarDropTargetValid({ session: { ...assigned, status: 'in_progress' }, destinationDate: '2026-08-12', today: '2026-08-10', targetAthleteId: 7 }), true);
+
+const measuredMonthCells = new Map([
+  ['2026-08-30', { x: 10, y: 100, width: 40, height: 48 }],
+  ['2026-08-31', { x: 50, y: 100, width: 40, height: 48 }],
+  ['2026-09-01', { x: 90, y: 100, width: 40, height: 48 }],
+]);
+assert.equal(coachCalendarDateAtPoint(109, 124, measuredMonthCells), '2026-09-01');
+assert.equal(coachCalendarDateAtPoint(9, 124, measuredMonthCells), null);
+assert.equal(coachCalendarDateAtPoint(131, 124, measuredMonthCells), null);
+
+const sessionToMove = { ...assigned, workout_id: 7 };
+const originalDays = [
+  { date: '2026-08-11', counts: { assigned: 2, total: 2 }, sessions: [sessionToMove, { ...assigned, workout_id: 8 }] },
+  { date: '2026-08-12', counts: { assigned: 0, total: 0 }, sessions: [] },
+];
+const optimisticDays = withCoachCalendarSessionDate(originalDays, sessionToMove, '2026-08-12');
+assert.deepEqual(optimisticDays.map((day) => day.sessions.length), [1, 1]);
+assert.equal(optimisticDays.flatMap((day) => day.sessions).filter((session) => session.workout_id === 7).length, 1);
+assert.equal(optimisticDays[1].sessions[0].date, '2026-08-12');
+const rolledBackDays = withCoachCalendarSessionDate(optimisticDays, sessionToMove, '2026-08-11');
+assert.deepEqual(rolledBackDays.map((day) => day.sessions.length), [2, 0]);
+assert.equal(rolledBackDays.flatMap((day) => day.sessions).filter((session) => session.workout_id === 7).length, 1);
 
 assert.equal(calendarSessionMatchesStatus({ status: 'draft' }, 'needs'), true);
 assert.equal(calendarSessionMatchesStatus({ status: 'assigned', needs_session_review: true }, 'needs'), true);
@@ -92,10 +123,17 @@ assert.match(routeSource, /\.slice\(0, 2\)/);
 assert.doesNotMatch(routeSource, /customItems\.slice\(0, 1\)/);
 assert.doesNotMatch(routeSource, /meets\.slice\(0, 1\)/);
 assert.match(routeSource, /function MonthBoard/);
+assert.match(routeSource, /function MonthDraggableSessionRow/);
 assert.match(routeSource, /function AgendaBoard/);
 assert.match(routeSource, /function DayDetailModal/);
 assert.match(routeSource, /activateAfterLongPress\(320\)/);
-assert.match(routeSource, /sameAthleteDateMove\(session, date, session\.athlete_id\)/);
+assert.match(routeSource, /isCoachCalendarDropTargetValid/);
+assert.match(routeSource, /measureInWindow/);
+assert.match(routeSource, /monthDayDragInvalid/);
+assert.match(routeSource, /monthDayDragValid/);
+assert.match(routeSource, /monthDayDragTarget/);
+assert.match(routeSource, /withCalendarSessionDate/);
+assert.match(routeSource, /The Session remains on its original date/);
 assert.match(routeSource, /dayCellDragValid/);
 assert.match(routeSource, /AccessibilityInfo\.isReduceMotionEnabled/);
 assert.match(routeSource, /\/coach\/mobile\/workouts\/\$\{session\.workout_id\}\/move/);
@@ -104,6 +142,9 @@ assert.match(routeSource, /pathname: '\/workout\/session-workspace\/\[workoutId\
 assert.match(routeSource, /scheduled_time/);
 assert.match(routeSource, /orderedDayItems/);
 assert.match(routeSource, /coach-calendar:athlete-filter:v1/);
+assert.match(routeSource, /\(day\.sessions \|\| \[\]\)\.filter/);
+assert.match(routeSource, /\(day\.meets \|\| \[\]\)\.filter/);
+assert.match(routeSource, /\(day\.custom_items \|\| \[\]\)\.filter/);
 for (const category of ['Reminder', 'Weigh-in', 'Travel', 'Team Check-in', 'Programming Day', 'Personal Note', 'Do Not Schedule']) {
   assert.ok(routeSource.includes(`'${category}'`), `Missing canonical calendar category: ${category}`);
 }

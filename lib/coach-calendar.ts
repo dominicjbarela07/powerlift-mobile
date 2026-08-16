@@ -133,6 +133,66 @@ export function sameAthleteDateMove(
   return !!targetDate && targetDate !== session.date;
 }
 
+export function isCoachCalendarDropTargetValid({
+  session,
+  destinationDate,
+  today,
+  targetAthleteId,
+}: {
+  session: { athlete_id: number; date: string; status?: string };
+  destinationDate: string;
+  today: string;
+  targetAthleteId: number;
+}) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(destinationDate) || !/^\d{4}-\d{2}-\d{2}$/.test(today)) return false;
+  if (destinationDate < today) return false;
+  return sameAthleteDateMove(session, destinationDate, targetAthleteId);
+}
+
+export type CoachCalendarCellRect = { x: number; y: number; width: number; height: number };
+
+export function coachCalendarDateAtPoint(
+  absoluteX: number,
+  absoluteY: number,
+  cells: ReadonlyMap<string, CoachCalendarCellRect>,
+) {
+  let match: string | null = null;
+  cells.forEach((rect, date) => {
+    if (match) return;
+    if (
+      absoluteX >= rect.x
+      && absoluteX <= rect.x + rect.width
+      && absoluteY >= rect.y
+      && absoluteY <= rect.y + rect.height
+    ) match = date;
+  });
+  return match;
+}
+
+function coachCalendarCountKey(status?: string) {
+  const normalized = String(status || 'assigned').toLowerCase();
+  if (['completed', 'logged', 'done'].includes(normalized)) return 'completed';
+  return ['assigned', 'in_progress', 'draft', 'missed', 'missed_excused', 'incomplete'].includes(normalized)
+    ? normalized
+    : 'assigned';
+}
+
+export function withCoachCalendarSessionDate<
+  TSession extends { workout_id: number; date: string; status?: string },
+  TDay extends { date: string; sessions: TSession[]; counts: Record<string, number> },
+>(days: TDay[], session: TSession, destinationDate: string): TDay[] {
+  const nextSession = { ...session, date: destinationDate } as TSession;
+  return days.map((day) => {
+    const sessions = day.sessions.filter((candidate) => candidate.workout_id !== session.workout_id);
+    if (day.date === destinationDate) sessions.push(nextSession);
+    const counts: Record<string, number> = { ...day.counts, total: sessions.length };
+    ['assigned', 'in_progress', 'completed', 'draft', 'missed', 'missed_excused', 'incomplete'].forEach((key) => {
+      counts[key] = sessions.filter((candidate) => coachCalendarCountKey(candidate.status) === key).length;
+    });
+    return { ...day, counts, sessions };
+  });
+}
+
 export function selectedAthleteLabel(
   athletes: Array<{ id: number; name: string }>,
   selectedIds: number[]
