@@ -18,6 +18,8 @@ import { ThemedView } from '@/components/themed-view';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
+import { formatWeightFromKg, normalizeDisplayWeightUnit } from '@/lib/display-units';
 
 const palette = {
   bg: SLColors.background,
@@ -89,11 +91,12 @@ function statusLabel(value?: string | null) {
   return 'Pending review';
 }
 
-function compactActual(video: ArchiveVideo) {
+function compactActual(video: ArchiveVideo, preferredUnits?: string | null) {
   const context = video.context;
   if (!context) return null;
-  const load = context.actual_weight_label
-    || (context.actual_weight_kg != null ? `${context.actual_weight_kg} kg` : null);
+  const load = context.actual_weight_kg != null
+    ? formatWeightFromKg(context.actual_weight_kg, normalizeDisplayWeightUnit(preferredUnits))
+    : context.actual_weight_label;
   const reps = context.actual_reps != null ? String(context.actual_reps) : null;
   const rpe = context.actual_rpe != null ? String(context.actual_rpe) : null;
   if (!load && !reps && !rpe) return null;
@@ -131,6 +134,7 @@ function reviewTimestamp(video: ArchiveVideo) {
 
 export default function AthleteVideoArchiveScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const params = useLocalSearchParams<{ lift?: string }>();
   const initialLift = typeof params.lift === 'string' ? params.lift : '';
   const [videos, setVideos] = useState<ArchiveVideo[]>([]);
@@ -462,7 +466,7 @@ export default function AthleteVideoArchiveScreen() {
                 const title = currentRoomKey && studyCategory(video) === currentRoomKey
                   ? setLabel
                   : `${movementName} · ${setLabel}`;
-                const actual = compactActual(video);
+                const actual = compactActual(video, user?.preferred_units);
                 const status = isFollowup ? 'Needs follow-up' : feedback ? 'Coach feedback' : statusLabel(video.review_status);
                 return (
                   <Pressable

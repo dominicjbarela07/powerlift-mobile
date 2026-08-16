@@ -8,8 +8,11 @@ import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { ledgerHrefFor } from './routing';
 import { fetchArchiveDetail, type ArchiveItem, type ArchiveItemType } from '@/lib/ledger-archive';
+import { useAuth } from '@/context/AuthContext';
+import { formatWeightFromKg, normalizeDisplayWeightUnit, type DisplayWeightUnit } from '@/lib/display-units';
 
 const first = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
+const ArchiveDetailUnitContext = React.createContext<DisplayWeightUnit>('lb');
 
 type ArchiveDetailItem = ArchiveItem & {
   sets?: ArchiveItem[];
@@ -32,11 +35,11 @@ function readable(key: string): string {
   return key.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function displayValue(key: string, value: unknown): string {
+function displayValue(key: string, value: unknown, unit: DisplayWeightUnit): string {
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (typeof value === 'number') {
     const formatted = Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-    if (key.endsWith('_kg')) return `${formatted} kg`;
+    if (key.endsWith('_kg')) return formatWeightFromKg(value, unit, 2) || '—';
     if (key.endsWith('_seconds')) {
       const minutes = Math.floor(value / 60);
       const seconds = Math.floor(value % 60);
@@ -55,6 +58,8 @@ function dateLabel(value?: string): string {
 
 export function ArchiveDetailExperience() {
   const router = useRouter();
+  const { user } = useAuth();
+  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string }>();
   const itemType = first(params.itemType) as ArchiveItemType;
   const sourceId = Number(first(params.sourceId));
@@ -79,7 +84,7 @@ export function ArchiveDetailExperience() {
   const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to) } } as never);
   const meta = TYPE_META[itemType] || TYPE_META.session;
 
-  return <View style={styles.page} testID="ledger-archive-detail">
+  return <ArchiveDetailUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-detail">
     <Pressable accessibilityLabel="Back to Archive results" onPress={back} style={styles.back}><Ionicons name="chevron-back" size={20} color={SLColors.iconPrimary} /><Text typographyRole="shortButtonLabel" style={styles.backText}>Archive</Text></Pressable>
     {state === 'loading' ? <DetailState loading icon="layers-outline" title="Opening source evidence" body="Retrieving the current authorized record…" /> : null}
     {state === 'unauthorized' ? <DetailState icon="lock-closed-outline" title="Archive access unavailable" body="Your session or access to this athlete's Archive could not be verified." /> : null}
@@ -106,7 +111,7 @@ export function ArchiveDetailExperience() {
       <DetailSection icon="create-outline" title="Athlete reflection" value={item.athlete_reflection} />
       {item.athlete_visible_coach_feedback ? <View style={styles.feedback}><View style={styles.feedbackIcon}><Ionicons name="chatbubble-ellipses-outline" size={21} color="#5ED7CA" /></View><View style={styles.feedbackCopy}><Text typographyRole="shortTechnicalLabel" style={styles.feedbackLabel}>ATHLETE-VISIBLE COACH FEEDBACK</Text><Text typographyRole="body" style={styles.feedbackBody}>{item.athlete_visible_coach_feedback}</Text></View></View> : null}
     </View> : null}
-  </View>;
+  </View></ArchiveDetailUnitContext.Provider>;
 }
 
 function MetaPill({ icon, label }: { icon: keyof typeof Ionicons.glyphMap; label: string }) {
@@ -118,33 +123,37 @@ function DetailState({ icon, title, body, loading = false, action, onAction }: {
 }
 
 function DetailSection({ icon, title, value }: { icon: keyof typeof Ionicons.glyphMap; title: string; value?: Record<string, unknown> | null }) {
+  const unit = React.useContext(ArchiveDetailUnitContext);
   const entries = Object.entries(value || {}).filter(([, entry]) => entry !== null && entry !== undefined && typeof entry !== 'object');
   if (!entries.length) return null;
-  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name={icon} size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>{title}</Text></View><View style={styles.fields}>{entries.map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry)}</Text></View>)}</View></View>;
+  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name={icon} size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>{title}</Text></View><View style={styles.fields}>{entries.map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View></View>;
 }
 
 function MeetSection({ value }: { value?: Record<string, unknown> | null }) {
+  const unit = React.useContext(ArchiveDetailUnitContext);
   if (!value) return null;
   const basic = Object.fromEntries(Object.entries(value).filter(([key, entry]) => !['attempts', 'result_summary'].includes(key) && entry !== null && entry !== undefined));
   const summary = value.result_summary && typeof value.result_summary === 'object' ? value.result_summary as Record<string, unknown> : null;
   const attempts = Array.isArray(value.attempts) ? value.attempts as Record<string, unknown>[] : [];
-  return <View style={styles.block}><View style={styles.blockHeading}><View style={[styles.blockIcon, styles.meetBlockIcon]}><SLTrophy size={18} tier="bronze" /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Competition evidence</Text></View><DetailFields value={basic} />{summary ? <View style={styles.summaryBand}><Text typographyRole="shortTechnicalLabel" style={styles.summaryLabel}>RESULT SUMMARY</Text><DetailFields value={summary} compact /></View> : null}{attempts.length ? <View style={styles.attempts}><Text typographyRole="shortTechnicalLabel" style={styles.summaryLabel}>ATTEMPTS</Text>{attempts.map((attempt, index) => <View key={String(attempt.id || index)} style={styles.attempt}><Text typographyRole="bodyStrong" style={styles.attemptLift}>{String(attempt.lift || 'Attempt')} {String(attempt.attempt_number || index + 1)}</Text><Text typographyRole="bodyStrong" style={styles.attemptWeight}>{displayValue('weight_kg', attempt.weight_kg)}</Text><Text typographyRole="caption" style={[styles.attemptResult, attempt.result === 'good' && styles.attemptGood]}>{String(attempt.result || 'recorded')}</Text></View>)}</View> : null}</View>;
+  return <View style={styles.block}><View style={styles.blockHeading}><View style={[styles.blockIcon, styles.meetBlockIcon]}><SLTrophy size={18} tier="bronze" /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Competition evidence</Text></View><DetailFields value={basic} />{summary ? <View style={styles.summaryBand}><Text typographyRole="shortTechnicalLabel" style={styles.summaryLabel}>RESULT SUMMARY</Text><DetailFields value={summary} compact /></View> : null}{attempts.length ? <View style={styles.attempts}><Text typographyRole="shortTechnicalLabel" style={styles.summaryLabel}>ATTEMPTS</Text>{attempts.map((attempt, index) => <View key={String(attempt.id || index)} style={styles.attempt}><Text typographyRole="bodyStrong" style={styles.attemptLift}>{String(attempt.lift || 'Attempt')} {String(attempt.attempt_number || index + 1)}</Text><Text typographyRole="bodyStrong" style={styles.attemptWeight}>{displayValue('weight_kg', attempt.weight_kg, unit)}</Text><Text typographyRole="caption" style={[styles.attemptResult, attempt.result === 'good' && styles.attemptGood]}>{String(attempt.result || 'recorded')}</Text></View>)}</View> : null}</View>;
 }
 
 function DetailFields({ value, compact = false }: { value: Record<string, unknown>; compact?: boolean }) {
-  return <View style={[styles.fields, compact && styles.fieldsCompact]}>{Object.entries(value).filter(([, entry]) => entry !== null && entry !== undefined && typeof entry !== 'object' && entry !== false).map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry)}</Text></View>)}</View>;
+  const unit = React.useContext(ArchiveDetailUnitContext);
+  return <View style={[styles.fields, compact && styles.fieldsCompact]}>{Object.entries(value).filter(([, entry]) => entry !== null && entry !== undefined && typeof entry !== 'object' && entry !== false).map(([key, entry]) => <View key={key} style={styles.field}><Text typographyRole="caption" style={styles.fieldName}>{readable(key)}</Text><Text typographyRole="bodyStrong" style={styles.fieldValue}>{displayValue(key, entry, unit)}</Text></View>)}</View>;
 }
 
 function SetEvidence({ items }: { items: ArchiveItem[] }) {
-  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name="pulse-outline" size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Performed sets</Text><Text typographyRole="caption" style={styles.setCount}>{items.length}</Text></View><View style={styles.sets}>{items.map((item) => <View key={item.source_id} style={styles.setRow}><Text typographyRole="numeric" style={styles.setIndex}>{String(item.performance?.set_index || '—')}</Text><View style={styles.setCopy}><Text typographyRole="bodyStrong" style={styles.setTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.setDetail}>{setPerformance(item)}</Text></View>{item.media?.video_count ? <Ionicons name="videocam-outline" size={17} color="#5ED7CA" /> : null}</View>)}</View></View>;
+  const unit = React.useContext(ArchiveDetailUnitContext);
+  return <View style={styles.block}><View style={styles.blockHeading}><View style={styles.blockIcon}><Ionicons name="pulse-outline" size={18} color={SLColors.accentMuted} /></View><Text typographyRole="sectionTitle" style={styles.blockTitle}>Performed sets</Text><Text typographyRole="caption" style={styles.setCount}>{items.length}</Text></View><View style={styles.sets}>{items.map((item) => <View key={item.source_id} style={styles.setRow}><Text typographyRole="numeric" style={styles.setIndex}>{String(item.performance?.set_index || '—')}</Text><View style={styles.setCopy}><Text typographyRole="bodyStrong" style={styles.setTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.setDetail}>{setPerformance(item, unit)}</Text></View>{item.media?.video_count ? <Ionicons name="videocam-outline" size={17} color="#5ED7CA" /> : null}</View>)}</View></View>;
 }
 
-function setPerformance(item: ArchiveItem): string {
+function setPerformance(item: ArchiveItem, unit: DisplayWeightUnit): string {
   const weight = item.performance?.weight_kg;
   const reps = item.performance?.reps;
   const rpe = item.performance?.rpe;
   const rir = item.performance?.rir;
-  return [typeof weight === 'number' ? `${displayValue('weight_kg', weight)}` : null, typeof reps === 'number' ? `${reps} reps` : null, typeof rpe === 'number' ? `RPE ${rpe}` : typeof rir === 'number' ? `${rir} RIR` : null].filter(Boolean).join(' · ') || 'Performed evidence';
+  return [typeof weight === 'number' ? `${displayValue('weight_kg', weight, unit)}` : null, typeof reps === 'number' ? `${reps} reps` : null, typeof rpe === 'number' ? `RPE ${rpe}` : typeof rir === 'number' ? `${rir} RIR` : null].filter(Boolean).join(' · ') || 'Performed evidence';
 }
 
 const styles = StyleSheet.create({

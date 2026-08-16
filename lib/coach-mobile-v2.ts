@@ -4,6 +4,11 @@ import type {
   CoachRosterAthlete,
   CoachRosterResponse,
 } from '@/lib/coach-mobile';
+import {
+  formatCompactVolumeValueFromKg,
+  formatWeightFromKg,
+  normalizeDisplayWeightUnit,
+} from '@/lib/display-units';
 
 type CoachHomeIdentity = {
   id?: number | null;
@@ -218,22 +223,19 @@ export function formatCoachRelativeDate(value?: string | null, today = new Date(
 }
 
 export function coachWeightUnit(preferredUnits?: string | null): 'kg' | 'lb' {
-  return String(preferredUnits || '').toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  return normalizeDisplayWeightUnit(preferredUnits);
 }
 
 export function formatCoachWeight(valueKg?: number | null, preferredUnits?: string | null) {
   if (valueKg == null || !Number.isFinite(valueKg)) return '—';
   const unit = coachWeightUnit(preferredUnits);
-  const value = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
-  return `${value >= 100 ? Math.round(value) : value.toFixed(1)} ${unit}`;
+  return formatWeightFromKg(valueKg, unit) || '—';
 }
 
 export function formatCoachVolume(valueKg?: number | null, preferredUnits?: string | null) {
   if (valueKg == null || valueKg <= 0) return null;
   const unit = coachWeightUnit(preferredUnits);
-  const value = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
-  const display = value >= 10_000 ? `${(value / 1000).toFixed(1)}K` : Math.round(value).toLocaleString();
-  return `${display} ${unit.toUpperCase()}`;
+  return formatCompactVolumeValueFromKg(valueKg, unit);
 }
 
 export function rosterInitials(name: string) {

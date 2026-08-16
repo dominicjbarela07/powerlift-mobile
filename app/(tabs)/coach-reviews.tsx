@@ -10,6 +10,8 @@ import { ThemedView } from '@/components/themed-view';
 import { getAthleteCoachReviews } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
+import { formatWeightFromKg, normalizeDisplayWeightUnit } from '@/lib/display-units';
 
 type AthleteReview = Omit<SetVideoSummary, 'review_tags'> & {
   review_tags?: SetVideoReviewTag[] | null;
@@ -54,11 +56,12 @@ function feedbackPreview(value?: string | null) {
   return text.length > 118 ? `${text.slice(0, 115).trim()}...` : text;
 }
 
-function compactActual(video: { context?: SetVideoSummary['context'] | null }) {
+function compactActual(video: { context?: SetVideoSummary['context'] | null }, preferredUnits?: string | null) {
   const context = video.context;
   if (!context) return null;
-  const load = context.actual_weight_label
-    || (context.actual_weight_kg != null ? `${context.actual_weight_kg} kg` : null);
+  const load = context.actual_weight_kg != null
+    ? formatWeightFromKg(context.actual_weight_kg, normalizeDisplayWeightUnit(preferredUnits))
+    : context.actual_weight_label;
   const reps = context.actual_reps != null ? String(context.actual_reps) : null;
   const rpe = context.actual_rpe != null ? String(context.actual_rpe) : null;
   if (!load && !reps && !rpe) return null;
@@ -92,6 +95,7 @@ function reviewTagLabels(tags?: AthleteReview['review_tags']) {
 
 export default function CoachReviewsScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const params = useLocalSearchParams<{ videoId?: string; from?: string }>();
   const [reviews, setReviews] = useState<AthleteReview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -186,7 +190,7 @@ export default function CoachReviewsScreen() {
                 const movement = simplifyMobileMovementName(context.movement_name || context.lift_name) || 'Movement';
                 const setLabel = context.set_display_label || context.set_context_label || (context.set_index != null ? `Set ${context.set_index}` : 'Set');
                 const planned = context.prescription_label || 'No planned snapshot';
-                const logged = compactActual(review) || 'No logged actuals';
+                const logged = compactActual(review, user?.preferred_units) || 'No logged actuals';
                 const tags = reviewTagLabels(review.review_tags);
 
                 return (

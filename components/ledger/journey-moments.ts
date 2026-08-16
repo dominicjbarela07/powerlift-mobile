@@ -1,5 +1,6 @@
 import type { ArchiveItem, ArchiveItemType } from '@/lib/ledger-archive';
-import type { AccomplishmentEvent } from '@/lib/ledger-data';
+import type { AccomplishmentEvent, LedgerUnit } from '@/lib/ledger-data';
+import { convertDisplayWeightValue, parseDisplayWeightUnit } from '../../lib/display-units';
 import { canonicalMajorVolumeMedallions } from '../../lib/ledger-rewards';
 import type {
   JourneyEvidenceReference,
@@ -184,13 +185,21 @@ function formatValue(value: number | null | undefined): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-function performanceDetail(event: AccomplishmentEvent): string {
+function eventDisplayValue(event: AccomplishmentEvent, value: number | null | undefined, unit: LedgerUnit): number | null {
+  if (value == null || !Number.isFinite(value)) return null;
+  const sourceUnit = parseDisplayWeightUnit(event.unit) || 'kg';
+  return convertDisplayWeightValue(value, sourceUnit, unit);
+}
+
+function performanceDetail(event: AccomplishmentEvent, unit: LedgerUnit): string {
+  const current = eventDisplayValue(event, event.current_value, unit);
+  const delta = eventDisplayValue(event, event.delta, unit);
   if (event.event_type === 'CORE_REP_MAX_PR') {
     const reps = recordNumber(event.evidence, 'rep_count') ?? recordNumber(event.evidence, 'actual_reps');
-    return `${formatValue(event.current_value)} ${event.unit || 'kg'} ${reps == null ? 'REP MAX' : `${formatValue(reps)} REP MAX`} · +${formatValue(event.delta)} ${event.unit || 'kg'}`;
+    return `${formatValue(current)} ${unit} ${reps == null ? 'REP MAX' : `${formatValue(reps)} REP MAX`} · +${formatValue(delta)} ${unit}`;
   }
   const metric = event.event_type === 'CORE_E1RM_PR' ? 'estimated 1RM' : 'weight';
-  return `${formatValue(event.current_value)} ${event.unit || 'kg'} ${metric} · +${formatValue(event.delta)} ${event.unit || 'kg'}`;
+  return `${formatValue(current)} ${unit} ${metric} · +${formatValue(delta)} ${unit}`;
 }
 
 function prTitle(event: AccomplishmentEvent, biggest: boolean): string {
@@ -278,8 +287,9 @@ export function buildJourneyMoments({
   accomplishments,
   archiveHistoryComplete,
   accomplishmentHistoryComplete,
+  unit = 'lb',
   now = new Date(),
-}: JourneySourceBundle): JourneyMoment[] {
+}: JourneySourceBundle & { unit?: LedgerUnit }): JourneyMoment[] {
   const validArchive = archiveItems.filter(isCurrentArchiveEvidence);
   const sessions = validArchive.filter(isCompletedSession)
     .sort((left, right) => Date.parse(occurredAt(left) || '') - Date.parse(occurredAt(right) || ''));
@@ -357,7 +367,7 @@ export function buildJourneyMoments({
         importance: first ? 'landmark' : 'major',
         occurredAt: episode.occurredAt,
         title: first ? `First meet · ${meet.title}` : meet.title,
-        detail: [federation, total == null ? null : `${formatValue(total)} kg total`].filter(Boolean).join(' · ') || 'Completed competition preserved in Archive.',
+        detail: [federation, total == null ? null : `${formatValue(convertDisplayWeightValue(total, 'kg', unit))} ${unit} total`].filter(Boolean).join(' · ') || 'Completed competition preserved in Archive.',
         expandedDetail: 'A completed competition backed by its canonical meet result.',
         evidence,
       }));
@@ -373,7 +383,7 @@ export function buildJourneyMoments({
         importance: isBiggest ? 'landmark' : 'major',
         occurredAt: episode.occurredAt,
         title: sourceCount > 1 ? `${primaryPr.workout_title || 'Training'} · ${sourceCount} career bests` : prTitle(primaryPr, isBiggest),
-        detail: performanceDetail(primaryPr),
+        detail: performanceDetail(primaryPr, unit),
         expandedDetail: `${sourceCount} qualifying career accomplishment${sourceCount === 1 ? '' : 's'} grouped with ${evidence.length} canonical evidence source${evidence.length === 1 ? '' : 's'}.`,
         evidence,
       }));
@@ -437,7 +447,7 @@ export function buildJourneyMoments({
       importance: 'landmark',
       occurredAt: medallion.occurredAt,
       title: `${familyLabel} lifetime volume medallion`,
-      detail: `${medallion.thresholdLb.toLocaleString('en-US')} lb accumulated volume`,
+      detail: `${formatValue(convertDisplayWeightValue(medallion.thresholdLb, 'lb', unit))} ${unit} accumulated volume`,
       expandedDetail: 'A canonical lifetime-volume threshold crossing preserved by the accomplishment platform.',
       evidence,
     }));

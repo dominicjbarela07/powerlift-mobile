@@ -20,10 +20,12 @@ import {
 } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/context/AuthContext';
 
 import { API_BASE, fetchJson, getSetVideoDownloadExportsStatus, getSetVideoExportStatus, type SetVideoExportOptions } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
+import { formatWeightFromKg, kilogramsToDisplayValue, normalizeDisplayWeightUnit, type DisplayWeightUnit } from '@/lib/display-units';
 
 const STRENGTH_LEDGER_LOGO = require('@/assets/images/Instagram Profile.png');
 
@@ -57,6 +59,16 @@ export type SetVideoContext = {
   set_display_label?: string | null;
   set_context_label?: string | null;
   prescription_label?: string | null;
+  prescription?: {
+    reps?: number | null;
+    reps_text?: string | null;
+    rpe_target?: number | null;
+    rir_target?: number | null;
+    pct?: number | null;
+    target_kg?: number | null;
+    target_low_kg?: number | null;
+    target_high_kg?: number | null;
+  } | null;
   actual_reps?: number | null;
   actual_weight_kg?: number | null;
   actual_weight_label?: string | null;
@@ -173,7 +185,7 @@ function clampNumber(value: number, min: number, max: number) {
 
 function normalizeExportWeightUnit(value?: string | null): 'kg' | 'lbs' {
   const unit = String(value || '').trim().toLowerCase();
-  return unit === 'lb' || unit === 'lbs' ? 'lbs' : 'kg';
+  return unit === 'kg' || unit === 'kgs' ? 'kg' : 'lbs';
 }
 
 function compactNumber(value: number, decimals = 2) {
@@ -181,19 +193,22 @@ function compactNumber(value: number, decimals = 2) {
   return value.toFixed(decimals).replace(/0+$/, '').replace(/\.$/, '');
 }
 
-function defaultExportWeightUnit(context?: SetVideoContext | null): 'kg' | 'lbs' {
-  if (context?.preferred_units) return normalizeExportWeightUnit(context.preferred_units);
+function defaultExportWeightUnit(viewerPreference?: string | null, context?: SetVideoContext | null): 'kg' | 'lbs' {
+  const viewerUnit = String(viewerPreference || '').trim().toLowerCase();
+  if (viewerUnit === 'kg' || viewerUnit === 'kgs' || viewerUnit === 'lb' || viewerUnit === 'lbs') {
+    return normalizeExportWeightUnit(viewerUnit);
+  }
   const label = String(context?.actual_weight_label || '').trim().toLowerCase();
   if (/\b(lb|lbs)\b/.test(label)) return 'lbs';
   if (/\bkg\b/.test(label)) return 'kg';
-  return 'kg';
+  return 'lbs';
 }
 
 function exportWeightLabel(context: SetVideoContext | null | undefined, unit: 'kg' | 'lbs') {
   if (context?.actual_weight_kg == null) return context?.actual_weight_label || null;
   const kg = Number(context.actual_weight_kg);
   if (!Number.isFinite(kg)) return context.actual_weight_label || null;
-  if (unit === 'lbs') return `${Math.round(kg * 2.2046226218)} lbs`;
+  if (unit === 'lbs') return `${Math.round(kilogramsToDisplayValue(kg, 'lb'))} lbs`;
   return `${compactNumber(kg)} kg`;
 }
 
@@ -212,17 +227,42 @@ function compactPrescriptionLabel(value?: string | null) {
   return text || null;
 }
 
-function compactContextActualParts(context?: SetVideoContext | null) {
+function compactPrescriptionContext(context: SetVideoContext | null | undefined, unit: DisplayWeightUnit) {
+  const prescription = context?.prescription;
+  if (prescription) {
+    const parts: string[] = [];
+    if (prescription.reps != null) parts.push(String(prescription.reps));
+    else if (prescription.reps_text) parts.push(prescription.reps_text);
+    if (prescription.rpe_target != null) parts.push(`@${prescription.rpe_target}`);
+    else if (prescription.rir_target != null) parts.push(`@RIR ${prescription.rir_target}`);
+    if (prescription.pct != null) parts.push(`${Math.round(prescription.pct * 100)}%`);
+    const target = formatWeightFromKg(prescription.target_kg, unit);
+    const low = formatWeightFromKg(prescription.target_low_kg, unit);
+    const high = formatWeightFromKg(prescription.target_high_kg, unit);
+    if (target) parts.push(target);
+    else if (low && high && low !== high) parts.push(`${low}–${high}`);
+    else if (low || high) parts.push(low || high || '');
+    if (parts.length) return parts.join(' ');
+  }
+  const legacy = compactPrescriptionLabel(context?.prescription_label);
+  return legacy && !/\b(?:kg|kgs|lb|lbs)\b/i.test(legacy) ? legacy : null;
+}
+
+function compactContextActualParts(context?: SetVideoContext | null, unit: DisplayWeightUnit = 'lb') {
   if (!context) return { load: null as string | null, reps: null as string | null, rpe: null as string | null };
-  const load = context.actual_weight_label
-    || (context.actual_weight_kg != null ? `${context.actual_weight_kg} kg` : null);
+  const numericLoad = formatWeightFromKg(context.actual_weight_kg, unit);
+  const legacyLabel = String(context.actual_weight_label || '').trim();
+  const legacyUnitMatches = unit === 'kg'
+    ? /\bkg\b/i.test(legacyLabel)
+    : /\blbs?\b/i.test(legacyLabel);
+  const load = numericLoad || (legacyUnitMatches ? legacyLabel : null);
   const reps = context.actual_reps != null ? String(context.actual_reps) : null;
   const rpe = context.actual_rpe != null ? String(context.actual_rpe) : null;
   return { load, reps, rpe };
 }
 
-function compactContextActual(context?: SetVideoContext | null) {
-  const { load, reps, rpe } = compactContextActualParts(context);
+function compactContextActual(context: SetVideoContext | null | undefined, unit: DisplayWeightUnit) {
+  const { load, reps, rpe } = compactContextActualParts(context, unit);
   if (!load && !reps && !rpe) return null;
   const parts: string[] = [];
   if (load) parts.push(load);
@@ -276,6 +316,7 @@ export default function SetVideoPlayerModal({
   onClose,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [video, setVideo] = useState<SetVideoSummary | null>(initialVideo || null);
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -438,6 +479,7 @@ export default function SetVideoPlayerModal({
   }, [player]);
 
   const context = video?.context || null;
+  const viewerDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const hudTop = Math.max(8, (insets.top || 0) + 4);
   const sessionLine = compactJoin([
     context?.athlete_name,
@@ -446,8 +488,8 @@ export default function SetVideoPlayerModal({
   ]);
   const movementTitle = simplifyMobileMovementName(context?.movement_name || context?.lift_name) || 'Movement unavailable';
   const setLabel = context?.set_display_label || context?.set_context_label || (context?.set_index != null ? `Set ${context.set_index}` : null);
-  const planLine = compactPrescriptionLabel(context?.prescription_label);
-  const logLine = compactContextActual(context);
+  const planLine = compactPrescriptionContext(context, viewerDisplayUnit);
+  const logLine = compactContextActual(context, viewerDisplayUnit);
   const coachFeedback = (video?.coach_feedback || '').trim();
   const showCoachFeedback =
     !reviewPanel &&
@@ -466,9 +508,9 @@ export default function SetVideoPlayerModal({
   const canShowFloatingPlayerActions = !hasActivePlayerPanel && !keyboardVisible;
   const hasMovementForExport = !!(context?.movement_name || context?.lift_name);
   const hasDateForExport = !!context?.session_date;
-  const defaultWeightUnit = defaultExportWeightUnit(context);
+  const defaultWeightUnit = defaultExportWeightUnit(user?.preferred_units, context);
   const selectedWeightUnit = normalizeExportWeightUnit(exportOptions.weight_unit || defaultWeightUnit);
-  const actualParts = compactContextActualParts(context);
+  const actualParts = compactContextActualParts(context, viewerDisplayUnit);
   const hasLoggedWeightForExport = !!actualParts.load;
   const hasLoggedRepsForExport = !!actualParts.reps;
   const hasLoggedRpeForExport = !!actualParts.rpe;
@@ -741,7 +783,7 @@ export default function SetVideoPlayerModal({
     try {
       setExporting(true);
       setExportError(null);
-      const unit = unitOverride || selectedWeightUnit || 'kg';
+      const unit = unitOverride || selectedWeightUnit || 'lbs';
       const url = downloadArtifactForUnit(unit);
       if (!url) {
         const payload = await refreshDownloadExportsStatus();

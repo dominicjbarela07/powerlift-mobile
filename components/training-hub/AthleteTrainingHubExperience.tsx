@@ -265,7 +265,7 @@ export function AthleteTrainingHubExperience({
       </Pressable>
 
       {data.previousWeekRecap ? (
-        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'kg'} />
+        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'lb'} />
       ) : null}
 
       {data.coachUpdates?.length ? (
@@ -289,7 +289,7 @@ export function AthleteTrainingHubExperience({
               key={week.key}
               onOpenSession={setSelectedSessionId}
               onToggle={() => setExpandedWeekKey((current) => current === week.key ? null : week.key)}
-              unit={data.preferredUnits || 'kg'}
+              unit={data.preferredUnits || 'lb'}
               week={week}
             />
           ))}
@@ -307,7 +307,7 @@ export function AthleteTrainingHubExperience({
         }}
         program={program}
         session={selectedSession}
-        unit={data.preferredUnits || 'kg'}
+        unit={data.preferredUnits || 'lb'}
       />
     </View>
   );

@@ -126,6 +126,7 @@ assert.equal(incompleteSuperlative[0].type, 'major-pr');
 
 // Rep-Max PRs are weight-primary career evidence within an exact rep category.
 const repOnly = buildJourneyMoments(bundle({
+  unit: 'kg',
   archiveItems: [session(30, '2026-04-01')],
   archiveHistoryComplete: false,
   accomplishments: [accomplishment(30, 30, '2026-04-01', {
@@ -138,6 +139,20 @@ const repOnly = buildJourneyMoments(bundle({
 }));
 assert.equal(repOnly[0].type, 'major-pr');
 assert.match(repOnly[0].detail, /205 kg 5 REP MAX/);
+
+const repOnlyLb = buildJourneyMoments(bundle({
+  unit: 'lb',
+  archiveItems: [session(31, '2026-04-02')],
+  archiveHistoryComplete: false,
+  accomplishments: [accomplishment(31, 31, '2026-04-02', {
+    event_type: 'CORE_REP_MAX_PR',
+    current_value: 205,
+    prior_value: 200,
+    delta: 5,
+    evidence: { actual_weight_kg: 205, actual_reps: 5, rep_count: 5 },
+  })],
+}));
+assert.match(repOnlyLb[0].detail, /451\.9 lb 5 REP MAX/);
 
 // Major volume threshold crossings are their own canonical Journey moments.
 // Their stored timestamp and source references are preserved; no chronology is
@@ -171,6 +186,7 @@ assert.deepEqual(buildJourneyMoments(bundle({
 // Completed meets are moments, with first-meet semantics and nested canonical
 // result-summary totals.
 const meets = buildJourneyMoments(bundle({
+  unit: 'kg',
   archiveItems: [{
     archive_item_type: 'meet',
     source_id: 8,

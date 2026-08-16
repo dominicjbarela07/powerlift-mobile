@@ -21,6 +21,8 @@ import { SLPageHeader } from '@/components/ui';
 import { CompactAccomplishmentSignal, type AccomplishmentSignal } from '@/components/core-accomplishments';
 import { feedbackAnalytics } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
+import { useAuth } from '@/context/AuthContext';
+import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 
 type HistorySession = {
   id: number;
@@ -64,6 +66,7 @@ const colors = {
 };
 
 export default function SessionHistoryScreen() {
+  const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
   const athleteId = params.athleteId ? String(params.athleteId) : null;
@@ -81,7 +84,7 @@ export default function SessionHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
-  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
+  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>(() => normalizeDisplayWeightUnit(user?.preferred_units));
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
@@ -109,7 +112,7 @@ export default function SessionHistoryScreen() {
       const nextSessions = Array.isArray(json.session_history?.sessions) ? json.session_history.sessions : [];
       setSessions(nextSessions);
       setOptions(json.session_history?.options || {});
-      setDisplayUnit(json.session_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
+      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
       feedbackAnalytics('historical_accomplishment_timeline_loaded', {
         surface: 'session_history',
         session_count: nextSessions.length,
@@ -124,7 +127,7 @@ export default function SessionHistoryScreen() {
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
-  }, [queryString]);
+  }, [queryString, user?.preferred_units]);
 
   useEffect(() => {
     load();

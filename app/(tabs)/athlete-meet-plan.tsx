@@ -24,6 +24,12 @@ import { SLTrophy } from '@/components/ui';
 import { fetchJson } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
+import {
+  convertDisplayWeightValue,
+  formatWeightFromKg,
+  normalizeDisplayWeightUnit,
+  type DisplayWeightUnit,
+} from '@/lib/display-units';
 
 type LiftKey = 'SQ' | 'BN' | 'DL';
 type MainTab = 'overview' | 'attempts' | 'warmups' | 'notes' | 'summary';
@@ -251,43 +257,47 @@ const VERTICAL_WHEEL_ROW_HEIGHT = 38;
 const VERTICAL_WHEEL_VISIBLE_ROWS = 5;
 
 
-function formatKg(value?: number | null) {
-  if (value == null || !Number.isFinite(Number(value))) return '—';
-  return `${Number(value).toFixed(1)} kg`;
+function formatMeetWeight(value?: number | null, unit: DisplayWeightUnit = 'lb') {
+  return formatWeightFromKg(value, unit) || '—';
 }
 
-function formatKgNumber(value?: number | null) {
+function formatMeetWeightNumber(value?: number | null, unit: DisplayWeightUnit = 'lb') {
   if (value == null || !Number.isFinite(Number(value))) return null;
-  return Number(value).toFixed(1);
+  const converted = convertDisplayWeightValue(Number(value), 'kg', unit);
+  return converted.toFixed(1).replace(/\.0$/, '');
+}
+
+function displayMeetWeightToKg(value: number, unit: DisplayWeightUnit) {
+  return convertDisplayWeightValue(value, unit, 'kg');
 }
 
 function isFluidAttempt(attempt: MeetAttempt) {
   return attempt.attempt_number !== 1 && (!!attempt.min_weight_kg || !!attempt.max_weight_kg);
 }
 
-function attemptDisplayWeight(attempt: MeetAttempt) {
-  if (attempt.result?.actual_weight_kg != null) return formatKg(attempt.result.actual_weight_kg);
-  if (!isFluidAttempt(attempt)) return formatKg(attempt.weight_kg);
+function attemptDisplayWeight(attempt: MeetAttempt, unit: DisplayWeightUnit = 'lb') {
+  if (attempt.result?.actual_weight_kg != null) return formatMeetWeight(attempt.result.actual_weight_kg, unit);
+  if (!isFluidAttempt(attempt)) return formatMeetWeight(attempt.weight_kg, unit);
 
-  const low = formatKgNumber(attempt.min_weight_kg);
-  const high = formatKgNumber(attempt.max_weight_kg);
-  if (low && high) return `${low}–${high} kg`;
-  if (low) return `${low}+ kg`;
-  if (high) return `≤${high} kg`;
-  return formatKg(attempt.weight_kg);
+  const low = formatMeetWeightNumber(attempt.min_weight_kg, unit);
+  const high = formatMeetWeightNumber(attempt.max_weight_kg, unit);
+  if (low && high) return `${low}–${high} ${unit}`;
+  if (low) return `${low}+ ${unit}`;
+  if (high) return `≤${high} ${unit}`;
+  return formatMeetWeight(attempt.weight_kg, unit);
 }
 
-function attemptPlanLabel(attempt: MeetAttempt) {
+function attemptPlanLabel(attempt: MeetAttempt, unit: DisplayWeightUnit = 'lb') {
   if (isFluidAttempt(attempt)) {
-    const low = formatKgNumber(attempt.min_weight_kg);
-    const target = formatKgNumber(attempt.target_weight_kg);
-    const high = formatKgNumber(attempt.max_weight_kg);
-    if (low && target && high) return `${low}–${high} kg · target ${target}`;
-    if (low && high) return `${low}–${high} kg`;
-    if (target) return `Target ${target} kg`;
+    const low = formatMeetWeightNumber(attempt.min_weight_kg, unit);
+    const target = formatMeetWeightNumber(attempt.target_weight_kg, unit);
+    const high = formatMeetWeightNumber(attempt.max_weight_kg, unit);
+    if (low && target && high) return `${low}–${high} ${unit} · target ${target}`;
+    if (low && high) return `${low}–${high} ${unit}`;
+    if (target) return `Target ${target} ${unit}`;
   }
 
-  return attempt.weight_kg != null ? formatKg(attempt.weight_kg) : attemptDisplayWeight(attempt);
+  return attempt.weight_kg != null ? formatMeetWeight(attempt.weight_kg, unit) : attemptDisplayWeight(attempt, unit);
 }
 
 function attemptStrategyNote(attempt: MeetAttempt) {
@@ -302,7 +312,7 @@ function meetWeightOption(value: number) {
   return Number(value).toFixed(1);
 }
 
-function meetWeightOptionsForAttempt(attempt: MeetAttempt) {
+function meetWeightOptionsForAttempt(attempt: MeetAttempt, unit: DisplayWeightUnit = 'lb') {
   const rawBase = defaultAttemptWeightForLog(attempt);
   const base = typeof rawBase === 'number' && Number.isFinite(rawBase)
     ? rawBase
@@ -312,11 +322,11 @@ function meetWeightOptionsForAttempt(attempt: MeetAttempt) {
 
   for (let offset = -25; offset <= 25; offset += 2.5) {
     const value = roundedBase + offset;
-    if (value > 0) options.add(meetWeightOption(value));
+    if (value > 0) options.add(meetWeightOption(convertDisplayWeightValue(value, 'kg', unit)));
   }
 
   if (typeof rawBase === 'number' && Number.isFinite(rawBase)) {
-    options.add(meetWeightOption(rawBase));
+    options.add(meetWeightOption(convertDisplayWeightValue(rawBase, 'kg', unit)));
   }
 
   return Array.from(options).sort((a, b) => Number(a) - Number(b));
@@ -419,7 +429,8 @@ function weightClassOptionsForFederation(federation?: string | null, sex?: strin
 
 export default function AthleteMeetPlanScreen() {
   const router = useRouter();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
 
   const [payload, setPayload] = useState<MeetPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -456,12 +467,12 @@ export default function AthleteMeetPlanScreen() {
     setAttemptDraft({
       attempt,
       result: (existing?.result as AttemptResultDraft['result']) || '',
-      actualWeightKg: typeof defaultWeight === 'number' ? meetWeightOption(defaultWeight) : '',
+      actualWeightKg: typeof defaultWeight === 'number' ? meetWeightOption(convertDisplayWeightValue(defaultWeight, 'kg', displayUnit)) : '',
       rpe: parsedNotes.rpe,
       missReason: existing?.result === 'miss' ? ((existing?.miss_reason as AttemptResultDraft['missReason']) || '') : '',
       notes: parsedNotes.notes,
     });
-  }, []);
+  }, [displayUnit]);
 
   const loadMeetPlan = useCallback(
     async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
@@ -614,14 +625,14 @@ export default function AthleteMeetPlanScreen() {
       location: meet.location || '',
       flight_platform: meet.flight_platform || '',
       weight_class: meet.weight_class || '',
-      weigh_in_bodyweight_kg: meet.weigh_in_bodyweight_kg != null ? String(meet.weigh_in_bodyweight_kg) : '',
+      weigh_in_bodyweight_kg: meet.weigh_in_bodyweight_kg != null ? (formatMeetWeightNumber(meet.weigh_in_bodyweight_kg, displayUnit) || '') : '',
       squat_rack_height: parsedSquatRack.height,
       squat_rack_orientation: parsedSquatRack.orientation,
       bench_rack_height: meet.rack_heights?.bench || '',
       bench_safety_height: meet.rack_heights?.bench_safety || '',
       gear_text: gearItems.join('\n'),
     }));
-  }, [meet, gearItems, parseSquatRack]);
+  }, [displayUnit, meet, gearItems, parseSquatRack]);
 
   useEffect(() => {
     if (!detailsModalOpen || weightClassOptions.length === 0) return;
@@ -759,7 +770,7 @@ export default function AthleteMeetPlanScreen() {
           location: meetForm.location,
           flight_platform: meetForm.flight_platform,
           weight_class: meetForm.weight_class,
-          weigh_in_bodyweight_kg: bodyweightText ? Number(bodyweightText) : null,
+          weigh_in_bodyweight_kg: bodyweightText ? displayMeetWeightToKg(Number(bodyweightText), displayUnit) : null,
           squat_rack_height: squatRackValue,
           bench_rack_height: meetForm.bench_rack_height,
           bench_safety_height: meetForm.bench_safety_height,
@@ -794,7 +805,7 @@ export default function AthleteMeetPlanScreen() {
     } finally {
       setSavingMeetDetails(false);
     }
-  }, [formatSquatRack, gearItems, loadMeetPlan, meetForm, router, token]);
+  }, [displayUnit, formatSquatRack, gearItems, loadMeetPlan, meetForm, router, token]);
 
   const submitAttemptResult = useCallback(
     async () => {
@@ -806,7 +817,10 @@ export default function AthleteMeetPlanScreen() {
       }
 
       const attempt = attemptDraft.attempt;
-      const actualWeight = Number.parseFloat(attemptDraft.actualWeightKg || '');
+      const actualWeightDisplay = Number.parseFloat(attemptDraft.actualWeightKg || '');
+      const actualWeight = Number.isFinite(actualWeightDisplay)
+        ? displayMeetWeightToKg(actualWeightDisplay, displayUnit)
+        : Number.NaN;
       const typedNote = attemptDraft.notes.trim();
       const notes = attemptDraft.rpe
         ? [`RPE ${attemptDraft.rpe}`, typedNote].filter(Boolean).join(' — ')
@@ -855,7 +869,7 @@ export default function AthleteMeetPlanScreen() {
         setSavingAttemptId(null);
       }
     },
-    [attemptDraft, loadMeetPlan, token, router]
+    [attemptDraft, displayUnit, loadMeetPlan, token, router]
   );
 
   const clearAttemptResult = useCallback(
@@ -1085,7 +1099,7 @@ export default function AthleteMeetPlanScreen() {
                     return (
                       <View key={`${lift}-${index}`} style={styles.attemptPreviewCell}>
                         <Text style={styles.attemptPreviewLabel}>{attemptLabel(index + 1)}</Text>
-                        <Text style={styles.attemptPreviewValue}>{attempt ? attemptDisplayWeight(attempt) : '—'}</Text>
+                        <Text style={styles.attemptPreviewValue}>{attempt ? attemptDisplayWeight(attempt, displayUnit) : '—'}</Text>
                       </View>
                     );
                   })}
@@ -1120,7 +1134,7 @@ export default function AthleteMeetPlanScreen() {
                   >
                     <Text style={styles.warmupPacketIndex}>{index + 1}</Text>
                     <View style={styles.warmupPacketCopy}>
-                      <Text style={styles.warmupPacketValue}>{formatKg(warmup.weight_kg)} x {warmup.reps ?? '—'}</Text>
+                      <Text style={styles.warmupPacketValue}>{formatMeetWeight(warmup.weight_kg, displayUnit)} x {warmup.reps ?? '—'}</Text>
                       <Text style={styles.warmupPacketMeta}>{[warmup.minutes_until_opener != null ? `-${warmup.minutes_until_opener} min` : null, warmup.label].filter(Boolean).join(' / ') || 'Warmup set'}</Text>
                     </View>
                     {canLogMeetResults ? (
@@ -1255,8 +1269,8 @@ export default function AthleteMeetPlanScreen() {
                     <Text style={styles.meetDetailsSectionTitle}>Check-in</Text>
                     <View style={styles.compactInputRow}>
                       <Text style={styles.compactInputLabel}>Actual BW</Text>
-                      <TextInput value={meetForm.weigh_in_bodyweight_kg} onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)} placeholder="89.7" placeholderTextColor={SLColors.textSubtle} keyboardType="decimal-pad" style={styles.compactNumberInput} />
-                      <Text style={styles.compactInputUnit}>kg</Text>
+                      <TextInput value={meetForm.weigh_in_bodyweight_kg} onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)} placeholder={displayUnit === 'lb' ? '198' : '89.7'} placeholderTextColor={SLColors.textSubtle} keyboardType="decimal-pad" style={styles.compactNumberInput} />
+                      <Text style={styles.compactInputUnit}>{displayUnit}</Text>
                     </View>
                   </View>
 
@@ -1381,7 +1395,7 @@ export default function AthleteMeetPlanScreen() {
             </Text>
             {nextAttempt ? (
               <Text style={styles.activeNextText}>
-                Next: {liftLabels[nextAttempt.lift]} {attemptLabel(nextAttempt.attempt.attempt_number).toLowerCase()} · {attemptPlanLabel(nextAttempt.attempt)}
+                Next: {liftLabels[nextAttempt.lift]} {attemptLabel(nextAttempt.attempt.attempt_number).toLowerCase()} · {attemptPlanLabel(nextAttempt.attempt, displayUnit)}
               </Text>
             ) : null}
             {remaining === 0 ? (
@@ -1445,7 +1459,7 @@ export default function AthleteMeetPlanScreen() {
                     </View>
                     <View style={styles.activeWarmupCopy}>
                       <Text style={[styles.activeWarmupValue, checkedWarmups[warmup.id] ? styles.activeWarmupValueDone : null]}>
-                        {formatKg(warmup.weight_kg)} × {warmup.reps || '—'}
+                        {formatMeetWeight(warmup.weight_kg, displayUnit)} × {warmup.reps || '—'}
                       </Text>
                       <Text style={styles.activeWarmupMeta}>
                         {[warmup.minutes_until_opener != null ? `-${warmup.minutes_until_opener} min` : null, pctOpener != null ? `${pctOpener}% opener` : null, warmup.label].filter(Boolean).join(' · ') || 'Warmup'}
@@ -1475,6 +1489,7 @@ export default function AthleteMeetPlanScreen() {
                 <MeetAttemptLogRow
                   key={attempt.id}
                   attempt={attempt}
+                  displayUnit={displayUnit}
                   disabled={savingAttemptId === attempt.id}
                   lockedReason={lockedReason}
                   onClear={() => clearAttemptResult(attempt)}
@@ -1703,7 +1718,7 @@ export default function AthleteMeetPlanScreen() {
             </View>
             <View style={styles.checkInTileAccent}>
               <Text style={styles.checkInLabel}>Actual BW</Text>
-              <Text style={styles.checkInValue}>{formatKg(meet.weigh_in_bodyweight_kg)}</Text>
+              <Text style={styles.checkInValue}>{formatMeetWeight(meet.weigh_in_bodyweight_kg, displayUnit)}</Text>
               <Text style={styles.checkInSubValue}>Recorded weigh-in</Text>
             </View>
           </View>
@@ -1842,11 +1857,11 @@ export default function AthleteMeetPlanScreen() {
                     <Text style={styles.meetDetailsSectionTitle}>Check-in</Text>
                     <View style={styles.meetFieldStack}>
                       <View>
-                        <Text style={styles.meetFieldLabel}>Actual Weigh-in BW (kg)</Text>
+                        <Text style={styles.meetFieldLabel}>Actual Weigh-in BW ({displayUnit})</Text>
                         <TextInput
                           value={meetForm.weigh_in_bodyweight_kg}
                           onChangeText={(value) => updateMeetFormField('weigh_in_bodyweight_kg', value)}
-                          placeholder="89.7"
+                          placeholder={displayUnit === 'lb' ? '198' : '89.7'}
                           placeholderTextColor={SLColors.textSubtle}
                           keyboardType="decimal-pad"
                           style={styles.meetFieldInput}
@@ -2021,10 +2036,10 @@ export default function AthleteMeetPlanScreen() {
                   <View>
                     <Text style={styles.attemptLabel}>{attemptLabel(attempt.attempt_number)}</Text>
                     <Text style={[styles.attemptWeight, isFluidAttempt(attempt) && !attempt.result ? styles.attemptWeightRange : null]}>
-                      {attemptDisplayWeight(attempt)}
+                      {attemptDisplayWeight(attempt, displayUnit)}
                     </Text>
                     {attempt.result?.actual_weight_kg != null && attempt.weight_kg != null && attempt.result.actual_weight_kg !== attempt.weight_kg ? (
-                      <Text style={styles.plannedWeightText}>Planned {formatKg(attempt.weight_kg)}</Text>
+                      <Text style={styles.plannedWeightText}>Planned {formatMeetWeight(attempt.weight_kg, displayUnit)}</Text>
                     ) : null}
                     {!attempt.result && isFluidAttempt(attempt) ? (
                       <Text style={styles.plannedWeightText}>Meet-day range</Text>
@@ -2047,12 +2062,12 @@ export default function AthleteMeetPlanScreen() {
                     {isFluidAttempt(attempt) ? (
                       <View style={styles.resultContextRow}>
                         <Text style={styles.resultContextLabel}>Range</Text>
-                        <Text style={styles.resultContextValue}>{attemptDisplayWeight({ ...attempt, result: null })}</Text>
+                        <Text style={styles.resultContextValue}>{attemptDisplayWeight({ ...attempt, result: null }, displayUnit)}</Text>
                       </View>
                     ) : attempt.weight_kg != null ? (
                       <View style={styles.resultContextRow}>
                         <Text style={styles.resultContextLabel}>Planned</Text>
-                        <Text style={styles.resultContextValue}>{formatKg(attempt.weight_kg)}</Text>
+                        <Text style={styles.resultContextValue}>{formatMeetWeight(attempt.weight_kg, displayUnit)}</Text>
                       </View>
                     ) : null}
                     {attempt.result.result === 'miss' && attempt.result.miss_reason ? (
@@ -2166,7 +2181,7 @@ export default function AthleteMeetPlanScreen() {
               <View style={styles.warmupTextCol}>
                 <View style={styles.warmupPrescriptionRow}>
                   <Text style={[styles.warmupWeight, checkedWarmups[warmup.id] ? styles.warmupWeightChecked : null]}>
-                    {formatKg(warmup.weight_kg)} × {warmup.reps ?? '—'}
+                    {formatMeetWeight(warmup.weight_kg, displayUnit)} × {warmup.reps ?? '—'}
                   </Text>
                   {warmup.minutes_until_opener != null ? (
                     <View style={styles.warmupTimingPill}>
@@ -2266,7 +2281,7 @@ export default function AthleteMeetPlanScreen() {
             <View style={styles.recapMetricGrid}>
               <View style={styles.recapMetricTile}>
                 <Text style={styles.recapMetricLabel}>Total</Text>
-                <Text style={styles.recapMetricValue}>{formatKg(resultSummary.total_kg)}</Text>
+                <Text style={styles.recapMetricValue}>{formatMeetWeight(resultSummary.total_kg, displayUnit)}</Text>
               </View>
               <View style={styles.recapMetricTile}>
                 <Text style={styles.recapMetricLabel}>Attempts</Text>
@@ -2323,7 +2338,7 @@ export default function AthleteMeetPlanScreen() {
                     <Text style={styles.recapLiftLabel}>{lift.label}</Text>
                     <Text style={styles.recapLiftSubText}>{lift.made}/{lift.total_attempts} made</Text>
                   </View>
-                  <Text style={styles.recapLiftValue}>{formatKg(lift.best_kg)}</Text>
+                  <Text style={styles.recapLiftValue}>{formatMeetWeight(lift.best_kg, displayUnit)}</Text>
                 </View>
               ))}
             </View>
@@ -2421,7 +2436,7 @@ export default function AthleteMeetPlanScreen() {
 
                 <View style={styles.attemptModalStrategy}>
                   <Text style={styles.attemptModalStrategyLabel}>Plan</Text>
-                  <Text style={styles.attemptModalStrategyText}>{attemptPlanLabel(attemptDraft.attempt)}</Text>
+                  <Text style={styles.attemptModalStrategyText}>{attemptPlanLabel(attemptDraft.attempt, displayUnit)}</Text>
                   {attemptStrategyNote(attemptDraft.attempt) ? (
                     <Text style={styles.attemptModalStrategyNote}>{attemptStrategyNote(attemptDraft.attempt)}</Text>
                   ) : null}
@@ -2465,11 +2480,11 @@ export default function AthleteMeetPlanScreen() {
                 <View style={styles.modalFieldGroup}>
                   <Text style={styles.modalLabel}>Actual weight</Text>
                   <HorizontalWheelSelector
-                    options={meetWeightOptionsForAttempt(attemptDraft.attempt)}
-                    value={attemptDraft.actualWeightKg || meetWeightOptionsForAttempt(attemptDraft.attempt)[0]}
+                    options={meetWeightOptionsForAttempt(attemptDraft.attempt, displayUnit)}
+                    value={attemptDraft.actualWeightKg || meetWeightOptionsForAttempt(attemptDraft.attempt, displayUnit)[0]}
                     onChange={(value) => setAttemptDraft((prev) => prev ? { ...prev, actualWeightKg: value } : prev)}
                   />
-                  <Text style={styles.modalWeightHint}>kg · 2.5 kg meet increments</Text>
+                  <Text style={styles.modalWeightHint}>{displayUnit} · official meet increments</Text>
                 </View>
 
                 <View style={styles.modalFieldGroup}>
@@ -2663,12 +2678,14 @@ function VerticalWheelSelector({
 
 function MeetAttemptLogRow({
   attempt,
+  displayUnit,
   disabled,
   lockedReason,
   onClear,
   onOpenLog,
 }: {
   attempt: MeetAttempt;
+  displayUnit: DisplayWeightUnit;
   disabled: boolean;
   lockedReason?: string | null;
   onClear: () => void;
@@ -2676,8 +2693,8 @@ function MeetAttemptLogRow({
 }) {
   const result = attempt.result;
   const status = result?.result || 'pending';
-  const planned = attemptDisplayWeight(attempt);
-  const actual = result?.actual_weight_kg != null ? formatKg(result.actual_weight_kg) : planned;
+  const planned = attemptDisplayWeight(attempt, displayUnit);
+  const actual = result?.actual_weight_kg != null ? formatMeetWeight(result.actual_weight_kg, displayUnit) : planned;
   const statusLabel = status === 'good' ? 'Good Lift' : status === 'miss' ? 'No Lift' : status === 'skipped' ? 'Skipped' : 'Pending';
   const tag = prettyTag(attempt.strategy_tag);
   const strategyNote = attemptStrategyNote(attempt);

@@ -20,7 +20,10 @@ const workspace = read('components', 'coach-mobile', 'SessionEditingWorkspace.ts
 const tabLayout = read('app', '(tabs)', '_layout.tsx');
 const calendar = read('app', '(tabs)', 'coach-calendar.tsx');
 const detail = read('app', '(tabs)', 'workout', '[workoutId].tsx');
-const backend = fs.readFileSync(path.join(repoRoot, 'app', 'blueprints', 'workouts.py'), 'utf8');
+const backendRoot = [repoRoot, path.join(repoRoot, 'preferred-units-backend')]
+  .find((candidate) => fs.existsSync(path.join(candidate, 'app', 'blueprints', 'workouts.py')));
+if (!backendRoot) throw new Error('backend worktree not found');
+const backend = fs.readFileSync(path.join(backendRoot, 'app', 'blueprints', 'workouts.py'), 'utf8');
 
 for (const retired of [
   ['components', 'creator', 'core-movement-card.tsx'],
@@ -77,14 +80,14 @@ requireMatch(workspace, /sessionToolkitShell: \{[^}]*alignItems: 'flex-end'[\s\S
 requireMatch(workspace, /const \{ expansion, expandedItemsOpacity, collapsedAnchorOpacity \} = useFloatingNavigationMotion\(\{[\s\S]*reduceMotion[\s\S]*panelMotionStyle[\s\S]*translateY:[\s\S]*scale:[\s\S]*<Animated\.View/, 'the floating toolkit must share the tab-row motion choreography and respect reduced motion.');
 requireMatch(workspace, /accessibilityLabel="Close Session tools"[\s\S]*onPress=\{\(\) => onExpandedChange\(false\)\}[\s\S]*sessionToolkitDismissLayer/, 'tapping outside the expanded toolkit must close it.');
 requireNoMatch(workspace, /SessionUnitFloatingControl|function UnitToggle|styles\.unitToggle/, 'the standalone and inline unit toggles must not remain in the workspace.');
-requireMatch(workspaceRoute, /preferred_units: plan\.metadataPatch\.displayUnit === 'lb' \? 'lbs' : 'kg'/, 'unit changes must persist through canonical Session setup.');
+requireNoMatch(workspaceRoute, /preferred_units: plan\.metadataPatch\.displayUnit/, 'a surface-local unit toggle must not mutate the athlete preference.');
+requireMatch(workspaceRoute, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)/, 'the workspace must initialize from the authenticated viewer preference.');
 requireMatch(workspace, /function collapsedLoadPresentation[\s\S]*kind === 'accessory'[\s\S]*validManualLow[\s\S]*label: 'Manual'[\s\S]*label: 'Calculated'/, 'Core rows show manual only for a positive explicit load and otherwise use calculated targets; Accessories show neither.');
 requireMatch(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'collapsed movement artwork must be the visual anchor.');
 requireMatch(workspace, /import \{ accessoryMuscleRegionAsset \} from '@\/lib\/accessory-muscle-region-assets';[\s\S]*import \{ accessoryMuscleRegion \} from '@\/lib\/accessory-muscle-group';/, 'the workspace must reuse the governed Accessory Picker muscle artwork resolver.');
 requireMatch(workspace, /if \(kind === 'accessory'\) \{[\s\S]*accessoryMuscleRegion\(item\)[\s\S]*accessoryMuscleRegionAsset\(muscle\.key\)[\s\S]*primary muscle artwork[\s\S]*const identity = resolveLoggerLiftIdentity\(item\)/, 'accessories must resolve primary-muscle artwork before preserving canonical core lift identity.');
 requireNoMatch(workspace, /ACCESSORY_CATEGORY_ARTWORK|accessory-wordmark-coin-seal/, 'the legacy generic accessory medallion must not remain in the Session Workspace.');
 requireNoMatch(workspace, /SLAccessoryIcon|resolveAccessoryIconName/, 'the workspace must not substitute its own accessory icon system for canonical Logger artwork.');
-requireMatch(backend, /if "preferred_units" in data:[\s\S]*next_athlete\.preferred_units/, 'the setup mutation must persist the athlete unit preference.');
 requireMatch(workspaceRoute, /movement_definition_id: movementDefinitionId/, 'accessory equipment identity must persist through the canonical identity contract.');
 requireMatch(workspaceRoute, /isCoreVariantSelection = setup\.lift === 'VR'[\s\S]*target_low_lb[\s\S]*target_high_lb/, 'every Core variant must persist an explicit coach-authored load range.');
 requireMatch(workspace, /function createSessionWorkspaceDraft[\s\S]*linkedBackdown[\s\S]*movementDraftFromItem\(item, displayUnit, linkedBackdown\)/, 'existing movements must enter the canonical Session draft with linked backdown data.');

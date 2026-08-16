@@ -21,9 +21,18 @@ import {
   type ArchiveQuery,
 } from '@/lib/ledger-archive';
 import { SectionLabel } from './primitives';
+import { useAuth } from '@/context/AuthContext';
+import {
+  convertDisplayWeightValue,
+  formatCompactVolumeValueFromKg,
+  formatWeightFromKg,
+  normalizeDisplayWeightUnit,
+  type DisplayWeightUnit,
+} from '@/lib/display-units';
 
 const COLLECTIONS: ArchiveCollection[] = ['training', 'media', 'competition'];
 const RECENT_SEARCHES_KEY = 'strength-ledger:ledger-archive:recent-searches:v1';
+const ArchiveDisplayUnitContext = React.createContext<DisplayWeightUnit>('lb');
 const first = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
 
 type ArchiveScope = 'overview' | ArchiveCollection;
@@ -126,7 +135,7 @@ function itemIcon(item: ArchiveItem): keyof typeof Ionicons.glyphMap {
   return 'barbell-outline';
 }
 
-function itemEvidence(item: ArchiveItem): string {
+function itemEvidence(item: ArchiveItem, unit: DisplayWeightUnit): string {
   const weight = performanceNumber(item, 'weight_kg');
   const reps = performanceNumber(item, 'reps');
   const setCount = performanceNumber(item, 'set_count');
@@ -136,13 +145,13 @@ function itemEvidence(item: ArchiveItem): string {
   const rir = performanceNumber(item, 'rir');
   if (weight !== null || reps !== null) {
     const effort = rpe !== null ? ` @${cleanNumber(rpe)} RPE` : rir !== null ? ` @${cleanNumber(rir)} RIR` : '';
-    return `${weight !== null ? `${cleanNumber(weight)} kg` : 'Load unrecorded'}${reps !== null ? ` × ${cleanNumber(reps)}` : ''}${effort}`;
+    return `${weight !== null ? formatWeightFromKg(weight, unit) : 'Load unrecorded'}${reps !== null ? ` × ${cleanNumber(reps)}` : ''}${effort}`;
   }
   if (setCount !== null || movementCount !== null) {
     const parts = [];
     if (setCount !== null) parts.push(`${setCount} ${setCount === 1 ? 'set' : 'sets'}`);
     if (movementCount !== null) parts.push(`${movementCount} ${movementCount === 1 ? 'movement' : 'movements'}`);
-    if (volume) parts.push(`${compactNumber(Math.round(volume))} kg moved`);
+    if (volume) parts.push(`${formatCompactVolumeValueFromKg(volume, unit)} moved`);
     return parts.join(' · ');
   }
   if (item.archive_item_type === 'video') {
@@ -152,7 +161,7 @@ function itemEvidence(item: ArchiveItem): string {
   const summary = item.meet_context?.result_summary;
   if (summary && typeof summary === 'object') {
     const total = (summary as Record<string, unknown>).total_kg;
-    if (typeof total === 'number') return `${cleanNumber(total)} kg total`;
+    if (typeof total === 'number') return `${formatWeightFromKg(total, unit)} total`;
   }
   return item.provenance_label || item.source_type || 'Preserved evidence';
 }
@@ -180,6 +189,8 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 export function ArchiveFoundationExperience() {
   const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const requestedCollection = first(params.collection) as ArchiveCollection | undefined;
   const initialScope: ArchiveScope = COLLECTIONS.includes(requestedCollection as ArchiveCollection) ? requestedCollection! : 'overview';
   const initialQuery = first(params.q) || '';
@@ -221,7 +232,7 @@ export function ArchiveFoundationExperience() {
     classification: filters.classification || undefined,
     has_video: filters.hasVideo || undefined,
     source_type: filters.sourceType || undefined,
-    weight_min: filters.weightMin.trim() || undefined,
+    weight_min: archiveFilterWeightKg(filters.weightMin, displayUnit),
     reps_min: filters.repsMin.trim() || undefined,
     rpe_min: filters.rpeMin.trim() || undefined,
     review_status: filters.reviewStatus || undefined,
@@ -230,7 +241,7 @@ export function ArchiveFoundationExperience() {
     federation: filters.federation.trim() || undefined,
     weight_class: filters.weightClass.trim() || undefined,
     status: filters.meetStatus || undefined,
-  }), [athleteId, committedQuery, filters, movementFilter, naturalAlbumFilter]);
+  }), [athleteId, committedQuery, displayUnit, filters, movementFilter, naturalAlbumFilter]);
 
   const loadOverview = useCallback(async () => {
     setLoading(true);
@@ -377,7 +388,7 @@ export function ArchiveFoundationExperience() {
     setToolsOpen(false);
   }, [clearSearch, resetFilters]);
 
-  return <View style={styles.page} testID="ledger-archive-experience">
+  return <ArchiveDisplayUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-experience">
     <ArchiveHeading />
     {browsingResults || toolsOpen ? <SearchBar
       filterCount={filterCount}
@@ -428,7 +439,20 @@ export function ArchiveFoundationExperience() {
       thumbnailUrls={thumbnailUrls}
     /> : null}
     {!loading && !error && browsingResults && cursor ? <Pressable disabled={loadingMore} onPress={() => void loadResults(cursor, true)} style={styles.loadMore}>{loadingMore ? <ActivityIndicator color={SLColors.accent} /> : <><Text typographyRole="shortButtonLabel" style={styles.loadMoreText}>Continue through history</Text><Ionicons name="arrow-down" size={16} color={SLColors.accentMuted} /></>}</Pressable> : null}
-  </View>;
+  </View></ArchiveDisplayUnitContext.Provider>;
+}
+
+function archiveFilterWeightKg(value: string, unit: DisplayWeightUnit): string | undefined {
+  const input = value.trim();
+  if (!input) return undefined;
+  const parsed = Number(input);
+  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
+  return String(convertDisplayWeightValue(parsed, unit, 'kg'));
+}
+
+function ArchiveEvidence({ item }: { item: ArchiveItem }) {
+  const unit = React.useContext(ArchiveDisplayUnitContext);
+  return <>{itemEvidence(item, unit)}</>;
 }
 
 function ArchiveHeading() {
@@ -477,13 +501,14 @@ function ActiveChip({ label, onClear }: { label: string; onClear: () => void }) 
 }
 
 function FilterPanel({ scope, filters, setFilters, onClear }: { scope: ArchiveScope; filters: Filters; setFilters: React.Dispatch<React.SetStateAction<Filters>>; onClear: () => void }) {
+  const displayUnit = React.useContext(ArchiveDisplayUnitContext);
   const update = <K extends keyof Filters>(key: K, value: Filters[K]) => setFilters((current) => ({ ...current, [key]: value }));
   return <View style={styles.filterPanel} testID="archive-filter-panel">
     <View style={styles.filterPanelHeader}><View><Text typographyRole="cardTitle" style={styles.filterPanelTitle}>Narrow the evidence</Text><Text typographyRole="caption" style={styles.filterPanelCaption}>Filters combine without changing source truth.</Text></View><Pressable onPress={onClear}><Text typographyRole="shortButtonLabel" style={styles.clearFilters}>Clear all</Text></Pressable></View>
     <View style={styles.filterFields}><FilterInput label="From" value={filters.dateFrom} placeholder="YYYY-MM-DD" onChange={(value) => update('dateFrom', value)} /><FilterInput label="To" value={filters.dateTo} placeholder="YYYY-MM-DD" onChange={(value) => update('dateTo', value)} /></View>
     {scope === 'training' ? <>
       <FilterChoice label="Training" values={[['', 'All'], ['core', 'Core'], ['accessory', 'Accessory']]} value={filters.classification} onChange={(value) => update('classification', value as Filters['classification'])} />
-      <View style={styles.filterFields}><FilterInput label="Min kg" value={filters.weightMin} placeholder="Any" keyboard="decimal-pad" onChange={(value) => update('weightMin', value)} /><FilterInput label="Min reps" value={filters.repsMin} placeholder="Any" keyboard="number-pad" onChange={(value) => update('repsMin', value)} /><FilterInput label="Min RPE" value={filters.rpeMin} placeholder="Any" keyboard="decimal-pad" onChange={(value) => update('rpeMin', value)} /></View>
+      <View style={styles.filterFields}><FilterInput label={`Min ${displayUnit}`} value={filters.weightMin} placeholder="Any" keyboard="decimal-pad" onChange={(value) => update('weightMin', value)} /><FilterInput label="Min reps" value={filters.repsMin} placeholder="Any" keyboard="number-pad" onChange={(value) => update('repsMin', value)} /><FilterInput label="Min RPE" value={filters.rpeMin} placeholder="Any" keyboard="decimal-pad" onChange={(value) => update('rpeMin', value)} /></View>
       <View style={styles.inlineChoices}><ToggleChip label="Has video" active={filters.hasVideo === 'true'} onPress={() => update('hasVideo', filters.hasVideo ? '' : 'true')} /><ToggleChip label="Imported source" active={filters.sourceType === 'historical'} onPress={() => update('sourceType', filters.sourceType ? '' : 'historical')} /></View>
     </> : null}
     {scope === 'media' ? <><FilterChoice label="Media date" values={[["performed", 'Performed'], ["uploaded", 'Uploaded']]} value={filters.dateField} onChange={(value) => update('dateField', value as Filters['dateField'])} /><View style={styles.inlineChoices}><ToggleChip label="Reviewed" active={filters.reviewStatus === 'reviewed'} onPress={() => update('reviewStatus', filters.reviewStatus ? '' : 'reviewed')} /><ToggleChip label="Has feedback" active={filters.hasFeedback === 'true'} onPress={() => update('hasFeedback', filters.hasFeedback ? '' : 'true')} /></View></> : null}
@@ -613,7 +638,7 @@ function FeaturedEvidence({ item, thumbnailUrl, onPress }: { item: ArchiveItem; 
       <View style={styles.featuredMediaBadge}><Ionicons name="play" size={18} color={SLColors.textStrong} /></View>
     </View> : null}
     <View style={styles.featuredTop}><View style={[styles.featuredIcon, { borderColor: `${tone}77` }]}><SLCanonicalIcon name={itemIcon(item)} size={24} color={tone} trophyTier="bronze" /></View><View style={styles.featuredCopy}><Text typographyRole="shortTechnicalLabel" style={[styles.provenance, { color: tone }]}>{item.provenance_label || item.source_type}</Text><Text typographyRole="modalTitle" style={styles.featuredTitle}>{item.title}</Text>{item.subtitle ? <Text typographyRole="body" style={styles.featuredSubtitle}>{item.subtitle}</Text> : null}</View><Ionicons name="arrow-forward" size={20} color={SLColors.iconMuted} /></View>
-    <View style={styles.featuredBottom}><Text typographyRole="bodyStrong" style={styles.featuredEvidence}>{itemEvidence(item)}</Text><Text typographyRole="caption" style={styles.featuredDate}>{dateLabel(item.occurred_on)}</Text></View>
+    <View style={styles.featuredBottom}><Text typographyRole="bodyStrong" style={styles.featuredEvidence}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.featuredDate}>{dateLabel(item.occurred_on)}</Text></View>
   </Pressable>;
 }
 
@@ -638,7 +663,7 @@ function SessionShelf({ items, onItem, onAll }: { items: ArchiveItem[]; onItem: 
         <View style={styles.sessionCardTop}><Text typographyRole="shortTechnicalLabel" style={styles.sessionDate}>{dateLabel(item.occurred_on)}</Text><Ionicons name="arrow-forward" size={17} color={SLColors.iconMuted} /></View>
         <Text typographyRole="cardTitle" numberOfLines={2} style={styles.sessionTitle}>{item.title}</Text>
         {item.subtitle ? <Text typographyRole="caption" numberOfLines={2} style={styles.sessionSubtitle}>{item.subtitle}</Text> : null}
-        <View style={styles.sessionEvidence}><Text typographyRole="bodyStrong" style={styles.sessionEvidenceText}>{itemEvidence(item)}</Text>{videos ? <View style={styles.sessionVideoCount}><Ionicons name="videocam-outline" size={14} color={COLLECTION_META.media.tone} /><Text typographyRole="caption" style={styles.sessionVideoCountText}>{videos}</Text></View> : null}</View>
+        <View style={styles.sessionEvidence}><Text typographyRole="bodyStrong" style={styles.sessionEvidenceText}><ArchiveEvidence item={item} /></Text>{videos ? <View style={styles.sessionVideoCount}><Ionicons name="videocam-outline" size={14} color={COLLECTION_META.media.tone} /><Text typographyRole="caption" style={styles.sessionVideoCountText}>{videos}</Text></View> : null}</View>
         {context ? <Text typographyRole="caption" numberOfLines={1} style={styles.sessionContext}>{context}</Text> : null}
       </Pressable>;
     })}
@@ -648,7 +673,7 @@ function SessionShelf({ items, onItem, onAll }: { items: ArchiveItem[]; onItem: 
 
 function CompactEvidence({ item, onPress }: { item: ArchiveItem; onPress: () => void }) {
   const tone = itemTone(item);
-  return <Pressable onPress={onPress} style={({ pressed }) => [styles.compactEvidence, pressed && styles.pressed]}><View style={[styles.compactDot, { backgroundColor: tone }]} /><View style={styles.compactCopy}><Text typographyRole="bodyStrong" style={styles.compactTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.compactMeta}>{itemEvidence(item)} · {dateLabel(item.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={16} color={SLColors.iconMuted} /></Pressable>;
+  return <Pressable onPress={onPress} style={({ pressed }) => [styles.compactEvidence, pressed && styles.pressed]}><View style={[styles.compactDot, { backgroundColor: tone }]} /><View style={styles.compactCopy}><Text typographyRole="bodyStrong" style={styles.compactTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.compactMeta}><ArchiveEvidence item={item} /> · {dateLabel(item.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={16} color={SLColors.iconMuted} /></Pressable>;
 }
 
 function MediaStage({ item, thumbnailUrl, grid = false }: { item: ArchiveItem; thumbnailUrl?: string; grid?: boolean }) {
@@ -661,7 +686,7 @@ function MediaStage({ item, thumbnailUrl, grid = false }: { item: ArchiveItem; t
 }
 
 function MediaShelf({ items, thumbnailUrls, onItem, onAll }: { items: ArchiveItem[]; thumbnailUrls: Record<number, string>; onItem: (item: ArchiveItem) => void; onAll: () => void }) {
-  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mediaRail}>{items.slice(0, 6).map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.mediaTile, pressed && styles.pressed]}><MediaStage item={item} thumbnailUrl={thumbnailUrls[item.source_id]} /><Text typographyRole="bodyStrong" style={styles.mediaTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.mediaMeta}>{itemEvidence(item)}</Text>{item.subtitle ? <Text typographyRole="caption" numberOfLines={1} style={styles.mediaSession}>{item.subtitle}</Text> : null}<Text typographyRole="caption" style={styles.mediaDate}>{dateLabel(item.occurred_on)}</Text></Pressable>)}<Pressable onPress={onAll} style={styles.shelfMore}><Ionicons name="arrow-forward" size={23} color={COLLECTION_META.media.tone} /><Text typographyRole="bodyStrong" style={styles.shelfMoreText}>All film</Text></Pressable></ScrollView>;
+  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mediaRail}>{items.slice(0, 6).map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.mediaTile, pressed && styles.pressed]}><MediaStage item={item} thumbnailUrl={thumbnailUrls[item.source_id]} /><Text typographyRole="bodyStrong" style={styles.mediaTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.mediaMeta}><ArchiveEvidence item={item} /></Text>{item.subtitle ? <Text typographyRole="caption" numberOfLines={1} style={styles.mediaSession}>{item.subtitle}</Text> : null}<Text typographyRole="caption" style={styles.mediaDate}>{dateLabel(item.occurred_on)}</Text></Pressable>)}<Pressable onPress={onAll} style={styles.shelfMore}><Ionicons name="arrow-forward" size={23} color={COLLECTION_META.media.tone} /><Text typographyRole="bodyStrong" style={styles.shelfMoreText}>All film</Text></Pressable></ScrollView>;
 }
 
 function YearChronology({ items, onItem }: { items: ArchiveItem[]; onItem: (item: ArchiveItem) => void }) {
@@ -670,15 +695,15 @@ function YearChronology({ items, onItem }: { items: ArchiveItem[]; onItem: (item
 }
 
 function TrainingRecord({ item, onPress }: { item: ArchiveItem; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={({ pressed }) => [styles.trainingRecord, pressed && styles.pressed]}><View style={styles.trainingDate}><Text typographyRole="shortTechnicalLabel" style={styles.trainingMonth}>{dateLabel(item.occurred_on).split(' ')[0]}</Text><Text typographyRole="numeric" style={styles.trainingDay}>{item.occurred_on?.slice(8, 10).replace(/^0/, '') || '—'}</Text></View><View style={styles.trainingCopy}><Text typographyRole="bodyStrong" style={styles.trainingTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.trainingMeta}>{itemEvidence(item)}</Text>{item.program_context?.program_name ? <Text typographyRole="caption" style={styles.trainingContext}>{String(item.program_context.program_name)}</Text> : null}</View><Ionicons name="arrow-forward" size={16} color={SLColors.iconMuted} /></Pressable>;
+  return <Pressable onPress={onPress} style={({ pressed }) => [styles.trainingRecord, pressed && styles.pressed]}><View style={styles.trainingDate}><Text typographyRole="shortTechnicalLabel" style={styles.trainingMonth}>{dateLabel(item.occurred_on).split(' ')[0]}</Text><Text typographyRole="numeric" style={styles.trainingDay}>{item.occurred_on?.slice(8, 10).replace(/^0/, '') || '—'}</Text></View><View style={styles.trainingCopy}><Text typographyRole="bodyStrong" style={styles.trainingTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.trainingMeta}><ArchiveEvidence item={item} /></Text>{item.program_context?.program_name ? <Text typographyRole="caption" style={styles.trainingContext}>{String(item.program_context.program_name)}</Text> : null}</View><Ionicons name="arrow-forward" size={16} color={SLColors.iconMuted} /></Pressable>;
 }
 
 function CompetitionShelf({ items, onItem, onAll }: { items: ArchiveItem[]; onItem: (item: ArchiveItem) => void; onAll: () => void }) {
-  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.competitionRail}>{items.slice(0, 5).map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.meetCard, pressed && styles.pressed]}><View style={styles.meetTop}><View style={styles.meetSeal}><SLTrophy size={20} tier="bronze" /></View><Text typographyRole="shortTechnicalLabel" style={styles.meetStatus}>{item.status}</Text></View><Text typographyRole="cardTitle" style={styles.meetTitle}>{item.title}</Text>{item.subtitle ? <Text typographyRole="caption" style={styles.meetSubtitle}>{item.subtitle}</Text> : null}<View style={styles.meetBottom}><Text typographyRole="bodyStrong" style={styles.meetEvidence}>{itemEvidence(item)}</Text><Text typographyRole="caption" style={styles.meetDate}>{dateLabel(item.occurred_on)}</Text></View></Pressable>)}<Pressable onPress={onAll} style={styles.shelfMore}><Ionicons name="arrow-forward" size={23} color={COLLECTION_META.competition.tone} /><Text typographyRole="bodyStrong" style={styles.shelfMoreText}>All meets</Text></Pressable></ScrollView>;
+  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.competitionRail}>{items.slice(0, 5).map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.meetCard, pressed && styles.pressed]}><View style={styles.meetTop}><View style={styles.meetSeal}><SLTrophy size={20} tier="bronze" /></View><Text typographyRole="shortTechnicalLabel" style={styles.meetStatus}>{item.status}</Text></View><Text typographyRole="cardTitle" style={styles.meetTitle}>{item.title}</Text>{item.subtitle ? <Text typographyRole="caption" style={styles.meetSubtitle}>{item.subtitle}</Text> : null}<View style={styles.meetBottom}><Text typographyRole="bodyStrong" style={styles.meetEvidence}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.meetDate}>{dateLabel(item.occurred_on)}</Text></View></Pressable>)}<Pressable onPress={onAll} style={styles.shelfMore}><Ionicons name="arrow-forward" size={23} color={COLLECTION_META.competition.tone} /><Text typographyRole="bodyStrong" style={styles.shelfMoreText}>All meets</Text></Pressable></ScrollView>;
 }
 
 function RediscoveredEvidence({ item, onPress }: { item: ArchiveItem; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={({ pressed }) => [styles.rediscovered, pressed && styles.pressed]}><View style={styles.rediscoveredDate}><Text typographyRole="numeric" style={styles.rediscoveredYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="shortTechnicalLabel" style={styles.rediscoveredLabel}>from the archive</Text></View><View style={styles.rediscoveredCopy}><Text typographyRole="cardTitle" style={styles.rediscoveredTitle}>{item.title}</Text><Text typographyRole="body" style={styles.rediscoveredBody}>{itemEvidence(item)}</Text><Text typographyRole="caption" style={styles.rediscoveredMeta}>{dateLabel(item.occurred_on)} · {item.provenance_label}</Text></View><Ionicons name="arrow-forward" size={18} color={SLColors.iconMuted} /></Pressable>;
+  return <Pressable onPress={onPress} style={({ pressed }) => [styles.rediscovered, pressed && styles.pressed]}><View style={styles.rediscoveredDate}><Text typographyRole="numeric" style={styles.rediscoveredYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="shortTechnicalLabel" style={styles.rediscoveredLabel}>from the archive</Text></View><View style={styles.rediscoveredCopy}><Text typographyRole="cardTitle" style={styles.rediscoveredTitle}>{item.title}</Text><Text typographyRole="body" style={styles.rediscoveredBody}><ArchiveEvidence item={item} /></Text><Text typographyRole="caption" style={styles.rediscoveredMeta}>{dateLabel(item.occurred_on)} · {item.provenance_label}</Text></View><Ionicons name="arrow-forward" size={18} color={SLColors.iconMuted} /></Pressable>;
 }
 
 function ArchiveResults({ collection, count, items, query, thumbnailUrls, onBack, onItem }: { collection: ArchiveCollection | null; count?: number; items: ArchiveItem[]; query: string; thumbnailUrls: Record<number, string>; onBack: () => void; onItem: (item: ArchiveItem) => void }) {
@@ -694,11 +719,11 @@ function ArchiveResults({ collection, count, items, query, thumbnailUrls, onBack
 }
 
 function MediaGrid({ items, thumbnailUrls, onItem }: { items: ArchiveItem[]; thumbnailUrls: Record<number, string>; onItem: (item: ArchiveItem) => void }) {
-  return <View style={styles.mediaGrid}>{items.map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.mediaGridItem, pressed && styles.pressed]}><MediaStage item={item} thumbnailUrl={thumbnailUrls[item.source_id]} grid /><Text typographyRole="bodyStrong" style={styles.mediaGridTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.mediaGridMeta}>{itemEvidence(item)}</Text>{item.subtitle ? <Text typographyRole="caption" numberOfLines={1} style={styles.mediaSession}>{item.subtitle}</Text> : null}<Text typographyRole="caption" style={styles.mediaGridDate}>{dateLabel(item.occurred_on)}</Text></Pressable>)}</View>;
+  return <View style={styles.mediaGrid}>{items.map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.mediaGridItem, pressed && styles.pressed]}><MediaStage item={item} thumbnailUrl={thumbnailUrls[item.source_id]} grid /><Text typographyRole="bodyStrong" style={styles.mediaGridTitle}>{item.title}</Text><Text typographyRole="caption" style={styles.mediaGridMeta}><ArchiveEvidence item={item} /></Text>{item.subtitle ? <Text typographyRole="caption" numberOfLines={1} style={styles.mediaSession}>{item.subtitle}</Text> : null}<Text typographyRole="caption" style={styles.mediaGridDate}>{dateLabel(item.occurred_on)}</Text></Pressable>)}</View>;
 }
 
 function CompetitionList({ items, onItem }: { items: ArchiveItem[]; onItem: (item: ArchiveItem) => void }) {
-  return <View style={styles.competitionList}>{items.map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.competitionRecord, pressed && styles.pressed]}><View style={styles.competitionDate}><Text typographyRole="numeric" style={styles.competitionYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="caption" style={styles.competitionMonth}>{dateLabel(item.occurred_on).replace(` ${yearLabel(item.occurred_on)}`, '')}</Text></View><View style={styles.competitionSpine}><View style={styles.competitionDot} /><View style={styles.competitionLine} /></View><View style={styles.competitionCopy}><Text typographyRole="shortTechnicalLabel" style={styles.meetStatus}>{item.status || 'recorded'}</Text><Text typographyRole="cardTitle" style={styles.competitionTitle}>{item.title}</Text>{item.subtitle ? <Text typographyRole="caption" style={styles.competitionSubtitle}>{item.subtitle}</Text> : null}<Text typographyRole="bodyStrong" style={styles.competitionEvidence}>{itemEvidence(item)}</Text></View><Ionicons name="chevron-forward" size={17} color={SLColors.iconMuted} /></Pressable>)}</View>;
+  return <View style={styles.competitionList}>{items.map((item) => <Pressable key={item.source_id} onPress={() => onItem(item)} style={({ pressed }) => [styles.competitionRecord, pressed && styles.pressed]}><View style={styles.competitionDate}><Text typographyRole="numeric" style={styles.competitionYear}>{yearLabel(item.occurred_on)}</Text><Text typographyRole="caption" style={styles.competitionMonth}>{dateLabel(item.occurred_on).replace(` ${yearLabel(item.occurred_on)}`, '')}</Text></View><View style={styles.competitionSpine}><View style={styles.competitionDot} /><View style={styles.competitionLine} /></View><View style={styles.competitionCopy}><Text typographyRole="shortTechnicalLabel" style={styles.meetStatus}>{item.status || 'recorded'}</Text><Text typographyRole="cardTitle" style={styles.competitionTitle}>{item.title}</Text>{item.subtitle ? <Text typographyRole="caption" style={styles.competitionSubtitle}>{item.subtitle}</Text> : null}<Text typographyRole="bodyStrong" style={styles.competitionEvidence}><ArchiveEvidence item={item} /></Text></View><Ionicons name="chevron-forward" size={17} color={SLColors.iconMuted} /></Pressable>)}</View>;
 }
 
 function GroupedSearchResults({ items, onItem }: { items: ArchiveItem[]; onItem: (item: ArchiveItem) => void }) {

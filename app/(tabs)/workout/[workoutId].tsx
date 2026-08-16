@@ -1480,12 +1480,17 @@ export default function WorkoutViewerScreen() {
     user?.is_individual_workspace === true ||
     user?.is_self_coached === true;
 
-  const [unit, setUnit] = useState<'kg' | 'lb'>('kg');
+  const [unit, setUnit] = useState<'kg' | 'lb'>(() => normalizeReadinessUnit(user?.preferred_units));
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
   const [acceptedSetEvidenceItemIds, setAcceptedSetEvidenceItemIds] = useState<
     ReadonlySet<number>
   >(() => new Set());
+  useEffect(() => {
+    if (unitPreferenceHydratedRef.current || !user) return;
+    setUnit(normalizeReadinessUnit(user.preferred_units));
+    unitPreferenceHydratedRef.current = true;
+  }, [user]);
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
     setUpdateBlocker('workout', isLogging);
@@ -5962,10 +5967,6 @@ export default function WorkoutViewerScreen() {
         const payload = hydrateWorkoutDetailEquipmentSelections(
           fixturePayload as unknown as Record<string, any>,
         ) as WorkoutPayload;
-        if (!unitPreferenceHydratedRef.current) {
-          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
-          unitPreferenceHydratedRef.current = true;
-        }
         setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
         setData(payload);
         restoreScrollSoon();
@@ -5989,10 +5990,6 @@ export default function WorkoutViewerScreen() {
         throw new Error('Athlete View could not be verified as read-only.');
       }
 
-      if (!unitPreferenceHydratedRef.current) {
-        setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
-        unitPreferenceHydratedRef.current = true;
-      }
       setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
       setData(payload);
       restoreScrollSoon();
@@ -7714,7 +7711,7 @@ export default function WorkoutViewerScreen() {
           <CompletedSessionRecap
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
-            preferredUnits={athlete.preferred_units}
+            preferredUnits={unit}
             refreshing={refreshing}
             onRefresh={onRefresh}
             onClose={handleCloseCompletedRecap}

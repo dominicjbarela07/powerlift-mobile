@@ -461,7 +461,7 @@ export default function AthleteDashboard() {
       ?? !current?.mission?.session?.id;
     if (!current || !canDailyCheckIn) return;
     const observation = current.daily_check_in;
-    const unit = normalizeReadinessUnit(user?.preferred_units ?? current.athlete?.preferred_units);
+    const unit = normalizeReadinessUnit(user?.preferred_units);
     const bodyweight = bodyweightKgToDisplay(observation?.bodyweight_kg, unit) || '';
     setDailyReadinessForm({
       bodyweight,
@@ -485,7 +485,7 @@ export default function AthleteDashboard() {
 
   const submitDailyReadiness = React.useCallback(async () => {
     const current = todayRef.current;
-    const unit = normalizeReadinessUnit(user?.preferred_units ?? current?.athlete?.preferred_units);
+    const unit = normalizeReadinessUnit(user?.preferred_units);
     const built = buildReadinessPayload(dailyReadinessForm, unit);
     if (!built.payload) {
       setDailyReadinessError(built.error || 'Check your readiness values.');
@@ -673,7 +673,7 @@ export default function AthleteDashboard() {
       <ReadinessModal
         context="daily"
         visible={dailyReadinessVisible}
-        unit={normalizeReadinessUnit(user?.preferred_units ?? today.athlete?.preferred_units)}
+        unit={normalizeReadinessUnit(user?.preferred_units)}
         priorBodyweightKg={today.athlete?.bodyweight_kg}
         values={dailyReadinessForm}
         error={dailyReadinessError}

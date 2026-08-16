@@ -589,10 +589,9 @@ export default function TrainingIndexScreen() {
         return;
       }
       const responseHub: TrainingHubPayload | null = res.training_hub || null;
-      const authoritativeDisplayUnit = parseDisplayWeightUnit(responseHub?.athlete?.preferred_units)
-        || preferredUnitFromSettingsPayload(settingsResp?.ok ? settingsResp.json : null)
+      const viewerDisplayUnit = preferredUnitFromSettingsPayload(settingsResp?.ok ? settingsResp.json : null)
         || parseDisplayWeightUnit(user?.preferred_units);
-      if (authoritativeDisplayUnit) setTrainingDisplayUnit(authoritativeDisplayUnit);
+      if (viewerDisplayUnit) setTrainingDisplayUnit(viewerDisplayUnit);
       const scoped = scopeProgrammingPayload<ProgramBlockPayload, HubSession, NonNullable<TrainingHubPayload['current_block']>>({
         activeProgramId: responseHub?.active_program?.id,
         blocks: res.blocks,
@@ -3729,7 +3728,7 @@ function buildAthleteTrainingHubData(
   blocks: ProgramBlockPayload[],
   pendingMap: SessionMap,
   completedMap: SessionMap,
-  preferredUnits: 'kg' | 'lb' = 'kg',
+  preferredUnits: 'kg' | 'lb' = 'lb',
 ): AthleteTrainingHubData {
   const athletePhoto = normalizeProfilePhotoPayload(hub?.athlete);
   const coachPhoto = normalizeProfilePhotoPayload(hub?.connected_coach);

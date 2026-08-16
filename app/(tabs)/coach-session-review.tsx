@@ -11,6 +11,7 @@ import {
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies, SLRadius } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
 import { fetchJson, getCoachSessionReview, saveCoachSessionReview, type CoachReviewItem } from '@/lib/api';
 
 type Option = { value: string; label: string };
@@ -71,6 +72,7 @@ function draftFromReview(payload: ReviewPayload): CoachReviewDraft {
 }
 
 export default function CoachSessionReviewScreen() {
+  const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutId?: string }>();
   const workoutId = Number(params.workoutId);
@@ -152,7 +154,7 @@ export default function CoachSessionReviewScreen() {
     return <CompletedSessionRecap
       recap={recap}
       impactSummary={detail?.workout?.impact_summary}
-      preferredUnits={detail?.athlete?.preferred_units}
+      preferredUnits={user?.preferred_units}
       viewerMode="coach"
       coachReview={coachReview}
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}

@@ -25,6 +25,7 @@ import Animated, {
 
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 import {
   mapCoachSessionEditorPayload,
@@ -306,7 +307,7 @@ export default function MobileSessionWorkspaceScreen() {
   const [reorderSaving, setReorderSaving] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [roster, setRoster] = useState<RosterAthlete[]>([]);
-  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>('kg');
+  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>(() => normalizeDisplayWeightUnit(user?.preferred_units));
   const hasLoadedSessionRef = useRef(false);
   const loadRequestRevisionRef = useRef(0);
   const nextDraftMovementIdRef = useRef(-1);
@@ -369,9 +370,8 @@ export default function MobileSessionWorkspaceScreen() {
   }, []);
 
   useEffect(() => {
-    const preferredUnits = String(payload?.athlete?.preferred_units || '').toLowerCase();
-    setWorkspaceDisplayUnit(['lb', 'lbs'].includes(preferredUnits) ? 'lb' : 'kg');
-  }, [payload?.athlete?.id, payload?.athlete?.preferred_units]);
+    setWorkspaceDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
+  }, [user?.preferred_units]);
 
   useEffect(() => {
     if (!authReady || user?.role !== 'coach') return;
@@ -860,7 +860,6 @@ export default function MobileSessionWorkspaceScreen() {
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
-        ...(plan.metadataPatch.displayUnit !== undefined ? { preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg' } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
@@ -976,7 +975,7 @@ export default function MobileSessionWorkspaceScreen() {
         <CompletedSessionRecap
           recap={workout.completed_recap}
           impactSummary={workout.impact_summary}
-          preferredUnits={payload?.athlete?.preferred_units}
+          preferredUnits={workspaceDisplayUnit}
           refreshing={refreshing}
           onRefresh={() => { void loadSession(true); }}
           onClose={closeToProgrammingHome}

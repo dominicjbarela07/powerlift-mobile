@@ -6,6 +6,7 @@ import {
 import {
   fetchLedgerAccomplishmentPage,
   type AccomplishmentEvent,
+  type LedgerUnit,
 } from '@/lib/ledger-data';
 import { buildJourneyMoments } from './journey-moments';
 import type { JourneyMoment } from './model';
@@ -38,7 +39,7 @@ async function fetchAllAccomplishments(maxPages = 20): Promise<{ items: Accompli
  * Runtime Journey adapter. Archive and accomplishment services remain source
  * owners; this layer only collects canonical pages for the pure moment policy.
  */
-export async function fetchJourneyArchiveEvents(): Promise<JourneyMoment[]> {
+export async function fetchJourneyArchiveEvents(unit: LedgerUnit = 'lb'): Promise<JourneyMoment[]> {
   const [training, media, competition, accomplishmentPage] = await Promise.all([
     fetchAllArchive('training'),
     fetchAllArchive('media'),
@@ -50,5 +51,6 @@ export async function fetchJourneyArchiveEvents(): Promise<JourneyMoment[]> {
     accomplishments: accomplishmentPage.items,
     archiveHistoryComplete: training.complete && competition.complete,
     accomplishmentHistoryComplete: accomplishmentPage.complete,
+    unit,
   });
 }

@@ -22,6 +22,7 @@ import {
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
 import { CORE_LIFT_MILESTONE_THRESHOLDS } from '@/lib/ledger-rewards';
 import { canRenderGymTotal, displayWeightFromCanonicalLb, plateClubLabel, readablePlateClubLabel } from '@/lib/milestones-layout';
+import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
@@ -98,7 +99,7 @@ export function LegacyCanonicalCuratorExperience() {
   const [archiveError, setArchiveError] = useState<LedgerRequestFailureKind | null>(null);
   const [canonicalMedia, setCanonicalMedia] = useState<CanonicalLedgerMedia | null>(null);
   const [mediaLoading, setMediaLoading] = useState(true);
-  const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const lifts = progression?.big_three_arc?.lifts ?? [];
   const primaryKey = canonicalLiftKey(progression?.strength_story?.primary_lift) ?? canonicalLiftKey(lifts[0]?.key);
   const primaryLift = primaryKey
@@ -116,7 +117,7 @@ export function LegacyCanonicalCuratorExperience() {
 
   useEffect(() => {
     let active = true;
-    fetchJourneyArchiveEvents()
+    fetchJourneyArchiveEvents(unit)
       .then((events) => {
         if (!active) return;
         setPreservedEvents(events);
@@ -134,7 +135,7 @@ export function LegacyCanonicalCuratorExperience() {
       })
       .finally(() => { if (active) setArchiveLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [unit]);
 
   useEffect(() => {
     let active = true;
@@ -286,7 +287,7 @@ export function JourneyExperience() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [journeyErrorKind, setJourneyErrorKind] = useState<LedgerRequestFailureKind | null>(null);
-  const unit: LedgerUnit = overview?.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = overview?.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort().reverse(), [allMoments]);
   const activeYear = selectedYear && availableYears.includes(selectedYear)
     ? selectedYear
@@ -307,7 +308,7 @@ export function JourneyExperience() {
         const page = bootstrap.timeline;
         setOverview(nextOverview);
         setBlocks(nextBlocks);
-        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, nextOverview.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg')));
+        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, nextOverview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb')));
         setNextCursor(page.next_cursor ?? null);
         setHasMore(page.has_more);
         setJourneyError(null);
@@ -366,7 +367,7 @@ export function JourneyExperience() {
       <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
       {view === 'Overview' ? <JourneyOverviewView overview={overview} /> : null}
-      {view === 'Blocks' ? <JourneyBlocksView blocks={blocks} /> : null}
+      {view === 'Blocks' ? <JourneyBlocksView blocks={blocks} unit={unit} /> : null}
       {view === 'Timeline' ? <>
         <View style={styles.journeyYearRail} accessibilityRole="tablist">
           {(availableYears.length ? availableYears : [activeYear]).map((year) => {
@@ -396,7 +397,7 @@ export function JourneyExperience() {
 
 function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
   const summary = overview.lifetime;
-  const unit: LedgerUnit = overview.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = overview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const reported = overview.bodyweight_context;
   const latestReportedKg = reported.latest?.reported_bodyweight_kg ?? reported.latest?.weight_kg;
   const latestReportedDate = reported.latest?.training_date ?? reported.latest?.date;
@@ -430,14 +431,14 @@ function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
   </View>;
 }
 
-function JourneyBlocksView({ blocks }: { blocks: JourneyBlock[] }) {
+function JourneyBlocksView({ blocks, unit }: { blocks: JourneyBlock[]; unit: LedgerUnit }) {
   if (!blocks.length) return <LedgerRoomState kind="empty" message="No recoverable program blocks are recorded yet." />;
   return <View testID="ledger-journey-blocks" style={styles.journeyBlocks}>
     {blocks.map((block) => <View key={block.id} style={[styles.journeyBlockCard, block.state === 'current' && styles.journeyBlockCardCurrent]}>
       <View style={styles.journeyBlockHeader}><View style={styles.journeyBlockCopy}><Kicker tone={block.state === 'current' ? '#B993FF' : '#7F8999'}>{block.state === 'current' ? 'CURRENT BLOCK' : block.program?.name?.toUpperCase() || 'TRAINING BLOCK'}</Kicker><Text style={styles.journeyBlockTitle}>{block.name}</Text></View><Ionicons name="layers-outline" size={22} color={block.state === 'current' ? '#B993FF' : '#7F8999'} /></View>
       <Text style={styles.journeyBlockRange}>{formatJourneyRange(block.start_date, block.end_date)}</Text>
       <View style={styles.journeyBlockStats}><Text style={styles.journeyBlockStat}>{block.session_count} Sessions</Text><Text style={styles.journeyBlockStat}>{block.pr_count} PRs</Text><Text style={styles.journeyBlockStat}>{block.state === 'historical_range' ? 'Historical range' : block.state}</Text></View>
-      {block.reported_bodyweight?.start && block.reported_bodyweight.end_or_latest && block.reported_bodyweight.change_kg != null ? <Text style={styles.journeyBlockBodyweight}>Reported BW · {block.reported_bodyweight.start.reported_bodyweight_kg.toFixed(1)} → {block.reported_bodyweight.end_or_latest.reported_bodyweight_kg.toFixed(1)} kg · observations within {block.reported_bodyweight.boundary_window_days} days of boundaries</Text> : null}
+      {block.reported_bodyweight?.start && block.reported_bodyweight.end_or_latest && block.reported_bodyweight.change_kg != null ? <Text style={styles.journeyBlockBodyweight}>Reported BW · {formatJourneyWeight(block.reported_bodyweight.start.reported_bodyweight_kg, unit)} → {formatJourneyWeight(block.reported_bodyweight.end_or_latest.reported_bodyweight_kg, unit)} {unit.toUpperCase()} · observations within {block.reported_bodyweight.boundary_window_days} days of boundaries</Text> : null}
     </View>)}
   </View>;
 }
@@ -607,7 +608,7 @@ export function StrengthExperience() {
 
   useEffect(() => {
     if (!unitPreferenceLoaded || hasStoredUnitPreference) return;
-    setUnit(progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg');
+    setUnit(progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb');
   }, [hasStoredUnitPreference, progression?.athlete?.preferred_units, unitPreferenceLoaded]);
 
   const changeUnit = useCallback((next: LedgerUnit) => {
@@ -675,7 +676,7 @@ export function StrengthExperience() {
   const liftKey = canonicalLiftKey(focusLift.key);
   const canonicalWeightLb = focusedProfile.canonicalWeightBestKg == null
     ? null
-    : Math.round((focusedProfile.canonicalWeightBestKg * 2.2046226218) / 5) * 5;
+    : Math.round(kilogramsToDisplayValue(focusedProfile.canonicalWeightBestKg, 'lb') / 5) * 5;
   const milestoneCurrent = canonicalWeightLb == null ? null : displayWeightFromCanonicalLb(canonicalWeightLb, unit);
   const milestoneThresholds = liftKey ? CORE_LIFT_MILESTONE_THRESHOLDS[liftKey][unit] : [];
   const currentMilestone = milestoneCurrent == null ? null : milestoneThresholds.filter((threshold) => threshold <= milestoneCurrent).at(-1) ?? null;

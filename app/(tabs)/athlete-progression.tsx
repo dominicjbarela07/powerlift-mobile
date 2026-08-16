@@ -10,6 +10,7 @@ import { SLMotionEntrance, SLMotionPressable } from '@/components/ui';
 import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { kilogramsToDisplayValue } from '@/lib/display-units';
 
 type ProgressionRange = '30d' | '90d' | '180d' | '1y' | 'all';
 type DisplayUnit = 'kg' | 'lb';
@@ -752,20 +753,20 @@ function friendlyLiftLabel(value: string) {
 
 function normalizeUnit(value?: string | null): DisplayUnit {
   const lower = String(value || '').toLowerCase();
-  return lower.startsWith('lb') ? 'lb' : 'kg';
+  return lower.startsWith('kg') ? 'kg' : 'lb';
 }
 
-function unitValue(valueKg?: number | null, unit: DisplayUnit = 'kg') {
+function unitValue(valueKg?: number | null, unit: DisplayUnit = 'lb') {
   if (valueKg == null || !Number.isFinite(Number(valueKg))) return Number.NaN;
-  return unit === 'lb' ? Number(valueKg) * 2.2046226218 : Number(valueKg);
+  return kilogramsToDisplayValue(Number(valueKg), unit);
 }
 
-function formatWeight(valueKg?: number | null, unit: DisplayUnit = 'kg') {
+function formatWeight(valueKg?: number | null, unit: DisplayUnit = 'lb') {
   if (valueKg == null || !Number.isFinite(Number(valueKg))) return 'Building';
   return `${roundWeight(unitValue(valueKg, unit))} ${unit}`;
 }
 
-function formatDelta(valueKg?: number | null, unit: DisplayUnit = 'kg') {
+function formatDelta(valueKg?: number | null, unit: DisplayUnit = 'lb') {
   if (valueKg == null || !Number.isFinite(Number(valueKg))) return 'Building';
   const value = unitValue(valueKg, unit);
   const sign = value > 0 ? '+' : '';

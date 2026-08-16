@@ -458,7 +458,7 @@ export default function AthleteCalendarScreen() {
 
   const openDailyReadiness = () => {
     const readiness = dayDetail?.date === selectedDate ? dayDetail.readiness : null;
-    const unit = data.preferredUnits || 'kg';
+    const unit = data.preferredUnits || 'lb';
     const existingBodyweight = bodyweightKgToDisplay(readiness?.bodyweightKg, unit) || '';
     setDailyReadinessValues({
       bodyweight: existingBodyweight,
@@ -473,7 +473,7 @@ export default function AthleteCalendarScreen() {
   };
 
   const submitDailyReadiness = async () => {
-    const unit = data.preferredUnits || 'kg';
+    const unit = data.preferredUnits || 'lb';
     const built = buildReadinessPayload(dailyReadinessValues, unit);
     if (!built.payload) {
       setDailyReadinessError(built.error || 'Check the readiness values and try again.');
@@ -690,7 +690,7 @@ export default function AthleteCalendarScreen() {
         priorBodyweightKg={dayDetail?.date === selectedDate ? dayDetail.readiness?.bodyweightKg : null}
         reduceMotion={reduceMotion}
         submitting={dailyReadinessSubmitting}
-        unit={data.preferredUnits || 'kg'}
+        unit={data.preferredUnits || 'lb'}
         values={dailyReadinessValues}
         visible={dailyReadinessVisible}
       />

@@ -1,4 +1,5 @@
 import { fetchJson } from '@/lib/api';
+import { kilogramsToDisplayValue } from '@/lib/display-units';
 
 export type LedgerRange = '30d' | '90d' | '180d' | '1y' | 'all';
 export type LedgerUnit = 'kg' | 'lb';
@@ -193,7 +194,7 @@ export async function fetchLedgerCurrentBests(): Promise<CurrentBest[]> {
 }
 
 export function kgToDisplay(valueKg: number, unit: LedgerUnit): number {
-  return unit === 'kg' ? valueKg : valueKg * 2.2046226218;
+  return kilogramsToDisplayValue(valueKg, unit);
 }
 
 export function displayWeight(valueKg: number | null | undefined, unit: LedgerUnit, fallback = '—'): string {

@@ -119,7 +119,8 @@ assert.doesNotMatch(screen, /unitControlStrip/, 'the unit toggle must not be mov
 assert.match(screen, /style=\{\[styles\.navButton, styles\.unitControl\]\}/, 'the unit toggle must occupy the intentional header-control position');
 assert.doesNotMatch(screen, /unitControl: \{[^}]*position: 'absolute'/, 'the unit toggle must not overlap scrolling content');
 assert.match(screen, /navButton: \{ width: 44, height: 44,[^}]*borderRadius: 22/, 'the header unit toggle must remain circular with a stable touch target');
-assert.match(screen, /requestedUnit === 'kg' \? 'kg' : 'lb'/, 'the achievements experience must support deterministic KG display without changing normal LB startup');
+assert.match(screen, /requestedUnit === 'kg' \|\| requestedUnit === 'lb'/, 'an explicit Achievements route unit must remain a local display override');
+assert.match(screen, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)/, 'Achievements must otherwise initialize from the signed-in viewer preference');
 assert.match(tabs, /name="ledger"/, 'the canonical Ledger route must be registered in the shipping tab navigator');
 assert.match(tabs, /href: viewMode === 'athlete' \|\| isIndividual \? '\/\(tabs\)\/ledger\/home' : null/, 'the canonical Ledger route must be reachable in athlete and individual modes');
 

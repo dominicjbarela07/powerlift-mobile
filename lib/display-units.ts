@@ -1,6 +1,7 @@
 export type DisplayWeightUnit = 'kg' | 'lb';
 
 export const KG_TO_LB = 2.2046226218;
+export const DEFAULT_DISPLAY_WEIGHT_UNIT: DisplayWeightUnit = 'lb';
 
 export function parseDisplayWeightUnit(value?: string | null): DisplayWeightUnit | null {
   const normalized = String(value || '').trim().toLowerCase();
@@ -11,9 +12,23 @@ export function parseDisplayWeightUnit(value?: string | null): DisplayWeightUnit
 
 export function normalizeDisplayWeightUnit(
   value?: string | null,
-  fallback: DisplayWeightUnit = 'kg',
+  fallback: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
 ): DisplayWeightUnit {
   return parseDisplayWeightUnit(value) || fallback;
+}
+
+export function resolveDisplayWeightUnit({
+  localOverride,
+  viewerPreference,
+  fallback = DEFAULT_DISPLAY_WEIGHT_UNIT,
+}: {
+  localOverride?: string | null;
+  viewerPreference?: string | null;
+  fallback?: DisplayWeightUnit;
+}): DisplayWeightUnit {
+  return parseDisplayWeightUnit(localOverride)
+    || parseDisplayWeightUnit(viewerPreference)
+    || fallback;
 }
 
 export function preferredUnitFromSettingsPayload(payload: unknown): DisplayWeightUnit | null {
@@ -23,6 +38,8 @@ export function preferredUnitFromSettingsPayload(payload: unknown): DisplayWeigh
   return parseDisplayWeightUnit(
     profile?.preferred_units
       ?? profile?.context?.preferred_units
+      ?? root.user?.preferred_units
+      ?? root.settings?.preferred_units
       ?? root.preferred_units,
   );
 }
@@ -33,7 +50,7 @@ export function kilogramsToDisplayValue(valueKg: number, unit: DisplayWeightUnit
 
 export function formatWeightFromKg(
   valueKg?: number | null,
-  unit: DisplayWeightUnit = 'kg',
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
   maximumFractionDigits = 1,
 ): string | null {
   if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
@@ -46,7 +63,7 @@ export function formatWeightFromKg(
 
 export function formatWeightDeltaFromKg(
   deltaKg?: number | null,
-  unit: DisplayWeightUnit = 'kg',
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
 ): string | null {
   if (deltaKg == null || !Number.isFinite(Number(deltaKg))) return null;
   const value = kilogramsToDisplayValue(Math.abs(Number(deltaKg)), unit);
@@ -56,7 +73,7 @@ export function formatWeightDeltaFromKg(
 
 export function formatCompactVolumeValueFromKg(
   valueKg?: number | null,
-  unit: DisplayWeightUnit = 'kg',
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
 ): string | null {
   if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
   const converted = kilogramsToDisplayValue(Number(valueKg), unit);
@@ -77,7 +94,7 @@ export function convertDisplayWeightValue(
 
 export function formatCompactWeightFromKg(
   valueKg?: number | null,
-  unit: DisplayWeightUnit = 'kg',
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
 ): string | null {
   if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
   const converted = kilogramsToDisplayValue(Number(valueKg), unit);
@@ -89,7 +106,7 @@ export function formatCompactWeightFromKg(
 
 export function formatTotalVolumeFromKg(
   valueKg?: number | null,
-  unit: DisplayWeightUnit = 'kg',
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
 ): string | null {
   const volume = formatCompactVolumeValueFromKg(valueKg, unit);
   return volume ? `${volume} Total Volume` : null;

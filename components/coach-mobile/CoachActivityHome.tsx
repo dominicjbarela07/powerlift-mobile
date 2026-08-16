@@ -55,6 +55,12 @@ import type {
 } from '@/lib/coach-mobile';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import {
+  convertDisplayWeightValue,
+  normalizeDisplayWeightUnit,
+  parseDisplayWeightUnit,
+  type DisplayWeightUnit,
+} from '@/lib/display-units';
 
 const PR_MEDALLION = require('@/assets/images/ledger-index-v2/ledger-career-pr-medallion-v1.png');
 const PROGRAM_ART = require('@/assets/images/logger-renders/plate-stack-studio-v2/mobile-hero-240x160@3x/squat-405.png');
@@ -178,6 +184,7 @@ export function CoachActivityHome({
   const router = useRouter();
   const params = useLocalSearchParams<{ filter?: string; roster?: string }>();
   const { user } = useAuth();
+  const viewerUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const contextKey = coachHomeContextKey(user);
   const contextKeyRef = useRef(contextKey);
   const requestRef = useRef(0);
@@ -437,6 +444,7 @@ export function CoachActivityHome({
             {visibleQueue.length ? visibleQueue.map((activity) => (
               <SwipeActivityCard
                 activity={activity}
+                displayUnit={viewerUnit}
                 key={activity.key}
                 onDismiss={() => dismiss(activity)}
                 onOpen={() => openDestination(activity.destination, activity.athlete.id)}
@@ -497,7 +505,7 @@ export function CoachActivityHome({
   );
 }
 
-function SwipeActivityCard({ activity, onDismiss, onOpen, onOpenAthlete }: { activity: CoachHomeActivity; onDismiss: () => void; onOpen: () => void; onOpenAthlete: () => void }) {
+function SwipeActivityCard({ activity, displayUnit, onDismiss, onOpen, onOpenAthlete }: { activity: CoachHomeActivity; displayUnit: DisplayWeightUnit; onDismiss: () => void; onOpen: () => void; onOpenAthlete: () => void }) {
   const reduceMotion = useSLReducedMotion();
   const x = useRef(new Animated.Value(0)).current;
   const pan = useMemo(() => PanResponder.create({
@@ -527,7 +535,7 @@ function SwipeActivityCard({ activity, onDismiss, onOpen, onOpenAthlete }: { act
             </Pressable>
             <Text numberOfLines={1} style={[styles.activityTitle, { color: toneForActivity(activity.type) }]}>{activity.title}</Text>
             <Text numberOfLines={1} style={styles.activitySubtitle}>{activity.subtitle}</Text>
-            <ActivityEvidence activity={activity} />
+            <ActivityEvidence activity={activity} displayUnit={displayUnit} />
           </View>
           <CoachCardChevron />
         </Pressable>
@@ -563,16 +571,39 @@ function ReadinessRing({ score }: { score: number }) {
   return <View style={styles.ring}><Svg height={68} viewBox="0 0 68 68" width={68}><Circle cx="34" cy="34" fill="none" r="28" stroke="#182A20" strokeWidth="5" /><Circle cx="34" cy="34" fill="none" r="28" rotation="-90" stroke={COACH_V2.green} strokeDasharray={`${circumference * progress} ${circumference}`} strokeLinecap="round" strokeWidth="5" x="0" y="0" /></Svg><Text style={styles.ringValue}>{score.toFixed(1)}</Text></View>;
 }
 
-function ActivityEvidence({ activity }: { activity: CoachHomeActivity }) {
+function ActivityEvidence({ activity, displayUnit }: { activity: CoachHomeActivity; displayUnit: DisplayWeightUnit }) {
   const evidence = activity.evidence;
   if (activity.type === 'completed_session') {
-    return <View style={styles.evidenceRow}><Text style={styles.evidenceText}>{[evidence.set_count ? `${evidence.set_count} sets` : null, formatCoachVolume(evidence.total_volume_kg, activity.athlete.preferred_units), evidence.session_rpe ? `RPE ${evidence.session_rpe}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}</Text>{evidence.pr_count ? <MiniBadge color={COACH_V2.gold} text={`${evidence.pr_count} PR`} /> : null}{evidence.video_count ? <MiniBadge color={COACH_V2.violetBright} text={`${evidence.video_count} VIDEO${evidence.video_count === 1 ? '' : 'S'}`} /> : null}</View>;
+    return <View style={styles.evidenceRow}><Text style={styles.evidenceText}>{[evidence.set_count ? `${evidence.set_count} sets` : null, formatCoachVolume(evidence.total_volume_kg, displayUnit), evidence.session_rpe ? `RPE ${evidence.session_rpe}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}</Text>{evidence.pr_count ? <MiniBadge color={COACH_V2.gold} text={`${evidence.pr_count} PR`} /> : null}{evidence.video_count ? <MiniBadge color={COACH_V2.violetBright} text={`${evidence.video_count} VIDEO${evidence.video_count === 1 ? '' : 'S'}`} /> : null}</View>;
   }
   if (activity.type === 'video_submitted') return <View style={styles.evidenceRow}><MiniBadge color={COACH_V2.violetBright} text="REVIEW" /><Text style={styles.evidenceText}>{evidence.set_indexes?.length ? `Sets ${evidence.set_indexes.join(', ')}` : 'Exact set context ready'}</Text></View>;
-  if (activity.type === 'pr_achieved') return <Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{evidence.weight_kg != null ? formatCoachWeight(evidence.weight_kg, activity.athlete.preferred_units) : evidence.current_value != null ? `${evidence.current_value} ${evidence.unit || ''}` : 'Evidence verified'}{evidence.reps ? ` × ${evidence.reps}` : ''}{evidence.delta ? `  +${evidence.delta}` : ''}</Text>;
+  if (activity.type === 'pr_achieved') {
+    const unitToken = String(evidence.unit || '').trim().toLowerCase();
+    const sourceUnit = parseDisplayWeightUnit(evidence.unit)
+      || (unitToken.startsWith('kg') ? 'kg' : unitToken.startsWith('lb') ? 'lb' : null);
+    const value = evidence.weight_kg != null
+      ? formatCoachWeight(evidence.weight_kg, displayUnit)
+      : evidence.current_value != null && sourceUnit
+        ? `${formatEvidenceMass(evidence.current_value, sourceUnit, displayUnit)} ${displayUnit}`
+        : evidence.current_value != null
+          ? `${evidence.current_value}${evidence.unit ? ` ${evidence.unit}` : ''}`
+          : 'Evidence verified';
+    const delta = evidence.delta && sourceUnit
+      ? `  +${formatEvidenceMass(evidence.delta, sourceUnit, displayUnit)} ${displayUnit}`
+      : evidence.delta
+        ? `  +${evidence.delta}`
+        : '';
+    return <Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{value}{evidence.reps ? ` × ${evidence.reps}` : ''}{delta}</Text>;
+  }
   if (activity.type === 'readiness_check_in') return <Text style={[styles.evidenceText, { color: COACH_V2.green }]}>Readiness {evidence.score?.toFixed(1)}{evidence.delta != null ? `  ${evidence.delta >= 0 ? '↑' : '↓'} ${Math.abs(evidence.delta).toFixed(1)}` : ''}</Text>;
   if (activity.type === 'programming_alert') return <Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{evidence.days_remaining == null ? 'Coverage required now' : `${Math.max(0, evidence.days_remaining)} day${evidence.days_remaining === 1 ? '' : 's'} remaining`}</Text>;
   return <Text style={[styles.evidenceText, { color: COACH_V2.violetBright }]}>{evidence.unread_count || 1} unread</Text>;
+}
+
+function formatEvidenceMass(value: number, sourceUnit: DisplayWeightUnit, displayUnit: DisplayWeightUnit): string {
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(
+    convertDisplayWeightValue(Number(value), sourceUnit, displayUnit),
+  );
 }
 
 function MiniBadge({ color, text }: { color: string; text: string }) {

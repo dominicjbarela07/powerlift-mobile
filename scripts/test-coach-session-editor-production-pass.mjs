@@ -94,7 +94,8 @@ const fullCustomKgPatch = movementProgrammingPatch({ ...persistedKg, scheme: 'FU
 assert.equal(fullCustomKgPatch.planned_sets[0].manual_target_kg, 100, 'Full Custom kg input remains canonical kg storage');
 
 assert.match(route, /<SessionEditingWorkspace/, 'live route uses the Adaptive Session Workspace architecture');
-assert.match(route, /preferred_units[\s\S]*displayUnit=/, 'authoritative athlete units reach the workspace editor');
+assert.match(route, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)[\s\S]*displayUnit=/, 'the authenticated viewer unit reaches the workspace editor');
+assert.doesNotMatch(route, /payload\?\.athlete\?\.preferred_units/, 'the viewed athlete cannot override the coach viewer unit');
 assert.match(route, /onSaveSession=\{saveSessionDraft\}/, 'the authoritative Session draft saves through one route orchestrator');
 assert.match(route, /const saveSessionDraft = async[\s\S]*movementUpdates[\s\S]*movementCreates[\s\S]*deletedMovementIds[\s\S]*items\/reorder/, 'the save orchestrator persists granular movement and ordering mutations');
 assert.match(route, /method: 'PATCH'/, 'edits remain wired to production mutations');

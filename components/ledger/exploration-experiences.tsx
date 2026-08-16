@@ -81,7 +81,7 @@ function RoomHeader({ title, subtitle }: { title: string; subtitle: string }) {
 
 function ContextBar({ data }: { data: LedgerExplorationIndex }) {
   const context = data.context;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const progress = context.block_progress == null ? null : Math.round(context.block_progress * 100);
   return <View testID="ledger-context-bar" style={styles.contextBar}><View style={styles.contextPrimary}><Text style={styles.contextKicker}>{context.block?.name || 'NO CURRENT BLOCK'}</Text><Text style={styles.contextDetail}>{context.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week'} · {context.block_completed_sessions}/{context.block_total_sessions || '—'} sessions</Text></View><View style={styles.contextFacts}><View><Text style={styles.contextFactValue}>{context.bodyweight_kg ? `${displayWeight(context.bodyweight_kg, unit)} ${unit}` : '—'}</Text><Text style={styles.contextFactLabel}>BODYWEIGHT</Text></View><View><Text style={styles.contextFactValue}>{context.training_frequency_per_week.toFixed(1)}</Text><Text style={styles.contextFactLabel}>SESSIONS/WK</Text></View><View style={styles.contextProgress}><Text style={styles.contextFactValue}>{progress == null ? '—' : `${progress}%`}</Text><Text style={styles.contextFactLabel}>BLOCK</Text></View></View></View>;
 }
@@ -116,7 +116,7 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
 
   if (loading) return <State title={`Loading ${kind} evidence.`} />;
   if (error || !data) return <State title={error || 'Ledger movement evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const totalVolume = movements.reduce((sum, movement) => sum + movement.volume_kg, 0);
   const maxVolume = Math.max(1, ...movements.map((movement) => movement.volume_kg));
   const openMovement = (movement: LedgerMovementProgress) => router.push(`/(tabs)/ledger/movement/${movement.id}?mode=${kind === 'variants' ? 'variant' : 'accessory'}` as any);
@@ -161,7 +161,7 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
   if (loading) return <State title="Loading movement evidence." />;
   if (error || !data) return <State title={error || 'Movement evidence is unavailable.'} error onRetry={reload} />;
   if (!movement) return <State title="This movement has no visible evidence in the Ledger." error />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const region = canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family);
   const tone = mode === 'variant' ? FAMILY_TONES[movement.core_family || ''] || '#A66AE4' : '#9A66E7';
   const sets = history?.sets ?? [];
@@ -195,7 +195,7 @@ export function MuscleGroupsExperience() {
   const [selected, setSelected] = useState<AccessoryMuscleRegionKey>('chest');
   if (loading) return <State title="Loading muscle-group evidence." />;
   if (error || !data) return <State title={error || 'Muscle-group evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const groups = data.muscle_groups.map((group) => ({ ...group, region: canonicalAccessoryMuscleRegionKey(group.key) }));
   const selectedGroup = groups.find((group) => group.region === selected) || groups[0];
   const activeRegion = selectedGroup?.region || selected;
@@ -213,7 +213,7 @@ export function MuscleDetailExperience({ region }: { region: AccessoryMuscleRegi
   const { data, loading, error, reload } = useExploration();
   if (loading) return <State title="Loading muscle-group detail." />;
   if (error || !data) return <State title={error || 'Muscle-group evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const group = data.muscle_groups.find((item) => canonicalAccessoryMuscleRegionKey(item.key) === region);
   const movements = data.movements.filter((movement) => canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family) === region).sort((left, right) => right.volume_kg - left.volume_kg);
   const max = Math.max(1, ...movements.map((movement) => movement.volume_kg));

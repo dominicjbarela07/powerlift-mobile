@@ -25,6 +25,7 @@ import {
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLAthleteAvatar } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
+import { useAuth } from '@/context/AuthContext';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { fetchJson } from '@/lib/api';
@@ -188,6 +189,7 @@ function shortDate(value?: string | null) {
 }
 
 export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSummary }: Props) {
+  const { user } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
@@ -385,8 +387,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
     } : null);
   const focus = recapFocusNames(recap).length ? recapFocusNames(recap) : sessionFocusNames(lastSession);
   const focusAsset = accessoryMuscleRegionAsset(canonicalAccessoryMuscleRegionKey(focus[0]));
-  const preferredUnits = details?.athlete.preferred_units ?? athlete.preferred_units;
-  const displayUnit = normalizeDisplayWeightUnit(preferredUnits);
+  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const week = details?.week_summary || athlete.week_summary;
   const highlights = recap?.highlights;
   const prCount = highlights?.pr_count ?? lastSession?.pr_count ?? week?.pr_count ?? 0;

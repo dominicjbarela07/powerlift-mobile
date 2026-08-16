@@ -21,6 +21,8 @@ import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } f
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
 import { MovementHistoryRequestGuard, emptyMovementHistoryPageState } from '@/lib/movement-history-request-guard';
+import { useAuth } from '@/context/AuthContext';
+import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 
 type MovementSession = {
   workout_id: number;
@@ -76,6 +78,7 @@ const colors = {
 };
 
 export default function MovementHistoryScreen() {
+  const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
   const athleteId = params.athleteId ? String(params.athleteId) : null;
@@ -94,7 +97,7 @@ export default function MovementHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
-  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
+  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>(() => normalizeDisplayWeightUnit(user?.preferred_units));
   const [accomplishments, setAccomplishments] = useState<LoggerRecognitionEvent[]>([]);
   const [accomplishmentCursor, setAccomplishmentCursor] = useState<string | null>(null);
   const [hasMoreAccomplishments, setHasMoreAccomplishments] = useState(false);
@@ -133,7 +136,7 @@ export default function MovementHistoryScreen() {
       setRefreshing(false);
       setMovements([]);
       setOptions({});
-      setDisplayUnit('kg');
+      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
       setAccomplishments(emptyPage.items);
       setAccomplishmentCursor(emptyPage.cursor);
       setHasMoreAccomplishments(emptyPage.hasMore);
@@ -155,7 +158,7 @@ export default function MovementHistoryScreen() {
       setAccomplishmentContextToken(accomplishmentPage.query?.continuation_token || null);
       setAccomplishmentError(null);
       setOptions(json.movement_history?.options || {});
-      setDisplayUnit(json.movement_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
+      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
       feedbackAnalytics('historical_accomplishment_timeline_loaded', {
         surface: 'movement_history',
         movement_count: nextMovements.length,
@@ -174,7 +177,7 @@ export default function MovementHistoryScreen() {
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
-  }, [queryString, requestGuard]);
+  }, [queryString, requestGuard, user?.preferred_units]);
 
   const loadMoreAccomplishments = useCallback(async () => {
     if (!accomplishmentCursor || loadingMoreAccomplishments) return;

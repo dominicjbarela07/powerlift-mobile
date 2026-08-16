@@ -333,7 +333,7 @@ export function CoachHomeV2({
               <CoachSectionHeading action="Find athlete" onAction={() => { setRosterInitialFilter('all'); setRosterOpen(true); }} title="Your Athletes at a Glance" />
               {athletes.length ? (
                 <ScrollView contentContainerStyle={styles.athleteRail} horizontal showsHorizontalScrollIndicator={false}>
-                  {athletes.map((athlete) => <AthleteOverviewCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} />)}
+                  {athletes.map((athlete) => <AthleteOverviewCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} viewerUnits={user?.preferred_units} />)}
                 </ScrollView>
               ) : <EmptyCard icon="people-outline" text="No active athlete relationships are available." />}
             </View>
@@ -361,7 +361,7 @@ export function CoachHomeV2({
                   <View style={styles.activityCopy}>
                     <Text numberOfLines={1} style={styles.activityHeadline}>{activity.athlete.name} completed {activity.session.label}</Text>
                     <Text numberOfLines={1} style={styles.activityEvidence}>
-                      {[activity.session.set_count ? `${activity.session.set_count} sets` : null, formatCoachVolume(activity.session.total_volume_kg), activity.session.pr_count ? `${activity.session.pr_count} PR${activity.session.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}
+                      {[activity.session.set_count ? `${activity.session.set_count} sets` : null, formatCoachVolume(activity.session.total_volume_kg, user?.preferred_units), activity.session.pr_count ? `${activity.session.pr_count} PR${activity.session.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}
                     </Text>
                   </View>
                   <Text style={styles.activityDate}>{formatCoachRelativeDate(activity.session.date)}</Text>
@@ -387,6 +387,7 @@ export function CoachHomeV2({
           setTimeout(() => openSession(session), 0);
         }}
         today={today}
+        viewerUnits={user?.preferred_units}
       />
       <CoachRosterDiscoverySheet
         athletes={athletes}
@@ -519,7 +520,7 @@ function CoachRosterDiscoverySheet({
   );
 }
 
-function AthleteOverviewCard({ athlete, onPress }: { athlete: CoachRosterAthlete; onPress: () => void }) {
+function AthleteOverviewCard({ athlete, onPress, viewerUnits }: { athlete: CoachRosterAthlete; onPress: () => void; viewerUnits?: string | null }) {
   const recent = (athlete.recent_training || []).find((session) => session.evidence_mode === 'performed');
   const focusId = recent?.muscle_focus?.primary?.[0]?.muscle_id;
   const focusAsset = accessoryMuscleRegionAsset(canonicalAccessoryMuscleRegionKey(focusId));
@@ -539,7 +540,7 @@ function AthleteOverviewCard({ athlete, onPress }: { athlete: CoachRosterAthlete
       <Text style={styles.athleteMetricLabel}>Last Session</Text>
       <Text numberOfLines={1} style={styles.athleteLastSession}>{recent?.label || 'No completed Session'}</Text>
       <View style={styles.athleteEvidenceRow}>
-        <Text numberOfLines={1} style={styles.athleteEvidence}>{recent ? [recent.pr_count ? `${recent.pr_count} PR${recent.pr_count === 1 ? '' : 's'}` : null, formatCoachVolume(recent.total_volume_kg, athlete.preferred_units)].filter(Boolean).join(' · ') || 'Performed' : '—'}</Text>
+        <Text numberOfLines={1} style={styles.athleteEvidence}>{recent ? [recent.pr_count ? `${recent.pr_count} PR${recent.pr_count === 1 ? '' : 's'}` : null, formatCoachVolume(recent.total_volume_kg, viewerUnits)].filter(Boolean).join(' · ') || 'Performed' : '—'}</Text>
         {focusId ? <Image resizeMode="contain" source={focusAsset.source} style={styles.athleteFocus} /> : null}
       </View>
     </Pressable>
@@ -556,7 +557,7 @@ function EmptyCard({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text:
   return <View style={styles.emptyCard}><Ionicons color={COACH_V2.muted} name={icon} size={21} /><Text style={styles.emptyText}>{text}</Text></View>;
 }
 
-function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, today }: { athletes: CoachRosterAthlete[]; kind: CoachCommandCenterKpi | null; onClose: () => void; onOpenAthlete: (athlete: CoachRosterAthlete) => void; onOpenSession: (session: CoachRecentTrainingSession) => void; today: Date }) {
+function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, today, viewerUnits }: { athletes: CoachRosterAthlete[]; kind: CoachCommandCenterKpi | null; onClose: () => void; onOpenAthlete: (athlete: CoachRosterAthlete) => void; onOpenSession: (session: CoachRecentTrainingSession) => void; today: Date; viewerUnits?: string | null }) {
   const insets = useSafeAreaInsets();
   if (!kind) return null;
   const labels: Record<CoachCommandCenterKpi, { title: string; empty: string }> = {
@@ -588,7 +589,7 @@ function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, 
             )) : kind !== 'sessions' && items.length ? items.map((athlete) => (
               <Pressable accessibilityRole="button" key={athlete.id} onPress={() => onOpenAthlete(athlete)} style={({ pressed }) => [styles.kpiRow, pressed && styles.pressed]}>
                 <SLAthleteAvatar imageUrl={athlete.profilePhotoUrl} imageVersion={athlete.profilePhotoVersion} name={athlete.name} size={44} />
-                <View style={styles.kpiRowCopy}><Text style={styles.kpiRowName}>{athlete.name}</Text><Text numberOfLines={1} style={styles.kpiRowMeta}>{kpiAthleteContext(athlete, kind)}</Text></View>
+                <View style={styles.kpiRowCopy}><Text style={styles.kpiRowName}>{athlete.name}</Text><Text numberOfLines={1} style={styles.kpiRowMeta}>{kpiAthleteContext(athlete, kind, viewerUnits)}</Text></View>
                 <CoachCardChevron />
               </Pressable>
             )) : <EmptyCard icon="checkmark-circle-outline" text={labels[kind].empty} />}
@@ -599,7 +600,7 @@ function CoachKpiSheet({ athletes, kind, onClose, onOpenAthlete, onOpenSession, 
   );
 }
 
-function kpiAthleteContext(athlete: CoachRosterAthlete, kind: Exclude<CoachCommandCenterKpi, 'sessions'>) {
+function kpiAthleteContext(athlete: CoachRosterAthlete, kind: Exclude<CoachCommandCenterKpi, 'sessions'>, viewerUnits?: string | null) {
   if (kind === 'reviews') {
     const count = Number(athlete.pending_video_reviews?.count || 0) + Number(athlete.pending_session_reviews?.count || 0);
     return `${count} review${count === 1 ? '' : 's'} waiting · ${athleteTrainingLabel(athlete)}`;
@@ -610,7 +611,7 @@ function kpiAthleteContext(athlete: CoachRosterAthlete, kind: Exclude<CoachComma
   }
   return [
     athlete.readiness.score == null ? null : `Readiness ${athlete.readiness.score.toFixed(1)}`,
-    athlete.reported_bodyweight?.latest ? formatCoachWeight(athlete.reported_bodyweight.latest.reported_bodyweight_kg, athlete.preferred_units) : null,
+    athlete.reported_bodyweight?.latest ? formatCoachWeight(athlete.reported_bodyweight.latest.reported_bodyweight_kg, viewerUnits) : null,
     athlete.readiness.date ? formatCoachRelativeDate(athlete.readiness.date) : null,
   ].filter(Boolean).join(' · ') || 'Check-in context available';
 }

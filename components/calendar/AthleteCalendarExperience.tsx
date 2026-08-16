@@ -33,6 +33,7 @@ import {
   SLTypography,
 } from '@/constants/theme';
 import type { CalendarRepeatRule } from '@/lib/calendar-event-form';
+import { formatWeightFromKg, type DisplayWeightUnit } from '@/lib/display-units';
 import {
   calendarDayMatchesFilter,
   primaryCalendarDayTone,
@@ -609,6 +610,7 @@ function AthleteCalendarV2Content({
             canManagePersonalEvents={canManagePersonalEvents}
             data={data}
             detail={resolvedDetail}
+            displayUnit={data.preferredUnits || 'lb'}
             error={dayDetailError}
             loading={dayDetailLoading && !dayDetail}
             onAction={onAction}
@@ -680,6 +682,7 @@ function TrainingLens({
   canManagePersonalEvents,
   data,
   detail,
+  displayUnit,
   error,
   loading,
   onAction,
@@ -689,6 +692,7 @@ function TrainingLens({
   canManagePersonalEvents: boolean;
   data: AthleteCalendarExperienceData;
   detail: AthleteCalendarDayDetail;
+  displayUnit: DisplayWeightUnit;
   error?: string | null;
   loading: boolean;
   onAction: (action: AthleteCalendarAction) => void;
@@ -733,7 +737,7 @@ function TrainingLens({
       {!loading && !error ? (
         <>
           {sessions.map((session) => (
-            <SessionLensCard key={session.id} onAction={onAction} session={session} state={state} tone={tone} />
+            <SessionLensCard displayUnit={displayUnit} key={session.id} onAction={onAction} session={session} state={state} tone={tone} />
           ))}
           {state === 'rest' && !sessions.length ? <RestLensCard detail={detail} readiness={readiness} /> : null}
           {detail.personalEvents.map((event) => (
@@ -765,11 +769,13 @@ function TrainingLens({
 }
 
 function SessionLensCard({
+  displayUnit,
   onAction,
   session,
   state,
   tone,
 }: {
+  displayUnit: DisplayWeightUnit;
   onAction: (action: AthleteCalendarAction) => void;
   session: AthleteCalendarDayDetailSession;
   state: AthleteCalendarLensState;
@@ -804,10 +810,10 @@ function SessionLensCard({
             <Metric label="SESSION RPE" value={formatNumber(session.reflection?.sessionRpe)} />
           </View>
           {bestSet ? (
-            <EvidenceRow icon="barbell-outline" label="PERFORMANCE HIGHLIGHT" value={`${formatWeight(bestSet.weightKg)} × ${bestSet.reps}${bestSet.rpe ? ` @ RPE ${formatNumber(bestSet.rpe)}` : ''}`} />
+            <EvidenceRow icon="barbell-outline" label="PERFORMANCE HIGHLIGHT" value={`${formatWeight(bestSet.weightKg, displayUnit)} × ${bestSet.reps}${bestSet.rpe ? ` @ RPE ${formatNumber(bestSet.rpe)}` : ''}`} />
           ) : null}
           {accomplishment ? (
-            <EvidenceRow icon="trophy-outline" label="ACCOMPLISHMENT" value={accomplishmentLabel(accomplishment)} tone={SLColors.success} />
+            <EvidenceRow icon="trophy-outline" label="ACCOMPLISHMENT" value={accomplishmentLabel(accomplishment, displayUnit)} tone={SLColors.success} />
           ) : null}
           {reflectionCopy(session) ? <EvidenceRow icon="chatbubble-ellipses-outline" label="HOW YOU FELT" value={reflectionCopy(session)!} /> : null}
         </>
@@ -1638,18 +1644,21 @@ function formatNumber(value?: number | null) {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—';
   return Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10);
 }
-function formatWeight(value?: number | null) {
-  return value === null || value === undefined ? '—' : `${formatNumber(value)} kg`;
+function formatWeight(value: number | null | undefined, displayUnit: DisplayWeightUnit) {
+  return formatWeightFromKg(value, displayUnit) || '—';
 }
-function accomplishmentLabel(accomplishment: NonNullable<AthleteCalendarAccomplishment['highestPriority']>) {
+function accomplishmentLabel(accomplishment: NonNullable<AthleteCalendarAccomplishment['highestPriority']>, displayUnit: DisplayWeightUnit) {
   const label = String(accomplishment.eventType || 'personal record')
     .split(/[_-]+/)
     .filter(Boolean)
     .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
     .join(' ');
+  const sourceUnit = String(accomplishment.unit || '').toLowerCase();
   const evidence = accomplishment.currentValue === null || accomplishment.currentValue === undefined
     ? null
-    : `${formatNumber(accomplishment.currentValue)}${accomplishment.unit ? ` ${accomplishment.unit}` : ''}`;
+    : sourceUnit.startsWith('kg')
+      ? formatWeightFromKg(accomplishment.currentValue, displayUnit)
+      : `${formatNumber(accomplishment.currentValue)}${accomplishment.unit ? ` ${accomplishment.unit}` : ''}`;
   return [accomplishment.movementLabel, label, evidence].filter(Boolean).join(' · ');
 }
 function reflectionCopy(session: AthleteCalendarDayDetailSession) {

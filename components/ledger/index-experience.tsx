@@ -32,6 +32,7 @@ import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
 import { useLedgerLiveData } from './use-ledger-live-data';
+import { convertDisplayWeightValue, kilogramsToDisplayValue } from '@/lib/display-units';
 
 const CHAPTERS: readonly {
   number: string;
@@ -112,8 +113,8 @@ function eventPerformedWeightKg(event?: AccomplishmentEvent) {
   if (evidenceWeight != null) return evidenceWeight;
   if (!event || typeof event.current_value !== 'number' || !Number.isFinite(event.current_value)) return null;
   const eventUnit = (event.unit || '').toLowerCase();
-  if (eventUnit === 'kg') return event.current_value;
-  if (eventUnit === 'lb') return event.current_value / 2.2046226218;
+  if (eventUnit.startsWith('kg')) return event.current_value;
+  if (eventUnit.startsWith('lb')) return convertDisplayWeightValue(event.current_value, 'lb', 'kg');
   return null;
 }
 
@@ -129,7 +130,7 @@ function eventPerformance(event?: AccomplishmentEvent, unit: LedgerUnit = 'lb') 
 
 function displayVolume(valueKg: number | null | undefined, unit: LedgerUnit) {
   if (valueKg == null || !Number.isFinite(valueKg)) return '—';
-  const value = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
+  const value = kilogramsToDisplayValue(valueKg, unit);
   if (value >= 10_000) return `${(value / 1000).toFixed(1)}K ${unit.toUpperCase()}`;
   return `${Math.round(value).toLocaleString()} ${unit.toUpperCase()}`;
 }
@@ -138,8 +139,9 @@ function eventComparison(event: AccomplishmentEvent, unit: LedgerUnit) {
   const reps = eventReps(event);
   const delta = typeof event.delta === 'number' && Number.isFinite(event.delta) ? event.delta : null;
   const priorValue = typeof event.prior_value === 'number' && Number.isFinite(event.prior_value) ? event.prior_value : null;
-  if (priorValue != null && delta != null && delta > 0 && (event.unit === 'kg' || event.unit === 'lb')) {
-    const deltaKg = event.unit === 'kg' ? delta : delta / 2.2046226218;
+  const eventUnit = String(event.unit || '').toLowerCase();
+  if (priorValue != null && delta != null && delta > 0 && (eventUnit.startsWith('kg') || eventUnit.startsWith('lb'))) {
+    const deltaKg = eventUnit.startsWith('kg') ? delta : convertDisplayWeightValue(delta, 'lb', 'kg');
     const amount = `+${displayWeight(deltaKg, unit)} ${unit.toUpperCase()}`;
     if (event.event_type.includes('REP_MAX')) return `${amount} · VS PRIOR ${reps ? `${reps}RM` : 'REP MAX'}`;
     if (event.event_type.includes('E1RM')) return `e1RM ${amount}`;
@@ -386,7 +388,7 @@ export function LedgerIndexExperience() {
   }, []);
 
   const model = useMemo(() => {
-    const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+    const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
     const prs = recentPrPerformances(accomplishments);
     const latest = accomplishments.find((event) => !RAW_COMPLETION_EVENT_TYPES.has(event.event_type));
     const liftBests = CORE_LIFT_PRESENTATION.map((lift) => currentBests

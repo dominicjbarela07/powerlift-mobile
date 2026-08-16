@@ -1,4 +1,5 @@
 import { KG_PER_LB } from './logger-weight-format.js';
+import { normalizeDisplayWeightUnit } from './display-units.js';
 
 export type ReadinessDisplayUnit = 'kg' | 'lb';
 
@@ -71,7 +72,7 @@ export function shouldAnimateReadinessThumb(reduceMotion: boolean): boolean {
 }
 
 export function normalizeReadinessUnit(value?: string | null): ReadinessDisplayUnit {
-  return String(value || '').toLowerCase().startsWith('lb') ? 'lb' : 'kg';
+  return normalizeDisplayWeightUnit(value);
 }
 
 export function bodyweightDisplayToKg(

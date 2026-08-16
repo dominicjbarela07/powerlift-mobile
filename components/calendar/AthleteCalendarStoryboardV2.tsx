@@ -763,7 +763,7 @@ function DraggableSessionPill({ children, movable, onCancel, onDrag, onDrop, onS
   );
 }
 
-function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onClose, onRetry, preferredUnits = 'kg', visible }: {
+function DayLens({ canRescheduleSessions, detail, error, loading, onAction, onClose, onRetry, preferredUnits = 'lb', visible }: {
   canRescheduleSessions: boolean;
   detail: AthleteCalendarDayDetail;
   error?: string | null;
@@ -971,7 +971,7 @@ function PersonalItems({ events, onAction }: { events: AthleteCalendarPersonalEv
   );
 }
 
-function MonthSummarySheet({ month, onClose, preferredUnits = 'kg', summary }: { month: Date | null; onClose: () => void; preferredUnits?: 'kg' | 'lb'; summary?: AthleteCalendarMonthSummary }) {
+function MonthSummarySheet({ month, onClose, preferredUnits = 'lb', summary }: { month: Date | null; onClose: () => void; preferredUnits?: 'kg' | 'lb'; summary?: AthleteCalendarMonthSummary }) {
   if (!month) return null;
   const indicator = resolveAthleteCalendarMonthIndicator(summary);
   return (

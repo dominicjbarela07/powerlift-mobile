@@ -116,7 +116,7 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
   const progress = training?.status === 'active' && training.week_position && training.week_total
     ? Math.min(100, Math.max(0, Math.round((training.week_position / training.week_total) * 100)))
     : null;
-  const preferredUnits = summary?.athlete.preferred_units;
+  const preferredUnits = user?.preferred_units;
 
   const openMessage = useCallback(() => {
     if (!summary) return;

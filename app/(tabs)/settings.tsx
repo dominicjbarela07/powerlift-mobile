@@ -36,6 +36,11 @@ import {
 import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
+import {
+  convertDisplayWeightValue,
+  kilogramsToDisplayValue,
+  normalizeDisplayWeightUnit,
+} from '@/lib/display-units';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -180,23 +185,21 @@ type LinkCoachStatus = {
 
 const TRANSITION_ATHLETE_TO_TEAM_COACH = 'athlete_to_team_coach';
 const TRANSITION_TEAM_COACH_TO_ATHLETE = 'team_coach_to_athlete';
-const KG_TO_LB = 2.2046226218;
-
 const normalizeUnits = (value?: string | null) => {
   const raw = String(value || '').trim().toLowerCase();
-  return raw === 'lb' || raw === 'lbs' ? 'lbs' : 'kg';
+  return raw === 'kg' || raw === 'kgs' ? 'kg' : 'lbs';
 };
 
-const kgToDisplayValue = (value?: number | null, units: 'kg' | 'lbs' = 'kg') => {
+const kgToDisplayValue = (value?: number | null, units: 'kg' | 'lbs' = 'lbs') => {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return '';
-  const converted = units === 'lbs' ? value * KG_TO_LB : value;
+  const converted = kilogramsToDisplayValue(value, normalizeDisplayWeightUnit(units));
   return Number.isInteger(converted) ? converted.toFixed(0) : converted.toFixed(1);
 };
 
-const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'kg') => {
+const displayValueToKg = (value: string, units: 'kg' | 'lbs' = 'lbs') => {
   const parsed = Number(String(value || '').trim());
   if (!Number.isFinite(parsed)) return 0;
-  return units === 'lbs' ? parsed / KG_TO_LB : parsed;
+  return convertDisplayWeightValue(parsed, normalizeDisplayWeightUnit(units), 'kg');
 };
 
 const normalizeMobileMode = (value: unknown): MobileViewMode | null => {
@@ -334,7 +337,7 @@ export default function SettingsScreen() {
     email: '',
     sex: 'M',
     bodyweight: '',
-    preferredUnits: 'kg',
+    preferredUnits: 'lbs',
     federation: '',
     weightClass: '',
   });

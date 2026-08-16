@@ -177,7 +177,7 @@ export function CoachAttentionDetailV2({ previewReasonType, previewSummary }: { 
                   <View style={styles.sessionCopy}>
                     <Text style={styles.sessionName}>{lastSession.label}</Text>
                     <Text style={styles.sessionMeta}>{formatCoachRelativeDate(lastSession.date)} · Completed</Text>
-                    <Text style={styles.sessionEvidence}>{[lastSession.set_count ? `${lastSession.set_count} sets` : null, formatCoachVolume(lastSession.total_volume_kg, summary.athlete.preferred_units), lastSession.pr_count ? `${lastSession.pr_count} PR${lastSession.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}</Text>
+                    <Text style={styles.sessionEvidence}>{[lastSession.set_count ? `${lastSession.set_count} sets` : null, formatCoachVolume(lastSession.total_volume_kg, user?.preferred_units), lastSession.pr_count ? `${lastSession.pr_count} PR${lastSession.pr_count === 1 ? '' : 's'}` : null].filter(Boolean).join(' · ') || 'Performed evidence recorded'}</Text>
                   </View>
                   <CoachCardChevron />
                 </Pressable>

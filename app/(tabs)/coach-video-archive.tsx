@@ -19,6 +19,8 @@ import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import { getCoachVideoArchive } from '@/lib/api';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { useAuth } from '@/context/AuthContext';
+import { formatWeightFromKg, normalizeDisplayWeightUnit } from '@/lib/display-units';
 
 const palette = {
   border: SLColors.borderHairline,
@@ -104,11 +106,12 @@ function statusLabel(value?: string | null) {
   return 'Pending';
 }
 
-function compactActual(video: ArchiveVideo) {
+function compactActual(video: ArchiveVideo, preferredUnits?: string | null) {
   const context = video.context;
   if (!context) return null;
-  const load = context.actual_weight_label
-    || (context.actual_weight_kg != null ? `${context.actual_weight_kg} kg` : null);
+  const load = context.actual_weight_kg != null
+    ? formatWeightFromKg(context.actual_weight_kg, normalizeDisplayWeightUnit(preferredUnits))
+    : context.actual_weight_label;
   const reps = context.actual_reps != null ? String(context.actual_reps) : null;
   const rpe = context.actual_rpe != null ? String(context.actual_rpe) : null;
   if (!load && !reps && !rpe) return null;
@@ -131,6 +134,7 @@ function tagLabels(tags?: ArchiveVideo['review_tags']) {
 
 export default function CoachVideoArchiveScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const [videos, setVideos] = useState<ArchiveVideo[]>([]);
   const [athletes, setAthletes] = useState<AthleteOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -441,7 +445,7 @@ export default function CoachVideoArchiveScreen() {
                       </Text>
                       <Text style={styles.detailLine} numberOfLines={1}>
                         <Text style={styles.detailLabel}>Log: </Text>
-                        {compactActual(video) || 'No logged actuals'}
+                        {compactActual(video, user?.preferred_units) || 'No logged actuals'}
                       </Text>
                       <View style={styles.cardFooter}>
                         <Text style={styles.footerText} numberOfLines={1}>
