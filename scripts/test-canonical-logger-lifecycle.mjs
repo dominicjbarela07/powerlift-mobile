@@ -20,6 +20,12 @@ const loggerIds = [
   'canonical-logger-active-session',
   'canonical-logger-post-session',
 ];
+const canonicalLifecycleIds = [
+  'canonical-logger-pre-session',
+  'canonical-logger-active-session',
+  'canonical-logger-final-session-completion',
+  'canonical-logger-post-session',
+];
 const loggerEntries = loggerIds.map((id) => {
   const entry = LIVE_SCREEN_REGISTRY.find((candidate) => candidate.id === id);
   assert.ok(entry, `Missing canonical lifecycle entry: ${id}`);
@@ -33,15 +39,15 @@ assert.equal(
 );
 assert.deepEqual(
   Object.keys(CANONICAL_LOGGER_ENTRY_LIFECYCLES),
-  loggerIds,
-  'The lifecycle map must enumerate exactly the three canonical logger entries.',
+  canonicalLifecycleIds,
+  'The lifecycle map must enumerate preparation, active, final-set completion, and completed review entries.',
 );
 assert.deepEqual(
   loggerEntries.map((entry) => entry.title),
   [
     'Canonical Logger — Pre Session',
     'Canonical Logger — Active Session',
-    'Canonical Logger — Post Session',
+    'Completed Session Recap V2',
   ],
 );
 for (const entry of loggerEntries) {
@@ -85,6 +91,11 @@ assert.equal(post.workout.impact_summary?.canonically_completed, true);
 assert.equal(post.workout.impact_summary?.all_prescribed_work_logged, true);
 assert.ok(post.workout.impact_summary?.session_volume_kg > 0);
 assert.ok(post.workout.post_session_coach_feedback);
+assert.equal(post.workout.completed_recap?.schema_version, 'completed-session-recap-v2');
+assert.equal(post.workout.completed_recap?.lifecycle_mode, 'completed_recap');
+assert.equal(post.workout.completed_recap?.session.set_count, loggedCount(post));
+assert.equal(post.workout.completed_recap?.highlights.prescription_completion_percent, 100);
+assert.equal(post.workout.completed_recap?.performed_movements.length, items(post).length);
 for (const item of items(post)) {
   assert.equal(
     item.set_logs.length,
@@ -108,6 +119,10 @@ assert.equal(
 );
 assert.equal(
   workoutDetailLifecycleForEntryId('canonical-logger-active-session'),
+  'active_session',
+);
+assert.equal(
+  workoutDetailLifecycleForEntryId('canonical-logger-final-session-completion'),
   'active_session',
 );
 assert.equal(

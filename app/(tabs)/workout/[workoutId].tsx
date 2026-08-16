@@ -4694,6 +4694,49 @@ export default function WorkoutViewerScreen() {
         actual_rir: null,
         client_submission_id: `ideal-core-${itemId}-${setIndex}`,
       };
+      if (loggerScenario === 'final-session-completion') {
+        const clientSubmissionId = String(mockSet.client_submission_id);
+        const recognitionEvent: LoggerRecognitionEvent = {
+          id: mockSet.id + 1,
+          event_type: 'CORE_WEIGHT_PR',
+          priority: 1,
+          core_movement_key: 'bench',
+          movement_label: 'Competition Bench Press',
+          current_value: weightKg,
+          prior_value: 220 * KG_PER_LB,
+          delta: weightKg - (220 * KG_PER_LB),
+          unit: 'kg',
+          scope: 'career',
+          source_set_log_id: mockSet.id,
+          trigger_set_log_id: mockSet.id,
+          source_revision: 1,
+          calculation_version: 'dev-final-session-validation-v1',
+          newly_generated: true,
+          replayed: false,
+          consumed: false,
+          source: {
+            workout_id: Number(workoutId),
+            workout_item_id: itemId,
+            set_log_id: mockSet.id,
+          },
+        };
+        beginFeedbackSubmission(itemId);
+        handleCanonicalSetFeedback({
+          ok: true,
+          created: true,
+          replayed: false,
+          client_submission_id: clientSubmissionId,
+          set: { ...mockSet, item_id: itemId },
+          recognition_events: [recognitionEvent],
+          completion_boundary: {
+            authority: 'canonical',
+            movement_final_set: true,
+            session_final_set: true,
+            remaining_required_sets: 0,
+            workout_evidence_revision: 1,
+          },
+        }, itemId);
+      }
       setData((current) => current ? {
         ...current,
         workout: {
@@ -4705,7 +4748,7 @@ export default function WorkoutViewerScreen() {
           )),
         },
       } : current);
-      setCoreWheel(null);
+      if (loggerScenario !== 'final-session-completion') setCoreWheel(null);
       setStraightInputs((current) => ({
         ...current,
         [itemId]: {
@@ -5570,6 +5613,17 @@ export default function WorkoutViewerScreen() {
     if (!skipIncompleteWarning && missingSetLabelsForWorkout(data.workout).length > 0) {
       setMissingCompletionSets(missingSetLabelsForWorkout(data.workout));
       return false;
+    }
+
+    if (isIdealWorkoutDetailPreview && loggerScenario === 'final-session-completion') {
+      const completedFixture = createWorkoutDetailFixture('completed-recap-v2', 'post_session') as WorkoutPayload;
+      const summaryId = completedFixture.workout.impact_summary?.summary_id || null;
+      stopRestTimer();
+      freshCompletionSummaryIdRef.current = summaryId;
+      setAnimatedCompletionSummaryId(summaryId);
+      setData(completedFixture);
+      void triggerSessionCompletionHaptic();
+      return true;
     }
 
     try {
@@ -7716,10 +7770,15 @@ export default function WorkoutViewerScreen() {
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
             preferredUnits={athlete.preferred_units}
+            viewerMode={coachPreviewRequested ? 'coach' : 'athlete'}
             refreshing={refreshing}
             onRefresh={onRefresh}
             onClose={handleCloseCompletedRecap}
             onDone={handleCloseCompletedRecap}
+            onViewLedger={coachPreviewRequested ? undefined : () => router.push('/(tabs)/ledger' as any)}
+            onViewCalendar={coachPreviewRequested
+              ? () => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id) } } as any)
+              : () => router.push('/(tabs)/athlete-calendar' as any)}
           />
         )}
       </>
@@ -11960,7 +12019,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 0,
     paddingTop: 14,
   },
 
