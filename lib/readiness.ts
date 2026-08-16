@@ -1,5 +1,5 @@
 import { KG_PER_LB } from './logger-weight-format.js';
-import { normalizeDisplayWeightUnit } from './display-units.js';
+import { normalizeDisplayWeightUnit } from './display-units';
 
 export type ReadinessDisplayUnit = 'kg' | 'lb';
 
