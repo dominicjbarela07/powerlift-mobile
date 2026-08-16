@@ -1778,8 +1778,11 @@ export default function WorkoutViewerScreen() {
         ? topTotal + backdownTotal
         : positiveInt(core.sets);
       const logged = isTop
-        ? loggedSetIndexCount(topLogs) + backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
-        : loggedSetIndexCount(core.set_logs || []);
+        ? uniqueLoggedSetIndexesForLogs(topLogs).length + backdownsForThisTop.reduce(
+            (sum, bd) => sum + uniqueLoggedSetIndexesForLogs(bd.set_logs || []).length,
+            0,
+          )
+        : uniqueLoggedSetIndexesForLogs(core.set_logs || []).length;
 
       rows.push({
         key: `core:${core.id}`,
@@ -1793,7 +1796,7 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
-      if (isIdealWorkoutDetailPreview && group.group) {
+      if (group.group) {
         const roundModel = buildSupersetRoundModel(group.items || []);
         const firstItemId = Number(group.items?.[0]?.id || 0);
         rows.push({
@@ -1802,15 +1805,15 @@ export default function WorkoutViewerScreen() {
           kind: 'accessory',
           id: firstItemId,
           complete: roundModel.status === 'complete',
-          logged: roundModel.completedRounds,
-          total: roundModel.roundCount,
+          logged: roundModel.loggedRequiredSets,
+          total: roundModel.totalRequiredSets,
         });
         continue;
       }
       for (const item of group.items || []) {
         const logs = item.set_logs || [];
         const total = positiveInt(item.sets);
-        const logged = loggedSetIndexCount(logs);
+        const logged = uniqueLoggedSetIndexesForLogs(logs).length;
         rows.push({
           key: `acc:${item.id}`,
           detailKey: `acc:${item.id}`,
@@ -1824,7 +1827,7 @@ export default function WorkoutViewerScreen() {
     }
 
     return rows;
-  }, [isIdealWorkoutDetailPreview]);
+  }, []);
 
   const findRenderedMovementKeyForItem = useCallback((
     workout: WorkoutPayload['workout'] | null | undefined,
@@ -1849,11 +1852,7 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
-      if (
-        isIdealWorkoutDetailPreview
-        && group.group
-        && group.items.some((item) => item.id === itemId)
-      ) {
+      if (group.group && group.items.some((item) => item.id === itemId)) {
         return `ss:${group.group}`;
       }
       for (const item of group.items || []) {
@@ -1862,7 +1861,7 @@ export default function WorkoutViewerScreen() {
     }
 
     return null;
-  }, [isIdealWorkoutDetailPreview]);
+  }, []);
 
   const openMovementCard = useCallback((key: string | null | undefined) => {
     if (!key) return;
@@ -8260,7 +8259,7 @@ export default function WorkoutViewerScreen() {
                 >
                   <SupersetRoundWorkspace
                     canLog={canLog && !isCoachView}
-                    executionHint={grp.dev_execution_hint || 'Alternate continuously'}
+                    executionHint="Flexible order"
                     expanded={Boolean(expandedCompletedMovements[detailKey])}
                     groupLabel={grp.group}
                     model={roundModel}
@@ -8271,8 +8270,12 @@ export default function WorkoutViewerScreen() {
                         mode: 'rir',
                         movementName: item.title,
                       })}
-                    onLogRound={(roundIndex) =>
-                      openSupersetRoundLogger(grp, roundIndex)}
+                    onLogMovement={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      if (item) openAccessoryWheel(item);
+                    }}
                     onOpenHistory={(itemId) => {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,

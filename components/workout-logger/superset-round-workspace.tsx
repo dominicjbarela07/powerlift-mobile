@@ -55,7 +55,7 @@ type SupersetRoundWorkspaceProps = {
   canLog: boolean;
   reduceMotion?: boolean;
   onToggle: () => void;
-  onLogRound: (roundIndex: number) => void;
+  onLogMovement: (itemId: number) => void;
   onOpenHistory: (itemId: number) => void;
   onEditSet: (
     item: SupersetWorkspaceItem,
@@ -73,10 +73,11 @@ function statusLabel(status: SupersetRoundModel<SupersetWorkspaceItem>['status']
   return 'NOT STARTED';
 }
 
-function entryStateLabel(state: 'complete' | 'ready' | 'upcoming') {
-  if (state === 'complete') return 'Logged';
-  if (state === 'ready') return 'Ready';
-  return 'Upcoming';
+function movementPositionLabel(position: number) {
+  if (position >= 1 && position <= 26) {
+    return String.fromCharCode(64 + position);
+  }
+  return String(position);
 }
 
 export function SupersetRoundWorkspace({
@@ -87,12 +88,11 @@ export function SupersetRoundWorkspace({
   canLog,
   reduceMotion = false,
   onToggle,
-  onLogRound,
+  onLogMovement,
   onOpenHistory,
   onEditSet,
   onDeleteSet,
 }: SupersetRoundWorkspaceProps) {
-  const currentRoundIndex = model.currentRoundIndex;
   const materialState = model.status === 'complete'
     ? 'complete' as const
     : model.status === 'in_progress'
@@ -112,7 +112,7 @@ export function SupersetRoundWorkspace({
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded }}
-        accessibilityLabel={`Superset ${groupLabel}, ${statusLabel(model.status)}, ${model.roundCount} rounds`}
+        accessibilityLabel={`Superset ${groupLabel}, ${statusLabel(model.status)}, ${model.loggedRequiredSets} of ${model.totalRequiredSets} sets`}
         onPress={onToggle}
         style={styles.header}
       >
@@ -147,7 +147,7 @@ export function SupersetRoundWorkspace({
             ))}
           </View>
           <Text numberOfLines={1} style={styles.summary}>
-            {model.roundCount} {model.roundCount === 1 ? 'Round' : 'Rounds'}
+            {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
             {executionHint ? ` · ${executionHint}` : ''}
           </Text>
         </View>
@@ -163,107 +163,119 @@ export function SupersetRoundWorkspace({
         <View style={styles.expanded}>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionLabel}>TODAY&apos;S WORK</Text>
-              <Text style={styles.sectionMeta}>
-                {model.completedRounds} / {model.roundCount} ROUNDS
-              </Text>
-            </View>
-            <Text style={styles.roundCount}>{model.roundCount} ROUNDS</Text>
-            <View style={styles.workList}>
-              {model.items.map((item) => (
-                <View key={item.id} style={styles.workItem}>
-                  <Text style={styles.workTitle}>{item.title}</Text>
-                  <Text style={styles.workPrescription}>{item.prescription}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View style={[styles.section, styles.timelineSection]}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionLabel}>ROUND TIMELINE</Text>
+              <Text style={styles.sectionLabel}>MOVEMENT PROGRESS</Text>
               <Text style={styles.sectionMeta}>
                 {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
               </Text>
             </View>
-            <View style={styles.timeline}>
-              {model.rounds.map((round) => (
-                <View key={round.index} style={styles.roundRow}>
-                  <View style={[
-                    styles.roundNode,
-                    round.state === 'current' && styles.roundNodeCurrent,
-                    round.state === 'complete' && styles.roundNodeComplete,
-                  ]}>
-                    {round.state === 'complete' ? (
-                      <Ionicons color={SLColors.textStrong} name="checkmark" size={17} />
-                    ) : (
-                      <Text style={[
-                        styles.roundNodeText,
-                        round.state === 'current' && styles.roundNodeTextCurrent,
+            <Text style={styles.roundCount}>
+              {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
+            </Text>
+            <Text style={styles.flexibleOrderHint}>
+              Log these movements in any order. Each movement keeps its own next set.
+            </Text>
+            <View style={styles.workList}>
+              {model.movements.map((movement) => {
+                const positionLabel = movementPositionLabel(movement.position);
+                const isSuggested = movement.itemId === model.suggestedNextItemId;
+                const logs = [...(movement.item.set_logs || [])]
+                  .filter((log) => movement.loggedSetIndexes.includes(Number(log.set_index || 0)))
+                  .sort((a, b) => Number(a.set_index || 0) - Number(b.set_index || 0));
+                return (
+                  <View key={movement.itemId} style={styles.workItem}>
+                    <View style={styles.workItemHeader}>
+                      <View style={[
+                        styles.positionBadge,
+                        movement.complete && styles.positionBadgeComplete,
                       ]}>
-                        {round.index}
+                        {movement.complete ? (
+                          <Ionicons color={SLColors.textStrong} name="checkmark" size={16} />
+                        ) : (
+                          <Text style={styles.positionBadgeText}>{positionLabel}</Text>
+                        )}
+                      </View>
+                      <View style={styles.workCopy}>
+                        <View style={styles.workTitleRow}>
+                          <Text numberOfLines={2} style={styles.workTitle}>
+                            {positionLabel} · {movement.item.title}
+                          </Text>
+                          {isSuggested && !movement.complete ? (
+                            <Text style={styles.suggestedPill}>NEXT</Text>
+                          ) : null}
+                        </View>
+                        <Text style={styles.workPrescription}>
+                          {movement.item.prescription}
+                        </Text>
+                      </View>
+                      <Text style={[
+                        styles.movementProgress,
+                        movement.complete && styles.movementProgressComplete,
+                      ]}>
+                        {movement.loggedRequiredSets} / {movement.requiredSets}
                       </Text>
+                    </View>
+
+                    {logs.length ? (
+                      <View style={styles.movementEvidence}>
+                        {logs.map((log) => {
+                          const persistedLog = log as SupersetWorkspaceLog;
+                          const canModifyLog = canLog && Number.isFinite(Number(persistedLog.id));
+                          return (
+                            <CompletedSetSwipeRow
+                              key={`${movement.itemId}:${persistedLog.id || persistedLog.set_index}`}
+                              onDelete={canModifyLog
+                                ? () => onDeleteSet(movement.item, persistedLog)
+                                : undefined}
+                              onEdit={canModifyLog
+                                ? () => onEditSet(movement.item, persistedLog)
+                                : undefined}
+                              reduceMotion={reduceMotion}
+                            >
+                              <View style={styles.timelineMovement}>
+                                <View style={[styles.timelineDot, styles.timelineDotComplete]} />
+                                <View style={styles.timelineCopy}>
+                                  <Text numberOfLines={1} style={styles.timelineTitle}>
+                                    Set {persistedLog.set_index}
+                                  </Text>
+                                  <Text numberOfLines={1} style={[
+                                    styles.timelineState,
+                                    styles.timelineStateComplete,
+                                  ]}>
+                                    {persistedLog.resultLine || 'Logged'}
+                                  </Text>
+                                </View>
+                              </View>
+                            </CompletedSetSwipeRow>
+                          );
+                        })}
+                      </View>
+                    ) : (
+                      <Text style={styles.noSetsYet}>No sets logged yet</Text>
                     )}
+
+                    {canLog && movement.nextSetIndex != null ? (
+                      <SLButton
+                        accessibilityLabel={`Log ${movement.item.title}, set ${movement.nextSetIndex} of ${movement.requiredSets}`}
+                        fullWidth
+                        iconRight="chevron-forward"
+                        iconRightPosition="edge"
+                        label={`Log ${positionLabel} · Set ${movement.nextSetIndex}`}
+                        onPress={() => onLogMovement(movement.itemId)}
+                        size="sm"
+                        style={styles.logMovementButton}
+                        variant={isSuggested ? 'primary' : 'secondary'}
+                      />
+                    ) : movement.complete ? (
+                      <View style={styles.movementCompleteRow}>
+                        <Ionicons color={SLColors.success} name="checkmark-circle" size={17} />
+                        <Text style={styles.movementCompleteText}>All prescribed sets complete</Text>
+                      </View>
+                    ) : null}
                   </View>
-                  <View style={styles.roundBody}>
-                    <Text style={styles.roundLabel}>ROUND {round.index}</Text>
-                    {round.entries.map((entry) => {
-                      const log = entry.log as SupersetWorkspaceLog | null;
-                      const canModifyLog = canLog
-                        && entry.state === 'complete'
-                        && log != null
-                        && Number.isFinite(Number(log.id));
-                      return (
-                        <CompletedSetSwipeRow
-                          key={entry.itemId}
-                          onDelete={canModifyLog
-                            ? () => onDeleteSet(entry.item, log)
-                            : undefined}
-                          onEdit={canModifyLog
-                            ? () => onEditSet(entry.item, log)
-                            : undefined}
-                          reduceMotion={reduceMotion}
-                        >
-                          <View style={styles.timelineMovement}>
-                            <View style={[
-                              styles.timelineDot,
-                              entry.state === 'ready' && styles.timelineDotReady,
-                              entry.state === 'complete' && styles.timelineDotComplete,
-                            ]} />
-                            <View style={styles.timelineCopy}>
-                              <Text numberOfLines={1} style={styles.timelineTitle}>
-                                {entry.item.timelineLabel || entry.item.title}
-                              </Text>
-                              <Text numberOfLines={1} style={[
-                                styles.timelineState,
-                                entry.state === 'ready' && styles.timelineStateReady,
-                                entry.state === 'complete' && styles.timelineStateComplete,
-                              ]}>
-                                {log?.resultLine || entryStateLabel(entry.state)}
-                              </Text>
-                            </View>
-                          </View>
-                        </CompletedSetSwipeRow>
-                      );
-                    })}
-                  </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </View>
-
-          {currentRoundIndex != null && canLog ? (
-            <SLButton
-              accessibilityLabel={`Log superset ${groupLabel} round ${currentRoundIndex}`}
-              fullWidth
-              iconRight="chevron-forward"
-              iconRightPosition="edge"
-              label={`Log Round ${currentRoundIndex}`}
-              onPress={() => onLogRound(currentRoundIndex)}
-              size="lg"
-              style={styles.logRoundButton}
-            />
-          ) : null}
 
           <View style={styles.historySection}>
             <Text style={styles.sectionLabel}>HISTORY</Text>
@@ -392,25 +404,115 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: SLSpacing.md,
   },
+  flexibleOrderHint: {
+    color: SLColors.textSecondary,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 19,
+    marginTop: SLSpacing.sm,
+  },
   workList: {
     gap: SLSpacing.md,
     marginTop: SLSpacing.lg,
   },
   workItem: {
-    borderLeftColor: SLColors.borderFocus,
-    borderLeftWidth: 2,
-    paddingLeft: SLSpacing.md,
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderStandard,
+    borderRadius: SLRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: SLSpacing.md,
+    padding: SLSpacing.md,
+  },
+  workItemHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+  },
+  positionBadge: {
+    alignItems: 'center',
+    backgroundColor: SLColors.accentSoft,
+    borderColor: SLColors.borderFocus,
+    borderRadius: SLRadius.pill,
+    borderWidth: 1,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+  positionBadgeComplete: {
+    backgroundColor: SLColors.successSoft,
+    borderColor: SLColors.success,
+  },
+  positionBadgeText: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+  },
+  workCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  workTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
   },
   workTitle: {
     color: SLColors.textStrong,
+    flexShrink: 1,
     fontSize: SLTypography.rowTitle.fontSize,
     fontWeight: '700',
+  },
+  suggestedPill: {
+    backgroundColor: SLColors.accentSoft,
+    borderRadius: SLRadius.pill,
+    color: SLColors.accentViolet,
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.7,
+    overflow: 'hidden',
+    paddingHorizontal: SLSpacing.sm,
+    paddingVertical: 3,
   },
   workPrescription: {
     color: SLColors.textSecondary,
     fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
     marginTop: 3,
+  },
+  movementProgress: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+    paddingTop: 5,
+  },
+  movementProgressComplete: {
+    color: SLColors.success,
+  },
+  movementEvidence: {
+    borderTopColor: SLColors.divider,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: SLSpacing.xs,
+    paddingTop: SLSpacing.sm,
+  },
+  noSetsYet: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.caption.fontSize,
+    paddingVertical: SLSpacing.xs,
+  },
+  logMovementButton: {
+    marginTop: SLSpacing.xs,
+  },
+  movementCompleteRow: {
+    alignItems: 'center',
+    borderTopColor: SLColors.divider,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: SLSpacing.sm,
+    paddingTop: SLSpacing.md,
+  },
+  movementCompleteText: {
+    color: SLColors.success,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
   },
   timeline: {
     marginTop: SLSpacing.lg,
