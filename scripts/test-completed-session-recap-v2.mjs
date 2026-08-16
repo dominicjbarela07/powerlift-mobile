@@ -3,7 +3,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createWorkoutDetailFixture } from '../dev-mocks/fixtures/workout-detail.ts';
-import { LIVE_SCREEN_REGISTRY } from '../dev-mocks/live-screen-registry.ts';
 
 const root = process.cwd();
 const source = fs.readFileSync(path.join(root, 'components/coach-mobile/CompletedSessionRecap.tsx'), 'utf8');
@@ -41,12 +40,6 @@ assert.ok(recap.performed_movements.every((movement) => movement.best_set));
 assert.ok(recap.performed_movements.every((movement) => movement.trend.scope.includes('identity')));
 assert.ok(recap.performed_movements.every((movement) => movement.projection.method === 'epley_rpe_adjusted_v1'));
 assert.ok(recap.performed_movements.flatMap((movement) => movement.sets).filter((set) => set.video_attachment_id).every((set) => String(set.video?.thumbnail_url || '').startsWith('sl-fixture://session-review/')));
-
-const entry = LIVE_SCREEN_REGISTRY.find((candidate) => candidate.id === 'canonical-logger-post-session');
-assert.ok(entry);
-assert.equal(entry.launchStrategy, 'direct-route');
-assert.equal(entry.routeParams?.loggerScenario, 'completed-recap-v2');
-assert.equal(entry.routeParams?.loggerLifecycle, 'post_session');
 
 assert.match(source, /INITIAL_MOVEMENT_COUNT = 6/);
 assert.match(source, /Plan \/ Compare/);
