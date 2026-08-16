@@ -98,7 +98,7 @@ for (const source of [
   'components/training-hub/AthleteTrainingHubExperience.tsx',
   'app/(tabs)/messages/index.tsx',
   'app/(tabs)/messages/[threadId].tsx',
-  'app/(tabs)/coach-roster.tsx',
+  'components/coach-mobile/CoachHomeV2.tsx',
   'app/(tabs)/coach-athlete/[athleteId].tsx',
   'app/(tabs)/create-workout.tsx',
   'app/(tabs)/workout/index.tsx',
@@ -121,10 +121,10 @@ assert.match(settingsSource, /method: 'DELETE'/);
 assert.match(settingsSource, /useFocusEffect\(/);
 assert.match(settingsSource, /void refreshAccountState\?\.\(\)/);
 
-const rosterSource = fs.readFileSync(path.join(root, 'app/(tabs)/coach-roster.tsx'), 'utf8');
-assert.match(rosterSource, /const \{ refreshAccountState, user \} = useAuth\(\)/);
-assert.match(rosterSource, /\.\.\.normalizeProfilePhotoPayload\(athlete\)/);
-assert.match(rosterSource, /void refreshAccountState\(\)/);
+const coachHomeSource = fs.readFileSync(path.join(root, 'components/coach-mobile/CoachHomeV2.tsx'), 'utf8');
+assert.match(coachHomeSource, /normalizeProfilePhotoPayload\(athlete\)/);
+assert.match(coachHomeSource, /imageUrl=\{item\.profilePhotoUrl\}/);
+assert.match(coachHomeSource, /imageVersion=\{item\.profilePhotoVersion\}/);
 
 const authSource = fs.readFileSync(path.join(root, 'context/AuthContext.tsx'), 'utf8');
 assert.match(authSource, /normalizeProfilePhotoPayload\(profileUser\)/);

@@ -117,10 +117,10 @@ export default function CoachInviteAthleteScreen() {
               ) : null}
               <Pressable
                 accessibilityRole="button"
-                onPress={() => router.replace('/(tabs)/coach-roster' as any)}
+                onPress={() => router.replace({ pathname: '/(tabs)/coach-dashboard', params: { roster: '1' } } as any)}
                 style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
               >
-                <Text style={styles.primaryButtonText}>Back to Roster</Text>
+                <Text style={styles.primaryButtonText}>Back to Coach Home</Text>
                 <Ionicons name="arrow-forward" size={18} color={SLColors.white} />
               </Pressable>
             </View>

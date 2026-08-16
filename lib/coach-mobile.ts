@@ -271,11 +271,12 @@ const COACH_DESTINATION_REQUIREMENTS: Record<string, string[]> = {
   '/(tabs)/messages/[threadId]': ['threadId'],
   '/(tabs)/check-ins': ['athleteId'],
   '/(tabs)/coach-athlete/[athleteId]': ['athleteId'],
-  '/(tabs)/coach-roster': [],
+  '/(tabs)/coach-dashboard': [],
 };
 
 const DESTINATION_ALIASES: Record<string, string> = {
   '/workout/[workoutId]': '/(tabs)/workout/[workoutId]',
+  '/(tabs)/coach-roster': '/(tabs)/coach-dashboard',
 };
 
 const VALID_CATEGORIES = new Set<CoachAttentionReason['category']>([

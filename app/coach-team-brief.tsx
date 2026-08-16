@@ -145,8 +145,8 @@ export default function CoachTeamBriefScreen() {
 
   const openRosterFilter = useCallback((filter: string) => {
     router.replace({
-      pathname: '/(tabs)/coach-roster',
-      params: { filter },
+      pathname: '/(tabs)/coach-dashboard',
+      params: { filter, roster: '1' },
     } as any);
   }, [router]);
 
@@ -223,7 +223,7 @@ export default function CoachTeamBriefScreen() {
                   headline: 'No urgent items',
                   supporting_line: 'The roster is clear today.',
                   action_label: 'Open',
-                  destination: { route: '/(tabs)/coach-roster', params: { filter: 'all' } },
+                  destination: { route: '/(tabs)/coach-dashboard', params: { filter: 'all', roster: '1' } },
                   tone: 'green',
                   icon: 'checkmark-circle-outline',
                 }]}
@@ -246,7 +246,7 @@ export default function CoachTeamBriefScreen() {
                   headline: 'On track',
                   supporting_line: `${brief.team_health.on_track} of ${brief.team_health.athletes} athletes.`,
                   action_label: 'Open',
-                  destination: { route: '/(tabs)/coach-roster', params: { filter: 'all' } },
+                  destination: { route: '/(tabs)/coach-dashboard', params: { filter: 'all', roster: '1' } },
                   tone: 'green',
                   icon: 'checkmark-circle-outline',
                 },
@@ -255,7 +255,7 @@ export default function CoachTeamBriefScreen() {
                   headline: 'Monitor',
                   supporting_line: `${brief.team_health.monitor} athlete${brief.team_health.monitor === 1 ? '' : 's'} to watch.`,
                   action_label: 'Open',
-                  destination: { route: '/(tabs)/coach-roster', params: { filter: 'needs_attention' } },
+                  destination: { route: '/(tabs)/coach-dashboard', params: { filter: 'needs_attention', roster: '1' } },
                   tone: 'orange',
                   icon: 'pulse-outline',
                 },
@@ -264,7 +264,7 @@ export default function CoachTeamBriefScreen() {
                   headline: 'Needs attention',
                   supporting_line: `${brief.team_health.needs_attention} athlete${brief.team_health.needs_attention === 1 ? '' : 's'}.`,
                   action_label: 'Open',
-                  destination: { route: '/(tabs)/coach-roster', params: { filter: 'needs_attention' } },
+                  destination: { route: '/(tabs)/coach-dashboard', params: { filter: 'needs_attention', roster: '1' } },
                   tone: 'critical',
                   icon: 'alert-circle-outline',
                 },

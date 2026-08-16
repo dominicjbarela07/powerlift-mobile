@@ -1,7 +1,16 @@
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 
-import { CoachRosterV2 } from '@/components/coach-mobile/CoachRosterV2';
-
 export default function CoachRosterRoute() {
-  return <CoachRosterV2 />;
+  const params = useLocalSearchParams<{ filter?: string }>();
+  const filter = Array.isArray(params.filter) ? params.filter[0] : params.filter;
+
+  return (
+    <Redirect
+      href={{
+        pathname: '/(tabs)/coach-dashboard',
+        params: { roster: '1', ...(filter ? { filter } : {}) },
+      } as any}
+    />
+  );
 }

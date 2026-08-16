@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
+  FlatList,
   Image,
   Modal,
   Pressable,
@@ -25,7 +26,7 @@ import {
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLAthleteAvatar, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
-import { Text } from '@/components/ui/sl-text';
+import { Text, TextInput } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
@@ -35,8 +36,10 @@ import {
   coachKpiAthletes,
   coachTodaySessions,
   type CoachCommandCenterKpi,
+  type CoachRosterV2Filter,
   coachHomeContextKey,
   deriveCoachHomeFromRoster,
+  filterCoachRosterV2,
   formatCoachRelativeDate,
   formatCoachVolume,
   formatCoachWeight,
@@ -82,17 +85,20 @@ function normalizeHome(payload: CoachHomeResponse): CoachHomeResponse {
 export function CoachHomeV2({
   previewCoachName,
   previewData,
+  previewInitiallyOpenRoster,
   previewInitiallySelectedAthleteId,
   previewRecaps,
   previewSummaries,
 }: {
   previewCoachName?: string;
   previewData?: CoachHomeResponse;
+  previewInitiallyOpenRoster?: boolean;
   previewInitiallySelectedAthleteId?: number;
   previewRecaps?: Record<number, CompletedSessionRecapPayload>;
   previewSummaries?: Record<number, CoachAthleteSummaryResponse>;
 }) {
   const router = useRouter();
+  const params = useLocalSearchParams<{ filter?: string; roster?: string }>();
   const { user } = useAuth();
   const contextKey = coachHomeContextKey(user);
   const contextKeyRef = useRef(contextKey);
@@ -114,6 +120,8 @@ export function CoachHomeV2({
   const [error, setError] = useState<string | null>(null);
   const [selectedAthlete, setSelectedAthlete] = useState<CoachRosterAthlete | null>(null);
   const [selectedKpi, setSelectedKpi] = useState<CoachCommandCenterKpi | null>(null);
+  const [rosterOpen, setRosterOpen] = useState(false);
+  const [rosterInitialFilter, setRosterInitialFilter] = useState<CoachRosterV2Filter>('all');
   const today = useMemo(() => new Date(), []);
   const firstName = useMemo(() => {
     const name = String(user?.user_name || '').trim();
@@ -128,6 +136,7 @@ export function CoachHomeV2({
     requestRef.current += 1;
     setSelectedAthlete(null);
     setSelectedKpi(null);
+    setRosterOpen(false);
     setError(null);
     setRefreshing(false);
     if (!previewMode) {
@@ -147,8 +156,17 @@ export function CoachHomeV2({
   }, [previewData]);
 
   useEffect(() => {
-    overlayOpenRef.current = Boolean(selectedAthlete || selectedKpi);
-  }, [selectedAthlete, selectedKpi]);
+    overlayOpenRef.current = Boolean(selectedAthlete || selectedKpi || rosterOpen);
+  }, [rosterOpen, selectedAthlete, selectedKpi]);
+
+  useEffect(() => {
+    const rawFilter = Array.isArray(params.filter) ? params.filter[0] : params.filter;
+    const rawRoster = Array.isArray(params.roster) ? params.roster[0] : params.roster;
+    if (rawRoster !== '1' && !isRosterFilter(rawFilter)) return;
+    setRosterInitialFilter(isRosterFilter(rawFilter) ? rawFilter : 'all');
+    setRosterOpen(true);
+    router.setParams({ filter: undefined, roster: undefined });
+  }, [params.filter, params.roster, router]);
 
   useEffect(() => () => {
     requestRef.current += 1;
@@ -162,6 +180,10 @@ export function CoachHomeV2({
       .find((item) => item.id === previewInitiallySelectedAthleteId);
     if (athlete) setSelectedAthlete(normalizeAthlete(athlete));
   }, [previewData, previewInitiallySelectedAthleteId]);
+
+  useEffect(() => {
+    if (previewInitiallyOpenRoster) setRosterOpen(true);
+  }, [previewInitiallyOpenRoster]);
 
   const load = useCallback((mode: 'initial' | 'background' | 'manual' = 'background'): Promise<void> => {
     if (previewMode || !contextKey) return Promise.resolve();
@@ -308,7 +330,7 @@ export function CoachHomeV2({
             </View>
 
             <View style={styles.section}>
-              <CoachSectionHeading action="View all" onAction={() => router.push('/(tabs)/coach-roster')} title="Your Athletes at a Glance" />
+              <CoachSectionHeading action="Find athlete" onAction={() => { setRosterInitialFilter('all'); setRosterOpen(true); }} title="Your Athletes at a Glance" />
               {athletes.length ? (
                 <ScrollView contentContainerStyle={styles.athleteRail} horizontal showsHorizontalScrollIndicator={false}>
                   {athletes.map((athlete) => <AthleteOverviewCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} />)}
@@ -332,7 +354,7 @@ export function CoachHomeV2({
             </View>
 
             <View style={styles.section}>
-              <CoachSectionHeading action="View all" onAction={() => router.push('/(tabs)/coach-roster')} title="Recent Activity Feed" />
+              <CoachSectionHeading title="Recent Activity Feed" />
               {data.recent_activity.length ? data.recent_activity.map((activity) => (
                 <Pressable accessibilityLabel={`Open ${activity.athlete.name} completed Session`} accessibilityRole="button" key={`${activity.athlete.id}-${activity.session.workout_id}`} onPress={() => openSession(activity.session)} style={({ pressed }) => [styles.activityCard, pressed && styles.pressed]}>
                   <SLAthleteAvatar imageUrl={(activity.athlete as any).profilePhotoUrl} imageVersion={(activity.athlete as any).profilePhotoVersion} name={activity.athlete.name} size={42} />
@@ -366,6 +388,20 @@ export function CoachHomeV2({
         }}
         today={today}
       />
+      <CoachRosterDiscoverySheet
+        athletes={athletes}
+        initialFilter={rosterInitialFilter}
+        onClose={() => setRosterOpen(false)}
+        onInvite={() => {
+          setRosterOpen(false);
+          router.push('/(tabs)/coach-invite-athlete' as any);
+        }}
+        onOpenAthlete={(athlete) => {
+          setRosterOpen(false);
+          setTimeout(() => setSelectedAthlete(athlete), 0);
+        }}
+        visible={rosterOpen}
+      />
       <CoachAthleteHubSheet
         athlete={selectedAthlete}
         onClose={() => setSelectedAthlete(null)}
@@ -373,6 +409,113 @@ export function CoachHomeV2({
         previewSummary={selectedAthlete ? previewSummaries?.[selectedAthlete.id] : null}
       />
     </SLScreen>
+  );
+}
+
+const ROSTER_FILTERS: { id: CoachRosterV2Filter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'needs_attention', label: 'Needs You' },
+  { id: 'programming', label: 'Programming' },
+  { id: 'active', label: 'Active' },
+];
+
+function isRosterFilter(value?: string): value is CoachRosterV2Filter {
+  return ROSTER_FILTERS.some((filter) => filter.id === value);
+}
+
+function CoachRosterDiscoverySheet({
+  athletes,
+  initialFilter,
+  onClose,
+  onInvite,
+  onOpenAthlete,
+  visible,
+}: {
+  athletes: CoachRosterAthlete[];
+  initialFilter: CoachRosterV2Filter;
+  onClose: () => void;
+  onInvite: () => void;
+  onOpenAthlete: (athlete: CoachRosterAthlete) => void;
+  visible: boolean;
+}) {
+  const insets = useSafeAreaInsets();
+  const [filter, setFilter] = useState<CoachRosterV2Filter>(initialFilter);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    if (!visible) return;
+    setFilter(initialFilter);
+    setQuery('');
+  }, [initialFilter, visible]);
+
+  const filteredAthletes = useMemo(
+    () => filterCoachRosterV2(athletes, filter, query),
+    [athletes, filter, query],
+  );
+
+  return (
+    <Modal animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
+      <View style={styles.kpiBackdrop}>
+        <Pressable accessibilityLabel="Close athlete finder" accessibilityRole="button" onPress={onClose} style={StyleSheet.absoluteFillObject} />
+        <View style={[styles.rosterSheet, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+          <View style={styles.kpiHandle} />
+          <View style={styles.rosterHeader}>
+            <View style={styles.rosterHeaderCopy}>
+              <Text style={styles.kpiEyebrow}>Coach Home</Text>
+              <Text style={styles.kpiTitle}>Find an Athlete</Text>
+              <Text style={styles.rosterCount}>{athletes.length} active relationship{athletes.length === 1 ? '' : 's'}</Text>
+            </View>
+            <Pressable accessibilityLabel="Invite athlete" accessibilityRole="button" onPress={onInvite} style={styles.rosterInvite}>
+              <Ionicons color={COACH_V2.violetBright} name="person-add-outline" size={18} />
+              <Text style={styles.rosterInviteText}>Invite</Text>
+            </Pressable>
+            <Pressable accessibilityLabel="Close" accessibilityRole="button" onPress={onClose} style={styles.kpiClose}><Ionicons color={COACH_V2.text} name="close" size={22} /></Pressable>
+          </View>
+          <View style={styles.rosterSearch}>
+            <Ionicons color={COACH_V2.subtle} name="search" size={18} />
+            <TextInput
+              accessibilityLabel="Search your athletes"
+              onChangeText={setQuery}
+              placeholder="Search your athletes"
+              placeholderTextColor={COACH_V2.subtle}
+              style={styles.rosterSearchInput}
+              value={query}
+            />
+            {query ? <Pressable accessibilityLabel="Clear athlete search" hitSlop={8} onPress={() => setQuery('')}><Ionicons color={COACH_V2.muted} name="close-circle" size={18} /></Pressable> : null}
+          </View>
+          <ScrollView contentContainerStyle={styles.rosterFilters} horizontal showsHorizontalScrollIndicator={false}>
+            {ROSTER_FILTERS.map((item) => {
+              const selected = item.id === filter;
+              return (
+                <Pressable accessibilityRole="tab" accessibilityState={{ selected }} key={item.id} onPress={() => setFilter(item.id)} style={[styles.rosterFilter, selected && styles.rosterFilterSelected]}>
+                  <Text style={[styles.rosterFilterText, selected && styles.rosterFilterTextSelected]}>{item.label}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <FlatList
+            contentContainerStyle={styles.rosterList}
+            data={filteredAthletes}
+            initialNumToRender={12}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(athlete) => String(athlete.id)}
+            maxToRenderPerBatch={12}
+            renderItem={({ item }) => (
+              <Pressable accessibilityLabel={`Open ${item.name} Athlete Hub`} accessibilityRole="button" onPress={() => onOpenAthlete(item)} style={({ pressed }) => [styles.rosterRow, pressed && styles.pressed]}>
+                <SLAthleteAvatar imageUrl={item.profilePhotoUrl} imageVersion={item.profilePhotoVersion} name={item.name} size={44} statusColor={item.status.classification === 'needs_attention' ? COACH_V2.magenta : COACH_V2.green} />
+                <View style={styles.rosterRowCopy}>
+                  <View style={styles.rosterRowTitle}><Text numberOfLines={1} style={styles.rosterRowName}>{item.name}</Text><CoachStatusBadge label={item.status.label} tone={toneForAthlete(item)} /></View>
+                  <Text numberOfLines={1} style={styles.rosterRowMeta}>{athleteTrainingLabel(item)}</Text>
+                </View>
+                <CoachCardChevron />
+              </Pressable>
+            )}
+            ListEmptyComponent={<EmptyCard icon="search-outline" text={athletes.length ? 'No athletes match this search or filter.' : 'Invite an athlete to begin coaching.'} />}
+            windowSize={7}
+          />
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -523,4 +666,23 @@ const styles = StyleSheet.create({
   kpiRowCopy: { flex: 1, minWidth: 0 },
   kpiRowName: { color: COACH_V2.text, fontSize: 13, fontWeight: '800' },
   kpiRowMeta: { marginTop: 3, color: COACH_V2.muted, fontSize: 10 },
+  rosterSheet: { maxHeight: '86%', minHeight: '62%', borderTopLeftRadius: 22, borderTopRightRadius: 22, borderWidth: 1, borderBottomWidth: 0, borderColor: COACH_V2.borderStrong, backgroundColor: COACH_V2.black, padding: 14 },
+  rosterHeader: { minHeight: 74, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rosterHeaderCopy: { flex: 1, minWidth: 0 },
+  rosterCount: { marginTop: 3, color: COACH_V2.muted, fontSize: 10 },
+  rosterInvite: { minHeight: 40, borderRadius: 20, borderWidth: 1, borderColor: `${COACH_V2.violetBright}88`, backgroundColor: '#1E102F', flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 11 },
+  rosterInviteText: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '800' },
+  rosterSearch: { height: 44, borderRadius: 11, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 11 },
+  rosterSearchInput: { flex: 1, height: 42, color: COACH_V2.text, fontSize: 14 },
+  rosterFilters: { gap: 7, paddingVertical: 10 },
+  rosterFilter: { height: 34, minWidth: 58, borderRadius: 18, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 13 },
+  rosterFilterSelected: { borderColor: COACH_V2.violet, backgroundColor: '#271143' },
+  rosterFilterText: { color: COACH_V2.muted, fontSize: 11, fontWeight: '700' },
+  rosterFilterTextSelected: { color: COACH_V2.text },
+  rosterList: { gap: 7, paddingBottom: 10 },
+  rosterRow: { minHeight: 68, borderRadius: 10, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10 },
+  rosterRowCopy: { flex: 1, minWidth: 0 },
+  rosterRowTitle: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  rosterRowName: { flex: 1, color: COACH_V2.text, fontSize: 13, fontWeight: '800' },
+  rosterRowMeta: { marginTop: 4, color: COACH_V2.muted, fontSize: 10 },
 });

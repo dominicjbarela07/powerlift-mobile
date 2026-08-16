@@ -13,7 +13,8 @@ const paths = {
   home: 'components/coach-mobile/CoachHomeV2.tsx',
   hubSheet: 'components/coach-mobile/CoachAthleteHubSheet.tsx',
   rosterRoute: 'app/(tabs)/coach-roster.tsx',
-  roster: 'components/coach-mobile/CoachRosterV2.tsx',
+  invite: 'app/(tabs)/coach-invite-athlete.tsx',
+  teamBrief: 'app/coach-team-brief.tsx',
   hubRoute: 'app/(tabs)/coach-athlete/[athleteId].tsx',
   hub: 'components/coach-mobile/CoachAthleteHubV2.tsx',
   detailRoute: 'app/(tabs)/coach-attention/[athleteId].tsx',
@@ -30,7 +31,7 @@ const source = Object.fromEntries(await Promise.all(Object.entries(paths).map(as
 const backend = await readFile(new URL('../../app/blueprints/main.py', import.meta.url), 'utf8');
 const operatingModel = await readFile(new URL('../../app/services/coach_mobile_operating_model.py', import.meta.url), 'utf8');
 
-for (const name of ['homeRoute', 'home', 'hubSheet', 'rosterRoute', 'roster', 'hubRoute', 'hub', 'detailRoute', 'detail', 'more']) {
+for (const name of ['homeRoute', 'home', 'hubSheet', 'rosterRoute', 'invite', 'teamBrief', 'hubRoute', 'hub', 'detailRoute', 'detail', 'more']) {
   const value = source[name];
   assert.doesNotMatch(value, /@\/dev-mocks\//, `${name} must not import DEV fixtures.`);
 }
@@ -45,6 +46,14 @@ assert.doesNotMatch(source.home, /title="Needs Your Attention"/);
 assert.match(source.home, /horizontal showsHorizontalScrollIndicator=\{false\}/);
 assert.match(source.home, /<CoachAthleteHubSheet[\s\S]*?athlete=\{selectedAthlete\}/);
 assert.match(source.home, /<CoachKpiSheet/);
+assert.match(source.home, /<CoachRosterDiscoverySheet/);
+assert.match(source.home, /Find an Athlete/);
+assert.match(source.home, /Search your athletes/);
+assert.match(source.home, /<FlatList/);
+assert.match(source.home, /initialNumToRender=\{12\}/);
+assert.match(source.home, /filterCoachRosterV2/);
+assert.match(source.home, /router\.push\('\/\(tabs\)\/coach-invite-athlete'/);
+assert.doesNotMatch(source.home, /router\.(?:push|replace)\('\/\(tabs\)\/coach-roster'/);
 assert.match(source.home, /contextKeyRef\.current === requestContext/);
 assert.match(source.home, /activeRequestRef/);
 assert.match(source.home, /signal: controller\.signal/);
@@ -70,14 +79,14 @@ assert.doesNotMatch(source.hubSheet, /dragArea/);
 assert.match(source.hubSheet, /openCoachDestination\(router, primaryReason\.destination\)/);
 assert.match(source.hubSheet, /onClose\(\);[\s\S]*router\.push/);
 
-assert.match(source.rosterRoute, /<CoachRosterV2/);
-assert.match(source.roster, /fetchJson\('\/coach\/mobile\/roster'/);
-assert.match(source.roster, /<FlatList/);
-assert.match(source.roster, /initialNumToRender=\{12\}/);
-assert.match(source.roster, /windowSize=\{9\}/);
-assert.match(source.roster, /Alphabetical athlete navigation/);
-assert.doesNotMatch(source.roster, /Swipeable|onLongPress/, 'Primary roster navigation must be tap-first.');
-for (const filter of ["'all'", "'needs_attention'", "'programming'", "'active'"]) assert.match(source.roster, new RegExp(filter));
+assert.match(source.rosterRoute, /<Redirect/);
+assert.match(source.rosterRoute, /pathname: '\/\(tabs\)\/coach-dashboard'/);
+assert.match(source.rosterRoute, /roster: '1'/);
+assert.doesNotMatch(source.rosterRoute, /CoachRosterV2|All Athletes/);
+assert.match(source.invite, /Back to Coach Home/);
+assert.match(source.invite, /pathname: '\/\(tabs\)\/coach-dashboard'[\s\S]*?roster: '1'/);
+assert.doesNotMatch(source.teamBrief, /pathname: '\/\(tabs\)\/coach-roster'/);
+assert.match(source.contract, /'\/\(tabs\)\/coach-roster': '\/\(tabs\)\/coach-dashboard'/);
 
 assert.match(source.hubRoute, /<CoachAthleteHubV2/);
 assert.match(source.hub, /\/coach\/mobile\/athletes\/\$\{athleteId\}\/summary/);
@@ -97,15 +106,15 @@ assert.match(source.detail, /openCoachDestination\(router, reason\.destination\)
 
 assert.match(source.shipping, /'coach-dashboard',[\s\S]*'coach-calendar',[\s\S]*'messages\/index',[\s\S]*'coach-more'/);
 assert.doesNotMatch(source.shipping, /SHIPPING_COACH_TAB_ROUTES\s*=\s*\[[\s\S]*?'coach-roster'/);
-assert.match(source.home, /onAction=\{\(\) => router\.push\('\/\(tabs\)\/coach-roster'\)\} title="Your Athletes at a Glance"/);
-assert.match(source.roster, /router\.canGoBack\(\)[\s\S]*?router\.back\(\)[\s\S]*?coach-dashboard/);
+assert.match(source.home, /action="Find athlete"[\s\S]*?title="Your Athletes at a Glance"/);
 assert.match(source.tabs, /name="coach-roster"[\s\S]*?href: null/);
+assert.doesNotMatch(source.tabs, /title: 'All Athletes'/);
 assert.match(source.tabs, /name="coach-calendar"[\s\S]*?\/\(tabs\)\/coach-calendar/);
 assert.match(source.tabs, /forceExpandedCoachNavigation/);
 assert.match(source.tabs, /name="coach-attention\/\[athleteId\]"/);
 assert.match(source.tabs, /name="coach-more"/);
 
-assert.match(backend, /@main_bp\.route\("\/coach\/mobile\/home"/);
+assert.match(backend, /@main_bp\.(?:route|get)\("\/coach\/mobile\/home"/);
 assert.match(backend, /if user\.role != "coach"/);
 assert.match(backend, /_filtered_coach_athlete_query\(user\.id, coach_preferences\)/);
 assert.match(backend, /build_coach_mobile_home\(model\)/);

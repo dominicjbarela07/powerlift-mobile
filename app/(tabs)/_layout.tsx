@@ -722,7 +722,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="coach-roster"
           options={{
-            title: 'All Athletes',
+            title: 'Coach Home',
             headerShown: false,
             href: null,
           }}

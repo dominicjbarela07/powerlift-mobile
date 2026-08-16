@@ -16,7 +16,6 @@
   "app/(tabs)/athlete-calendar.tsx": { "colors": 0, "radius": 1, "fontSize": 0, "shadow": 0, "reason": "Calendar pagination error surface retains one compact geometry exception; the route otherwise delegates visual construction to shared Calendar primitives." },
   "components/calendar/AthleteCalendarExperience.tsx": { "colors": 0, "radius": 11, "fontSize": 0, "shadow": 0, "reason": "Compact calendar pulse cells, temporal timeline nodes, event-icon geometry, and dense touch-control radii intentionally scale to the Calendar rail." },
   "components/calendar/CalendarEventSheet.tsx": { "colors": 0, "radius": 1, "fontSize": 1, "shadow": 0, "reason": "Native calendar editor handle geometry and input font sizing preserve platform-sheet affordance and field readability." },
-  "app/(tabs)/coach-roster.tsx": { "colors": 0, "radius": 0, "fontSize": 7, "shadow": 0, "reason": "Roster command value plus dense programming/readiness/status metadata." },
   "app/(tabs)/link-coach.tsx": { "colors": 0, "radius": 5, "fontSize": 0, "shadow": 0, "reason": "Circular icon/avatar geometry in the relationship-entry workspace." },
   "app/(tabs)/reflection.tsx": { "colors": 0, "radius": 2, "fontSize": 2, "shadow": 0, "reason": "Media hero/focus geometry, reflection KPI hierarchy, and compact metadata." },
   "app/(tabs)/athlete-progression.tsx": { "colors": 0, "radius": 0, "fontSize": 2, "shadow": 0, "reason": "KPI hierarchy and compact axis labels." },

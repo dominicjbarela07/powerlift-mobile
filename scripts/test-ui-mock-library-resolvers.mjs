@@ -151,9 +151,6 @@ const thread = await resolveLiveScreenLaunch(entry('message-thread'), athlete, d
 assert.equal(thread.ok, true);
 assert.equal(thread.href.params.threadId, '52');
 
-assert.equal(liveScreenAvailability(entry('coach-roster'), athlete).available, false);
-assert.equal(liveScreenAvailability(entry('coach-roster'), coach).available, true);
-assert.equal(liveScreenAvailability(entry('coach-roster'), selfCoach).available, false);
 assert.equal(liveScreenAvailability(entry('athlete-home'), coach).available, true, 'Coach accounts retain athlete identity');
 assert.equal(liveScreenAvailability(entry('athlete-home'), selfCoach).available, false);
 assert.equal(liveScreenAvailability(entry('workout-list'), null).available, false);

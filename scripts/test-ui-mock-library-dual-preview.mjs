@@ -194,7 +194,6 @@ assert.equal(idealUserFor('verify-email')?.account_state, 'EMAIL_VERIFICATION_RE
 assert.equal(idealUserFor('verify-email')?.can_access_product, false);
 assert.equal(idealUserFor('link-coach')?.account_state, 'LINK_COACH_REQUIRED');
 assert.equal(idealUserFor('link-coach')?.has_linked_athlete, false);
-assert.equal(idealUserFor('coach-roster')?.mobile_mode, 'coach');
 assert.equal(idealUserFor('self-coach-home')?.workspace_mode, 'individual');
 
 beginDevLiveScreenSession({
