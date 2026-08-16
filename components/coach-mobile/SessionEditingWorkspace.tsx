@@ -24,6 +24,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
+import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
@@ -54,6 +55,7 @@ import {
 } from '@/lib/coach-session-editor';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
+import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
@@ -108,14 +110,27 @@ export type SessionMovementItem = {
   approved_subs?: string[];
   planned_sets?: Record<string, unknown>[];
   movement_identity?: {
-    family?: string | null;
-    family_display_name?: string | null;
+    id?: number | null;
     display_name?: string | null;
     primary_muscle_group?: string | null;
+    secondary_muscle_groups?: string[] | null;
+    execution_family?: string | null;
+    ownership_scope?: string | null;
+    library_scope?: string | null;
     equipment_type?: string | null;
     loading_implementation?: string | null;
     manufacturer?: { display_name?: string | null } | null;
     equipment_model?: { display_name?: string | null } | null;
+  } | null;
+  legacy?: {
+    state?: string | null;
+    original_text?: string | null;
+    normalized_key?: string | null;
+    resolution_id?: number | null;
+    effective_movement_definition_id?: number | null;
+    indicator?: string | null;
+    history_caveat?: string | null;
+    mapping?: { id?: number | null; revision?: number | null; status?: string | null } | null;
   } | null;
   core_movement?: {
     display_name?: string | null;
@@ -233,6 +248,7 @@ type Props = {
   onOpenReorder: (order: { coreIds: number[]; accessoryIds: number[] }, onApply: (order: { coreIds: number[]; accessoryIds: number[] }) => void) => void;
   onAddCore: (displayUnit: CoachDisplayUnit, onAdd: (item: SessionMovementItem) => void) => void;
   onAddAccessory: (onAdd: (item: SessionMovementItem) => void) => void;
+  onChangeAccessory: (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => void;
   onCalculateLoad: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>;
   onSaveSession: (plan: SessionWorkspaceSavePlan) => Promise<boolean>;
   renderLifecycleActions: (guard: GuardAction, restricted: boolean) => React.ReactNode;
@@ -556,6 +572,24 @@ export function SessionEditingWorkspace(props: Props) {
     ]);
   }, [selectedItem]);
 
+  const changeSelectedAccessory = useCallback(() => {
+    if (!selectedItem || selectedKind !== 'accessory') return;
+    props.onChangeAccessory(selectedItem, (replacement) => {
+      setSessionDraft((current) => ({
+        ...current,
+        items: { ...current.items, [replacement.id]: replacement },
+        movements: {
+          ...current.movements,
+          [replacement.id]: {
+            ...current.movements[replacement.id],
+            movement: movementName(replacement),
+          },
+        },
+      }));
+      setSelectedId(replacement.id);
+    });
+  }, [props, selectedItem, selectedKind]);
+
   const openReorder = useCallback(() => {
     props.onOpenReorder(
       { coreIds: sessionDraft.coreOrder, accessoryIds: sessionDraft.accessoryOrder },
@@ -655,6 +689,7 @@ export function SessionEditingWorkspace(props: Props) {
                         onChange={updateDraft}
                         onManualOverrideEnabledChange={setManualOverrideEnabled}
                         onBackdownManualOverrideEnabledChange={setBackdownManualOverrideEnabled}
+                        onChangeMovement={kind === 'accessory' ? changeSelectedAccessory : undefined}
                         canDelete={!!capabilities.can_remove_movement}
                         onDelete={deleteSelectedMovement}
                         onCollapse={collapseMovement}
@@ -1102,6 +1137,11 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       <MovementCardMaterial accentColor={movementAccent(item)} borderRadius={SLRadius.lg} state="not_started" />
       <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={72} /></View>
       <View style={styles.movementCopy}>
+        {kind === 'accessory' && item.legacy?.indicator ? (
+          <View style={[styles.legacyBadge, item.legacy.state === 'legacy_unresolved' && styles.legacyBadgeUnresolved]}>
+            <Text typographyRole="micro" style={styles.legacyBadgeText}>{item.legacy.indicator}</Text>
+          </View>
+        ) : null}
         <Text typographyRole="movementTitle" numberOfLines={2} style={styles.movementName}>{movementName(item)}</Text>
         <Text typographyRole="bodyStrong" numberOfLines={2} style={styles.movementPrescription}>{prescriptionSummary(item, kind)}</Text>
         {load ? <View style={styles.movementLoadRow}>{load.label ? <Text typographyRole="micro" style={[styles.movementLoadLabel, load.manual && styles.movementLoadLabelManual]}>{load.label}</Text> : null}<Text typographyRole="bodyStrong" numberOfLines={2} style={[styles.movementLoad, load.manual && styles.movementLoadManual]}>{load.value}</Text></View> : null}
@@ -1112,7 +1152,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
   );
 }
 
-function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
@@ -1122,6 +1162,11 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
       <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${movementName(item)} editor`} onPress={onCollapse} style={({ pressed }) => [styles.expandedMovementHeader, pressed && styles.pressed]}>
         <View style={styles.expandedMovementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
         <View style={styles.expandedMovementCopy}>
+          {kind === 'accessory' && item.legacy?.indicator ? (
+            <View style={[styles.legacyBadge, item.legacy.state === 'legacy_unresolved' && styles.legacyBadgeUnresolved]}>
+              <Text typographyRole="micro" style={styles.legacyBadgeText}>{item.legacy.indicator}</Text>
+            </View>
+          ) : null}
           <Text numberOfLines={2} style={[styles.movementName, styles.expandedMovementName]}>{movementName(item)}</Text>
           <Text numberOfLines={2} style={styles.expandedPrescription}>{draftPrescriptionSummary(draft, kind)}</Text>
           {load ? <View style={styles.movementLoadRow}><Text typographyRole="micro" style={[styles.movementLoadLabel, load.manual && styles.movementLoadLabelManual]}>{load.label}</Text><Text numberOfLines={2} style={[styles.expandedLoad, load.manual && styles.movementLoadManual]}>{load.value}</Text></View> : null}
@@ -1130,6 +1175,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
         <View style={styles.movementTrailing}><Ionicons name="chevron-forward" size={20} color={palette.muted} /></View>
       </Pressable>
       <View style={styles.expandedEditorBody}>
+        {kind === 'accessory' && onChangeMovement ? <MovementIdentityAction movement={movementName(item)} disabled={!editable} onPress={onChangeMovement} /> : null}
         <MovementQuickPrescriptionEditor
           key={`movement-editor-${item.id}`}
           draft={draft}
@@ -1147,6 +1193,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
           onManualOverrideEnabledChange={onManualOverrideEnabledChange}
           onBackdownManualOverrideEnabledChange={onBackdownManualOverrideEnabledChange}
         />
+        {kind === 'accessory' ? <AccessorySessionProgrammingContext draft={draft} editable={editable} onChange={onChange} /> : null}
         <RecentHistorySection item={item} displayUnit={displayUnit} />
         <CoachNotesSection value={draft.notes} editable={editable} onChange={(value) => onChange({ notes: value })} />
         <MovementDeleteAction disabled={!canDelete} onDelete={onDelete} />
@@ -1159,6 +1206,10 @@ function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | nul
   if (!item) return <View style={[styles.artworkFallback, { width: size, height: size }]}><Ionicons name="barbell-outline" size={Math.round(size * 0.46)} color={palette.violet} /></View>;
   if (kind === 'accessory') {
     const muscle = accessoryMuscleRegion(item);
+    const primary = item.movement_identity?.primary_muscle_group;
+    if (isGovernedMuscleId(primary)) {
+      return <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}><MuscleMap anatomy="automatic" primary={[primary]} secondary={item.movement_identity?.secondary_muscle_groups || []} size="thumbnail" style={{ transform: [{ scale: size / 92 }] }} view="auto" /></View>;
+    }
     const artwork = accessoryMuscleRegionAsset(muscle.key);
     return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${movementName(item)} ${artwork.label} primary muscle artwork`} resizeMode="contain" source={artwork.source} style={[styles.movementArtworkImage, { width: size, height: size }]} />;
   }
@@ -1646,12 +1697,50 @@ function CoachNotesSection({ value, editable, onChange }: { value: string; edita
   );
 }
 
+function AccessorySessionProgrammingContext({ draft, editable, onChange }: { draft: CoachMovementDraft; editable: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void }) {
+  const groups = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const positions = ['1', '2', '3', '4'];
+  return (
+    <View style={styles.quickSection}>
+      <Text typographyRole="sectionTitle" style={styles.quickSectionTitle}>Session Context</Text>
+      <Text style={styles.fieldLabel}>Grouped Set</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.accessoryContextChoices}>
+        {groups.map((group) => {
+          const selected = draft.supersetGroup === group;
+          return <Pressable key={group || 'none'} accessibilityRole="button" accessibilityState={{ selected, disabled: !editable }} disabled={!editable} onPress={() => onChange({ supersetGroup: group, supersetPosition: group ? (draft.supersetPosition || '1') : '' })} style={[styles.accessoryContextChoice, selected && styles.accessoryContextChoiceSelected, !editable && styles.disabled]}><Text style={[styles.accessoryContextChoiceText, selected && styles.accessoryContextChoiceTextSelected]}>{group || 'None'}</Text></Pressable>;
+        })}
+      </ScrollView>
+      {draft.supersetGroup ? <><Text style={styles.fieldLabel}>Group Position</Text><View style={styles.accessoryContextChoices}>{positions.map((position) => {
+        const selected = draft.supersetPosition === position;
+        return <Pressable key={position} accessibilityRole="button" accessibilityState={{ selected, disabled: !editable }} disabled={!editable} onPress={() => onChange({ supersetPosition: position })} style={[styles.accessoryContextChoice, selected && styles.accessoryContextChoiceSelected, !editable && styles.disabled]}><Text style={[styles.accessoryContextChoiceText, selected && styles.accessoryContextChoiceTextSelected]}>{position}</Text></Pressable>;
+      })}</View></> : null}
+      <Text style={styles.fieldLabel}>Approved Substitutions</Text>
+      <TextInput accessibilityLabel="Approved Substitutions" editable={editable} multiline onChangeText={(approvedSubsText) => onChange({ approvedSubsText })} placeholder="One approved substitution per line" placeholderTextColor={palette.subtle} style={styles.accessorySubstitutionInput} value={draft.approvedSubsText} />
+    </View>
+  );
+}
+
 function MovementDeleteAction({ disabled, onDelete }: { disabled: boolean; onDelete: () => void }) {
   return (
     <View style={styles.movementDeleteSection}>
       <Pressable accessibilityRole="button" accessibilityLabel="Delete Movement" accessibilityState={{ disabled }} disabled={disabled} onPress={onDelete} style={({ pressed }) => [styles.movementDeleteButton, pressed && styles.pressed, disabled && styles.disabled]}>
         <Ionicons name="trash-outline" size={SLIconSize.standard} color={palette.red} />
         <Text typographyRole="buttonLabel" style={styles.movementDeleteText}>Delete Movement</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function MovementIdentityAction({ movement, disabled, onPress }: { movement: string; disabled: boolean; onPress: () => void }) {
+  return (
+    <View style={styles.movementIdentitySection}>
+      <View style={styles.movementIdentityCopy}>
+        <Text typographyRole="micro" style={styles.movementIdentityEyebrow}>Selected Movement</Text>
+        <Text numberOfLines={2} style={styles.movementIdentityName}>{movement}</Text>
+      </View>
+      <Pressable accessibilityRole="button" accessibilityLabel={`Change or swap ${movement}`} accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.movementIdentityButton, pressed && styles.pressed, disabled && styles.disabled]}>
+        <Ionicons name="swap-horizontal-outline" size={SLIconSize.standard} color={palette.violet} />
+        <Text style={styles.movementIdentityButtonText}>Change / Swap</Text>
       </Pressable>
     </View>
   );
@@ -1829,7 +1918,9 @@ function sessionWorkspaceDraftIsDirty(current: SessionWorkspaceDraft, persisted:
     const persistedMovement = persisted.movements[id];
     if (!currentMovement || !persistedMovement) return true;
     const comparableCurrent = convertMovementDraftUnit(currentMovement, current.displayUnit, persisted.displayUnit);
-    return movementDraftIsDirty(comparableCurrent, persistedMovement);
+    const identityChanged = current.kinds[id] === 'accessory'
+      && Number(current.items[id]?.movement_identity?.id || 0) !== Number(persisted.items[id]?.movement_identity?.id || 0);
+    return identityChanged || movementDraftIsDirty(comparableCurrent, persistedMovement);
   });
 }
 
@@ -1846,13 +1937,19 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     const comparable = persisted.movements[id]
       ? convertMovementDraftUnit(movement, current.displayUnit, persisted.displayUnit)
       : null;
+    const identityChanged = kind === 'accessory'
+      && Number(item.movement_identity?.id || 0) !== Number(persisted.items[id]?.movement_identity?.id || 0);
+    const patch = movementProgrammingPatch(movement, kind, current.displayUnit);
+    if (kind === 'accessory' && item.movement_identity?.id) {
+      patch.movement_definition_id = item.movement_identity.id;
+    }
     const save: SessionWorkspaceMovementSave = {
       item,
       kind,
-      patch: movementProgrammingPatch(movement, kind, current.displayUnit),
+      patch,
     };
     if (id < 0 || !persisted.movements[id]) movementCreates.push(save);
-    else if (comparable && movementDraftIsDirty(comparable, persisted.movements[id])) movementUpdates.push(save);
+    else if (comparable && (identityChanged || movementDraftIsDirty(comparable, persisted.movements[id]))) movementUpdates.push(save);
   });
   return {
     title: current.title.trim(),
@@ -2212,6 +2309,9 @@ const styles = StyleSheet.create({
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   artworkFallback: { alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: palette.violetSoft, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(167,139,250,0.25)' },
   movementCopy: { flex: 1, minWidth: 0, gap: 2 },
+  legacyBadge: { alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft },
+  legacyBadgeUnresolved: { borderColor: SLColors.warning, backgroundColor: SLColors.warningSoft },
+  legacyBadgeText: { color: SLColors.textStrong, fontFamily: SLFontFamilies.technical, textTransform: 'uppercase' },
   movementName: { color: palette.text },
   expandedMovementName: { fontFamily: SLFontFamilies.sansBold, fontSize: 20, lineHeight: 25 },
   movementMeta: { color: palette.muted, textTransform: 'uppercase', fontFamily: SLFontFamilies.technical, fontSize: 13, lineHeight: 18 },
@@ -2228,12 +2328,24 @@ const styles = StyleSheet.create({
   expandedPrescription: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },
   expandedLoad: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },
   expandedEditorBody: { gap: 0, paddingHorizontal: 10, paddingTop: 1, paddingBottom: 1, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStandard },
+  movementIdentitySection: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm, paddingVertical: SLSpacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },
+  movementIdentityCopy: { flex: 1, minWidth: 0, gap: 2 },
+  movementIdentityEyebrow: { color: palette.muted, textTransform: 'uppercase' },
+  movementIdentityName: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 17, lineHeight: 22 },
+  movementIdentityButton: { minHeight: SLControlSize.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SLSpacing.xs, paddingHorizontal: SLSpacing.sm, borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSelected, backgroundColor: palette.violetSoft },
+  movementIdentityButtonText: { color: palette.violet, fontFamily: SLFontFamilies.sansBold, fontSize: 13, lineHeight: 18 },
   emptyList: { minHeight: 90, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: palette.line, borderStyle: 'dashed', borderRadius: 12 },
   emptyText: { color: palette.muted, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 18 },
   movementMetaStatusRow: { minHeight: 20, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm },
   dirtyDot: { width: 6, height: 6, borderRadius: SLRadius.pill, backgroundColor: palette.violet },
   quickSection: { gap: SLSpacing.xs, paddingVertical: SLSpacing.xs, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },
   quickSectionTitle: { color: palette.text },
+  accessoryContextChoices: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.xs, paddingVertical: 2 },
+  accessoryContextChoice: { minWidth: SLControlSize.minimumTouchTarget, minHeight: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLSpacing.sm, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line, backgroundColor: SLColors.surfaceFlat },
+  accessoryContextChoiceSelected: { borderColor: SLColors.borderSelected, backgroundColor: palette.violetSoft },
+  accessoryContextChoiceText: { color: palette.muted, fontFamily: SLFontFamilies.sansBold, fontSize: 13, lineHeight: 18 },
+  accessoryContextChoiceTextSelected: { color: palette.violet },
+  accessorySubstitutionInput: { minHeight: 76, borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, backgroundColor: SLColors.surfaceFlat, color: palette.text, padding: SLSpacing.sm, textAlignVertical: 'top', fontFamily: SLTypography.body.fontFamily, fontSize: SLTypography.body.fontSize, lineHeight: SLTypography.body.lineHeight },
   prescriptionChoiceRow: { zIndex: 30, flexDirection: 'row', alignItems: 'flex-start', gap: SLSpacing.sm, overflow: 'visible' },
   prescriptionChoiceField: { flex: 1, minWidth: 0, gap: SLSpacing.sm },
   programmingStack: { gap: 0 },

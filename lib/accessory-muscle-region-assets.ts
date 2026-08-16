@@ -7,6 +7,8 @@ export type AccessoryMuscleRegionAsset = Readonly<{
   source: ImageSourcePropType;
 }>;
 
+export type AccessoryRegionalArtworkKey = AccessoryMuscleRegionKey | 'back_region';
+
 export const ACCESSORY_MUSCLE_REGION_ASSETS: Readonly<
   Record<AccessoryMuscleRegionKey, AccessoryMuscleRegionAsset>
 > = {
@@ -43,4 +45,24 @@ export function accessoryMuscleRegionAsset(
   key?: AccessoryMuscleRegionKey | null,
 ): AccessoryMuscleRegionAsset {
   return ACCESSORY_MUSCLE_REGION_ASSETS[key || 'full_body'];
+}
+
+/**
+ * Region-only artwork stays outside the governed muscle key set so browsing
+ * can never manufacture a MovementDefinition muscle identity.
+ */
+const ACCESSORY_REGIONAL_ARTWORK_ASSETS: Readonly<
+  Record<AccessoryRegionalArtworkKey, AccessoryMuscleRegionAsset>
+> = {
+  ...ACCESSORY_MUSCLE_REGION_ASSETS,
+  back_region: {
+    label: 'Back',
+    source: require('../assets/images/muscle-regions/back-region.png'),
+  },
+};
+
+export function accessoryRegionalArtworkAsset(
+  key?: AccessoryRegionalArtworkKey | null,
+): AccessoryMuscleRegionAsset {
+  return ACCESSORY_REGIONAL_ARTWORK_ASSETS[key || 'full_body'];
 }

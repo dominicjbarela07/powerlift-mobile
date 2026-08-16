@@ -3,7 +3,7 @@ import {
   AccessibilityInfo,
   ActivityIndicator,
   Alert,
-  Keyboard,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -13,9 +13,11 @@ import {
   View,
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -44,6 +46,11 @@ import {
   type CompletedSessionRecapPayload,
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
+import {
+  accessoryRegionalArtworkAsset,
+  type AccessoryRegionalArtworkKey,
+} from '@/lib/accessory-muscle-region-assets';
+import { accessoryPickerArtwork } from '@/lib/accessory-picker-artwork';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -84,6 +91,27 @@ type WorkoutItem = {
   movement_identity?: {
     id?: number | null;
     display_name?: string | null;
+    primary_muscle_group?: string | null;
+    secondary_muscle_groups?: string[] | null;
+    execution_family?: string | null;
+    ownership_scope?: string | null;
+    library_scope?: string | null;
+  } | null;
+  legacy?: {
+    state?: 'canonical' | 'legacy_unresolved' | 'legacy_resolved' | string;
+    original_text?: string | null;
+    normalized_key?: string | null;
+    resolution_id?: number | null;
+    effective_movement_definition_id?: number | null;
+    indicator?: string | null;
+    history_caveat?: string | null;
+    mapping?: {
+      id?: number | null;
+      revision?: number | null;
+      movement_definition_id?: number | null;
+      movement_name?: string | null;
+      status?: string | null;
+    } | null;
   } | null;
 };
 
@@ -119,6 +147,8 @@ type WorkoutPayload = {
     name?: string | null;
     timezone?: string | null;
     preferred_units?: string | null;
+    sex?: string | null;
+    anatomy_display_preference?: string | null;
     avatar_url?: string | null;
     avatar_uploaded_at?: string | null;
   } | null;
@@ -173,6 +203,27 @@ type MovementPreset = {
   measurement_type?: string | null;
   sidedness?: string | null;
   ownership_scope?: string | null;
+  identity_status?: string | null;
+  library_scope?: 'canonical' | 'my_movement' | string | null;
+  can_manage?: boolean | null;
+  can_restore?: boolean | null;
+  primary_muscle_group?: string | null;
+  secondary_muscle_groups?: string[] | null;
+  execution_family?: string | null;
+  requires_equipment_configuration?: boolean | null;
+  custom_notes?: string | null;
+  aliases?: string[] | null;
+  is_favorite?: boolean | null;
+  last_used_on?: string | null;
+  recent_session_count?: number | null;
+};
+
+type MovementSimilarityMatch = {
+  tier: 'EXACT' | 'ALIAS_MATCH' | 'EQUIPMENT_IMPLEMENTATION_MATCH' | 'STRONG_SIMILARITY' | 'RELATED';
+  score?: number | null;
+  reasons?: string[];
+  can_manage?: boolean;
+  movement_definition: MovementPreset;
 };
 
 type MovementPresetGroup = {
@@ -190,6 +241,24 @@ type MovementPresetPayload = {
     categories?: MovementPresetGroup[];
     definitions?: MovementPreset[];
   };
+};
+
+type MovementSearchResultGroup = {
+  items: MovementPreset[];
+  total_count: number;
+  next_cursor: string | null;
+};
+
+type MovementSearchResultGroups = {
+  selected_muscle_group: string;
+  primary: MovementSearchResultGroup;
+  secondary: MovementSearchResultGroup;
+};
+
+type MovementAuthoringOptions = {
+  muscle_groups: { key: string; label: string; body_region?: string; artwork_url?: string }[];
+  execution_families: { key: string; label: string; requires_equipment_configuration?: boolean }[];
+  regional_groups?: AccessoryPickerRegion[];
 };
 
 type EditKind = 'core' | 'accessory';
@@ -238,6 +307,8 @@ type TrainingLiftSetup = {
 type AccessorySetup = {
   movement: string;
   movementDefinitionId: number | null;
+  ownershipScope: string;
+  libraryScope: string;
   family: string;
   notes: string;
   customMovement: string;
@@ -248,7 +319,95 @@ type AccessorySetup = {
   loadConvention: string;
   measurementType: string;
   sidedness: string;
+  primaryMuscleGroup: string;
+  secondaryMuscleGroups: string[];
+  executionFamily: string;
+  customNotes: string;
 };
+
+const ACCESSORY_MUSCLE_GROUPS = [
+  ['chest', 'Chest'],
+  ['front_delts', 'Front Delts'],
+  ['side_delts', 'Side Delts'],
+  ['rear_delts', 'Rear Delts'],
+  ['lats', 'Lats'],
+  ['upper_back', 'Upper Back'],
+  ['traps', 'Traps'],
+  ['biceps', 'Biceps'],
+  ['triceps', 'Triceps'],
+  ['forearms', 'Forearms'],
+  ['quads', 'Quads'],
+  ['hamstrings', 'Hamstrings'],
+  ['glutes', 'Glutes'],
+  ['adductors', 'Adductors'],
+  ['abductors', 'Abductors'],
+  ['calves', 'Calves'],
+  ['abs', 'Abs'],
+  ['obliques', 'Obliques'],
+  ['lower_back', 'Lower Back'],
+  ['serratus', 'Serratus'],
+  ['hip_flexors', 'Hip Flexors'],
+  ['neck', 'Neck'],
+] as const;
+
+const ACCESSORY_EXECUTION_FAMILIES = [
+  ['FREE_WEIGHT', 'Free Weight'],
+  ['MACHINE', 'Machine'],
+  ['CABLE', 'Cable'],
+  ['BODYWEIGHT', 'Bodyweight'],
+  ['BAND', 'Band'],
+  ['OTHER_PORTABLE', 'Other Portable'],
+] as const;
+
+type AccessoryPickerRegion = Readonly<{
+  key: string;
+  label: string;
+  artwork: AccessoryRegionalArtworkKey;
+  muscles: readonly string[];
+}>;
+
+const ACCESSORY_PICKER_REGIONS = [
+  { key: 'chest', label: 'Chest', artwork: 'chest', muscles: ['chest', 'serratus'] },
+  { key: 'back', label: 'Back', artwork: 'back_region', muscles: ['lats', 'upper_back', 'traps', 'lower_back'] },
+  { key: 'shoulders', label: 'Shoulders', artwork: 'side_delts', muscles: ['front_delts', 'side_delts', 'rear_delts'] },
+  { key: 'arms', label: 'Arms', artwork: 'arms', muscles: ['biceps', 'triceps', 'forearms'] },
+  { key: 'legs', label: 'Legs', artwork: 'quads', muscles: ['quads', 'hamstrings', 'adductors', 'abductors', 'calves'] },
+  { key: 'glutes_hips', label: 'Glutes / Hips', artwork: 'glutes', muscles: ['glutes', 'hip_flexors'] },
+  { key: 'core', label: 'Core', artwork: 'core', muscles: ['abs', 'obliques'] },
+  { key: 'other', label: 'Other', artwork: 'neck', muscles: ['neck'] },
+] as const satisfies readonly AccessoryPickerRegion[];
+
+type AccessoryPickerStep =
+  | 'discovery'
+  | 'targets'
+  | 'results'
+  | 'detail'
+  | 'review'
+  | 'success'
+  | 'custom-name'
+  | 'custom-primary'
+  | 'custom-secondary'
+  | 'custom-execution'
+  | 'custom-review'
+  | 'custom-created';
+type AccessoryPickerResultMode = 'all' | 'favorites' | 'recent' | 'custom';
+
+const CUSTOM_MOVEMENT_STEPS: readonly AccessoryPickerStep[] = [
+  'custom-name',
+  'custom-primary',
+  'custom-secondary',
+  'custom-execution',
+  'custom-review',
+];
+
+const CUSTOM_EXECUTION_PRESENTATION = {
+  FREE_WEIGHT: { description: 'Barbells, dumbbells, and free implements.', icon: 'barbell-outline' },
+  MACHINE: { description: 'Selectorized and plate-loaded machines.', icon: 'fitness-outline' },
+  CABLE: { description: 'Cable stack and pulley movements.', icon: 'git-branch-outline' },
+  BODYWEIGHT: { description: 'Performed using bodyweight only.', icon: 'body-outline' },
+  BAND: { description: 'Resistance-band movements.', icon: 'remove-outline' },
+  OTHER_PORTABLE: { description: 'Landmine, kettlebell, and specialty methods.', icon: 'options-outline' },
+} as const;
 
 const KG_PER_LB = 0.45359237;
 const WHEEL_ITEM_WIDTH = 64;
@@ -307,12 +466,13 @@ export default function MobileSessionWorkspaceScreen() {
   const [reorderSaving, setReorderSaving] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [roster, setRoster] = useState<RosterAthlete[]>([]);
-  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>(() => normalizeDisplayWeightUnit(user?.preferred_units));
+  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>('kg');
   const hasLoadedSessionRef = useRef(false);
   const loadRequestRevisionRef = useRef(0);
   const nextDraftMovementIdRef = useRef(-1);
   const addCoreCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
   const addAccessoryCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
+  const changeAccessoryCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
   const reorderCompletionRef = useRef<((order: ReorderEditorState) => void) | null>(null);
   const loadedStatus = String(payload?.workout?.raw_status || payload?.workout?.status || '').trim().toLowerCase();
   const loadedCompletedSession = ['completed', 'logged', 'done'].includes(loadedStatus);
@@ -391,28 +551,12 @@ export default function MobileSessionWorkspaceScreen() {
   useEffect(() => {
     let active = true;
     setMovementGroupsLoading(true);
-    const athleteId = payload?.athlete?.id;
-    const customDefinitionsRequest = athleteId
-      ? fetchJson<any>(`/workouts/mobile/movement-definitions/search?athlete_id=${athleteId}&limit=49`, { method: 'GET' })
-      : Promise.resolve(null);
-    Promise.all([
-      fetchJson<MovementPresetPayload>('/workouts/mobile/movement_presets', { method: 'GET' }),
-      customDefinitionsRequest,
-    ])
-      .then(([resp, customResponse]) => {
+    void fetchJson<MovementPresetPayload>('/workouts/mobile/movement_presets?include_accessories=0', { method: 'GET' })
+      .then((resp) => {
         const json = resp.json || {};
         if (!active) return;
         setMovementGroups(Array.isArray(json.training_lifts?.categories) ? json.training_lifts.categories : []);
-        const categories = Array.isArray(json.accessories?.categories) ? json.accessories.categories : [];
-        const definitions = Array.isArray(json.accessories?.definitions) ? json.accessories.definitions : [];
-        const customItems = customResponse?.ok && Array.isArray(customResponse.json?.items)
-          ? customResponse.json.items.filter((row: MovementPreset) => row.ownership_scope !== 'global')
-          : [];
-        setAccessoryGroups(accessoryGroupsWithCanonicalIdentity(
-          accessoryGroupsWithCanonicalIdentity(categories, definitions),
-          customItems,
-          'custom_identity',
-        ));
+        setAccessoryGroups([]);
       })
       .catch(() => {
         if (!active) return;
@@ -489,11 +633,51 @@ export default function MobileSessionWorkspaceScreen() {
   };
 
   const openAddAccessoryEditor = (onAdd: (item: SessionMovementItem) => void) => {
+    changeAccessoryCompletionRef.current = null;
     addAccessoryCompletionRef.current = onAdd;
-    const setup = defaultAccessorySetup(accessoryGroups);
+    const defaults = defaultAccessorySetup(accessoryGroups);
+    const setup: AccessorySetup = {
+      ...defaults,
+      movement: '',
+      movementDefinitionId: null,
+      ownershipScope: '',
+      libraryScope: '',
+      primaryMuscleGroup: '',
+      secondaryMuscleGroups: [],
+      executionFamily: '',
+      customMovement: '',
+      customNotes: '',
+    };
     setAccessoryEditor({
       mode: 'add',
       item: null,
+      setup,
+      initialSetup: setup,
+    });
+  };
+
+  const openChangeAccessoryEditor = (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => {
+    addAccessoryCompletionRef.current = null;
+    changeAccessoryCompletionRef.current = onChange;
+    const identity = item.movement_identity || null;
+    const setup: AccessorySetup = {
+      ...defaultAccessorySetup(accessoryGroups),
+      movement: String(identity?.display_name || item.movement || item.original_movement || ''),
+      movementDefinitionId: identity?.id || null,
+      ownershipScope: String(identity?.ownership_scope || ''),
+      libraryScope: String(identity?.library_scope || ''),
+      notes: String(item.notes || ''),
+      supersetGroup: String(item.superset_group || ''),
+      supersetPosition: item.superset_pos == null ? '' : String(item.superset_pos),
+      primaryMuscleGroup: String(identity?.primary_muscle_group || ''),
+      secondaryMuscleGroups: Array.isArray(identity?.secondary_muscle_groups) ? identity.secondary_muscle_groups : [],
+      executionFamily: String(identity?.execution_family || ''),
+      customMovement: '',
+      customNotes: '',
+    };
+    setAccessoryEditor({
+      mode: 'edit',
+      item: item as WorkoutItem,
       setup,
       initialSetup: setup,
     });
@@ -515,11 +699,12 @@ export default function MobileSessionWorkspaceScreen() {
     if (accessoryEditor && JSON.stringify(accessoryEditor.setup) !== JSON.stringify(accessoryEditor.initialSetup)) {
       Alert.alert('Discard movement changes?', 'Your unsaved accessory setup changes will be lost.', [
         { text: 'Keep Editing', style: 'cancel' },
-        { text: 'Discard Changes', style: 'destructive', onPress: () => { addAccessoryCompletionRef.current = null; setAccessoryEditor(null); } },
+        { text: 'Discard Changes', style: 'destructive', onPress: () => { addAccessoryCompletionRef.current = null; changeAccessoryCompletionRef.current = null; setAccessoryEditor(null); } },
       ]);
       return;
     }
     addAccessoryCompletionRef.current = null;
+    changeAccessoryCompletionRef.current = null;
     setAccessoryEditor(null);
   };
 
@@ -645,44 +830,69 @@ export default function MobileSessionWorkspaceScreen() {
     }
   };
 
-  const applyAccessorySetup = async (setup: AccessorySetup) => {
-    if (!workout?.id || !accessoryEditor) return;
+  const applyAccessorySetup = async (setup: AccessorySetup): Promise<boolean> => {
+    if (!workout?.id || !accessoryEditor) return false;
     try {
       setAccessorySaving(true);
-      let movementDefinitionId = setup.movementDefinitionId;
-      const isNewCustomMovement = !movementDefinitionId
-        && !!setup.customMovement.trim()
-        && setup.movement === setup.customMovement.trim();
-      if (isNewCustomMovement) {
-        const identityResponse = await fetchJson<any>('/workouts/mobile/movement-definitions', {
+      const movementDefinitionId = setup.movementDefinitionId;
+      const resolvedMovementName = setup.movement;
+      if (!movementDefinitionId) {
+        throw new Error('Select a canonical or custom movement before applying changes.');
+      }
+      const legacy = accessoryEditor.item?.legacy;
+      if (
+        accessoryEditor.mode === 'edit'
+        && accessoryEditor.item?.id
+        && Number(accessoryEditor.item.id) > 0
+        && legacy?.state === 'legacy_unresolved'
+        && legacy.original_text
+      ) {
+        const previewResponse = await fetchJson<any>('/workouts/mobile/legacy-accessory-resolutions/preview', {
+          method: 'POST',
+          body: { legacy_label: legacy.original_text } as any,
+        });
+        const preview: any = previewResponse.json?.preview || {};
+        if (!previewResponse.ok || !previewResponse.json?.ok) {
+          throw new Error(previewResponse.json?.error || 'Legacy impact could not be loaded.');
+        }
+        const counts = preview.counts || {};
+        const resolutionScope = await new Promise<'cancel' | 'occurrence' | 'mapping'>((resolve) => {
+          Alert.alert(
+            'Resolve this legacy name?',
+            [
+              `“${legacy.original_text}” will map to “${resolvedMovementName}” in your coaching workspace.`,
+              `${Number(counts.future_draft || 0)} future draft · ${Number(counts.template || 0)} template · ${Number(counts.historical || 0)} historical preserved`,
+              'Completed history keeps its original text.',
+            ].join('\n\n'),
+            [
+              { text: 'Cancel', style: 'cancel', onPress: () => resolve('cancel') },
+              { text: 'This Session', onPress: () => resolve('occurrence') },
+              { text: 'Resolve Once', onPress: () => resolve('mapping') },
+            ],
+            { cancelable: true, onDismiss: () => resolve('cancel') },
+          );
+        });
+        if (resolutionScope === 'cancel') return false;
+        const resolutionResponse = await fetchJson<any>('/workouts/mobile/legacy-accessory-resolutions/resolve', {
           method: 'POST',
           body: {
-            athlete_id: payload?.athlete?.id,
-            display_name: setup.movement,
-            equipment_type: setup.equipmentType,
-            loading_implementation: setup.loadingImplementation,
-            load_convention: setup.loadConvention,
-            measurement_type: setup.measurementType,
-            sidedness: setup.sidedness,
+            legacy_label: legacy.original_text,
+            movement_definition_id: movementDefinitionId,
+            expected_revision: legacy.mapping?.revision || undefined,
+            remember: resolutionScope === 'mapping',
+            workout_item_id: accessoryEditor.item.id,
           } as any,
         });
-        const identityJson = identityResponse.json || {};
-        if (!identityResponse.ok || !identityJson.ok || !identityJson.movement_definition?.id) {
-          throw new Error(identityJson.error || `HTTP ${identityResponse.status}`);
+        if (!resolutionResponse.ok || !resolutionResponse.json?.ok) {
+          throw new Error(resolutionResponse.json?.error || 'Legacy movement could not be resolved.');
         }
-        movementDefinitionId = Number(identityJson.movement_definition.id);
-        setAccessoryGroups((current) => accessoryGroupsWithCanonicalIdentity(current, [identityJson.movement_definition], 'custom_identity'));
-        setAccessoryEditor((current) => current ? {
-          ...current,
-          setup: { ...current.setup, movementDefinitionId },
-        } : current);
       }
       if (accessoryEditor.mode === 'add' && addAccessoryCompletionRef.current) {
         const id = nextDraftMovementIdRef.current--;
         addAccessoryCompletionRef.current({
           id,
-          movement: setup.movement,
-          original_movement: setup.movement,
+          movement: resolvedMovementName,
+          original_movement: resolvedMovementName,
           variant: 'ACC',
           sets: 3,
           reps_text: '10-12',
@@ -690,14 +900,46 @@ export default function MobileSessionWorkspaceScreen() {
           notes: setup.notes,
           superset_group: setup.supersetGroup || null,
           superset_pos: setup.supersetGroup ? Number(setup.supersetPosition || 1) : null,
-          movement_identity: movementDefinitionId ? { display_name: setup.movement } : null,
+          movement_identity: movementDefinitionId ? {
+            id: movementDefinitionId,
+            display_name: resolvedMovementName,
+            primary_muscle_group: setup.primaryMuscleGroup,
+            secondary_muscle_groups: setup.secondaryMuscleGroups,
+            execution_family: setup.executionFamily,
+            ownership_scope: setup.ownershipScope,
+            library_scope: setup.libraryScope,
+          } : null,
         });
         addAccessoryCompletionRef.current = null;
-        setAccessoryEditor(null);
-        return;
+        return true;
+      }
+      if (accessoryEditor.mode === 'edit' && changeAccessoryCompletionRef.current && accessoryEditor.item) {
+        changeAccessoryCompletionRef.current({
+          ...(accessoryEditor.item as SessionMovementItem),
+          movement: resolvedMovementName,
+          original_movement: resolvedMovementName,
+          movement_identity: {
+            id: movementDefinitionId,
+            display_name: resolvedMovementName,
+            primary_muscle_group: setup.primaryMuscleGroup,
+            secondary_muscle_groups: setup.secondaryMuscleGroups,
+            execution_family: setup.executionFamily,
+            ownership_scope: setup.ownershipScope,
+            library_scope: setup.libraryScope,
+          },
+          legacy: legacy?.state === 'legacy_unresolved' ? {
+            ...legacy,
+            state: 'legacy_resolved',
+            effective_movement_definition_id: movementDefinitionId,
+            indicator: 'LEGACY · Resolved',
+            history_caveat: null,
+          } : legacy,
+        });
+        changeAccessoryCompletionRef.current = null;
+        return true;
       }
       const body = {
-        movement: setup.movement,
+        movement: resolvedMovementName,
         movement_definition_id: movementDefinitionId,
         notes: setup.notes,
         superset_group: setup.supersetGroup || null,
@@ -719,16 +961,52 @@ export default function MobileSessionWorkspaceScreen() {
       });
       const json: any = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      setAccessoryEditor(null);
       await loadSession(true);
+      return true;
     } catch (err: any) {
       Alert.alert(
         accessoryEditor.mode === 'add' ? 'Could not add accessory' : 'Could not update accessory',
         err?.message || 'Please try again.'
       );
+      return false;
     } finally {
       setAccessorySaving(false);
     }
+  };
+
+  const closeAccessoryEditorAfterSuccess = () => {
+    addAccessoryCompletionRef.current = null;
+    changeAccessoryCompletionRef.current = null;
+    setAccessoryEditor(null);
+  };
+
+  const createCustomAccessoryDefinition = async (
+    setup: AccessorySetup,
+    confirmSimilar: boolean,
+  ): Promise<MovementPreset | null> => {
+    const athleteId = Number(payload?.athlete?.id);
+    if (!Number.isFinite(athleteId) || athleteId <= 0) {
+      throw new Error('Athlete context is unavailable.');
+    }
+    const identityBody = {
+      athlete_id: athleteId,
+      display_name: setup.customMovement.trim(),
+      primary_muscle_group: setup.primaryMuscleGroup,
+      secondary_muscle_groups: setup.secondaryMuscleGroups,
+      execution_family: setup.executionFamily,
+      notes: setup.customNotes,
+    };
+    const response = await fetchJson<any>('/workouts/mobile/movement-definitions', {
+      method: 'POST',
+      body: { ...identityBody, confirm_similar: confirmSimilar } as any,
+    });
+    const json = response.json || {};
+    const definition: MovementPreset | null = response.ok && json.ok
+      ? json.movement_definition
+      : json.existing_custom_movement || json.existing_movement || null;
+    if (!definition?.id) throw new Error(json.error || `HTTP ${response.status}`);
+    setAccessoryGroups((current) => accessoryGroupsWithCanonicalIdentity(current, [definition], 'custom_identity'));
+    return definition;
   };
 
   const runSessionAction = async (
@@ -860,6 +1138,7 @@ export default function MobileSessionWorkspaceScreen() {
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
+        ...(plan.metadataPatch.displayUnit !== undefined ? { preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg' } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
@@ -975,10 +1254,13 @@ export default function MobileSessionWorkspaceScreen() {
         <CompletedSessionRecap
           recap={workout.completed_recap}
           impactSummary={workout.impact_summary}
-          preferredUnits={workspaceDisplayUnit}
+          preferredUnits={user?.preferred_units}
+          viewerMode="coach"
           refreshing={refreshing}
           onRefresh={() => { void loadSession(true); }}
           onClose={closeToProgrammingHome}
+          onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(payload?.athlete?.id || '') } } as any)}
+          onOpenProgramming={closeToProgrammingHome}
         />
       </>
     );
@@ -1024,6 +1306,7 @@ export default function MobileSessionWorkspaceScreen() {
         onOpenReorder={openReorderEditor}
         onAddCore={openAddCoreLiftEditor}
         onAddAccessory={openAddAccessoryEditor}
+        onChangeAccessory={openChangeAccessoryEditor}
         onSaveSession={saveSessionDraft}
         onCalculateLoad={calculateMovementLoad}
         renderLifecycleActions={(guard, restricted) => (
@@ -1064,11 +1347,15 @@ export default function MobileSessionWorkspaceScreen() {
       <AccessoryEditorModal
         state={accessoryEditor}
         groups={accessoryGroups}
-        loadingGroups={movementGroupsLoading}
+        athleteId={payload?.athlete?.id || null}
+        athleteAnatomy={{ sex: payload?.athlete?.sex, anatomy_display_preference: payload?.athlete?.anatomy_display_preference }}
+        canCreateCustom={workspaceEditable && workspaceCapabilities.can_add_movement !== false}
         saving={accessorySaving}
         onChange={(setup) => setAccessoryEditor((current) => current ? { ...current, setup } : current)}
         onCancel={cancelAccessoryEditor}
         onApply={applyAccessorySetup}
+        onCreateCustom={createCustomAccessoryDefinition}
+        onDone={closeAccessoryEditorAfterSuccess}
       />
       <ReorderEditorModal
         state={reorderEditor}
@@ -1120,7 +1407,7 @@ function TrainingLiftEditorModal({
     const query = movementQuery.trim().toLowerCase();
     const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
     return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
-      .filter(({ movement }) => !query || movementPresetName(movement).toLowerCase().includes(query))
+      .filter(({ movement }) => !query || movementPresetSearchText(movement).includes(query))
       .slice(0, query ? 48 : (isCompetition ? 3 : 14));
   }, [activeGroup, groups, isCompetition, movementQuery]);
 
@@ -1360,314 +1647,1158 @@ function TrainingLiftEditorModal({
   );
 }
 
+function AnatomyTargetArt({
+  primary,
+  secondary = [],
+  athlete,
+  style,
+  scale = 0.72,
+  size = 'thumbnail',
+}: {
+  primary: string;
+  secondary?: string[];
+  athlete?: { sex?: string | null; anatomy_display_preference?: string | null };
+  style?: React.ComponentProps<typeof View>['style'];
+  scale?: number;
+  size?: 'thumbnail' | 'card';
+}) {
+  return <View style={[styles.anatomyTargetArt, style]}><MuscleMap athlete={athlete} primary={[primary]} secondary={secondary} size={size} style={{ transform: [{ scale }] }} view="auto" /></View>;
+}
+
 function AccessoryEditorModal({
   state,
   groups,
-  loadingGroups,
+  athleteId,
+  athleteAnatomy,
+  canCreateCustom,
   saving,
   onChange,
   onCancel,
   onApply,
+  onCreateCustom,
+  onDone,
 }: {
   state: AccessoryEditorState | null;
   groups: MovementPresetGroup[];
-  loadingGroups: boolean;
+  athleteId: number | null;
+  athleteAnatomy: { sex?: string | null; anatomy_display_preference?: string | null };
+  canCreateCustom: boolean;
   saving: boolean;
   onChange: (setup: AccessorySetup) => void;
   onCancel: () => void;
-  onApply: (setup: AccessorySetup) => void | Promise<void>;
+  onApply: (setup: AccessorySetup) => Promise<boolean>;
+  onCreateCustom: (setup: AccessorySetup, confirmSimilar: boolean) => Promise<MovementPreset | null>;
+  onDone: () => void;
 }) {
+  const insets = useSafeAreaInsets();
+  const [pickerStep, setPickerStep] = useState<AccessoryPickerStep>('discovery');
+  const [detailReturnStep, setDetailReturnStep] = useState<AccessoryPickerStep>('results');
+  const [customReturnStep, setCustomReturnStep] = useState<AccessoryPickerStep>('results');
+  const [discoveryMode, setDiscoveryMode] = useState<'muscle' | 'movement'>('muscle');
+  const [selectedRegionKey, setSelectedRegionKey] = useState('');
+  const [selectedMovement, setSelectedMovement] = useState<MovementPreset | null>(null);
   const [movementQuery, setMovementQuery] = useState('');
+  const [primaryMuscleFilter, setPrimaryMuscleFilter] = useState('');
+  const [regionalMuscleFilters, setRegionalMuscleFilters] = useState<string[]>([]);
+  const [executionFamilyFilter, setExecutionFamilyFilter] = useState('');
+  const [resultMode, setResultMode] = useState<AccessoryPickerResultMode>('all');
+  const [searchResults, setSearchResults] = useState<MovementPreset[]>([]);
+  const [searchResultGroups, setSearchResultGroups] = useState<MovementSearchResultGroups | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchLoadingMore, setSearchLoadingMore] = useState(false);
+  const [searchNextCursor, setSearchNextCursor] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState('');
+  const [searchRevision, setSearchRevision] = useState(0);
+  const [creatingCustom, setCreatingCustom] = useState(false);
+  const [reviewingCustom, setReviewingCustom] = useState(false);
+  const [customReviewed, setCustomReviewed] = useState(false);
+  const [customMatches, setCustomMatches] = useState<MovementSimilarityMatch[]>([]);
+  const [customError, setCustomError] = useState('');
+  const [customPrimaryRegionKey, setCustomPrimaryRegionKey] = useState('');
+  const [customSecondaryExpanded, setCustomSecondaryExpanded] = useState(false);
+  const [customNotesVisible, setCustomNotesVisible] = useState(false);
+  const [authoringOptions, setAuthoringOptions] = useState<MovementAuthoringOptions | null>(null);
+  const [authoringLoading, setAuthoringLoading] = useState(false);
+  const [authoringError, setAuthoringError] = useState('');
+  const [authoringRevision, setAuthoringRevision] = useState(0);
+  const searchRequestRef = useRef(0);
+  const customSimilarityRequestRef = useRef(0);
   const setup = state?.setup || null;
-  const activeGroup = setup ? movementGroupByKey(groups, setup.family) || groups[0] || null : null;
-  const title = state?.mode === 'add' ? 'Add accessory' : 'Change accessory';
-  const isNewCustomMovement = !!setup
-    && !setup.movementDefinitionId
-    && !!setup.customMovement.trim()
-    && setup.movement === setup.customMovement.trim();
-  const customIdentityComplete = !!setup
-    && !!setup.equipmentType
-    && !!setup.loadingImplementation
-    && !!setup.loadConvention
-    && !!setup.measurementType
-    && !!setup.sidedness;
-  useEffect(() => setMovementQuery(''), [state?.item?.id, state?.mode]);
-  const visibleMovementChoices = useMemo(() => {
-    const query = movementQuery.trim().toLowerCase();
-    const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
-    return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
-      .filter(({ movement }) => !query || movementPresetName(movement).toLowerCase().includes(query))
-      .slice(0, query ? 48 : 18);
-  }, [activeGroup, groups, movementQuery]);
+  const title = state?.mode === 'add' ? 'Add Accessory' : 'Change Accessory';
+  const pickerRegions = authoringOptions?.regional_groups?.length
+    ? authoringOptions.regional_groups
+    : ACCESSORY_PICKER_REGIONS;
+  const selectedRegion = pickerRegions.find((region) => region.key === selectedRegionKey) || null;
+  const options = authoringOptions || {
+    muscle_groups: ACCESSORY_MUSCLE_GROUPS.map(([key, label]) => ({ key, label })),
+    execution_families: ACCESSORY_EXECUTION_FAMILIES.map(([key, label]) => ({ key, label })),
+  };
+  const customIdentityComplete = !!setup?.customMovement.trim()
+    && !!setup.primaryMuscleGroup
+    && !!setup.executionFamily;
+  const showsResults = pickerStep === 'targets'
+    || pickerStep === 'results'
+    || (pickerStep === 'discovery' && discoveryMode === 'movement');
+
+  useEffect(() => {
+    setPickerStep('discovery');
+    setDetailReturnStep('results');
+    setCustomReturnStep('results');
+    setDiscoveryMode('muscle');
+    setSelectedRegionKey('');
+    setSelectedMovement(null);
+    setMovementQuery('');
+    setPrimaryMuscleFilter('');
+    setRegionalMuscleFilters([]);
+    setExecutionFamilyFilter('');
+    setResultMode('all');
+    setSearchResults([]);
+    setSearchResultGroups(null);
+    setSearchNextCursor(null);
+    setSearchError('');
+    setCustomError('');
+    setCustomReviewed(false);
+    setCustomMatches([]);
+    setCustomPrimaryRegionKey('');
+    setCustomSecondaryExpanded(false);
+    setCustomNotesVisible(false);
+    setAuthoringError('');
+  }, [state?.item?.id, state?.mode]);
+
+  useEffect(() => {
+    if (!state || !showsResults) {
+      searchRequestRef.current += 1;
+      setSearchLoading(false);
+      return;
+    }
+    const requestId = ++searchRequestRef.current;
+    const targetAthleteId = Number(athleteId);
+    if (!Number.isFinite(targetAthleteId) || targetAthleteId <= 0) {
+      setSearchResults([]);
+      setSearchError('Athlete context is unavailable.');
+      return;
+    }
+    setSearchLoading(true);
+    setSearchLoadingMore(false);
+    setSearchNextCursor(null);
+    setSearchResultGroups(null);
+    setSearchError('');
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams({
+        athlete_id: String(targetAthleteId),
+        q: movementQuery.trim(),
+        limit: '24',
+      });
+      if (pickerStep === 'results' && primaryMuscleFilter) {
+        params.set('primary_muscle_group', primaryMuscleFilter);
+        params.set('include_secondary', '1');
+      }
+      else if (pickerStep === 'results' && regionalMuscleFilters.length) {
+        params.set('primary_muscle_groups', regionalMuscleFilters.join(','));
+      } else if (pickerStep === 'targets' && selectedRegion?.muscles.length) {
+        params.set('primary_muscle_groups', selectedRegion.muscles.join(','));
+      }
+      if (executionFamilyFilter) params.set('execution_family', executionFamilyFilter);
+      if (resultMode === 'favorites') params.set('favorites_only', '1');
+      if (resultMode === 'recent') params.set('recent_only', '1');
+      if (resultMode === 'custom') params.set('custom_only', '1');
+      void fetchJson<any>(`/workouts/mobile/movement-definitions/search?${params.toString()}`, { method: 'GET' })
+        .then((response) => {
+          if (requestId !== searchRequestRef.current) return;
+          const json = response.json || {};
+          if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+          const grouped = movementSearchResultGroups(json.result_groups);
+          setSearchResultGroups(grouped);
+          setSearchResults(grouped
+            ? uniqueMovementResults([...grouped.primary.items, ...grouped.secondary.items])
+            : Array.isArray(json.items) ? json.items : []);
+          setSearchNextCursor(typeof json.next_cursor === 'string' ? json.next_cursor : null);
+        })
+        .catch((error: any) => {
+          if (requestId !== searchRequestRef.current) return;
+          setSearchResults([]);
+          setSearchResultGroups(null);
+          setSearchNextCursor(null);
+          setSearchError(error?.message || 'Accessory movements could not load.');
+        })
+        .finally(() => {
+          if (requestId === searchRequestRef.current) setSearchLoading(false);
+        });
+    }, movementQuery.trim() ? 220 : 0);
+    return () => clearTimeout(timer);
+  }, [
+    athleteId,
+    discoveryMode,
+    executionFamilyFilter,
+    movementQuery,
+    pickerStep,
+    primaryMuscleFilter,
+    regionalMuscleFilters,
+    resultMode,
+    searchRevision,
+    selectedRegion?.muscles,
+    showsResults,
+    state,
+  ]);
+
+  useEffect(() => {
+    if (!state || !canCreateCustom || authoringOptions) return;
+    const targetAthleteId = Number(athleteId);
+    if (!Number.isFinite(targetAthleteId) || targetAthleteId <= 0) return;
+    setAuthoringLoading(true);
+    setAuthoringError('');
+    void fetchJson<any>(`/workouts/mobile/movement-definitions/authoring-options?athlete_id=${targetAthleteId}`, { method: 'GET' })
+      .then((response) => {
+        const json = response.json || {};
+        if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+        setAuthoringOptions({
+          muscle_groups: Array.isArray(json.muscle_groups) ? json.muscle_groups : [],
+          execution_families: Array.isArray(json.execution_families) ? json.execution_families : [],
+          regional_groups: Array.isArray(json.regional_groups)
+            ? json.regional_groups.map((region: any) => ({
+              key: String(region.key || ''),
+              label: String(region.label || ''),
+              artwork: String(region.artwork_key || 'full_body') as AccessoryRegionalArtworkKey,
+              muscles: Array.isArray(region.primary_muscle_groups)
+                ? region.primary_muscle_groups.map(String)
+                : [],
+            })).filter((region: AccessoryPickerRegion) => region.key && region.label && region.muscles.length)
+            : [],
+        });
+      })
+      .catch(() => setAuthoringError('Custom movement options could not load.'))
+      .finally(() => setAuthoringLoading(false));
+  }, [athleteId, authoringOptions, authoringRevision, canCreateCustom, state]);
 
   const patchSetup = (patch: Partial<AccessorySetup>) => {
     if (!setup) return;
+    if ('customMovement' in patch || 'primaryMuscleGroup' in patch || 'secondaryMuscleGroups' in patch || 'executionFamily' in patch) {
+      setCustomReviewed(false);
+      if ('customMovement' in patch) {
+        customSimilarityRequestRef.current += 1;
+        setReviewingCustom(false);
+        setCustomMatches([]);
+      }
+      setCustomError('');
+    }
     onChange({ ...setup, ...patch });
   };
 
-  const chooseFamily = (group: MovementPresetGroup) => {
-    const first = group.movements?.[0] || null;
-    const name = movementPresetName(first);
-    const preset = typeof first === 'object' && first ? first : null;
-    patchSetup({
-      family: group.key,
-      movement: name || setup?.movement || '',
-      movementDefinitionId: preset?.id || null,
-    });
+  const openMovementDetail = (movement: MovementPreset) => {
+    setDetailReturnStep(pickerStep);
+    setSelectedMovement(movement);
+    setPickerStep('detail');
   };
 
-  const chooseMovement = (movement: MovementPreset | string, group = activeGroup) => {
-    if (!group) return;
-    const name = movementPresetName(movement);
-    patchSetup({
-      movement: name,
-      family: group.key,
-      movementDefinitionId: typeof movement === 'object' ? movement.id || null : null,
-    });
+  const movementSetupFor = (movement: MovementPreset): AccessorySetup | null => {
+    if (!setup || !movement.id) return null;
+    const family = `identity_${String(movement.family || 'accessory').toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
+    return {
+      ...setup,
+      movement: movementPresetName(movement),
+      family: movementGroupByKey(groups, family)?.key || family,
+      movementDefinitionId: movement.id,
+      ownershipScope: movement.ownership_scope || '',
+      libraryScope: movement.library_scope || '',
+      primaryMuscleGroup: movement.primary_muscle_group || '',
+      secondaryMuscleGroups: movement.secondary_muscle_groups || [],
+      executionFamily: movement.execution_family || '',
+      customNotes: movement.custom_notes || '',
+    };
   };
 
-  const useCustomMovement = () => {
-    if (!setup?.customMovement.trim()) return;
-    patchSetup({
-      movement: setup.customMovement.trim(),
-      movementDefinitionId: null,
-    });
+  const confirmMovement = () => {
+    if (!selectedMovement) return;
+    const selectedSetup = movementSetupFor(selectedMovement);
+    if (!selectedSetup) return;
+    setPickerStep('review');
   };
+
+  const confirmAndApplyMovement = async () => {
+    if (!selectedMovement) return;
+    const selectedSetup = movementSetupFor(selectedMovement);
+    if (!selectedSetup) return;
+    if (await onApply(selectedSetup)) setPickerStep('success');
+  };
+
+  const toggleFavorite = async (movement: MovementPreset) => {
+    if (!movement.id || !athleteId) return;
+    const nextFavorite = !movement.is_favorite;
+    const update = (item: MovementPreset) => item.id === movement.id
+      ? { ...item, is_favorite: nextFavorite }
+      : item;
+    setSearchResults((current) => current.map(update));
+    setSearchResultGroups((current) => current ? {
+      ...current,
+      primary: { ...current.primary, items: current.primary.items.map(update) },
+      secondary: { ...current.secondary, items: current.secondary.items.map(update) },
+    } : current);
+    setSelectedMovement((current) => current && current.id === movement.id ? update(current) : current);
+    const response = await fetchJson<any>(
+      `/workouts/mobile/movement-definitions/${movement.id}/favorite`,
+      {
+        method: nextFavorite ? 'PUT' : 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ athlete_id: athleteId }),
+      },
+    );
+    const json = response.json || {};
+    if (!response.ok || !json.ok) {
+      const rollback = (item: MovementPreset) => item.id === movement.id
+        ? { ...item, is_favorite: !nextFavorite }
+        : item;
+      setSearchResults((current) => current.map(rollback));
+      setSearchResultGroups((current) => current ? {
+        ...current,
+        primary: { ...current.primary, items: current.primary.items.map(rollback) },
+        secondary: { ...current.secondary, items: current.secondary.items.map(rollback) },
+      } : current);
+      setSelectedMovement((current) => current && current.id === movement.id ? rollback(current) : current);
+      Alert.alert('Favorite not updated', json.error || 'Try again.');
+    } else if (!nextFavorite && resultMode === 'favorites') {
+      setSearchResults((current) => current.filter((item) => item.id !== movement.id));
+      setSearchResultGroups((current) => current ? {
+        ...current,
+        primary: {
+          ...current.primary,
+          items: current.primary.items.filter((item) => item.id !== movement.id),
+          total_count: Math.max(0, current.primary.total_count - Number(current.primary.items.some((item) => item.id === movement.id))),
+        },
+        secondary: {
+          ...current.secondary,
+          items: current.secondary.items.filter((item) => item.id !== movement.id),
+          total_count: Math.max(0, current.secondary.total_count - Number(current.secondary.items.some((item) => item.id === movement.id))),
+        },
+      } : current);
+    }
+  };
+
+  const loadMoreMovements = async (resultGroup?: 'primary' | 'secondary') => {
+    const groupCursor = resultGroup ? searchResultGroups?.[resultGroup].next_cursor : searchNextCursor;
+    if (!state || !groupCursor || searchLoadingMore) return;
+    const targetAthleteId = Number(athleteId);
+    if (!Number.isFinite(targetAthleteId) || targetAthleteId <= 0) return;
+    try {
+      setSearchLoadingMore(true);
+      const params = new URLSearchParams({
+        athlete_id: String(targetAthleteId),
+        q: movementQuery.trim(),
+        limit: '24',
+      });
+      if (resultGroup && primaryMuscleFilter) {
+        params.set('primary_muscle_group', primaryMuscleFilter);
+        params.set('include_secondary', '1');
+        params.set('result_group', resultGroup);
+        params.set(`${resultGroup}_cursor`, groupCursor);
+      } else {
+        params.set('cursor', groupCursor);
+      }
+      if (primaryMuscleFilter && !resultGroup) params.set('primary_muscle_group', primaryMuscleFilter);
+      else if (regionalMuscleFilters.length) {
+        params.set('primary_muscle_groups', regionalMuscleFilters.join(','));
+      }
+      if (executionFamilyFilter) params.set('execution_family', executionFamilyFilter);
+      if (resultMode === 'favorites') params.set('favorites_only', '1');
+      if (resultMode === 'recent') params.set('recent_only', '1');
+      if (resultMode === 'custom') params.set('custom_only', '1');
+      const response = await fetchJson<any>(`/workouts/mobile/movement-definitions/search?${params.toString()}`, { method: 'GET' });
+      const json = response.json || {};
+      if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+      const grouped = movementSearchResultGroups(json.result_groups);
+      if (resultGroup && grouped) {
+        const loadedGroup = grouped[resultGroup];
+        setSearchResultGroups((current) => {
+          if (!current) return grouped;
+          const mergedGroup = {
+            ...loadedGroup,
+            items: uniqueMovementResults([...current[resultGroup].items, ...loadedGroup.items]),
+          };
+          return { ...current, [resultGroup]: mergedGroup };
+        });
+        setSearchResults((current) => uniqueMovementResults([...current, ...loadedGroup.items]));
+        return;
+      }
+      const nextItems: MovementPreset[] = Array.isArray(json.items) ? json.items : [];
+      setSearchResults((current) => {
+        const seen = new Set(current.map((item) => item.id));
+        return [...current, ...nextItems.filter((item) => !seen.has(item.id))];
+      });
+      setSearchNextCursor(typeof json.next_cursor === 'string' ? json.next_cursor : null);
+    } catch (error: any) {
+      setSearchError(error?.message || 'More accessory movements could not load.');
+    } finally {
+      setSearchLoadingMore(false);
+    }
+  };
+
+  const reviewCustomMovement = useCallback(async ({ nameOnly = false }: { nameOnly?: boolean } = {}) => {
+    if (!setup || !setup.customMovement.trim() || (!nameOnly && !customIdentityComplete) || !athleteId) return false;
+    const requestId = ++customSimilarityRequestRef.current;
+    try {
+      setReviewingCustom(true);
+      setCustomError('');
+      const response = await fetchJson<any>('/workouts/mobile/movement-definitions/similarity', {
+        method: 'POST',
+        body: {
+          athlete_id: athleteId,
+          display_name: setup.customMovement.trim(),
+          ...(nameOnly ? {} : {
+            primary_muscle_group: setup.primaryMuscleGroup,
+            secondary_muscle_groups: setup.secondaryMuscleGroups,
+            execution_family: setup.executionFamily,
+            notes: setup.customNotes,
+          }),
+        } as any,
+      });
+      const json = response.json || {};
+      if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
+      if (requestId !== customSimilarityRequestRef.current) return false;
+      setCustomMatches(Array.isArray(json.matches) ? json.matches : []);
+      setCustomReviewed(true);
+      return true;
+    } catch (error: any) {
+      if (requestId !== customSimilarityRequestRef.current) return false;
+      setCustomError(error?.message || 'Possible matches could not be reviewed.');
+      return false;
+    } finally {
+      if (requestId === customSimilarityRequestRef.current) setReviewingCustom(false);
+    }
+  }, [athleteId, customIdentityComplete, setup]);
+
+  useEffect(() => {
+    if (pickerStep !== 'custom-name' || !setup?.customMovement.trim() || !athleteId) return;
+    const movementName = setup.customMovement.trim();
+    if (movementName.length < 1) return;
+    const timer = setTimeout(() => {
+      void reviewCustomMovement({ nameOnly: true });
+    }, 260);
+    return () => clearTimeout(timer);
+  }, [athleteId, pickerStep, reviewCustomMovement, setup?.customMovement]);
+
+  const selectCustomMatch = (movement: MovementPreset) => {
+    if (!movement?.id) return;
+    setSearchResults((current) => [movement, ...current.filter((item) => item.id !== movement.id)]);
+    setSelectedMovement(movement);
+    setDetailReturnStep('custom-name');
+    setPickerStep('detail');
+  };
+
+  const openCustomCreator = () => {
+    setCustomReturnStep(pickerStep);
+    setCustomPrimaryRegionKey('');
+    setCustomSecondaryExpanded(false);
+    setCustomError('');
+    setCustomMatches([]);
+    setCustomReviewed(false);
+    patchSetup({
+      customMovement: movementQuery.trim(),
+      primaryMuscleGroup: '',
+      secondaryMuscleGroups: [],
+      executionFamily: '',
+      customNotes: '',
+    });
+    setPickerStep('custom-name');
+  };
+
+  const advanceToCustomReview = async () => {
+    if (await reviewCustomMovement()) setPickerStep('custom-review');
+  };
+
+  const createReviewedCustomMovement = async () => {
+    if (!setup || !customIdentityComplete || !customReviewed) return;
+    try {
+      setCreatingCustom(true);
+      setCustomError('');
+      const definition = await onCreateCustom(setup, true);
+      if (!definition?.id) return;
+      setSearchResults((current) => [definition, ...current.filter((item) => item.id !== definition.id)]);
+      setSelectedMovement(definition);
+      setPickerStep('custom-created');
+    } catch (error: any) {
+      setCustomError(error?.message || 'Custom movement could not be created.');
+    } finally {
+      setCreatingCustom(false);
+    }
+  };
+
+  const applyCreatedCustomMovement = async () => {
+    if (!selectedMovement) return;
+    const selectedSetup = movementSetupFor(selectedMovement);
+    if (!selectedSetup) return;
+    if (await onApply(selectedSetup)) onDone();
+  };
+
+  const goBack = () => {
+    if (pickerStep === 'detail') setPickerStep(detailReturnStep);
+    else if (pickerStep === 'review') setPickerStep('detail');
+    else if (pickerStep === 'custom-name') setPickerStep(customReturnStep);
+    else if (pickerStep === 'custom-primary') setPickerStep('custom-name');
+    else if (pickerStep === 'custom-secondary') setPickerStep('custom-primary');
+    else if (pickerStep === 'custom-execution') setPickerStep('custom-secondary');
+    else if (pickerStep === 'custom-review') setPickerStep('custom-execution');
+    else if (pickerStep === 'results') {
+      setPrimaryMuscleFilter('');
+      setRegionalMuscleFilters([]);
+      setExecutionFamilyFilter('');
+      setMovementQuery('');
+      setResultMode('all');
+      setPickerStep(selectedRegionKey ? 'targets' : 'discovery');
+    }
+    else if (pickerStep === 'targets') {
+      setSelectedRegionKey('');
+      setPrimaryMuscleFilter('');
+      setRegionalMuscleFilters([]);
+      setPickerStep('discovery');
+    }
+  };
+
+  const selectLibraryMode = (mode: AccessoryPickerResultMode) => {
+    setSelectedRegionKey('');
+    setPrimaryMuscleFilter('');
+    setRegionalMuscleFilters([]);
+    setExecutionFamilyFilter('');
+    setMovementQuery('');
+    setResultMode(mode);
+    setPickerStep('results');
+  };
+
+  const movementCard = (movement: MovementPreset, relationship: 'default' | 'primary' | 'secondary' = 'default') => {
+    const primaryLabel = accessoryTaxonomyLabel(movement.primary_muscle_group) || 'Primary muscle not specified';
+    const executionLabel = accessoryTaxonomyLabel(movement.execution_family) || 'Execution not specified';
+    const selectedMuscleLabel = accessoryTaxonomyLabel(primaryMuscleFilter);
+    return (
+    <View key={movement.id || movementPresetName(movement)} style={styles.accessoryPickerMovementCard}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Review ${movementPresetName(movement)}`}
+        onPress={() => openMovementDetail(movement)}
+        style={({ pressed }) => [styles.accessoryPickerMovementMain, pressed && styles.pressed]}
+      >
+        <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerMovementArt} />
+        <View style={styles.accessoryPickerMovementCopy}>
+          <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(movement)}</Text>
+          {relationship === 'default' ? (
+            <Text numberOfLines={2} style={styles.accessoryPickerMovementMeta}>{movementResultContext(movement)}</Text>
+          ) : (
+            <Text numberOfLines={2} style={styles.accessoryPickerMovementMeta}>
+              {primaryLabel}
+              {relationship === 'secondary' && selectedMuscleLabel ? <Text style={styles.accessoryPickerMovementSecondaryMeta}> · + {selectedMuscleLabel}</Text> : null}
+              <Text> · {executionLabel}</Text>
+            </Text>
+          )}
+          {movement.ownership_scope === 'coach' ? <Text style={styles.accessoryPickerMovementSource}>My Movement</Text> : null}
+        </View>
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={movement.is_favorite ? `Remove ${movementPresetName(movement)} from favorites` : `Add ${movementPresetName(movement)} to favorites`}
+        accessibilityState={{ selected: !!movement.is_favorite }}
+        hitSlop={8}
+        onPress={() => void toggleFavorite(movement)}
+        style={({ pressed }) => [styles.accessoryPickerFavorite, movement.is_favorite && styles.accessoryPickerFavoriteActive, pressed && styles.pressed]}
+      >
+        <Ionicons name={movement.is_favorite ? 'star' : 'star-outline'} size={22} color={movement.is_favorite ? SLColors.warning : colors.muted} />
+      </Pressable>
+    </View>
+    );
+  };
+
+  const favoriteResults = resultMode === 'all' ? searchResults.filter((movement) => movement.is_favorite) : [];
+  const recentResults = resultMode === 'all'
+    ? searchResults.filter((movement) => !movement.is_favorite && movement.last_used_on)
+    : [];
+  const ungroupedResults = resultMode === 'all'
+    ? searchResults.filter((movement) => !movement.is_favorite && !movement.last_used_on)
+    : searchResults;
+  const unscopedResultSections = [
+    ...(favoriteResults.length ? [{ label: 'Favorites', items: favoriteResults }] : []),
+    ...(recentResults.length ? [{ label: 'Recently Used', items: recentResults }] : []),
+    ...(ungroupedResults.length ? [{
+      label: resultMode === 'favorites' ? 'Favorites' : resultMode === 'recent' ? 'Recently Used' : resultMode === 'custom' ? 'My Movements' : 'All Movements',
+      items: ungroupedResults,
+    }] : []),
+  ];
+  const customStepNumber = CUSTOM_MOVEMENT_STEPS.indexOf(pickerStep) + 1;
+  const customPrimaryRegion = pickerRegions.find((region) => region.key === customPrimaryRegionKey)
+    || pickerRegions.find((region) => (region.muscles as readonly string[]).includes(setup?.primaryMuscleGroup || ''))
+    || null;
+  const contextualSecondaryMuscles = options.muscle_groups
+    .filter((option) => option.key !== setup?.primaryMuscleGroup)
+    .sort((left, right) => {
+      const leftRelevant = (customPrimaryRegion?.muscles as readonly string[] | undefined)?.includes(left.key) ? 0 : 1;
+      const rightRelevant = (customPrimaryRegion?.muscles as readonly string[] | undefined)?.includes(right.key) ? 0 : 1;
+      return leftRelevant - rightRelevant;
+    });
+  const visibleSecondaryMuscles = customSecondaryExpanded
+    ? contextualSecondaryMuscles
+    : contextualSecondaryMuscles.slice(0, 12);
+
+  const resultList = (
+    <View style={styles.accessoryPickerResultList}>
+      {searchLoading ? (
+        <View style={styles.trainingLiftLoadingRow}>
+          <ActivityIndicator color={colors.violet} />
+          <Text style={styles.trainingLiftMuted}>Loading relevant movements...</Text>
+        </View>
+      ) : null}
+      {searchError ? (
+        <View style={styles.accessoryEditorStatusBlock}>
+          <Text style={styles.accessoryEditorErrorText}>{searchError}</Text>
+          <Pressable accessibilityRole="button" onPress={() => setSearchRevision((value) => value + 1)} style={styles.trainingLiftSecondaryButton}>
+            <Text style={styles.trainingLiftSecondaryText}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : null}
+      {!searchLoading && !searchError && searchResultGroups ? (
+        <>
+          <View style={[styles.accessoryPickerResultSection, styles.accessoryPickerResultSectionPrimary]}>
+            <View style={styles.accessoryPickerResultSectionHeading}>
+              <Text style={styles.accessoryPickerSectionLabel}>Primary target · {accessoryTaxonomyLabel(searchResultGroups.selected_muscle_group)}</Text>
+              <Text style={styles.accessoryPickerResultCount}>{searchResultGroups.primary.total_count}</Text>
+            </View>
+            <Text style={styles.accessoryPickerResultDescription}>These movements primarily target your {accessoryTaxonomyLabel(searchResultGroups.selected_muscle_group)}.</Text>
+            <View style={styles.accessoryPickerResultCards}>{searchResultGroups.primary.items.map((movement) => movementCard(movement, 'primary'))}</View>
+            {!searchResultGroups.primary.items.length ? <Text style={styles.trainingLiftMuted}>No primary-target movements match these filters.</Text> : null}
+            {searchResultGroups.primary.next_cursor ? (
+              <Pressable accessibilityRole="button" disabled={searchLoadingMore} onPress={() => void loadMoreMovements('primary')} style={styles.trainingLiftSecondaryButton}>
+                <Text style={styles.trainingLiftSecondaryText}>{searchLoadingMore ? 'Loading...' : 'Load More Primary Targets'}</Text>
+              </Pressable>
+            ) : null}
+          </View>
+          {searchResultGroups.secondary.total_count > 0 ? (
+            <View style={[styles.accessoryPickerResultSection, styles.accessoryPickerResultSectionSecondary]}>
+              <View style={styles.accessoryPickerResultSectionHeading}>
+                <Text style={[styles.accessoryPickerSectionLabel, styles.accessoryPickerSectionLabelSecondary]}>Also trains {accessoryTaxonomyLabel(searchResultGroups.selected_muscle_group)}</Text>
+                <Text style={[styles.accessoryPickerResultCount, styles.accessoryPickerResultCountSecondary]}>{searchResultGroups.secondary.total_count}</Text>
+              </View>
+              <Text style={styles.accessoryPickerResultDescription}>{accessoryTaxonomyLabel(searchResultGroups.selected_muscle_group)} is a secondary target in these movements.</Text>
+              <View style={styles.accessoryPickerResultCards}>{searchResultGroups.secondary.items.map((movement) => movementCard(movement, 'secondary'))}</View>
+              {searchResultGroups.secondary.next_cursor ? (
+                <Pressable accessibilityRole="button" disabled={searchLoadingMore} onPress={() => void loadMoreMovements('secondary')} style={styles.trainingLiftSecondaryButton}>
+                  <Text style={styles.trainingLiftSecondaryText}>{searchLoadingMore ? 'Loading...' : 'Load More Secondary Targets'}</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+        </>
+      ) : null}
+      {!searchLoading && !searchError && !searchResultGroups ? unscopedResultSections.map((section) => (
+        <View key={section.label} style={styles.accessoryPickerResultSection}>
+          <Text style={styles.accessoryPickerSectionLabel}>{section.label}</Text>
+          <View style={styles.accessoryPickerResultCards}>{section.items.map((movement) => movementCard(movement))}</View>
+        </View>
+      )) : null}
+      {!searchLoading && !searchError && !searchResults.length ? (
+        <View style={styles.accessoryEditorStatusBlock}>
+          <Text style={styles.trainingLiftMuted}>No matching accessory movements.</Text>
+          <Text style={styles.trainingLiftMuted}>Change the scope or create a coach-owned movement.</Text>
+        </View>
+      ) : null}
+      {searchNextCursor && !searchResultGroups && !searchLoading ? (
+        <Pressable accessibilityRole="button" disabled={searchLoadingMore} onPress={() => void loadMoreMovements()} style={styles.trainingLiftSecondaryButton}>
+          <Text style={styles.trainingLiftSecondaryText}>{searchLoadingMore ? 'Loading...' : 'Load More'}</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+
+  const stepTitle = pickerStep === 'discovery'
+    ? title
+    : pickerStep === 'targets'
+      ? selectedRegion?.label || 'Choose Focus'
+      : pickerStep === 'results'
+        ? primaryMuscleFilter
+          ? accessoryTaxonomyLabel(primaryMuscleFilter)
+          : regionalMuscleFilters.length && selectedRegion
+            ? `${selectedRegion.label} Movements`
+            : resultMode === 'favorites'
+              ? 'Favorites'
+              : resultMode === 'recent'
+                ? 'Recent'
+                : resultMode === 'custom'
+                  ? 'My Movements'
+                  : 'Movements'
+        : pickerStep === 'detail'
+          ? movementPresetName(selectedMovement) || 'Movement Details'
+          : pickerStep === 'review'
+            ? 'Review Selection'
+            : pickerStep === 'success'
+              ? state?.mode === 'edit' ? 'Accessory Changed' : 'Accessory Added'
+              : pickerStep === 'custom-created'
+                ? 'Movement Created'
+                : CUSTOM_MOVEMENT_STEPS.includes(pickerStep)
+                  ? 'Create Movement'
+                  : title;
 
   return (
-    <Modal visible={!!state} transparent animationType="fade" onRequestClose={onCancel}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.accessoryEditorKeyboardWrap}
-      >
-        <Pressable style={styles.accessoryEditorBackdrop} onPress={Keyboard.dismiss}>
-          <Pressable
-            style={styles.accessoryEditorCard}
-            onPress={(event) => event.stopPropagation()}
+    <Modal visible={!!state} animationType="slide" onRequestClose={pickerStep === 'success' || pickerStep === 'custom-created' ? onDone : onCancel} statusBarTranslucent>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.accessoryEditorKeyboardWrap}>
+        <View style={styles.accessoryEditorCard}>
+          <View
+            style={[
+              styles.trainingLiftEditorHeader,
+              styles.accessoryEditorHeader,
+              { paddingTop: Math.max(insets.top + 8, 18) },
+            ]}
           >
-            <View style={[styles.trainingLiftEditorHeader, styles.accessoryEditorHeader]}>
-              <View style={styles.accessoryEditorTitleBlock}>
-                <Text style={styles.trainingLiftEditorEyebrow}>Workspace edit</Text>
-                <Text style={styles.trainingLiftEditorTitle}>{title}</Text>
-              </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Cancel accessory changes"
-                onPress={onCancel}
-                style={({ pressed }) => [styles.trainingLiftCancelButton, pressed && styles.pressed]}
-              >
-                <Text style={styles.trainingLiftCancelText}>Cancel</Text>
+            <View style={styles.accessoryPickerHeaderAction}>
+              {pickerStep !== 'discovery' && pickerStep !== 'success' && pickerStep !== 'custom-created' ? (
+                <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={goBack} style={styles.accessoryPickerHeaderButton}>
+                  <Ionicons name="chevron-back" size={22} color={colors.textStrong} />
+                </Pressable>
+              ) : null}
+            </View>
+            <View style={styles.accessoryEditorTitleBlock}>
+              <Text style={styles.trainingLiftEditorEyebrow}>Session builder</Text>
+              <Text numberOfLines={1} style={styles.accessoryPickerHeaderTitle}>{stepTitle}</Text>
+            </View>
+            <View style={styles.accessoryPickerHeaderAction}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close accessory picker" onPress={pickerStep === 'success' || pickerStep === 'custom-created' ? onDone : onCancel} style={styles.accessoryPickerHeaderButton}>
+                <Ionicons name="close" size={22} color={colors.textStrong} />
               </Pressable>
             </View>
+          </View>
 
-            {!setup ? null : (
-              <ScrollView
-                style={styles.trainingLiftEditorScroll}
-                contentContainerStyle={styles.accessoryEditorContent}
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="on-drag"
-              >
-                <TrainingLiftSection title="Movement">
-              {loadingGroups ? (
-                <View style={styles.trainingLiftLoadingRow}>
-                  <ActivityIndicator color={colors.violet} />
-                  <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
-                </View>
-              ) : null}
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
-                {groups.map((group) => {
-                  const selected = group.key === activeGroup?.key;
-                  return (
-                    <Pressable
-                      key={group.key}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      onPress={() => chooseFamily(group)}
-                      style={({ pressed }) => [
-                        styles.trainingLiftFamilyButton,
-                        selected && styles.trainingLiftFamilyButtonActive,
-                        pressed && styles.pressed,
-                      ]}
-                    >
-                      <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                        {group.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-              <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} placeholder="Search movements" placeholderTextColor={colors.subtle} style={styles.trainingLiftInput} />
-              <View style={styles.trainingLiftCardGrid}>
-                {visibleMovementChoices.map(({ movement, group }) => {
-                  const name = movementPresetName(movement);
-                  const selected = name === setup.movement;
-                  return (
-                    <TrainingLiftOptionCard
-                      key={`${group.key}-${name}`}
-                      title={name}
-                      detail={group.name || 'Accessory movement'}
-                      selected={selected}
-                      tone="amber"
-                      onPress={() => chooseMovement(movement, group)}
-                    />
-                  );
-                })}
-              </View>
-              <View style={styles.trainingLiftCustomBlock}>
-                <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
-                <TextInput
-                  value={setup.customMovement}
-                  onChangeText={(value) => patchSetup({ customMovement: value })}
-                  placeholder="Type custom accessory"
-                  placeholderTextColor={colors.subtle}
-                  returnKeyType="done"
-                  onSubmitEditing={Keyboard.dismiss}
-                  blurOnSubmit
-                  style={styles.trainingLiftInput}
-                />
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={useCustomMovement}
-                  style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
-                >
-                  <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
-                </Pressable>
-              </View>
-                </TrainingLiftSection>
-
-                {isNewCustomMovement ? (
-                  <TrainingLiftSection title="Custom Equipment Identity">
-                    <Text style={styles.trainingLiftMuted}>Define the movement’s equipment and measurement semantics before adding it.</Text>
-                    <AccessoryConfigChoices label="Equipment" value={setup.equipmentType} values={['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight', 'other']} onSelect={(equipmentType) => patchSetup({ equipmentType })} />
-                    <AccessoryConfigChoices label="Loading" value={setup.loadingImplementation} values={['free_weight', 'selectorized_machine', 'plate_loaded_machine', 'cable_stack', 'bodyweight', 'unknown']} onSelect={(loadingImplementation) => patchSetup({ loadingImplementation })} />
-                    <AccessoryConfigChoices label="Load convention" value={setup.loadConvention} values={['total_external_load', 'per_hand', 'machine_stack_display', 'bodyweight_only', 'added_bodyweight', 'assistance_load', 'no_external_load', 'unknown']} onSelect={(loadConvention) => patchSetup({ loadConvention })} />
-                    <AccessoryConfigChoices label="Measurement" value={setup.measurementType} values={['load_reps', 'bodyweight_reps', 'added_weight_reps', 'assisted_reps', 'duration', 'unknown']} onSelect={(measurementType) => patchSetup({ measurementType })} />
-                    <AccessoryConfigChoices label="Sidedness" value={setup.sidedness} values={['bilateral', 'unilateral', 'alternating', 'unknown']} onSelect={(sidedness) => patchSetup({ sidedness })} />
-                  </TrainingLiftSection>
-                ) : null}
-
-                <TrainingLiftSection title="Grouped Set">
-                  <Text style={styles.trainingLiftMuted}>
-                    Leave “None” selected for a standard accessory. Matching letters run together as a superset, tri-set, or giant set.
-                  </Text>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.trainingLiftFamilyRow}
-                  >
-                    {['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((group) => {
-                      const selected = setup.supersetGroup === group;
-                      const label = group || 'None';
-                      return (
+          {!setup ? (
+            <View testID="accessory-picker-body" style={styles.accessoryEditorFailureState}>
+              <Text style={styles.trainingLiftSectionTitle}>Accessory picker unavailable</Text>
+              <Text style={styles.trainingLiftMuted}>Close this editor and try again.</Text>
+            </View>
+          ) : (
+            <ScrollView
+              testID="accessory-picker-body"
+              style={styles.trainingLiftEditorScroll}
+              contentContainerStyle={[
+                styles.accessoryEditorContent,
+                { paddingBottom: Math.max(insets.bottom + 18, 18) },
+              ]}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+            >
+              {pickerStep === 'discovery' ? (
+                <>
+                  <View style={styles.accessoryPickerIntro}>
+                    <Text style={styles.accessoryPickerKicker}>Choose target first</Text>
+                    <Text style={styles.accessoryPickerIntroTitle}>What are you trying to train?</Text>
+                    <Text style={styles.trainingLiftMuted}>Start with the muscle, or search directly when you already know the movement.</Text>
+                  </View>
+                  <View style={styles.accessoryPickerModeRow}>
+                    {([
+                      ['muscle', 'By Muscle', 'Drill into a target'],
+                      ['movement', 'By Movement', 'Search directly'],
+                    ] as const).map(([mode, label, detail]) => (
+                      <Pressable
+                        key={mode}
+                        accessibilityRole="tab"
+                        accessibilityState={{ selected: discoveryMode === mode }}
+                        onPress={() => {
+                          setDiscoveryMode(mode);
+                          setSelectedRegionKey('');
+                          setPrimaryMuscleFilter('');
+                          setRegionalMuscleFilters([]);
+                          setMovementQuery('');
+                          setResultMode('all');
+                        }}
+                        style={[styles.accessoryPickerMode, discoveryMode === mode && styles.accessoryPickerModeActive]}
+                      >
+                        <View style={[styles.accessoryPickerModeIcon, discoveryMode === mode && styles.accessoryPickerModeIconActive]}>
+                          <Ionicons name={mode === 'muscle' ? 'body-outline' : 'search-outline'} size={24} color={discoveryMode === mode ? colors.violet : colors.muted} />
+                        </View>
+                        <View style={styles.accessoryPickerModeCopy}>
+                          <Text style={styles.accessoryPickerModeTitle}>{label}</Text>
+                          <Text style={styles.accessoryPickerModeDetail}>{detail}</Text>
+                        </View>
+                        {discoveryMode === mode ? <Ionicons name="checkmark-circle" size={22} color={colors.violet} /> : null}
+                      </Pressable>
+                    ))}
+                  </View>
+                  {discoveryMode === 'muscle' ? (
+                    <View style={styles.accessoryPickerRegionGrid}>
+                      {pickerRegions.map((region) => (
                         <Pressable
-                          key={label}
+                          key={region.key}
                           accessibilityRole="button"
-                          accessibilityLabel={group ? `Set group ${group}` : 'No grouped set'}
-                          accessibilityState={{ selected }}
-                          onPress={() => patchSetup({
-                            supersetGroup: group,
-                            supersetPosition: group ? (setup.supersetPosition || '1') : '',
-                          })}
-                          style={({ pressed }) => [
-                            styles.trainingLiftFamilyButton,
-                            selected && styles.trainingLiftFamilyButtonActive,
-                            pressed && styles.pressed,
-                          ]}
+                          accessibilityLabel={`Choose ${region.label}`}
+                          onPress={() => {
+                            setSelectedRegionKey(region.key);
+                            setPrimaryMuscleFilter('');
+                            setRegionalMuscleFilters([]);
+                            setExecutionFamilyFilter('');
+                            setMovementQuery('');
+                            setPickerStep('targets');
+                          }}
+                          style={({ pressed }) => [styles.accessoryPickerRegionCard, pressed && styles.pressed]}
                         >
-                          <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                            {label}
-                          </Text>
+                          <Image source={accessoryRegionalArtworkAsset(region.artwork).source} resizeMode="contain" style={styles.accessoryPickerRegionArt} />
+                          <Text style={styles.accessoryPickerRegionLabel}>{region.label}</Text>
                         </Pressable>
-                      );
-                    })}
-                  </ScrollView>
-                  {setup.supersetGroup ? (
-                    <View style={styles.trainingLiftCustomBlock}>
-                      <Text style={styles.trainingLiftFieldLabel}>Order inside group {setup.supersetGroup}</Text>
-                      <TextInput
-                        accessibilityLabel={`Order inside grouped set ${setup.supersetGroup}`}
-                        value={setup.supersetPosition}
-                        onChangeText={(value) => patchSetup({
-                          supersetPosition: value.replace(/[^0-9]/g, '').slice(0, 2),
-                        })}
-                        keyboardType="number-pad"
-                        placeholder="1"
-                        placeholderTextColor={colors.subtle}
-                        style={styles.trainingLiftInput}
-                      />
+                      ))}
+                    </View>
+                  ) : (
+                    <View style={styles.accessoryPickerSectionInset}>
+                      <View style={styles.accessoryPickerSearchField}>
+                        <Ionicons name="search-outline" size={20} color={colors.muted} />
+                        <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} autoFocus placeholder="Search all movements..." placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
+                      </View>
+                      {resultList}
+                    </View>
+                  )}
+                  <View style={styles.accessoryPickerQuickRow}>
+                    <Pressable onPress={() => selectLibraryMode('favorites')} style={styles.accessoryPickerQuickButton}><Ionicons name="star-outline" size={17} color={SLColors.warning} /><Text style={styles.accessoryPickerQuickText}>Favorites</Text></Pressable>
+                    <Pressable onPress={() => selectLibraryMode('recent')} style={styles.accessoryPickerQuickButton}><Ionicons name="time-outline" size={17} color={colors.violet} /><Text style={styles.accessoryPickerQuickText}>Recent</Text></Pressable>
+                    <Pressable onPress={() => selectLibraryMode('custom')} style={styles.accessoryPickerQuickButton}><Ionicons name="person-outline" size={17} color={colors.violet} /><Text style={styles.accessoryPickerQuickText}>My Movements</Text></Pressable>
+                  </View>
+                </>
+              ) : null}
+
+              {pickerStep === 'targets' && selectedRegion ? (
+                <>
+                  <View style={styles.accessoryPickerHero}>
+                    <Image source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} resizeMode="contain" style={styles.accessoryPickerHeroArt} />
+                  </View>
+                  <View style={styles.accessoryPickerIntro}>
+                    <Text style={styles.accessoryPickerKicker}>Select a primary target</Text>
+                    <Text style={styles.trainingLiftMuted}>These targets filter the most relevant movements while preserving the governed muscle identity.</Text>
+                  </View>
+                  <View style={styles.accessoryPickerTargetGrid}>
+                    {selectedRegion.muscles.map((muscle) => (
+                      <Pressable
+                        key={muscle}
+                        accessibilityRole="button"
+                        onPress={() => {
+                          setPrimaryMuscleFilter(muscle);
+                          setRegionalMuscleFilters([]);
+                          setResultMode('all');
+                          setMovementQuery('');
+                          setPickerStep('results');
+                        }}
+                        style={({ pressed }) => [styles.accessoryPickerTargetCard, pressed && styles.pressed]}
+                      >
+                        <AnatomyTargetArt athlete={athleteAnatomy} primary={muscle} style={styles.accessoryPickerTargetArt} />
+                        <View style={styles.accessoryPickerTargetCopy}>
+                          <Text style={styles.accessoryPickerTargetLabel}>{accessoryTaxonomyLabel(muscle)}</Text>
+                          <Text style={styles.accessoryPickerTargetMeta}>Primary muscle</Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+                      </Pressable>
+                    ))}
+                  </View>
+                  <View style={styles.accessoryPickerSectionInset}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`View all ${selectedRegion.label} movements`}
+                      testID={`accessory-picker-view-all-${selectedRegion.key}`}
+                      onPress={() => {
+                        setPrimaryMuscleFilter('');
+                        setRegionalMuscleFilters([...selectedRegion.muscles]);
+                        setExecutionFamilyFilter('');
+                        setResultMode('all');
+                        setMovementQuery('');
+                        setPickerStep('results');
+                      }}
+                      style={styles.trainingLiftSecondaryButton}
+                    >
+                      <Text style={styles.trainingLiftSecondaryText}>View All {selectedRegion.label} Movements</Text>
+                      <Ionicons name="arrow-forward" size={18} color={colors.muted} />
+                    </Pressable>
+                  </View>
+                  {searchResults.some((movement) => movement.last_used_on) ? (
+                    <View style={styles.accessoryPickerSectionInset}>
+                      <Text style={styles.accessoryPickerSectionLabel}>Recently Used</Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.accessoryPickerRecentRail}>
+                        {searchResults.filter((movement) => movement.last_used_on).slice(0, 6).map((movement) => (
+                          <Pressable key={movement.id || movementPresetName(movement)} onPress={() => openMovementDetail(movement)} style={styles.accessoryPickerRecentCard}>
+                            <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerRecentArt} />
+                            <Text numberOfLines={2} style={styles.accessoryPickerRecentTitle}>{movementPresetName(movement)}</Text>
+                          </Pressable>
+                        ))}
+                      </ScrollView>
                     </View>
                   ) : null}
-                </TrainingLiftSection>
+                </>
+              ) : null}
 
-                <TrainingLiftSection title="Movement Notes">
-                  <TextInput
-                    value={setup.notes}
-                    onChangeText={(value) => patchSetup({ notes: value })}
-                    placeholder="Add cue, setup note, or movement context..."
-                    placeholderTextColor={colors.subtle}
-                    multiline
-                    style={[styles.trainingLiftInput, styles.trainingLiftNotesInput]}
-                  />
-                </TrainingLiftSection>
-              </ScrollView>
-            )}
+              {pickerStep === 'results' ? (
+                <>
+                  {primaryMuscleFilter ? (
+                    <View style={styles.accessoryPickerHeroCompact}>
+                      <AnatomyTargetArt athlete={athleteAnatomy} primary={primaryMuscleFilter} scale={1.12} style={styles.accessoryPickerHeroCompactArt} />
+                      <View><Text style={styles.accessoryPickerKicker}>Muscle focus</Text><Text style={styles.accessoryPickerIntroTitle}>{accessoryTaxonomyLabel(primaryMuscleFilter)}</Text></View>
+                    </View>
+                  ) : regionalMuscleFilters.length && selectedRegion ? (
+                    <View style={styles.accessoryPickerHeroCompact}>
+                      <Image source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} resizeMode="contain" style={styles.accessoryPickerHeroCompactArt} />
+                      <View><Text style={styles.accessoryPickerKicker}>Regional browse</Text><Text style={styles.accessoryPickerIntroTitle}>{selectedRegion.label}</Text></View>
+                    </View>
+                  ) : null}
+                  <View style={styles.accessoryPickerSectionInset}>
+                    <View style={styles.accessoryPickerSearchField}>
+                      <Ionicons name="search-outline" size={20} color={colors.muted} />
+                      <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} placeholder="Search this movement scope" placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
+                      {([
+                        ['all', 'All'],
+                        ['favorites', 'Favorites'],
+                        ['recent', 'Recent'],
+                      ] as const).map(([mode, label]) => (
+                        <Pressable key={mode} accessibilityRole="button" accessibilityState={{ selected: resultMode === mode }} onPress={() => setResultMode(mode)} style={[styles.trainingLiftFamilyButton, resultMode === mode && styles.trainingLiftFamilyButtonActive]}><Text style={[styles.trainingLiftFamilyText, resultMode === mode && styles.trainingLiftFamilyTextActive]}>{label}</Text></Pressable>
+                      ))}
+                    </ScrollView>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
+                      {[['', 'Any equipment'], ...ACCESSORY_EXECUTION_FAMILIES].map(([key, label]) => (
+                        <Pressable key={key || 'all'} accessibilityRole="button" accessibilityState={{ selected: executionFamilyFilter === key }} onPress={() => setExecutionFamilyFilter(key)} style={[styles.accessoryPickerEquipmentChip, executionFamilyFilter === key && styles.trainingLiftFamilyButtonActive]}><Text style={[styles.trainingLiftFamilyText, executionFamilyFilter === key && styles.trainingLiftFamilyTextActive]}>{label}</Text></Pressable>
+                      ))}
+                    </ScrollView>
+                    {resultList}
+                    {canCreateCustom ? <Pressable accessibilityRole="button" onPress={openCustomCreator} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>Can&apos;t find it? Create custom movement</Text></Pressable> : null}
+                  </View>
+                </>
+              ) : null}
 
-            {setup ? (
-              <View style={[styles.trainingLiftEditorActions, styles.accessoryEditorActions]}>
-            <Pressable
-              accessibilityRole="button"
-              disabled={saving}
-              onPress={onCancel}
-              style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
-            >
-              <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              disabled={saving || !setup.movement || (isNewCustomMovement && !customIdentityComplete)}
-              onPress={() => onApply(setup)}
-              style={({ pressed }) => [
-                styles.trainingLiftActionPrimary,
-                (saving || !setup.movement || (isNewCustomMovement && !customIdentityComplete)) && styles.editorDisabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Changes'}</Text>
-            </Pressable>
-              </View>
-            ) : null}
-          </Pressable>
-        </Pressable>
+              {pickerStep === 'detail' && selectedMovement ? (
+                <View style={styles.accessoryPickerDetail}>
+                  <View style={styles.accessoryPickerDetailHero}>
+                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerDetailArt} />
+                    <Pressable accessibilityRole="button" accessibilityLabel={selectedMovement.is_favorite ? 'Remove from favorites' : 'Add to favorites'} onPress={() => void toggleFavorite(selectedMovement)} style={styles.accessoryPickerDetailFavorite}>
+                      <Ionicons name={selectedMovement.is_favorite ? 'star' : 'star-outline'} size={20} color={selectedMovement.is_favorite ? SLColors.warning : colors.muted} />
+                      <Text style={styles.accessoryPickerDetailFavoriteText}>{selectedMovement.is_favorite ? 'Favorited' : 'Favorite'}</Text>
+                    </Pressable>
+                  </View>
+                  <View style={styles.accessoryPickerDetailRows}>
+                    {[
+                      ['Primary muscle', accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)],
+                      ['Secondary muscles', (selectedMovement.secondary_muscle_groups || []).map(accessoryTaxonomyLabel).join(', ') || 'None'],
+                      ['Equipment family', accessoryTaxonomyLabel(selectedMovement.execution_family)],
+                      ['Setup', selectedMovement.requires_equipment_configuration ? 'Choose exact equipment in the Session' : 'No equipment setup required'],
+                      ['Source', selectedMovement.ownership_scope === 'coach' ? 'My Movement' : 'Strength Ledger'],
+                      ...(selectedMovement.last_used_on ? [['Last used', selectedMovement.last_used_on]] : []),
+                    ].map(([label, value]) => <View key={label} style={styles.accessoryPickerDetailRow}><Text style={styles.accessoryPickerDetailLabel}>{label}</Text><Text style={styles.accessoryPickerDetailValue}>{value || 'Not specified'}</Text></View>)}
+                  </View>
+                  <Pressable accessibilityRole="button" disabled={saving} onPress={confirmMovement} style={[styles.accessoryPickerPrimaryAction, saving && styles.editorDisabled]}><Text style={styles.accessoryPickerPrimaryActionText}>{saving ? 'Selecting...' : 'Select Movement'}</Text></Pressable>
+                </View>
+              ) : null}
+
+              {pickerStep === 'review' && selectedMovement ? (
+                <View style={styles.accessoryPickerReview}>
+                  <View style={styles.accessoryPickerProgressRail}>
+                    {[0, 1, 2, 3, 4].map((step) => <View key={step} style={[styles.accessoryPickerProgressNode, styles.accessoryPickerProgressNodeActive]} />)}
+                  </View>
+                  <View style={styles.accessoryPickerIntroFlush}>
+                    <Text style={styles.accessoryPickerKicker}>Confirm selection</Text>
+                    <Text style={styles.accessoryPickerIntroTitle}>Review the exact movement</Text>
+                    <Text style={styles.trainingLiftMuted}>Confirm this identity before adding it to the Session Workspace.</Text>
+                  </View>
+                  <View style={styles.accessoryPickerSelectedSummary}>
+                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} />
+                    <View style={styles.accessoryPickerMovementCopy}>
+                      <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text>
+                      <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text>
+                      <Text style={styles.accessoryPickerMovementSource}>{accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)} · Primary</Text>
+                    </View>
+                    <Ionicons name="checkmark-circle" size={24} color={colors.violet} />
+                  </View>
+                  {searchResults.some((movement) => movement.id !== selectedMovement.id) ? (
+                    <View style={styles.accessoryPickerReviewAlternatives}>
+                      <Text style={styles.accessoryPickerSectionLabel}>Other Movements In This Scope</Text>
+                      {searchResults.filter((movement) => movement.id !== selectedMovement.id).slice(0, 4).map((movement) => (
+                        <Pressable key={movement.id || movementPresetName(movement)} onPress={() => openMovementDetail(movement)} style={styles.accessoryPickerAlternativeRow}>
+                          <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerAlternativeArt} />
+                          <View style={styles.accessoryPickerMovementCopy}>
+                            <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(movement)}</Text>
+                            <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(movement.execution_family)}</Text>
+                          </View>
+                          <Ionicons name="chevron-forward" size={19} color={colors.muted} />
+                        </Pressable>
+                      ))}
+                    </View>
+                  ) : null}
+                  <Pressable accessibilityRole="button" disabled={saving} onPress={() => void confirmAndApplyMovement()} style={[styles.accessoryPickerConfirmAction, saving && styles.editorDisabled]}>
+                    <Ionicons name="checkmark" size={20} color={SLColors.textInverted} />
+                    <Text style={styles.accessoryPickerConfirmActionText}>{saving ? 'Adding...' : state?.mode === 'edit' ? 'Confirm Change' : 'Confirm & Add to Session'}</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+
+              {pickerStep === 'success' && selectedMovement ? (
+                <View style={styles.accessoryPickerSuccess}>
+                  <View style={styles.accessoryPickerSuccessMark}>
+                    <Ionicons name="checkmark" size={54} color={colors.violet} />
+                  </View>
+                  <View style={styles.accessoryPickerSelectedSummary}>
+                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} />
+                    <View style={styles.accessoryPickerMovementCopy}>
+                      <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text>
+                      <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text>
+                      <Text style={styles.accessoryPickerMovementSource}>{accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)} · Primary</Text>
+                    </View>
+                  </View>
+                  <View style={styles.accessoryPickerSuccessContext}>
+                    <Text style={styles.accessoryPickerSectionLabel}>Added To Session</Text>
+                    {[
+                      ['Position', state?.mode === 'edit' ? 'Existing accessory' : 'Next accessory'],
+                      ['Sets', state?.mode === 'edit' ? (state.item?.sets ? `${state.item.sets} sets` : 'Preserved') : '3 sets'],
+                      ['Rep target', state?.mode === 'edit' ? (state.item?.reps_text || (state.item?.reps ? `${state.item.reps} reps` : 'Preserved')) : '10–12 reps'],
+                    ].map(([label, value]) => <View key={label} style={styles.accessoryPickerDetailRow}><Text style={styles.accessoryPickerDetailLabel}>{label}</Text><Text style={styles.accessoryPickerDetailValue}>{value}</Text></View>)}
+                  </View>
+                  <Pressable accessibilityRole="button" onPress={onDone} style={styles.accessoryPickerConfirmAction}>
+                    <Text style={styles.accessoryPickerConfirmActionText}>Continue Editing Session</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+
+              {CUSTOM_MOVEMENT_STEPS.includes(pickerStep) ? (
+                <View style={styles.customMovementCreator}>
+                  <View style={styles.customMovementStepMeta}>
+                    <Text style={styles.customMovementStepCount}>{customStepNumber} / 5</Text>
+                    <View style={styles.customMovementStepRail}>
+                      {CUSTOM_MOVEMENT_STEPS.map((step, index) => <View key={step} style={[styles.customMovementStepSegment, index < customStepNumber && styles.customMovementStepSegmentActive]} />)}
+                    </View>
+                  </View>
+
+                  {pickerStep === 'custom-name' ? (
+                    <>
+                      <View style={styles.accessoryPickerIntroFlush}>
+                        <Text style={styles.accessoryPickerIntroTitle}>What are you creating?</Text>
+                        <Text style={styles.trainingLiftMuted}>Start by giving your movement a clear, unique name.</Text>
+                      </View>
+                      <View style={styles.customMovementFieldGroup}>
+                        <Text style={styles.trainingLiftFieldLabel}>Movement name</Text>
+                        <TextInput value={setup.customMovement} onChangeText={(customMovement) => patchSetup({ customMovement })} autoFocus placeholder="Single-Arm Cable Face-Away Curl" placeholderTextColor={colors.subtle} maxLength={160} style={styles.customMovementNameInput} />
+                      </View>
+                      <View style={styles.accessoryPickerSimilaritySection}>
+                        <Text style={styles.accessoryPickerSectionLabel}>Possible Matches</Text>
+                        {reviewingCustom ? <View style={styles.trainingLiftLoadingRow}><ActivityIndicator color={colors.violet} /><Text style={styles.trainingLiftMuted}>Checking canonical names and your library...</Text></View> : null}
+                        {!reviewingCustom && customReviewed && customMatches.length ? customMatches.slice(0, 4).map((match) => (
+                          <Pressable key={`${match.tier}-${match.movement_definition.id}`} onPress={() => selectCustomMatch(match.movement_definition)} style={styles.customMovementMatchCard}>
+                            <Image source={accessoryPickerArtwork(match.movement_definition).source} resizeMode="contain" style={styles.customMovementMatchArt} />
+                            <View style={styles.accessoryPickerMovementCopy}>
+                              <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(match.movement_definition)}</Text>
+                              <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(match.movement_definition.primary_muscle_group)} · {accessoryTaxonomyLabel(match.movement_definition.execution_family)}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+                          </Pressable>
+                        )) : null}
+                        {!reviewingCustom && customReviewed && !customMatches.length ? <Text style={styles.trainingLiftMuted}>No plausible existing movement identities found.</Text> : null}
+                      </View>
+                      {customReviewed ? (
+                        <Pressable accessibilityRole="button" onPress={() => setPickerStep('custom-primary')} style={styles.customMovementDistinctAction}>
+                          <View><Text style={styles.customMovementDistinctTitle}>No, mine is different.</Text><Text style={styles.customMovementDistinctMeta}>Continue creating</Text></View>
+                          <Ionicons name="arrow-forward" size={20} color={colors.violet} />
+                        </Pressable>
+                      ) : null}
+                      {customError ? <Text style={styles.accessoryEditorErrorText}>{customError}</Text> : null}
+                      <Pressable accessibilityRole="button" disabled={!customReviewed || reviewingCustom || !setup.customMovement.trim()} onPress={() => setPickerStep('custom-primary')} style={[styles.accessoryPickerPrimaryAction, (!customReviewed || reviewingCustom || !setup.customMovement.trim()) && styles.editorDisabled]}><Text style={styles.accessoryPickerPrimaryActionText}>Continue</Text></Pressable>
+                    </>
+                  ) : null}
+
+                  {pickerStep === 'custom-primary' ? (
+                    <>
+                      <View style={styles.accessoryPickerIntroFlush}>
+                        <Text style={styles.accessoryPickerIntroTitle}>What does this movement primarily train?</Text>
+                        <Text style={styles.trainingLiftMuted}>Select the main muscle group.</Text>
+                      </View>
+                      {authoringLoading ? <View style={styles.trainingLiftLoadingRow}><ActivityIndicator color={colors.violet} /><Text style={styles.trainingLiftMuted}>Loading governed muscle targets...</Text></View> : null}
+                      {authoringError ? <View style={styles.accessoryEditorStatusBlock}><Text style={styles.accessoryEditorErrorText}>{authoringError}</Text><Pressable onPress={() => setAuthoringRevision((value) => value + 1)} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>Retry</Text></Pressable></View> : null}
+                      <View style={styles.customMovementRegionGrid}>
+                        {pickerRegions.map((region) => {
+                          const selected = customPrimaryRegion?.key === region.key;
+                          return <Pressable key={region.key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => setCustomPrimaryRegionKey(region.key)} style={[styles.customMovementRegionCard, selected && styles.customMovementChoiceActive]}><Image source={accessoryRegionalArtworkAsset(region.artwork).source} resizeMode="contain" style={styles.customMovementRegionArt} /><Text style={styles.customMovementChoiceLabel}>{region.label}</Text></Pressable>;
+                        })}
+                      </View>
+                      {customPrimaryRegion ? (
+                        <View style={styles.customMovementExactTargets}>
+                          <Text style={styles.accessoryPickerSectionLabel}>Choose Exact Primary Muscle</Text>
+                          <View style={styles.customMovementMuscleGrid}>
+                            {customPrimaryRegion.muscles.map((muscle) => {
+                              const selected = setup.primaryMuscleGroup === muscle;
+                              return <Pressable key={muscle} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => patchSetup({ primaryMuscleGroup: muscle, secondaryMuscleGroups: setup.secondaryMuscleGroups.filter((value) => value !== muscle) })} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><AnatomyTargetArt athlete={athleteAnatomy} primary={muscle} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{accessoryTaxonomyLabel(muscle)}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
+                            })}
+                          </View>
+                        </View>
+                      ) : null}
+                      <View style={styles.customMovementFooterActions}><Pressable onPress={goBack} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Back</Text></Pressable><Pressable disabled={!setup.primaryMuscleGroup} onPress={() => setPickerStep('custom-secondary')} style={[styles.accessoryPickerPrimaryAction, styles.customMovementFooterPrimary, !setup.primaryMuscleGroup && styles.editorDisabled]}><Text style={styles.accessoryPickerPrimaryActionText}>Continue</Text></Pressable></View>
+                    </>
+                  ) : null}
+
+                  {pickerStep === 'custom-secondary' ? (
+                    <>
+                      <View style={styles.accessoryPickerIntroFlush}>
+                        <View style={styles.customMovementPromptRow}><Text style={styles.accessoryPickerIntroTitle}>Any secondary muscles?</Text><Text style={styles.customMovementSelectedCount}>{setup.secondaryMuscleGroups.length} selected</Text></View>
+                        <Text style={styles.trainingLiftMuted}>Select up to 3 muscles that are significantly involved.</Text>
+                      </View>
+                      <View style={styles.customMovementMuscleGrid}>
+                        {visibleSecondaryMuscles.map((option) => {
+                          const selected = setup.secondaryMuscleGroups.includes(option.key);
+                          return <Pressable key={option.key} accessibilityRole="checkbox" accessibilityState={{ checked: selected }} onPress={() => { const next = selected ? setup.secondaryMuscleGroups.filter((value) => value !== option.key) : [...setup.secondaryMuscleGroups, option.key]; if (next.length <= 3) patchSetup({ secondaryMuscleGroups: next }); }} style={[styles.customMovementMuscleCard, selected && styles.customMovementChoiceActive]}><AnatomyTargetArt athlete={athleteAnatomy} primary={option.key} style={styles.customMovementMuscleArt} /><Text style={styles.customMovementChoiceLabel}>{option.label}</Text>{selected ? <Ionicons name="checkmark-circle" size={18} color={colors.violet} /> : null}</Pressable>;
+                        })}
+                      </View>
+                      {!customSecondaryExpanded && contextualSecondaryMuscles.length > visibleSecondaryMuscles.length ? <Pressable onPress={() => setCustomSecondaryExpanded(true)} style={styles.trainingLiftSecondaryButton}><Text style={styles.trainingLiftSecondaryText}>View all governed muscles</Text></Pressable> : null}
+                      <View style={styles.customMovementFooterActions}><Pressable onPress={goBack} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Back</Text></Pressable><Pressable onPress={() => setPickerStep('custom-execution')} style={[styles.accessoryPickerPrimaryAction, styles.customMovementFooterPrimary]}><Text style={styles.accessoryPickerPrimaryActionText}>Continue</Text></Pressable></View>
+                    </>
+                  ) : null}
+
+                  {pickerStep === 'custom-execution' ? (
+                    <>
+                      <View style={styles.accessoryPickerIntroFlush}>
+                        <Text style={styles.accessoryPickerIntroTitle}>How is it performed?</Text>
+                        <Text style={styles.trainingLiftMuted}>Select the primary execution method.</Text>
+                      </View>
+                      <View style={styles.customMovementExecutionList}>
+                        {options.execution_families.map((option) => {
+                          const selected = setup.executionFamily === option.key;
+                          const presentation = CUSTOM_EXECUTION_PRESENTATION[option.key as keyof typeof CUSTOM_EXECUTION_PRESENTATION] || CUSTOM_EXECUTION_PRESENTATION.OTHER_PORTABLE;
+                          return <Pressable key={option.key} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => patchSetup({ executionFamily: option.key })} style={[styles.customMovementExecutionCard, selected && styles.customMovementChoiceActive]}><View style={styles.customMovementExecutionIcon}><Ionicons name={presentation.icon} size={25} color={selected ? colors.violet : colors.muted} /></View><View style={styles.accessoryPickerMovementCopy}><Text style={styles.accessoryPickerMovementTitle}>{option.label}</Text><Text style={styles.accessoryPickerMovementMeta}>{presentation.description}</Text></View>{selected ? <Ionicons name="checkmark-circle" size={21} color={colors.violet} /> : null}</Pressable>;
+                        })}
+                      </View>
+                      {customError ? <Text style={styles.accessoryEditorErrorText}>{customError}</Text> : null}
+                      <View style={styles.customMovementFooterActions}><Pressable onPress={goBack} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Back</Text></Pressable><Pressable disabled={!setup.executionFamily || reviewingCustom} onPress={() => void advanceToCustomReview()} style={[styles.accessoryPickerPrimaryAction, styles.customMovementFooterPrimary, (!setup.executionFamily || reviewingCustom) && styles.editorDisabled]}><Text style={styles.accessoryPickerPrimaryActionText}>{reviewingCustom ? 'Checking...' : 'Continue'}</Text></Pressable></View>
+                    </>
+                  ) : null}
+
+                  {pickerStep === 'custom-review' ? (
+                    <>
+                      <View style={styles.accessoryPickerIntroFlush}>
+                        <Text style={styles.accessoryPickerIntroTitle}>Review your movement</Text>
+                        <Text style={styles.trainingLiftMuted}>Review the details before adding it to your library.</Text>
+                      </View>
+                      <View style={styles.customMovementReviewHero}>
+                        <AnatomyTargetArt athlete={athleteAnatomy} primary={setup.primaryMuscleGroup} secondary={setup.secondaryMuscleGroups} scale={0.88} size="card" style={styles.customMovementReviewArt} />
+                        <View style={styles.customMovementReviewIdentity}><Text style={styles.customMovementReviewName}>{setup.customMovement}</Text>{[['Primary muscle', accessoryTaxonomyLabel(setup.primaryMuscleGroup)], ['Secondary muscles', setup.secondaryMuscleGroups.map(accessoryTaxonomyLabel).join(', ') || 'None'], ['Execution', accessoryTaxonomyLabel(setup.executionFamily)], ['Library', 'My Coaching Library']].map(([label, value]) => <View key={label} style={styles.customMovementReviewRow}><View style={styles.customMovementReviewDot} /><View><Text style={styles.accessoryPickerDetailLabel}>{label}</Text><Text style={styles.customMovementReviewValue}>{value}</Text></View></View>)}</View>
+                      </View>
+                      {!customNotesVisible ? <Pressable onPress={() => setCustomNotesVisible(true)} style={styles.customMovementQuietAction}><Text style={styles.trainingLiftSecondaryText}>+ Add optional coaching notes</Text></Pressable> : <TextInput value={setup.customNotes} onChangeText={(customNotes) => patchSetup({ customNotes })} placeholder="Optional movement definition notes" placeholderTextColor={colors.subtle} multiline maxLength={500} style={[styles.trainingLiftInput, styles.trainingLiftNotesInput]} />}
+                      {customError ? <Text style={styles.accessoryEditorErrorText}>{customError}</Text> : null}
+                      <Pressable accessibilityRole="button" disabled={creatingCustom || !customIdentityComplete || !customReviewed} onPress={() => void createReviewedCustomMovement()} style={[styles.accessoryPickerConfirmAction, (creatingCustom || !customIdentityComplete || !customReviewed) && styles.editorDisabled]}><Ionicons name="checkmark" size={20} color={SLColors.textInverted} /><Text style={styles.accessoryPickerConfirmActionText}>{creatingCustom ? 'Creating...' : 'Create Movement'}</Text></Pressable>
+                      <Pressable onPress={goBack} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Back</Text></Pressable>
+                    </>
+                  ) : null}
+                </View>
+              ) : null}
+
+              {pickerStep === 'custom-created' && selectedMovement ? (
+                <View style={styles.customMovementCreated}>
+                  <View style={styles.accessoryPickerSuccessMark}><Ionicons name="checkmark" size={54} color={colors.violet} /></View>
+                  <View style={styles.customMovementCreatedCopy}><Text style={styles.customMovementCreatedKicker}>Added to your library</Text><Text style={styles.trainingLiftMuted}>This movement is now available whenever you program an athlete you are authorized to coach.</Text></View>
+                  <View style={styles.accessoryPickerSelectedSummary}><Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} /><View style={styles.accessoryPickerMovementCopy}><Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text><Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)} · {accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text></View></View>
+                  <Pressable disabled={saving} onPress={() => void applyCreatedCustomMovement()} style={[styles.accessoryPickerConfirmAction, saving && styles.editorDisabled]}><Text style={styles.accessoryPickerConfirmActionText}>{saving ? 'Using...' : 'Use This Movement'}</Text></Pressable>
+                  <Pressable onPress={onDone} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Done</Text></Pressable>
+                </View>
+              ) : null}
+
+            </ScrollView>
+          )}
+        </View>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
+
 
 function TrainingLiftSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.trainingLiftSection}>
       <Text style={styles.trainingLiftSectionTitle}>{title}</Text>
       {children}
-    </View>
-  );
-}
-
-function AccessoryConfigChoices({ label, value, values, onSelect }: { label: string; value: string; values: string[]; onSelect: (value: string) => void }) {
-  return (
-    <View style={styles.trainingLiftCustomBlock}>
-      <Text style={styles.trainingLiftFieldLabel}>{label}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
-        {values.map((option) => {
-          const selected = option === value;
-          return (
-            <Pressable key={option} accessibilityRole="radio" accessibilityState={{ checked: selected }} onPress={() => onSelect(option)} style={[styles.trainingLiftFamilyButton, selected && styles.trainingLiftFamilyButtonActive]}>
-              <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                {equipmentPresentationLabel(option, 'Option')}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
     </View>
   );
 }
@@ -2243,6 +3374,63 @@ function movementPresetName(value?: MovementPreset | string | null) {
   return String(value.name || value.display_name || '').trim();
 }
 
+function movementPresetSearchText(value?: MovementPreset | string | null) {
+  if (!value) return '';
+  if (typeof value === 'string') return value.toLowerCase();
+  return [movementPresetName(value), ...(value.aliases || [])]
+    .join(' ')
+    .toLowerCase();
+}
+
+function accessoryTaxonomyLabel(value?: string | null) {
+  const normalized = String(value || '').trim();
+  if (!normalized) return '';
+  const muscle = ACCESSORY_MUSCLE_GROUPS.find(([key]) => key === normalized.toLowerCase());
+  if (muscle) return muscle[1];
+  const execution = ACCESSORY_EXECUTION_FAMILIES.find(([key]) => key === normalized.toUpperCase());
+  if (execution) return execution[1];
+  return equipmentPresentationLabel(normalized, normalized);
+}
+
+function movementResultContext(value?: MovementPreset | null) {
+  if (!value) return 'Accessory movement';
+  const primary = accessoryTaxonomyLabel(value.primary_muscle_group) || 'Primary muscle not specified';
+  const secondary = (value.secondary_muscle_groups || [])
+    .map(accessoryTaxonomyLabel)
+    .filter(Boolean);
+  const execution = accessoryTaxonomyLabel(value.execution_family) || 'Execution not specified';
+  return [
+    primary,
+    secondary.length ? `Secondary: ${secondary.join(', ')}` : 'Secondary: None',
+    execution,
+  ].join(' • ');
+}
+
+function uniqueMovementResults(items: MovementPreset[]) {
+  const seen = new Set<number | string>();
+  return items.filter((item) => {
+    const key = item.id ?? movementPresetName(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function movementSearchResultGroups(value: any): MovementSearchResultGroups | null {
+  const selectedMuscle = String(value?.selected_muscle_group || '').trim();
+  if (!selectedMuscle || !value?.primary || !value?.secondary) return null;
+  const normalizeGroup = (group: any): MovementSearchResultGroup => ({
+    items: Array.isArray(group?.items) ? group.items : [],
+    total_count: Math.max(0, Number(group?.total_count) || 0),
+    next_cursor: typeof group?.next_cursor === 'string' ? group.next_cursor : null,
+  });
+  return {
+    selected_muscle_group: selectedMuscle,
+    primary: normalizeGroup(value.primary),
+    secondary: normalizeGroup(value.secondary),
+  };
+}
+
 function accessoryGroupsWithCanonicalIdentity(categories: MovementPresetGroup[], definitions: MovementPreset[], keyPrefix = 'identity') {
   if (!definitions.length) return categories;
   const grouped = new Map<string, MovementPresetGroup>();
@@ -2322,7 +3510,7 @@ function findAccessoryPreset(groups: MovementPresetGroup[], movementName: string
     for (const movement of group.movements || []) {
       const name = movementPresetName(movement);
       if (name.trim().toLowerCase() === wanted) {
-        return { group, name, definitionId: typeof movement === 'object' ? movement.id || null : null };
+        return { group, name, definition: typeof movement === 'object' ? movement : null };
       }
     }
   }
@@ -2333,10 +3521,15 @@ function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
   const fallback = 'Chest-Supported Row';
   const found = findAccessoryPreset(groups, fallback);
   const firstGroup = groups[0] || null;
-  const firstMovement = movementPresetName(firstGroup?.movements?.[0] || null);
+  const firstValue = firstGroup?.movements?.[0] || null;
+  const firstMovement = movementPresetName(firstValue);
+  const firstDefinition = typeof firstValue === 'object' ? firstValue : null;
+  const definition = found?.definition || firstDefinition;
   return {
     movement: found?.name || firstMovement || fallback,
-    movementDefinitionId: found?.definitionId || (typeof firstGroup?.movements?.[0] === 'object' ? firstGroup.movements[0].id || null : null),
+    movementDefinitionId: definition?.id || null,
+    ownershipScope: definition?.ownership_scope || '',
+    libraryScope: definition?.library_scope || '',
     family: found?.group.key || firstGroup?.key || 'lats_upper_back',
     notes: '',
     customMovement: '',
@@ -2347,6 +3540,10 @@ function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
     loadConvention: '',
     measurementType: '',
     sidedness: '',
+    primaryMuscleGroup: definition?.primary_muscle_group || '',
+    secondaryMuscleGroups: definition?.secondary_muscle_groups || [],
+    executionFamily: definition?.execution_family || '',
+    customNotes: definition?.custom_notes || '',
   };
 }
 
@@ -2412,6 +3609,11 @@ function formatNumber(value: number) {
 }
 
 const styles = StyleSheet.create({
+  anatomyTargetArt: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -3379,6 +4581,7 @@ const styles = StyleSheet.create({
   },
   accessoryEditorKeyboardWrap: {
     flex: 1,
+    backgroundColor: '#000000',
   },
   accessoryEditorBackdrop: {
     flex: 1,
@@ -3389,12 +4592,12 @@ const styles = StyleSheet.create({
   },
   accessoryEditorCard: {
     width: '100%',
-    maxHeight: '92%',
-    borderWidth: 1,
-    borderColor: 'rgba(222, 198, 166, 0.14)',
-    borderRadius: SLRadius.xl,
+    height: '100%',
+    maxHeight: '100%',
+    borderWidth: 0,
+    borderRadius: 0,
     overflow: 'hidden',
-    backgroundColor: SLColors.surfaceInset,
+    backgroundColor: '#000000',
     ...SLShadows.shadowSheet,
   },
   trainingLiftEditorHeader: {
@@ -3411,8 +4614,9 @@ const styles = StyleSheet.create({
   },
   accessoryEditorHeader: {
     paddingTop: 18,
-    paddingBottom: 14,
-    backgroundColor: 'rgba(30, 24, 38, 0.72)',
+    paddingBottom: 12,
+    borderBottomColor: 'rgba(200, 171, 114, 0.14)',
+    backgroundColor: '#000000',
   },
   accessoryEditorTitleBlock: {
     flex: 1,
@@ -3446,6 +4650,7 @@ const styles = StyleSheet.create({
   },
   trainingLiftEditorScroll: {
     flex: 1,
+    minHeight: 0,
   },
   trainingLiftEditorContent: {
     paddingTop: 14,
@@ -3453,10 +4658,911 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   accessoryEditorContent: {
-    paddingTop: 14,
-    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingHorizontal: 0,
     paddingBottom: 18,
     gap: 14,
+  },
+  accessoryEditorFailureState: {
+    flex: 1,
+    minHeight: 240,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 24,
+  },
+  accessoryEditorStatusBlock: {
+    gap: 10,
+    paddingVertical: 8,
+  },
+  accessoryEditorErrorText: {
+    color: SLColors.danger,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerHeaderAction: {
+    width: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accessoryPickerHeaderButton: {
+    width: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.md,
+    backgroundColor: '#050507',
+  },
+  accessoryPickerHeaderTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    lineHeight: 26,
+    fontFamily: SLFontFamilies.sansBold,
+    textAlign: 'center',
+  },
+  accessoryPickerIntro: {
+    gap: 7,
+    marginHorizontal: 14,
+    paddingVertical: 4,
+  },
+  accessoryPickerKicker: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 15,
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerIntroTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    lineHeight: 28,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerModeRow: {
+    flexDirection: 'column',
+    gap: 10,
+    marginHorizontal: 14,
+  },
+  accessoryPickerMode: {
+    minHeight: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 13,
+  },
+  accessoryPickerModeActive: {
+    borderColor: 'rgba(167, 139, 250, 0.66)',
+    backgroundColor: 'rgba(124, 58, 237, 0.18)',
+  },
+  accessoryPickerModeIcon: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#020204',
+  },
+  accessoryPickerModeIconActive: {
+    borderColor: 'rgba(167, 139, 250, 0.48)',
+    backgroundColor: 'rgba(124, 58, 237, 0.16)',
+  },
+  accessoryPickerModeCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3,
+  },
+  accessoryPickerModeTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerModeDetail: {
+    color: colors.muted,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerRegionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginHorizontal: 14,
+  },
+  accessoryPickerRegionCard: {
+    width: '31.3%',
+    minHeight: 118,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#040507',
+  },
+  accessoryPickerRegionArt: {
+    width: '100%',
+    height: 84,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerRegionLabel: {
+    color: colors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 20,
+    fontFamily: SLFontFamilies.sansBold,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    textAlign: 'center',
+  },
+  accessoryPickerQuickRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginHorizontal: 14,
+  },
+  accessoryPickerQuickButton: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.pill,
+    backgroundColor: '#050608',
+    paddingHorizontal: 13,
+  },
+  accessoryPickerQuickText: {
+    color: colors.muted,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerHero: {
+    minHeight: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    overflow: 'hidden',
+    marginHorizontal: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.22)',
+    borderRadius: SLRadius.xl,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerHeroArt: {
+    width: '100%',
+    height: 220,
+  },
+  accessoryPickerHeroCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 7,
+  },
+  accessoryPickerTargetGrid: {
+    gap: 10,
+    marginHorizontal: 14,
+  },
+  accessoryPickerTargetCard: {
+    minHeight: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 9,
+  },
+  accessoryPickerTargetArt: {
+    width: 56,
+    height: 56,
+    borderRadius: SLRadius.sm,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerTargetCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3,
+  },
+  accessoryPickerTargetLabel: {
+    color: colors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerTargetMeta: {
+    color: colors.muted,
+    fontSize: SLTypography.micro.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerHeroCompact: {
+    minHeight: 116,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.20)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#040507',
+    paddingRight: 14,
+  },
+  accessoryPickerHeroCompactArt: {
+    width: 112,
+    height: 110,
+  },
+  accessoryPickerSectionInset: {
+    gap: 12,
+    marginHorizontal: 14,
+  },
+  accessoryPickerSearchField: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(225, 221, 240, 0.16)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 13,
+  },
+  accessoryPickerSearchInput: {
+    flex: 1,
+    minWidth: 0,
+    color: colors.textStrong,
+    fontSize: SLTypography.rowTitle.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+    paddingVertical: 10,
+  },
+  accessoryPickerEquipmentChip: {
+    minHeight: 42,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: '#050608',
+    borderRadius: SLRadius.pill,
+    paddingHorizontal: 12,
+  },
+  accessoryPickerResultList: {
+    gap: 15,
+  },
+  accessoryPickerResultSection: {
+    gap: 8,
+  },
+  accessoryPickerResultSectionPrimary: {
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.20)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: 'rgba(124, 58, 237, 0.035)',
+    padding: 10,
+  },
+  accessoryPickerResultSectionSecondary: {
+    borderWidth: 1,
+    borderColor: 'rgba(74, 144, 226, 0.22)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: 'rgba(33, 96, 190, 0.035)',
+    padding: 10,
+  },
+  accessoryPickerResultSectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  accessoryPickerResultCount: {
+    minWidth: 25,
+    height: 22,
+    paddingHorizontal: 7,
+    borderRadius: SLRadius.pill,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(167, 139, 250, 0.20)',
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 22,
+    textAlign: 'center',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerResultCountSecondary: {
+    backgroundColor: 'rgba(74, 144, 226, 0.18)',
+    color: '#67A7FF',
+  },
+  accessoryPickerResultDescription: {
+    color: colors.muted,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 16,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerResultCards: {
+    gap: 7,
+  },
+  accessoryPickerSectionLabel: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 16,
+    letterSpacing: 0.65,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerSectionLabelSecondary: {
+    color: '#67A7FF',
+  },
+  accessoryPickerMovementCard: {
+    minHeight: 88,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+  },
+  accessoryPickerMovementMain: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 88,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    padding: 8,
+  },
+  accessoryPickerMovementArt: {
+    width: 70,
+    height: 70,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerMovementCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3,
+  },
+  accessoryPickerMovementTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.cardTitle.fontSize,
+    lineHeight: 21,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerMovementMeta: {
+    color: colors.muted,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 16,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerMovementSecondaryMeta: {
+    color: '#67A7FF',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerMovementSource: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 15,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerFavorite: {
+    width: 48,
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderLeftWidth: 1,
+    borderLeftColor: colors.lineSoft,
+  },
+  accessoryPickerFavoriteActive: {
+    backgroundColor: 'rgba(200, 171, 114, 0.08)',
+    borderLeftColor: 'rgba(200, 171, 114, 0.20)',
+  },
+  accessoryPickerDetail: {
+    gap: 14,
+    marginHorizontal: 14,
+  },
+  accessoryPickerDetailHero: {
+    minHeight: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.22)',
+    borderRadius: SLRadius.xl,
+    backgroundColor: '#010102',
+    padding: 14,
+  },
+  accessoryPickerDetailArt: {
+    width: '100%',
+    height: 230,
+  },
+  accessoryPickerDetailFavorite: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    alignSelf: 'stretch',
+    borderWidth: 1,
+    borderColor: 'rgba(214, 167, 94, 0.24)',
+    borderRadius: SLRadius.md,
+    backgroundColor: '#050608',
+  },
+  accessoryPickerDetailFavoriteText: {
+    color: colors.muted,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerDetailRows: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+  },
+  accessoryPickerDetailRow: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.lineSoft,
+    paddingHorizontal: 13,
+    paddingVertical: 10,
+  },
+  accessoryPickerDetailLabel: {
+    color: colors.subtle,
+    fontSize: SLTypography.micro.fontSize,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerDetailValue: {
+    flex: 1,
+    color: colors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 18,
+    textAlign: 'right',
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  accessoryPickerStandaloneAction: {
+    flex: 0,
+    minHeight: 54,
+  },
+  accessoryPickerPrimaryAction: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(185, 104, 255, 0.72)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#4B1A78',
+    paddingHorizontal: 16,
+  },
+  accessoryPickerPrimaryActionText: {
+    color: '#FFFFFF',
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerConfirmAction: {
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(232, 194, 104, 0.72)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#D1A83E',
+    paddingHorizontal: 16,
+  },
+  accessoryPickerConfirmActionText: {
+    color: SLColors.textInverted,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerSelectedSummary: {
+    minHeight: 104,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(214, 167, 94, 0.20)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    padding: 9,
+  },
+  accessoryPickerSelectedArt: {
+    width: 84,
+    height: 84,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerIntroFlush: {
+    gap: 7,
+    paddingVertical: 4,
+  },
+  accessoryPickerReview: {
+    gap: 16,
+    marginHorizontal: 14,
+  },
+  accessoryPickerProgressRail: {
+    height: 22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 2,
+    borderTopColor: 'rgba(167, 139, 250, 0.54)',
+    marginHorizontal: 14,
+    marginTop: 9,
+  },
+  accessoryPickerProgressNode: {
+    width: 8,
+    height: 8,
+    marginTop: -5,
+    borderRadius: 999,
+    backgroundColor: colors.muted,
+  },
+  accessoryPickerProgressNodeActive: {
+    borderWidth: 2,
+    borderColor: colors.violet,
+    backgroundColor: '#000000',
+  },
+  accessoryPickerReviewAlternatives: {
+    gap: 8,
+  },
+  accessoryPickerAlternativeRow: {
+    minHeight: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    padding: 8,
+  },
+  accessoryPickerAlternativeArt: {
+    width: 54,
+    height: 54,
+    borderRadius: SLRadius.sm,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerSuccess: {
+    flex: 1,
+    minHeight: 610,
+    justifyContent: 'space-between',
+    gap: 18,
+    marginHorizontal: 14,
+    paddingTop: 20,
+  },
+  accessoryPickerSuccessMark: {
+    width: 120,
+    height: 120,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.violet,
+    borderRadius: 999,
+    backgroundColor: 'rgba(124, 58, 237, 0.08)',
+  },
+  accessoryPickerSuccessContext: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#030405',
+    paddingTop: 12,
+    paddingHorizontal: 12,
+  },
+  accessoryPickerRecentRail: {
+    gap: 9,
+    paddingRight: 14,
+  },
+  accessoryPickerRecentCard: {
+    width: 106,
+    minHeight: 126,
+    gap: 7,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    padding: 7,
+  },
+  accessoryPickerRecentArt: {
+    width: '100%',
+    height: 82,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#010102',
+  },
+  accessoryPickerRecentTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 15,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  accessoryPickerSimilaritySection: {
+    gap: 9,
+  },
+  accessoryPickerSimilarityCard: {
+    gap: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(200, 171, 114, 0.30)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: 'rgba(200, 171, 114, 0.06)',
+    padding: 12,
+  },
+  accessoryPickerSimilarityBadge: {
+    alignSelf: 'flex-start',
+    borderRadius: SLRadius.pill,
+    backgroundColor: 'rgba(200, 171, 114, 0.14)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  accessoryPickerSimilarityBadgeText: {
+    color: SLColors.warning,
+    fontSize: SLTypography.micro.fontSize,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementCreator: {
+    gap: 16,
+    marginHorizontal: 14,
+    paddingBottom: 6,
+  },
+  customMovementStepMeta: {
+    gap: 8,
+  },
+  customMovementStepCount: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementStepRail: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  customMovementStepSegment: {
+    flex: 1,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: '#17141D',
+  },
+  customMovementStepSegmentActive: {
+    backgroundColor: colors.violet,
+  },
+  customMovementFieldGroup: {
+    gap: 7,
+  },
+  customMovementNameInput: {
+    minHeight: 52,
+    color: colors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+    borderWidth: 1,
+    borderColor: 'rgba(185, 104, 255, 0.52)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 14,
+  },
+  customMovementMatchCard: {
+    minHeight: 76,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#050608',
+    padding: 7,
+  },
+  customMovementMatchArt: {
+    width: 60,
+    height: 60,
+    borderRadius: SLRadius.sm,
+    backgroundColor: '#010102',
+  },
+  customMovementDistinctAction: {
+    minHeight: 62,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(185, 104, 255, 0.28)',
+    borderRadius: SLRadius.lg,
+    backgroundColor: 'rgba(124, 58, 237, 0.08)',
+    paddingHorizontal: 14,
+  },
+  customMovementDistinctTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementDistinctMeta: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementRegionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  customMovementRegionCard: {
+    width: '31.7%',
+    minHeight: 112,
+    overflow: 'hidden',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#050608',
+    paddingBottom: 8,
+  },
+  customMovementRegionArt: {
+    width: '100%',
+    height: 82,
+    backgroundColor: '#010102',
+  },
+  customMovementChoiceActive: {
+    borderColor: 'rgba(185, 104, 255, 0.78)',
+    backgroundColor: 'rgba(124, 58, 237, 0.18)',
+  },
+  customMovementChoiceLabel: {
+    flex: 1,
+    color: colors.textStrong,
+    fontSize: SLTypography.micro.fontSize,
+    lineHeight: 15,
+    textAlign: 'center',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementExactTargets: {
+    gap: 9,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.lineSoft,
+    paddingTop: 14,
+  },
+  customMovementMuscleGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  customMovementMuscleCard: {
+    width: '31.7%',
+    minHeight: 105,
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#050608',
+    padding: 6,
+  },
+  customMovementMuscleArt: {
+    width: '100%',
+    height: 66,
+    borderRadius: SLRadius.sm,
+    backgroundColor: '#010102',
+  },
+  customMovementPromptRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  customMovementSelectedCount: {
+    color: colors.violet,
+    fontSize: SLTypography.micro.fontSize,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementExecutionList: {
+    gap: 8,
+  },
+  customMovementExecutionCard: {
+    minHeight: 68,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 12,
+  },
+  customMovementExecutionIcon: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: '#010102',
+  },
+  customMovementFooterActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  customMovementFooterPrimary: {
+    flex: 1.35,
+  },
+  customMovementBackAction: {
+    minHeight: 54,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: SLRadius.lg,
+    backgroundColor: '#050608',
+    paddingHorizontal: 14,
+  },
+  customMovementReviewHero: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(185, 104, 255, 0.24)',
+    borderRadius: SLRadius.xl,
+    backgroundColor: '#020203',
+    padding: 10,
+  },
+  customMovementReviewArt: {
+    width: '44%',
+    minHeight: 265,
+  },
+  customMovementReviewIdentity: {
+    flex: 1,
+    minWidth: 0,
+    justifyContent: 'center',
+    gap: 13,
+  },
+  customMovementReviewName: {
+    color: colors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    lineHeight: 26,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  customMovementReviewRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  customMovementReviewDot: {
+    width: 6,
+    height: 6,
+    marginTop: 4,
+    borderRadius: 999,
+    backgroundColor: colors.violet,
+  },
+  customMovementReviewValue: {
+    color: colors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 18,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  customMovementQuietAction: {
+    minHeight: 44,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  customMovementCreated: {
+    flex: 1,
+    minHeight: 610,
+    justifyContent: 'space-between',
+    gap: 18,
+    marginHorizontal: 14,
+    paddingTop: 24,
+  },
+  customMovementCreatedCopy: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  customMovementCreatedKicker: {
+    color: colors.violet,
+    fontSize: SLTypography.cardTitle.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
   },
   trainingLiftSection: {
     gap: 10,
