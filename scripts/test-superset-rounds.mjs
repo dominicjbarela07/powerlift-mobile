@@ -41,6 +41,53 @@ assert.deepEqual(
   'a partial round must only save missing movements and must not create duplicates',
 );
 
+const movementAFirst = buildSupersetRoundModel([
+  item(1, 1, 4, [1, 2, 3, 4]),
+  item(2, 2, 4),
+]);
+assert.equal(movementAFirst.loggedRequiredSets, 4);
+assert.equal(movementAFirst.totalRequiredSets, 8);
+assert.equal(movementAFirst.status, 'in_progress');
+assert.deepEqual(
+  movementAFirst.movements.map((movement) => ({
+    itemId: movement.itemId,
+    logged: movement.loggedRequiredSets,
+    next: movement.nextSetIndex,
+    complete: movement.complete,
+  })),
+  [
+    { itemId: 1, logged: 4, next: null, complete: true },
+    { itemId: 2, logged: 0, next: 1, complete: false },
+  ],
+  'one superset movement may finish before its sibling starts',
+);
+assert.equal(movementAFirst.suggestedNextItemId, 2);
+assert.deepEqual(
+  movementAFirst.rounds.map((round) => round.entries.map((entry) => entry.state)),
+  [
+    ['complete', 'ready'],
+    ['complete', 'upcoming'],
+    ['complete', 'upcoming'],
+    ['complete', 'upcoming'],
+  ],
+  'only each movement\'s own first missing ordinal is ready',
+);
+
+const mixedOrder = buildSupersetRoundModel([
+  item(1, 1, 4, [1, 2, 3]),
+  item(2, 2, 4, [1, 2]),
+]);
+assert.deepEqual(mixedOrder.movements.map((movement) => movement.nextSetIndex), [4, 3]);
+assert.equal(mixedOrder.loggedRequiredSets, 5);
+
+const unequalCounts = buildSupersetRoundModel([
+  item(1, 1, 4, [1, 2, 3, 4]),
+  item(2, 2, 3, [1, 2]),
+]);
+assert.equal(unequalCounts.totalRequiredSets, 7);
+assert.equal(unequalCounts.loggedRequiredSets, 6);
+assert.deepEqual(unequalCounts.movements.map((movement) => movement.nextSetIndex), [null, 3]);
+
 const progressed = buildSupersetRoundModel([
   item(1, 1, 3, [1]),
   item(2, 2, 3, [1]),
@@ -60,6 +107,7 @@ assert.equal(triSet.rounds[0].entries.length, 3);
 assert.equal(triSet.rounds[2].entries.length, 2);
 assert.equal(triSet.currentRoundIndex, 3);
 assert.deepEqual(missingSupersetRoundItemIds(triSet, 3), [3]);
+assert.deepEqual(triSet.movements.map((movement) => movement.nextSetIndex), [null, null, 3]);
 
 const giantSetComplete = buildSupersetRoundModel([
   item(1, 1, 2, [1, 2]),
@@ -81,29 +129,28 @@ const workspace = fs.readFileSync(
   'utf8',
 );
 assert.match(route, /<SupersetRoundWorkspace/);
-assert.match(route, /openSupersetRoundLogger/);
-assert.match(route, /saveSupersetRound/);
-assert.match(route, /if \(!supersetRoundLogger \|\| !data \|\| !workoutId\) return/);
-assert.match(route, /isFinalMovement \? finalActionLabel : 'Next Movement'/);
-assert.match(route, /hasCompletedMovement \? 'Finish Round' : 'Save Round'/);
 assert.match(
   route,
   /if \(isSuperset && grp\.group\)[\s\S]*?<SupersetRoundWorkspace/,
-  'live and Ideal State must render the same canonical round workspace',
+  'live and Ideal State must render the same canonical superset workspace',
 );
 assert.match(
   route,
-  /workouts\/mobile\/\$\{workoutId\}\/superset-rounds\/\$\{encodeURIComponent\(supersetRoundLogger\.groupLabel\)\}\/\$\{roundIndex\}/,
-  'live grouped rounds must persist through the atomic production endpoint',
+  /<SupersetRoundWorkspace[\s\S]*?onLogMovement=\{\(itemId\) => \{[\s\S]*?candidate\.id === itemId[\s\S]*?openAccessoryWheel\(item\)/,
+  'each grouped movement must open the canonical individual Set Logger',
 );
 assert.match(
   route,
-  /candidate\.group !== supersetRoundLogger\.groupLabel[\s\S]*alreadyExists[\s\S]*set_logs:/,
-  'Save Round must update the grouped fixture in one state transaction and skip duplicates',
+  /const handleAccessorySave = async[\s\S]*?loggedIndexes[\s\S]*?while \(loggedIndexes\.has\(accessorySetIndex\)\) accessorySetIndex \+= 1[\s\S]*?logAccessorySet/,
+  'next set identity must derive independently from the selected movement evidence',
 );
-assert.match(workspace, /TODAY&apos;S WORK/);
-assert.match(workspace, /ROUND TIMELINE/);
-assert.match(workspace, /Log Round/);
+assert.match(route, /\/items\/\$\{itemId\}\/log_acc/);
+assert.match(workspace, /MOVEMENT PROGRESS/);
+assert.match(workspace, /Log these movements in any order/);
+assert.match(workspace, /model\.movements\.map/);
+assert.match(workspace, /onLogMovement\(movement\.itemId\)/);
+assert.match(workspace, /movement\.loggedRequiredSets} \/ \{movement\.requiredSets/);
+assert.doesNotMatch(workspace, /Log Round|ROUND TIMELINE|onLogRound/);
 assert.match(workspace, /onOpenHistory\(item\.id\)/);
 assert.match(
   workspace,
@@ -112,7 +159,7 @@ assert.match(
 );
 assert.match(
   workspace,
-  /canLog[\s\S]*entry\.state === 'complete'[\s\S]*log != null[\s\S]*Number\.isFinite\(Number\(log\.id\)\)/,
+  /const canModifyLog = canLog && Number\.isFinite\(Number\(persistedLog\.id\)\)/,
   'only persisted completed superset logs may expose mutation gestures',
 );
 assert.match(
@@ -132,5 +179,5 @@ assert.doesNotMatch(
 );
 
 console.log(
-  '[superset-rounds] pair, partial round, tri-set, giant-set, and duplicate-log guards passed',
+  '[superset-rounds] independent pair, mixed order, unequal count, tri-set, giant-set, and persistence wiring guards passed',
 );
