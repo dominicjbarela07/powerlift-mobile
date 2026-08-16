@@ -7,12 +7,7 @@ import {
   calendarRange,
   coachCalendarDateAtPoint,
   calendarSessionMatchesStatus,
-  COACH_CALENDAR_WEEK_DAYS,
-  COACH_CALENDAR_WEEK_WINDOW_WEEKS,
   coachCalendarRequestRange,
-  coachCalendarWeekIndex,
-  coachCalendarWeekWindow,
-  coachCalendarWindowNeedsShift,
   fromLocalYMD,
   isCoachCalendarDropTargetValid,
   isCalendarSessionMovable,
@@ -32,27 +27,13 @@ assert.equal(toLocalYMD(monday), '2026-08-10');
 assert.equal(toLocalYMD(startOfCalendarWeek(monday)), '2026-08-09');
 assert.equal(toLocalYMD(addCalendarDays(monday, 7)), '2026-08-17');
 
-const week = calendarRange('week', monday);
-assert.equal(toLocalYMD(week.start), '2026-08-09');
-assert.equal(toLocalYMD(week.end), '2026-08-16');
-assert.equal(COACH_CALENDAR_WEEK_DAYS, 7);
-
-const weekWindow = coachCalendarWeekWindow(monday);
-assert.equal(COACH_CALENDAR_WEEK_WINDOW_WEEKS, 5);
-assert.equal(toLocalYMD(weekWindow.start), '2026-07-26');
-assert.equal(toLocalYMD(weekWindow.end), '2026-08-30');
-assert.equal(Math.round((weekWindow.end.getTime() - weekWindow.start.getTime()) / 86_400_000), 35);
-assert.deepEqual(coachCalendarRequestRange('week', monday), weekWindow);
-assert.equal(coachCalendarWeekIndex(monday, weekWindow.start), 2);
-assert.equal(coachCalendarWindowNeedsShift(monday, weekWindow.start), false);
-assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-03'), weekWindow.start), true);
-assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-17'), weekWindow.start), true);
-assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-07-27'), weekWindow.start), true);
-assert.equal(coachCalendarWindowNeedsShift(fromLocalYMD('2026-08-24'), weekWindow.start), true);
-
 const month = calendarRange('month', fromLocalYMD('2026-08-11'));
 assert.equal(monthGridRows(Array.from({ length: 42 }, (_, index) => index)).length, 6);
 assert.equal(Math.round((month.end.getTime() - month.start.getTime()) / 86_400_000), 42);
+assert.deepEqual(coachCalendarRequestRange('month', fromLocalYMD('2026-08-11')), month);
+const agenda = calendarRange('agenda', fromLocalYMD('2026-08-19'));
+assert.equal(toLocalYMD(agenda.start), '2026-08-19');
+assert.equal(toLocalYMD(agenda.end), '2026-09-30');
 
 const springDst = addCalendarDays(fromLocalYMD('2026-03-08'), 1);
 assert.equal(toLocalYMD(springDst), '2026-03-09');
@@ -105,23 +86,15 @@ assert.equal(selectedAthleteLabel(athletes, []), 'All Athletes');
 assert.equal(selectedAthleteLabel(athletes, [1]), 'Amanda');
 assert.equal(selectedAthleteLabel(athletes, [1, 2]), 'All Athletes');
 
-assert.match(routeSource, /useState<CoachCalendarView>\('week'\)/);
+assert.match(routeSource, /useState<CoachCalendarView>\('month'\)/);
+assert.match(routeSource, /\(\['month', 'agenda'\] as CoachCalendarView\[\]\)/);
+assert.doesNotMatch(routeSource, /\(\['week', 'month', 'agenda'\] as CoachCalendarView\[\]\)/);
 assert.match(routeSource, /function WeekBoard/);
 assert.match(routeSource, /function AthleteFilterRail/);
-assert.match(routeSource, /React\.memo\(function WeekAthleteCard/);
-assert.match(routeSource, /WEEK_CARD_HEIGHT/);
-assert.match(routeSource, /athleteWeekCardInactive/);
-assert.match(routeSource, /No Sessions this week/);
 assert.match(routeSource, /Filter Calendar by athlete/);
-assert.match(routeSource, /Schedule \$\{athlete\.name\} on/);
 assert.doesNotMatch(routeSource, /styles\.matrixHeader/);
 assert.doesNotMatch(routeSource, /styles\.matrixRow/);
-assert.match(routeSource, /<FlatList/);
 assert.match(routeSource, /coachCalendarRequestRange/);
-assert.match(routeSource, /coachCalendarWindowNeedsShift/);
-assert.match(routeSource, /preservedCenterDate/);
-assert.match(routeSource, /onVisibleWeekSettled/);
-assert.match(routeSource, /onMomentumScrollEnd/);
 assert.match(routeSource, /SLTabRowControlShell/);
 assert.match(routeSource, /SLTabRowControlItem/);
 assert.match(routeSource, /useSafeAreaInsets/);
@@ -133,6 +106,14 @@ assert.doesNotMatch(routeSource, /meets\.slice\(0, 1\)/);
 assert.match(routeSource, /function MonthBoard/);
 assert.match(routeSource, /function MonthDraggableSessionRow/);
 assert.match(routeSource, /function AgendaBoard/);
+assert.match(routeSource, /function CalendarSessionCard/);
+assert.match(routeSource, /function agendaGroups/);
+assert.match(routeSource, /<MuscleMap/);
+assert.match(routeSource, /session\.muscle_focus\?\.primary/);
+assert.match(routeSource, /movement_count/);
+assert.match(routeSource, /set_count/);
+assert.match(routeSource, /const \[selectedDate, setSelectedDate\]/);
+assert.match(routeSource, /onSelectDate=\{setSelectedDate\}/);
 assert.match(routeSource, /function DayDetailModal/);
 assert.match(routeSource, /activateAfterLongPress\(320\)/);
 assert.match(routeSource, /isCoachCalendarDropTargetValid/);
