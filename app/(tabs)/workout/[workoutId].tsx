@@ -152,6 +152,10 @@ import {
   type ResolvedLoggerPrescribedWeight,
 } from '@/lib/logger-prescribed-weight';
 import {
+  resolveSetLoggerLoadDefault,
+  type SetLoggerLoadEvidence,
+} from '@/lib/set-logger-load-default';
+import {
   accessoryPerSetPrescription,
   accessoryPerSetRepsLabel,
 } from '@/lib/accessory-logger-prescription';
@@ -1332,27 +1336,73 @@ function nearestWheelValue(options: string[], value: string, fallback: string) {
   return best || fallback;
 }
 
-function prescribedCoreWeight(item: WorkoutItem, unit: 'kg' | 'lb', planned?: PlannedSet | null) {
-  return resolveLoggerPrescribedWeight({
-    item,
-    planned,
-    unit,
-  })?.displayValue || '';
+function loadWheelAllowsZero(item: WorkoutItem): boolean {
+  const identity = item.performed_movement_identity || item.movement_identity || null;
+  const convention = String(identity?.load_convention || '').trim().toLowerCase();
+  return convention === 'bodyweight_only' || convention === 'no_external_load';
 }
 
-function defaultCoreWeight(item: WorkoutItem, unit: 'kg' | 'lb', carriedInput?: string | null, planned?: PlannedSet | null) {
-  if (carriedInput && Number.isFinite(Number(carriedInput)) && Number(carriedInput) > 0) {
-    return carriedInput;
-  }
+function nextSetIndexFromEvidence(evidence: readonly SetLoggerLoadEvidence[]): number {
+  const logged = new Set(
+    evidence
+      .map((row) => Number(row.set_index || 0))
+      .filter((value) => Number.isFinite(value) && value > 0),
+  );
+  let index = 1;
+  while (logged.has(index)) index += 1;
+  return index;
+}
 
-  const prescribed = prescribedCoreWeight(item, unit, planned);
-  if (prescribed) return prescribed;
+function coreStagePrescriptionChanged(
+  item: WorkoutItem,
+  planned: PlannedSet | null | undefined,
+): boolean {
+  const currentSetIndex = Number(planned?.set_index || 0);
+  if (currentSetIndex <= 1) return false;
+  const priorPlanned = (item.planned_sets || [])
+    .filter((candidate) => Number(candidate.set_index || 0) < currentSetIndex)
+    .sort((left, right) => Number(right.set_index || 0) - Number(left.set_index || 0))[0];
+  if (!priorPlanned) return false;
+  const current = resolveLoggerPrescribedWeight({ item, planned, unit: 'kg' });
+  const previous = resolveLoggerPrescribedWeight({ item, planned: priorPlanned, unit: 'kg' });
+  return current != null
+    && previous != null
+    && Math.abs(current.canonicalWeightKg - previous.canonicalWeightKg) > 0.01;
+}
 
-  const best = getLookbackBest(item);
-  const bestWeight = best?.actual_weight_kg ?? best?.weight_kg ?? null;
-  if (bestWeight != null) return displayWeightFromKg(bestWeight, unit);
-
-  return unit === 'kg' ? '100' : '225';
+function defaultCoreWeight({
+  item,
+  unit,
+  currentSetIndex,
+  acceptedSet,
+  planned,
+}: {
+  item: WorkoutItem;
+  unit: 'kg' | 'lb';
+  currentSetIndex: number;
+  acceptedSet?: SetLoggerLoadEvidence | null;
+  planned?: PlannedSet | null;
+}) {
+  const prescribedWeightKg = resolveLoggerPrescribedWeight({
+    item,
+    planned,
+    unit: 'kg',
+  })?.canonicalWeightKg ?? null;
+  const sessionEvidence = [
+    ...(item.set_logs || []),
+    ...(acceptedSet ? [acceptedSet] : []),
+  ];
+  const fallbackWeightKg = unit === 'kg' ? 100 : 225 * KG_PER_LB;
+  const resolved = resolveSetLoggerLoadDefault({
+    currentSetIndex,
+    currentSessionSets: sessionEvidence,
+    comparableHistory: item.movement_history,
+    prescribedWeightKg,
+    fallbackWeightKg,
+    allowZeroLoad: loadWheelAllowsZero(item),
+    preferPrescriptionForStageTransition: coreStagePrescriptionChanged(item, planned),
+  });
+  return displayWeightFromKg(resolved.weightKg, unit);
 }
 
 function defaultCoreReps(item: WorkoutItem, planned?: PlannedSet | null) {
@@ -1377,18 +1427,33 @@ function accessoryTargetLine(item: WorkoutItem) {
   return `${base} @${formatWheelNumber(Number(item.rir_target))} RIR`;
 }
 
-function defaultAccessoryWeight(item: WorkoutItem, unit: 'kg' | 'lb', existingInput?: string | null) {
-  if (existingInput && Number.isFinite(Number(existingInput)) && Number(existingInput) > 0) {
-    return existingInput;
-  }
-
-  const previousLog = item.set_logs?.length
-    ? [...item.set_logs].sort((a, b) => (b.set_index || 0) - (a.set_index || 0))[0]
-    : null;
-  const previousWeight = toWheelWeight(previousLog, unit);
-  if (previousWeight) return previousWeight;
-
-  return '0';
+function defaultAccessoryWeight({
+  item,
+  unit,
+  currentSetIndex,
+  acceptedSet,
+}: {
+  item: WorkoutItem;
+  unit: 'kg' | 'lb';
+  currentSetIndex: number;
+  acceptedSet?: SetLoggerLoadEvidence | null;
+}) {
+  const prescribedWeightKg = resolveLoggerPrescribedWeight({
+    item,
+    unit: 'kg',
+  })?.canonicalWeightKg ?? null;
+  const resolved = resolveSetLoggerLoadDefault({
+    currentSetIndex,
+    currentSessionSets: [
+      ...(item.set_logs || []),
+      ...(acceptedSet ? [acceptedSet] : []),
+    ],
+    comparableHistory: item.movement_history,
+    prescribedWeightKg,
+    fallbackWeightKg: 0,
+    allowZeroLoad: loadWheelAllowsZero(item),
+  });
+  return displayWeightFromKg(resolved.weightKg, unit);
 }
 
 function defaultAccessoryRir(item: WorkoutItem) {
@@ -1480,15 +1545,19 @@ export default function WorkoutViewerScreen() {
     user?.is_individual_workspace === true ||
     user?.is_self_coached === true;
 
+  const unitLocalOverrideRef = useRef<'kg' | 'lb' | null>(null);
   const [unit, setUnit] = useState<'kg' | 'lb'>(() => normalizeReadinessUnit(user?.preferred_units));
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+  const acceptedLoadByItemIdRef = useRef<Record<number, SetLoggerLoadEvidence>>({});
   const [acceptedSetEvidenceItemIds, setAcceptedSetEvidenceItemIds] = useState<
     ReadonlySet<number>
   >(() => new Set());
   useEffect(() => {
     if (unitPreferenceHydratedRef.current || !user) return;
-    setUnit(normalizeReadinessUnit(user.preferred_units));
+    if (unitLocalOverrideRef.current == null) {
+      setUnit(normalizeReadinessUnit(user.preferred_units));
+    }
     unitPreferenceHydratedRef.current = true;
   }, [user]);
   useEffect(() => {
@@ -2199,11 +2268,27 @@ export default function WorkoutViewerScreen() {
     return outcome.value;
   }, [beginFeedbackSubmission, consumeSetResultOnce, handleCanonicalSetFailure, handleCanonicalSetFeedback]);
 
+  const rememberAcceptedLoad = useCallback((
+    itemId: number,
+    setIndex: number,
+    actualWeightKg: number,
+  ) => {
+    acceptedLoadByItemIdRef.current[itemId] = {
+      set_index: setIndex,
+      actual_weight_kg: actualWeightKg,
+    };
+  }, []);
+
   const intendedSetIndex = useCallback((itemId: number) => {
     const item = data?.workout?.core_items?.find((row: any) => Number(row?.id) === Number(itemId));
     const total = Math.max(0, Number(item?.sets || 0));
     const logged = new Set(
-      (Array.isArray(item?.set_logs) ? item.set_logs : [])
+      [
+        ...(Array.isArray(item?.set_logs) ? item.set_logs : []),
+        ...(acceptedLoadByItemIdRef.current[itemId]
+          ? [acceptedLoadByItemIdRef.current[itemId]]
+          : []),
+      ]
         .map((row: any) => Number(row?.set_index || 0))
         .filter((value: number) => value > 0),
     );
@@ -2217,6 +2302,21 @@ export default function WorkoutViewerScreen() {
     while (logged.has(index)) index += 1;
     return index;
   }, [data?.workout?.core_items]);
+
+  useEffect(() => {
+    const items = [
+      ...(data?.workout?.core_items || []),
+      ...(data?.workout?.accessory_groups || []).flatMap((group) => group.items || []),
+    ];
+    for (const item of items) {
+      const accepted = acceptedLoadByItemIdRef.current[item.id];
+      if (!accepted) continue;
+      const persisted = (item.set_logs || []).some((set) => (
+        Number(set.set_index || 0) === Number(accepted.set_index || 0)
+      ));
+      if (persisted) delete acceptedLoadByItemIdRef.current[item.id];
+    }
+  }, [data?.workout?.accessory_groups, data?.workout?.core_items]);
   const [videoUploadBySetLogId, setVideoUploadBySetLogId] = useState<
     Record<number, { uploading?: boolean; queued?: boolean; uploaded?: boolean; error?: string | null; permanent?: boolean; job?: QueuedVideoUploadJob | null }>
   >({});
@@ -3749,8 +3849,18 @@ export default function WorkoutViewerScreen() {
     const idealSuggestedWeight = Number.isFinite(idealRecommendationWeightKg) && idealRecommendationWeightKg > 0
       ? formatWeight(idealRecommendationWeightKg, unit)
       : '';
+    const acceptedSet = acceptedLoadByItemIdRef.current[item.id] || null;
+    const currentSetIndex = nextSetIndexFromEvidence([
+      ...(item.set_logs || []),
+      ...(acceptedSet ? [acceptedSet] : []),
+    ]);
     const rawWeight = idealSuggestedWeight
-      || defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
+      || defaultAccessoryWeight({
+        item,
+        unit,
+        currentSetIndex,
+        acceptedSet,
+      });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
@@ -3825,10 +3935,16 @@ export default function WorkoutViewerScreen() {
           && idealRecommendationWeightKg > 0
           ? formatWeight(idealRecommendationWeightKg, unit)
           : '';
+        const acceptedSet = acceptedLoadByItemIdRef.current[item.id] || null;
         const weight = log
           ? toWheelWeight(log as SetLog, unit)
           : suggestedWeight
-            || defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
+            || defaultAccessoryWeight({
+              item,
+              unit,
+              currentSetIndex: roundIndex,
+              acceptedSet,
+            });
         const weightOptions = buildAccessoryWeightOptions(unit, weight || '0');
         const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
         const rirOptions = Array.from(
@@ -4261,6 +4377,9 @@ export default function WorkoutViewerScreen() {
           } : current);
           return;
         }
+        parsedEntries.forEach((entry) => {
+          rememberAcceptedLoad(entry.itemId, roundIndex, entry.weightKg);
+        });
         setAccInputs((current) => {
           const next = { ...current };
           parsedEntries.forEach((entry) => {
@@ -4354,6 +4473,7 @@ export default function WorkoutViewerScreen() {
   const switchDisplayUnit = (nextUnit: 'kg' | 'lb') => {
     if (nextUnit === unit) return;
     const currentUnit = unit;
+    unitLocalOverrideRef.current = nextUnit;
 
     setCoreWheel((prev) => {
       if (!prev) return prev;
@@ -4424,15 +4544,25 @@ export default function WorkoutViewerScreen() {
     planned?: PlannedSet | null;
     targetLine?: string | null;
   }) => {
-    const carriedInput = (() => {
-      if (kind === 'straight') return straightInputs[item.id]?.weight || '';
-      if (kind === 'top') return topInputs[item.id]?.weight || '';
-      if (kind === 'bk') return bkInputs[item.id]?.weight || '';
-      if (kind === 'fc') return fcInputs[`${item.id}:${setIndex}`]?.weight || '';
-      return '';
-    })();
-
-    const rawWeight = defaultCoreWeight(item, unit, carriedInput, planned || null);
+    const acceptedSet = acceptedLoadByItemIdRef.current[item.id] || null;
+    const sessionEvidence = [
+      ...(item.set_logs || []),
+      ...(acceptedSet ? [acceptedSet] : []),
+    ];
+    const requestedSetIndex = Number(setIndex || 0);
+    const requestedSetAlreadyLogged = requestedSetIndex > 0 && sessionEvidence.some(
+      (set) => Number(set.set_index || 0) === requestedSetIndex,
+    );
+    const currentSetIndex = requestedSetIndex > 0 && !requestedSetAlreadyLogged
+      ? requestedSetIndex
+      : nextSetIndexFromEvidence(sessionEvidence);
+    const rawWeight = defaultCoreWeight({
+      item,
+      unit,
+      currentSetIndex,
+      acceptedSet,
+      planned: planned || null,
+    });
     const weightOptions = buildCoreWeightOptions(unit, rawWeight);
     const weight = nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || (unit === 'kg' ? '100' : '225'));
     const repsOptions = ['0', ...Array.from({ length: 20 }, (_, idx) => String(idx + 1))];
@@ -4446,8 +4576,8 @@ export default function WorkoutViewerScreen() {
       visible: true,
       kind,
       itemId: item.id,
-      setIndex,
-      title: `${liftDisplayName(item)}${setIndex ? ` · Set ${setIndex}` : ''}`,
+      setIndex: kind === 'fc' ? currentSetIndex : setIndex,
+      title: `${liftDisplayName(item)}${currentSetIndex ? ` · Set ${currentSetIndex}` : ''}`,
       subtitle: unit.toUpperCase(),
       targetLine,
       prescriptionLine: targetLine ? `${targetLine} × ${reps} @${rpe}` : null,
@@ -4747,6 +4877,7 @@ export default function WorkoutViewerScreen() {
       },
     });
     if (!json) return;
+    rememberAcceptedLoad(itemId, setIndex, weightKg);
 
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
@@ -4842,6 +4973,7 @@ export default function WorkoutViewerScreen() {
       },
     });
     if (!json) return;
+    rememberAcceptedLoad(itemId, setIndex, weightKg);
 
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
@@ -4929,6 +5061,7 @@ export default function WorkoutViewerScreen() {
       },
     });
     if (!json) return;
+    rememberAcceptedLoad(itemId, setIndex, weightKg);
 
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
@@ -5004,6 +5137,7 @@ export default function WorkoutViewerScreen() {
       },
     });
     if (!json) return;
+    rememberAcceptedLoad(itemId, setIndex, weightKg);
 
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
@@ -5070,6 +5204,7 @@ export default function WorkoutViewerScreen() {
     canonicalSetSubmissionController.reset();
     processedSetResultsRef.current.reset();
     setSubmissionAttemptsRef.current = {};
+    acceptedLoadByItemIdRef.current = {};
     activeTimerHandoffIdentityRef.current = null;
     timerHandoffReleaseController.reset();
     feedbackDispatch({ type: 'RESET' });
@@ -5279,7 +5414,12 @@ export default function WorkoutViewerScreen() {
       .flatMap((group: any) => group?.items || [])
       .find((row: any) => Number(row?.id) === Number(itemId));
     const loggedIndexes = new Set(
-      (Array.isArray(accessoryItem?.set_logs) ? accessoryItem.set_logs : [])
+      [
+        ...(Array.isArray(accessoryItem?.set_logs) ? accessoryItem.set_logs : []),
+        ...(acceptedLoadByItemIdRef.current[itemId]
+          ? [acceptedLoadByItemIdRef.current[itemId]]
+          : []),
+      ]
         .map((row: any) => Number(row?.set_index || 0))
         .filter((value: number) => value > 0),
     );
@@ -5346,6 +5486,7 @@ export default function WorkoutViewerScreen() {
       ),
     });
     if (!json) return;
+    rememberAcceptedLoad(itemId, accessorySetIndex, weightKg);
 
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
