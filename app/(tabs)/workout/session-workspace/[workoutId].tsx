@@ -62,6 +62,18 @@ type WorkoutItem = {
   superset_group?: string | null;
   superset_pos?: number | null;
   planned_sets?: PlannedSet[];
+  movement_identity?: {
+    id?: number | null;
+    display_name?: string | null;
+  } | null;
+  legacy?: {
+    state?: string | null;
+    original_text?: string | null;
+    indicator?: string | null;
+    mapping?: {
+      revision?: number | null;
+    } | null;
+  } | null;
 };
 
 type AccessoryGroup = {
@@ -91,7 +103,9 @@ type WorkoutPayload = {
 };
 
 type MovementPreset = {
+  id?: number | null;
   name?: string | null;
+  display_name?: string | null;
   lift?: string | null;
   category?: string | null;
   category_key?: string | null;
@@ -166,6 +180,7 @@ type TrainingLiftSetup = {
 
 type AccessorySetup = {
   movement: string;
+  movementDefinitionId: number | null;
   family: string;
   notes: string;
   customMovement: string;
@@ -453,8 +468,59 @@ export default function MobileSessionWorkspaceScreen() {
     if (!workout?.id || !accessoryEditor) return;
     try {
       setAccessorySaving(true);
+      if (!setup.movementDefinitionId) {
+        throw new Error('Select a canonical movement before applying changes.');
+      }
+      const legacy = accessoryEditor.item?.legacy;
+      if (
+        accessoryEditor.mode === 'edit'
+        && accessoryEditor.item?.id
+        && legacy?.state === 'legacy_unresolved'
+        && legacy.original_text
+      ) {
+        const previewResponse = await fetchJson<any>('/workouts/mobile/legacy-accessory-resolutions/preview', {
+          method: 'POST',
+          body: { legacy_label: legacy.original_text } as any,
+        });
+        const preview = previewResponse.json?.preview || {};
+        if (!previewResponse.ok || !previewResponse.json?.ok) {
+          throw new Error(previewResponse.json?.error || 'Legacy impact could not be loaded.');
+        }
+        const counts = preview.counts || {};
+        const resolutionScope = await new Promise<'cancel' | 'occurrence' | 'mapping'>((resolve) => {
+          Alert.alert(
+            'Resolve this legacy name?',
+            [
+              `“${legacy.original_text}” will map to “${setup.movement}”.`,
+              `${Number(counts.future_draft || 0)} future draft · ${Number(counts.template || 0)} template · ${Number(counts.historical || 0)} historical preserved`,
+              'Completed history keeps its original text.',
+            ].join('\n\n'),
+            [
+              { text: 'Cancel', style: 'cancel', onPress: () => resolve('cancel') },
+              { text: 'This Session', onPress: () => resolve('occurrence') },
+              { text: 'Resolve Once', onPress: () => resolve('mapping') },
+            ],
+            { cancelable: true, onDismiss: () => resolve('cancel') },
+          );
+        });
+        if (resolutionScope === 'cancel') return;
+        const resolutionResponse = await fetchJson<any>('/workouts/mobile/legacy-accessory-resolutions/resolve', {
+          method: 'POST',
+          body: {
+            legacy_label: legacy.original_text,
+            movement_definition_id: setup.movementDefinitionId,
+            expected_revision: legacy.mapping?.revision || undefined,
+            remember: resolutionScope === 'mapping',
+            workout_item_id: accessoryEditor.item.id,
+          } as any,
+        });
+        if (!resolutionResponse.ok || !resolutionResponse.json?.ok) {
+          throw new Error(resolutionResponse.json?.error || 'Legacy movement could not be resolved.');
+        }
+      }
       const body = {
         movement: setup.movement,
+        movement_definition_id: setup.movementDefinitionId,
         notes: setup.notes,
         ...(accessoryEditor.mode === 'add'
           ? {
@@ -1787,6 +1853,7 @@ function AccessoryEditorModal({
     patchSetup({
       family: group.key,
       movement: name || setup?.movement || '',
+      movementDefinitionId: movementPresetId(first),
     });
   };
 
@@ -1795,14 +1862,8 @@ function AccessoryEditorModal({
     const name = movementPresetName(movement);
     patchSetup({
       movement: name,
+      movementDefinitionId: movementPresetId(movement),
       family: activeGroup.key,
-    });
-  };
-
-  const useCustomMovement = () => {
-    if (!setup?.customMovement.trim()) return;
-    patchSetup({
-      movement: setup.customMovement.trim(),
     });
   };
 
@@ -1884,26 +1945,7 @@ function AccessoryEditorModal({
                       );
                     })}
                   </View>
-                  <View style={styles.trainingLiftCustomBlock}>
-                    <Text style={styles.trainingLiftFieldLabel}>Custom fallback</Text>
-                    <TextInput
-                      value={setup.customMovement}
-                      onChangeText={(value) => patchSetup({ customMovement: value })}
-                      placeholder="Type custom accessory"
-                      placeholderTextColor={colors.subtle}
-                      returnKeyType="done"
-                      onSubmitEditing={Keyboard.dismiss}
-                      blurOnSubmit
-                      style={styles.trainingLiftInput}
-                    />
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={useCustomMovement}
-                      style={({ pressed }) => [styles.trainingLiftSecondaryButton, pressed && styles.pressed]}
-                    >
-                      <Text style={styles.trainingLiftSecondaryText}>Use custom accessory</Text>
-                    </Pressable>
-                  </View>
+                  <Text style={styles.trainingLiftMuted}>New accessories use governed catalog identity. Create custom movements from the full movement library.</Text>
                 </TrainingLiftSection>
 
                 <TrainingLiftSection title="Movement Notes">
@@ -2554,7 +2596,12 @@ function calendarDaysForMonth(monthCursor: Date) {
 function movementPresetName(value?: MovementPreset | string | null) {
   if (!value) return '';
   if (typeof value === 'string') return value;
-  return String(value.name || '').trim();
+  return String(value.display_name || value.name || '').trim();
+}
+
+function movementPresetId(value?: MovementPreset | string | null) {
+  if (!value || typeof value === 'string' || !value.id) return null;
+  return Number(value.id);
 }
 
 function movementPresetFromValue(value: MovementPreset | string | null | undefined, group?: MovementPresetGroup | null) {
@@ -2633,7 +2680,7 @@ function findAccessoryPreset(groups: MovementPresetGroup[], movementName: string
     for (const movement of group.movements || []) {
       const name = movementPresetName(movement);
       if (name.trim().toLowerCase() === wanted) {
-        return { group, name };
+        return { group, name, preset: movement };
       }
     }
   }
@@ -2645,6 +2692,7 @@ function accessorySetupFromItem(item: WorkoutItem, groups: MovementPresetGroup[]
   const found = findAccessoryPreset(groups, movement);
   return {
     movement,
+    movementDefinitionId: item.movement_identity?.id || movementPresetId(found?.preset || null),
     family: found?.group.key || groups[0]?.key || 'lats_upper_back',
     notes: String(item.notes || ''),
     customMovement: '',
@@ -2658,6 +2706,7 @@ function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
   const firstMovement = movementPresetName(firstGroup?.movements?.[0] || null);
   return {
     movement: found?.name || firstMovement || fallback,
+    movementDefinitionId: movementPresetId(found?.preset || firstGroup?.movements?.[0] || null),
     family: found?.group.key || firstGroup?.key || 'lats_upper_back',
     notes: '',
     customMovement: '',

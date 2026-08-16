@@ -50,6 +50,7 @@ type PlannedSetDraft = {
 
 type AccDraft = {
   movement: string;
+  movement_definition_id?: number | null;
   sets: number;
   reps_text: string;
   rir_target?: number | null;
@@ -81,8 +82,17 @@ type TemplateDetail = {
 type MovementPresetCategory = {
   key?: string;
   name: string;
-  movements: string[];
+  movements: Array<string | { id?: number | null; name?: string | null; display_name?: string | null }>;
 };
+
+function presetMovementName(value: MovementPresetCategory['movements'][number]) {
+  if (typeof value === 'string') return value;
+  return String(value.display_name || value.name || '').trim();
+}
+
+function presetMovementId(value: MovementPresetCategory['movements'][number]) {
+  return typeof value === 'string' || !value.id ? null : Number(value.id);
+}
 
 type MovementPickerKind = 'accessory' | 'variant' | 'pendingVariant';
 
@@ -674,6 +684,9 @@ export default function CreateWorkoutScreen() {
       .map((r: any) => {
         const out: AccDraft = {
           movement: String(r?.movement ?? ''),
+          movement_definition_id: r?.movement_definition_id == null
+            ? (r?.movement_identity?.id == null ? null : Number(r.movement_identity.id))
+            : Number(r.movement_definition_id),
           sets: Number(r?.sets ?? 0),
           reps_text: String(r?.reps_text ?? ''),
           rir_target: r?.rir_target == null ? null : Number(r.rir_target),
@@ -835,21 +848,26 @@ export default function CreateWorkoutScreen() {
     }
   };
 
-  const selectMovementPreset = (movement: string) => {
+  const selectMovementPreset = (movement: MovementPresetCategory['movements'][number]) => {
     const picker = movementPickerOpen;
     if (!picker) return;
+    const movementName = presetMovementName(movement);
 
     if (picker.kind === 'accessory') {
-      setAcc((p) => p.map((x, i) => (i === picker.idx ? { ...x, movement } : x)));
+      setAcc((p) => p.map((x, i) => (i === picker.idx ? {
+        ...x,
+        movement: movementName,
+        movement_definition_id: presetMovementId(movement),
+      } : x)));
     } else if (picker.kind === 'pendingVariant') {
       setPendingCoreVariant((draft) => draft ? {
         ...draft,
-        top: { ...draft.top, movement },
-        backdown: draft.backdown ? { ...draft.backdown, movement } : undefined,
+        top: { ...draft.top, movement: movementName },
+        backdown: draft.backdown ? { ...draft.backdown, movement: movementName } : undefined,
         error: null,
       } : draft);
     } else {
-      updateCoreAt(picker.idx, { movement });
+      updateCoreAt(picker.idx, { movement: movementName });
     }
 
     setMovementPickerOpen(null);
@@ -863,7 +881,7 @@ export default function CreateWorkoutScreen() {
       .map((category) => {
         const movements = Array.isArray(category.movements) ? category.movements : [];
         const filtered = query
-          ? movements.filter((movement) => movement.toLowerCase().includes(query))
+          ? movements.filter((movement) => presetMovementName(movement).toLowerCase().includes(query))
           : movements;
         return { ...category, movements: filtered };
       })
@@ -2146,7 +2164,7 @@ export default function CreateWorkoutScreen() {
     const idx = acc.length;
     setAcc((p) => [
       ...p,
-      { movement: '', sets: 3, reps_text: '10-12', rir_target: 2, superset_group: null, superset_pos: null },
+      { movement: '', movement_definition_id: null, sets: 3, reps_text: '10-12', rir_target: 2, superset_group: null, superset_pos: null },
     ]);
     setAccEditorOpen({ idx });
     setTimeout(() => openMovementPicker('accessory', idx), 0);
@@ -2255,6 +2273,14 @@ export default function CreateWorkoutScreen() {
     if (coreVariantIssue) {
       setError(coreVariantIssue);
       Alert.alert('Fix Core Variant', coreVariantIssue);
+      return;
+    }
+
+    const unresolvedAccessory = acc.find((item) => item.movement.trim() && !item.movement_definition_id);
+    if (unresolvedAccessory) {
+      const message = `Choose a governed movement for “${unresolvedAccessory.movement}” before saving.`;
+      setError(message);
+      Alert.alert('Resolve accessory identity', message);
       return;
     }
 
@@ -2513,7 +2539,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           autoCapitalize="words"
         />
 
-        {movementSearch.trim() ? (
+        {kind === 'variant' && movementSearch.trim() ? (
           <Pressable
             style={styles.customMovementRow}
             onPress={() => selectMovementPreset(movementSearch.trim())}
@@ -2544,15 +2570,18 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
             categories.map((category) => (
               <View key={category.key || category.name} style={styles.presetCategoryBlock}>
                 <ThemedText variant="badge" style={styles.presetCategoryTitle}>{category.name}</ThemedText>
-                {category.movements.map((movement) => (
-                  <TouchableOpacity
-                    key={`${category.name}-${movement}`}
-                    style={styles.presetMovementRow}
-                    onPress={() => selectMovementPreset(movement)}
-                  >
-                    <ThemedText variant="body" style={styles.presetMovementText}>{movement}</ThemedText>
-                  </TouchableOpacity>
-                ))}
+                {category.movements.map((movement) => {
+                  const movementName = presetMovementName(movement);
+                  return (
+                    <TouchableOpacity
+                      key={`${category.name}-${movementName}`}
+                      style={styles.presetMovementRow}
+                      onPress={() => selectMovementPreset(movement)}
+                    >
+                      <ThemedText variant="body" style={styles.presetMovementText}>{movementName}</ThemedText>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             ))
           )}
@@ -3713,13 +3742,9 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                         </View>
                         <ThemedText variant="bodyMuted" style={styles.selectChevron}>▾</ThemedText>
                       </Pressable>
-                      <TextInput
-                        value={a.movement}
-                        onChangeText={(v) => updateAccAt(idx, { movement: v })}
-                        placeholder="Custom movement"
-                        placeholderTextColor="#64748b"
-                        style={[styles.input, styles.customMovementInput]}
-                      />
+                      <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
+                        Select a governed catalog movement. Custom movement creation is available in the full movement library.
+                      </ThemedText>
 
                       <ThemedText variant="bodyMuted" style={styles.fieldLabel}>Superset</ThemedText>
                       {renderChoiceChips<string>(
@@ -3851,15 +3876,18 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                   filteredMovementCategories(movementPickerOpen.kind).map((category) => (
                     <View key={category.key || category.name} style={styles.presetCategoryBlock}>
                       <ThemedText variant="badge" style={styles.presetCategoryTitle}>{category.name}</ThemedText>
-                      {category.movements.map((movement) => (
-                        <TouchableOpacity
-                          key={`${category.name}-${movement}`}
-                          style={styles.presetMovementRow}
-                          onPress={() => selectMovementPreset(movement)}
-                        >
-                          <ThemedText variant="body" style={styles.presetMovementText}>{movement}</ThemedText>
-                        </TouchableOpacity>
-                      ))}
+                      {category.movements.map((movement) => {
+                        const movementName = presetMovementName(movement);
+                        return (
+                          <TouchableOpacity
+                            key={`${category.name}-${movementName}`}
+                            style={styles.presetMovementRow}
+                            onPress={() => selectMovementPreset(movement)}
+                          >
+                            <ThemedText variant="body" style={styles.presetMovementText}>{movementName}</ThemedText>
+                          </TouchableOpacity>
+                        );
+                      })}
                     </View>
                   ))
                 ) : null}
