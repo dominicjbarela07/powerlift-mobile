@@ -107,7 +107,15 @@ assert.equal(selectedAthleteLabel(athletes, [1, 2]), 'All Athletes');
 
 assert.match(routeSource, /useState<CoachCalendarView>\('week'\)/);
 assert.match(routeSource, /function WeekBoard/);
-assert.match(routeSource, /React\.memo\(function WeekAthleteRow/);
+assert.match(routeSource, /function AthleteFilterRail/);
+assert.match(routeSource, /React\.memo\(function WeekAthleteCard/);
+assert.match(routeSource, /WEEK_CARD_HEIGHT/);
+assert.match(routeSource, /athleteWeekCardInactive/);
+assert.match(routeSource, /No Sessions this week/);
+assert.match(routeSource, /Filter Calendar by athlete/);
+assert.match(routeSource, /Schedule \$\{athlete\.name\} on/);
+assert.doesNotMatch(routeSource, /styles\.matrixHeader/);
+assert.doesNotMatch(routeSource, /styles\.matrixRow/);
 assert.match(routeSource, /<FlatList/);
 assert.match(routeSource, /coachCalendarRequestRange/);
 assert.match(routeSource, /coachCalendarWindowNeedsShift/);
