@@ -9,6 +9,7 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
+  Pressable,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
@@ -20,6 +21,7 @@ import {
   findNodeHandle,
   UIManager,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 let Notifications: any = null;
 if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
@@ -58,7 +60,14 @@ import {
   type WorkoutProgressSetSegment,
 } from '@/components/workout-logger/session-shell';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE, fetchJson, removeVideoAttachment } from '@/lib/api';
+import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
+import {
+  createSessionTimeDraft,
+  formatSessionTimeLabel,
+  parseSessionTimeDraft,
+  replaceSessionTimePart,
+  resolveSessionTimeZone,
+} from '@/lib/post-session-times';
 import {
   cancelVideoUploadJob,
   enqueueVideoUpload,
@@ -194,6 +203,7 @@ type WorkoutPayload = {
     status: string | null;
     started_at?: string | null;
     completed_duration_seconds?: number | null;
+    scheduled_timezone?: string | null;
     completion_reminder_sent_at?: string | null;
     timeliness?: 'on_time' | 'tardy' | 'missed' | string | null;
     loggable?: boolean | null;
@@ -1710,11 +1720,19 @@ export default function WorkoutViewerScreen() {
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
+  const [postSessionTimeError, setPostSessionTimeError] = useState<string | null>(null);
+  const [postSessionFallbackTimeZone, setPostSessionFallbackTimeZone] = useState(
+    () => getDeviceTimezone() || 'America/Los_Angeles',
+  );
+  const [postSessionTimePicker, setPostSessionTimePicker] = useState<'start' | 'end' | null>(null);
+  const [postSessionTimePickerDraft, setPostSessionTimePickerDraft] = useState<Date | null>(null);
   const [postSessionForm, setPostSessionForm] = useState({
     sessionRpe: null as number | null,
     strengthFeeling: '' as '' | 'much_weaker' | 'slightly_weaker' | 'normal' | 'slightly_stronger' | 'much_stronger',
     fatigueFeeling: '' as '' | 'very_fresh' | 'slightly_fatigued' | 'moderately_fatigued' | 'very_fatigued',
     note: '',
+    sessionStart: new Date(),
+    sessionEnd: new Date(),
   });
 
   const [editSetVisible, setEditSetVisible] = useState(false);
@@ -3267,8 +3285,14 @@ export default function WorkoutViewerScreen() {
     await beginWorkoutConfirmed(reason);
   };
 
-  const completeWorkout = async ({ skipIncompleteWarning = false }: { skipIncompleteWarning?: boolean } = {}) => {
-    if (!data?.workout) return;
+  const completeWorkout = async ({
+    skipIncompleteWarning = false,
+    sessionTimes = null,
+  }: {
+    skipIncompleteWarning?: boolean;
+    sessionTimes?: { startedAt: string; endedAt: string } | null;
+  } = {}) => {
+    if (!data?.workout) return false;
     const wkId = data.workout.id;
 
     if (!skipIncompleteWarning && missingSetLabelsForWorkout(data.workout).length > 0) {
@@ -3282,12 +3306,19 @@ export default function WorkoutViewerScreen() {
 
       const done = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/complete`,
-        { method: 'POST', auth: true }
+        {
+          method: 'POST',
+          auth: true,
+          body: sessionTimes ? {
+            session_started_at: sessionTimes.startedAt,
+            session_ended_at: sessionTimes.endedAt,
+          } : {},
+        }
       );
 
       if (!done.ok || !done.json?.ok) {
         Alert.alert('Error', done.json?.error || `Failed to complete workout (HTTP ${done.status})`);
-        return;
+        return false;
       }
 
       // Refresh local data
@@ -3302,22 +3333,82 @@ export default function WorkoutViewerScreen() {
       } catch (e) {
         console.warn('checkin after complete failed', e);
       }
+      return true;
     } catch (err) {
       console.error('completeWorkout error', err);
       Alert.alert('Error', 'Failed to complete workout');
+      return false;
     } finally {
       setActionLoading(null);
     }
   };
 
+  const postSessionTimeZone = resolveSessionTimeZone(
+    data?.workout?.scheduled_timezone,
+    postSessionFallbackTimeZone,
+  );
+
+  useEffect(() => {
+    let active = true;
+    void getResolvedTimezone().then((timeZone) => {
+      if (active) setPostSessionFallbackTimeZone(timeZone);
+    });
+    return () => { active = false; };
+  }, []);
+
   const openPostSessionSurvey = () => {
+    const timeDraft = createSessionTimeDraft(data?.workout?.started_at, new Date());
     setPostSessionForm({
       sessionRpe: null,
       strengthFeeling: '',
       fatigueFeeling: '',
       note: '',
+      sessionStart: timeDraft.start,
+      sessionEnd: timeDraft.end,
     });
+    setPostSessionTimeError(null);
+    setPostSessionTimePicker(null);
+    setPostSessionTimePickerDraft(null);
     setPostSessionVisible(true);
+  };
+
+  const openPostSessionTimePicker = (target: 'start' | 'end') => {
+    Keyboard.dismiss();
+    setPostSessionTimeError(null);
+    const current = target === 'start' ? postSessionForm.sessionStart : postSessionForm.sessionEnd;
+    setPostSessionTimePickerDraft(new Date(current.getTime()));
+    setPostSessionTimePicker(target);
+  };
+
+  const closePostSessionTimePicker = () => {
+    setPostSessionTimePicker(null);
+    setPostSessionTimePickerDraft(null);
+  };
+
+  const updatePostSessionTimePickerDraft = (selected: Date) => {
+    if (!postSessionTimePickerDraft) return;
+    const next = replaceSessionTimePart(postSessionTimePickerDraft, selected, postSessionTimeZone);
+    if (!next) {
+      setPostSessionTimeError('That time is not valid in the Session timezone.');
+      return;
+    }
+    setPostSessionTimePickerDraft(next);
+    setPostSessionTimeError(null);
+  };
+
+  const commitPostSessionTimePicker = () => {
+    if (!postSessionTimePicker || !postSessionTimePickerDraft) return;
+    const nextForm = {
+      ...postSessionForm,
+      [postSessionTimePicker === 'start' ? 'sessionStart' : 'sessionEnd']: postSessionTimePickerDraft,
+    };
+    const parsed = parseSessionTimeDraft({ start: nextForm.sessionStart, end: nextForm.sessionEnd });
+    if (!parsed.value) {
+      setPostSessionTimeError(parsed.error);
+      return;
+    }
+    setPostSessionForm(nextForm);
+    closePostSessionTimePicker();
   };
 
   const requestCompleteWorkout = () => {
@@ -3336,8 +3427,21 @@ export default function WorkoutViewerScreen() {
   };
 
   const skipPostSessionAndComplete = async () => {
-    setPostSessionVisible(false);
-    await completeWorkout({ skipIncompleteWarning: true });
+    const parsed = parseSessionTimeDraft({ start: postSessionForm.sessionStart, end: postSessionForm.sessionEnd });
+    if (!parsed.value) {
+      setPostSessionTimeError(parsed.error);
+      return;
+    }
+    setPostSessionSubmitting(true);
+    try {
+      const completed = await completeWorkout({ skipIncompleteWarning: true, sessionTimes: parsed.value });
+      if (completed) {
+        closePostSessionTimePicker();
+        setPostSessionVisible(false);
+      }
+    } finally {
+      setPostSessionSubmitting(false);
+    }
   };
 
   const submitPostSessionAndComplete = async () => {
@@ -3358,6 +3462,14 @@ export default function WorkoutViewerScreen() {
     try {
       setPostSessionSubmitting(true);
       setError(null);
+      const parsedTimes = parseSessionTimeDraft({
+        start: postSessionForm.sessionStart,
+        end: postSessionForm.sessionEnd,
+      });
+      if (!parsedTimes.value) {
+        setPostSessionTimeError(parsedTimes.error);
+        return;
+      }
 
       const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${workoutId}/post_session_survey`,
@@ -3377,8 +3489,14 @@ export default function WorkoutViewerScreen() {
         throw new Error(json?.error || `Failed to save post-session survey (HTTP ${status})`);
       }
 
-      setPostSessionVisible(false);
-      await completeWorkout({ skipIncompleteWarning: true });
+      const completed = await completeWorkout({
+        skipIncompleteWarning: true,
+        sessionTimes: parsedTimes.value,
+      });
+      if (completed) {
+        closePostSessionTimePicker();
+        setPostSessionVisible(false);
+      }
     } catch (err: any) {
       console.log('submitPostSessionAndComplete error', err);
       setError(err?.message || 'Failed to submit post-session survey');
@@ -5714,7 +5832,10 @@ export default function WorkoutViewerScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => {
-          if (!postSessionSubmitting) setPostSessionVisible(false);
+          if (!postSessionSubmitting) {
+            closePostSessionTimePicker();
+            setPostSessionVisible(false);
+          }
         }}
       >
         <KeyboardAvoidingView
@@ -5726,6 +5847,35 @@ export default function WorkoutViewerScreen() {
             <View style={styles.modalBackdrop}>
               <View style={[styles.modalCard, styles.postSessionModal]}>
                 <Text style={styles.postSessionTitle}>Post-Session Survey</Text>
+                <View style={styles.postSessionTimeSection}>
+                  <Text style={styles.surveyLabel}>Session time</Text>
+                  <View style={styles.postSessionTimeRow}>
+                    {(['start', 'end'] as const).map((target) => {
+                      const value = target === 'start' ? postSessionForm.sessionStart : postSessionForm.sessionEnd;
+                      return (
+                        <Pressable
+                          key={target}
+                          accessibilityRole="button"
+                          accessibilityLabel={`${target === 'start' ? 'Session started' : 'Session ended'} ${formatSessionTimeLabel(value, {
+                            sessionDate: data?.workout?.date,
+                            timeZone: postSessionTimeZone,
+                          })}`}
+                          onPress={() => openPostSessionTimePicker(target)}
+                          style={({ pressed }) => [styles.postSessionTimeSelection, pressed && styles.postSessionTimeSelectionPressed]}
+                        >
+                          <Text style={styles.postSessionTimeLabel}>{target === 'start' ? 'Started' : 'Ended'}</Text>
+                          <Text style={styles.postSessionTimeValue}>
+                            {formatSessionTimeLabel(value, {
+                              sessionDate: data?.workout?.date,
+                              timeZone: postSessionTimeZone,
+                            })}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                  {postSessionTimeError ? <Text style={styles.postSessionTimeError}>{postSessionTimeError}</Text> : null}
+                </View>
                 <View style={styles.surveySection}>
                   <Text style={styles.surveyLabel}>Session RPE</Text>
                   <View style={styles.surveyChipRow}>
@@ -5856,6 +6006,52 @@ export default function WorkoutViewerScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {postSessionTimePicker != null ? (
+                <View style={[styles.modalBackdropCenter, styles.postSessionTimePickerOverlay]}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Cancel time changes"
+                    onPress={closePostSessionTimePicker}
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  <View style={[styles.modalCard, styles.postSessionTimePickerCard]}>
+                    <Text style={styles.postSessionTimePickerTitle}>
+                      {postSessionTimePicker === 'start' ? 'Session start' : 'Session end'}
+                    </Text>
+                    <DateTimePicker
+                      value={postSessionTimePickerDraft || new Date()}
+                      mode="time"
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      themeVariant="dark"
+                      timeZoneName={postSessionTimeZone}
+                      minuteInterval={1}
+                      style={styles.postSessionNativeTimePicker}
+                      onChange={(event, selected) => {
+                        if (event.type === 'dismissed' || !selected) {
+                          if (Platform.OS !== 'ios') closePostSessionTimePicker();
+                          return;
+                        }
+                        updatePostSessionTimePickerDraft(selected);
+                      }}
+                    />
+                    <View style={styles.modalActionsRow}>
+                      <TouchableOpacity
+                        style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
+                        onPress={closePostSessionTimePicker}
+                      >
+                        <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
+                        onPress={commitPostSessionTimePicker}
+                      >
+                        <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Confirm</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              ) : null}
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -7230,6 +7426,63 @@ const styles = StyleSheet.create({
     width: '95%',
     maxWidth: 520,
     paddingTop: 4,
+  },
+  postSessionTimeSection: {
+    marginTop: 14,
+  },
+  postSessionTimeRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  postSessionTimeSelection: {
+    flex: 1,
+    minHeight: 58,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.38)',
+    borderRadius: 12,
+    backgroundColor: 'rgba(15,23,42,0.82)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  postSessionTimeSelectionPressed: {
+    borderColor: '#A78BFA',
+    backgroundColor: 'rgba(76,29,149,0.28)',
+  },
+  postSessionTimeLabel: {
+    color: '#94A3B8',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  postSessionTimeValue: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  postSessionTimeError: {
+    color: '#FCA5A5',
+    fontSize: 12,
+    marginTop: 8,
+  },
+  postSessionTimePickerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
+    elevation: 20,
+  },
+  postSessionTimePickerCard: {
+    width: '92%',
+    maxWidth: 420,
+  },
+  postSessionTimePickerTitle: {
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  postSessionNativeTimePicker: {
+    height: 180,
   },
   incompleteCompleteModal: {
     width: '92%',
