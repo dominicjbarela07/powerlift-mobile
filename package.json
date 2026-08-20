@@ -104,7 +104,9 @@
     "audit:ui-constitution": "node scripts/audit-ui-constitution.js && node scripts/audit-transparent-screen-roots.js && node scripts/audit-mobile-horizontal-layout.mjs",
     "audit:transparent-screen-roots": "node scripts/audit-transparent-screen-roots.js",
     "audit:mobile-horizontal-layout": "node scripts/audit-mobile-horizontal-layout.mjs",
-    "audit:workspace-system": "node scripts/audit-workspace-system.mjs"
+    "audit:workspace-system": "node scripts/audit-workspace-system.mjs",
+    "test:ota-native-compatibility": "node scripts/assert-ota-native-compatibility.mjs",
+    "test:ota-route-bundle": "node scripts/assert-ota-route-bundle.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
