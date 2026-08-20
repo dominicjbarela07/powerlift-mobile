@@ -63,9 +63,9 @@ const canonicalProjection = {
   week: { performed: { sessions: 5, sets: 19, total_volume_kg: 8391.46, pr_count: 1 } },
   last_session: { id: 44, title: 'W3 SARMS', performed_set_count: 19, performed_volume_kg: 8391.46, session_rpe: 7, pr_count: 1 },
   trends: {
-    readiness: { points: Array.from({ length: 7 }, (_, index) => ({ date: `2026-08-${index + 9}`, value: 3.5 + index / 10 })) },
-    bodyweight: { latest_kg: 84, points: [{ date: '2026-08-01', value_kg: 85 }, { date: '2026-08-08', value_kg: 84.5 }, { date: '2026-08-15', value_kg: 84 }] },
-    volume: { this_week_kg: 8391.46, points: [{ date: '2026-07-20', value_kg: 7000 }, { date: '2026-07-27', value_kg: 7600 }, { date: '2026-08-03', value_kg: 8100 }, { date: '2026-08-10', value_kg: 8391.46 }] },
+    readiness: { delta_vs_prior_7d: 0.4, window_days: 7, points: Array.from({ length: 7 }, (_, index) => ({ date: `2026-08-${index + 9}`, value: 3.5 + index / 10 })) },
+    bodyweight: { latest_kg: 84, delta_kg: -1, comparison_span_days: 14, points: [{ date: '2026-08-01', value_kg: 85 }, { date: '2026-08-08', value_kg: 84.5 }, { date: '2026-08-15', value_kg: 84 }] },
+    volume: { this_week_kg: 8391.46, prior_week_kg: 8100, delta_kg: 291.46, window_weeks: 5, points: [{ date: '2026-07-20', value_kg: 7000 }, { date: '2026-07-27', value_kg: 7600 }, { date: '2026-08-03', value_kg: 8100 }, { date: '2026-08-10', value_kg: 8391.46 }] },
   },
   strength: { family: 'bench', metric: 'bench_e1rm', current_e1rm_kg: 159.66, points: [{ date: '2026-07-20', value_kg: 150 }, { date: '2026-08-10', value_kg: 159.66 }] },
 };

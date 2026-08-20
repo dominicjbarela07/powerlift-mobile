@@ -31,12 +31,14 @@ import {
   normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
 import type { HomePlotDatum } from '@/lib/home-trend-plot';
+import { SESSION_RECAP_ARCHIVE_ART } from '@/lib/session-recap-assets';
 
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/chair.png');
 const ACHIEVEMENT_ART = require('@/assets/images/ledger-index-v2/ledger-career-pr-medallion-v1.png');
 const MEET_ART = require('@/assets/images/gym_vibe.jpg');
 const MEET_RACK_ART = require('@/assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png');
+const SESSION_FOCUS_ART = require('@/assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png');
 const REST_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
 
 type Today = {
@@ -308,7 +310,14 @@ function SessionCard({ eyebrow, onAction, session, today, unit }: { eyebrow: str
       </View>
       {focus.primary.length ? (
         <View style={styles.sessionAnatomy}><MuscleMap athlete={today.athlete} primary={focus.primary} secondary={focus.secondary} size="thumbnail" /></View>
-      ) : <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={52} />}
+      ) : (
+        <Image
+          accessibilityIgnoresInvertColors
+          resizeMode="contain"
+          source={completed ? SESSION_RECAP_ARCHIVE_ART : SESSION_FOCUS_ART}
+          style={styles.sessionFallbackArt}
+        />
+      )}
       <Ionicons color={SLColors.textSecondary} name="chevron-forward" size={20} />
     </Pressable>
   );
@@ -339,31 +348,39 @@ function TrendsSection({ home, onAction, unit }: { home: AthleteHomeV3Projection
   const volumeValue = formatCompactVolumeValueFromKg(volume?.this_week_kg, unit);
   const available = projectionAvailable(home);
   const readinessPoints = React.useMemo(
-    () => (readiness?.points || []).map((point) => ({ date: point.date, value: normalizedReadiness(point.value) })),
+    () => (readiness?.points || []).flatMap((point) => point.value == null ? [] : [{ date: point.date, value: normalizedReadiness(point.value) }]),
     [readiness?.points],
   );
   const bodyweightPoints = React.useMemo(
-    () => (bodyweight?.points || []).map((point) => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    () => (bodyweight?.points || []).flatMap((point) => point.value_kg == null ? [] : [{ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) }]),
     [bodyweight?.points, unit],
   );
   const volumePoints = React.useMemo(
-    () => (volume?.points || []).map((point) => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    () => (volume?.points || []).flatMap((point) => point.value_kg == null ? [] : [{ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) }]),
     [unit, volume?.points],
   );
   const bodyweightDetail = bodyweightPoints.length === 1
     ? 'First report'
-    : bodyweightPoints.length === 2
-      ? '2 real reports'
-      : bodyweight?.delta_kg != null
-        ? formatWeightDeltaFromKg(bodyweight.delta_kg, unit) || `${bodyweightPoints.length} real reports`
-        : `${bodyweightPoints.length} real reports`;
+    : bodyweight?.delta_kg != null
+      ? `${formatWeightDeltaFromKg(bodyweight.delta_kg, unit)} / ${bodyweight.comparison_span_days || bodyweight.window_days || 28}d`
+      : `${bodyweightPoints.length} real reports`;
+  const readinessDetail = readinessPoints.length
+    ? readiness?.delta_vs_prior_7d != null
+      ? `${formatReadinessDelta(readiness.delta_vs_prior_7d)} vs prior 7d`
+      : '7-day avg'
+    : available ? 'Check in to begin' : 'Refresh to retry';
+  const volumeDetail = volumePoints.length
+    ? volume?.delta_kg != null
+      ? `${formatCompactVolumeDelta(volume.delta_kg, unit)} vs prior week`
+      : 'This week · 5-week view'
+    : available ? 'Log sets to begin' : 'Refresh to retry';
   return (
     <View style={styles.sectionGap}>
       <SectionHeader label="YOUR TRENDS" />
       <View style={styles.trendRow}>
-        <TrendCard accent="#44D38A" emptyLabel={available ? 'No check-ins yet' : 'Refresh unavailable'} label="READINESS" metric="Daily Readiness · 10-point display" value={readiness?.average_7d != null ? formatReadiness(readiness.average_7d) : available ? 'No data' : 'Unavailable'} detail={readinessPoints.length ? '7-day avg' : available ? 'Check in to begin' : 'Refresh to retry'} points={readinessPoints} onPress={() => onAction(readiness?.action)} />
-        <TrendCard accent="#4AB7FF" emptyLabel={available ? 'No reports yet' : 'Refresh unavailable'} label="REPORTED BW" metric={`Reported Bodyweight · ${unit}`} value={latestBodyweight || (available ? 'No reports' : 'Unavailable')} detail={bodyweightPoints.length ? bodyweightDetail : available ? 'Report in readiness' : 'Refresh to retry'} points={bodyweightPoints} onPress={() => onAction(bodyweight?.action)} />
-        <TrendCard accent="#B44CFF" emptyLabel={available ? 'No completed volume' : 'Refresh unavailable'} kind="bar" label="VOLUME" metric={`Weekly Total Volume · ${unit}`} value={volumeValue || (volume?.this_week_kg === 0 && available ? `0 ${unit}` : available ? 'No volume' : 'Unavailable')} detail={volumePoints.length ? 'This week' : available ? 'Log sets to begin' : 'Refresh to retry'} points={volumePoints} onPress={() => onAction(volume?.action)} />
+        <TrendCard accent="#44D38A" emptyLabel={available ? 'No check-ins yet' : 'Refresh unavailable'} label="READINESS" metric="Daily Readiness · last 7 days · 10-point display" value={readiness?.latest != null ? formatReadiness(readiness.latest) : available ? 'No data' : 'Unavailable'} detail={readinessDetail} points={readinessPoints} onPress={() => onAction(readiness?.action)} />
+        <TrendCard accent="#4AB7FF" emptyLabel={available ? 'No reports yet' : 'Refresh unavailable'} label="REPORTED BW" metric={`Reported Bodyweight · last ${bodyweight?.window_days || 28} days · ${unit}`} value={latestBodyweight || (available ? 'No reports' : 'Unavailable')} detail={bodyweightPoints.length ? bodyweightDetail : available ? 'Report in readiness' : 'Refresh to retry'} points={bodyweightPoints} onPress={() => onAction(bodyweight?.action)} />
+        <TrendCard accent="#B44CFF" emptyLabel={available ? 'No completed volume' : 'Refresh unavailable'} kind="bar" label="VOLUME" metric={`Weekly Total Volume · last ${volume?.window_weeks || 5} weeks · ${unit}`} value={volumeValue || (volume?.this_week_kg === 0 && available ? `0 ${unit}` : available ? 'No volume' : 'Unavailable')} detail={volumeDetail} points={volumePoints} onPress={() => onAction(volume?.action)} />
       </View>
     </View>
   );
@@ -385,7 +402,7 @@ function StrengthCard({ home, onAction, unit }: { home: AthleteHomeV3Projection;
   const available = projectionAvailable(home);
   const value = formatWeightFromKg(strength.current_e1rm_kg, unit, 0) || (available ? 'No history' : 'Unavailable');
   const points = React.useMemo(
-    () => (strength.points || []).map(point => ({ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) })),
+    () => (strength.points || []).flatMap(point => point.value_kg == null ? [] : [{ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) }]),
     [strength.points, unit],
   );
   return (
@@ -508,6 +525,8 @@ function missingMetricLabel(available: boolean, value?: number | null) { return 
 function metricValue(value: number | null | undefined, available: boolean) { return value == null ? (available ? 'No data' : 'Unavailable') : String(value); }
 function normalizedReadiness(value?: number | null) { if (value == null) return null; const parsed = Number(value); return Math.round((parsed <= 5 ? parsed * 2 : parsed) * 10) / 10; }
 function formatReadiness(value: number) { const parsed = normalizedReadiness(value); return parsed == null ? '—' : String(parsed); }
+function formatReadinessDelta(value: number) { const display = Math.round(Number(value) * 20) / 10; return `${display > 0 ? '+' : ''}${display}`; }
+function formatCompactVolumeDelta(value: number, unit: 'kg' | 'lb') { const formatted = formatCompactVolumeValueFromKg(Math.abs(value), unit); return `${value > 0 ? '+' : value < 0 ? '−' : ''}${formatted}`; }
 function stateColor(state: AthleteHomeState) { return state === 'meet' || state === 'achievement' ? '#F0B84B' : state === 'training' ? '#9C4DFF' : state === 'recovery' ? '#43D38A' : '#4AB7FF'; }
 function greetingForNow() { const hour = new Date().getHours(); return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'; }
 function parseDate(value?: string | null) { if (!value) return null; const parsed = new Date(`${value.slice(0, 10)}T12:00:00`); return Number.isNaN(parsed.getTime()) ? null : parsed; }
@@ -581,6 +600,7 @@ const styles = StyleSheet.create({
   cardBody: { color: '#A7A2AC', fontSize: 11, lineHeight: 15 },
   sessionEvidence: { color: '#7C7883', fontSize: 10, lineHeight: 14 },
   sessionAnatomy: { width: 55, height: 88, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  sessionFallbackArt: { width: 64, height: 88, opacity: 0.9 },
   lastMetrics: { marginTop: -1, flexDirection: 'row', paddingVertical: 10, borderBottomLeftRadius: 14, borderBottomRightRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderTopWidth: 0, borderColor: '#30273A', backgroundColor: '#07080C' },
   sectionGap: { gap: 7 },
   trendRow: { flexDirection: 'row', gap: 6 },

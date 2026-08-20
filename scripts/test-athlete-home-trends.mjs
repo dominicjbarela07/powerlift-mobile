@@ -18,6 +18,14 @@ assert.deepEqual(
   ['2026-08-01', '2026-08-08', '2026-08-15'],
   'real observations are ordered chronologically',
 );
+assert.deepEqual(
+  chronologicalHomePoints([
+    { date: '2026-08-01', value: null },
+    { date: '2026-08-08', value: 0 },
+  ]).map((point) => point.value),
+  [0],
+  'missing observations are excluded while a real zero remains plotted',
+);
 
 const spaced = buildHomeLinePlot([
   { date: '2026-08-01', value: 7 },
@@ -50,6 +58,10 @@ assert.doesNotMatch(screen, /react-native-svg|Polyline|function Sparkline/, 'man
 assert.match(screen, /Weekly Total Volume/);
 assert.match(screen, /Reported Bodyweight/);
 assert.match(screen, /e1RM/);
+assert.match(screen, /vs prior 7d/);
+assert.match(screen, /vs prior week/);
+assert.doesNotMatch(screen, /name="barbell-outline"/, 'session cards do not fall back to a generic barbell icon');
+assert.match(screen, /SESSION_RECAP_ARCHIVE_ART[\s\S]*SESSION_FOCUS_ART/, 'session cards use semantic completed/planned artwork when governed anatomy is absent');
 assert.match(plot, /@shopify\/react-native-skia/);
 assert.match(plot, /Line[\s\S]*Circle[\s\S]*Rect|Circle[\s\S]*Rect/, 'real line and bar plot primitives are present');
 

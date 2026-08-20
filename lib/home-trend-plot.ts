@@ -34,6 +34,7 @@ function timestampForDate(value?: string | null) {
 export function chronologicalHomePoints(raw: HomePlotDatum[], limit = 8) {
   const points = raw.flatMap((point) => {
     const timestamp = timestampForDate(point.date);
+    if (point.value == null || (point.value as unknown) === '') return [];
     const value = Number(point.value);
     return timestamp == null || !Number.isFinite(value)
       ? []

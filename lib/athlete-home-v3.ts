@@ -94,7 +94,16 @@ export type HomeTrend = {
   metric?: string | null;
   unit?: string | null;
   latest?: number | null;
+  latest_date?: string | null;
   average_7d?: number | null;
+  delta_vs_prior_7d?: number | null;
+  window_days?: number | null;
+  comparison_span_days?: number | null;
+  comparison_start_date?: string | null;
+  comparison_end_date?: string | null;
+  prior_week_kg?: number | null;
+  delta_kg?: number | null;
+  window_weeks?: number | null;
   points?: { date?: string | null; value?: number | null; value_kg?: number | null }[];
   action?: HomeAction | null;
 };
