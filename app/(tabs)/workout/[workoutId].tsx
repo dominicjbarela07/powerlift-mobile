@@ -9867,22 +9867,16 @@ export default function WorkoutViewerScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-      </Modal>
 
-      <Modal
-        visible={postSessionTimePicker != null}
-        transparent
-        animationType="fade"
-        presentationStyle="overFullScreen"
-        onRequestClose={closePostSessionTimePicker}
-      >
-        <TouchableWithoutFeedback onPress={closePostSessionTimePicker} accessible={false}>
-          <View style={styles.modalBackdropCenter}>
-            <TouchableWithoutFeedback onPress={() => undefined} accessible={false}>
-              <View style={[styles.modalCard, styles.postSessionTimePickerCard]}>
+              {postSessionTimePicker != null ? (
+                <View style={[styles.modalBackdropCenter, styles.postSessionTimePickerOverlay]}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Cancel time changes"
+                    onPress={closePostSessionTimePicker}
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  <View style={[styles.modalCard, styles.postSessionTimePickerCard]}>
                 <View style={styles.postSessionTimePickerHeader}>
                   <View>
                     <Text style={styles.postSessionTimePickerTitle}>
@@ -9964,10 +9958,12 @@ export default function WorkoutViewerScreen() {
                 >
                   <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Done</Text>
                 </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
+                  </View>
+                </View>
+              ) : null}
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Shared rest timer picker (popup modal) */}
@@ -11911,6 +11907,11 @@ const styles = StyleSheet.create({
   postSessionTimePickerCard: {
     width: '100%',
     maxWidth: 420,
+  },
+  postSessionTimePickerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
+    elevation: 20,
   },
   postSessionTimePickerHeader: {
     flexDirection: 'row',

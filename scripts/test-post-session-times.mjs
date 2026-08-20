@@ -82,6 +82,13 @@ const workoutSource = readFileSync(
 assert.match(workoutSource, /postSessionTimePickerDraft/);
 assert.match(workoutSource, /postSessionTimeRow/);
 assert.match(workoutSource, /display="spinner"/);
+assert.match(workoutSource, /postSessionTimePickerOverlay/);
+assert.match(workoutSource, /style=\{StyleSheet\.absoluteFillObject\}/);
+assert.doesNotMatch(
+  workoutSource,
+  /<Modal\s+[\s\S]*?visible=\{postSessionTimePicker != null\}/,
+  'the iOS picker must render inside the reflection modal instead of attempting a second native modal presentation',
+);
 assert.match(workoutSource, /session_started_at: sessionTimes\.startedAt/);
 assert.match(workoutSource, /session_ended_at: sessionTimes\.endedAt/);
 assert.match(workoutSource, /const completed = await completeWorkout/);
