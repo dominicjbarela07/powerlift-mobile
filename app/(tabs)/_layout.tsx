@@ -10,7 +10,7 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { SLAtmosphere } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
-import { getUnreadSummary } from '@/lib/api';
+import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLTypography } from '@/constants/theme';
 import {
   getMobileViewMode,
@@ -26,7 +26,7 @@ function FilteredTabBar({
   isIndividual,
   isUnlinkedAthlete,
   viewMode,
-  hasMeetDate,
+  hasMeetPlan,
   hasMessageNotifications,
   onMessagesTabPress,
   bottomInset,
@@ -35,7 +35,7 @@ function FilteredTabBar({
   isIndividual: boolean;
   isUnlinkedAthlete: boolean;
   viewMode: MobileViewMode;
-  hasMeetDate: boolean;
+  hasMeetPlan: boolean;
   hasMessageNotifications: boolean;
   onMessagesTabPress: () => void;
   bottomInset: number;
@@ -54,7 +54,7 @@ function FilteredTabBar({
           'athlete-calendar',
           'athlete-progression',
           'reflection',
-          ...(hasMeetDate ? ['athlete-meet-plan'] : []),
+          ...(hasMeetPlan ? ['athlete-meet-plan'] : []),
         ];
 
   const messagesRoute =
@@ -174,9 +174,11 @@ export default function TabsLayout() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);
+  const [hasMeetPlan, setHasMeetPlan] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [mobileViewModeLoaded, setMobileViewModeLoaded] = useState(false);
   const unreadPollingRef = useRef(false);
+  const meetPlanPollingRef = useRef(false);
 
   const isCoach = !!user?.is_coach;
   const accountState = user?.account_state;
@@ -200,7 +202,29 @@ export default function TabsLayout() {
       (user.is_coach === true && (user.billing_required === true || user.can_access_product === false))
     );
   const viewMode: MobileViewMode = isIndividual ? 'individual' : isCoach ? mobileViewMode : 'athlete';
-  const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
+
+  const refreshMeetPlanAvailability = useCallback(async () => {
+    if (!user || accessBlocked || isIndividual || isUnlinkedAthlete || viewMode !== 'athlete') {
+      setHasMeetPlan(false);
+      return;
+    }
+    if (meetPlanPollingRef.current) return;
+
+    meetPlanPollingRef.current = true;
+    try {
+      const response = await fetchJson<{ has_meet_plan?: boolean }>(
+        '/meet-planner/mobile/athlete/current',
+        { method: 'GET' }
+      );
+      if (response.ok && response.json) {
+        setHasMeetPlan(response.json.has_meet_plan === true);
+      }
+    } catch (err) {
+      console.warn('Meet plan availability refresh failed', err);
+    } finally {
+      meetPlanPollingRef.current = false;
+    }
+  }, [accessBlocked, isIndividual, isUnlinkedAthlete, user, viewMode]);
 
   useEffect(() => {
     if (!user) {
@@ -336,6 +360,18 @@ export default function TabsLayout() {
     };
   }, [accessBlocked, isIndividual, isUnlinkedAthlete, refreshMessageNotifications, user]);
 
+  useEffect(() => {
+    refreshMeetPlanAvailability();
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        refreshMeetPlanAvailability();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [pathname, refreshMeetPlanAvailability]);
+
   if (!user) {
     return null;
   }
@@ -424,7 +460,7 @@ export default function TabsLayout() {
             isIndividual={isIndividual}
             isUnlinkedAthlete={isUnlinkedAthlete}
             viewMode={viewMode}
-            hasMeetDate={hasMeetDate}
+            hasMeetPlan={hasMeetPlan}
             hasMessageNotifications={hasMessageNotifications}
             onMessagesTabPress={refreshMessageNotifications}
             bottomInset={insets.bottom}
@@ -718,7 +754,7 @@ export default function TabsLayout() {
           name="athlete-meet-plan"
           options={{
             title: 'Meet',
-            href: hasMeetDate ? '/(tabs)/athlete-meet-plan' : null,
+            href: hasMeetPlan ? '/(tabs)/athlete-meet-plan' : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? 'trophy' : 'trophy-outline'}
