@@ -17,6 +17,10 @@ import {
   CreatorSegmentedControl,
   CreatorStepper,
 } from '@/components/creator';
+import {
+  CanonicalAccessoryPicker,
+  type CanonicalAccessorySelection,
+} from '@/components/CanonicalAccessoryPicker';
 
 type CoreDraft = {
   lift: 'SQ'|'BN'|'DL'|'OHP'|'VR';
@@ -2162,12 +2166,36 @@ export default function CreateWorkoutScreen() {
 
   const addAcc = () => {
     const idx = acc.length;
-    setAcc((p) => [
-      ...p,
-      { movement: '', movement_definition_id: null, sets: 3, reps_text: '10-12', rir_target: 2, superset_group: null, superset_pos: null },
-    ]);
+    openMovementPicker('accessory', idx);
+  };
+
+  const applyCanonicalAccessoryMovement = (movement: CanonicalAccessorySelection) => {
+    const picker = movementPickerOpen;
+    if (!picker || picker.kind !== 'accessory') return;
+    const idx = picker.idx;
+    const nextMovement = {
+      movement: movement.display_name,
+      movement_definition_id: movement.id,
+    };
+    setAcc((current) => {
+      if (idx < current.length) {
+        return current.map((row, rowIndex) => rowIndex === idx ? { ...row, ...nextMovement } : row);
+      }
+      return [
+        ...current,
+        {
+          ...nextMovement,
+          sets: 3,
+          reps_text: '10-12',
+          rir_target: 2,
+          superset_group: null,
+          superset_pos: null,
+        },
+      ];
+    });
+    setMovementPickerOpen(null);
+    setMovementSearch('');
     setAccEditorOpen({ idx });
-    setTimeout(() => openMovementPicker('accessory', idx), 0);
   };
 
   const updateAccAt = (idx: number, patch: Partial<AccDraft>) => {
@@ -3620,7 +3648,7 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
           {acc.map((a, idx) => (
             <AccessoryMovementCard
               key={idx}
-              title={a.movement.trim() || `Accessory ${idx + 1}`}
+              title={a.movement.trim() || 'Select governed movement'}
               summary={accessorySummary(a)}
               canMoveUp={canMoveAccUp(idx)}
               canMoveDown={canMoveAccDown(idx)}
@@ -3689,43 +3717,29 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
             <View style={styles.editorSheet}>
               <View style={styles.modalHeader}>
                 <View>
-                  <ThemedText variant="h3" style={styles.modalTitle}>
-                    {movementPickerOpen?.kind === 'accessory' ? 'Choose movement' : 'Edit accessory'}
-                  </ThemedText>
-                  {movementPickerOpen?.kind !== 'accessory' && accEditorOpen && acc[accEditorOpen.idx] ? (
+                  <ThemedText variant="h3" style={styles.modalTitle}>Edit accessory</ThemedText>
+                  {accEditorOpen && acc[accEditorOpen.idx] ? (
                     <ThemedText variant="bodyMuted" style={styles.sectionSubtext}>
-                      {acc[accEditorOpen.idx].movement.trim() || `Accessory ${accEditorOpen.idx + 1}`}
+                      {acc[accEditorOpen.idx].movement.trim() || 'Select governed movement'}
                     </ThemedText>
                   ) : null}
                 </View>
                 <TouchableOpacity
-                  onPress={() => {
-                    if (movementPickerOpen?.kind === 'accessory') {
-                      setMovementPickerOpen(null);
-                      setMovementSearch('');
-                      return;
-                    }
-                    setAccEditorOpen(null);
-                  }}
+                  onPress={() => setAccEditorOpen(null)}
                   style={styles.modalClose}
                   accessibilityLabel="Close accessory editor"
                 >
-                  <ThemedText variant="badge" style={styles.modalCloseText}>
-                    {movementPickerOpen?.kind === 'accessory' ? 'Back' : 'Done'}
-                  </ThemedText>
+                  <ThemedText variant="badge" style={styles.modalCloseText}>Done</ThemedText>
                 </TouchableOpacity>
               </View>
 
-              {movementPickerOpen?.kind === 'accessory' ? (
-                renderMovementPickerBody('accessory')
-              ) : (
-                <ScrollView
-                  style={styles.editorScroll}
-                  contentContainerStyle={styles.editorScrollContent}
-                  keyboardShouldPersistTaps="handled"
-                  keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
-                >
-                  {accEditorOpen && acc[accEditorOpen.idx] ? (() => {
+              <ScrollView
+                style={styles.editorScroll}
+                contentContainerStyle={styles.editorScrollContent}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              >
+                {accEditorOpen && acc[accEditorOpen.idx] ? (() => {
                   const idx = accEditorOpen.idx;
                   const a = acc[idx];
                   const group = normalizeSSGroup(a.superset_group);
@@ -3795,12 +3809,21 @@ const ACCESSORY_REP_PRESETS = ['8-10', '10-12', '12-15', '15-20', 'AMRAP', '30 s
                       </Pressable>
                     </View>
                   );
-                  })() : null}
-                </ScrollView>
-              )}
+                })() : null}
+              </ScrollView>
             </View>
           </KeyboardAvoidingView>
         </Modal>
+
+        <CanonicalAccessoryPicker
+          visible={movementPickerOpen?.kind === 'accessory'}
+          athleteId={Number(athleteId) > 0 ? Number(athleteId) : null}
+          onCancel={() => {
+            setMovementPickerOpen(null);
+            setMovementSearch('');
+          }}
+          onSelect={applyCanonicalAccessoryMovement}
+        />
 
         {/* Movement preset picker */}
         <Modal

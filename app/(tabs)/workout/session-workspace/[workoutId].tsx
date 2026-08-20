@@ -27,6 +27,10 @@ import Animated, {
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
+import {
+  CanonicalAccessoryPicker,
+  type CanonicalAccessorySelection,
+} from '@/components/CanonicalAccessoryPicker';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -872,6 +876,7 @@ export default function MobileSessionWorkspaceScreen() {
             />
             <AccessoryEditorModal
               state={accessoryEditor}
+              athleteId={Number(payload?.athlete?.id) > 0 ? Number(payload?.athlete?.id) : null}
               groups={accessoryGroups}
               loadingGroups={movementGroupsLoading}
               saving={accessorySaving}
@@ -1823,6 +1828,7 @@ function TrainingLiftEditorModal({
 
 function AccessoryEditorModal({
   state,
+  athleteId,
   groups,
   loadingGroups,
   saving,
@@ -1831,6 +1837,7 @@ function AccessoryEditorModal({
   onApply,
 }: {
   state: AccessoryEditorState | null;
+  athleteId: number | null;
   groups: MovementPresetGroup[];
   loadingGroups: boolean;
   saving: boolean;
@@ -1838,8 +1845,8 @@ function AccessoryEditorModal({
   onCancel: () => void;
   onApply: (setup: AccessorySetup) => void | Promise<void>;
 }) {
+  const [identityConfirmed, setIdentityConfirmed] = useState(false);
   const setup = state?.setup || null;
-  const activeGroup = setup ? movementGroupByKey(groups, setup.family) || groups[0] || null : null;
   const title = state?.mode === 'add' ? 'Add accessory' : 'Change accessory';
 
   const patchSetup = (patch: Partial<AccessorySetup>) => {
@@ -1847,28 +1854,28 @@ function AccessoryEditorModal({
     onChange({ ...setup, ...patch });
   };
 
-  const chooseFamily = (group: MovementPresetGroup) => {
-    const first = group.movements?.[0] || null;
-    const name = movementPresetName(first);
-    patchSetup({
-      family: group.key,
-      movement: name || setup?.movement || '',
-      movementDefinitionId: movementPresetId(first),
-    });
-  };
+  useEffect(() => {
+    setIdentityConfirmed(false);
+  }, [state?.item?.id, state?.mode]);
 
-  const chooseMovement = (movement: MovementPreset | string) => {
-    if (!activeGroup) return;
-    const name = movementPresetName(movement);
+  const chooseCanonicalMovement = (movement: CanonicalAccessorySelection) => {
     patchSetup({
-      movement: name,
-      movementDefinitionId: movementPresetId(movement),
-      family: activeGroup.key,
+      movement: movement.display_name,
+      movementDefinitionId: movement.id,
+      family: String(movement.primary_muscle_group || setup?.family || 'accessory'),
     });
+    setIdentityConfirmed(true);
   };
 
   return (
-    <Modal visible={!!state} transparent animationType="fade" onRequestClose={onCancel}>
+    <>
+      <CanonicalAccessoryPicker
+        visible={!!state && !identityConfirmed}
+        athleteId={athleteId}
+        onCancel={onCancel}
+        onSelect={chooseCanonicalMovement}
+      />
+      <Modal visible={!!state && identityConfirmed} transparent animationType="fade" onRequestClose={onCancel}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.accessoryEditorKeyboardWrap}
@@ -1901,51 +1908,22 @@ function AccessoryEditorModal({
                 keyboardDismissMode="on-drag"
               >
                 <TrainingLiftSection title="Movement">
-                  {loadingGroups ? (
-                    <View style={styles.trainingLiftLoadingRow}>
-                      <ActivityIndicator color={colors.violet} />
-                      <Text style={styles.trainingLiftMuted}>Loading accessory presets...</Text>
-                    </View>
-                  ) : null}
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trainingLiftFamilyRow}>
-                    {groups.map((group) => {
-                      const selected = group.key === activeGroup?.key;
-                      return (
-                        <Pressable
-                          key={group.key}
-                          accessibilityRole="button"
-                          accessibilityState={{ selected }}
-                          onPress={() => chooseFamily(group)}
-                          style={({ pressed }) => [
-                            styles.trainingLiftFamilyButton,
-                            selected && styles.trainingLiftFamilyButtonActive,
-                            pressed && styles.pressed,
-                          ]}
-                        >
-                          <Text style={[styles.trainingLiftFamilyText, selected && styles.trainingLiftFamilyTextActive]}>
-                            {group.name}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
                   <View style={styles.trainingLiftCardGrid}>
-                    {(activeGroup?.movements || []).slice(0, 18).map((movement) => {
-                      const name = movementPresetName(movement);
-                      const selected = name === setup.movement;
-                      return (
-                        <TrainingLiftOptionCard
-                          key={`${activeGroup?.key}-${name}`}
-                          title={name}
-                          detail={activeGroup?.name || 'Accessory movement'}
-                          selected={selected}
-                          tone="amber"
-                          onPress={() => chooseMovement(movement)}
-                        />
-                      );
-                    })}
+                    <TrainingLiftOptionCard
+                      title={setup.movement || 'Governed accessory movement'}
+                      detail="Canonical movement identity confirmed"
+                      selected
+                      tone="amber"
+                      onPress={() => setIdentityConfirmed(false)}
+                    />
                   </View>
-                  <Text style={styles.trainingLiftMuted}>New accessories use governed catalog identity. Create custom movements from the full movement library.</Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setIdentityConfirmed(false)}
+                    style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.trainingLiftActionSecondaryText}>Change Movement</Text>
+                  </Pressable>
                 </TrainingLiftSection>
 
                 <TrainingLiftSection title="Movement Notes">
@@ -1988,7 +1966,8 @@ function AccessoryEditorModal({
           </Pressable>
         </Pressable>
       </KeyboardAvoidingView>
-    </Modal>
+      </Modal>
+    </>
   );
 }
 
