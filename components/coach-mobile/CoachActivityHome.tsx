@@ -64,7 +64,6 @@ import {
 
 const PR_MEDALLION = require('@/assets/images/ledger-index-v2/ledger-career-pr-medallion-v1.png');
 const PROGRAM_ART = require('@/assets/images/logger-renders/plate-stack-studio-v2/mobile-hero-240x160@3x/squat-405.png');
-const VIDEO_FALLBACK = require('@/assets/images/gym_vibe.jpg');
 const QUEUE_PREVIEW_LIMIT = 6;
 
 const FILTERS: { id: 'all' | CoachHomeActivityType; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -544,13 +543,42 @@ function SwipeActivityCard({ activity, displayUnit, onDismiss, onOpen, onOpenAth
   );
 }
 
+function ActivityVideoArtwork({ thumbnailUrl }: { thumbnailUrl?: string | null }) {
+  const [thumbnailFailed, setThumbnailFailed] = useState(false);
+
+  useEffect(() => {
+    setThumbnailFailed(false);
+  }, [thumbnailUrl]);
+
+  const showThumbnail = Boolean(thumbnailUrl && !thumbnailFailed);
+  return (
+    <View style={styles.artwork}>
+      {showThumbnail ? (
+        <Image
+          accessibilityIgnoresInvertColors
+          onError={() => setThumbnailFailed(true)}
+          resizeMode="cover"
+          source={{ uri: thumbnailUrl! }}
+          style={styles.videoThumbnail}
+        />
+      ) : (
+        <View style={styles.videoFallback}>
+          <Ionicons color={COACH_V2.subtle} name="videocam-outline" size={28} />
+        </View>
+      )}
+      {showThumbnail ? <View pointerEvents="none" style={styles.videoScrim} /> : null}
+      <View pointerEvents="none" style={styles.videoPlay}><Ionicons color="#FFF" name="play" size={15} /></View>
+    </View>
+  );
+}
+
 function ActivityArtwork({ activity }: { activity: CoachHomeActivity }) {
   const kind = activity.artwork?.kind;
   if (kind === 'performed_anatomy') {
     return <View style={styles.artwork}><LinearGradient colors={['#17101F', '#07090D']} style={StyleSheet.absoluteFillObject} /><MuscleMap primary={anatomyKeys(activity.artwork?.muscle_keys || activity.evidence.muscle_keys)} showFrame={false} size="thumbnail" style={styles.anatomy} /></View>;
   }
   if (kind === 'video_thumbnail') {
-    return <View style={styles.artwork}><Image resizeMode="cover" source={activity.artwork?.thumbnail_url ? { uri: activity.artwork.thumbnail_url } : VIDEO_FALLBACK} style={StyleSheet.absoluteFillObject} /><View style={styles.videoPlay}><Ionicons color="#FFF" name="play" size={18} /></View></View>;
+    return <ActivityVideoArtwork thumbnailUrl={activity.artwork?.thumbnail_url} />;
   }
   if (kind === 'pr_medallion') {
     return <View style={[styles.artwork, styles.prArtwork]}><Image resizeMode="contain" source={PR_MEDALLION} style={styles.prImage} /><View style={styles.prSeal}><Text style={styles.prSealText}>PR</Text></View></View>;
@@ -693,7 +721,10 @@ const styles = StyleSheet.create({
   activityCard: { minHeight: 112, borderRadius: 12, borderWidth: 1, borderColor: '#2B2F3A', backgroundColor: '#090B11', flexDirection: 'row', alignItems: 'center', gap: 10, padding: 8, paddingRight: 10 },
   artwork: { width: 92, height: 94, borderRadius: 10, overflow: 'hidden', borderWidth: 1, borderColor: '#282C35', backgroundColor: '#080A0F', alignItems: 'center', justifyContent: 'center' },
   anatomy: { transform: [{ scale: 1.2 }] },
-  videoPlay: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(0,0,0,.68)', borderWidth: 1, borderColor: 'rgba(255,255,255,.38)', alignItems: 'center', justifyContent: 'center', paddingLeft: 2 },
+  videoThumbnail: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
+  videoFallback: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: '#10131A' },
+  videoScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,.16)' },
+  videoPlay: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(0,0,0,.48)', borderWidth: 1, borderColor: 'rgba(255,255,255,.5)', alignItems: 'center', justifyContent: 'center', paddingLeft: 2 },
   prArtwork: { backgroundColor: '#160E02', borderColor: '#624816' },
   prImage: { width: 82, height: 82 },
   prSeal: { position: 'absolute', width: 49, height: 49, borderRadius: 25, borderWidth: 2, borderColor: '#FFD86A', backgroundColor: 'rgba(47,29,2,.93)', alignItems: 'center', justifyContent: 'center', shadowColor: '#FFB323', shadowOpacity: 0.8, shadowRadius: 10 },

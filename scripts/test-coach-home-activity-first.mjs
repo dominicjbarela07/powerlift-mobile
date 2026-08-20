@@ -36,6 +36,16 @@ for (const visual of [
 }
 assert.match(home, /<MuscleMap/);
 assert.match(home, /thumbnail_url/);
+assert.match(home, /function ActivityVideoArtwork/);
+assert.match(home, /source=\{\{ uri: thumbnailUrl! \}\}/);
+assert.match(home, /resizeMode="cover"/);
+assert.match(home, /style=\{styles\.videoThumbnail\}/);
+assert.match(home, /onError=\{\(\) => setThumbnailFailed\(true\)\}/);
+assert.match(home, /showThumbnail \? <View pointerEvents="none" style=\{styles\.videoScrim\}/);
+assert.match(home, /videoThumbnail: \{ \.\.\.StyleSheet\.absoluteFillObject, width: '100%', height: '100%' \}/);
+assert.match(home, /videoFallback: \{ \.\.\.StyleSheet\.absoluteFillObject/);
+assert.doesNotMatch(home, /VIDEO_FALLBACK/);
+assert.doesNotMatch(home, /<VideoView|useVideoPlayer/);
 assert.match(home, /PR_MEDALLION/);
 assert.match(home, /<ReadinessRing/);
 assert.match(home, /PROGRAM_ART/);
