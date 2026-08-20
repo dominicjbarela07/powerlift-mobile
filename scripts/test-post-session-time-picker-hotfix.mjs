@@ -12,6 +12,10 @@ assert.equal(parseSessionLifecycleInstant('2026-08-20T15:00:00')?.toISOString(),
 assert.equal(parseSessionLifecycleInstant('2026-08-20T08:00:00-07:00')?.toISOString(), '2026-08-20T15:00:00.000Z');
 
 const draft = createSessionTimeDraft('2026-08-20T15:00:00', new Date('2026-08-20T16:30:00.000Z'));
+assert.equal(
+  createSessionTimeDraft('2026-08-20T15:00:00', new Date('2026-08-21T16:30:00.000Z'), 5400).end.toISOString(),
+  '2026-08-20T16:30:00.000Z',
+);
 assert.equal(formatSessionTimeLabel(draft.start, {
   sessionDate: '2026-08-20',
   timeZone: 'America/Los_Angeles',

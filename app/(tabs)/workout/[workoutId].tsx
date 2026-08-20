@@ -3357,7 +3357,12 @@ export default function WorkoutViewerScreen() {
   }, []);
 
   const openPostSessionSurvey = () => {
-    const timeDraft = createSessionTimeDraft(data?.workout?.started_at, new Date());
+    const isCompleted = String(data?.workout?.status || '').toLowerCase() === 'completed';
+    const timeDraft = createSessionTimeDraft(
+      data?.workout?.started_at,
+      new Date(),
+      isCompleted ? data?.workout?.completed_duration_seconds : null,
+    );
     setPostSessionForm({
       sessionRpe: null,
       strengthFeeling: '',
