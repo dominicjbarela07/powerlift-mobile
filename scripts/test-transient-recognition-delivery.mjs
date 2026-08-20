@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 import {
   attachTransientRecognitionDelivery,
@@ -211,5 +212,35 @@ assert.notEqual(recognitionDeliveryId(afterReset[0]), recognitionDeliveryId(resp
 // duration, not by changing recognition eligibility or delivery.
 assert.equal(feedbackMotionDuration(500, true), 0);
 assert.equal(feedbackMotionDuration(500, false), 500);
+
+// The Session's one-second wall clock causes ordinary React rerenders. The
+// choreography must be keyed only by the canonical transient delivery and
+// must read haptic/phase callbacks through refs so those rerenders cannot
+// restart phase one or duplicate haptics.
+const canonicalRecognitionSource = fs.readFileSync(
+  new URL('../components/workout-logger/canonical-record-recognition.tsx', import.meta.url),
+  'utf8',
+);
+const feedbackSurfaceSource = fs.readFileSync(
+  new URL('../components/workout-logger/logger-feedback.tsx', import.meta.url),
+  'utf8',
+);
+const milestoneSource = fs.readFileSync(
+  new URL('../components/workout-logger/major-volume-milestone-recognition.tsx', import.meta.url),
+  'utf8',
+);
+const loggerScreenSource = fs.readFileSync(
+  new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url),
+  'utf8',
+);
+assert.match(loggerScreenSource, /setInterval\(\(\) => setSessionNowMs\(Date\.now\(\)\), 1000\)/);
+assert.match(canonicalRecognitionSource, /const onImpactRef = useRef\(onImpact\)/);
+assert.match(canonicalRecognitionSource, /onImpactRef\.current\?\.\(\)/);
+assert.doesNotMatch(canonicalRecognitionSource, /\], \[[^\]]*onImpact[^\]]*\]\);/);
+assert.match(feedbackSurfaceSource, /animationKey=\{recognitionDeliveryId\(event\)\}/);
+assert.match(feedbackSurfaceSource, /presentedDeliveryIdRef\.current === deliveryId/);
+assert.match(feedbackSurfaceSource, /const onSettleRef = useRef\(onSettle\)/);
+assert.match(milestoneSource, /const onPhaseChangeRef = useRef\(onPhaseChange\)/);
+assert.doesNotMatch(milestoneSource, /\], \[[^\]]*onImpact[^\]]*\]\);/);
 
 console.log('[transient-recognition-delivery] timer handoff, presentation start, replay, reset reuse, durable separation, variants, and invalidation passed');

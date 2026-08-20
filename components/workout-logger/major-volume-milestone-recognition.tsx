@@ -146,6 +146,10 @@ export function MajorVolumeMilestoneRecognition({
   const accent = presentation.liftFamily ? LIFT_ACCENT[presentation.liftFamily] : '#D9A84D';
   const progress = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
   const [risingTotalKg, setRisingTotalKg] = useState(presentation.previousTotalKg);
+  const onPhaseChangeRef = useRef(onPhaseChange);
+  const onImpactRef = useRef(onImpact);
+  onPhaseChangeRef.current = onPhaseChange;
+  onImpactRef.current = onImpact;
 
   const phaseDurations = useMemo(() => {
     const entrance = previewMotion?.entranceMs ?? 360;
@@ -174,8 +178,8 @@ export function MajorVolumeMilestoneRecognition({
     setRisingTotalKg(presentation.previousTotalKg);
     if (reduceMotion) {
       progress.setValue(1);
-      onPhaseChange?.('8 · Resolve');
-      onImpact?.();
+      onPhaseChangeRef.current?.('8 · Resolve');
+      onImpactRef.current?.();
       return undefined;
     }
     progress.setValue(0);
@@ -194,8 +198,8 @@ export function MajorVolumeMilestoneRecognition({
     let elapsed = 0;
     phases.forEach((phase, index) => {
       timers.push(setTimeout(() => {
-        onPhaseChange?.(phase);
-        if (index === 3) onImpact?.();
+        onPhaseChangeRef.current?.(phase);
+        if (index === 3) onImpactRef.current?.();
       }, elapsed));
       elapsed += phaseDurations[index];
       if (index === EARNED_ARTIFACT_PHASE_INDEX) elapsed += settledHeroHoldMs;
@@ -224,7 +228,7 @@ export function MajorVolumeMilestoneRecognition({
       progress.removeListener(listener);
       timers.forEach(clearTimeout);
     };
-  }, [event.id, onImpact, onPhaseChange, phaseDurations, presentation.previousTotalKg, presentation.thresholdLb, progress, reduceMotion, settledHeroHoldMs]);
+  }, [event.id, phaseDurations, presentation.previousTotalKg, presentation.thresholdLb, progress, reduceMotion, settledHeroHoldMs]);
 
   const ledgerOpacity = progress.interpolate({ inputRange: [0, 0.1, 0.22, 0.63, 0.9, 1], outputRange: [0, 0.2, 0.72, 0.32, 0.1, 0] });
   const systemOpacity = progress.interpolate({ inputRange: [0, 0.1, 0.22, 0.51, 0.63], outputRange: [0, 0, 1, 1, 0] });

@@ -14,7 +14,7 @@ import {
   type CanonicalRecordRecognitionPhase,
 } from '@/components/workout-logger/canonical-record-recognition';
 import { SLColors, SLIconSize, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
-import { feedbackMotionDuration, recognitionPresentation, recognitionVisibleDuration, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
+import { feedbackMotionDuration, recognitionDeliveryId, recognitionPresentation, recognitionVisibleDuration, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import {
   triggerMajorVolumeMilestoneHaptic,
   triggerRecognitionImpactHaptic,
@@ -136,7 +136,7 @@ export function RecordReplacementHero({
   onImpact,
   onSettle,
 }: {
-  animationKey: number;
+  animationKey: string | number;
   eyebrow: string;
   movementLabel: string;
   previousValue: string | null;
@@ -183,7 +183,7 @@ export function RpeEfficiencyHero({
   onImpact,
   onSettle,
 }: {
-  animationKey: number;
+  animationKey: string | number;
   movementLabel: string;
   workload: string;
   previousRpe: string;
@@ -210,6 +210,12 @@ export function RpeEfficiencyHero({
   const trophyScale = useRef(new Animated.Value(1)).current;
   const evidenceOpacity = useRef(new Animated.Value(0)).current;
   const evidenceTranslateY = useRef(new Animated.Value(14)).current;
+  const onPhaseChangeRef = useRef(onPhaseChange);
+  const onImpactRef = useRef(onImpact);
+  const onSettleRef = useRef(onSettle);
+  onPhaseChangeRef.current = onPhaseChange;
+  onImpactRef.current = onImpact;
+  onSettleRef.current = onSettle;
 
   useEffect(() => {
     const values = [
@@ -231,7 +237,7 @@ export function RpeEfficiencyHero({
       trophyScale.setValue(1);
       evidenceOpacity.setValue(1);
       evidenceTranslateY.setValue(0);
-      onPhaseChange?.('8 · Complete');
+      onPhaseChangeRef.current?.('8 · Complete');
       return undefined;
     }
 
@@ -262,29 +268,29 @@ export function RpeEfficiencyHero({
     trophyScale.setValue(1);
     evidenceOpacity.setValue(0);
     evidenceTranslateY.setValue(14);
-    onPhaseChange?.('1 · Former effort');
+    onPhaseChangeRef.current?.('1 · Former effort');
 
     timers.push(setTimeout(() => {
       setPhaseLabel('NEW ATTEMPT');
-      onPhaseChange?.('2 · New attempt');
+      onPhaseChangeRef.current?.('2 · New attempt');
     }, approachAt));
     timers.push(setTimeout(() => {
-      onPhaseChange?.('3 · Better execution takes over');
-      onImpact?.();
+      onPhaseChangeRef.current?.('3 · Better execution takes over');
+      onImpactRef.current?.();
     }, displacementAt));
     timers.push(setTimeout(() => {
       setPhaseLabel('MORE EFFICIENT');
-      onPhaseChange?.('4 · More efficient');
+      onPhaseChangeRef.current?.('4 · More efficient');
     }, victoryAt));
-    timers.push(setTimeout(() => onPhaseChange?.('5 · Victory hold'), holdAt));
+    timers.push(setTimeout(() => onPhaseChangeRef.current?.('5 · Victory hold'), holdAt));
     timers.push(setTimeout(() => {
       setPhaseLabel('MOVEMENT EFFICIENCY');
-      onPhaseChange?.('6 · Evidence transition');
+      onPhaseChangeRef.current?.('6 · Evidence transition');
     }, transitionAt));
-    timers.push(setTimeout(() => onPhaseChange?.('7 · Final evidence'), evidenceAt));
+    timers.push(setTimeout(() => onPhaseChangeRef.current?.('7 · Final evidence'), evidenceAt));
     timers.push(setTimeout(() => {
-      onPhaseChange?.('8 · Complete');
-      onSettle?.();
+      onPhaseChangeRef.current?.('8 · Complete');
+      onSettleRef.current?.();
     }, completeAt));
 
     const sequence = Animated.sequence([
@@ -337,7 +343,7 @@ export function RpeEfficiencyHero({
       sequence.stop();
       timers.forEach(clearTimeout);
     };
-  }, [animationKey, atmosphereOpacity, challengerOpacity, challengerScale, challengerTranslateY, evidenceOpacity, evidenceTranslateY, formerOpacity, formerTranslateY, groundOpacity, groundScale, heroOpacity, onImpact, onPhaseChange, onSettle, playbackRate, previewMotion?.entranceMs, previewMotion?.phaseDelayMs, previewMotion?.spatialMs, previewMotion?.stateMs, reduceMotion, trophyScale, trophyTranslateY]);
+  }, [animationKey, atmosphereOpacity, challengerOpacity, challengerScale, challengerTranslateY, evidenceOpacity, evidenceTranslateY, formerOpacity, formerTranslateY, groundOpacity, groundScale, heroOpacity, playbackRate, previewMotion?.entranceMs, previewMotion?.phaseDelayMs, previewMotion?.spatialMs, previewMotion?.stateMs, reduceMotion, trophyScale, trophyTranslateY]);
 
   return (
     <View style={styles.rpeBody}>
@@ -429,6 +435,7 @@ export function LoggerFeedbackSurface({
   const contentOpacity = useRef(new Animated.Value(1)).current;
   const surfaceScale = useRef(new Animated.Value(0.985)).current;
   const activeAnimationEventId = useRef<number | null>(null);
+  const presentedDeliveryIdRef = useRef<string | null>(null);
   const presentation = useMemo(() => event ? recognitionPresentation(event, displayUnit) : null, [displayUnit, event]);
   const motionConfig = recognitionMotionConfig(event?.event_type);
   const repCount = Number(event?.evidence?.rep_count ?? event?.evidence?.actual_reps ?? String(event?.comparison_bucket || '').replace(/^reps:/, ''));
@@ -597,7 +604,14 @@ export function LoggerFeedbackSurface({
   }, [contentOpacity, evidenceOpacity, event, isKnownCompletion, isMajorVolumeMilestone, isRpeEfficiency, isStrengthPrReplacement, labelOpacity, playbackRate, presentation, previewMotion?.spring, reduceMotion, spatialMs, staggerMs, stateMs, trophyOpacity, trophyRotate, trophyScale, valueOpacity, valueTranslateY]);
 
   useEffect(() => {
-    if (presentation && event) onPresentationStarted(event);
+    if (!presentation || !event) {
+      presentedDeliveryIdRef.current = null;
+      return;
+    }
+    const deliveryId = recognitionDeliveryId(event);
+    if (presentedDeliveryIdRef.current === deliveryId) return;
+    presentedDeliveryIdRef.current = deliveryId;
+    onPresentationStarted(event);
   }, [event, onPresentationStarted, presentation]);
 
   useEffect(() => {
@@ -655,7 +669,7 @@ export function LoggerFeedbackSurface({
               />
             ) : isStrengthPrReplacement && event ? (
               <RecordReplacementHero
-                animationKey={event.id}
+                animationKey={recognitionDeliveryId(event)}
                 eyebrow={presentation.eyebrow}
                 movementLabel={event.movement_label || 'Core movement'}
                 previousValue={presentation.detail?.replace(/^Previous\s+/, '') ?? null}
@@ -671,7 +685,7 @@ export function LoggerFeedbackSurface({
               />
             ) : isRpeEfficiency && event ? (
               <RpeEfficiencyHero
-                animationKey={event.id}
+                animationKey={recognitionDeliveryId(event)}
                 movementLabel={event.movement_label || 'Core movement'}
                 workload={presentation.workload ?? presentation.progression ?? 'Matched workload'}
                 previousRpe={presentation.detail?.replace(/^Previous\s+/, '') ?? 'Previous effort'}
@@ -723,7 +737,7 @@ export function LoggerFeedbackSurface({
                 </View>
             </Animated.View>}
             <FeedbackLifetimeBar
-              animationKey={event?.id ?? null}
+              animationKey={event ? recognitionDeliveryId(event) : null}
               duration={recognitionVisibleDuration(event)}
               reduceMotion={reduceMotion}
               playbackRate={playbackRate}

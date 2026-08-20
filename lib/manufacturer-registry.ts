@@ -25,7 +25,8 @@ export type ManufacturerLogoAssetKey =
   | 'star-trac'
   | 'torque-fitness'
   | 'sportsart'
-  | 'newtech';
+  | 'newtech'
+  | 'icarian';
 
 export type ManufacturerRegistryEntry = Readonly<{
   key: string;
@@ -256,6 +257,14 @@ export const MANUFACTURER_REGISTRY: readonly ManufacturerRegistryEntry[] = Objec
     logoAssetKey: 'newtech',
     logoSurface: 'light',
     opticalScale: 0.9,
+  },
+  {
+    key: 'icarian',
+    displayName: 'Icarian',
+    aliases: ['icarian', 'icarian fitness', 'precor icarian'],
+    logoAssetKey: 'icarian',
+    logoSurface: 'light',
+    opticalScale: 0.94,
   },
 ]);
 

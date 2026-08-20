@@ -36,4 +36,5 @@ export const MANUFACTURER_LOGO_ASSETS: Readonly<
   'torque-fitness': require('@/assets/images/manufacturer-logos/runtime/torque-fitness.png'),
   sportsart: require('@/assets/images/manufacturer-logos/runtime/sportsart.png'),
   newtech: require('@/assets/images/manufacturer-logos/runtime/newtech.png'),
+  icarian: require('@/assets/images/manufacturer-logos/runtime/icarian.png'),
 });

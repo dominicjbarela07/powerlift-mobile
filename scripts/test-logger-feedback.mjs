@@ -351,7 +351,7 @@ assert.equal(finalAssignedSetOpportunity('Squat', [
 assert.equal(finalAssignedSetOpportunity('Squat', [{ state: 'locked' }]), null);
 
 assert.equal(recognitionVisibleDuration(event(401, 'CORE_WEIGHT_PR')), 5000);
-assert.equal(recognitionVisibleDuration(event(402, 'CORE_BLOCK_WEIGHT_BEST')), 3400);
+assert.equal(recognitionVisibleDuration(event(402, 'CORE_BLOCK_WEIGHT_BEST')), 4200);
 assert.equal(recognitionVisibleDuration(event(403, 'CORE_PRESCRIPTION_COMPLETED')), 2200);
 assert.equal(recognitionVisibleDuration(volumeMilestone(404, 'TOTAL_LIFETIME_VOLUME_MILESTONE')), 7000);
 

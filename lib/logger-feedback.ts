@@ -694,6 +694,9 @@ export function recognitionVisibleDuration(event: LoggerRecognitionEvent | null)
   if (MAJOR_VOLUME_MILESTONE_EVENT_TYPES.has(event.event_type)) return 7000;
   if (event.event_type === 'CORE_RPE_PR') return 4200;
   if (CAREER_EVENT_TYPES.has(event.event_type)) return 5000;
-  if (BLOCK_EVENT_TYPES.has(event.event_type)) return 3400;
+  // The canonical record-takeover reaches its final settled comparison at
+  // 3,911 ms with production motion tokens. Keep a short settled hold before
+  // dismissal; animation stability is enforced independently by delivery ID.
+  if (BLOCK_EVENT_TYPES.has(event.event_type)) return 4200;
   return 2200;
 }

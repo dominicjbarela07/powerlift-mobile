@@ -130,7 +130,7 @@ assert.deepEqual(selectCelebrationEvents([
 
 // Career accomplishments receive more stillness than block or completion events.
 assert.equal(recognitionVisibleDuration(event(20, 'CORE_WEIGHT_PR', 20)), 5000);
-assert.equal(recognitionVisibleDuration(event(21, 'CORE_BLOCK_WEIGHT_BEST', 40)), 3400);
+assert.equal(recognitionVisibleDuration(event(21, 'CORE_BLOCK_WEIGHT_BEST', 40)), 4200);
 assert.equal(recognitionVisibleDuration(event(22, 'CORE_PRESCRIPTION_COMPLETED', 80)), 2200);
 
 console.log('[logger-reward-loop] anticipation, action, hierarchy, safety, and timing tests passed');

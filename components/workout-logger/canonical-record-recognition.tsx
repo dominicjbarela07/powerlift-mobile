@@ -21,7 +21,7 @@ export type CanonicalRecordRecognitionPhase =
   | '8 · Final settled state';
 
 type Props = {
-  animationKey: number;
+  animationKey: string | number;
   movementLabel: string;
   previousValue: string | null;
   nextValue: string;
@@ -107,6 +107,12 @@ export function CanonicalRecordRecognition({
   const evidenceNewOpacity = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
   const evidenceNewTranslateX = useRef(new Animated.Value(reduceMotion ? 0 : 22)).current;
   const evidenceDetailsOpacity = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+  const onPhaseChangeRef = useRef(onPhaseChange);
+  const onImpactRef = useRef(onImpact);
+  const onSettleRef = useRef(onSettle);
+  onPhaseChangeRef.current = onPhaseChange;
+  onImpactRef.current = onImpact;
+  onSettleRef.current = onSettle;
 
   const approachDistance = 112 + clamp(motion.distancePx, 0, 40) * 1.5;
   const displacementDistance = 66 + clamp(motion.distancePx, 0, 40);
@@ -125,7 +131,7 @@ export function CanonicalRecordRecognition({
     values.forEach((value) => value.stopAnimation());
     const timers: ReturnType<typeof setTimeout>[] = [];
     const atRate = (duration: number) => reduceMotion ? 0 : Math.round(duration / Math.max(0.1, playbackRate));
-    const phase = (value: CanonicalRecordRecognitionPhase) => onPhaseChange?.(value);
+    const phase = (value: CanonicalRecordRecognitionPhase) => onPhaseChangeRef.current?.(value);
 
     if (reduceMotion) {
       setRecordState('New Best');
@@ -168,12 +174,12 @@ export function CanonicalRecordRecognition({
     const settledAt = comparisonAt + evidenceStepMs * 3 + evidenceStaggerMs * 2;
 
     timers.push(setTimeout(() => phase('2 · Challenger approaches'), approachAt));
-    timers.push(setTimeout(() => { phase('3 · Displacement impact'); onImpact?.(); }, impactAt));
+    timers.push(setTimeout(() => { phase('3 · Displacement impact'); onImpactRef.current?.(); }, impactAt));
     timers.push(setTimeout(() => { setRecordState('New Best'); phase('4 · Victory moment'); }, victoryAt));
     timers.push(setTimeout(() => phase('5 · Settle and breathe'), breatheAt));
     timers.push(setTimeout(() => phase('6 · Evidence reveal begins'), evidenceAt));
     timers.push(setTimeout(() => phase('7 · Complete comparison'), comparisonAt));
-    timers.push(setTimeout(() => { phase('8 · Final settled state'); onSettle?.(); }, settledAt));
+    timers.push(setTimeout(() => { phase('8 · Final settled state'); onSettleRef.current?.(); }, settledAt));
 
     const animation = Animated.sequence([
       Animated.parallel([
@@ -282,7 +288,7 @@ export function CanonicalRecordRecognition({
     ]);
     animation.start();
     return () => { animation.stop(); timers.forEach(clearTimeout); };
-  }, [animationKey, approachDistance, bloomOpacity, bloomScale, celebrationIntensity, displacementDistance, evidenceArrowOpacity, evidenceArrowScale, evidenceDetailsOpacity, evidenceNewOpacity, evidenceNewTranslateX, evidenceOldOpacity, evidenceOldTranslateX, evidenceOpacity, evidenceTranslateY, fragmentOpacity, fragmentProgress, groundLineOpacity, groundLineScale, headerTrophyScale, headerTrophyTranslateY, heroOpacity, heroTranslateY, impactScale, motion.entranceMs, motion.phaseDelayMs, motion.spatialMs, motion.staggerMs, motion.stateMs, newOpacity, newScale, newTranslateY, oldOpacity, oldScale, oldTranslateY, onImpact, onPhaseChange, onSettle, playbackRate, rayOpacity, reduceMotion, surfaceResponse, trophyOpacity, trophyScale, trophyTranslateY]);
+  }, [animationKey, approachDistance, bloomOpacity, bloomScale, celebrationIntensity, displacementDistance, evidenceArrowOpacity, evidenceArrowScale, evidenceDetailsOpacity, evidenceNewOpacity, evidenceNewTranslateX, evidenceOldOpacity, evidenceOldTranslateX, evidenceOpacity, evidenceTranslateY, fragmentOpacity, fragmentProgress, groundLineOpacity, groundLineScale, headerTrophyScale, headerTrophyTranslateY, heroOpacity, heroTranslateY, impactScale, motion.entranceMs, motion.phaseDelayMs, motion.spatialMs, motion.staggerMs, motion.stateMs, newOpacity, newScale, newTranslateY, oldOpacity, oldScale, oldTranslateY, playbackRate, rayOpacity, reduceMotion, surfaceResponse, trophyOpacity, trophyScale, trophyTranslateY]);
 
   return (
     <View accessible accessibilityLabel={accessibilityLabel} style={styles.stage}>
