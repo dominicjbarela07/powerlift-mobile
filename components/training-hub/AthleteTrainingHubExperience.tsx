@@ -14,6 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
+import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
@@ -105,6 +106,11 @@ export type AthleteTrainingSession = {
   accessoryCount?: number | null;
   movements?: AthleteTrainingMovement[];
   focusMuscles?: string[];
+  muscleFocus?: {
+    primary: string[];
+    secondary: string[];
+    source?: string | null;
+  } | null;
   recap?: AthleteTrainingSessionRecap | null;
 };
 
@@ -176,6 +182,8 @@ export type AthleteTrainingHubData = {
   athleteName?: string | null;
   profilePhotoUrl?: string | null;
   profilePhotoVersion?: string | null;
+  athleteSex?: string | null;
+  anatomyDisplayPreference?: string | null;
   preferredUnits?: 'kg' | 'lb';
   activeProgram?: AthleteTrainingProgram | null;
   previousProgram?: AthleteTrainingHistory | null;
@@ -265,7 +273,7 @@ export function AthleteTrainingHubExperience({
       </Pressable>
 
       {data.previousWeekRecap ? (
-        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'lb'} />
+        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'kg'} />
       ) : null}
 
       {data.coachUpdates?.length ? (
@@ -289,7 +297,7 @@ export function AthleteTrainingHubExperience({
               key={week.key}
               onOpenSession={setSelectedSessionId}
               onToggle={() => setExpandedWeekKey((current) => current === week.key ? null : week.key)}
-              unit={data.preferredUnits || 'lb'}
+              unit={data.preferredUnits || 'kg'}
               week={week}
             />
           ))}
@@ -297,6 +305,7 @@ export function AthleteTrainingHubExperience({
       ) : null}
 
       <TrainingHubSessionPreviewBottomSheet
+        athlete={{ sex: data.athleteSex, anatomy_display_preference: data.anatomyDisplayPreference }}
         context={selectedSessionContext}
         onClose={() => setSelectedSessionId(null)}
         onOpen={() => {
@@ -307,7 +316,7 @@ export function AthleteTrainingHubExperience({
         }}
         program={program}
         session={selectedSession}
-        unit={data.preferredUnits || 'lb'}
+        unit={data.preferredUnits || 'kg'}
       />
     </View>
   );
@@ -491,11 +500,13 @@ function SessionCard({ session, onPress, unit }: { session: AthleteTrainingSessi
   );
 }
 
-function SessionPreviewSheet({ session, program, onClose, onOpen, unit }: { session: AthleteTrainingSession | null; program: AthleteTrainingProgram; onClose: () => void; onOpen: () => void; unit: 'kg' | 'lb' }) {
+function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit }: { session: AthleteTrainingSession | null; program: AthleteTrainingProgram; athlete: { sex?: string | null; anatomy_display_preference?: string | null }; onClose: () => void; onOpen: () => void; unit: 'kg' | 'lb' }) {
   const insets = useSafeAreaInsets();
   if (!session) return null;
   const completed = session.status === 'completed';
   const accent = completed ? SLColors.success : session.status === 'in_progress' ? SLColors.warning : SLColors.accentViolet;
+  const primaryMuscles = session.muscleFocus?.primary?.length ? session.muscleFocus.primary : (session.focusMuscles || []).slice(0, 3);
+  const secondaryMuscles = session.muscleFocus?.secondary || [];
   return (
     <Modal animationType="slide" onRequestClose={onClose} presentationStyle="fullScreen" visible>
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.modalSafe}>
@@ -505,26 +516,23 @@ function SessionPreviewSheet({ session, program, onClose, onOpen, unit }: { sess
             <View style={styles.modalHeaderCopy}><Text style={styles.modalBrand}>STRENGTH</Text><Text style={styles.modalBrandSub}>— LEDGER —</Text></View>
             <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="close" size={23} /></Pressable>
           </View>
-          <ImageBackground imageStyle={styles.previewHeroImage} source={sessionArtwork(session)} style={styles.previewHero}>
-            <LinearGradient colors={['rgba(2,2,4,0.15)', '#030305']} style={StyleSheet.absoluteFillObject} />
+          <View style={styles.previewHero}>
+            <MuscleMap athlete={athlete} primary={primaryMuscles} secondary={secondaryMuscles} view="auto" size="card" />
+            <LinearGradient colors={['rgba(2,2,4,0.02)', 'rgba(3,3,5,0.35)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
             <View style={styles.previewStatus}><Text style={[styles.previewStatusText, { color: accent }]}>{session.stateLabel || (completed ? 'COMPLETED' : 'UPCOMING')}</Text></View>
-          </ImageBackground>
+          </View>
           <Text style={[styles.previewDate, { color: accent }]}>{formatLongDate(session.date)}</Text>
           <Text style={styles.previewTitle}>{session.title}</Text>
           <Text style={styles.previewMeta}>{session.movementCount || session.movements?.length || 0} movements · {program.name}</Text>
 
           {completed ? <CompletedEvidence session={session} unit={unit} /> : <PlannedPreview session={session} />}
 
-          {session.focusMuscles?.length ? (
+          {primaryMuscles.length ? (
             <View style={styles.focusSection}>
               <Text style={styles.sectionKicker}>FOCUS MUSCLES</Text>
-              <View style={styles.focusArtworkRow}>
-                {session.focusMuscles.slice(0, 3).map((muscle) => (
-                  <View key={muscle} style={styles.focusArtworkCard}>
-                    <Image source={muscleArtwork(muscle)} style={styles.focusArtwork} />
-                    <Text numberOfLines={1} style={styles.focusArtworkLabel}>{humanizeMuscle(muscle)}</Text>
-                  </View>
-                ))}
+              <View style={styles.focusSummaryCard}>
+                <MuscleMap athlete={athlete} primary={primaryMuscles} secondary={secondaryMuscles} view="auto" size="card" />
+                <View style={styles.focusSummaryCopy}><Text style={styles.focusPrimaryLabel}>PRIMARY</Text><Text style={styles.focusSummaryText}>{primaryMuscles.map(humanizeMuscle).join(' · ')}</Text>{secondaryMuscles.length ? <><Text style={styles.focusSecondaryLabel}>SECONDARY</Text><Text style={styles.focusSummaryText}>{secondaryMuscles.map(humanizeMuscle).join(' · ')}</Text></> : null}<Text style={styles.focusEvidence}>{session.muscleFocus?.source === 'performed' ? 'Performed set evidence' : 'Programmed set exposure'}</Text></View>
               </View>
             </View>
           ) : null}
@@ -737,8 +745,7 @@ const styles = StyleSheet.create({
   modalHeaderCopy: { alignItems: 'center' },
   modalBrand: { fontSize: 13, lineHeight: 15, fontWeight: '800', letterSpacing: 2.1, color: '#FFFFFF' },
   modalBrandSub: { fontSize: 8, lineHeight: 10, letterSpacing: 2.2, color: SLColors.accentViolet },
-  previewHero: { height: 210, justifyContent: 'flex-start', alignItems: 'flex-end', padding: 12 },
-  previewHeroImage: { resizeMode: 'cover', opacity: 0.88 },
+  previewHero: { height: 210, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', padding: 12, backgroundColor: '#050609' },
   previewStatus: { paddingHorizontal: 9, paddingVertical: 5, borderRadius: 6, backgroundColor: 'rgba(10,8,13,0.88)', borderWidth: 1, borderColor: SLColors.borderSubtle },
   previewStatusText: { ...SLTypography.micro, fontWeight: '800' },
   previewDate: { ...SLTypography.micro, marginHorizontal: 16, marginTop: 2, letterSpacing: 0.6 },
@@ -753,10 +760,12 @@ const styles = StyleSheet.create({
   previewMovementPrescription: { ...SLTypography.caption, color: SLColors.textMuted },
   moreMovements: { ...SLTypography.caption, color: SLColors.textMuted, paddingTop: 10 },
   focusSection: { marginHorizontal: 14, gap: 9 },
-  focusArtworkRow: { flexDirection: 'row', gap: 8 },
-  focusArtworkCard: { flex: 1, minWidth: 0, borderRadius: 10, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#08090C', overflow: 'hidden' },
-  focusArtwork: { width: '100%', aspectRatio: 0.95, resizeMode: 'contain', backgroundColor: '#030304' },
-  focusArtworkLabel: { ...SLTypography.micro, color: SLColors.text, textAlign: 'center', padding: 7 },
+  focusSummaryCard: { alignItems: 'center', flexDirection: 'row', gap: 12, borderRadius: 12, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#08090C', padding: 10 },
+  focusSummaryCopy: { flex: 1, gap: 3 },
+  focusPrimaryLabel: { ...SLTypography.micro, color: '#B575F0' },
+  focusSecondaryLabel: { ...SLTypography.micro, color: '#E447B7', marginTop: 4 },
+  focusSummaryText: { color: SLColors.text, fontSize: 11, lineHeight: 16 },
+  focusEvidence: { color: SLColors.textMuted, fontSize: 9, marginTop: 5 },
   completedMetrics: { flexDirection: 'row', minHeight: 60 },
   completedVolume: { ...SLTypography.bodyStrong, color: SLColors.success },
   topLiftList: { gap: 2, marginTop: 4 },

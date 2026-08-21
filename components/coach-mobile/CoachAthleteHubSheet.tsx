@@ -1,17 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
-  Animated,
   Image,
   Modal,
-  PanResponder,
   Pressable,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,6 +45,7 @@ import {
 } from '@/lib/display-units';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 
 type WorkoutRecapResponse = {
   ok?: boolean;
@@ -93,9 +91,6 @@ type Props = {
   previewSummary?: CoachAthleteSummaryResponse | null;
   previewRecap?: CompletedSessionRecapPayload | null;
 };
-
-const DISMISS_DISTANCE = 96;
-const DISMISS_VELOCITY = 0.85;
 
 function toneForStatus(tone?: string) {
   if (tone === 'danger') return 'danger' as const;
@@ -192,9 +187,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   const { user } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
   const reduceMotion = useSLReducedMotion();
-  const translateY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef<ScrollView>(null);
   const notesY = useRef(0);
   const requestRef = useRef(0);
@@ -302,7 +295,6 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   useEffect(() => {
     requestRef.current += 1;
     requestControllerRef.current?.abort();
-    translateY.setValue(0);
     const cached = athlete ? cacheRef.current.get(athlete.id) : null;
     setSummary(previewSummary || cached?.summary || null);
     setRecap(previewRecap || cached?.recap || null);
@@ -316,47 +308,13 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
       void load();
     }
     return () => requestControllerRef.current?.abort();
-  }, [athlete, load, previewRecap, previewSummary, translateY]);
+  }, [athlete, load, previewRecap, previewSummary]);
 
-  const settleSheet = useCallback(() => {
-    if (reduceMotion) {
-      translateY.setValue(0);
-      return;
-    }
-    Animated.spring(translateY, {
-      damping: 24,
-      mass: 0.7,
-      stiffness: 280,
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
-  }, [reduceMotion, translateY]);
-
-  const dismissSheet = useCallback(() => {
+  const closeSheet = useCallback(() => {
     requestRef.current += 1;
     requestControllerRef.current?.abort();
-    if (reduceMotion) {
-      onClose();
-      return;
-    }
-    Animated.timing(translateY, {
-      duration: 180,
-      toValue: Math.max(height, 640),
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) onClose();
-    });
-  }, [height, onClose, reduceMotion, translateY]);
-
-  const dragResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
-    onPanResponderMove: (_, gesture) => translateY.setValue(Math.max(0, gesture.dy)),
-    onPanResponderRelease: (_, gesture) => {
-      if (gesture.dy >= DISMISS_DISTANCE || gesture.vy >= DISMISS_VELOCITY) dismissSheet();
-      else settleSheet();
-    },
-    onPanResponderTerminate: settleSheet,
-  }), [dismissSheet, settleSheet, translateY]);
+    onClose();
+  }, [onClose]);
 
   const navigate = useCallback((target: Parameters<typeof router.push>[0]) => {
     onClose();
@@ -480,37 +438,13 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
 
   return (
     <>
-    <Modal
-      animationType={reduceMotion ? 'none' : 'slide'}
-      onRequestClose={dismissSheet}
-      presentationStyle="overFullScreen"
-      statusBarTranslucent
-      transparent
-      visible
-    >
-      <View style={styles.backdrop}>
-        <Pressable accessibilityLabel="Dismiss Athlete Hub" accessibilityRole="button" onPress={dismissSheet} style={StyleSheet.absoluteFillObject} />
-        <Animated.View
-          accessibilityViewIsModal
-          style={[
-            styles.sheet,
-            {
-              maxHeight: Math.min(height - Math.max(insets.top + 8, 28), 900),
-              paddingBottom: Math.max(insets.bottom, 10),
-              transform: [{ translateY }],
-            },
-          ]}
-        >
+    <StrengthLedgerBottomSheet accessibilityLabel="Athlete Hub" onDismiss={closeSheet} visible>
           <ScrollView ref={scrollRef} bounces contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-            <View style={styles.hero} {...dragResponder.panHandlers}>
+            <View style={styles.hero}>
               <LinearGradient colors={['rgba(157,92,255,0.17)', 'rgba(7,8,13,0.94)']} style={StyleSheet.absoluteFillObject} />
-              <View style={styles.dragHandle} />
               <View style={styles.sheetActions}>
                 <Pressable accessibilityLabel="More athlete actions" accessibilityRole="button" onPress={more} style={styles.roundButton}>
                   <Ionicons color={COACH_V2.text} name="ellipsis-horizontal" size={20} />
-                </Pressable>
-                <Pressable accessibilityLabel="Close Athlete Hub" accessibilityRole="button" onPress={dismissSheet} style={styles.roundButton}>
-                  <Ionicons color={COACH_V2.text} name="close" size={22} />
                 </Pressable>
               </View>
               <View style={styles.identity}>
@@ -703,9 +637,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
               <Ionicons color={COACH_V2.text} name="arrow-forward" size={20} />
             </Pressable>
           </ScrollView>
-        </Animated.View>
-      </View>
-    </Modal>
+    </StrengthLedgerBottomSheet>
     <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={() => setReadinessOpen(false)} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={readinessOpen}>
       <View style={styles.detailBackdrop}>
         <Pressable accessibilityLabel="Close readiness details" accessibilityRole="button" onPress={() => setReadinessOpen(false)} style={StyleSheet.absoluteFillObject} />
@@ -826,9 +758,6 @@ function ReadinessComponent({ label, value }: { label: string; value?: number | 
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.72)' },
-  sheet: { width: '100%', minHeight: '88%', overflow: 'hidden', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: COACH_V2.borderStrong, backgroundColor: COACH_V2.black },
-  dragHandle: { alignSelf: 'center', width: 46, height: 5, borderRadius: 3, backgroundColor: '#5C6070' },
   sheetActions: { position: 'absolute', zIndex: 2, top: 17, right: 10, flexDirection: 'row', gap: 7 },
   roundButton: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   content: { gap: 14, padding: 14, paddingTop: 8 },

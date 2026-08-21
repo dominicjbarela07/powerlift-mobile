@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -32,7 +33,7 @@ import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 import {
   mapCoachSessionEditorPayload,
 } from '@/lib/coach-session-editor';
-import { SLColors, SLControlSize, SLFontFamilies, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import { SLColors, SLControlSize, SLFontFamilies, SLLayout, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import {
   SessionEditingWorkspace,
   type CalculatedLoadRequest,
@@ -430,7 +431,23 @@ const colors = {
   red: SLColors.railDanger,
 };
 
+export type MobileSessionWorkspaceContentProps = Readonly<{
+  workoutId?: number | string | null;
+  athleteId?: number | string | null;
+  programmingBlockId?: number | string | null;
+  programmingWeek?: number | string | null;
+  programmingDay?: string | null;
+  section?: string | null;
+  embedded?: boolean;
+  onClose?: () => void;
+  registerDismissRequest?: (handler: (() => void) | null) => void;
+}>;
+
 export default function MobileSessionWorkspaceScreen() {
+  return <MobileSessionWorkspaceContent />;
+}
+
+export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceContentProps = {}) {
   const router = useRouter();
   const { user, authReady } = useAuth();
   const params = useLocalSearchParams<{
@@ -441,12 +458,12 @@ export default function MobileSessionWorkspaceScreen() {
     programmingDay?: string | string[];
     section?: string | string[];
   }>();
-  const workoutId = firstParam(params.workoutId);
-  const programmingAthleteId = firstParam(params.athleteId);
-  const programmingBlockId = firstParam(params.programmingBlockId);
-  const programmingWeek = firstParam(params.programmingWeek);
-  const programmingDay = firstParam(params.programmingDay);
-  const requestedSection = firstParam(params.section);
+  const workoutId = props.workoutId == null ? firstParam(params.workoutId) : String(props.workoutId);
+  const programmingAthleteId = props.athleteId == null ? firstParam(params.athleteId) : String(props.athleteId);
+  const programmingBlockId = props.programmingBlockId == null ? firstParam(params.programmingBlockId) : String(props.programmingBlockId);
+  const programmingWeek = props.programmingWeek == null ? firstParam(params.programmingWeek) : String(props.programmingWeek);
+  const programmingDay = props.programmingDay == null ? firstParam(params.programmingDay) : String(props.programmingDay);
+  const requestedSection = props.section == null ? firstParam(params.section) : String(props.section);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -476,7 +493,7 @@ export default function MobileSessionWorkspaceScreen() {
   const reorderCompletionRef = useRef<((order: ReorderEditorState) => void) | null>(null);
   const loadedStatus = String(payload?.workout?.raw_status || payload?.workout?.status || '').trim().toLowerCase();
   const loadedCompletedSession = ['completed', 'logged', 'done'].includes(loadedStatus);
-  const redirectingToLogger = authReady && user?.role !== 'coach' && !!payload && !loadedCompletedSession;
+  const redirectingToLogger = !props.embedded && authReady && user?.role !== 'coach' && !!payload && !loadedCompletedSession;
 
   const loadSession = useCallback(async (silent?: boolean) => {
     if (!workoutId) {
@@ -582,17 +599,33 @@ export default function MobileSessionWorkspaceScreen() {
   const workout = payload?.workout || null;
   const workspaceCapabilities = workout?.workspace_capabilities || {};
   const workspaceEditable = workspaceCapabilities.editable !== false;
-  const coreItems = workout?.core_items || [];
+  const coreItems = useMemo(() => workout?.core_items || [], [workout?.core_items]);
   const accessoryItems = useMemo(
     () => (workout?.accessory_groups || []).flatMap((group) => group.items || []),
     [workout?.accessory_groups]
   );
+  const workspaceFocus = useMemo(() => {
+    const primary: string[] = [];
+    const secondary: string[] = [];
+    for (const item of [...coreItems, ...accessoryItems]) {
+      const main = item.movement_identity?.primary_muscle_group;
+      if (main && !primary.includes(main)) primary.push(main);
+      for (const muscle of item.movement_identity?.secondary_muscle_groups || []) {
+        if (muscle && !primary.includes(muscle) && !secondary.includes(muscle)) secondary.push(muscle);
+      }
+    }
+    return { primary: primary.slice(0, 4), secondary: secondary.slice(0, 5) };
+  }, [accessoryItems, coreItems]);
 
   const status = humanStatus(workout?.raw_status || workout?.status);
   const title = sessionTitle(workout?.label);
   const context = sessionContext(payload?.athlete?.name, workout?.label, workout?.date);
 
   const closeToProgrammingHome = () => {
+    if (props.onClose) {
+      props.onClose();
+      return;
+    }
     router.replace({
       pathname: '/(tabs)/workout' as any,
       params: {
@@ -1249,7 +1282,7 @@ export default function MobileSessionWorkspaceScreen() {
   if (loadedCompletedSession && workout.completed_recap) {
     return (
       <>
-        <Tabs.Screen options={{ headerShown: false }} />
+        {!props.embedded ? <Tabs.Screen options={{ headerShown: false, tabBarStyle: { display: 'none' } }} /> : null}
         <CompletedSessionRecap
           recap={workout.completed_recap}
           impactSummary={workout.impact_summary}
@@ -1266,8 +1299,24 @@ export default function MobileSessionWorkspaceScreen() {
   }
 
   return (
-    <View style={styles.screen}>
-      <SessionEditingWorkspace
+    <>
+      {!props.embedded ? <Tabs.Screen options={{ headerShown: false, tabBarStyle: { display: 'none' } }} /> : null}
+      <View style={[styles.screen, styles.programmingWorkspaceStage, props.embedded && styles.embeddedWorkspaceStage]}>
+      <View style={styles.programmingWeekContext}>
+        {!props.embedded ? <Pressable accessibilityRole="button" accessibilityLabel="Return to Week Lens" onPress={closeToProgrammingHome} style={styles.programmingWeekBack}>
+          <Ionicons name="chevron-back" size={18} color={colors.textStrong} />
+        </Pressable> : null}
+        <View style={styles.programmingWeekContextCopy}>
+          <Text style={styles.programmingWeekContextTitle}>Week {programmingWeek || '—'}</Text>
+          <Text style={styles.programmingWeekContextMeta}>{programmingDay ? formatContextDate(programmingDay) : context}</Text>
+        </View>
+        <View style={styles.programmingWeekContextArt}>
+          <ProgrammingMuscleRegionArt level="session" primary={workspaceFocus.primary} style={styles.programmingWeekContextAnatomy} />
+        </View>
+      </View>
+      <View style={styles.programmingWorkspaceSheet}>
+        {!props.embedded ? <View style={styles.programmingWorkspaceHandle} /> : null}
+        <SessionEditingWorkspace
         title={title}
         context={context}
         status={status}
@@ -1299,6 +1348,8 @@ export default function MobileSessionWorkspaceScreen() {
           avatarVersion: athlete.avatar_uploaded_at || null,
         }))}
         assignmentBlockedReason={workspaceCapabilities.assign_blocked_reason || null}
+        sheetPresentation={props.embedded}
+        registerDismissRequest={props.registerDismissRequest}
         onRefresh={() => { void loadSession(true); }}
         onCloseWorkspace={closeToProgrammingHome}
         onOpenAthleteView={openAthleteView}
@@ -1322,7 +1373,8 @@ export default function MobileSessionWorkspaceScreen() {
             onDelete={() => guard(deleteSession)}
           />
         )}
-      />
+        />
+      </View>
 
       <SessionCalendarModal
         visible={!!calendarAction}
@@ -1366,7 +1418,8 @@ export default function MobileSessionWorkspaceScreen() {
         onCancel={cancelReorderEditor}
         onApply={applyReorder}
       />
-    </View>
+      </View>
+    </>
   );
 
 }
@@ -1661,7 +1714,7 @@ function AnatomyTargetArt({
   scale?: number;
   size?: 'thumbnail' | 'card';
 }) {
-  return <View style={[styles.anatomyTargetArt, style]}><MuscleMap athlete={athlete} primary={[primary]} secondary={secondary} size={size} style={{ transform: [{ scale }] }} view="auto" /></View>;
+  return <View style={[styles.anatomyTargetArt, style]}><MuscleMap athlete={athlete} primary={[primary]} secondary={secondary} semanticLevel="movement" size={size} style={{ transform: [{ scale }] }} view="auto" /></View>;
 }
 
 function AccessoryEditorModal({
@@ -3616,6 +3669,70 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
+  },
+  programmingWorkspaceStage: {
+    backgroundColor: '#08090D',
+    paddingTop: 8,
+  },
+  embeddedWorkspaceStage: {
+    paddingTop: 0,
+  },
+  programmingWeekContext: {
+    minHeight: 66,
+    paddingHorizontal: SLLayout.screenGutter,
+    paddingBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  programmingWeekBack: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  programmingWeekContextCopy: { flex: 1 },
+  programmingWeekContextArt: {
+    width: 50,
+    height: 52,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(168,101,255,0.34)',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(70,31,100,0.16)',
+  },
+  programmingWeekContextAnatomy: { width: '100%', height: '100%' },
+  programmingWeekContextTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  programmingWeekContextMeta: {
+    color: colors.muted,
+    fontSize: SLTypography.caption.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+    marginTop: 2,
+  },
+  programmingWorkspaceSheet: {
+    flex: 1,
+    overflow: 'hidden',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: colors.line,
+    backgroundColor: SLColors.canvas,
+  },
+  programmingWorkspaceHandle: {
+    width: 42,
+    height: 4,
+    borderRadius: 2,
+    alignSelf: 'center',
+    backgroundColor: colors.subtle,
+    marginTop: 7,
+    marginBottom: 2,
   },
   scrollView: {
     flex: 1,

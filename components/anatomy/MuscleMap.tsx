@@ -13,10 +13,14 @@ import {
   anatomyRenderKey,
   normalizeMuscleRoles,
   resolveAnatomyPresentation,
+  resolveAnatomyRegion,
   resolveAnatomyView,
   type AnatomyPresentation,
   type AnatomyPresentationPreference,
+  type AnatomyRegion,
+  type AnatomyRegionPreference,
   type AnatomyResolvedView,
+  type AnatomySemanticLevel,
   type AnatomySize,
   type AnatomyViewPreference,
   type GovernedMuscleId,
@@ -43,6 +47,7 @@ const SIZE_HEIGHT: Readonly<Record<AnatomySize, number>> = {
 export type MuscleMapRenderState = Readonly<{
   presentation: AnatomyPresentation;
   view: AnatomyResolvedView;
+  region: AnatomyRegion;
   primary: readonly GovernedMuscleId[];
   secondary: readonly GovernedMuscleId[];
   mountedMasks: readonly GovernedMuscleId[];
@@ -58,13 +63,15 @@ export type MuscleMapProps = Readonly<{
   primary?: readonly (GovernedMuscleId | string)[] | null;
   secondary?: readonly (GovernedMuscleId | string)[] | null;
   view?: AnatomyViewPreference;
+  region?: AnatomyRegionPreference;
+  semanticLevel?: AnatomySemanticLevel;
   size?: AnatomySize;
   style?: StyleProp<ViewStyle>;
   showFrame?: boolean;
   testID?: string;
 }>;
 
-export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy' | 'athlete' | 'primary' | 'secondary' | 'view' | 'size'>): MuscleMapRenderState {
+export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy' | 'athlete' | 'primary' | 'secondary' | 'view' | 'region' | 'semanticLevel' | 'size'>): MuscleMapRenderState {
   const size = props.size || 'card';
   const roles = normalizeMuscleRoles(props.primary, props.secondary);
   const presentation = resolveAnatomyPresentation({
@@ -74,31 +81,44 @@ export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy
     sex: props.athlete?.sex,
   });
   const view = resolveAnatomyView(roles.primary, roles.secondary, props.view || 'auto', size);
+  const region = resolveAnatomyRegion(roles.primary, roles.secondary, props.semanticLevel || 'movement', props.region || 'auto');
   const mountedMasks = mountedMasksForView([...roles.secondary, ...roles.primary], view);
   return {
     presentation,
     view,
+    region,
     ...roles,
     mountedMasks,
-    cacheKey: anatomyRenderKey({ presentation, view, ...roles, size }),
+    cacheKey: anatomyRenderKey({ presentation, view, region, ...roles, size }),
   };
 }
+
+const REGION_VIEWBOX: Readonly<Record<AnatomyRegion, readonly [number, number, number, number]>> = {
+  upper: [0, 78, 418, 470],
+  lower: [32, 430, 354, 500],
+  torso: [38, 112, 342, 390],
+  arms: [0, 112, 418, 430],
+  full: [0, 0, 418, 941],
+};
 
 function Figure({
   presentation,
   view,
   primary,
   secondary,
+  region,
   size,
 }: {
   presentation: AnatomyPresentation;
   view: Exclude<AnatomyResolvedView, 'dual'>;
   primary: readonly GovernedMuscleId[];
   secondary: readonly GovernedMuscleId[];
+  region: AnatomyRegion;
   size: AnatomySize;
 }) {
   const height = SIZE_HEIGHT[size];
-  const width = Math.round(height * 418 / 941);
+  const [viewX, viewY, viewWidth, viewHeight] = REGION_VIEWBOX[region];
+  const width = Math.round(height * viewWidth / viewHeight);
   const primarySet = new Set(primary);
   const visibleSecondary = secondary.filter((muscle) => !primarySet.has(muscle));
   const primaryOpacity = size === 'thumbnail' ? 0.93 : 0.82;
@@ -110,7 +130,7 @@ function Figure({
         pointerEvents="none"
         preserveAspectRatio="xMidYMid meet"
         style={StyleSheet.absoluteFill}
-        viewBox="0 0 418 941"
+        viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`}
       >
         <SvgImage
           height={941}
@@ -153,19 +173,21 @@ function MuscleMapComponent({
   primary,
   secondary,
   view = 'auto',
+  region = 'auto',
+  semanticLevel = 'movement',
   size = 'card',
   style,
   showFrame = false,
   testID,
 }: MuscleMapProps) {
   const state = useMemo(
-    () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, size }),
-    [anatomy, athlete, primary, secondary, view, size],
+    () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, region, semanticLevel, size }),
+    [anatomy, athlete, primary, secondary, view, region, semanticLevel, size],
   );
   const primaryLabels = state.primary.map((muscle) => MUSCLE_META[muscle].label);
   const secondaryLabels = state.secondary.map((muscle) => MUSCLE_META[muscle].label);
   const accessibilityLabel = [
-    `${state.presentation} anatomy, ${state.view} view`,
+    `${state.presentation} anatomy, ${state.region} region, ${state.view} view`,
     primaryLabels.length ? `Primary: ${primaryLabels.join(', ')}` : 'No primary muscles',
     secondaryLabels.length ? `Secondary: ${secondaryLabels.join(', ')}` : 'No secondary muscles',
   ].join('. ');
@@ -182,10 +204,10 @@ function MuscleMapComponent({
       ]}
     >
       {state.view === 'front' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} />
+        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} region={state.region} size={size} />
       ) : null}
       {state.view === 'rear' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} />
+        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} region={state.region} size={size} />
       ) : null}
     </View>
   );

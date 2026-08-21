@@ -24,6 +24,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
+import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -72,6 +73,7 @@ import {
   loadWheelOptions,
   marginWheelOptions,
   transitionAccessoryRepTarget,
+  type AccessoryRepTarget,
   type AccessoryRepTargetMemory,
   type AccessoryRepTargetMode,
 } from '@/lib/prescription-wheel-options';
@@ -242,6 +244,8 @@ type Props = {
   displayUnit: CoachDisplayUnit;
   athleteOptions?: SessionWorkspaceAthleteOption[];
   assignmentBlockedReason?: string | null;
+  sheetPresentation?: boolean;
+  registerDismissRequest?: (handler: (() => void) | null) => void;
   onRefresh: () => void;
   onCloseWorkspace: () => void;
   onOpenAthleteView: () => void;
@@ -590,6 +594,27 @@ export function SessionEditingWorkspace(props: Props) {
     });
   }, [props, selectedItem, selectedKind]);
 
+  const chooseApprovedSubstitution = useCallback(() => {
+    if (!selectedItem || selectedKind !== 'accessory' || selectedId == null) return;
+    props.onChangeAccessory(selectedItem, (choice) => {
+      const selectedName = movementName(choice).trim();
+      if (!selectedName) return;
+      setSessionDraft((current) => {
+        const movement = current.movements[selectedId];
+        if (!movement) return current;
+        const names = movement.approvedSubsText.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+        if (!names.some((name) => name.localeCompare(selectedName, undefined, { sensitivity: 'accent' }) === 0)) names.push(selectedName);
+        return {
+          ...current,
+          movements: {
+            ...current.movements,
+            [selectedId]: { ...movement, approvedSubsText: names.join('\n') },
+          },
+        };
+      });
+    });
+  }, [props, selectedId, selectedItem, selectedKind]);
+
   const openReorder = useCallback(() => {
     props.onOpenReorder(
       { coreIds: sessionDraft.coreOrder, accessoryIds: sessionDraft.accessoryOrder },
@@ -598,6 +623,13 @@ export function SessionEditingWorkspace(props: Props) {
   }, [props, sessionDraft.accessoryOrder, sessionDraft.coreOrder]);
 
   const guardLifecycle = useCallback<GuardAction>((action) => resolveDirty(action), [resolveDirty]);
+  const registerDismissRequest = props.registerDismissRequest;
+  const onCloseWorkspace = props.onCloseWorkspace;
+
+  useEffect(() => {
+    registerDismissRequest?.(() => resolveDirty(onCloseWorkspace));
+    return () => registerDismissRequest?.(null);
+  }, [onCloseWorkspace, registerDismissRequest, resolveDirty]);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -690,6 +722,8 @@ export function SessionEditingWorkspace(props: Props) {
                         onManualOverrideEnabledChange={setManualOverrideEnabled}
                         onBackdownManualOverrideEnabledChange={setBackdownManualOverrideEnabled}
                         onChangeMovement={kind === 'accessory' ? changeSelectedAccessory : undefined}
+                        onChooseSubstitution={kind === 'accessory' ? chooseApprovedSubstitution : undefined}
+                        groupedWith={groupedMovementNames(sessionDraft, item.id, draft.supersetGroup)}
                         canDelete={!!capabilities.can_remove_movement}
                         onDelete={deleteSelectedMovement}
                         onCollapse={collapseMovement}
@@ -719,7 +753,9 @@ export function SessionEditingWorkspace(props: Props) {
       </ScrollView>
 
       <SessionFloatingToolkit
-        bottom={insets.bottom + SLSpacing.xs + SL_TAB_ROW_CONTROL.shellHeight + SLSpacing.md}
+        bottom={props.sheetPresentation
+          ? SLSpacing.md
+          : insets.bottom + SLSpacing.xs + SL_TAB_ROW_CONTROL.shellHeight + SLSpacing.md}
         expanded={toolkitExpanded}
         reduceMotion={reduceMotion}
         restricted={sessionDirty}
@@ -772,7 +808,7 @@ export function SessionEditingWorkspace(props: Props) {
       {sessionDirty ? (
         <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.inlineActionBarLayer}>
           <MovementActionBar
-            safeAreaBottom={insets.bottom}
+            safeAreaBottom={props.sheetPresentation ? 0 : insets.bottom}
             dirty
             saving={savingSession}
             onSave={() => { void saveWorkspaceChanges(); }}
@@ -1137,11 +1173,6 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       <MovementCardMaterial accentColor={movementAccent(item)} borderRadius={SLRadius.lg} state="not_started" />
       <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={72} /></View>
       <View style={styles.movementCopy}>
-        {kind === 'accessory' && item.legacy?.indicator ? (
-          <View style={[styles.legacyBadge, item.legacy.state === 'legacy_unresolved' && styles.legacyBadgeUnresolved]}>
-            <Text typographyRole="micro" style={styles.legacyBadgeText}>{item.legacy.indicator}</Text>
-          </View>
-        ) : null}
         <Text typographyRole="movementTitle" numberOfLines={2} style={styles.movementName}>{movementName(item)}</Text>
         <Text typographyRole="bodyStrong" numberOfLines={2} style={styles.movementPrescription}>{prescriptionSummary(item, kind)}</Text>
         {load ? <View style={styles.movementLoadRow}>{load.label ? <Text typographyRole="micro" style={[styles.movementLoadLabel, load.manual && styles.movementLoadLabelManual]}>{load.label}</Text> : null}<Text typographyRole="bodyStrong" numberOfLines={2} style={[styles.movementLoad, load.manual && styles.movementLoadManual]}>{load.value}</Text></View> : null}
@@ -1152,7 +1183,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
   );
 }
 
-function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
@@ -1162,15 +1193,10 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
       <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${movementName(item)} editor`} onPress={onCollapse} style={({ pressed }) => [styles.expandedMovementHeader, pressed && styles.pressed]}>
         <View style={styles.expandedMovementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
         <View style={styles.expandedMovementCopy}>
-          {kind === 'accessory' && item.legacy?.indicator ? (
-            <View style={[styles.legacyBadge, item.legacy.state === 'legacy_unresolved' && styles.legacyBadgeUnresolved]}>
-              <Text typographyRole="micro" style={styles.legacyBadgeText}>{item.legacy.indicator}</Text>
-            </View>
-          ) : null}
           <Text numberOfLines={2} style={[styles.movementName, styles.expandedMovementName]}>{movementName(item)}</Text>
-          <Text numberOfLines={2} style={styles.expandedPrescription}>{draftPrescriptionSummary(draft, kind)}</Text>
+          <Text numberOfLines={2} style={styles.movementMeta}>{draftMovementMeta(draft, item, kind)}</Text>
           {load ? <View style={styles.movementLoadRow}><Text typographyRole="micro" style={[styles.movementLoadLabel, load.manual && styles.movementLoadLabelManual]}>{load.label}</Text><Text numberOfLines={2} style={[styles.expandedLoad, load.manual && styles.movementLoadManual]}>{load.value}</Text></View> : null}
-          <View style={styles.movementMetaStatusRow}><Text numberOfLines={2} style={styles.movementMeta}>{draftMovementMeta(draft, item, kind)}</Text>{dirty ? <View accessibilityLabel="Unsaved changes" style={styles.dirtyDot} /> : null}</View>
+          {dirty ? <View accessibilityLabel="Unsaved changes" style={styles.dirtyDot} /> : null}
         </View>
         <View style={styles.movementTrailing}><Ionicons name="chevron-forward" size={20} color={palette.muted} /></View>
       </Pressable>
@@ -1193,7 +1219,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
           onManualOverrideEnabledChange={onManualOverrideEnabledChange}
           onBackdownManualOverrideEnabledChange={onBackdownManualOverrideEnabledChange}
         />
-        {kind === 'accessory' ? <AccessorySessionProgrammingContext draft={draft} editable={editable} onChange={onChange} /> : null}
+        {kind === 'accessory' ? <AccessorySessionProgrammingContext draft={draft} editable={editable} groupedWith={groupedWith} onChange={onChange} onChooseSubstitution={onChooseSubstitution} /> : null}
         <RecentHistorySection item={item} displayUnit={displayUnit} />
         <CoachNotesSection value={draft.notes} editable={editable} onChange={(value) => onChange({ notes: value })} />
         <MovementDeleteAction disabled={!canDelete} onDelete={onDelete} />
@@ -1208,7 +1234,7 @@ function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | nul
     const muscle = accessoryMuscleRegion(item);
     const primary = item.movement_identity?.primary_muscle_group;
     if (isGovernedMuscleId(primary)) {
-      return <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}><MuscleMap anatomy="automatic" primary={[primary]} secondary={item.movement_identity?.secondary_muscle_groups || []} size="thumbnail" style={{ transform: [{ scale: size / 92 }] }} view="auto" /></View>;
+      return <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}><MuscleMap anatomy="automatic" primary={[primary]} secondary={item.movement_identity?.secondary_muscle_groups || []} semanticLevel="movement" size="thumbnail" style={{ transform: [{ scale: size / 92 }] }} view="auto" /></View>;
     }
     const artwork = accessoryMuscleRegionAsset(muscle.key);
     return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${movementName(item)} ${artwork.label} primary muscle artwork`} resizeMode="contain" source={artwork.source} style={[styles.movementArtworkImage, { width: size, height: size }]} />;
@@ -1268,130 +1294,95 @@ function CompactDropdownSelector({ label, value, options, open, disabled, onOpen
   );
 }
 
-function AccessoryPrescriptionEditor({ draft, editable, accessibilityReflow, modeMenuOpen, onModeMenuOpenChange, onChange }: { draft: CoachMovementDraft; editable: boolean; accessibilityReflow: boolean; modeMenuOpen: boolean; onModeMenuOpenChange: (open: boolean) => void; onChange: (patch: Partial<CoachMovementDraft>) => void }) {
-  const target = accessoryRepTargetFromText(draft.repsText);
-  const memoryRef = useRef<AccessoryRepTargetMemory>(accessoryRepTargetMemoryFromTarget(target));
-  if (target.mode === 'FIXED') memoryRef.current.fixed = target.fixed;
-  if (target.mode === 'RANGE') memoryRef.current.range = { low: target.low, high: target.high };
+type AccessoryPrescriptionPicker = 'sets' | 'reps' | 'rir' | null;
 
-  const repTargetOptions: PrescriptionDropdownOption[] = [
-    { label: 'Fixed', value: 'FIXED' },
-    { label: 'Range', value: 'RANGE' },
-    { label: 'AMRAP', value: 'AMRAP' },
-  ];
-  const setsColumn = {
-    key: 'accessory-sets',
-    label: 'Sets',
-    value: draft.sets,
-    options: integerWheelOptions(1, 20, draft.sets),
-    accessibilityValue: (value: string) => `${value} sets`,
-    onChange: (sets: string) => onChange({ sets }),
-    disabled: !editable,
+function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: CoachMovementDraft; editable: boolean; accessibilityReflow: boolean; modeMenuOpen: boolean; onModeMenuOpenChange: (open: boolean) => void; onChange: (patch: Partial<CoachMovementDraft>) => void }) {
+  const committedTarget = accessoryRepTargetFromText(draft.repsText);
+  const [picker, setPicker] = useState<AccessoryPrescriptionPicker>(null);
+  const [setsDraft, setSetsDraft] = useState(draft.sets || '3');
+  const [rirDraft, setRirDraft] = useState(draft.rir || '2');
+  const [repDraft, setRepDraft] = useState<AccessoryRepTarget>(committedTarget);
+  const repMemoryRef = useRef<AccessoryRepTargetMemory>(accessoryRepTargetMemoryFromTarget(committedTarget));
+
+  const openPicker = (next: Exclude<AccessoryPrescriptionPicker, null>) => {
+    if (!editable) return;
+    setSetsDraft(draft.sets || '3');
+    setRirDraft(draft.rir || '2');
+    const nextTarget = accessoryRepTargetFromText(draft.repsText);
+    setRepDraft(nextTarget);
+    repMemoryRef.current = accessoryRepTargetMemoryFromTarget(nextTarget);
+    setPicker(next);
   };
-  const rirColumn = {
-    key: 'accessory-rir',
-    label: 'RIR Target',
-    value: draft.rir,
-    options: decimalWheelOptions(0, 10, 0.5, draft.rir),
-    accessibilityValue: (value: string) => `${value} RIR`,
-    onChange: (rir: string) => onChange({ rir }),
-    disabled: !editable,
+  const changeRepMode = (nextMode: AccessoryRepTargetMode) => {
+    const transitioned = transitionAccessoryRepTarget(repDraft, nextMode, repMemoryRef.current);
+    repMemoryRef.current = transitioned.memory;
+    setRepDraft(transitioned.target);
   };
-  const changeMode = (value: string) => {
-    const transitioned = transitionAccessoryRepTarget(target, value as AccessoryRepTargetMode, memoryRef.current);
-    memoryRef.current = transitioned.memory;
-    onChange({ repsText: accessoryRepTargetText(transitioned.target) });
+  const apply = () => {
+    if (picker === 'sets') onChange({ sets: setsDraft });
+    if (picker === 'reps') onChange({ repsText: accessoryRepTargetText(repDraft) });
+    if (picker === 'rir') onChange({ rir: rirDraft });
+    setPicker(null);
   };
+  const repTypeLabel = committedTarget.mode === 'FIXED' ? 'Single' : committedTarget.mode === 'RANGE' ? 'Range' : 'AMRAP';
 
   return (
     <View style={[styles.quickSection, styles.accessoryPrescriptionEditor]}>
-      <CompactDropdownSelector
-        label="Rep Target"
-        value={target.mode}
-        options={repTargetOptions}
-        open={modeMenuOpen}
-        disabled={!editable}
-        onOpenChange={onModeMenuOpenChange}
-        onChange={changeMode}
-      />
+      <Text style={styles.prescriptionSectionLabel}>PRESCRIPTION</Text>
+      <View style={styles.prescriptionControlRow}>
+        <PrescriptionValueControl accent="sets" disabled={!editable} label="SETS" meta="Tap to edit" onPress={() => openPicker('sets')} value={draft.sets || '—'} />
+        <PrescriptionValueControl accent="reps" disabled={!editable} label="REPS" meta={repTypeLabel} onPress={() => openPicker('reps')} value={accessoryRepDisplayText(draft.repsText)} />
+        <PrescriptionValueControl accent="rir" disabled={!editable} label="RIR" meta="Tap to edit" onPress={() => openPicker('rir')} value={draft.rir || '—'} />
+      </View>
 
-      {target.mode === 'FIXED' ? (
-        accessibilityReflow ? (
-          <View style={styles.programmingWheelStack}>
-            <LoggerWheelPicker density="compact" columns={[
-              setsColumn,
-              {
-                key: 'accessory-fixed-reps',
-                label: 'Reps',
-                value: target.fixed,
-                options: integerWheelOptions(1, 50, target.fixed),
-                accessibilityValue: (value) => `${value} reps`,
-                onChange: (fixed) => onChange({ repsText: accessoryRepTargetText({ mode: 'FIXED', fixed }) }),
-                disabled: !editable,
-              },
-            ]} />
-            <LoggerWheelPicker density="compact" columns={[rirColumn]} />
-          </View>
-        ) : (
-          <LoggerWheelPicker density="compact" columns={[
-            setsColumn,
-            {
-              key: 'accessory-fixed-reps',
-              label: 'Reps',
-              value: target.fixed,
-              options: integerWheelOptions(1, 50, target.fixed),
-              accessibilityValue: (value) => `${value} reps`,
-              onChange: (fixed) => onChange({ repsText: accessoryRepTargetText({ mode: 'FIXED', fixed }) }),
-              disabled: !editable,
-            },
-            rirColumn,
-          ]} />
-        )
-      ) : target.mode === 'RANGE' ? (
-        <View style={styles.programmingWheelStack}>
-          <View style={[styles.accessoryRangeControls, accessibilityReflow && styles.accessoryRangeControlsReflow]}>
-            <View style={[styles.accessoryRangeCell, styles.accessoryRangeSetsCell, accessibilityReflow && styles.accessoryRangeCellReflow]}>
-              <Text style={styles.accessoryRangeLabel}>Sets</Text>
-              <LoggerWheelPicker density="compact" grouped columns={[{ ...setsColumn, label: '', accessibilityLabel: 'Sets' }]} />
+      <StrengthLedgerBottomSheet
+        accessibilityLabel={picker === 'sets' ? 'Sets prescription picker' : picker === 'reps' ? 'Rep Target prescription picker' : 'RIR prescription picker'}
+        heightFraction={picker === 'reps' && repDraft.mode === 'RANGE' ? 0.68 : 0.56}
+        onDismiss={() => setPicker(null)}
+        visible={picker != null}
+      >
+        <View style={styles.prescriptionPickerSheet}>
+          <Text style={styles.prescriptionPickerTitle}>{picker === 'sets' ? 'SETS' : picker === 'reps' ? 'REP TARGET' : 'RIR'}</Text>
+          {picker === 'sets' ? <LoggerWheelPicker density="compact" columns={[{
+            key: 'sheet-sets', label: '', accessibilityLabel: 'Sets', value: setsDraft,
+            options: integerWheelOptions(1, 20, setsDraft), accessibilityValue: (value) => `${value} sets`, onChange: setSetsDraft,
+          }]} /> : null}
+          {picker === 'reps' ? <>
+            <View style={styles.repModeRow}>
+              {([['FIXED', 'Single'], ['RANGE', 'Range'], ['AMRAP', 'AMRAP']] as const).map(([mode, label]) => {
+                const selected = repDraft.mode === mode;
+                return <Pressable key={mode} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => changeRepMode(mode)} style={[styles.repModeButton, selected && styles.repModeButtonSelected]}><Text style={[styles.repModeButtonText, selected && styles.repModeButtonTextSelected]}>{label}</Text></Pressable>;
+              })}
             </View>
-            <View style={[styles.accessoryRangeCell, styles.accessoryRangeBoundsCell, accessibilityReflow && styles.accessoryRangeCellReflow]}>
-              <Text style={styles.accessoryRangeLabel}>Rep Range</Text>
-              <View style={styles.accessoryRangeWheels}>
-                <LoggerWheelPicker density="compact" grouped columns={[
-                  {
-                    key: 'accessory-range-low',
-                    label: '',
-                    accessibilityLabel: 'Rep range lower bound',
-                    value: target.low,
-                    options: integerWheelOptions(1, 50, target.low),
-                    accessibilityValue: (value) => `Rep range lower bound, ${value}`,
-                    onChange: (low) => onChange({ repsText: accessoryRepTargetText(accessoryRepRangeAfterLowerChange(low, target.high)) }),
-                    disabled: !editable,
-                  },
-                  {
-                    key: 'accessory-range-high',
-                    label: '',
-                    accessibilityLabel: 'Rep range upper bound',
-                    value: target.high,
-                    options: integerWheelOptions(1, 50, target.high),
-                    accessibilityValue: (value) => `Rep range upper bound, ${value}`,
-                    onChange: (high) => onChange({ repsText: accessoryRepTargetText(accessoryRepRangeAfterUpperChange(target.low, high)) }),
-                    disabled: !editable,
-                  },
-                ]} />
-                <View pointerEvents="none" style={styles.accessoryRangeSeparator} />
-              </View>
-            </View>
-          </View>
-          <LoggerWheelPicker density="compact" columns={[rirColumn]} />
+            {repDraft.mode === 'FIXED' ? <LoggerWheelPicker density="compact" columns={[{
+              key: 'sheet-single-reps', label: 'REPS', value: repDraft.fixed,
+              options: integerWheelOptions(1, 50, repDraft.fixed), accessibilityValue: (value) => `${value} reps`, onChange: (fixed) => setRepDraft({ mode: 'FIXED', fixed }),
+            }]} /> : repDraft.mode === 'RANGE' ? <View style={styles.repRangePicker}>
+              <LoggerWheelPicker density="compact" grouped columns={[
+                { key: 'sheet-min-reps', label: 'MIN REPS', value: repDraft.low, options: integerWheelOptions(1, 50, repDraft.low), accessibilityValue: (value) => `Minimum ${value} reps`, onChange: (low) => setRepDraft(accessoryRepRangeAfterLowerChange(low, repDraft.high)) },
+                { key: 'sheet-max-reps', label: 'MAX REPS', value: repDraft.high, options: integerWheelOptions(1, 50, repDraft.high), accessibilityValue: (value) => `Maximum ${value} reps`, onChange: (high) => setRepDraft(accessoryRepRangeAfterUpperChange(repDraft.low, high)) },
+              ]} />
+              <View pointerEvents="none" style={styles.repRangeDash}><Text style={styles.repRangeDashText}>—</Text></View>
+            </View> : <View style={styles.amrapState}><Text style={styles.amrapValue}>AMRAP</Text><Text style={styles.amrapDetail}>As many quality repetitions as possible. RIR remains an independent target.</Text></View>}
+          </> : null}
+          {picker === 'rir' ? <LoggerWheelPicker density="compact" columns={[{
+            key: 'sheet-rir', label: '', accessibilityLabel: 'RIR target', value: rirDraft,
+            options: decimalWheelOptions(0, 10, 0.5, rirDraft), accessibilityValue: (value) => `${value} RIR`, onChange: setRirDraft,
+          }]} /> : null}
+          <View style={styles.prescriptionPickerAction}><SLButton fullWidth label="Apply" onPress={apply} size="lg" variant="primary" /></View>
         </View>
-      ) : (
-        <View style={styles.programmingWheelStack}>
-          <LoggerWheelPicker density="compact" columns={[setsColumn, rirColumn]} />
-        </View>
-      )}
+      </StrengthLedgerBottomSheet>
     </View>
   );
+}
+
+function PrescriptionValueControl({ accent, disabled, label, meta, onPress, value }: { accent: 'sets' | 'reps' | 'rir'; disabled: boolean; label: string; meta: string; onPress: () => void; value: string }) {
+  const accentStyle = accent === 'sets' ? styles.prescriptionValueControlSets : accent === 'reps' ? styles.prescriptionValueControlReps : styles.prescriptionValueControlRir;
+  return <Pressable accessibilityLabel={`${label}, ${value}, ${meta}`} accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.prescriptionValueControl, accentStyle, pressed && styles.pressed, disabled && styles.disabled]}>
+    <Text style={styles.prescriptionValueLabel}>{label}</Text>
+    <Text numberOfLines={1} style={[styles.prescriptionValue, accent === 'sets' ? styles.prescriptionValueSets : accent === 'reps' ? styles.prescriptionValueReps : styles.prescriptionValueRir]}>{value}</Text>
+    <Text numberOfLines={1} style={styles.prescriptionValueMeta}>{meta}</Text>
+  </Pressable>;
 }
 
 function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityReflow, onChange, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange }: { draft: CoachMovementDraft; kind: MovementKind; editable: boolean; accessibilityReflow: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void }) {
@@ -1660,19 +1651,13 @@ function RecentHistorySection({ item, displayUnit }: { item: SessionMovementItem
   const recent = item.movement_history?.recent_sessions || [];
   const fallback = item.movement_history?.most_recent_logged_set;
   const rows = recent.length ? recent : fallback ? [fallback] : [];
+  const [expanded, setExpanded] = useState(false);
+  const latest = rows[0];
   return (
     <View style={styles.quickSection}>
-      <Text typographyRole="sectionTitle" style={styles.quickSectionTitle}>Recent History</Text>
-      {rows.length ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.historyCards}>
-          {rows.slice(0, 5).map((row, index) => (
-            <View key={`${row.date || 'history'}-${index}`} style={[styles.historyCard, index === 0 && styles.historyCardLatest]}>
-              <Text style={styles.historyValue}>{historySetText(row, displayUnit)}</Text>
-              <Text style={[styles.historyDate, index === 0 && styles.historyDateLatest]}>{formatDate(row.date)}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      ) : <Text style={styles.emptyText}>No recent history.</Text>}
+      <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>LAST EXPOSURE</Text>{rows.length > 1 ? <Pressable accessibilityRole="button" onPress={() => setExpanded((value) => !value)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{expanded ? 'Close' : 'History'}</Text></Pressable> : null}</View>
+      {latest ? <Text style={styles.lastExposureValue}>{historySetText(latest, displayUnit)} · {formatDate(latest.date)}</Text> : <Text style={styles.emptyText}>No prior exposure.</Text>}
+      {expanded ? <View style={styles.historyList}>{rows.slice(1, 5).map((row, index) => <View key={`${row.date || 'history'}-${index}`} style={styles.historyListRow}><Text style={styles.historyValue}>{historySetText(row, displayUnit)}</Text><Text style={styles.historyDate}>{formatDate(row.date)}</Text></View>)}</View> : null}
     </View>
   );
 }
@@ -1681,7 +1666,7 @@ function CoachNotesSection({ value, editable, onChange }: { value: string; edita
   const [editing, setEditing] = useState(false);
   return (
     <View style={styles.quickSection}>
-      <View style={styles.sectionHeadingRow}><Text typographyRole="sectionTitle" style={styles.quickSectionTitle}>Coach Notes</Text>{editable ? <Pressable accessibilityRole="button" accessibilityLabel={editing ? 'Done editing Coach Notes' : 'Edit Coach Notes'} onPress={() => setEditing((current) => !current)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{editing ? 'Done' : 'Edit'}</Text></Pressable> : null}</View>
+      <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>COACH NOTE</Text>{editable ? <Pressable accessibilityRole="button" accessibilityLabel={editing ? 'Done editing Coach Note' : 'Edit Coach Note'} onPress={() => setEditing((current) => !current)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{editing ? 'Done' : 'Edit'}</Text></Pressable> : null}</View>
       {editing ? <TextInput
           accessibilityLabel="Coach Notes"
           autoFocus
@@ -1697,25 +1682,25 @@ function CoachNotesSection({ value, editable, onChange }: { value: string; edita
   );
 }
 
-function AccessorySessionProgrammingContext({ draft, editable, onChange }: { draft: CoachMovementDraft; editable: boolean; onChange: (patch: Partial<CoachMovementDraft>) => void }) {
-  const groups = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-  const positions = ['1', '2', '3', '4'];
+function AccessorySessionProgrammingContext({ draft, editable, groupedWith, onChange, onChooseSubstitution }: { draft: CoachMovementDraft; editable: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onChooseSubstitution?: () => void }) {
+  const groups = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  const approvedNames = draft.approvedSubsText.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+  const removeSubstitution = (name: string) => onChange({ approvedSubsText: approvedNames.filter((candidate) => candidate !== name).join('\n') });
   return (
     <View style={styles.quickSection}>
-      <Text typographyRole="sectionTitle" style={styles.quickSectionTitle}>Session Context</Text>
-      <Text style={styles.fieldLabel}>Grouped Set</Text>
+      <Text style={styles.fieldLabel}>GROUPED SET</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.accessoryContextChoices}>
         {groups.map((group) => {
           const selected = draft.supersetGroup === group;
           return <Pressable key={group || 'none'} accessibilityRole="button" accessibilityState={{ selected, disabled: !editable }} disabled={!editable} onPress={() => onChange({ supersetGroup: group, supersetPosition: group ? (draft.supersetPosition || '1') : '' })} style={[styles.accessoryContextChoice, selected && styles.accessoryContextChoiceSelected, !editable && styles.disabled]}><Text style={[styles.accessoryContextChoiceText, selected && styles.accessoryContextChoiceTextSelected]}>{group || 'None'}</Text></Pressable>;
         })}
       </ScrollView>
-      {draft.supersetGroup ? <><Text style={styles.fieldLabel}>Group Position</Text><View style={styles.accessoryContextChoices}>{positions.map((position) => {
-        const selected = draft.supersetPosition === position;
-        return <Pressable key={position} accessibilityRole="button" accessibilityState={{ selected, disabled: !editable }} disabled={!editable} onPress={() => onChange({ supersetPosition: position })} style={[styles.accessoryContextChoice, selected && styles.accessoryContextChoiceSelected, !editable && styles.disabled]}><Text style={[styles.accessoryContextChoiceText, selected && styles.accessoryContextChoiceTextSelected]}>{position}</Text></Pressable>;
-      })}</View></> : null}
-      <Text style={styles.fieldLabel}>Approved Substitutions</Text>
-      <TextInput accessibilityLabel="Approved Substitutions" editable={editable} multiline onChangeText={(approvedSubsText) => onChange({ approvedSubsText })} placeholder="One approved substitution per line" placeholderTextColor={palette.subtle} style={styles.accessorySubstitutionInput} value={draft.approvedSubsText} />
+      {draft.supersetGroup ? <Text style={styles.groupContextText}><Text style={styles.groupContextLetter}>{draft.supersetGroup}  </Text>{groupedWith.length ? `Grouped with: ${groupedWith[0]}${groupedWith.length > 1 ? ` +${groupedWith.length - 1}` : ''}` : 'Group assigned · add another movement to connect it'}</Text> : null}
+      <Pressable accessibilityRole="button" accessibilityLabel={`Manage approved substitutions. ${approvedNames.length} approved`} accessibilityState={{ disabled: !editable || !onChooseSubstitution }} disabled={!editable || !onChooseSubstitution} onPress={onChooseSubstitution} style={({ pressed }) => [styles.compactContextRow, pressed && styles.pressed]}>
+        <View style={styles.compactContextCopy}><Text style={styles.fieldLabel}>APPROVED SUBSTITUTIONS</Text><Text numberOfLines={1} style={approvedNames.length ? styles.compactContextValue : styles.emptyText}>{approvedNames.length ? approvedNames.join(' · ') : 'None approved'}</Text></View>
+        <Text style={styles.compactContextAction}>{approvedNames.length} approved</Text><Ionicons name="chevron-forward" size={17} color={palette.muted} />
+      </Pressable>
+      {approvedNames.length ? <View style={styles.substitutionChips}>{approvedNames.map((name) => <Pressable key={name} accessibilityLabel={`Remove ${name} substitution`} accessibilityRole="button" disabled={!editable} onPress={() => removeSubstitution(name)} style={styles.substitutionChip}><Text numberOfLines={1} style={styles.substitutionChipText}>{name}</Text>{editable ? <Ionicons name="close" size={13} color={palette.muted} /> : null}</Pressable>)}</View> : null}
     </View>
   );
 }
@@ -1723,9 +1708,9 @@ function AccessorySessionProgrammingContext({ draft, editable, onChange }: { dra
 function MovementDeleteAction({ disabled, onDelete }: { disabled: boolean; onDelete: () => void }) {
   return (
     <View style={styles.movementDeleteSection}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Delete Movement" accessibilityState={{ disabled }} disabled={disabled} onPress={onDelete} style={({ pressed }) => [styles.movementDeleteButton, pressed && styles.pressed, disabled && styles.disabled]}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Remove Movement" accessibilityState={{ disabled }} disabled={disabled} onPress={onDelete} style={({ pressed }) => [styles.movementDeleteButton, pressed && styles.pressed, disabled && styles.disabled]}>
         <Ionicons name="trash-outline" size={SLIconSize.standard} color={palette.red} />
-        <Text typographyRole="buttonLabel" style={styles.movementDeleteText}>Delete Movement</Text>
+        <Text typographyRole="buttonLabel" style={styles.movementDeleteText}>Remove Movement</Text>
       </Pressable>
     </View>
   );
@@ -1757,6 +1742,15 @@ function MovementActionBar({ safeAreaBottom, dirty, saving, onSave, onDiscard, o
 
 function SmallButton({ label, onPress, disabled, primary }: { label: string; onPress: () => void; disabled: boolean; primary?: boolean }) {
   return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={[styles.smallButton, primary && styles.smallButtonPrimary, disabled && styles.disabled]}><Text style={[styles.smallButtonText, primary && styles.smallButtonTextPrimary]}>{label}</Text></Pressable>;
+}
+
+function groupedMovementNames(session: SessionWorkspaceDraft, selectedId: number, group: string) {
+  const normalizedGroup = group.trim().toUpperCase();
+  if (!normalizedGroup) return [];
+  return [...session.coreOrder, ...session.accessoryOrder]
+    .filter((id) => id !== selectedId && session.movements[id]?.supersetGroup.trim().toUpperCase() === normalizedGroup)
+    .map((id) => movementName(session.items[id]))
+    .filter(Boolean);
 }
 
 function movementAccent(item: SessionMovementItem | null) {
@@ -2048,9 +2042,15 @@ function movementMeta(item: SessionMovementItem, kind: MovementKind) {
     if (item.designation) parts.push(humanize(item.designation));
     if (!isCoreVariantItem(item) && item.variant) parts.push(humanize(item.variant === 'BK' ? 'Backdown' : item.variant));
   } else {
-    if (item.superset_group) parts.push(`Group ${item.superset_group}${item.superset_pos ? item.superset_pos : ''}`);
+    const primary = String(item.movement_identity?.primary_muscle_group || '').trim();
+    const secondary = Array.isArray(item.movement_identity?.secondary_muscle_groups)
+      ? item.movement_identity.secondary_muscle_groups.map((muscle) => String(muscle || '').trim()).filter(Boolean)
+      : [];
+    const muscles = [primary, ...secondary].filter(Boolean).slice(0, 2).map(humanize);
+    if (muscles.length) parts.push(muscles.join(' · '));
+    else parts.push(accessoryMuscleRegion(item).label);
   }
-  return parts.filter(Boolean).join(' - ');
+  return parts.filter(Boolean).join(' · ');
 }
 
 function prescriptionSummary(item: SessionMovementItem, kind: MovementKind) {
@@ -2062,24 +2062,6 @@ function prescriptionSummary(item: SessionMovementItem, kind: MovementKind) {
     : String(item.mode || 'RPE').toUpperCase() === 'PCT'
       ? item.pct != null ? `@ ${numberText(Number(item.pct) <= 1 ? Number(item.pct) * 100 : item.pct)}%` : ''
       : item.rpe_target != null ? `@ ${numberText(item.rpe_target)} RPE` : '';
-  return [sets && reps ? `${sets} × ${reps}` : sets || reps, effort].filter(Boolean).join(' ');
-}
-
-function draftPrescriptionSummary(draft: CoachMovementDraft, kind: MovementKind) {
-  if (kind === 'accessory') {
-    const reps = accessoryRepDisplayText(draft.repsText || draft.reps);
-    return [`${draft.sets} × ${reps}`, draft.rir ? `@ ${draft.rir} RIR` : ''].filter(Boolean).join(' ');
-  }
-  if (isCoreVariantDraft(draft)) {
-    return draft.sets && draft.reps ? `${draft.sets} × ${draft.reps}` : draft.sets || draft.reps;
-  }
-  const firstPlanned = draft.plannedSets[0];
-  const sets = draft.scheme === 'FULL_CUSTOM' ? String(draft.plannedSets.length || 1) : draft.sets;
-  const reps = draft.scheme === 'FULL_CUSTOM' ? String(firstPlanned?.reps || '') : draft.reps;
-  const intensity = draft.scheme === 'FULL_CUSTOM'
-    ? draft.mode === 'PCT' ? firstPlanned?.pct : firstPlanned?.rpe
-    : draft.mode === 'PCT' ? draft.pct : draft.rpe;
-  const effort = intensity ? `@ ${intensity}${draft.mode === 'PCT' ? '%' : ' RPE'}` : '';
   return [sets && reps ? `${sets} × ${reps}` : sets || reps, effort].filter(Boolean).join(' ');
 }
 
@@ -2309,9 +2291,6 @@ const styles = StyleSheet.create({
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   artworkFallback: { alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: palette.violetSoft, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(167,139,250,0.25)' },
   movementCopy: { flex: 1, minWidth: 0, gap: 2 },
-  legacyBadge: { alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft },
-  legacyBadgeUnresolved: { borderColor: SLColors.warning, backgroundColor: SLColors.warningSoft },
-  legacyBadgeText: { color: SLColors.textStrong, fontFamily: SLFontFamilies.technical, textTransform: 'uppercase' },
   movementName: { color: palette.text },
   expandedMovementName: { fontFamily: SLFontFamilies.sansBold, fontSize: 20, lineHeight: 25 },
   movementMeta: { color: palette.muted, textTransform: 'uppercase', fontFamily: SLFontFamilies.technical, fontSize: 13, lineHeight: 18 },
@@ -2342,15 +2321,49 @@ const styles = StyleSheet.create({
   quickSectionTitle: { color: palette.text },
   accessoryContextChoices: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.xs, paddingVertical: 2 },
   accessoryContextChoice: { minWidth: SLControlSize.minimumTouchTarget, minHeight: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLSpacing.sm, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line, backgroundColor: SLColors.surfaceFlat },
-  accessoryContextChoiceSelected: { borderColor: SLColors.borderSelected, backgroundColor: palette.violetSoft },
+  accessoryContextChoiceSelected: { borderColor: SLColors.warning, backgroundColor: SLColors.warningSoft },
   accessoryContextChoiceText: { color: palette.muted, fontFamily: SLFontFamilies.sansBold, fontSize: 13, lineHeight: 18 },
-  accessoryContextChoiceTextSelected: { color: palette.violet },
-  accessorySubstitutionInput: { minHeight: 76, borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, backgroundColor: SLColors.surfaceFlat, color: palette.text, padding: SLSpacing.sm, textAlignVertical: 'top', fontFamily: SLTypography.body.fontFamily, fontSize: SLTypography.body.fontSize, lineHeight: SLTypography.body.lineHeight },
+  accessoryContextChoiceTextSelected: { color: SLColors.warning },
+  groupContextText: { color: palette.muted, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 17 },
+  groupContextLetter: { color: SLColors.warning, fontFamily: SLFontFamilies.bodyBold },
+  compactContextRow: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.xs, paddingVertical: SLSpacing.xs },
+  compactContextCopy: { flex: 1, minWidth: 0, gap: 3 },
+  compactContextValue: { color: palette.text, fontFamily: SLFontFamilies.body, fontSize: 13, lineHeight: 18 },
+  compactContextAction: { color: palette.violet, fontFamily: SLFontFamilies.bodySemiBold, fontSize: 12, lineHeight: 17 },
+  substitutionChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SLSpacing.xs },
+  substitutionChip: { maxWidth: '100%', minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceFlat },
+  substitutionChipText: { maxWidth: 210, color: palette.text, fontFamily: SLFontFamilies.bodyMedium, fontSize: 11, lineHeight: 15 },
   prescriptionChoiceRow: { zIndex: 30, flexDirection: 'row', alignItems: 'flex-start', gap: SLSpacing.sm, overflow: 'visible' },
   prescriptionChoiceField: { flex: 1, minWidth: 0, gap: SLSpacing.sm },
   programmingStack: { gap: 0 },
   programmingWheelStack: { gap: SLSpacing.sm },
   accessoryPrescriptionEditor: { zIndex: 20, gap: SLSpacing.sm },
+  prescriptionSectionLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 10, lineHeight: 14, letterSpacing: 0.65 },
+  prescriptionControlRow: { flexDirection: 'row', gap: 6 },
+  prescriptionValueControl: { flex: 1, minWidth: 0, minHeight: 78, alignItems: 'center', justifyContent: 'center', gap: 2, overflow: 'hidden', borderRadius: SLRadius.md, borderWidth: 1, backgroundColor: SLColors.surfaceMedia },
+  prescriptionValueControlSets: { borderColor: 'rgba(168,101,255,0.46)', backgroundColor: 'rgba(105,48,162,0.18)' },
+  prescriptionValueControlReps: { borderColor: 'rgba(232,61,154,0.46)', backgroundColor: 'rgba(142,26,92,0.16)' },
+  prescriptionValueControlRir: { borderColor: 'rgba(120,170,180,0.48)', backgroundColor: 'rgba(36,102,116,0.18)' },
+  prescriptionValueLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 9, lineHeight: 12, letterSpacing: 0.55 },
+  prescriptionValue: { maxWidth: '95%', fontFamily: SLFontFamilies.numeric, fontSize: 19, lineHeight: 24 },
+  prescriptionValueSets: { color: palette.violet },
+  prescriptionValueReps: { color: SLColors.accentMagenta },
+  prescriptionValueRir: { color: SLColors.accentCyanMuted },
+  prescriptionValueMeta: { maxWidth: '92%', color: palette.muted, fontFamily: SLFontFamilies.bodyMedium, fontSize: 9, lineHeight: 12 },
+  prescriptionPickerSheet: { flex: 1, minHeight: 0, paddingHorizontal: SLLayout.screenGutter, paddingBottom: SLSpacing.sm },
+  prescriptionPickerTitle: { color: palette.text, fontFamily: SLFontFamilies.display, fontSize: 17, lineHeight: 22, textAlign: 'center', marginBottom: SLSpacing.sm },
+  prescriptionPickerAction: { marginTop: 'auto', paddingTop: SLSpacing.sm },
+  repModeRow: { flexDirection: 'row', overflow: 'hidden', borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceFlat },
+  repModeButton: { flex: 1, minHeight: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: SLColors.borderStandard },
+  repModeButtonSelected: { backgroundColor: 'rgba(105,48,162,0.42)' },
+  repModeButtonText: { color: palette.muted, fontFamily: SLFontFamilies.bodySemiBold, fontSize: 12, lineHeight: 17 },
+  repModeButtonTextSelected: { color: palette.text },
+  repRangePicker: { position: 'relative', marginTop: SLSpacing.sm },
+  repRangeDash: { position: 'absolute', zIndex: 3, left: '50%', top: 78, width: 24, marginLeft: -12, alignItems: 'center' },
+  repRangeDashText: { color: palette.text, fontFamily: SLFontFamilies.numeric, fontSize: 18, lineHeight: 22 },
+  amrapState: { minHeight: 174, alignItems: 'center', justifyContent: 'center', gap: SLSpacing.sm, marginTop: SLSpacing.sm, borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(232,61,154,0.42)', backgroundColor: 'rgba(142,26,92,0.12)' },
+  amrapValue: { color: SLColors.accentMagenta, fontFamily: SLFontFamilies.display, fontSize: 27, lineHeight: 34 },
+  amrapDetail: { maxWidth: 280, color: palette.muted, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 18, textAlign: 'center' },
   accessoryRangeControls: { flexDirection: 'row', alignItems: 'stretch', gap: SLSpacing.sm },
   accessoryRangeControlsReflow: { flexDirection: 'column' },
   accessoryRangeCell: { minWidth: 0, overflow: 'hidden', paddingTop: SLSpacing.xs, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, borderRadius: SLRadius.md, backgroundColor: SLColors.surfaceMedia },
@@ -2405,11 +2418,10 @@ const styles = StyleSheet.create({
   fullCustomWheelGroup: { width: '100%' },
   fieldLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16, textTransform: 'uppercase', letterSpacing: 0.5 },
   fullCustomOverrideList: { gap: SLSpacing.sm },
-  historyCards: { gap: SLSpacing.xs, paddingRight: GUTTER },
-  historyCard: { width: 148, minHeight: 82, justifyContent: 'center', gap: SLSpacing.xxs, borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStandard, backgroundColor: '#09090D', paddingHorizontal: SLSpacing.sm, paddingVertical: SLSpacing.xs },
-  historyCardLatest: { borderColor: SLColors.borderStrong, backgroundColor: SLColors.highlightQuiet },
+  lastExposureValue: { color: palette.text, fontFamily: SLFontFamilies.bodySemiBold, fontSize: 13, lineHeight: 19 },
+  historyList: { gap: 0, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderHairline },
+  historyListRow: { minHeight: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline },
   historyDate: { color: palette.muted, fontFamily: SLTypography.metadata.fontFamily, fontSize: 13, lineHeight: 18 },
-  historyDateLatest: { color: palette.muted },
   historyValue: { color: palette.text, fontFamily: SLTypography.metadataStrong.fontFamily, fontSize: 15, lineHeight: 20 },
   inlineTextAction: { minWidth: SLControlSize.minimumTouchTarget, minHeight: SLControlSize.minimumTouchTarget, alignItems: 'flex-end', justifyContent: 'center' },
   inlineTextActionLabel: { color: palette.violet, fontFamily: SLTypography.buttonLabel.fontFamily, fontSize: SLTypography.buttonLabel.fontSize, lineHeight: SLTypography.buttonLabel.lineHeight },

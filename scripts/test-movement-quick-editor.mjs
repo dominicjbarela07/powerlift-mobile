@@ -36,7 +36,7 @@ assert.doesNotMatch(workspace, /autoOpenedSectionRef|openMovement\(initialSectio
 assert.match(workspace, /const collapseMovement = useCallback[\s\S]*setSelectedId\(null\)/, 'expanded movement collapse must be presentation-only');
 assert.doesNotMatch(workspace.match(/const openMovement = useCallback[\s\S]*?\n  \}, \[/)?.[0] || '', /resolveDirty|Alert\.alert/, 'switching expanded movements must never trigger a dirty-state guard');
 assert.match(workspace, /function InlineMovementWorkspace[\s\S]*styles\.expandedMovementHeader[\s\S]*<MovementQuickPrescriptionEditor/, 'movement identity must remain attached above direct prescription controls');
-assert.doesNotMatch(workspace, /MovementSheetSnap|applySnap|GestureDetector|styles\.backdrop|styles\.sheet(?:[,\]])/, 'the editor must not retain detached bottom-sheet architecture');
+assert.match(workspace, /<StrengthLedgerBottomSheet[\s\S]*visible=\{picker != null\}/, 'input machinery must use the shared contextual bottom sheet while movement content stays inline');
 assert.equal(packageJson.dependencies['@react-native-picker/picker'], undefined, 'the rejected coach-only third-party picker dependency must be removed');
 assert.match(workspace, /import \{ LoggerWheelPicker \} from '@\/components\/workout-logger\/logger-wheel-picker'/, 'the movement editor must import the canonical Session Logger wheel');
 assert.match(loggerRoute, /import \{ LoggerWheelPicker \} from '@\/components\/workout-logger\/logger-wheel-picker'/, 'the live Session Logger must use the extracted shared wheel');
@@ -52,7 +52,7 @@ assert.doesNotMatch(workspace, /NativeWheelField|nativeWheel|<Picker|@react-nati
 assert.doesNotMatch(loggerRoute, /function WheelColumn|function LoggerWheelPicker|coreWheelSelectionPlane|coreWheelOptionText/, 'the Session Logger must not retain a duplicate embedded wheel implementation');
 assert.doesNotMatch(workspace, /NumericStepper|numericStepper|stepperButton|Decrease \$\{label\}|Increase \$\{label\}/, 'plus/minus steppers must not remain in prescription editing');
 assert.match(workspace, /<LoggerWheelPicker density="compact" columns=\{\[[\s\S]*key: 'sets'[\s\S]*key: 'reps'[\s\S]*key: draft\.mode\.toLowerCase\(\)/, 'core sets, reps, and intensity must use the compact canonical wheel');
-assert.match(workspace, /function AccessoryPrescriptionEditor[\s\S]*<LoggerWheelPicker density="compact"/, 'Accessory prescriptions must use the canonical compact wheel');
+assert.match(workspace, /function AccessoryPrescriptionEditor[\s\S]*PrescriptionValueControl accent="sets"[\s\S]*<StrengthLedgerBottomSheet[\s\S]*<LoggerWheelPicker density="compact"/, 'Accessory prescriptions remain compact until a canonical wheel sheet is requested');
 assert.doesNotMatch(workspace, /label: 'Reps Lower'|label: 'Reps Upper'/, 'Accessory rep bounds must not be exposed as backend-shaped fields');
 assert.match(workspace, /function CompactDropdownSelector[\s\S]*styles\.dropdownMenu/, 'set and intensity choices must use literal anchored dropdown menus');
 assert.match(workspace, /styles\.prescriptionChoiceRow[\s\S]*label="Designation"[\s\S]*label="Set Type"[\s\S]*label="Intensity Type"/, 'Designation, Set Type, and Intensity Type must share one line before the wheels');
@@ -91,7 +91,7 @@ assert.doesNotMatch(workspace, /Plate Math|Per Side|platesPerSide|plateMath(?:Pa
 assert.match(workspace, /function RecentHistorySection[\s\S]*movement_history\?\.recent_sessions/, 'real recent history must be directly visible');
 assert.match(workspace, /function CoachNotesSection[\s\S]*\{editing \? 'Done' : 'Edit'\}[\s\S]*accessibilityLabel="Coach Notes"/, 'Coach Notes must remain inline with explicit Edit and Done controls');
 assert.match(workspace, /function InlineMovementWorkspace[\s\S]*<RecentHistorySection[\s\S]*<CoachNotesSection[\s\S]*<MovementDeleteAction/, 'movement-specific content and the single Delete action must remain inside the expanded card');
-assert.match(workspace, /function MovementDeleteAction[\s\S]*accessibilityLabel="Delete Movement"/, 'the expanded movement card exposes one direct Delete action');
+assert.match(workspace, /function MovementDeleteAction[\s\S]*accessibilityLabel="Remove Movement"/, 'the expanded movement card exposes one restrained Remove Movement action');
 assert.doesNotMatch(workspace, /function MovementQuickActions|Quick Actions|Duplicating|label="Move"|label="Duplicate"/, 'the rejected movement Quick Actions group must not return');
 assert.match(workspace, /\{sessionDirty \? \([\s\S]*Discard Changes[\s\S]*Save Changes/, 'the Session-wide dirty state alone controls the sticky save and discard actions');
 assert.match(workspace, /if \(!success\) \{[\s\S]*acceptIncomingSessionRef\.current = false[\s\S]*return false[\s\S]*setPersistedSession/, 'only a successful whole-Session save may reset persisted dirty state');

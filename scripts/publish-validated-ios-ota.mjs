@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -134,7 +135,9 @@ if (!localBundle.equals(remoteBundle)) {
   );
 }
 
+const bundleSha256 = crypto.createHash('sha256').update(localBundle).digest('hex');
+
 console.log(
   `OTA publish verified — group ${published.group}, update ${published.id}, ` +
-  `${remoteBundle.length} byte route-complete launch bundle.`,
+  `${remoteBundle.length} byte route-complete launch bundle, SHA-256 ${bundleSha256}.`,
 );

@@ -38,6 +38,9 @@ export type AnatomyPresentation = Exclude<AnatomyPresentationPreference, 'automa
 export type AnatomyViewPreference = 'auto' | 'front' | 'rear' | 'dual';
 export type AnatomyResolvedView = Exclude<AnatomyViewPreference, 'auto'>;
 export type AnatomySize = 'thumbnail' | 'card' | 'hero';
+export type AnatomyRegion = 'upper' | 'lower' | 'torso' | 'arms' | 'full';
+export type AnatomyRegionPreference = AnatomyRegion | 'auto';
+export type AnatomySemanticLevel = 'week' | 'session' | 'movement';
 
 export const ANATOMY_COLORS = Object.freeze({
   primary: '#9C4DFF',
@@ -145,6 +148,49 @@ export function resolveAnatomyView(
   return rear > front ? 'rear' : 'front';
 }
 
+const LOWER_MUSCLES = new Set<GovernedMuscleId>([
+  'quads', 'hamstrings', 'glutes', 'adductors', 'abductors', 'calves', 'hip_flexors',
+]);
+const ARM_MUSCLES = new Set<GovernedMuscleId>(['biceps', 'triceps', 'forearms']);
+const TORSO_MUSCLES = new Set<GovernedMuscleId>([
+  'chest', 'lats', 'upper_back', 'traps', 'abs', 'obliques', 'lower_back', 'serratus',
+]);
+
+/**
+ * Chooses framing, not muscle evidence. Movement inspection preserves complete
+ * anatomical relationships; Week and Session summaries frame dominant regions.
+ */
+export function resolveAnatomyRegion(
+  primary?: readonly unknown[] | null,
+  secondary?: readonly unknown[] | null,
+  semanticLevel: AnatomySemanticLevel = 'movement',
+  requested: AnatomyRegionPreference = 'auto',
+): AnatomyRegion {
+  if (requested !== 'auto') return requested;
+  if (semanticLevel === 'movement') return 'full';
+  const roles = normalizeMuscleRoles(primary, secondary);
+  const weighted = [
+    ...roles.primary.map((muscle) => ({ muscle, weight: 2 })),
+    ...roles.secondary.map((muscle) => ({ muscle, weight: 1 })),
+  ];
+  if (!weighted.length) return 'full';
+  const total = weighted.reduce((sum, row) => sum + row.weight, 0);
+  const score = (members: ReadonlySet<GovernedMuscleId>) => weighted.reduce(
+    (sum, row) => sum + (members.has(row.muscle) ? row.weight : 0),
+    0,
+  );
+  const lower = score(LOWER_MUSCLES);
+  const arms = score(ARM_MUSCLES);
+  const torso = score(TORSO_MUSCLES);
+  const upper = total - lower;
+  const threshold = semanticLevel === 'session' ? 0.50 : 0.64;
+  if (lower / total >= threshold) return 'lower';
+  if (arms / total >= threshold) return 'arms';
+  if (torso / total >= threshold) return 'torso';
+  if (upper / total >= threshold) return 'upper';
+  return 'full';
+}
+
 export type MovementMuscleEvidence = Readonly<{
   movementDefinitionId?: number | null;
   primaryMuscle?: string | null;
@@ -159,6 +205,40 @@ export type SessionMuscleFocus = Readonly<{
   source: 'planned' | 'performed';
   evidence_movement_count: number;
 }>;
+
+type ScoredMuscle = Readonly<{ muscle_id?: string | null; score?: number | null }>;
+export type ProgrammingMuscleFocus = Readonly<{
+  primary?: readonly ScoredMuscle[] | null;
+  secondary?: readonly ScoredMuscle[] | null;
+}>;
+
+/** Aggregates canonical Session focus scores into a Week-level composition. */
+export function aggregateProgrammingWeekFocus(focuses: readonly ProgrammingMuscleFocus[]): {
+  primary: GovernedMuscleId[];
+  secondary: GovernedMuscleId[];
+} {
+  const primaryScores = new Map<GovernedMuscleId, number>();
+  const secondaryScores = new Map<GovernedMuscleId, number>();
+  const add = (target: Map<GovernedMuscleId, number>, row: ScoredMuscle) => {
+    const muscle = normalizeMuscleIds([row.muscle_id])[0];
+    if (!muscle) return;
+    const score = Number(row.score);
+    target.set(muscle, (target.get(muscle) || 0) + (Number.isFinite(score) && score > 0 ? score : 1));
+  };
+  for (const focus of focuses) {
+    for (const row of focus.primary || []) add(primaryScores, row);
+    for (const row of focus.secondary || []) add(secondaryScores, row);
+  }
+  const rank = (scores: Map<GovernedMuscleId, number>) => [...scores.entries()]
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .map(([muscle]) => muscle);
+  const primary = rank(primaryScores).slice(0, 5);
+  const primarySet = new Set(primary);
+  return {
+    primary,
+    secondary: rank(secondaryScores).filter((muscle) => !primarySet.has(muscle)).slice(0, 4),
+  };
+}
 
 function boundedSetCount(value: number | null | undefined): number {
   const count = Number(value);
@@ -217,6 +297,7 @@ export function aggregateSessionMuscleFocus(
 export function anatomyRenderKey(input: {
   presentation: AnatomyPresentation;
   view: AnatomyResolvedView;
+  region?: AnatomyRegion;
   primary?: readonly unknown[] | null;
   secondary?: readonly unknown[] | null;
   size: AnatomySize;
@@ -225,6 +306,7 @@ export function anatomyRenderKey(input: {
   return [
     input.presentation,
     input.view,
+    input.region || 'full',
     [...roles.primary].sort().join(','),
     [...roles.secondary].sort().join(','),
     input.size,
