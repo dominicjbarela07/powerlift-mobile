@@ -106,7 +106,8 @@
     "audit:mobile-horizontal-layout": "node scripts/audit-mobile-horizontal-layout.mjs",
     "audit:workspace-system": "node scripts/audit-workspace-system.mjs",
     "test:ota-native-compatibility": "node scripts/assert-ota-native-compatibility.mjs",
-    "test:ota-route-bundle": "node scripts/assert-ota-route-bundle.mjs"
+    "test:ota-route-bundle": "node scripts/assert-ota-route-bundle.mjs",
+    "release:ios-ota": "node scripts/publish-validated-ios-ota.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
