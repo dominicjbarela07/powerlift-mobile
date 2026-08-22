@@ -44,6 +44,18 @@ type AccessoryIdentity = Readonly<{
 type AccessoryMovement = Readonly<{
   movement?: string | null;
   movement_identity?: AccessoryIdentity | null;
+  performed_movement_identity?: AccessoryIdentity | null;
+  performed_canonical_movement_identity?: AccessoryIdentity | null;
+  legacy?: Readonly<{
+    state?: string | null;
+    original_text?: string | null;
+    normalized_key?: string | null;
+    resolution_id?: number | null;
+    effective_movement_definition_id?: number | null;
+    effective_movement_identity?: AccessoryIdentity | null;
+    indicator?: string | null;
+    history_caveat?: string | null;
+  }> | null;
 }>;
 
 const REGION_LABELS: Record<AccessoryMuscleRegionKey, string> = {
@@ -130,10 +142,10 @@ const LEGACY_NAME_RULES: readonly [RegExp, AccessoryMuscleRegionKey][] = [
   [/\b(biceps?|curl)\b/i, 'biceps'],
   [/\b(forearms?|wrist|grip|farmer(?:'s)?\s+(?:carry|walk))\b/i, 'forearms'],
   [/\b(shoulders?|delts?|overhead\s*press|military\s*press)\b/i, 'shoulders'],
+  [/\b(upper\s*back|rows?|face\s*pull)\b/i, 'upper_back'],
   [/\b(chest|bench\s*press|pec|flye?|incline\s*press|push[- ]?up)\b/i, 'chest'],
   [/\b(lats?|pulldown|pull[- ]?up|chin[- ]?up)\b/i, 'lats'],
   [/\b(lower\s*back|back\s*extension|hyperextension|reverse\s*hyper)\b/i, 'lower_back'],
-  [/\b(upper\s*back|rows?|face\s*pull)\b/i, 'upper_back'],
   [/\b(hamstrings?|leg\s*curl|rdl|romanian\s*deadlift|nordic|good\s*morning)\b/i, 'hamstrings'],
   [/\b(hip\s*flexors?|iliopsoas|psoas|iliacus)\b/i, 'hip_flexors'],
   [/\b(abductors?|hip\s*abduction|outer\s*thigh)\b/i, 'abductors'],
@@ -185,13 +197,20 @@ function regionFromLegacyText(value?: string | null): AccessoryMuscleRegionKey |
  * without allowing display copy to override a governed family.
  */
 export function accessoryMuscleRegion(item: AccessoryMovement): AccessoryMuscleRegionPresentation {
-  const identity = item.movement_identity;
-  const governedFamily = regionFromGovernedKey(identity?.primary_muscle_group)
-    || regionFromGovernedKey(identity?.family);
-  if (governedFamily) return presentation(governedFamily);
+  const identities = [
+    item.performed_canonical_movement_identity,
+    item.performed_movement_identity,
+    item.movement_identity,
+    item.legacy?.effective_movement_identity,
+  ];
+  for (const identity of identities) {
+    const governedFamily = regionFromGovernedKey(identity?.primary_muscle_group)
+      || regionFromGovernedKey(identity?.family);
+    if (governedFamily) return presentation(governedFamily);
 
-  const identityDisplayRegion = regionFromLegacyText(identity?.family_display_name);
-  if (identityDisplayRegion) return presentation(identityDisplayRegion);
+    const identityDisplayRegion = regionFromLegacyText(identity?.family_display_name);
+    if (identityDisplayRegion) return presentation(identityDisplayRegion);
+  }
 
   const legacyRegion = regionFromLegacyText(item.movement);
   return presentation(legacyRegion || 'full_body');

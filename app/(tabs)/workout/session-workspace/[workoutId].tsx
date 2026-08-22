@@ -52,6 +52,15 @@ import {
   type AccessoryRegionalArtworkKey,
 } from '@/lib/accessory-muscle-region-assets';
 import { accessoryPickerArtwork } from '@/lib/accessory-picker-artwork';
+import {
+  movementHistorySheetRoute,
+  resolveMovementHistoryLaunchForItem,
+  resolveMovementHistoryLaunchFromMeasurement,
+} from '@/lib/movement-history-launch';
+import {
+  GovernedAccessoryPickerModal,
+  type GovernedAccessoryIdentity,
+} from '@/components/movement/GovernedAccessoryPickerModal';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -98,12 +107,15 @@ type WorkoutItem = {
     ownership_scope?: string | null;
     library_scope?: string | null;
   } | null;
+  performed_movement_identity?: SessionMovementItem['movement_identity'];
+  performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {
     state?: 'canonical' | 'legacy_unresolved' | 'legacy_resolved' | string;
     original_text?: string | null;
     normalized_key?: string | null;
     resolution_id?: number | null;
     effective_movement_definition_id?: number | null;
+    effective_movement_identity?: SessionMovementItem['movement_identity'];
     indicator?: string | null;
     history_caveat?: string | null;
     mapping?: {
@@ -1293,6 +1305,18 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           onClose={closeToProgrammingHome}
           onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(payload?.athlete?.id || '') } } as any)}
           onOpenProgramming={closeToProgrammingHome}
+          onOpenMovementHistory={(movement) => {
+            const resolution = resolveMovementHistoryLaunchFromMeasurement({
+              athleteId: payload?.athlete?.id,
+              movementDefinitionId: movement.measurement?.canonical_identity_id,
+              equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
+            });
+            if (!resolution.ok) {
+              Alert.alert('History unavailable', resolution.message);
+              return;
+            }
+            router.push(movementHistorySheetRoute(resolution.target) as never);
+          }}
         />
       </>
     );
@@ -1357,6 +1381,18 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         onAddCore={openAddCoreLiftEditor}
         onAddAccessory={openAddAccessoryEditor}
         onChangeAccessory={openChangeAccessoryEditor}
+        onOpenMovementHistory={(item) => {
+          const resolution = resolveMovementHistoryLaunchForItem({
+            athleteId: payload?.athlete?.id,
+            item,
+          });
+          if (!resolution.ok) {
+            if (__DEV__) console.warn('[MovementHistory] launch rejected', resolution.reason, item.id);
+            Alert.alert('History unavailable', resolution.message);
+            return;
+          }
+          router.push(movementHistorySheetRoute(resolution.target) as never);
+        }}
         onSaveSession={saveSessionDraft}
         onCalculateLoad={calculateMovementLoad}
         renderLifecycleActions={(guard, restricted) => (
@@ -1395,18 +1431,28 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         onCancel={cancelTrainingLiftEditor}
         onApply={applyTrainingLiftSetup}
       />
-      <AccessoryEditorModal
-        state={accessoryEditor}
-        groups={accessoryGroups}
+      <GovernedAccessoryPickerModal
+        visible={!!accessoryEditor}
+        title={accessoryEditor?.mode === 'add' ? 'Add Accessory' : 'Change Accessory'}
         athleteId={payload?.athlete?.id || null}
-        athleteAnatomy={{ sex: payload?.athlete?.sex, anatomy_display_preference: payload?.athlete?.anatomy_display_preference }}
+        currentIdentityId={accessoryEditor?.setup.movementDefinitionId || null}
         canCreateCustom={workspaceEditable && workspaceCapabilities.can_add_movement !== false}
-        saving={accessorySaving}
-        onChange={(setup) => setAccessoryEditor((current) => current ? { ...current, setup } : current)}
         onCancel={cancelAccessoryEditor}
-        onApply={applyAccessorySetup}
-        onCreateCustom={createCustomAccessoryDefinition}
-        onDone={closeAccessoryEditorAfterSuccess}
+        onSelect={async (identity: GovernedAccessoryIdentity) => {
+          if (!accessoryEditor) return;
+          const setup: AccessorySetup = {
+            ...accessoryEditor.setup,
+            movement: identity.display_name,
+            movementDefinitionId: identity.id,
+            ownershipScope: identity.ownership_scope || '',
+            libraryScope: identity.library_scope || '',
+            family: identity.family || '',
+            primaryMuscleGroup: identity.primary_muscle_group || '',
+            secondaryMuscleGroups: identity.secondary_muscle_groups || [],
+            executionFamily: identity.execution_family || '',
+          };
+          if (await applyAccessorySetup(setup)) closeAccessoryEditorAfterSuccess();
+        }}
       />
       <ReorderEditorModal
         state={reorderEditor}

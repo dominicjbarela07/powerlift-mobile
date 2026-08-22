@@ -60,7 +60,9 @@ export function accessorySwapActionForItem({
   targetItemHasSetLogs: boolean;
   acceptedPersistedSetLogForItem?: boolean;
 }): AccessorySwapAction {
-  if (isCoachPreview || targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
+  // Existing SetLogs are immutable snapshots. They do not prevent changing
+  // the governed movement used by future sets in the same active Session.
+  if (isCoachPreview) return null;
   if (!SWAPPABLE_SESSION_LIFECYCLES.has(String(sessionLifecycle || '').trim().toLowerCase())) {
     return null;
   }

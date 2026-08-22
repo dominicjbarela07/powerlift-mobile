@@ -1,6 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import {
   Animated,
+  Easing,
   Modal,
   PanResponder,
   Pressable,
@@ -25,6 +26,7 @@ type Props = Readonly<{
   accessibilityLabel: string;
   children: React.ReactNode;
   heightFraction?: number;
+  motionPreset?: 'standard' | 'deliberate';
   onDismiss: () => void;
   onRequestClose?: () => void;
   testID?: string;
@@ -35,6 +37,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   accessibilityLabel,
   children,
   heightFraction = 0.93,
+  motionPreset = 'standard',
   onDismiss,
   onRequestClose,
   testID,
@@ -48,10 +51,20 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const dismissingRef = useRef(false);
   const usableHeight = height - Math.max(insets.top + 8, 28);
   const sheetHeight = Math.min(usableHeight, Math.round(height * Math.max(0.35, Math.min(0.93, heightFraction))));
+  const deliberateMotion = motionPreset === 'deliberate';
 
   const settle = useCallback(() => {
     if (reduceMotion) {
       translateY.setValue(0);
+      return;
+    }
+    if (deliberateMotion) {
+      Animated.timing(translateY, {
+        duration: 280,
+        easing: Easing.bezier(0.22, 1, 0.36, 1),
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
       return;
     }
     Animated.spring(translateY, {
@@ -61,7 +74,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
       toValue: 0,
       useNativeDriver: true,
     }).start();
-  }, [reduceMotion, translateY]);
+  }, [deliberateMotion, reduceMotion, translateY]);
 
   const dismiss = useCallback(() => {
     if (dismissingRef.current) return;
@@ -71,13 +84,23 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
       return;
     }
     Animated.parallel([
-      Animated.timing(translateY, { duration: 180, toValue: Math.max(height, 640), useNativeDriver: true }),
-      Animated.timing(backdropOpacity, { duration: 160, toValue: 0, useNativeDriver: true }),
+      Animated.timing(translateY, {
+        duration: deliberateMotion ? 320 : 180,
+        easing: deliberateMotion ? Easing.bezier(0.4, 0, 0.2, 1) : Easing.linear,
+        toValue: Math.max(height, 640),
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        duration: deliberateMotion ? 280 : 160,
+        easing: Easing.out(Easing.quad),
+        toValue: 0,
+        useNativeDriver: true,
+      }),
     ]).start(({ finished }) => {
       if (finished) onDismiss();
       else dismissingRef.current = false;
     });
-  }, [backdropOpacity, height, onDismiss, reduceMotion, translateY]);
+  }, [backdropOpacity, deliberateMotion, height, onDismiss, reduceMotion, translateY]);
 
   const requestClose = useCallback(() => {
     if (onRequestClose) onRequestClose();
@@ -97,10 +120,28 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
     translateY.setValue(Math.max(height, 640));
     backdropOpacity.setValue(0);
     Animated.parallel([
-      Animated.timing(backdropOpacity, { duration: 160, toValue: 1, useNativeDriver: true }),
-      Animated.spring(translateY, { damping: 24, mass: 0.7, stiffness: 280, toValue: 0, useNativeDriver: true }),
+      Animated.timing(backdropOpacity, {
+        duration: deliberateMotion ? 300 : 160,
+        easing: Easing.out(Easing.quad),
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      deliberateMotion
+        ? Animated.timing(translateY, {
+            duration: 440,
+            easing: Easing.bezier(0.16, 1, 0.3, 1),
+            toValue: 0,
+            useNativeDriver: true,
+          })
+        : Animated.spring(translateY, {
+            damping: 24,
+            mass: 0.7,
+            stiffness: 280,
+            toValue: 0,
+            useNativeDriver: true,
+          }),
     ]).start();
-  }, [backdropOpacity, height, reduceMotion, translateY, visible]);
+  }, [backdropOpacity, deliberateMotion, height, reduceMotion, translateY, visible]);
 
   const dragResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),

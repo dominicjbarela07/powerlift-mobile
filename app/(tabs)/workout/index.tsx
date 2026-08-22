@@ -39,6 +39,10 @@ import {
   type AthleteTrainingWeek,
 } from '@/components/training-hub/AthleteTrainingHubExperience';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
+import {
+  AthleteBlockDetailsSheet,
+  type BlockDetailsSession,
+} from '@/components/training-hub/AthleteBlockDetailsSheet';
 import { ProgrammingSessionMoveModal } from '@/components/coach-mobile/ProgrammingSessionMoveModal';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -594,6 +598,7 @@ export default function TrainingIndexScreen() {
   const [programBlocks, setProgramBlocks] = useState<ProgramBlockPayload[]>([]);
   const [pendingMap, setPendingMap] = useState<SessionMap>({});
   const [completedMap, setCompletedMap] = useState<SessionMap>({});
+  const [blockDetailsVisible, setBlockDetailsVisible] = useState(false);
   const [attentionModal, setAttentionModal] = useState<AttentionModalState>(null);
   const [attentionReason, setAttentionReason] = useState('');
   const [attentionComment, setAttentionComment] = useState('');
@@ -684,6 +689,7 @@ export default function TrainingIndexScreen() {
     setError(null);
     setRefreshing(false);
     setLoading(true);
+    setBlockDetailsVisible(false);
   }, [trainingScopeKey]);
 
   useFocusEffect(
@@ -727,7 +733,11 @@ export default function TrainingIndexScreen() {
   };
 
   const openBlockDetails = () => {
-    router.push('/(tabs)/workout/block-details' as any);
+    setBlockDetailsVisible(true);
+  };
+
+  const openBlockDetailsSession = (session: BlockDetailsSession) => {
+    openWorkout(session.id);
   };
 
   const openSessionHistory = () => {
@@ -868,6 +878,12 @@ export default function TrainingIndexScreen() {
         onSubmit={submitAttention}
         onMessageCoach={coordinateWithCoach}
         isIndividual={isIndividual}
+      />
+      <AthleteBlockDetailsSheet
+        athleteId={rosterAthleteId ? Number(rosterAthleteId) : null}
+        onDismiss={() => setBlockDetailsVisible(false)}
+        onOpenSession={openBlockDetailsSession}
+        visible={blockDetailsVisible}
       />
     </View>
   );

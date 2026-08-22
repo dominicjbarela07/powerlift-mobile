@@ -11,8 +11,11 @@ import {
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies, SLRadius } from '@/constants/theme';
-import { useAuth } from '@/context/AuthContext';
 import { fetchJson, getCoachSessionReview, saveCoachSessionReview, type CoachReviewItem } from '@/lib/api';
+import {
+  movementHistorySheetRoute,
+  resolveMovementHistoryLaunchFromMeasurement,
+} from '@/lib/movement-history-launch';
 
 type Option = { value: string; label: string };
 type ReviewPayload = {
@@ -72,7 +75,6 @@ function draftFromReview(payload: ReviewPayload): CoachReviewDraft {
 }
 
 export default function CoachSessionReviewScreen() {
-  const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutId?: string }>();
   const workoutId = Number(params.workoutId);
@@ -91,10 +93,11 @@ export default function CoachSessionReviewScreen() {
       return;
     }
     try {
-      refresh ? setRefreshing(true) : setLoading(true);
+      if (refresh) setRefreshing(true);
+      else setLoading(true);
       setError(null);
       const [detailResult, reviewResult] = await Promise.all([
-        fetchJson<DetailPayload>(`/workouts/mobile/${workoutId}?view=coach-preview${__DEV__ ? '&history_diagnostics=1' : ''}`, { method: 'GET', auth: true }),
+        fetchJson<DetailPayload>(`/workouts/mobile/${workoutId}?view=coach-preview`, { method: 'GET', auth: true }),
         getCoachSessionReview(workoutId),
       ]);
       const nextDetail = detailResult.json as DetailPayload | null;
@@ -154,7 +157,7 @@ export default function CoachSessionReviewScreen() {
     return <CompletedSessionRecap
       recap={recap}
       impactSummary={detail?.workout?.impact_summary}
-      preferredUnits={user?.preferred_units}
+      preferredUnits={detail?.athlete?.preferred_units}
       viewerMode="coach"
       coachReview={coachReview}
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}
@@ -164,6 +167,18 @@ export default function CoachSessionReviewScreen() {
       onDone={() => router.back()}
       onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(detail?.athlete?.id || '') } } as any)}
       onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || ''), athleteName: detail?.athlete?.name || '' } } as any)}
+      onOpenMovementHistory={(movement) => {
+        const resolution = resolveMovementHistoryLaunchFromMeasurement({
+          athleteId: detail?.athlete?.id,
+          movementDefinitionId: movement.measurement?.canonical_identity_id,
+          equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
+        });
+        if (!resolution.ok) {
+          Alert.alert('History unavailable', resolution.message);
+          return;
+        }
+        router.push(movementHistorySheetRoute(resolution.target) as never);
+      }}
     />;
   }
 

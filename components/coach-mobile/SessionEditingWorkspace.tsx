@@ -57,6 +57,7 @@ import {
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
+import { exactAccessoryHistoryRows } from '@/lib/exact-accessory-history';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
@@ -124,12 +125,15 @@ export type SessionMovementItem = {
     manufacturer?: { display_name?: string | null } | null;
     equipment_model?: { display_name?: string | null } | null;
   } | null;
+  performed_movement_identity?: SessionMovementItem['movement_identity'];
+  performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {
     state?: string | null;
     original_text?: string | null;
     normalized_key?: string | null;
     resolution_id?: number | null;
     effective_movement_definition_id?: number | null;
+    effective_movement_identity?: SessionMovementItem['movement_identity'];
     indicator?: string | null;
     history_caveat?: string | null;
     mapping?: { id?: number | null; revision?: number | null; status?: string | null } | null;
@@ -139,6 +143,10 @@ export type SessionMovementItem = {
     loading_implementation?: string | null;
   } | null;
   movement_history?: {
+    identity_scope?: string | null;
+    comparison_allowed?: boolean | null;
+    comparison_identity_key?: string | null;
+    recent_sets?: MovementHistorySet[];
     recent_sessions?: MovementHistorySet[];
     most_recent_logged_set?: MovementHistorySet | null;
   } | null;
@@ -253,6 +261,7 @@ type Props = {
   onAddCore: (displayUnit: CoachDisplayUnit, onAdd: (item: SessionMovementItem) => void) => void;
   onAddAccessory: (onAdd: (item: SessionMovementItem) => void) => void;
   onChangeAccessory: (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => void;
+  onOpenMovementHistory?: (item: SessionMovementItem) => void;
   onCalculateLoad: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>;
   onSaveSession: (plan: SessionWorkspaceSavePlan) => Promise<boolean>;
   renderLifecycleActions: (guard: GuardAction, restricted: boolean) => React.ReactNode;
@@ -723,6 +732,9 @@ export function SessionEditingWorkspace(props: Props) {
                         onBackdownManualOverrideEnabledChange={setBackdownManualOverrideEnabled}
                         onChangeMovement={kind === 'accessory' ? changeSelectedAccessory : undefined}
                         onChooseSubstitution={kind === 'accessory' ? chooseApprovedSubstitution : undefined}
+                        onOpenHistory={kind === 'accessory' && props.onOpenMovementHistory
+                          ? () => props.onOpenMovementHistory?.(item)
+                          : undefined}
                         groupedWith={groupedMovementNames(sessionDraft, item.id, draft.supersetGroup)}
                         canDelete={!!capabilities.can_remove_movement}
                         onDelete={deleteSelectedMovement}
@@ -1183,7 +1195,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
   );
 }
 
-function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
@@ -1220,7 +1232,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
           onBackdownManualOverrideEnabledChange={onBackdownManualOverrideEnabledChange}
         />
         {kind === 'accessory' ? <AccessorySessionProgrammingContext draft={draft} editable={editable} groupedWith={groupedWith} onChange={onChange} onChooseSubstitution={onChooseSubstitution} /> : null}
-        <RecentHistorySection item={item} displayUnit={displayUnit} />
+        <RecentHistorySection item={item} displayUnit={displayUnit} onOpenHistory={onOpenHistory} />
         <CoachNotesSection value={draft.notes} editable={editable} onChange={(value) => onChange({ notes: value })} />
         <MovementDeleteAction disabled={!canDelete} onDelete={onDelete} />
       </View>
@@ -1647,16 +1659,14 @@ function FullCustomOverrideEditor({ draft, editable, onChange, storageUnit, disp
   })}</View> : null}</View>;
 }
 
-function RecentHistorySection({ item, displayUnit }: { item: SessionMovementItem; displayUnit: CoachDisplayUnit }) {
-  const recent = item.movement_history?.recent_sessions || [];
-  const fallback = item.movement_history?.most_recent_logged_set;
-  const rows = recent.length ? recent : fallback ? [fallback] : [];
+function RecentHistorySection({ item, displayUnit, onOpenHistory }: { item: SessionMovementItem; displayUnit: CoachDisplayUnit; onOpenHistory?: () => void }) {
+  const rows = exactAccessoryHistoryRows(item.movement_history);
   const [expanded, setExpanded] = useState(false);
   const latest = rows[0];
   return (
     <View style={styles.quickSection}>
-      <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>LAST EXPOSURE</Text>{rows.length > 1 ? <Pressable accessibilityRole="button" onPress={() => setExpanded((value) => !value)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{expanded ? 'Close' : 'History'}</Text></Pressable> : null}</View>
-      {latest ? <Text style={styles.lastExposureValue}>{historySetText(latest, displayUnit)} · {formatDate(latest.date)}</Text> : <Text style={styles.emptyText}>No prior exposure.</Text>}
+      <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>LAST EXPOSURE</Text>{onOpenHistory ? <Pressable accessibilityRole="button" onPress={onOpenHistory} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>History</Text></Pressable> : rows.length > 1 ? <Pressable accessibilityRole="button" onPress={() => setExpanded((value) => !value)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{expanded ? 'Close' : 'History'}</Text></Pressable> : null}</View>
+      {latest ? <Text style={styles.lastExposureValue}>{historySetText(latest, displayUnit)} · {formatDate(latest.date)}</Text> : <Text style={styles.emptyText}>No previous exact exposure.</Text>}
       {expanded ? <View style={styles.historyList}>{rows.slice(1, 5).map((row, index) => <View key={`${row.date || 'history'}-${index}`} style={styles.historyListRow}><Text style={styles.historyValue}>{historySetText(row, displayUnit)}</Text><Text style={styles.historyDate}>{formatDate(row.date)}</Text></View>)}</View> : null}
     </View>
   );

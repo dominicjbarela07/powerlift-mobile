@@ -67,7 +67,7 @@ export type LedgerExplorationContext = Readonly<{
 }>;
 
 export type LedgerExplorationIndex = Readonly<{
-  athlete: { id: number; name: string; preferred_units?: string | null };
+  athlete: { id: number; name: string; preferred_units?: string | null; sex?: string | null; anatomy_display_preference?: string | null };
   context: LedgerExplorationContext;
   movements: LedgerMovementProgress[];
   muscle_groups: LedgerMuscleProgress[];

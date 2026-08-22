@@ -433,6 +433,16 @@ function RootStack() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
+          name="movement-history-sheet"
+          options={{
+            animation: 'none',
+            contentStyle: styles.transparentScene,
+            gestureEnabled: false,
+            headerShown: false,
+            presentation: 'transparentModal',
+          }}
+        />
+        <Stack.Screen
           name="coach-team-brief"
           options={{
             animation: 'slide_from_bottom',

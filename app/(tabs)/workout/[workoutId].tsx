@@ -73,6 +73,10 @@ import {
   SessionUnitFloatingControl,
 } from '@/components/workout-logger/logger-primitives';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
+import {
+  GovernedAccessoryPickerModal,
+  type GovernedAccessoryIdentity,
+} from '@/components/movement/GovernedAccessoryPickerModal';
 import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { LoggerFeedbackSurface } from '@/components/workout-logger/logger-feedback';
 import { FinalSessionCompletionPresenter } from '@/components/workout-logger/final-session-completion-presenter';
@@ -168,6 +172,16 @@ import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { movementScrollTarget } from '@/lib/movement-transition';
 import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
 import {
+  accessoryRepRangeAfterLowerChange,
+  accessoryRepRangeAfterUpperChange,
+  accessoryRepTargetFromText,
+  accessoryRepTargetText,
+  decimalWheelOptions,
+  integerWheelOptions,
+  transitionAccessoryRepTarget,
+  type AccessoryRepTarget,
+} from '@/lib/prescription-wheel-options';
+import {
   canonicalLoggedSetCountForSession,
   deriveSessionElapsedSeconds,
   formatSessionElapsed,
@@ -193,8 +207,14 @@ import {
   workoutDetailLifecycleForEntryId,
   workoutDetailMachineIdentityChoices,
   workoutDetailMachineVariantIdentity,
-  useDevLiveScreenSession,
-} from '@/lib/release-preview-stubs';
+} from '@/dev-mocks/fixtures/workout-detail';
+import { useDevLiveScreenSession } from '@/dev-mocks/live-screen-session';
+import {
+  exactAccessoryBestExposure,
+  exactAccessoryDefaultWeightKg,
+  exactAccessoryHistoryRows,
+  exactAccessoryLastExposure,
+} from '@/lib/exact-accessory-history';
 import {
   resolveLoggerLiftIdentity,
   resolveLoggerPlateStack,
@@ -256,6 +276,11 @@ import {
   type EquipmentSelectionContinuation,
 } from '@/lib/equipment-selection';
 import {
+  movementHistorySheetRoute,
+  resolveMovementHistoryLaunchForItem,
+  resolveMovementHistoryLaunchFromMeasurement,
+} from '@/lib/movement-history-launch';
+import {
   equipmentPresentationLabel,
   equipmentPresentationParts,
 } from '@/lib/equipment-presentation';
@@ -263,7 +288,6 @@ import {
   MACHINE_EQUIPMENT_TYPES,
   type MachineEquipmentType,
 } from '@/lib/machine-equipment';
-import { buildSwapMovementGroups } from '@/lib/swap-movement-options';
 import {
   accessoryRepeatDraft,
   coreRepeatDraft,
@@ -271,7 +295,7 @@ import {
   repeatSetPreview,
 } from '@/lib/repeat-last-set';
 
-const WORKOUT_DETAIL_COACH_AVATAR = null;
+const WORKOUT_DETAIL_COACH_AVATAR = require('@/assets/images/app_logo.png');
 const CORE_FAMILY_LIFT_CODE = {
   squat: 'SQ',
   bench: 'BN',
@@ -341,6 +365,9 @@ type MovementHistory = {
   recent_sets?: MovementHistorySet[];
   recent_sessions?: MovementHistorySet[];
   identity_scope?: 'exact_identity' | 'legacy_unresolved' | string;
+  comparison_allowed?: boolean | null;
+  comparison_identity_key?: string | null;
+  comparison_scope?: string | null;
   movement_definition_id?: number | null;
   legacy_unresolved_history?: {
     most_recent_logged_set?: MovementHistorySet | null;
@@ -374,6 +401,13 @@ type GeneralMovementIdentity = {
   display_name: string;
   family_id?: number | null;
   family_display_name?: string | null;
+  family?: string | null;
+  ownership_scope?: string | null;
+  library_scope?: string | null;
+  primary_muscle_group?: string | null;
+  secondary_muscle_groups?: string[] | null;
+  execution_family?: string | null;
+  requires_equipment_configuration?: boolean | null;
   identity_specificity?: 'broad' | 'exact' | 'unknown' | string;
   equipment_type?: string | null;
   loading_implementation?: string | null;
@@ -418,6 +452,7 @@ type WorkoutItem = {
   is_substituted?: boolean;
   selected_sub_movement?: string | null;
   approved_subs?: string[];
+  approved_sub_identities?: GeneralMovementIdentity[];
   sets: number | null;
   reps: number | null;
   reps_text: string | null;
@@ -453,6 +488,15 @@ type WorkoutItem = {
   movement_history?: MovementHistory | null;
   movement_identity?: GeneralMovementIdentity | null;
   performed_movement_identity?: GeneralMovementIdentity | null;
+  performed_canonical_movement_identity?: GeneralMovementIdentity | null;
+  legacy?: {
+    state?: string | null;
+    effective_movement_definition_id?: number | null;
+    effective_movement_identity?: GeneralMovementIdentity | null;
+  } | null;
+  performed_sets?: number | null;
+  performed_reps_text?: string | null;
+  performed_rir_target?: number | null;
   parent_item_id?: number | string | null;
   dev_core_family?: keyof typeof CORE_FAMILY_LIFT_CODE | null;
   dev_visual_coverage?: string[];
@@ -472,6 +516,8 @@ type WorkoutPayload = {
     can_coach: boolean;
     is_self_coached: boolean;
     can_hot_swap: boolean;
+    can_browse_hot_swap_catalog?: boolean;
+    can_create_custom_movement?: boolean;
     view_only?: boolean;
   };
   workout: {
@@ -655,6 +701,9 @@ function liftDisplayName(core: WorkoutItem): string {
 }
 
 function getLookbackBest(it: any) {
+  if (String(it?.variant || '').trim().toUpperCase() === 'ACC') {
+    return exactAccessoryLastExposure(it?.movement_history);
+  }
   return it?.lookback_best || it?.last_best || it?.prev_best || null;
 }
 
@@ -997,6 +1046,7 @@ type SupersetRoundLoggerEntry = {
   rir: string;
   requiresRir: boolean;
   alreadyLogged: boolean;
+  skipped?: boolean;
   loggedResult?: string | null;
   validationError?: string | null;
   weightOptions: string[];
@@ -1188,8 +1238,9 @@ function missingSetLabelsForWorkout(workout?: WorkoutPayload['workout'] | null):
 
   for (const group of workout.accessory_groups || []) {
     for (const item of group.items || []) {
-      const name = simplifyMobileMovementName(item.movement || item.lift || 'Accessory');
-      addMissingForItem(item, Array.from({ length: positiveInt(item.sets) }).map((_, idx) => idx + 1), name);
+      const executionItem = accessoryExecutionItem(item);
+      const name = simplifyMobileMovementName(accessoryExecutionName(item));
+      addMissingForItem(executionItem, Array.from({ length: positiveInt(executionItem.sets) }).map((_, idx) => idx + 1), name);
     }
   }
 
@@ -1370,6 +1421,14 @@ function coreStagePrescriptionChanged(
     && Math.abs(current.canonicalWeightKg - previous.canonicalWeightKg) > 0.01;
 }
 
+function prescribedCoreWeight(item: WorkoutItem, unit: 'kg' | 'lb', planned?: PlannedSet | null) {
+  return resolveLoggerPrescribedWeight({
+    item,
+    planned,
+    unit,
+  })?.displayValue || '';
+}
+
 function defaultCoreWeight({
   item,
   unit,
@@ -1383,22 +1442,16 @@ function defaultCoreWeight({
   acceptedSet?: SetLoggerLoadEvidence | null;
   planned?: PlannedSet | null;
 }) {
-  const prescribedWeightKg = resolveLoggerPrescribedWeight({
-    item,
-    planned,
-    unit: 'kg',
-  })?.canonicalWeightKg ?? null;
-  const sessionEvidence = [
-    ...(item.set_logs || []),
-    ...(acceptedSet ? [acceptedSet] : []),
-  ];
-  const fallbackWeightKg = unit === 'kg' ? 100 : 225 * KG_PER_LB;
+  const prescribedWeightKg = resolveLoggerPrescribedWeight({ item, planned, unit: 'kg' })?.canonicalWeightKg ?? null;
   const resolved = resolveSetLoggerLoadDefault({
     currentSetIndex,
-    currentSessionSets: sessionEvidence,
+    currentSessionSets: [
+      ...(item.set_logs || []),
+      ...(acceptedSet ? [acceptedSet] : []),
+    ],
     comparableHistory: item.movement_history,
     prescribedWeightKg,
-    fallbackWeightKg,
+    fallbackWeightKg: unit === 'kg' ? 100 : 225 * KG_PER_LB,
     allowZeroLoad: loadWheelAllowsZero(item),
     preferPrescriptionForStageTransition: coreStagePrescriptionChanged(item, planned),
   });
@@ -1413,7 +1466,24 @@ function defaultCoreRpe(item: WorkoutItem, planned?: PlannedSet | null) {
   return formatWheelNumber(Number(planned?.rpe_target ?? item.rpe_target ?? 8));
 }
 
+function accessoryExecutionItem(item: WorkoutItem): WorkoutItem {
+  return {
+    ...item,
+    movement: item.performed_canonical_movement_identity?.display_name
+      || item.selected_sub_movement
+      || item.movement,
+    sets: item.performed_sets ?? item.sets,
+    reps_text: item.performed_reps_text || item.reps_text,
+    rir_target: item.performed_rir_target ?? item.rir_target,
+  };
+}
+
+function accessoryExecutionName(item: WorkoutItem) {
+  return accessoryExecutionItem(item).movement || 'Accessory';
+}
+
 function accessoryRepsDefault(item: WorkoutItem) {
+  item = accessoryExecutionItem(item);
   const raw = String(item.reps_text || item.reps || '').trim();
   if (!raw || /amrap/i.test(raw)) return '10';
   const matches = raw.match(/\d+/g);
@@ -1422,6 +1492,7 @@ function accessoryRepsDefault(item: WorkoutItem) {
 }
 
 function accessoryTargetLine(item: WorkoutItem) {
+  item = accessoryExecutionItem(item);
   const base = `${positiveInt(item.sets)}×${item.reps_text || item.reps || '—'}`;
   if (item.rir_target == null) return base;
   return `${base} @${formatWheelNumber(Number(item.rir_target))} RIR`;
@@ -1438,10 +1509,7 @@ function defaultAccessoryWeight({
   currentSetIndex: number;
   acceptedSet?: SetLoggerLoadEvidence | null;
 }) {
-  const prescribedWeightKg = resolveLoggerPrescribedWeight({
-    item,
-    unit: 'kg',
-  })?.canonicalWeightKg ?? null;
+  const prescribedWeightKg = resolveLoggerPrescribedWeight({ item, unit: 'kg' })?.canonicalWeightKg ?? null;
   const resolved = resolveSetLoggerLoadDefault({
     currentSetIndex,
     currentSessionSets: [
@@ -1457,7 +1525,7 @@ function defaultAccessoryWeight({
 }
 
 function defaultAccessoryRir(item: WorkoutItem) {
-  return formatWheelNumber(Number(item.rir_target ?? 2));
+  return formatWheelNumber(Number(accessoryExecutionItem(item).rir_target ?? 2));
 }
 
 function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb', metric: 'rpe' | 'rir') {
@@ -1778,11 +1846,8 @@ export default function WorkoutViewerScreen() {
         ? topTotal + backdownTotal
         : positiveInt(core.sets);
       const logged = isTop
-        ? uniqueLoggedSetIndexesForLogs(topLogs).length + backdownsForThisTop.reduce(
-            (sum, bd) => sum + uniqueLoggedSetIndexesForLogs(bd.set_logs || []).length,
-            0,
-          )
-        : uniqueLoggedSetIndexesForLogs(core.set_logs || []).length;
+        ? loggedSetIndexCount(topLogs) + backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
+        : loggedSetIndexCount(core.set_logs || []);
 
       rows.push({
         key: `core:${core.id}`,
@@ -1796,7 +1861,7 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
-      if (group.group) {
+      if (isIdealWorkoutDetailPreview && group.group) {
         const roundModel = buildSupersetRoundModel(group.items || []);
         const firstItemId = Number(group.items?.[0]?.id || 0);
         rows.push({
@@ -1805,15 +1870,15 @@ export default function WorkoutViewerScreen() {
           kind: 'accessory',
           id: firstItemId,
           complete: roundModel.status === 'complete',
-          logged: roundModel.loggedRequiredSets,
-          total: roundModel.totalRequiredSets,
+          logged: roundModel.completedRounds,
+          total: roundModel.roundCount,
         });
         continue;
       }
       for (const item of group.items || []) {
         const logs = item.set_logs || [];
         const total = positiveInt(item.sets);
-        const logged = uniqueLoggedSetIndexesForLogs(logs).length;
+        const logged = loggedSetIndexCount(logs);
         rows.push({
           key: `acc:${item.id}`,
           detailKey: `acc:${item.id}`,
@@ -1827,7 +1892,7 @@ export default function WorkoutViewerScreen() {
     }
 
     return rows;
-  }, []);
+  }, [isIdealWorkoutDetailPreview]);
 
   const findRenderedMovementKeyForItem = useCallback((
     workout: WorkoutPayload['workout'] | null | undefined,
@@ -1852,7 +1917,11 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
-      if (group.group && group.items.some((item) => item.id === itemId)) {
+      if (
+        isIdealWorkoutDetailPreview
+        && group.group
+        && group.items.some((item) => item.id === itemId)
+      ) {
         return `ss:${group.group}`;
       }
       for (const item of group.items || []) {
@@ -1861,7 +1930,7 @@ export default function WorkoutViewerScreen() {
     }
 
     return null;
-  }, []);
+  }, [isIdealWorkoutDetailPreview]);
 
   const openMovementCard = useCallback((key: string | null | undefined) => {
     if (!key) return;
@@ -2301,7 +2370,6 @@ export default function WorkoutViewerScreen() {
     while (logged.has(index)) index += 1;
     return index;
   }, [data?.workout?.core_items]);
-
   useEffect(() => {
     const items = [
       ...(data?.workout?.core_items || []),
@@ -2783,7 +2851,9 @@ export default function WorkoutViewerScreen() {
 
   // --- Accessory hot-swap (self-coached only) ---
   const [swapAccVisible, setSwapAccVisible] = useState(false);
+  const [swapPickerVisible, setSwapPickerVisible] = useState(false);
   const [swapAccItem, setSwapAccItem] = useState<WorkoutItem | null>(null);
+  const [swapAccIdentity, setSwapAccIdentity] = useState<GeneralMovementIdentity | null>(null);
   const [movementHistoryItem, setMovementHistoryItem] = useState<WorkoutItem | null>(null);
   const [identityPickerItem, setIdentityPickerItem] = useState<WorkoutItem | null>(null);
   const [identityPickerQuery, setIdentityPickerQuery] = useState('');
@@ -2796,12 +2866,23 @@ export default function WorkoutViewerScreen() {
     useState<GeneralMovementIdentity | null>(null);
   const identityPickerRequestRef = useRef(0);
   const [swapAccForm, setSwapAccForm] = useState({
-    movement: '',
     sets: '',
-    reps_text: '',
     rir: '',
   });
-  const [swapAccQuery, setSwapAccQuery] = useState('');
+  const [swapRepTarget, setSwapRepTarget] = useState<AccessoryRepTarget>({ mode: 'FIXED', fixed: '10' });
+
+  const openCanonicalMovementHistory = (item: WorkoutItem) => {
+    const resolution = resolveMovementHistoryLaunchForItem({
+      athleteId: Number(data?.workout?.athlete_id || 0),
+      item,
+    });
+    if (!resolution.ok) {
+      if (__DEV__) console.warn('[MovementHistory] launch rejected', resolution.reason, item.id);
+      Alert.alert('History unavailable', resolution.message);
+      return;
+    }
+    router.push(movementHistorySheetRoute(resolution.target) as never);
+  };
 
   const openSwapAcc = (it: WorkoutItem) => {
     const currentWorkout = data?.workout;
@@ -2818,26 +2899,30 @@ export default function WorkoutViewerScreen() {
     });
     if (!swapAction) return;
     setSwapAccItem(it);
+    setSwapAccIdentity(
+      it.performed_canonical_movement_identity
+      || it.movement_identity
+      || null
+    );
     setSwapAccForm({
-      movement: it.selected_sub_movement || it.movement || it.original_movement || '',
-      sets: it.sets != null ? String(it.sets) : '',
-      reps_text: it.reps_text || (it.reps != null ? String(it.reps) : ''),
-      rir: it.rir_target != null ? String(it.rir_target) : '',
+      sets: (it.performed_sets ?? it.sets) != null ? String(it.performed_sets ?? it.sets) : '',
+      rir: (it.performed_rir_target ?? it.rir_target) != null ? String(it.performed_rir_target ?? it.rir_target) : '',
     });
-    setSwapAccQuery('');
-    setSwapAccVisible(true);
+    setSwapRepTarget(accessoryRepTargetFromText(
+      it.performed_reps_text || it.reps_text || (it.reps != null ? String(it.reps) : '10'),
+    ));
+    setSwapPickerVisible(true);
   };
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
 
-    const movement = String(swapAccForm.movement || '').trim();
     const setsStr = String(swapAccForm.sets || '').trim();
-    const repsText = String(swapAccForm.reps_text || '').trim();
+    const repsText = accessoryRepTargetText(swapRepTarget);
     const rirStr = String(swapAccForm.rir || '').trim();
 
-    if (!movement) {
-      setError('Movement required');
+    if (!swapAccIdentity?.id) {
+      setError('Select a governed movement');
       return;
     }
 
@@ -2871,7 +2956,8 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           body: {
-            movement,
+            movement: swapAccIdentity.display_name,
+            performed_canonical_movement_definition_id: swapAccIdentity.id,
             sets: sets ?? undefined,
             reps_text: repsText,
             rir: rir ?? undefined,
@@ -2884,10 +2970,14 @@ export default function WorkoutViewerScreen() {
         throw new Error(json?.error || `Failed to swap accessory (HTTP ${status})`);
       }
 
+      const savedItem = json.item as WorkoutItem | undefined;
       setSwapAccVisible(false);
       setSwapAccItem(null);
       rememberScroll();
       await fetchWorkout();
+      if (savedItem?.performed_canonical_movement_identity?.requires_equipment_configuration) {
+        openIdentityPicker(savedItem);
+      }
     } catch (err: any) {
       console.log('saveSwapAcc error', err);
       setError(err?.message || 'Error swapping accessory');
@@ -3842,6 +3932,7 @@ export default function WorkoutViewerScreen() {
       );
       return;
     }
+    const executionItem = accessoryExecutionItem(item);
     const idealRecommendationWeightKg = isIdealWorkoutDetailPreview
       ? Number((item as any).dev_accessory_intelligence?.recommendation_weight_kg)
       : NaN;
@@ -3854,23 +3945,18 @@ export default function WorkoutViewerScreen() {
       ...(acceptedSet ? [acceptedSet] : []),
     ]);
     const rawWeight = idealSuggestedWeight
-      || defaultAccessoryWeight({
-        item,
-        unit,
-        currentSetIndex,
-        acceptedSet,
-      });
+      || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
-    const repsDefault = accInputs[item.id]?.reps || accessoryRepsDefault(item);
-    const rirDefault = accInputs[item.id]?.rir || defaultAccessoryRir(item);
+    const repsDefault = accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
+    const rirDefault = accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
 
     setAccessoryWheel({
       visible: true,
       itemId: item.id,
-      title: item.movement || 'Accessory',
-      targetLine: accessoryTargetLine(item),
+      title: accessoryExecutionName(item),
+      targetLine: accessoryTargetLine(executionItem),
       weight: nearestWheelValue(weightOptions, rawWeight, '0'),
       reps: nearestWheelValue(repsOptions, repsDefault, '10'),
       rir: nearestWheelValue(rirOptions, rirDefault, '2'),
@@ -3927,6 +4013,7 @@ export default function WorkoutViewerScreen() {
     }
 
     const entries = round.entries.map(({ item, log }) => {
+        const executionItem = accessoryExecutionItem(item);
         const idealRecommendationWeightKg = Number(
           (item as any).dev_accessory_intelligence?.recommendation_weight_kg,
         );
@@ -3939,7 +4026,7 @@ export default function WorkoutViewerScreen() {
           ? toWheelWeight(log as SetLog, unit)
           : suggestedWeight
             || defaultAccessoryWeight({
-              item,
+              item: executionItem,
               unit,
               currentSetIndex: roundIndex,
               acceptedSet,
@@ -3952,10 +4039,10 @@ export default function WorkoutViewerScreen() {
         );
         const reps = log?.actual_reps != null
           ? String(log.actual_reps)
-          : accInputs[item.id]?.reps || accessoryRepsDefault(item);
+          : accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
         const rir = log?.actual_rir != null
           ? formatWheelNumber(Number(log.actual_rir))
-          : accInputs[item.id]?.rir || defaultAccessoryRir(item);
+          : accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
         const previousLog = latestRepeatableSet(
           (item.set_logs || []).filter(
             (candidate) => Number(candidate.set_index || 0) < roundIndex,
@@ -3966,12 +4053,12 @@ export default function WorkoutViewerScreen() {
           : null;
         return {
           itemId: item.id,
-          title: simplifyMobileMovementName(item.movement) || 'Accessory',
-          prescription: accessoryTargetLine(item),
+          title: simplifyMobileMovementName(accessoryExecutionName(item)),
+          prescription: accessoryTargetLine(executionItem),
           weight: nearestWheelValue(weightOptions, weight || '0', '0'),
           reps: nearestWheelValue(repsOptions, reps, '10'),
           rir: nearestWheelValue(rirOptions, rir, '2'),
-          requiresRir: item.rir_target != null,
+          requiresRir: executionItem.rir_target != null,
           alreadyLogged: Boolean(log),
           loggedResult: log ? loggedSetText(log as SetLog, unit) : null,
           validationError: null,
@@ -4575,8 +4662,8 @@ export default function WorkoutViewerScreen() {
       visible: true,
       kind,
       itemId: item.id,
-      setIndex: kind === 'fc' ? currentSetIndex : setIndex,
-      title: `${liftDisplayName(item)}${currentSetIndex ? ` · Set ${currentSetIndex}` : ''}`,
+      setIndex,
+      title: `${liftDisplayName(item)}${setIndex ? ` · Set ${setIndex}` : ''}`,
       subtitle: unit.toUpperCase(),
       targetLine,
       prescriptionLine: targetLine ? `${targetLine} × ${reps} @${rpe}` : null,
@@ -4827,6 +4914,49 @@ export default function WorkoutViewerScreen() {
         actual_rir: null,
         client_submission_id: `ideal-core-${itemId}-${setIndex}`,
       };
+      if (loggerScenario === 'final-session-completion') {
+        const clientSubmissionId = String(mockSet.client_submission_id);
+        const recognitionEvent: LoggerRecognitionEvent = {
+          id: mockSet.id + 1,
+          event_type: 'CORE_WEIGHT_PR',
+          priority: 1,
+          core_movement_key: 'bench',
+          movement_label: 'Competition Bench Press',
+          current_value: weightKg,
+          prior_value: 220 * KG_PER_LB,
+          delta: weightKg - (220 * KG_PER_LB),
+          unit: 'kg',
+          scope: 'career',
+          source_set_log_id: mockSet.id,
+          trigger_set_log_id: mockSet.id,
+          source_revision: 1,
+          calculation_version: 'dev-final-session-validation-v1',
+          newly_generated: true,
+          replayed: false,
+          consumed: false,
+          source: {
+            workout_id: Number(workoutId),
+            workout_item_id: itemId,
+            set_log_id: mockSet.id,
+          },
+        };
+        beginFeedbackSubmission(itemId);
+        handleCanonicalSetFeedback({
+          ok: true,
+          created: true,
+          replayed: false,
+          client_submission_id: clientSubmissionId,
+          set: { ...mockSet, item_id: itemId },
+          recognition_events: [recognitionEvent],
+          completion_boundary: {
+            authority: 'canonical',
+            movement_final_set: true,
+            session_final_set: true,
+            remaining_required_sets: 0,
+            workout_evidence_revision: 1,
+          },
+        }, itemId);
+      }
       setData((current) => current ? {
         ...current,
         workout: {
@@ -4838,7 +4968,7 @@ export default function WorkoutViewerScreen() {
           )),
         },
       } : current);
-      setCoreWheel(null);
+      if (loggerScenario !== 'final-session-completion') setCoreWheel(null);
       setStraightInputs((current) => ({
         ...current,
         [itemId]: {
@@ -5716,6 +5846,17 @@ export default function WorkoutViewerScreen() {
       return false;
     }
 
+    if (isIdealWorkoutDetailPreview && loggerScenario === 'final-session-completion') {
+      const completedFixture = createWorkoutDetailFixture('completed-recap-v2', 'post_session') as WorkoutPayload;
+      const summaryId = completedFixture.workout.impact_summary?.summary_id || null;
+      stopRestTimer();
+      freshCompletionSummaryIdRef.current = summaryId;
+      setAnimatedCompletionSummaryId(summaryId);
+      setData(completedFixture);
+      void triggerSessionCompletionHaptic();
+      return true;
+    }
+
     try {
       setActionLoading('complete');
       setError(null);
@@ -6107,6 +6248,12 @@ export default function WorkoutViewerScreen() {
         const payload = hydrateWorkoutDetailEquipmentSelections(
           fixturePayload as unknown as Record<string, any>,
         ) as WorkoutPayload;
+        if (!unitPreferenceHydratedRef.current) {
+          if (unitLocalOverrideRef.current == null) {
+            setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+          }
+          unitPreferenceHydratedRef.current = true;
+        }
         setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
         setData(payload);
         restoreScrollSoon();
@@ -6130,6 +6277,12 @@ export default function WorkoutViewerScreen() {
         throw new Error('Athlete View could not be verified as read-only.');
       }
 
+      if (!unitPreferenceHydratedRef.current) {
+        if (unitLocalOverrideRef.current == null) {
+          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+        }
+        unitPreferenceHydratedRef.current = true;
+      }
       setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
       setData(payload);
       restoreScrollSoon();
@@ -6999,7 +7152,7 @@ export default function WorkoutViewerScreen() {
       targetLine,
     }),
     onRepeatLast: undefined,
-    onViewHistory: () => setMovementHistoryItem(item),
+    onViewHistory: () => openCanonicalMovementHistory(item),
     });
   };
 
@@ -7513,6 +7666,7 @@ export default function WorkoutViewerScreen() {
     expanded: boolean;
     isComplete: boolean;
   }): { loggerFocus: MovementLoggerFocusModel | null; detailRows: ActiveMovementDetailRow[] } => {
+    item = accessoryExecutionItem(item);
     const completedIndexes = logs.map((log) => log.set_index || 0).filter(Boolean);
     const rowCount = Math.max(totalSets, ...logs.map((log) => Number(log.set_index || 0)), 0);
     const detailRows: ActiveMovementDetailRow[] = Array.from({ length: rowCount }).map((_, offset) => {
@@ -7560,7 +7714,7 @@ export default function WorkoutViewerScreen() {
           canRepeat: false,
           onLogSet: canLogNext ? () => openAccessoryWheel(item) : undefined,
           onRepeatLast: undefined,
-          onViewHistory: () => setMovementHistoryItem(item),
+          onViewHistory: () => openCanonicalMovementHistory(item),
           accessoryPresentation: true,
         }
       : null;
@@ -7569,12 +7723,13 @@ export default function WorkoutViewerScreen() {
   };
 
   const renderAccessoryMovement = (it: WorkoutItem) => {
+    const executionItem = accessoryExecutionItem(it);
     const logs = it.set_logs || [];
     const latestLoggedIdx =
       logs.length > 0
         ? Math.max(...logs.map((l) => l.set_index || 0))
         : 0;
-    const totalSets = positiveInt(it.sets);
+    const totalSets = positiveInt(executionItem.sets);
     const loggedCount = logs.length;
     const nextIndex = loggedCount + 1;
     const accessoryDetailKey = `acc:${it.id}`;
@@ -7584,7 +7739,7 @@ export default function WorkoutViewerScreen() {
     const accessoryState = accessoryIsComplete ? 'complete' : loggedCount > 0 ? 'logged' : 'not_started';
     const lookbackLine = accessoryLookbackLine(it);
     const movementPresentation = buildAccessoryMovementPresentation({
-      item: it,
+      item: executionItem,
       logs,
       totalSets,
       latestLoggedIdx,
@@ -7658,11 +7813,11 @@ export default function WorkoutViewerScreen() {
       >
         <CoreMovementLedgerRow
           state={accessoryState}
-          title={it.movement || 'Accessory'}
+          title={accessoryExecutionName(it)}
           designation="Accessory"
           variantLabel={accessoryVariantLabel}
-          scheme={accessoryTargetLine(it)}
-          headerPrescription={accessoryTargetLine(it)}
+          scheme={accessoryTargetLine(executionItem)}
+          headerPrescription={accessoryTargetLine(executionItem)}
           loggerFocus={
             (isPreSession || isActiveSession) && accessoryIsExpanded
               ? movementPresentation.loggerFocus
@@ -7712,14 +7867,14 @@ export default function WorkoutViewerScreen() {
           }
           sessionLifecycle={screenMode}
           auxAction={isCoachAthletePreview ? null : (
-            <View style={styles.accessoryInlineActions}>
+            <>
               {machineAccessory ? (
                 <TouchableOpacity
                   style={styles.accessoryInlineAction}
                   onPress={() => openIdentityPicker(it)}
                 >
                   <Ionicons name="barbell-outline" size={18} color={SLColors.textMuted} />
-                  <Text style={styles.accessoryInlineActionText}>Equipment</Text>
+                  <Text adjustsFontSizeToFit minimumFontScale={0.82} numberOfLines={1} style={styles.accessoryInlineActionText}>Equipment</Text>
                 </TouchableOpacity>
               ) : null}
               {swapLabel ? (
@@ -7731,7 +7886,7 @@ export default function WorkoutViewerScreen() {
                   <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
                 </TouchableOpacity>
               ) : null}
-            </View>
+            </>
           )}
           onOpen={() => toggleMovementCard(accessoryDetailKey)}
         />
@@ -7851,11 +8006,28 @@ export default function WorkoutViewerScreen() {
           <CompletedSessionRecap
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
-            preferredUnits={unit}
+            preferredUnits={athlete.preferred_units}
+            viewerMode={coachPreviewRequested ? 'coach' : 'athlete'}
             refreshing={refreshing}
             onRefresh={onRefresh}
             onClose={handleCloseCompletedRecap}
             onDone={handleCloseCompletedRecap}
+            onViewLedger={coachPreviewRequested ? undefined : () => router.push('/(tabs)/ledger' as any)}
+            onViewCalendar={coachPreviewRequested
+              ? () => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id) } } as any)
+              : () => router.push('/(tabs)/athlete-calendar' as any)}
+            onOpenMovementHistory={(movement) => {
+              const resolution = resolveMovementHistoryLaunchFromMeasurement({
+                athleteId: athlete.id,
+                movementDefinitionId: movement.measurement?.canonical_identity_id,
+                equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
+              });
+              if (!resolution.ok) {
+                Alert.alert('History unavailable', resolution.message);
+                return;
+              }
+              router.push(movementHistorySheetRoute(resolution.target) as never);
+            }}
           />
         )}
       </>
@@ -8259,7 +8431,7 @@ export default function WorkoutViewerScreen() {
                 >
                   <SupersetRoundWorkspace
                     canLog={canLog && !isCoachView}
-                    executionHint="Flexible order"
+                    executionHint={grp.dev_execution_hint || 'Alternate continuously'}
                     expanded={Boolean(expandedCompletedMovements[detailKey])}
                     groupLabel={grp.group}
                     model={roundModel}
@@ -8270,12 +8442,8 @@ export default function WorkoutViewerScreen() {
                         mode: 'rir',
                         movementName: item.title,
                       })}
-                    onLogMovement={(itemId) => {
-                      const item = grp.items.find(
-                        (candidate) => candidate.id === itemId,
-                      );
-                      if (item) openAccessoryWheel(item);
-                    }}
+                    onLogRound={(roundIndex) =>
+                      openSupersetRoundLogger(grp, roundIndex)}
                     onOpenHistory={(itemId) => {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,
@@ -8954,7 +9122,7 @@ export default function WorkoutViewerScreen() {
       </Modal>
 
       <Modal
-        visible={!!movementHistoryItem}
+        visible={false && !!movementHistoryItem}
         transparent
         animationType="slide"
         onRequestClose={() => setMovementHistoryItem(null)}
@@ -8978,9 +9146,9 @@ export default function WorkoutViewerScreen() {
                 || historyIdentity?.display_name
                 || 'Machine';
             const exactEquipmentMetadata = machineHistoryMetadata(historyIdentity?.equipment_type);
-            const recent = (history?.recent_sessions && history.recent_sessions.length > 0)
-              ? history.recent_sessions
-              : ((history?.recent_sets || []).slice(0, 5));
+            const recent = exactAccessoryHistoryRows(history).slice(0, 5);
+            const exactMostRecent = exactAccessoryLastExposure(history);
+            const exactBest = exactAccessoryBestExposure(history);
             const legacyHistory = history?.legacy_unresolved_history || null;
             const legacyRecent = (legacyHistory?.recent_sessions && legacyHistory.recent_sessions.length > 0)
               ? legacyHistory.recent_sessions
@@ -9072,14 +9240,14 @@ export default function WorkoutViewerScreen() {
                         assisted={assisted}
                         kind="recent"
                         label="Most recent"
-                        row={history?.most_recent_logged_set}
+                        row={exactMostRecent}
                         unit={unit}
                       />
                       <MovementHistorySummaryTile
                         assisted={assisted}
                         kind="best"
                         label="Best"
-                        row={history?.best_logged_set}
+                        row={exactBest}
                         unit={unit}
                       />
                     </View>
@@ -9104,7 +9272,7 @@ export default function WorkoutViewerScreen() {
                       </ScrollView>
                     ) : (
                       <Text style={styles.movementHistoryEmpty}>
-                        No prior matching equipment history yet.
+                        No previous exact exposure.
                       </Text>
                     )}
 
@@ -9185,13 +9353,13 @@ export default function WorkoutViewerScreen() {
                       <View style={styles.movementHistoryStatCard}>
                         <Text style={styles.movementHistoryLabel}>Most Recent</Text>
                         <Text style={styles.movementHistoryValue}>
-                          {formatMovementHistorySet(history?.most_recent_logged_set, unit, assisted)}
+                          {formatMovementHistorySet(exactMostRecent, unit, assisted)}
                         </Text>
                       </View>
                       <View style={styles.movementHistoryStatCard}>
                         <Text style={styles.movementHistoryLabel}>Best</Text>
                         <Text style={styles.movementHistoryValue}>
-                          {formatMovementHistorySet(history?.best_logged_set, unit, assisted)}
+                          {formatMovementHistorySet(exactBest, unit, assisted)}
                         </Text>
                       </View>
                     </View>
@@ -9211,7 +9379,7 @@ export default function WorkoutViewerScreen() {
                           </Text>
                         </View>
                       )) : (
-                        <Text style={styles.movementHistoryEmpty}>No prior matching accessory history yet.</Text>
+                        <Text style={styles.movementHistoryEmpty}>No previous exact exposure.</Text>
                       )}
                       {related.length > 0 ? (
                         <>
@@ -9994,6 +10162,31 @@ export default function WorkoutViewerScreen() {
       />
 
       {/* Accessory substitution modal */}
+      <GovernedAccessoryPickerModal
+        visible={swapPickerVisible}
+        athleteId={data?.athlete?.id || null}
+        title={data?.permissions?.can_browse_hot_swap_catalog ? 'Swap Accessory' : 'Choose Approved Substitute'}
+        currentIdentityId={swapAccIdentity?.id || null}
+        approvedOnly={!data?.permissions?.can_browse_hot_swap_catalog}
+        canCreateCustom={!!data?.permissions?.can_create_custom_movement}
+        approvedIdentities={(() => {
+          const identities = [
+            swapAccItem?.movement_identity,
+            ...(swapAccItem?.approved_sub_identities || []),
+          ].filter((value): value is GeneralMovementIdentity => !!value?.id);
+          return [...new Map(identities.map((value) => [Number(value.id), value])).values()] as GovernedAccessoryIdentity[];
+        })()}
+        onCancel={() => {
+          setSwapPickerVisible(false);
+          setSwapAccItem(null);
+        }}
+        onSelect={(identity) => {
+          setSwapAccIdentity(identity as GeneralMovementIdentity);
+          setSwapPickerVisible(false);
+          setSwapAccVisible(true);
+        }}
+      />
+
       <Modal
         visible={swapAccVisible}
         transparent
@@ -10004,259 +10197,111 @@ export default function WorkoutViewerScreen() {
           <View style={[styles.modalCard, styles.swapModalWide]}>
             <View style={styles.modalSheetHandle} />
             <View style={styles.swapHeaderRow}>
-              <View style={styles.swapHeaderSpacer} />
-              <Text style={styles.postSessionTitle}>
-                {canHotSwap ? 'Swap accessory' : 'Substitute accessory'}
-              </Text>
+              <TouchableOpacity
+                style={styles.swapCloseButton}
+                onPress={() => {
+                  setSwapAccVisible(false);
+                  setSwapPickerVisible(true);
+                }}
+              >
+                <Ionicons name="arrow-back" size={20} color={SLColors.textStrong} />
+              </TouchableOpacity>
+              <Text style={styles.postSessionTitle}>Confirm substitution</Text>
               <TouchableOpacity style={styles.swapCloseButton} onPress={() => setSwapAccVisible(false)}>
                 <Text style={styles.swapCloseText}>×</Text>
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.modalSubtitle}>
-              {canHotSwap
-                ? 'Update the accessory movement and prescription.'
-                : isIndividualUser
-                  ? 'Select one of the approved substitutions below.'
-                  : 'Select one of the coach-approved substitutions below.'}
-            </Text>
+            <View style={styles.swapSummaryCard}>
+              <Text style={styles.swapSummaryIcon}>↔</Text>
+              <View style={styles.swapSummaryCopy}>
+                <Text style={styles.modalLabel}>PROGRAMMED</Text>
+                <Text style={styles.swapSummaryText}>{swapAccItem?.movement || swapAccItem?.original_movement || 'Accessory'}</Text>
+                <Text style={[styles.modalLabel, { marginTop: 10 }]}>PERFORMING</Text>
+                <Text style={styles.swapSummaryTitle}>{swapAccIdentity?.display_name || 'Choose movement'}</Text>
+              </View>
+            </View>
 
-            {(() => {
-              const groups = buildSwapMovementGroups({
-                current: swapAccItem?.selected_sub_movement || swapAccItem?.movement,
-                prescribed: swapAccItem?.original_movement || swapAccItem?.movement,
-                approved: swapAccItem?.approved_subs,
-                query: swapAccQuery,
-              });
-              return (
-                <>
-                  <Text style={styles.modalSectionKicker}>Movement</Text>
-                  <View style={styles.swapMovementField}>
-                    <Ionicons color={SLColors.textMuted} name="search" size={18} />
-                    <TextInput
-                      autoCorrect={false}
-                      style={styles.swapMovementInput}
-                      placeholder={canHotSwap ? 'Search or enter a movement' : 'Search approved movements'}
-                      placeholderTextColor={SLColors.textSubtle}
-                      value={swapAccQuery}
-                      onChangeText={(query) => {
-                        setSwapAccQuery(query);
-                        if (canHotSwap) setSwapAccForm((current) => ({ ...current, movement: query }));
-                      }}
-                    />
-                    {swapAccQuery ? (
-                      <TouchableOpacity
-                        accessibilityLabel="Clear movement search"
-                        onPress={() => setSwapAccQuery('')}
-                      >
-                        <Ionicons color={SLColors.textMuted} name="close-circle" size={18} />
-                      </TouchableOpacity>
-                    ) : null}
-                  </View>
-                  <ScrollView
-                    contentContainerStyle={styles.swapOptionList}
-                    keyboardShouldPersistTaps="handled"
-                    style={styles.swapOptionScroll}
-                  >
-                    {groups.map((group) => (
-                      <View key={group.title} style={styles.swapOptionGroup}>
-                        <Text style={styles.swapOptionGroupTitle}>{group.title}</Text>
-                        {group.options.map((option) => {
-                          const selected = swapAccForm.movement === option.movement;
-                          return (
-                            <TouchableOpacity
-                              accessibilityRole="radio"
-                              accessibilityState={{ selected }}
-                              key={`${option.kind}:${option.movement}`}
-                              onPress={() => {
-                                setSwapAccForm((current) => ({ ...current, movement: option.movement }));
-                                setSwapAccQuery(option.movement);
-                              }}
-                              style={[
-                                styles.swapOptionButton,
-                                selected && styles.swapOptionButtonActive,
-                              ]}
-                            >
-                              <Text style={[styles.swapOptionText, selected && styles.swapOptionTextActive]}>
-                                {option.movement}
-                              </Text>
-                              {selected ? (
-                                <Ionicons color={SLColors.accentViolet} name="checkmark-circle" size={19} />
-                              ) : (
-                                <Ionicons color={SLColors.textMuted} name="chevron-forward" size={17} />
-                              )}
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
-                    ))}
-                    {!groups.length && swapAccQuery.trim() ? (
-                      <Text style={styles.movementHistoryEmpty}>
-                        {canHotSwap
-                          ? `Use “${swapAccQuery.trim()}” as the movement name.`
-                          : 'No approved movements match this search.'}
-                      </Text>
-                    ) : null}
-                  </ScrollView>
-                </>
-              );
-            })()}
-
-            {canHotSwap ? (
+            {data?.permissions?.can_browse_hot_swap_catalog ? (
               <>
-                <View style={{ display: 'none' }}>
-                <Text style={styles.modalSectionKicker}>Movement</Text>
-                <View style={styles.swapMovementField}>
-                  <Text style={styles.swapSearchIcon}>⌕</Text>
-                  <TextInput
-                    style={styles.swapMovementInput}
-                    placeholder="Movement (e.g., Lat Pulldown)"
-                    placeholderTextColor={SLColors.textSubtle}
-                    value={swapAccForm.movement}
-                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
-                  />
-                  {swapAccForm.movement ? (
-                    <TouchableOpacity onPress={() => setSwapAccForm((p) => ({ ...p, movement: '' }))}>
-                      <Text style={styles.swapClearText}>×</Text>
+                <Text style={styles.modalSectionKicker}>Future-set prescription</Text>
+                <LoggerWheelPicker
+                  density="compact"
+                  grouped
+                  columns={[
+                    {
+                      key: 'swap-sets', label: 'SETS', value: swapAccForm.sets || '3',
+                      options: integerWheelOptions(1, 12, swapAccForm.sets),
+                      onChange: (sets) => setSwapAccForm((value) => ({ ...value, sets })),
+                    },
+                    {
+                      key: 'swap-rir', label: 'RIR', value: swapAccForm.rir || '2',
+                      options: decimalWheelOptions(0, 5, .5, swapAccForm.rir),
+                      onChange: (rir) => setSwapAccForm((value) => ({ ...value, rir })),
+                    },
+                  ]}
+                />
+                <View style={styles.swapRepModeRow}>
+                  {(['FIXED', 'RANGE', 'AMRAP'] as const).map((mode) => (
+                    <TouchableOpacity
+                      key={mode}
+                      style={[styles.swapRepMode, swapRepTarget.mode === mode && styles.swapRepModeActive]}
+                      onPress={() => setSwapRepTarget((current) => transitionAccessoryRepTarget(
+                        current,
+                        mode,
+                        {
+                          fixed: current.mode === 'FIXED' ? current.fixed : null,
+                          range: current.mode === 'RANGE' ? { low: current.low, high: current.high } : null,
+                        },
+                      ).target)}
+                    >
+                      <Text style={styles.swapRepModeText}>{mode === 'FIXED' ? 'Single' : mode === 'RANGE' ? 'Range' : 'AMRAP'}</Text>
                     </TouchableOpacity>
-                  ) : null}
+                  ))}
                 </View>
-                </View>
-
-                <Text style={styles.modalSectionKicker}>Prescription</Text>
-                <View style={styles.readinessScaleRow}>
-                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
-                    <Text style={styles.modalLabel}>Sets</Text>
-                    <TextInput
-                      style={styles.swapPrescriptionInput}
-                      placeholder="—"
-                      placeholderTextColor={SLColors.textSubtle}
-                      keyboardType="number-pad"
-                      value={swapAccForm.sets}
-                      onChangeText={(t) =>
-                        setSwapAccForm((p) => ({ ...p, sets: (t ?? '').replace(/[^0-9]/g, '') }))
-                      }
-                    />
-                    <Text style={styles.modalValueUnit}>sets</Text>
-                  </View>
-                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
-                    <Text style={styles.modalLabel}>Reps</Text>
-                    <TextInput
-                      style={styles.swapPrescriptionInput}
-                      placeholder="—"
-                      placeholderTextColor={SLColors.textSubtle}
-                      value={swapAccForm.reps_text}
-                      onChangeText={(t) => setSwapAccForm((p) => ({ ...p, reps_text: t }))}
-                    />
-                    <Text style={styles.modalValueUnit}>reps</Text>
-                  </View>
-                  <View style={[styles.swapPrescriptionCard, { flex: 1 }]}>
-                    <Text style={styles.modalLabel}>RIR</Text>
-                    <TextInput
-                      style={styles.swapPrescriptionInput}
-                      placeholder="—"
-                      placeholderTextColor={SLColors.textSubtle}
-                      keyboardType="numeric"
-                      value={swapAccForm.rir}
-                      onChangeText={(t) => setSwapAccForm((p) => ({ ...p, rir: t }))}
-                    />
-                    <Text style={styles.modalValueUnit}>RIR</Text>
-                  </View>
-                </View>
-
-                <View style={styles.swapSummaryCard}>
-                  <Text style={styles.swapSummaryIcon}>↔</Text>
-                  <View style={styles.swapSummaryCopy}>
-                    <Text style={styles.swapSummaryTitle}>
-                      This will update {swapAccItem?.movement || 'this accessory'}
-                    </Text>
-                    <Text style={styles.swapSummaryText}>
-                      {swapAccForm.sets || '—'}×{swapAccForm.reps_text || '—'} @ {swapAccForm.rir || '—'} RIR
-                    </Text>
-                  </View>
-                </View>
+                {swapRepTarget.mode !== 'AMRAP' ? (
+                  <LoggerWheelPicker
+                    density="compact"
+                    grouped
+                    columns={swapRepTarget.mode === 'FIXED' ? [{
+                      key: 'swap-reps', label: 'REPS', value: swapRepTarget.fixed,
+                      options: integerWheelOptions(1, 50, swapRepTarget.fixed),
+                      onChange: (fixed) => setSwapRepTarget({ mode: 'FIXED', fixed }),
+                    }] : [
+                      {
+                        key: 'swap-low-reps', label: 'LOW', value: swapRepTarget.low,
+                        options: integerWheelOptions(1, 50, swapRepTarget.low),
+                        onChange: (low) => setSwapRepTarget((current) => current.mode === 'RANGE' ? accessoryRepRangeAfterLowerChange(low, current.high) : current),
+                      },
+                      {
+                        key: 'swap-high-reps', label: 'HIGH', value: swapRepTarget.high,
+                        options: integerWheelOptions(1, 50, swapRepTarget.high),
+                        onChange: (high) => setSwapRepTarget((current) => current.mode === 'RANGE' ? accessoryRepRangeAfterUpperChange(current.low, high) : current),
+                      },
+                    ]}
+                  />
+                ) : <Text style={[styles.modalSubtitle, { marginTop: 12 }]}>Future sets use an AMRAP rep target.</Text>}
               </>
             ) : (
-              <>
-                <View style={{ display: 'none', gap: 8, marginTop: 10 }}>
-                  {(() => {
-                    const prescribed = String(
-                      swapAccItem?.original_movement || swapAccItem?.movement || ''
-                    ).trim();
-
-                    const approved = Array.isArray(swapAccItem?.approved_subs)
-                      ? swapAccItem.approved_subs
-                      : [];
-
-                    const options: string[] = [];
-                    const seen = new Set<string>();
-
-                    [prescribed, ...approved].forEach((mv) => {
-                      const clean = String(mv || '').trim();
-                      if (!clean) return;
-                      const key = clean.toLowerCase();
-                      if (seen.has(key)) return;
-                      seen.add(key);
-                      options.push(clean);
-                    });
-
-                    const currentActive = String(
-                      swapAccItem?.selected_sub_movement || swapAccItem?.movement || ''
-                    ).trim();
-
-                    return options.map((movement) => {
-                      const selected = swapAccForm.movement === movement;
-                      const isPrescribed = prescribed !== '' && movement === prescribed;
-                      const isActive = currentActive !== '' && movement === currentActive;
-
-                      return (
-                        <TouchableOpacity
-                          key={movement}
-                          style={[
-                            styles.swapOptionButton,
-                            selected && styles.swapOptionButtonActive,
-                          ]}
-                          onPress={() => setSwapAccForm((p) => ({ ...p, movement }))}
-                        >
-                          <Text style={[styles.swapOptionText, selected && styles.swapOptionTextActive]}>
-                            {movement}
-                            {isPrescribed ? ' (Prescribed)' : ''}
-                            {isActive ? ' (Active)' : ''}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    });
-                  })()}
-                </View>
-
-                <Text style={[styles.modalSubtitle, { marginTop: 10 }]}>
-                  Keeps the same sets, reps, and RIR by default.
-                </Text>
-              </>
+              <Text style={[styles.modalSubtitle, { marginTop: 14 }]}>The programmed sets, reps, and RIR remain unchanged.</Text>
             )}
 
+            {itemHasPersistedSetLogs(swapAccItem) ? (
+              <Text style={[styles.modalSubtitle, { marginTop: 12 }]}>Completed sets keep their original movement identity. This applies only to future sets.</Text>
+            ) : null}
+
             <View style={styles.modalActionsRow}>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-                onPress={() => setSwapAccVisible(false)}
-              >
+              <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setSwapAccVisible(false)}>
                 <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
-                onPress={saveSwapAcc}
-                disabled={savingItemId != null}
-              >
-                {savingItemId === swapAccItem?.id ? (
-                  <ActivityIndicator size="small" color={SLColors.textInverted} />
-                ) : (
-                  <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Save Changes</Text>
-                )}
+              <TouchableOpacity style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]} onPress={saveSwapAcc} disabled={savingItemId != null}>
+                {savingItemId === swapAccItem?.id ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Use for Future Sets</Text>}
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
     </KeyboardAvoidingView>
   );
 }
@@ -12237,18 +12282,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 12,
+    gap: 6,
+    paddingHorizontal: 8,
     borderRadius: SLRadius.radiusRow,
     borderWidth: 1,
     borderColor: SLColors.borderSelected,
     backgroundColor: 'transparent',
-  },
-  accessoryInlineActions: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
   },
   accessoryInlineActionText: {
     color: SLColors.textStrong,
@@ -13144,6 +13183,30 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     padding: 0,
     margin: 0,
+  },
+  swapRepModeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 14,
+  },
+  swapRepMode: {
+    flex: 1,
+    minHeight: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    borderColor: SLColors.borderStandard,
+    backgroundColor: SLColors.surfaceFlat,
+  },
+  swapRepModeActive: {
+    borderColor: SLColors.accent,
+    backgroundColor: 'rgba(125, 55, 205, 0.28)',
+  },
+  swapRepModeText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
   },
   swapSummaryCard: {
     marginTop: 16,

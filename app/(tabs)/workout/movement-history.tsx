@@ -12,7 +12,7 @@ import {
 import { Text, TextInput } from '@/components/ui/sl-text';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
@@ -21,8 +21,7 @@ import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } f
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
 import { MovementHistoryRequestGuard, emptyMovementHistoryPageState } from '@/lib/movement-history-request-guard';
-import { useAuth } from '@/context/AuthContext';
-import { normalizeDisplayWeightUnit } from '@/lib/display-units';
+import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 
 type MovementSession = {
   workout_id: number;
@@ -77,8 +76,29 @@ const colors = {
   red: SLColors.railDanger,
 };
 
-export default function MovementHistoryScreen() {
-  const { user } = useAuth();
+export default function MovementHistoryRoute() {
+  const params = useLocalSearchParams<{
+    athleteId?: string;
+    movementDefinitionId?: string;
+    equipmentContextDefinitionId?: string;
+    equipmentDefinitionId?: string;
+  }>();
+  const movementDefinitionId = Number(Array.isArray(params.movementDefinitionId) ? params.movementDefinitionId[0] : params.movementDefinitionId);
+  const athleteId = Number(Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId);
+  const equipmentDefinitionId = Number(Array.isArray(params.equipmentContextDefinitionId ?? params.equipmentDefinitionId)
+    ? (params.equipmentContextDefinitionId ?? params.equipmentDefinitionId)?.[0]
+    : (params.equipmentContextDefinitionId ?? params.equipmentDefinitionId));
+  if (Number.isFinite(movementDefinitionId) && movementDefinitionId > 0) {
+    return <Redirect href={movementHistorySheetRouteForCanonicalIdentity({
+      athleteId,
+      movementDefinitionId,
+      equipmentContextDefinitionId: equipmentDefinitionId,
+    }) as never} />;
+  }
+  return <MovementHistoryIndexScreen />;
+}
+
+function MovementHistoryIndexScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
   const athleteId = params.athleteId ? String(params.athleteId) : null;
@@ -97,7 +117,7 @@ export default function MovementHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
-  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>(() => normalizeDisplayWeightUnit(user?.preferred_units));
+  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
   const [accomplishments, setAccomplishments] = useState<LoggerRecognitionEvent[]>([]);
   const [accomplishmentCursor, setAccomplishmentCursor] = useState<string | null>(null);
   const [hasMoreAccomplishments, setHasMoreAccomplishments] = useState(false);
@@ -136,7 +156,7 @@ export default function MovementHistoryScreen() {
       setRefreshing(false);
       setMovements([]);
       setOptions({});
-      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
+      setDisplayUnit('kg');
       setAccomplishments(emptyPage.items);
       setAccomplishmentCursor(emptyPage.cursor);
       setHasMoreAccomplishments(emptyPage.hasMore);
@@ -158,7 +178,7 @@ export default function MovementHistoryScreen() {
       setAccomplishmentContextToken(accomplishmentPage.query?.continuation_token || null);
       setAccomplishmentError(null);
       setOptions(json.movement_history?.options || {});
-      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
+      setDisplayUnit(json.movement_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
       feedbackAnalytics('historical_accomplishment_timeline_loaded', {
         surface: 'movement_history',
         movement_count: nextMovements.length,
@@ -177,7 +197,7 @@ export default function MovementHistoryScreen() {
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
-  }, [queryString, requestGuard, user?.preferred_units]);
+  }, [queryString, requestGuard]);
 
   const loadMoreAccomplishments = useCallback(async () => {
     if (!accomplishmentCursor || loadingMoreAccomplishments) return;
