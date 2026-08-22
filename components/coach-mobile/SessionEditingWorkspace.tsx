@@ -1367,13 +1367,13 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
 
       <StrengthLedgerBottomSheet
         accessibilityLabel={picker === 'sets' ? 'Sets prescription picker' : picker === 'reps' ? 'Rep Target prescription picker' : 'RIR prescription picker'}
-        heightFraction={picker === 'reps' && repDraft.mode === 'RANGE' ? 0.68 : 0.56}
+        heightFraction={picker === 'reps' ? (repDraft.mode === 'AMRAP' ? 0.5 : 0.64) : 0.55}
         onDismiss={() => setPicker(null)}
         visible={picker != null}
       >
         <View style={styles.prescriptionPickerSheet}>
           <Text style={styles.prescriptionPickerTitle}>{picker === 'sets' ? 'SETS' : picker === 'reps' ? 'REP TARGET' : 'RIR'}</Text>
-          {picker === 'sets' ? <LoggerWheelPicker density="compact" columns={[{
+          {picker === 'sets' ? <LoggerWheelPicker density="sheet" columns={[{
             key: 'sheet-sets', label: '', accessibilityLabel: 'Sets', value: setsDraft,
             options: integerWheelOptions(1, 20, setsDraft), accessibilityValue: (value) => `${value} sets`, onChange: setSetsDraft,
           }]} /> : null}
@@ -1384,18 +1384,15 @@ function AccessoryPrescriptionEditor({ draft, editable, onChange }: { draft: Coa
                 return <Pressable key={mode} accessibilityRole="button" accessibilityState={{ selected }} onPress={() => changeRepMode(mode)} style={[styles.repModeButton, selected && styles.repModeButtonSelected]}><Text style={[styles.repModeButtonText, selected && styles.repModeButtonTextSelected]}>{label}</Text></Pressable>;
               })}
             </View>
-            {repDraft.mode === 'FIXED' ? <LoggerWheelPicker density="compact" columns={[{
+            {repDraft.mode === 'FIXED' ? <LoggerWheelPicker density="sheet" columns={[{
               key: 'sheet-single-reps', label: 'REPS', value: repDraft.fixed,
               options: integerWheelOptions(1, 50, repDraft.fixed), accessibilityValue: (value) => `${value} reps`, onChange: (fixed) => setRepDraft({ mode: 'FIXED', fixed }),
-            }]} /> : repDraft.mode === 'RANGE' ? <View style={styles.repRangePicker}>
-              <LoggerWheelPicker density="compact" grouped columns={[
+            }]} /> : repDraft.mode === 'RANGE' ? <LoggerWheelPicker density="sheet" separator="—" columns={[
                 { key: 'sheet-min-reps', label: 'MIN REPS', value: repDraft.low, options: integerWheelOptions(1, 50, repDraft.low), accessibilityValue: (value) => `Minimum ${value} reps`, onChange: (low) => setRepDraft(accessoryRepRangeAfterLowerChange(low, repDraft.high)) },
                 { key: 'sheet-max-reps', label: 'MAX REPS', value: repDraft.high, options: integerWheelOptions(1, 50, repDraft.high), accessibilityValue: (value) => `Maximum ${value} reps`, onChange: (high) => setRepDraft(accessoryRepRangeAfterUpperChange(repDraft.low, high)) },
-              ]} />
-              <View pointerEvents="none" style={styles.repRangeDash}><Text style={styles.repRangeDashText}>—</Text></View>
-            </View> : <View style={styles.amrapState}><Text style={styles.amrapValue}>AMRAP</Text><Text style={styles.amrapDetail}>As many quality repetitions as possible. RIR remains an independent target.</Text></View>}
+              ]} /> : <View style={styles.amrapState}><Text style={styles.amrapValue}>AMRAP</Text><Text style={styles.amrapDetail}>As many quality repetitions as possible. RIR remains an independent target.</Text></View>}
           </> : null}
-          {picker === 'rir' ? <LoggerWheelPicker density="compact" columns={[{
+          {picker === 'rir' ? <LoggerWheelPicker density="sheet" columns={[{
             key: 'sheet-rir', label: '', accessibilityLabel: 'RIR target', value: rirDraft,
             options: decimalWheelOptions(0, 10, 0.5, rirDraft), accessibilityValue: (value) => `${value} RIR`, onChange: setRirDraft,
           }]} /> : null}
@@ -2401,9 +2398,6 @@ const styles = StyleSheet.create({
   repModeButtonSelected: { backgroundColor: 'rgba(105,48,162,0.42)' },
   repModeButtonText: { color: palette.muted, fontFamily: SLFontFamilies.bodySemiBold, fontSize: 12, lineHeight: 17 },
   repModeButtonTextSelected: { color: palette.text },
-  repRangePicker: { position: 'relative', marginTop: SLSpacing.sm },
-  repRangeDash: { position: 'absolute', zIndex: 3, left: '50%', top: 78, width: 24, marginLeft: -12, alignItems: 'center' },
-  repRangeDashText: { color: palette.text, fontFamily: SLFontFamilies.numeric, fontSize: 18, lineHeight: 22 },
   amrapState: { minHeight: 174, alignItems: 'center', justifyContent: 'center', gap: SLSpacing.sm, marginTop: SLSpacing.sm, borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(232,61,154,0.42)', backgroundColor: 'rgba(142,26,92,0.12)' },
   amrapValue: { color: SLColors.accentMagenta, fontFamily: SLFontFamilies.display, fontSize: 27, lineHeight: 34 },
   amrapDetail: { maxWidth: 280, color: palette.muted, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 18, textAlign: 'center' },

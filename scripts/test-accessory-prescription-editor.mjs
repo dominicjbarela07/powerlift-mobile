@@ -88,10 +88,14 @@ assert.equal(movementProgrammingPatch({ ...persisted, repsText: 'AMRAP' }, 'acce
 assert.match(workspace, /PrescriptionValueControl accent="sets"[\s\S]*accent="reps"[\s\S]*accent="rir"/, 'the inline editor exposes compact Sets, Reps, and RIR controls instead of permanent wheels');
 assert.match(workspace, /type AccessoryPrescriptionPicker = 'sets' \| 'reps' \| 'rir' \| null/, 'one contextual picker state owns the prescription input machinery');
 assert.match(workspace, /<StrengthLedgerBottomSheet[\s\S]*heightFraction=[\s\S]*visible=\{picker != null\}/, 'all prescription inputs reuse the shared Strength Ledger bottom sheet');
+assert.match(workspace, /heightFraction=\{picker === 'reps' \? \(repDraft\.mode === 'AMRAP' \? 0\.5 : 0\.64\) : 0\.55\}/, 'sheet height follows the actual input content instead of preserving a large dead void');
 assert.match(workspace, /const \[setsDraft[\s\S]*const \[rirDraft[\s\S]*const \[repDraft[\s\S]*const apply = \(\) => \{[\s\S]*onChange\(\{ sets: setsDraft \}\)[\s\S]*onChange\(\{ repsText: accessoryRepTargetText\(repDraft\) \}\)[\s\S]*onChange\(\{ rir: rirDraft \}\)/, 'picker state remains local until Apply commits the selected field');
 assert.match(workspace, /onDismiss=\{\(\) => setPicker\(null\)\}/, 'dismissal cancels a picker without mutating the Session draft');
 assert.match(workspace, /\[\['FIXED', 'Single'\], \['RANGE', 'Range'\], \['AMRAP', 'AMRAP'\]\]/, 'Rep Target exposes canonical Single, Range, and AMRAP modes');
 assert.match(workspace, /repDraft\.mode === 'FIXED'[\s\S]*sheet-single-reps[\s\S]*repDraft\.mode === 'RANGE'[\s\S]*sheet-min-reps[\s\S]*sheet-max-reps/, 'Single and Range modes render the correct wheel architecture');
+assert.equal((workspace.match(/<LoggerWheelPicker density="sheet"/g) || []).length, 4, 'Sets, Single, Range, and RIR share one dominant sheet-wheel presentation');
+assert.match(workspace, /density="sheet" separator="—" columns=\{\[[\s\S]*label: 'MIN REPS'[\s\S]*label: 'MAX REPS'/, 'Range owns its low wheel, fixed center separator, and high wheel in one shared row');
+assert.doesNotMatch(workspace, /repRangeDash|marginLeft: -12|top: 78/, 'Range has no manually eyeballed separator geometry');
 assert.match(workspace, /accessoryRepRangeAfterLowerChange\(low, repDraft\.high\)[\s\S]*accessoryRepRangeAfterUpperChange\(repDraft\.low, high\)/, 'Range draft changes preserve valid minimum and maximum ordering');
 assert.match(workspace, /styles\.amrapState[\s\S]*>AMRAP<[\s\S]*RIR remains an independent target/, 'AMRAP uses purpose-specific content rather than a meaningless rep wheel');
 assert.match(workspace, /decimalWheelOptions\(0, 10, 0\.5, rirDraft\)/, 'RIR preserves the canonical fractional range');

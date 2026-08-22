@@ -14,10 +14,13 @@ import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
 
 export const LOGGER_WHEEL_ROW_HEIGHT = 44;
 export const LOGGER_WHEEL_VISIBLE_ROWS = 5;
-export const LOGGER_WHEEL_COMPACT_ROW_HEIGHT = 32;
+export const LOGGER_WHEEL_COMPACT_ROW_HEIGHT = 36;
 export const LOGGER_WHEEL_COMPACT_VISIBLE_ROWS = 3;
+export const LOGGER_WHEEL_SHEET_ROW_HEIGHT = 56;
+export const LOGGER_WHEEL_SHEET_VISIBLE_ROWS = 5;
+export const LOGGER_WHEEL_SHEET_LABEL_HEIGHT = 28;
 
-export type LoggerWheelDensity = 'standard' | 'compact';
+export type LoggerWheelDensity = 'standard' | 'compact' | 'sheet';
 
 export type LoggerWheelColumnConfig = {
   key: string;
@@ -32,14 +35,34 @@ export type LoggerWheelColumnConfig = {
   disabled?: boolean;
 };
 
-function LoggerWheelColumn({ column, density, grouped, onSettle }: { column: LoggerWheelColumnConfig; density: LoggerWheelDensity; grouped: boolean; onSettle: () => void }) {
+function wheelGeometry(density: LoggerWheelDensity) {
+  if (density === 'sheet') {
+    return {
+      framePadding: 4,
+      rowHeight: LOGGER_WHEEL_SHEET_ROW_HEIGHT,
+      visibleRows: LOGGER_WHEEL_SHEET_VISIBLE_ROWS,
+    };
+  }
+  if (density === 'compact') {
+    return {
+      framePadding: 3,
+      rowHeight: LOGGER_WHEEL_COMPACT_ROW_HEIGHT,
+      visibleRows: LOGGER_WHEEL_COMPACT_VISIBLE_ROWS,
+    };
+  }
+  return {
+    framePadding: SLSpacing.sm,
+    rowHeight: LOGGER_WHEEL_ROW_HEIGHT,
+    visibleRows: LOGGER_WHEEL_VISIBLE_ROWS,
+  };
+}
+
+function LoggerWheelColumn({ column, density, grouped, onSettle, reserveSheetLabel }: { column: LoggerWheelColumnConfig; density: LoggerWheelDensity; grouped: boolean; onSettle: () => void; reserveSheetLabel: boolean }) {
   const wheelRef = useRef<ScrollView | null>(null);
   const dragSettleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInteracting = useRef(false);
-  const rowHeight = density === 'compact' ? LOGGER_WHEEL_COMPACT_ROW_HEIGHT : LOGGER_WHEEL_ROW_HEIGHT;
-  const visibleRows = density === 'compact' ? LOGGER_WHEEL_COMPACT_VISIBLE_ROWS : LOGGER_WHEEL_VISIBLE_ROWS;
+  const { framePadding, rowHeight, visibleRows } = wheelGeometry(density);
   const centerPadding = rowHeight * Math.floor(visibleRows / 2);
-  const framePadding = density === 'compact' ? 3 : SLSpacing.sm;
   const firstValidValue = column.options.find((option) => option !== '') || column.options[0] || '';
   const selectedValue = column.value && column.options.includes(column.value) ? column.value : firstValidValue;
   const selectedIndex = Math.max(0, column.options.indexOf(selectedValue));
@@ -111,12 +134,17 @@ function LoggerWheelColumn({ column, density, grouped, onSettle }: { column: Log
       style={[
         styles.column,
         density === 'compact' && (grouped ? styles.columnCompactGrouped : styles.columnCompact),
+        density === 'sheet' && styles.columnSheet,
         column.disabled && styles.disabled,
       ]}
     >
-      {column.label ? <Text style={[styles.columnLabel, density === 'compact' && styles.columnLabelCompact]}>{column.label}</Text> : null}
-      <View style={[styles.scrollFrame, density === 'compact' && styles.scrollFrameCompact, { height: (rowHeight * visibleRows) + (framePadding * 2), paddingVertical: framePadding }]}>
-        {density === 'compact' ? <View pointerEvents="none" style={[styles.columnSelectionPlane, { top: framePadding + centerPadding, height: rowHeight }]} /> : null}
+      {density === 'sheet' && reserveSheetLabel ? (
+        <View style={styles.sheetLabelBand}>
+          {column.label ? <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={[styles.columnLabel, styles.columnLabelSheet]}>{column.label}</Text> : null}
+        </View>
+      ) : column.label ? <Text style={[styles.columnLabel, density === 'compact' && styles.columnLabelCompact]}>{column.label}</Text> : null}
+      <View style={[styles.scrollFrame, density !== 'standard' && styles.scrollFrameCompact, density === 'sheet' && styles.scrollFrameSheet, { height: (rowHeight * visibleRows) + (framePadding * 2), paddingVertical: framePadding }]}>
+        {density !== 'standard' ? <View pointerEvents="none" style={[styles.columnSelectionPlane, density === 'sheet' && styles.columnSelectionPlaneSheet, { top: framePadding + centerPadding, height: rowHeight }]} /> : null}
         <ScrollView
           ref={wheelRef}
           nestedScrollEnabled
@@ -152,6 +180,7 @@ function LoggerWheelColumn({ column, density, grouped, onSettle }: { column: Log
         >
           {column.options.map((option, index) => {
             const selected = option === selectedValue;
+            const distance = Math.abs(index - selectedIndex);
             const display = (column.formatValue?.(option) ?? option) || '—';
             return (
               <TouchableOpacity
@@ -165,7 +194,20 @@ function LoggerWheelColumn({ column, density, grouped, onSettle }: { column: Log
                   onSettle();
                 }}
               >
-                <Text style={[styles.optionText, density === 'compact' && styles.optionTextCompact, selected && styles.optionTextActive, selected && density === 'compact' && styles.optionTextActiveCompact]}>
+                <Text
+                  maxFontSizeMultiplier={density === 'sheet' ? 1.25 : undefined}
+                  numberOfLines={1}
+                  style={[
+                    styles.optionText,
+                    density === 'compact' && styles.optionTextCompact,
+                    density === 'sheet' && styles.optionTextSheet,
+                    density === 'sheet' && distance === 1 && styles.optionTextSheetNear,
+                    density === 'sheet' && distance >= 2 && styles.optionTextSheetFar,
+                    selected && styles.optionTextActive,
+                    selected && density === 'compact' && styles.optionTextActiveCompact,
+                    selected && density === 'sheet' && styles.optionTextActiveSheet,
+                  ]}
+                >
                   {display}{column.suffix ? ` ${column.suffix}` : ''}
                 </Text>
               </TouchableOpacity>
@@ -177,16 +219,30 @@ function LoggerWheelColumn({ column, density, grouped, onSettle }: { column: Log
   );
 }
 
-export function LoggerWheelPicker({ columns, density = 'standard', grouped = false, style }: { columns: LoggerWheelColumnConfig[]; density?: LoggerWheelDensity; grouped?: boolean; style?: StyleProp<ViewStyle> }) {
-  const rowHeight = density === 'compact' ? LOGGER_WHEEL_COMPACT_ROW_HEIGHT : LOGGER_WHEEL_ROW_HEIGHT;
-  const visibleRows = density === 'compact' ? LOGGER_WHEEL_COMPACT_VISIBLE_ROWS : LOGGER_WHEEL_VISIBLE_ROWS;
+export function LoggerWheelPicker({ columns, density = 'standard', grouped = false, separator, style }: { columns: LoggerWheelColumnConfig[]; density?: LoggerWheelDensity; grouped?: boolean; separator?: string; style?: StyleProp<ViewStyle> }) {
+  const { framePadding, rowHeight, visibleRows } = wheelGeometry(density);
+  const centerPadding = rowHeight * Math.floor(visibleRows / 2);
+  const reserveSheetLabel = density === 'sheet' && columns.some((column) => Boolean(column.label));
   const confirmSelection = () => {
     void Haptics.selectionAsync().catch(() => undefined);
   };
   return (
-    <View style={[styles.columns, density === 'compact' && styles.columnsCompact, grouped && styles.columnsGrouped, style]}>
+    <View style={[styles.columns, density === 'compact' && styles.columnsCompact, density === 'sheet' && styles.columnsSheet, grouped && styles.columnsGrouped, style]}>
       {density === 'standard' ? <View pointerEvents="none" style={[styles.selectionPlane, { top: SLSpacing.xl + SLSpacing.sm + (rowHeight * Math.floor(visibleRows / 2)), height: rowHeight }]} /> : null}
-      {columns.map((column) => <LoggerWheelColumn key={column.key} column={column} density={density} grouped={grouped} onSettle={confirmSelection} />)}
+      {columns.map((column, index) => (
+        <React.Fragment key={column.key}>
+          {index > 0 && separator ? (
+            <View pointerEvents="none" style={[styles.separatorColumn, reserveSheetLabel && styles.separatorColumnWithLabel]}>
+              <View style={[styles.separatorFrame, { height: (rowHeight * visibleRows) + (framePadding * 2) }]}>
+                <View style={[styles.separatorSelectedRow, { top: framePadding + centerPadding, height: rowHeight }]}>
+                  <Text maxFontSizeMultiplier={1.25} numberOfLines={1} style={styles.separatorText}>{separator}</Text>
+                </View>
+              </View>
+            </View>
+          ) : null}
+          <LoggerWheelColumn column={column} density={density} grouped={grouped} onSettle={confirmSelection} reserveSheetLabel={reserveSheetLabel} />
+        </React.Fragment>
+      ))}
     </View>
   );
 }
@@ -203,6 +259,11 @@ const styles = StyleSheet.create({
   },
   columnsGrouped: {
     gap: 0,
+  },
+  columnsSheet: {
+    alignItems: 'flex-start',
+    gap: SLSpacing.xs,
+    marginTop: SLSpacing.sm,
   },
   selectionPlane: {
     position: 'absolute',
@@ -227,6 +288,10 @@ const styles = StyleSheet.create({
   columnCompactGrouped: {
     overflow: 'hidden',
   },
+  columnSheet: {
+    minWidth: 0,
+    overflow: 'hidden',
+  },
   columnLabel: {
     color: SLColors.textSubtle,
     fontSize: 12,
@@ -240,12 +305,26 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     paddingHorizontal: SLSpacing.xs,
   },
+  sheetLabelBand: {
+    height: LOGGER_WHEEL_SHEET_LABEL_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  columnLabelSheet: {
+    marginBottom: 0,
+    color: SLColors.textSecondary,
+    fontSize: 13,
+    lineHeight: 18,
+  },
   scrollFrame: {
     paddingVertical: SLSpacing.sm,
     overflow: 'hidden',
   },
   scrollFrameCompact: {
     position: 'relative',
+  },
+  scrollFrameSheet: {
+    width: '100%',
   },
   columnSelectionPlane: {
     position: 'absolute',
@@ -255,6 +334,13 @@ const styles = StyleSheet.create({
     borderColor: SLColors.borderHairline,
     borderRadius: SLRadius.sm,
     backgroundColor: 'rgba(255,255,255,0.055)',
+  },
+  columnSelectionPlaneSheet: {
+    left: 2,
+    right: 2,
+    borderColor: SLColors.borderSelected,
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(116,58,185,0.24)',
   },
   scroll: {
     flex: 1,
@@ -282,12 +368,64 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.1 }],
   },
   optionTextCompact: {
-    fontSize: 13,
+    color: SLColors.textSecondary,
+    fontSize: 15,
+    lineHeight: 20,
+    opacity: 0.56,
   },
   optionTextActiveCompact: {
-    fontSize: 18,
+    fontSize: 22,
+    lineHeight: 28,
     letterSpacing: 0,
+    opacity: 1,
     transform: [{ scale: 1 }],
+  },
+  optionTextSheet: {
+    color: SLColors.textSecondary,
+    fontSize: 20,
+    lineHeight: 28,
+    opacity: 0.56,
+  },
+  optionTextSheetNear: {
+    color: SLColors.textPrimary,
+    fontSize: 22,
+    opacity: 0.76,
+  },
+  optionTextSheetFar: {
+    fontSize: 18,
+    opacity: 0.38,
+  },
+  optionTextActiveSheet: {
+    color: SLColors.textStrong,
+    fontSize: 32,
+    lineHeight: 40,
+    letterSpacing: -0.4,
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  },
+  separatorColumn: {
+    width: 30,
+    flexShrink: 0,
+  },
+  separatorColumnWithLabel: {
+    paddingTop: LOGGER_WHEEL_SHEET_LABEL_HEIGHT,
+  },
+  separatorFrame: {
+    position: 'relative',
+    width: '100%',
+  },
+  separatorSelectedRow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  separatorText: {
+    color: SLColors.textStrong,
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: '800',
   },
   disabled: {
     opacity: 0.45,

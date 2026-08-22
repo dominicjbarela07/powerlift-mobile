@@ -41,7 +41,7 @@ assert.equal(packageJson.dependencies['@react-native-picker/picker'], undefined,
 assert.match(workspace, /import \{ LoggerWheelPicker \} from '@\/components\/workout-logger\/logger-wheel-picker'/, 'the movement editor must import the canonical Session Logger wheel');
 assert.match(loggerRoute, /import \{ LoggerWheelPicker \} from '@\/components\/workout-logger\/logger-wheel-picker'/, 'the live Session Logger must use the extracted shared wheel');
 assert.match(loggerWheel, /LOGGER_WHEEL_ROW_HEIGHT = 44[\s\S]*LOGGER_WHEEL_VISIBLE_ROWS = 5/, 'canonical Logger wheel geometry must remain unchanged');
-assert.match(loggerWheel, /LOGGER_WHEEL_COMPACT_ROW_HEIGHT = 32[\s\S]*LOGGER_WHEEL_COMPACT_VISIBLE_ROWS = 3/, 'the workspace must use the vertically compact shared-wheel geometry');
+assert.match(loggerWheel, /LOGGER_WHEEL_COMPACT_ROW_HEIGHT = 36[\s\S]*LOGGER_WHEEL_COMPACT_VISIBLE_ROWS = 3/, 'inline workspace wheels retain a compact but readable shared geometry');
 assert.match(loggerWheel, /snapToInterval=\{rowHeight\}[\s\S]*decelerationRate="normal"/, 'canonical snapping and momentum must remain shared across densities');
 assert.match(loggerWheel, /firstValidValue = column\.options\.find\(\(option\) => option !== ''\)[\s\S]*selectedValue = column\.value && column\.options\.includes\(column\.value\) \? column\.value : firstValidValue[\s\S]*next !== selectedValue[\s\S]*selected = option === selectedValue/, 'missing values must visibly select the first non-empty valid option without mutating the draft on open');
 assert.match(loggerWheel, /Haptics\.selectionAsync\(\)/, 'both logger and editor must share canonical selection haptics');
@@ -52,7 +52,7 @@ assert.doesNotMatch(workspace, /NativeWheelField|nativeWheel|<Picker|@react-nati
 assert.doesNotMatch(loggerRoute, /function WheelColumn|function LoggerWheelPicker|coreWheelSelectionPlane|coreWheelOptionText/, 'the Session Logger must not retain a duplicate embedded wheel implementation');
 assert.doesNotMatch(workspace, /NumericStepper|numericStepper|stepperButton|Decrease \$\{label\}|Increase \$\{label\}/, 'plus/minus steppers must not remain in prescription editing');
 assert.match(workspace, /<LoggerWheelPicker density="compact" columns=\{\[[\s\S]*key: 'sets'[\s\S]*key: 'reps'[\s\S]*key: draft\.mode\.toLowerCase\(\)/, 'core sets, reps, and intensity must use the compact canonical wheel');
-assert.match(workspace, /function AccessoryPrescriptionEditor[\s\S]*PrescriptionValueControl accent="sets"[\s\S]*<StrengthLedgerBottomSheet[\s\S]*<LoggerWheelPicker density="compact"/, 'Accessory prescriptions remain compact until a canonical wheel sheet is requested');
+assert.match(workspace, /function AccessoryPrescriptionEditor[\s\S]*PrescriptionValueControl accent="sets"[\s\S]*<StrengthLedgerBottomSheet[\s\S]*<LoggerWheelPicker density="sheet"/, 'Accessory prescriptions remain compact inline and open the dominant canonical sheet wheel on request');
 assert.doesNotMatch(workspace, /label: 'Reps Lower'|label: 'Reps Upper'/, 'Accessory rep bounds must not be exposed as backend-shaped fields');
 assert.match(workspace, /function CompactDropdownSelector[\s\S]*styles\.dropdownMenu/, 'set and intensity choices must use literal anchored dropdown menus');
 assert.match(workspace, /styles\.prescriptionChoiceRow[\s\S]*label="Designation"[\s\S]*label="Set Type"[\s\S]*label="Intensity Type"/, 'Designation, Set Type, and Intensity Type must share one line before the wheels');
