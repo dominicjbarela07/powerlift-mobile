@@ -974,9 +974,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           },
           legacy: legacy?.state === 'legacy_unresolved' ? {
             ...legacy,
-            state: 'legacy_resolved',
+            state: 'canonical',
             effective_movement_definition_id: movementDefinitionId,
-            indicator: 'LEGACY · Resolved',
+            indicator: null,
             history_caveat: null,
           } : legacy,
         });

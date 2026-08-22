@@ -78,6 +78,11 @@ assert.match(
   'adding an accessory must stay inside the canonical dirty Session save plan',
 );
 assert.match(route, /ownership_scope: setup\.ownershipScope[\s\S]*library_scope: setup\.libraryScope/, 'draft items must retain canonical/custom origin context');
+assert.match(
+  route,
+  /legacy: legacy\?\.state === 'legacy_unresolved' \? \{[\s\S]*state: 'canonical'[\s\S]*indicator: null/,
+  'an explicit resolution must immediately become ordinary canonical Session state without a legacy badge',
+);
 
 const modal = route.slice(route.indexOf('function AccessoryEditorModal'), route.indexOf('function TrainingLiftSection'));
 assert.match(modal, /onCancel/, 'the staged picker must preserve one explicit cancel path');
