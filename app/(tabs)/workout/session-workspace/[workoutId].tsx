@@ -97,6 +97,14 @@ type WorkoutItem = {
   superset_group?: string | null;
   superset_pos?: number | null;
   approved_subs?: string[];
+  approved_sub_identities?: Array<{
+    movement?: string | null;
+    movement_definition_id?: number | null;
+    movement_identity?: {
+      id?: number | null;
+      display_name?: string | null;
+    } | null;
+  }>;
   planned_sets?: PlannedSet[];
   movement_identity?: {
     id?: number | null;
@@ -498,6 +506,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>('kg');
   const hasLoadedSessionRef = useRef(false);
   const loadRequestRevisionRef = useRef(0);
+  const loadedWorkoutIdRef = useRef<string | null>(null);
   const nextDraftMovementIdRef = useRef(-1);
   const addCoreCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
   const addAccessoryCompletionRef = useRef<((item: SessionMovementItem) => void) | null>(null);
@@ -513,8 +522,23 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       setLoading(false);
       return;
     }
+    const sessionChanged = loadedWorkoutIdRef.current !== workoutId;
+    if (sessionChanged) {
+      loadedWorkoutIdRef.current = workoutId;
+      hasLoadedSessionRef.current = false;
+      setPayload(null);
+      setTrainingLiftEditor(null);
+      setAccessoryEditor(null);
+      setReorderEditor(null);
+      setCalendarAction(null);
+      addCoreCompletionRef.current = null;
+      addAccessoryCompletionRef.current = null;
+      changeAccessoryCompletionRef.current = null;
+      reorderCompletionRef.current = null;
+    }
     const requestRevision = ++loadRequestRevisionRef.current;
-    if (silent) setRefreshing(true);
+    const shouldRefreshSilently = Boolean(silent && !sessionChanged);
+    if (shouldRefreshSilently) setRefreshing(true);
     else setLoading(true);
     setError(null);
 
@@ -529,13 +553,13 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       hasLoadedSessionRef.current = true;
     } catch (err: any) {
       if (requestRevision !== loadRequestRevisionRef.current) return;
-      if (!silent) {
+      if (!shouldRefreshSilently) {
         setPayload(null);
         setError(err?.message || 'Session workspace could not load.');
       }
     } finally {
       if (requestRevision !== loadRequestRevisionRef.current) return;
-      if (silent) setRefreshing(false);
+      if (shouldRefreshSilently) setRefreshing(false);
       else setLoading(false);
     }
   }, [workoutId]);
@@ -559,8 +583,10 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   }, []);
 
   useEffect(() => {
-    setWorkspaceDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
-  }, [user?.preferred_units]);
+    setWorkspaceDisplayUnit(normalizeDisplayWeightUnit(
+      payload?.athlete?.preferred_units || user?.preferred_units,
+    ));
+  }, [payload?.athlete?.id, payload?.athlete?.preferred_units, user?.preferred_units]);
 
   useEffect(() => {
     if (!authReady || user?.role !== 'coach') return;
@@ -1151,6 +1177,17 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
                 });
                 const json = resp.json || {};
                 if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+                ++loadRequestRevisionRef.current;
+                hasLoadedSessionRef.current = false;
+                setPayload(null);
+                setTrainingLiftEditor(null);
+                setAccessoryEditor(null);
+                setReorderEditor(null);
+                setCalendarAction(null);
+                addCoreCompletionRef.current = null;
+                addAccessoryCompletionRef.current = null;
+                changeAccessoryCompletionRef.current = null;
+                reorderCompletionRef.current = null;
                 closeToProgrammingHome();
               } catch (err: any) {
                 Alert.alert('Delete failed', err?.message || 'Please try again.');
@@ -1183,6 +1220,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
+        ...(plan.metadataPatch.displayUnit !== undefined ? {
+          preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg',
+        } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {

@@ -118,7 +118,13 @@ export type CoachMovementDraft = {
   supersetGroup: string;
   supersetPosition: string;
   approvedSubsText: string;
+  approvedSubstitutions: CoachApprovedSubstitutionDraft[];
   plannedSets: CoachPlannedSetDraft[];
+};
+
+export type CoachApprovedSubstitutionDraft = {
+  movement: string;
+  movementDefinitionId: number;
 };
 
 export type CoachPlannedSetDraft = {
@@ -151,9 +157,30 @@ function normalizedText(value: unknown): string {
   return String(value ?? '').trim();
 }
 
+function approvedSubstitutionDrafts(item: CoachEditorItem): CoachApprovedSubstitutionDraft[] {
+  const rows = Array.isArray(item.approved_sub_identities) ? item.approved_sub_identities : [];
+  const seen = new Set<number>();
+  return rows.flatMap((raw) => {
+    if (!raw || typeof raw !== 'object') return [];
+    const row = raw as Record<string, unknown>;
+    const identity = row.movement_identity && typeof row.movement_identity === 'object'
+      ? row.movement_identity as Record<string, unknown>
+      : null;
+    const movementDefinitionId = Number(row.movement_definition_id || identity?.id || 0);
+    const movement = normalizedText(row.movement || row.name || identity?.display_name);
+    if (!Number.isInteger(movementDefinitionId) || movementDefinitionId <= 0 || !movement || seen.has(movementDefinitionId)) return [];
+    seen.add(movementDefinitionId);
+    return [{ movement, movementDefinitionId }];
+  });
+}
+
 export function movementDraftFromItem(item: CoachEditorItem, displayUnit: CoachDisplayUnit = 'lb', linkedBackdown?: CoachEditorItem | null): CoachMovementDraft {
   const variant = normalizedText(item.variant).toUpperCase();
   const mode = normalizedText(item.mode).toUpperCase() === 'PCT' ? 'PCT' : 'RPE';
+  const approvedSubstitutions = approvedSubstitutionDrafts(item);
+  const approvedSubNames = approvedSubstitutions.length
+    ? approvedSubstitutions.map((row) => row.movement)
+    : (Array.isArray(item.approved_subs) ? item.approved_subs : []).map(normalizedText).filter(Boolean);
   return {
     sourceLift: normalizedText(item.lift).toUpperCase(),
     sourceVariant: variant,
@@ -182,7 +209,8 @@ export function movementDraftFromItem(item: CoachEditorItem, displayUnit: CoachD
     notes: normalizedText(item.notes),
     supersetGroup: normalizedText(item.superset_group).toUpperCase(),
     supersetPosition: cleanNumeric(item.superset_pos as number | null | undefined),
-    approvedSubsText: (Array.isArray(item.approved_subs) ? item.approved_subs : []).map(normalizedText).filter(Boolean).join('\n'),
+    approvedSubsText: approvedSubNames.join('\n'),
+    approvedSubstitutions,
     plannedSets: (item.planned_sets || []).map((row) => ({
       reps: cleanNumeric(row.reps as number | null | undefined),
       rpe: cleanNumeric(row.rpe_target as number | null | undefined),
@@ -215,6 +243,10 @@ function semanticDraft(draft: CoachMovementDraft) {
     backdownTargetHighLb: cleanNumeric(optionalDisplayNumber(draft.backdownTargetHighLb)),
     supersetPosition: cleanNumeric(optionalDisplayNumber(draft.supersetPosition)),
     approvedSubsText: normalizedText(draft.approvedSubsText).split(/\r?\n/).map(normalizedText).filter(Boolean).join('\n'),
+    approvedSubstitutions: draft.approvedSubstitutions
+      .map((row) => ({ movement: normalizedText(row.movement), movementDefinitionId: Number(row.movementDefinitionId) }))
+      .filter((row) => row.movement && Number.isInteger(row.movementDefinitionId) && row.movementDefinitionId > 0)
+      .sort((left, right) => left.movementDefinitionId - right.movementDefinitionId),
     plannedSets: draft.plannedSets.map((row) => ({
       reps: cleanNumeric(optionalDisplayNumber(row.reps)),
       rpe: cleanNumeric(optionalDisplayNumber(row.rpe)),
@@ -248,7 +280,6 @@ export function movementProgrammingPatch(
       notes: normalizedText(draft.notes),
       superset_group: normalizedText(draft.supersetGroup) || null,
       superset_pos: normalizedText(draft.supersetGroup) ? normalizedText(draft.supersetPosition) : null,
-      approved_subs: normalizedText(draft.approvedSubsText).split(/\r?\n/).map(normalizedText).filter(Boolean),
     };
   }
   if (isCoreVariantDraft(draft)) {

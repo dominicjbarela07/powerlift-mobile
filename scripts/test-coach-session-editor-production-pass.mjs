@@ -94,8 +94,7 @@ const fullCustomKgPatch = movementProgrammingPatch({ ...persistedKg, scheme: 'FU
 assert.equal(fullCustomKgPatch.planned_sets[0].manual_target_kg, 100, 'Full Custom kg input remains canonical kg storage');
 
 assert.match(route, /<SessionEditingWorkspace/, 'live route uses the Adaptive Session Workspace architecture');
-assert.match(route, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)[\s\S]*displayUnit=/, 'the authenticated viewer unit reaches the workspace editor');
-assert.doesNotMatch(route, /payload\?\.athlete\?\.preferred_units/, 'the viewed athlete cannot override the coach viewer unit');
+assert.match(route, /preferred_units[\s\S]*displayUnit=/, 'authoritative athlete units reach the workspace editor');
 assert.match(route, /onSaveSession=\{saveSessionDraft\}/, 'the authoritative Session draft saves through one route orchestrator');
 assert.match(route, /const saveSessionDraft = async[\s\S]*movementUpdates[\s\S]*movementCreates[\s\S]*deletedMovementIds[\s\S]*items\/reorder/, 'the save orchestrator persists granular movement and ordering mutations');
 assert.match(route, /method: 'PATCH'/, 'edits remain wired to production mutations');
@@ -111,7 +110,7 @@ assert.doesNotMatch(workspace, /MovementSheetSnap|applySnap|GestureDetector|styl
 assert.match(workspace, /const openMovement = useCallback[\s\S]*selectedId === item\.id \? null : item\.id[\s\S]*setSelectedId\(nextId\)/, 'opening a movement changes presentation without replacing the canonical Session draft');
 assert.match(workspace, /function MovementQuickPrescriptionEditor/, 'primary prescription fields use the direct quick editor');
 assert.doesNotMatch(workspace, /activeOffsetX|horizontalGesture|switchMovement|nextMovementIndex/, 'in-sheet movement switching is removed');
-assert.doesNotMatch(workspace, /MovementPeekSummary|function Disclosure|setExpanded/, 'passive peek and disclosure state are removed');
+assert.doesNotMatch(workspace, /MovementPeekSummary|function Disclosure|setMovementExpanded/, 'passive peek and disclosure state are removed');
 assert.match(workspace, /Unsaved Session changes/, 'dirty close protection is implemented');
 assert.match(workspace, /Save Changes/, 'dirty state exposes Save Changes');
 assert.match(workspace, /Discard Changes/, 'dirty state exposes Discard Changes');
@@ -167,7 +166,8 @@ assert.doesNotMatch(workspace, /styles\.orderBadge|styles\.orderText/, 'collapse
 assert.match(workspace, /movementRow: \{[^}]*minHeight: 124/, 'movement rows make room for prescription-first hierarchy');
 assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'movement artwork is the collapsed-card visual anchor');
 assert.match(workspace, /function movementName\(item: SessionMovementItem\)[\s\S]*return name;/, 'movement titles do not repeat their designation');
-assert.match(workspace, /parts\.filter\(Boolean\)\.join\(' - '\)/, 'movement designation and scheme remain below the title');
+assert.match(workspace, /function draftMovementMeta[\s\S]*return \[humanize\(draft\.designation\), scheme\]\.filter\(Boolean\)\.join\(' - '\)/, 'Core movement designation and scheme remain below the title');
+assert.match(workspace, /function movementMeta[\s\S]*muscles\.join\(' · '\)[\s\S]*parts\.filter\(Boolean\)\.join\(' · '\)/, 'Accessory movement metadata uses canonical muscle-group context below the title');
 assert.match(workspace, /sessionNotes: \{[^}]*paddingTop: 0/, 'Session Notes card removes redundant top padding');
 assert.match(workspace, /function FullCustomSetEditor/, 'Full Custom planned-set editing remains inside the movement workspace');
 assert.match(workspace, /onPress=\{\(\) => onOpen\(item\)\}/, 'each visual movement row expands its own attached workspace');
@@ -211,10 +211,11 @@ assert.doesNotMatch(workspace, /setSessionEditorOverlayOpen\(Boolean\(selectedIt
 assert.match(workspace, /const currentCoreItems = useMemo\([\s\S]*\[sessionDraft\.coreOrder, sessionDraft\.items\]/, 'calculated-load inputs must retain stable identity between unrelated workspace renders');
 assert.match(workspace, /const currentAccessoryItems = useMemo\([\s\S]*\[sessionDraft\.accessoryOrder, sessionDraft\.items\]/, 'accessory item collections must retain stable identity between unrelated workspace renders');
 assert.doesNotMatch(workspace, /const currentCoreItems = sessionDraft\.coreOrder\.map/, 'the calculated-load effect must not depend on a freshly allocated array that creates a request/render loop');
-assert.match(workspace, /bottom=\{insets\.bottom \+ SLSpacing\.xs \+ SL_TAB_ROW_CONTROL\.shellHeight \+ SLSpacing\.md\}[\s\S]*sessionToolkit: \{ position: 'absolute', right: SLLayout\.screenGutter/, 'the Session toolkit sits above the bottom tab row with a canonical gap');
+assert.match(workspace, /bottom=\{props\.sheetPresentation[\s\S]*insets\.bottom \+ SLSpacing\.xs \+ SL_TAB_ROW_CONTROL\.shellHeight \+ SLSpacing\.md\}[\s\S]*sessionToolkit: \{ position: 'absolute', right: SLLayout\.screenGutter/, 'the Session toolkit sits above the bottom tab row with a canonical gap and stays sheet-local when embedded');
 assert.match(workspace, /sessionToolkitShell: \{[^}]*alignItems: 'flex-end'[\s\S]*sessionToolkitPanel: \{ width: 264[^}]*borderRadius: SLRadius\.lg[\s\S]*sessionToolkitMaterial: \{[^}]*SL_TAB_ROW_CONTROL\.translucentFallback[\s\S]*sessionToolkitTrigger: \{[^}]*width: SL_TAB_ROW_CONTROL\.shellHeight/, 'the Session tools use canonical material in a compact rectangular panel with a separate trigger');
 assert.match(overlayState, /useSyncExternalStore/, 'overlay visibility is subscribed without coupling it to route navigation state');
-assert.match(workspace, /content: \{ paddingHorizontal: GUTTER/, 'the collapsed hub owns one canonical horizontal gutter');
+assert.match(workspace, /content: \{ paddingTop: 6, paddingBottom: 160 \}/, 'the Session root canvas stays edge to edge without page-level horizontal padding');
+assert.doesNotMatch(workspace, /content: \{[^}]*paddingHorizontal/, 'local surfaces, not the page root, must own horizontal insets');
 assert.match(workspace, /sessionToolkitAction: \{ width: '100%', minHeight: SLControlSize\.minimumTouchTarget/, 'floating toolkit controls retain full width and minimum touch targets');
 assert.match(workspace, /const \{ expansion, expandedItemsOpacity, collapsedAnchorOpacity \} = useFloatingNavigationMotion\(\{[\s\S]*reduceMotion[\s\S]*panelMotionStyle[\s\S]*translateY:[\s\S]*scale:/, 'floating toolkit opening and closing uses the canonical tab-row motion curve');
 assert.match(workspace, /accessibilityLabel="Close Session tools"[\s\S]*onPress=\{\(\) => onExpandedChange\(false\)\}[\s\S]*style=\{styles\.sessionToolkitDismissLayer\}/, 'the expanded toolkit closes when the user taps outside it');
@@ -240,7 +241,7 @@ assert.match(logger, /const canEdit =\s*!isCoachAthletePreview/, 'Athlete View d
 assert.match(logger, /const handleReturnToCoachEditor = \(\) => \{\s*router\.replace\(\{\s*pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'Coach Editor return targets the exact Session workspace');
 assert.match(logger, /section: returnSection === 'accessories' \? 'accessories' : 'core'/, 'Coach Editor return restores the active Session section');
 assert.match(logger, /onPress=\{handleReturnToCoachEditor\}/, 'Athlete View return control uses deterministic Session workspace navigation');
-assert.doesNotMatch(logger, /if \(router\.canGoBack\(\)\) \{\s*router\.back\(\)/, 'Coach Editor return never falls through the ambient tab history');
+assert.doesNotMatch(logger.match(/const handleReturnToCoachEditor = \(\) => \{[\s\S]*?\n  \};/)?.[0] || '', /router\.canGoBack\(\)|router\.back\(\)/, 'Coach Editor return never falls through the ambient tab history');
 
 assert.match(bootstrap, /status: 'draft'[\s\S]*core_items: \[\][\s\S]*acc_items: \[\]/, 'mobile creation establishes a server-backed draft before programming');
 assert.match(bootstrap, /editSessionId[\s\S]*router\.replace\([\s\S]*session-workspace/, 'legacy edit links safely redirect to the Adaptive Session Workspace');

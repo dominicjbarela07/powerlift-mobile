@@ -43,5 +43,8 @@ assert.match(route, /const saveSessionDraft = async[\s\S]*\/rename[\s\S]*\/setup
 assert.match(route, /catch \(err: any\) \{[\s\S]*Could not save Session[\s\S]*return false/, 'partial failure returns one Session-level error without clearing local edits');
 assert.match(route, /addCoreCompletionRef[\s\S]*nextDraftMovementIdRef[\s\S]*addAccessoryCompletionRef/, 'new movements enter local temporary Session state before save');
 assert.match(route, /reorderCompletionRef[\s\S]*reorderCompletionRef\.current\(nextOrder\)/, 'reorder changes return to the local Session draft before save');
+assert.match(route, /loadedWorkoutIdRef[\s\S]*sessionChanged[\s\S]*setPayload\(null\)[\s\S]*addAccessoryCompletionRef\.current = null/, 'changing Sessions clears every prior workspace and picker reference before hydration');
+assert.match(route, /method: 'POST'[\s\S]*body: \{ confirm: true \}[\s\S]*\+\+loadRequestRevisionRef\.current[\s\S]*setPayload\(null\)[\s\S]*closeToProgrammingHome/, 'deletion invalidates late requests and clears the deleted Session before navigation');
+assert.match(route, /payload\?\.athlete\?\.preferred_units \|\| user\?\.preferred_units/, 'the programmed athlete owns the initial workspace unit preference');
 
 console.log('[session-workspace-draft-state] authoritative Session draft invariants verified');

@@ -88,7 +88,7 @@ assert.match(workspace, /function SessionFloatingToolkit[\s\S]*Units: \$\{unit\.
 assert.doesNotMatch(workspace, /function UnitToggle|styles\.unitToggle|SessionUnitFloatingControl/, 'no separate unit toggle remains inside or outside the expanded card');
 assert.doesNotMatch(workspace, /PlateVisualizationSection|Plate Visualization|LoggerPlateStackVisual|resolveLoggerPlateStackForDisplayWeight/, 'the rejected Plate Visualization section must remain absent');
 assert.doesNotMatch(workspace, /Plate Math|Per Side|platesPerSide|plateMath(?:Panel|Summary|Line|Label|Image|Unavailable)/, 'the visual plate confirmation must not regress into a textual calculator');
-assert.match(workspace, /function RecentHistorySection[\s\S]*movement_history\?\.recent_sessions/, 'real recent history must be directly visible');
+assert.match(workspace, /function RecentHistorySection[\s\S]*exactAccessoryHistoryRows\(item\.movement_history\)/, 'real recent history must use the centralized exact-history contract');
 assert.match(workspace, /function CoachNotesSection[\s\S]*\{editing \? 'Done' : 'Edit'\}[\s\S]*accessibilityLabel="Coach Notes"/, 'Coach Notes must remain inline with explicit Edit and Done controls');
 assert.match(workspace, /function InlineMovementWorkspace[\s\S]*<RecentHistorySection[\s\S]*<CoachNotesSection[\s\S]*<MovementDeleteAction/, 'movement-specific content and the single Delete action must remain inside the expanded card');
 assert.match(workspace, /function MovementDeleteAction[\s\S]*accessibilityLabel="Remove Movement"/, 'the expanded movement card exposes one restrained Remove Movement action');

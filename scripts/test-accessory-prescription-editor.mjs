@@ -20,6 +20,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspace = fs.readFileSync(path.join(root, 'components', 'coach-mobile', 'SessionEditingWorkspace.tsx'), 'utf8');
 const wheel = fs.readFileSync(path.join(root, 'components', 'workout-logger', 'logger-wheel-picker.tsx'), 'utf8');
 const route = fs.readFileSync(path.join(root, 'app', '(tabs)', 'workout', 'session-workspace', '[workoutId].tsx'), 'utf8');
+const editor = fs.readFileSync(path.join(root, 'lib', 'coach-session-editor.ts'), 'utf8');
 
 assert.deepEqual(accessoryRepTargetFromText('10'), { mode: 'FIXED', fixed: '10' });
 assert.deepEqual(accessoryRepTargetFromText('10-12'), { mode: 'RANGE', low: '10', high: '12' });
@@ -28,6 +29,13 @@ assert.deepEqual(accessoryRepTargetFromText('AMRAP'), { mode: 'AMRAP' });
 assert.deepEqual(accessoryRepTargetFromText('amrap'), { mode: 'AMRAP' });
 assert.equal(accessoryRepTargetText({ mode: 'FIXED', fixed: '10' }), '10');
 assert.equal(accessoryRepTargetText({ mode: 'RANGE', low: '10', high: '12' }), '10-12');
+const governedSubstitutionDraft = movementDraftFromItem({
+  variant: 'ACC',
+  approved_subs: ['Cable Row'],
+  approved_sub_identities: [{ movement: 'Cable Row', movement_identity: { id: 42, display_name: 'Cable Row' } }],
+});
+assert.deepEqual(governedSubstitutionDraft.approvedSubstitutions, [{ movement: 'Cable Row', movementDefinitionId: 42 }]);
+assert.equal(movementProgrammingPatch(governedSubstitutionDraft, 'accessory').approved_subs, undefined, 'unchanged substitutions are not rewritten by generic prescription edits');
 assert.equal(accessoryRepTargetText({ mode: 'RANGE', low: '10', high: '10' }), '10-10');
 assert.equal(accessoryRepTargetText({ mode: 'AMRAP' }), 'AMRAP');
 assert.equal(accessoryRepDisplayText('10'), '10');
@@ -98,7 +106,9 @@ assert.match(workspace, /function CoachNotesSection/, 'Coach Notes remain direct
 assert.doesNotMatch(workspace, /legacyBadge|item\.legacy\?\.indicator/, 'legacy migration provenance is absent from normal movement cards');
 assert.match(workspace, /const groups = \['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'\][\s\S]*Grouped with:/, 'inline grouping preserves A–G assignment and truthful group context');
 assert.doesNotMatch(workspace, /accessibilityLabel="Approved Substitutions"[\s\S]*multiline/, 'approved substitutions are not anonymous free text');
-assert.match(workspace, /chooseApprovedSubstitution[\s\S]*props\.onChangeAccessory[\s\S]*approvedSubsText/, 'approved substitutions reuse the governed movement picker');
+assert.match(workspace, /chooseApprovedSubstitution[\s\S]*props\.onChangeAccessory[\s\S]*movementDefinitionId[\s\S]*approvedSubstitutions/, 'approved substitutions retain governed movement IDs from the picker');
+assert.match(workspace, /patch\.approved_subs = movement\.approvedSubstitutions\.map[\s\S]*movement_definition_id: row\.movementDefinitionId/, 'approved substitutions serialize stable governed identities');
+assert.match(editor, /approved_sub_identities[\s\S]*movement_identity[\s\S]*movementDefinitionId/, 'persisted approved substitutions rehydrate from canonical identity payloads');
 assert.match(workspace, /automaticallyAdjustKeyboardInsets[\s\S]*keyboardShouldPersistTaps="handled"/, 'the inline workspace remains keyboard safe');
 assert.match(workspace, /if \(!success\) \{[\s\S]*return false[\s\S]*setPersistedSession/, 'only successful whole-Session saves clear dirty state');
 assert.match(route, /Your Session edits are still available\./, 'failed saves preserve the local Accessory draft');

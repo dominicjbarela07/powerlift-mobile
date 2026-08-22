@@ -111,6 +111,14 @@ export type SessionMovementItem = {
   superset_group?: string | null;
   superset_pos?: number | null;
   approved_subs?: string[];
+  approved_sub_identities?: Array<{
+    movement?: string | null;
+    movement_definition_id?: number | null;
+    movement_identity?: {
+      id?: number | null;
+      display_name?: string | null;
+    } | null;
+  }>;
   planned_sets?: Record<string, unknown>[];
   movement_identity?: {
     id?: number | null;
@@ -607,17 +615,27 @@ export function SessionEditingWorkspace(props: Props) {
     if (!selectedItem || selectedKind !== 'accessory' || selectedId == null) return;
     props.onChangeAccessory(selectedItem, (choice) => {
       const selectedName = movementName(choice).trim();
-      if (!selectedName) return;
+      const movementDefinitionId = Number(choice.movement_identity?.id || 0);
+      if (!selectedName || !Number.isInteger(movementDefinitionId) || movementDefinitionId <= 0) {
+        Alert.alert('Governed movement required', 'Choose a canonical or coach-owned custom movement.');
+        return;
+      }
       setSessionDraft((current) => {
         const movement = current.movements[selectedId];
         if (!movement) return current;
-        const names = movement.approvedSubsText.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
-        if (!names.some((name) => name.localeCompare(selectedName, undefined, { sensitivity: 'accent' }) === 0)) names.push(selectedName);
+        const substitutions = [...movement.approvedSubstitutions];
+        if (!substitutions.some((row) => row.movementDefinitionId === movementDefinitionId)) {
+          substitutions.push({ movement: selectedName, movementDefinitionId });
+        }
         return {
           ...current,
           movements: {
             ...current.movements,
-            [selectedId]: { ...movement, approvedSubsText: names.join('\n') },
+            [selectedId]: {
+              ...movement,
+              approvedSubsText: substitutions.map((row) => row.movement).join('\n'),
+              approvedSubstitutions: substitutions,
+            },
           },
         };
       });
@@ -1695,7 +1713,13 @@ function CoachNotesSection({ value, editable, onChange }: { value: string; edita
 function AccessorySessionProgrammingContext({ draft, editable, groupedWith, onChange, onChooseSubstitution }: { draft: CoachMovementDraft; editable: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onChooseSubstitution?: () => void }) {
   const groups = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
   const approvedNames = draft.approvedSubsText.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
-  const removeSubstitution = (name: string) => onChange({ approvedSubsText: approvedNames.filter((candidate) => candidate !== name).join('\n') });
+  const removeSubstitution = (name: string) => {
+    const approvedSubstitutions = draft.approvedSubstitutions.filter((row) => row.movement !== name);
+    onChange({
+      approvedSubsText: approvedNames.filter((candidate) => candidate !== name).join('\n'),
+      approvedSubstitutions,
+    });
+  };
   return (
     <View style={styles.quickSection}>
       <Text style={styles.fieldLabel}>GROUPED SET</Text>
@@ -1946,6 +1970,15 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     const patch = movementProgrammingPatch(movement, kind, current.displayUnit);
     if (kind === 'accessory' && item.movement_identity?.id) {
       patch.movement_definition_id = item.movement_identity.id;
+    }
+    if (kind === 'accessory') {
+      const persistedSubstitutions = persisted.movements[id]?.approvedSubstitutions || [];
+      if (JSON.stringify(movement.approvedSubstitutions) !== JSON.stringify(persistedSubstitutions)) {
+        patch.approved_subs = movement.approvedSubstitutions.map((row) => ({
+          movement: row.movement,
+          movement_definition_id: row.movementDefinitionId,
+        }));
+      }
     }
     const save: SessionWorkspaceMovementSave = {
       item,
