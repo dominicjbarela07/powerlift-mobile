@@ -85,6 +85,7 @@
     "test:preferred-unit-display": "node --import tsx scripts/test-preferred-unit-display.mjs",
     "test:floating-display-unit": "node scripts/test-floating-display-unit-control.mjs",
     "test:session-recap-trends": "node --import tsx scripts/test-session-recap-trends.mjs",
+    "test:session-recap-plan-compare": "node --import tsx scripts/test-session-recap-plan-compare.mjs",
     "test:completed-session-recap": "node --import tsx scripts/test-completed-session-recap.mjs",
     "test:training-program-progress": "node --import tsx scripts/test-training-program-progress.mjs",
     "test:athlete-block-details-v2": "node scripts/test-athlete-block-details-v2.mjs",
