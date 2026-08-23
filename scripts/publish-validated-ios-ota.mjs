@@ -30,6 +30,7 @@ if (!prepareOnly && !message) {
 
 const easConfig = JSON.parse(fs.readFileSync(path.join(root, 'eas.json'), 'utf8'));
 const apiBase = process.env.EXPO_PUBLIC_API_BASE
+  ?? easConfig.build?.[branch]?.env?.EXPO_PUBLIC_API_BASE
   ?? easConfig.build?.testflight?.env?.EXPO_PUBLIC_API_BASE;
 if (!apiBase) {
   throw new Error('OTA blocked: EXPO_PUBLIC_API_BASE is not configured.');

@@ -69,7 +69,7 @@
     "extra": {
       "router": {},
       "appRevision": 4,
-      "releaseTrack": "testflight",
+      "releaseTrack": "production",
       "eas": {
         "projectId": "7afb1a4b-46b6-4295-b33f-816b05589e81"
       }

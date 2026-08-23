@@ -13,10 +13,25 @@
       "ios": {
         "distribution": "store"
       }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE": "https://app.strengthledger.fit"
+      },
+      "ios": {
+        "distribution": "store"
+      }
     }
   },
   "submit": {
     "testflight": {
+      "ios": {
+        "ascAppId": "6756639297"
+      }
+    },
+    "production": {
       "ios": {
         "ascAppId": "6756639297"
       }
