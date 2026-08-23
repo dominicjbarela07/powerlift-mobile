@@ -26,7 +26,11 @@ export type ManufacturerLogoAssetKey =
   | 'torque-fitness'
   | 'sportsart'
   | 'newtech'
-  | 'icarian';
+  | 'glutebuilder'
+  | 'mega-mass'
+  | 'icarian'
+  | 'gymleco'
+  | 'pit-shark';
 
 export type ManufacturerRegistryEntry = Readonly<{
   key: string;
@@ -259,12 +263,48 @@ export const MANUFACTURER_REGISTRY: readonly ManufacturerRegistryEntry[] = Objec
     opticalScale: 0.9,
   },
   {
+    key: 'glutebuilder',
+    displayName: 'GluteBuilder',
+    aliases: ['glutebuilder', 'glute builder', 'glute builder fitness'],
+    logoAssetKey: 'glutebuilder',
+    opticalScale: 0.9,
+  },
+  {
+    key: 'mega-mass',
+    displayName: 'Mega Mass',
+    aliases: [
+      'mega mass',
+      'megamass',
+      'mega mass fitness',
+      'megamass fitness',
+      'mega mass strength',
+      'megamass strength',
+    ],
+    logoAssetKey: 'mega-mass',
+    opticalScale: 0.9,
+  },
+  {
     key: 'icarian',
     displayName: 'Icarian',
     aliases: ['icarian', 'icarian fitness', 'precor icarian'],
     logoAssetKey: 'icarian',
     logoSurface: 'light',
     opticalScale: 0.94,
+  },
+  {
+    key: 'gymleco',
+    displayName: 'Gymleco',
+    aliases: ['gymleco', 'gym leco', 'gymleco fitness'],
+    logoAssetKey: 'gymleco',
+    opticalScale: 0.94,
+  },
+  {
+    key: 'pit-shark',
+    displayName: 'Pit Shark',
+    aliases: ['pit shark', 'pitshark', 'pit shark strength', 'pit shark equipment'],
+    logoAssetKey: 'pit-shark',
+    logoSurface: 'light',
+    opticalScale: 0.92,
   },
 ]);
 

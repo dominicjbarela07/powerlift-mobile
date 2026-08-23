@@ -44,6 +44,11 @@ const requiredManufacturers = [
   'strive',
   'nebula',
   'bodymasters',
+  'icarian',
+  'glutebuilder',
+  'mega-mass',
+  'gymleco',
+  'pit-shark',
 ];
 
 const registryKeys = new Set(MANUFACTURER_REGISTRY.map((entry) => entry.key));
@@ -59,6 +64,20 @@ assert.deepEqual(
   'The provenance manifest and runtime registry must have identical coverage',
 );
 
+const registeredLogoKeys = new Set(
+  MANUFACTURER_REGISTRY.flatMap((entry) => entry.logoAssetKey ? [entry.logoAssetKey] : []),
+);
+const runtimeLogoKeys = new Set(
+  fs.readdirSync(path.join(assetRoot, 'runtime'))
+    .filter((fileName) => fileName.endsWith('.png'))
+    .map((fileName) => fileName.slice(0, -'.png'.length)),
+);
+assert.deepEqual(
+  runtimeLogoKeys,
+  registeredLogoKeys,
+  'Every bundled manufacturer logo must have exactly one governed manufacturer tag',
+);
+
 for (const entry of MANUFACTURER_REGISTRY) {
   const manifestEntry = manifestByKey.get(entry.key);
   assert.ok(manifestEntry, `Missing provenance entry: ${entry.key}`);
@@ -70,8 +89,8 @@ for (const entry of MANUFACTURER_REGISTRY) {
   }
 
   assert.ok(
-    manifestEntry.status === 'official' || manifestEntry.status === 'provided',
-    `${entry.key} must document either an official or user-provided local source`,
+    manifestEntry.status === 'official' || manifestEntry.status === 'provided' || manifestEntry.status === 'public',
+    `${entry.key} must document an official, user-provided, or public trademark source`,
   );
   assert.equal(manifestEntry.runtimeFile, `runtime/${entry.logoAssetKey}.png`);
   const runtimePath = path.join(assetRoot, manifestEntry.runtimeFile);
@@ -103,6 +122,16 @@ const resolutionCases = [
   ['Elite FTS', 'elitefts'],
   ['Free Motion Fitness', 'freemotion'],
   ['Newtech Strength Equipment', 'newtech'],
+  ['Icarian Fitness', 'icarian'],
+  ['Precor Icarian', 'icarian'],
+  ['GluteBuilder', 'glutebuilder'],
+  ['Glute Builder Fitness', 'glutebuilder'],
+  ['Mega Mass', 'mega-mass'],
+  ['MEGAMASS Strength Equipment', 'mega-mass'],
+  ['Gymleco', 'gymleco'],
+  ['Gym Leco Fitness', 'gymleco'],
+  ['Pit Shark', 'pit-shark'],
+  ['PitShark Equipment', 'pit-shark'],
 ];
 for (const [input, expectedKey] of resolutionCases) {
   assert.equal(resolveManufacturerBrand(input).key, expectedKey, `Failed alias: ${input}`);
@@ -118,6 +147,8 @@ for (const manufacturer of [
   'Newtech',
   'SportsArt',
   'Torque Fitness',
+  'Icarian',
+  'Pit Shark',
 ]) {
   assert.equal(
     resolveManufacturerBrand(manufacturer).logoSurface,

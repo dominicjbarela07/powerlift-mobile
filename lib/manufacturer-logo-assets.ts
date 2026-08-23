@@ -36,5 +36,9 @@ export const MANUFACTURER_LOGO_ASSETS: Readonly<
   'torque-fitness': require('@/assets/images/manufacturer-logos/runtime/torque-fitness.png'),
   sportsart: require('@/assets/images/manufacturer-logos/runtime/sportsart.png'),
   newtech: require('@/assets/images/manufacturer-logos/runtime/newtech.png'),
+  glutebuilder: require('@/assets/images/manufacturer-logos/runtime/glutebuilder.png'),
+  'mega-mass': require('@/assets/images/manufacturer-logos/runtime/mega-mass.png'),
   icarian: require('@/assets/images/manufacturer-logos/runtime/icarian.png'),
+  gymleco: require('@/assets/images/manufacturer-logos/runtime/gymleco.png'),
+  'pit-shark': require('@/assets/images/manufacturer-logos/runtime/pit-shark.png'),
 });
