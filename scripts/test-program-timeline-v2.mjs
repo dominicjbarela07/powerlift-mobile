@@ -30,14 +30,14 @@ const raw = {
       { id: 10, date: '2026-07-06', label: 'W1 Pull', status: 'completed', preview: { movement_count: 6, muscle_focus: { primary: [{ muscle_id: 'lats' }] } }, recap: { logged_set_count: 18, session_rpe: 7 } },
     ],
     2: [
-      { id: 20, date: '2026-08-17', label: 'W2 Pull', status: 'completed', preview: { movement_count: 7, muscle_focus: { primary: [{ muscle_id: 'lats' }] } }, recap: { logged_set_count: 21, session_rpe: 8 } },
+      { id: 20, date: '2026-08-17', label: 'W2 Pull', status: 'completed', preview: { movement_count: 7, set_count: 21, muscle_focus: { primary: [{ muscle_id: 'lats' }] } }, recap: { logged_set_count: 21, session_rpe: 8 } },
     ],
   },
   pending_map: {
     2: [
-      { id: 21, date: '2026-08-18', label: 'Missed Push', status: 'missed', preview: { movement_count: 5, muscle_focus: { primary: [{ muscle_id: 'chest' }] } } },
-      { id: 22, date: '2026-08-20', label: 'Back Today', status: 'assigned', preview: { movement_count: 6, muscle_focus: { primary: [{ muscle_id: 'upper_back' }] } }, estimated_duration_minutes: 70 },
-      { id: 23, date: '2026-08-22', label: 'Upcoming Arms', status: 'assigned', preview: { movement_count: 4, muscle_focus: { primary: [{ muscle_id: 'biceps' }] } } },
+      { id: 21, date: '2026-08-18', label: 'Missed Push', status: 'missed', preview: { movement_count: 5, set_count: 15, muscle_focus: { primary: [{ muscle_id: 'chest' }] } } },
+      { id: 22, date: '2026-08-20', label: 'Back Today', status: 'assigned', preview: { movement_count: 6, set_count: 18, muscle_focus: { primary: [{ muscle_id: 'upper_back' }] } }, estimated_duration_minutes: 70 },
+      { id: 23, date: '2026-08-22', label: 'Upcoming Arms', status: 'assigned', preview: { movement_count: 4, set_count: 12, muscle_focus: { primary: [{ muscle_id: 'biceps' }] } } },
     ],
     3: [
       { id: 30, date: '2026-09-14', label: 'Future Legs', status: 'assigned', preview: { movement_count: 5, muscle_focus: { primary: [{ muscle_id: 'quads' }] } } },
@@ -65,6 +65,9 @@ assert.equal(currentWeek.current, true);
 assert.equal(currentWeek.sessionCount, 4);
 assert.equal(currentWeek.completedCount, 1);
 assert.equal(currentWeek.missedCount, 1);
+assert.equal(currentWeek.plannedSetCount, 66, 'Week fingerprints must carry real planned-set density');
+assert.equal(currentWeek.programmingState, 'programmed');
+assert.equal(payload.blocks[2].weeks[1].programmingState, 'unbuilt', 'empty future Weeks must remain visibly unbuilt');
 assert.equal(currentWeek.days.find((day) => day.date === '2026-08-19')?.sessions.length, 0, 'an empty day stays neutral');
 assert.equal(currentWeek.days.find((day) => day.date === '2026-08-18')?.sessions[0]?.lifecycle, 'missed');
 assert.equal(currentWeek.days.find((day) => day.date === '2026-08-20')?.sessions[0]?.lifecycle, 'today');
@@ -77,11 +80,20 @@ const hub = fs.readFileSync(path.join(root, 'components/training-hub/AthleteTrai
 const index = fs.readFileSync(path.join(root, 'app/(tabs)/workout/index.tsx'), 'utf8');
 const detail = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 
-assert.match(component, /SectionList/, 'long Programs must use virtualized chronology');
+assert.match(component, /FlatList<ProgramTimelineBlock>/, 'long Programs must virtualize compact Block territories');
+assert.doesNotMatch(component, /SectionList|blockNavigator/, 'the rejected giant Week chronology and horizontal Block tabs must not return');
+assert.match(component, /BlockTerritory/, 'Blocks must render as continuous map territories');
+assert.match(component, /WeekNode/, 'Weeks must render as landmark nodes');
+assert.match(component, /DensityMarks/, 'Week nodes must expose real Session lifecycle density');
+assert.match(component, /WeekExpansion/, 'the selected Week must expand contextually inside the map');
+assert.match(component, /programmingState === 'unbuilt'/, 'programmed future and unbuilt future must not look identical');
 assert.match(component, /ProgrammingMuscleRegionArt level="session"/, 'Sessions must use focused muscle-region assets');
 assert.doesNotMatch(component, /MuscleMap|level="week"/, 'Program, Block, and Week headers must not render full anatomy');
-assert.match(component, /scrollToLocation/, 'Block and current-Week navigation must jump directly');
-assert.match(component, /setExpandedWeekKey\(\(current\) => current === week\.key \? null : week\.key\)/, 'only one Week may be expanded');
+assert.match(component, /Gesture\.Pan\(\)/, 'Week map must support tactile scrubbing and traversal gestures');
+assert.match(component, /Haptics\.selectionAsync/, 'landmark transitions must use restrained selection haptics');
+assert.match(component, /useSLReducedMotion/, 'map motion must honor Reduced Motion');
+assert.match(component, /setExpandedWeekKey\(opening \? week\.key : null\)/, 'only one Week may be expanded');
+assert.match(component, /Return to current Week/, 'browsing away must expose one integrated current-Week return');
 assert.doesNotMatch(component, /contentMaxWidth|alignSelf:\s*'center'/, 'standard iPhone layout must not be squeezed into a centered web column');
 assert.match(route, /\/workouts\/my_list\/mobile/, 'timeline must reuse the authoritative active Program payload');
 assert.match(route, /returnTo: 'program-timeline'/, 'Session drill-down must preserve timeline return context');
@@ -91,4 +103,4 @@ assert.match(hub, />Program Timeline</, 'active Program CTA must be named truthf
 assert.match(hub, /PROGRAM HISTORY/, 'completed-program history remains a separate destination');
 assert.match(index, /openProgramTimeline\(action\.id\)/, 'Training Hub must route the active Program action');
 
-console.log('Program Timeline V2 contracts passed.');
+console.log('Program Timeline V3 contracts passed.');

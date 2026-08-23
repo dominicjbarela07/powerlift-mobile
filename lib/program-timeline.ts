@@ -13,6 +13,7 @@ export type ProgramTimelineSession = {
   lifecycle: Exclude<ProgramTimelineLifecycle, 'no_session'>;
   movementCount: number | null;
   setCount: number | null;
+  plannedSetCount: number | null;
   sessionRpe: number | null;
   estimatedDurationMinutes: number | null;
   primaryMuscles: string[];
@@ -37,6 +38,8 @@ export type ProgramTimelineWeek = {
   sessionCount: number;
   completedCount: number;
   missedCount: number;
+  plannedSetCount: number;
+  programmingState: 'programmed' | 'unbuilt';
   days: ProgramTimelineDay[];
 };
 
@@ -140,6 +143,18 @@ function primaryMuscles(session: RawSession) {
     : [];
 }
 
+function plannedSetCount(session: RawSession) {
+  const explicit = asNumber(session.recap?.planned_set_count ?? session.preview?.set_count);
+  if (explicit != null) return explicit;
+  const rows = Array.isArray(session.preview?.movements)
+    ? session.preview.movements
+    : Array.isArray(session.preview?.core)
+      ? session.preview.core
+      : [];
+  if (!rows.length) return null;
+  return rows.reduce((sum: number, row: any) => sum + Math.max(0, Number(row?.sets || 0)), 0);
+}
+
 function mapSession(session: RawSession, date: string, today: string): ProgramTimelineSession | null {
   const id = asNumber(session.id);
   if (!id) return null;
@@ -150,6 +165,7 @@ function mapSession(session: RawSession, date: string, today: string): ProgramTi
     lifecycle: sessionLifecycle(session, date, today),
     movementCount: asNumber(session.preview?.movement_count ?? session.recap?.movement_count),
     setCount: asNumber(session.recap?.logged_set_count ?? session.recap?.planned_set_count ?? session.preview?.set_count),
+    plannedSetCount: plannedSetCount(session),
     sessionRpe: asNumber(session.recap?.session_rpe ?? session.recap?.average_rpe),
     estimatedDurationMinutes: asNumber(session.estimated_duration_minutes ?? session.preview?.estimated_duration_minutes),
     primaryMuscles: primaryMuscles(session),
@@ -248,6 +264,8 @@ export function buildProgramTimelinePayload(raw: any): ProgramTimelinePayload | 
         sessionCount: weekSessions.length,
         completedCount: weekSessions.filter((session) => session.lifecycle === 'completed').length,
         missedCount: weekSessions.filter((session) => session.lifecycle === 'missed').length,
+        plannedSetCount: weekSessions.reduce((sum, session) => sum + Number(session.plannedSetCount || 0), 0),
+        programmingState: weekSessions.length ? 'programmed' as const : 'unbuilt' as const,
         days,
       };
       return { ...baseWeek, lifecycle: weekLifecycle(baseWeek, today) };
