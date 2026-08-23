@@ -7013,7 +7013,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const handleBackToTrainingHub = () => {
-    if (returnTo === 'training-hub' && router.canGoBack()) {
+    if ((returnTo === 'training-hub' || returnTo === 'program-timeline') && router.canGoBack()) {
       router.back();
       return;
     }

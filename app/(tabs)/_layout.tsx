@@ -970,6 +970,16 @@ export default function TabsLayout() {
         />
 
         <Tabs.Screen
+          name="workout/program-timeline"
+          options={{
+            href: null,
+            title: 'Program Timeline',
+            headerShown: false,
+            tabBarStyle: { display: 'none' },
+          }}
+        />
+
+        <Tabs.Screen
           name="workout/movement-history"
           options={{
             href: null,

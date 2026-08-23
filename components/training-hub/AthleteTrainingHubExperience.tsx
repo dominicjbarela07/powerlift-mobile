@@ -199,6 +199,7 @@ export type AthleteTrainingHubData = {
 export type AthleteTrainingHubAction =
   | { type: 'session'; id: number }
   | { type: 'block'; id: number }
+  | { type: 'program-timeline'; id: number }
   | { type: 'program-history'; id?: number }
   | { type: 'message-coach' };
 
@@ -260,14 +261,14 @@ export function AthleteTrainingHubExperience({
       ) : null}
 
       <Pressable
-        onPress={() => onAction({ type: 'program-history' })}
+        onPress={() => onAction({ type: 'program-timeline', id: program.id })}
         style={({ pressed }) => [styles.historyAction, pressed && styles.pressed]}
       >
         <View style={styles.historyIdentity}>
-          <View style={styles.historyIcon}><Ionicons color={SLColors.text} name="book-outline" size={18} /></View>
+          <View style={styles.historyIcon}><Ionicons color={SLColors.text} name="map-outline" size={18} /></View>
           <View>
-            <Text style={styles.historyTitle}>Program History</Text>
-            <Text style={styles.historyMeta}>Review completed plans and sessions</Text>
+            <Text style={styles.historyTitle}>Program Timeline</Text>
+            <Text style={styles.historyMeta}>See the entire Program from start to finish</Text>
           </View>
         </View>
         <Ionicons color={SLColors.textMuted} name="chevron-forward" size={18} />

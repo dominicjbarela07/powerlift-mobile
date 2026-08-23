@@ -747,6 +747,16 @@ export default function TrainingIndexScreen() {
     } as any);
   };
 
+  const openProgramTimeline = (programId: number) => {
+    router.push({
+      pathname: '/(tabs)/workout/program-timeline',
+      params: {
+        programId: String(programId),
+        ...(rosterAthleteId ? { athleteId: rosterAthleteId } : {}),
+      },
+    } as any);
+  };
+
   const addSessionForDate = (date?: string | null) => {
     router.push({
       pathname: '/(tabs)/create-workout',
@@ -859,6 +869,7 @@ export default function TrainingIndexScreen() {
               onAction={(action) => {
                 if (action.type === 'session') openWorkout(action.id);
                 if (action.type === 'block') openBlockDetails();
+                if (action.type === 'program-timeline') openProgramTimeline(action.id);
                 if (action.type === 'program-history') openSessionHistory();
                 if (action.type === 'message-coach') openMessages();
               }}
