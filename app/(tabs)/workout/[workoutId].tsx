@@ -8442,8 +8442,12 @@ export default function WorkoutViewerScreen() {
                         mode: 'rir',
                         movementName: item.title,
                       })}
-                    onLogRound={(roundIndex) =>
-                      openSupersetRoundLogger(grp, roundIndex)}
+                    onLogMovement={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      if (item) openAccessoryWheel(item);
+                    }}
                     onOpenHistory={(itemId) => {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,

@@ -18,12 +18,14 @@ type MotionPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
   pressScale?: number;
   pressedOpacity?: number;
+  disableNativePressAnimation?: boolean;
 };
 
 export function SLMotionPressable({
   style,
   pressScale = SLMotion.pressScale,
   pressedOpacity = 1,
+  disableNativePressAnimation = false,
   onPressIn,
   onPressOut,
   disabled,
@@ -38,6 +40,7 @@ export function SLMotionPressable({
     : style;
 
   const settle = (toValue: number) => {
+    if (disableNativePressAnimation) return;
     scale.stopAnimation();
     if (reduceMotion) {
       scale.setValue(1);
@@ -67,7 +70,10 @@ export function SLMotionPressable({
       }}
       style={[
         resolvedStyle,
-        { opacity: disabled ? SLOpacity.disabled : pressed ? pressedOpacity : 1, transform: [{ scale }] },
+        {
+          opacity: disabled ? SLOpacity.disabled : pressed ? pressedOpacity : 1,
+          transform: disableNativePressAnimation ? undefined : [{ scale }],
+        },
       ]}
     />
   );

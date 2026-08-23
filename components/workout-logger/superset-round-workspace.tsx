@@ -256,6 +256,7 @@ export function SupersetRoundWorkspace({
                     {canLog && movement.nextSetIndex != null ? (
                       <SLButton
                         accessibilityLabel={`Log ${movement.item.title}, set ${movement.nextSetIndex} of ${movement.requiredSets}`}
+                        disableNativePressAnimation
                         fullWidth
                         iconRight="chevron-forward"
                         iconRightPosition="edge"

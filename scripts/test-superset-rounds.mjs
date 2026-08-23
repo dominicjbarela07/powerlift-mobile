@@ -149,6 +149,11 @@ assert.match(workspace, /MOVEMENT PROGRESS/);
 assert.match(workspace, /Log these movements in any order/);
 assert.match(workspace, /model\.movements\.map/);
 assert.match(workspace, /onLogMovement\(movement\.itemId\)/);
+assert.match(
+  workspace,
+  /<SLButton[\s\S]*?disableNativePressAnimation[\s\S]*?onPress=\{\(\) => onLogMovement\(movement\.itemId\)\}/,
+  'grouped movement logging must not overlap native press animation with Set Logger presentation',
+);
 assert.match(workspace, /movement\.loggedRequiredSets} \/ \{movement\.requiredSets/);
 assert.doesNotMatch(workspace, /Log Round|ROUND TIMELINE|onLogRound/);
 assert.match(workspace, /onOpenHistory\(item\.id\)/);

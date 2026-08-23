@@ -36,6 +36,7 @@ type SLButtonProps = {
   accessibilityLabel?: string;
   accessibilityState?: AccessibilityState;
   labelTypographyRole?: Extract<SLTypographyRole, 'shortButtonLabel' | 'longButtonLabel'>;
+  disableNativePressAnimation?: boolean;
 };
 
 const variantStyles: Record<ButtonVariant, { bg: string; border: string; text: string; icon: string }> = {
@@ -87,6 +88,7 @@ export function SLButton({
   accessibilityLabel,
   accessibilityState,
   labelTypographyRole,
+  disableNativePressAnimation = false,
 }: SLButtonProps) {
   const [pressed, setPressed] = useState(false);
   const palette = variantStyles[variant];
@@ -102,6 +104,7 @@ export function SLButton({
       accessibilityRole="button"
       accessibilityState={{ ...accessibilityState, busy: loading, disabled: isDisabled }}
       disabled={isDisabled}
+      disableNativePressAnimation={disableNativePressAnimation}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       onPress={onPress}
