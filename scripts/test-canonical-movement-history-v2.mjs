@@ -4,6 +4,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { samePrimaryHistoryObservation } from '../lib/canonical-movement-history-contract.ts';
+import {
+  buildLoadRepProfileLayout,
+  loadRepProfileAccessibilityLabel,
+} from '../lib/load-rep-profile.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
@@ -21,6 +25,67 @@ const primary = {
 assert.equal(samePrimaryHistoryObservation(primary, { ...primary }), true);
 assert.equal(samePrimaryHistoryObservation(primary, { ...primary, set_log_id: 802 }), false);
 assert.equal(samePrimaryHistoryObservation(primary, { ...primary, reps: 12 }), false);
+
+const KG_TO_LB = 2.2046226218;
+const performedSet = (id, pounds, reps, date, exposureId = `exposure:${id}`, extra = {}) => ({
+  id,
+  exposure_id: exposureId,
+  date,
+  weight_kg: pounds / KG_TO_LB,
+  reps,
+  ...extra,
+});
+const profileEvidence = [
+  performedSet(1, 250, 15, '2026-05-10'),
+  performedSet(2, 275, 12, '2026-06-12'),
+  performedSet(3, 300, 10, '2026-07-01', 'prime:3', { rir: 1 }),
+  performedSet(4, 300, 8, '2026-07-08', 'matrix:4'),
+  performedSet(5, 320, 10, '2026-08-16', 'newtech:5', { rir: 0 }),
+  performedSet(6, 300, 10, '2026-07-15', 'prime:6', { rir: 2 }),
+  performedSet(7, 300, 10, '2026-07-22', 'resolved-legacy:7', { rir: 1 }),
+  performedSet(8, 285, 11, '2026-07-29', 'unknown:8'),
+];
+const profileLayout = buildLoadRepProfileLayout({
+  observations: profileEvidence,
+  unit: 'lb',
+  plotLeft: 48,
+  plotRight: 328,
+  plotTop: 24,
+  plotBottom: 190,
+});
+assert.equal(profileLayout.observationCount, 8);
+assert.ok(profileLayout.xDomain[0] > 0, 'rep domain must not default to zero');
+assert.ok(profileLayout.yDomain[0] > 0, 'load domain must not default to zero');
+assert.ok(profileLayout.xTicks.every((tick) => tick >= profileLayout.xDomain[0] && tick <= profileLayout.xDomain[1]));
+assert.ok(profileLayout.yTicks.every((tick) => tick >= profileLayout.yDomain[0] && tick <= profileLayout.yDomain[1]));
+
+const coordinateFor = (reps, load) => profileLayout.coordinates.find((point) => point.reps === reps && Math.abs(point.load - load) < 0.0001);
+const threeHundredByTen = coordinateFor(10, 300);
+const threeHundredByEight = coordinateFor(8, 300);
+const threeTwentyByTen = coordinateFor(10, 320);
+assert.ok(threeHundredByTen && threeHundredByEight && threeTwentyByTen);
+assert.equal(threeHundredByTen.observations.length, 3, 'identical coordinates retain all performed-set evidence');
+assert.equal(threeHundredByTen.y, threeHundredByEight.y, 'equal loads share an exact Y coordinate');
+assert.equal(threeHundredByTen.x, threeTwentyByTen.x, 'equal reps share an exact X coordinate');
+assert.ok(threeHundredByEight.x < threeHundredByTen.x, 'fewer reps plot to the left');
+assert.ok(threeTwentyByTen.y < threeHundredByTen.y, 'heavier loads plot higher');
+assert.ok(threeHundredByTen.radius > coordinateFor(8, 300).radius, 'repeat density increases point size without coordinate jitter');
+assert.match(loadRepProfileAccessibilityLabel(threeHundredByTen, 'lb', 'Prime Fitness · Plate Loaded'), /300 pounds for 10 reps, 1 RIR[\s\S]*3 performed sets/);
+
+const kgProfile = buildLoadRepProfileLayout({
+  observations: profileEvidence,
+  unit: 'kg',
+  plotLeft: 48,
+  plotRight: 328,
+  plotTop: 24,
+  plotBottom: 190,
+});
+assert.ok(Math.abs(kgProfile.coordinates.find((point) => point.reps === 10 && point.observations.length === 3).load - (300 / KG_TO_LB)) < 0.0001);
+for (const sparse of [profileEvidence.slice(0, 1), profileEvidence.slice(0, 2)]) {
+  const sparseLayout = buildLoadRepProfileLayout({ observations: sparse, unit: 'lb', plotLeft: 48, plotRight: 328, plotTop: 24, plotBottom: 190 });
+  assert.equal(sparseLayout.observationCount, sparse.length);
+  assert.ok(sparseLayout.coordinates.every((point) => Number.isFinite(point.x) && Number.isFinite(point.y)));
+}
 
 const api = read('lib/canonical-movement-history.ts');
 const screen = read('components/movement-history/CanonicalMovementHistoryScreen.tsx');
@@ -68,6 +133,13 @@ assert.match(screen, /ManufacturerBrandMark/);
 assert.match(screen, /View Full Session/);
 assert.doesNotMatch(screen, /Rest Timer" value="Session evidence/);
 assert.doesNotMatch(screen, /RIR Scaling" value="Canonical/);
+assert.match(screen, /buildLoadRepProfileLayout/);
+assert.match(screen, /layout\.xTicks\.map/);
+assert.match(screen, /layout\.yTicks\.map/);
+assert.match(screen, /loadRepProfileAccessibilityLabel/);
+assert.match(screen, /performed set/);
+assert.match(screen, /Unknown equipment/);
+assert.doesNotMatch(screen, /index >= plotted\.length/);
 
 assert.match(chart, /Canvas/);
 assert.match(chart, /Skia\.Path\.Make/);

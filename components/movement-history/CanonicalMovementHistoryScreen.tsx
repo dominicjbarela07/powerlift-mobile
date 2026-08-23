@@ -35,6 +35,11 @@ import {
 import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import {
+  buildLoadRepProfileLayout,
+  loadRepProfileAccessibilityLabel,
+  type LoadRepProfileCoordinate,
+} from '@/lib/load-rep-profile';
 
 type FilterPreset = 'all' | 'rir1' | 'rir2' | 'reps6to10' | 'reps8to12' | 'reps12plus';
 
@@ -258,6 +263,10 @@ export function CanonicalMovementHistoryScreen({
   const selectedEquipment = history?.equipment_breakdown.find((row) => row.selected) || null;
   const scopeLabel = history?.filters.selected_scope === 'all_history' ? 'All History' : selectedEquipment?.label || 'Equipment';
   const unknownEquipmentSeries = history?.filters.analytics_basis === 'recorded_unknown_equipment';
+  const profileEquipmentId = Number(String(history?.filters.analytics_scope || '').replace(/^equipment:/, ''));
+  const profileSeriesLabel = unknownEquipmentSeries
+    ? 'Unknown equipment'
+    : history?.equipment_breakdown.find((row) => row.id === profileEquipmentId)?.label || 'Exact comparable sets';
   const muscleLine = [titleCase(history?.movement.primary_muscle_group), ...(history?.movement.secondary_muscle_groups || []).slice(0, 1).map(titleCase)].filter(Boolean).join(' · ');
   const primaryMuscleRegion = canonicalAccessoryMuscleRegionKey(history?.movement.primary_muscle_group);
 
@@ -338,11 +347,9 @@ export function CanonicalMovementHistoryScreen({
               <View style={styles.legendRow}><View style={styles.legendRing} /><Text style={styles.legendText}>Point label = reps on the exact set</Text></View>
             </NumberedSection>
 
-            {history.load_rep_profile.length ? (
-              <NumberedSection number="3" title="LOAD × REP PROFILE" subtitle="Demonstrated performance envelope" tone="#9B6BDB">
-                <LoadRepProfile points={history.load_rep_profile} unit={unit} onOpenExposure={(id) => void openExposure(id)} />
-              </NumberedSection>
-            ) : null}
+            <NumberedSection number="3" title="LOAD × REP PROFILE" subtitle="Demonstrated performance envelope" tone="#9B6BDB">
+              <LoadRepProfile points={history.load_rep_profile} unit={unit} seriesLabel={profileSeriesLabel} onOpenExposure={(id) => void openExposure(id)} />
+            </NumberedSection>
 
             <Section title="KEY STATISTICS">
               <StatisticsGrid statistics={history.statistics} unit={unit} onOpenExposure={(id) => void openExposure(id)} />
@@ -430,25 +437,52 @@ function EquipmentCard({ equipment, unit, onPress }: { equipment: CanonicalMovem
   return <Pressable accessibilityRole="button" accessibilityState={{ selected: equipment.selected }} onPress={onPress} style={[styles.equipmentCard, equipment.selected && styles.equipmentCardSelected]}><View style={styles.equipmentBrandRow}>{unknown ? <View style={styles.standardEquipment}><Ionicons name="help-outline" size={19} color="#A66DE5" /></View> : <ManufacturerBrandMark compact manufacturerName={equipment.manufacturer?.display_name || equipment.label} />}{equipment.current_context ? <View style={styles.primaryBadge}><Text style={styles.primaryBadgeText}>CURRENT</Text></View> : equipment.selected ? <View style={styles.primaryBadge}><Text style={styles.primaryBadgeText}>FILTERED</Text></View> : null}</View><Text numberOfLines={2} style={styles.equipmentName}>{unknown ? 'Unknown' : equipment.label}</Text><Text style={styles.equipmentCount}>{equipment.exposure_count} exposure{equipment.exposure_count === 1 ? '' : 's'} · {equipment.set_count} sets</Text><Text style={styles.equipmentMetricLabel}>{unknown ? 'HISTORICAL FACT' : 'BEST PERFORMANCE'}</Text><Text numberOfLines={1} style={styles.equipmentMetricValue}>{unknown ? 'Equipment was not recorded' : setLabel(equipment.best_performance, unit)}</Text><Text style={styles.equipmentLast}>Last used {dateLabel(equipment.last_used)}</Text></Pressable>;
 }
 
-function LoadRepProfile({ points, unit, onOpenExposure }: { points: CanonicalMovementHistory['load_rep_profile']; unit: MovementHistoryUnit; onOpenExposure: (id: string) => void }) {
+function LoadRepProfile({ points, unit, seriesLabel, onOpenExposure }: { points: CanonicalMovementHistory['load_rep_profile']; unit: MovementHistoryUnit; seriesLabel: string; onOpenExposure: (id: string) => void }) {
   const [width, setWidth] = useState(340);
-  const height = 178;
-  const left = 38;
-  const right = 12;
-  const top = 14;
-  const bottom = 150;
-  const reps = points.map((row) => Number(row.reps || 0));
-  const loads = points.map((row) => kilogramsToDisplayValue(Number(row.weight_kg || 0), unit));
-  const minRep = Math.min(...reps, 0);
-  const maxRep = Math.max(...reps, minRep + 1);
-  const minLoad = Math.min(...loads, 0);
-  const maxLoad = Math.max(...loads, minLoad + 1);
-  const plotted = points.map((point, index) => ({
-    ...point,
-    x: left + ((reps[index] - minRep) / Math.max(maxRep - minRep, 1)) * (width - left - right),
-    y: bottom - ((loads[index] - minLoad) / Math.max(maxLoad - minLoad, 1)) * (bottom - top),
-  }));
-  return <View accessibilityLabel={`Load by rep profile with ${points.length} exact sets`} onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))} style={styles.profileChart}><Canvas style={{ width, height }}><Line p1={vec(left, bottom)} p2={vec(width - right, bottom)} color="#343743" strokeWidth={1} /><Line p1={vec(left, top)} p2={vec(left, bottom)} color="#343743" strokeWidth={1} />{[0.25, 0.5, 0.75].map((ratio) => <Line key={ratio} p1={vec(left, top + ratio * (bottom - top))} p2={vec(width - right, top + ratio * (bottom - top))} color="#1E222A" strokeWidth={0.7} />)}{plotted.map((point, index) => <Circle key={`${point.id}-${index}`} cx={point.x} cy={point.y} r={4.4} color={index >= plotted.length - Math.ceil(plotted.length / 3) ? '#A865FF' : index >= plotted.length / 3 ? '#2CC8B7' : '#E6A72D'} />)}</Canvas><View pointerEvents="box-none" style={StyleSheet.absoluteFillObject}>{plotted.map((point) => <Pressable key={`tap-${point.id}`} accessibilityRole="button" accessibilityLabel={`${displayWeight(point.weight_kg, unit)} ${unit} for ${point.reps} reps on ${dateLabel(point.date)}`} onPress={() => onOpenExposure(point.exposure_id)} style={[styles.profileTarget, { left: point.x - 18, top: point.y - 18 }]} />)}<Text style={styles.profileYLabel}>Load ({unit})</Text><Text style={styles.profileXLabel}>Reps</Text></View></View>;
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const height = 246;
+  const plotLeft = 48;
+  const plotRight = width - 14;
+  const plotTop = 32;
+  const plotBottom = 190;
+  const layout = useMemo(() => buildLoadRepProfileLayout({
+    observations: points,
+    unit,
+    plotLeft,
+    plotRight,
+    plotTop,
+    plotBottom,
+  }), [plotRight, points, unit]);
+  const selected = layout.coordinates.find((point) => point.key === selectedKey) || null;
+
+  useEffect(() => {
+    setSelectedKey((current) => layout.coordinates.some((point) => point.key === current) ? current : null);
+  }, [layout.coordinates]);
+
+  const selectNearest = (x: number, y: number) => {
+    const nearest = layout.coordinates.reduce<LoadRepProfileCoordinate | null>((best, point) => {
+      const distance = Math.hypot(point.x - x, point.y - y);
+      if (distance > 30) return best;
+      if (!best) return point;
+      return distance < Math.hypot(best.x - x, best.y - y) ? point : best;
+    }, null);
+    if (nearest) setSelectedKey(nearest.key);
+  };
+
+  if (!layout.observationCount) {
+    return <View style={styles.profileEmpty} accessibilityLabel="No performed sets in the current Load by Rep Profile filter"><Text style={styles.profileEmptyTitle}>No load × rep evidence in this filter.</Text><Text style={styles.profileEmptyBody}>A performed set with both load and reps is required.</Text></View>;
+  }
+
+  const selectedObservation = selected?.observations[0] || null;
+  const selectedEffort = selectedObservation?.rir != null
+    ? `${selectedObservation.rir} RIR`
+    : selectedObservation?.rpe != null
+      ? `RPE ${selectedObservation.rpe}`
+      : 'Effort not recorded';
+  const tooltipLeft = selected ? Math.min(Math.max(selected.x - 76, plotLeft), width - 166) : 0;
+  const tooltipTop = selected ? (selected.y < 98 ? selected.y + 14 : selected.y - 76) : 0;
+
+  return <View><View accessibilityLabel={`Load by rep profile with ${layout.observationCount} performed sets`} onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))} style={styles.profileChart}><Canvas style={{ width, height }}>{layout.yTicks.map((tick) => { const y = plotBottom - ((tick - layout.yDomain[0]) / Math.max(layout.yDomain[1] - layout.yDomain[0], 1)) * (plotBottom - plotTop); return <Line key={`y-${tick}`} p1={vec(plotLeft, y)} p2={vec(plotRight, y)} color="#242832" strokeWidth={tick === layout.yDomain[0] ? 1.1 : 0.7} />; })}{layout.xTicks.map((tick) => { const x = plotLeft + ((tick - layout.xDomain[0]) / Math.max(layout.xDomain[1] - layout.xDomain[0], 1)) * (plotRight - plotLeft); return <Line key={`x-${tick}`} p1={vec(x, plotTop)} p2={vec(x, plotBottom)} color="#1A1E27" strokeWidth={0.7} />; })}{selected ? <><Line p1={vec(selected.x, plotTop)} p2={vec(selected.x, plotBottom)} color="#A865FF88" strokeWidth={1} /><Line p1={vec(plotLeft, selected.y)} p2={vec(plotRight, selected.y)} color="#A865FF88" strokeWidth={1} /></> : null}{layout.coordinates.map((point) => <React.Fragment key={point.key}>{point.observations.length > 1 ? <Circle cx={point.x} cy={point.y} r={point.radius + 3} color="#A865FF33" /> : null}{selected?.key === point.key ? <Circle cx={point.x} cy={point.y} r={point.radius + 3} color="#F4E9FF" /> : null}<Circle cx={point.x} cy={point.y} r={point.radius} color="#A865FF" /></React.Fragment>)}</Canvas><View pointerEvents="none" style={StyleSheet.absoluteFillObject}>{layout.yTicks.map((tick) => { const y = plotBottom - ((tick - layout.yDomain[0]) / Math.max(layout.yDomain[1] - layout.yDomain[0], 1)) * (plotBottom - plotTop); return <Text key={`yl-${tick}`} style={[styles.profileYTick, { top: y - 8 }]}>{tick.toLocaleString('en-US', { maximumFractionDigits: 1 })}</Text>; })}{layout.xTicks.map((tick) => { const x = plotLeft + ((tick - layout.xDomain[0]) / Math.max(layout.xDomain[1] - layout.xDomain[0], 1)) * (plotRight - plotLeft); return <Text key={`xl-${tick}`} style={[styles.profileXTick, { left: x - 16 }]}>{tick}</Text>; })}<Text style={styles.profileYLabel}>Load ({unit})</Text><Text style={styles.profileXLabel}>Reps</Text></View><View style={StyleSheet.absoluteFillObject} onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderGrant={(event) => selectNearest(event.nativeEvent.locationX, event.nativeEvent.locationY)} onResponderMove={(event) => selectNearest(event.nativeEvent.locationX, event.nativeEvent.locationY)}>{layout.coordinates.map((point) => <Pressable key={`tap-${point.key}`} accessibilityRole="button" accessibilityLabel={loadRepProfileAccessibilityLabel(point, unit, seriesLabel)} onPress={() => setSelectedKey(point.key)} style={[styles.profileTarget, { left: point.x - 22, top: point.y - 22 }]} />)}{selected && selectedObservation ? <Pressable accessibilityRole="button" accessibilityLabel={`Open exposure from ${dateLabel(selectedObservation.date)}`} onPress={() => onOpenExposure(selectedObservation.exposure_id)} style={[styles.profileTooltip, { left: tooltipLeft, top: tooltipTop }]}><Text style={styles.profileTooltipValue}>{displayWeight(selectedObservation.weight_kg, unit)} {unit} × {selected.reps}{selected.observations.length > 1 ? ` · ${selected.observations.length} sets` : ''}</Text><Text numberOfLines={1} style={styles.profileTooltipDetail}>{selectedEffort} · {dateLabel(selectedObservation.date)}</Text><Text numberOfLines={1} style={styles.profileTooltipSeries}>{seriesLabel} · View evidence</Text></Pressable> : null}</View></View><View style={styles.profileLegend}><View style={styles.profileLegendDot} /><Text numberOfLines={1} style={styles.profileLegendText}>{seriesLabel}</Text><Text style={styles.profileObservationCount}>{layout.observationCount} performed set{layout.observationCount === 1 ? '' : 's'}</Text></View></View>;
 }
 
 function StatisticsGrid({ statistics, unit, onOpenExposure }: { statistics: CanonicalMovementHistory['statistics']; unit: MovementHistoryUnit; onOpenExposure: (id: string) => void }) {
@@ -558,10 +592,23 @@ const styles = StyleSheet.create({
   legendRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 4 },
   legendRing: { width: 8, height: 8, borderRadius: 4, borderWidth: 1, borderColor: '#EF3C8C' },
   legendText: { color: '#797C86', fontSize: 10.5, lineHeight: 14 },
-  profileChart: { height: 178, overflow: 'hidden', borderRadius: 9, backgroundColor: '#07090E' },
-  profileTarget: { position: 'absolute', width: 36, height: 36, borderRadius: 18 },
-  profileYLabel: { position: 'absolute', left: 3, top: 5, color: '#7C808B', fontSize: 10 },
-  profileXLabel: { position: 'absolute', right: 12, bottom: 3, color: '#7C808B', fontSize: 10 },
+  profileChart: { height: 246, overflow: 'hidden', borderRadius: 9, backgroundColor: '#07090E' },
+  profileTarget: { position: 'absolute', width: 44, height: 44, borderRadius: 22 },
+  profileYLabel: { position: 'absolute', left: 5, top: 4, color: '#969AA5', fontSize: 10.5, fontWeight: '600' },
+  profileXLabel: { position: 'absolute', right: 12, bottom: 4, color: '#969AA5', fontSize: 10.5, fontWeight: '600' },
+  profileYTick: { position: 'absolute', left: 4, width: 39, color: '#A6A9B3', fontSize: 10.5, lineHeight: 16, textAlign: 'right' },
+  profileXTick: { position: 'absolute', bottom: 25, width: 32, color: '#A6A9B3', fontSize: 10.5, lineHeight: 16, textAlign: 'center' },
+  profileTooltip: { position: 'absolute', width: 160, minHeight: 62, justifyContent: 'center', gap: 2, paddingHorizontal: 9, paddingVertical: 7, borderRadius: 8, borderWidth: 1, borderColor: '#A865FF', backgroundColor: '#171020' },
+  profileTooltipValue: { color: '#F4EBFA', fontSize: 12.5, lineHeight: 17, fontWeight: '700' },
+  profileTooltipDetail: { color: '#C5BFCA', fontSize: 10.5, lineHeight: 14 },
+  profileTooltipSeries: { color: '#B978EF', fontSize: 10, lineHeight: 13, fontWeight: '600' },
+  profileLegend: { minHeight: 34, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 5 },
+  profileLegendDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: '#A865FF' },
+  profileLegendText: { flex: 1, minWidth: 0, color: '#A9A5AF', fontSize: 11, lineHeight: 15 },
+  profileObservationCount: { color: '#7E818B', fontSize: 10.5, lineHeight: 15 },
+  profileEmpty: { minHeight: 176, alignItems: 'center', justifyContent: 'center', gap: 5, padding: 20, borderRadius: 9, backgroundColor: '#07090E' },
+  profileEmptyTitle: { color: '#D9D5DD', fontSize: 15, lineHeight: 20, fontWeight: '600', textAlign: 'center' },
+  profileEmptyBody: { color: '#7D818C', fontSize: 12, lineHeight: 17, textAlign: 'center' },
   statisticsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, padding: 8 },
   statCard: { width: '49%', minHeight: 96, gap: 3, padding: 9, borderRadius: 8, borderWidth: StyleSheet.hairlineWidth, borderColor: '#292C34', backgroundColor: '#090B10' },
   statHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
