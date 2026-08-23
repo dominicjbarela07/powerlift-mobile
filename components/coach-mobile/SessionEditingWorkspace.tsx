@@ -57,7 +57,7 @@ import {
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
-import { exactAccessoryHistoryRows } from '@/lib/exact-accessory-history';
+import { exactAccessoryHistoryRows, exactAccessoryLastExposure } from '@/lib/exact-accessory-history';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
@@ -1677,7 +1677,7 @@ function FullCustomOverrideEditor({ draft, editable, onChange, storageUnit, disp
 function RecentHistorySection({ item, displayUnit, onOpenHistory }: { item: SessionMovementItem; displayUnit: CoachDisplayUnit; onOpenHistory?: () => void }) {
   const rows = exactAccessoryHistoryRows(item.movement_history);
   const [expanded, setExpanded] = useState(false);
-  const latest = rows[0];
+  const latest = exactAccessoryLastExposure(item.movement_history);
   return (
     <View style={styles.quickSection}>
       <View style={styles.sectionHeadingRow}><Text style={styles.fieldLabel}>LAST EXPOSURE</Text>{onOpenHistory ? <Pressable accessibilityRole="button" onPress={onOpenHistory} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>History</Text></Pressable> : rows.length > 1 ? <Pressable accessibilityRole="button" onPress={() => setExpanded((value) => !value)} style={styles.inlineTextAction}><Text style={styles.inlineTextActionLabel}>{expanded ? 'Close' : 'History'}</Text></Pressable> : null}</View>

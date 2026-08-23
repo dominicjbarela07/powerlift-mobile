@@ -11,6 +11,9 @@ export type SetLoggerComparableHistory = Readonly<{
   identity_scope?: string | null;
   movement_definition_id?: number | null;
   most_recent_logged_set?: SetLoggerLoadEvidence | null;
+  previous_exposure?: {
+    representative_set?: SetLoggerLoadEvidence | null;
+  } | null;
   recent_sets?: readonly SetLoggerLoadEvidence[] | null;
 }>;
 
@@ -19,6 +22,7 @@ export type SetLoggerLoadDefaultSource =
   | 'current_session_previous_set'
   | 'historical_corresponding_set'
   | 'historical_most_recent_set'
+  | 'historical_representative_set'
   | 'prescription'
   | 'fallback';
 
@@ -60,48 +64,23 @@ function latestPriorSessionSet(
     })[0] || null;
 }
 
-function sameHistoricalExposure(
-  row: SetLoggerLoadEvidence,
-  anchor: SetLoggerLoadEvidence,
-): boolean {
-  if (anchor.workout_id != null && row.workout_id != null) {
-    return Number(row.workout_id) === Number(anchor.workout_id);
-  }
-  if (anchor.date && row.date) return String(row.date) === String(anchor.date);
-  return false;
-}
-
 function comparableHistoricalLoad({
   history,
-  currentSetIndex,
   allowZeroLoad,
 }: {
   history?: SetLoggerComparableHistory | null;
-  currentSetIndex: number | null;
   allowZeroLoad: boolean;
 }): { evidence: SetLoggerLoadEvidence; source: SetLoggerLoadDefaultSource } | null {
   // Only the stable-identity series is load-comparable. Legacy/unresolved and
   // related-family history are intentionally excluded from initialization.
   if (history?.identity_scope !== 'exact_identity') return null;
 
-  const recentSets = Array.isArray(history.recent_sets) ? history.recent_sets : [];
-  const anchor = loadKg(history.most_recent_logged_set, allowZeroLoad) != null
-    ? history.most_recent_logged_set
-    : recentSets.find((row) => loadKg(row, allowZeroLoad) != null) || null;
+  const anchor = history.previous_exposure?.representative_set
+    || history.most_recent_logged_set
+    || null;
   if (!anchor) return null;
-
-  if (currentSetIndex != null) {
-    const aligned = recentSets.find((row) => (
-      setIndex(row) === currentSetIndex
-      && sameHistoricalExposure(row, anchor)
-      && loadKg(row, allowZeroLoad) != null
-    ));
-    if (aligned) {
-      return { evidence: aligned, source: 'historical_corresponding_set' };
-    }
-  }
-
-  return { evidence: anchor, source: 'historical_most_recent_set' };
+  if (loadKg(anchor, allowZeroLoad) == null) return null;
+  return { evidence: anchor, source: 'historical_representative_set' };
 }
 
 /**
@@ -164,7 +143,6 @@ export function resolveSetLoggerLoadDefault({
 
   const historical = comparableHistoricalLoad({
     history: comparableHistory,
-    currentSetIndex: normalizedSetIndex,
     allowZeroLoad,
   });
   if (historical) {

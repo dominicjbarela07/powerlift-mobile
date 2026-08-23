@@ -9,6 +9,9 @@ const historicalExposure = {
   identity_scope: 'exact_identity',
   movement_definition_id: 42,
   most_recent_logged_set: { workout_id: 901, set_index: 3, weight_kg: 140, date: '2026-08-09' },
+  previous_exposure: {
+    representative_set: { id: 7001, workout_id: 901, set_index: 1, weight_kg: 135, date: '2026-08-09' },
+  },
   recent_sets: [
     { workout_id: 901, set_index: 3, weight_kg: 140, date: '2026-08-09' },
     { workout_id: 901, set_index: 2, weight_kg: 137.5, date: '2026-08-09' },
@@ -52,8 +55,8 @@ assert.deepEqual(
     prescribedWeightKg: 130,
     fallbackWeightKg: 0,
   }),
-  { weightKg: 137.5, source: 'historical_corresponding_set', evidenceSetIndex: 2 },
-  'the corresponding set from the most recent comparable exposure is preferred',
+  { weightKg: 135, source: 'historical_representative_set', evidenceSetIndex: 1 },
+  'the canonical representative set from the most recent comparable exposure is preferred',
 );
 
 assert.deepEqual(
@@ -63,8 +66,8 @@ assert.deepEqual(
     prescribedWeightKg: 130,
     fallbackWeightKg: 0,
   }),
-  { weightKg: 140, source: 'historical_most_recent_set', evidenceSetIndex: 3 },
-  'history falls back to the last meaningful load from the latest exposure',
+  { weightKg: 135, source: 'historical_representative_set', evidenceSetIndex: 1 },
+  'every new-set default uses the same canonical representative evidence',
 );
 
 assert.equal(

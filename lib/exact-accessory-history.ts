@@ -1,4 +1,5 @@
 export type ExactAccessoryHistorySet = {
+  id?: number | null;
   weight_kg?: number | null;
   reps?: number | null;
   rir?: number | null;
@@ -14,6 +15,14 @@ export type ExactAccessoryHistoryPayload<TSet extends ExactAccessoryHistorySet =
   best_logged_set?: TSet | null;
   recent_sets?: TSet[] | null;
   recent_sessions?: TSet[] | null;
+  previous_exposure?: {
+    workout_id?: number | null;
+    date?: string | null;
+    comparison_identity_key?: string | null;
+    representative_set_id?: number | null;
+    representative_set_selection_reason?: string | null;
+    representative_set?: TSet | null;
+  } | null;
 } | null | undefined;
 
 export function isExactComparableAccessoryHistory(
@@ -38,7 +47,11 @@ export function exactAccessoryHistoryRows<TSet extends ExactAccessoryHistorySet>
 export function exactAccessoryLastExposure<TSet extends ExactAccessoryHistorySet>(
   history: ExactAccessoryHistoryPayload<TSet>,
 ): TSet | null {
-  return exactAccessoryHistoryRows(history)[0] || null;
+  if (!isExactComparableAccessoryHistory(history)) return null;
+  return history?.previous_exposure?.representative_set
+    || history?.recent_sessions?.[0]
+    || history?.most_recent_logged_set
+    || null;
 }
 
 export function exactAccessoryBestExposure<TSet extends ExactAccessoryHistorySet>(

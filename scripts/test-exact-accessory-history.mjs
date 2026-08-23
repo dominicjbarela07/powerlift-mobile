@@ -22,11 +22,17 @@ const exact = {
     { weight_kg: 63.503, reps: 8, rir: 1, date: '2026-08-14' },
   ],
   recent_sessions: [{ weight_kg: 63.503, reps: 8, rir: 1, date: '2026-08-14' }],
+  previous_exposure: {
+    representative_set_id: 703,
+    representative_set_selection_reason: 'highest_canonical_e10rm',
+    representative_set: { id: 703, weight_kg: 63.503, reps: 8, rir: 1, date: '2026-08-14' },
+  },
 };
 assert.equal(isExactComparableAccessoryHistory(exact), true);
-assert.equal(exactAccessoryLastExposure(exact)?.weight_kg, 43.091);
+assert.equal(exactAccessoryLastExposure(exact)?.id, 703);
+assert.equal(exactAccessoryLastExposure(exact)?.weight_kg, 63.503);
 assert.equal(exactAccessoryBestExposure(exact)?.weight_kg, 63.503);
-assert.equal(exactAccessoryDefaultWeightKg(exact), 43.091);
+assert.equal(exactAccessoryDefaultWeightKg(exact), 63.503);
 assert.equal(exactAccessoryHistoryRows(exact).length, 2);
 
 for (const unsafe of [
@@ -44,7 +50,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const logger = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 const workspace = fs.readFileSync(path.join(root, 'components/coach-mobile/SessionEditingWorkspace.tsx'), 'utf8');
 assert.match(logger, /exactAccessoryLastExposure\(it\?\.movement_history\)/);
-assert.match(logger, /const previousLog = item\.set_logs\?\.length[\s\S]*exactAccessoryDefaultWeightKg\(item\.movement_history\)/);
+assert.match(logger, /resolveSetLoggerLoadDefault\(/);
+assert.match(logger, /comparableHistory:\s*item\.movement_history/);
 assert.match(logger, /No previous exact exposure\./);
 assert.match(workspace, /exactAccessoryHistoryRows\(item\.movement_history\)/);
 assert.match(workspace, /No previous exact exposure\./);
