@@ -14,6 +14,8 @@ import {
 const recapSource = fs.readFileSync(path.join(process.cwd(), 'components/coach-mobile/CompletedSessionRecap.tsx'), 'utf8');
 assert.doesNotMatch(recapSource, /compareIndex/);
 assert.match(recapSource, /<ManufacturerBrandMark compact manufacturerName=/);
+assert.doesNotMatch(recapSource, /compareLargeArtwork/, 'expanded comparison must not repeat the header movement artwork');
+assert.equal((recapSource.match(/source=\{artwork\}/g) || []).length, 1, 'each comparison card must render movement artwork only once');
 
 assert.deepEqual(parseSessionRecapRepTarget('8–10'), { low: 8, high: 10 });
 assert.deepEqual(parseSessionRecapRepTarget(12), { low: 12, high: 12 });
