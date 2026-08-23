@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import {
   buildSessionRecapComparisons,
@@ -8,6 +10,10 @@ import {
   sessionRecapTargetGeometry,
   summarizeSessionRecapExecution,
 } from '../lib/session-recap-plan-compare.ts';
+
+const recapSource = fs.readFileSync(path.join(process.cwd(), 'components/coach-mobile/CompletedSessionRecap.tsx'), 'utf8');
+assert.doesNotMatch(recapSource, /compareIndex/);
+assert.match(recapSource, /<ManufacturerBrandMark compact manufacturerName=/);
 
 assert.deepEqual(parseSessionRecapRepTarget('8–10'), { low: 8, high: 10 });
 assert.deepEqual(parseSessionRecapRepTarget(12), { low: 12, high: 12 });
@@ -59,4 +65,3 @@ assert.equal(sameLabelWrongIdentity.length, 2, 'display labels must never join p
 assert.equal(sameLabelWrongIdentity[0].comparisons[0].kind, 'not_logged');
 
 console.log('Session Recap Plan / Compare transcript contracts passed.');
-
