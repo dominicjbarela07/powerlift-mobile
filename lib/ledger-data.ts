@@ -1,5 +1,5 @@
 import { fetchJson } from '@/lib/api';
-import { kilogramsToDisplayValue } from '@/lib/display-units';
+import { formatCalculatedWeightValue, kilogramsToDisplayValue } from '@/lib/display-units';
 
 export type LedgerRange = '30d' | '90d' | '180d' | '1y' | 'all';
 export type LedgerUnit = 'kg' | 'lb';
@@ -202,6 +202,11 @@ export function displayWeight(valueKg: number | null | undefined, unit: LedgerUn
   const converted = kgToDisplay(valueKg, unit);
   const rounded = unit === 'kg' ? Math.round(converted * 2) / 2 : Math.round(converted / 5) * 5;
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+export function displayCalculatedWeight(valueKg: number | null | undefined, unit: LedgerUnit, fallback = '—'): string {
+  if (valueKg === null || valueKg === undefined || !Number.isFinite(valueKg)) return fallback;
+  return formatCalculatedWeightValue(kgToDisplay(valueKg, unit), unit) || fallback;
 }
 
 export function canonicalLiftKey(value?: string | null): 'squat' | 'bench' | 'deadlift' | null {

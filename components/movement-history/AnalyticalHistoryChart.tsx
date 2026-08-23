@@ -10,7 +10,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
-import { kilogramsToDisplayValue } from '@/lib/display-units';
+import { formatCalculatedWeightValue, kilogramsToDisplayValue } from '@/lib/display-units';
 import type {
   CanonicalHistoryPoint,
   MovementHistoryUnit,
@@ -41,6 +41,13 @@ function displayValue(valueKg: number, unit: MovementHistoryUnit) {
 
 function numberLabel(value: number, maximumFractionDigits = 0) {
   return value.toLocaleString('en-US', { maximumFractionDigits });
+}
+
+function chartWeightLabel(valueKg: number, unit: MovementHistoryUnit, metric: Metric, digits = 1) {
+  const displayed = displayValue(valueKg, unit);
+  return metric === 'e10rm'
+    ? formatCalculatedWeightValue(displayed, unit) ?? '—'
+    : numberLabel(displayed, digits);
 }
 
 function effortLabel(point: CanonicalHistoryPoint) {
@@ -160,7 +167,7 @@ export function AnalyticalHistoryChart({
         <View style={styles.inspection} pointerEvents="none">
           <View>
             <Text style={[styles.inspectionValue, { color }]}>
-              {numberLabel(displayValue(metric === 'e10rm' ? Number(selected.e10rm_kg) : Number(selected.weight_kg), unit), 1)} {unit}
+              {chartWeightLabel(metric === 'e10rm' ? Number(selected.e10rm_kg) : Number(selected.weight_kg), unit, metric)} {unit}
               {metric === 'e10rm' ? ' e10RM' : ` × ${selected.reps ?? '—'}`}
             </Text>
             <Text style={styles.inspectionEvidence}>
@@ -188,7 +195,7 @@ export function AnalyticalHistoryChart({
       <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
         {plot.gridValues.map((value, index) => (
           <Text key={index} style={[styles.yLabel, { top: PLOT_TOP - 7 + index * ((PLOT_BOTTOM - PLOT_TOP) / 4) }]}>
-            {numberLabel(displayValue(value, unit), 0)}
+            {chartWeightLabel(value, unit, metric, 0)}
           </Text>
         ))}
         {plot.rows.map((point, index) => metric === 'load' ? (

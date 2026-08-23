@@ -1,3 +1,8 @@
+import {
+  formatCalculatedWeightValue as formatCalculatedWeightValueBase,
+  roundCalculatedWeightForDisplay as roundCalculatedWeightForDisplayBase,
+} from './calculated-weight-format.js';
+
 export type DisplayWeightUnit = 'kg' | 'lb';
 
 export const KG_TO_LB = 2.2046226218;
@@ -46,6 +51,58 @@ export function preferredUnitFromSettingsPayload(payload: unknown): DisplayWeigh
 
 export function kilogramsToDisplayValue(valueKg: number, unit: DisplayWeightUnit): number {
   return unit === 'lb' ? Number(valueKg) * KG_TO_LB : Number(valueKg);
+}
+
+/**
+ * Presentation-only precision for calculated/estimated weight evidence.
+ * Pounds use the platform-law 0.5 lb precision. Kilograms retain the
+ * established one-decimal presentation rule. Never use this for stored data,
+ * prescriptions, performed set loads, or bar-loading mechanics.
+ */
+export function roundCalculatedWeightForDisplay(
+  value: number,
+  unit: DisplayWeightUnit,
+): number {
+  return roundCalculatedWeightForDisplayBase(value, unit);
+}
+
+export function formatCalculatedWeightValue(
+  value: number | null | undefined,
+  unit: DisplayWeightUnit,
+): string | null {
+  return formatCalculatedWeightValueBase(value, unit);
+}
+
+export function formatCalculatedWeightFromKg(
+  valueKg: number | null | undefined,
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
+): string | null {
+  if (valueKg == null || !Number.isFinite(Number(valueKg)) || Number(valueKg) <= 0) return null;
+  const formatted = formatCalculatedWeightValue(
+    kilogramsToDisplayValue(Number(valueKg), unit),
+    unit,
+  );
+  return formatted == null ? null : `${formatted} ${unit}`;
+}
+
+export function formatCalculatedWeightDeltaFromKg(
+  deltaKg: number | null | undefined,
+  unit: DisplayWeightUnit = DEFAULT_DISPLAY_WEIGHT_UNIT,
+  signStyle: 'arrow' | 'signed' = 'arrow',
+): string | null {
+  if (deltaKg == null || !Number.isFinite(Number(deltaKg))) return null;
+  const numeric = Number(deltaKg);
+  const formatted = formatCalculatedWeightValue(
+    kilogramsToDisplayValue(Math.abs(numeric), unit),
+    unit,
+  );
+  if (formatted == null) return null;
+  if (signStyle === 'signed') {
+    const sign = numeric > 0 ? '+' : numeric < 0 ? '-' : '';
+    return `${sign}${formatted} ${unit}`;
+  }
+  const arrow = numeric < 0 ? '↓' : numeric > 0 ? '↑' : '→';
+  return `${arrow} ${formatted} ${unit}`;
 }
 
 export function formatWeightFromKg(

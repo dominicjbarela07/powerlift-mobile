@@ -20,6 +20,7 @@ import { TrainingHubMaterialSurface } from '@/components/training-hub/training-h
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import {
   convertDisplayWeightValue,
+  formatCalculatedWeightValue,
   formatSessionVolumeSummary,
   formatTotalVolumeFromKg,
   kilogramsToDisplayValue,
@@ -634,7 +635,7 @@ function formatWeekRangeLabel(value: string) { return String(value || '').replac
 function formatLongDate(value?: string | null) { if (!value) return 'SESSION'; const date = new Date(`${value}T12:00:00`); return Number.isFinite(date.getTime()) ? date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }).toUpperCase() : value.toUpperCase(); }
 function formatUpdateAge(value: string) { const elapsed = Date.now() - new Date(value).getTime(); if (!Number.isFinite(elapsed)) return ''; const days = Math.max(0, Math.floor(elapsed / 86400000)); return days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days}d`; }
 function formatSet(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { const load = lift.weightKg != null ? `${Math.round(kilogramsToDisplayValue(lift.weightKg, unit))} ${unit}` : 'Load not recorded'; const reps = lift.reps != null ? ` × ${lift.reps}` : ''; const rpe = lift.rpe != null ? ` @ ${lift.rpe}` : ''; return `${load}${reps}${rpe}`; }
-function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!lift.hasPr || lift.prDelta == null || Number(lift.prDelta) <= 0) return null; const sourceUnit = String(lift.prUnit || '').toLowerCase(); const sourceValue = Number(lift.prDelta); const normalizedSource = sourceUnit === 'kg' ? 'kg' : sourceUnit.startsWith('lb') ? 'lb' : unit; const displayValue = convertDisplayWeightValue(sourceValue, normalizedSource, unit); const suffix = /e1rm/i.test(String(lift.prEventType || '')) ? ' e1RM' : ''; return `+${Math.round(displayValue)} ${unit}${suffix}`; }
+function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!lift.hasPr || lift.prDelta == null || Number(lift.prDelta) <= 0) return null; const sourceUnit = String(lift.prUnit || '').toLowerCase(); const sourceValue = Number(lift.prDelta); const normalizedSource = sourceUnit === 'kg' ? 'kg' : sourceUnit.startsWith('lb') ? 'lb' : unit; const displayValue = convertDisplayWeightValue(sourceValue, normalizedSource, unit); const isEstimated = /e1rm/i.test(String(lift.prEventType || '')); const formatted = isEstimated ? formatCalculatedWeightValue(displayValue, unit) : Math.round(displayValue).toLocaleString('en-US'); return `+${formatted} ${unit}${isEstimated ? ' e1RM' : ''}`; }
 function colorWithAlpha(color: string, alpha: number) { const match = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); return match ? `rgba(${parseInt(match[1], 16)},${parseInt(match[2], 16)},${parseInt(match[3], 16)},${alpha})` : color; }
 
 const styles = StyleSheet.create({

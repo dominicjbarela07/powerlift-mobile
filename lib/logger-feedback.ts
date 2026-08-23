@@ -1,3 +1,4 @@
+import { formatCalculatedWeightFromKgValue } from './calculated-weight-format.js';
 import { formatLoggerWeightDeltaKg, formatLoggerWeightKg, type LoggerDisplayUnit } from './logger-weight-format.js';
 import { LOGGER_RECOGNITION_EVENT_TYPES } from './logger-recognition-event-types.js';
 
@@ -281,7 +282,7 @@ export function loggerFeedbackReducer(state: LoggerFeedbackState, action: Logger
 
 export type RecognitionPresentation = { eyebrow: string; value: string; detail: string | null; delta: string | null; progression: string | null; workload: string | null; accessibilityLabel: string; severity: 'career' | 'block' | 'completion' };
 const count = (value: number | null | undefined) => value == null || !Number.isFinite(Number(value)) ? '—' : String(Number(value));
-type RecognitionMetric = 'weight' | 'rep_max' | 'rpe' | 'reps' | 'sets';
+type RecognitionMetric = 'weight' | 'derived_weight' | 'rep_max' | 'rpe' | 'reps' | 'sets';
 
 function formatRpe(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(Number(value))) return '—';
@@ -338,11 +339,11 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
     },
     CORE_RPE_PR: { eyebrow: 'MORE EFFICIENT', severity: 'career', metric: 'rpe' },
     CORE_SAME_WEIGHT_REP_PR: { eyebrow: `Rep PR at ${load} ${displayUnit}`, accessibilityEyebrow: `Rep PR at ${load} ${spokenUnit}`, severity: 'career', metric: 'reps' },
-    CORE_E1RM_PR: { eyebrow: 'New e1RM PR', severity: 'career', metric: 'weight' },
+    CORE_E1RM_PR: { eyebrow: 'New e1RM PR', severity: 'career', metric: 'derived_weight' },
     CORE_BLOCK_WEIGHT_BEST: { eyebrow: 'Block weight best', severity: 'block', metric: 'weight' },
     CORE_BLOCK_REP_MAX_BEST: { eyebrow: `${repMaxTitle} BLOCK BEST`, severity: 'block', metric: 'rep_max' },
     CORE_BLOCK_SAME_WEIGHT_REP_BEST: { eyebrow: `Block rep best at ${load} ${displayUnit}`, accessibilityEyebrow: `Block rep best at ${load} ${spokenUnit}`, severity: 'block', metric: 'reps' },
-    CORE_BLOCK_E1RM_BEST: { eyebrow: 'Block e1RM best', severity: 'block', metric: 'weight' },
+    CORE_BLOCK_E1RM_BEST: { eyebrow: 'Block e1RM best', severity: 'block', metric: 'derived_weight' },
     CORE_PRESCRIPTION_COMPLETED: { eyebrow: 'Prescription logged', severity: 'completion', metric: 'sets' },
     CORE_MOVEMENT_SESSION_COMPLETED: { eyebrow: 'Movement work logged', severity: 'completion', metric: 'sets' },
   };
@@ -359,21 +360,22 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
     : mode === 'historical'
     ? historicalRecognitionLabel(config.accessibilityEyebrow || config.eyebrow)
     : (config.accessibilityEyebrow || config.eyebrow);
-  const isWeightMetric = config.metric === 'weight' || config.metric === 'rep_max';
+  const isWeightMetric = config.metric === 'weight' || config.metric === 'derived_weight' || config.metric === 'rep_max';
+  const isDerivedWeightMetric = config.metric === 'derived_weight';
   const isRpeMetric = config.metric === 'rpe';
   const value = isWeightMetric
-    ? `${formatLoggerWeightKg(event.current_value, displayUnit)} ${displayUnit}`
+    ? `${isDerivedWeightMetric ? formatCalculatedWeightFromKgValue(event.current_value, displayUnit) : formatLoggerWeightKg(event.current_value, displayUnit)} ${displayUnit}`
     : isRpeMetric
     ? formatRpe(event.current_value)
     : formatCountMetric(event.current_value, config.metric === 'reps' ? 'rep' : 'set');
   const detailValue = isWeightMetric
-    ? `${formatLoggerWeightKg(event.prior_value, displayUnit)} ${displayUnit}`
+    ? `${isDerivedWeightMetric ? formatCalculatedWeightFromKgValue(event.prior_value, displayUnit) : formatLoggerWeightKg(event.prior_value, displayUnit)} ${displayUnit}`
     : isRpeMetric
     ? formatRpe(event.prior_value)
     : formatCountMetric(event.prior_value, config.metric === 'reps' ? 'rep' : 'set');
   const detail = event.prior_value == null ? null : `Previous ${detailValue}`;
   const deltaValue = isWeightMetric
-    ? `${formatLoggerWeightDeltaKg(event.delta, displayUnit)} ${displayUnit}`
+    ? `${isDerivedWeightMetric ? formatCalculatedWeightFromKgValue(Math.abs(Number(event.delta)), displayUnit) : formatLoggerWeightDeltaKg(event.delta, displayUnit)} ${displayUnit}`
     : isRpeMetric
     ? `${Number(event.delta).toFixed(1)} RPE`
     : formatCountMetric(event.delta, config.metric === 'reps' ? 'rep' : 'set');

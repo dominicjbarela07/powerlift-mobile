@@ -55,8 +55,8 @@ import {
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import {
+  formatCalculatedWeightFromKg,
   normalizeDisplayWeightUnit,
-  formatWeightFromKg,
   parseDisplayWeightUnit,
   preferredUnitFromSettingsPayload,
   type DisplayWeightUnit,
@@ -2381,7 +2381,7 @@ export function ProgrammingStoryboard({
         </View>
         <View style={storyStyles.intelligenceSection}>
           <Text style={storyStyles.sheetSectionLabel}>TM SUGGESTIONS</Text>
-          {(intelligence?.tm_suggestions || []).length ? intelligence?.tm_suggestions?.map((item, index) => <View key={`${item.lift}-${index}`} style={storyStyles.intelligenceSuggestion}><Image source={storyboardLiftArtwork(item.lift_label || item.lift)} style={storyStyles.intelligenceSuggestionArt} resizeMode="contain" /><View style={storyStyles.grow}><Text style={storyStyles.intelligenceSuggestionLift}>{item.lift_label || item.lift}</Text><Text style={storyStyles.intelligenceSuggestionValue}>{formatWeightFromKg(item.current_tm, displayUnit) || '—'} → {formatWeightFromKg(item.suggested_tm, displayUnit) || '—'}</Text></View><Ionicons name="arrow-forward" size={17} color={colors.amber} /></View>) : <Text style={storyStyles.intelligenceMeta}>No active suggestions</Text>}
+          {(intelligence?.tm_suggestions || []).length ? intelligence?.tm_suggestions?.map((item, index) => <View key={`${item.lift}-${index}`} style={storyStyles.intelligenceSuggestion}><Image source={storyboardLiftArtwork(item.lift_label || item.lift)} style={storyStyles.intelligenceSuggestionArt} resizeMode="contain" /><View style={storyStyles.grow}><Text style={storyStyles.intelligenceSuggestionLift}>{item.lift_label || item.lift}</Text><Text style={storyStyles.intelligenceSuggestionValue}>{formatCalculatedWeightFromKg(item.current_tm, displayUnit) || '—'} → {formatCalculatedWeightFromKg(item.suggested_tm, displayUnit) || '—'}</Text></View><Ionicons name="arrow-forward" size={17} color={colors.amber} /></View>) : <Text style={storyStyles.intelligenceMeta}>No active suggestions</Text>}
         </View>
         <View style={storyStyles.intelligenceSection}>
           <Text style={storyStyles.sheetSectionLabel}>ATTENTION NEEDED</Text>
@@ -2453,8 +2453,8 @@ function ProgrammingIntelligenceStrip({
   const readinessPoints = (intelligence?.readiness?.points || [])
     .filter((point) => point.date && point.value != null)
     .map((point) => ({ date: String(point.date), value: Number(point.value) }));
-  const currentTm = formatWeightFromKg(suggestion?.current_tm, displayUnit);
-  const suggestedTm = formatWeightFromKg(suggestion?.suggested_tm, displayUnit);
+  const currentTm = formatCalculatedWeightFromKg(suggestion?.current_tm, displayUnit);
+  const suggestedTm = formatCalculatedWeightFromKg(suggestion?.suggested_tm, displayUnit);
   return (
     <SLMotionPressable accessibilityRole="button" accessibilityLabel="Open Programming Intelligence" onPress={onPress} pressScale={0.988} style={storyStyles.metrics}>
       <LinearGradient colors={['rgba(25,63,52,0.20)', 'rgba(17,25,43,0.16)', 'rgba(44,22,56,0.20)']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />

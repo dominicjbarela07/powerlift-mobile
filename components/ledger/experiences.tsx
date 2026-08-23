@@ -9,7 +9,8 @@ import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
-import { canonicalLiftKey, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
+import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
+import { formatCalculatedWeightValue, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
 import { ArchiveRequestError, archiveDetailHref } from '@/lib/ledger-archive';
 import {
   fetchJourneyBootstrap,
@@ -22,7 +23,6 @@ import {
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
 import { CORE_LIFT_MILESTONE_THRESHOLDS } from '@/lib/ledger-rewards';
 import { canRenderGymTotal, displayWeightFromCanonicalLb, plateClubLabel, readablePlateClubLabel } from '@/lib/milestones-layout';
-import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
@@ -105,8 +105,8 @@ export function LegacyCanonicalCuratorExperience() {
   const primaryLift = primaryKey
     ? lifts.find((lift) => canonicalLiftKey(lift.key || lift.label) === primaryKey) ?? lifts[0]
     : undefined;
-  const currentValue = displayWeight(primaryLift?.current_e1rm_kg, unit);
-  const changeValue = primaryLift?.change_kg == null ? null : displayWeight(Math.abs(primaryLift.change_kg), unit);
+  const currentValue = displayCalculatedWeight(primaryLift?.current_e1rm_kg, unit);
+  const changeValue = primaryLift?.change_kg == null ? null : displayCalculatedWeight(Math.abs(primaryLift.change_kg), unit);
   const recentAccomplishment = accomplishments[0];
   const achievementTitle = recentAccomplishment?.movement_label
     ? `${recentAccomplishment.movement_label}: ${recentAccomplishment.event_type.replace(/^CORE_/, '').replaceAll('_', ' ').toLowerCase()}`
@@ -492,7 +492,7 @@ function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyE
     : [];
   const completion = contextualEvidence.completion;
   if (entry.event_type === 'E1RM_PR' && performance?.e1rm_kg != null) {
-    detail = `${formatJourneyWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
+    detail = `${displayCalculatedWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
   } else if ((entry.event_type === 'WEIGHT_PR' || entry.event_type === 'REP_PR') && performance?.weight_kg != null) {
     detail = `${formatJourneyWeight(performance.weight_kg, unit)} ${unit}${performance.reps ? ` × ${performance.reps}` : ''}`;
   }
@@ -638,9 +638,9 @@ export function StrengthExperience() {
     const current = currentKg == null ? null : kgToDisplay(currentKg, unit);
     const peak = peakKg == null ? null : kgToDisplay(peakKg, unit);
     const points = livePoints;
-    const best = current == null ? null : Math.round(current * (unit === 'kg' ? 2 : 1)) / (unit === 'kg' ? 2 : 1);
-    const peakValue = peak ?? best;
-    const delta = live?.change_kg == null ? null : Math.round(Math.abs(kgToDisplay(live.change_kg, unit)) * (unit === 'kg' ? 2 : 1)) / (unit === 'kg' ? 2 : 1);
+    const best = current == null ? null : roundCalculatedWeightForDisplay(current, unit);
+    const peakValue = peak == null ? best : roundCalculatedWeightForDisplay(peak, unit);
+    const delta = live?.change_kg == null ? null : roundCalculatedWeightForDisplay(Math.abs(kgToDisplay(live.change_kg, unit)), unit);
     const retention = peakValue != null && peakValue > 0 && best != null ? Math.min(100, Math.round((best / peakValue) * 100)) : null;
     const liftEvents = accomplishments.filter((event) => canonicalLiftKey(event.core_movement_key || event.movement_label) === key);
     const bodyweightEvent = liftEvents.find((event) => event.reported_bodyweight?.reported_bodyweight_kg != null);
@@ -783,8 +783,8 @@ export function StrengthExperience() {
 
       <View style={styles.strengthHistory}>
         <Kicker>HISTORICAL CONTEXT</Kicker><Text style={styles.strengthHistoryTitle}>{focusLift.best != null && focusedProfile.retention != null ? `${focusedProfile.retention}% of the observed peak is retained.` : 'A historical peak is not established yet.'}</Text>
-        <View style={styles.strengthHistoryScale}><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusLift.points.length ? Math.min(...focusLift.points) : '—'}</Text><Text style={styles.strengthHistoryLabel}>RANGE LOW</Text></View><View style={styles.strengthHistoryRail}>{focusLift.best != null ? <><View style={[styles.strengthHistoryFill, { backgroundColor: focusedProfile.color }]} /><View style={[styles.strengthHistoryCurrent, { borderColor: focusedProfile.color }]} /></> : null}</View><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusedProfile.peak ?? '—'}</Text><Text style={styles.strengthHistoryLabel}>OBSERVED PEAK</Text></View></View>
-        <Text style={styles.strengthHistoryBody}>{focusLift.best != null && focusedProfile.peak != null ? `Today’s ${focusLift.best} ${unit} estimate is ${Math.max(0, Math.round((focusedProfile.peak - focusLift.best) * 10) / 10)} ${unit} below the observed peak.` : 'Log qualifying movement-matched sets to establish current and historical estimates.'} Open the source evidence before treating any estimate as a tested max.</Text>
+        <View style={styles.strengthHistoryScale}><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusLift.points.length ? formatCalculatedWeightValue(Math.min(...focusLift.points), unit) : '—'}</Text><Text style={styles.strengthHistoryLabel}>RANGE LOW</Text></View><View style={styles.strengthHistoryRail}>{focusLift.best != null ? <><View style={[styles.strengthHistoryFill, { backgroundColor: focusedProfile.color }]} /><View style={[styles.strengthHistoryCurrent, { borderColor: focusedProfile.color }]} /></> : null}</View><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusedProfile.peak == null ? '—' : formatCalculatedWeightValue(focusedProfile.peak, unit)}</Text><Text style={styles.strengthHistoryLabel}>OBSERVED PEAK</Text></View></View>
+        <Text style={styles.strengthHistoryBody}>{focusLift.best != null && focusedProfile.peak != null ? `Today’s ${formatCalculatedWeightValue(focusLift.best, unit)} ${unit} estimate is ${formatCalculatedWeightValue(Math.max(0, focusedProfile.peak - focusLift.best), unit)} ${unit} below the observed peak.` : 'Log qualifying movement-matched sets to establish current and historical estimates.'} Open the source evidence before treating any estimate as a tested max.</Text>
       </View>
 
       <View style={styles.strengthSupporting}><View style={styles.strengthSectionLead}><Kicker>SUPPORTING SIGNALS</Kicker><Text style={styles.strengthSectionTitle}>What else the ledger sees.</Text></View>{supportingSignals.map(([label, value, detail]) => <View key={label} style={styles.strengthSupportingRow}><Text style={styles.strengthSupportingLabel}>{label}</Text><View style={styles.strengthSupportingValueWrap}><Text style={styles.strengthSupportingValue}>{value}</Text><Text style={styles.strengthSupportingDetail}>{detail}</Text></View></View>)}</View>

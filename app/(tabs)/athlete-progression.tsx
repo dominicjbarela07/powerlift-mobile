@@ -9,8 +9,13 @@ import { Redirect } from 'expo-router';
 import { SLMotionEntrance, SLMotionPressable } from '@/components/ui';
 import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import {
+  formatCalculatedWeightDeltaFromKg,
+  formatCalculatedWeightFromKg,
+  formatCalculatedWeightValue,
+  kilogramsToDisplayValue,
+} from '@/lib/display-units';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
-import { kilogramsToDisplayValue } from '@/lib/display-units';
 
 type ProgressionRange = '30d' | '90d' | '180d' | '1y' | 'all';
 type DisplayUnit = 'kg' | 'lb';
@@ -496,9 +501,9 @@ function StrengthStory({ payload, unit }: { payload: ProgressionPayload | null; 
             <View style={styles.liftCardCopy}>
               <Text style={styles.liftName}>{friendlyLiftLabel(lift.label || lift.key || 'Lift')}</Text>
               <View style={styles.liftStatsRow}>
-                <MetricColumn label="Current" value={formatWeight(lift.current_e1rm_kg, unit)} tone={liftTone(String(lift.key)).color} />
-                <MetricColumn label="Best" value={formatWeight(lift.best_e1rm_kg, unit)} />
-                <MetricColumn label="Change" value={formatDelta(lift.change_kg, unit)} tone={deltaTone(lift.change_kg)} />
+                <MetricColumn label="Current" value={formatCalculatedWeightFromKg(lift.current_e1rm_kg, unit) || 'Building'} tone={liftTone(String(lift.key)).color} />
+                <MetricColumn label="Best" value={formatCalculatedWeightFromKg(lift.best_e1rm_kg, unit) || 'Building'} />
+                <MetricColumn label="Change" value={formatCalculatedWeightDeltaFromKg(lift.change_kg, unit) || 'Building'} tone={deltaTone(lift.change_kg)} />
               </View>
             </View>
             <Sparkline points={(lift.points || []).map((point) => ({ date: point.date, value: unitValue(point.value_kg, unit) })).filter((point) => Number.isFinite(point.value))} color={liftTone(String(lift.key)).color} />
@@ -589,7 +594,7 @@ function buildChart(payload: ProgressionPayload | null, metric: MetricKey, unit:
     }));
     return {
       series,
-      formatValue: (value: number) => `${roundWeight(value)}`,
+      formatValue: (value: number) => formatCalculatedWeightValue(value, unit) || '0',
       emptyTitle: 'No e1RM trend yet.',
     };
   }
@@ -634,7 +639,7 @@ function buildInsight(payload: ProgressionPayload | null, metric: MetricKey, uni
       .filter((lift) => lift.change_kg != null)
       .sort((a, b) => Number(b.change_kg || 0) - Number(a.change_kg || 0))[0];
     if (best && Number(best.change_kg || 0) > 0) {
-      return `Your ${friendlyLiftLabel(best.label || best.key || 'lift').toLowerCase()} e1RM is trending up ${formatWeight(Math.abs(Number(best.change_kg)), unit)} over ${rangeLabel}.`;
+      return `Your ${friendlyLiftLabel(best.label || best.key || 'lift').toLowerCase()} e1RM is trending up ${formatCalculatedWeightFromKg(Math.abs(Number(best.change_kg)), unit) || '0'} over ${rangeLabel}.`;
     }
     return convertKgText(payload.strength_story?.body || 'Keep logging sessions and your first trend will appear here.', unit);
   }

@@ -24,6 +24,7 @@ import {
 } from '@/lib/athlete-home-v3';
 import {
   convertDisplayWeightValue,
+  formatCalculatedWeightFromKg,
   formatCompactVolumeValueFromKg,
   formatWeightDeltaFromKg,
   formatWeightFromKg,
@@ -400,7 +401,7 @@ function TrendCard({ accent, detail, emptyLabel, kind = 'line', label, metric, o
 function StrengthCard({ home, onAction, unit }: { home: AthleteHomeV3Projection; onAction: Props['onAction']; unit: 'kg' | 'lb' }) {
   const strength = home.strength!;
   const available = projectionAvailable(home);
-  const value = formatWeightFromKg(strength.current_e1rm_kg, unit, 0) || (available ? 'No history' : 'Unavailable');
+  const value = formatCalculatedWeightFromKg(strength.current_e1rm_kg, unit) || (available ? 'No history' : 'Unavailable');
   const points = React.useMemo(
     () => (strength.points || []).flatMap(point => point.value_kg == null ? [] : [{ date: point.date, value: kilogramsToDisplayValue(Number(point.value_kg), unit) }]),
     [strength.points, unit],

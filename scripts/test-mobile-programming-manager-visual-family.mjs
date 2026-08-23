@@ -53,7 +53,7 @@ assert.match(manager, /onLongPress=\{\(\) => \{ storyboardSelectionFeedback\(\);
 
 assert.match(manager, /<ProgrammingIntelligenceStrip[\s\S]*coverage=\{coverage\}[\s\S]*displayUnit=\{displayUnit\}/, 'the analytical strip must consume canonical coverage and preferred units');
 assert.match(manager, /<HomeTrendPlot[\s\S]*points=\{readinessPoints\}/, 'readiness must use the real chronological plot');
-assert.match(manager, /formatWeightFromKg\(suggestion\?\.current_tm, displayUnit\)/, 'TM Review must honor preferred units');
+assert.match(manager, /formatCalculatedWeightFromKg\(suggestion\?\.current_tm, displayUnit\)/, 'TM Review must honor calculated-weight precision and preferred units');
 
 assert.match(manager, /storyboardWeekSessionCount\(week\)/, 'Week counts must derive from canonical Week Sessions');
 assert.match(manager, /weekPillCount[\s\S]*storyboardStateColor\(state\)/, 'Week counts must carry semantic state color');
