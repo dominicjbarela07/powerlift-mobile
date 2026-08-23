@@ -147,9 +147,14 @@ export type SessionMovementItem = {
     mapping?: { id?: number | null; revision?: number | null; status?: string | null } | null;
   } | null;
   core_movement?: {
+    id?: number | null;
+    key?: string | null;
     display_name?: string | null;
+    family?: string | null;
+    kind?: string | null;
     loading_implementation?: string | null;
   } | null;
+  performed_core_movement?: SessionMovementItem['core_movement'];
   movement_history?: {
     identity_scope?: string | null;
     comparison_allowed?: boolean | null;

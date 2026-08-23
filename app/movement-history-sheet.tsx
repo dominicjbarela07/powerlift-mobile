@@ -19,9 +19,11 @@ export default function MovementHistorySheetRoute() {
     equipmentContextDefinitionId?: string | string[];
     equipmentDefinitionId?: string | string[];
     movementDefinitionId?: string | string[];
+    coreMovementId?: string | string[];
   }>();
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const movementDefinitionId = numericParam(params.movementDefinitionId);
+  const coreMovementId = numericParam(params.coreMovementId);
   const athleteId = numericParam(params.athleteId);
   const equipmentContextDefinitionId = numericParam(
     params.equipmentContextDefinitionId ?? params.equipmentDefinitionId,
@@ -38,11 +40,12 @@ export default function MovementHistorySheetRoute() {
       testID="canonical-movement-history-sheet"
       visible
     >
-      {movementDefinitionId ? (
+      {movementDefinitionId || coreMovementId ? (
         <CanonicalMovementHistoryScreen
           athleteId={athleteId}
           initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
           movementDefinitionId={movementDefinitionId}
+          coreMovementId={coreMovementId}
           onRequestClose={requestClose}
           presentation="sheet"
         />

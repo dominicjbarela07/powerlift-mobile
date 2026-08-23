@@ -211,7 +211,6 @@ import {
 import { useDevLiveScreenSession } from '@/dev-mocks/live-screen-session';
 import {
   exactAccessoryBestExposure,
-  exactAccessoryDefaultWeightKg,
   exactAccessoryHistoryRows,
   exactAccessoryLastExposure,
 } from '@/lib/exact-accessory-history';
@@ -489,6 +488,14 @@ type WorkoutItem = {
   movement_identity?: GeneralMovementIdentity | null;
   performed_movement_identity?: GeneralMovementIdentity | null;
   performed_canonical_movement_identity?: GeneralMovementIdentity | null;
+  core_movement?: {
+    id: number;
+    key: string;
+    display_name: string;
+    family?: string | null;
+    kind?: string | null;
+  } | null;
+  performed_core_movement?: WorkoutItem['core_movement'];
   legacy?: {
     state?: string | null;
     effective_movement_definition_id?: number | null;
@@ -8020,6 +8027,7 @@ export default function WorkoutViewerScreen() {
               const resolution = resolveMovementHistoryLaunchFromMeasurement({
                 athleteId: athlete.id,
                 movementDefinitionId: movement.measurement?.canonical_identity_id,
+                identityType: movement.kind,
                 equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
               });
               if (!resolution.ok) {

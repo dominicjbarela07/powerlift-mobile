@@ -115,6 +115,15 @@ type WorkoutItem = {
     ownership_scope?: string | null;
     library_scope?: string | null;
   } | null;
+  core_movement?: {
+    id?: number | null;
+    key?: string | null;
+    display_name?: string | null;
+    family?: string | null;
+    kind?: string | null;
+    loading_implementation?: string | null;
+  } | null;
+  performed_core_movement?: WorkoutItem['core_movement'];
   performed_movement_identity?: SessionMovementItem['movement_identity'];
   performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {
@@ -209,6 +218,7 @@ type RosterAthlete = {
 
 type MovementPreset = {
   id?: number | null;
+  core_movement_id?: number | null;
   name?: string | null;
   display_name?: string | null;
   lift?: string | null;
@@ -314,6 +324,7 @@ type ReorderEditorState = {
 
 type TrainingLiftSetup = {
   movement: string;
+  coreMovementId: number | null;
   family: string;
   lift: string;
   designation: string;
@@ -792,6 +803,11 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       addCoreCompletionRef.current({
         id,
         movement: setup.movement,
+        core_movement: setup.coreMovementId ? {
+          id: setup.coreMovementId,
+          display_name: setup.movement,
+          kind: 'variant',
+        } : null,
         lift: setup.lift,
         designation: setup.designation,
         variant: setup.scheme === 'TOP_BACKDOWN' ? 'TOP' : setup.scheme === 'FULL_CUSTOM' ? 'FULL_CUSTOM' : 'STRAIGHT',
@@ -822,6 +838,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         method: isAddMode ? 'POST' : 'PATCH',
         body: {
           movement: setup.movement,
+          core_movement_id: setup.coreMovementId,
           lift: setup.lift,
           designation: setup.designation,
           notes: setup.notes,
@@ -1349,6 +1366,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
             const resolution = resolveMovementHistoryLaunchFromMeasurement({
               athleteId: payload?.athlete?.id,
               movementDefinitionId: movement.measurement?.canonical_identity_id,
+              identityType: movement.kind,
               equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
             });
             if (!resolution.ok) {
@@ -1560,6 +1578,7 @@ function TrainingLiftEditorModal({
     patchSetup({
       family: group.key,
       movement: preset.name,
+      coreMovementId: preset.coreMovementId,
       lift: preset.lift,
       ...(preset.lift === 'VR' ? { scheme: 'STRAIGHT', mode: 'RPE' } : {}),
     });
@@ -1570,6 +1589,7 @@ function TrainingLiftEditorModal({
     const preset = movementPresetFromValue(movement, group);
     patchSetup({
       movement: preset.name,
+      coreMovementId: preset.coreMovementId,
       family: preset.categoryKey || group.key,
       lift: preset.lift,
       ...(preset.lift === 'VR' ? { scheme: 'STRAIGHT', mode: 'RPE' } : {}),
@@ -1580,6 +1600,7 @@ function TrainingLiftEditorModal({
     if (!setup?.customMovement.trim()) return;
     patchSetup({
       movement: setup.customMovement.trim(),
+      coreMovementId: null,
       lift: 'VR',
       scheme: 'STRAIGHT',
       mode: 'RPE',
@@ -3597,6 +3618,7 @@ function movementPresetFromValue(value: MovementPreset | string | null | undefin
   const preset = typeof value === 'object' && value ? value : null;
   return {
     name,
+    coreMovementId: Number(preset?.core_movement_id || preset?.id) || null,
     lift: String(preset?.lift || (group?.key === 'competition_lifts'
       ? name === 'Competition Bench' ? 'BN' : name === 'Competition Deadlift' ? 'DL' : 'SQ'
       : 'VR')).toUpperCase(),
@@ -3629,6 +3651,7 @@ function defaultTrainingLiftSetup(existingCount: number, groups: MovementPresetG
   const firstPreset = movementPresetFromValue(firstGroup?.movements?.[0] || fallback, firstGroup);
   return {
     movement: found?.preset.name || firstPreset.name || fallback,
+    coreMovementId: found?.preset.coreMovementId || firstPreset.coreMovementId || null,
     family: found?.group.key || firstGroup?.key || 'competition_lifts',
     lift: found?.preset.lift || firstPreset.lift || 'SQ',
     designation: existingCount ? 'SECONDARY' : 'PRIMARY',

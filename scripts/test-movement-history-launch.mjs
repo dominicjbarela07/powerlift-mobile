@@ -55,6 +55,24 @@ assert.deepEqual(noEquipment.ok ? noEquipment.target : null, {
   movementDefinitionId: 200,
 });
 
+const exactCoreVariant = resolveMovementHistoryLaunchForItem({
+  athleteId: 4,
+  item: {
+    id: 22,
+    core_movement: { id: 41 },
+    performed_core_movement: { id: 42 },
+    movement_identity: { id: 200 },
+  },
+});
+assert.deepEqual(exactCoreVariant.ok ? exactCoreVariant.target : null, {
+  athleteId: 4,
+  coreMovementId: 42,
+});
+assert.deepEqual(exactCoreVariant.ok ? movementHistorySheetRoute(exactCoreVariant.target) : null, {
+  pathname: '/movement-history-sheet',
+  params: { athleteId: '4', coreMovementId: '42' },
+});
+
 const performedCanonicalWins = resolveMovementHistoryLaunchForItem({
   athleteId: 4,
   item: {
@@ -105,6 +123,16 @@ assert.deepEqual(recap.ok ? recap.target : null, {
   athleteId: 4,
   movementDefinitionId: 167,
   equipmentContextDefinitionId: 25,
+});
+
+const coreRecap = resolveMovementHistoryLaunchFromMeasurement({
+  athleteId: 4,
+  movementDefinitionId: 42,
+  identityType: 'core',
+});
+assert.deepEqual(coreRecap.ok ? coreRecap.target : null, {
+  athleteId: 4,
+  coreMovementId: 42,
 });
 
 console.log('[movement-history-launch] canonical identity, legacy resolution, equipment context, controlled failure, and state preservation passed');

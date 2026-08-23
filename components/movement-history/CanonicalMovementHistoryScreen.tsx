@@ -17,6 +17,7 @@ import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBot
 import { Text } from '@/components/ui/sl-text';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
+import { CoreVariantBadge, type CoreVariantFamily } from '@/components/workout-logger/core-variant-badge';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLLayout } from '@/constants/theme';
 import { API_BASE } from '@/lib/api';
@@ -38,6 +39,7 @@ import {
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
+import { ledgerCoreLiftAsset } from '@/lib/ledger-index-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import {
   buildLoadRepProfileLayout,
@@ -119,12 +121,14 @@ function filterQuery(preset: FilterPreset) {
 
 export function CanonicalMovementHistoryScreen({
   movementDefinitionId,
+  coreMovementId,
   athleteId,
   initialEquipmentContextDefinitionId,
   presentation = 'screen',
   onRequestClose,
 }: {
-  movementDefinitionId: number;
+  movementDefinitionId?: number | null;
+  coreMovementId?: number | null;
   athleteId?: number | null;
   initialEquipmentContextDefinitionId?: number | null;
   presentation?: 'screen' | 'sheet';
@@ -163,30 +167,30 @@ export function CanonicalMovementHistoryScreen({
     setRange('all');
     setFilterPreset('all');
     setHistory(null);
-  }, [athleteId, initialEquipmentContextDefinitionId, movementDefinitionId]);
+  }, [athleteId, coreMovementId, initialEquipmentContextDefinitionId, movementDefinitionId]);
 
   useEffect(() => {
-    if (resolvedAthleteId || !movementDefinitionId) return;
+    if (resolvedAthleteId || (!movementDefinitionId && !coreMovementId)) return;
     let active = true;
     fetchLedgerExplorationIndex()
       .then((payload) => { if (active) setResolvedAthleteId(payload.athlete.id); })
       .catch((caught) => { if (active) setError(caught instanceof Error ? caught.message : 'Athlete context is unavailable.'); })
       .finally(() => { if (active && !resolvedAthleteId) setLoading(false); });
     return () => { active = false; };
-  }, [movementDefinitionId, resolvedAthleteId]);
+  }, [coreMovementId, movementDefinitionId, resolvedAthleteId]);
 
   const query = useMemo<MovementHistoryQuery | null>(() => {
-    if (!resolvedAthleteId || !movementDefinitionId) return null;
+    if (!resolvedAthleteId || (!movementDefinitionId && !coreMovementId)) return null;
     return {
       athleteId: resolvedAthleteId,
-      movementDefinitionId,
+      ...(coreMovementId ? { coreMovementId } : { movementDefinitionId }),
       equipmentDefinitionId,
       equipmentContextDefinitionId: equipmentDefinitionId === null ? initialEquipmentContextDefinitionId : null,
       range,
       ...filterQuery(filterPreset),
       limit: 12,
     };
-  }, [equipmentDefinitionId, filterPreset, initialEquipmentContextDefinitionId, movementDefinitionId, range, resolvedAthleteId]);
+  }, [coreMovementId, equipmentDefinitionId, filterPreset, initialEquipmentContextDefinitionId, movementDefinitionId, range, resolvedAthleteId]);
 
   const load = useCallback(async (refresh = false) => {
     if (!query) return;
@@ -249,7 +253,7 @@ export function CanonicalMovementHistoryScreen({
   };
 
   const toggleFavorite = async () => {
-    if (!history || favoriteSaving) return;
+    if (!history || favoriteSaving || history.movement.favorite_supported === false) return;
     const next = !history.movement.is_favorite;
     setFavoriteSaving(true);
     setHistory({ ...history, movement: { ...history.movement, is_favorite: next } });
@@ -265,7 +269,10 @@ export function CanonicalMovementHistoryScreen({
 
   const unit = history?.athlete.preferred_units || 'kg';
   const selectedEquipment = history?.equipment_breakdown.find((row) => row.selected) || null;
-  const scopeLabel = history?.filters.selected_scope === 'all_history' ? 'All History' : selectedEquipment?.label || 'Equipment';
+  const isCoreHistory = history?.movement.identity_type === 'core';
+  const scopeLabel = isCoreHistory
+    ? history?.movement.kind === 'variant' ? 'Exact Variant' : 'Exact Core'
+    : history?.filters.selected_scope === 'all_history' ? 'All History' : selectedEquipment?.label || 'Equipment';
   const unknownEquipmentSeries = history?.filters.analytics_basis === 'recorded_unknown_equipment';
   const profileEquipmentId = Number(String(history?.filters.analytics_scope || '').replace(/^equipment:/, ''));
   const profileSeriesLabel = unknownEquipmentSeries
@@ -273,6 +280,9 @@ export function CanonicalMovementHistoryScreen({
     : history?.equipment_breakdown.find((row) => row.id === profileEquipmentId)?.label || 'Exact comparable sets';
   const muscleLine = [titleCase(history?.movement.primary_muscle_group), ...(history?.movement.secondary_muscle_groups || []).slice(0, 1).map(titleCase)].filter(Boolean).join(' · ');
   const primaryMuscleRegion = canonicalAccessoryMuscleRegionKey(history?.movement.primary_muscle_group);
+  const coreArtwork = isCoreHistory
+    ? ledgerCoreLiftAsset(history?.movement.family || history?.movement.key)
+    : null;
 
   const closeHistory = onRequestClose || (() => router.back());
   const screenContent = (
@@ -296,18 +306,28 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                <AccessoryMuscleRegionMedallion
+                {isCoreHistory && coreArtwork && history.movement.kind === 'variant' && ['squat', 'bench', 'deadlift'].includes(String(history.movement.family)) ? <CoreVariantBadge
+                  accentColor="#A865FF"
+                  compact
+                  family={history.movement.family as CoreVariantFamily}
+                  liftArtworkSource={coreArtwork}
+                /> : isCoreHistory && coreArtwork ? <Image
+                  accessibilityLabel={`${titleCase(history.movement.family)} movement artwork`}
+                  resizeMode="contain"
+                  source={coreArtwork}
+                  style={styles.coreArtwork}
+                /> : <AccessoryMuscleRegionMedallion
                   accessibilityLabel={`${titleCase(history.movement.primary_muscle_group) || 'Movement'} muscle group`}
                   regionKey={primaryMuscleRegion}
-                />
+                />}
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
                 <Text style={styles.movementMuscles}>{muscleLine || 'Governed movement identity'}</Text>
               </View>
-              <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
+              {history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
                 <Ionicons name={history.movement.is_favorite ? 'star' : 'star-outline'} size={23} color="#E9B83F" />
-              </Pressable>
+              </Pressable> : <View style={styles.favoriteButton} />}
             </View>
 
             <View style={styles.summaryStrip}>
@@ -318,7 +338,7 @@ export function CanonicalMovementHistoryScreen({
 
             <View style={styles.controlRow}>
               <TopControl icon="options-outline" label="Filters" active={filterPreset !== 'all'} onPress={() => setFilterSheetOpen(true)} />
-              <TopControl label={scopeLabel} active={equipmentDefinitionId !== null} onPress={() => setScopeSheetOpen(true)} chevron />
+              <TopControl label={scopeLabel} active={isCoreHistory || equipmentDefinitionId !== null} onPress={() => { if (!isCoreHistory) setScopeSheetOpen(true); }} chevron={!isCoreHistory} />
               <TopControl icon="calendar-outline" label={history.filters.date_range_label} active={range !== 'all'} onPress={() => setRangeSheetOpen(true)} chevron />
             </View>
 
@@ -547,6 +567,7 @@ const styles = StyleSheet.create({
   navTitleText: { color: '#B971FF', fontSize: 17, lineHeight: 22, fontWeight: '600' },
   movementHeader: { minHeight: 104, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
   muscleArtworkFrame: { width: 96, height: 86, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  coreArtwork: { width: 88, height: 82 },
   movementIdentity: { flex: 1, minWidth: 0, gap: 4 },
   movementName: { color: '#FAF8FC', fontSize: 25, lineHeight: 31, fontWeight: '600' },
   movementMuscles: { color: '#AAA5B1', fontSize: 15, lineHeight: 20 },

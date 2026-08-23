@@ -73,15 +73,19 @@ export type CanonicalHistoryExposureDetail = CanonicalHistoryExposure & Readonly
 
 export type CanonicalMovementHistory = Readonly<{
   schema_version: 'canonical-movement-history-v2';
-  scope: 'exact_identity';
+  scope: 'exact_identity' | 'exact_core_identity';
   comparison_allowed: boolean;
   movement: {
     id: number;
     key: string;
     display_name: string;
+    identity_type?: 'accessory' | 'core';
+    family?: 'squat' | 'bench' | 'deadlift' | 'press' | string | null;
+    kind?: 'competition' | 'variant' | string | null;
     primary_muscle_group?: string | null;
     secondary_muscle_groups?: string[];
     is_favorite?: boolean;
+    favorite_supported?: boolean;
     [key: string]: unknown;
   };
   athlete: {
@@ -136,14 +140,15 @@ export type CanonicalMovementHistory = Readonly<{
   exposures: CanonicalHistoryExposure[];
   has_more: boolean;
   next_cursor?: string | null;
-  recognition_enabled: false;
+  recognition_enabled: boolean;
 }>;
 
 export type MovementHistoryDateRange = '1m' | '3m' | '6m' | '1y' | 'all';
 
 export type MovementHistoryQuery = Readonly<{
   athleteId: number;
-  movementDefinitionId: number;
+  movementDefinitionId?: number | null;
+  coreMovementId?: number | null;
   equipmentDefinitionId?: number | null;
   equipmentContextDefinitionId?: number | null;
   range?: MovementHistoryDateRange;
@@ -157,10 +162,12 @@ export type MovementHistoryQuery = Readonly<{
 function queryParams(query: MovementHistoryQuery) {
   const params = new URLSearchParams({
     view: 'v2',
-    movement_definition_id: String(query.movementDefinitionId),
     range: query.range || 'all',
     limit: String(query.limit || 12),
   });
+  if (query.coreMovementId) params.set('core_movement_id', String(query.coreMovementId));
+  else if (query.movementDefinitionId) params.set('movement_definition_id', String(query.movementDefinitionId));
+  else throw new Error('A governed movement identity is required.');
   if (query.equipmentDefinitionId === 0) params.set('equipment_not_recorded', '1');
   else if (query.equipmentDefinitionId) params.set('equipment_definition_id', String(query.equipmentDefinitionId));
   if (query.equipmentContextDefinitionId) {

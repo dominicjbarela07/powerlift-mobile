@@ -8,6 +8,8 @@ export type MovementHistoryLaunchItem = Readonly<{
   movement_identity?: IdentityReference | null;
   performed_movement_identity?: IdentityReference | null;
   performed_canonical_movement_identity?: IdentityReference | null;
+  core_movement?: IdentityReference | null;
+  performed_core_movement?: IdentityReference | null;
   legacy?: {
     effective_movement_definition_id?: number | null;
     effective_movement_identity?: IdentityReference | null;
@@ -16,7 +18,8 @@ export type MovementHistoryLaunchItem = Readonly<{
 
 export type MovementHistoryLaunchTarget = Readonly<{
   athleteId: number;
-  movementDefinitionId: number;
+  movementDefinitionId?: number;
+  coreMovementId?: number;
   equipmentContextDefinitionId?: number;
 }>;
 
@@ -52,6 +55,19 @@ export function resolveMovementHistoryLaunchForItem({
   const equipmentContextDefinitionId = positiveId(
     activeEquipmentIdentity(item as EquipmentAwareWorkoutItem)?.id,
   );
+
+  const coreMovementId = positiveId(
+    item.performed_core_movement?.id || item.core_movement?.id,
+  );
+  if (coreMovementId) {
+    return {
+      ok: true,
+      target: {
+        athleteId: resolvedAthleteId,
+        coreMovementId,
+      },
+    };
+  }
 
   // Governed movement identity is the subject. A resolved legacy identity is
   // authoritative when older Session rows have not materialized the direct
@@ -89,10 +105,12 @@ export function resolveMovementHistoryLaunchForItem({
 export function resolveMovementHistoryLaunchFromMeasurement({
   athleteId,
   movementDefinitionId,
+  identityType,
   equipmentContextDefinitionId,
 }: {
   athleteId: number | null | undefined;
   movementDefinitionId: number | null | undefined;
+  identityType?: 'accessory' | 'core' | null;
   equipmentContextDefinitionId?: number | null;
 }): MovementHistoryLaunchResolution {
   const resolvedAthleteId = positiveId(athleteId);
@@ -116,7 +134,9 @@ export function resolveMovementHistoryLaunchFromMeasurement({
     ok: true,
     target: {
       athleteId: resolvedAthleteId,
-      movementDefinitionId: resolvedMovementDefinitionId,
+      ...(identityType === 'core'
+        ? { coreMovementId: resolvedMovementDefinitionId }
+        : { movementDefinitionId: resolvedMovementDefinitionId }),
       ...(resolvedEquipmentContextId
         ? { equipmentContextDefinitionId: resolvedEquipmentContextId }
         : {}),
@@ -129,7 +149,12 @@ export function movementHistorySheetRoute(target: MovementHistoryLaunchTarget) {
     pathname: '/movement-history-sheet' as const,
     params: {
       athleteId: String(target.athleteId),
-      movementDefinitionId: String(target.movementDefinitionId),
+      ...(target.movementDefinitionId
+        ? { movementDefinitionId: String(target.movementDefinitionId) }
+        : {}),
+      ...(target.coreMovementId
+        ? { coreMovementId: String(target.coreMovementId) }
+        : {}),
       ...(target.equipmentContextDefinitionId
         ? { equipmentContextDefinitionId: String(target.equipmentContextDefinitionId) }
         : {}),
