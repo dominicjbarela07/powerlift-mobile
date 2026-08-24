@@ -24,8 +24,9 @@ const addAccessory = creator.slice(creator.indexOf('const addAcc ='), creator.in
 assert.doesNotMatch(addAccessory, /movement:\s*''|movement_definition_id:\s*null/, 'Add Accessory must not create an anonymous placeholder row');
 assert.match(addAccessory, /openMovementPicker\('accessory'/, 'Add Accessory must open the canonical picker first');
 assert.match(creator, /CanonicalAccessoryPicker[\s\S]*onSelect=\{applyCanonicalAccessoryMovement\}/, 'the production creator must mount the canonical picker');
-assert.match(creator, /movement_definition_id:\s*movement\.id/, 'creator selections must retain a governed identity id');
-assert.match(creator, /unresolvedAccessory[\s\S]*!item\.movement_definition_id[\s\S]*acc_items:\s*acc[\s\S]*\.map\(\(a\) => \(\{[\s\S]*\.\.\.a/, 'creator saves must reject missing identity and serialize the governed identity id');
+assert.match(creator, /governedIdentityFromSelection\(movement\)/, 'creator selections must validate the governed identity object');
+assert.match(creator, /materializeGovernedAccessoryDraft[\s\S]*governedMovementDefinitionId/, 'creator drafts must retain and rematerialize governed identity');
+assert.match(creator, /unresolvedAccessory[\s\S]*governedMovementDefinitionId\(item\)[\s\S]*canonicalAccessories[\s\S]*movement_definition_id:\s*a\.movement_definition_id/, 'creator saves must reject missing identity and serialize the governed identity id');
 
 assert.match(workspace, /CanonicalAccessoryPicker[\s\S]*onSelect=\{chooseCanonicalMovement\}/, 'existing Session authoring must reuse the same canonical picker');
 assert.match(workspace, /movementDefinitionId:\s*movement\.id/, 'workspace selections must retain the governed identity id');

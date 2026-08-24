@@ -58,6 +58,8 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
 });
 
 run(process.execPath, ['scripts/test-production-equipment-picker-hotfix.mjs']);
+run(process.execPath, ['scripts/test-production-canonical-accessory-hotfix.mjs']);
+run(process.execPath, ['scripts/test-catalog-canonical-identity-gate.mjs']);
 run('npx', ['tsc', '--noEmit']);
 run('npx', [
   'expo',

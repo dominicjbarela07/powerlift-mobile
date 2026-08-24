@@ -21,6 +21,12 @@ import {
   CanonicalAccessoryPicker,
   type CanonicalAccessorySelection,
 } from '@/components/CanonicalAccessoryPicker';
+import {
+  governedIdentityFromSelection,
+  governedMovementDefinitionId,
+  materializeGovernedAccessoryDraft,
+  type GovernedAccessoryIdentity,
+} from '@/lib/governedAccessoryDraft';
 
 type CoreDraft = {
   lift: 'SQ'|'BN'|'DL'|'OHP'|'VR';
@@ -55,6 +61,7 @@ type PlannedSetDraft = {
 type AccDraft = {
   movement: string;
   movement_definition_id?: number | null;
+  movement_identity?: GovernedAccessoryIdentity | null;
   sets: number;
   reps_text: string;
   rir_target?: number | null;
@@ -686,11 +693,22 @@ export default function CreateWorkoutScreen() {
     if (!Array.isArray(rows)) return [];
     return rows
       .map((r: any) => {
+        const rawDefinitionId = r?.movement_definition_id ?? r?.movement_identity?.id;
+        const parsedDefinitionId = Number(rawDefinitionId);
+        const definitionId: number | null = rawDefinitionId != null
+          && Number.isInteger(parsedDefinitionId)
+          && parsedDefinitionId > 0
+          ? parsedDefinitionId
+          : null;
+        const displayName = String(r?.movement_identity?.display_name || r?.movement || '').trim();
         const out: AccDraft = {
-          movement: String(r?.movement ?? ''),
-          movement_definition_id: r?.movement_definition_id == null
-            ? (r?.movement_identity?.id == null ? null : Number(r.movement_identity.id))
-            : Number(r.movement_definition_id),
+          movement: definitionId !== null && displayName
+            ? displayName
+            : String(r?.movement ?? ''),
+          movement_definition_id: definitionId,
+          movement_identity: definitionId !== null && displayName
+            ? { id: definitionId, display_name: displayName }
+            : null,
           sets: Number(r?.sets ?? 0),
           reps_text: String(r?.reps_text ?? ''),
           rir_target: r?.rir_target == null ? null : Number(r.rir_target),
@@ -858,11 +876,30 @@ export default function CreateWorkoutScreen() {
     const movementName = presetMovementName(movement);
 
     if (picker.kind === 'accessory') {
-      setAcc((p) => p.map((x, i) => (i === picker.idx ? {
-        ...x,
-        movement: movementName,
-        movement_definition_id: presetMovementId(movement),
-      } : x)));
+      const movementDefinitionId = presetMovementId(movement);
+      if (!movementDefinitionId || !movementName) {
+        setError('Invalid governed movement catalog row. Refresh the catalog and try again.');
+        return;
+      }
+      const identity = governedIdentityFromSelection({
+        id: movementDefinitionId,
+        display_name: movementName,
+      });
+      setAcc((current) => {
+        const existing = current[picker.idx];
+        const next = materializeGovernedAccessoryDraft(existing || {
+          movement: identity.display_name,
+          sets: 3,
+          reps_text: '10-12',
+          rir_target: 2,
+          superset_group: null,
+          superset_pos: null,
+        }, identity);
+        if (picker.idx < current.length) {
+          return current.map((row, index) => index === picker.idx ? next : row);
+        }
+        return [...current, next];
+      });
     } else if (picker.kind === 'pendingVariant') {
       setPendingCoreVariant((draft) => draft ? {
         ...draft,
@@ -2173,25 +2210,27 @@ export default function CreateWorkoutScreen() {
     const picker = movementPickerOpen;
     if (!picker || picker.kind !== 'accessory') return;
     const idx = picker.idx;
-    const nextMovement = {
-      movement: movement.display_name,
-      movement_definition_id: movement.id,
-    };
+    let identity: GovernedAccessoryIdentity;
+    try {
+      identity = governedIdentityFromSelection(movement);
+    } catch (reason: any) {
+      setError(reason?.message || 'Invalid governed movement catalog row.');
+      return;
+    }
     setAcc((current) => {
+      const existing = current[idx];
+      const next = materializeGovernedAccessoryDraft(existing || {
+        movement: identity.display_name,
+        sets: 3,
+        reps_text: '10-12',
+        rir_target: 2,
+        superset_group: null,
+        superset_pos: null,
+      }, identity);
       if (idx < current.length) {
-        return current.map((row, rowIndex) => rowIndex === idx ? { ...row, ...nextMovement } : row);
+        return current.map((row, rowIndex) => rowIndex === idx ? next : row);
       }
-      return [
-        ...current,
-        {
-          ...nextMovement,
-          sets: 3,
-          reps_text: '10-12',
-          rir_target: 2,
-          superset_group: null,
-          superset_pos: null,
-        },
-      ];
+      return [...current, next];
     });
     setMovementPickerOpen(null);
     setMovementSearch('');
@@ -2304,7 +2343,7 @@ export default function CreateWorkoutScreen() {
       return;
     }
 
-    const unresolvedAccessory = acc.find((item) => item.movement.trim() && !item.movement_definition_id);
+    const unresolvedAccessory = acc.find((item) => item.movement.trim() && !governedMovementDefinitionId(item));
     if (unresolvedAccessory) {
       const message = `Choose a governed movement for “${unresolvedAccessory.movement}” before saving.`;
       setError(message);
@@ -2314,18 +2353,25 @@ export default function CreateWorkoutScreen() {
 
     setSaving(true);
 
+    const canonicalAccessories = acc
+      .filter((item) => item.movement.trim().length > 0)
+      .map((item) => materializeGovernedAccessoryDraft(item));
+
     const payload = {
       athlete_id: Number(athleteId),
       date: dateStr,
       label: label.trim() || null,
       status, // <-- IMPORTANT
       core_items: core.map(serializeCoreForSave),
-      acc_items: acc
-        .filter((a) => a.movement.trim().length > 0)
+      acc_items: canonicalAccessories
         .map((a) => ({
-          ...a,
           movement: a.movement.trim(),
+          movement_definition_id: a.movement_definition_id,
+          sets: a.sets,
           reps_text: a.reps_text.trim(),
+          rir_target: a.rir_target ?? null,
+          superset_group: a.superset_group ?? null,
+          superset_pos: a.superset_pos ?? null,
         })),
     };
 
