@@ -1003,26 +1003,39 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         return true;
       }
       if (accessoryEditor.mode === 'edit' && changeAccessoryCompletionRef.current && accessoryEditor.item) {
-        changeAccessoryCompletionRef.current({
-          ...(accessoryEditor.item as SessionMovementItem),
+        const currentItem = accessoryEditor.item as SessionMovementItem;
+        const priorIdentityId = Number(
+          currentItem.movement_identity?.id
+          || currentItem.legacy?.effective_movement_definition_id
+          || 0,
+        );
+        const identityChanged = priorIdentityId > 0 && priorIdentityId !== movementDefinitionId;
+        const replacementIdentity: NonNullable<SessionMovementItem['movement_identity']> = {
+          id: movementDefinitionId,
+          display_name: resolvedMovementName,
+          primary_muscle_group: setup.primaryMuscleGroup,
+          secondary_muscle_groups: setup.secondaryMuscleGroups,
+          execution_family: setup.executionFamily,
+          ownership_scope: setup.ownershipScope,
+          library_scope: setup.libraryScope,
+        };
+        changeAccessoryCompletionRef.current(identityChanged ? {
+          ...currentItem,
           movement: resolvedMovementName,
           original_movement: resolvedMovementName,
-          movement_identity: {
-            id: movementDefinitionId,
-            display_name: resolvedMovementName,
-            primary_muscle_group: setup.primaryMuscleGroup,
-            secondary_muscle_groups: setup.secondaryMuscleGroups,
-            execution_family: setup.executionFamily,
-            ownership_scope: setup.ownershipScope,
-            library_scope: setup.libraryScope,
-          },
-          legacy: legacy?.state === 'legacy_unresolved' ? {
-            ...legacy,
-            state: 'canonical',
-            effective_movement_definition_id: movementDefinitionId,
-            indicator: null,
-            history_caveat: null,
-          } : legacy,
+          movement_identity: replacementIdentity,
+          selected_sub_movement: null,
+          is_substituted: false,
+          performed_movement_identity: null,
+          performed_canonical_movement_identity: null,
+          approved_subs: [],
+          approved_sub_identities: [],
+          legacy: null,
+        } : {
+          ...currentItem,
+          movement: resolvedMovementName,
+          original_movement: resolvedMovementName,
+          movement_identity: replacementIdentity,
         });
         changeAccessoryCompletionRef.current = null;
         return true;

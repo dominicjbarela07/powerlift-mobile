@@ -107,6 +107,8 @@ export type SessionMovementItem = {
   notes?: string | null;
   superset_group?: string | null;
   superset_pos?: number | null;
+  selected_sub_movement?: string | null;
+  is_substituted?: boolean | null;
   approved_subs?: string[];
   approved_sub_identities?: Array<{
     movement?: string | null;
@@ -598,17 +600,39 @@ export function SessionEditingWorkspace(props: Props) {
   const changeSelectedAccessory = useCallback(() => {
     if (!selectedItem || selectedKind !== 'accessory') return;
     props.onChangeAccessory(selectedItem, (replacement) => {
-      setSessionDraft((current) => ({
-        ...current,
-        items: { ...current.items, [replacement.id]: replacement },
-        movements: {
-          ...current.movements,
-          [replacement.id]: {
-            ...current.movements[replacement.id],
-            movement: movementName(replacement),
+      setSessionDraft((current) => {
+        const previous = current.items[replacement.id];
+        const previousIdentityId = Number(
+          previous?.movement_identity?.id
+          || previous?.legacy?.effective_movement_definition_id
+          || 0,
+        );
+        const replacementIdentityId = Number(
+          replacement.movement_identity?.id
+          || replacement.legacy?.effective_movement_definition_id
+          || 0,
+        );
+        const identityChanged = (
+          previousIdentityId > 0
+          && replacementIdentityId > 0
+          && previousIdentityId !== replacementIdentityId
+        );
+        return {
+          ...current,
+          items: { ...current.items, [replacement.id]: replacement },
+          movements: {
+            ...current.movements,
+            [replacement.id]: {
+              ...current.movements[replacement.id],
+              movement: movementName(replacement),
+              ...(identityChanged ? {
+                approvedSubsText: '',
+                approvedSubstitutions: [],
+              } : {}),
+            },
           },
-        },
-      }));
+        };
+      });
       setSelectedId(replacement.id);
     });
   }, [props, selectedItem, selectedKind]);
