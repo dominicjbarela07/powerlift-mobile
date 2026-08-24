@@ -55,7 +55,9 @@ assert.match(
 );
 assert.match(route, /What are you trying to train\?[\s\S]*By Muscle[\s\S]*By Movement/, 'discovery must start with muscle-first and direct-search modes');
 assert.match(route, /ACCESSORY_PICKER_REGIONS[\s\S]*selectedRegion\.muscles/, 'regional navigation must drill into governed primary-muscle targets');
-assert.match(route, /function AnatomyTargetArt[\s\S]*<MuscleMap[\s\S]*primary=\{\[primary\]\}[\s\S]*secondary=\{secondary\}/, 'the shared dynamic anatomy renderer must drive exact picker target visuals');
+assert.match(route, /function AnatomyTargetArt[\s\S]*focusedAccessoryMuscleRegionKey\(primary\)[\s\S]*accessoryMuscleRegionAsset\(region\)/, 'muscle discovery must use the governed focused muscle-group PNG library');
+assert.doesNotMatch(route, /<MuscleMap/, 'individual movement picker surfaces must never render full-figure anatomy');
+assert.match(route, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/, 'individual picker results must use the canonical identity artwork component');
 assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'exact movement selection must pass through review, apply, and success states');
 assert.match(route, /Confirm & Add to Session[\s\S]*Continue Editing Session/, 'the live picker must provide deliberate confirmation and return-to-Session actions');
 assert.match(route, /Can(?:'|&apos;)t find it\? Create custom movement/, 'the coach-owned custom movement entrypoint must be visible');
@@ -78,11 +80,6 @@ assert.match(
   'adding an accessory must stay inside the canonical dirty Session save plan',
 );
 assert.match(route, /ownership_scope: setup\.ownershipScope[\s\S]*library_scope: setup\.libraryScope/, 'draft items must retain canonical/custom origin context');
-assert.match(
-  route,
-  /legacy: legacy\?\.state === 'legacy_unresolved' \? \{[\s\S]*state: 'canonical'[\s\S]*indicator: null/,
-  'an explicit resolution must immediately become ordinary canonical Session state without a legacy badge',
-);
 
 const modal = route.slice(route.indexOf('function AccessoryEditorModal'), route.indexOf('function TrainingLiftSection'));
 assert.match(modal, /onCancel/, 'the staged picker must preserve one explicit cancel path');

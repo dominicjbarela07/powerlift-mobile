@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
 import { kilogramsToDisplayValue } from '@/lib/display-units';
@@ -17,7 +18,6 @@ import {
   type LedgerMovementProgress,
   type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey, type AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { ledgerHrefFor } from './routing';
@@ -94,8 +94,7 @@ function Tabs<T extends string>({ values, value, onChange }: { values: readonly 
 }
 
 function MovementArtwork({ movement, size = 58 }: { movement: LedgerMovementProgress; size?: number }) {
-  const region = canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family);
-  return <View style={[styles.artworkFrame, { width: size, height: size }]}>{isGovernedMuscleId(region) ? <MuscleMap anatomy="automatic" primary={[region]} secondary={movement.secondary_muscle_groups} size="thumbnail" style={{ transform: [{ scale: size / 92 }] }} view="auto" /> : <Image accessibilityLabel={`${prettify(region)} muscle artwork`} source={accessoryMuscleRegionAsset(region).source} resizeMode="contain" style={styles.artwork} />}</View>;
+  return <CanonicalMovementArtwork movement={movement} size={size} style={styles.artworkFrame} testID="ledger-canonical-movement-artwork" />;
 }
 
 function MovementRow({ movement, unit, tone, onPress }: { movement: LedgerMovementProgress; unit: LedgerUnit; tone: string; onPress: () => void }) {
@@ -178,7 +177,7 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
     <RoomHeader title={movement.name} subtitle={`${prettify(region)} · ${prettify(movement.equipment_type)}`} />
     <View style={styles.inset}><Tabs values={['Overview', 'History', 'PRs'] as const} value={tab} onChange={setTab} /></View>
     <View style={styles.inset}>
-      <View style={[styles.movementHero, { borderColor: `${tone}66` }]}><Image source={accessoryMuscleRegionAsset(region).source} resizeMode="contain" style={styles.movementHeroArt} /><View style={styles.movementHeroCopy}><Text style={[styles.sectionKicker, { color: tone }]}>{mode === 'variant' ? `${prettify(movement.core_family)} VARIANT` : `${prettify(region)} ACCESSORY`}</Text><Text style={styles.movementHeroValue}>{loadLabel(bestSet?.weight_kg || movement.latest_weight_kg, bestSet?.reps || movement.latest_reps, unit)}</Text><Text style={styles.movementHeroLabel}>{comparable ? 'BEST EXACT PERFORMANCE' : 'LATEST EXACT PERFORMANCE'}</Text><Text style={styles.movementHeroDate}>{dateLabel(bestSet?.date || movement.last_performed_on)}</Text></View></View>
+      <View style={[styles.movementHero, { borderColor: `${tone}66` }]}><CanonicalMovementArtwork movement={movement} size={92} style={styles.movementHeroArt} testID="ledger-history-canonical-movement-artwork" /><View style={styles.movementHeroCopy}><Text style={[styles.sectionKicker, { color: tone }]}>{mode === 'variant' ? `${prettify(movement.core_family)} VARIANT` : `${prettify(region)} ACCESSORY`}</Text><Text style={styles.movementHeroValue}>{loadLabel(bestSet?.weight_kg || movement.latest_weight_kg, bestSet?.reps || movement.latest_reps, unit)}</Text><Text style={styles.movementHeroLabel}>{comparable ? 'BEST EXACT PERFORMANCE' : 'LATEST EXACT PERFORMANCE'}</Text><Text style={styles.movementHeroDate}>{dateLabel(bestSet?.date || movement.last_performed_on)}</Text></View></View>
     </View>
     {tab === 'PRs' ? <View style={styles.inset}><View style={styles.policyNotice}><Ionicons name="shield-checkmark-outline" size={20} color="#C5A4F1" /><View style={styles.policyCopy}><Text style={styles.policyTitle}>Recognition follows governed identity.</Text><Text style={styles.policyBody}>{mode === 'variant' ? 'Only canonical core accomplishment events appear as PRs. Exact set history remains available below.' : 'Accessory recognition is currently disabled by the movement identity platform, so no PR was invented for this movement.'}</Text></View></View></View> : null}
     {tab !== 'PRs' ? <>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Image,
   type StyleProp,
@@ -24,11 +25,13 @@ export function AccessoryMuscleRegionMedallion({
   containerStyle,
   regionKey,
 }: AccessoryMuscleRegionMedallionProps) {
-  const asset = accessoryMuscleRegionAsset(regionKey);
+  const asset = regionKey && regionKey !== 'full_body'
+    ? accessoryMuscleRegionAsset(regionKey)
+    : null;
 
   return (
     <View
-      accessibilityLabel={accessibilityLabel || `${asset.label} primary muscle group`}
+      accessibilityLabel={accessibilityLabel || (asset ? `${asset.label} primary muscle group` : 'Movement artwork unavailable')}
       accessibilityRole="image"
       style={[
         styles.frame,
@@ -36,12 +39,12 @@ export function AccessoryMuscleRegionMedallion({
         containerStyle,
       ]}
     >
-      <Image
+      {asset ? <Image
         accessibilityIgnoresInvertColors
         resizeMode="contain"
         source={asset.source}
         style={styles.image}
-      />
+      /> : <Ionicons name="help-outline" size={compact ? 22 : 26} color={SLColors.accentMuted} />}
     </View>
   );
 }

@@ -64,17 +64,21 @@ const medallion = fs.readFileSync(medallionPath, 'utf8');
 const coreLogger = fs.readFileSync(coreLoggerPath, 'utf8');
 const superset = fs.readFileSync(supersetPath, 'utf8');
 const pickerArtwork = fs.readFileSync(pickerArtworkPath, 'utf8');
+assert.match(medallion, /regionKey && regionKey !== 'full_body'/);
 assert.match(medallion, /accessoryMuscleRegionAsset\(regionKey\)/);
 assert.match(medallion, /<Image[\s\S]*?source=\{asset\.source\}/);
 assert.doesNotMatch(medallion, /MuscleMap|isGovernedMuscleId/, 'Logger movement cards must use muscle-group PNG assets, never the full-body anatomy renderer.');
 assert.doesNotMatch(medallion, /<Text/);
-assert.match(coreLogger, /<AccessoryMuscleRegionMedallion/);
+assert.match(coreLogger, /<CanonicalMovementArtwork/);
+assert.doesNotMatch(coreLogger, /<AccessoryMuscleRegionMedallion|<CoreVariantBadge|<MuscleMap/, 'individual Logger cards must have exactly one canonical artwork path');
 assert.match(superset, /<AccessoryMuscleRegionMedallion/);
 assert.doesNotMatch(coreLogger, /activeMovementMuscleGroupText|accessoryMuscleGroupLabel/);
 assert.doesNotMatch(superset, /muscleGroupBadgeText|primaryMuscleGroup/);
-assert.match(pickerArtwork, /EXACT_MOVEMENT_ARTWORK/);
-assert.match(pickerArtwork, /if \(exact\) return \{ kind: 'movement', source: exact \}/);
-assert.match(pickerArtwork, /accessoryMuscleRegionAsset\(region\)\.source/);
+assert.match(pickerArtwork, /resolveCanonicalMovementArtwork/);
+assert.match(pickerArtwork, /resolved\.kind !== 'accessory'/);
+assert.match(pickerArtwork, /accessoryMuscleRegionAsset\(resolved\.regionKey\)\.source/);
+assert.doesNotMatch(pickerArtwork, /movementName|normalizedName|includes\(/, 'picker artwork may not inspect display names');
+assert.doesNotMatch(pickerArtwork, /EXACT_MOVEMENT_ARTWORK/, 'Accessory rows always use governed focused muscle-region PNGs');
 assert.equal((pickerArtwork.match(/require\(/g) || []).length, 0, 'picker fallback must reuse the shared asset registry');
 
 assert.deepEqual(

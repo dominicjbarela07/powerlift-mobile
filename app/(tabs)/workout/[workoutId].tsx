@@ -6267,7 +6267,7 @@ export default function WorkoutViewerScreen() {
         ) as WorkoutPayload;
         if (!unitPreferenceHydratedRef.current) {
           if (unitLocalOverrideRef.current == null) {
-            setUnit(normalizeReadinessUnit(user?.preferred_units));
+            setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
           }
           unitPreferenceHydratedRef.current = true;
         }
@@ -6296,7 +6296,7 @@ export default function WorkoutViewerScreen() {
 
       if (!unitPreferenceHydratedRef.current) {
         if (unitLocalOverrideRef.current == null) {
-          setUnit(normalizeReadinessUnit(user?.preferred_units));
+          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
         }
         unitPreferenceHydratedRef.current = true;
       }
@@ -6323,7 +6323,6 @@ export default function WorkoutViewerScreen() {
     isIdealWorkoutDetailPreview,
     loggerScenario,
     coachPreviewRequested,
-    user?.preferred_units,
     workoutId,
   ]);
 
@@ -6979,10 +6978,6 @@ export default function WorkoutViewerScreen() {
           iconSource: null,
         }
       : resolveLoggerLiftIdentity(item);
-    const isCoreVariant =
-      !isAccessory
-      && String(item.variant || '').trim().toUpperCase() === 'VR'
-      && resolvedIdentity.key in CORE_FAMILY_LIFT_CODE;
     const identity = resolvedIdentity;
     const resolvedPlateWeight = prescribedWeight === undefined
       ? resolveLoggerPrescribedWeight({ item, unit })
@@ -7005,16 +7000,9 @@ export default function WorkoutViewerScreen() {
       : baseProgress;
     const coach = data.coach;
     return {
+      movementArtworkInput: { ...item, kind: isAccessory ? 'accessory' : 'core' },
       liftLabel: identity.label,
       liftAccentColor: identity.accentColor,
-      liftIconSource: identity.iconSource,
-      accessoryIconName,
-      accessoryMuscleRegion: isAccessory
-        ? accessoryMuscleRegion(item).key
-        : null,
-      coreVariantFamily: isCoreVariant
-        ? resolvedIdentity.key as keyof typeof CORE_FAMILY_LIFT_CODE
-        : null,
       plateStack,
       progress,
       coach: coach

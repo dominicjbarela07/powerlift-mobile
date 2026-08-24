@@ -7,7 +7,6 @@ import {
   Alert,
   Animated,
   BackHandler,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   LayoutAnimation,
@@ -25,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
@@ -54,9 +53,7 @@ import {
   movementProgrammingPatch,
   storedRangeFromManualTarget,
 } from '@/lib/coach-session-editor';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
-import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { exactAccessoryHistoryRows, exactAccessoryLastExposure } from '@/lib/exact-accessory-history';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logger-weight-format';
@@ -1264,19 +1261,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
 }
 
 function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | null; kind: MovementKind; size: number }) {
-  if (!item) return <View style={[styles.artworkFallback, { width: size, height: size }]}><Ionicons name="barbell-outline" size={Math.round(size * 0.46)} color={palette.violet} /></View>;
-  if (kind === 'accessory') {
-    const muscle = accessoryMuscleRegion(item);
-    const primary = item.movement_identity?.primary_muscle_group;
-    if (isGovernedMuscleId(primary)) {
-      return <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}><MuscleMap anatomy="automatic" primary={[primary]} secondary={item.movement_identity?.secondary_muscle_groups || []} semanticLevel="movement" size="thumbnail" style={{ transform: [{ scale: size / 92 }] }} view="auto" /></View>;
-    }
-    const artwork = accessoryMuscleRegionAsset(muscle.key);
-    return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${movementName(item)} ${artwork.label} primary muscle artwork`} resizeMode="contain" source={artwork.source} style={[styles.movementArtworkImage, { width: size, height: size }]} />;
-  }
-  const identity = resolveLoggerLiftIdentity(item);
-  if (identity.iconSource) return <Image accessibilityIgnoresInvertColors accessibilityLabel={`${identity.label} movement artwork`} resizeMode="contain" source={identity.iconSource} style={[styles.movementArtworkImage, { width: size, height: size, shadowColor: identity.accentColor }]} />;
-  return <View style={[styles.artworkFallback, { width: size, height: size }]}><Ionicons name="barbell-outline" size={Math.round(size * 0.46)} color={palette.violet} /></View>;
+  return <CanonicalMovementArtwork movement={item ? { ...item, kind } : null} size={size} testID="session-editor-canonical-movement-artwork" />;
 }
 
 type PrescriptionDropdownOption = {

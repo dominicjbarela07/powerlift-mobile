@@ -12,7 +12,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 
-export type CoreVariantFamily = 'squat' | 'bench' | 'deadlift';
+export type CoreVariantFamily = 'squat' | 'bench' | 'deadlift' | 'press';
 
 type CoreVariantBadgeProps = {
   accentColor: string;
@@ -31,7 +31,7 @@ function colorWithAlpha(color: string, alpha: number) {
 
 /**
  * Canonical Core Variant identity: the badge owns the silhouette while the
- * locked competition artwork identifies its Squat, Bench, or Deadlift family.
+ * locked Core artwork identifies its Squat, Bench, Deadlift, or Press family.
  */
 export function CoreVariantBadge({
   accentColor,

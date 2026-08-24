@@ -1,32 +1,28 @@
 import type { ImageSourcePropType } from 'react-native';
 
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { resolveCanonicalMovementArtwork } from '@/lib/canonical-movement-artwork';
 
 type PickerMovementIdentity = Readonly<{
+  id?: number | null;
   key?: string | null;
   primary_muscle_group?: string | null;
 }>;
 
 export type AccessoryPickerArtwork = Readonly<{
-  kind: 'movement' | 'muscle';
-  source: ImageSourcePropType;
+  kind: 'muscle' | 'neutral';
+  source: ImageSourcePropType | null;
 }>;
-
-// Exact artwork is opt-in and keyed by stable movement identity. Keep this
-// registry empty until a reviewed image is genuinely available and correct.
-const EXACT_MOVEMENT_ARTWORK: Readonly<Record<string, ImageSourcePropType>> = {};
 
 export function accessoryPickerArtwork(
   movement?: PickerMovementIdentity | null,
 ): AccessoryPickerArtwork {
-  const exact = movement?.key ? EXACT_MOVEMENT_ARTWORK[movement.key] : null;
-  if (exact) return { kind: 'movement', source: exact };
-  const region = canonicalAccessoryMuscleRegionKey(
-    movement?.primary_muscle_group,
+  const resolved = resolveCanonicalMovementArtwork(
+    movement ? { ...movement, kind: 'accessory' } : null,
   );
+  if (resolved.kind !== 'accessory') return { kind: 'neutral', source: null };
   return {
     kind: 'muscle',
-    source: accessoryMuscleRegionAsset(region).source,
+    source: accessoryMuscleRegionAsset(resolved.regionKey).source,
   };
 }

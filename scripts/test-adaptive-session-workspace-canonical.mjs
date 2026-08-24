@@ -20,10 +20,7 @@ const workspace = read('components', 'coach-mobile', 'SessionEditingWorkspace.ts
 const tabLayout = read('app', '(tabs)', '_layout.tsx');
 const calendar = read('app', '(tabs)', 'coach-calendar.tsx');
 const detail = read('app', '(tabs)', 'workout', '[workoutId].tsx');
-const backendRoot = [repoRoot, path.join(repoRoot, 'preferred-units-backend')]
-  .find((candidate) => fs.existsSync(path.join(candidate, 'app', 'blueprints', 'workouts.py')));
-if (!backendRoot) throw new Error('backend worktree not found');
-const backend = fs.readFileSync(path.join(backendRoot, 'app', 'blueprints', 'workouts.py'), 'utf8');
+const backend = fs.readFileSync(path.join(repoRoot, 'app', 'blueprints', 'workouts.py'), 'utf8');
 
 for (const retired of [
   ['components', 'creator', 'core-movement-card.tsx'],
@@ -83,8 +80,9 @@ requireNoMatch(workspace, /SessionUnitFloatingControl|function UnitToggle|styles
 requireMatch(workspaceRoute, /preferred_units: plan\.metadataPatch\.displayUnit === 'lb' \? 'lbs' : 'kg'/, 'unit changes must persist through canonical Session setup.');
 requireMatch(workspace, /function collapsedLoadPresentation[\s\S]*kind === 'accessory'[\s\S]*validManualLow[\s\S]*label: 'Manual'[\s\S]*label: 'Calculated'/, 'Core rows show manual only for a positive explicit load and otherwise use calculated targets; Accessories show neither.');
 requireMatch(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'collapsed movement artwork must be the visual anchor.');
-requireMatch(workspace, /import \{ accessoryMuscleRegionAsset \} from '@\/lib\/accessory-muscle-region-assets';[\s\S]*import \{ accessoryMuscleRegion \} from '@\/lib\/accessory-muscle-group';/, 'the workspace must reuse the governed Accessory Picker muscle artwork resolver.');
-requireMatch(workspace, /if \(kind === 'accessory'\) \{[\s\S]*accessoryMuscleRegion\(item\)[\s\S]*accessoryMuscleRegionAsset\(muscle\.key\)[\s\S]*primary muscle artwork[\s\S]*const identity = resolveLoggerLiftIdentity\(item\)/, 'accessories must resolve primary-muscle artwork before preserving canonical core lift identity.');
+requireMatch(workspace, /import \{ CanonicalMovementArtwork \} from '@\/components\/movement\/CanonicalMovementArtwork';/, 'the workspace must reuse the canonical individual-movement artwork resolver.');
+requireMatch(workspace, /function MovementArtwork[\s\S]*<CanonicalMovementArtwork movement=\{item \? \{ \.\.\.item, kind \} : null\}/, 'accessory, core, and variant artwork must resolve through governed identity.');
+requireNoMatch(workspace, /<MuscleMap/, 'individual workspace movement cards must never render full-figure anatomy');
 requireNoMatch(workspace, /ACCESSORY_CATEGORY_ARTWORK|accessory-wordmark-coin-seal/, 'the legacy generic accessory medallion must not remain in the Session Workspace.');
 requireNoMatch(workspace, /SLAccessoryIcon|resolveAccessoryIconName/, 'the workspace must not substitute its own accessory icon system for canonical Logger artwork.');
 requireMatch(backend, /if "preferred_units" in data:[\s\S]*next_athlete\.preferred_units/, 'the setup mutation must persist the athlete unit preference.');

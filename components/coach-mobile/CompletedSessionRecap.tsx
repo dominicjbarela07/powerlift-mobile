@@ -24,14 +24,12 @@ import {
 } from '@shopify/react-native-skia';
 
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLColors, SLFontFamilies, SLRadius, SLShadows } from '@/constants/theme';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
-import { isGovernedMuscleId } from '@/lib/anatomy-system';
+import { canonicalMovementArtworkSource } from '@/lib/canonical-movement-artwork-assets';
 import { API_BASE } from '@/lib/api';
 import {
   formatCalculatedWeightDeltaFromKg,
@@ -42,7 +40,6 @@ import {
   normalizeDisplayWeightUnit,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
-import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   SESSION_RECAP_ARCHIVE_ART,
@@ -370,24 +367,11 @@ function formatMuscle(value: string) {
 }
 
 function movementArtworkSource(movement: CompletedRecapMovement) {
-  if (movement.kind === 'accessory') {
-    const region = accessoryMuscleRegion({
-      movement: movement.label,
-      movement_identity: { primary_muscle_group: movement.primary_muscle_group },
-    });
-    return accessoryMuscleRegionAsset(region.key).source;
-  }
-  return resolveLoggerLiftIdentity({ lift: movement.lift, movement: movement.label }).iconSource || null;
+  return canonicalMovementArtworkSource(movement);
 }
 
 function MovementArtwork({ movement }: { movement: CompletedRecapMovement }) {
-  if (movement.kind === 'accessory' && isGovernedMuscleId(movement.primary_muscle_group)) {
-    return <MuscleMap anatomy="automatic" primary={[movement.primary_muscle_group]} secondary={movement.secondary_muscle_groups || []} size="thumbnail" style={styles.artworkMap} view="auto" />;
-  }
-  const source = movementArtworkSource(movement);
-  return source
-    ? <Image accessibilityIgnoresInvertColors resizeMode="contain" source={source} style={styles.artworkImage} />
-    : <Ionicons name="barbell-outline" size={28} color={SLColors.accentMuted} />;
+  return <CanonicalMovementArtwork movement={movement} size={72} testID="completed-recap-canonical-movement-artwork" />;
 }
 
 function setVideoId(set?: CompletedRecapSet | null) {

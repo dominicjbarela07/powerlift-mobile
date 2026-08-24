@@ -13,11 +13,10 @@ import {
 } from 'react-native';
 
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
 import { SLScreen } from '@/components/ui/sl-screen';
-import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
-import { CoreVariantBadge, type CoreVariantFamily } from '@/components/workout-logger/core-variant-badge';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLLayout } from '@/constants/theme';
 import { API_BASE } from '@/lib/api';
@@ -39,8 +38,6 @@ import {
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
-import { ledgerCoreLiftAsset } from '@/lib/ledger-index-assets';
-import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   buildLoadRepProfileLayout,
@@ -149,6 +146,10 @@ function withLoadSemantics<T extends CanonicalHistorySet | null | undefined>(
 }
 
 function hydrateHistoryLoadSemantics(payload: CanonicalMovementHistory) {
+  const hydrateExposure = (row: CanonicalHistoryExposure) => ({
+    ...row,
+    best_set: withLoadSemantics(row.best_set, payload.movement),
+  });
   return {
     ...payload,
     equipment_breakdown: payload.equipment_breakdown.map((row) => ({
@@ -162,10 +163,7 @@ function hydrateHistoryLoadSemantics(payload: CanonicalMovementHistory) {
       rep_pr_at_load: withLoadSemantics(payload.statistics.rep_pr_at_load, payload.movement),
       best_n_rep_load: withLoadSemantics(payload.statistics.best_n_rep_load, payload.movement),
     },
-    exposures: payload.exposures.map((row) => ({
-      ...row,
-      best_set: withLoadSemantics(row.best_set, payload.movement),
-    })),
+    exposures: payload.exposures.map(hydrateExposure),
   } as CanonicalMovementHistory;
 }
 
@@ -343,10 +341,6 @@ export function CanonicalMovementHistoryScreen({
     ? 'Unknown equipment'
     : history?.equipment_breakdown.find((row) => row.id === profileEquipmentId)?.label || 'Exact comparable sets';
   const muscleLine = [titleCase(history?.movement.primary_muscle_group), ...(history?.movement.secondary_muscle_groups || []).slice(0, 1).map(titleCase)].filter(Boolean).join(' · ');
-  const primaryMuscleRegion = canonicalAccessoryMuscleRegionKey(history?.movement.primary_muscle_group);
-  const coreArtwork = isCoreHistory
-    ? ledgerCoreLiftAsset(history?.movement.family || history?.movement.key)
-    : null;
 
   const closeHistory = onRequestClose || (() => router.back());
   const screenContent = (
@@ -370,20 +364,7 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                {isCoreHistory && coreArtwork && history.movement.kind === 'variant' && ['squat', 'bench', 'deadlift'].includes(String(history.movement.family)) ? <CoreVariantBadge
-                  accentColor="#A865FF"
-                  compact
-                  family={history.movement.family as CoreVariantFamily}
-                  liftArtworkSource={coreArtwork}
-                /> : isCoreHistory && coreArtwork ? <Image
-                  accessibilityLabel={`${titleCase(history.movement.family)} movement artwork`}
-                  resizeMode="contain"
-                  source={coreArtwork}
-                  style={styles.coreArtwork}
-                /> : <AccessoryMuscleRegionMedallion
-                  accessibilityLabel={`${titleCase(history.movement.primary_muscle_group) || 'Movement'} muscle group`}
-                  regionKey={primaryMuscleRegion}
-                />}
+                <CanonicalMovementArtwork movement={history.movement} size={86} testID="movement-history-canonical-artwork" />
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
