@@ -11,6 +11,12 @@ type GovernedAccessoryIdentity = Readonly<{
   family?: string | null;
   primary_muscle_group?: string | null;
   secondary_muscle_groups?: readonly string[] | null;
+  material_parameters?: Readonly<{
+    accessory_taxonomy?: Readonly<{
+      primary_muscle_group?: string | null;
+      secondary_muscle_groups?: readonly string[] | null;
+    }> | null;
+  }> | null;
 }>;
 
 type GovernedCoreIdentity = Readonly<{
@@ -100,7 +106,9 @@ function explicitCoreIdentity(
   if (nested) {
     return {
       id: positiveId(nested.id)!,
-      family: coreFamily(nested.family),
+      family: coreFamily(nested.family)
+        || coreFamily(movement.core_family || movement.family)
+        || coreFamilyFromLiftCode(movement.lift),
       variant: normalizedToken(nested.kind) === 'variant',
     };
   }
@@ -124,25 +132,62 @@ function explicitCoreIdentity(
 
 function explicitAccessoryIdentity(
   movement: CanonicalMovementArtworkInput,
-): { id: number; identity: GovernedAccessoryIdentity } | null {
-  const resolvedLegacy = normalizedToken(movement.legacy?.state) === 'legacy_resolved'
+): {
+  id: number;
+  primaryMuscleGroup: string;
+  secondaryMuscleGroups: readonly string[];
+} | null {
+  const governedTaxonomy = (
+    identity?: GovernedAccessoryIdentity | null,
+    allowParentFallback = false,
+  ): { primaryMuscleGroup: string; secondaryMuscleGroups: readonly string[] } | null => {
+    const nested = identity?.material_parameters?.accessory_taxonomy;
+    const primary = identity?.primary_muscle_group
+      || nested?.primary_muscle_group
+      || (allowParentFallback ? movement.primary_muscle_group : null)
+      || (allowParentFallback ? movement.family : null)
+      || identity?.family;
+    const region = focusedAccessoryMuscleRegionKey(primary);
+    if (!region) return null;
+    return {
+      primaryMuscleGroup: region,
+      secondaryMuscleGroups: identity?.secondary_muscle_groups
+        || nested?.secondary_muscle_groups
+        || (allowParentFallback ? movement.secondary_muscle_groups : null)
+        || [],
+    };
+  };
+  const candidate = (
+    identity?: GovernedAccessoryIdentity | null,
+    idOverride?: unknown,
+    allowParentFallback = false,
+  ) => {
+    const id = positiveId(idOverride) || positiveId(identity?.id);
+    const taxonomy = governedTaxonomy(identity, allowParentFallback);
+    return id && taxonomy ? { id, ...taxonomy } : null;
+  };
+
+  const legacyState = normalizedToken(movement.legacy?.state);
+  const resolvedLegacy = ['canonical', 'legacy_resolved', 'resolved'].includes(legacyState)
     && positiveId(movement.legacy?.effective_movement_definition_id)
     && movement.legacy?.effective_movement_identity
-    ? {
-        id: positiveId(movement.legacy.effective_movement_definition_id)!,
-        identity: movement.legacy.effective_movement_identity,
-      }
+    ? candidate(
+        movement.legacy.effective_movement_identity,
+        movement.legacy.effective_movement_definition_id,
+      )
     : null;
   if (resolvedLegacy) return resolvedLegacy;
 
-  for (const identity of [
-    movement.performed_canonical_movement_identity,
-    movement.performed_movement_identity,
-    movement.movement_identity,
-  ]) {
-    const id = positiveId(identity?.id);
-    if (id && identity) return { id, identity };
-  }
+  // A performed equipment implementation is not a movement identity. Prefer
+  // the explicit performed canonical movement, then the governed programmed
+  // movement. A performed identity is only eligible when it carries governed
+  // movement taxonomy of its own.
+  const performedCanonical = candidate(movement.performed_canonical_movement_identity);
+  if (performedCanonical) return performedCanonical;
+  const programmed = candidate(movement.movement_identity, undefined, true);
+  if (programmed) return programmed;
+  const performed = candidate(movement.performed_movement_identity);
+  if (performed) return performed;
 
   const directAccessory = ['accessory', 'custom'].includes(normalizedToken(movement.kind))
     || normalizedToken(movement.identity_type) === 'accessory';
@@ -151,15 +196,13 @@ function explicitAccessoryIdentity(
     || positiveId(movement.movement_definition_id)
     || positiveId(movement.id);
   if (!id) return null;
-  return {
-    id,
-    identity: {
+  return candidate({
       id,
       key: movement.key,
+      family: movement.family,
       primary_muscle_group: movement.primary_muscle_group,
       secondary_muscle_groups: movement.secondary_muscle_groups,
-    },
-  };
+    }, id, true);
 }
 
 /**
@@ -183,14 +226,26 @@ export function resolveCanonicalMovementArtwork(
   }
 
   const accessory = explicitAccessoryIdentity(movement);
-  if (!accessory) return { kind: 'neutral', reason: 'missing_canonical_identity' };
-  const regionKey = focusedAccessoryMuscleRegionKey(accessory.identity.primary_muscle_group);
-  if (!regionKey) return { kind: 'neutral', reason: 'missing_governed_taxonomy' };
+  if (!accessory) {
+    const hasAccessoryIdentity = [
+      movement.legacy?.effective_movement_definition_id,
+      movement.performed_canonical_movement_identity?.id,
+      movement.movement_identity?.id,
+      movement.performed_movement_identity?.id,
+      movement.measurement?.canonical_identity_id,
+      movement.movement_definition_id,
+      ['accessory', 'custom'].includes(normalizedToken(movement.kind)) ? movement.id : null,
+    ].some((value) => positiveId(value));
+    return {
+      kind: 'neutral',
+      reason: hasAccessoryIdentity ? 'missing_governed_taxonomy' : 'missing_canonical_identity',
+    };
+  }
   return {
     kind: 'accessory',
     canonicalIdentityId: accessory.id,
-    regionKey,
-    primaryMuscleGroup: String(accessory.identity.primary_muscle_group),
-    secondaryMuscleGroups: accessory.identity.secondary_muscle_groups || [],
+    regionKey: accessory.primaryMuscleGroup as FocusedAccessoryMuscleRegionKey,
+    primaryMuscleGroup: accessory.primaryMuscleGroup,
+    secondaryMuscleGroups: accessory.secondaryMuscleGroups,
   };
 }
