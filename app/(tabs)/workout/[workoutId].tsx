@@ -86,6 +86,11 @@ import {
 } from '@/lib/equipment-selection';
 import { setUpdateBlocker } from '@/lib/updateSafety';
 import { ThemedText } from '@/components/themed-text';
+import {
+  CanonicalAccessoryPicker,
+  type CanonicalAccessorySelection,
+} from '@/components/CanonicalAccessoryPicker';
+import { resolveLoggerMovementIdentity } from '@/lib/logger-movement-identity';
 
 type SetLog = {
   id: number;
@@ -154,6 +159,11 @@ type WorkoutItem = {
   is_substituted?: boolean;
   selected_sub_movement?: string | null;
   approved_subs?: string[];
+  approved_sub_identities?: Array<{
+    movement?: string | null;
+    movement_definition_id?: number | null;
+    movement_identity?: EquipmentIdentityLike | null;
+  }>;
   sets: number | null;
   reps: number | null;
   reps_text: string | null;
@@ -187,7 +197,14 @@ type WorkoutItem = {
   prev_best?: WorkoutItem['lookback_best'];
   movement_history?: MovementHistory | null;
   movement_identity?: EquipmentIdentityLike | null;
+  effective_movement_identity?: EquipmentIdentityLike | null;
   performed_movement_identity?: EquipmentIdentityLike | null;
+  performed_canonical_movement_identity?: EquipmentIdentityLike | null;
+  effective_movement_definition_id?: number | null;
+  legacy?: {
+    effective_movement_definition_id?: number | null;
+    effective_movement_identity?: EquipmentIdentityLike | null;
+  } | null;
   parent_item_id?: number | string | null;
 };
 
@@ -1843,7 +1860,9 @@ export default function WorkoutViewerScreen() {
 
   // --- Accessory hot-swap (self-coached only) ---
   const [swapAccVisible, setSwapAccVisible] = useState(false);
+  const [swapPickerVisible, setSwapPickerVisible] = useState(false);
   const [swapAccItem, setSwapAccItem] = useState<WorkoutItem | null>(null);
+  const [swapAccIdentity, setSwapAccIdentity] = useState<CanonicalAccessorySelection | null>(null);
   const [movementHistoryItem, setMovementHistoryItem] = useState<WorkoutItem | null>(null);
   const [swapAccForm, setSwapAccForm] = useState({
     movement: '',
@@ -1853,9 +1872,11 @@ export default function WorkoutViewerScreen() {
   });
 
   const openSwapAcc = (it: WorkoutItem) => {
+    const identity = resolveLoggerMovementIdentity(it);
     setSwapAccItem(it);
+    setSwapAccIdentity(identity.effective as CanonicalAccessorySelection | null);
     setSwapAccForm({
-      movement: it.selected_sub_movement || it.movement || it.original_movement || '',
+      movement: identity.displayName,
       sets: it.sets != null ? String(it.sets) : '',
       reps_text: it.reps_text || (it.reps != null ? String(it.reps) : ''),
       rir: it.rir_target != null ? String(it.rir_target) : '',
@@ -1863,16 +1884,28 @@ export default function WorkoutViewerScreen() {
     setSwapAccVisible(true);
   };
 
+  const openGovernedSwapPicker = () => {
+    setSwapAccVisible(false);
+    setTimeout(() => setSwapPickerVisible(true), 180);
+  };
+
+  const returnToSwapAfterPicker = () => {
+    setSwapPickerVisible(false);
+    setTimeout(() => {
+      if (swapAccItem) setSwapAccVisible(true);
+    }, 180);
+  };
+
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
 
-    const movement = String(swapAccForm.movement || '').trim();
+    const movement = String(swapAccIdentity?.display_name || '').trim();
     const setsStr = String(swapAccForm.sets || '').trim();
     const repsText = String(swapAccForm.reps_text || '').trim();
     const rirStr = String(swapAccForm.rir || '').trim();
 
-    if (!movement) {
-      setError('Movement required');
+    if (!swapAccIdentity?.id || !movement) {
+      setError('Select a governed movement');
       return;
     }
 
@@ -1907,6 +1940,7 @@ export default function WorkoutViewerScreen() {
           method: 'POST',
           body: {
             movement,
+            performed_canonical_movement_definition_id: swapAccIdentity.id,
             sets: sets ?? undefined,
             reps_text: repsText,
             rir: rir ?? undefined,
@@ -1917,6 +1951,13 @@ export default function WorkoutViewerScreen() {
 
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to swap accessory (HTTP ${status})`);
+      }
+      const acceptedIdentityId = Number(
+        json?.item?.effective_movement_definition_id
+        || json?.item?.performed_canonical_movement_identity?.id,
+      );
+      if (acceptedIdentityId !== Number(swapAccIdentity.id)) {
+        throw new Error('The server did not confirm the selected governed movement.');
       }
 
       setSwapAccVisible(false);
@@ -2481,10 +2522,15 @@ export default function WorkoutViewerScreen() {
     const repsDefault = accInputs[item.id]?.reps || accessoryRepsDefault(item);
     const rirDefault = accInputs[item.id]?.rir || defaultAccessoryRir(item);
 
+    const identity = resolveLoggerMovementIdentity(item);
+    if (!identity.canonicalIdentityComplete) {
+      setError('This accessory does not have a governed movement identity.');
+      return;
+    }
     setAccessoryWheel({
       visible: true,
       itemId: item.id,
-      title: item.movement || 'Accessory',
+      title: identity.displayName,
       targetLine: accessoryTargetLine(item),
       weight: nearestWheelValue(weightOptions, rawWeight, '0'),
       reps: nearestWheelValue(repsOptions, repsDefault, '10'),
@@ -4899,6 +4945,7 @@ export default function WorkoutViewerScreen() {
     expanded: boolean;
     isComplete: boolean;
   }): { loggerFocus: MovementLoggerFocusModel | null; detailRows: ActiveMovementDetailRow[] } => {
+    const identity = resolveLoggerMovementIdentity(item);
     const completedIndexes = logs.map((log) => log.set_index || 0).filter(Boolean);
     const detailRows: ActiveMovementDetailRow[] = logs
       .slice()
@@ -4920,7 +4967,7 @@ export default function WorkoutViewerScreen() {
       ? {
           itemId: item.id,
           groupItemId: item.id,
-          movementName: simplifyMobileMovementName(item.movement) || 'Accessory',
+          movementName: simplifyMobileMovementName(identity.displayName) || 'Accessory',
           designation: 'Accessory',
           liftType: 'Support Work',
           currentSetLabel: `Set ${nextIndex}`,
@@ -4944,6 +4991,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const renderAccessoryMovement = (it: WorkoutItem) => {
+    const identity = resolveLoggerMovementIdentity(it);
     const logs = it.set_logs || [];
     const latestLoggedIdx =
       logs.length > 0
@@ -4973,7 +5021,7 @@ export default function WorkoutViewerScreen() {
       <CoreMovementLedgerRow
         key={it.id}
         state={accessoryState}
-        title={it.movement || 'Accessory'}
+        title={identity.displayName}
         variantLabel="Accessory"
         scheme={accessoryTargetLine(it)}
         loggerFocus={accessoryIsExpanded ? movementPresentation.loggerFocus : null}
@@ -5798,7 +5846,7 @@ export default function WorkoutViewerScreen() {
                 <View style={styles.coreWheelHeaderRow}>
                   <View style={styles.coreWheelHeaderCopy}>
                     <Text style={styles.coreWheelTitle}>
-                      {movementHistoryItem.movement || 'Movement'} History
+                      {resolveLoggerMovementIdentity(movementHistoryItem).displayName} History
                     </Text>
                     <Text style={styles.coreWheelSubtitle}>
                       {formatHistoryPattern(history?.movement_pattern)}
@@ -6524,21 +6572,18 @@ export default function WorkoutViewerScreen() {
             {canHotSwap ? (
               <>
                 <Text style={styles.modalSectionKicker}>Movement</Text>
-                <View style={styles.swapMovementField}>
+                <TouchableOpacity
+                  style={styles.swapMovementField}
+                  onPress={openGovernedSwapPicker}
+                  accessibilityRole="button"
+                  accessibilityLabel="Choose governed movement"
+                >
                   <Text style={styles.swapSearchIcon}>⌕</Text>
-                  <TextInput
-                    style={styles.swapMovementInput}
-                    placeholder="Movement (e.g., Lat Pulldown)"
-                    placeholderTextColor="#64748b"
-                    value={swapAccForm.movement}
-                    onChangeText={(t) => setSwapAccForm((p) => ({ ...p, movement: t }))}
-                  />
-                  {swapAccForm.movement ? (
-                    <TouchableOpacity onPress={() => setSwapAccForm((p) => ({ ...p, movement: '' }))}>
-                      <Text style={styles.swapClearText}>×</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
+                  <Text style={styles.swapMovementInput} numberOfLines={1}>
+                    {swapAccIdentity?.display_name || 'Choose governed movement'}
+                  </Text>
+                  <Text style={styles.swapClearText}>›</Text>
+                </TouchableOpacity>
 
                 <Text style={styles.modalSectionKicker}>Prescription</Text>
                 <View style={styles.readinessScaleRow}>
@@ -6597,46 +6642,47 @@ export default function WorkoutViewerScreen() {
               <>
                 <View style={{ gap: 8, marginTop: 10 }}>
                   {(() => {
-                    const prescribed = String(
-                      swapAccItem?.original_movement || swapAccItem?.movement || ''
-                    ).trim();
-
-                    const approved = Array.isArray(swapAccItem?.approved_subs)
-                      ? swapAccItem.approved_subs
-                      : [];
-
-                    const options: string[] = [];
-                    const seen = new Set<string>();
-
-                    [prescribed, ...approved].forEach((mv) => {
-                      const clean = String(mv || '').trim();
-                      if (!clean) return;
-                      const key = clean.toLowerCase();
-                      if (seen.has(key)) return;
-                      seen.add(key);
-                      options.push(clean);
-                    });
-
-                    const currentActive = String(
-                      swapAccItem?.selected_sub_movement || swapAccItem?.movement || ''
-                    ).trim();
-
-                    return options.map((movement) => {
-                      const selected = swapAccForm.movement === movement;
-                      const isPrescribed = prescribed !== '' && movement === prescribed;
-                      const isActive = currentActive !== '' && movement === currentActive;
+                    const prescribedId = Number(swapAccItem?.movement_identity?.id || 0);
+                    const rows = [
+                      swapAccItem?.movement_identity
+                        ? {
+                            id: Number(swapAccItem.movement_identity.id),
+                            display_name: String(swapAccItem.movement_identity.display_name || ''),
+                          }
+                        : null,
+                      ...(swapAccItem?.approved_sub_identities || []).map((row) => {
+                        const identity = row.movement_identity;
+                        const id = Number(row.movement_definition_id || identity?.id || 0);
+                        const displayName = String(identity?.display_name || row.movement || '').trim();
+                        return id > 0 && displayName ? { id, display_name: displayName } : null;
+                      }),
+                    ].filter(Boolean) as CanonicalAccessorySelection[];
+                    const options = [...new Map(rows.map((row) => [row.id, row])).values()];
+                    if (!options.length) {
+                      return <Text style={styles.modalSubtitle}>Governed substitution options are unavailable.</Text>;
+                    }
+                    return options.map((identity) => {
+                      const selected = Number(swapAccIdentity?.id) === Number(identity.id);
+                      const isPrescribed = Number(identity.id) === prescribedId;
+                      const isActive = selected;
 
                       return (
                         <TouchableOpacity
-                          key={movement}
+                          key={identity.id}
                           style={[
                             styles.swapOptionButton,
                             selected && styles.swapOptionButtonActive,
                           ]}
-                          onPress={() => setSwapAccForm((p) => ({ ...p, movement }))}
+                          onPress={() => {
+                            setSwapAccIdentity(identity);
+                            setSwapAccForm((current) => ({
+                              ...current,
+                              movement: identity.display_name,
+                            }));
+                          }}
                         >
                           <Text style={[styles.swapOptionText, selected && styles.swapOptionTextActive]}>
-                            {movement}
+                            {identity.display_name}
                             {isPrescribed ? ' (Prescribed)' : ''}
                             {isActive ? ' (Active)' : ''}
                           </Text>
@@ -6662,7 +6708,7 @@ export default function WorkoutViewerScreen() {
               <TouchableOpacity
                 style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
                 onPress={saveSwapAcc}
-                disabled={savingItemId != null}
+                disabled={savingItemId != null || !swapAccIdentity?.id}
               >
                 {savingItemId === swapAccItem?.id ? (
                   <ActivityIndicator size="small" color="#0B0F1A" />
@@ -6674,6 +6720,20 @@ export default function WorkoutViewerScreen() {
           </View>
         </View>
       </Modal>
+
+      <CanonicalAccessoryPicker
+        visible={swapPickerVisible}
+        athleteId={Number(data?.workout?.athlete_id || 0) || null}
+        onCancel={returnToSwapAfterPicker}
+        onSelect={(movement) => {
+          setSwapAccIdentity(movement);
+          setSwapAccForm((current) => ({
+            ...current,
+            movement: movement.display_name,
+          }));
+          returnToSwapAfterPicker();
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
