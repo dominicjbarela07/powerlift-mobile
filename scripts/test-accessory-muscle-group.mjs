@@ -6,7 +6,7 @@ import {
 
 const governed = (family, movement = 'Legacy display copy') => accessoryMuscleRegion({
   movement,
-  movement_identity: { family },
+  movement_identity: { id: 100, family },
 }).key;
 
 assert.equal(governed('shoulders'), 'shoulders');
@@ -30,24 +30,20 @@ assert.equal(governed('hip_flexors'), 'hip_flexors');
 assert.equal(
   accessoryMuscleRegion({
     movement: 'Misleading Shoulder Press',
-    movement_identity: { family: 'row', family_display_name: 'Row' },
+    movement_identity: { id: 101, family: 'row', family_display_name: 'Row' },
   }).key,
   'upper_back',
   'Governed identity must win over legacy movement copy.',
 );
-assert.equal(accessoryMuscleRegion({ movement: 'Machine Shoulder Press' }).key, 'shoulders');
-assert.equal(accessoryMuscleRegion({ movement: 'Cable Front Raise' }).key, 'front_delts');
-assert.equal(accessoryMuscleRegion({ movement: 'Dumbbell Lateral Raise' }).key, 'side_delts');
-assert.equal(accessoryMuscleRegion({ movement: 'Reverse Pec Deck Rear Delt' }).key, 'rear_delts');
-assert.equal(accessoryMuscleRegion({ movement: 'Dumbbell Shrug' }).key, 'traps');
-assert.equal(accessoryMuscleRegion({ movement: 'Cable External Rotation' }).key, 'rotator_cuff');
-assert.equal(accessoryMuscleRegion({ movement: 'Reverse Hyperextension' }).key, 'lower_back');
-assert.equal(accessoryMuscleRegion({ movement: 'Seated Calf Raise' }).key, 'calves');
-assert.equal(accessoryMuscleRegion({ movement: 'Hip Abductor Machine' }).key, 'abductors');
-assert.equal(accessoryMuscleRegion({ movement: 'Hip Adductor Machine' }).key, 'adductors');
-assert.equal(accessoryMuscleRegion({ movement: 'Standing Hip Flexor March' }).key, 'hip_flexors');
-assert.equal(accessoryMuscleRegion({ movement: 'Cable Oblique Crunch' }).key, 'obliques');
-assert.equal(accessoryMuscleRegion({ movement: 'Cable Abdominal Crunch' }).key, 'abs');
+for (const movement of [
+  'Machine Shoulder Press', 'Cable Front Raise', 'Dumbbell Lateral Raise',
+  'Reverse Pec Deck Rear Delt', 'Dumbbell Shrug', 'Cable External Rotation',
+  'Reverse Hyperextension', 'Seated Calf Raise', 'Hip Abductor Machine',
+  'Hip Adductor Machine', 'Standing Hip Flexor March',
+  'Cable Oblique Crunch', 'Cable Abdominal Crunch',
+]) {
+  assert.equal(accessoryMuscleRegion({ movement }).key, 'full_body');
+}
 assert.equal(accessoryMuscleRegion({ movement: 'Unresolved Custom Movement' }).key, 'full_body');
 
 assert.deepEqual(

@@ -115,6 +115,7 @@ type WorkoutItem = {
     ownership_scope?: string | null;
     library_scope?: string | null;
   } | null;
+  effective_movement_identity?: SessionMovementItem['movement_identity'];
   performed_movement_identity?: SessionMovementItem['movement_identity'];
   performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {

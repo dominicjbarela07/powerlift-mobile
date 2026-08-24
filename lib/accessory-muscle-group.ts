@@ -1,3 +1,8 @@
+import {
+  resolveLoggerMovementIdentity,
+  type LoggerMovementIdentityItem,
+} from '@/lib/logger-movement-identity';
+
 export const ACCESSORY_MUSCLE_REGION_KEYS = [
   'chest',
   'shoulders',
@@ -36,6 +41,7 @@ export type AccessoryMuscleRegionPresentation = Readonly<{
 }>;
 
 type AccessoryIdentity = Readonly<{
+  id?: number | null;
   family?: string | null;
   family_display_name?: string | null;
   primary_muscle_group?: string | null;
@@ -44,8 +50,10 @@ type AccessoryIdentity = Readonly<{
 type AccessoryMovement = Readonly<{
   movement?: string | null;
   movement_identity?: AccessoryIdentity | null;
+  effective_movement_identity?: AccessoryIdentity | null;
   performed_movement_identity?: AccessoryIdentity | null;
   performed_canonical_movement_identity?: AccessoryIdentity | null;
+  is_substituted?: boolean | null;
   legacy?: Readonly<{
     state?: string | null;
     original_text?: string | null;
@@ -185,35 +193,22 @@ function presentation(key: AccessoryMuscleRegionKey): AccessoryMuscleRegionPrese
   return { key, label: REGION_LABELS[key] };
 }
 
-function regionFromLegacyText(value?: string | null): AccessoryMuscleRegionKey | null {
-  const normalized = String(value || '').trim();
-  if (!normalized) return null;
-  return LEGACY_NAME_RULES.find(([pattern]) => pattern.test(normalized))?.[1] || null;
-}
-
 /**
- * Resolves accessory artwork through governed movement identity first. Legacy
- * name matching is deliberately second so older prescriptions remain useful
- * without allowing display copy to override a governed family.
+ * Resolves accessory artwork only through the stable effective movement
+ * identity and its governed taxonomy. Display copy never selects artwork.
  */
 export function accessoryMuscleRegion(item: AccessoryMovement): AccessoryMuscleRegionPresentation {
-  const identities = [
-    item.performed_canonical_movement_identity,
-    item.performed_movement_identity,
-    item.movement_identity,
-    item.legacy?.effective_movement_identity,
-  ];
+  const normalized = resolveLoggerMovementIdentity(
+    item as LoggerMovementIdentityItem,
+  );
+  const identities = [normalized.effective];
   for (const identity of identities) {
     const governedFamily = regionFromGovernedKey(identity?.primary_muscle_group)
-      || regionFromGovernedKey(identity?.family);
+      || regionFromGovernedKey(identity?.family)
+      || regionFromGovernedKey(identity?.family_display_name);
     if (governedFamily) return presentation(governedFamily);
-
-    const identityDisplayRegion = regionFromLegacyText(identity?.family_display_name);
-    if (identityDisplayRegion) return presentation(identityDisplayRegion);
   }
-
-  const legacyRegion = regionFromLegacyText(item.movement);
-  return presentation(legacyRegion || 'full_body');
+  return presentation('full_body');
 }
 
 /** Compatibility helper for non-visual consumers that still need readable copy. */
