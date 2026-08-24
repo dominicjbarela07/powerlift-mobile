@@ -27,6 +27,8 @@ export type CanonicalHistorySet = Readonly<{
   e10rm_kg?: number | null;
   performed_label?: string | null;
   comparison_scope?: string | null;
+  load_convention?: string | null;
+  measurement_type?: string | null;
   video?: { id: number; thumbnail_url?: string | null; review_status?: string | null } | null;
   pr_indicators?: string[];
 }>;

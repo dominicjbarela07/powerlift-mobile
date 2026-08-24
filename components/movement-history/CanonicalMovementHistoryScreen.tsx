@@ -41,6 +41,7 @@ import {
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
 import { ledgerCoreLiftAsset } from '@/lib/ledger-index-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   buildLoadRepProfileLayout,
   loadRepProfileAccessibilityLabel,
@@ -78,12 +79,20 @@ function displayWeight(valueKg: number | null | undefined, unit: MovementHistory
 function setLabel(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {
   if (!set) return 'No comparable set';
   const effort = set.rir != null ? ` @ ${set.rir} RIR` : set.rpe != null ? ` @ RPE ${set.rpe}` : '';
-  return `${displayWeight(set.weight_kg, unit)} ${unit} × ${set.reps ?? '—'}${effort}`;
+  const load = formatPerformedLoad(set.weight_kg, unit, {
+    loadConvention: set.load_convention,
+    measurementType: set.measurement_type,
+  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;
+  return `${load} × ${set.reps ?? '—'}${effort}`;
 }
 
 function compactSetLoad(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {
   if (!set) return '—';
-  return `${displayWeight(set.weight_kg, unit)} ${unit} × ${set.reps ?? '—'}`;
+  const load = formatPerformedLoad(set.weight_kg, unit, {
+    loadConvention: set.load_convention,
+    measurementType: set.measurement_type,
+  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;
+  return `${load} × ${set.reps ?? '—'}`;
 }
 
 function compactSetEffort(set: CanonicalHistorySet | null | undefined) {
@@ -117,6 +126,58 @@ function filterQuery(preset: FilterPreset) {
   if (preset === 'reps8to12') return { repMin: 8, repMax: 12 };
   if (preset === 'reps12plus') return { repMin: 12 };
   return {};
+}
+
+function movementLoadSemantics(movement?: CanonicalMovementHistory['movement'] | null) {
+  return {
+    load_convention: typeof movement?.load_convention === 'string' ? movement.load_convention : null,
+    measurement_type: typeof movement?.measurement_type === 'string' ? movement.measurement_type : null,
+  };
+}
+
+function withLoadSemantics<T extends CanonicalHistorySet | null | undefined>(
+  set: T,
+  movement?: CanonicalMovementHistory['movement'] | null,
+): T {
+  if (!set) return set;
+  const semantics = movementLoadSemantics(movement);
+  return {
+    ...set,
+    load_convention: set.load_convention || semantics.load_convention,
+    measurement_type: set.measurement_type || semantics.measurement_type,
+  } as T;
+}
+
+function hydrateHistoryLoadSemantics(payload: CanonicalMovementHistory) {
+  return {
+    ...payload,
+    equipment_breakdown: payload.equipment_breakdown.map((row) => ({
+      ...row,
+      best_performance: withLoadSemantics(row.best_performance, payload.movement),
+    })),
+    load_rep_profile: payload.load_rep_profile.map((row) => withLoadSemantics(row, payload.movement)),
+    statistics: {
+      ...payload.statistics,
+      load_pr: withLoadSemantics(payload.statistics.load_pr, payload.movement),
+      rep_pr_at_load: withLoadSemantics(payload.statistics.rep_pr_at_load, payload.movement),
+      best_n_rep_load: withLoadSemantics(payload.statistics.best_n_rep_load, payload.movement),
+    },
+    exposures: payload.exposures.map((row) => ({
+      ...row,
+      best_set: withLoadSemantics(row.best_set, payload.movement),
+    })),
+  } as CanonicalMovementHistory;
+}
+
+function hydrateDetailLoadSemantics(
+  detail: CanonicalHistoryExposureDetail,
+  movement?: CanonicalMovementHistory['movement'] | null,
+) {
+  return {
+    ...detail,
+    best_set: withLoadSemantics(detail.best_set, movement),
+    sets: detail.sets.map((row) => withLoadSemantics(row, movement)),
+  };
 }
 
 export function CanonicalMovementHistoryScreen({
@@ -201,7 +262,7 @@ export function CanonicalMovementHistoryScreen({
     try {
       const payload = await fetchCanonicalMovementHistory(query);
       if (generation !== requestGeneration.current) return;
-      setHistory(payload);
+      setHistory(hydrateHistoryLoadSemantics(payload));
     } catch (caught) {
       if (generation !== requestGeneration.current) return;
       setError(caught instanceof Error ? caught.message : 'Movement History could not load.');
@@ -219,7 +280,7 @@ export function CanonicalMovementHistoryScreen({
     if (!query || !history?.has_more || !history.next_cursor || loadingMore) return;
     setLoadingMore(true);
     try {
-      const next = await fetchCanonicalMovementHistory({ ...query, cursor: history.next_cursor });
+      const next = hydrateHistoryLoadSemantics(await fetchCanonicalMovementHistory({ ...query, cursor: history.next_cursor }));
       setHistory((current) => current ? {
         ...next,
         exposures: [...current.exposures, ...next.exposures.filter((row) => !current.exposures.some((existing) => existing.id === row.id))],
@@ -238,13 +299,16 @@ export function CanonicalMovementHistoryScreen({
     setDetailError(null);
     setDetailLoading(true);
     try {
-      setExposureDetail(await fetchCanonicalMovementExposure(query, exposureId));
+      setExposureDetail(hydrateDetailLoadSemantics(
+        await fetchCanonicalMovementExposure(query, exposureId),
+        history?.movement,
+      ));
     } catch (caught) {
       setDetailError(caught instanceof Error ? caught.message : 'Exposure evidence could not load.');
     } finally {
       setDetailLoading(false);
     }
-  }, [query]);
+  }, [history?.movement, query]);
 
   const closeExposure = () => {
     setSelectedExposureId(null);

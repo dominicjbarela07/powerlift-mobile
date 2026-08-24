@@ -152,6 +152,7 @@ import {
   roundLoggerDisplayWeight,
   roundToNearestGymIncrementLb,
 } from '@/lib/logger-weight-format';
+import { formatPerformedLoad, type PerformedLoadSemantics } from '@/lib/performed-load-semantics';
 import {
   resolveLoggerPrescribedWeight,
   type ResolvedLoggerPrescribedWeight,
@@ -593,9 +594,19 @@ function formatWeight(
   return formatLoggerWeightKg(kg, unit);
 }
 
-function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg') {
+function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
+  const identity = item?.performed_movement_identity || item?.movement_identity || null;
+  return {
+    loadConvention: identity?.load_convention,
+    measurementType: identity?.measurement_type,
+    loadingBehavior: item?.movement_history?.loading_behavior,
+  };
+}
+
+function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
   if (!log) return null;
-  let text = `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
+  let text = formatPerformedLoad(log.actual_weight_kg, unit, itemLoadSemantics(item))
+    || `${formatWeight(log.actual_weight_kg, unit)} ${unit}`;
   if (log.actual_reps === 0) text += ' × Failed';
   else if (log.actual_reps != null) text += ` × ${log.actual_reps}`;
   if (log.actual_rpe != null) text += ` @ RPE ${log.actual_rpe.toFixed(1)}`;
@@ -717,7 +728,7 @@ function getLookbackBest(it: any) {
   return it?.lookback_best || it?.last_best || it?.prev_best || null;
 }
 
-function formatLookbackLine(best: any, unit: 'kg' | 'lb') {
+function formatLookbackLine(best: any, unit: 'kg' | 'lb', item?: WorkoutItem | null) {
   if (!best) return null;
 
   // Support both shapes:
@@ -731,7 +742,8 @@ function formatLookbackLine(best: any, unit: 'kg' | 'lb') {
 
   if (w == null || reps == null) return null;
 
-  let line = `Last best: ${formatWeight(w, unit)} ${unit} × ${reps}`;
+  const load = formatPerformedLoad(w, unit, itemLoadSemantics(item)) || `${formatWeight(w, unit)} ${unit}`;
+  let line = `Last best: ${load} × ${reps}`;
   if (rpe != null) line += ` @ RPE ${Number(rpe).toFixed(1)}`;
   if (rir != null) line += ` (RIR ${rir})`;
   if (dateStr) line += ` · ${dateStr}`;
@@ -1295,23 +1307,8 @@ function repeatLoadLabel(
   log: SetLog,
   unit: 'kg' | 'lb',
 ): string {
-  const identity = item?.performed_movement_identity || item?.movement_identity || null;
-  const convention = String(identity?.load_convention || '').trim().toLowerCase();
-  const loadingBehavior = String(item?.movement_history?.loading_behavior || '').trim().toLowerCase();
-  const displayedWeight = toWheelWeight(log, unit) || '0';
-
-  if (convention === 'bodyweight_only' || convention === 'no_external_load') {
-    return 'BW';
-  }
-  if (convention === 'added_bodyweight') {
-    return Number(log.actual_weight_kg || 0) > 0
-      ? `BW + ${displayedWeight} ${unit}`
-      : 'BW';
-  }
-  if (convention === 'assistance_load' || loadingBehavior === 'assisted') {
-    return `${displayedWeight} ${unit} assistance`;
-  }
-  return `${displayedWeight} ${unit}`;
+  return formatPerformedLoad(log.actual_weight_kg, unit, itemLoadSemantics(item))
+    || `${toWheelWeight(log, unit) || '0'} ${unit}`;
 }
 
 function displayWeightFromKg(kg: number | null | undefined, unit: 'kg' | 'lb') {
@@ -4077,7 +4074,7 @@ export default function WorkoutViewerScreen() {
           rir: nearestWheelValue(rirOptions, rir, '2'),
           requiresRir: executionItem.rir_target != null,
           alreadyLogged: Boolean(log),
-          loggedResult: log ? loggedSetText(log as SetLog, unit) : null,
+          loggedResult: log ? loggedSetText(log as SetLog, unit, item) : null,
           validationError: null,
           weightOptions,
           repsOptions,
@@ -7179,7 +7176,7 @@ export default function WorkoutViewerScreen() {
     progressionLabel: progressionLabel || `${completedIndexes.length} / ${total} sets logged`,
     targetLine,
     prescriptionLine,
-    recentContext: formatLookbackLine(getLookbackBest(item), unit),
+    recentContext: formatLookbackLine(getLookbackBest(item), unit, item),
     rail: resolvedRail,
     opportunity: finalAssignedSetOpportunity(liftDisplayName(item), resolvedRail),
     canLog,
@@ -7210,7 +7207,7 @@ export default function WorkoutViewerScreen() {
 
     return {
       setLogId: log.id,
-      resultText: loggedSetText(log, unit),
+      resultText: loggedSetText(log, unit, item),
       videoLabel: hasVideo
         ? 'View'
         : uploadState.uploading
@@ -7633,7 +7630,7 @@ export default function WorkoutViewerScreen() {
 
     return {
       setLogId: log.id,
-      resultText: loggedSetText(log, unit),
+      resultText: loggedSetText(log, unit, item),
       videoLabel: hasVideo
         ? 'View'
         : uploadState.uploading
@@ -7664,7 +7661,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const accessoryLookbackLine = (item: WorkoutItem) => {
-    const line = formatLookbackLine(getLookbackBest(item), unit);
+    const line = formatLookbackLine(getLookbackBest(item), unit, item);
     const devContext = isIdealWorkoutDetailPreview
       ? (item as any).dev_accessory_intelligence
       : null;
@@ -7685,7 +7682,7 @@ export default function WorkoutViewerScreen() {
     primaryMuscleRegion: accessoryMuscleRegion(item).key,
     set_logs: (item.set_logs || []).map((log) => ({
       ...log,
-      resultLine: loggedSetText(log, unit),
+      resultLine: loggedSetText(log, unit, item),
     })),
   }));
 
@@ -8426,7 +8423,7 @@ export default function WorkoutViewerScreen() {
                   expanded={detailsExpanded}
                   detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
                   meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
-                  top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit)}
+                  top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit, core)}
                   movementNote={core.notes}
                   visualContext={movementVisualContextFor(
                     core,

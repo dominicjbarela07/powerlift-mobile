@@ -42,6 +42,7 @@ import {
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
+import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   SESSION_RECAP_ARCHIVE_ART,
   sessionRecapHighlightAsset,
@@ -394,12 +395,12 @@ function setVideoId(set?: CompletedRecapSet | null) {
 
 function setResultLabel(set: Pick<CompletedRecapSet, 'actual_weight_kg' | 'actual_reps'>, movement: CompletedRecapMovement, unit: DisplayWeightUnit) {
   const type = String(movement.measurement?.measurement_type || 'load_reps').toLowerCase();
-  const load = formatWeightFromKg(set.actual_weight_kg, unit) || null;
+  const load = formatPerformedLoad(set.actual_weight_kg, unit, {
+    loadConvention: movement.measurement?.load_convention,
+    measurementType: movement.measurement?.measurement_type,
+  }) || formatWeightFromKg(set.actual_weight_kg, unit) || null;
   const reps = Number(set.actual_reps);
   const repsLabel = Number.isFinite(reps) && reps > 0 ? numberLabel(reps, 0) : '—';
-  if (type === 'bodyweight_reps') return `Bodyweight × ${repsLabel}`;
-  if (type.includes('assisted')) return `${load || 'Assistance'} assistance × ${repsLabel}`;
-  if (type.includes('added_weight') || type.includes('weighted_bodyweight')) return `BW${load ? ` + ${load}` : ''} × ${repsLabel}`;
   if (type === 'duration' || type === 'time') return `${repsLabel} sec`;
   if (type.includes('distance')) return [load, `${repsLabel} m`].filter(Boolean).join(' · ');
   if (!load && repsLabel !== '—') return `${repsLabel} reps`;

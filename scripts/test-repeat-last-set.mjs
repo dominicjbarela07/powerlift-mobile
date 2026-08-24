@@ -91,8 +91,9 @@ assert.match(source, /<Text style=\{styles\.repeatLastSetSubtitle\}>\{accessoryW
 assert.match(source, /<Text style=\{styles\.repeatLastSetSubtitle\}>\{activeEntry\.repeatLast\.preview\}<\/Text>/);
 assert.match(source, /repeatLoadLabel\(coreWheelItem, coreWheelLastLog, unit\)/);
 assert.match(source, /repeatLoadLabel\(accessoryWheelItem, accessoryWheelLastLog, unit\)/);
-assert.match(source, /convention === 'bodyweight_only' \|\| convention === 'no_external_load'/);
-assert.match(source, /convention === 'assistance_load' \|\| loadingBehavior === 'assisted'/);
+assert.match(source, /formatPerformedLoad\(log\.actual_weight_kg, unit, itemLoadSemantics\(item\)\)/);
+assert.match(source, /loadConvention: identity\?\.load_convention/);
+assert.match(source, /loadingBehavior: item\?\.movement_history\?\.loading_behavior/);
 assert.match(source, /if \(!skipEquipmentGate && needsEquipmentSelection\(item\)\)/);
 assert.match(source, /\.\.\.equipmentSnapshotForSet\(activeEquipmentIdentity\(item\)\)/);
 assert.match(source, /if \(!json\) return;[\s\S]*markAutoAdvanceAfterAcceptedLog\(itemId, json\)/);

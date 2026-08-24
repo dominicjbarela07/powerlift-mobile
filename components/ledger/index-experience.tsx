@@ -27,6 +27,7 @@ import {
 import { fetchLedgerExplorationIndex, type LedgerExplorationIndex, type LedgerMovementProgress } from '@/lib/ledger-exploration';
 import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
 import { fetchJourneyBootstrap, type JourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
+import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import { canonicalTotal, totalClubState } from '@/lib/ledger-rewards';
 import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
@@ -168,9 +169,10 @@ function journeyPerformance(entry: JourneyEntry | null, unit: LedgerUnit) {
     : typeof performance.rir === 'number'
       ? ` @ ${performance.rir} RIR`
       : '';
-  const loadConvention = journeyLoadConvention(entry);
-  const assistance = loadConvention === 'assistance_load' ? ' ASSIST' : '';
-  return `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}${assistance}${reps}${effort}`;
+  const load = formatPerformedLoad(performance.weight_kg, unit, {
+    loadConvention: journeyLoadConvention(entry),
+  }) || `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}`;
+  return `${load}${reps}${effort}`;
 }
 
 function comparePrEvents(left: AccomplishmentEvent, right: AccomplishmentEvent) {

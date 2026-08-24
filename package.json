@@ -98,6 +98,7 @@
     "test:accessory-prescription-editor": "node --import tsx scripts/test-accessory-prescription-editor.mjs",
     "test:logger-wheel-picker": "node --import tsx scripts/test-logger-wheel-picker.mjs",
     "test:set-logger-load-default": "node --import tsx scripts/test-set-logger-load-default.mjs",
+    "test:bodyweight-external-load": "node --import tsx scripts/test-bodyweight-external-load-semantics.mjs",
     "test:coach-roster-first": "node --import tsx scripts/test-coach-roster-first.mjs",
     "test:coach-mobile-live": "node --import tsx scripts/test-coach-mobile-live.mjs",
     "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",
