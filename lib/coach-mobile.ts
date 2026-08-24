@@ -520,3 +520,27 @@ export function openCoachDestination(
   } as any);
   return true;
 }
+
+export function coachComingUpProgrammingDestination(
+  session: Pick<CoachHomeUpcomingSession, 'athlete' | 'destination'>,
+): CoachDestination | null {
+  const athleteId = Number(session.athlete?.id);
+  const normalized = normalizeCoachDestination(session.destination);
+  const workoutId = Number(normalized?.params?.workoutId);
+  if (
+    normalized?.route !== '/(tabs)/workout'
+    || !Number.isInteger(athleteId)
+    || athleteId <= 0
+    || !Number.isInteger(workoutId)
+    || workoutId <= 0
+  ) return null;
+
+  return {
+    route: '/(tabs)/workout',
+    params: {
+      athleteId,
+      workoutId,
+      ...(normalized.params?.programId != null ? { programId: normalized.params.programId } : {}),
+    },
+  };
+}

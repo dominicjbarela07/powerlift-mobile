@@ -84,6 +84,7 @@ import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
+import { resolveProgrammingSessionDeepOpen } from '@/lib/programming-session-deep-open';
 import { SLColors, SLFontFamilies, SLLayout, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 const SESSION_SWIPE_ACTIONS_WIDTH = 116;
@@ -580,12 +581,16 @@ export default function TrainingIndexScreen() {
   const { user } = useAuth();
   const params = useLocalSearchParams<{
     athleteId?: string;
+    workoutId?: string;
+    programId?: string;
     programCreated?: string;
     programmingBlockId?: string;
     programmingWeek?: string;
     programmingDay?: string;
   }>();
   const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
+  const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
+  const directProgramId = params.programId ? Number(params.programId) : null;
   const trainingScopeKey = rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self';
   const programCreatedNonce = params.programCreated ? String(params.programCreated) : null;
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
@@ -833,6 +838,7 @@ export default function TrainingIndexScreen() {
   if (isProgrammingManager) {
     return (
       <IndividualProgrammingHome
+        key={trainingScopeKey}
         hub={visibleHub}
         loading={loading || !trainingScopeReady}
         error={error}
@@ -850,6 +856,9 @@ export default function TrainingIndexScreen() {
         managedAthleteAvatarUrl={visibleHub?.athlete?.avatar_url || null}
         displayUnit={trainingDisplayUnit}
         coachMode={Boolean(rosterAthleteId)}
+        directWorkoutId={Number.isInteger(directWorkoutId) ? directWorkoutId : null}
+        directProgramId={Number.isInteger(directProgramId) ? directProgramId : null}
+        onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}
       />
     );
   }
@@ -921,6 +930,9 @@ function IndividualProgrammingHome({
   managedAthleteAvatarUrl,
   displayUnit,
   coachMode,
+  directWorkoutId,
+  directProgramId,
+  onConsumeDirectOpen,
 }: {
   hub: TrainingHubPayload | null;
   loading: boolean;
@@ -939,6 +951,9 @@ function IndividualProgrammingHome({
   managedAthleteAvatarUrl?: string | null;
   displayUnit: DisplayWeightUnit;
   coachMode: boolean;
+  directWorkoutId?: number | null;
+  directProgramId?: number | null;
+  onConsumeDirectOpen: () => void;
 }) {
   const router = useRouter();
   const activeProgram = hub?.active_program || null;
@@ -947,6 +962,7 @@ function IndividualProgrammingHome({
   const [workspaceSelection, setWorkspaceSelection] = useState<ProgrammingWorkspaceSelection | null>(null);
   const workspaceSheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const workspaceDismissRequestRef = useRef<() => void>(() => undefined);
+  const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
   const followProgrammingOffset = useCallback((offsetY: number) => {
     programmingScrollRef.current?.scrollTo({
@@ -999,6 +1015,57 @@ function IndividualProgrammingHome({
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
     void onRefresh();
   }, [dismissWorkspaceSheet, onRefresh]);
+
+  useEffect(() => {
+    const intentKey = directWorkoutId
+      ? `${managedAthleteId || 0}:${directProgramId || 0}:${directWorkoutId}`
+      : null;
+    if (!intentKey) {
+      consumedDirectOpenRef.current = null;
+      return;
+    }
+    if (consumedDirectOpenRef.current === intentKey) return;
+
+    const result = resolveProgrammingSessionDeepOpen({
+      ready: !loading && !error && !!hub,
+      requestedWorkoutId: directWorkoutId,
+      requestedAthleteId: managedAthleteId,
+      loadedAthleteId: hub?.athlete?.id,
+      requestedProgramId: directProgramId,
+      activeProgramId: activeProgram?.id,
+      blocks,
+      pendingMap,
+      completedMap,
+    });
+    if (result.state === 'idle' || result.state === 'pending') return;
+
+    consumedDirectOpenRef.current = intentKey;
+    onConsumeDirectOpen();
+    if (result.state === 'open') {
+      openSessionWorkspace(result.workoutId, result.context);
+      return;
+    }
+
+    const message = result.reason === 'lifecycle'
+      ? 'This Session is no longer editable from Programming Manager.'
+      : result.reason === 'athlete'
+        ? 'This Session is not available in the selected athlete workspace.'
+        : 'This Session is no longer available in the active Training Program.';
+    Alert.alert('Session unavailable', message);
+  }, [
+    activeProgram?.id,
+    blocks,
+    completedMap,
+    directProgramId,
+    directWorkoutId,
+    error,
+    hub,
+    loading,
+    managedAthleteId,
+    onConsumeDirectOpen,
+    openSessionWorkspace,
+    pendingMap,
+  ]);
 
   return (
     <View style={styles.screen}>

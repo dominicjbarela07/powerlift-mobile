@@ -42,15 +42,16 @@ import {
   sortCoachCommandCenterAthletes,
   type CoachRosterV2Filter,
 } from '@/lib/coach-mobile-v2';
-import type {
-  CoachAthleteSummaryResponse,
-  CoachDestination,
-  CoachHomeActivity,
-  CoachHomeActivityType,
-  CoachHomeResponse,
-  CoachHomeUpcomingSession,
-  CoachRosterAthlete,
-  CoachRosterResponse,
+import {
+  coachComingUpProgrammingDestination,
+  type CoachAthleteSummaryResponse,
+  type CoachDestination,
+  type CoachHomeActivity,
+  type CoachHomeActivityType,
+  type CoachHomeResponse,
+  type CoachHomeUpcomingSession,
+  type CoachRosterAthlete,
+  type CoachRosterResponse,
 } from '@/lib/coach-mobile';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
@@ -373,6 +374,15 @@ export function CoachActivityHome({
     router.push({ pathname: destination.route as any, params: Object.fromEntries(Object.entries(destination.params || {}).map(([key, value]) => [key, String(value ?? '')])) } as any);
   }, [openAthlete, router]);
 
+  const openComingUpSession = useCallback((session: CoachHomeUpcomingSession) => {
+    const destination = coachComingUpProgrammingDestination(session);
+    if (!destination) {
+      setError('This upcoming Session is no longer available. Refresh Coach Home and try again.');
+      return;
+    }
+    openDestination(destination, session.athlete.id);
+  }, [openDestination]);
+
   const dismiss = useCallback(async (activity: CoachHomeActivity) => {
     const current = dataRef.current;
     if (!current) return;
@@ -477,7 +487,7 @@ export function CoachActivityHome({
             </View>
             {(data.coming_up || []).length ? (
               <ScrollView contentContainerStyle={styles.upcomingRail} horizontal showsHorizontalScrollIndicator={false}>
-                {(data.coming_up || []).map((session) => <UpcomingCard key={session.key} onOpen={() => openDestination(session.destination, session.athlete.id)} session={session} />)}
+                {(data.coming_up || []).map((session) => <UpcomingCard key={session.key} onOpen={() => openComingUpSession(session)} session={session} />)}
               </ScrollView>
             ) : <EmptyCard icon="calendar-outline" text="Nothing programmed in the next two weeks." />}
           </View>
