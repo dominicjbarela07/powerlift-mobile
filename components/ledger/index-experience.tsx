@@ -154,6 +154,11 @@ function eventComparison(event: AccomplishmentEvent, unit: LedgerUnit) {
 }
 
 function journeyLoadConvention(entry: JourneyEntry | null) {
+  const loadSemantics = entry?.evidence?.load_semantics;
+  if (loadSemantics && typeof loadSemantics === 'object') {
+    const convention = (loadSemantics as Record<string, unknown>).load_convention;
+    if (typeof convention === 'string') return convention;
+  }
   const equipment = entry?.evidence?.equipment;
   if (!equipment || typeof equipment !== 'object') return null;
   const convention = (equipment as Record<string, unknown>).load_convention;
@@ -169,8 +174,13 @@ function journeyPerformance(entry: JourneyEntry | null, unit: LedgerUnit) {
     : typeof performance.rir === 'number'
       ? ` @ ${performance.rir} RIR`
       : '';
+  const loadSemantics = entry?.evidence?.load_semantics;
+  const measurementType = loadSemantics && typeof loadSemantics === 'object'
+    ? (loadSemantics as Record<string, unknown>).measurement_type
+    : null;
   const load = formatPerformedLoad(performance.weight_kg, unit, {
     loadConvention: journeyLoadConvention(entry),
+    measurementType: typeof measurementType === 'string' ? measurementType : null,
   }) || `${displayWeight(performance.weight_kg, unit)} ${unit.toUpperCase()}`;
   return `${load}${reps}${effort}`;
 }

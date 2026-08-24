@@ -35,7 +35,11 @@ assert.doesNotMatch(primitives, /<AnimatedPressable[\s\S]*?style=\{\(state\)/, '
 assert.match(button, /const variantStyles:[\s\S]*primary:[\s\S]*secondary:[\s\S]*ghost:[\s\S]*danger:/, 'shared buttons must retain concrete workspace-system variant surfaces');
 assert.doesNotMatch(button, /variantSurface|innerSurface/, 'shared buttons must not reintroduce a duplicate nested surface');
 assert.match(listRow, /disabled=\{disabled\}/, 'static informational rows must not inherit disabled opacity');
-assert.match(coreLoggers, /return hasPreSessionDetails \? \([\s\S]*?<SLMotionPressable[\s\S]*?: \([\s\S]*?<View/, 'non-expandable movement rows must remain fully legible');
+assert.match(
+  coreLoggers,
+  /const sessionMovementCard = \([\s\S]*?<View[\s\S]*?return collapseCompletedGesture \? \([\s\S]*?<GestureDetector[\s\S]*?: sessionMovementCard/,
+  'movement rows must remain a fully legible static card when no gesture wrapper applies',
+);
 
 assert.match(tabs, /SLMotionPressable/, 'floating navigation must use shared press feedback');
 assert.match(tabs, /Haptics\.selectionAsync/, 'navigation selection should receive restrained tactile feedback');
@@ -46,7 +50,8 @@ assert.match(floatingNavigationMotion, /return \(\) => animation\.stop\(\)/, 'na
 assert.match(feedback, /Achievement unlocked/, 'earned recognition must begin with a ceremonial cue');
 assert.match(feedback, /trophyOpacity/, 'recognition must transition from trophy to evidence');
 assert.match(feedback, /recognitionVisibleDuration/, 'recognition dwell remains tied to the established lifecycle');
-assert.match(completion, /SessionStreakBadge/, 'completion recap must preserve the streak diamond');
+assert.match(completion, /PostSessionLedgerCeremony/, 'completion recap must preserve the canonical streak ceremony');
+assert.match(completion, /summary\.session_streak/, 'completion ceremony must remain driven by canonical streak evidence');
 assert.match(completion, /animateEntry \|\| reduceMotion/, 'completion recap must bypass ceremony under Reduced Motion');
 assert.match(readiness, /heldScale\.stopAnimation\(\)/, 'readiness direct manipulation must be interruptible');
 assert.match(readiness, /crossedReadinessBoundary/, 'readiness haptics must remain boundary based');

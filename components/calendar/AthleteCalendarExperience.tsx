@@ -62,6 +62,10 @@ export type AthleteCalendarSession = {
   status?: string | null;
   blockId?: number | null;
   blockName?: string | null;
+  programName?: string | null;
+  programStatus?: string | null;
+  weekNumber?: number | null;
+  calendarAccessScope?: 'full' | 'athlete_history' | string | null;
   plannedSummary?: string | null;
   primaryLifts?: string[];
   accessoryCount?: number | null;
@@ -235,6 +239,8 @@ export type AthleteCalendarDayDetail = {
     endDate?: string | null;
     weekNumber?: number | null;
     totalWeeks?: number | null;
+    programName?: string | null;
+    programStatus?: string | null;
   } | null;
   nextUp?: AthleteCalendarSession | null;
   capabilities: { canAddPersonalItem: boolean; canCreateSession: boolean };
@@ -841,7 +847,7 @@ function RestLensCard({ detail, readiness }: { detail: AthleteCalendarDayDetail;
         <EvidenceRow
           icon="layers-outline"
           label="CURRENT BLOCK"
-          value={`${detail.blockContext.name || 'Training Block'}${detail.blockContext.weekNumber ? ` · Week ${detail.blockContext.weekNumber}${detail.blockContext.totalWeeks ? ` of ${detail.blockContext.totalWeeks}` : ''}` : ''}`}
+          value={`${detail.blockContext.programName ? `${detail.blockContext.programName} · ` : ''}${detail.blockContext.name || 'Training Block'}${detail.blockContext.weekNumber ? ` · Week ${detail.blockContext.weekNumber}${detail.blockContext.totalWeeks ? ` of ${detail.blockContext.totalWeeks}` : ''}` : ''}`}
         />
       ) : null}
       <EvidenceRow icon="pulse-outline" label="READINESS" value={readiness ? readinessSummary(readiness) : 'Not submitted'} />
@@ -1435,7 +1441,7 @@ function timedItems(day: AthleteCalendarDay | undefined, onAction: (action: Athl
     ...day.sessions.filter((session) => session.scheduledStartTime).map((session) => ({
       key: `s-${session.id}`,
       title: session.title || 'Training Session',
-      location: session.blockName,
+      location: sessionCalendarContext(session),
       tone: 'training' as const,
       startMinutes: parseClock(session.scheduledStartTime) ?? 9 * 60,
       endMinutes: parseClock(session.scheduledEndTime) ?? ((parseClock(session.scheduledStartTime) ?? 9 * 60) + (session.estimatedDurationMinutes || 30)),
@@ -1486,7 +1492,7 @@ function allDayItems(
       return {
         key: `s-${session.id}`,
         title: session.title || 'Training Session',
-        meta: [session.blockName, durationLabel(session)].filter(Boolean).join(' · '),
+        meta: [sessionCalendarContext(session), durationLabel(session)].filter(Boolean).join(' · '),
         status,
         tone: status.tone,
         onPress: () => onAction({ type: 'schedule-session', session }),
@@ -1635,10 +1641,17 @@ function lensStateBadge(state: AthleteCalendarLensState) {
 }
 function trainingContextLabel(session: AthleteCalendarDayDetailSession) {
   return [
-    session.blockName,
+    sessionCalendarContext(session),
     session.planned?.label || session.plannedSummary,
     session.planned?.movementLabels?.length ? session.planned.movementLabels.join(' + ') : null,
   ].filter(Boolean).join(' · ') || 'Training Session';
+}
+function sessionCalendarContext(session: AthleteCalendarSession) {
+  return [...new Set([
+    session.programName,
+    session.blockName,
+    session.weekNumber ? `Week ${session.weekNumber}` : null,
+  ].filter((value): value is string => Boolean(value)))].join(' · ') || null;
 }
 function formatNumber(value?: number | null) {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—';

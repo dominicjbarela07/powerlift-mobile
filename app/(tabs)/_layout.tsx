@@ -32,7 +32,7 @@ import {
 import { SLCanonicalIcon, SLMotionPressable, SLTrophy } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
-import { getUnreadSummary } from '@/lib/api';
+import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import { useSLReducedMotion } from '@/lib/motion';
 import {
@@ -64,7 +64,7 @@ function FilteredTabBar({
   isIndividual,
   isUnlinkedAthlete,
   viewMode,
-  hasMeetDate,
+  hasMeetPlan,
   hasMessageNotifications,
   onMessagesTabPress,
   collapseTabRowRef,
@@ -75,7 +75,7 @@ function FilteredTabBar({
   isIndividual: boolean;
   isUnlinkedAthlete: boolean;
   viewMode: MobileViewMode;
-  hasMeetDate: boolean;
+  hasMeetPlan: boolean;
   hasMessageNotifications: boolean;
   onMessagesTabPress: () => void;
   collapseTabRowRef: React.MutableRefObject<(() => void) | null>;
@@ -98,7 +98,7 @@ function FilteredTabBar({
     isIndividual,
     isUnlinkedAthlete,
     viewMode,
-    hasMeetDate,
+    hasMeetPlan,
   });
 
   const messagesRoute =
@@ -410,9 +410,11 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const devPreviewSession = useDevLiveScreenSession();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);
+  const [hasMeetPlan, setHasMeetPlan] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [mobileViewModeLoaded, setMobileViewModeLoaded] = useState(false);
   const unreadPollingRef = useRef(false);
+  const meetPlanPollingRef = useRef(false);
   const collapseTabRowRef = useRef<(() => void) | null>(null);
   const pendingTabRowCollapseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -455,7 +457,28 @@ export default function TabsLayout() {
       (user.is_coach === true && (user.billing_required === true || user.can_access_product === false))
     );
   const viewMode: MobileViewMode = isIndividual ? 'individual' : isCoach ? mobileViewMode : 'athlete';
-  const hasMeetDate = viewMode === 'athlete' && !!(user as any)?.meet_date;
+  const refreshMeetPlanAvailability = useCallback(async () => {
+    if (!user || accessBlocked || isIndividual || isUnlinkedAthlete || viewMode !== 'athlete') {
+      setHasMeetPlan(false);
+      return;
+    }
+    if (meetPlanPollingRef.current) return;
+
+    meetPlanPollingRef.current = true;
+    try {
+      const response = await fetchJson<{ has_meet_plan?: boolean }>(
+        '/meet-planner/mobile/athlete/current',
+        { method: 'GET' },
+      );
+      if (response.ok && response.json) {
+        setHasMeetPlan(response.json.has_meet_plan === true);
+      }
+    } catch (err) {
+      console.warn('Meet plan availability refresh failed', err);
+    } finally {
+      meetPlanPollingRef.current = false;
+    }
+  }, [accessBlocked, isIndividual, isUnlinkedAthlete, user, viewMode]);
   // A single dev-only mock-library boundary is deliberately allowed alongside
   // Settings for authenticated accounts in every account state. It has no APIs
   // or production product data and is removed from the UI in release builds.
@@ -604,6 +627,18 @@ export default function TabsLayout() {
     };
   }, [accessBlocked, isIndividual, isUnlinkedAthlete, refreshMessageNotifications, user]);
 
+  useEffect(() => {
+    refreshMeetPlanAvailability();
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        refreshMeetPlanAvailability();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [pathname, refreshMeetPlanAvailability]);
+
   if (!user) {
     return null;
   }
@@ -680,7 +715,7 @@ export default function TabsLayout() {
             isIndividual={isIndividual}
             isUnlinkedAthlete={isUnlinkedAthlete}
             viewMode={viewMode}
-            hasMeetDate={hasMeetDate}
+            hasMeetPlan={hasMeetPlan}
             hasMessageNotifications={hasMessageNotifications}
             onMessagesTabPress={refreshMessageNotifications}
             collapseTabRowRef={collapseTabRowRef}
@@ -1030,7 +1065,7 @@ export default function TabsLayout() {
           name="athlete-meet-plan"
           options={{
             title: 'Meet',
-            href: hasMeetDate ? '/(tabs)/athlete-meet-plan' : null,
+            href: hasMeetPlan ? '/(tabs)/athlete-meet-plan' : null,
             tabBarIcon: ({ color, focused }) => (
               <SLTrophy size={22} tier="bronze" muted={!focused} />
             ),

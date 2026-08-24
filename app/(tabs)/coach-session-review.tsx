@@ -171,6 +171,7 @@ export default function CoachSessionReviewScreen() {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
           athleteId: detail?.athlete?.id,
           movementDefinitionId: movement.measurement?.canonical_identity_id,
+          identityType: movement.kind,
           equipmentContextDefinitionId: movement.measurement?.equipment_configuration_identity_id,
         });
         if (!resolution.ok) {

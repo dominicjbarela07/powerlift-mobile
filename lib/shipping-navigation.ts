@@ -36,19 +36,19 @@ export function shippingTabRouteNames({
   isIndividual,
   isUnlinkedAthlete,
   viewMode,
-  hasMeetDate,
+  hasMeetPlan,
 }: {
   isCoach: boolean;
   isIndividual: boolean;
   isUnlinkedAthlete: boolean;
   viewMode: ShippingMobileViewMode;
-  hasMeetDate: boolean;
+  hasMeetPlan: boolean;
 }): string[] {
   if (isUnlinkedAthlete) return [...SHIPPING_UNLINKED_ATHLETE_TAB_ROUTES];
   if (isIndividual) return [...SHIPPING_ATHLETE_TAB_ROUTES];
   if (isCoach && viewMode === 'coach') return [...SHIPPING_COACH_TAB_ROUTES];
 
   const athleteRoutes: string[] = [...SHIPPING_ATHLETE_TAB_ROUTES];
-  if (hasMeetDate) athleteRoutes.splice(3, 0, 'athlete-meet-plan');
+  if (hasMeetPlan) athleteRoutes.splice(3, 0, 'athlete-meet-plan');
   return athleteRoutes;
 }

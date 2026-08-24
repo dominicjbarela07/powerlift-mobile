@@ -24,7 +24,7 @@ assert.doesNotMatch(
 );
 assert.match(
   storyboard,
-  /refreshControl=\{onRefresh \? <RefreshControl refreshing=\{refreshing\} onRefresh=\{onRefresh\}/,
+  /refreshControl=\{onRefresh\s*\?\s*<RefreshControl[\s\S]*?refreshing=\{refreshing\}[\s\S]*?onRefresh=\{onRefresh\}/,
   'pull-to-refresh keeps one controlled boolean RefreshControl',
 );
 assert.match(storyboard, /lensVisible \? \([\s\S]*?<DayLens/);

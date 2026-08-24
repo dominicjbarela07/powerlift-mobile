@@ -50,6 +50,8 @@ import {
 type ApiSession = {
   workout_id: number; title?: string | null; date?: string | null; status?: string | null;
   block_id?: number | null; block_name?: string | null; planned_summary?: string | null;
+  program?: { id: number; name?: string | null; status?: string | null; start?: string | null; end?: string | null } | null;
+  week_number?: number | null; calendar_access_scope?: 'full' | 'athlete_history' | string | null;
   primary_lifts?: string[]; accessory_count?: number | null; estimated_duration_minutes?: number | null;
   pr_count?: number | null;
   scheduled_start_time?: string | null; scheduled_end_time?: string | null;
@@ -76,6 +78,8 @@ type ApiDayDetailSession = {
   workout_id: number; title?: string | null; date: string; status?: string | null;
   scheduled_start_time?: string | null; scheduled_timezone?: string | null;
   block_id?: number | null; block_name?: string | null; programming_notes?: string | null;
+  program?: { id: number; name?: string | null; status?: string | null; start?: string | null; end?: string | null } | null;
+  week_number?: number | null; calendar_access_scope?: 'full' | 'athlete_history' | string | null;
   planned?: { movement_count?: number; movement_labels?: string[]; planned_sets?: number; label?: string | null } | null;
   performance?: { completed_sets?: number; total_reps?: number; total_volume_kg?: number; actual_duration_minutes?: number | null; best_set?: { weight_kg?: number; reps?: number; rpe?: number | null; rir?: number | null } | null } | null;
   estimated_duration_minutes?: number | null;
@@ -96,8 +100,8 @@ type ApiDayDetail = {
   date: string; timezone?: string | null; is_today?: boolean; state?: AthleteCalendarDayDetail['state'];
   sessions?: ApiDayDetailSession[]; readiness?: ApiReadiness | null; personal_events?: ApiPersonalEvent[];
   conflicts?: ApiConflict[];
-  block_context?: { block_id: number; name?: string | null; start_date?: string | null; end_date?: string | null; week_number?: number | null; total_weeks?: number | null } | null;
-  next_up?: { workout_id: number; title?: string | null; date: string; status?: string | null; planned_summary?: string | null; block_name?: string | null } | null;
+  block_context?: { block_id: number; name?: string | null; start_date?: string | null; end_date?: string | null; week_number?: number | null; total_weeks?: number | null; program?: { id: number; name?: string | null; status?: string | null } | null } | null;
+  next_up?: ApiSession | null;
   capabilities?: { can_add_personal_item?: boolean; can_create_session?: boolean };
 };
 type ApiUpcoming = { date?: string | null; kind?: string | null; title?: string | null; workout_id?: number | null; meet_plan_id?: number | null; block_id?: number | null };
@@ -743,6 +747,10 @@ function mapDayDetail(day: ApiDayDetail): AthleteCalendarDayDetail {
       scheduledTimezone: session.scheduled_timezone,
       blockId: session.block_id,
       blockName: session.block_name,
+      programName: session.program?.name,
+      programStatus: session.program?.status,
+      weekNumber: session.week_number,
+      calendarAccessScope: session.calendar_access_scope,
       programmingNotes: session.programming_notes,
       planned: {
         movementCount: session.planned?.movement_count || 0,
@@ -799,6 +807,8 @@ function mapDayDetail(day: ApiDayDetail): AthleteCalendarDayDetail {
       endDate: day.block_context.end_date,
       weekNumber: day.block_context.week_number,
       totalWeeks: day.block_context.total_weeks,
+      programName: day.block_context.program?.name,
+      programStatus: day.block_context.program?.status,
     } : null,
     nextUp: day.next_up ? {
       id: day.next_up.workout_id,
@@ -807,6 +817,10 @@ function mapDayDetail(day: ApiDayDetail): AthleteCalendarDayDetail {
       status: day.next_up.status,
       plannedSummary: day.next_up.planned_summary,
       blockName: day.next_up.block_name,
+      programName: day.next_up.program?.name,
+      programStatus: day.next_up.program?.status,
+      weekNumber: day.next_up.week_number,
+      calendarAccessScope: day.next_up.calendar_access_scope,
     } : null,
     capabilities: {
       canAddPersonalItem: day.capabilities?.can_add_personal_item === true,
@@ -829,7 +843,7 @@ function mapReadiness(row?: ApiReadiness | null): AthleteCalendarDayDetail['read
     bodyweightKg: row.bodyweight_kg,
   };
 }
-function mapSession(session: ApiSession): AthleteCalendarSession { return { id: session.workout_id, title: session.title, date: session.date, status: session.status, blockId: session.block_id, blockName: session.block_name, plannedSummary: session.planned_summary, primaryLifts: session.primary_lifts, accessoryCount: session.accessory_count, prCount: session.pr_count, estimatedDurationMinutes: session.estimated_duration_minutes, scheduledStartTime: session.scheduled_start_time, scheduledEndTime: session.scheduled_end_time, scheduledTimezone: session.scheduled_timezone, presentation: /heavy|top|peak|test|max/i.test(session.title || '') ? 'heavy' : null }; }
+function mapSession(session: ApiSession): AthleteCalendarSession { return { id: session.workout_id, title: session.title, date: session.date, status: session.status, blockId: session.block_id, blockName: session.block_name, programName: session.program?.name, programStatus: session.program?.status, weekNumber: session.week_number, calendarAccessScope: session.calendar_access_scope, plannedSummary: session.planned_summary, primaryLifts: session.primary_lifts, accessoryCount: session.accessory_count, prCount: session.pr_count, estimatedDurationMinutes: session.estimated_duration_minutes, scheduledStartTime: session.scheduled_start_time, scheduledEndTime: session.scheduled_end_time, scheduledTimezone: session.scheduled_timezone, presentation: /heavy|top|peak|test|max/i.test(session.title || '') ? 'heavy' : null }; }
 function mapEvent(event: ApiPersonalEvent): AthleteCalendarPersonalEvent { return { id: event.event_id, title: event.title, startsAt: event.starts_at, endsAt: event.ends_at, allDay: event.all_day, timezone: event.timezone, category: event.category, location: event.location, notes: event.notes, repeatRule: event.repeat_rule || 'none', alertOffsetMinutes: event.alert_offset_minutes ?? null, unavailableForTraining: event.unavailable_for_training }; }
 function mapConflict(item: ApiConflict): AthleteCalendarConflict { return { id: item.conflict_id, certainty: item.certainty, reason: item.reason, date: item.date, eventId: item.event_id, eventTitle: item.event_title, workoutId: item.workout_id, workoutTitle: item.workout_title }; }
 function mapWeekSummary(item: ApiWeekSummary): AthleteCalendarWeekSummary { return { startDate: item.start_date, endDate: item.end_date, sessionCount: item.session_count, completedCount: item.completed_count, missedCount: item.missed_count, heavyCount: item.heavy_count, personalEventCount: item.personal_event_count, isCurrent: item.is_current, loadLabel: item.load_label }; }

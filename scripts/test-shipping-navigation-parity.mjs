@@ -35,7 +35,7 @@ assert.deepEqual(
     isIndividual: false,
     isUnlinkedAthlete: false,
     viewMode: 'athlete',
-    hasMeetDate: true,
+    hasMeetPlan: true,
   }),
   ['athlete-dashboard', 'workout/index', 'athlete-calendar', 'athlete-meet-plan', 'ledger'],
   'the optional Meet tab must not replace or hide the Ledger',
@@ -46,7 +46,7 @@ assert.deepEqual(
     isIndividual: false,
     isUnlinkedAthlete: false,
     viewMode: 'coach',
-    hasMeetDate: false,
+    hasMeetPlan: false,
   }),
   [...SHIPPING_COACH_TAB_ROUTES],
 );

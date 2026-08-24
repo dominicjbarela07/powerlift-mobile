@@ -14,6 +14,8 @@ export type CanonicalHistoryEquipment = Readonly<{
   equipment_type?: string | null;
   implementation_key?: string | null;
   comparison_scope?: string | null;
+  load_convention?: string | null;
+  measurement_type?: string | null;
   comparison_confidence?: string | null;
 }>;
 

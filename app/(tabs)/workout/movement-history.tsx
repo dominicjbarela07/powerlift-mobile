@@ -21,7 +21,7 @@ import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } f
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
 import { MovementHistoryRequestGuard, emptyMovementHistoryPageState } from '@/lib/movement-history-request-guard';
-import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
+import { movementHistorySheetRoute, movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 
 type MovementSession = {
   workout_id: number;
@@ -38,6 +38,8 @@ type MovementSession = {
 type MovementRow = {
   key: string;
   core_movement_key?: string | null;
+  core_movement_id?: number | null;
+  movement_definition_id?: number | null;
   label: string;
   movement_type?: string | null;
   last_trained_date?: string | null;
@@ -102,6 +104,7 @@ function MovementHistoryIndexScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
   const athleteId = params.athleteId ? String(params.athleteId) : null;
+  const [historyAthleteId, setHistoryAthleteId] = useState<number | null>(athleteId ? Number(athleteId) : null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,6 +175,7 @@ function MovementHistoryIndexScreen() {
       const nextMovements = Array.isArray(json.movement_history?.movements) ? json.movement_history.movements : [];
       const accomplishmentPage = json.movement_history?.accomplishment_timeline || {};
       setMovements(nextMovements);
+      setHistoryAthleteId(Number(json.movement_history?.athlete?.id) || null);
       setAccomplishments(Array.isArray(accomplishmentPage.items) ? accomplishmentPage.items : []);
       setAccomplishmentCursor(accomplishmentPage.next_cursor || null);
       setHasMoreAccomplishments(Boolean(accomplishmentPage.has_more));
@@ -319,6 +323,17 @@ function MovementHistoryIndexScreen() {
                 </View>
                 <Text style={styles.meta}>{formatShortDate(movement.last_trained_date)}</Text>
               </View>
+              {(movement.core_movement_id || movement.movement_definition_id) && historyAthleteId ? <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Open exact Movement History for ${movement.label}`}
+                onPress={() => router.push(movementHistorySheetRoute({
+                  athleteId: historyAthleteId,
+                  ...(movement.core_movement_id
+                    ? { coreMovementId: movement.core_movement_id }
+                    : { movementDefinitionId: Number(movement.movement_definition_id) }),
+                }) as never)}
+                style={({ pressed }) => [styles.historyLaunch, pressed && styles.pressed]}
+              ><Ionicons name="analytics-outline" size={16} color={colors.violet} /><Text style={styles.historyLaunchText}>Open exact history</Text><Ionicons name="chevron-forward" size={15} color={colors.muted} /></Pressable> : null}
               {movement.core_movement_key ? (
                 <View style={styles.accomplishments}>
                   <CurrentBestList items={movement.current_bests || []} displayUnit={displayUnit} />
@@ -663,6 +678,8 @@ const styles = StyleSheet.create({
   clearText: { ...SLTypography.label, color: colors.textStrong },
   group: { gap: 10 },
   groupHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 },
+  historyLaunch: { minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.lineSoft, paddingHorizontal: 10 },
+  historyLaunchText: { flex: 1, ...SLTypography.label, color: colors.violet },
   accomplishments: { gap: 10 },
   groupTitleWrap: { flex: 1, gap: 2 },
   kicker: { ...SLTypography.caption, color: colors.subtle, textTransform: 'uppercase' },

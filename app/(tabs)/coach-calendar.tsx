@@ -79,6 +79,9 @@ type CalendarSession = {
   status: string;
   block_name?: string | null;
   training_block_id?: number | null;
+  program?: { id: number; name?: string | null; status?: string | null; start?: string | null; end?: string | null } | null;
+  week_number?: number | null;
+  calendar_access_scope?: 'full' | 'athlete_history' | string | null;
   tags?: string[];
   planned_summary?: string | null;
   movement_count?: number;
@@ -177,6 +180,14 @@ function statusTone(status: string): SLStatusTone {
 
 function statusColor(status: string) {
   return SLStatusTones[statusTone(status)].icon;
+}
+
+function calendarSessionContext(session: CalendarSession) {
+  return [...new Set([
+    session.program?.name,
+    session.block_name,
+    session.week_number ? `Week ${session.week_number}` : null,
+  ].filter((value): value is string => Boolean(value)))].join(' · ') || null;
 }
 
 function emptyDraft(date: string, athleteId: number | null = null): ItemDraft {
@@ -1198,7 +1209,7 @@ function DraggableSessionChip({ session, dayIndex, days, moving, reduceMotion, t
       <Animated.View style={[styles.sessionChip, { borderColor: color, backgroundColor: `${color}18` }, animatedStyle]}>
         <Pressable accessibilityHint={movable ? 'Long press and drag left or right to change the date.' : undefined} accessibilityLabel={`${session.athlete_name}, ${session.label}, ${formatCalendarDate(session.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${calendarStatusLabel(session.status)}`} accessibilityRole="button" disabled={moving} onPress={(event) => { event.stopPropagation(); onPress(session); }} style={styles.chipPressable}>
           <Text numberOfLines={1} style={styles.chipTitle}>{session.label}</Text>
-          <Text numberOfLines={1} style={styles.chipMeta}>{session.block_name || calendarStatusLabel(session.status)}</Text>
+          <Text numberOfLines={1} style={styles.chipMeta}>{calendarSessionContext(session) || calendarStatusLabel(session.status)}</Text>
           <View style={[styles.chipStatusDot, { backgroundColor: color }]} />
         </Pressable>
       </Animated.View>
@@ -1594,7 +1605,7 @@ function CalendarSessionCard({ athlete, compact = false, session, onPress, onOve
             <Text numberOfLines={2} style={[styles.sessionVisualTitle, compact && styles.sessionVisualTitleCompact]}>{session.label}</Text>
           </View>
         </View>
-        <Text numberOfLines={1} style={styles.sessionProgramContext}>{[session.block_name, focusLabel].filter(Boolean).join(' · ') || calendarStatusLabel(session.status)}</Text>
+        <Text numberOfLines={1} style={styles.sessionProgramContext}>{[calendarSessionContext(session), focusLabel].filter(Boolean).join(' · ') || calendarStatusLabel(session.status)}</Text>
         <View style={styles.sessionEvidenceRow}>
           <Ionicons color={SLColors.textMuted} name="clipboard-outline" size={13} />
           <Text numberOfLines={1} style={styles.sessionEvidence}>{countSummary}</Text>

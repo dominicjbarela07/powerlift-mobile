@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { Swipeable } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, Swipeable } from 'react-native-gesture-handler';
 
 import { SLMotionEntrance, SLMotionPressable, SLProfileAvatar } from '@/components/ui';
 import { SLButton } from '@/components/ui/sl-button';
@@ -55,8 +55,8 @@ import {
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import {
-  formatCalculatedWeightFromKg,
   normalizeDisplayWeightUnit,
+  formatCalculatedWeightFromKg,
   parseDisplayWeightUnit,
   preferredUnitFromSettingsPayload,
   type DisplayWeightUnit,
@@ -74,8 +74,11 @@ import {
   type ProgrammingProgramVisualKey,
 } from '@/lib/programming-visual-semantics';
 import {
+  canDragProgrammingSession,
   isSameProgrammingDate,
   programmingMoveDestination,
+  programmingWeekDropDate,
+  type ProgrammingWeekDropZone,
 } from '@/lib/programming-session-move';
 import {
   movementCardStateAccent,
@@ -1345,6 +1348,36 @@ function ActiveProgrammingRoadmap({
     }
   };
 
+  const executeStoryboardSessionMove = async (session: HubSession, targetDate: string) => {
+    if (!selectedBlock?.id || !session.id || !session.date) {
+      throw new Error('This Session does not have complete scheduling context.');
+    }
+    if (!canDragProgrammingSession(session.status || session.kind)) {
+      throw new Error('Only draft or assigned Sessions can be moved.');
+    }
+    if (isSameProgrammingDate(session.date, targetDate)) return;
+    const destination = programmingMoveDestination(visibleWeeks, targetDate);
+    if (!destination) throw new Error('Choose a date within this Training Block.');
+    if (quickMoveSubmittingRef.current) throw new Error('Another Session move is already saving.');
+
+    quickMoveSubmittingRef.current = true;
+    try {
+      const resp = await fetchJson<any>(`/workouts/mobile/${session.id}/programming-actions`, {
+        method: 'POST',
+        body: {
+          action: 'move',
+          target_date: targetDate,
+          source_date: session.date,
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      await onRefresh();
+    } finally {
+      quickMoveSubmittingRef.current = false;
+    }
+  };
+
   const executeWeekAction = async (action: WeekActionKey, week: RoadmapWeek, extra?: Record<string, any>) => {
     if (!activeProgram.id || !selectedBlock?.id || !athleteId || !week.startDate) {
       setWeekActionWarning('Week action context is missing.');
@@ -1444,6 +1477,7 @@ function ActiveProgrammingRoadmap({
         onSelectBlock={setSelectedBlockId}
         onOpenSession={onOpenSession}
         onAddSession={(date) => setSessionAdd({ date, mode: 'choose' })}
+        onMoveSession={executeStoryboardSessionMove}
         onWeekActions={(week) => setWeekMenu({ week, anchorY: 124 })}
         onBlockActions={(block) => setBlockMenu({ block, anchorY: 124 })}
         onProgramActions={() => setProgramActionsOpen(true)}
@@ -2092,6 +2126,7 @@ export function ProgrammingStoryboard({
   onSelectBlock,
   onOpenSession,
   onAddSession,
+  onMoveSession,
   onWeekActions,
   onBlockActions,
   onProgramActions,
@@ -2116,6 +2151,7 @@ export function ProgrammingStoryboard({
   onSelectBlock: (id: number) => void;
   onOpenSession: (id?: number | null, context?: ProgrammingReturnContext) => void;
   onAddSession: (date: string) => void;
+  onMoveSession: (session: HubSession, targetDate: string) => Promise<void>;
   onWeekActions: (week: RoadmapWeek) => void;
   onBlockActions: (block: ProgramBlockPayload) => void;
   onProgramActions: () => void;
@@ -2143,6 +2179,13 @@ export function ProgrammingStoryboard({
   );
   const [athleteSearch, setAthleteSearch] = useState('');
   const [roster, setRoster] = useState<Array<{ id: number; name?: string; avatar_url?: string | null; bodyweight?: number | null; preferred_units?: string | null }>>(previewRoster || []);
+  const [draggingSessionId, setDraggingSessionId] = useState<number | null>(null);
+  const [dragTargetDate, setDragTargetDate] = useState<string | null>(null);
+  const [dragMoveBusy, setDragMoveBusy] = useState(false);
+  const [dragMoveError, setDragMoveError] = useState('');
+  const dayStripRef = useRef<View>(null);
+  const dayDropZoneRef = useRef<ProgrammingWeekDropZone | null>(null);
+  const dragTargetDateRef = useRef<string | null>(null);
   const selectedWeek = weeks.find((week) => week.index === selectedWeekIndex) || weeks[0] || null;
   const selectedDay = selectedWeek?.days.find((day) => day.key === selectedDayKey)
     || selectedWeek?.days.find((day) => day.date === today)
@@ -2152,6 +2195,63 @@ export function ProgrammingStoryboard({
   const readiness = intelligence?.readiness?.current_score;
   const tmCount = intelligence?.tm_suggestions?.length || 0;
   const programArtwork = storyboardProgramArtwork(activeProgram);
+
+  const measureDayDropZone = useCallback(() => {
+    dayStripRef.current?.measureInWindow((x, y, width, height) => {
+      dayDropZoneRef.current = { x, y, width, height };
+    });
+  }, []);
+
+  const dragDateAtPoint = useCallback((absoluteX: number, absoluteY: number) => (
+    programmingWeekDropDate(
+      (selectedWeek?.days || []).map((day) => day.date),
+      dayDropZoneRef.current,
+      absoluteX,
+      absoluteY,
+    )
+  ), [selectedWeek?.days]);
+
+  const beginSessionDrag = useCallback((session: HubSession) => {
+    if (dragMoveBusy || !canDragProgrammingSession(session.status || session.kind)) return;
+    measureDayDropZone();
+    dragTargetDateRef.current = null;
+    setDragTargetDate(null);
+    setDragMoveError('');
+    setDraggingSessionId(session.id);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
+  }, [dragMoveBusy, measureDayDropZone]);
+
+  const updateSessionDrag = useCallback((absoluteX: number, absoluteY: number) => {
+    const nextDate = dragDateAtPoint(absoluteX, absoluteY);
+    if (dragTargetDateRef.current === nextDate) return;
+    dragTargetDateRef.current = nextDate;
+    setDragTargetDate(nextDate);
+    if (nextDate) void Haptics.selectionAsync().catch(() => undefined);
+  }, [dragDateAtPoint]);
+
+  const cancelSessionDrag = useCallback(() => {
+    dragTargetDateRef.current = null;
+    setDragTargetDate(null);
+    setDraggingSessionId(null);
+  }, []);
+
+  const finishSessionDrag = useCallback(async (session: HubSession, absoluteX: number, absoluteY: number) => {
+    const targetDate = dragDateAtPoint(absoluteX, absoluteY) || dragTargetDateRef.current;
+    cancelSessionDrag();
+    if (!targetDate || !session.date || isSameProgrammingDate(session.date, targetDate)) return;
+    setDragMoveBusy(true);
+    setDragMoveError('');
+    try {
+      await onMoveSession(session, targetDate);
+      setSelectedDayKey(targetDate);
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
+    } catch (error: any) {
+      setDragMoveError(error?.message || 'Session could not be moved.');
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => undefined);
+    } finally {
+      setDragMoveBusy(false);
+    }
+  }, [cancelSessionDrag, dragDateAtPoint, onMoveSession]);
 
   useEffect(() => {
     if (previewState) return;
@@ -2195,14 +2295,19 @@ export function ProgrammingStoryboard({
           <Text style={[storyStyles.topbarTitle, mode === 'week' && storyStyles.topbarWeekTitle]}>{mode === 'week' ? `Week ${selectedWeek?.index || ''}` : 'PROGRAMMING\nMANAGER'}</Text>
           {mode === 'week' ? <Text style={storyStyles.topbarSub}>{selectedWeek?.rangeLabel}</Text> : null}
         </View>
-        <SLMotionPressable accessibilityRole="button" accessibilityLabel="Training Program actions" onPress={onProgramActions} style={storyStyles.topbarAction}>
+        <SLMotionPressable
+          accessibilityRole="button"
+          accessibilityLabel={mode === 'week' ? `Week ${selectedWeek?.index || ''} actions` : 'Training Program actions'}
+          onPress={() => mode === 'week' && selectedWeek ? onWeekActions(selectedWeek) : onProgramActions()}
+          style={storyStyles.topbarAction}
+        >
           <Ionicons name="options-outline" size={16} color={colors.violet} />
           <Text style={storyStyles.topbarActionText}>Actions</Text>
         </SLMotionPressable>
       </View>
 
       {mode === 'overview' ? (
-        <ScrollView contentContainerStyle={storyStyles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={storyStyles.scroll} scrollEnabled={!draggingSessionId && !dragMoveBusy} showsVerticalScrollIndicator={false}>
           <Pressable
             accessibilityRole={coachMode ? 'button' : undefined}
             accessibilityLabel={coachMode ? 'Switch athlete' : undefined}
@@ -2308,27 +2413,62 @@ export function ProgrammingStoryboard({
             <SLMotionEntrance motionKey={`overview-week-${selectedWeek.index}`} distance={5}>
             <View style={storyStyles.thisWeekCard}>
               <LinearGradient colors={['rgba(74,36,105,0.28)', 'rgba(12,14,20,0.97)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
-              <SLMotionPressable accessibilityRole="button" onPress={() => openWeek(selectedWeek)} style={storyStyles.thisWeekHeader}>
-                <View style={storyStyles.grow}>
-                  <Text style={storyStyles.eyebrow}>THIS WEEK</Text>
-                  <Text style={storyStyles.weekTitle}>Week {selectedWeek.index}</Text>
-                  <Text style={storyStyles.weekRange}>{selectedWeek.rangeLabel}</Text>
-                  <Text style={storyStyles.weekSummary}>{storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned</Text>
+              <View style={storyStyles.thisWeekHeader}>
+                <SLMotionPressable accessibilityRole="button" onPress={() => openWeek(selectedWeek)} style={storyStyles.thisWeekHeaderMain}>
+                  <View style={storyStyles.grow}>
+                    <Text style={storyStyles.eyebrow}>THIS WEEK</Text>
+                    <Text style={storyStyles.weekTitle}>Week {selectedWeek.index}</Text>
+                    <Text style={storyStyles.weekRange}>{selectedWeek.rangeLabel}</Text>
+                    <Text style={storyStyles.weekSummary}>{storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned</Text>
+                  </View>
+                </SLMotionPressable>
+                <View style={storyStyles.thisWeekHeaderActions}>
+                  <SLMotionPressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Week ${selectedWeek.index} actions`}
+                    onPress={() => onWeekActions(selectedWeek)}
+                    style={storyStyles.weekCardAction}
+                  >
+                    <Ionicons name="options-outline" size={16} color={colors.violet} />
+                    <Text style={storyStyles.weekCardActionText}>Actions</Text>
+                  </SLMotionPressable>
+                  <SLMotionPressable accessibilityRole="button" accessibilityLabel={`Open Week ${selectedWeek.index}`} onPress={() => openWeek(selectedWeek)} style={storyStyles.weekOpenControl}>
+                    <Ionicons name="chevron-forward" size={22} color={colors.violet} />
+                  </SLMotionPressable>
                 </View>
-                <View style={storyStyles.weekOpenControl}>
-                  <Ionicons name="chevron-forward" size={22} color={colors.violet} />
-                </View>
-              </SLMotionPressable>
-              <DayStrip week={selectedWeek} selectedKey={selectedDay?.key || null} today={today} onSelect={(day) => { setSelectedDayKey(day.key); openWeek(selectedWeek); }} />
+              </View>
+              <DayStrip
+                containerRef={dayStripRef}
+                dragTargetDate={dragTargetDate}
+                dragging={!!draggingSessionId}
+                week={selectedWeek}
+                selectedKey={selectedDay?.key || null}
+                today={today}
+                onSelect={(day) => { setSelectedDayKey(day.key); openWeek(selectedWeek); }}
+              />
+              {draggingSessionId ? <Text style={storyStyles.dragInstruction}>Drop on a day to move this Session</Text> : null}
+              {dragMoveBusy ? <View style={storyStyles.dragStatus}><ActivityIndicator size="small" color={colors.violet} /><Text style={storyStyles.dragStatusText}>Moving Session…</Text></View> : null}
+              {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
               <View style={storyStyles.compactWeekSessions}>
-                {selectedWeek.days.flatMap((day) => day.sessions.slice(0, 1).map((session) => (
-                  <StoryboardSessionRow
+                {selectedWeek.days.flatMap((day) => day.sessions.map((session) => (
+                  <StoryboardSessionDragGesture
                     key={session.id}
-                    dayLabel={day.label}
-                    displayUnit={displayUnit}
+                    enabled={!dragMoveBusy && canDragProgrammingSession(session.status || session.kind)}
                     session={session}
-                    onPress={() => onOpenSession(session.id, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
-                  />
+                    onDragStart={beginSessionDrag}
+                    onDragMove={updateSessionDrag}
+                    onDragEnd={finishSessionDrag}
+                    onDragCancel={cancelSessionDrag}
+                  >
+                    <StoryboardSessionRow
+                      dayLabel={day.label}
+                      displayUnit={displayUnit}
+                      draggable={canDragProgrammingSession(session.status || session.kind)}
+                      dragging={draggingSessionId === session.id}
+                      session={session}
+                      onPress={() => onOpenSession(session.id, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
+                    />
+                  </StoryboardSessionDragGesture>
                 )))}
               </View>
             </View>
@@ -2336,23 +2476,42 @@ export function ProgrammingStoryboard({
           ) : null}
         </ScrollView>
       ) : selectedWeek && selectedDay ? (
-        <ScrollView contentContainerStyle={storyStyles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={storyStyles.scroll} scrollEnabled={!draggingSessionId && !dragMoveBusy} showsVerticalScrollIndicator={false}>
           <View style={storyStyles.weekLensHeader}>
             <View><Text style={storyStyles.weekLensTitle}>Week {selectedWeek.index}</Text><Text style={storyStyles.weekLensRange}>{selectedWeek.rangeLabel}</Text></View>
-            <Pressable accessibilityRole="button" onPress={() => onWeekActions(selectedWeek)} style={storyStyles.compactAction}><Text style={storyStyles.compactActionText}>Actions</Text></Pressable>
           </View>
-          <DayStrip week={selectedWeek} selectedKey={selectedDay.key} today={today} onSelect={(day) => setSelectedDayKey(day.key)} />
-          <SLMotionEntrance motionKey={`week-${selectedWeek.index}-${selectedDay.key}`} distance={5}>
-          <StoryboardDayPanel
-            day={selectedDay}
+          <DayStrip
+            containerRef={dayStripRef}
+            dragTargetDate={dragTargetDate}
+            dragging={!!draggingSessionId}
+            week={selectedWeek}
+            selectedKey={selectedDay.key}
             today={today}
-            displayUnit={displayUnit}
-            weekHasSessions={selectedWeek.days.some((day) => day.sessions.length > 0)}
-            blockId={selectedBlock?.id || null}
-            weekIndex={selectedWeek.index}
-            onOpenSession={onOpenSession}
-            onAddSession={onAddSession}
+            onSelect={(day) => setSelectedDayKey(day.key)}
           />
+          {draggingSessionId ? <Text style={storyStyles.dragInstruction}>Drop on a day to move this Session</Text> : null}
+          {dragMoveBusy ? <View style={storyStyles.dragStatus}><ActivityIndicator size="small" color={colors.violet} /><Text style={storyStyles.dragStatusText}>Moving Session…</Text></View> : null}
+          {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
+          <SLMotionEntrance motionKey={`week-${selectedWeek.index}-${selectedDay.key}`} distance={5}>
+          <StoryboardSessionDragGesture
+            enabled={!!selectedDay.sessions[0] && !dragMoveBusy && canDragProgrammingSession(selectedDay.sessions[0]?.status || selectedDay.sessions[0]?.kind)}
+            session={selectedDay.sessions[0] || null}
+            onDragStart={beginSessionDrag}
+            onDragMove={updateSessionDrag}
+            onDragEnd={finishSessionDrag}
+            onDragCancel={cancelSessionDrag}
+          >
+            <StoryboardDayPanel
+              day={selectedDay}
+              today={today}
+              displayUnit={displayUnit}
+              weekHasSessions={selectedWeek.days.some((day) => day.sessions.length > 0)}
+              blockId={selectedBlock?.id || null}
+              weekIndex={selectedWeek.index}
+              onOpenSession={onOpenSession}
+              onAddSession={onAddSession}
+            />
+          </StoryboardSessionDragGesture>
           </SLMotionEntrance>
         </ScrollView>
       ) : null}
@@ -2510,10 +2669,81 @@ function StoryboardSessionArtwork({ session, style }: { session: HubSession; sty
   return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} style={style} />;
 }
 
-function StoryboardSessionRow({ dayLabel, displayUnit, onPress, session }: { dayLabel: string; displayUnit: DisplayWeightUnit; onPress: () => void; session: HubSession }) {
+function StoryboardSessionDragGesture({
+  children,
+  enabled,
+  session,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
+  onDragCancel,
+}: {
+  children: React.ReactNode;
+  enabled: boolean;
+  session: HubSession | null;
+  onDragStart: (session: HubSession) => void;
+  onDragMove: (absoluteX: number, absoluteY: number) => void;
+  onDragEnd: (session: HubSession, absoluteX: number, absoluteY: number) => void | Promise<void>;
+  onDragCancel: () => void;
+}) {
+  const translation = useRef(new Animated.ValueXY()).current;
+  const [dragging, setDragging] = useState(false);
+  const gesture = useMemo(() => Gesture.Pan()
+    .enabled(enabled && !!session)
+    .activateAfterLongPress(220)
+    .minDistance(3)
+    .runOnJS(true)
+    .onStart(() => {
+      if (!session) return;
+      translation.setValue({ x: 0, y: 0 });
+      setDragging(true);
+      onDragStart(session);
+    })
+    .onUpdate((event) => {
+      if (!session) return;
+      translation.setValue({ x: event.translationX, y: event.translationY });
+      onDragMove(event.absoluteX, event.absoluteY);
+    })
+    .onEnd((event) => {
+      if (session) void onDragEnd(session, event.absoluteX, event.absoluteY);
+    })
+    .onFinalize((_event, success) => {
+      setDragging(false);
+      Animated.spring(translation, {
+        toValue: { x: 0, y: 0 },
+        damping: 20,
+        stiffness: 240,
+        mass: 0.72,
+        useNativeDriver: true,
+      }).start();
+      if (!success) onDragCancel();
+    }), [enabled, onDragCancel, onDragEnd, onDragMove, onDragStart, session, translation]);
+
+  return (
+    <GestureDetector gesture={gesture}>
+      <Animated.View
+        style={[
+          storyStyles.dragSessionContainer,
+          dragging && storyStyles.dragSessionContainerActive,
+          { transform: translation.getTranslateTransform() },
+        ]}
+      >
+        {children}
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
+function StoryboardSessionRow({ dayLabel, displayUnit, draggable, dragging, onPress, session }: { dayLabel: string; displayUnit: DisplayWeightUnit; draggable: boolean; dragging: boolean; onPress: () => void; session: HubSession }) {
   const completed = storyboardSessionState(session) === 'completed';
   return (
-    <SLMotionPressable accessibilityRole="button" onPress={() => { storyboardSelectionFeedback(); onPress(); }} pressScale={0.985} style={({ pressed }) => [storyStyles.compactSessionRow, pressed && storyStyles.tactilePressed]}>
+    <SLMotionPressable
+      accessibilityRole="button"
+      accessibilityHint={draggable ? 'Tap to open. Press and hold, then drag to a day above to move.' : 'Tap to open.'}
+      onPress={() => { storyboardSelectionFeedback(); onPress(); }}
+      pressScale={0.985}
+      style={({ pressed }) => [storyStyles.compactSessionRow, dragging && storyStyles.compactSessionRowDragging, pressed && storyStyles.tactilePressed]}
+    >
       <View style={storyStyles.compactSessionDayBadge}><Text style={storyStyles.compactSessionDay}>{dayLabel}</Text></View>
       <View style={storyStyles.compactSessionArtwork}>
         <LinearGradient colors={completed ? ['rgba(32,105,74,0.24)', '#080B0E'] : ['rgba(107,69,16,0.24)', '#090A0E']} style={StyleSheet.absoluteFillObject} />
@@ -2524,7 +2754,7 @@ function StoryboardSessionRow({ dayLabel, displayUnit, onPress, session }: { day
         <Text numberOfLines={1} style={storyStyles.compactSessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text>
       </View>
       <View style={[storyStyles.sessionStatusDot, { backgroundColor: storyboardSessionColor(session) }]} />
-      <Ionicons name="ellipsis-vertical" size={17} color={colors.subtle} />
+      <Ionicons name={draggable ? 'reorder-three-outline' : 'ellipsis-vertical'} size={draggable ? 21 : 17} color={dragging ? colors.violet : colors.subtle} />
     </SLMotionPressable>
   );
 }
@@ -2533,11 +2763,12 @@ function MetricCell({ label, value, detail, tone = colors.textStrong }: { label:
   return <View style={storyStyles.metricCell}><Text style={storyStyles.metricLabel}>{label}</Text><Text style={[storyStyles.metricValue, { color: tone }]}>{value}</Text><Text numberOfLines={1} style={storyStyles.metricDetail}>{detail}</Text></View>;
 }
 
-function DayStrip({ week, selectedKey, today, onSelect }: { week: RoadmapWeek; selectedKey: string | null; today: string; onSelect: (day: RoadmapWeek['days'][number]) => void }) {
-  return <View style={storyStyles.dayStrip}>{week.days.map((day) => {
+function DayStrip({ containerRef, dragTargetDate, dragging, week, selectedKey, today, onSelect }: { containerRef?: React.RefObject<View | null>; dragTargetDate?: string | null; dragging?: boolean; week: RoadmapWeek; selectedKey: string | null; today: string; onSelect: (day: RoadmapWeek['days'][number]) => void }) {
+  return <View ref={containerRef} style={[storyStyles.dayStrip, dragging && storyStyles.dayStripDragging]}>{week.days.map((day) => {
     const selected = day.key === selectedKey;
+    const dropTarget = dragging && day.date === dragTargetDate;
     const countColor = selected ? colors.amber : day.sessions.length ? storyboardSessionColor(day.sessions[0]) : colors.subtle;
-    return <SLMotionPressable key={day.key} onPress={() => { storyboardSelectionFeedback(); onSelect(day); }} pressScale={0.94} style={[storyStyles.dayCell, selected && storyStyles.dayCellSelected]}><Text style={[storyStyles.dayLabel, selected && storyStyles.dayLabelSelected]}>{day.label}</Text><Text style={[storyStyles.dayNumber, day.date === today && storyStyles.dayNumberToday, selected && storyStyles.dayNumberSelected]}>{day.date ? parseDate(day.date)?.getDate() : '—'}</Text><Text style={[storyStyles.daySessionCount, { color: countColor }]}>{day.sessions.length}</Text><View style={[storyStyles.dayStatusRail, { backgroundColor: countColor }]} /></SLMotionPressable>;
+    return <SLMotionPressable key={day.key} onPress={() => { storyboardSelectionFeedback(); onSelect(day); }} pressScale={0.94} style={[storyStyles.dayCell, selected && storyStyles.dayCellSelected, dragging && storyStyles.dayCellDropReady, dropTarget && storyStyles.dayCellDropTarget]}><Text style={[storyStyles.dayLabel, selected && storyStyles.dayLabelSelected, dropTarget && storyStyles.dayDropText]}>{day.label}</Text><Text style={[storyStyles.dayNumber, day.date === today && storyStyles.dayNumberToday, selected && storyStyles.dayNumberSelected, dropTarget && storyStyles.dayDropText]}>{day.date ? parseDate(day.date)?.getDate() : '—'}</Text><Text style={[storyStyles.daySessionCount, { color: dropTarget ? colors.violet : countColor }]}>{day.sessions.length}</Text><View style={[storyStyles.dayStatusRail, { backgroundColor: dropTarget ? colors.violet : countColor }]} /></SLMotionPressable>;
   })}</View>;
 }
 
@@ -4994,14 +5225,22 @@ const storyStyles = StyleSheet.create({
   weekPillProgressTrack: { position: 'absolute', left: 4, right: 4, bottom: 3, height: 2, overflow: 'hidden', borderRadius: 1, backgroundColor: 'rgba(110,108,122,0.18)' },
   weekPillProgressFill: { height: '100%', borderRadius: 1 },
   thisWeekCard: { position: 'relative', overflow: 'hidden', backgroundColor: '#0B0D13', borderWidth: 1, borderColor: 'rgba(145,92,190,0.40)', borderRadius: SLRadius.xl, padding: 12, gap: 12, ...SLShadows.level1 },
-  thisWeekHeader: { minHeight: 106, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  thisWeekHeader: { minHeight: 106, flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between', gap: 8 },
+  thisWeekHeaderMain: { flex: 1, minWidth: 0, justifyContent: 'center' },
+  thisWeekHeaderActions: { alignItems: 'stretch', justifyContent: 'center', gap: 7 },
+  weekCardAction: { minWidth: 82, height: 38, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(168,101,255,0.30)', borderRadius: SLRadius.md, backgroundColor: 'rgba(80,36,112,0.12)' },
+  weekCardActionText: { color: colors.violet, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   weekOpenControl: { width: 42, height: 52, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(168,101,255,0.28)', borderRadius: SLRadius.lg, backgroundColor: 'rgba(80,36,112,0.10)' },
   weekTitle: { color: colors.textStrong, fontSize: 24, lineHeight: 29, fontFamily: SLFontFamilies.sansBold, marginTop: 6 },
   weekRange: { color: colors.muted, fontSize: 15, lineHeight: 20, fontFamily: SLFontFamilies.sansMedium, marginTop: 3 },
   weekSummary: { color: colors.muted, fontSize: 13, lineHeight: 17, fontFamily: SLFontFamilies.sansMedium, marginTop: 4 },
   dayStrip: { flexDirection: 'row', gap: 5 },
+  dayStripDragging: { zIndex: 30 },
   dayCell: { position: 'relative', flex: 1, minWidth: 0, height: 70, overflow: 'hidden', borderRadius: 7, borderWidth: 1, borderColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center', gap: 2 },
   dayCellSelected: { borderColor: colors.amber, backgroundColor: 'rgba(204,164,74,.08)' },
+  dayCellDropReady: { borderColor: 'rgba(168,101,255,0.46)', backgroundColor: 'rgba(90,42,130,0.12)' },
+  dayCellDropTarget: { borderColor: colors.violet, backgroundColor: 'rgba(112,53,158,0.34)', transform: [{ scale: 1.035 }] },
+  dayDropText: { color: colors.textStrong },
   dayLabel: { color: colors.muted, fontSize: 10, lineHeight: 13, fontFamily: SLFontFamilies.sansMedium },
   dayLabelSelected: { color: colors.amber },
   dayNumber: { color: colors.textStrong, fontSize: 15, lineHeight: 18, fontFamily: SLFontFamilies.sansBold },
@@ -5009,8 +5248,15 @@ const storyStyles = StyleSheet.create({
   dayNumberSelected: { color: colors.amber },
   daySessionCount: { fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   dayStatusRail: { position: 'absolute', left: 7, right: 7, bottom: 3, height: 2, borderRadius: 1 },
+  dragInstruction: { ...SLTypography.metadataStrong, color: colors.violet, textAlign: 'center', paddingVertical: 2 },
+  dragStatus: { minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  dragStatusText: { ...SLTypography.metadataStrong, color: colors.muted },
+  dragError: { ...SLTypography.metadataStrong, color: SLColors.danger, textAlign: 'center', paddingVertical: 4 },
   compactWeekSessions: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
+  dragSessionContainer: { position: 'relative', zIndex: 1 },
+  dragSessionContainerActive: { zIndex: 50, elevation: 12, opacity: 0.94 },
   compactSessionRow: { position: 'relative', minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft, paddingVertical: 8, paddingRight: 2 },
+  compactSessionRowDragging: { borderWidth: 1, borderColor: 'rgba(168,101,255,0.72)', borderRadius: SLRadius.md, backgroundColor: 'rgba(38,19,54,0.96)', paddingHorizontal: 7, ...SLShadows.level2 },
   compactSessionArtwork: { width: 54, height: 60, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(157,97,211,0.28)' },
   compactSessionDayBadge: { width: 22, alignItems: 'center' },
   compactSessionDay: { color: colors.muted, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansMedium },

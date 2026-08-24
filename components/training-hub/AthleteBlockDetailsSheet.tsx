@@ -213,9 +213,7 @@ export function AthleteBlockDetailsSheet({ athleteId, onDismiss, onOpenSession, 
               <View style={styles.progressTrack}>
                 <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
               </View>
-              <Text style={styles.progressLabel}>
-                {Number(block.progress?.completed || 0)} / {Number(block.progress?.total || 0)} complete
-              </Text>
+              <Text style={styles.progressLabel}>{Number(block.progress?.completed || 0)} / {Number(block.progress?.total || 0)} complete</Text>
               <View style={styles.summaryRow}>
                 <SummaryMetric color={tone.complete} label="Complete" value={summary?.completed} />
                 <SummaryMetric color={tone.upcoming} label="Upcoming" value={summary?.upcoming} />
@@ -229,6 +227,7 @@ export function AthleteBlockDetailsSheet({ athleteId, onDismiss, onOpenSession, 
               <View pointerEvents="none" style={styles.timelineSpine} />
               {(details?.weeks || []).map((week) => (
                 <TimelineWeek
+                  current={Boolean(week.is_current || week.week === Number(block.current_week || 0))}
                   expanded={expandedWeek === week.week}
                   key={week.week}
                   onOpenSession={openSession}
@@ -255,53 +254,78 @@ function SummaryMetric({ color, label, value }: { color: string; label: string; 
 }
 
 function TimelineWeek({
+  current,
   expanded,
   onOpenSession,
   onPress,
   week,
 }: {
+  current: boolean;
   expanded: boolean;
   onOpenSession: (session: BlockDetailsSession) => void;
   onPress: () => void;
   week: BlockDetailsWeek;
 }) {
-  const weekTone = week.is_current ? tone.current : week.position === 'past' ? tone.complete : tone.upcoming;
+  const weekTone = current ? tone.current : week.position === 'past' ? tone.complete : tone.upcoming;
   const total = Number(week.counts?.total || 0);
   const completed = Number(week.counts?.completed || 0);
-  const countLabel = total > 0 ? `${completed} / ${total}` : 'No Sessions planned';
+  const countLabel = total > 0 ? `${completed} / ${total}` : '0 / 0';
+  const dates = week.date_range_label || compactDateRange(week.start_date, week.end_date);
   const orderedSessions = useMemo(
     () => [...(week.sessions || [])].sort((left, right) => String(left.date || '').localeCompare(String(right.date || '')) || left.id - right.id),
     [week.sessions],
   );
   return (
-    <View style={[styles.weekRow, expanded && styles.weekRowExpanded]}>
+    <View style={[styles.weekRow, current && styles.weekRowCurrent, expanded && styles.weekRowExpanded]}>
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         onPress={onPress}
         style={({ pressed }) => [styles.weekPressable, pressed && styles.pressed]}
       >
-        <View style={styles.timelineIdentity}>
+        <View style={styles.weekHeader}>
           <View style={[styles.timelineNode, { borderColor: weekTone }, week.position === 'past' && styles.timelineNodeDone]}>
             {week.position === 'past' ? <Ionicons color={SLColors.canvas} name="checkmark" size={13} /> : <View style={[styles.timelineNodeCore, { backgroundColor: expanded ? weekTone : 'transparent' }]} />}
           </View>
-          <Text style={[styles.weekName, expanded && { color: weekTone }]}>W{week.week}</Text>
-          <Text numberOfLines={1} style={styles.weekDates}>{week.date_range_label || compactDateRange(week.start_date, week.end_date)}</Text>
-          <Text numberOfLines={1} style={[styles.weekCount, total === 0 && styles.weekCountEmpty]}>{countLabel}</Text>
+          <View style={styles.weekIdentityCopy}>
+            <View style={styles.weekTitleLine}>
+              <Text style={[styles.weekName, (expanded || current) && { color: weekTone }]}>W{week.week}</Text>
+              {current ? <Text style={styles.currentBadge}>CURRENT</Text> : null}
+            </View>
+            <Text style={styles.weekDates}>{dates || 'Dates unavailable'}</Text>
+          </View>
+          <View style={styles.weekCountWrap}>
+            <Text style={[styles.weekCount, { color: weekTone }, total === 0 && styles.weekCountEmpty]}>{countLabel}</Text>
+            {current ? <Text style={styles.weekCountCaption}>Sessions complete</Text> : null}
+          </View>
         </View>
         <View style={[styles.weekPanel, expanded && styles.weekPanelExpanded]}>
-          <WeekDayRail days={week.days || []} />
-          {expanded ? (
-            <View style={styles.agenda}>
-              {orderedSessions.length ? orderedSessions.map((session) => (
-                <SessionAgendaRow key={session.id} onPress={() => onOpenSession(session)} session={session} />
-              )) : <Text style={styles.emptyAgenda}>No Sessions planned for this Week.</Text>}
-            </View>
-          ) : null}
+          <WeekDayRail days={normalizeWeekDays(week.days || [], week.start_date)} />
         </View>
       </Pressable>
+      {expanded ? (
+        <View style={styles.agenda}>
+          {orderedSessions.length ? orderedSessions.map((session) => (
+            <SessionAgendaRow key={session.id} onPress={() => onOpenSession(session)} session={session} />
+          )) : <Text style={styles.emptyAgenda}>No Sessions planned for this Week.</Text>}
+        </View>
+      ) : null}
     </View>
   );
+}
+
+function normalizeWeekDays(days: BlockDetailsDay[], startDate?: string | null): BlockDetailsDay[] {
+  const byDate = new Map(days.filter((day) => day.date).map((day) => [String(day.date), day]));
+  const canBuildDates = /^\d{4}-\d{2}-\d{2}$/.test(String(startDate || ''));
+  return Array.from({ length: 7 }, (_, index) => {
+    if (canBuildDates) {
+      const [year, month, day] = String(startDate).split('-').map(Number);
+      const date = new Date(year, month - 1, day + index);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      return byDate.get(key) || { date: key, day_number: date.getDate(), kind: 'no_session', sessions: [] };
+    }
+    return days[index] || { day_number: null, kind: 'no_session', sessions: [] };
+  });
 }
 
 function WeekDayRail({ days }: { days: BlockDetailsDay[] }) {
@@ -425,50 +449,56 @@ function dayFromDate(value?: string | null) {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  scrollContent: { paddingHorizontal: 12, paddingTop: 8 },
-  titleRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4, marginBottom: 8 },
-  sheetTitle: { fontFamily: SLFontFamilies.sansBold, fontSize: 23, lineHeight: 29, color: SLColors.textPrimary },
+  scrollContent: { paddingHorizontal: 10, paddingTop: 4 },
+  titleRow: { minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 2, marginBottom: 6 },
+  sheetTitle: { fontFamily: SLFontFamilies.sansBold, fontSize: 21, lineHeight: 27, color: SLColors.textPrimary },
   stateRow: { minHeight: 150, alignItems: 'center', justifyContent: 'center', gap: 12 },
   stateCard: { minHeight: 150, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, borderRadius: SLRadius.lg, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20, backgroundColor: SLColors.surfaceInset },
   stateText: { ...SLTypography.body, color: SLColors.textSecondary, textAlign: 'center' },
   retryButton: { minHeight: 42, paddingHorizontal: 18, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderSelected, alignItems: 'center', justifyContent: 'center' },
   retryText: { ...SLTypography.label, color: SLColors.accentMuted },
-  blockCard: { overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderRadius: SLRadius.lg, backgroundColor: SLColors.surfaceInset },
-  blockIdentityRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 },
-  blockMark: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft },
+  blockCard: { overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderRadius: SLRadius.lg, backgroundColor: 'rgba(8,8,13,0.72)' },
+  blockIdentityRow: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 11, paddingTop: 9, paddingBottom: 7 },
+  blockMark: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft },
   blockCopy: { flex: 1, minWidth: 0, gap: 3 },
-  blockName: { fontFamily: SLFontFamilies.sansSemiBold, fontSize: 20, lineHeight: 25, color: SLColors.textPrimary, textTransform: 'uppercase' },
-  blockMeta: { fontFamily: SLFontFamilies.sans, fontSize: 14, lineHeight: 19, color: SLColors.textSecondary },
-  progressTrack: { height: 6, borderRadius: 3, overflow: 'hidden', marginHorizontal: 14, backgroundColor: SLColors.borderSubtle },
+  blockName: { fontFamily: SLFontFamilies.sansSemiBold, fontSize: 18, lineHeight: 23, color: SLColors.textPrimary, textTransform: 'uppercase' },
+  blockMeta: { fontFamily: SLFontFamilies.sans, fontSize: 13, lineHeight: 17, color: SLColors.textSecondary },
+  progressTrack: { height: 5, borderRadius: 3, overflow: 'hidden', marginHorizontal: 11, backgroundColor: SLColors.borderSubtle },
   progressFill: { height: '100%', borderRadius: 3, backgroundColor: SLColors.accentViolet },
-  progressLabel: { alignSelf: 'flex-end', marginHorizontal: 14, marginTop: 6, marginBottom: 12, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 13, lineHeight: 17, color: SLColors.accentMuted },
-  summaryRow: { minHeight: 74, flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
+  progressLabel: { alignSelf: 'flex-end', marginHorizontal: 11, marginTop: 4, marginBottom: 7, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 12, lineHeight: 15, color: SLColors.accentMuted },
+  summaryRow: { minHeight: 52, flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
   summaryMetric: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', gap: 2, borderRightWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, paddingHorizontal: 2 },
-  summaryValue: { fontFamily: SLFontFamilies.monoSemiBold, fontSize: 21, lineHeight: 27 },
-  summaryLabel: { fontFamily: SLFontFamilies.sans, fontSize: 11, lineHeight: 15, color: SLColors.textMuted },
-  sectionLabel: { marginTop: 20, marginBottom: 10, marginLeft: 2, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14, lineHeight: 18, letterSpacing: 0.5, textTransform: 'uppercase', color: SLColors.accentMuted },
+  summaryValue: { fontFamily: SLFontFamilies.monoSemiBold, fontSize: 18, lineHeight: 22 },
+  summaryLabel: { fontFamily: SLFontFamilies.sans, fontSize: 10, lineHeight: 13, color: SLColors.textMuted },
+  sectionLabel: { marginTop: 14, marginBottom: 6, marginLeft: 2, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 13, lineHeight: 17, letterSpacing: 0.5, textTransform: 'uppercase', color: SLColors.accentMuted },
   timeline: { position: 'relative' },
-  timelineSpine: { position: 'absolute', left: 16, top: 18, bottom: 18, width: 2, backgroundColor: 'rgba(167,139,250,0.32)' },
-  weekRow: { paddingBottom: 10 },
-  weekRowExpanded: { paddingBottom: 14 },
-  weekPressable: { flexDirection: 'row', gap: 9 },
-  timelineIdentity: { width: 68, minHeight: 68, alignItems: 'center' },
+  timelineSpine: { position: 'absolute', left: 12, top: 14, bottom: 14, width: 2, backgroundColor: 'rgba(167,139,250,0.28)' },
+  weekRow: { position: 'relative', paddingBottom: 5 },
+  weekRowCurrent: { marginBottom: 5, borderLeftWidth: 3, borderLeftColor: tone.current, borderRadius: 12, backgroundColor: 'rgba(112,60,175,0.10)' },
+  weekRowExpanded: { paddingBottom: 7 },
+  weekPressable: { paddingTop: 4, paddingBottom: 5 },
+  weekHeader: { minHeight: 37, flexDirection: 'row', alignItems: 'center' },
   timelineNode: { zIndex: 1, width: 24, height: 24, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.canvas },
   timelineNodeDone: { backgroundColor: tone.complete },
   timelineNodeCore: { width: 10, height: 10, borderRadius: 5 },
-  weekName: { marginTop: 5, fontFamily: SLFontFamilies.monoSemiBold, fontSize: 16, lineHeight: 20, color: SLColors.textSecondary },
-  weekDates: { marginTop: 1, fontFamily: SLFontFamilies.sans, fontSize: 10, lineHeight: 13, color: SLColors.textMuted },
-  weekCount: { marginTop: 1, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 11, lineHeight: 14, color: tone.complete },
-  weekCountEmpty: { fontSize: 9, color: SLColors.textSubtle },
-  weekPanel: { flex: 1, minWidth: 0, alignSelf: 'flex-start', borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, borderRadius: 12, overflow: 'hidden', backgroundColor: 'rgba(8,8,13,0.88)' },
-  weekPanelExpanded: { borderColor: SLColors.borderSelected, backgroundColor: SLColors.surfaceInset },
-  dayRail: { height: 64, flexDirection: 'row', alignItems: 'stretch', paddingHorizontal: 3 },
+  weekIdentityCopy: { flex: 1, minWidth: 0, marginLeft: 9 },
+  weekTitleLine: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  weekName: { fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 20, color: SLColors.textSecondary },
+  currentBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8, overflow: 'hidden', backgroundColor: SLColors.accentSoft, fontFamily: SLFontFamilies.sansBold, fontSize: 8, lineHeight: 11, letterSpacing: 0.5, color: SLColors.accentMuted },
+  weekDates: { marginTop: 1, fontFamily: SLFontFamilies.sans, fontSize: 12, lineHeight: 16, color: SLColors.textMuted },
+  weekCountWrap: { minWidth: 58, alignItems: 'flex-end', marginLeft: 8, paddingRight: 2 },
+  weekCount: { fontFamily: SLFontFamilies.sansSemiBold, fontSize: 12, lineHeight: 16 },
+  weekCountCaption: { fontFamily: SLFontFamilies.sans, fontSize: 8, lineHeight: 11, color: SLColors.textMuted },
+  weekCountEmpty: { color: SLColors.textSubtle },
+  weekPanel: { marginLeft: 33, overflow: 'hidden', borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
+  weekPanelExpanded: { borderColor: 'rgba(167,139,250,0.35)' },
+  dayRail: { height: 40, flexDirection: 'row', alignItems: 'stretch' },
   dayCell: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', gap: 1 },
-  dayLabel: { fontFamily: SLFontFamilies.sansSemiBold, fontSize: 10, lineHeight: 13, color: SLColors.textMuted },
-  dayNumber: { fontFamily: SLFontFamilies.sans, fontSize: 12, lineHeight: 16, color: SLColors.textSecondary },
-  dayDot: { width: 9, height: 9, borderRadius: 5, borderWidth: 1 },
+  dayLabel: { fontFamily: SLFontFamilies.sansSemiBold, fontSize: 9, lineHeight: 11, color: SLColors.textMuted },
+  dayNumber: { fontFamily: SLFontFamilies.sans, fontSize: 11, lineHeight: 13, color: SLColors.textSecondary },
+  dayDot: { width: 7, height: 7, borderRadius: 4, borderWidth: 1 },
   dayDotNeutral: { backgroundColor: tone.none, borderColor: tone.none, opacity: 0.7 },
-  agenda: { borderTopWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
+  agenda: { marginLeft: 33, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
   emptyAgenda: { ...SLTypography.caption, color: SLColors.textMuted, paddingHorizontal: 12, paddingVertical: 16 },
   sessionRow: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderSubtle },
   sessionDate: { width: 28, alignItems: 'center' },

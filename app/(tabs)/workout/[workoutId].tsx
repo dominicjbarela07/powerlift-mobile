@@ -784,7 +784,9 @@ function formatMovementHistorySet(row: MovementHistorySet | null | undefined, un
   const reps = row.reps ?? null;
   if (w == null || reps == null) return 'No logged set found';
   const dateStr = row.date ? String(row.date).slice(0, 10) : null;
-  let line = `${formatWeight(w, unit)} ${assisted ? `${unit} assistance` : unit} × ${reps}`;
+  const load = formatPerformedLoad(w, unit, assisted ? { loadConvention: 'assistance_load' } : null)
+    || `${formatWeight(w, unit)} ${unit}`;
+  let line = `${load} × ${reps}`;
   if (row.rir != null) line += ` · RIR ${Number(row.rir).toFixed(1)}`;
   if (dateStr) line += ` · ${dateStr}`;
   return line;
@@ -808,7 +810,8 @@ function historyPerformanceParts(
       ? `RPE ${formatHistoryMetric(row.rpe)}`
       : null;
   return {
-    weight: `${formatWeight(row.weight_kg, unit)} ${unit}${assisted ? ' assistance' : ''}`,
+    weight: formatPerformedLoad(row.weight_kg, unit, assisted ? { loadConvention: 'assistance_load' } : null)
+      || `${formatWeight(row.weight_kg, unit)} ${unit}`,
     reps: `×${row.reps}`,
     effort,
     date: row.date ? String(row.date).slice(0, 10) : 'Date unavailable',
@@ -6264,7 +6267,7 @@ export default function WorkoutViewerScreen() {
         ) as WorkoutPayload;
         if (!unitPreferenceHydratedRef.current) {
           if (unitLocalOverrideRef.current == null) {
-            setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+            setUnit(normalizeReadinessUnit(user?.preferred_units));
           }
           unitPreferenceHydratedRef.current = true;
         }
@@ -6293,7 +6296,7 @@ export default function WorkoutViewerScreen() {
 
       if (!unitPreferenceHydratedRef.current) {
         if (unitLocalOverrideRef.current == null) {
-          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+          setUnit(normalizeReadinessUnit(user?.preferred_units));
         }
         unitPreferenceHydratedRef.current = true;
       }
@@ -6320,6 +6323,7 @@ export default function WorkoutViewerScreen() {
     isIdealWorkoutDetailPreview,
     loggerScenario,
     coachPreviewRequested,
+    user?.preferred_units,
     workoutId,
   ]);
 
