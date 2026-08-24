@@ -33,14 +33,11 @@ assert.doesNotMatch(manager, /programFocusArt/, 'Training Program must not use a
 assert.doesNotMatch(manager, /<ProgrammingMuscleRegionArt level="week"/, 'Week headers must remain anatomy-free');
 assert.match(manager, /<ProgrammingMuscleRegionArt level="session" primary=\{focus\.primary\}/, 'Session artwork must use the existing region asset system');
 assert.match(workspace, /<ProgrammingMuscleRegionArt level="session" primary=\{workspaceFocus\.primary\}/, 'Session Workspace must use the existing region asset system');
-assert.match(workspace, /semanticLevel="movement"/, 'Movement selection must preserve complete anatomical relationships');
-assert.match(editingWorkspace, /semanticLevel="movement"/, 'Movement rows must preserve precise anatomy');
-assert.match(programmingRegionArt, /accessoryRegionalArtworkAsset/);
-assert.match(programmingRegionArt, /resizeMode="contain"/);
-assert.match(muscleMap, /const REGION_VIEWBOX/);
-for (const region of ['upper', 'lower', 'torso', 'arms', 'full']) {
-  assert.match(muscleMap, new RegExp(`\\b${region}: \\[`), `missing region-aware frame: ${region}`);
-}
+assert.match(workspace, /CanonicalMovementArtwork/, 'Movement selection must preserve canonical individual-movement artwork semantics');
+assert.match(editingWorkspace, /CanonicalMovementArtwork/, 'Movement rows must preserve canonical individual-movement artwork semantics');
+assert.match(programmingRegionArt, /<MuscleMap/);
+assert.doesNotMatch(programmingRegionArt, /accessoryRegionalArtworkAsset|resizeMode="contain"/);
+assert.match(muscleMap, /resolveAnatomyFraming/);
 for (const asset of [
   'assets/images/gym_vibe.jpg',
   'assets/images/journey-gym-rack.png',

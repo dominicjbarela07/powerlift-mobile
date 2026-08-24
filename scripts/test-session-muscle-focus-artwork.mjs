@@ -22,13 +22,14 @@ assert.deepEqual(
 
 const artwork = source('components/anatomy/ProgrammingMuscleRegionArt.tsx');
 assert.match(artwork, /Session muscle focus unavailable/);
-assert.doesNotMatch(artwork, /MuscleMap/);
+assert.match(artwork, /MuscleMap/);
+assert.doesNotMatch(artwork, /accessoryRegionalArtworkAsset/);
 
 const coachHome = source('components/coach-mobile/CoachActivityHome.tsx');
 assert.match(coachHome, /session\.muscle_focus/);
 assert.match(coachHome, /activity\.artwork\?\.muscle_focus \|\| activity\.evidence\.muscle_focus/);
 assert.doesNotMatch(coachHome, /function anatomyKeys/);
-assert.doesNotMatch(coachHome, /<MuscleMap/);
+assert.doesNotMatch(coachHome, /<MuscleMap/, 'aggregate consumers must route through the shared framing wrapper');
 
 const manager = source('app/(tabs)/workout/index.tsx');
 assert.match(manager, /ProgrammingMuscleRegionArt level="session" primary=\{focus\.primary\} secondary=\{focus\.secondary\}/);
@@ -48,4 +49,4 @@ for (const relative of [
   assert.match(source(relative), /ProgrammingMuscleRegionArt/, `${relative} must use canonical Session region artwork`);
 }
 
-console.log('[session-muscle-focus-artwork] canonical projection and cross-surface regional artwork contracts passed');
+console.log('[session-muscle-focus-artwork] canonical projection and cross-surface aggregate anatomy contracts passed');

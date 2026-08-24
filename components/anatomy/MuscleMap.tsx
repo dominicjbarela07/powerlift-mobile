@@ -1,5 +1,6 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import {
+  LayoutChangeEvent,
   StyleProp,
   StyleSheet,
   View,
@@ -26,6 +27,11 @@ import {
   type GovernedMuscleId,
 } from '@/lib/anatomy-system';
 import { AnatomyMaskPaths, mountedMasksForView } from './anatomy-mask-registry';
+import {
+  resolveAnatomyFraming,
+  type AnatomyFramingSurface,
+  type AnatomyFigureView,
+} from '@/lib/anatomy-framing';
 
 const BASES = {
   masculine: {
@@ -42,6 +48,12 @@ const SIZE_HEIGHT: Readonly<Record<AnatomySize, number>> = {
   thumbnail: 76,
   card: 184,
   hero: 390,
+};
+
+const SIZE_WIDTH: Readonly<Record<AnatomySize, number>> = {
+  thumbnail: 76,
+  card: 156,
+  hero: 320,
 };
 
 export type MuscleMapRenderState = Readonly<{
@@ -67,6 +79,7 @@ export type MuscleMapProps = Readonly<{
   semanticLevel?: AnatomySemanticLevel;
   size?: AnatomySize;
   style?: StyleProp<ViewStyle>;
+  surface?: AnatomyFramingSurface;
   showFrame?: boolean;
   testID?: string;
 }>;
@@ -93,38 +106,40 @@ export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy
   };
 }
 
-const REGION_VIEWBOX: Readonly<Record<AnatomyRegion, readonly [number, number, number, number]>> = {
-  upper: [0, 78, 418, 470],
-  lower: [32, 430, 354, 500],
-  torso: [38, 112, 342, 390],
-  arms: [0, 112, 418, 430],
-  full: [0, 0, 418, 941],
-};
-
 function Figure({
   presentation,
   view,
   primary,
   secondary,
-  region,
   size,
+  width,
+  height,
+  surface,
 }: {
   presentation: AnatomyPresentation;
   view: Exclude<AnatomyResolvedView, 'dual'>;
   primary: readonly GovernedMuscleId[];
   secondary: readonly GovernedMuscleId[];
-  region: AnatomyRegion;
   size: AnatomySize;
+  width: number;
+  height: number;
+  surface: AnatomyFramingSurface;
 }) {
-  const height = SIZE_HEIGHT[size];
-  const [viewX, viewY, viewWidth, viewHeight] = REGION_VIEWBOX[region];
-  const width = Math.round(height * viewWidth / viewHeight);
+  const framing = resolveAnatomyFraming({
+    primary,
+    secondary,
+    view: view as AnatomyFigureView,
+    destinationAspectRatio: width / Math.max(1, height),
+    size,
+    surface,
+  });
+  const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = framing.viewBox;
   const primarySet = new Set(primary);
   const visibleSecondary = secondary.filter((muscle) => !primarySet.has(muscle));
   const primaryOpacity = size === 'thumbnail' ? 0.93 : 0.82;
   const secondaryOpacity = size === 'thumbnail' ? 0.78 : 0.68;
   return (
-    <View style={{ width, height }}>
+    <View style={styles.figure}>
       <Svg
         accessible={false}
         pointerEvents="none"
@@ -177,9 +192,11 @@ function MuscleMapComponent({
   semanticLevel = 'movement',
   size = 'card',
   style,
+  surface = 'auto',
   showFrame = false,
   testID,
 }: MuscleMapProps) {
+  const [layout, setLayout] = useState(() => ({ width: SIZE_WIDTH[size], height: SIZE_HEIGHT[size] }));
   const state = useMemo(
     () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, region, semanticLevel, size }),
     [anatomy, athlete, primary, secondary, view, region, semanticLevel, size],
@@ -191,23 +208,33 @@ function MuscleMapComponent({
     primaryLabels.length ? `Primary: ${primaryLabels.join(', ')}` : 'No primary muscles',
     secondaryLabels.length ? `Secondary: ${secondaryLabels.join(', ')}` : 'No secondary muscles',
   ].join('. ');
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    if (width <= 0 || height <= 0) return;
+    setLayout((current) => Math.abs(current.width - width) < 0.5 && Math.abs(current.height - height) < 0.5
+      ? current
+      : { width, height });
+  };
+  const figureWidth = state.view === 'dual' ? Math.max(1, (layout.width - 2) / 2) : layout.width;
   return (
     <View
       accessibilityLabel={accessibilityLabel}
       accessible
       testID={testID}
+      onLayout={handleLayout}
       style={[
         styles.root,
+        { width: SIZE_WIDTH[size], height: SIZE_HEIGHT[size] },
         state.view === 'dual' && styles.dual,
         showFrame && styles.frame,
         style,
       ]}
     >
       {state.view === 'front' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} region={state.region} size={size} />
+        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} />
       ) : null}
       {state.view === 'rear' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} region={state.region} size={size} />
+        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} />
       ) : null}
     </View>
   );
@@ -220,17 +247,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   dual: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 2,
   },
   frame: {
     overflow: 'hidden',
-    padding: 8,
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#3A2A4A',
     backgroundColor: '#07080B',
+  },
+  figure: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
   },
 });

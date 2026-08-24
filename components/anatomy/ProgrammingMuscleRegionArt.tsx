@@ -1,13 +1,11 @@
 import React, { memo, useMemo } from 'react';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { SLColors } from '@/constants/theme';
 
-import { accessoryRegionalArtworkAsset } from '@/lib/accessory-muscle-region-assets';
-import {
-  resolveProgrammingRegionArtwork,
-} from '@/lib/programming-visual-semantics';
+import { normalizeMuscleRoles } from '@/lib/anatomy-system';
+import { MuscleMap } from './MuscleMap';
 
 type Props = Readonly<{
   primary?: readonly string[] | null;
@@ -17,9 +15,8 @@ type Props = Readonly<{
 }>;
 
 function ProgrammingMuscleRegionArtComponent({ primary, secondary, level, style }: Props) {
-  const keys = useMemo(() => resolveProgrammingRegionArtwork(primary || [], level), [level, primary]);
-  const assets = keys.map((key) => accessoryRegionalArtworkAsset(key));
-  if (!assets.length) {
+  const roles = useMemo(() => normalizeMuscleRoles(primary, secondary), [primary, secondary]);
+  if (!roles.primary.length && !roles.secondary.length) {
     return (
       <View accessibilityLabel="Session muscle focus unavailable" accessible style={[styles.root, styles.neutral, style]}>
         <Ionicons color={SLColors.textMuted} name="barbell-outline" size={26} />
@@ -29,21 +26,19 @@ function ProgrammingMuscleRegionArtComponent({ primary, secondary, level, style 
   return (
     <View
       accessibilityLabel={`${level === 'week' ? 'Week' : 'Session'} focus: ${[
-        ...assets.map((asset) => asset.label),
-        ...(secondary || []).map((value) => String(value).replaceAll('_', ' ')),
+        ...roles.primary,
+        ...roles.secondary,
       ].join(', ')}`}
       accessible
-      style={[styles.root, assets.length > 1 && styles.aggregate, style]}
+      style={[styles.root, style]}
     >
-      {assets.map((asset, index) => (
-        <Image
-          accessibilityIgnoresInvertColors
-          key={`${keys[index]}-${index}`}
-          resizeMode="contain"
-          source={asset.source}
-          style={[styles.image, assets.length > 1 && styles.aggregateImage]}
-        />
-      ))}
+      <MuscleMap
+        primary={roles.primary}
+        secondary={roles.secondary}
+        semanticLevel={level}
+        size={level === 'week' ? 'thumbnail' : 'card'}
+        style={styles.map}
+      />
     </View>
   );
 }
@@ -53,7 +48,5 @@ export const ProgrammingMuscleRegionArt = memo(ProgrammingMuscleRegionArtCompone
 const styles = StyleSheet.create({
   root: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   neutral: { borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(140,134,153,0.30)', borderRadius: 12, backgroundColor: 'rgba(12,13,18,0.72)' },
-  aggregate: { flexDirection: 'row' },
-  image: { width: '100%', height: '100%' },
-  aggregateImage: { width: '58%', marginHorizontal: '-4%' },
+  map: { width: '100%', height: '100%' },
 });

@@ -80,7 +80,6 @@ export const MUSCLE_META: Readonly<Record<GovernedMuscleId, MuscleVisibility & {
   hip_flexors: { label: 'Hip Flexors', front: true, rear: false, preferred: 'front' },
   neck: { label: 'Neck', front: true, rear: true, preferred: 'rear' },
 };
-
 const GOVERNED_SET = new Set<string>(GOVERNED_MUSCLE_IDS);
 
 export function isGovernedMuscleId(value: unknown): value is GovernedMuscleId {
@@ -144,7 +143,10 @@ export function resolveAnatomyView(
   }
   const frontOnly = weighted.some(({ muscle }) => MUSCLE_META[muscle].front && !MUSCLE_META[muscle].rear);
   const rearOnly = weighted.some(({ muscle }) => MUSCLE_META[muscle].rear && !MUSCLE_META[muscle].front);
-  if (size !== 'thumbnail' && frontOnly && rearOnly && Math.min(front, rear) >= Math.max(front, rear) * 0.34) return 'dual';
+  // A secondary target remains intentional evidence. If the governed target
+  // set spans front-only and rear-only anatomy, a single view would silently
+  // hide valid Session emphasis, including in compact previews.
+  if (frontOnly && rearOnly) return 'dual';
   return rear > front ? 'rear' : 'front';
 }
 

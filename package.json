@@ -61,6 +61,7 @@
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
     "test:anatomy-system": "node --import tsx scripts/test-anatomy-system.mjs",
+    "test:anatomy-framing": "node --import tsx scripts/test-anatomy-framing.mjs",
     "test:ui-mock-library": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
     "test:ui-mock-library-resolvers": "node --import tsx scripts/test-ui-mock-library-resolvers.mjs",
     "test:ui-mock-library-dual-preview": "node --import tsx scripts/test-ui-mock-library-dual-preview.mjs",

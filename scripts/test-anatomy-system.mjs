@@ -21,10 +21,10 @@ assert.equal(resolveAnatomyPresentation({ preference: 'feminine', sex: 'M' }), '
 assert.equal(resolveAnatomyPresentation({ preference: 'automatic', sex: 'F' }), 'feminine');
 assert.equal(resolveAnatomyPresentation({ preference: 'automatic', sex: null }), 'masculine');
 
-assert.equal(resolveAnatomyView(['chest', 'front_delts'], ['triceps'], 'auto', 'card'), 'front');
+assert.equal(resolveAnatomyView(['chest', 'front_delts'], ['triceps'], 'auto', 'card'), 'dual');
 assert.equal(resolveAnatomyView(['lats', 'upper_back'], ['rear_delts'], 'auto', 'card'), 'rear');
 assert.equal(resolveAnatomyView(['quads', 'glutes', 'hamstrings'], [], 'auto', 'card'), 'dual');
-assert.equal(resolveAnatomyView(['quads', 'glutes'], [], 'auto', 'thumbnail'), 'front');
+assert.equal(resolveAnatomyView(['quads', 'glutes'], [], 'auto', 'thumbnail'), 'dual');
 
 assert.equal(resolveAnatomyRegion(['chest', 'front_delts'], ['triceps'], 'session'), 'upper');
 assert.equal(resolveAnatomyRegion(['lats', 'upper_back'], ['rear_delts'], 'session'), 'torso');
