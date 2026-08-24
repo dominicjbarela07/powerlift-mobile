@@ -1,5 +1,39 @@
 export type AccessorySwapAction = 'Swap' | 'Sub' | null;
 
+export type SubstitutionAuthority =
+  | 'self_governed'
+  | 'coach_restricted'
+  | 'none';
+
+export function resolveSubstitutionAuthority({
+  serverAuthority,
+  canHotSwap,
+  permissionIsSelfCoached,
+  accountIsSelfCoached,
+  isCoachPreview,
+}: {
+  serverAuthority?: string | null;
+  canHotSwap?: boolean | null;
+  permissionIsSelfCoached?: boolean | null;
+  accountIsSelfCoached?: boolean | null;
+  isCoachPreview: boolean;
+}): SubstitutionAuthority {
+  if (isCoachPreview) return 'none';
+
+  const normalized = String(serverAuthority || '').trim().toLowerCase();
+  if (normalized === 'self_governed' || normalized === 'coach_restricted' || normalized === 'none') {
+    return normalized;
+  }
+
+  // Compatibility for a TestFlight client talking to a backend deployed
+  // before the explicit authority field. Both legacy signals are still
+  // server-derived relationship facts; UI mode never grants authority.
+  if (canHotSwap || permissionIsSelfCoached || accountIsSelfCoached) {
+    return 'self_governed';
+  }
+  return 'coach_restricted';
+}
+
 export type ItemSetLogProjection = {
   id?: number | string | null;
   set_logs?: readonly unknown[] | null;
@@ -46,14 +80,14 @@ export function persistedSetLogItemIds(
 }
 
 export function accessorySwapActionForItem({
-  canHotSwap,
+  substitutionAuthority,
   hasApprovedSubstitutions,
   isCoachPreview,
   sessionLifecycle,
   targetItemHasSetLogs,
   acceptedPersistedSetLogForItem,
 }: {
-  canHotSwap: boolean;
+  substitutionAuthority: SubstitutionAuthority;
   hasApprovedSubstitutions: boolean;
   isCoachPreview: boolean;
   sessionLifecycle: string | null | undefined;
@@ -66,7 +100,7 @@ export function accessorySwapActionForItem({
   if (!SWAPPABLE_SESSION_LIFECYCLES.has(String(sessionLifecycle || '').trim().toLowerCase())) {
     return null;
   }
-  if (canHotSwap) return 'Swap';
-  if (hasApprovedSubstitutions) return 'Sub';
+  if (substitutionAuthority === 'self_governed') return 'Swap';
+  if (substitutionAuthority === 'coach_restricted' && hasApprovedSubstitutions) return 'Sub';
   return null;
 }

@@ -110,6 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const mergeAccountStatePayload = useCallback((base: AuthUser, payload: AccountStatePayload = {}): AuthUser => {
     const payloadUser = (payload.user || {}) as Record<string, any>;
+    const payloadAthlete = ((payload as any).athlete || {}) as Record<string, any>;
     const profilePhoto = normalizeProfilePhotoPayload(payloadUser);
     const accountState = payloadUser.account_state ?? payload.account_state ?? base.account_state ?? null;
     const payloadVerificationRequired =
@@ -158,7 +159,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           ? false
           : base.is_individual_workspace,
       is_self_coached:
-        payloadUser.is_self_coached === true
+        payloadAthlete.is_self_coached === true
+          ? true
+          : payloadAthlete.is_self_coached === false
+          ? false
+          : payloadUser.is_self_coached === true
           ? true
           : payloadUser.is_self_coached === false
           ? false
@@ -374,8 +379,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
               is_coach: profileUser.role === 'coach',
               workspace_mode: profileUser.workspace_mode,
               is_individual_workspace: profileUser.is_individual_workspace === true,
-              is_self_coached: profileUser.is_self_coached === true,
-              self_athlete_id: profileUser.self_athlete_id ?? null,
+              is_self_coached:
+                profile.json?.athlete?.is_self_coached === true
+                || profileUser.is_self_coached === true,
+              self_athlete_id:
+                profileUser.self_athlete_id
+                ?? (profile.json?.athlete?.is_self_coached === true ? profile.json?.athlete?.id : null),
               account_state: profileUser.account_state ?? profile.json?.account_state ?? restoredUser?.account_state ?? null,
               next_url: profileUser.next_url ?? profile.json?.next_url ?? restoredUser?.next_url ?? null,
               next_route: profileUser.next_route ?? profile.json?.next_route ?? restoredUser?.next_route ?? null,

@@ -5,10 +5,11 @@ import {
   accessorySwapActionForItem,
   itemHasPersistedSetLogs,
   persistedSetLogItemIds,
+  resolveSubstitutionAuthority,
 } from '../lib/accessory-swap-eligibility.ts';
 
 const resolve = (overrides = {}) => accessorySwapActionForItem({
-  canHotSwap: true,
+  substitutionAuthority: 'self_governed',
   hasApprovedSubstitutions: false,
   isCoachPreview: false,
   sessionLifecycle: 'active_session',
@@ -39,14 +40,21 @@ assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree)
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) }), 'Swap', 'accessory B at 0/3 remains swappable');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
-assert.equal(resolve({ canHotSwap: false }), null, 'unauthorized coached athlete does not gain Swap');
-assert.equal(resolve({ canHotSwap: false, hasApprovedSubstitutions: true }), 'Sub', 'approved substitution is visible for an untouched target');
-assert.equal(resolve({ canHotSwap: false, hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), 'Sub', 'target evidence preserves approved future-set substitution');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted' }), null, 'externally coached athlete without approved choices does not gain Swap');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), 'Sub', 'approved substitution is visible for an untouched target');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), 'Sub', 'target evidence preserves approved future-set substitution');
+assert.equal(resolve({ substitutionAuthority: 'none', hasApprovedSubstitutions: true }), null, 'read-only viewer receives no substitution action');
 assert.equal(resolve({ sessionLifecycle: 'pre_session' }), 'Swap', 'pre-Session untouched target shows Swap');
 assert.equal(resolve({ sessionLifecycle: 'finished_session' }), null, 'post-Session Swap is hidden');
 assert.equal(resolve({ sessionLifecycle: 'completed' }), null, 'completed Session Swap is hidden');
 assert.equal(resolve({ isCoachPreview: true }), null, 'coach preview remains read-only');
 assert.equal(resolve({ targetItemHasSetLogs: false }), 'Swap', 'deleting target evidence restores eligibility while lifecycle allows');
+
+for (const mobileMode of ['athlete', 'individual']) {
+  assert.equal(resolveSubstitutionAuthority({ serverAuthority: null, canHotSwap: false, permissionIsSelfCoached: false, accountIsSelfCoached: true, isCoachPreview: false }), 'self_governed', `self-coached relationship remains free-swap in ${mobileMode} mode`);
+}
+assert.equal(resolveSubstitutionAuthority({ serverAuthority: 'coach_restricted', canHotSwap: false, permissionIsSelfCoached: false, accountIsSelfCoached: false, isCoachPreview: false }), 'coach_restricted', 'explicit external-coach authority remains restricted');
+assert.equal(resolveSubstitutionAuthority({ serverAuthority: 'self_governed', canHotSwap: true, permissionIsSelfCoached: true, accountIsSelfCoached: true, isCoachPreview: true }), 'none', 'coach preview cannot inherit the self athlete free-swap authority');
 
 const loggerSource = readFileSync(new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url), 'utf8');
 assert.match(
@@ -79,5 +87,10 @@ assert.match(
   /<GovernedAccessoryPickerModal[\s\S]*visible=\{swapPickerVisible\}[\s\S]*onSelect=\{\(identity\) =>/,
   'accessory substitution must remain wired through the governed movement picker',
 );
+assert.match(loggerSource, /approvedOnly=\{substitutionAuthority !== 'self_governed'\}/, 'picker restriction must follow server relationship authority rather than UI mode');
+assert.doesNotMatch(loggerSource, /title=\{data\?\.permissions\?\.can_browse_hot_swap_catalog/, 'ambiguous catalog-boolean copy gate must not choose the approved-substitution experience');
+
+const authSource = readFileSync(new URL('../context/AuthContext.tsx', import.meta.url), 'utf8');
+assert.match(authSource, /payloadAthlete\.is_self_coached === true/, 'mobile auth must retain server relationship truth when presentation mode changes');
 
 console.log('accessory swap per-movement gating regression: PASS');

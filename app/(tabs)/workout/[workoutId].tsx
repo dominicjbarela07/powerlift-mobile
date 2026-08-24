@@ -97,6 +97,7 @@ import {
   accessorySwapActionForItem,
   itemHasPersistedSetLogs,
   persistedSetLogItemIds,
+  resolveSubstitutionAuthority,
 } from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
 import {
@@ -526,6 +527,7 @@ type WorkoutPayload = {
     can_hot_swap: boolean;
     can_browse_hot_swap_catalog?: boolean;
     can_create_custom_movement?: boolean;
+    substitution_authority?: 'self_governed' | 'coach_restricted' | 'none' | string;
     view_only?: boolean;
   };
   workout: {
@@ -2894,8 +2896,15 @@ export default function WorkoutViewerScreen() {
 
   const openSwapAcc = (it: WorkoutItem) => {
     const currentWorkout = data?.workout;
+    const authority = resolveSubstitutionAuthority({
+      serverAuthority: data?.permissions?.substitution_authority,
+      canHotSwap: data?.permissions?.can_hot_swap,
+      permissionIsSelfCoached: data?.permissions?.is_self_coached,
+      accountIsSelfCoached: user?.is_self_coached,
+      isCoachPreview: coachPreviewRequested,
+    });
     const swapAction = accessorySwapActionForItem({
-      canHotSwap: !coachPreviewRequested && !!data?.permissions?.can_hot_swap,
+      substitutionAuthority: authority,
       hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
       isCoachPreview:
         coachPreviewRequested
@@ -6875,6 +6884,13 @@ export default function WorkoutViewerScreen() {
     && data.permissions?.view_only === true;
   const canLogFromServer = !isCoachAthletePreview && !!data.permissions?.can_log;
   const canHotSwap = !isCoachAthletePreview && !!data.permissions?.can_hot_swap;
+  const substitutionAuthority = resolveSubstitutionAuthority({
+    serverAuthority: data.permissions?.substitution_authority,
+    canHotSwap,
+    permissionIsSelfCoached: data.permissions?.is_self_coached,
+    accountIsSelfCoached: user?.is_self_coached,
+    isCoachPreview: isCoachAthletePreview,
+  });
   // Coach viewing an athlete Training Session in read-only mode.
   const isCoachView = isCoachAthletePreview || (!!data.permissions?.can_coach && !canLogFromServer);
   const canEdit =
@@ -7772,7 +7788,7 @@ export default function WorkoutViewerScreen() {
       isComplete: accessoryIsComplete,
     });
     const swapLabel = accessorySwapActionForItem({
-      canHotSwap,
+      substitutionAuthority,
       hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
       isCoachPreview: isCoachAthletePreview,
       sessionLifecycle: screenMode,
@@ -10195,10 +10211,13 @@ export default function WorkoutViewerScreen() {
       <GovernedAccessoryPickerModal
         visible={swapPickerVisible}
         athleteId={data?.athlete?.id || null}
-        title={data?.permissions?.can_browse_hot_swap_catalog ? 'Swap Accessory' : 'Choose Approved Substitute'}
+        title={substitutionAuthority === 'self_governed' ? 'Swap Accessory' : 'Choose Approved Substitute'}
         currentIdentityId={swapAccIdentity?.id || null}
-        approvedOnly={!data?.permissions?.can_browse_hot_swap_catalog}
-        canCreateCustom={!!data?.permissions?.can_create_custom_movement}
+        approvedOnly={substitutionAuthority !== 'self_governed'}
+        canCreateCustom={
+          substitutionAuthority === 'self_governed'
+          && (data?.permissions?.can_create_custom_movement !== false || user?.is_self_coached === true)
+        }
         approvedIdentities={(() => {
           const identities = [
             swapAccItem?.movement_identity,
@@ -10252,7 +10271,7 @@ export default function WorkoutViewerScreen() {
               </View>
             </View>
 
-            {data?.permissions?.can_browse_hot_swap_catalog ? (
+            {substitutionAuthority === 'self_governed' ? (
               <>
                 <Text style={styles.modalSectionKicker}>Future-set prescription</Text>
                 <LoggerWheelPicker
