@@ -186,6 +186,7 @@ import {
   deriveSessionElapsedSeconds,
   formatSessionElapsed,
 } from '@/lib/session-header-metrics';
+import { sessionLoggerSharedHeaderShown } from '@/lib/session-logger-shell';
 import {
   createSessionTimeDraft,
   formatSessionTimeLabel,
@@ -6831,24 +6832,40 @@ export default function WorkoutViewerScreen() {
     };
   }, []);
 
+  const loggerShellMode = loading && !data
+    ? 'loading'
+    : !data
+      ? 'error'
+      : deriveScreenMode(data.workout.status);
+  const loggerHeaderShown = sessionLoggerSharedHeaderShown({
+    mode: loggerShellMode,
+    hasCompletedRecap: Boolean(data?.workout?.completed_recap),
+  });
+
   if (loading && !data) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator />
-        <ThemedText variant="bodyMuted" style={styles.muted}>
-          Loading Training Session…
-        </ThemedText>
-      </View>
+      <>
+        <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
+        <View style={styles.center}>
+          <ActivityIndicator />
+          <ThemedText variant="bodyMuted" style={styles.muted}>
+            Loading Training Session…
+          </ThemedText>
+        </View>
+      </>
     );
   }
 
   if (!data) {
     return (
-      <View style={styles.center}>
-        <ThemedText variant="error" style={styles.errorText}>
-          {error || 'Something went wrong'}
-        </ThemedText>
-      </View>
+      <>
+        <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
+        <View style={styles.center}>
+          <ThemedText variant="error" style={styles.errorText}>
+            {error || 'Something went wrong'}
+          </ThemedText>
+        </View>
+      </>
     );
   }
 
@@ -7992,7 +8009,7 @@ export default function WorkoutViewerScreen() {
     );
     return (
       <>
-        <Tabs.Screen options={{ headerShown: false }} />
+        <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
         {shouldShowCompletionCeremony ? (
           <View
             style={[
@@ -8048,6 +8065,7 @@ export default function WorkoutViewerScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 92 : 0}
     >
+      <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
       <SessionCommandStrip
         restActive={restActive}
         restSeconds={restSeconds}
