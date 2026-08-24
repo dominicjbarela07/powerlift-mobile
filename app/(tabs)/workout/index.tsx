@@ -81,6 +81,11 @@ import {
   type ProgrammingWeekDropZone,
 } from '@/lib/programming-session-move';
 import {
+  canonicalBlockRelativeWeeks,
+  canonicalProgrammingWeekKey,
+  type ServerProgrammingBlockWeek,
+} from '@/lib/programming-week-identity';
+import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
@@ -363,6 +368,7 @@ type ProgramBlockPayload = {
   total_weeks?: number | null;
   date_range_label?: string | null;
   week_label?: string | null;
+  weeks?: ServerProgrammingBlockWeek[] | null;
   week_tags?: Array<{
     week: number;
     key: string;
@@ -386,6 +392,11 @@ type ProgrammingReturnContext = {
 
 type RoadmapWeek = {
   index: number;
+  blockId: number;
+  blockName: string;
+  blockOrder: number;
+  endDate?: string | null;
+  identitySource: 'server' | 'legacy-block-dates' | 'undated';
   startDate?: string | null;
   rangeLabel: string;
   summary: string;
@@ -1283,6 +1294,10 @@ function ActiveProgrammingRoadmap({
     () => buildRoadmapWeeks(selectedBlock, pendingMap, completedMap),
     [selectedBlock, pendingMap, completedMap]
   );
+  const programActionWeeks = useMemo(
+    () => orderedBlocks.flatMap((block) => buildRoadmapWeeks(block, pendingMap, completedMap)),
+    [completedMap, orderedBlocks, pendingMap]
+  );
   const visibleWeeks = weeks;
 
   useEffect(() => {
@@ -1446,7 +1461,7 @@ function ActiveProgrammingRoadmap({
   };
 
   const executeWeekAction = async (action: WeekActionKey, week: RoadmapWeek, extra?: Record<string, any>) => {
-    if (!activeProgram.id || !selectedBlock?.id || !athleteId || !week.startDate) {
+    if (!activeProgram.id || !week.blockId || !athleteId || !week.startDate) {
       setWeekActionWarning('Week action context is missing.');
       return;
     }
@@ -1454,7 +1469,8 @@ function ActiveProgrammingRoadmap({
       action: action.replaceAll('-', '_'),
       athlete_id: athleteId,
       program_id: activeProgram.id,
-      block_id: selectedBlock.id,
+      block_id: week.blockId,
+      block_week_index: week.index,
       source_week_start: week.startDate,
       week_start: week.startDate,
       confirm_conflicts: weekActionConfirmed,
@@ -1554,7 +1570,7 @@ function ActiveProgrammingRoadmap({
       <BlockActionPopout context={blockMenu} onClose={() => setBlockMenu(null)} onSelect={openBlockAction} />
       <WeekActionModal
         state={weekAction}
-        weeks={visibleWeeks}
+        weeks={programActionWeeks}
         busy={weekActionBusy}
         warning={weekActionWarning}
         confirmed={weekActionConfirmed}
@@ -2087,7 +2103,7 @@ function ActiveProgrammingRoadmap({
       />
       <WeekActionModal
         state={weekAction}
-        weeks={visibleWeeks}
+        weeks={programActionWeeks}
         busy={weekActionBusy}
         warning={weekActionWarning}
         confirmed={weekActionConfirmed}
@@ -3759,10 +3775,14 @@ function WeekActionModal({
   const action = state?.action || null;
   const week = state?.week || null;
   const availableWeeks = useMemo(
-    () => weeks.filter((candidate) => candidate.startDate && candidate.startDate !== week?.startDate),
-    [week?.startDate, weeks]
+    () => weeks.filter((candidate) => (
+      candidate.startDate
+      && roadmapWeekIdentityKey(candidate) !== (week ? roadmapWeekIdentityKey(week) : '')
+      && (action !== 'shift' || candidate.blockId === week?.blockId)
+    )),
+    [action, week, weeks]
   );
-  const [selectedWeekStart, setSelectedWeekStart] = useState('');
+  const [selectedWeekKey, setSelectedWeekKey] = useState('');
   const [templateName, setTemplateName] = useState('');
   const [templates, setTemplates] = useState<WeekTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
@@ -3774,8 +3794,12 @@ function WeekActionModal({
 
   useEffect(() => {
     if (!state) return;
-    const firstWeek = weeks.find((candidate) => candidate.startDate && candidate.startDate !== state.week.startDate);
-    setSelectedWeekStart(firstWeek?.startDate || '');
+    const firstWeek = weeks.find((candidate) => (
+      candidate.startDate
+      && roadmapWeekIdentityKey(candidate) !== roadmapWeekIdentityKey(state.week)
+      && (state.action !== 'shift' || candidate.blockId === state.week.blockId)
+    ));
+    setSelectedWeekKey(firstWeek ? roadmapWeekIdentityKey(firstWeek) : '');
     setTemplateName(`Week ${state.week.index} Template`);
     setSelectedTemplateId('');
     setTemplateError('');
@@ -3808,10 +3832,10 @@ function WeekActionModal({
 
   if (!state || !week || !action) return null;
 
-  const selectedWeek = weeks.find((candidate) => candidate.startDate === selectedWeekStart) || null;
+  const selectedWeek = weeks.find((candidate) => roadmapWeekIdentityKey(candidate) === selectedWeekKey) || null;
   const selectedTemplate = templates.find((template) => String(template.id) === selectedTemplateId) || null;
   const canConfirm = !busy && (
-    needsWeekChoice ? !!selectedWeekStart
+    needsWeekChoice ? !!selectedWeek?.startDate
       : needsTemplateChoice ? !!selectedTemplateId
         : true
   );
@@ -3827,10 +3851,18 @@ function WeekActionModal({
             ? 'Save Focus'
         : 'Confirm';
   const extra: Record<string, any> = {};
-  if (action === 'copy-to' || action === 'shift') extra.target_week_start = selectedWeekStart;
+  if ((action === 'copy-to' || action === 'shift') && selectedWeek?.startDate) {
+    extra.target_week_start = selectedWeek.startDate;
+    extra.target_block_id = selectedWeek.blockId;
+    extra.target_block_week_index = selectedWeek.index;
+  }
   if (action === 'copy-from') {
-    extra.source_week_start = selectedWeekStart;
+    extra.source_week_start = selectedWeek?.startDate;
+    extra.source_block_id = selectedWeek?.blockId;
+    extra.source_block_week_index = selectedWeek?.index;
     extra.target_week_start = week.startDate;
+    extra.target_block_id = week.blockId;
+    extra.target_block_week_index = week.index;
   }
   if (action === 'save-template') extra.template_name = templateName;
   if (action === 'apply-template') {
@@ -3906,16 +3938,18 @@ function WeekActionModal({
             <View style={styles.weekChoiceList}>
               <Text style={styles.weekActionFieldLabel}>{action === 'copy-from' ? 'Source week' : 'Target week'}</Text>
               {availableWeeks.length ? availableWeeks.map((candidate) => {
-                const selected = candidate.startDate === selectedWeekStart;
+                const candidateKey = roadmapWeekIdentityKey(candidate);
+                const selected = candidateKey === selectedWeekKey;
                 return (
                   <Pressable
-                    key={candidate.startDate || candidate.index}
-                    onPress={() => setSelectedWeekStart(candidate.startDate || '')}
+                    key={candidateKey}
+                    onPress={() => setSelectedWeekKey(candidateKey)}
                     style={[styles.weekChoiceRow, selected && styles.weekChoiceRowSelected]}
                   >
                     <View>
-                      <Text style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>Week {candidate.index}</Text>
-                      <Text style={styles.weekChoiceMeta}>{candidate.rangeLabel} · {candidate.summary}</Text>
+                      <Text style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>{candidate.blockName}</Text>
+                      <Text style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>Week {candidate.index} · {candidate.rangeLabel}</Text>
+                      <Text style={styles.weekChoiceMeta}>{candidate.summary}</Text>
                     </View>
                     {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.violet} /> : null}
                   </Pressable>
@@ -4163,6 +4197,15 @@ function weekActionLabel(action: WeekActionKey) {
   return weekActionRows.find((row) => row.key === action)?.label || 'Week Action';
 }
 
+function roadmapWeekIdentityKey(week: RoadmapWeek) {
+  if (!week.startDate) return `${week.blockId}:${week.index}:undated`;
+  return canonicalProgrammingWeekKey({ blockId: week.blockId, blockWeekIndex: week.index, weekStart: week.startDate });
+}
+
+function weekActionIdentityLabel(week: RoadmapWeek) {
+  return `${week.blockName} · Week ${week.index} · ${week.rangeLabel}`;
+}
+
 function weekActionCopy(action: WeekActionKey) {
   return {
     'edit-objective': 'Set the concise coach-authored objective the athlete will see for this week.',
@@ -4197,13 +4240,13 @@ function weekActionPreview(
       ? `Set Week ${source.index} focus to ${tag?.label || weekTag}.`
       : `Clear the special focus from Week ${source.index}.`;
   }
-  if (action === 'copy-to') return `Copy Week ${source.index} into ${target ? `Week ${target.index}` : 'target week'}. Copied sessions will be drafts.`;
-  if (action === 'copy-from') return `Copy ${target ? `Week ${target.index}` : 'source week'} into Week ${source.index}. Copied sessions will be drafts.`;
+  if (action === 'copy-to') return `Copy ${weekActionIdentityLabel(source)} into ${target ? weekActionIdentityLabel(target) : 'the target week'}. Copied sessions will be drafts.`;
+  if (action === 'copy-from') return `Copy ${target ? weekActionIdentityLabel(target) : 'the source week'} into ${weekActionIdentityLabel(source)}. Copied sessions will be drafts.`;
   if (action === 'apply-template') return `Apply ${template?.name || 'selected template'} to Week ${source.index}. Applied sessions become drafts.`;
   if (action === 'save-template') return `Save Week ${source.index} as a reusable week template.`;
   if (action === 'assign-drafts') return `Assign every draft session in Week ${source.index}. Completed, logged, and locked sessions are preserved.`;
   if (action === 'revert-assigned') return `Revert every assigned session in Week ${source.index} to draft. Completed, logged, and locked sessions are preserved.`;
-  if (action === 'shift') return `Move Week ${source.index} into ${target ? `Week ${target.index}` : 'target week'}. Source week becomes empty.`;
+  if (action === 'shift') return `Move ${weekActionIdentityLabel(source)} into ${target ? weekActionIdentityLabel(target) : 'the target week'}. Source week becomes empty.`;
   return `Remove safe draft/assigned sessions from Week ${source.index}. Logged or locked sessions are preserved.`;
 }
 
@@ -4799,16 +4842,19 @@ function buildRoadmapWeeks(
   if (!block) return [];
   const start = parseDate(block.start_date);
   const end = parseDate(block.end_date);
-  const totalWeeks = Number(block.total_weeks || inclusiveWeekCount(block.start_date, block.end_date) || 4);
+  const canonicalWeeks = canonicalBlockRelativeWeeks(block);
+  const totalWeeks = canonicalWeeks.length
+    || Number(block.total_weeks || inclusiveWeekCount(block.start_date, block.end_date) || 4);
   const blockSessions = [
     ...(pendingMap[String(block.id)] || []),
     ...(completedMap[String(block.id)] || []),
   ];
 
   return Array.from({ length: Math.max(1, totalWeeks) }, (_, offset) => {
-    const index = offset + 1;
-    const weekStart = start ? addDays(start, offset * 7) : null;
-    const weekEnd = weekStart ? addDays(weekStart, 6) : null;
+    const identity = canonicalWeeks[offset] || null;
+    const index = identity?.blockWeekIndex || offset + 1;
+    const weekStart = identity ? parseDate(identity.weekStart) : start ? addDays(start, offset * 7) : null;
+    const weekEnd = identity ? parseDate(identity.weekEnd) : weekStart ? addDays(weekStart, 6) : null;
     const boundedEnd = weekEnd && end && weekEnd > end ? end : weekEnd;
     const sessions = blockSessions.filter((session) => {
       const sessionDate = parseDate(session.date);
@@ -4820,7 +4866,12 @@ function buildRoadmapWeeks(
 
     return {
       index,
-      startDate: weekStart ? toDateKey(weekStart) : null,
+      blockId: block.id,
+      blockName: block.name || 'Training Block',
+      blockOrder: Number(block.order_idx || 0),
+      startDate: identity?.weekStart || (weekStart ? toDateKey(weekStart) : null),
+      endDate: identity?.weekEnd || (boundedEnd ? toDateKey(boundedEnd) : null),
+      identitySource: identity?.source || 'undated',
       rangeLabel: formatRangeLabel(weekStart, boundedEnd),
       summary: weekSummary(assigned, drafts, sessions.length),
       tag: block.week_tags?.find((tag) => Number(tag.week) === index) || null,
