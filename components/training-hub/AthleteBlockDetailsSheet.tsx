@@ -20,6 +20,7 @@ import { fetchJson } from '@/lib/api';
 
 type MuscleFocus = Readonly<{
   primary?: readonly { muscle_id?: string | null; score?: number | null }[];
+  secondary?: readonly { muscle_id?: string | null; score?: number | null }[];
   source?: string | null;
 }>;
 
@@ -350,6 +351,9 @@ function SessionAgendaRow({ onPress, session }: { onPress: () => void; session: 
   const muscleIds = (session.preview?.muscle_focus?.primary || [])
     .map((row) => String(row.muscle_id || ''))
     .filter((value) => value && value !== 'full_body');
+  const secondaryMuscleIds = (session.preview?.muscle_focus?.secondary || [])
+    .map((row) => String(row.muscle_id || ''))
+    .filter((value) => value && value !== 'full_body');
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.sessionRow, pressed && styles.pressed]}>
       <View style={styles.sessionDate}>
@@ -358,7 +362,7 @@ function SessionAgendaRow({ onPress, session }: { onPress: () => void; session: 
       </View>
       {muscleIds.length ? (
         <View style={styles.sessionArtFrame}>
-          <ProgrammingMuscleRegionArt level="session" primary={muscleIds} />
+          <ProgrammingMuscleRegionArt level="session" primary={muscleIds} secondary={secondaryMuscleIds} />
         </View>
       ) : null}
       <View style={styles.sessionCopy}>

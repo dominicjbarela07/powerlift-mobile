@@ -83,7 +83,7 @@ const [screen, route] = await Promise.all([
   readFile(new URL('../app/(tabs)/athlete-dashboard.tsx', import.meta.url), 'utf8'),
 ]);
 assert.match(screen, /Array\.from\(\{ length: 7 \}/, 'Week always renders exactly seven days');
-assert.match(screen, /MuscleMap[\s\S]*muscle_focus/, 'Home consumes governed muscle-focus evidence');
+assert.match(screen, /ProgrammingMuscleRegionArt[\s\S]*muscleIds/, 'Home consumes governed muscle-focus evidence through regional assets');
 assert.match(screen, /Total Volume/, 'performed volume is explicitly labeled');
 assert.doesNotMatch(screen, /Performed evidence recorded/, 'athlete Home does not expose developer filler copy');
 assert.match(screen, /No reports yet[\s\S]*No completed volume/, 'true empty trend states are intentional');

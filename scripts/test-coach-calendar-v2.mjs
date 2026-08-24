@@ -108,7 +108,7 @@ assert.match(routeSource, /function MonthDraggableSessionRow/);
 assert.match(routeSource, /function AgendaBoard/);
 assert.match(routeSource, /function CalendarSessionCard/);
 assert.match(routeSource, /function agendaGroups/);
-assert.match(routeSource, /<MuscleMap/);
+assert.match(routeSource, /<ProgrammingMuscleRegionArt/);
 assert.match(routeSource, /session\.muscle_focus\?\.primary/);
 assert.match(routeSource, /movement_count/);
 assert.match(routeSource, /set_count/);

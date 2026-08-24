@@ -2729,11 +2729,7 @@ function ProgrammingIntelligenceStrip({
 
 function StoryboardSessionArtwork({ session, style }: { session: HubSession; style?: any }) {
   const focus = storyboardSessionMuscleFocus(session);
-  const liftArtwork = storyboardSessionLiftArtwork(session);
-  if (!focus.primary.length && !focus.secondary.length && liftArtwork) {
-    return <Image accessibilityIgnoresInvertColors resizeMode="contain" source={liftArtwork} style={[storyStyles.sessionLiftFallback, style]} />;
-  }
-  return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} style={style} />;
+  return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} style={style} />;
 }
 
 function StoryboardSessionDragGesture({
@@ -2874,18 +2870,6 @@ function storyboardSessionMuscleFocus(session: HubSession) {
 
 function storyboardMuscleLabel(value: string) {
   return value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function storyboardSessionLiftArtwork(session: HubSession) {
-  const source = [
-    session.title,
-    session.label,
-    ...(session.preview?.movements || []).flatMap((movement) => [movement.movement, movement.movement_family]),
-  ].filter(Boolean).join(' ').toLowerCase();
-  if (source.includes('deadlift')) return PROGRAMMING_LIFT_ARTWORK.deadlift;
-  if (source.includes('bench') || source.includes('press') || source.includes('push')) return PROGRAMMING_LIFT_ARTWORK.bench;
-  if (source.includes('squat') || source.includes('leg')) return PROGRAMMING_LIFT_ARTWORK.squat;
-  return null;
 }
 
 function storyboardProgramArtwork(program: NonNullable<TrainingHubPayload['active_program']>) {
@@ -5330,7 +5314,6 @@ const storyStyles = StyleSheet.create({
   compactSessionTitle: { color: colors.textStrong, fontSize: 17, lineHeight: 21, fontFamily: SLFontFamilies.sansBold },
   compactSessionMeta: { color: colors.muted, fontSize: 11, lineHeight: 15, fontFamily: SLFontFamilies.sansMedium, marginTop: 4 },
   sessionStatusDot: { width: 10, height: 10, borderRadius: 5 },
-  sessionLiftFallback: { width: 44, height: 44 },
   tactilePressed: { borderColor: 'rgba(171,105,232,0.30)', backgroundColor: 'rgba(141,78,194,0.08)' },
   weekLensHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   weekLensTitle: { ...SLTypography.title, color: colors.textStrong },

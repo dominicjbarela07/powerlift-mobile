@@ -23,7 +23,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import {
   SL_TAB_ROW_CONTROL,
   SLTabRowControlItem,
@@ -1613,13 +1613,7 @@ function CalendarSessionCard({ athlete, compact = false, session, onPress, onOve
         <View style={[styles.sessionStatusRail, { backgroundColor: color }]} />
         {primary.length || secondary.length ? (
           <View pointerEvents="none" style={[styles.sessionAnatomy, compact && styles.sessionAnatomyCompact]}>
-            <MuscleMap
-              athlete={{ anatomy_display_preference: athlete?.anatomy_display_preference, sex: athlete?.sex }}
-              primary={primary}
-              secondary={secondary}
-              size="thumbnail"
-              view="auto"
-            />
+            <ProgrammingMuscleRegionArt level="session" primary={primary} secondary={secondary} />
           </View>
         ) : null}
       </Pressable>

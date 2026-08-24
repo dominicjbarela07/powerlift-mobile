@@ -13,6 +13,7 @@ import {
   CoachStatusBadge,
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { SLAthleteAvatar, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
@@ -293,13 +294,23 @@ function SignalTile({ accent, delta, icon, label, value }: { accent: string; del
   );
 }
 
-function TrainingRow({ onPress, preferredUnits, session }: { onPress: () => void; preferredUnits?: string | null; session: CoachRecentTrainingSession }) {
+function TrainingRow({ onPress, preferredUnits, session }: {
+  onPress: () => void;
+  preferredUnits?: string | null;
+  session: CoachRecentTrainingSession;
+}) {
   const performed = session.evidence_mode === 'performed';
+  const primary = (session.muscle_focus?.primary || []).map((row) => row.muscle_id);
+  const secondary = (session.muscle_focus?.secondary || []).map((row) => row.muscle_id);
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.trainingRow, pressed && styles.pressed]}>
-      <View style={[styles.sessionIcon, { borderColor: performed ? `${COACH_V2.green}77` : `${COACH_V2.gold}77` }]}>
-        <Ionicons color={performed ? COACH_V2.green : COACH_V2.gold} name={performed ? 'checkmark-circle-outline' : 'calendar-outline'} size={20} />
-      </View>
+      {primary.length ? (
+        <ProgrammingMuscleRegionArt level="session" primary={primary} secondary={secondary} style={styles.sessionIcon} />
+      ) : (
+        <View style={[styles.sessionIcon, { borderColor: performed ? `${COACH_V2.green}77` : `${COACH_V2.gold}77` }]}>
+          <Ionicons color={performed ? COACH_V2.green : COACH_V2.gold} name={performed ? 'checkmark-circle-outline' : 'calendar-outline'} size={20} />
+        </View>
+      )}
       <View style={styles.trainingRowCopy}>
         <Text numberOfLines={1} style={styles.sessionName}>{session.label}</Text>
         <Text style={styles.sessionMeta}>{formatCoachRelativeDate(session.date)} · {performed ? 'Completed' : 'Assigned'}</Text>

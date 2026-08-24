@@ -68,11 +68,15 @@ export function resolveProgrammingRegionArtwork(
   const governed = primary.filter((muscle): muscle is ProgrammingRegionArtworkKey =>
     SINGLE_REGION_ARTWORK.has(muscle as ProgrammingRegionArtworkKey),
   );
-  if (!governed.length) return ['full_body'];
+  // Missing governed evidence is not "full body". Consumers must render a
+  // neutral Session placeholder rather than inventing anatomy.
+  if (!governed.length) return [];
   const allIn = (members: ReadonlySet<string>) => governed.every((muscle) => members.has(muscle));
   if (governed.length > 1 && allIn(BACK_REGIONS)) return ['back_region'];
   if (governed.length > 1 && allIn(ARM_REGIONS)) return ['arms'];
   if (governed.length > 1 && allIn(SHOULDER_REGIONS)) return ['shoulders'];
   if (governed.length > 1 && allIn(CORE_REGIONS)) return ['core'];
-  return governed.slice(0, level === 'week' ? 2 : 1);
+  // A Session is an aggregate, not its first movement. Two regional assets
+  // preserve the dominant whole-Session emphasis without becoming a collage.
+  return governed.slice(0, 2);
 }

@@ -93,6 +93,7 @@
     "test:coach-session-editor-production-pass": "node --import tsx scripts/test-coach-session-editor-production-pass.mjs",
     "test:session-workspace-draft-state": "node scripts/test-session-workspace-draft-state.mjs",
     "test:session-workspace-accessory-artwork": "node --import tsx scripts/test-session-workspace-accessory-artwork.mjs",
+    "test:session-muscle-focus-artwork": "node --import tsx scripts/test-session-muscle-focus-artwork.mjs",
     "test:governed-accessory-picker-layout": "node scripts/test-governed-accessory-picker-layout.mjs",
     "test:movement-quick-editor": "node --import tsx scripts/test-movement-quick-editor.mjs",
     "test:accessory-prescription-editor": "node --import tsx scripts/test-accessory-prescription-editor.mjs",

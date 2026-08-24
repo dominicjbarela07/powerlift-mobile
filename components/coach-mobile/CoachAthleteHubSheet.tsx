@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
-  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -14,6 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { CompletedSessionRecapPayload } from '@/components/coach-mobile/CompletedSessionRecap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import {
   CoachCardChevron,
   CoachSparkline,
@@ -23,8 +23,6 @@ import {
 import { SLAthleteAvatar } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { fetchJson } from '@/lib/api';
 import {
   attentionActionLabel,
@@ -344,7 +342,10 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
       evidence_mode: 'performed' as const,
     } : null);
   const focus = recapFocusNames(recap).length ? recapFocusNames(recap) : sessionFocusNames(lastSession);
-  const focusAsset = accessoryMuscleRegionAsset(canonicalAccessoryMuscleRegionKey(focus[0]));
+  const canonicalFocus = recap?.muscle_focus || lastSession?.muscle_focus;
+  const focusPrimary = (canonicalFocus?.primary || []).map((item) => item.muscle_id).filter(Boolean);
+  const focusSecondary = (canonicalFocus?.secondary || []).map((item) => item.muscle_id).filter(Boolean);
+  const renderedFocusPrimary = focusPrimary.length ? focusPrimary : focus;
   const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const week = details?.week_summary || athlete.week_summary;
   const highlights = recap?.highlights;
@@ -522,7 +523,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <CoachSparkline color={COACH_V2.cyan} values={bodyweightObservations.map((point) => point.reported_bodyweight_kg)} />
               </StatusCard>
               <View style={styles.focusCard}>
-                <Image resizeMode="contain" source={focusAsset.source} style={styles.focusImage} />
+                <ProgrammingMuscleRegionArt level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.focusImage} />
                 <Text style={styles.statusLabel}>Training Focus</Text>
                 <Text numberOfLines={2} style={styles.focusLabel}>{focus.length ? focus.slice(0, 2).map(humanize).join(', ') : evidencePending ? 'Loading focus…' : 'No target evidence'}</Text>
               </View>
@@ -532,7 +533,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
             {lastSession ? (
               <Pressable accessibilityLabel={`Open ${lastSession.label}`} accessibilityRole="button" onPress={openLastSession} style={({ pressed }) => [styles.lastSessionCard, pressed && styles.pressed]}>
                 <View style={styles.lastSessionTop}>
-                  <View style={styles.lastSessionArtwork}><Image resizeMode="contain" source={focusAsset.source} style={styles.lastSessionImage} /></View>
+                  <View style={styles.lastSessionArtwork}><ProgrammingMuscleRegionArt level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.lastSessionImage} /></View>
                   <View style={styles.lastSessionCopy}>
                     <Text style={styles.lastSessionTitle}>{lastSession.label}</Text>
                     <Text style={styles.lastSessionMeta}>{formatCoachRelativeDate(lastSession.date)} · Completed</Text>

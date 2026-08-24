@@ -36,6 +36,7 @@ export type CoachHomeActivity = {
     pr_count?: number;
     session_rpe?: number | null;
     muscle_keys?: string[];
+    muscle_focus?: CoachSessionMuscleFocus | null;
     set_indexes?: number[];
     movement_name?: string | null;
     score?: number;
@@ -57,6 +58,7 @@ export type CoachHomeActivity = {
   artwork?: {
     kind?: 'performed_anatomy' | 'video_thumbnail' | 'pr_medallion' | 'readiness_chart' | 'programming' | 'message';
     muscle_keys?: string[];
+    muscle_focus?: CoachSessionMuscleFocus | null;
     thumbnail_url?: string | null;
   };
 };
@@ -69,7 +71,13 @@ export type CoachHomeUpcomingSession = {
   subtitle?: string | null;
   movement_count?: number;
   muscle_keys?: string[];
+  muscle_focus?: CoachSessionMuscleFocus | null;
   destination: CoachDestination;
+};
+
+export type CoachSessionMuscleFocus = {
+  primary?: { muscle_id: string; score?: number }[];
+  secondary?: { muscle_id: string; score?: number }[];
 };
 
 export type CoachAttentionReason = {

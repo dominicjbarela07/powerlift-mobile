@@ -24,8 +24,8 @@ assert.doesNotMatch(component, /Evidence recorded/, 'movement cards must render 
 assert.doesNotMatch(component, /0 COMPARABLE/, 'the UI must not claim zero history from an unwired contract');
 assert.match(component, /FIRST COMPARABLE PERFORMANCE/, 'one exact performance must have a truthful first-performance state');
 assert.match(component, /showPerfectPlan = Number\(recapHighlights\.prescribed_set_count \|\| 0\) > 0/, 'Perfect Plan must require a non-zero prescription denominator');
-assert.match(component, /<MuscleMap athlete=\{recap\.athlete\}/, 'hero and focus must render governed anatomy');
-assert.match(component, /SESSION_RECAP_ARCHIVE_ART/, 'missing anatomy must use an intentional governed fallback');
+assert.match(component, /<ProgrammingMuscleRegionArt level="session"/, 'hero and focus must render governed regional assets');
+assert.match(component, /SESSION_RECAP_ARCHIVE_ART/, 'sparse historical recap must retain its intentional archive treatment');
 assert.match(component, /history_diagnostics/, 'DEV exact-history diagnostics must remain inspectable');
 assert.match(component, /ManufacturerBrandMark/, 'equipment identity must remain a secondary branded layer');
 assert.match(component, /MovementTrendChart/, 'movement cards must use the canonical chart component');

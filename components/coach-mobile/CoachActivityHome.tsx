@@ -17,7 +17,7 @@ import {
 import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { CoachAthleteHubSheet } from '@/components/coach-mobile/CoachAthleteHubSheet';
 import type { CompletedSessionRecapPayload } from '@/components/coach-mobile/CompletedSessionRecap';
 import { SwipeActionRow } from '@/components/gestures/SwipeActionRow';
@@ -124,14 +124,11 @@ function absoluteAssetUrl(value?: string | null) {
   return `${API_BASE}${value.startsWith('/') ? '' : '/'}${value}`;
 }
 
-function anatomyKeys(values?: string[] | null) {
-  const expanded = (values || []).flatMap((value) => {
-    const key = String(value || '').trim().toLowerCase();
-    if (key === 'arms') return ['biceps', 'triceps'];
-    if (key === 'full_body') return ['chest', 'lats', 'quads', 'hamstrings'];
-    return key ? [key] : [];
-  });
-  return [...new Set(expanded)];
+function focusMuscles(focus?: { primary?: { muscle_id: string }[]; secondary?: { muscle_id: string }[] } | null) {
+  return {
+    primary: (focus?.primary || []).map((row) => row.muscle_id).filter(Boolean),
+    secondary: (focus?.secondary || []).map((row) => row.muscle_id).filter(Boolean),
+  };
 }
 
 function normalizeAthlete(athlete: CoachRosterAthlete): CoachRosterAthlete {
@@ -596,7 +593,8 @@ function ActivityVideoArtwork({ thumbnailUrl }: { thumbnailUrl?: string | null }
 function ActivityArtwork({ activity }: { activity: CoachHomeActivity }) {
   const kind = activity.artwork?.kind;
   if (kind === 'performed_anatomy') {
-    return <View style={styles.artwork}><LinearGradient colors={['#17101F', '#07090D']} style={StyleSheet.absoluteFillObject} /><MuscleMap primary={anatomyKeys(activity.artwork?.muscle_keys || activity.evidence.muscle_keys)} showFrame={false} size="thumbnail" style={styles.anatomy} /></View>;
+    const focus = focusMuscles(activity.artwork?.muscle_focus || activity.evidence.muscle_focus);
+    return <View style={styles.artwork}><LinearGradient colors={['#17101F', '#07090D']} style={StyleSheet.absoluteFillObject} /><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} style={styles.anatomy} /></View>;
   }
   if (kind === 'video_thumbnail') {
     return <ActivityVideoArtwork thumbnailUrl={activity.artwork?.thumbnail_url} />;
@@ -660,12 +658,13 @@ function MiniBadge({ color, text }: { color: string; text: string }) {
 }
 
 function UpcomingCard({ session, onOpen }: { session: CoachHomeUpcomingSession; onOpen: () => void }) {
+  const focus = focusMuscles(session.muscle_focus);
   return <Pressable accessibilityLabel={`Open ${session.athlete.name} ${session.title}`} accessibilityRole="button" onPress={onOpen} style={({ pressed }) => [styles.upcomingCard, pressed && styles.pressed]}>
     <LinearGradient colors={['#10121A', '#05060A']} style={StyleSheet.absoluteFillObject} />
     <Text numberOfLines={1} style={styles.upcomingDate}>{shortDay(session.date)}</Text>
     <Text numberOfLines={1} style={styles.upcomingAthlete}>{session.athlete.name}</Text>
     <Text numberOfLines={1} style={styles.upcomingTitle}>{session.title}</Text>
-    <View style={styles.upcomingAnatomy}><MuscleMap primary={anatomyKeys(session.muscle_keys)} showFrame={false} size="thumbnail" /></View>
+    <View style={styles.upcomingAnatomy}><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} /></View>
     <Text numberOfLines={1} style={styles.upcomingMeta}>{session.movement_count ? `${session.movement_count} movements` : session.subtitle}</Text>
   </Pressable>;
 }

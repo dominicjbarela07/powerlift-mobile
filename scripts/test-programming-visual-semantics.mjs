@@ -17,8 +17,8 @@ assert.equal(resolveProgrammingProgramVisual({ name: 'Strength', meetDate: '2026
 assert.deepEqual(resolveProgrammingRegionArtwork(['lats', 'upper_back', 'rear_delts'], 'session'), ['back_region']);
 assert.deepEqual(resolveProgrammingRegionArtwork(['biceps', 'triceps'], 'session'), ['arms']);
 assert.deepEqual(resolveProgrammingRegionArtwork(['quads', 'lats'], 'week'), ['quads', 'lats']);
-assert.deepEqual(resolveProgrammingRegionArtwork(['quads', 'lats'], 'session'), ['quads']);
-assert.deepEqual(resolveProgrammingRegionArtwork(['unknown'], 'session'), ['full_body']);
+assert.deepEqual(resolveProgrammingRegionArtwork(['quads', 'lats'], 'session'), ['quads', 'lats']);
+assert.deepEqual(resolveProgrammingRegionArtwork(['unknown'], 'session'), []);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manager = fs.readFileSync(path.join(root, 'app/(tabs)/workout/index.tsx'), 'utf8');
@@ -47,7 +47,7 @@ for (const asset of [
   'assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png',
   'assets/images/ledger-index-v2/ledger-hero-plate-v1.png',
 ]) assert.ok(fs.existsSync(path.join(root, asset)), `missing program equipment asset: ${asset}`);
-for (const asset of ['back-region.png', 'arms.png', 'quads.png', 'lats.png', 'full-body.png']) {
+for (const asset of ['back-region.png', 'arms.png', 'quads.png', 'lats.png']) {
   assert.ok(fs.existsSync(path.join(root, 'assets/images/muscle-regions', asset)), `missing muscle-region asset: ${asset}`);
 }
 

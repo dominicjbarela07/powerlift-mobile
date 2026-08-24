@@ -167,6 +167,11 @@ type WorkoutPayload = {
     estimated_duration_low_minutes?: number | null;
     estimated_duration_high_minutes?: number | null;
     workspace_capabilities?: WorkspaceCapabilities | null;
+    muscle_focus?: {
+      primary?: { muscle_id: string; score?: number | null }[];
+      secondary?: { muscle_id: string; score?: number | null }[];
+      source?: string | null;
+    } | null;
     core_items?: WorkoutItem[];
     accessory_groups?: AccessoryGroup[];
     completed_recap?: CompletedSessionRecapPayload | null;
@@ -652,17 +657,12 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     [workout?.accessory_groups]
   );
   const workspaceFocus = useMemo(() => {
-    const primary: string[] = [];
-    const secondary: string[] = [];
-    for (const item of [...coreItems, ...accessoryItems]) {
-      const main = item.movement_identity?.primary_muscle_group;
-      if (main && !primary.includes(main)) primary.push(main);
-      for (const muscle of item.movement_identity?.secondary_muscle_groups || []) {
-        if (muscle && !primary.includes(muscle) && !secondary.includes(muscle)) secondary.push(muscle);
-      }
-    }
-    return { primary: primary.slice(0, 4), secondary: secondary.slice(0, 5) };
-  }, [accessoryItems, coreItems]);
+    const focus = workout?.muscle_focus;
+    return {
+      primary: (focus?.primary || []).map((row) => row.muscle_id).filter(Boolean),
+      secondary: (focus?.secondary || []).map((row) => row.muscle_id).filter(Boolean),
+    };
+  }, [workout?.muscle_focus]);
 
   const status = humanStatus(workout?.raw_status || workout?.status);
   const title = sessionTitle(workout?.label);
@@ -1388,7 +1388,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           <Text style={styles.programmingWeekContextMeta}>{programmingDay ? formatContextDate(programmingDay) : context}</Text>
         </View>
         <View style={styles.programmingWeekContextArt}>
-          <ProgrammingMuscleRegionArt level="session" primary={workspaceFocus.primary} style={styles.programmingWeekContextAnatomy} />
+          <ProgrammingMuscleRegionArt level="session" primary={workspaceFocus.primary} secondary={workspaceFocus.secondary} style={styles.programmingWeekContextAnatomy} />
         </View>
       </View>
       <View style={styles.programmingWorkspaceSheet}>

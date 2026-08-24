@@ -17,6 +17,7 @@ export type ProgramTimelineSession = {
   sessionRpe: number | null;
   estimatedDurationMinutes: number | null;
   primaryMuscles: string[];
+  secondaryMuscles: string[];
 };
 
 export type ProgramTimelineDay = {
@@ -143,6 +144,15 @@ function primaryMuscles(session: RawSession) {
     : [];
 }
 
+function secondaryMuscles(session: RawSession) {
+  const muscleFocus = session.preview?.muscle_focus?.secondary;
+  return Array.isArray(muscleFocus)
+    ? muscleFocus
+      .map((row: any) => typeof row === 'string' ? row : row?.muscle_id)
+      .filter((value: unknown): value is string => Boolean(value) && value !== 'full_body')
+    : [];
+}
+
 function plannedSetCount(session: RawSession) {
   const explicit = asNumber(session.recap?.planned_set_count ?? session.preview?.set_count);
   if (explicit != null) return explicit;
@@ -169,6 +179,7 @@ function mapSession(session: RawSession, date: string, today: string): ProgramTi
     sessionRpe: asNumber(session.recap?.session_rpe ?? session.recap?.average_rpe),
     estimatedDurationMinutes: asNumber(session.estimated_duration_minutes ?? session.preview?.estimated_duration_minutes),
     primaryMuscles: primaryMuscles(session),
+    secondaryMuscles: secondaryMuscles(session),
   };
 }
 

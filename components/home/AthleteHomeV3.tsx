@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { HomeTrendPlot } from '@/components/home/HomeTrendPlot';
 import { SLProfileAvatar } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
@@ -32,14 +32,12 @@ import {
   normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
 import type { HomePlotDatum } from '@/lib/home-trend-plot';
-import { SESSION_RECAP_ARCHIVE_ART } from '@/lib/session-recap-assets';
 
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/chair.png');
 const ACHIEVEMENT_ART = require('@/assets/images/ledger-index-v2/ledger-career-pr-medallion-v1.png');
 const MEET_ART = require('@/assets/images/gym_vibe.jpg');
 const MEET_RACK_ART = require('@/assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png');
-const SESSION_FOCUS_ART = require('@/assets/images/ledger-index-v2/ledger-core-squat-rack-v1.png');
 const REST_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
 
 type Today = {
@@ -161,7 +159,7 @@ function TrainingHero({ home, onAction, today }: { home: AthleteHomeV3Projection
       </View>
       {focus.primary.length ? (
         <View pointerEvents="none" style={styles.heroAnatomy}>
-          <MuscleMap athlete={today.athlete} primary={focus.primary} secondary={focus.secondary} size="card" />
+          <ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} />
         </View>
       ) : null}
       <HeroButton label={actionLabel} onPress={() => onAction(session?.action || { route: 'workout', workout_id: session?.id })} />
@@ -310,14 +308,9 @@ function SessionCard({ eyebrow, onAction, session, today, unit }: { eyebrow: str
         <Text style={styles.sessionEvidence}>{sessionEvidenceLine(session, completed, unit)}</Text>
       </View>
       {focus.primary.length ? (
-        <View style={styles.sessionAnatomy}><MuscleMap athlete={today.athlete} primary={focus.primary} secondary={focus.secondary} size="thumbnail" /></View>
+        <View style={styles.sessionAnatomy}><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} /></View>
       ) : (
-        <Image
-          accessibilityIgnoresInvertColors
-          resizeMode="contain"
-          source={completed ? SESSION_RECAP_ARCHIVE_ART : SESSION_FOCUS_ART}
-          style={styles.sessionFallbackArt}
-        />
+        <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={52} />
       )}
       <Ionicons color={SLColors.textSecondary} name="chevron-forward" size={20} />
     </Pressable>
@@ -601,7 +594,6 @@ const styles = StyleSheet.create({
   cardBody: { color: '#A7A2AC', fontSize: 11, lineHeight: 15 },
   sessionEvidence: { color: '#7C7883', fontSize: 10, lineHeight: 14 },
   sessionAnatomy: { width: 55, height: 88, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  sessionFallbackArt: { width: 64, height: 88, opacity: 0.9 },
   lastMetrics: { marginTop: -1, flexDirection: 'row', paddingVertical: 10, borderBottomLeftRadius: 14, borderBottomRightRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderTopWidth: 0, borderColor: '#30273A', backgroundColor: '#07080C' },
   sectionGap: { gap: 7 },
   trendRow: { flexDirection: 'row', gap: 6 },

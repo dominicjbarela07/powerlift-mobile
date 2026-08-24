@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Image,
   ImageBackground,
   type ImageSourcePropType,
   Modal,
@@ -14,7 +13,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
-import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
@@ -25,36 +24,13 @@ import {
   formatTotalVolumeFromKg,
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
-import {
-  movementCardStateAccent,
-  type MovementCardMaterialState,
-} from '@/lib/movement-card-material';
+import { movementCardStateAccent } from '@/lib/movement-card-material';
 
 const PROGRAM_ART = require('@/assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
 const BLOCK_ART = require('@/assets/images/gym_vibe.jpg');
 const BLOCK_STRENGTH_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-variants-v1.png');
 const BLOCK_HYPERTROPHY_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-accessories-v1.png');
 const BLOCK_FOUNDATION_ART = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
-const MUSCLE_ART: Record<string, ImageSourcePropType> = {
-  abs: require('@/assets/images/muscle-regions/abs.png'),
-  arms: require('@/assets/images/muscle-regions/arms.png'),
-  biceps: require('@/assets/images/muscle-regions/biceps.png'),
-  chest: require('@/assets/images/muscle-regions/chest.png'),
-  core: require('@/assets/images/muscle-regions/core.png'),
-  forearms: require('@/assets/images/muscle-regions/forearms.png'),
-  front_delts: require('@/assets/images/muscle-regions/front-delts.png'),
-  glutes: require('@/assets/images/muscle-regions/glutes.png'),
-  hamstrings: require('@/assets/images/muscle-regions/hamstrings.png'),
-  lats: require('@/assets/images/muscle-regions/lats.png'),
-  lower_back: require('@/assets/images/muscle-regions/lower-back.png'),
-  quads: require('@/assets/images/muscle-regions/quads.png'),
-  rear_delts: require('@/assets/images/muscle-regions/rear-delts.png'),
-  shoulders: require('@/assets/images/muscle-regions/shoulders.png'),
-  traps: require('@/assets/images/muscle-regions/traps.png'),
-  triceps: require('@/assets/images/muscle-regions/triceps.png'),
-  upper_back: require('@/assets/images/muscle-regions/upper-back.png'),
-};
-
 export type AthleteTrainingMovement = {
   label: string;
   kind: 'core' | 'accessory';
@@ -481,7 +457,7 @@ function SessionCard({ session, onPress, unit }: { session: AthleteTrainingSessi
     : session.contentSummary;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionCard, { borderLeftColor: accent }, pressed && styles.pressed]}>
-      <Image source={sessionArtwork(session)} style={styles.sessionArtwork} />
+      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
       <View style={styles.sessionCopy}>
         <View style={styles.sessionTitleRow}>
           <Text numberOfLines={1} style={styles.sessionTitle}>{session.title}</Text>
@@ -519,7 +495,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="close" size={23} /></Pressable>
           </View>
           <View style={styles.previewHero}>
-            <MuscleMap athlete={athlete} primary={primaryMuscles} secondary={secondaryMuscles} view="auto" size="card" />
+            <ProgrammingMuscleRegionArt level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
             <LinearGradient colors={['rgba(2,2,4,0.02)', 'rgba(3,3,5,0.35)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
             <View style={styles.previewStatus}><Text style={[styles.previewStatusText, { color: accent }]}>{session.stateLabel || (completed ? 'COMPLETED' : 'UPCOMING')}</Text></View>
           </View>
@@ -533,7 +509,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <View style={styles.focusSection}>
               <Text style={styles.sectionKicker}>FOCUS MUSCLES</Text>
               <View style={styles.focusSummaryCard}>
-                <MuscleMap athlete={athlete} primary={primaryMuscles} secondary={secondaryMuscles} view="auto" size="card" />
+                <ProgrammingMuscleRegionArt level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
                 <View style={styles.focusSummaryCopy}><Text style={styles.focusPrimaryLabel}>PRIMARY</Text><Text style={styles.focusSummaryText}>{primaryMuscles.map(humanizeMuscle).join(' · ')}</Text>{secondaryMuscles.length ? <><Text style={styles.focusSecondaryLabel}>SECONDARY</Text><Text style={styles.focusSummaryText}>{secondaryMuscles.map(humanizeMuscle).join(' · ')}</Text></> : null}<Text style={styles.focusEvidence}>{session.muscleFocus?.source === 'performed' ? 'Performed set evidence' : 'Programmed set exposure'}</Text></View>
               </View>
             </View>
@@ -615,10 +591,6 @@ function NoActiveProgram({ data, onAction }: { data: AthleteTrainingHubData; onA
   );
 }
 
-function sessionArtwork(session: AthleteTrainingSession): ImageSourcePropType {
-  const focus = session.focusMuscles?.find((key) => MUSCLE_ART[normalizeMuscleKey(key)]);
-  return focus ? MUSCLE_ART[normalizeMuscleKey(focus)] : BLOCK_ART;
-}
 function blockArtwork(block: AthleteTrainingBlock): ImageSourcePropType {
   const identity = `${block.name} ${block.phase || ''} ${block.purpose || ''}`.toLowerCase();
   if (/(hypertrophy|bodybuild|offseason|accessor|volume)/.test(identity)) return BLOCK_HYPERTROPHY_ART;
@@ -626,7 +598,6 @@ function blockArtwork(block: AthleteTrainingBlock): ImageSourcePropType {
   if (/(base|foundation|recovery|return|reverse|rebuild)/.test(identity)) return BLOCK_FOUNDATION_ART;
   return BLOCK_ART;
 }
-function muscleArtwork(value: string) { return MUSCLE_ART[normalizeMuscleKey(value)] || BLOCK_ART; }
 function normalizeMuscleKey(value: string) { return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_'); }
 function humanizeMuscle(value: string) { return normalizeMuscleKey(value).split('_').map((part) => part ? part[0].toUpperCase() + part.slice(1) : '').join(' '); }
 function shortBlockName(value: string) { return String(value || 'Block').replace(/\s+Block$/i, ''); }
