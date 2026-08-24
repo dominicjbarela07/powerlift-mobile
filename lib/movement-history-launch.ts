@@ -1,4 +1,7 @@
-import { activeEquipmentIdentity, type EquipmentAwareWorkoutItem } from '@/lib/equipment-selection';
+import {
+  resolveLoggerMovementIdentity,
+  type LoggerMovementIdentityItem,
+} from '@/lib/logger-movement-identity';
 
 type IdentityReference = Readonly<{ id?: number | null }>;
 
@@ -6,10 +9,14 @@ export type MovementHistoryLaunchItem = Readonly<{
   id?: number | null;
   movement?: string | null;
   movement_identity?: IdentityReference | null;
+  effective_movement_identity?: IdentityReference | null;
   performed_movement_identity?: IdentityReference | null;
   performed_canonical_movement_identity?: IdentityReference | null;
   core_movement?: IdentityReference | null;
   performed_core_movement?: IdentityReference | null;
+  is_substituted?: boolean | null;
+  original_movement?: string | null;
+  selected_sub_movement?: string | null;
   legacy?: {
     effective_movement_definition_id?: number | null;
     effective_movement_identity?: IdentityReference | null;
@@ -52,9 +59,10 @@ export function resolveMovementHistoryLaunchForItem({
     };
   }
 
-  const equipmentContextDefinitionId = positiveId(
-    activeEquipmentIdentity(item as EquipmentAwareWorkoutItem)?.id,
+  const normalized = resolveLoggerMovementIdentity(
+    item as LoggerMovementIdentityItem,
   );
+  const equipmentContextDefinitionId = positiveId(normalized.equipment?.id);
 
   const coreMovementId = positiveId(
     item.performed_core_movement?.id || item.core_movement?.id,
@@ -69,19 +77,7 @@ export function resolveMovementHistoryLaunchForItem({
     };
   }
 
-  // Governed movement identity is the subject. A resolved legacy identity is
-  // authoritative when older Session rows have not materialized the direct
-  // canonical fields yet. Historical equipment identities are explicitly
-  // excluded from the movement-subject slot.
-  const candidates = [
-    item.performed_canonical_movement_identity?.id,
-    item.movement_identity?.id,
-    item.legacy?.effective_movement_identity?.id,
-    item.legacy?.effective_movement_definition_id,
-  ].map(positiveId);
-  const movementDefinitionId = candidates.find((candidate) => (
-    candidate && candidate !== equipmentContextDefinitionId
-  )) || null;
+  const movementDefinitionId = positiveId(normalized.effective?.id);
   if (!movementDefinitionId) {
     return {
       ok: false,

@@ -125,6 +125,7 @@ type WorkoutItem = {
     loading_implementation?: string | null;
   } | null;
   performed_core_movement?: WorkoutItem['core_movement'];
+  effective_movement_identity?: SessionMovementItem['movement_identity'];
   performed_movement_identity?: SessionMovementItem['movement_identity'];
   performed_canonical_movement_identity?: SessionMovementItem['movement_identity'];
   legacy?: {

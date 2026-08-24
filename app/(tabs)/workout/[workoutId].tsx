@@ -282,6 +282,7 @@ import {
   resolveMovementHistoryLaunchForItem,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '@/lib/movement-history-launch';
+import { resolveLoggerMovementIdentity } from '@/lib/logger-movement-identity';
 import {
   equipmentPresentationLabel,
   equipmentPresentationParts,
@@ -489,6 +490,7 @@ type WorkoutItem = {
   prev_best?: WorkoutItem['lookback_best'];
   movement_history?: MovementHistory | null;
   movement_identity?: GeneralMovementIdentity | null;
+  effective_movement_identity?: GeneralMovementIdentity | null;
   performed_movement_identity?: GeneralMovementIdentity | null;
   performed_canonical_movement_identity?: GeneralMovementIdentity | null;
   core_movement?: {
@@ -1477,11 +1479,10 @@ function defaultCoreRpe(item: WorkoutItem, planned?: PlannedSet | null) {
 }
 
 function accessoryExecutionItem(item: WorkoutItem): WorkoutItem {
+  const identity = resolveLoggerMovementIdentity(item);
   return {
     ...item,
-    movement: item.performed_canonical_movement_identity?.display_name
-      || item.selected_sub_movement
-      || item.movement,
+    movement: identity.displayName,
     sets: item.performed_sets ?? item.sets,
     reps_text: item.performed_reps_text || item.reps_text,
     rir_target: item.performed_rir_target ?? item.rir_target,
@@ -2916,9 +2917,9 @@ export default function WorkoutViewerScreen() {
     });
     if (!swapAction) return;
     setSwapAccItem(it);
+    const identity = resolveLoggerMovementIdentity(it);
     setSwapAccIdentity(
-      it.performed_canonical_movement_identity
-      || it.movement_identity
+      identity.effective
       || null
     );
     setSwapAccForm({

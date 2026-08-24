@@ -83,6 +83,43 @@ const performedCanonicalWins = resolveMovementHistoryLaunchForItem({
 });
 assert.equal(performedCanonicalWins.ok && performedCanonicalWins.target.movementDefinitionId, 11);
 
+const performedMovementWins = resolveMovementHistoryLaunchForItem({
+  athleteId: 4,
+  item: {
+    id: 4,
+    movement_identity: { id: 13 },
+    performed_movement_identity: { id: 11 },
+    is_substituted: true,
+  },
+});
+assert.equal(performedMovementWins.ok && performedMovementWins.target.movementDefinitionId, 11);
+
+const incompleteTBarSwap = resolveMovementHistoryLaunchForItem({
+  athleteId: 4,
+  item: {
+    id: 16038,
+    movement: 'Barbell Row',
+    selected_sub_movement: 'T-Bar Row',
+    movement_identity: { id: 4 },
+    performed_movement_identity: null,
+    performed_canonical_movement_identity: null,
+    is_substituted: true,
+  },
+});
+assert.equal(incompleteTBarSwap.ok, false);
+assert.equal(incompleteTBarSwap.ok ? null : incompleteTBarSwap.reason, 'canonical_identity_missing');
+
+const serverAcceptedTBarSwap = resolveMovementHistoryLaunchForItem({
+  athleteId: 4,
+  item: {
+    id: 16038,
+    movement_identity: { id: 4 },
+    effective_movement_identity: { id: 197 },
+    is_substituted: true,
+  },
+});
+assert.equal(serverAcceptedTBarSwap.ok && serverAcceptedTBarSwap.target.movementDefinitionId, 197);
+
 const historicalEquipmentInProgrammedSlot = resolveMovementHistoryLaunchForItem({
   athleteId: 4,
   item: {
