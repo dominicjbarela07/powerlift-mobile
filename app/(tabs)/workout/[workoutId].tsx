@@ -77,6 +77,13 @@ import {
   type QueuedVideoUploadJob,
 } from '@/lib/videoUploadQueue';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import {
+  activeEquipmentIdentity,
+  isMachineAccessoryItem,
+  needsEquipmentSelection,
+  orderEquipmentChoices,
+  type EquipmentIdentityLike,
+} from '@/lib/equipment-selection';
 import { setUpdateBlocker } from '@/lib/updateSafety';
 import { ThemedText } from '@/components/themed-text';
 
@@ -179,8 +186,14 @@ type WorkoutItem = {
   last_best?: WorkoutItem['lookback_best'];
   prev_best?: WorkoutItem['lookback_best'];
   movement_history?: MovementHistory | null;
+  movement_identity?: EquipmentIdentityLike | null;
+  performed_movement_identity?: EquipmentIdentityLike | null;
   parent_item_id?: number | string | null;
 };
+
+type EquipmentPickerContinuation =
+  | { kind: 'none' }
+  | { kind: 'accessory_set'; itemId: number };
 
 type AccessoryGroup = {
   group: string | null;
@@ -1321,6 +1334,14 @@ export default function WorkoutViewerScreen() {
   const [coreWheel, setCoreWheel] = useState<CoreWheelState | null>(null);
   const [pendingCoreWheelLog, setPendingCoreWheelLog] = useState<PendingCoreWheelLog>(null);
   const [accessoryWheel, setAccessoryWheel] = useState<AccessoryWheelState | null>(null);
+  const [equipmentPickerItem, setEquipmentPickerItem] = useState<WorkoutItem | null>(null);
+  const [equipmentPickerRows, setEquipmentPickerRows] = useState<EquipmentIdentityLike[]>([]);
+  const [equipmentPickerQuery, setEquipmentPickerQuery] = useState('');
+  const [equipmentPickerLoading, setEquipmentPickerLoading] = useState(false);
+  const [equipmentPickerError, setEquipmentPickerError] = useState<string | null>(null);
+  const [equipmentPickerManufacturer, setEquipmentPickerManufacturer] = useState<EquipmentIdentityLike | null>(null);
+  const [equipmentPickerContinuation, setEquipmentPickerContinuation] = useState<EquipmentPickerContinuation>({ kind: 'none' });
+  const equipmentPickerRequestRef = useRef(0);
   const [pendingAccessoryLogItemId, setPendingAccessoryLogItemId] = useState<any>(null);
   const [expandedCompletedMovements, setExpandedCompletedMovements] = useState<Record<string, boolean>>({});
   const [expandedCoreDetails, setExpandedCoreDetails] = useState<Record<string, boolean>>({});
@@ -1901,7 +1922,13 @@ export default function WorkoutViewerScreen() {
       setSwapAccVisible(false);
       setSwapAccItem(null);
       rememberScroll();
-      await fetchWorkout();
+      const refreshed = await fetchWorkout();
+      const refreshedItem = refreshed?.workout?.accessory_groups
+        ?.flatMap((group) => group.items || [])
+        .find((candidate) => Number(candidate.id) === Number(swapAccItem.id));
+      if (refreshedItem && needsEquipmentSelection(refreshedItem)) {
+        requestAnimationFrame(() => openEquipmentPicker(refreshedItem));
+      }
     } catch (err: any) {
       console.log('saveSwapAcc error', err);
       setError(err?.message || 'Error swapping accessory');
@@ -2324,7 +2351,129 @@ export default function WorkoutViewerScreen() {
     setPendingAccessoryLogItemId(item.id);
   };
 
-  const openAccessoryWheel = (item: WorkoutItem) => {
+  const closeEquipmentPicker = () => {
+    equipmentPickerRequestRef.current += 1;
+    setEquipmentPickerItem(null);
+    setEquipmentPickerRows([]);
+    setEquipmentPickerQuery('');
+    setEquipmentPickerError(null);
+    setEquipmentPickerManufacturer(null);
+    setEquipmentPickerContinuation({ kind: 'none' });
+    setEquipmentPickerLoading(false);
+  };
+
+  const loadEquipmentManufacturers = async (item: WorkoutItem) => {
+    if (!workoutId) return;
+    const requestId = ++equipmentPickerRequestRef.current;
+    setEquipmentPickerLoading(true);
+    setEquipmentPickerError(null);
+    try {
+      const response = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${item.id}/equipment-manufacturers`,
+        { method: 'GET', auth: true },
+      );
+      if (!response.ok || !response.json?.ok) {
+        throw new Error(response.json?.error || 'Could not load equipment choices.');
+      }
+      if (requestId !== equipmentPickerRequestRef.current) return;
+      setEquipmentPickerRows(orderEquipmentChoices(response.json.items || []));
+    } catch (pickerError: any) {
+      if (requestId !== equipmentPickerRequestRef.current) return;
+      setEquipmentPickerError(pickerError?.message || 'Could not load equipment choices.');
+    } finally {
+      if (requestId === equipmentPickerRequestRef.current) {
+        setEquipmentPickerLoading(false);
+      }
+    }
+  };
+
+  const openEquipmentPicker = (
+    item: WorkoutItem,
+    continuation: EquipmentPickerContinuation = { kind: 'none' },
+  ) => {
+    const open = () => {
+      setEquipmentPickerItem(item);
+      setEquipmentPickerRows([]);
+      setEquipmentPickerQuery('');
+      setEquipmentPickerError(null);
+      setEquipmentPickerManufacturer(null);
+      setEquipmentPickerContinuation(continuation);
+      void loadEquipmentManufacturers(item);
+    };
+
+    if (
+      continuation.kind === 'none'
+      && activeEquipmentIdentity(item)
+      && (item.set_logs || []).length > 0
+    ) {
+      Alert.alert(
+        'Change equipment for upcoming sets?',
+        'Sets already logged keep their original equipment identity. Your new choice applies only to future sets.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Continue', onPress: open },
+        ],
+      );
+      return;
+    }
+    open();
+  };
+
+  const selectEquipmentVariant = async (equipmentType: 'plate_loaded' | 'selectorized') => {
+    if (!workoutId || !equipmentPickerItem || !equipmentPickerManufacturer) return;
+    const pickerItem = equipmentPickerItem;
+    const continuation = equipmentPickerContinuation;
+    setEquipmentPickerLoading(true);
+    setEquipmentPickerError(null);
+    try {
+      const response = await fetchJson(
+        `${API_BASE}/workouts/mobile/${workoutId}/items/${pickerItem.id}/performed-identity`,
+        {
+          method: 'PUT',
+          auth: true,
+          body: {
+            manufacturer_key: equipmentPickerManufacturer.manufacturer?.key || 'other',
+            equipment_type: equipmentType,
+          },
+        },
+      );
+      if (!response.ok || !response.json?.ok) {
+        throw new Error(response.json?.error || 'Could not save equipment choice.');
+      }
+
+      const nextIdentity = response.json.performed_movement_identity as EquipmentIdentityLike;
+      const nextItem: WorkoutItem = {
+        ...pickerItem,
+        performed_movement_identity: nextIdentity,
+      };
+      setData((current) => current ? {
+        ...current,
+        workout: {
+          ...current.workout,
+          accessory_groups: current.workout.accessory_groups.map((group) => ({
+            ...group,
+            items: group.items.map((candidate) => (
+              Number(candidate.id) === Number(nextItem.id) ? nextItem : candidate
+            )),
+          })),
+        },
+      } : current);
+      closeEquipmentPicker();
+      void fetchWorkout({ silent: true });
+      if (continuation.kind === 'accessory_set') {
+        requestAnimationFrame(() => openAccessoryWheel(nextItem, true));
+      }
+    } catch (pickerError: any) {
+      setEquipmentPickerError(pickerError?.message || 'Could not save equipment choice.');
+      setEquipmentPickerLoading(false);
+    }
+  };
+
+  const openAccessoryWheel = (item: WorkoutItem, skipEquipmentGate = false) => {
+    if (!skipEquipmentGate && needsEquipmentSelection(item)) {
+      openEquipmentPicker(item, { kind: 'accessory_set', itemId: Number(item.id) });
+      return;
+    }
     const rawWeight = defaultAccessoryWeight(item, unit, accInputs[item.id]?.weight || '');
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
@@ -3578,12 +3727,14 @@ export default function WorkoutViewerScreen() {
 
       setData(payload);
       restoreScrollSoon();
+      return payload;
     } catch (err: any) {
       console.log('Workout fetch error', err);
       setError(err?.message || 'Error loading workout');
       if (!silent && !dataRef.current) {
         setData(null);
       }
+      return null;
     } finally {
       if (silent) setRefreshing(false);
       else {
@@ -4832,14 +4983,26 @@ export default function WorkoutViewerScreen() {
         top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
         movementNote={it.notes}
         auxAction={
-          swapLabel ? (
-            <TouchableOpacity
-              style={styles.accessoryInlineAction}
-              onPress={() => openSwapAcc(it)}
-              disabled={savingItemId === it.id}
-            >
-              <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
-            </TouchableOpacity>
+          isMachineAccessoryItem(it) || swapLabel ? (
+            <View style={styles.accessoryInlineActions}>
+              {isMachineAccessoryItem(it) ? (
+                <TouchableOpacity
+                  style={styles.accessoryInlineAction}
+                  onPress={() => openEquipmentPicker(it)}
+                >
+                  <Text style={styles.accessoryInlineActionText}>Equipment</Text>
+                </TouchableOpacity>
+              ) : null}
+              {swapLabel ? (
+                <TouchableOpacity
+                  style={styles.accessoryInlineAction}
+                  onPress={() => openSwapAcc(it)}
+                  disabled={savingItemId === it.id}
+                >
+                  <Text style={styles.accessoryInlineActionText}>{swapLabel}</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
           ) : null
         }
         onOpen={() => toggleMovementCard(accessoryDetailKey)}
@@ -5396,6 +5559,143 @@ export default function WorkoutViewerScreen() {
               </View>
             </View>
           ) : null}
+        </View>
+      </Modal>
+
+      <Modal
+        visible={!!equipmentPickerItem}
+        transparent
+        animationType="slide"
+        onRequestClose={closeEquipmentPicker}
+      >
+        <View style={styles.coreWheelBackdrop}>
+          <TouchableWithoutFeedback onPress={closeEquipmentPicker}>
+            <View style={styles.coreWheelBackdropHit} />
+          </TouchableWithoutFeedback>
+          <View style={styles.equipmentPickerSheet}>
+            <View style={styles.coreWheelHandle} />
+            {equipmentPickerItem ? (
+              <>
+                <Text style={styles.equipmentPickerKicker}>EQUIPMENT FOR</Text>
+                <Text style={styles.equipmentPickerMovement} numberOfLines={2}>
+                  {simplifyMobileMovementName(equipmentPickerItem.movement) || 'Accessory'}
+                </Text>
+                {equipmentPickerManufacturer ? (
+                  <>
+                    <View style={styles.equipmentPickerHeader}>
+                      <TouchableOpacity
+                        style={styles.equipmentPickerHeaderButton}
+                        onPress={() => {
+                          setEquipmentPickerManufacturer(null);
+                          setEquipmentPickerError(null);
+                        }}
+                      >
+                        <Text style={styles.equipmentPickerHeaderButtonText}>Back</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.equipmentPickerTitle}>Choose Machine Type</Text>
+                      <TouchableOpacity
+                        style={styles.equipmentPickerHeaderButton}
+                        onPress={closeEquipmentPicker}
+                      >
+                        <Text style={styles.equipmentPickerHeaderButtonText}>Close</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={styles.equipmentPickerManufacturerName}>
+                      {equipmentPickerManufacturer.manufacturer?.display_name || 'Other'}
+                    </Text>
+                    {(['plate_loaded', 'selectorized'] as const).map((equipmentType) => (
+                      <TouchableOpacity
+                        key={equipmentType}
+                        style={styles.equipmentPickerOption}
+                        onPress={() => void selectEquipmentVariant(equipmentType)}
+                        disabled={equipmentPickerLoading}
+                      >
+                        <View style={styles.equipmentPickerOptionCopy}>
+                          <Text style={styles.equipmentPickerOptionTitle}>
+                            {equipmentType === 'plate_loaded' ? 'Plate Loaded' : 'Selectorized'}
+                          </Text>
+                          <Text style={styles.equipmentPickerOptionMeta}>
+                            {equipmentType === 'plate_loaded'
+                              ? 'Load the machine with weight plates'
+                              : 'Choose weight from the machine stack'}
+                          </Text>
+                        </View>
+                        <Text style={styles.equipmentPickerChevron}>›</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.equipmentPickerHeader}>
+                      <View style={styles.equipmentPickerHeaderSpacer} />
+                      <Text style={styles.equipmentPickerTitle}>Choose Manufacturer</Text>
+                      <TouchableOpacity
+                        style={styles.equipmentPickerHeaderButton}
+                        onPress={closeEquipmentPicker}
+                      >
+                        <Text style={styles.equipmentPickerHeaderButtonText}>Close</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <TextInput
+                      value={equipmentPickerQuery}
+                      onChangeText={setEquipmentPickerQuery}
+                      placeholder="Search manufacturers"
+                      placeholderTextColor="#64748B"
+                      style={styles.equipmentPickerSearch}
+                      autoCorrect={false}
+                    />
+                    {equipmentPickerLoading ? (
+                      <ActivityIndicator color="#8B5CF6" style={styles.equipmentPickerLoading} />
+                    ) : null}
+                    <ScrollView
+                      style={styles.equipmentPickerList}
+                      keyboardShouldPersistTaps="handled"
+                    >
+                      {equipmentPickerRows
+                        .filter((row) => {
+                          const needle = equipmentPickerQuery.trim().toLowerCase();
+                          if (!needle) return true;
+                          return String(row.manufacturer?.display_name || row.display_name || '')
+                            .toLowerCase()
+                            .includes(needle);
+                        })
+                        .map((row) => {
+                          const status = row.equipment_context?.remembered_status;
+                          return (
+                            <TouchableOpacity
+                              key={`${row.id}:${row.key}`}
+                              style={styles.equipmentPickerOption}
+                              onPress={() => {
+                                setEquipmentPickerManufacturer(row);
+                                setEquipmentPickerQuery('');
+                                setEquipmentPickerError(null);
+                              }}
+                            >
+                              <View style={styles.equipmentPickerOptionCopy}>
+                                <Text style={styles.equipmentPickerOptionTitle}>
+                                  {row.manufacturer?.display_name || 'Other'}
+                                </Text>
+                                <Text style={styles.equipmentPickerOptionMeta}>
+                                  {status === 'current'
+                                    ? 'Current equipment'
+                                    : status === 'used_before'
+                                      ? 'Used before'
+                                      : 'Not used yet'}
+                                </Text>
+                              </View>
+                              <Text style={styles.equipmentPickerChevron}>›</Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                    </ScrollView>
+                  </>
+                )}
+                {equipmentPickerError ? (
+                  <Text style={styles.equipmentPickerError}>{equipmentPickerError}</Text>
+                ) : null}
+              </>
+            ) : null}
+          </View>
         </View>
       </Modal>
 
@@ -7641,6 +7941,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: 'rgba(255,255,255,0.035)',
   },
+  accessoryInlineActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   accessoryInlineActionText: {
     color: '#AFA4C8',
     fontSize: 11,
@@ -7981,6 +8286,125 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 24,
+  },
+  equipmentPickerSheet: {
+    maxHeight: '82%',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: 'rgba(148,163,184,0.24)',
+    backgroundColor: 'rgba(9,14,25,0.99)',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 24,
+  },
+  equipmentPickerKicker: {
+    color: '#A78BFA',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  equipmentPickerMovement: {
+    color: '#F8FAFC',
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '900',
+    marginTop: 3,
+    marginBottom: 14,
+  },
+  equipmentPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 12,
+  },
+  equipmentPickerHeaderSpacer: {
+    width: 54,
+  },
+  equipmentPickerHeaderButton: {
+    minWidth: 54,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'rgba(139,92,246,0.10)',
+  },
+  equipmentPickerHeaderButtonText: {
+    color: '#C4B5FD',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  equipmentPickerTitle: {
+    flex: 1,
+    color: '#F8FAFC',
+    fontSize: 18,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  equipmentPickerManufacturerName: {
+    color: '#C4B5FD',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  equipmentPickerSearch: {
+    minHeight: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.22)',
+    backgroundColor: 'rgba(15,23,42,0.78)',
+    color: '#F8FAFC',
+    fontSize: 16,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+  equipmentPickerLoading: {
+    paddingVertical: 12,
+  },
+  equipmentPickerList: {
+    maxHeight: 390,
+  },
+  equipmentPickerOption: {
+    minHeight: 66,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(148,163,184,0.14)',
+    backgroundColor: 'rgba(15,23,42,0.58)',
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginBottom: 8,
+  },
+  equipmentPickerOptionCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  equipmentPickerOptionTitle: {
+    color: '#F8FAFC',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  equipmentPickerOptionMeta: {
+    color: '#94A3B8',
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 2,
+  },
+  equipmentPickerChevron: {
+    color: '#A78BFA',
+    fontSize: 28,
+    lineHeight: 30,
+  },
+  equipmentPickerError: {
+    color: '#F87171',
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+    marginTop: 8,
   },
   coreWheelHandle: {
     alignSelf: 'center',
