@@ -53,7 +53,8 @@ assert.match(home, /<SLAthleteAvatar/);
 assert.match(home, /formatCoachWeight/);
 assert.match(home, /formatCoachVolume/);
 
-assert.match(home, /PanResponder\.create/);
+assert.match(home, /<SwipeActionRow/);
+assert.doesNotMatch(home, /PanResponder\.create/);
 assert.match(home, /Swipe left to dismiss/);
 assert.match(home, /\/coach\/mobile\/home\/activity\/dismiss/);
 assert.match(home, /cleared_activity/);

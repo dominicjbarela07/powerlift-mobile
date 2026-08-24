@@ -5,11 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated,
   AppState,
   Image,
   Modal,
-  PanResponder,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -22,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { CoachAthleteHubSheet } from '@/components/coach-mobile/CoachAthleteHubSheet';
 import type { CompletedSessionRecapPayload } from '@/components/coach-mobile/CompletedSessionRecap';
+import { SwipeActionRow } from '@/components/gestures/SwipeActionRow';
 import {
   CoachCardChevron,
   CoachSparkline,
@@ -210,6 +209,7 @@ export function CoachActivityHome({
   const [rosterInitialFilter, setRosterInitialFilter] = useState<CoachRosterV2Filter>('all');
   const [filter, setFilter] = useState<'all' | CoachHomeActivityType>('all');
   const [showEarlier, setShowEarlier] = useState(false);
+  const [openQueueKey, setOpenQueueKey] = useState<string | null>(null);
   const today = useMemo(() => new Date(), []);
   const firstName = useMemo(() => {
     const name = String(user?.user_name || '').trim();
@@ -338,6 +338,7 @@ export function CoachActivityHome({
     if (!overlayOpenRef.current) {
       void load(dataRef.current ? 'background' : 'initial');
     }
+    return () => setOpenQueueKey(null);
   }, [load]));
 
   useEffect(() => {
@@ -412,6 +413,7 @@ export function CoachActivityHome({
     <SLScreen edges="none" padded={false} style={styles.screen}>
       <ScrollView
         contentContainerStyle={styles.content}
+        onScrollBeginDrag={() => setOpenQueueKey(null)}
         refreshControl={<RefreshControl onRefresh={() => load('manual')} refreshing={refreshing} tintColor={COACH_V2.violet} />}
         showsVerticalScrollIndicator={false}
       >
@@ -444,10 +446,14 @@ export function CoachActivityHome({
               <SwipeActivityCard
                 activity={activity}
                 displayUnit={viewerUnit}
+                isOpen={openQueueKey === activity.key}
                 key={activity.key}
                 onDismiss={() => dismiss(activity)}
+                onGestureStart={() => setOpenQueueKey((current) => current === activity.key ? current : null)}
                 onOpen={() => openDestination(activity.destination, activity.athlete.id)}
                 onOpenAthlete={() => openAthlete(activity.athlete.id)}
+                onRequestClose={() => setOpenQueueKey((current) => current === activity.key ? null : current)}
+                onRequestOpen={() => setOpenQueueKey(activity.key)}
               />
             )) : <EmptyQueue filter={filter} />}
             {filteredQueue.length > QUEUE_PREVIEW_LIMIT ? (
@@ -504,31 +510,37 @@ export function CoachActivityHome({
   );
 }
 
-function SwipeActivityCard({ activity, displayUnit, onDismiss, onOpen, onOpenAthlete }: { activity: CoachHomeActivity; displayUnit: DisplayWeightUnit; onDismiss: () => void; onOpen: () => void; onOpenAthlete: () => void }) {
+function SwipeActivityCard({ activity, displayUnit, isOpen, onDismiss, onGestureStart, onOpen, onOpenAthlete, onRequestClose, onRequestOpen }: { activity: CoachHomeActivity; displayUnit: DisplayWeightUnit; isOpen: boolean; onDismiss: () => void; onGestureStart: () => void; onOpen: () => void; onOpenAthlete: () => void; onRequestClose: () => void; onRequestOpen: () => void }) {
   const reduceMotion = useSLReducedMotion();
-  const x = useRef(new Animated.Value(0)).current;
-  const pan = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_event, gesture) => gesture.dx < -8 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
-    onPanResponderMove: (_event, gesture) => x.setValue(Math.max(-112, Math.min(0, gesture.dx))),
-    onPanResponderRelease: (_event, gesture) => {
-      if (gesture.dx < -82 || gesture.vx < -0.75) {
-        Animated.timing(x, { duration: reduceMotion ? 0 : 150, toValue: -420, useNativeDriver: true }).start(onDismiss);
-      } else {
-        Animated.spring(x, { damping: 18, stiffness: 220, toValue: 0, useNativeDriver: true }).start();
-      }
-    },
-    onPanResponderTerminate: () => Animated.spring(x, { damping: 18, stiffness: 220, toValue: 0, useNativeDriver: true }).start(),
-  }), [onDismiss, reduceMotion, x]);
+  const openCard = () => {
+    if (isOpen) {
+      onRequestClose();
+      return;
+    }
+    onOpen();
+  };
+  const openAthlete = () => {
+    if (isOpen) {
+      onRequestClose();
+      return;
+    }
+    onOpenAthlete();
+  };
   return (
-    <View style={styles.swipeShell}>
-      <Pressable accessibilityLabel={`Dismiss ${activity.title}`} accessibilityRole="button" onPress={onDismiss} style={styles.dismissAction}>
-        <Ionicons color="#FFF" name="trash-outline" size={22} /><Text style={styles.dismissText}>Dismiss</Text>
-      </Pressable>
-      <Animated.View {...pan.panHandlers} style={{ transform: [{ translateX: x }] }}>
-        <Pressable accessibilityHint="Swipe left to dismiss" accessibilityLabel={`${activity.athlete.name}, ${activity.title}`} accessibilityRole="button" onPress={onOpen} style={({ pressed }) => [styles.activityCard, pressed && styles.pressed]}>
+    <SwipeActionRow
+      action={<Pressable accessibilityLabel={`Dismiss ${activity.title}`} accessibilityRole="button" onPress={onDismiss} style={styles.dismissAction}><Ionicons color="#FFF" name="trash-outline" size={22} /><Text style={styles.dismissText}>Dismiss</Text></Pressable>}
+      isOpen={isOpen}
+      onAction={onDismiss}
+      onGestureStart={onGestureStart}
+      onRequestClose={onRequestClose}
+      onRequestOpen={onRequestOpen}
+      reduceMotion={reduceMotion}
+      style={styles.swipeShell}
+    >
+        <Pressable accessibilityActions={[{ name: 'dismiss', label: `Dismiss ${activity.title}` }]} accessibilityHint="Swipe left to dismiss" accessibilityLabel={`${activity.athlete.name}, ${activity.title}`} accessibilityRole="button" onAccessibilityAction={(event) => { if (event.nativeEvent.actionName === 'dismiss') onDismiss(); }} onPress={openCard} style={({ pressed }) => [styles.activityCard, pressed && styles.pressed]}>
           <ActivityArtwork activity={activity} />
           <View style={styles.activityBody}>
-            <Pressable accessibilityLabel={`Open ${activity.athlete.name} Athlete Hub`} onPress={(event) => { event.stopPropagation(); onOpenAthlete(); }} style={styles.activityAthleteRow}>
+            <Pressable accessibilityLabel={`Open ${activity.athlete.name} Athlete Hub`} onPress={(event) => { event.stopPropagation(); openAthlete(); }} style={styles.activityAthleteRow}>
               <SLAthleteAvatar imageUrl={activity.athlete.avatar_url} name={activity.athlete.name} size={26} />
               <View style={styles.activityIdentity}><Text numberOfLines={1} style={styles.activityAthlete}>{activity.athlete.name}</Text><Text style={styles.activityTime}>{relativeTime(activity.occurred_at)}</Text></View>
             </Pressable>
@@ -538,8 +550,7 @@ function SwipeActivityCard({ activity, displayUnit, onDismiss, onOpen, onOpenAth
           </View>
           <CoachCardChevron />
         </Pressable>
-      </Animated.View>
-    </View>
+    </SwipeActionRow>
   );
 }
 
@@ -716,7 +727,7 @@ const styles = StyleSheet.create({
   countText: { color: '#C88BFF', fontSize: 9, fontWeight: '800', textTransform: 'uppercase' },
   filterButton: { minHeight: 34, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 5 },
   swipeShell: { overflow: 'hidden', borderRadius: 12, backgroundColor: '#B72F3B' },
-  dismissAction: { ...StyleSheet.absoluteFillObject, left: '74%', alignItems: 'center', justifyContent: 'center', gap: 4 },
+  dismissAction: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 },
   dismissText: { color: '#FFF', fontSize: 10, fontWeight: '800' },
   activityCard: { minHeight: 112, borderRadius: 12, borderWidth: 1, borderColor: '#2B2F3A', backgroundColor: '#090B11', flexDirection: 'row', alignItems: 'center', gap: 10, padding: 8, paddingRight: 10 },
   artwork: { width: 92, height: 94, borderRadius: 10, overflow: 'hidden', borderWidth: 1, borderColor: '#282C35', backgroundColor: '#080A0F', alignItems: 'center', justifyContent: 'center' },
