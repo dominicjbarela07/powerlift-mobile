@@ -19,6 +19,7 @@ type CoachHomeIdentity = {
   workspace_mode?: string | null;
   is_individual_workspace?: boolean;
   is_self_coached?: boolean;
+  mobile_mode?: string | null;
 };
 
 export function coachHomeContextKey(user?: CoachHomeIdentity | null): string | null {
@@ -27,10 +28,15 @@ export function coachHomeContextKey(user?: CoachHomeIdentity | null): string | n
     || String(user.id ?? user.user_id ?? '').trim();
   if (!identity) return null;
   const role = user.is_coach || user.role === 'coach' ? 'coach' : String(user.role || 'athlete');
-  const workspace =
-    user.workspace_mode === 'individual' || user.is_individual_workspace || user.is_self_coached
-      ? 'individual'
-      : 'team';
+  const workspace = user.mobile_mode === 'coach'
+    ? 'coach'
+    : user.mobile_mode === 'athlete'
+    ? 'athlete'
+    : user.mobile_mode === 'individual'
+    ? 'individual'
+    : user.workspace_mode === 'individual' || user.is_individual_workspace
+    ? 'individual'
+    : 'coach';
   return `${role}:${identity}:${workspace}`;
 }
 

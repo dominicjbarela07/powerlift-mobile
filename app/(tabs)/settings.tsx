@@ -33,7 +33,7 @@ import {
   getDeviceTimezone,
   setManualTimezonePreference,
 } from '@/lib/api';
-import { getMobileViewMode, saveMobileViewMode, type MobileViewMode } from '@/lib/mobileViewMode';
+import type { MobileViewMode } from '@/lib/mobileViewMode';
 import { openRecoverableCheckoutBrowser } from '@/lib/checkoutBrowser';
 import { ACCESSORY_REVIEW_CATALOG, canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
 import {
@@ -364,7 +364,6 @@ export default function SettingsScreen() {
   });
   const [timezoneModalOpen, setTimezoneModalOpen] = useState(false);
   const [timezoneSearch, setTimezoneSearch] = useState('');
-  const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
   const [modeModalOpen, setModeModalOpen] = useState(false);
   const [modeSwitching, setModeSwitching] = useState<MobileViewMode | null>(null);
   const [accountTransitions, setAccountTransitions] = useState<AccountTransitionMetadata | null>(null);
@@ -419,10 +418,8 @@ export default function SettingsScreen() {
     return 'athlete';
   }, [auth]);
   const isCoach = role === 'coach' || !!auth?.user?.is_coach;
-  const isIndividual =
-    auth?.user?.workspace_mode === 'individual' ||
-      auth?.user?.is_individual_workspace === true ||
-      auth?.user?.is_self_coached === true;
+  const activeMobileMode = auth.activeMobileMode as MobileViewMode;
+  const isIndividual = activeMobileMode === 'individual';
   const canUseInternalSelfCoachMode =
     auth?.user?.can_access_internal_self_coach_mobile_mode === true;
   const safeBackendMobileModes = useMemo(() => {
@@ -437,8 +434,6 @@ export default function SettingsScreen() {
       .filter((mode: string): mode is MobileViewMode => ['athlete', 'coach', 'individual'].includes(mode));
     return Array.from(new Set(normalized.length ? normalized : isCoach ? ['athlete', 'coach'] : ['athlete'])) as MobileViewMode[];
   }, [auth?.user?.available_mobile_modes, canUseInternalSelfCoachMode, isCoach, isIndividual]);
-  const activeMobileMode: MobileViewMode =
-    isIndividual && !canUseInternalSelfCoachMode ? 'individual' : mobileViewMode;
   const transitionModeOptions = useMemo(() => {
     const transitionModes = Array.isArray(accountTransitions?.available_modes)
       ? accountTransitions.available_modes
@@ -638,25 +633,6 @@ export default function SettingsScreen() {
     ].filter((row) => row.value);
   }, [trainingProfile]);
 
-  useEffect(() => {
-    let mounted = true;
-
-    if (isIndividual) {
-      setMobileViewMode('individual');
-      return () => {
-        mounted = false;
-      };
-    }
-
-    getMobileViewMode(isCoach).then((mode) => {
-      if (mounted) setMobileViewMode(mode);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [isCoach, isIndividual, auth?.user?.email]);
-
   const timezoneSourceLabel = useMemo(() => {
     if (timezoneSource === 'manual') return 'Manually set';
     if (timezoneSource === 'fallback') return 'Fallback';
@@ -693,9 +669,6 @@ export default function SettingsScreen() {
             ),
           },
         } as any);
-      }
-      if (json.mobile_mode && ['athlete', 'coach', 'individual'].includes(String(json.mobile_mode))) {
-        setMobileViewMode(String(json.mobile_mode) as MobileViewMode);
       }
       setVideoMlTrainingConsent(
         typeof json.video_ml_training_consent === 'boolean'
@@ -1273,8 +1246,7 @@ export default function SettingsScreen() {
       await auth?.refreshAccountState?.();
       await loadMobileSettings();
       await loadAccountTransitionMetadata();
-      await saveMobileViewMode('athlete');
-      setMobileViewMode('athlete');
+      await auth?.switchMobileMode?.('athlete');
       setDowngradeModalOpen(false);
       Alert.alert(
         'Athlete account ready',
@@ -1314,24 +1286,11 @@ export default function SettingsScreen() {
       setProfileEditor(null);
       setTrainingProfile(null);
       setMobileSettingsLoaded(false);
-      const resp = await fetchJson<any>('/mobile/settings/mode', {
-        method: 'PATCH',
-        body: { mode: nextMode } as any,
-      });
-      const json = resp.json || {};
-      if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      await auth?.applyAccountStatePayload?.(json);
-      const resolvedMode =
-        ['athlete', 'coach', 'individual'].includes(String(json?.user?.mobile_mode))
-          ? (String(json.user.mobile_mode) as MobileViewMode)
-          : ['athlete', 'coach', 'individual'].includes(String(json?.mode))
-          ? (String(json.mode) as MobileViewMode)
-          : nextMode;
-      await saveMobileViewMode(resolvedMode);
-      setMobileViewMode(resolvedMode);
+      const transition = auth?.switchMobileMode?.(nextMode);
       setModeModalOpen(false);
-      loadAccountTransitionMetadata();
-      router.replace(resolvedMode === 'coach' ? '/(tabs)/coach-dashboard' : '/(tabs)/athlete-dashboard');
+      router.replace(nextMode === 'coach' ? '/(tabs)/coach-dashboard' : '/(tabs)/athlete-dashboard');
+      await transition;
+      void loadAccountTransitionMetadata();
     } catch (err: any) {
       Alert.alert('Mode not changed', err?.message || 'Please try again.');
     } finally {
@@ -1451,10 +1410,7 @@ export default function SettingsScreen() {
     auth?.profile?.name ||
     auth?.user?.email ||
     'Strength Ledger';
-  const backendCurrentMode = ['athlete', 'coach', 'individual'].includes(String(accountTransitions?.current_mode || ''))
-    ? (String(accountTransitions?.current_mode) as MobileViewMode)
-    : null;
-  const displayMobileMode = backendCurrentMode || activeMobileMode;
+  const displayMobileMode = activeMobileMode;
   const profileDescriptor =
     displayMobileMode === 'individual'
       ? 'Self-coached training'

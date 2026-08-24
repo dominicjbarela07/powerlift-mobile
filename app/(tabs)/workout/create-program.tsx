@@ -126,8 +126,8 @@ export default function CreateProgramScreen() {
     athleteId?: string;
     athleteName?: string;
   }>();
-  const { user } = useAuth();
-  const isIndividual = user?.workspace_mode === 'individual' || !!user?.is_individual_workspace || !!user?.is_self_coached;
+  const { activeMobileMode } = useAuth();
+  const isIndividual = activeMobileMode === 'individual';
   const managedAthleteId = params.athleteId ? Number(params.athleteId) : null;
   const isCoachManaged = !isIndividual && Number.isFinite(managedAthleteId || NaN);
   const canUseProgramBuilder = isIndividual || isCoachManaged;

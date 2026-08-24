@@ -260,13 +260,10 @@ function MessageAvatar({
 }
 
 export default function MessageThreadScreen() {
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ coachPlaceholder?: string }>();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
 
   React.useEffect(() => {
     if (isIndividual) {
@@ -278,7 +275,7 @@ export default function MessageThreadScreen() {
     return null;
   }
 
-  if (user?.is_coach && params.coachPlaceholder === '1') {
+  if (activeMobileMode === 'coach' && user?.is_coach && params.coachPlaceholder === '1') {
     return <CoachConversationPlaceholderScreen />;
   }
 

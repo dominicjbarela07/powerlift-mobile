@@ -201,15 +201,12 @@ function StartupLoadingScreen({ message = 'Loading...' }: { message?: string }) 
 }
 
 function RootStack() {
-  const { authReady, user } = useAuth();
+  const { authReady, user, activeMobileMode } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const registeredPushTokenRef = useRef<string | null>(null);
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
   const isDevSessionRecapCertification =
     __DEV__ && pathname === '/dev-session-recap-certification';
 

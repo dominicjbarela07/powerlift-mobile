@@ -24,6 +24,12 @@ import {
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { startVideoUploadQueue, stopVideoUploadQueue } from '@/lib/videoUploadQueue';
+import {
+  normalizeMobileViewMode,
+  resolveActiveMobileMode,
+  saveMobileViewMode,
+  type MobileViewMode,
+} from '@/lib/mobileViewMode';
 
 // Shape of the authenticated user coming from your Flask API
 export type AuthUser = {
@@ -67,8 +73,13 @@ type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
   authReady: boolean;
+  activeMobileMode: MobileViewMode;
+  workspaceGeneration: number;
+  workspaceKey: string;
+  mobileModeTransitioning: MobileViewMode | null;
   login: (payload: { user: AuthUser; token: string | null }) => Promise<void>;
   logout: () => Promise<void>;
+  switchMobileMode: (mode: MobileViewMode) => Promise<MobileViewMode>;
   refreshAccountState: () => Promise<AuthUser | null>;
   applyAccountStatePayload: (payload: AccountStatePayload) => Promise<AuthUser | null>;
   updateProfilePhoto: (payload: unknown) => Promise<AuthUser | null>;
@@ -86,9 +97,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [workspaceGeneration, setWorkspaceGeneration] = useState(0);
+  const [mobileModeTransitioning, setMobileModeTransitioning] = useState<MobileViewMode | null>(null);
   const userRef = useRef<AuthUser | null>(null);
   const tokenRef = useRef<string | null>(null);
   const refreshAccountStatePromiseRef = useRef<Promise<AuthUser | null> | null>(null);
+  const mobileModeSequenceRef = useRef(0);
+  const workspaceAuthorityGenerationRef = useRef(0);
+  const mobileModeMutationQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const pendingMobileModeRef = useRef<{ sequence: number; requestedMode: MobileViewMode } | null>(null);
+  const confirmedMobileUserRef = useRef<AuthUser | null>(null);
 
   useEffect(() => {
     userRef.current = user;
@@ -99,10 +117,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [token]);
 
   const persistUser = useCallback(async (nextUser: AuthUser | null) => {
-    setUser(nextUser);
-    userRef.current = nextUser;
-    if (nextUser) {
-      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(nextUser));
+    const pendingMode = pendingMobileModeRef.current?.requestedMode;
+    const reconciledUser = nextUser && pendingMode
+      ? { ...nextUser, mobile_mode: pendingMode }
+      : nextUser;
+    setUser(reconciledUser);
+    userRef.current = reconciledUser;
+    if (reconciledUser) {
+      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(reconciledUser));
     } else {
       await SecureStore.deleteItemAsync(USER_KEY);
     }
@@ -256,11 +278,107 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const current = userRef.current;
       if (!current) return null;
       const nextUser = mergeAccountStatePayload(current, payload);
+      // Generic account-state updates may change capabilities or relationships,
+      // but only the workspace transition owner may change presentation mode.
+      nextUser.mobile_mode = current.mobile_mode;
       await persistUser(nextUser);
       return nextUser;
     },
     [mergeAccountStatePayload, persistUser]
   );
+
+  const switchMobileMode = useCallback((nextMode: MobileViewMode) => {
+    const current = userRef.current;
+    if (!current) return Promise.reject(new Error('Sign in before changing mobile mode.'));
+
+    const availableModes = Array.isArray(current.available_mobile_modes)
+      ? current.available_mobile_modes.map(normalizeMobileViewMode).filter(Boolean)
+      : [];
+    if (availableModes.length && !availableModes.includes(nextMode)) {
+      return Promise.reject(new Error('That mobile mode is not available for this account.'));
+    }
+
+    const currentMode = resolveActiveMobileMode(current);
+    if (currentMode === nextMode && !pendingMobileModeRef.current) {
+      const synchronizedUser = { ...current, mobile_mode: nextMode };
+      confirmedMobileUserRef.current = synchronizedUser;
+      return Promise.all([
+        saveMobileViewMode(nextMode),
+        persistUser(synchronizedUser),
+      ]).then(() => nextMode);
+    }
+
+    const sequence = ++mobileModeSequenceRef.current;
+    workspaceAuthorityGenerationRef.current += 1;
+    pendingMobileModeRef.current = { sequence, requestedMode: nextMode };
+    setMobileModeTransitioning(nextMode);
+    setWorkspaceGeneration((value) => value + 1);
+
+    const optimisticUser: AuthUser = { ...current, mobile_mode: nextMode };
+    const localPersistence = Promise.all([
+      persistUser(optimisticUser),
+      saveMobileViewMode(nextMode),
+    ]);
+
+    const mutation = mobileModeMutationQueueRef.current
+      .catch(() => undefined)
+      .then(async (): Promise<MobileViewMode> => {
+        await localPersistence;
+
+        // A newer tap superseded this selection before its mutation began.
+        if (sequence !== mobileModeSequenceRef.current) {
+          return resolveActiveMobileMode(userRef.current);
+        }
+
+        const response = await fetchJson<any>('/mobile/settings/mode', {
+          method: 'PATCH',
+          body: { mode: nextMode } as any,
+        });
+        const payload = response.json || {};
+        if (!response.ok || payload.ok === false) {
+          throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+
+        const serverMode =
+          normalizeMobileViewMode(payload?.user?.mobile_mode) ||
+          normalizeMobileViewMode(payload?.mode) ||
+          nextMode;
+        const confirmedBase = confirmedMobileUserRef.current || current;
+        const confirmedUser = mergeAccountStatePayload(confirmedBase, payload);
+        confirmedUser.mobile_mode = serverMode;
+        confirmedMobileUserRef.current = confirmedUser;
+
+        // The request may have completed after a newer selection was made. Its
+        // server result is useful rollback truth, but it cannot rehydrate UI.
+        if (sequence !== mobileModeSequenceRef.current) {
+          return resolveActiveMobileMode(userRef.current);
+        }
+
+        pendingMobileModeRef.current = null;
+        setMobileModeTransitioning(null);
+        await saveMobileViewMode(serverMode);
+        await persistUser(confirmedUser);
+        if (serverMode !== nextMode) setWorkspaceGeneration((value) => value + 1);
+        return serverMode;
+      })
+      .catch(async (error) => {
+        if (sequence !== mobileModeSequenceRef.current) {
+          return resolveActiveMobileMode(userRef.current);
+        }
+
+        pendingMobileModeRef.current = null;
+        setMobileModeTransitioning(null);
+        const rollbackUser = confirmedMobileUserRef.current || current;
+        const rollbackMode = resolveActiveMobileMode(rollbackUser);
+        await saveMobileViewMode(rollbackMode);
+        await persistUser({ ...rollbackUser, mobile_mode: rollbackMode });
+        setWorkspaceGeneration((value) => value + 1);
+        throw error;
+      });
+
+    mobileModeMutationQueueRef.current = mutation.then(() => undefined, () => undefined);
+    return mutation;
+  }, [mergeAccountStatePayload, persistUser]);
 
   const refreshAccountState = useCallback(async () => {
     if (refreshAccountStatePromiseRef.current) {
@@ -268,6 +386,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     const current = userRef.current;
     const currentToken = tokenRef.current;
+    const requestWorkspaceGeneration = workspaceAuthorityGenerationRef.current;
     if (!current || !currentToken) return current;
 
     refreshAccountStatePromiseRef.current = (async () => {
@@ -277,6 +396,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       ]);
       const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
       const payload = profile.json || {};
+      if (requestWorkspaceGeneration !== workspaceAuthorityGenerationRef.current) {
+        return userRef.current;
+      }
       if (profile.ok && payload?.user) {
         const athlete = payload.athlete || {};
         const nextUser = mergeAccountStatePayload(current, {
@@ -311,7 +433,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function login(payload: { user: AuthUser; token: string | null }) {
     const profilePhoto = normalizeProfilePhotoPayload(payload.user);
-    await persistUser({
+    const loginUser: AuthUser = {
       ...payload.user,
       profilePhotoUrl: profilePhoto.hasProfilePhotoValue
         ? profilePhoto.profilePhotoUrl
@@ -319,7 +441,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       profilePhotoVersion: profilePhoto.hasProfilePhotoValue
         ? profilePhoto.profilePhotoVersion
         : payload.user.profilePhotoVersion ?? null,
-    });
+    };
+    confirmedMobileUserRef.current = loginUser;
+    await persistUser(loginUser);
     setToken(payload.token);
     tokenRef.current = payload.token;
 
@@ -327,8 +451,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await SecureStore.setItemAsync(TOKEN_KEY, payload.token);
       const settings = await fetchJson<any>('/mobile/settings', { method: 'GET' });
       const preferredUnits = preferredUnitFromSettingsPayload(settings.ok ? settings.json : null);
-      if (preferredUnits && userRef.current) {
-        await persistUser({ ...userRef.current, preferred_units: preferredUnits });
+      if (userRef.current && settings.ok && settings.json) {
+        const refreshedUser = mergeAccountStatePayload(userRef.current, {
+          user: {
+            ...settings.json,
+            preferred_units: preferredUnits,
+          },
+        });
+        confirmedMobileUserRef.current = refreshedUser;
+        await saveMobileViewMode(resolveActiveMobileMode(refreshedUser));
+        await persistUser(refreshedUser);
       }
     }
     startVideoUploadQueue();
@@ -339,6 +471,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await persistUser(null);
     setToken(null);
     tokenRef.current = null;
+    mobileModeSequenceRef.current += 1;
+    workspaceAuthorityGenerationRef.current += 1;
+    pendingMobileModeRef.current = null;
+    confirmedMobileUserRef.current = null;
+    setMobileModeTransitioning(null);
+    setWorkspaceGeneration((value) => value + 1);
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(MANUAL_TIMEZONE_KEY);
   }
@@ -378,6 +516,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
               role: profileUser.role === 'coach' ? 'coach' : 'athlete',
               is_coach: profileUser.role === 'coach',
               workspace_mode: profileUser.workspace_mode,
+              available_mobile_modes:
+                profileUser.available_mobile_modes ?? restoredUser?.available_mobile_modes,
+              mobile_mode:
+                profileUser.mobile_mode ?? profile.json?.mobile_mode ?? restoredUser?.mobile_mode ?? null,
+              can_access_internal_self_coach_mobile_mode:
+                profileUser.can_access_internal_self_coach_mobile_mode === true ||
+                restoredUser?.can_access_internal_self_coach_mobile_mode === true,
               is_individual_workspace: profileUser.is_individual_workspace === true,
               is_self_coached:
                 profile.json?.athlete?.is_self_coached === true
@@ -421,6 +566,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 ? profilePhoto.profilePhotoVersion
                 : restoredUser?.profilePhotoVersion ?? null,
             };
+            confirmedMobileUserRef.current = refreshedUser;
+            await saveMobileViewMode(resolveActiveMobileMode(refreshedUser));
             await persistUser(refreshedUser);
           } else if (restoredUser && (profile.status === 402 || profile.status === 403)) {
             const refreshedUser: AuthUser = {
@@ -484,12 +631,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => subscription.remove();
   }, [refreshAccountState]);
 
+  const activeMobileMode = resolveActiveMobileMode(user);
+  const accountIdentity = String(user?.id ?? user?.user_id ?? user?.email ?? 'signed-out');
+  const workspaceIdentity =
+    activeMobileMode === 'coach'
+      ? `coach:${accountIdentity}`
+      : `athlete:${user?.self_athlete_id ?? user?.athlete_id ?? accountIdentity}`;
+  const workspaceKey = `${accountIdentity}:${activeMobileMode}:${workspaceIdentity}:${workspaceGeneration}`;
+
+  useEffect(() => {
+    if (!pendingMobileModeRef.current) confirmedMobileUserRef.current = user;
+  }, [user]);
+
   const value: AuthContextValue = {
     user,
     token,
     authReady,
+    activeMobileMode,
+    workspaceGeneration,
+    workspaceKey,
+    mobileModeTransitioning,
     login,
     logout,
+    switchMobileMode,
     refreshAccountState,
     applyAccountStatePayload,
     updateProfilePhoto,
@@ -521,8 +685,13 @@ export function useAuth(): AuthContextValue {
         user: idealUser,
         token: idealUser ? 'dev-ideal-state-token' : null,
         authReady: true,
+        activeMobileMode: resolveActiveMobileMode(idealUser),
+        workspaceGeneration: 0,
+        workspaceKey: `dev-preview:${resolveActiveMobileMode(idealUser)}`,
+        mobileModeTransitioning: null,
         login: async () => undefined,
         logout: async () => undefined,
+        switchMobileMode: async (mode) => mode,
         refreshAccountState: currentIdealUser,
         applyAccountStatePayload: currentIdealUser,
         updateProfilePhoto: currentIdealUser,

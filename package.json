@@ -82,6 +82,7 @@
     "test:athlete-home-trends": "node --import tsx scripts/test-athlete-home-trends.mjs",
     "test:recovery-day-check-in-state": "node --import tsx scripts/test-recovery-day-check-in-state.mjs",
     "test:settings-trustworthiness": "node scripts/test-settings-trustworthiness.mjs",
+    "test:mobile-mode-transition": "node --import tsx scripts/test-mobile-mode-transition.mjs",
     "test:session-content-snapshot": "node --import tsx scripts/test-session-content-snapshot.mjs",
     "test:training-hub-session-labels": "node --import tsx scripts/test-training-hub-session-labels.mjs",
     "test:preferred-unit-display": "node --import tsx scripts/test-preferred-unit-display.mjs",

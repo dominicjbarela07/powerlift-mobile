@@ -119,6 +119,9 @@ export default function LoginScreen() {
               (res.is_coach ? 'coach' : 'athlete'),
       is_coach: !!(res.is_coach || res.role === 'coach'),
       workspace_mode: res.workspace_mode,
+      available_mobile_modes: res.available_mobile_modes,
+      mobile_mode: res.mobile_mode,
+      can_access_internal_self_coach_mobile_mode: res.can_access_internal_self_coach_mobile_mode,
       is_individual_workspace: res.is_individual_workspace,
       is_self_coached: res.is_self_coached,
       self_athlete_id: res.self_athlete_id ?? null,
@@ -138,12 +141,6 @@ export default function LoginScreen() {
       athlete_id: res.athlete_id ?? null,
       preferred_units: res.preferred_units === 'lbs' ? 'lb' : res.preferred_units ?? null,
     };
-    const isIndividual =
-      authUser.is_coach &&
-      (authUser.workspace_mode === 'individual' ||
-        authUser.is_individual_workspace === true ||
-        authUser.is_self_coached === true);
-
     await login({ user: authUser, token: res.token });
 
     if (
@@ -156,15 +153,6 @@ export default function LoginScreen() {
       (authUser.is_coach && res.billing_required)
     ) {
       router.replace('/');
-    } else if (isIndividual) {
-      router.replace('/(tabs)/athlete-dashboard');
-    } else if (!authUser.is_coach && authUser.has_linked_athlete && authUser.athlete_id) {
-      router.replace({
-        pathname: '/athlete-dashboard',
-        params: { athlete_id: String(authUser.athlete_id) },
-      });
-    } else if (authUser.is_coach) {
-      router.replace('/(tabs)/coach-dashboard');
     } else {
       router.replace('/');
     }

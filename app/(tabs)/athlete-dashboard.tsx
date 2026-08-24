@@ -260,7 +260,7 @@ const palette = {
 export default function AthleteDashboard() {
   const router = useRouter();
   const params = useLocalSearchParams<{ submittedCheckIn?: string }>();
-  const { token, user, applyAccountStatePayload } = useAuth();
+  const { token, user, applyAccountStatePayload, workspaceKey, activeMobileMode } = useAuth();
   const requestManagerRef = useRef(createLatestRequestManager<any>());
   const todayRef = useRef<TodayPayload | null>(null);
   const [today, setToday] = useState<TodayPayload | null>(null);
@@ -275,14 +275,11 @@ export default function AthleteDashboard() {
   const [dailyReadinessForm, setDailyReadinessForm] = useState<ReadinessModalValues>(() => emptyDailyReadinessForm());
   const dailyReadinessSubmissionGateRef = useRef(createReadinessSubmissionGate());
   const reduceMotion = useSLReducedMotion();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
   const isAuthenticatedCoach = user?.role === 'coach' || user?.is_coach === true;
   const showCoachCheckIn = !isAuthenticatedCoach && !isIndividual;
   const individualWelcomeKey = `${INDIVIDUAL_TODAY_WELCOME_VERSION}:${user?.email || 'unknown'}`;
-  const todayCacheKey = `${TODAY_CACHE_VERSION}:${user?.athlete_id || user?.email || 'unknown'}`;
+  const todayCacheKey = `${TODAY_CACHE_VERSION}:${workspaceKey}:${user?.athlete_id || user?.email || 'unknown'}`;
 
   useEffect(() => {
     todayRef.current = today;

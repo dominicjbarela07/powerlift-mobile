@@ -272,12 +272,9 @@ function AttachmentPreviewChip({
 }
 
 export default function MessagesScreen() {
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
   const router = useRouter();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
 
   useEffect(() => {
     if (isIndividual) {
@@ -289,7 +286,7 @@ export default function MessagesScreen() {
     return null;
   }
 
-  if (user?.is_coach) {
+  if (activeMobileMode === 'coach' && user?.is_coach) {
     return <CoachMessagesScreen />;
   }
 

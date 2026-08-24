@@ -7,11 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function CheckInsScreen() {
   const router = useRouter();
-  const { user } = useAuth();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const { activeMobileMode } = useAuth();
+  const isIndividual = activeMobileMode === 'individual';
 
   React.useEffect(() => {
     if (isIndividual) {

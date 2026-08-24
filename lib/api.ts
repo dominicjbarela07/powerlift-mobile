@@ -67,6 +67,9 @@ export type AccountStatePayload = {
   verification_required?: boolean;
   link_coach_required?: boolean;
   workspace_mode?: 'team' | 'individual' | string | null;
+  available_mobile_modes?: string[] | null;
+  mobile_mode?: 'athlete' | 'coach' | 'individual' | string | null;
+  can_access_internal_self_coach_mobile_mode?: boolean;
   role?: string | null;
   athlete_id?: number | null;
   preferred_units?: 'kg' | 'lb' | 'lbs' | null;
@@ -640,6 +643,9 @@ export type ApiLoginResponse = {
   role?: string;
   is_coach?: boolean;
   workspace_mode?: 'team' | 'individual';
+  available_mobile_modes?: Array<'athlete' | 'coach' | 'individual' | string>;
+  mobile_mode?: 'athlete' | 'coach' | 'individual' | string | null;
+  can_access_internal_self_coach_mobile_mode?: boolean;
   is_individual_workspace?: boolean;
   is_self_coached?: boolean;
   self_athlete_id?: number | null;

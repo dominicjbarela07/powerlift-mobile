@@ -6,6 +6,7 @@ const root = resolve(import.meta.dirname, '..');
 const settings = readFileSync(resolve(root, 'app/(tabs)/settings.tsx'), 'utf8');
 const accountGate = readFileSync(resolve(root, 'app/index.tsx'), 'utf8');
 const api = readFileSync(resolve(root, 'lib/api.ts'), 'utf8');
+const authContext = readFileSync(resolve(root, 'context/AuthContext.tsx'), 'utf8');
 const liveRegistry = readFileSync(resolve(root, 'dev-mocks/live-screen-registry.ts'), 'utf8');
 
 const accountTypeRow = settings.indexOf("title: 'Account Type'");
@@ -44,7 +45,8 @@ assert.match(settings, /Stripe cancellation is confirmed before coach tools are 
 const mobileModeHandlerStart = settings.indexOf('const handleSelectMobileMode');
 const mobileModeHandlerEnd = settings.indexOf('const handleLinkCoach', mobileModeHandlerStart);
 const mobileModeHandler = settings.slice(mobileModeHandlerStart, mobileModeHandlerEnd);
-assert.match(mobileModeHandler, /'\/mobile\/settings\/mode'/, 'Mobile Mode must use its view-preference endpoint');
+assert.match(mobileModeHandler, /auth\?\.switchMobileMode\?\.\(nextMode\)/, 'Settings must delegate mode mutation to the authoritative AuthContext transition');
+assert.match(authContext, /'\/mobile\/settings\/mode'/, 'the authoritative transition must use the protected view-preference endpoint');
 assert.doesNotMatch(mobileModeHandler, /account-transitions|TRANSITION_ATHLETE_TO_TEAM_COACH|TRANSITION_TEAM_COACH_TO_ATHLETE/, 'switching Mobile Mode must not mutate account type');
 assert.match(api, /startMobileBillingCheckout[\s\S]*?\/mobile\/billing\/checkout/, 'activation recovery must use the authenticated mobile billing endpoint');
 assert.match(api, /cancelPendingTeamCoachUpgrade[\s\S]*?\/auth\/account-transitions\/team-coach-upgrade\/cancel/, 'incomplete Team Coach upgrade cancellation must remain available through the protected endpoint');
@@ -78,7 +80,7 @@ const saveTrainingMaxesEnd = settings.indexOf('const saveTrainingContext', saveT
 const saveTrainingMaxes = settings.slice(saveTrainingMaxesStart, saveTrainingMaxesEnd);
 assert.match(saveTrainingMaxes, /squat_tm: displayValueToKg\(maxesDraft\.squat_tm, profileUnits\)[\s\S]*?bench_tm: displayValueToKg\(maxesDraft\.bench_tm, profileUnits\)[\s\S]*?deadlift_tm: displayValueToKg\(maxesDraft\.deadlift_tm, profileUnits\)/, 'authorized Training Max saves must preserve canonical kilogram conversion for all three lifts');
 assert.match(saveTrainingMaxes, /resp\.status === 403 && json\.error === 'coach_controlled_training_maxes'[\s\S]*?setProfileEditor\(null\)[\s\S]*?await loadMobileSettings\(\)[\s\S]*?Your training maxes are now managed by your coach/, 'a stale Training Max save must close the editor, refresh authority, and explain the relationship change');
-assert.match(settings, /setProfileEditor\(null\)[\s\S]*?setTrainingProfile\(null\)[\s\S]*?setMobileSettingsLoaded\(false\)[\s\S]*?'\/mobile\/settings\/mode'/, 'account switching must clear stale Training Max capability data before changing mode');
+assert.match(settings, /setProfileEditor\(null\)[\s\S]*?setTrainingProfile\(null\)[\s\S]*?setMobileSettingsLoaded\(false\)[\s\S]*?switchMobileMode/, 'account switching must clear stale Training Max capability data before delegating to the authoritative transition');
 
 assert.match(liveRegistry, /id: 'settings'[\s\S]*?role-aware Mobile Mode[\s\S]*?Planned integrations stay hidden until functional/, 'the Settings UI Mock entry must document the updated hierarchy');
 assert.match(liveRegistry, /id: 'mobile-mode-sheet'[\s\S]*?multiple backend-authorized mobile modes/, 'the modal mock must document its production capability gate');

@@ -35,11 +35,7 @@ import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import { useSLReducedMotion } from '@/lib/motion';
-import {
-  getMobileViewMode,
-  subscribeMobileViewModeChanged,
-  type MobileViewMode,
-} from '@/lib/mobileViewMode';
+import type { MobileViewMode } from '@/lib/mobileViewMode';
 import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
 import { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
 import {
@@ -404,15 +400,13 @@ function FilteredTabBar({
 }
 
 export default function TabsLayout() {
-  const { user } = useAuth();
+  const { user, activeMobileMode, workspaceKey } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const devPreviewSession = useDevLiveScreenSession();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);
   const [hasMeetPlan, setHasMeetPlan] = useState(false);
-  const [mobileViewMode, setMobileViewMode] = useState<MobileViewMode>('coach');
-  const [mobileViewModeLoaded, setMobileViewModeLoaded] = useState(false);
   const unreadPollingRef = useRef(false);
   const meetPlanPollingRef = useRef(false);
   const collapseTabRowRef = useRef<(() => void) | null>(null);
@@ -444,10 +438,7 @@ export default function TabsLayout() {
       user.link_coach_required === true ||
       !user.has_linked_athlete ||
       !user.athlete_id);
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
   const accessBlocked =
     !!user &&
     (
@@ -456,7 +447,7 @@ export default function TabsLayout() {
       (user.verification_required === true && user.email_verified === false) ||
       (user.is_coach === true && (user.billing_required === true || user.can_access_product === false))
     );
-  const viewMode: MobileViewMode = isIndividual ? 'individual' : isCoach ? mobileViewMode : 'athlete';
+  const viewMode: MobileViewMode = activeMobileMode;
   const refreshMeetPlanAvailability = useCallback(async () => {
     if (!user || accessBlocked || isIndividual || isUnlinkedAthlete || viewMode !== 'athlete') {
       setHasMeetPlan(false);
@@ -498,40 +489,7 @@ export default function TabsLayout() {
   }, [accessBlocked, canUseAccessoryCatalogReview, isAccessoryCatalogReviewRoute, isDevMockRoute, isUnlinkedAthlete, pathname, router, user]);
 
   useEffect(() => {
-    let mounted = true;
-    setMobileViewModeLoaded(false);
-
-    if (isIndividual) {
-      setMobileViewMode('individual');
-      setMobileViewModeLoaded(true);
-      return () => {
-        mounted = false;
-      };
-    }
-
-    getMobileViewMode(isCoach).then((mode) => {
-      if (mounted) {
-        setMobileViewMode(mode);
-        setMobileViewModeLoaded(true);
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [isCoach, isIndividual, user?.email]);
-
-  useEffect(() => {
-    if (!isCoach || isIndividual) return undefined;
-
-    return subscribeMobileViewModeChanged((mode) => {
-      setMobileViewMode(mode);
-      setMobileViewModeLoaded(true);
-    });
-  }, [isCoach, isIndividual]);
-
-  useEffect(() => {
-    if (!isCoach || !mobileViewModeLoaded) return;
+    if (!isCoach) return;
     if (isUnlinkedAthlete) return;
     if (pathname.includes('/settings') || isDevMockRoute) return;
 
@@ -578,7 +536,7 @@ export default function TabsLayout() {
     } else if (viewMode === 'athlete' && isCoachFacingPath) {
       router.replace('/(tabs)/athlete-dashboard');
     }
-  }, [isCoach, isDevMockRoute, isIndividual, isUnlinkedAthlete, mobileViewModeLoaded, pathname, router, viewMode]);
+  }, [isCoach, isDevMockRoute, isIndividual, isUnlinkedAthlete, pathname, router, viewMode]);
 
   const refreshMessageNotifications = useCallback(async () => {
     if (!user || isIndividual || isUnlinkedAthlete || unreadPollingRef.current) {
@@ -656,6 +614,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs
+        key={workspaceKey}
         screenOptions={{
           header: () => (
             <StrengthLedgerAppHeader

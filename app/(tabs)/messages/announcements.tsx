@@ -98,12 +98,9 @@ function sourceLabel(item?: CoachAnnouncement | null) {
 }
 
 export default function AnnouncementsScreen() {
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
   const router = useRouter();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
 
   React.useEffect(() => {
     if (isIndividual) {

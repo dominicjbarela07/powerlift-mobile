@@ -17,7 +17,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 
 import { SLMotionEntrance } from '@/components/ui';
-import { useAuth } from '@/context/AuthContext';
 import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
 
@@ -116,12 +115,6 @@ export default function LegacyReflectionRoute() {
 
 export function TrainingFocusScreen({ focusOnly = false }: { focusOnly?: boolean } = {}) {
   const router = useRouter();
-  const { user } = useAuth();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-    user?.is_individual_workspace === true ||
-    user?.is_self_coached === true;
-
   const [focusLifts, setFocusLifts] = useState<FocusLift[]>([]);
   const [trainingHistory, setTrainingHistory] = useState<TrainingHistorySession[]>([]);
   const [filmRooms, setFilmRooms] = useState<FilmStudyRoom[]>([]);

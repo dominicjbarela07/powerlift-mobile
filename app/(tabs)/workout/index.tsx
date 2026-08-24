@@ -578,7 +578,7 @@ const blockActionGroups: Array<{ title: string; keys: BlockActionKey[] }> = [
 
 export default function TrainingIndexScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
   const params = useLocalSearchParams<{
     athleteId?: string;
     workoutId?: string;
@@ -596,7 +596,7 @@ export default function TrainingIndexScreen() {
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
   const returnWeek = params.programmingWeek ? Number(params.programmingWeek) : null;
   const returnDay = params.programmingDay ? String(params.programmingDay) : null;
-  const isIndividual = user?.workspace_mode === 'individual' || !!user?.is_individual_workspace || !!user?.is_self_coached;
+  const isIndividual = activeMobileMode === 'individual';
   const isProgrammingManager = isIndividual || !!rosterAthleteId;
 
   const [loading, setLoading] = useState(true);

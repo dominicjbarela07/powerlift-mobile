@@ -272,18 +272,14 @@ function AccountAccessGate({
 }
 
 export default function IndexGate() {
-  const { user } = useAuth();
+  const { user, activeMobileMode } = useAuth();
 
   // 🔒 Not logged in → go to login
   if (!user) {
     return <Redirect href="/login" />;
   }
 
-  const isIndividual =
-    user.is_coach &&
-    (user.workspace_mode === 'individual' ||
-      user.is_individual_workspace === true ||
-      user.is_self_coached === true);
+  const isIndividual = activeMobileMode === 'individual';
   const accountState = user.account_state;
 
   if (
@@ -311,8 +307,12 @@ export default function IndexGate() {
     );
   }
 
-  // ✅ Individual / self-coached users are coach-role accounts.
+  // Presentation mode chooses the workspace; relationship truth does not.
   if (isIndividual) {
+    return <Redirect href="/(tabs)/athlete-dashboard" />;
+  }
+
+  if (user.is_coach && activeMobileMode === 'athlete') {
     return <Redirect href="/(tabs)/athlete-dashboard" />;
   }
 

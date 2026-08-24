@@ -7,12 +7,9 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function CheckInSubmissionScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { activeMobileMode } = useAuth();
   const params = useLocalSearchParams<{ returnTo?: string; submissionId?: string }>();
-  const isIndividual =
-    user?.workspace_mode === 'individual' ||
-      user?.is_individual_workspace === true ||
-      user?.is_self_coached === true;
+  const isIndividual = activeMobileMode === 'individual';
 
   React.useEffect(() => {
     if (isIndividual) {
