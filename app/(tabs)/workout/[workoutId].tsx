@@ -73,6 +73,7 @@ import {
   SessionUnitFloatingControl,
 } from '@/components/workout-logger/logger-primitives';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
+import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
 import {
   GovernedAccessoryPickerModal,
   type GovernedAccessoryIdentity,
@@ -174,13 +175,8 @@ import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { movementScrollTarget } from '@/lib/movement-transition';
 import { programmedSetCountForSession } from '@/lib/session-programmed-set-count';
 import {
-  accessoryRepRangeAfterLowerChange,
-  accessoryRepRangeAfterUpperChange,
   accessoryRepTargetFromText,
   accessoryRepTargetText,
-  decimalWheelOptions,
-  integerWheelOptions,
-  transitionAccessoryRepTarget,
   type AccessoryRepTarget,
 } from '@/lib/prescription-wheel-options';
 import {
@@ -10246,116 +10242,27 @@ export default function WorkoutViewerScreen() {
         }}
       />
 
-      <Modal
+      <SubstitutionConfirmationSheet
+        editablePrescription={!!data?.permissions?.can_browse_hot_swap_catalog}
+        onBack={() => {
+          setSwapAccVisible(false);
+          setSwapPickerVisible(true);
+        }}
+        onCancel={() => setSwapAccVisible(false)}
+        onConfirm={saveSwapAcc}
+        onRepTargetChange={setSwapRepTarget}
+        onRirChange={(rir) => setSwapAccForm((value) => ({ ...value, rir }))}
+        onSetsChange={(sets) => setSwapAccForm((value) => ({ ...value, sets }))}
+        performingIdentity={swapAccIdentity}
+        performingName={swapAccIdentity?.display_name || 'Choose movement'}
+        programmedIdentity={swapAccItem?.movement_identity || null}
+        programmedName={swapAccItem?.movement || swapAccItem?.original_movement || 'Accessory'}
+        repTarget={swapRepTarget}
+        rir={swapAccForm.rir}
+        saving={savingItemId === swapAccItem?.id}
+        sets={swapAccForm.sets}
         visible={swapAccVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setSwapAccVisible(false)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalCard, styles.swapModalWide]}>
-            <View style={styles.modalSheetHandle} />
-            <View style={styles.swapHeaderRow}>
-              <TouchableOpacity
-                style={styles.swapCloseButton}
-                onPress={() => {
-                  setSwapAccVisible(false);
-                  setSwapPickerVisible(true);
-                }}
-              >
-                <Ionicons name="arrow-back" size={20} color={SLColors.textStrong} />
-              </TouchableOpacity>
-              <Text style={styles.postSessionTitle}>Confirm substitution</Text>
-              <TouchableOpacity style={styles.swapCloseButton} onPress={() => setSwapAccVisible(false)}>
-                <Text style={styles.swapCloseText}>×</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.swapSummaryCard}>
-              <Text style={styles.swapSummaryIcon}>↔</Text>
-              <View style={styles.swapSummaryCopy}>
-                <Text style={styles.modalLabel}>PROGRAMMED</Text>
-                <Text style={styles.swapSummaryText}>{swapAccItem?.movement || swapAccItem?.original_movement || 'Accessory'}</Text>
-                <Text style={[styles.modalLabel, { marginTop: 10 }]}>PERFORMING</Text>
-                <Text style={styles.swapSummaryTitle}>{swapAccIdentity?.display_name || 'Choose movement'}</Text>
-              </View>
-            </View>
-
-            {substitutionAuthority === 'self_governed' ? (
-              <>
-                <Text style={styles.modalSectionKicker}>Future-set prescription</Text>
-                <LoggerWheelPicker
-                  density="compact"
-                  grouped
-                  columns={[
-                    {
-                      key: 'swap-sets', label: 'SETS', value: swapAccForm.sets || '3',
-                      options: integerWheelOptions(1, 12, swapAccForm.sets),
-                      onChange: (sets) => setSwapAccForm((value) => ({ ...value, sets })),
-                    },
-                    {
-                      key: 'swap-rir', label: 'RIR', value: swapAccForm.rir || '2',
-                      options: decimalWheelOptions(0, 5, .5, swapAccForm.rir),
-                      onChange: (rir) => setSwapAccForm((value) => ({ ...value, rir })),
-                    },
-                  ]}
-                />
-                <View style={styles.swapRepModeRow}>
-                  {(['FIXED', 'RANGE', 'AMRAP'] as const).map((mode) => (
-                    <TouchableOpacity
-                      key={mode}
-                      style={[styles.swapRepMode, swapRepTarget.mode === mode && styles.swapRepModeActive]}
-                      onPress={() => setSwapRepTarget((current) => transitionAccessoryRepTarget(
-                        current,
-                        mode,
-                        {
-                          fixed: current.mode === 'FIXED' ? current.fixed : null,
-                          range: current.mode === 'RANGE' ? { low: current.low, high: current.high } : null,
-                        },
-                      ).target)}
-                    >
-                      <Text style={styles.swapRepModeText}>{mode === 'FIXED' ? 'Single' : mode === 'RANGE' ? 'Range' : 'AMRAP'}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                {swapRepTarget.mode !== 'AMRAP' ? (
-                  <LoggerWheelPicker
-                    density="compact"
-                    grouped
-                    columns={swapRepTarget.mode === 'FIXED' ? [{
-                      key: 'swap-reps', label: 'REPS', value: swapRepTarget.fixed,
-                      options: integerWheelOptions(1, 50, swapRepTarget.fixed),
-                      onChange: (fixed) => setSwapRepTarget({ mode: 'FIXED', fixed }),
-                    }] : [
-                      {
-                        key: 'swap-low-reps', label: 'LOW', value: swapRepTarget.low,
-                        options: integerWheelOptions(1, 50, swapRepTarget.low),
-                        onChange: (low) => setSwapRepTarget((current) => current.mode === 'RANGE' ? accessoryRepRangeAfterLowerChange(low, current.high) : current),
-                      },
-                      {
-                        key: 'swap-high-reps', label: 'HIGH', value: swapRepTarget.high,
-                        options: integerWheelOptions(1, 50, swapRepTarget.high),
-                        onChange: (high) => setSwapRepTarget((current) => current.mode === 'RANGE' ? accessoryRepRangeAfterUpperChange(current.low, high) : current),
-                      },
-                    ]}
-                  />
-                ) : <Text style={[styles.modalSubtitle, { marginTop: 12 }]}>Future sets use an AMRAP rep target.</Text>}
-              </>
-            ) : (
-              <Text style={[styles.modalSubtitle, { marginTop: 14 }]}>The programmed sets, reps, and RIR remain unchanged.</Text>
-            )}
-
-            <View style={styles.modalActionsRow}>
-              <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setSwapAccVisible(false)}>
-                <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]} onPress={saveSwapAcc} disabled={savingItemId != null}>
-                {savingItemId === swapAccItem?.id ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Use Movement</Text>}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      />
 
     </KeyboardAvoidingView>
   );

@@ -43,6 +43,8 @@ export type CanonicalMovementArtworkInput = Readonly<{
   movement_identity?: GovernedAccessoryIdentity | null;
   performed_movement_identity?: GovernedAccessoryIdentity | null;
   performed_canonical_movement_identity?: GovernedAccessoryIdentity | null;
+  effective_movement_identity?: GovernedAccessoryIdentity | null;
+  is_substituted?: boolean | null;
   core_movement?: GovernedCoreIdentity | null;
   performed_core_movement?: GovernedCoreIdentity | null;
   measurement?: Readonly<{ canonical_identity_id?: number | null }> | null;
@@ -167,6 +169,20 @@ function explicitAccessoryIdentity(
     return id && taxonomy ? { id, ...taxonomy } : null;
   };
 
+  // A performed equipment implementation is not a movement identity. Prefer
+  // the server-normalized effective subject and explicit performed canonical
+  // movement. A performed identity is only eligible when it carries governed
+  // movement taxonomy of its own.
+  const effective = candidate(movement.effective_movement_identity);
+  if (effective) return effective;
+  const performedCanonical = candidate(movement.performed_canonical_movement_identity);
+  if (performedCanonical) return performedCanonical;
+  const performed = candidate(movement.performed_movement_identity);
+  if (performed) return performed;
+
+  // A substitution without a stable performed ID is incomplete. Do not paint
+  // the original prescription as if it were the movement currently performed.
+  if (movement.is_substituted) return null;
   const legacyState = normalizedToken(movement.legacy?.state);
   const resolvedLegacy = ['canonical', 'legacy_resolved', 'resolved'].includes(legacyState)
     && positiveId(movement.legacy?.effective_movement_definition_id)
@@ -178,16 +194,8 @@ function explicitAccessoryIdentity(
     : null;
   if (resolvedLegacy) return resolvedLegacy;
 
-  // A performed equipment implementation is not a movement identity. Prefer
-  // the explicit performed canonical movement, then the governed programmed
-  // movement. A performed identity is only eligible when it carries governed
-  // movement taxonomy of its own.
-  const performedCanonical = candidate(movement.performed_canonical_movement_identity);
-  if (performedCanonical) return performedCanonical;
   const programmed = candidate(movement.movement_identity, undefined, true);
   if (programmed) return programmed;
-  const performed = candidate(movement.performed_movement_identity);
-  if (performed) return performed;
 
   const directAccessory = ['accessory', 'custom'].includes(normalizedToken(movement.kind))
     || normalizedToken(movement.identity_type) === 'accessory';
@@ -229,6 +237,7 @@ export function resolveCanonicalMovementArtwork(
   if (!accessory) {
     const hasAccessoryIdentity = [
       movement.legacy?.effective_movement_definition_id,
+      movement.effective_movement_identity?.id,
       movement.performed_canonical_movement_identity?.id,
       movement.movement_identity?.id,
       movement.performed_movement_identity?.id,
