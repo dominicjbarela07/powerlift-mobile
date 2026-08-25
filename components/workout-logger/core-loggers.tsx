@@ -351,7 +351,9 @@ export function CoreMovementLedgerRow({
       : 'not_started' as const;
   const cardStateAccent = movementCardStateAccent(cardMaterialState);
   const individualArtworkIsAccessory = visualContext?.movementArtworkInput?.kind === 'accessory'
-    || visualContext?.movementArtworkInput?.kind === 'custom';
+    || visualContext?.movementArtworkInput?.kind === 'custom'
+    || visualContext?.movementArtworkInput?.identity_type === 'accessory'
+    || String(visualContext?.movementArtworkInput?.variant || '').trim().toUpperCase() === 'ACC';
   const opportunityAnnouncementRef = React.useRef<string | null>(null);
   React.useEffect(() => {
     const opportunity = loggerFocus?.opportunity;

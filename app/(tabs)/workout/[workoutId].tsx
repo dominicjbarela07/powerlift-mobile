@@ -7017,7 +7017,14 @@ export default function WorkoutViewerScreen() {
       : baseProgress;
     const coach = data.coach;
     return {
-      movementArtworkInput: { ...item, kind: isAccessory ? 'accessory' : 'core' },
+      movementArtworkInput: {
+        ...item,
+        kind: isAccessory
+          ? 'accessory'
+          : String(item.variant || '').trim().toUpperCase() === 'VR'
+            ? 'variant'
+            : 'core',
+      },
       liftLabel: identity.label,
       liftAccentColor: identity.accentColor,
       plateStack,
