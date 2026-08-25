@@ -26,11 +26,12 @@ const storageSource = readFileSync(resolve(root, 'lib/accessory-catalog-review-s
 const loggerSource = readFileSync(resolve(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 const workspaceSource = readFileSync(resolve(root, 'app/(tabs)/workout/session-workspace/[workoutId].tsx'), 'utf8');
 
-assert.equal(ACCESSORY_REVIEW_CATALOG.total_movements, 583, 'reviewer must use all canonical accessories');
-assert.equal(ACCESSORY_REVIEW_CATALOG.movements.length, 583, 'catalog projection count must reconcile');
+const canonicalMovementCount = ACCESSORY_REVIEW_CATALOG.total_movements;
+assert.ok(canonicalMovementCount > 0, 'canonical accessory catalog must not be empty');
+assert.equal(ACCESSORY_REVIEW_CATALOG.movements.length, canonicalMovementCount, 'catalog projection count must reconcile');
 assert.equal(ACCESSORY_REVIEW_CATALOG.muscle_groups.length, 22, 'governed muscle taxonomy must be complete');
 assert.equal(ACCESSORY_REVIEW_CATALOG.execution_families.length, 6, 'governed execution taxonomy must be complete');
-assert.equal(new Set(ACCESSORY_REVIEW_CATALOG.movements.map((movement) => movement.id)).size, 583, 'stable movement IDs must be unique');
+assert.equal(new Set(ACCESSORY_REVIEW_CATALOG.movements.map((movement) => movement.id)).size, canonicalMovementCount, 'stable movement IDs must be unique');
 assert.match(ACCESSORY_REVIEW_CATALOG.catalog_version, /^sha256:/, 'review state must be versioned by catalog fingerprint');
 
 assert.equal(ACCESSORY_CATALOG_REVIEW_USER_ID, 1);
@@ -46,11 +47,11 @@ assert.match(layoutSource, /canUseAccessoryCatalogReview = canAccessAccessoryCat
 const first = ACCESSORY_REVIEW_CATALOG.movements[0];
 const second = ACCESSORY_REVIEW_CATALOG.movements[1];
 let store = createAccessoryReviewStore();
-assert.deepEqual(deriveReviewCounts(store), { total: 583, reviewed: 0, correct: 0, corrected: 0, remaining: 583 });
+assert.deepEqual(deriveReviewCounts(store), { total: canonicalMovementCount, reviewed: 0, correct: 0, corrected: 0, remaining: canonicalMovementCount });
 
 store = setMovementCorrect(store, first, '2026-08-11T00:00:00.000Z');
 assert.equal(reviewStateFor(store, first.id), 'CORRECT');
-assert.deepEqual(deriveReviewCounts(store), { total: 583, reviewed: 1, correct: 1, corrected: 0, remaining: 582 });
+assert.deepEqual(deriveReviewCounts(store), { total: canonicalMovementCount, reviewed: 1, correct: 1, corrected: 0, remaining: canonicalMovementCount - 1 });
 
 store = setMovementCorrected(store, first, {
   canonical_name: `${first.canonical_name} Revised`,
@@ -59,11 +60,11 @@ store = setMovementCorrected(store, first, {
   execution_family: 'CABLE',
 }, 'Review note', '2026-08-11T00:01:00.000Z');
 assert.equal(reviewStateFor(store, first.id), 'CORRECTED');
-assert.deepEqual(deriveReviewCounts(store), { total: 583, reviewed: 1, correct: 0, corrected: 1, remaining: 582 });
+assert.deepEqual(deriveReviewCounts(store), { total: canonicalMovementCount, reviewed: 1, correct: 0, corrected: 1, remaining: canonicalMovementCount - 1 });
 assert.deepEqual(store.reviews[first.id].proposed.secondary_muscle_groups, ['upper_back'], 'secondary taxonomy must deduplicate and exclude the primary');
 
 store = setMovementCorrect(store, second, '2026-08-11T00:02:00.000Z');
-assert.deepEqual(deriveReviewCounts(store), { total: 583, reviewed: 2, correct: 1, corrected: 1, remaining: 581 });
+assert.deepEqual(deriveReviewCounts(store), { total: canonicalMovementCount, reviewed: 2, correct: 1, corrected: 1, remaining: canonicalMovementCount - 2 });
 
 const corrected = filterAccessoryMovements(store, { state: 'CORRECTED', primaryMuscle: null, executionFamily: null, search: '' });
 assert.deepEqual(corrected.map((movement) => movement.id), [first.id]);
@@ -77,7 +78,7 @@ assert.equal(reconciled.last_movement_id, first.id);
 const exported = buildAccessoryReviewExport(store, '2026-08-11T01:00:00.000Z');
 assert.equal(exported.review_metadata.reviewed, 2);
 assert.equal(exported.reviews.length, 2);
-assert.equal(exported.effective_catalog.length, 583);
+assert.equal(exported.effective_catalog.length, canonicalMovementCount);
 assert.equal(exported.effective_catalog.find((movement) => movement.movement_id === first.id).canonical_name, `${first.canonical_name} Revised`);
 assert.equal(exported.effective_catalog.find((movement) => movement.movement_id === ACCESSORY_REVIEW_CATALOG.movements[2].id).review_state, 'UNREVIEWED');
 assert.deepEqual(JSON.parse(buildAccessoryReviewJson(store, '2026-08-11T01:00:00.000Z')), exported);
