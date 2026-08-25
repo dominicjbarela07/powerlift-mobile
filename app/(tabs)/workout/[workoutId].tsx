@@ -91,6 +91,10 @@ import {
   type CanonicalAccessorySelection,
 } from '@/components/CanonicalAccessoryPicker';
 import { resolveLoggerMovementIdentity } from '@/lib/logger-movement-identity';
+import {
+  accessorySwapActionForItem,
+  itemHasPersistedSetLogs,
+} from '@/lib/accessory-swap-eligibility';
 
 type SetLog = {
   id: number;
@@ -182,6 +186,7 @@ type WorkoutItem = {
   superset_group: string | null;
   superset_pos: number | null;
   set_logs: SetLog[];
+  has_performed_evidence?: boolean;
   // Optional lookback / history (provided by backend when available)
   lookback_best?: {
     workout_id?: number | null;
@@ -1872,6 +1877,15 @@ export default function WorkoutViewerScreen() {
   });
 
   const openSwapAcc = (it: WorkoutItem) => {
+    const action = accessorySwapActionForItem({
+      canHotSwap: !!data?.permissions?.can_hot_swap,
+      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
+      isCoachPreview: !!data?.permissions?.can_coach && !data?.permissions?.can_log,
+      sessionStatus: data?.workout?.status,
+      item: it,
+    });
+    if (!action) return;
+
     const identity = resolveLoggerMovementIdentity(it);
     setSwapAccItem(it);
     setSwapAccIdentity(identity.effective as CanonicalAccessorySelection | null);
@@ -1898,6 +1912,15 @@ export default function WorkoutViewerScreen() {
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
+    const currentItem = data?.workout?.accessory_groups
+      ?.flatMap((group) => group.items || [])
+      .find((candidate) => Number(candidate.id) === Number(swapAccItem.id));
+    if (itemHasPersistedSetLogs(currentItem || swapAccItem)) {
+      setSwapAccVisible(false);
+      setSwapAccItem(null);
+      setError('Movement cannot be changed after performed evidence exists.');
+      return;
+    }
 
     const movement = String(swapAccIdentity?.display_name || '').trim();
     const setsStr = String(swapAccForm.sets || '').trim();
@@ -4260,6 +4283,18 @@ export default function WorkoutViewerScreen() {
   }, [data]);
 
   useEffect(() => {
+    if (!swapAccItem) return;
+    const currentItem = data?.workout?.accessory_groups
+      ?.flatMap((group) => group.items || [])
+      .find((candidate) => Number(candidate.id) === Number(swapAccItem.id));
+    if (!itemHasPersistedSetLogs(currentItem)) return;
+    setSwapAccVisible(false);
+    setSwapPickerVisible(false);
+    setSwapAccItem(null);
+    setSwapAccIdentity(null);
+  }, [data?.workout?.accessory_groups, swapAccItem]);
+
+  useEffect(() => {
     const workout = data?.workout;
     if (!workout) return;
 
@@ -5015,7 +5050,13 @@ export default function WorkoutViewerScreen() {
       expanded: accessoryIsExpanded,
       isComplete: accessoryIsComplete,
     });
-    const swapLabel = canHotSwap ? 'Swap' : Array.isArray(it.approved_subs) && it.approved_subs.length > 0 ? 'Sub' : null;
+    const swapLabel = accessorySwapActionForItem({
+      canHotSwap,
+      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
+      isCoachPreview: isCoachView,
+      sessionStatus: workout.status,
+      item: it,
+    });
 
     return (
       <CoreMovementLedgerRow
