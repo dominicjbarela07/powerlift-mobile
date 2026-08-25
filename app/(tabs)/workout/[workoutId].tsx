@@ -6955,10 +6955,6 @@ export default function WorkoutViewerScreen() {
           iconSource: null,
         }
       : resolveLoggerLiftIdentity(item);
-    const isCoreVariant =
-      !isAccessory
-      && String(item.variant || '').trim().toUpperCase() === 'VR'
-      && resolvedIdentity.key in CORE_FAMILY_LIFT_CODE;
     const identity = resolvedIdentity;
     const resolvedPlateWeight = prescribedWeight === undefined
       ? resolveLoggerPrescribedWeight({ item, unit })
@@ -6981,16 +6977,16 @@ export default function WorkoutViewerScreen() {
       : baseProgress;
     const coach = data.coach;
     return {
+      movementArtworkInput: {
+        ...item,
+        kind: isAccessory
+          ? 'accessory'
+          : String(item.variant || '').trim().toUpperCase() === 'VR'
+            ? 'variant'
+            : 'core',
+      },
       liftLabel: identity.label,
       liftAccentColor: identity.accentColor,
-      liftIconSource: identity.iconSource,
-      accessoryIconName,
-      accessoryMuscleRegion: isAccessory
-        ? accessoryMuscleRegion(item).key
-        : null,
-      coreVariantFamily: isCoreVariant
-        ? resolvedIdentity.key as keyof typeof CORE_FAMILY_LIFT_CODE
-        : null,
       plateStack,
       progress,
       coach: coach

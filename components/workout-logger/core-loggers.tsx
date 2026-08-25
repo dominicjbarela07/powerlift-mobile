@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-  Image,
   type ImageSourcePropType,
   StyleSheet,
   useWindowDimensions,
@@ -15,11 +14,9 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import {
-  SLAccessoryIcon,
   SLButton,
   SLMotionPressable,
   SLProfileAvatar,
-  type SLAccessoryIconName,
 } from '@/components/ui';
 import {
   SLColors,
@@ -27,19 +24,15 @@ import {
   SLMovementCardMaterial,
   SLMotion,
   SLRadius,
-  SLSpacing,
   SLTypography,
 } from '@/constants/theme';
-import {
-  CoreVariantBadge,
-  type CoreVariantFamily,
-} from '@/components/workout-logger/core-variant-badge';
-import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
 import { logSetActionPresentation, type LoggerFeedbackState, type PrescribedOpportunity } from '@/lib/logger-feedback';
 import type { LoggerPlateStackPresentation, LoggerProgressContext } from '@/lib/logger-visual-context';
+import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import {
   coreLoggerHeaderMetadataLines,
   coreLoggerMovementStateLabel,
@@ -47,7 +40,6 @@ import {
   coreLoggerVisibleMovementNote,
 } from '@/lib/core-logger-header';
 import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';
-import type { AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 
 export type SetRailStep = {
   key: string;
@@ -82,12 +74,9 @@ export type MovementLoggerFocusModel = {
 };
 
 export type ActiveMovementVisualContext = {
+  movementArtworkInput?: CanonicalMovementArtworkInput | null;
   liftLabel: string;
   liftAccentColor: string;
-  liftIconSource?: ImageSourcePropType | null;
-  accessoryIconName?: SLAccessoryIconName | null;
-  accessoryMuscleRegion?: AccessoryMuscleRegionKey | null;
-  coreVariantFamily?: CoreVariantFamily | null;
   plateStack?: LoggerPlateStackPresentation | null;
   progress?: LoggerProgressContext | null;
   coach?: {
@@ -361,7 +350,9 @@ export function CoreMovementLedgerRow({
       ? 'complete' as const
       : 'not_started' as const;
   const cardStateAccent = movementCardStateAccent(cardMaterialState);
-  const artworkAccent = visualContext?.liftAccentColor || SLColors.accentViolet;
+  const individualArtworkIsAccessory = visualContext?.movementArtworkInput?.kind === 'accessory'
+    || visualContext?.movementArtworkInput?.identity_type === 'accessory'
+    || String(visualContext?.movementArtworkInput?.variant || '').trim().toUpperCase() === 'ACC';
   const opportunityAnnouncementRef = React.useRef<string | null>(null);
   React.useEffect(() => {
     const opportunity = loggerFocus?.opportunity;
@@ -410,48 +401,15 @@ export function CoreMovementLedgerRow({
         ]}>
           <View style={[
             styles.activeMovementLiftArtwork,
-            visualContext?.accessoryMuscleRegion && styles.activeMovementAccessoryArtwork,
+            individualArtworkIsAccessory && styles.activeMovementAccessoryArtwork,
             compactMovementLayout && styles.activeMovementLiftArtworkCompact,
-            compactMovementLayout && visualContext?.accessoryMuscleRegion && styles.activeMovementAccessoryArtworkCompact,
+            compactMovementLayout && individualArtworkIsAccessory && styles.activeMovementAccessoryArtworkCompact,
           ]}>
-            {visualContext?.accessoryMuscleRegion ? (
-              <AccessoryMuscleRegionMedallion
-                compact={compactMovementLayout}
-                regionKey={visualContext.accessoryMuscleRegion}
-              />
-            ) : visualContext?.coreVariantFamily && visualContext.liftIconSource ? (
-              <CoreVariantBadge
-                accentColor={visualContext.liftAccentColor}
-                compact={compactMovementLayout}
-                family={visualContext.coreVariantFamily}
-                liftArtworkSource={visualContext.liftIconSource}
-              />
-            ) : visualContext?.liftIconSource ? (
-              <Image
-                accessibilityIgnoresInvertColors
-                accessibilityLabel={`${visualContext.liftLabel} movement`}
-                resizeMode="contain"
-                source={visualContext.liftIconSource}
-                style={[
-                  styles.activeMovementLiftIcon,
-                  compactMovementLayout && styles.activeMovementLiftIconCompact,
-                  canonicalMovementCard && { shadowColor: artworkAccent },
-                ]}
-              />
-            ) : visualContext?.accessoryIconName ? (
-              <SLAccessoryIcon
-                accessibilityLabel={`${title} accessory movement`}
-                name={visualContext.accessoryIconName}
-                size={compactMovementLayout ? 52 : 58}
-              />
-            ) : (
-              <View style={[
-                styles.activeMovementAccessoryIcon,
-                compactMovementLayout && styles.activeMovementAccessoryIconCompact,
-              ]}>
-                <Ionicons name="barbell-outline" size={34} color={SLColors.textMuted} />
-              </View>
-            )}
+            <CanonicalMovementArtwork
+              movement={visualContext?.movementArtworkInput || null}
+              size={compactMovementLayout ? 60 : 72}
+              testID="logger-canonical-movement-artwork"
+            />
           </View>
           <View style={styles.activeMovementHeadingCopy}>
             <Text
