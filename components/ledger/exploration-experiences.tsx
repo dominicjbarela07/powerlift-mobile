@@ -8,7 +8,6 @@ import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
-import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
 import { kilogramsToDisplayValue } from '@/lib/display-units';

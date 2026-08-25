@@ -95,9 +95,6 @@ if [[ "${confirmation}" != "PUBLISH TESTFLIGHT" ]]; then
   exit 1
 fi
 
-npx eas-cli update \
-  --channel "${EXPECTED_CHANNEL}" \
-  --platform all \
-  --message "${release_message}" \
-  --non-interactive \
-  --json
+node scripts/publish-validated-ios-ota.mjs \
+  --branch "${EXPECTED_CHANNEL}" \
+  --message "${release_message}"

@@ -163,8 +163,9 @@ assert.match(launch, /performed_core_movement\?\.id \|\| item\.core_movement\?\.
 assert.match(launch, /coreMovementId/);
 assert.match(sheetRoute, /params\.coreMovementId/);
 assert.match(screen, /CanonicalMovementArtwork/);
-assert.match(launch, /performed_canonical_movement_identity\?\.id[\s\S]*movement_identity\?\.id[\s\S]*effective_movement_identity\?\.id[\s\S]*effective_movement_definition_id/);
-assert.match(launch, /activeEquipmentIdentity/);
+assert.match(launch, /resolveLoggerMovementIdentity/);
+assert.match(launch, /normalized\.effective\?\.id/);
+assert.match(launch, /normalized\.equipment\?\.id/);
 assert.match(launch, /canonical_identity_missing/);
 assert.match(programmingRoute, /onOpenMovementHistory/);
 assert.match(programmingRoute, /movementDefinitionId/);

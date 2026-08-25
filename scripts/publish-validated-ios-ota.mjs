@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -43,6 +44,9 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
 });
+
+run('npm', ['run', 'test:release-critical-invariants']);
+run(process.execPath, ['scripts/test-testflight-source-parity.mjs', '--release-projection', '.']);
 
 run('npx', [
   'expo',

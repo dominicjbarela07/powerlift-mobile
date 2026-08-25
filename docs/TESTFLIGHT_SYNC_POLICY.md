@@ -20,6 +20,23 @@ the OTA channel, never the Production source tree.
 
 Promotion must add the approved change to the current known-good TestFlight head. It must never replace that head with development HEAD or merge the development branch wholesale.
 
+## Cumulative accepted-invariant gate
+
+A TestFlight candidate may not silently drop any previously accepted critical
+product behavior. Every OTA and native TestFlight build must run
+`npm run test:release-critical-invariants` from the exact clean release
+worktree before export/build. The gate covers substitution authority, canonical
+movement identity, catalog authoring, individual movement artwork, the Session
+Logger shell, equipment, rich Plan / Compare, immediate workspace-mode
+switching, and the consolidated Week Programming Manager.
+
+Release branches must be based on the latest known-good cumulative TestFlight
+lineage. A successful focused delta test is not evidence that the candidate is
+cumulative. `scripts/eas-update-testflight.sh` must delegate to
+`scripts/publish-validated-ios-ota.mjs`, so the single route-complete,
+native-compatible artifact that passed the invariant gate is the exact artifact
+uploaded and downloaded for byte-equality verification.
+
 ## Active accessory rebuild exception
 
 The active accessory picker, muscle-first discovery, custom accessory creator, accessory favorites, region drilldown, storyboard/parity work, accessory identity cleanup, and accessory-specific migrations remain development-only until the product owner explicitly authorizes their promotion. Their presence in a development worktree or mixed development commit is not release approval.

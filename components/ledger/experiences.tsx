@@ -12,6 +12,7 @@ import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
 import { formatCalculatedWeightValue, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { ArchiveRequestError, archiveDetailHref } from '@/lib/ledger-archive';
 import {
   fetchJourneyBootstrap,
@@ -288,7 +289,7 @@ export function JourneyExperience() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [journeyErrorKind, setJourneyErrorKind] = useState<LedgerRequestFailureKind | null>(null);
-  const unit: LedgerUnit = overview?.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
+  const { unit, setUnit } = useSurfaceWeightUnit(overview?.athlete.preferred_units);
   const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort().reverse(), [allMoments]);
   const activeYear = selectedYear && availableYears.includes(selectedYear)
     ? selectedYear
@@ -309,7 +310,7 @@ export function JourneyExperience() {
         const page = bootstrap.timeline;
         setOverview(nextOverview);
         setBlocks(nextBlocks);
-        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, nextOverview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb')));
+        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, unit)));
         setNextCursor(page.next_cursor ?? null);
         setHasMore(page.has_more);
         setJourneyError(null);
@@ -333,7 +334,7 @@ export function JourneyExperience() {
         if (active) setJourneyLoading(false);
       });
     return () => { active = false; };
-  }, [includeSessions]);
+  }, [includeSessions, unit]);
 
   useEffect(() => loadJourney(), [loadJourney]);
 

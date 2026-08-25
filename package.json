@@ -121,6 +121,7 @@
     "audit:workspace-system": "node scripts/audit-workspace-system.mjs",
     "test:ota-native-compatibility": "node scripts/assert-ota-native-compatibility.mjs",
     "test:ota-route-bundle": "node scripts/assert-ota-route-bundle.mjs",
+    "test:release-critical-invariants": "node scripts/test-release-critical-invariants.mjs",
     "release:ios-ota": "node scripts/publish-validated-ios-ota.mjs"
   },
   "dependencies": {

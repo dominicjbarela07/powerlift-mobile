@@ -57,6 +57,7 @@ if (failures.length) {
 NODE
 
 node scripts/test-testflight-source-parity.mjs --release-projection .
+npm run test:release-critical-invariants
 
 echo "TestFlight native release candidate"
 echo "  path: ${actual_root}"
