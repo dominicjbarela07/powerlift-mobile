@@ -16,6 +16,7 @@ export { SLPriorityBadge } from './sl-priority-badge';
 export { SLQueueRow } from './sl-queue-row';
 export { SLScreen, SLScrollScreen } from './sl-screen';
 export { SLSectionHeader } from './sl-section-header';
+export { SurfaceWeightUnitToggle } from './surface-weight-unit-toggle';
 export { SLEmptyState, SLErrorState, SLLoadingState } from './sl-state';
 export { SLStatusPill } from './sl-status-pill';
 export { SLCanonicalIcon, SLTrophy } from './sl-trophy';

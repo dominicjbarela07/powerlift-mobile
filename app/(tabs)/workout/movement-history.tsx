@@ -17,9 +17,10 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { SLPageHeader } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } from '@/components/core-accomplishments';
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
-import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { MovementHistoryRequestGuard, emptyMovementHistoryPageState } from '@/lib/movement-history-request-guard';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 
@@ -117,7 +118,8 @@ function MovementHistoryIndexScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
-  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>('kg');
+  const [athletePreferredUnit, setAthletePreferredUnit] = useState<string | null>(null);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(athletePreferredUnit);
   const [accomplishments, setAccomplishments] = useState<LoggerRecognitionEvent[]>([]);
   const [accomplishmentCursor, setAccomplishmentCursor] = useState<string | null>(null);
   const [hasMoreAccomplishments, setHasMoreAccomplishments] = useState(false);
@@ -156,7 +158,7 @@ function MovementHistoryIndexScreen() {
       setRefreshing(false);
       setMovements([]);
       setOptions({});
-      setDisplayUnit('kg');
+      setAthletePreferredUnit(null);
       setAccomplishments(emptyPage.items);
       setAccomplishmentCursor(emptyPage.cursor);
       setHasMoreAccomplishments(emptyPage.hasMore);
@@ -178,7 +180,7 @@ function MovementHistoryIndexScreen() {
       setAccomplishmentContextToken(accomplishmentPage.query?.continuation_token || null);
       setAccomplishmentError(null);
       setOptions(json.movement_history?.options || {});
-      setDisplayUnit(json.movement_history?.athlete?.preferred_units === 'lb' ? 'lb' : 'kg');
+      setAthletePreferredUnit(json.movement_history?.athlete?.preferred_units || null);
       feedbackAnalytics('historical_accomplishment_timeline_loaded', {
         surface: 'movement_history',
         movement_count: nextMovements.length,
@@ -268,6 +270,7 @@ function MovementHistoryIndexScreen() {
           backLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
+        <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={displayUnit} onChange={setDisplayUnit} testID="movement-history-index-unit-toggle" /></View>
 
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
@@ -646,6 +649,8 @@ function formatReadableDate(value: string) {
 }
 
 const styles = StyleSheet.create({
+  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { ...SLTypography.caption, color: colors.subtle, textTransform: 'uppercase' },
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },

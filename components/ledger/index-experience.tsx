@@ -14,11 +14,14 @@ import {
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { SLColors, SLSpacing } from '@/constants/theme';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import {
   canonicalLiftKey,
+  displayCalculatedWeight,
   displayWeight,
   type AccomplishmentEvent,
   type CurrentBest,
@@ -32,7 +35,6 @@ import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
 import { useLedgerLiveData } from './use-ledger-live-data';
-import { convertDisplayWeightValue, kilogramsToDisplayValue } from '@/lib/display-units';
 
 const CHAPTERS: readonly {
   number: string;
@@ -113,8 +115,8 @@ function eventPerformedWeightKg(event?: AccomplishmentEvent) {
   if (evidenceWeight != null) return evidenceWeight;
   if (!event || typeof event.current_value !== 'number' || !Number.isFinite(event.current_value)) return null;
   const eventUnit = (event.unit || '').toLowerCase();
-  if (eventUnit.startsWith('kg')) return event.current_value;
-  if (eventUnit.startsWith('lb')) return convertDisplayWeightValue(event.current_value, 'lb', 'kg');
+  if (eventUnit === 'kg') return event.current_value;
+  if (eventUnit === 'lb') return event.current_value / 2.2046226218;
   return null;
 }
 
@@ -122,7 +124,12 @@ function eventPerformance(event?: AccomplishmentEvent, unit: LedgerUnit = 'lb') 
   const weightKg = eventPerformedWeightKg(event);
   if (weightKg != null) {
     const reps = eventReps(event);
-    return `${displayWeight(weightKg, unit)} ${unit.toUpperCase()}${reps ? ` × ${reps}` : ''}`;
+    const isCalculatedEstimate = Boolean(event?.event_type.includes('E1RM'))
+      && evidenceNumber(event, 'actual_weight_kg') == null;
+    const displayed = isCalculatedEstimate
+      ? displayCalculatedWeight(weightKg, unit)
+      : displayWeight(weightKg, unit);
+    return `${displayed} ${unit.toUpperCase()}${reps ? ` × ${reps}` : ''}`;
   }
   if (!event || typeof event.current_value !== 'number') return '—';
   return `${event.current_value.toLocaleString()}${event.unit ? ` ${event.unit}` : ''}`;
@@ -130,7 +137,7 @@ function eventPerformance(event?: AccomplishmentEvent, unit: LedgerUnit = 'lb') 
 
 function displayVolume(valueKg: number | null | undefined, unit: LedgerUnit) {
   if (valueKg == null || !Number.isFinite(valueKg)) return '—';
-  const value = kilogramsToDisplayValue(valueKg, unit);
+  const value = unit === 'lb' ? valueKg * 2.2046226218 : valueKg;
   if (value >= 10_000) return `${(value / 1000).toFixed(1)}K ${unit.toUpperCase()}`;
   return `${Math.round(value).toLocaleString()} ${unit.toUpperCase()}`;
 }
@@ -139,10 +146,9 @@ function eventComparison(event: AccomplishmentEvent, unit: LedgerUnit) {
   const reps = eventReps(event);
   const delta = typeof event.delta === 'number' && Number.isFinite(event.delta) ? event.delta : null;
   const priorValue = typeof event.prior_value === 'number' && Number.isFinite(event.prior_value) ? event.prior_value : null;
-  const eventUnit = String(event.unit || '').toLowerCase();
-  if (priorValue != null && delta != null && delta > 0 && (eventUnit.startsWith('kg') || eventUnit.startsWith('lb'))) {
-    const deltaKg = eventUnit.startsWith('kg') ? delta : convertDisplayWeightValue(delta, 'lb', 'kg');
-    const amount = `+${displayWeight(deltaKg, unit)} ${unit.toUpperCase()}`;
+  if (priorValue != null && delta != null && delta > 0 && (event.unit === 'kg' || event.unit === 'lb')) {
+    const deltaKg = event.unit === 'kg' ? delta : delta / 2.2046226218;
+    const amount = `+${event.event_type.includes('E1RM') ? displayCalculatedWeight(deltaKg, unit) : displayWeight(deltaKg, unit)} ${unit.toUpperCase()}`;
     if (event.event_type.includes('REP_MAX')) return `${amount} · VS PRIOR ${reps ? `${reps}RM` : 'REP MAX'}`;
     if (event.event_type.includes('E1RM')) return `e1RM ${amount}`;
     return `${amount} · VS PRIOR BEST`;
@@ -153,6 +159,11 @@ function eventComparison(event: AccomplishmentEvent, unit: LedgerUnit) {
 }
 
 function journeyLoadConvention(entry: JourneyEntry | null) {
+  const loadSemantics = entry?.evidence?.load_semantics;
+  if (loadSemantics && typeof loadSemantics === 'object') {
+    const convention = (loadSemantics as Record<string, unknown>).load_convention;
+    if (typeof convention === 'string') return convention;
+  }
   const equipment = entry?.evidence?.equipment;
   if (!equipment || typeof equipment !== 'object') return null;
   const convention = (equipment as Record<string, unknown>).load_convention;
@@ -374,6 +385,7 @@ export function LedgerIndexExperience() {
   const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
   const [journeyBootstrap, setJourneyBootstrap] = useState<JourneyBootstrap | null>(null);
   const [supportLoading, setSupportLoading] = useState(true);
+  const { unit, setUnit } = useSurfaceWeightUnit(progression?.athlete?.preferred_units);
 
   useEffect(() => {
     let active = true;
@@ -388,7 +400,6 @@ export function LedgerIndexExperience() {
   }, []);
 
   const model = useMemo(() => {
-    const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
     const prs = recentPrPerformances(accomplishments);
     const latest = accomplishments.find((event) => !RAW_COMPLETION_EVENT_TYPES.has(event.event_type));
     const liftBests = CORE_LIFT_PRESENTATION.map((lift) => currentBests
@@ -398,7 +409,7 @@ export function LedgerIndexExperience() {
     const club = totalClubState(completeTotal, unit);
     const trophyIndex = Math.max(0, club.earnedTierIndex);
     return { prs, latest, unit, liftBests, trophyIndex };
-  }, [accomplishments, currentBests, progression?.athlete?.preferred_units]);
+  }, [accomplishments, currentBests, unit]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
   if (error) return <View testID="ledger-home-experience" style={styles.state}><Ionicons name={errorKind === 'unauthorized' ? 'lock-closed-outline' : 'alert-circle-outline'} size={32} color="#B994F3" /><Text style={styles.stateTitle}>{error}</Text><Pressable onPress={() => void reload()} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable></View>;
@@ -473,6 +484,11 @@ export function LedgerIndexExperience() {
       </View>
     </ImageBackground>
 
+    <View style={styles.ledgerUnitToolbar}>
+      <Text style={styles.ledgerUnitLabel}>DISPLAY WEIGHT</Text>
+      <SurfaceWeightUnitToggle compact unit={model.unit} onChange={setUnit} testID="ledger-index-unit-toggle" />
+    </View>
+
     <View style={styles.sectionInset}>
       <View style={styles.careerSnapshot}>
         <View style={styles.careerTop}>
@@ -530,6 +546,8 @@ export function LedgerIndexExperience() {
 
 const styles = StyleSheet.create({
   page: { gap: 19, paddingBottom: 20, backgroundColor: '#000000' },
+  ledgerUnitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 9, justifyContent: 'flex-end', paddingHorizontal: 18 },
+  ledgerUnitLabel: { color: '#85818F', fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   sectionInset: { gap: 9, marginHorizontal: 12 },
   hero: { minHeight: 160, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
   heroImage: { opacity: 0.96 },

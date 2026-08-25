@@ -12,6 +12,7 @@ import {
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { HomeTrendPlot } from '@/components/home/HomeTrendPlot';
 import { SLProfileAvatar } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
 import {
@@ -28,10 +29,10 @@ import {
   formatWeightDeltaFromKg,
   formatWeightFromKg,
   kilogramsToDisplayValue,
-  normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
 import type { HomePlotDatum } from '@/lib/home-trend-plot';
 import { SESSION_RECAP_ARCHIVE_ART } from '@/lib/session-recap-assets';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/chair.png');
@@ -73,11 +74,12 @@ type Props = {
 export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
   const state = resolveHomeState(home);
-  const unit = normalizeDisplayWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
+  const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
 
   return (
     <View style={styles.page}>
       <Greeting today={today} state={state} />
+      <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={unit} onChange={setUnit} testID="athlete-home-unit-toggle" /></View>
       <StateHero home={home} onAction={onAction} state={state} today={today} unit={unit} />
       {supplementaryContent}
       <WeekSection home={home} onAction={onAction} today={today} unit={unit} />
@@ -539,6 +541,8 @@ function relativeDay(value?: string | null, today?: string | null) { const date 
 function titleCase(value?: string | null) { return String(value || '').replaceAll('_', ' ').replace(/\b\w/g, match => match.toUpperCase()); }
 
 const styles = StyleSheet.create({
+  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   page: { gap: 11, paddingTop: 8, paddingHorizontal: 10, paddingBottom: 112 },
   flex: { flex: 1, minWidth: 0 },
   greetingRow: { minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 2 },

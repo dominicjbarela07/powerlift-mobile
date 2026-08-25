@@ -19,6 +19,7 @@ export default function MovementHistorySheetRoute() {
     equipmentContextDefinitionId?: string | string[];
     equipmentDefinitionId?: string | string[];
     movementDefinitionId?: string | string[];
+    displayUnit?: string | string[];
   }>();
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const movementDefinitionId = numericParam(params.movementDefinitionId);
@@ -27,6 +28,8 @@ export default function MovementHistorySheetRoute() {
     params.equipmentContextDefinitionId ?? params.equipmentDefinitionId,
   );
   const requestClose = useCallback(() => sheetRef.current?.dismiss(), []);
+  const displayUnitParam = Array.isArray(params.displayUnit) ? params.displayUnit[0] : params.displayUnit;
+  const initialDisplayUnit = displayUnitParam === 'lb' || displayUnitParam === 'kg' ? displayUnitParam : null;
 
   return (
     <StrengthLedgerBottomSheet
@@ -42,6 +45,7 @@ export default function MovementHistorySheetRoute() {
         <CanonicalMovementHistoryScreen
           athleteId={athleteId}
           initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
+          initialDisplayUnit={initialDisplayUnit}
           movementDefinitionId={movementDefinitionId}
           onRequestClose={requestClose}
           presentation="sheet"

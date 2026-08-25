@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -7,9 +6,12 @@ import Svg, { Circle, Line, Polygon, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
-import { canonicalLiftKey, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
+import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
+import { formatCalculatedWeightValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { ArchiveRequestError, archiveDetailHref } from '@/lib/ledger-archive';
 import {
   fetchJourneyBootstrap,
@@ -22,7 +24,6 @@ import {
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
 import { CORE_LIFT_MILESTONE_THRESHOLDS } from '@/lib/ledger-rewards';
 import { canRenderGymTotal, displayWeightFromCanonicalLb, plateClubLabel, readablePlateClubLabel } from '@/lib/milestones-layout';
-import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
@@ -30,8 +31,6 @@ import { ArchiveFoundationExperience } from './archive-foundation';
 import { useLedgerLiveData } from './use-ledger-live-data';
 import { fetchJourneyArchiveEvents } from './journey-live-events';
 import { LedgerIndexExperience } from './index-experience';
-
-const PROGRESSION_UNIT_KEY = 'strength-ledger.progression.unit';
 
 type CanonicalLedgerMedia = Readonly<{
   uri: string;
@@ -99,14 +98,14 @@ export function LegacyCanonicalCuratorExperience() {
   const [archiveError, setArchiveError] = useState<LedgerRequestFailureKind | null>(null);
   const [canonicalMedia, setCanonicalMedia] = useState<CanonicalLedgerMedia | null>(null);
   const [mediaLoading, setMediaLoading] = useState(true);
-  const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
+  const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const lifts = progression?.big_three_arc?.lifts ?? [];
   const primaryKey = canonicalLiftKey(progression?.strength_story?.primary_lift) ?? canonicalLiftKey(lifts[0]?.key);
   const primaryLift = primaryKey
     ? lifts.find((lift) => canonicalLiftKey(lift.key || lift.label) === primaryKey) ?? lifts[0]
     : undefined;
-  const currentValue = displayWeight(primaryLift?.current_e1rm_kg, unit);
-  const changeValue = primaryLift?.change_kg == null ? null : displayWeight(Math.abs(primaryLift.change_kg), unit);
+  const currentValue = displayCalculatedWeight(primaryLift?.current_e1rm_kg, unit);
+  const changeValue = primaryLift?.change_kg == null ? null : displayCalculatedWeight(Math.abs(primaryLift.change_kg), unit);
   const recentAccomplishment = accomplishments[0];
   const achievementTitle = recentAccomplishment?.movement_label
     ? `${recentAccomplishment.movement_label}: ${recentAccomplishment.event_type.replace(/^CORE_/, '').replaceAll('_', ' ').toLowerCase()}`
@@ -117,7 +116,7 @@ export function LegacyCanonicalCuratorExperience() {
 
   useEffect(() => {
     let active = true;
-    fetchJourneyArchiveEvents(unit)
+    fetchJourneyArchiveEvents()
       .then((events) => {
         if (!active) return;
         setPreservedEvents(events);
@@ -135,7 +134,7 @@ export function LegacyCanonicalCuratorExperience() {
       })
       .finally(() => { if (active) setArchiveLoading(false); });
     return () => { active = false; };
-  }, [unit]);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -280,14 +279,15 @@ export function JourneyExperience() {
   const [includeSessions, setIncludeSessions] = useState(false);
   const [overview, setOverview] = useState<JourneyOverview | null>(null);
   const [blocks, setBlocks] = useState<JourneyBlock[]>([]);
-  const [allMoments, setAllMoments] = useState<JourneyEvent[]>([]);
+  const [journeyEntries, setJourneyEntries] = useState<JourneyEntry[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [journeyLoading, setJourneyLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [journeyErrorKind, setJourneyErrorKind] = useState<LedgerRequestFailureKind | null>(null);
-  const unit: LedgerUnit = overview?.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
+  const { unit, setUnit } = useSurfaceWeightUnit(overview?.athlete.preferred_units);
+  const allMoments = useMemo(() => journeyEntries.map((entry) => journeyMomentFromEntry(entry, unit)), [journeyEntries, unit]);
   const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort().reverse(), [allMoments]);
   const activeYear = selectedYear && availableYears.includes(selectedYear)
     ? selectedYear
@@ -308,7 +308,7 @@ export function JourneyExperience() {
         const page = bootstrap.timeline;
         setOverview(nextOverview);
         setBlocks(nextBlocks);
-        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, nextOverview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb')));
+        setJourneyEntries(page.items);
         setNextCursor(page.next_cursor ?? null);
         setHasMore(page.has_more);
         setJourneyError(null);
@@ -318,7 +318,7 @@ export function JourneyExperience() {
         if (!active) return;
         setOverview(null);
         setBlocks([]);
-        setAllMoments([]);
+        setJourneyEntries([]);
         console.warn('Journey historical projection request failed', error);
         const kind = error instanceof JourneyRequestError && (error.status === 401 || error.status === 403)
           ? 'unauthorized'
@@ -341,7 +341,7 @@ export function JourneyExperience() {
     setLoadingMore(true);
     try {
       const page = await fetchJourneyTimelinePage({ limit: 24, cursor: nextCursor, includeSessions });
-      setAllMoments((current) => [...current, ...page.items.map((entry) => journeyMomentFromEntry(entry, unit))]);
+      setJourneyEntries((current) => [...current, ...page.items]);
       setNextCursor(page.next_cursor ?? null);
       setHasMore(page.has_more);
     } catch (error) {
@@ -351,7 +351,7 @@ export function JourneyExperience() {
     } finally {
       setLoadingMore(false);
     }
-  }, [includeSessions, loadingMore, nextCursor, unit]);
+  }, [includeSessions, loadingMore, nextCursor]);
 
   if (journeyLoading) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind="loading" message="Loading preserved career evidence." /></View>;
   if (combinedError && !overview) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => loadJourney()} /></View>;
@@ -364,9 +364,10 @@ export function JourneyExperience() {
         <Text style={styles.journeyIntroTitle}>Journey</Text>
         <Text style={styles.journeyIntroBody}>From {formatJourneyDate(overview.earliest_record.date)} to today. Reconstructed from your preserved Strength Ledger evidence.</Text>
       </View>
+      <View style={styles.journeyUnitToolbar}><Text style={styles.journeyUnitLabel}>DISPLAY WEIGHT</Text><SurfaceWeightUnitToggle compact unit={unit} onChange={setUnit} testID="ledger-journey-unit-toggle" /></View>
       <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
-      {view === 'Overview' ? <JourneyOverviewView overview={overview} /> : null}
+      {view === 'Overview' ? <JourneyOverviewView overview={overview} unit={unit} /> : null}
       {view === 'Blocks' ? <JourneyBlocksView blocks={blocks} unit={unit} /> : null}
       {view === 'Timeline' ? <>
         <View style={styles.journeyYearRail} accessibilityRole="tablist">
@@ -395,9 +396,8 @@ export function JourneyExperience() {
   );
 }
 
-function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
+function JourneyOverviewView({ overview, unit }: { overview: JourneyOverview; unit: LedgerUnit }) {
   const summary = overview.lifetime;
-  const unit: LedgerUnit = overview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const reported = overview.bodyweight_context;
   const latestReportedKg = reported.latest?.reported_bodyweight_kg ?? reported.latest?.weight_kg;
   const latestReportedDate = reported.latest?.training_date ?? reported.latest?.date;
@@ -460,6 +460,10 @@ function formatJourneyWeight(valueKg: number, unit: LedgerUnit): string {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
+function formatJourneyCalculatedWeight(valueKg: number, unit: LedgerUnit): string {
+  return displayCalculatedWeight(valueKg, unit, '—');
+}
+
 function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyEvent {
   const persistedSource = entry.source_kind === 'persisted';
   const date = new Date(`${entry.occurred_on}T12:00:00`);
@@ -492,7 +496,7 @@ function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyE
     : [];
   const completion = contextualEvidence.completion;
   if (entry.event_type === 'E1RM_PR' && performance?.e1rm_kg != null) {
-    detail = `${formatJourneyWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
+    detail = `${formatJourneyCalculatedWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
   } else if ((entry.event_type === 'WEIGHT_PR' || entry.event_type === 'REP_PR') && performance?.weight_kg != null) {
     detail = `${formatJourneyWeight(performance.weight_kg, unit)} ${unit}${performance.reps ? ` × ${performance.reps}` : ''}`;
   }
@@ -588,34 +592,8 @@ export function StrengthExperience() {
   const [focusLiftIndex, setFocusLiftIndex] = useState(2);
   const [proofExpanded, setProofExpanded] = useState(false);
   const [range, setRange] = useState<LedgerRange>('90d');
-  const [unit, setUnit] = useState<LedgerUnit>('lb');
-  const [unitPreferenceLoaded, setUnitPreferenceLoaded] = useState(false);
-  const [hasStoredUnitPreference, setHasStoredUnitPreference] = useState(false);
   const { progression, currentBests, accomplishments, loading, error, errorKind, reload } = useLedgerLiveData(range);
-
-  useEffect(() => {
-    let active = true;
-    AsyncStorage.getItem(PROGRESSION_UNIT_KEY)
-      .then((stored) => {
-        if (!active || (stored !== 'kg' && stored !== 'lb')) return;
-        setUnit(stored);
-        setHasStoredUnitPreference(true);
-      })
-      .catch(() => {})
-      .finally(() => { if (active) setUnitPreferenceLoaded(true); });
-    return () => { active = false; };
-  }, []);
-
-  useEffect(() => {
-    if (!unitPreferenceLoaded || hasStoredUnitPreference) return;
-    setUnit(progression?.athlete?.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb');
-  }, [hasStoredUnitPreference, progression?.athlete?.preferred_units, unitPreferenceLoaded]);
-
-  const changeUnit = useCallback((next: LedgerUnit) => {
-    setUnit(next);
-    setHasStoredUnitPreference(true);
-    void AsyncStorage.setItem(PROGRESSION_UNIT_KEY, next);
-  }, []);
+  const { unit, setUnit: changeUnit } = useSurfaceWeightUnit(progression?.athlete?.preferred_units);
   const baseProfile = useMemo(() => CORE_LIFT_PRESENTATION.map((lift) => ({ ...lift })), []);
   const profile = useMemo(() => baseProfile.map((base) => {
     const key = canonicalLiftKey(base.key);
@@ -638,9 +616,9 @@ export function StrengthExperience() {
     const current = currentKg == null ? null : kgToDisplay(currentKg, unit);
     const peak = peakKg == null ? null : kgToDisplay(peakKg, unit);
     const points = livePoints;
-    const best = current == null ? null : Math.round(current * (unit === 'kg' ? 2 : 1)) / (unit === 'kg' ? 2 : 1);
-    const peakValue = peak ?? best;
-    const delta = live?.change_kg == null ? null : Math.round(Math.abs(kgToDisplay(live.change_kg, unit)) * (unit === 'kg' ? 2 : 1)) / (unit === 'kg' ? 2 : 1);
+    const best = current == null ? null : roundCalculatedWeightForDisplay(current, unit);
+    const peakValue = peak == null ? best : roundCalculatedWeightForDisplay(peak, unit);
+    const delta = live?.change_kg == null ? null : roundCalculatedWeightForDisplay(Math.abs(kgToDisplay(live.change_kg, unit)), unit);
     const retention = peakValue != null && peakValue > 0 && best != null ? Math.min(100, Math.round((best / peakValue) * 100)) : null;
     const liftEvents = accomplishments.filter((event) => canonicalLiftKey(event.core_movement_key || event.movement_label) === key);
     const bodyweightEvent = liftEvents.find((event) => event.reported_bodyweight?.reported_bodyweight_kg != null);
@@ -676,7 +654,7 @@ export function StrengthExperience() {
   const liftKey = canonicalLiftKey(focusLift.key);
   const canonicalWeightLb = focusedProfile.canonicalWeightBestKg == null
     ? null
-    : Math.round(kilogramsToDisplayValue(focusedProfile.canonicalWeightBestKg, 'lb') / 5) * 5;
+    : Math.round((focusedProfile.canonicalWeightBestKg * 2.2046226218) / 5) * 5;
   const milestoneCurrent = canonicalWeightLb == null ? null : displayWeightFromCanonicalLb(canonicalWeightLb, unit);
   const milestoneThresholds = liftKey ? CORE_LIFT_MILESTONE_THRESHOLDS[liftKey][unit] : [];
   const currentMilestone = milestoneCurrent == null ? null : milestoneThresholds.filter((threshold) => threshold <= milestoneCurrent).at(-1) ?? null;
@@ -714,7 +692,7 @@ export function StrengthExperience() {
     <View style={[styles.page, styles.strengthPage]} testID="ledger-strength-experience">
       <View style={styles.strengthControls}>
         <Segmented values={['30d', '90d', '180d', '1y', 'all'] as const} value={range} onChange={setRange} />
-        <Segmented values={['lb', 'kg'] as const} value={unit} onChange={changeUnit} />
+        <SurfaceWeightUnitToggle unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" />
       </View>
       <View style={styles.strengthLiftRail} accessibilityRole="tablist">
         {profile.map((item, index) => <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected: index === focusLiftIndex }} onPress={() => setFocusLiftIndex(index)} style={[styles.strengthLiftTab, index === focusLiftIndex && { borderColor: item.color, backgroundColor: `${item.color}13` }]}><Image source={item.image} resizeMode="contain" style={[styles.strengthLiftTabImage, { tintColor: item.color }]} /><Text style={[styles.strengthLiftTabText, index === focusLiftIndex && { color: item.color }]}>{item.key}</Text></Pressable>)}
@@ -783,8 +761,8 @@ export function StrengthExperience() {
 
       <View style={styles.strengthHistory}>
         <Kicker>HISTORICAL CONTEXT</Kicker><Text style={styles.strengthHistoryTitle}>{focusLift.best != null && focusedProfile.retention != null ? `${focusedProfile.retention}% of the observed peak is retained.` : 'A historical peak is not established yet.'}</Text>
-        <View style={styles.strengthHistoryScale}><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusLift.points.length ? Math.min(...focusLift.points) : '—'}</Text><Text style={styles.strengthHistoryLabel}>RANGE LOW</Text></View><View style={styles.strengthHistoryRail}>{focusLift.best != null ? <><View style={[styles.strengthHistoryFill, { backgroundColor: focusedProfile.color }]} /><View style={[styles.strengthHistoryCurrent, { borderColor: focusedProfile.color }]} /></> : null}</View><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusedProfile.peak ?? '—'}</Text><Text style={styles.strengthHistoryLabel}>OBSERVED PEAK</Text></View></View>
-        <Text style={styles.strengthHistoryBody}>{focusLift.best != null && focusedProfile.peak != null ? `Today’s ${focusLift.best} ${unit} estimate is ${Math.max(0, Math.round((focusedProfile.peak - focusLift.best) * 10) / 10)} ${unit} below the observed peak.` : 'Log qualifying movement-matched sets to establish current and historical estimates.'} Open the source evidence before treating any estimate as a tested max.</Text>
+        <View style={styles.strengthHistoryScale}><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusLift.points.length ? formatCalculatedWeightValue(Math.min(...focusLift.points), unit) : '—'}</Text><Text style={styles.strengthHistoryLabel}>RANGE LOW</Text></View><View style={styles.strengthHistoryRail}>{focusLift.best != null ? <><View style={[styles.strengthHistoryFill, { backgroundColor: focusedProfile.color }]} /><View style={[styles.strengthHistoryCurrent, { borderColor: focusedProfile.color }]} /></> : null}</View><View style={styles.strengthHistoryPoint}><Text style={styles.strengthHistoryValue}>{focusedProfile.peak == null ? '—' : formatCalculatedWeightValue(focusedProfile.peak, unit)}</Text><Text style={styles.strengthHistoryLabel}>OBSERVED PEAK</Text></View></View>
+        <Text style={styles.strengthHistoryBody}>{focusLift.best != null && focusedProfile.peak != null ? `Today’s ${formatCalculatedWeightValue(focusLift.best, unit)} ${unit} estimate is ${formatCalculatedWeightValue(Math.max(0, focusedProfile.peak - focusLift.best), unit)} ${unit} below the observed peak.` : 'Log qualifying movement-matched sets to establish current and historical estimates.'} Open the source evidence before treating any estimate as a tested max.</Text>
       </View>
 
       <View style={styles.strengthSupporting}><View style={styles.strengthSectionLead}><Kicker>SUPPORTING SIGNALS</Kicker><Text style={styles.strengthSectionTitle}>What else the ledger sees.</Text></View>{supportingSignals.map(([label, value, detail]) => <View key={label} style={styles.strengthSupportingRow}><Text style={styles.strengthSupportingLabel}>{label}</Text><View style={styles.strengthSupportingValueWrap}><Text style={styles.strengthSupportingValue}>{value}</Text><Text style={styles.strengthSupportingDetail}>{detail}</Text></View></View>)}</View>
@@ -823,6 +801,8 @@ const styles = StyleSheet.create({
   page: { gap: SLSpacing.md },
   journeyPage: { gap: 0 },
   journeyIntro: { gap: 6, paddingTop: 2, paddingBottom: 18 },
+  journeyUnitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginBottom: 10 },
+  journeyUnitLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   journeyIntroTitle: { color: '#F7F5FA', fontSize: 34, lineHeight: 39, fontWeight: '700', letterSpacing: -0.8 },
   journeyIntroBody: { maxWidth: 430, color: '#929AA7', fontSize: 13, lineHeight: 19 },
   journeyOverview: { gap: 14, paddingTop: 18 },

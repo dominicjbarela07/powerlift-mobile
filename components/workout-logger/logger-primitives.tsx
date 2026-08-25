@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import { SLButton, SLMotionPressable } from '@/components/ui';
 import type { LoggerPlateStack } from '@/lib/logger-visual-context';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 
 export function MovementCompleteSummary({
   title,
@@ -40,24 +41,7 @@ export function LogSheetUnitToggle({
   unit: 'kg' | 'lb';
   onChange: (unit: 'kg' | 'lb') => void;
 }) {
-  return (
-    <View style={styles.unitTogglePill}>
-      {(['kg', 'lb'] as const).map((option) => {
-        const active = unit === option;
-        return (
-          <SLMotionPressable
-            key={option}
-            style={[styles.unitToggleOption, active && styles.unitToggleOptionActive]}
-            onPress={() => onChange(option)}
-          >
-            <Text style={[styles.unitToggleText, active && styles.unitToggleTextActive]}>
-              {option}
-            </Text>
-          </SLMotionPressable>
-        );
-      })}
-    </View>
-  );
+  return <SurfaceWeightUnitToggle unit={unit} onChange={onChange} />;
 }
 
 export function SessionUnitFloatingControl({

@@ -1934,7 +1934,6 @@ function sessionWorkspaceDraftIsDirty(current: SessionWorkspaceDraft, persisted:
   if (current.title.trim() !== persisted.title.trim()
     || current.athleteId !== persisted.athleteId
     || current.scheduledDate !== persisted.scheduledDate
-    || current.displayUnit !== persisted.displayUnit
     || current.notes.trim() !== persisted.notes.trim()
     || JSON.stringify(current.coreOrder) !== JSON.stringify(persisted.coreOrder)
     || JSON.stringify(current.accessoryOrder) !== JSON.stringify(persisted.accessoryOrder)) return true;
@@ -1998,7 +1997,6 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
       ...(current.title.trim() !== persisted.title.trim() ? { title: current.title.trim() } : {}),
       ...(current.athleteId !== persisted.athleteId ? { athleteId: current.athleteId } : {}),
       ...(current.scheduledDate !== persisted.scheduledDate ? { scheduledDate: current.scheduledDate } : {}),
-      ...(current.displayUnit !== persisted.displayUnit ? { displayUnit: current.displayUnit } : {}),
       ...(current.notes.trim() !== persisted.notes.trim() ? { notes: current.notes } : {}),
     },
     movementUpdates,

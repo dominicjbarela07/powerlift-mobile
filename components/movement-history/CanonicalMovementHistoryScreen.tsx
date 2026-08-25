@@ -15,6 +15,7 @@ import {
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
@@ -35,6 +36,7 @@ import {
 import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 type FilterPreset = 'all' | 'rir1' | 'rir2' | 'reps6to10' | 'reps8to12' | 'reps12plus';
 
@@ -112,12 +114,14 @@ export function CanonicalMovementHistoryScreen({
   movementDefinitionId,
   athleteId,
   initialEquipmentContextDefinitionId,
+  initialDisplayUnit,
   presentation = 'screen',
   onRequestClose,
 }: {
   movementDefinitionId: number;
   athleteId?: number | null;
   initialEquipmentContextDefinitionId?: number | null;
+  initialDisplayUnit?: MovementHistoryUnit | null;
   presentation?: 'screen' | 'sheet';
   onRequestClose?: () => void;
 }) {
@@ -147,6 +151,7 @@ export function CanonicalMovementHistoryScreen({
   const [loadingMore, setLoadingMore] = useState(false);
   const [favoriteSaving, setFavoriteSaving] = useState(false);
   const requestGeneration = useRef(0);
+  const { unit, setUnit } = useSurfaceWeightUnit(history?.athlete.preferred_units, initialDisplayUnit);
 
   useEffect(() => {
     setResolvedAthleteId(athleteId || null);
@@ -254,7 +259,6 @@ export function CanonicalMovementHistoryScreen({
     }
   };
 
-  const unit = history?.athlete.preferred_units || 'kg';
   const selectedEquipment = history?.equipment_breakdown.find((row) => row.selected) || null;
   const scopeLabel = history?.filters.selected_scope === 'all_history' ? 'All History' : selectedEquipment?.label || 'Equipment';
   const unknownEquipmentSeries = history?.filters.analytics_basis === 'recorded_unknown_equipment';
@@ -278,6 +282,7 @@ export function CanonicalMovementHistoryScreen({
             <Ionicons name="ellipsis-horizontal" size={21} color="#D5D3DC" />
           </Pressable>
         </View>
+        <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={unit} onChange={setUnit} testID="movement-history-unit-toggle" /></View>
 
         {loading && !history ? <State icon="hourglass-outline" title="Loading exact movement evidence" /> : error && !history ? <State icon="alert-circle-outline" title={error} action="Try again" onAction={() => void load(false)} /> : history ? (
           <>
@@ -501,6 +506,8 @@ function DetailFact({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  unitToolbar: { minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { color: '#85808F', fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   screen: { flex: 1, backgroundColor: '#020205' },
   content: { paddingHorizontal: 14, paddingBottom: SLLayout.tabBarClearance + 26 },
   navbar: { height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

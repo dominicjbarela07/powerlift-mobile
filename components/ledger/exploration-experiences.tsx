@@ -5,6 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
@@ -17,11 +18,12 @@ import {
   type LedgerMovementProgress,
   type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey, type AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
+import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { ledgerHrefFor } from './routing';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 type ExplorationKind = 'accessories' | 'variants';
 
@@ -82,11 +84,14 @@ function RoomHeader({ title, subtitle }: { title: string; subtitle: string }) {
   return <View style={styles.roomHeader}><Text style={styles.roomKicker}>THE LEDGER</Text><Text style={styles.roomTitle}>{title}</Text><Text style={styles.roomSubtitle}>{subtitle}</Text></View>;
 }
 
-function ContextBar({ data }: { data: LedgerExplorationIndex }) {
+function ContextBar({ data, unit }: { data: LedgerExplorationIndex; unit: LedgerUnit }) {
   const context = data.context;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const progress = context.block_progress == null ? null : Math.round(context.block_progress * 100);
   return <View testID="ledger-context-bar" style={styles.contextBar}><View style={styles.contextPrimary}><Text style={styles.contextKicker}>{context.block?.name || 'NO CURRENT BLOCK'}</Text><Text style={styles.contextDetail}>{context.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week'} · {context.block_completed_sessions}/{context.block_total_sessions || '—'} sessions</Text></View><View style={styles.contextFacts}><View><Text style={styles.contextFactValue}>{context.bodyweight_kg ? `${displayWeight(context.bodyweight_kg, unit)} ${unit}` : '—'}</Text><Text style={styles.contextFactLabel}>BODYWEIGHT</Text></View><View><Text style={styles.contextFactValue}>{context.training_frequency_per_week.toFixed(1)}</Text><Text style={styles.contextFactLabel}>SESSIONS/WK</Text></View><View style={styles.contextProgress}><Text style={styles.contextFactValue}>{progress == null ? '—' : `${progress}%`}</Text><Text style={styles.contextFactLabel}>BLOCK</Text></View></View></View>;
+}
+
+function ExplorationUnitToolbar({ unit, onChange }: { unit: LedgerUnit; onChange: (unit: LedgerUnit) => void }) {
+  return <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY WEIGHT</Text><SurfaceWeightUnitToggle compact unit={unit} onChange={onChange} /></View>;
 }
 
 function Tabs<T extends string>({ values, value, onChange }: { values: readonly T[]; value: T; onChange: (value: T) => void }) {
@@ -106,6 +111,7 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
   const router = useRouter();
   const params = useLocalSearchParams<{ muscle?: string; equipment?: string }>();
   const { data, loading, error, reload } = useExploration();
+  const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
   const [tab, setTab] = useState<'Overview' | 'By Muscle' | 'History'>('Overview');
   const movements = useMemo(() => {
     const source = data?.movements ?? [];
@@ -119,11 +125,10 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
 
   if (loading) return <State title={`Loading ${kind} evidence.`} />;
   if (error || !data) return <State title={error || 'Ledger movement evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const totalVolume = movements.reduce((sum, movement) => sum + movement.volume_kg, 0);
   const maxVolume = Math.max(1, ...movements.map((movement) => movement.volume_kg));
   const openMovement = (movement: LedgerMovementProgress) => router.push(
-    movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id }) as any,
+    movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id, displayUnit: unit }) as any,
   );
   const sorted = [...movements].sort((left, right) => tab === 'History'
     ? String(right.last_performed_on || '').localeCompare(String(left.last_performed_on || ''))
@@ -131,7 +136,7 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
 
   return <View testID={`ledger-${kind}-experience`} style={styles.page}>
     <RoomHeader title={kind === 'variants' ? 'Variants' : 'Accessories'} subtitle={kind === 'variants' ? 'Independent progress for alternate core movements.' : 'Every accessory movement, tracked with exact identity.'} />
-    <View style={styles.inset}><Tabs values={['Overview', 'By Muscle', 'History'] as const} value={tab} onChange={setTab} /><ContextBar data={data} /></View>
+    <View style={styles.inset}><ExplorationUnitToolbar unit={unit} onChange={setUnit} /><Tabs values={['Overview', 'By Muscle', 'History'] as const} value={tab} onChange={setTab} /><ContextBar data={data} unit={unit} /></View>
     <View style={styles.inset}>
       <View style={styles.collectionHero}><View><Text style={styles.sectionKicker}>{kind === 'variants' ? 'CORE VARIANT RECORD' : 'ACCESSORY RECORD'}</Text><Text style={styles.collectionHeroValue}>{movements.length}</Text><Text style={styles.collectionHeroLabel}>MOVEMENTS WITH EXACT EVIDENCE</Text></View><View style={styles.collectionHeroSide}><Text style={styles.collectionHeroVolume}>{volumeNumber(totalVolume, unit)}</Text><Text style={styles.collectionHeroVolumeLabel}>{unit.toUpperCase()} PERFORMED VOLUME</Text></View></View>
       {params.muscle || params.equipment ? <View style={styles.activeFilter}><Text style={styles.activeFilterText}>FILTERED · {prettify(params.muscle || params.equipment)}</Text><Pressable onPress={() => router.setParams({ muscle: undefined, equipment: undefined })}><Ionicons name="close" size={17} color="#C8B1EC" /></Pressable></View> : null}
@@ -150,6 +155,7 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
 export function MovementDetailExperience({ movementId, mode }: { movementId: number; mode?: 'accessory' | 'variant' }) {
   const router = useRouter();
   const { data, loading, error, reload } = useExploration();
+  const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
   const [history, setHistory] = useState<LedgerMovementHistory | null>(null);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [tab, setTab] = useState<'Overview' | 'History' | 'PRs'>('Overview');
@@ -166,7 +172,6 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
   if (loading) return <State title="Loading movement evidence." />;
   if (error || !data) return <State title={error || 'Movement evidence is unavailable.'} error onRetry={reload} />;
   if (!movement) return <State title="This movement has no visible evidence in the Ledger." error />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const region = canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family);
   const tone = mode === 'variant' ? FAMILY_TONES[movement.core_family || ''] || '#A66AE4' : '#9A66E7';
   const sets = history?.sets ?? [];
@@ -176,7 +181,7 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
 
   return <View testID="ledger-movement-detail-experience" style={styles.page}>
     <RoomHeader title={movement.name} subtitle={`${prettify(region)} · ${prettify(movement.equipment_type)}`} />
-    <View style={styles.inset}><Tabs values={['Overview', 'History', 'PRs'] as const} value={tab} onChange={setTab} /></View>
+    <View style={styles.inset}><ExplorationUnitToolbar unit={unit} onChange={setUnit} /><Tabs values={['Overview', 'History', 'PRs'] as const} value={tab} onChange={setTab} /></View>
     <View style={styles.inset}>
       <View style={[styles.movementHero, { borderColor: `${tone}66` }]}><Image source={accessoryMuscleRegionAsset(region).source} resizeMode="contain" style={styles.movementHeroArt} /><View style={styles.movementHeroCopy}><Text style={[styles.sectionKicker, { color: tone }]}>{mode === 'variant' ? `${prettify(movement.core_family)} VARIANT` : `${prettify(region)} ACCESSORY`}</Text><Text style={styles.movementHeroValue}>{loadLabel(bestSet?.weight_kg || movement.latest_weight_kg, bestSet?.reps || movement.latest_reps, unit)}</Text><Text style={styles.movementHeroLabel}>{comparable ? 'BEST EXACT PERFORMANCE' : 'LATEST EXACT PERFORMANCE'}</Text><Text style={styles.movementHeroDate}>{dateLabel(bestSet?.date || movement.last_performed_on)}</Text></View></View>
     </View>
@@ -197,17 +202,17 @@ function SetEvidenceRow({ set, tone, unit, onPress }: { set: LedgerMovementSet; 
 export function MuscleGroupsExperience() {
   const router = useRouter();
   const { data, loading, error, reload } = useExploration();
+  const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
   const [selected, setSelected] = useState<AccessoryMuscleRegionKey>('chest');
   if (loading) return <State title="Loading muscle-group evidence." />;
   if (error || !data) return <State title={error || 'Muscle-group evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const groups = data.muscle_groups.map((group) => ({ ...group, region: canonicalAccessoryMuscleRegionKey(group.key) }));
   const selectedGroup = groups.find((group) => group.region === selected) || groups[0];
   const activeRegion = selectedGroup?.region || selected;
   const maxVolume = Math.max(1, ...groups.map((group) => group.volume_kg));
   return <View testID="ledger-muscle-groups-experience" style={styles.page}>
     <RoomHeader title="Muscle Groups" subtitle="Performed training volume and movement balance." />
-    <View style={styles.inset}><ContextBar data={data} /></View>
+    <View style={styles.inset}><ExplorationUnitToolbar unit={unit} onChange={setUnit} /><ContextBar data={data} unit={unit} /></View>
     <View style={styles.inset}><View style={styles.muscleHero}><MuscleMap athlete={data.athlete} primary={isGovernedMuscleId(activeRegion) ? [activeRegion] : []} size="card" view="auto" /><View style={styles.muscleHeroCopy}><Text style={styles.sectionKicker}>MUSCLE BALANCE</Text><Text style={styles.muscleHeroTitle}>{prettify(activeRegion)}</Text><Text style={styles.muscleHeroValue}>{selectedGroup ? volumeNumber(selectedGroup.volume_kg, unit) : '—'} <Text style={styles.muscleHeroUnit}>{unit.toUpperCase()} VOLUME</Text></Text><Text style={styles.muscleHeroBody}>{selectedGroup ? `${selectedGroup.movement_count} movements · ${selectedGroup.set_count} sets` : 'No performed evidence'}</Text><Pressable disabled={!selectedGroup} onPress={() => selectedGroup && router.push(`/(tabs)/ledger/muscle-groups/${selectedGroup.region}` as any)} style={styles.detailButton}><Text style={styles.detailButtonText}>View detailed breakdown</Text><Ionicons name="arrow-forward" size={14} color="#CCB1F1" /></Pressable></View></View></View>
     <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>VOLUME BY MUSCLE GROUP</Text><Text style={styles.sectionMeta}>PERFORMED SETS</Text></View><View style={styles.muscleList}>{groups.map((group) => <Pressable key={group.key} onPress={() => setSelected(group.region)} style={[styles.muscleRow, group.region === activeRegion && styles.muscleRowActive]}><View style={styles.muscleRowArt}>{isGovernedMuscleId(group.region) ? <MuscleMap athlete={data.athlete} primary={[group.region]} size="thumbnail" style={{ transform: [{ scale: 0.54 }] }} view="auto" /> : null}</View><View style={styles.muscleRowCopy}><View style={styles.muscleRowTop}><Text style={styles.muscleRowName}>{prettify(group.region)}</Text><Text style={styles.muscleRowValue}>{volumeNumber(group.volume_kg, unit)} {unit}</Text></View><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, group.volume_kg / maxVolume * 100)}%`, backgroundColor: group.region === activeRegion ? '#A46DE4' : '#60498A' }]} /></View></View></Pressable>)}</View></View>
   </View>;
@@ -216,16 +221,17 @@ export function MuscleGroupsExperience() {
 export function MuscleDetailExperience({ region }: { region: AccessoryMuscleRegionKey }) {
   const router = useRouter();
   const { data, loading, error, reload } = useExploration();
+  const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
   if (loading) return <State title="Loading muscle-group detail." />;
   if (error || !data) return <State title={error || 'Muscle-group evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
   const group = data.muscle_groups.find((item) => canonicalAccessoryMuscleRegionKey(item.key) === region);
   const movements = data.movements.filter((movement) => canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family) === region).sort((left, right) => right.volume_kg - left.volume_kg);
   const max = Math.max(1, ...movements.map((movement) => movement.volume_kg));
   return <View testID="ledger-muscle-detail-experience" style={styles.page}>
     <RoomHeader title={prettify(region)} subtitle="Exact movement contribution and performed volume." />
+    <View style={styles.inset}><ExplorationUnitToolbar unit={unit} onChange={setUnit} /></View>
     <View style={styles.inset}><View style={styles.muscleDetailHero}>{isGovernedMuscleId(region) ? <MuscleMap athlete={data.athlete} primary={[region]} size="card" view="auto" /> : null}<View style={styles.muscleDetailMetrics}><Text style={styles.sectionKicker}>ALL-TIME PERFORMED EVIDENCE</Text><Text style={styles.muscleDetailVolume}>{group ? volumeNumber(group.volume_kg, unit) : '—'}</Text><Text style={styles.muscleDetailUnit}>{unit.toUpperCase()} VOLUME</Text><View style={styles.detailMetrics}><View><Text style={styles.detailMetricValue}>{group?.set_count ?? 0}</Text><Text style={styles.detailMetricLabel}>SETS</Text></View><View><Text style={styles.detailMetricValue}>{group?.movement_count ?? 0}</Text><Text style={styles.detailMetricLabel}>MOVEMENTS</Text></View></View></View></View></View>
-    <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>TOP MOVEMENTS</Text><Text style={styles.sectionMeta}>EXACT IDENTITIES</Text></View><View style={styles.movementList}>{movements.map((movement) => <View key={movement.id}><MovementRow movement={movement} unit={unit} tone="#A46DE4" onPress={() => router.push(movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id }) as any)} /><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, movement.volume_kg / max * 100)}%`, backgroundColor: '#7653A5' }]} /></View></View>)}</View></View>
+    <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>TOP MOVEMENTS</Text><Text style={styles.sectionMeta}>EXACT IDENTITIES</Text></View><View style={styles.movementList}>{movements.map((movement) => <View key={movement.id}><MovementRow movement={movement} unit={unit} tone="#A46DE4" onPress={() => router.push(movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id, displayUnit: unit }) as any)} /><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, movement.volume_kg / max * 100)}%`, backgroundColor: '#7653A5' }]} /></View></View>)}</View></View>
     <View style={styles.inset}><View style={styles.policyNotice}><Ionicons name="ribbon-outline" size={20} color="#C5A4F1" /><View style={styles.policyCopy}><Text style={styles.policyTitle}>Reward evidence remains canonical.</Text><Text style={styles.policyBody}>Muscle-level medallions are not shown because the accomplishment platform does not currently issue them. Per-lift and total volume medallions remain in Achievements.</Text></View></View></View>
   </View>;
 }
@@ -234,6 +240,7 @@ export function LedgerFiltersExperience() {
   const router = useRouter();
   const params = useLocalSearchParams<{ time?: string }>();
   const { data, loading, error, reload } = useExploration();
+  const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
   const [time, setTime] = useState(params.time || 'All Time');
   const [program, setProgram] = useState('All');
   const [muscle, setMuscle] = useState('All');
@@ -252,7 +259,7 @@ export function LedgerFiltersExperience() {
   };
   return <View testID="ledger-filters-experience" style={styles.page}>
     <RoomHeader title="Filter the Ledger" subtitle="Every view is contextual. Focus on what matters." />
-    <View style={styles.inset}><ContextBar data={data} /></View>
+    <View style={styles.inset}><ExplorationUnitToolbar unit={unit} onChange={setUnit} /><ContextBar data={data} unit={unit} /></View>
     <View style={styles.inset}><FilterGroup label="TIME PERIOD" values={['This Block', 'Last 3 Months', 'This Year', 'All Time']} value={time} onChange={setTime} /><FilterGroup label="PROGRAM" values={['All', ...data.filters.programs.map((item) => item.name)]} value={program} onChange={setProgram} /><FilterGroup label="MUSCLE GROUP" values={['All', ...data.filters.muscle_groups]} value={muscle} onChange={setMuscle} format /><FilterGroup label="EXERCISE TYPE" values={['All', ...data.filters.exercise_types]} value={exerciseType} onChange={setExerciseType} format /><FilterGroup label="EQUIPMENT" values={['All', ...data.filters.equipment]} value={equipment} onChange={setEquipment} format /></View>
     <View style={styles.inset}><View style={styles.filterActions}><Pressable onPress={() => { setTime('All Time'); setProgram('All'); setMuscle('All'); setExerciseType('All'); setEquipment('All'); }} style={styles.clearButton}><Text style={styles.clearButtonText}>Clear Filters</Text></Pressable><Pressable onPress={apply} style={styles.applyButton}><Text style={styles.applyButtonText}>Apply Filters</Text></Pressable></View></View>
   </View>;
@@ -263,6 +270,8 @@ function FilterGroup({ label, values, value, onChange, format = false }: { label
 }
 
 const styles = StyleSheet.create({
+  unitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginBottom: 10 },
+  unitToolbarLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   page: { gap: 18, paddingBottom: 22 },
   inset: { gap: 10, marginHorizontal: 14 },
   roomHeader: { gap: 2, paddingHorizontal: 18, paddingTop: 2, paddingBottom: 2 },

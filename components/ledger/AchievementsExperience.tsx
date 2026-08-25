@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type LayoutChangeEvent } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ImageSourcePropType, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { SLCanonicalIcon, SLScreen, SLTrophy } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/components/volume-achievements/VolumeAchievementExperience';
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
 import { useLedgerLiveData } from './use-ledger-live-data';
@@ -21,15 +22,9 @@ import {
   type TotalClubState,
 } from '@/lib/ledger-rewards';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
-import { useAuth } from '@/context/AuthContext';
-import {
-  convertDisplayWeightValue,
-  formatWeightFromKg,
-  kilogramsToDisplayValue,
-  normalizeDisplayWeightUnit,
-  parseDisplayWeightUnit,
-} from '@/lib/display-units';
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
+import { formatCalculatedWeightFromKg, formatWeightFromKg, KG_TO_LB } from '@/lib/display-units';
 import {
   MILESTONE_RENDER_ORIENTATION_STYLE,
   resolveMilestoneRenderAsset,
@@ -278,13 +273,18 @@ function formatEarnedDate(value?: string | null): string | null {
 
 function formatPrEvent(event: AccomplishmentEvent, unit: Unit): { title: string; value: string; detail: string } {
   const title = event.movement_label || event.core_movement_key || 'Movement';
-  const sourceUnit = parseDisplayWeightUnit(event.unit) || 'kg';
-  const value = typeof event.current_value === 'number'
-    ? `${number(convertDisplayWeightValue(event.current_value, sourceUnit, unit))} ${unit}`
-    : 'Recorded PR';
+  const sourceUnit = String(event.unit || '').toLowerCase();
+  const valueKg = typeof event.current_value === 'number'
+    ? sourceUnit === 'lb' ? event.current_value / KG_TO_LB : sourceUnit === 'kg' ? event.current_value : null
+    : null;
+  const value = valueKg == null
+    ? 'Recorded PR'
+    : event.event_type.includes('E1RM')
+      ? formatCalculatedWeightFromKg(valueKg, unit) || 'Recorded PR'
+      : formatWeightFromKg(valueKg, unit) || 'Recorded PR';
   const bodyweight = event.reported_bodyweight?.reported_bodyweight_kg;
   const bodyweightContext = typeof bodyweight === 'number'
-    ? ` · Reported BW ${formatWeightFromKg(bodyweight, unit)}${formatEarnedDate(event.reported_bodyweight?.training_date) ? ` · ${formatEarnedDate(event.reported_bodyweight?.training_date)}` : ''}`
+    ? ` · Reported BW ${formatWeightFromKg(bodyweight, unit) || '—'}${formatEarnedDate(event.reported_bodyweight?.training_date) ? ` · ${formatEarnedDate(event.reported_bodyweight?.training_date)}` : ''}`
     : '';
   if (event.event_type === 'CORE_REP_MAX_PR') {
     const reps = typeof event.evidence?.rep_count === 'number'
@@ -375,7 +375,7 @@ function AchievementsHub({
 
     <Pressable testID="achievement-family-medallions" onPress={() => onOpen('medallions')} style={({ pressed }) => [styles.medallionDoorway, pressed && styles.pressed]}>
       <View style={styles.medallionDoorwayArtifact}>{latestMedallionAsset ? <Image source={latestMedallionAsset} resizeMode="contain" style={styles.medallionDoorwayImage} /> : <Ionicons name="ribbon-outline" size={48} color="#6F7784" />}</View>
-      <View style={styles.medallionDoorwayCopy}><ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>MEDALLIONS</ThemedText><ThemedText typographyRole="modalTitle" style={styles.doorwayFeatureTitle}>{latestMedallion ? `${number(convertDisplayWeightValue(latestMedallion.thresholdLb, 'lb', unit))} ${unit} ${latestMedallion.family === 'total' ? 'total' : latestMedallion.family} volume` : 'No recorded volume medallion yet'}</ThemedText><ThemedText typographyRole="supportingBody" style={styles.hubCopy}>{latestMedallion ? `Earned ${formatEarnedDate(latestMedallion.occurredAt) ?? 'from canonical evidence'}.` : 'Only stored lifetime-volume milestone events appear as earned.'}</ThemedText></View>
+      <View style={styles.medallionDoorwayCopy}><ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>MEDALLIONS</ThemedText><ThemedText typographyRole="modalTitle" style={styles.doorwayFeatureTitle}>{latestMedallion ? `${number(unit === 'lb' ? latestMedallion.thresholdLb : latestMedallion.thresholdLb / KG_TO_LB)} ${unit} ${latestMedallion.family === 'total' ? 'total' : latestMedallion.family} volume` : 'No recorded volume medallion yet'}</ThemedText><ThemedText typographyRole="supportingBody" style={styles.hubCopy}>{latestMedallion ? `Earned ${formatEarnedDate(latestMedallion.occurredAt) ?? 'from canonical evidence'}.` : 'Only stored lifetime-volume milestone events appear as earned.'}</ThemedText></View>
       <Ionicons name="chevron-forward" size={18} color="#9180A8" />
     </Pressable>
 
@@ -403,7 +403,7 @@ function TrophyCabinet({ club, unit, complete, onOpen }: { club: TotalClubState;
   </View>;
 }
 
-function MedallionGallery({ items, onOpen, unit }: { items: readonly MajorVolumeMedallionEvidence[]; onOpen: (label: string, value: string, state: MilestoneState, remaining?: string, sourceHref?: string, note?: string) => void; unit: Unit }) {
+function MedallionGallery({ items, unit, onOpen }: { items: readonly MajorVolumeMedallionEvidence[]; unit: Unit; onOpen: (label: string, value: string, state: MilestoneState, remaining?: string, sourceHref?: string, note?: string) => void }) {
   if (!items.length) return <View testID="ledger-medallion-gallery"><AchievementRequestState kind="empty" message="No recorded lifetime-volume medallions yet" /></View>;
   return <View testID="ledger-medallion-gallery" style={styles.medallionGallery}>
     <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>MAJOR VOLUME MEDALLIONS</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Earned only from canonical threshold-crossing events. The engraved artwork is the record.</ThemedText></View>
@@ -411,18 +411,18 @@ function MedallionGallery({ items, onOpen, unit }: { items: readonly MajorVolume
       const tone = MEDALLION_TONES[item.family];
       const date = formatEarnedDate(item.occurredAt);
       const sourceHref = item.sourceSetLogId ? archiveDetailHref('set', item.sourceSetLogId) : undefined;
-      const displayThreshold = number(convertDisplayWeightValue(item.thresholdLb, 'lb', unit));
-      return <Pressable key={item.event.id} onPress={() => onOpen(`${item.family === 'total' ? 'Total' : item.family[0].toUpperCase() + item.family.slice(1)} Lifetime Volume`, `${displayThreshold} ${unit.toUpperCase()}`, 'completed', undefined, sourceHref, date ? `Earned ${date}.` : undefined)} style={({ pressed }) => [styles.medallionItem, { borderColor: `${tone}52` }, pressed && styles.pressed]}>
+      const displayThreshold = unit === 'lb' ? item.thresholdLb : item.thresholdLb / KG_TO_LB;
+      return <Pressable key={item.event.id} onPress={() => onOpen(`${item.family === 'total' ? 'Total' : item.family[0].toUpperCase() + item.family.slice(1)} Lifetime Volume`, `${number(displayThreshold)} ${unit.toUpperCase()}`, 'completed', undefined, sourceHref, date ? `Earned ${date}.` : undefined)} style={({ pressed }) => [styles.medallionItem, { borderColor: `${tone}52` }, pressed && styles.pressed]}>
         <Image source={majorVolumeMedallionAsset(item.family, item.thresholdLb)} resizeMode="contain" style={styles.medallionImage} />
         <ThemedText typographyRole="shortTechnicalLabel" style={[styles.medallionFamily, { color: tone }]}>{item.family.toUpperCase()}</ThemedText>
-        <ThemedText typographyRole="milestoneThreshold" style={styles.medallionThreshold}>{displayThreshold} {unit.toUpperCase()}</ThemedText>
+        <ThemedText typographyRole="milestoneThreshold" style={styles.medallionThreshold}>{number(displayThreshold)} {unit.toUpperCase()}</ThemedText>
         {date ? <ThemedText typographyRole="caption" style={styles.medallionDate}>{date}</ThemedText> : null}
       </Pressable>;
     })}</View>
   </View>;
 }
 
-function PrHistory({ events, onOpen, unit }: { events: readonly AccomplishmentEvent[]; onOpen: (event: AccomplishmentEvent) => void; unit: Unit }) {
+function PrHistory({ events, unit, onOpen }: { events: readonly AccomplishmentEvent[]; unit: Unit; onOpen: (event: AccomplishmentEvent) => void }) {
   if (!events.length) return <View testID="ledger-pr-history"><AchievementRequestState kind="empty" message="No canonical PR history yet" /></View>;
   return <View testID="ledger-pr-history" style={styles.prHistory}>
     <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>PR HISTORY</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Career PR events preserved by the accomplishment platform. Open any qualifying SetLog that is still available.</ThemedText></View>
@@ -437,17 +437,14 @@ function PrHistory({ events, onOpen, unit }: { events: readonly AccomplishmentEv
 
 export default function AchievementsExperience({ onBack, backAccessibilityLabel = 'Back to The Ledger' }: { onBack?: () => void; backAccessibilityLabel?: string } = {}) {
   const router = useRouter();
-  const { user } = useAuth();
   const { unit: requestedUnit, tab: requestedTab, section: requestedSection } = useLocalSearchParams<{ unit?: string; tab?: string; section?: string }>();
   const scrollRef = useRef<ScrollView>(null);
-  const [unit, setUnit] = useState<Unit>(() => requestedUnit === 'kg' || requestedUnit === 'lb'
-    ? requestedUnit
-    : normalizeDisplayWeightUnit(user?.preferred_units));
   const [section, setSection] = useState<AchievementSection>(() => requestedAchievementSection(requestedSection, requestedTab));
   const [detail, setDetail] = useState<Detail>(null);
   const [historyEvents, setHistoryEvents] = useState<AccomplishmentEvent[]>([]);
   const liveData = useLedgerLiveData('all');
   const progression = liveData.progression;
+  const { unit, setUnit } = useSurfaceWeightUnit(progression?.athlete?.preferred_units, requestedUnit);
   const currentBests = liveData.currentBests;
   const loading = liveData.loading;
   const error = liveData.error;
@@ -465,7 +462,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     return {
       ...lift,
       canonicalWeightKg: canonicalWeight ?? null,
-      currentLb: canonicalWeight == null ? null : Math.round(kilogramsToDisplayValue(canonicalWeight, 'lb') / 5) * 5,
+      currentLb: canonicalWeight == null ? null : Math.round(canonicalWeight * 2.2046226218 / 5) * 5,
       sourceSetLogId: canonicalWeightBest?.event?.source_set_log_id ?? null,
     };
   });
@@ -500,17 +497,17 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const hasVolumeData = totalVolumeKg > 0 || competitionTotalVolumeKg > 0;
   const volumeDataset: VolumeAchievementDataset = {
     ...VOLUME_PRESENTATION,
-    total: { ...VOLUME_PRESENTATION.total, current: { kg: Math.round(totalVolumeKg), lb: Math.round(kilogramsToDisplayValue(totalVolumeKg, 'lb')) } },
+    total: { ...VOLUME_PRESENTATION.total, current: { kg: Math.round(totalVolumeKg), lb: Math.round(totalVolumeKg * 2.2046226218) } },
     competitionTotal: {
       label: 'Competition Total Volume',
       current: competitionTotalVolumeKg > 0
-        ? { kg: Math.round(competitionTotalVolumeKg), lb: Math.round(kilogramsToDisplayValue(competitionTotalVolumeKg, 'lb')) }
+        ? { kg: Math.round(competitionTotalVolumeKg), lb: Math.round(competitionTotalVolumeKg * 2.2046226218) }
         : { kg: null, lb: null },
     },
     lifts: VOLUME_PRESENTATION.lifts.map((lift) => {
       const kg = byLiftKg[lift.id as 'squat' | 'bench' | 'deadlift'];
       return typeof kg === 'number' && kg > 0
-        ? { ...lift, current: { kg: Math.round(kg), lb: Math.round(kilogramsToDisplayValue(kg, 'lb')) } }
+        ? { ...lift, current: { kg: Math.round(kg), lb: Math.round(kg * 2.2046226218) } }
         : { ...lift, current: { kg: null, lb: null } };
     }),
   };
@@ -547,11 +544,6 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   }, []));
 
   useEffect(() => {
-    if (requestedUnit === 'lb' || requestedUnit === 'kg') setUnit(requestedUnit);
-    else setUnit(normalizeDisplayWeightUnit(user?.preferred_units));
-  }, [requestedUnit, user?.preferred_units]);
-
-  useEffect(() => {
     setSection(requestedAchievementSection(requestedSection, requestedTab));
   }, [requestedSection, requestedTab]);
 
@@ -566,21 +558,16 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   return <SLScreen edges="none" padded={false} style={styles.screen}>
     <View style={styles.canvas}>
       <ScrollView ref={scrollRef} contentContainerStyle={styles.content} contentOffset={{ x: 0, y: 0 }} showsVerticalScrollIndicator={false}>
-        <View style={styles.navHeader}><Pressable onPress={section === 'hub' ? onBack ?? (() => router.replace('/(tabs)/ledger/home' as any)) : () => openSection('hub')} style={styles.navButton} accessibilityLabel={section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}><Ionicons name="chevron-back" size={25} color="#F4F6FA" /></Pressable><View style={styles.achievementHeaderTitle}><ThemedText typographyRole="shortTechnicalLabel" style={styles.achievementHeaderKicker}>THE LEDGER</ThemedText><ThemedText typographyRole="modalTitle" style={styles.achievementHeaderText}>{ACHIEVEMENT_SECTION_LABELS[section]}</ThemedText></View>{section !== 'streaks' && section !== 'prs' && section !== 'medallions' ? <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Display unit: ${unit.toUpperCase()}. Switch to ${unit === 'kg' ? 'LB' : 'KG'}`}
-          onPress={() => setUnit(unit === 'lb' ? 'kg' : 'lb')}
-          style={[styles.navButton, styles.unitControl]}
-        ><ThemedText typographyRole="unit" style={styles.unitControlText}>{unit.toUpperCase()}</ThemedText></Pressable> : <Pressable onPress={() => Alert.alert('Achievement evidence', 'Earned states and dates shown here come from canonical accomplishment evidence.')} style={styles.navButton} accessibilityLabel="Achievement evidence information"><Ionicons name="information-circle-outline" size={22} color="#B6BDCB" /></Pressable>}</View>
+        <View style={styles.navHeader}><Pressable onPress={section === 'hub' ? onBack ?? (() => router.replace('/(tabs)/ledger/home' as any)) : () => openSection('hub')} style={styles.navButton} accessibilityLabel={section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}><Ionicons name="chevron-back" size={25} color="#F4F6FA" /></Pressable><View style={styles.achievementHeaderTitle}><ThemedText typographyRole="shortTechnicalLabel" style={styles.achievementHeaderKicker}>THE LEDGER</ThemedText><ThemedText typographyRole="modalTitle" style={styles.achievementHeaderText}>{ACHIEVEMENT_SECTION_LABELS[section]}</ThemedText></View><SurfaceWeightUnitToggle compact unit={unit} onChange={setUnit} testID="ledger-achievements-unit-toggle" /></View>
         <AchievementFamilyRail section={section} onSelect={openSection} />
         {loading ? <AchievementRequestState kind="loading" message="Loading achievements" />
           : error ? <AchievementRequestState kind={errorKind ?? 'error'} message={error} onRetry={() => void reload()} />
             : section === 'hub' ? <AchievementsHub club={club} unit={unit} totalComplete={hasCompleteStrengthTotal} plateSource={hubPlateSource} latestMedallion={volumeMedallions[0]} hasVolume={hasVolumeData} prCount={prHistory.length} onOpen={openSection} />
               : section === 'streaks' ? (liveStreaks.length ? <StreakContent items={liveStreaks} /> : <AchievementRequestState kind="empty" message="No streak evidence yet" />)
                 : section === 'trophies' ? <TrophyCabinet club={club} unit={unit} complete={hasCompleteStrengthTotal} onOpen={openDetail} />
-                  : section === 'medallions' ? <MedallionGallery items={volumeMedallions} onOpen={openDetail} unit={unit} />
+                  : section === 'medallions' ? <MedallionGallery items={volumeMedallions} unit={unit} onOpen={openDetail} />
                     : section === 'volume' ? (hasVolumeData ? <VolumeAchievementExperience data={volumeDataset} unit={unit} /> : <AchievementRequestState kind="empty" message="No canonical volume evidence yet" />)
-                      : section === 'prs' ? <PrHistory events={prHistory} onOpen={(event) => { if (event.source_set_log_id) router.push(archiveDetailHref('set', event.source_set_log_id) as any); }} unit={unit} />
+                      : section === 'prs' ? <PrHistory events={prHistory} unit={unit} onOpen={(event) => { if (event.source_set_log_id) router.push(archiveDetailHref('set', event.source_set_log_id) as any); }} />
                         : <>
           {section === 'clubs' && hasCompleteStrengthTotal ? <View testID="ledger-total-clubs" style={[styles.hero, { minHeight: 315 }]}>
             <View style={styles.heroTop}><View style={styles.trophyScene}><View style={styles.trophyPedestal}><Image source={SL_TOTAL_TROPHY_ASSETS[highestCompletedTier]} style={styles.heroTrophyImage} resizeMode="contain" /></View></View><View style={styles.heroCopy}><ThemedText typographyRole="heroNumeric" adjustsFontSizeToFit minimumFontScale={0.55} numberOfLines={1} style={styles.heroValue}>{number(total.current)} <ThemedText typographyRole="unit" style={styles.heroUnit}>{unit.toUpperCase()}</ThemedText></ThemedText><ThemedText typographyRole="caption" style={styles.heroMeta}>Current Total</ThemedText></View><View style={styles.nextBlock}><ThemedText typographyRole="shortTechnicalLabel" adjustsFontSizeToFit minimumFontScale={0.5} numberOfLines={1} style={styles.nextLabel}>{club.next == null ? 'MILESTONE LADDER' : 'NEXT MILESTONE'}</ThemedText><ThemedText typographyRole="milestoneThreshold" adjustsFontSizeToFit minimumFontScale={0.6} numberOfLines={1} style={styles.nextValue}>{club.next == null ? 'COMPLETE' : <>{number(total.next)} <ThemedText typographyRole="unit" style={styles.nextUnit}>{unit.toUpperCase()}</ThemedText></>}</ThemedText><ThemedText typographyRole="caption" style={styles.nextSub}>{club.next == null ? 'Highest approved threshold reached' : `${number(remaining)} ${unit.toUpperCase()} to go`}</ThemedText></View></View>

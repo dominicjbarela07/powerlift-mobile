@@ -18,11 +18,10 @@ import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList, simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { SLPageHeader } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { CompactAccomplishmentSignal, type AccomplishmentSignal } from '@/components/core-accomplishments';
 import { feedbackAnalytics } from '@/lib/logger-feedback';
-import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
-import { useAuth } from '@/context/AuthContext';
-import { normalizeDisplayWeightUnit } from '@/lib/display-units';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 type HistorySession = {
   id: number;
@@ -66,7 +65,6 @@ const colors = {
 };
 
 export default function SessionHistoryScreen() {
-  const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
   const athleteId = params.athleteId ? String(params.athleteId) : null;
@@ -84,7 +82,8 @@ export default function SessionHistoryScreen() {
   const [designations, setDesignations] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [accessorySearch, setAccessorySearch] = useState('');
-  const [displayUnit, setDisplayUnit] = useState<LoggerDisplayUnit>(() => normalizeDisplayWeightUnit(user?.preferred_units));
+  const [athletePreferredUnit, setAthletePreferredUnit] = useState<string | null>(null);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(athletePreferredUnit);
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
@@ -112,7 +111,7 @@ export default function SessionHistoryScreen() {
       const nextSessions = Array.isArray(json.session_history?.sessions) ? json.session_history.sessions : [];
       setSessions(nextSessions);
       setOptions(json.session_history?.options || {});
-      setDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
+      setAthletePreferredUnit(json.session_history?.athlete?.preferred_units || null);
       feedbackAnalytics('historical_accomplishment_timeline_loaded', {
         surface: 'session_history',
         session_count: nextSessions.length,
@@ -127,7 +126,7 @@ export default function SessionHistoryScreen() {
       if (silent) setRefreshing(false);
       else setLoading(false);
     }
-  }, [queryString, user?.preferred_units]);
+  }, [queryString]);
 
   useEffect(() => {
     load();
@@ -164,6 +163,7 @@ export default function SessionHistoryScreen() {
           backLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
+        <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={displayUnit} onChange={setDisplayUnit} testID="session-history-unit-toggle" /></View>
 
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
@@ -549,6 +549,8 @@ function formatReadableDate(value: string) {
 }
 
 const styles = StyleSheet.create({
+  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { ...SLTypography.caption, color: colors.subtle, textTransform: 'uppercase' },
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },

@@ -167,7 +167,7 @@ export default function CoachSessionReviewScreen() {
       onDone={() => router.back()}
       onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(detail?.athlete?.id || '') } } as any)}
       onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || ''), athleteName: detail?.athlete?.name || '' } } as any)}
-      onOpenMovementHistory={(movement) => {
+      onOpenMovementHistory={(movement, displayUnit) => {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
           athleteId: detail?.athlete?.id,
           movementDefinitionId: movement.measurement?.canonical_identity_id,
@@ -177,7 +177,7 @@ export default function CoachSessionReviewScreen() {
           Alert.alert('History unavailable', resolution.message);
           return;
         }
-        router.push(movementHistorySheetRoute(resolution.target) as never);
+        router.push(movementHistorySheetRoute({ ...resolution.target, displayUnit }) as never);
       }}
     />;
   }

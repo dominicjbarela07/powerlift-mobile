@@ -25,6 +25,7 @@ export type MovementHistoryLaunchTarget = Readonly<{
   athleteId: number;
   movementDefinitionId: number;
   equipmentContextDefinitionId?: number;
+  displayUnit?: 'kg' | 'lb';
 }>;
 
 export type MovementHistoryLaunchResolution =
@@ -128,6 +129,7 @@ export function movementHistorySheetRoute(target: MovementHistoryLaunchTarget) {
       ...(target.equipmentContextDefinitionId
         ? { equipmentContextDefinitionId: String(target.equipmentContextDefinitionId) }
         : {}),
+      ...(target.displayUnit ? { displayUnit: target.displayUnit } : {}),
     },
   };
 }
@@ -136,10 +138,12 @@ export function movementHistorySheetRouteForCanonicalIdentity({
   movementDefinitionId,
   athleteId,
   equipmentContextDefinitionId,
+  displayUnit,
 }: {
   movementDefinitionId: number;
   athleteId?: number | null;
   equipmentContextDefinitionId?: number | null;
+  displayUnit?: 'kg' | 'lb';
 }) {
   return {
     pathname: '/movement-history-sheet' as const,
@@ -149,6 +153,7 @@ export function movementHistorySheetRouteForCanonicalIdentity({
       ...(positiveId(equipmentContextDefinitionId)
         ? { equipmentContextDefinitionId: String(equipmentContextDefinitionId) }
         : {}),
+      ...(displayUnit ? { displayUnit } : {}),
     },
   };
 }

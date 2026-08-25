@@ -8037,7 +8037,7 @@ export default function WorkoutViewerScreen() {
             onViewCalendar={coachPreviewRequested
               ? () => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id) } } as any)
               : () => router.push('/(tabs)/athlete-calendar' as any)}
-            onOpenMovementHistory={(movement) => {
+            onOpenMovementHistory={(movement, displayUnit) => {
               const resolution = resolveMovementHistoryLaunchFromMeasurement({
                 athleteId: athlete.id,
                 movementDefinitionId: movement.measurement?.canonical_identity_id,
@@ -8047,7 +8047,7 @@ export default function WorkoutViewerScreen() {
                 Alert.alert('History unavailable', resolution.message);
                 return;
               }
-              router.push(movementHistorySheetRoute(resolution.target) as never);
+              router.push(movementHistorySheetRoute({ ...resolution.target, displayUnit }) as never);
             }}
           />
         )}

@@ -14,6 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
@@ -28,6 +29,7 @@ import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const PROGRAM_ART = require('@/assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
 const BLOCK_ART = require('@/assets/images/gym_vibe.jpg');
@@ -226,6 +228,7 @@ export function AthleteTrainingHubExperience({
     [data.activeProgram],
   );
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(initialSessionId ?? null);
+  const { unit, setUnit } = useSurfaceWeightUnit(data.preferredUnits);
   const selectedSession = allSessions.find((session) => session.id === selectedSessionId) || null;
   const selectedSessionContext = useMemo(() => {
     if (!selectedSessionId) return null;
@@ -250,6 +253,7 @@ export function AthleteTrainingHubExperience({
   const progress = clamp01(program.progress);
   return (
     <View style={styles.root}>
+      <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={unit} onChange={setUnit} testID="training-hub-unit-toggle" /></View>
       <ProgramHero data={data} program={program} progress={progress} />
 
       <ProgramTimeline blocks={program.blocks} selectedBlockId={selectedBlock?.id} onSelect={setSelectedBlockId} />
@@ -273,7 +277,7 @@ export function AthleteTrainingHubExperience({
       </Pressable>
 
       {data.previousWeekRecap ? (
-        <LastWeekEvidence recap={data.previousWeekRecap} unit={data.preferredUnits || 'kg'} />
+        <LastWeekEvidence recap={data.previousWeekRecap} unit={unit} />
       ) : null}
 
       {data.coachUpdates?.length ? (
@@ -297,7 +301,7 @@ export function AthleteTrainingHubExperience({
               key={week.key}
               onOpenSession={setSelectedSessionId}
               onToggle={() => setExpandedWeekKey((current) => current === week.key ? null : week.key)}
-              unit={data.preferredUnits || 'kg'}
+              unit={unit}
               week={week}
             />
           ))}
@@ -316,7 +320,7 @@ export function AthleteTrainingHubExperience({
         }}
         program={program}
         session={selectedSession}
-        unit={data.preferredUnits || 'kg'}
+        unit={unit}
       />
     </View>
   );
@@ -638,6 +642,8 @@ function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!l
 function colorWithAlpha(color: string, alpha: number) { const match = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); return match ? `rgba(${parseInt(match[1], 16)},${parseInt(match[2], 16)},${parseInt(match[3], 16)},${alpha})` : color; }
 
 const styles = StyleSheet.create({
+  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   root: { width: '100%', gap: 12, backgroundColor: '#000000' },
   pressed: { opacity: 0.76 },
   sectionKicker: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.65 },

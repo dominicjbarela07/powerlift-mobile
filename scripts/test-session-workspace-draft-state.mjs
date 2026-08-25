@@ -13,7 +13,9 @@ const route = read('app', '(tabs)', 'workout', 'session-workspace', '[workoutId]
 assert.match(workspace, /type SessionWorkspaceDraft = \{[\s\S]*title: string[\s\S]*athleteId[\s\S]*scheduledDate[\s\S]*displayUnit[\s\S]*notes[\s\S]*items[\s\S]*movements[\s\S]*coreOrder[\s\S]*accessoryOrder/, 'one Session draft owns every editable Session concept');
 assert.match(workspace, /const \[persistedSession, setPersistedSession\][\s\S]*const \[sessionDraft, setSessionDraft\][\s\S]*const \[selectedId, setSelectedId\]/, 'the persisted snapshot, authoritative draft, and presentation-only expansion state are separate');
 assert.match(workspace, /const sessionDirty = sessionWorkspaceDraftIsDirty\(sessionDraft, persistedSession\)/, 'one semantic comparison owns Session dirtiness');
-assert.match(workspace, /function sessionWorkspaceDraftIsDirty[\s\S]*title\.trim[\s\S]*athleteId[\s\S]*scheduledDate[\s\S]*displayUnit[\s\S]*notes\.trim[\s\S]*coreOrder[\s\S]*accessoryOrder[\s\S]*movementDraftIsDirty/, 'metadata, order, and all movement programming participate in dirtiness');
+assert.match(workspace, /function sessionWorkspaceDraftIsDirty[\s\S]*title\.trim[\s\S]*athleteId[\s\S]*scheduledDate[\s\S]*notes\.trim[\s\S]*coreOrder[\s\S]*accessoryOrder[\s\S]*movementDraftIsDirty/, 'persisted metadata, order, and all movement programming participate in dirtiness');
+assert.doesNotMatch(workspace, /current\.displayUnit !== persisted\.displayUnit/, 'display-only unit changes never dirty the Session');
+assert.doesNotMatch(route, /preferred_units:\s*plan\.metadataPatch\.displayUnit/, 'display-only unit changes never rewrite athlete preferences');
 
 const openMovement = workspace.match(/const openMovement = useCallback[\s\S]*?\n  \}, \[[^\]]*\]\);/)?.[0] || '';
 assert.match(openMovement, /selectedId === item\.id \? null : item\.id/, 'tapping an expanded movement collapses it and tapping another switches directly');

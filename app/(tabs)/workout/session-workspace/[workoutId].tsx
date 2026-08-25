@@ -1221,9 +1221,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
-        ...(plan.metadataPatch.displayUnit !== undefined ? {
-          preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg',
-        } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
@@ -1339,14 +1336,14 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         <CompletedSessionRecap
           recap={workout.completed_recap}
           impactSummary={workout.impact_summary}
-          preferredUnits={user?.preferred_units}
+          preferredUnits={payload?.athlete?.preferred_units}
           viewerMode="coach"
           refreshing={refreshing}
           onRefresh={() => { void loadSession(true); }}
           onClose={closeToProgrammingHome}
           onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(payload?.athlete?.id || '') } } as any)}
           onOpenProgramming={closeToProgrammingHome}
-          onOpenMovementHistory={(movement) => {
+          onOpenMovementHistory={(movement, displayUnit) => {
             const resolution = resolveMovementHistoryLaunchFromMeasurement({
               athleteId: payload?.athlete?.id,
               movementDefinitionId: movement.measurement?.canonical_identity_id,
@@ -1356,7 +1353,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
               Alert.alert('History unavailable', resolution.message);
               return;
             }
-            router.push(movementHistorySheetRoute(resolution.target) as never);
+            router.push(movementHistorySheetRoute({ ...resolution.target, displayUnit }) as never);
           }}
         />
       </>

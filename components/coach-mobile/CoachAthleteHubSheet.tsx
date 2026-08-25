@@ -21,8 +21,8 @@ import {
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLAthleteAvatar } from '@/components/ui';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import { Text } from '@/components/ui/sl-text';
-import { useAuth } from '@/context/AuthContext';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { fetchJson } from '@/lib/api';
@@ -30,6 +30,7 @@ import {
   attentionActionLabel,
   formatCoachRelativeDate,
 } from '@/lib/coach-mobile-v2';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   openCoachDestination,
   type CoachAthleteSummaryResponse,
@@ -40,7 +41,6 @@ import {
   formatCompactVolumeValueFromKg,
   formatWeightDeltaFromKg,
   formatWeightFromKg,
-  normalizeDisplayWeightUnit,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { useSLReducedMotion } from '@/lib/motion';
@@ -184,7 +184,6 @@ function shortDate(value?: string | null) {
 }
 
 export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSummary }: Props) {
-  const { user } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const reduceMotion = useSLReducedMotion();
@@ -201,6 +200,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   const [readinessDetailLoading, setReadinessDetailLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(summary?.athlete.preferred_units ?? athlete?.preferred_units);
 
   const load = useCallback(async () => {
     if (!athlete) return;
@@ -345,7 +345,6 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
     } : null);
   const focus = recapFocusNames(recap).length ? recapFocusNames(recap) : sessionFocusNames(lastSession);
   const focusAsset = accessoryMuscleRegionAsset(canonicalAccessoryMuscleRegionKey(focus[0]));
-  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const week = details?.week_summary || athlete.week_summary;
   const highlights = recap?.highlights;
   const prCount = highlights?.pr_count ?? lastSession?.pr_count ?? week?.pr_count ?? 0;
@@ -473,6 +472,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <QuickAction icon="ellipsis-horizontal" label="More" onPress={more} />
               </View>
             </View>
+            <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={displayUnit} onChange={setDisplayUnit} testID="coach-athlete-hub-unit-toggle" /></View>
 
             {primaryReason ? (
               <Pressable accessibilityRole="button" onPress={openPrimaryReason} style={({ pressed }) => [styles.attentionCard, pressed && styles.pressed]}>
@@ -758,6 +758,8 @@ function ReadinessComponent({ label, value }: { label: string; value?: number | 
 }
 
 const styles = StyleSheet.create({
+  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
+  unitToolbarLabel: { color: COACH_V2.muted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   sheetActions: { position: 'absolute', zIndex: 2, top: 17, right: 10, flexDirection: 'row', gap: 7 },
   roundButton: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   content: { gap: 14, padding: 14, paddingTop: 8 },
