@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-08-24T10:18:48-07:00",
+  "recordedAt": "2026-08-24T20:31:06-07:00",
   "platform": "ios",
   "bundleIdentifier": "com.dominicbarela.strengthcoachui",
   "appStoreVersion": "2.0.2",
@@ -10,9 +10,9 @@
   "nativeDependencyFingerprint": "0773ae5d9ae9c7b144b1e2a970b1cae8bb4b259f16280be700036044689c1748",
   "channel": "production",
   "branch": "production-live-2.0.2",
-  "activeUpdateGroup": "f047a607-3a0b-4be2-9eaf-83f83dfe016f",
-  "activeIosUpdateId": "01a034c7-9f13-7d99-bd98-1592d43f1c34",
-  "activeUpdateSourceCommit": "1df67d9ea5577a0ace93599ce4b1d8b099cc0e8f",
+  "activeUpdateGroup": "3596cdae-7091-4c82-9fdf-29622f4c36af",
+  "activeIosUpdateId": "01a036f8-66d0-7cd0-b48c-d01a1fcc5502",
+  "activeUpdateSourceCommit": "9ec3c27c1baa220ccd7be378d21f3108ec13b048",
   "nativeBuildRequiredForRuntimeChange": true,
   "nativeBuildAuthorization": "NOT_GRANTED",
   "appStoreSubmissionAuthorization": "NOT_GRANTED"
