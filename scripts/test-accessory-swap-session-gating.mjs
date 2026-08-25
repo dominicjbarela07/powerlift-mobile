@@ -23,12 +23,14 @@ const oneOfThree = { id: 31, set_logs: [{ id: 1 }] };
 const twoOfThree = { id: 32, set_logs: [{ id: 2 }, { id: 3 }] };
 const threeOfThree = { id: 33, set_logs: [{ id: 4 }, { id: 5 }, { id: 6 }] };
 const untouchedFour = { id: 34, set_logs: [] };
+const serverLocked = { id: 35, set_logs: [], has_performed_evidence: true };
 
 assert.equal(resolve(), 'Swap', 'active Session + untouched target shows Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), 'Swap', 'one persisted target SetLog preserves future-set Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', '2/3 target completion preserves future-set Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree) }), 'Swap', 'completed target still permits correction while Session is active');
-assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), 'Swap', 'successful persistence does not hide future-set Swap');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), null, 'first persisted target SetLog removes Swap');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, '2/3 target completion remains identity-locked');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree) }), null, 'completed target remains identity-locked');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(serverLocked) }), null, 'server evidence projection locks even without embedded rows');
+assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), null, 'successful persistence hides Swap immediately');
 assert.equal(resolve({ acceptedPersistedSetLogForItem: false }), 'Swap', 'failed first persistence keeps target Swap');
 
 const multiItemSession = {
@@ -36,13 +38,13 @@ const multiItemSession = {
   accessory_groups: [{ items: [twoOfThree, untouched, untouchedFour] }],
 };
 assert.deepEqual(persistedSetLogItemIds(multiItemSession), [10, 32], 'persisted evidence is indexed by its own movement item');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', 'accessory A at 2/3 remains swappable for future sets');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, 'accessory A at 2/3 is locked');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) }), 'Swap', 'accessory B at 0/3 remains swappable');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted' }), null, 'externally coached athlete without approved choices does not gain Swap');
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), 'Sub', 'approved substitution is visible for an untouched target');
-assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), 'Sub', 'target evidence preserves approved future-set substitution');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), null, 'target evidence removes approved substitution');
 assert.equal(resolve({ substitutionAuthority: 'none', hasApprovedSubstitutions: true }), null, 'read-only viewer receives no substitution action');
 assert.equal(resolve({ sessionLifecycle: 'pre_session' }), 'Swap', 'pre-Session untouched target shows Swap');
 assert.equal(resolve({ sessionLifecycle: 'finished_session' }), null, 'post-Session Swap is hidden');

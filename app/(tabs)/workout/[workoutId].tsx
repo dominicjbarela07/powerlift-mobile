@@ -475,6 +475,7 @@ type WorkoutItem = {
   superset_group: string | null;
   superset_pos: number | null;
   set_logs: SetLog[];
+  has_performed_evidence?: boolean | null;
   // Optional lookback / history (provided by backend when available)
   lookback_best?: {
     workout_id?: number | null;
@@ -2882,6 +2883,15 @@ export default function WorkoutViewerScreen() {
   });
   const [swapRepTarget, setSwapRepTarget] = useState<AccessoryRepTarget>({ mode: 'FIXED', fixed: '10' });
 
+  useEffect(() => {
+    const itemId = Number(swapAccItem?.id || 0);
+    if (!itemId || !acceptedSetEvidenceItemIds.has(itemId)) return;
+    setSwapPickerVisible(false);
+    setSwapAccVisible(false);
+    setSwapAccItem(null);
+    setSwapAccIdentity(null);
+  }, [acceptedSetEvidenceItemIds, swapAccItem?.id]);
+
   const openCanonicalMovementHistory = (item: WorkoutItem) => {
     const resolution = resolveMovementHistoryLaunchForItem({
       athleteId: Number(data?.workout?.athlete_id || 0),
@@ -2934,6 +2944,16 @@ export default function WorkoutViewerScreen() {
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
+    if (
+      itemHasPersistedSetLogs(swapAccItem)
+      || acceptedSetEvidenceItemIds.has(Number(swapAccItem.id))
+    ) {
+      setSwapPickerVisible(false);
+      setSwapAccVisible(false);
+      setSwapAccItem(null);
+      setSwapAccIdentity(null);
+      return;
+    }
 
     const setsStr = String(swapAccForm.sets || '').trim();
     const repsText = accessoryRepTargetText(swapRepTarget);
@@ -10325,16 +10345,12 @@ export default function WorkoutViewerScreen() {
               <Text style={[styles.modalSubtitle, { marginTop: 14 }]}>The programmed sets, reps, and RIR remain unchanged.</Text>
             )}
 
-            {itemHasPersistedSetLogs(swapAccItem) ? (
-              <Text style={[styles.modalSubtitle, { marginTop: 12 }]}>Completed sets keep their original movement identity. This applies only to future sets.</Text>
-            ) : null}
-
             <View style={styles.modalActionsRow}>
               <TouchableOpacity style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]} onPress={() => setSwapAccVisible(false)}>
                 <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]} onPress={saveSwapAcc} disabled={savingItemId != null}>
-                {savingItemId === swapAccItem?.id ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Use for Future Sets</Text>}
+                {savingItemId === swapAccItem?.id ? <ActivityIndicator size="small" color={SLColors.textInverted} /> : <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>Use Movement</Text>}
               </TouchableOpacity>
             </View>
           </View>
