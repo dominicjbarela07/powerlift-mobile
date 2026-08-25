@@ -2345,6 +2345,10 @@ export function ProgrammingStoryboard({
   }, [currentWeek, initialDay, previewState, selectedBlock?.id, selectedBlock?.current_week]);
 
   useEffect(() => {
+    setOpenSwipeSessionId(null);
+  }, [selectedBlock?.id, selectedWeekIndex]);
+
+  useEffect(() => {
     if (sheet !== 'athletes' || !coachMode || previewRoster?.length) return;
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
@@ -2528,8 +2532,10 @@ export function ProgrammingStoryboard({
               {selectedDay?.date ? (
                 <View style={storyStyles.selectedDayActionRow}>
                   <View style={storyStyles.grow}>
-                    <Text style={storyStyles.selectedDayLabel}>{formatLongDate(selectedDay.date)}</Text>
-                    <Text style={storyStyles.selectedDayMeta}>{selectedDay.sessions.length ? `${selectedDay.sessions.length} Session${selectedDay.sessions.length === 1 ? '' : 's'} scheduled` : 'No Sessions planned'}</Text>
+                    <Text style={storyStyles.selectedDayLabel}>SESSIONS THIS WEEK</Text>
+                    <Text style={storyStyles.selectedDayMeta}>
+                      {storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned · Add target {formatLongDate(selectedDay.date)}
+                    </Text>
                   </View>
                   <SLMotionPressable accessibilityRole="button" accessibilityLabel={`Add Session on ${formatLongDate(selectedDay.date)}`} onPress={() => onAddSession(selectedDay.date!)} style={storyStyles.addSessionButton}>
                     <Ionicons name="add" size={17} color={colors.violet} />
@@ -2574,10 +2580,12 @@ export function ProgrammingStoryboard({
                         </Pressable>
                       )}
                       isOpen={openSwipeSessionId === session.id}
+                      foregroundStyle={storyStyles.sessionSwipeForeground}
                       onAction={runSwipeAction}
                       onGestureStart={() => setOpenSwipeSessionId((current) => current === session.id ? current : null)}
                       onRequestClose={() => setOpenSwipeSessionId((current) => current === session.id ? null : current)}
                       onRequestOpen={() => setOpenSwipeSessionId(session.id)}
+                      style={storyStyles.sessionSwipeFrame}
                     >
                       <StoryboardSessionRow
                         dayDate={day.date}
@@ -5405,11 +5413,13 @@ const storyStyles = StyleSheet.create({
   dragStatus: { minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   dragStatusText: { ...SLTypography.metadataStrong, color: colors.muted },
   dragError: { ...SLTypography.metadataStrong, color: SLColors.danger, textAlign: 'center', paddingVertical: 4 },
-  compactWeekSessions: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
+  compactWeekSessions: { gap: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line, paddingTop: 6 },
   dragSessionContainer: { position: 'relative', zIndex: 1 },
   dragSessionContainerActive: { zIndex: 50, elevation: 12, opacity: 0.94 },
-  compactSessionRow: { position: 'relative', minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft, paddingVertical: 8, paddingRight: 2 },
-  compactSessionRowFocused: { backgroundColor: 'rgba(168,101,255,0.055)' },
+  sessionSwipeFrame: { overflow: 'hidden', borderRadius: SLRadius.md, backgroundColor: '#5B3087' },
+  sessionSwipeForeground: { width: '100%', backgroundColor: '#0B0D13' },
+  compactSessionRow: { position: 'relative', minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 9, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineSoft, borderRadius: SLRadius.md, backgroundColor: '#0B0D13', paddingVertical: 8, paddingHorizontal: 7 },
+  compactSessionRowFocused: { borderColor: 'rgba(168,101,255,0.34)', backgroundColor: '#130F1B' },
   compactSessionRowDragging: { borderWidth: 1, borderColor: 'rgba(168,101,255,0.72)', borderRadius: SLRadius.md, backgroundColor: 'rgba(38,19,54,0.96)', paddingHorizontal: 7, ...SLShadows.level2 },
   compactSessionArtwork: { width: 54, height: 60, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(157,97,211,0.28)' },
   compactSessionDayBadge: { width: 26, alignItems: 'center', gap: 2 },
@@ -5419,7 +5429,7 @@ const storyStyles = StyleSheet.create({
   compactSessionMeta: { color: colors.muted, fontSize: 11, lineHeight: 15, fontFamily: SLFontFamilies.sansMedium, marginTop: 4 },
   sessionStatusDot: { width: 10, height: 10, borderRadius: 5 },
   sessionOverflowButton: { width: 34, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  sessionSwipeAction: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft, backgroundColor: 'rgba(91,48,135,0.90)' },
+  sessionSwipeAction: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: '#5B3087' },
   sessionSwipeActionText: { color: colors.textStrong, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   emptyWeekRow: { minHeight: 68, flexDirection: 'row', alignItems: 'center', gap: 11, paddingVertical: 12 },
   emptyWeekTitle: { color: colors.textStrong, fontSize: 14, lineHeight: 18, fontFamily: SLFontFamilies.sansBold },
