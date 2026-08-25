@@ -28,6 +28,7 @@ export function SwipeActionRow({
   onRequestClose,
   onRequestOpen,
   reduceMotion = false,
+  foregroundStyle,
   style,
 }: {
   action: React.ReactNode;
@@ -38,6 +39,7 @@ export function SwipeActionRow({
   onRequestClose: () => void;
   onRequestOpen: () => void;
   reduceMotion?: boolean;
+  foregroundStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
 }) {
   const translateX = useSharedValue(isOpen ? -SWIPE_ACTION_WIDTH : 0);
@@ -122,7 +124,7 @@ export function SwipeActionRow({
     <View style={[styles.frame, style]}>
       <View style={styles.action}>{action}</View>
       <GestureDetector gesture={gesture}>
-        <Animated.View style={animatedStyle}>{children}</Animated.View>
+        <Animated.View style={[styles.foreground, foregroundStyle, animatedStyle]}>{children}</Animated.View>
       </GestureDetector>
     </View>
   );
@@ -138,5 +140,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: SWIPE_ACTION_WIDTH,
+  },
+  foreground: {
+    width: '100%',
   },
 });
