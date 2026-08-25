@@ -18,6 +18,7 @@ import {
 } from '@/constants/theme';
 
 type Props = {
+  action?: 'copy' | 'move';
   visible: boolean;
   sessionTitle: string;
   currentDate: string;
@@ -30,6 +31,7 @@ type Props = {
 };
 
 export function ProgrammingSessionMoveModal({
+  action = 'move',
   visible,
   sessionTitle,
   currentDate,
@@ -58,6 +60,8 @@ export function ProgrammingSessionMoveModal({
     month: 'long',
     year: 'numeric',
   });
+  const actionLabel = action === 'copy' ? 'Copy Session' : 'Move Session';
+  const busyLabel = action === 'copy' ? 'Copying...' : 'Moving...';
   const close = () => {
     if (!busy) onCancel();
   };
@@ -74,7 +78,7 @@ export function ProgrammingSessionMoveModal({
         <View accessibilityViewIsModal style={styles.modal}>
           <View style={styles.header}>
             <View style={styles.headingCopy}>
-              <Text style={styles.eyebrow}>Move Session</Text>
+              <Text style={styles.eyebrow}>{actionLabel}</Text>
               <Text numberOfLines={2} style={styles.title}>{sessionTitle}</Text>
               <Text style={styles.currentDate}>
                 Currently {formatFullDate(currentDate)}
@@ -82,7 +86,7 @@ export function ProgrammingSessionMoveModal({
             </View>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Close Move Session"
+              accessibilityLabel={`Close ${action === 'copy' ? 'Copy' : 'Move'} Session`}
               disabled={busy}
               onPress={close}
               style={({ pressed }) => [styles.close, pressed && styles.pressed]}
@@ -166,7 +170,7 @@ export function ProgrammingSessionMoveModal({
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Move Session to selected date"
+                accessibilityLabel={`${action === 'copy' ? 'Copy' : 'Move'} Session to selected date`}
                 disabled={busy}
                 onPress={() => onConfirm(selectedDate)}
                 style={({ pressed }) => [
@@ -176,7 +180,7 @@ export function ProgrammingSessionMoveModal({
                 ]}
               >
                 {busy ? <ActivityIndicator size="small" color={SLColors.success} /> : null}
-                <Text style={styles.primaryText}>{busy ? 'Moving...' : 'Move Session'}</Text>
+                <Text style={styles.primaryText}>{busy ? busyLabel : actionLabel}</Text>
               </Pressable>
             </View>
           </View>

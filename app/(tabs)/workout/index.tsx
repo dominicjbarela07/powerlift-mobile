@@ -22,6 +22,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector, Swipeable } from 'react-native-gesture-handler';
 
 import { SLMotionEntrance, SLMotionPressable, SLProfileAvatar } from '@/components/ui';
+import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { SLButton } from '@/components/ui/sl-button';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import {
@@ -44,6 +45,7 @@ import {
   type BlockDetailsSession,
 } from '@/components/training-hub/AthleteBlockDetailsSheet';
 import { ProgrammingSessionMoveModal } from '@/components/coach-mobile/ProgrammingSessionMoveModal';
+import { SwipeActionRow } from '@/components/gestures/SwipeActionRow';
 import { useAuth } from '@/context/AuthContext';
 import {
   archiveProgrammingProgram,
@@ -64,6 +66,7 @@ import {
 import { scopeProgrammingPayload } from '@/lib/programming-program-scope';
 import { compactProgrammingWeekdayLabel } from '@/lib/programming-weekday-label';
 import { formatSessionContentSnapshot } from '@/lib/session-content-snapshot';
+import { sessionDurationPresentation } from '@/lib/session-duration';
 import {
   trainingHubSessionDayLabel,
   trainingHubSessionStatusLabel,
@@ -89,7 +92,6 @@ import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
-import { resolveProgrammingSessionDeepOpen } from '@/lib/programming-session-deep-open';
 import { SLColors, SLFontFamilies, SLLayout, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 const SESSION_SWIPE_ACTIONS_WIDTH = 116;
@@ -177,6 +179,9 @@ type HubSession = {
     type?: 'missed' | 'incomplete' | string | null;
     label?: string | null;
   } | null;
+  actual_duration_minutes?: number | null;
+  duration_display_minutes?: number | null;
+  duration_is_estimate?: boolean | null;
   estimated_duration_minutes?: number | null;
 };
 
@@ -213,6 +218,7 @@ type SessionAddState = {
 } | null;
 
 type QuickMoveSessionState = {
+  action: 'copy' | 'move';
   sessionId: number;
   title: string;
   currentDate: string;
@@ -589,25 +595,21 @@ const blockActionGroups: Array<{ title: string; keys: BlockActionKey[] }> = [
 
 export default function TrainingIndexScreen() {
   const router = useRouter();
-  const { user, activeMobileMode } = useAuth();
+  const { user } = useAuth();
   const params = useLocalSearchParams<{
     athleteId?: string;
-    workoutId?: string;
-    programId?: string;
     programCreated?: string;
     programmingBlockId?: string;
     programmingWeek?: string;
     programmingDay?: string;
   }>();
   const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
-  const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
-  const directProgramId = params.programId ? Number(params.programId) : null;
   const trainingScopeKey = rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self';
   const programCreatedNonce = params.programCreated ? String(params.programCreated) : null;
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
   const returnWeek = params.programmingWeek ? Number(params.programmingWeek) : null;
   const returnDay = params.programmingDay ? String(params.programmingDay) : null;
-  const isIndividual = activeMobileMode === 'individual';
+  const isIndividual = user?.workspace_mode === 'individual' || !!user?.is_individual_workspace || !!user?.is_self_coached;
   const isProgrammingManager = isIndividual || !!rosterAthleteId;
 
   const [loading, setLoading] = useState(true);
@@ -766,16 +768,6 @@ export default function TrainingIndexScreen() {
     } as any);
   };
 
-  const openProgramTimeline = (programId: number) => {
-    router.push({
-      pathname: '/(tabs)/workout/program-timeline',
-      params: {
-        programId: String(programId),
-        ...(rosterAthleteId ? { athleteId: rosterAthleteId } : {}),
-      },
-    } as any);
-  };
-
   const addSessionForDate = (date?: string | null) => {
     router.push({
       pathname: '/(tabs)/create-workout',
@@ -867,15 +859,13 @@ export default function TrainingIndexScreen() {
         managedAthleteAvatarUrl={visibleHub?.athlete?.avatar_url || null}
         displayUnit={trainingDisplayUnit}
         coachMode={Boolean(rosterAthleteId)}
-        directWorkoutId={Number.isInteger(directWorkoutId) ? directWorkoutId : null}
-        directProgramId={Number.isInteger(directProgramId) ? directProgramId : null}
-        onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}
       />
     );
   }
 
   return (
     <View style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scroll}
@@ -892,7 +882,6 @@ export default function TrainingIndexScreen() {
               onAction={(action) => {
                 if (action.type === 'session') openWorkout(action.id);
                 if (action.type === 'block') openBlockDetails();
-                if (action.type === 'program-timeline') openProgramTimeline(action.id);
                 if (action.type === 'program-history') openSessionHistory();
                 if (action.type === 'message-coach') openMessages();
               }}
@@ -919,6 +908,7 @@ export default function TrainingIndexScreen() {
         onOpenSession={openBlockDetailsSession}
         visible={blockDetailsVisible}
       />
+      </FloatingControlCoordinator>
     </View>
   );
 }
@@ -941,9 +931,6 @@ function IndividualProgrammingHome({
   managedAthleteAvatarUrl,
   displayUnit,
   coachMode,
-  directWorkoutId,
-  directProgramId,
-  onConsumeDirectOpen,
 }: {
   hub: TrainingHubPayload | null;
   loading: boolean;
@@ -962,9 +949,6 @@ function IndividualProgrammingHome({
   managedAthleteAvatarUrl?: string | null;
   displayUnit: DisplayWeightUnit;
   coachMode: boolean;
-  directWorkoutId?: number | null;
-  directProgramId?: number | null;
-  onConsumeDirectOpen: () => void;
 }) {
   const router = useRouter();
   const activeProgram = hub?.active_program || null;
@@ -973,7 +957,6 @@ function IndividualProgrammingHome({
   const [workspaceSelection, setWorkspaceSelection] = useState<ProgrammingWorkspaceSelection | null>(null);
   const workspaceSheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const workspaceDismissRequestRef = useRef<() => void>(() => undefined);
-  const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
   const followProgrammingOffset = useCallback((offsetY: number) => {
     programmingScrollRef.current?.scrollTo({
@@ -1026,57 +1009,6 @@ function IndividualProgrammingHome({
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
     void onRefresh();
   }, [dismissWorkspaceSheet, onRefresh]);
-
-  useEffect(() => {
-    const intentKey = directWorkoutId
-      ? `${managedAthleteId || 0}:${directProgramId || 0}:${directWorkoutId}`
-      : null;
-    if (!intentKey) {
-      consumedDirectOpenRef.current = null;
-      return;
-    }
-    if (consumedDirectOpenRef.current === intentKey) return;
-
-    const result = resolveProgrammingSessionDeepOpen({
-      ready: !loading && !error && !!hub,
-      requestedWorkoutId: directWorkoutId,
-      requestedAthleteId: managedAthleteId,
-      loadedAthleteId: hub?.athlete?.id,
-      requestedProgramId: directProgramId,
-      activeProgramId: activeProgram?.id,
-      blocks,
-      pendingMap,
-      completedMap,
-    });
-    if (result.state === 'idle' || result.state === 'pending') return;
-
-    consumedDirectOpenRef.current = intentKey;
-    onConsumeDirectOpen();
-    if (result.state === 'open') {
-      openSessionWorkspace(result.workoutId, result.context);
-      return;
-    }
-
-    const message = result.reason === 'lifecycle'
-      ? 'This Session is no longer editable from Programming Manager.'
-      : result.reason === 'athlete'
-        ? 'This Session is not available in the selected athlete workspace.'
-        : 'This Session is no longer available in the active Training Program.';
-    Alert.alert('Session unavailable', message);
-  }, [
-    activeProgram?.id,
-    blocks,
-    completedMap,
-    directProgramId,
-    directWorkoutId,
-    error,
-    hub,
-    loading,
-    managedAthleteId,
-    onConsumeDirectOpen,
-    openSessionWorkspace,
-    pendingMap,
-  ]);
 
   return (
     <View style={styles.screen}>
@@ -1259,6 +1191,7 @@ function ActiveProgrammingRoadmap({
   const [quickMoveError, setQuickMoveError] = useState('');
   const [quickMoveFollowTarget, setQuickMoveFollowTarget] = useState<QuickMoveFollowTarget | null>(null);
   const quickMoveSubmittingRef = useRef(false);
+  const sessionActionSubmittingRef = useRef(false);
   const sessionSwipeRefs = useRef<Record<number, Swipeable | null>>({});
   const weekListOffset = useRef(0);
   const weekLayoutOffsets = useRef<Record<string, number>>({});
@@ -1359,14 +1292,15 @@ function ActiveProgrammingRoadmap({
     setBlockActionConfirmed(false);
   };
 
-  const openQuickMoveSession = (session: HubSession) => {
+  const openQuickMoveSession = (session: HubSession, action: 'copy' | 'move' = 'move') => {
     if (!selectedBlock?.id || !session.id || !session.date) {
-      Alert.alert('Move Session unavailable', 'This Session does not have complete scheduling context.');
+      Alert.alert(`${action === 'copy' ? 'Copy' : 'Move'} Session unavailable`, 'This Session does not have complete scheduling context.');
       return;
     }
     sessionSwipeRefs.current[session.id]?.close();
     setQuickMoveError('');
     setQuickMoveSession({
+      action,
       sessionId: session.id,
       title: sessionTitle(session),
       currentDate: session.date,
@@ -1383,7 +1317,7 @@ function ActiveProgrammingRoadmap({
   const executeQuickMoveSession = async (targetDate: string) => {
     const move = quickMoveSession;
     if (!move || quickMoveSubmittingRef.current) return;
-    if (isSameProgrammingDate(move.currentDate, targetDate)) {
+    if (move.action === 'move' && isSameProgrammingDate(move.currentDate, targetDate)) {
       closeQuickMoveSession();
       return;
     }
@@ -1401,8 +1335,9 @@ function ActiveProgrammingRoadmap({
       const resp = await fetchJson<any>(`/workouts/mobile/${move.sessionId}/programming-actions`, {
         method: 'POST',
         body: {
-          action: 'move',
+          action: move.action === 'copy' ? 'copy_to' : 'move',
           target_date: targetDate,
+          source_date: move.currentDate,
         } as any,
       });
       const json = resp.json || {};
@@ -1418,7 +1353,7 @@ function ActiveProgrammingRoadmap({
         blockId: move.blockId,
         week: destination.week,
         date: targetDate,
-        sessionId: move.sessionId,
+        sessionId: Number(json.workout?.id || move.sessionId),
       });
       setQuickMoveSession(null);
       await onRefresh();
@@ -1428,6 +1363,68 @@ function ActiveProgrammingRoadmap({
       quickMoveSubmittingRef.current = false;
       setQuickMoveBusy(false);
     }
+  };
+
+  const saveSessionTemplate = async (session: HubSession) => {
+    if (sessionActionSubmittingRef.current) return;
+    sessionActionSubmittingRef.current = true;
+    try {
+      const resp = await fetchJson<any>(`/workouts/mobile/${session.id}/programming-actions`, {
+        method: 'POST',
+        body: {
+          action: 'save_template',
+          template_name: sessionTitle(session),
+        } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      Alert.alert('Session Template saved', `${json.template?.name || sessionTitle(session)} is now available in your Library.`);
+    } catch (error: any) {
+      Alert.alert('Template not saved', error?.message || 'This Session could not be saved as a template.');
+    } finally {
+      sessionActionSubmittingRef.current = false;
+    }
+  };
+
+  const deleteProgrammingSession = async (session: HubSession) => {
+    if (sessionActionSubmittingRef.current) return;
+    sessionActionSubmittingRef.current = true;
+    try {
+      const resp = await fetchJson<any>(`/workouts/mobile/${session.id}/delete`, {
+        method: 'POST',
+        body: { confirm: true } as any,
+      });
+      const json = resp.json || {};
+      if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      await onRefresh();
+    } catch (error: any) {
+      Alert.alert('Session not deleted', error?.message || 'This Session could not be deleted.');
+    } finally {
+      sessionActionSubmittingRef.current = false;
+    }
+  };
+
+  const openSessionActions = (session: HubSession, context: ProgrammingReturnContext) => {
+    const movable = canDragProgrammingSession(session.status || session.kind);
+    Alert.alert(
+      sessionTitle(session),
+      'Session actions',
+      [
+        { text: 'Open Session', onPress: () => onOpenSession(session.id, context) },
+        { text: 'Copy Session To…', onPress: () => openQuickMoveSession(session, 'copy') },
+        ...(movable ? [{ text: 'Move Session To…', onPress: () => openQuickMoveSession(session, 'move') }] : []),
+        { text: 'Save as Session Template', onPress: () => void saveSessionTemplate(session) },
+        ...(movable ? [{ text: 'Delete Session…', style: 'destructive' as const, onPress: () => Alert.alert(
+          'Delete Session?',
+          'This permanently deletes editable programming. Completed or performed evidence remains protected by the server.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Delete', style: 'destructive', onPress: () => void deleteProgrammingSession(session) },
+          ],
+        ) }] : []),
+        { text: 'Cancel', style: 'cancel' },
+      ],
+    );
   };
 
   const executeStoryboardSessionMove = async (session: HubSession, targetDate: string) => {
@@ -1550,6 +1547,7 @@ function ActiveProgrammingRoadmap({
         weeks={visibleWeeks}
         currentWeek={currentWeek}
         initialWeek={expandedWeek}
+        initialDay={initialDay || null}
         today={String(today || '')}
         intelligence={intelligence || null}
         coachMode={coachMode}
@@ -1561,6 +1559,8 @@ function ActiveProgrammingRoadmap({
         onOpenSession={onOpenSession}
         onAddSession={(date) => setSessionAdd({ date, mode: 'choose' })}
         onMoveSession={executeStoryboardSessionMove}
+        onQuickMoveSession={(session) => openQuickMoveSession(session, 'move')}
+        onSessionActions={openSessionActions}
         onWeekActions={(week) => setWeekMenu({ week, anchorY: 124 })}
         onBlockActions={(block) => setBlockMenu({ block, anchorY: 124 })}
         onProgramActions={() => setProgramActionsOpen(true)}
@@ -1601,14 +1601,15 @@ function ActiveProgrammingRoadmap({
         blockId={selectedBlock?.id || null}
         onClose={() => setSessionAdd(null)}
         onMode={(mode) => setSessionAdd((existing) => existing ? { ...existing, mode } : existing)}
-        onBuild={() => { const date = sessionAdd?.date || null; setSessionAdd(null); onAddSession(date); }}
         onOpenSession={(sessionId) => onOpenSession(sessionId, {
           blockId: selectedBlock?.id || null,
+          week: expandedWeek,
           day: sessionAdd?.date || null,
         })}
         onRefresh={onRefresh}
       />
       <ProgrammingSessionMoveModal
+        action={quickMoveSession?.action || 'move'}
         visible={!!quickMoveSession}
         sessionTitle={quickMoveSession?.title || 'Training Session'}
         currentDate={quickMoveSession?.currentDate || ''}
@@ -2028,9 +2029,7 @@ function ActiveProgrammingRoadmap({
                                 <Text style={styles.programmingSessionDate}>
                                   {[
                                     formatLongDate(session.date || selectedDay?.date),
-                                    session.estimated_duration_minutes
-                                      ? `About ${session.estimated_duration_minutes} min`
-                                      : null,
+                                    sessionDurationPresentation(session)?.label ?? null,
                                   ].filter(Boolean).join(' · ')}
                                 </Text>
                               </View>
@@ -2150,11 +2149,6 @@ function ActiveProgrammingRoadmap({
         onMode={(mode) => setSessionAdd((existing) => (
           existing ? { ...existing, mode } : existing
         ))}
-        onBuild={() => {
-          const date = sessionAdd?.date || null;
-          setSessionAdd(null);
-          onAddSession(date);
-        }}
         onOpenSession={(sessionId) => onOpenSession(sessionId, {
           blockId: selectedBlock?.id || null,
           day: sessionAdd?.date || null,
@@ -2199,6 +2193,7 @@ export function ProgrammingStoryboard({
   weeks,
   currentWeek,
   initialWeek,
+  initialDay,
   today,
   intelligence,
   coachMode,
@@ -2210,6 +2205,8 @@ export function ProgrammingStoryboard({
   onOpenSession,
   onAddSession,
   onMoveSession,
+  onQuickMoveSession,
+  onSessionActions,
   onWeekActions,
   onBlockActions,
   onProgramActions,
@@ -2224,6 +2221,7 @@ export function ProgrammingStoryboard({
   weeks: RoadmapWeek[];
   currentWeek: number;
   initialWeek: number;
+  initialDay?: string | null;
   today: string;
   intelligence?: TrainingHubPayload['programming_intelligence'];
   coachMode: boolean;
@@ -2235,6 +2233,8 @@ export function ProgrammingStoryboard({
   onOpenSession: (id?: number | null, context?: ProgrammingReturnContext) => void;
   onAddSession: (date: string) => void;
   onMoveSession: (session: HubSession, targetDate: string) => Promise<void>;
+  onQuickMoveSession: (session: HubSession) => void;
+  onSessionActions: (session: HubSession, context: ProgrammingReturnContext) => void;
   onWeekActions: (week: RoadmapWeek) => void;
   onBlockActions: (block: ProgramBlockPayload) => void;
   onProgramActions: () => void;
@@ -2254,11 +2254,12 @@ export function ProgrammingStoryboard({
           ? 3
           : null;
   const previewWeek = weeks.find((week) => week.index === Math.max(1, initialWeek || currentWeek));
-  const [mode, setMode] = useState<'overview' | 'week'>(previewState && ['week', 'completed', 'assigned', 'open', 'empty'].includes(previewState) ? 'week' : 'overview');
   const [sheet, setSheet] = useState<StoryboardSheetKind>(initialSheet);
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(Math.max(1, initialWeek || currentWeek));
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(
-    previewDayOffset == null ? null : previewWeek?.days[previewDayOffset]?.key || null,
+    previewDayOffset == null
+      ? initialDay || null
+      : previewWeek?.days[previewDayOffset]?.key || null,
   );
   const [athleteSearch, setAthleteSearch] = useState('');
   const [roster, setRoster] = useState<Array<{ id: number; name?: string; avatar_url?: string | null; bodyweight?: number | null; preferred_units?: string | null }>>(previewRoster || []);
@@ -2266,6 +2267,7 @@ export function ProgrammingStoryboard({
   const [dragTargetDate, setDragTargetDate] = useState<string | null>(null);
   const [dragMoveBusy, setDragMoveBusy] = useState(false);
   const [dragMoveError, setDragMoveError] = useState('');
+  const [openSwipeSessionId, setOpenSwipeSessionId] = useState<number | null>(null);
   const dayStripRef = useRef<View>(null);
   const dayDropZoneRef = useRef<ProgrammingWeekDropZone | null>(null);
   const dragTargetDateRef = useRef<string | null>(null);
@@ -2339,9 +2341,12 @@ export function ProgrammingStoryboard({
   useEffect(() => {
     if (previewState) return;
     setSelectedWeekIndex(Math.max(1, Number(selectedBlock?.current_week || currentWeek || 1)));
-    setSelectedDayKey(null);
-    setMode('overview');
-  }, [currentWeek, previewState, selectedBlock?.id, selectedBlock?.current_week]);
+    setSelectedDayKey(initialDay || null);
+  }, [currentWeek, initialDay, previewState, selectedBlock?.id, selectedBlock?.current_week]);
+
+  useEffect(() => {
+    setOpenSwipeSessionId(null);
+  }, [selectedBlock?.id, selectedWeekIndex]);
 
   useEffect(() => {
     if (sheet !== 'athletes' || !coachMode || previewRoster?.length) return;
@@ -2353,11 +2358,11 @@ export function ProgrammingStoryboard({
     return () => { active = false; };
   }, [coachMode, previewRoster, sheet]);
 
-  const openWeek = (week: RoadmapWeek) => {
+  const selectWeekInPlace = (week: RoadmapWeek) => {
     storyboardSelectionFeedback();
     setSelectedWeekIndex(week.index);
     setSelectedDayKey(week.days.find((day) => day.date === today)?.key || week.days[0]?.key || null);
-    setMode('week');
+    setOpenSwipeSessionId(null);
   };
 
   const selectAthlete = (id: number) => {
@@ -2369,19 +2374,13 @@ export function ProgrammingStoryboard({
   return (
     <View style={storyStyles.root} testID="mobile-programming-manager-storyboard">
       <View style={storyStyles.topbar}>
-        {mode === 'week' ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Back to Programming Manager" onPress={() => setMode('overview')} style={storyStyles.iconButton}>
-            <Ionicons name="chevron-back" size={21} color={colors.textStrong} />
-          </Pressable>
-        ) : null}
         <View style={storyStyles.topbarCopy}>
-          <Text style={[storyStyles.topbarTitle, mode === 'week' && storyStyles.topbarWeekTitle]}>{mode === 'week' ? `Week ${selectedWeek?.index || ''}` : 'PROGRAMMING\nMANAGER'}</Text>
-          {mode === 'week' ? <Text style={storyStyles.topbarSub}>{selectedWeek?.rangeLabel}</Text> : null}
+          <Text style={storyStyles.topbarTitle}>{'PROGRAMMING\nMANAGER'}</Text>
         </View>
         <SLMotionPressable
           accessibilityRole="button"
-          accessibilityLabel={mode === 'week' ? `Week ${selectedWeek?.index || ''} actions` : 'Training Program actions'}
-          onPress={() => mode === 'week' && selectedWeek ? onWeekActions(selectedWeek) : onProgramActions()}
+          accessibilityLabel="Training Program actions"
+          onPress={onProgramActions}
           style={storyStyles.topbarAction}
         >
           <Ionicons name="options-outline" size={16} color={colors.violet} />
@@ -2389,8 +2388,12 @@ export function ProgrammingStoryboard({
         </SLMotionPressable>
       </View>
 
-      {mode === 'overview' ? (
-        <ScrollView contentContainerStyle={storyStyles.scroll} scrollEnabled={!draggingSessionId && !dragMoveBusy} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={storyStyles.scroll}
+        onScrollBeginDrag={() => setOpenSwipeSessionId(null)}
+        scrollEnabled={!draggingSessionId && !dragMoveBusy}
+        showsVerticalScrollIndicator={false}
+      >
           <Pressable
             accessibilityRole={coachMode ? 'button' : undefined}
             accessibilityLabel={coachMode ? 'Switch athlete' : undefined}
@@ -2480,7 +2483,7 @@ export function ProgrammingStoryboard({
                 const state = storyboardWeekState(week, currentWeek);
                 const active = week.index === selectedWeek?.index;
                 return (
-                  <SLMotionPressable key={week.index} accessibilityRole="button" onPress={() => { storyboardSelectionFeedback(); setSelectedWeekIndex(week.index); }} style={[storyStyles.weekPill, storyboardWeekMaterialStyle(state), active && storyStyles.weekPillActive]} pressScale={0.94}>
+                  <SLMotionPressable key={week.index} accessibilityRole="button" onPress={() => selectWeekInPlace(week)} style={[storyStyles.weekPill, storyboardWeekMaterialStyle(state), active && storyStyles.weekPillActive]} pressScale={0.94}>
                     <Text style={[storyStyles.weekPillLabel, active && storyStyles.weekPillLabelActive]}>W{week.index}</Text>
                     <Text style={[storyStyles.weekPillCount, { color: storyboardStateColor(state) }]}>{storyboardWeekSessionCount(week)}</Text>
                     <View style={storyStyles.weekPillProgressTrack}>
@@ -2497,14 +2500,14 @@ export function ProgrammingStoryboard({
             <View style={storyStyles.thisWeekCard}>
               <LinearGradient colors={['rgba(74,36,105,0.28)', 'rgba(12,14,20,0.97)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
               <View style={storyStyles.thisWeekHeader}>
-                <SLMotionPressable accessibilityRole="button" onPress={() => openWeek(selectedWeek)} style={storyStyles.thisWeekHeaderMain}>
+                <View style={storyStyles.thisWeekHeaderMain}>
                   <View style={storyStyles.grow}>
-                    <Text style={storyStyles.eyebrow}>THIS WEEK</Text>
+                    <Text style={storyStyles.eyebrow}>{selectedWeek.index === currentWeek ? 'THIS WEEK' : 'SELECTED WEEK'}</Text>
                     <Text style={storyStyles.weekTitle}>Week {selectedWeek.index}</Text>
                     <Text style={storyStyles.weekRange}>{selectedWeek.rangeLabel}</Text>
                     <Text style={storyStyles.weekSummary}>{storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned</Text>
                   </View>
-                </SLMotionPressable>
+                </View>
                 <View style={storyStyles.thisWeekHeaderActions}>
                   <SLMotionPressable
                     accessibilityRole="button"
@@ -2515,9 +2518,6 @@ export function ProgrammingStoryboard({
                     <Ionicons name="options-outline" size={16} color={colors.violet} />
                     <Text style={storyStyles.weekCardActionText}>Actions</Text>
                   </SLMotionPressable>
-                  <SLMotionPressable accessibilityRole="button" accessibilityLabel={`Open Week ${selectedWeek.index}`} onPress={() => openWeek(selectedWeek)} style={storyStyles.weekOpenControl}>
-                    <Ionicons name="chevron-forward" size={22} color={colors.violet} />
-                  </SLMotionPressable>
                 </View>
               </View>
               <DayStrip
@@ -2527,77 +2527,95 @@ export function ProgrammingStoryboard({
                 week={selectedWeek}
                 selectedKey={selectedDay?.key || null}
                 today={today}
-                onSelect={(day) => { setSelectedDayKey(day.key); openWeek(selectedWeek); }}
+                onSelect={(day) => { setSelectedDayKey(day.key); setOpenSwipeSessionId(null); }}
               />
+              {selectedDay?.date ? (
+                <View style={storyStyles.selectedDayActionRow}>
+                  <View style={storyStyles.grow}>
+                    <Text style={storyStyles.selectedDayLabel}>SESSIONS THIS WEEK</Text>
+                    <Text style={storyStyles.selectedDayMeta}>
+                      {storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned · Add target {formatLongDate(selectedDay.date)}
+                    </Text>
+                  </View>
+                  <SLMotionPressable accessibilityRole="button" accessibilityLabel={`Add Session on ${formatLongDate(selectedDay.date)}`} onPress={() => onAddSession(selectedDay.date!)} style={storyStyles.addSessionButton}>
+                    <Ionicons name="add" size={17} color={colors.violet} />
+                    <Text style={storyStyles.addSessionButtonText}>Add Session</Text>
+                  </SLMotionPressable>
+                </View>
+              ) : null}
               {draggingSessionId ? <Text style={storyStyles.dragInstruction}>Drop on a day to move this Session</Text> : null}
               {dragMoveBusy ? <View style={storyStyles.dragStatus}><ActivityIndicator size="small" color={colors.violet} /><Text style={storyStyles.dragStatusText}>Moving Session…</Text></View> : null}
               {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
               <View style={storyStyles.compactWeekSessions}>
-                {selectedWeek.days.flatMap((day) => day.sessions.map((session) => (
+                {selectedWeek.days.flatMap((day) => day.sessions.map((session) => {
+                  const movable = canDragProgrammingSession(session.status || session.kind);
+                  const swipeLabel = movable ? 'Move' : 'Actions';
+                  const runSwipeAction = () => {
+                    setOpenSwipeSessionId(null);
+                    if (movable) {
+                      onQuickMoveSession(session);
+                    } else {
+                      onSessionActions(session, {
+                        blockId: selectedBlock?.id,
+                        week: selectedWeek.index,
+                        day: day.key,
+                      });
+                    }
+                  };
+                  return (
                   <StoryboardSessionDragGesture
                     key={session.id}
-                    enabled={!dragMoveBusy && canDragProgrammingSession(session.status || session.kind)}
+                    enabled={!dragMoveBusy && movable}
                     session={session}
                     onDragStart={beginSessionDrag}
                     onDragMove={updateSessionDrag}
                     onDragEnd={finishSessionDrag}
                     onDragCancel={cancelSessionDrag}
                   >
-                    <StoryboardSessionRow
-                      dayLabel={day.label}
-                      displayUnit={displayUnit}
-                      draggable={canDragProgrammingSession(session.status || session.kind)}
-                      dragging={draggingSessionId === session.id}
-                      session={session}
-                      onPress={() => onOpenSession(session.id, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
-                    />
+                    <SwipeActionRow
+                      action={(
+                        <Pressable accessibilityRole="button" accessibilityLabel={`${swipeLabel} ${sessionTitle(session)}`} onPress={runSwipeAction} style={storyStyles.sessionSwipeAction}>
+                          <Ionicons name={movable ? 'move-outline' : 'ellipsis-horizontal'} size={19} color={colors.textStrong} />
+                          <Text style={storyStyles.sessionSwipeActionText}>{swipeLabel}</Text>
+                        </Pressable>
+                      )}
+                      isOpen={openSwipeSessionId === session.id}
+                      foregroundStyle={storyStyles.sessionSwipeForeground}
+                      onAction={runSwipeAction}
+                      onGestureStart={() => setOpenSwipeSessionId((current) => current === session.id ? current : null)}
+                      onRequestClose={() => setOpenSwipeSessionId((current) => current === session.id ? null : current)}
+                      onRequestOpen={() => setOpenSwipeSessionId(session.id)}
+                      style={storyStyles.sessionSwipeFrame}
+                    >
+                      <StoryboardSessionRow
+                        dayDate={day.date}
+                        dayLabel={day.label}
+                        displayUnit={displayUnit}
+                        draggable={movable}
+                        dragging={draggingSessionId === session.id}
+                        focused={selectedDay?.key === day.key}
+                        session={session}
+                        onActions={() => onSessionActions(session, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
+                        onPress={() => onOpenSession(session.id, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
+                      />
+                    </SwipeActionRow>
                   </StoryboardSessionDragGesture>
-                )))}
+                  );
+                }))}
+                {!storyboardWeekSessionCount(selectedWeek) ? (
+                  <View style={storyStyles.emptyWeekRow}>
+                    <Ionicons name="calendar-clear-outline" size={21} color={colors.violet} />
+                    <View style={storyStyles.grow}>
+                      <Text style={storyStyles.emptyWeekTitle}>No Sessions planned</Text>
+                      <Text style={storyStyles.emptyWeekMeta}>Choose any day above, then add the first Session.</Text>
+                    </View>
+                  </View>
+                ) : null}
               </View>
             </View>
             </SLMotionEntrance>
           ) : null}
-        </ScrollView>
-      ) : selectedWeek && selectedDay ? (
-        <ScrollView contentContainerStyle={storyStyles.scroll} scrollEnabled={!draggingSessionId && !dragMoveBusy} showsVerticalScrollIndicator={false}>
-          <View style={storyStyles.weekLensHeader}>
-            <View><Text style={storyStyles.weekLensTitle}>Week {selectedWeek.index}</Text><Text style={storyStyles.weekLensRange}>{selectedWeek.rangeLabel}</Text></View>
-          </View>
-          <DayStrip
-            containerRef={dayStripRef}
-            dragTargetDate={dragTargetDate}
-            dragging={!!draggingSessionId}
-            week={selectedWeek}
-            selectedKey={selectedDay.key}
-            today={today}
-            onSelect={(day) => setSelectedDayKey(day.key)}
-          />
-          {draggingSessionId ? <Text style={storyStyles.dragInstruction}>Drop on a day to move this Session</Text> : null}
-          {dragMoveBusy ? <View style={storyStyles.dragStatus}><ActivityIndicator size="small" color={colors.violet} /><Text style={storyStyles.dragStatusText}>Moving Session…</Text></View> : null}
-          {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
-          <SLMotionEntrance motionKey={`week-${selectedWeek.index}-${selectedDay.key}`} distance={5}>
-          <StoryboardSessionDragGesture
-            enabled={!!selectedDay.sessions[0] && !dragMoveBusy && canDragProgrammingSession(selectedDay.sessions[0]?.status || selectedDay.sessions[0]?.kind)}
-            session={selectedDay.sessions[0] || null}
-            onDragStart={beginSessionDrag}
-            onDragMove={updateSessionDrag}
-            onDragEnd={finishSessionDrag}
-            onDragCancel={cancelSessionDrag}
-          >
-            <StoryboardDayPanel
-              day={selectedDay}
-              today={today}
-              displayUnit={displayUnit}
-              weekHasSessions={selectedWeek.days.some((day) => day.sessions.length > 0)}
-              blockId={selectedBlock?.id || null}
-              weekIndex={selectedWeek.index}
-              onOpenSession={onOpenSession}
-              onAddSession={onAddSession}
-            />
-          </StoryboardSessionDragGesture>
-          </SLMotionEntrance>
-        </ScrollView>
-      ) : null}
+      </ScrollView>
 
       <StoryboardSheet visible={sheet === 'blocks'} title="Change Block" onClose={() => setSheet(null)}>
         {blocks.map((block) => (
@@ -2613,7 +2631,7 @@ export function ProgrammingStoryboard({
           const state = storyboardWeekState(week, currentWeek);
           const count = week.days.reduce((sum, day) => sum + day.sessions.length, 0);
           return (
-            <Pressable key={week.index} onPress={() => { setSheet(null); openWeek(week); }} style={storyStyles.sheetRow}>
+            <Pressable key={week.index} onPress={() => { setSheet(null); selectWeekInPlace(week); }} style={storyStyles.sheetRow}>
               <View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>Week {week.index}</Text><Text style={storyStyles.sheetRowMeta}>{week.rangeLabel}{count ? ` · ${count} Sessions` : ' · No Sessions'}</Text></View>
               <View style={[storyStyles.statusRing, { borderColor: storyboardStateColor(state) }]} />
             </Pressable>
@@ -2745,7 +2763,7 @@ function ProgrammingIntelligenceStrip({
 
 function StoryboardSessionArtwork({ session, style }: { session: HubSession; style?: any }) {
   const focus = storyboardSessionMuscleFocus(session);
-  return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} style={style} />;
+  return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} style={style} />;
 }
 
 function StoryboardSessionDragGesture({
@@ -2813,7 +2831,7 @@ function StoryboardSessionDragGesture({
   );
 }
 
-function StoryboardSessionRow({ dayLabel, displayUnit, draggable, dragging, onPress, session }: { dayLabel: string; displayUnit: DisplayWeightUnit; draggable: boolean; dragging: boolean; onPress: () => void; session: HubSession }) {
+function StoryboardSessionRow({ dayDate, dayLabel, displayUnit, draggable, dragging, focused, onActions, onPress, session }: { dayDate: string | null; dayLabel: string; displayUnit: DisplayWeightUnit; draggable: boolean; dragging: boolean; focused: boolean; onActions: () => void; onPress: () => void; session: HubSession }) {
   const completed = storyboardSessionState(session) === 'completed';
   return (
     <SLMotionPressable
@@ -2821,9 +2839,12 @@ function StoryboardSessionRow({ dayLabel, displayUnit, draggable, dragging, onPr
       accessibilityHint={draggable ? 'Tap to open. Press and hold, then drag to a day above to move.' : 'Tap to open.'}
       onPress={() => { storyboardSelectionFeedback(); onPress(); }}
       pressScale={0.985}
-      style={({ pressed }) => [storyStyles.compactSessionRow, dragging && storyStyles.compactSessionRowDragging, pressed && storyStyles.tactilePressed]}
+      style={({ pressed }) => [storyStyles.compactSessionRow, focused && storyStyles.compactSessionRowFocused, dragging && storyStyles.compactSessionRowDragging, pressed && storyStyles.tactilePressed]}
     >
-      <View style={storyStyles.compactSessionDayBadge}><Text style={storyStyles.compactSessionDay}>{dayLabel}</Text></View>
+      <View style={storyStyles.compactSessionDayBadge}>
+        <Text style={storyStyles.compactSessionDay}>{dayLabel}</Text>
+        <Text style={storyStyles.compactSessionDate}>{dayDate ? parseDate(dayDate)?.getDate() : '—'}</Text>
+      </View>
       <View style={storyStyles.compactSessionArtwork}>
         <LinearGradient colors={completed ? ['rgba(32,105,74,0.24)', '#080B0E'] : ['rgba(107,69,16,0.24)', '#090A0E']} style={StyleSheet.absoluteFillObject} />
         <StoryboardSessionArtwork session={session} />
@@ -2833,7 +2854,15 @@ function StoryboardSessionRow({ dayLabel, displayUnit, draggable, dragging, onPr
         <Text numberOfLines={1} style={storyStyles.compactSessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text>
       </View>
       <View style={[storyStyles.sessionStatusDot, { backgroundColor: storyboardSessionColor(session) }]} />
-      <Ionicons name={draggable ? 'reorder-three-outline' : 'ellipsis-vertical'} size={draggable ? 21 : 17} color={dragging ? colors.violet : colors.subtle} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${sessionTitle(session)} actions`}
+        hitSlop={8}
+        onPress={(event) => { event.stopPropagation(); onActions(); }}
+        style={storyStyles.sessionOverflowButton}
+      >
+        <Ionicons name="ellipsis-vertical" size={18} color={dragging ? colors.violet : colors.subtle} />
+      </Pressable>
     </SLMotionPressable>
   );
 }
@@ -2862,7 +2891,8 @@ function StoryboardDayPanel({ day, today, displayUnit, weekHasSessions, blockId,
   }
   const completed = storyboardSessionState(session) === 'completed';
   const focus = storyboardSessionMuscleFocus(session);
-  return <View style={storyStyles.dayPanel}><View style={storyStyles.dayArtworkFrame}><LinearGradient colors={completed ? ['rgba(25,93,64,0.34)', 'rgba(29,15,45,0.38)', '#080A0F'] : ['rgba(111,73,14,0.35)', 'rgba(31,17,48,0.38)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><View style={storyStyles.dayArtworkCopy}><Text style={[storyStyles.dayState, { color: storyboardSessionColor(session) }]}>{completed ? 'Completed' : sessionStatusText(session)}</Text><Text style={storyStyles.daySessionTitle}>{sessionTitle(session)}</Text><Text style={storyStyles.daySessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text></View><View style={storyStyles.dayAnatomy}><StoryboardSessionArtwork session={session} /></View><View style={[storyStyles.dayFocusRail, { backgroundColor: storyboardSessionColor(session) }]} /></View><View style={storyStyles.focusLegend}><View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#A865FF' }]} /><Text style={storyStyles.focusLegendText}>{focus.primary[0] ? storyboardMuscleLabel(focus.primary[0]) : 'Primary focus'}</Text></View>{focus.secondary[0] ? <View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#E347CF' }]} /><Text style={storyStyles.focusLegendText}>{storyboardMuscleLabel(focus.secondary[0])}</Text></View> : null}</View>{completed ? <View style={storyStyles.dayEvidence}><MetricCell label="RPE" value={String(session.recap?.session_rpe ?? session.recap?.average_rpe ?? '—')} detail="Session" /><MetricCell label="Sets" value={String(session.recap?.logged_set_count ?? session.log_count ?? '—')} detail="Completed" /><MetricCell label="Duration" value={session.estimated_duration_minutes ? `${session.estimated_duration_minutes}m` : '—'} detail="Session" /></View> : <View style={storyStyles.dayEvidence}><MetricCell label="Duration" value={session.estimated_duration_minutes ? `${session.estimated_duration_minutes}m` : '—'} detail="Planned" /><MetricCell label="Movements" value={String(session.preview?.movement_count || session.focus?.core_count || 0)} detail="Programmed" /></View>}<SLButton label={completed ? 'View Session' : 'Open Session'} onPress={() => onOpenSession(session.id, { blockId, week: weekIndex, day: day.key })} /></View>;
+  const duration = sessionDurationPresentation(session);
+  return <View style={storyStyles.dayPanel}><View style={storyStyles.dayArtworkFrame}><LinearGradient colors={completed ? ['rgba(25,93,64,0.34)', 'rgba(29,15,45,0.38)', '#080A0F'] : ['rgba(111,73,14,0.35)', 'rgba(31,17,48,0.38)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><View style={storyStyles.dayArtworkCopy}><Text style={[storyStyles.dayState, { color: storyboardSessionColor(session) }]}>{completed ? 'Completed' : sessionStatusText(session)}</Text><Text style={storyStyles.daySessionTitle}>{sessionTitle(session)}</Text><Text style={storyStyles.daySessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text></View><View style={storyStyles.dayAnatomy}><StoryboardSessionArtwork session={session} /></View><View style={[storyStyles.dayFocusRail, { backgroundColor: storyboardSessionColor(session) }]} /></View><View style={storyStyles.focusLegend}><View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#A865FF' }]} /><Text style={storyStyles.focusLegendText}>{focus.primary[0] ? storyboardMuscleLabel(focus.primary[0]) : 'Primary focus'}</Text></View>{focus.secondary[0] ? <View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#E347CF' }]} /><Text style={storyStyles.focusLegendText}>{storyboardMuscleLabel(focus.secondary[0])}</Text></View> : null}</View>{completed ? <View style={storyStyles.dayEvidence}><MetricCell label="RPE" value={String(session.recap?.session_rpe ?? session.recap?.average_rpe ?? '—')} detail="Session" /><MetricCell label="Sets" value={String(session.recap?.logged_set_count ?? session.log_count ?? '—')} detail="Completed" /><MetricCell label="Duration" value={duration && !duration.isEstimate ? `${duration.minutes}m` : '—'} detail="Actual" /></View> : <View style={storyStyles.dayEvidence}><MetricCell label="Duration" value={duration ? `${duration.isEstimate ? '~' : ''}${duration.minutes}m` : '—'} detail={duration?.isEstimate ? 'Estimated' : 'Actual'} /><MetricCell label="Movements" value={String(session.preview?.movement_count || session.focus?.core_count || 0)} detail="Programmed" /></View>}<SLButton label={completed ? 'View Session' : 'Open Session'} onPress={() => onOpenSession(session.id, { blockId, week: weekIndex, day: day.key })} /></View>;
 }
 
 function StoryboardSheet({ visible, title, onClose, children }: { visible: boolean; title: string; onClose: () => void; children: React.ReactNode }) {
@@ -2908,6 +2938,7 @@ function storyboardLiftArtwork(value?: string | null) {
 
 function storyboardSessionEvidence(session: HubSession, _displayUnit: DisplayWeightUnit) {
   const completed = storyboardSessionState(session) === 'completed';
+  const duration = sessionDurationPresentation(session);
   const movementCount = Number(session.preview?.movement_count || session.recap?.movement_count || 0);
   const setCount = Number(session.recap?.logged_set_count || session.log_count || 0);
   const rpe = session.recap?.session_rpe ?? session.recap?.average_rpe;
@@ -2916,11 +2947,12 @@ function storyboardSessionEvidence(session: HubSession, _displayUnit: DisplayWei
       movementCount ? `${movementCount} movements` : null,
       setCount ? `${setCount} sets` : null,
       rpe != null ? `RPE ${rpe}` : null,
+      duration && !duration.isEstimate ? duration.label : null,
     ].filter(Boolean).join(' · ') || 'Completed';
   }
   return [
     movementCount ? `${movementCount} movements` : null,
-    session.estimated_duration_minutes ? `~${session.estimated_duration_minutes} min` : null,
+    duration?.label,
     sessionStatusText(session),
   ].filter(Boolean).join(' · ');
 }
@@ -2981,7 +3013,6 @@ function SessionAddModal({
   blockId,
   onClose,
   onMode,
-  onBuild,
   onOpenSession,
   onRefresh,
 }: {
@@ -2991,11 +3022,9 @@ function SessionAddModal({
   blockId: number | null;
   onClose: () => void;
   onMode: (mode: NonNullable<SessionAddState>['mode']) => void;
-  onBuild: () => void;
   onOpenSession: (sessionId: number) => void;
   onRefresh: () => void | Promise<void>;
 }) {
-  const router = useRouter();
   const [templates, setTemplates] = useState<SessionTemplateOption[]>([]);
   const [sources, setSources] = useState<AdoptableSessionOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -3047,6 +3076,38 @@ function SessionAddModal({
   if (!state) return null;
 
   const contextReady = !!athleteId && !!programId && !!blockId && !!state.date;
+  const buildSession = async () => {
+    if (!contextReady || busyId) {
+      if (!contextReady) setError('Training Program context is missing.');
+      return;
+    }
+    setBusyId('build');
+    setError('');
+    try {
+      const resp = await fetchJson<any>('/workouts/mobile/new', {
+        method: 'POST',
+        body: {
+          athlete_id: athleteId,
+          date: state.date,
+          label: null,
+          status: 'draft',
+          training_block_id: blockId,
+          core_items: [],
+          acc_items: [],
+        } as any,
+      });
+      const json = resp.json || {};
+      const createdSessionId = json.workout_id || json.workout?.id || json.id;
+      if (!resp.ok || !json.ok || !createdSessionId) throw new Error(json.error || `HTTP ${resp.status}`);
+      await onRefresh();
+      onClose();
+      onOpenSession(Number(createdSessionId));
+    } catch (err: any) {
+      setError(err?.message || 'The Session draft could not be created.');
+    } finally {
+      setBusyId('');
+    }
+  };
   const applyTemplate = async (template: SessionTemplateOption) => {
     if (!contextReady || template.unsupported_reason) return;
     const key = `template:${String(template.id)}`;
@@ -3151,17 +3212,7 @@ function SessionAddModal({
                 icon="create-outline"
                 title="Build New"
                 detail="Create a draft and open the Session Workspace."
-                onPress={() => {
-                  if (!contextReady) {
-                    onBuild();
-                    return;
-                  }
-                  onClose();
-                  router.push({
-                    pathname: '/(tabs)/create-workout',
-                    params: { athleteId: String(athleteId), date: state.date, programmingBlockId: String(blockId), programmingProgramId: String(programId) },
-                  } as any);
-                }}
+                onPress={() => void buildSession()}
               />
               <SessionAddChoice
                 icon="albums-outline"
@@ -4199,7 +4250,11 @@ function weekActionLabel(action: WeekActionKey) {
 
 function roadmapWeekIdentityKey(week: RoadmapWeek) {
   if (!week.startDate) return `${week.blockId}:${week.index}:undated`;
-  return canonicalProgrammingWeekKey({ blockId: week.blockId, blockWeekIndex: week.index, weekStart: week.startDate });
+  return canonicalProgrammingWeekKey({
+    blockId: week.blockId,
+    blockWeekIndex: week.index,
+    weekStart: week.startDate,
+  });
 }
 
 function weekActionIdentityLabel(week: RoadmapWeek) {
@@ -5332,7 +5387,6 @@ const storyStyles = StyleSheet.create({
   thisWeekHeaderActions: { alignItems: 'stretch', justifyContent: 'center', gap: 7 },
   weekCardAction: { minWidth: 82, height: 38, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(168,101,255,0.30)', borderRadius: SLRadius.md, backgroundColor: 'rgba(80,36,112,0.12)' },
   weekCardActionText: { color: colors.violet, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
-  weekOpenControl: { width: 42, height: 52, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(168,101,255,0.28)', borderRadius: SLRadius.lg, backgroundColor: 'rgba(80,36,112,0.10)' },
   weekTitle: { color: colors.textStrong, fontSize: 24, lineHeight: 29, fontFamily: SLFontFamilies.sansBold, marginTop: 6 },
   weekRange: { color: colors.muted, fontSize: 15, lineHeight: 20, fontFamily: SLFontFamilies.sansMedium, marginTop: 3 },
   weekSummary: { color: colors.muted, fontSize: 13, lineHeight: 17, fontFamily: SLFontFamilies.sansMedium, marginTop: 4 },
@@ -5350,21 +5404,36 @@ const storyStyles = StyleSheet.create({
   dayNumberSelected: { color: colors.amber },
   daySessionCount: { fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   dayStatusRail: { position: 'absolute', left: 7, right: 7, bottom: 3, height: 2, borderRadius: 1 },
+  selectedDayActionRow: { minHeight: 54, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 7, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.lineSoft },
+  selectedDayLabel: { color: colors.textStrong, fontSize: 13, lineHeight: 17, fontFamily: SLFontFamilies.sansBold },
+  selectedDayMeta: { color: colors.muted, fontSize: 11, lineHeight: 15, fontFamily: SLFontFamilies.sansMedium, marginTop: 2 },
+  addSessionButton: { minHeight: 38, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingHorizontal: 11, borderWidth: 1, borderColor: 'rgba(168,101,255,0.38)', borderRadius: SLRadius.md, backgroundColor: 'rgba(80,36,112,0.16)' },
+  addSessionButtonText: { color: colors.violet, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   dragInstruction: { ...SLTypography.metadataStrong, color: colors.violet, textAlign: 'center', paddingVertical: 2 },
   dragStatus: { minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   dragStatusText: { ...SLTypography.metadataStrong, color: colors.muted },
   dragError: { ...SLTypography.metadataStrong, color: SLColors.danger, textAlign: 'center', paddingVertical: 4 },
-  compactWeekSessions: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
+  compactWeekSessions: { gap: 6, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line, paddingTop: 6 },
   dragSessionContainer: { position: 'relative', zIndex: 1 },
   dragSessionContainerActive: { zIndex: 50, elevation: 12, opacity: 0.94 },
-  compactSessionRow: { position: 'relative', minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft, paddingVertical: 8, paddingRight: 2 },
+  sessionSwipeFrame: { overflow: 'hidden', borderRadius: SLRadius.md, backgroundColor: '#5B3087' },
+  sessionSwipeForeground: { width: '100%', backgroundColor: '#0B0D13' },
+  compactSessionRow: { position: 'relative', minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 9, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.lineSoft, borderRadius: SLRadius.md, backgroundColor: '#0B0D13', paddingVertical: 8, paddingHorizontal: 7 },
+  compactSessionRowFocused: { borderColor: 'rgba(168,101,255,0.34)', backgroundColor: '#130F1B' },
   compactSessionRowDragging: { borderWidth: 1, borderColor: 'rgba(168,101,255,0.72)', borderRadius: SLRadius.md, backgroundColor: 'rgba(38,19,54,0.96)', paddingHorizontal: 7, ...SLShadows.level2 },
   compactSessionArtwork: { width: 54, height: 60, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(157,97,211,0.28)' },
-  compactSessionDayBadge: { width: 22, alignItems: 'center' },
+  compactSessionDayBadge: { width: 26, alignItems: 'center', gap: 2 },
   compactSessionDay: { color: colors.muted, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansMedium },
+  compactSessionDate: { color: colors.textStrong, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
   compactSessionTitle: { color: colors.textStrong, fontSize: 17, lineHeight: 21, fontFamily: SLFontFamilies.sansBold },
   compactSessionMeta: { color: colors.muted, fontSize: 11, lineHeight: 15, fontFamily: SLFontFamilies.sansMedium, marginTop: 4 },
   sessionStatusDot: { width: 10, height: 10, borderRadius: 5 },
+  sessionOverflowButton: { width: 34, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  sessionSwipeAction: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: '#5B3087' },
+  sessionSwipeActionText: { color: colors.textStrong, fontSize: 11, lineHeight: 14, fontFamily: SLFontFamilies.sansBold },
+  emptyWeekRow: { minHeight: 68, flexDirection: 'row', alignItems: 'center', gap: 11, paddingVertical: 12 },
+  emptyWeekTitle: { color: colors.textStrong, fontSize: 14, lineHeight: 18, fontFamily: SLFontFamilies.sansBold },
+  emptyWeekMeta: { color: colors.muted, fontSize: 11, lineHeight: 15, fontFamily: SLFontFamilies.sansMedium, marginTop: 2 },
   tactilePressed: { borderColor: 'rgba(171,105,232,0.30)', backgroundColor: 'rgba(141,78,194,0.08)' },
   weekLensHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   weekLensTitle: { ...SLTypography.title, color: colors.textStrong },
