@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -51,7 +52,6 @@ import {
   accessoryRegionalArtworkAsset,
   type AccessoryRegionalArtworkKey,
 } from '@/lib/accessory-muscle-region-assets';
-import { accessoryPickerArtwork } from '@/lib/accessory-picker-artwork';
 import {
   movementHistorySheetRoute,
   resolveMovementHistoryLaunchForItem,
@@ -2310,7 +2310,7 @@ function AccessoryEditorModal({
         onPress={() => openMovementDetail(movement)}
         style={({ pressed }) => [styles.accessoryPickerMovementMain, pressed && styles.pressed]}
       >
-        <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerMovementArt} />
+        <CanonicalMovementArtwork movement={{ ...movement, kind: 'accessory' }} size={56} style={styles.accessoryPickerMovementArt} testID="workspace-picker-canonical-movement-artwork" />
         <View style={styles.accessoryPickerMovementCopy}>
           <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(movement)}</Text>
           {relationship === 'default' ? (
@@ -2644,7 +2644,7 @@ function AccessoryEditorModal({
                       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.accessoryPickerRecentRail}>
                         {searchResults.filter((movement) => movement.last_used_on).slice(0, 6).map((movement) => (
                           <Pressable key={movement.id || movementPresetName(movement)} onPress={() => openMovementDetail(movement)} style={styles.accessoryPickerRecentCard}>
-                            <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerRecentArt} />
+                            <CanonicalMovementArtwork movement={{ ...movement, kind: 'accessory' }} size={50} style={styles.accessoryPickerRecentArt} />
                             <Text numberOfLines={2} style={styles.accessoryPickerRecentTitle}>{movementPresetName(movement)}</Text>
                           </Pressable>
                         ))}
@@ -2695,7 +2695,7 @@ function AccessoryEditorModal({
               {pickerStep === 'detail' && selectedMovement ? (
                 <View style={styles.accessoryPickerDetail}>
                   <View style={styles.accessoryPickerDetailHero}>
-                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerDetailArt} />
+                    <CanonicalMovementArtwork movement={{ ...selectedMovement, kind: 'accessory' }} size={92} style={styles.accessoryPickerDetailArt} />
                     <Pressable accessibilityRole="button" accessibilityLabel={selectedMovement.is_favorite ? 'Remove from favorites' : 'Add to favorites'} onPress={() => void toggleFavorite(selectedMovement)} style={styles.accessoryPickerDetailFavorite}>
                       <Ionicons name={selectedMovement.is_favorite ? 'star' : 'star-outline'} size={20} color={selectedMovement.is_favorite ? SLColors.warning : colors.muted} />
                       <Text style={styles.accessoryPickerDetailFavoriteText}>{selectedMovement.is_favorite ? 'Favorited' : 'Favorite'}</Text>
@@ -2726,7 +2726,7 @@ function AccessoryEditorModal({
                     <Text style={styles.trainingLiftMuted}>Confirm this identity before adding it to the Session Workspace.</Text>
                   </View>
                   <View style={styles.accessoryPickerSelectedSummary}>
-                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} />
+                    <CanonicalMovementArtwork movement={{ ...selectedMovement, kind: 'accessory' }} size={64} style={styles.accessoryPickerSelectedArt} />
                     <View style={styles.accessoryPickerMovementCopy}>
                       <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text>
                       <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text>
@@ -2739,7 +2739,7 @@ function AccessoryEditorModal({
                       <Text style={styles.accessoryPickerSectionLabel}>Other Movements In This Scope</Text>
                       {searchResults.filter((movement) => movement.id !== selectedMovement.id).slice(0, 4).map((movement) => (
                         <Pressable key={movement.id || movementPresetName(movement)} onPress={() => openMovementDetail(movement)} style={styles.accessoryPickerAlternativeRow}>
-                          <Image source={accessoryPickerArtwork(movement).source} resizeMode="contain" style={styles.accessoryPickerAlternativeArt} />
+                          <CanonicalMovementArtwork movement={{ ...movement, kind: 'accessory' }} size={54} style={styles.accessoryPickerAlternativeArt} />
                           <View style={styles.accessoryPickerMovementCopy}>
                             <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(movement)}</Text>
                             <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(movement.execution_family)}</Text>
@@ -2762,7 +2762,7 @@ function AccessoryEditorModal({
                     <Ionicons name="checkmark" size={54} color={colors.violet} />
                   </View>
                   <View style={styles.accessoryPickerSelectedSummary}>
-                    <Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} />
+                    <CanonicalMovementArtwork movement={{ ...selectedMovement, kind: 'accessory' }} size={64} style={styles.accessoryPickerSelectedArt} />
                     <View style={styles.accessoryPickerMovementCopy}>
                       <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text>
                       <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text>
@@ -2807,7 +2807,7 @@ function AccessoryEditorModal({
                         {reviewingCustom ? <View style={styles.trainingLiftLoadingRow}><ActivityIndicator color={colors.violet} /><Text style={styles.trainingLiftMuted}>Checking canonical names and your library...</Text></View> : null}
                         {!reviewingCustom && customReviewed && customMatches.length ? customMatches.slice(0, 4).map((match) => (
                           <Pressable key={`${match.tier}-${match.movement_definition.id}`} onPress={() => selectCustomMatch(match.movement_definition)} style={styles.customMovementMatchCard}>
-                            <Image source={accessoryPickerArtwork(match.movement_definition).source} resizeMode="contain" style={styles.customMovementMatchArt} />
+                            <CanonicalMovementArtwork movement={{ ...match.movement_definition, kind: 'accessory' }} size={58} style={styles.customMovementMatchArt} />
                             <View style={styles.accessoryPickerMovementCopy}>
                               <Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(match.movement_definition)}</Text>
                               <Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(match.movement_definition.primary_muscle_group)} · {accessoryTaxonomyLabel(match.movement_definition.execution_family)}</Text>
@@ -2915,7 +2915,7 @@ function AccessoryEditorModal({
                 <View style={styles.customMovementCreated}>
                   <View style={styles.accessoryPickerSuccessMark}><Ionicons name="checkmark" size={54} color={colors.violet} /></View>
                   <View style={styles.customMovementCreatedCopy}><Text style={styles.customMovementCreatedKicker}>Added to your library</Text><Text style={styles.trainingLiftMuted}>This movement is now available whenever you program an athlete you are authorized to coach.</Text></View>
-                  <View style={styles.accessoryPickerSelectedSummary}><Image source={accessoryPickerArtwork(selectedMovement).source} resizeMode="contain" style={styles.accessoryPickerSelectedArt} /><View style={styles.accessoryPickerMovementCopy}><Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text><Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)} · {accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text></View></View>
+                  <View style={styles.accessoryPickerSelectedSummary}><CanonicalMovementArtwork movement={{ ...selectedMovement, kind: 'accessory' }} size={64} style={styles.accessoryPickerSelectedArt} /><View style={styles.accessoryPickerMovementCopy}><Text style={styles.accessoryPickerMovementTitle}>{movementPresetName(selectedMovement)}</Text><Text style={styles.accessoryPickerMovementMeta}>{accessoryTaxonomyLabel(selectedMovement.primary_muscle_group)} · {accessoryTaxonomyLabel(selectedMovement.execution_family)}</Text></View></View>
                   <Pressable disabled={saving} onPress={() => void applyCreatedCustomMovement()} style={[styles.accessoryPickerConfirmAction, saving && styles.editorDisabled]}><Text style={styles.accessoryPickerConfirmActionText}>{saving ? 'Using...' : 'Use This Movement'}</Text></Pressable>
                   <Pressable onPress={onDone} style={styles.customMovementBackAction}><Text style={styles.trainingLiftSecondaryText}>Done</Text></Pressable>
                 </View>

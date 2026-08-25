@@ -25,13 +25,14 @@ import {
 
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLColors, SLFontFamilies, SLRadius, SLShadows } from '@/constants/theme';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
-import { isGovernedMuscleId } from '@/lib/anatomy-system';
+import { CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
+import { resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { API_BASE } from '@/lib/api';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
@@ -40,7 +41,6 @@ import {
   formatWeightFromKg,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
-import { resolveLoggerLiftIdentity } from '@/lib/logger-visual-context';
 import {
   SESSION_RECAP_ARCHIVE_ART,
   sessionRecapHighlightAsset,
@@ -357,25 +357,25 @@ function formatMuscle(value: string) {
   return value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function movementArtworkInput(movement: CompletedRecapMovement): CanonicalMovementArtworkInput {
+  return {
+    ...movement,
+    kind: movement.kind,
+    movement_definition_id: movement.history_diagnostics?.movement_definition_id,
+  };
+}
+
 function movementArtworkSource(movement: CompletedRecapMovement) {
-  if (movement.kind === 'accessory') {
-    const region = accessoryMuscleRegion({
-      movement: movement.label,
-      movement_identity: { primary_muscle_group: movement.primary_muscle_group },
-    });
-    return accessoryMuscleRegionAsset(region.key).source;
+  const resolution = resolveCanonicalMovementArtwork(movementArtworkInput(movement));
+  if (resolution.kind === 'accessory') return accessoryMuscleRegionAsset(resolution.regionKey).source;
+  if (resolution.kind === 'core' || resolution.kind === 'core_variant') {
+    return CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family];
   }
-  return resolveLoggerLiftIdentity({ lift: movement.lift, movement: movement.label }).iconSource || null;
+  return null;
 }
 
 function MovementArtwork({ movement }: { movement: CompletedRecapMovement }) {
-  if (movement.kind === 'accessory' && isGovernedMuscleId(movement.primary_muscle_group)) {
-    return <MuscleMap anatomy="automatic" primary={[movement.primary_muscle_group]} secondary={movement.secondary_muscle_groups || []} size="thumbnail" style={styles.artworkMap} view="auto" />;
-  }
-  const source = movementArtworkSource(movement);
-  return source
-    ? <Image accessibilityIgnoresInvertColors resizeMode="contain" source={source} style={styles.artworkImage} />
-    : <Ionicons name="barbell-outline" size={28} color={SLColors.accentMuted} />;
+  return <CanonicalMovementArtwork movement={movementArtworkInput(movement)} size={72} testID="completed-recap-canonical-movement-artwork" />;
 }
 
 function setVideoId(set?: CompletedRecapSet | null) {

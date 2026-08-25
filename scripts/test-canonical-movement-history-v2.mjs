@@ -61,8 +61,7 @@ assert.match(screen, /exposureHeaderRow[\s\S]*exposureMetrics[\s\S]*ExposureMetr
 assert.match(screen, /numberOfLines=\{1\} adjustsFontSizeToFit minimumFontScale=\{0\.8\}/);
 assert.doesNotMatch(screen, /resolvedDefaultEquipment/);
 assert.match(screen, /kilogramsToDisplayValue/);
-assert.match(screen, /AccessoryMuscleRegionMedallion/);
-assert.match(screen, /canonicalAccessoryMuscleRegionKey\(history\?\.movement\.primary_muscle_group\)/);
+assert.match(screen, /CanonicalMovementArtwork movement=\{\{ \.\.\.history\.movement, kind: 'accessory' \}\}/);
 assert.doesNotMatch(screen, /MuscleMap/);
 assert.match(screen, /ManufacturerBrandMark/);
 assert.match(screen, /View Full Session/);
@@ -88,8 +87,9 @@ assert.match(rootLayout, /name="movement-history-sheet"[\s\S]*presentation: 'tra
 assert.match(logger, /movementHistorySheetRoute/);
 assert.doesNotMatch(logger, /pathname: '\/\(tabs\)\/workout\/movement-history'/);
 assert.match(logger, /resolveMovementHistoryLaunchForItem/);
-assert.match(launch, /performed_canonical_movement_identity\?\.id[\s\S]*movement_identity\?\.id[\s\S]*effective_movement_identity\?\.id[\s\S]*effective_movement_definition_id/);
-assert.match(launch, /activeEquipmentIdentity/);
+assert.match(launch, /resolveLoggerMovementIdentity/);
+assert.match(launch, /normalized\.effective\?\.id/);
+assert.match(launch, /normalized\.equipment\?\.id/);
 assert.match(launch, /canonical_identity_missing/);
 assert.match(programmingRoute, /onOpenMovementHistory/);
 assert.match(programmingRoute, /movementDefinitionId/);

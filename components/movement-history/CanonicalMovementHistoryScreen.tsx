@@ -13,11 +13,11 @@ import {
 } from 'react-native';
 
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLScreen } from '@/components/ui/sl-screen';
-import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLLayout } from '@/constants/theme';
 import { API_BASE } from '@/lib/api';
@@ -35,7 +35,6 @@ import {
 } from '@/lib/canonical-movement-history';
 import { kilogramsToDisplayValue } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
-import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 type FilterPreset = 'all' | 'rir1' | 'rir2' | 'reps6to10' | 'reps8to12' | 'reps12plus';
@@ -263,7 +262,6 @@ export function CanonicalMovementHistoryScreen({
   const scopeLabel = history?.filters.selected_scope === 'all_history' ? 'All History' : selectedEquipment?.label || 'Equipment';
   const unknownEquipmentSeries = history?.filters.analytics_basis === 'recorded_unknown_equipment';
   const muscleLine = [titleCase(history?.movement.primary_muscle_group), ...(history?.movement.secondary_muscle_groups || []).slice(0, 1).map(titleCase)].filter(Boolean).join(' · ');
-  const primaryMuscleRegion = canonicalAccessoryMuscleRegionKey(history?.movement.primary_muscle_group);
 
   const closeHistory = onRequestClose || (() => router.back());
   const screenContent = (
@@ -286,10 +284,7 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                <AccessoryMuscleRegionMedallion
-                  accessibilityLabel={`${titleCase(history.movement.primary_muscle_group) || 'Movement'} muscle group`}
-                  regionKey={primaryMuscleRegion}
-                />
+                <CanonicalMovementArtwork movement={{ ...history.movement, kind: 'accessory' }} size={86} testID="movement-history-canonical-artwork" />
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>

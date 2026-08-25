@@ -14,11 +14,10 @@ import {
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLSpacing } from '@/constants/theme';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
-import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import {
   canonicalLiftKey,
   displayCalculatedWeight,
@@ -363,20 +362,7 @@ function RecentPrCard({ performance, unit, onPress, hero = false }: { performanc
 
 function LatestEntryArtwork({ movement, entry, fallbackEvent }: { movement?: LedgerMovementProgress | null; entry?: JourneyEntry | null; fallbackEvent?: AccomplishmentEvent }) {
   const movementLabel = movement?.name || entry?.movement?.label || fallbackEvent?.movement_label;
-  const fallbackFamily = entry?.movement?.family || fallbackEvent?.core_movement_key || fallbackEvent?.movement_family;
-  const hasMovementIdentity = Boolean(movementLabel || movement?.family || movement?.primary_muscle_group || fallbackFamily);
-  const coreLift = canonicalLiftKey(movement?.core_family || movementLabel || fallbackFamily);
-  const coreRegion = coreLift === 'squat' ? 'quads' : coreLift === 'bench' ? 'chest' : coreLift === 'deadlift' ? 'hamstrings' : null;
-  const region = coreRegion || accessoryMuscleRegion({
-    movement: movementLabel,
-    movement_identity: {
-      family: movement?.family || movement?.body_region || fallbackFamily,
-      family_display_name: movementLabel,
-      primary_muscle_group: movement?.primary_muscle_group,
-    },
-  }).key;
-  const source = hasMovementIdentity ? accessoryMuscleRegionAsset(region).source : LEDGER_INDEX_ASSETS.latestEntryFallback;
-  return <View accessibilityLabel={movementLabel ? `${movementLabel} muscle focus` : 'Latest movement'} style={styles.latestImage}><Image accessible={false} source={source} resizeMode="contain" style={styles.latestImageFallback} /></View>;
+  return <View accessibilityLabel={movementLabel ? `${movementLabel} canonical artwork` : 'Latest movement'} style={styles.latestImage}>{movement ? <CanonicalMovementArtwork movement={movement} size={78} testID="ledger-latest-canonical-movement-artwork" /> : <Image accessible={false} source={LEDGER_INDEX_ASSETS.latestEntryFallback} resizeMode="contain" style={styles.latestImageFallback} />}</View>;
 }
 
 export function LedgerIndexExperience() {

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -13,9 +12,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
-import { accessoryPickerArtwork } from '@/lib/accessory-picker-artwork';
 
 export type GovernedAccessoryIdentity = {
   id: number;
@@ -177,7 +176,6 @@ export function GovernedAccessoryPickerModal({
   };
 
   const renderIdentity = (identity: GovernedAccessoryIdentity) => {
-    const artwork = accessoryPickerArtwork(identity);
     const selected = Number(identity.id) === Number(currentIdentityId);
     return (
       <Pressable
@@ -187,7 +185,7 @@ export function GovernedAccessoryPickerModal({
         onPress={() => void onSelect(identity)}
         style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.pressed]}
       >
-        <Image source={artwork.source} style={styles.artwork} resizeMode="contain" />
+        <CanonicalMovementArtwork movement={{ ...identity, kind: 'accessory' }} size={62} style={styles.artwork} testID="governed-picker-canonical-movement-artwork" />
         <View style={styles.rowCopy}>
           <Text style={styles.rowTitle}>{identity.display_name}</Text>
           <Text style={styles.rowMeta}>
