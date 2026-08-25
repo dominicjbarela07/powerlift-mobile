@@ -73,14 +73,18 @@ function planSet(plan: Record<string, any>, setIndex: number): SessionRecapPlanS
   const reps = parseSessionRecapRepTarget(
     row.reps_text ?? row.reps ?? row.rep_target ?? plan.reps_text ?? plan.reps,
   );
-  const low = finite(
+  const explicitLow = finite(
     row.coach_prescribed_low_kg ?? row.target_low_kg
       ?? plan.coach_prescribed_low_kg ?? plan.target_low_kg,
   );
-  const high = finite(
+  const explicitHigh = finite(
     row.coach_prescribed_high_kg ?? row.target_high_kg
       ?? plan.coach_prescribed_high_kg ?? plan.target_high_kg,
   );
+  const manualTarget = finite(row.manual_target_kg ?? row.target_kg);
+  const manualRange = Math.max(0, finite(row.manual_pm_kg ?? row.plus_kg) ?? 0);
+  const low = explicitLow ?? (manualTarget == null ? null : manualTarget - manualRange);
+  const high = explicitHigh ?? (manualTarget == null ? low : manualTarget + manualRange);
   return {
     setIndex,
     repLow: reps.low,
@@ -211,4 +215,3 @@ export function filterSessionRecapComparisons<TPlan, TPerformed>(
         : !['matched', 'not_logged'].includes(comparison.kind)
   )));
 }
-

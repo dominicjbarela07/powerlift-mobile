@@ -679,7 +679,7 @@ function TargetBand({ comparison }: { comparison: SessionRecapSetComparison }) {
   </View>;
 }
 
-function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { row: PlanComparisonRow; expanded: boolean; unit: DisplayWeightUnit; onToggle: () => void; onOpenHistory?: (movement: CompletedRecapMovement) => void }) {
+function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { row: PlanComparisonRow; expanded: boolean; unit: DisplayWeightUnit; onToggle: () => void; onOpenHistory?: (movement: CompletedRecapMovement, displayUnit: DisplayWeightUnit) => void }) {
   const movement = row.performed;
   const plan = row.plan;
   const state = comparisonMovementState(row);
@@ -706,12 +706,12 @@ function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { 
           return <View key={comparison.setIndex} style={styles.compareSetRow}><View style={styles.compareSetNumber}><View style={[styles.compareSetNumberBadge, { borderColor: `${presentation.color}88` }]}><Text style={styles.compareSetNumberText}>{comparison.setIndex}</Text></View></View><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareLoad]}>{performed ? (formatWeightFromKg(performed.actual_weight_kg, unit) || '—') : '—'}</Text><Text style={[styles.compareSetValue, styles.compareReps, comparison.kind === 'matched' && styles.compareSetMatched]}>{performed?.actual_reps ?? '—'}</Text><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareEffort]}>{performed ? (effortLabel(performed) || '—') : '—'}</Text><View style={styles.compareTarget}><TargetBand comparison={comparison} /></View></View>;
         })}<View style={styles.targetLegend}><View style={styles.targetLegendBand} /><Text style={styles.targetLegendText}>Target range</Text><View style={styles.targetLegendMarker} /><Text style={styles.targetLegendText}>Your performance</Text></View></View>
       </View>
-      <Pressable disabled={!movement || !onOpenHistory} accessibilityRole="button" accessibilityLabel={`Open exact history for ${title}`} onPress={() => movement && onOpenHistory?.(movement)} style={({ pressed }) => [styles.compareLastTime, pressed && styles.pressed]}><Ionicons name="time-outline" size={21} color={SLColors.accentMuted} /><View style={styles.compareLastTimeCopy}><Text style={styles.compareLastTimeLabel}>LAST TIME</Text><Text numberOfLines={2} style={styles.compareLastTimeValue}>{previous && movement ? `${setResultLabel({ actual_weight_kg: previous.weight_kg, actual_reps: previous.reps }, movement, unit)}${previous.rir != null ? ` @ ${numberLabel(previous.rir)} RIR` : previous.rpe != null ? ` @ RPE ${numberLabel(previous.rpe)}` : ''} · ${dateLabel(previous.date)}` : 'No previous exact exposure'}</Text></View>{movement && onOpenHistory ? <Ionicons name="chevron-forward" size={20} color={SLColors.textSecondary} /> : null}</Pressable>
+      <Pressable disabled={!movement || !onOpenHistory} accessibilityRole="button" accessibilityLabel={`Open exact history for ${title}`} onPress={() => movement && onOpenHistory?.(movement, unit)} style={({ pressed }) => [styles.compareLastTime, pressed && styles.pressed]}><Ionicons name="time-outline" size={21} color={SLColors.accentMuted} /><View style={styles.compareLastTimeCopy}><Text style={styles.compareLastTimeLabel}>LAST TIME</Text><Text numberOfLines={2} style={styles.compareLastTimeValue}>{previous && movement ? `${setResultLabel({ actual_weight_kg: previous.weight_kg, actual_reps: previous.reps }, movement, unit)}${previous.rir != null ? ` @ ${numberLabel(previous.rir)} RIR` : previous.rpe != null ? ` @ RPE ${numberLabel(previous.rpe)}` : ''} · ${dateLabel(previous.date)}` : 'No previous exact exposure'}</Text></View>{movement && onOpenHistory ? <Ionicons name="chevron-forward" size={20} color={SLColors.textSecondary} /> : null}</Pressable>
     </View> : null}
   </View>;
 }
 
-function PlanCompareExperience({ recap, performedMovements, unit, onOpenHistory }: { recap: CompletedSessionRecapPayload; performedMovements: CompletedRecapMovement[]; unit: DisplayWeightUnit; onOpenHistory?: (movement: CompletedRecapMovement) => void }) {
+function PlanCompareExperience({ recap, performedMovements, unit, onOpenHistory }: { recap: CompletedSessionRecapPayload; performedMovements: CompletedRecapMovement[]; unit: DisplayWeightUnit; onOpenHistory?: (movement: CompletedRecapMovement, displayUnit: DisplayWeightUnit) => void }) {
   const rows = useMemo(() => buildSessionRecapComparisons(recap.plan.movements, performedMovements) as PlanComparisonRow[], [performedMovements, recap.plan.movements]);
   const [filter, setFilter] = useState<PlanCompareFilter>('all');
   const [expandedKey, setExpandedKey] = useState<string | null>(() => rows[0]?.key || null);
