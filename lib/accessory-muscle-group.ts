@@ -34,6 +34,7 @@ export const ACCESSORY_MUSCLE_REGION_KEYS = [
 ] as const;
 
 export type AccessoryMuscleRegionKey = typeof ACCESSORY_MUSCLE_REGION_KEYS[number];
+export type FocusedAccessoryMuscleRegionKey = Exclude<AccessoryMuscleRegionKey, 'full_body'>;
 
 export type AccessoryMuscleRegionPresentation = Readonly<{
   key: AccessoryMuscleRegionKey;
@@ -181,6 +182,19 @@ function regionFromGovernedKey(value?: string | null): AccessoryMuscleRegionKey 
     return normalized as AccessoryMuscleRegionKey;
   }
   return GOVERNED_FAMILY_REGIONS[normalized] || null;
+}
+
+/**
+ * Individual movement artwork consumes governed taxonomy only. It excludes
+ * the aggregate full-body key and never inspects display names.
+ */
+export function focusedAccessoryMuscleRegionKey(
+  value?: string | null,
+): FocusedAccessoryMuscleRegionKey | null {
+  const region = regionFromGovernedKey(value);
+  return region && region !== 'full_body'
+    ? region as FocusedAccessoryMuscleRegionKey
+    : null;
 }
 
 export function canonicalAccessoryMuscleRegionKey(
