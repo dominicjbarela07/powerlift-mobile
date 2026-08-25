@@ -14,7 +14,7 @@ import {
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLSpacing } from '@/constants/theme';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { accessoryMuscleRegion } from '@/lib/accessory-muscle-group';
@@ -475,6 +475,7 @@ export function LedgerIndexExperience() {
   const latestFooter = [latestEquipment, dateLabel(latestDate)].filter(Boolean).join(' · ');
 
   return <View testID="ledger-home-experience" style={styles.page}>
+    <FloatingDisplayUnitRegistration unit={model.unit} onChange={setUnit} testID="ledger-index-unit-toggle" />
     <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
       <View style={styles.heroScrim} />
       <View style={styles.heroCopy}>
@@ -483,11 +484,6 @@ export function LedgerIndexExperience() {
         <Text style={styles.pageSubtitle}>Your training, written in results.</Text>
       </View>
     </ImageBackground>
-
-    <View style={styles.ledgerUnitToolbar}>
-      <Text style={styles.ledgerUnitLabel}>DISPLAY WEIGHT</Text>
-      <SurfaceWeightUnitToggle compact unit={model.unit} onChange={setUnit} testID="ledger-index-unit-toggle" />
-    </View>
 
     <View style={styles.sectionInset}>
       <View style={styles.careerSnapshot}>
@@ -546,8 +542,6 @@ export function LedgerIndexExperience() {
 
 const styles = StyleSheet.create({
   page: { gap: 19, paddingBottom: 20, backgroundColor: '#000000' },
-  ledgerUnitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 9, justifyContent: 'flex-end', paddingHorizontal: 18 },
-  ledgerUnitLabel: { color: '#85818F', fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   sectionInset: { gap: 9, marginHorizontal: 12 },
   hero: { minHeight: 160, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
   heroImage: { opacity: 0.96 },

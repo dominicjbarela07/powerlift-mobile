@@ -14,7 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/sl-text';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
@@ -253,7 +253,7 @@ export function AthleteTrainingHubExperience({
   const progress = clamp01(program.progress);
   return (
     <View style={styles.root}>
-      <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={unit} onChange={setUnit} testID="training-hub-unit-toggle" /></View>
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="training-hub-unit-toggle" />
       <ProgramHero data={data} program={program} progress={progress} />
 
       <ProgramTimeline blocks={program.blocks} selectedBlockId={selectedBlock?.id} onSelect={setSelectedBlockId} />
@@ -642,8 +642,6 @@ function formatPrDelta(lift: AthleteTrainingTopLift, unit: 'kg' | 'lb') { if (!l
 function colorWithAlpha(color: string, alpha: number) { const match = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); return match ? `rgba(${parseInt(match[1], 16)},${parseInt(match[2], 16)},${parseInt(match[3], 16)},${alpha})` : color; }
 
 const styles = StyleSheet.create({
-  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
-  unitToolbarLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   root: { width: '100%', gap: 12, backgroundColor: '#000000' },
   pressed: { opacity: 0.76 },
   sectionKicker: { ...SLTypography.micro, color: SLColors.accentViolet, letterSpacing: 0.65 },

@@ -6,7 +6,7 @@ import Svg, { Circle, Line, Polygon, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
@@ -359,12 +359,12 @@ export function JourneyExperience() {
 
   return (
     <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience">
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-journey-unit-toggle" />
       <View style={styles.journeyIntro}>
         <Kicker>YOUR COMPLETE RECORD</Kicker>
         <Text style={styles.journeyIntroTitle}>Journey</Text>
         <Text style={styles.journeyIntroBody}>From {formatJourneyDate(overview.earliest_record.date)} to today. Reconstructed from your preserved Strength Ledger evidence.</Text>
       </View>
-      <View style={styles.journeyUnitToolbar}><Text style={styles.journeyUnitLabel}>DISPLAY WEIGHT</Text><SurfaceWeightUnitToggle compact unit={unit} onChange={setUnit} testID="ledger-journey-unit-toggle" /></View>
       <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
       {view === 'Overview' ? <JourneyOverviewView overview={overview} unit={unit} /> : null}
@@ -690,9 +690,9 @@ export function StrengthExperience() {
 
   return (
     <View style={[styles.page, styles.strengthPage]} testID="ledger-strength-experience">
+      <FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" />
       <View style={styles.strengthControls}>
         <Segmented values={['30d', '90d', '180d', '1y', 'all'] as const} value={range} onChange={setRange} />
-        <SurfaceWeightUnitToggle unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" />
       </View>
       <View style={styles.strengthLiftRail} accessibilityRole="tablist">
         {profile.map((item, index) => <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected: index === focusLiftIndex }} onPress={() => setFocusLiftIndex(index)} style={[styles.strengthLiftTab, index === focusLiftIndex && { borderColor: item.color, backgroundColor: `${item.color}13` }]}><Image source={item.image} resizeMode="contain" style={[styles.strengthLiftTabImage, { tintColor: item.color }]} /><Text style={[styles.strengthLiftTabText, index === focusLiftIndex && { color: item.color }]}>{item.key}</Text></Pressable>)}
@@ -801,8 +801,6 @@ const styles = StyleSheet.create({
   page: { gap: SLSpacing.md },
   journeyPage: { gap: 0 },
   journeyIntro: { gap: 6, paddingTop: 2, paddingBottom: 18 },
-  journeyUnitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginBottom: 10 },
-  journeyUnitLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   journeyIntroTitle: { color: '#F7F5FA', fontSize: 34, lineHeight: 39, fontWeight: '700', letterSpacing: -0.8 },
   journeyIntroBody: { maxWidth: 430, color: '#929AA7', fontSize: 13, lineHeight: 19 },
   journeyOverview: { gap: 14, paddingTop: 18 },

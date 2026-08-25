@@ -17,6 +17,13 @@ export { SLQueueRow } from './sl-queue-row';
 export { SLScreen, SLScrollScreen } from './sl-screen';
 export { SLSectionHeader } from './sl-section-header';
 export { SurfaceWeightUnitToggle } from './surface-weight-unit-toggle';
+export {
+  FloatingControlCoordinator,
+  FloatingDisplayUnitRegistration,
+  floatingControlBottom,
+  type FloatingControlContext,
+  type FloatingTrailingSlot,
+} from './floating-control-coordinator';
 export { SLEmptyState, SLErrorState, SLLoadingState } from './sl-state';
 export { SLStatusPill } from './sl-status-pill';
 export { SLCanonicalIcon, SLTrophy } from './sl-trophy';

@@ -22,6 +22,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector, Swipeable } from 'react-native-gesture-handler';
 
 import { SLMotionEntrance, SLMotionPressable, SLProfileAvatar } from '@/components/ui';
+import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { SLButton } from '@/components/ui/sl-button';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import {
@@ -864,6 +865,7 @@ export default function TrainingIndexScreen() {
 
   return (
     <View style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scroll}
@@ -906,6 +908,7 @@ export default function TrainingIndexScreen() {
         onOpenSession={openBlockDetailsSession}
         visible={blockDetailsVisible}
       />
+      </FloatingControlCoordinator>
     </View>
   );
 }

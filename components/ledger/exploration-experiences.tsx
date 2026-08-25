@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
@@ -91,7 +91,7 @@ function ContextBar({ data, unit }: { data: LedgerExplorationIndex; unit: Ledger
 }
 
 function ExplorationUnitToolbar({ unit, onChange }: { unit: LedgerUnit; onChange: (unit: LedgerUnit) => void }) {
-  return <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY WEIGHT</Text><SurfaceWeightUnitToggle compact unit={unit} onChange={onChange} /></View>;
+  return <FloatingDisplayUnitRegistration unit={unit} onChange={onChange} testID="ledger-exploration-unit-toggle" />;
 }
 
 function Tabs<T extends string>({ values, value, onChange }: { values: readonly T[]; value: T; onChange: (value: T) => void }) {
@@ -270,8 +270,6 @@ function FilterGroup({ label, values, value, onChange, format = false }: { label
 }
 
 const styles = StyleSheet.create({
-  unitToolbar: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'flex-end', marginBottom: 10 },
-  unitToolbarLabel: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   page: { gap: 18, paddingBottom: 22 },
   inset: { gap: 10, marginHorizontal: 14 },
   roomHeader: { gap: 2, paddingHorizontal: 18, paddingTop: 2, paddingBottom: 2 },

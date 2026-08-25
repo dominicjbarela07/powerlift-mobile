@@ -6,7 +6,7 @@ import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { SLCanonicalIcon, SLScreen, SLTrophy } from '@/components/ui';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/components/volume-achievements/VolumeAchievementExperience';
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
 import { useLedgerLiveData } from './use-ledger-live-data';
@@ -556,9 +556,11 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   }, []);
 
   return <SLScreen edges="none" padded={false} style={styles.screen}>
+    <FloatingControlCoordinator context="tab-screen">
+    <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-achievements-unit-toggle" />
     <View style={styles.canvas}>
       <ScrollView ref={scrollRef} contentContainerStyle={styles.content} contentOffset={{ x: 0, y: 0 }} showsVerticalScrollIndicator={false}>
-        <View style={styles.navHeader}><Pressable onPress={section === 'hub' ? onBack ?? (() => router.replace('/(tabs)/ledger/home' as any)) : () => openSection('hub')} style={styles.navButton} accessibilityLabel={section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}><Ionicons name="chevron-back" size={25} color="#F4F6FA" /></Pressable><View style={styles.achievementHeaderTitle}><ThemedText typographyRole="shortTechnicalLabel" style={styles.achievementHeaderKicker}>THE LEDGER</ThemedText><ThemedText typographyRole="modalTitle" style={styles.achievementHeaderText}>{ACHIEVEMENT_SECTION_LABELS[section]}</ThemedText></View><SurfaceWeightUnitToggle compact unit={unit} onChange={setUnit} testID="ledger-achievements-unit-toggle" /></View>
+        <View style={styles.navHeader}><Pressable onPress={section === 'hub' ? onBack ?? (() => router.replace('/(tabs)/ledger/home' as any)) : () => openSection('hub')} style={styles.navButton} accessibilityLabel={section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}><Ionicons name="chevron-back" size={25} color="#F4F6FA" /></Pressable><View style={styles.achievementHeaderTitle}><ThemedText typographyRole="shortTechnicalLabel" style={styles.achievementHeaderKicker}>THE LEDGER</ThemedText><ThemedText typographyRole="modalTitle" style={styles.achievementHeaderText}>{ACHIEVEMENT_SECTION_LABELS[section]}</ThemedText></View><View style={styles.navButton} /></View>
         <AchievementFamilyRail section={section} onSelect={openSection} />
         {loading ? <AchievementRequestState kind="loading" message="Loading achievements" />
           : error ? <AchievementRequestState kind={errorKind ?? 'error'} message={error} onRetry={() => void reload()} />
@@ -581,6 +583,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
       </ScrollView>
     </View>
     <Modal transparent visible={!!detail} animationType="fade" onRequestClose={() => setDetail(null)}><Pressable style={styles.modalScrim} onPress={() => setDetail(null)}><Pressable testID="achievement-detail" style={styles.detailSheet} onPress={(event) => event.stopPropagation()}><View style={[styles.detailIcon, detail?.state === 'completed' ? styles.totalEarned : detail?.state === 'progress' ? styles.totalProgress : styles.totalLocked]}>{detail?.state === 'completed' ? <SLTrophy size={21} /> : <Ionicons name={detail?.state === 'progress' ? 'radio-button-on' : 'lock-closed'} size={21} color={detail?.state === 'progress' ? '#B165FF' : '#AEB7C6'} />}</View><ThemedText typographyRole="heroNumeric" style={styles.detailTitle}>{detail?.value}</ThemedText><ThemedText typographyRole="modalTitle" style={styles.detailLabel}>{detail?.label}</ThemedText><ThemedText typographyRole="modalBody" style={styles.detailState}>{detail?.state === 'completed' ? 'Earned' : detail?.state === 'progress' ? detail.remaining ?? 'In progress' : 'Locked · Keep building'}</ThemedText>{detail?.note ? <ThemedText typographyRole="supportingBody" style={styles.detailNote}>{detail.note}</ThemedText> : null}<Pressable onPress={() => { const href = detail?.sourceHref; setDetail(null); if (href) router.push(href as any); }} style={styles.detailClose}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>{detail?.sourceHref ? detail.actionLabel ?? 'Open source evidence' : 'Done'}</ThemedText></Pressable></Pressable></Pressable></Modal>
+    </FloatingControlCoordinator>
   </SLScreen>;
 }
 

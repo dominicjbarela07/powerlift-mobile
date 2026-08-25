@@ -15,7 +15,7 @@ import {
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
@@ -282,8 +282,6 @@ export function CanonicalMovementHistoryScreen({
             <Ionicons name="ellipsis-horizontal" size={21} color="#D5D3DC" />
           </Pressable>
         </View>
-        <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={unit} onChange={setUnit} testID="movement-history-unit-toggle" /></View>
-
         {loading && !history ? <State icon="hourglass-outline" title="Loading exact movement evidence" /> : error && !history ? <State icon="alert-circle-outline" title={error} action="Try again" onAction={() => void load(false)} /> : history ? (
           <>
             <View style={styles.movementHeader}>
@@ -398,8 +396,8 @@ export function CanonicalMovementHistoryScreen({
       </StrengthLedgerBottomSheet>
     </>
   );
-  if (presentation === 'sheet') return <View style={styles.screen}>{screenContent}</View>;
-  return <SLScreen edges="top" padded={false} style={styles.screen}>{screenContent}</SLScreen>;
+  if (presentation === 'sheet') return <View style={styles.screen}><FloatingControlCoordinator context="sheet"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></View>;
+  return <SLScreen edges="top" padded={false} style={styles.screen}><FloatingControlCoordinator context="screen"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></SLScreen>;
 }
 
 function State({ icon, title, action, onAction }: { icon: keyof typeof Ionicons.glyphMap; title: string; action?: string; onAction?: () => void }) {
@@ -506,8 +504,6 @@ function DetailFact({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  unitToolbar: { minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
-  unitToolbarLabel: { color: '#85808F', fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   screen: { flex: 1, backgroundColor: '#020205' },
   content: { paddingHorizontal: 14, paddingBottom: SLLayout.tabBarClearance + 26 },
   navbar: { height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

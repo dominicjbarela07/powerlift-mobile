@@ -16,6 +16,7 @@ import {
 import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon } from '@/components/ui/sl-trophy';
 import { SLScreen } from '@/components/ui/sl-screen';
+import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
 
@@ -25,6 +26,7 @@ export function LedgerFrame({ active, children }: React.PropsWithChildren<{ acti
 
   return (
     <SLScreen edges="none" padded={false} style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         {!isIndex ? <View style={styles.backRow}>
           <Pressable accessibilityLabel="Back to The Ledger" onPress={() => router.replace(ledgerHrefFor('home') as any)} style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
@@ -33,6 +35,7 @@ export function LedgerFrame({ active, children }: React.PropsWithChildren<{ acti
         </View> : null}
         <AnimatedEntrance key={active}>{children}</AnimatedEntrance>
       </ScrollView>
+      </FloatingControlCoordinator>
     </SLScreen>
   );
 }

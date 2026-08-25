@@ -21,7 +21,7 @@ import {
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLAthleteAvatar } from '@/components/ui';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { Text } from '@/components/ui/sl-text';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
 import { canonicalAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
@@ -438,6 +438,8 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   return (
     <>
     <StrengthLedgerBottomSheet accessibilityLabel="Athlete Hub" onDismiss={closeSheet} visible>
+          <FloatingControlCoordinator context="sheet">
+          <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} slot={1} testID="coach-athlete-hub-unit-toggle" />
           <ScrollView ref={scrollRef} bounces contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.hero}>
               <LinearGradient colors={['rgba(157,92,255,0.17)', 'rgba(7,8,13,0.94)']} style={StyleSheet.absoluteFillObject} />
@@ -472,8 +474,6 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <QuickAction icon="ellipsis-horizontal" label="More" onPress={more} />
               </View>
             </View>
-            <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={displayUnit} onChange={setDisplayUnit} testID="coach-athlete-hub-unit-toggle" /></View>
-
             {primaryReason ? (
               <Pressable accessibilityRole="button" onPress={openPrimaryReason} style={({ pressed }) => [styles.attentionCard, pressed && styles.pressed]}>
                 <LinearGradient colors={['rgba(255,71,103,0.24)', 'rgba(37,8,18,0.96)']} style={StyleSheet.absoluteFillObject} />
@@ -637,6 +637,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
               <Ionicons color={COACH_V2.text} name="arrow-forward" size={20} />
             </Pressable>
           </ScrollView>
+          </FloatingControlCoordinator>
     </StrengthLedgerBottomSheet>
     <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={() => setReadinessOpen(false)} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={readinessOpen}>
       <View style={styles.detailBackdrop}>
@@ -758,8 +759,6 @@ function ReadinessComponent({ label, value }: { label: string; value?: number | 
 }
 
 const styles = StyleSheet.create({
-  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
-  unitToolbarLabel: { color: COACH_V2.muted, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
   sheetActions: { position: 'absolute', zIndex: 2, top: 17, right: 10, flexDirection: 'row', gap: 7 },
   roundButton: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   content: { gap: 14, padding: 14, paddingTop: 8 },

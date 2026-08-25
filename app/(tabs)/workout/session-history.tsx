@@ -18,7 +18,7 @@ import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList, simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { SLPageHeader } from '@/components/ui';
-import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { CompactAccomplishmentSignal, type AccomplishmentSignal } from '@/components/core-accomplishments';
 import { feedbackAnalytics } from '@/lib/logger-feedback';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
@@ -153,6 +153,8 @@ export default function SessionHistoryScreen() {
 
   return (
     <View style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
+      <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="session-history-unit-toggle" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scroll}
@@ -163,8 +165,6 @@ export default function SessionHistoryScreen() {
           backLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
-        <View style={styles.unitToolbar}><Text style={styles.unitToolbarLabel}>DISPLAY UNIT</Text><SurfaceWeightUnitToggle unit={displayUnit} onChange={setDisplayUnit} testID="session-history-unit-toggle" /></View>
-
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
             <Ionicons name="search-outline" size={16} color={colors.muted} />
@@ -237,6 +237,7 @@ export default function SessionHistoryScreen() {
         onClear={clearFilters}
         onClose={() => setFilterOpen(false)}
       />
+      </FloatingControlCoordinator>
     </View>
   );
 }
@@ -549,8 +550,6 @@ function formatReadableDate(value: string) {
 }
 
 const styles = StyleSheet.create({
-  unitToolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
-  unitToolbarLabel: { ...SLTypography.caption, color: colors.subtle, textTransform: 'uppercase' },
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
   scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
