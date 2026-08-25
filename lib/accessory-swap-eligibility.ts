@@ -3,6 +3,7 @@ export type AccessorySwapAction = 'Swap' | 'Sub' | null;
 export type ItemSetLogProjection = {
   id?: number | string | null;
   set_logs?: readonly unknown[] | null;
+  has_performed_evidence?: boolean | null;
 };
 
 type AccessoryGroupCollection = {
@@ -26,7 +27,7 @@ const SWAPPABLE_SESSION_LIFECYCLES = new Set([
 export function itemHasPersistedSetLogs(
   item?: ItemSetLogProjection | null,
 ): boolean {
-  return (item?.set_logs || []).length > 0;
+  return item?.has_performed_evidence === true || (item?.set_logs || []).length > 0;
 }
 
 export function persistedSetLogItemIds(
@@ -60,9 +61,8 @@ export function accessorySwapActionForItem({
   targetItemHasSetLogs: boolean;
   acceptedPersistedSetLogForItem?: boolean;
 }): AccessorySwapAction {
-  // Existing SetLogs are immutable snapshots. They do not prevent changing
-  // the governed movement used by future sets in the same active Session.
   if (isCoachPreview) return null;
+  if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
   if (!SWAPPABLE_SESSION_LIFECYCLES.has(String(sessionLifecycle || '').trim().toLowerCase())) {
     return null;
   }
