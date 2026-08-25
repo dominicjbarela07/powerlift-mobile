@@ -1285,7 +1285,18 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
 }
 
 function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | null; kind: MovementKind; size: number }) {
-  return <CanonicalMovementArtwork movement={item ? { ...item, kind } : null} size={size} testID="session-editor-canonical-movement-artwork" />;
+  const movement = item ? {
+    id: item.id,
+    kind,
+    lift: item.lift,
+    variant: item.variant,
+    movement_definition_id: item.movement_identity?.id,
+    movement_identity: item.movement_identity,
+    performed_movement_identity: item.performed_movement_identity,
+    performed_canonical_movement_identity: item.performed_canonical_movement_identity,
+    legacy: item.legacy,
+  } : null;
+  return <CanonicalMovementArtwork movement={movement} size={size} testID="session-editor-canonical-movement-artwork" />;
 }
 
 type PrescriptionDropdownOption = {

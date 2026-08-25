@@ -81,7 +81,7 @@ assert.deepEqual(
 
 assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'Collapsed rows must render through the shared artwork component.');
 assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{64\}/, 'Expanded rows must render through the shared artwork component.');
-assert.match(workspace, /function MovementArtwork[\s\S]*<CanonicalMovementArtwork movement=\{item \? \{ \.\.\.item, kind \} : null\}/, 'Session Workspace must use the one governed individual-movement artwork resolver.');
+assert.match(workspace, /function MovementArtwork[\s\S]*<CanonicalMovementArtwork movement=\{movement\}/, 'Session Workspace must use the one governed individual-movement artwork resolver.');
 assert.doesNotMatch(workspace, /<MuscleMap/, 'Individual Session Workspace movement cards must never render full-figure anatomy.');
 assert.doesNotMatch(workspace, /ACCESSORY_CATEGORY_ARTWORK|accessory-wordmark-coin-seal|back-region/, 'Session rows must not use a generic accessory or broad regional asset.');
 

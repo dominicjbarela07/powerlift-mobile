@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
