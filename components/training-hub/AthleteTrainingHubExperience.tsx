@@ -14,6 +14,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { Text } from '@/components/ui/sl-text';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { TrainingHubSessionPreviewBottomSheet } from '@/components/training-hub/TrainingHubSessionPreviewSheet';
 import { TrainingHubMaterialSurface } from '@/components/training-hub/training-hub-material-surface';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
@@ -25,6 +26,7 @@ import {
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const PROGRAM_ART = require('@/assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
 const BLOCK_ART = require('@/assets/images/gym_vibe.jpg');
@@ -190,6 +192,7 @@ export function AthleteTrainingHubExperience({
   initialExpandedWeekKey?: string | null;
   initialSessionId?: number | null;
 }) {
+  const { unit, setUnit } = useSurfaceWeightUnit(data.preferredUnits);
   const currentBlock = data.activeProgram?.blocks.find((block) => block.status === 'current')
     || data.activeProgram?.blocks[0]
     || null;
@@ -228,6 +231,7 @@ export function AthleteTrainingHubExperience({
   const progress = clamp01(program.progress);
   return (
     <View style={styles.root}>
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="training-hub-unit-toggle" />
       <ProgramHero data={data} program={program} progress={progress} />
 
       <ProgramTimeline blocks={program.blocks} selectedBlockId={selectedBlock?.id} onSelect={setSelectedBlockId} />

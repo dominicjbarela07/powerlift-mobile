@@ -22,6 +22,7 @@ import { TodayCheckInSurface, TodaySubmittedCheckIn } from '@/components/Athlete
 import { AthleteHomeV3 } from '@/components/home/AthleteHomeV3';
 import { type TodayReadinessObservation } from '@/components/home/TodayHomeExperience';
 import { SLButton, SLProfileAvatar } from '@/components/ui';
+import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
@@ -661,6 +662,7 @@ export default function AthleteDashboard() {
 
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <FloatingControlCoordinator context="tab-screen">
       <PatchNoteModal dismissPatchNote={dismissPatchNote} showPatchNote={showPatchNote && !isIndividual} />
       <IndividualTodayWelcomeModal
         onGoToProgramming={goToProgrammingFromWelcome}
@@ -708,6 +710,7 @@ export default function AthleteDashboard() {
           today={today}
         />
       </ScrollView>
+      </FloatingControlCoordinator>
     </SafeAreaView>
   );
 }

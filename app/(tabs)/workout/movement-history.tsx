@@ -17,6 +17,7 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { SLPageHeader } from '@/components/ui';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } from '@/components/core-accomplishments';
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
@@ -262,6 +263,8 @@ function MovementHistoryIndexScreen() {
 
   return (
     <View style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
+      <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="movement-history-index-unit-toggle" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scroll}
@@ -272,7 +275,6 @@ function MovementHistoryIndexScreen() {
           backLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
-
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
             <Ionicons name="search-outline" size={16} color={colors.muted} />
@@ -384,6 +386,7 @@ function MovementHistoryIndexScreen() {
         onClear={clearFilters}
         onClose={() => setFilterOpen(false)}
       />
+      </FloatingControlCoordinator>
     </View>
   );
 }

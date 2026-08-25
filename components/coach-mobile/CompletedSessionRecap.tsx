@@ -27,10 +27,12 @@ import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideo
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLColors, SLFontFamilies, SLRadius, SLShadows } from '@/constants/theme';
 import { canonicalMovementArtworkSource } from '@/lib/canonical-movement-artwork-assets';
 import { API_BASE } from '@/lib/api';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   formatCalculatedWeightDeltaFromKg,
   formatCalculatedWeightFromKg,
@@ -747,7 +749,7 @@ function ActionButton({ icon, label, primary, onPress }: { icon: React.Component
 
 export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, refreshing, onRefresh, onClose, onDone, initialTab = 'performed', initialShowAllMovements = false, initialScrollOffsetY = 0, initialExpandedItemId, viewerMode = 'athlete', coachReview, coachReviewUnavailableReason, onViewLedger, onViewCalendar, onLogNextSession, onOpenProgramming, onOpenMovementHistory }: Props) {
   const insets = useSafeAreaInsets();
-  const unit = normalizeDisplayWeightUnit(preferredUnits);
+  const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits);
   const [tab, setTab] = useState<RecapTab>(initialTab);
   const [showAllMovements, setShowAllMovements] = useState(initialShowAllMovements);
   const [showAccomplishments, setShowAccomplishments] = useState(false);
@@ -824,6 +826,8 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   }
 
   return <SafeAreaView edges={['top']} style={styles.screen}>
+    <FloatingControlCoordinator context="screen">
+    <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="session-recap-unit-toggle" />
     <View style={styles.topBar}><Pressable accessibilityRole="button" accessibilityLabel="Back from Session review" onPress={onClose} style={({ pressed }) => [styles.topButton, pressed && styles.pressed]}><Ionicons name="chevron-back" size={23} color={SLColors.textPrimary} /></Pressable><View style={styles.topBarCopy}><Text numberOfLines={1} style={styles.topTitle}><Text style={styles.topDot}>• </Text>{recap.session.label}</Text><Text style={styles.topSubtitle}>{viewerMode === 'coach' ? 'Coach Session Review' : 'Session Recap'}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Done reviewing completed session recap" onPress={onDone || onClose} style={({ pressed }) => [styles.completeMark, pressed && styles.pressed]}><Ionicons name="checkmark" size={23} color={SLColors.textPrimary} /></Pressable></View>
     <ScrollView contentOffset={{ x: 0, y: initialScrollOffsetY }} contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 18) + 24 }]} refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={SLColors.accent} /> : undefined} showsVerticalScrollIndicator={false}>
       <View style={styles.sectionShell}><View style={styles.tabs}><Pressable accessibilityRole="tab" accessibilityState={{ selected: tab === 'performed' }} onPress={() => setTab('performed')} style={[styles.tab, tab === 'performed' && styles.tabActive]}><Text style={[styles.tabText, tab === 'performed' && styles.tabTextActive]}>Performed</Text></Pressable><Pressable accessibilityRole="tab" accessibilityState={{ selected: tab === 'plan' }} onPress={() => setTab('plan')} style={[styles.tab, tab === 'plan' && styles.tabActive]}><Text style={[styles.tabText, tab === 'plan' && styles.tabTextActive]}>Plan / Compare</Text></Pressable></View></View>
@@ -846,6 +850,7 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
       {deepActions.length ? <View style={styles.sectionShell}><View style={styles.nextActions}>{deepActions.map((action) => <ActionButton key={action.label} {...action} />)}</View></View> : null}
     </ScrollView>
     <SetVideoPlayerModal visible={!!video} videoId={video?.id || null} initialVideo={video?.summary || null} initialUrl={video?.summary?.url || null} onClose={() => setVideo(null)} />
+    </FloatingControlCoordinator>
   </SafeAreaView>;
 }
 

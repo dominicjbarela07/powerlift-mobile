@@ -21,9 +21,11 @@ import {
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLAthleteAvatar } from '@/components/ui';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   attentionActionLabel,
   formatCoachRelativeDate,
@@ -199,6 +201,9 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   const [readinessDetailLoading, setReadinessDetailLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(
+    summary?.athlete.preferred_units ?? user?.preferred_units,
+  );
 
   const load = useCallback(async () => {
     if (!athlete) return;
@@ -346,7 +351,6 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   const focusPrimary = (canonicalFocus?.primary || []).map((item) => item.muscle_id).filter(Boolean);
   const focusSecondary = (canonicalFocus?.secondary || []).map((item) => item.muscle_id).filter(Boolean);
   const renderedFocusPrimary = focusPrimary.length ? focusPrimary : focus;
-  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const week = details?.week_summary || athlete.week_summary;
   const highlights = recap?.highlights;
   const prCount = highlights?.pr_count ?? lastSession?.pr_count ?? week?.pr_count ?? 0;
@@ -440,6 +444,8 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   return (
     <>
     <StrengthLedgerBottomSheet accessibilityLabel="Athlete Hub" onDismiss={closeSheet} visible>
+          <FloatingControlCoordinator context="sheet">
+          <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} slot={1} testID="coach-athlete-hub-unit-toggle" />
           <ScrollView ref={scrollRef} bounces contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.hero}>
               <LinearGradient colors={['rgba(157,92,255,0.17)', 'rgba(7,8,13,0.94)']} style={StyleSheet.absoluteFillObject} />
@@ -474,7 +480,6 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <QuickAction icon="ellipsis-horizontal" label="More" onPress={more} />
               </View>
             </View>
-
             {primaryReason ? (
               <Pressable accessibilityRole="button" onPress={openPrimaryReason} style={({ pressed }) => [styles.attentionCard, pressed && styles.pressed]}>
                 <LinearGradient colors={['rgba(255,71,103,0.24)', 'rgba(37,8,18,0.96)']} style={StyleSheet.absoluteFillObject} />
@@ -638,6 +643,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
               <Ionicons color={COACH_V2.text} name="arrow-forward" size={20} />
             </Pressable>
           </ScrollView>
+          </FloatingControlCoordinator>
     </StrengthLedgerBottomSheet>
     <Modal animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={() => setReadinessOpen(false)} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={readinessOpen}>
       <View style={styles.detailBackdrop}>

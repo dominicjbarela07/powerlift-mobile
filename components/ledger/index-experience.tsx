@@ -15,7 +15,9 @@ import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLSpacing } from '@/constants/theme';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   canonicalLiftKey,
   displayCalculatedWeight,
@@ -376,6 +378,7 @@ export function LedgerIndexExperience() {
   const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
   const [journeyBootstrap, setJourneyBootstrap] = useState<JourneyBootstrap | null>(null);
   const [supportLoading, setSupportLoading] = useState(true);
+  const { unit, setUnit } = useSurfaceWeightUnit(progression?.athlete?.preferred_units);
 
   useEffect(() => {
     let active = true;
@@ -390,7 +393,6 @@ export function LedgerIndexExperience() {
   }, []);
 
   const model = useMemo(() => {
-    const unit: LedgerUnit = progression?.athlete?.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
     const prs = recentPrPerformances(accomplishments);
     const latest = accomplishments.find((event) => !RAW_COMPLETION_EVENT_TYPES.has(event.event_type));
     const liftBests = CORE_LIFT_PRESENTATION.map((lift) => currentBests
@@ -400,7 +402,7 @@ export function LedgerIndexExperience() {
     const club = totalClubState(completeTotal, unit);
     const trophyIndex = Math.max(0, club.earnedTierIndex);
     return { prs, latest, unit, liftBests, trophyIndex };
-  }, [accomplishments, currentBests, progression?.athlete?.preferred_units]);
+  }, [accomplishments, currentBests, unit]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
   if (error) return <View testID="ledger-home-experience" style={styles.state}><Ionicons name={errorKind === 'unauthorized' ? 'lock-closed-outline' : 'alert-circle-outline'} size={32} color="#B994F3" /><Text style={styles.stateTitle}>{error}</Text><Pressable onPress={() => void reload()} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable></View>;
@@ -466,6 +468,7 @@ export function LedgerIndexExperience() {
   const latestFooter = [latestEquipment, dateLabel(latestDate)].filter(Boolean).join(' · ');
 
   return <View testID="ledger-home-experience" style={styles.page}>
+    <FloatingDisplayUnitRegistration unit={model.unit} onChange={setUnit} testID="ledger-index-unit-toggle" />
     <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
       <View style={styles.heroScrim} />
       <View style={styles.heroCopy}>

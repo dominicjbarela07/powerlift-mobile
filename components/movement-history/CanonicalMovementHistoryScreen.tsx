@@ -16,6 +16,7 @@ import { AnalyticalHistoryChart } from '@/components/movement-history/Analytical
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { SLLayout } from '@/constants/theme';
@@ -38,6 +39,7 @@ import {
   kilogramsToDisplayValue,
 } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   buildLoadRepProfileLayout,
@@ -183,6 +185,7 @@ export function CanonicalMovementHistoryScreen({
   coreMovementId,
   athleteId,
   initialEquipmentContextDefinitionId,
+  initialDisplayUnit,
   presentation = 'screen',
   onRequestClose,
 }: {
@@ -190,6 +193,7 @@ export function CanonicalMovementHistoryScreen({
   coreMovementId?: number | null;
   athleteId?: number | null;
   initialEquipmentContextDefinitionId?: number | null;
+  initialDisplayUnit?: MovementHistoryUnit | null;
   presentation?: 'screen' | 'sheet';
   onRequestClose?: () => void;
 }) {
@@ -329,7 +333,7 @@ export function CanonicalMovementHistoryScreen({
     }
   };
 
-  const unit = history?.athlete.preferred_units || 'kg';
+  const { unit, setUnit } = useSurfaceWeightUnit(history?.athlete.preferred_units, initialDisplayUnit);
   const selectedEquipment = history?.equipment_breakdown.find((row) => row.selected) || null;
   const isCoreHistory = history?.movement.identity_type === 'core';
   const scopeLabel = isCoreHistory
@@ -359,7 +363,6 @@ export function CanonicalMovementHistoryScreen({
             <Ionicons name="ellipsis-horizontal" size={21} color="#D5D3DC" />
           </Pressable>
         </View>
-
         {loading && !history ? <State icon="hourglass-outline" title="Loading exact movement evidence" /> : error && !history ? <State icon="alert-circle-outline" title={error} action="Try again" onAction={() => void load(false)} /> : history ? (
           <>
             <View style={styles.movementHeader}>
@@ -469,8 +472,8 @@ export function CanonicalMovementHistoryScreen({
       </StrengthLedgerBottomSheet>
     </>
   );
-  if (presentation === 'sheet') return <View style={styles.screen}>{screenContent}</View>;
-  return <SLScreen edges="top" padded={false} style={styles.screen}>{screenContent}</SLScreen>;
+  if (presentation === 'sheet') return <View style={styles.screen}><FloatingControlCoordinator context="sheet"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></View>;
+  return <SLScreen edges="top" padded={false} style={styles.screen}><FloatingControlCoordinator context="screen"><FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="movement-history-unit-toggle" />{screenContent}</FloatingControlCoordinator></SLScreen>;
 }
 
 function State({ icon, title, action, onAction }: { icon: keyof typeof Ionicons.glyphMap; title: string; action?: string; onAction?: () => void }) {

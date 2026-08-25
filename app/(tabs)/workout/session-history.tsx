@@ -18,6 +18,7 @@ import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList, simplifyMobileMovementText } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
 import { SLPageHeader } from '@/components/ui';
+import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { CompactAccomplishmentSignal, type AccomplishmentSignal } from '@/components/core-accomplishments';
 import { feedbackAnalytics } from '@/lib/logger-feedback';
 import type { LoggerDisplayUnit } from '@/lib/logger-weight-format.js';
@@ -154,6 +155,8 @@ export default function SessionHistoryScreen() {
 
   return (
     <View style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
+      <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="session-history-unit-toggle" />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scroll}
@@ -164,7 +167,6 @@ export default function SessionHistoryScreen() {
           backLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
-
         <View style={styles.searchControlRow}>
           <View style={styles.searchRow}>
             <Ionicons name="search-outline" size={16} color={colors.muted} />
@@ -237,6 +239,7 @@ export default function SessionHistoryScreen() {
         onClear={clearFilters}
         onClose={() => setFilterOpen(false)}
       />
+      </FloatingControlCoordinator>
     </View>
   );
 }

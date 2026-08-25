@@ -7,6 +7,7 @@ import Svg, { Circle, Line, Polygon, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
@@ -359,6 +360,7 @@ export function JourneyExperience() {
 
   return (
     <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience">
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-journey-unit-toggle" />
       <View style={styles.journeyIntro}>
         <Kicker>YOUR COMPLETE RECORD</Kicker>
         <Text style={styles.journeyIntroTitle}>Journey</Text>
@@ -712,9 +714,9 @@ export function StrengthExperience() {
 
   return (
     <View style={[styles.page, styles.strengthPage]} testID="ledger-strength-experience">
+      <FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" />
       <View style={styles.strengthControls}>
         <Segmented values={['30d', '90d', '180d', '1y', 'all'] as const} value={range} onChange={setRange} />
-        <Segmented values={['lb', 'kg'] as const} value={unit} onChange={changeUnit} />
       </View>
       <View style={styles.strengthLiftRail} accessibilityRole="tablist">
         {profile.map((item, index) => <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected: index === focusLiftIndex }} onPress={() => setFocusLiftIndex(index)} style={[styles.strengthLiftTab, index === focusLiftIndex && { borderColor: item.color, backgroundColor: `${item.color}13` }]}><Image source={item.image} resizeMode="contain" style={[styles.strengthLiftTabImage, { tintColor: item.color }]} /><Text style={[styles.strengthLiftTabText, index === focusLiftIndex && { color: item.color }]}>{item.key}</Text></Pressable>)}

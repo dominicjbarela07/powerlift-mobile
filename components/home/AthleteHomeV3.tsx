@@ -12,6 +12,7 @@ import {
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { HomeTrendPlot } from '@/components/home/HomeTrendPlot';
 import { SLProfileAvatar } from '@/components/ui';
+import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
 import {
@@ -32,6 +33,7 @@ import {
   normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
 import type { HomePlotDatum } from '@/lib/home-trend-plot';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const TRAINING_ART = require('@/assets/images/gym_vibe.jpg');
 const RECOVERY_ART = require('@/assets/images/chair.png');
@@ -72,11 +74,12 @@ type Props = {
 export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
   const state = resolveHomeState(home);
-  const unit = normalizeDisplayWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
+  const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
 
   return (
     <View style={styles.page}>
       <Greeting today={today} state={state} />
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="athlete-home-unit-toggle" />
       <StateHero home={home} onAction={onAction} state={state} today={today} unit={unit} />
       {supplementaryContent}
       <WeekSection home={home} onAction={onAction} today={today} unit={unit} />
