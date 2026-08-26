@@ -1097,6 +1097,7 @@ function IndividualProgrammingHome({
           accessibilityLabel="Session Workspace"
           onDismiss={finishWorkspaceDismiss}
           onRequestClose={requestWorkspaceDismiss}
+          presentationBoundary="app-shell"
           testID="programming-session-workspace-sheet"
           visible
         >

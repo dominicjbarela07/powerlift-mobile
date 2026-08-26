@@ -393,9 +393,9 @@ export function SessionEditingWorkspace(props: Props) {
     acceptIncomingSessionRef.current = false;
   }, [incomingSession, incomingSessionSignature, sessionDirty]);
   useLayoutEffect(() => {
-    setSessionEditorOverlayOpen(sessionDirty);
+    setSessionEditorOverlayOpen(true);
     return () => setSessionEditorOverlayOpen(false);
-  }, [sessionDirty]);
+  }, []);
   useEffect(() => {
     let active = true;
     const requests = currentCoreItems
@@ -698,6 +698,20 @@ export function SessionEditingWorkspace(props: Props) {
 
   return (
     <View style={styles.root}>
+      <View style={styles.workspaceTopBar}>
+        {!props.sheetPresentation ? (
+          <Pressable
+            accessibilityLabel="Return to Week Lens"
+            accessibilityRole="button"
+            onPress={() => resolveDirty(props.onCloseWorkspace)}
+            style={styles.workspaceTopBarAction}
+          >
+            <Ionicons color={palette.text} name="chevron-back" size={22} />
+          </Pressable>
+        ) : <View style={styles.workspaceTopBarAction} />}
+        <Text numberOfLines={1} style={styles.workspaceTopBarTitle}>Session Workspace</Text>
+        <View style={styles.workspaceTopBarAction} />
+      </View>
       <ScrollView
         automaticallyAdjustKeyboardInsets
         ref={listScrollRef}
@@ -811,7 +825,7 @@ export function SessionEditingWorkspace(props: Props) {
       <SessionFloatingToolkit
         bottom={props.sheetPresentation
           ? SLSpacing.md
-          : insets.bottom + SLSpacing.xs + SL_TAB_ROW_CONTROL.shellHeight + SLSpacing.md}
+          : insets.bottom + SLSpacing.md}
         expanded={toolkitExpanded}
         reduceMotion={reduceMotion}
         restricted={sessionDirty}
@@ -2263,6 +2277,9 @@ function formatDate(value?: string | null) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: palette.canvas },
+  workspaceTopBar: { minHeight: 48, flexShrink: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SLLayout.screenGutter, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderHairline, backgroundColor: palette.canvas },
+  workspaceTopBarAction: { width: SLControlSize.minimumTouchTarget, height: SLControlSize.minimumTouchTarget, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md },
+  workspaceTopBarTitle: { flex: 1, minWidth: 0, color: palette.text, textAlign: 'center', fontFamily: SLFontFamilies.sansBold, fontSize: 17, lineHeight: 22 },
   scroll: { flex: 1 },
   content: { paddingTop: 6, paddingBottom: 160 },
   contentEditing: { paddingBottom: 148 },

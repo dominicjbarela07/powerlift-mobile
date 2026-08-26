@@ -13,6 +13,7 @@ const areas = [
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
+  ['Session Workspace composition', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs']],
 ];
 
 const failures = [];

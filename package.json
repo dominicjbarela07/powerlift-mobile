@@ -13,6 +13,7 @@
     "test:review-hub-canonical": "node scripts/test-review-hub-canonical-parity.mjs",
     "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js",
     "test:adaptive-session-workspace-canonical": "node scripts/test-adaptive-session-workspace-canonical.mjs",
+    "test:session-workspace-layout": "node scripts/test-session-workspace-layout.mjs && node scripts/test-programming-session-workspace-sheet.mjs",
     "test:logger-feedback": "node scripts/test-logger-feedback.mjs",
     "test:rpe-pr-recognition": "node scripts/test-rpe-pr-recognition.mjs",
     "test:e1rm-session-insight": "node scripts/test-e1rm-session-insight.mjs",

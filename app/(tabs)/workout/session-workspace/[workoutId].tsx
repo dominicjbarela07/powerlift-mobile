@@ -13,7 +13,6 @@ import {
   View,
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
-import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -33,7 +32,7 @@ import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 import {
   mapCoachSessionEditorPayload,
 } from '@/lib/coach-session-editor';
-import { SLColors, SLControlSize, SLFontFamilies, SLLayout, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import { SLColors, SLControlSize, SLFontFamilies, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import {
   SessionEditingWorkspace,
   type CalculatedLoadRequest,
@@ -660,14 +659,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     () => (workout?.accessory_groups || []).flatMap((group) => group.items || []),
     [workout?.accessory_groups]
   );
-  const workspaceFocus = useMemo(() => {
-    const focus = workout?.muscle_focus;
-    return {
-      primary: (focus?.primary || []).map((row) => row.muscle_id).filter(Boolean),
-      secondary: (focus?.secondary || []).map((row) => row.muscle_id).filter(Boolean),
-    };
-  }, [workout?.muscle_focus]);
-
   const status = humanStatus(workout?.raw_status || workout?.status);
   const title = sessionTitle(workout?.label);
   const context = sessionContext(payload?.athlete?.name, workout?.label, workout?.date);
@@ -1397,22 +1388,8 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
 
   return (
     <>
-      {!props.embedded ? <Tabs.Screen options={{ headerShown: false, tabBarStyle: { display: 'none' } }} /> : null}
-      <View style={[styles.screen, styles.programmingWorkspaceStage, props.embedded && styles.embeddedWorkspaceStage]}>
-      <View style={styles.programmingWeekContext}>
-        {!props.embedded ? <Pressable accessibilityRole="button" accessibilityLabel="Return to Week Lens" onPress={closeToProgrammingHome} style={styles.programmingWeekBack}>
-          <Ionicons name="chevron-back" size={18} color={colors.textStrong} />
-        </Pressable> : null}
-        <View style={styles.programmingWeekContextCopy}>
-          <Text style={styles.programmingWeekContextTitle}>Week {programmingWeek || '—'}</Text>
-          <Text style={styles.programmingWeekContextMeta}>{programmingDay ? formatContextDate(programmingDay) : context}</Text>
-        </View>
-        <View style={styles.programmingWeekContextArt}>
-          <ProgrammingMuscleRegionArt level="session" primary={workspaceFocus.primary} secondary={workspaceFocus.secondary} style={styles.programmingWeekContextAnatomy} />
-        </View>
-      </View>
-      <View style={styles.programmingWorkspaceSheet}>
-        {!props.embedded ? <View style={styles.programmingWorkspaceHandle} /> : null}
+      {!props.embedded ? <Tabs.Screen options={{ headerShown: true, tabBarStyle: { display: 'none' } }} /> : null}
+      <View style={[styles.screen, styles.programmingWorkspaceStage]}>
         <SessionEditingWorkspace
         title={title}
         context={context}
@@ -1537,7 +1514,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         onCancel={cancelReorderEditor}
         onApply={applyReorder}
       />
-      </View>
     </>
   );
 
@@ -3797,67 +3773,6 @@ const styles = StyleSheet.create({
   },
   programmingWorkspaceStage: {
     backgroundColor: '#08090D',
-    paddingTop: 8,
-  },
-  embeddedWorkspaceStage: {
-    paddingTop: 0,
-  },
-  programmingWeekContext: {
-    minHeight: 66,
-    paddingHorizontal: SLLayout.screenGutter,
-    paddingBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  programmingWeekBack: {
-    width: 38,
-    height: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  programmingWeekContextCopy: { flex: 1 },
-  programmingWeekContextArt: {
-    width: 50,
-    height: 52,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(168,101,255,0.34)',
-    borderRadius: SLRadius.md,
-    backgroundColor: 'rgba(70,31,100,0.16)',
-  },
-  programmingWeekContextAnatomy: { width: '100%', height: '100%' },
-  programmingWeekContextTitle: {
-    color: colors.textStrong,
-    fontSize: SLTypography.sectionTitle.fontSize,
-    fontFamily: SLFontFamilies.sansBold,
-  },
-  programmingWeekContextMeta: {
-    color: colors.muted,
-    fontSize: SLTypography.caption.fontSize,
-    fontFamily: SLFontFamilies.sansMedium,
-    marginTop: 2,
-  },
-  programmingWorkspaceSheet: {
-    flex: 1,
-    overflow: 'hidden',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: colors.line,
-    backgroundColor: SLColors.canvas,
-  },
-  programmingWorkspaceHandle: {
-    width: 42,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    backgroundColor: colors.subtle,
-    marginTop: 7,
-    marginBottom: 2,
   },
   scrollView: {
     flex: 1,

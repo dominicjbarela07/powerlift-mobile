@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSLReducedMotion } from '@/lib/motion';
 import { SLColors, SLShadows } from '@/constants/theme';
+import { STRENGTH_LEDGER_APP_HEADER } from '@/components/navigation/StrengthLedgerAppHeader';
 
 const DISMISS_DISTANCE = 96;
 const DISMISS_VELOCITY = 0.85;
@@ -26,6 +27,7 @@ type Props = Readonly<{
   accessibilityLabel: string;
   children: React.ReactNode;
   heightFraction?: number;
+  presentationBoundary?: 'viewport' | 'app-shell';
   motionPreset?: 'standard' | 'deliberate';
   onDismiss: () => void;
   onRequestClose?: () => void;
@@ -37,6 +39,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   accessibilityLabel,
   children,
   heightFraction = 0.93,
+  presentationBoundary = 'viewport',
   motionPreset = 'standard',
   onDismiss,
   onRequestClose,
@@ -49,8 +52,13 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const translateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const dismissingRef = useRef(false);
-  const usableHeight = height - Math.max(insets.top + 8, 28);
-  const sheetHeight = Math.min(usableHeight, Math.round(height * Math.max(0.35, Math.min(0.93, heightFraction))));
+  const topBoundary = presentationBoundary === 'app-shell'
+    ? insets.top + STRENGTH_LEDGER_APP_HEADER.contentHeight
+    : Math.max(insets.top + 8, 28);
+  const usableHeight = Math.max(0, height - topBoundary);
+  const sheetHeight = presentationBoundary === 'app-shell'
+    ? usableHeight
+    : Math.min(usableHeight, Math.round(height * Math.max(0.35, Math.min(0.93, heightFraction))));
   const deliberateMotion = motionPreset === 'deliberate';
 
   const settle = useCallback(() => {
