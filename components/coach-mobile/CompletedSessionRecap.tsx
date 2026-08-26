@@ -39,7 +39,6 @@ import {
   formatCompactVolumeValueFromKg,
   formatWeightDeltaFromKg,
   formatWeightFromKg,
-  normalizeDisplayWeightUnit,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
@@ -66,6 +65,7 @@ import {
   type SessionRecapComparisonMovement,
   type SessionRecapSetComparison,
 } from '@/lib/session-recap-plan-compare';
+import { estimateMovementStrengthKg, strengthMetricForMovementClass } from '@/lib/movement-strength-metric';
 
 export type CompletedRecapSet = {
   id: number;
@@ -150,6 +150,7 @@ export type CompletedRecapMovement = {
     delta_value?: number | null;
     delta_kg?: number | null;
     state?: 'trend' | 'limited_history' | 'first_comparable_performance' | 'comparison_unavailable' | null;
+    strength_metric?: Record<string, string> | null;
   } | null;
   projection?: {
     metric?: string | null;
@@ -157,6 +158,7 @@ export type CompletedRecapMovement = {
     method?: string | null;
     source_set_log_id?: number | null;
     label?: string | null;
+    strength_metric?: Record<string, string> | null;
   } | null;
   history_diagnostics?: {
     movement_definition_id?: number | null;
@@ -171,6 +173,44 @@ export type CompletedRecapMovement = {
     rejected?: { reason?: string; count?: number }[];
   } | null;
 };
+
+function normalizeMovementStrengthMetric(movement: CompletedRecapMovement): CompletedRecapMovement {
+  const policy = strengthMetricForMovementClass(movement.kind);
+  const alreadyGoverned = movement.trend?.metric === policy.metric
+    && (!movement.projection || movement.projection.metric === policy.projectionMetric);
+  if (alreadyGoverned) return movement;
+  const points = (movement.trend?.points || []).map((point) => {
+    const value = estimateMovementStrengthKg(policy, point.weight_kg, point.reps, point.rpe, point.rir);
+    return value == null ? point : { ...point, score: value, metric_value: value };
+  });
+  const current = movement.best_set;
+  const projectionValue = estimateMovementStrengthKg(
+    policy, current?.weight_kg, current?.reps, current?.rpe, current?.rir,
+  );
+  return {
+    ...movement,
+    trend: movement.trend ? {
+      ...movement.trend,
+      metric: policy.metric,
+      metric_label: policy.label,
+      metric_unit: 'kg',
+      points,
+      delta_value: points.length > 1
+        ? Number(points.at(-1)?.metric_value) - Number(points.at(-2)?.metric_value)
+        : null,
+      delta_kg: points.length > 1
+        ? Number(points.at(-1)?.metric_value) - Number(points.at(-2)?.metric_value)
+        : null,
+    } : movement.trend,
+    projection: movement.projection && projectionValue != null ? {
+      ...movement.projection,
+      metric: policy.projectionMetric,
+      value_kg: projectionValue,
+      method: policy.method,
+      label: policy.label,
+    } : movement.projection,
+  };
+}
 
 type ReadinessContext = {
   sleep_quality?: number | null;
@@ -755,7 +795,8 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const [showAccomplishments, setShowAccomplishments] = useState(false);
   const [video, setVideo] = useState<{ id: number; summary?: SetVideoSummary | null } | null>(null);
   const canonicalPrEvents = useMemo(() => recap.accomplishments.filter((row) => CANONICAL_PR_EVENT_TYPES.has(String(row.event_type || '').toUpperCase())), [recap.accomplishments]);
-  const performedMovements = useMemo(() => recap.performed_movements.map((movement) => {
+  const performedMovements = useMemo(() => recap.performed_movements.map((rawMovement) => {
+    const movement = normalizeMovementStrengthMetric(rawMovement);
     const events = canonicalPrEvents.filter((row) => accomplishmentMatchesMovement(row, movement));
     const prSetIds = new Set(events.map(accomplishmentSetLogId).filter((id): id is number => id != null));
     return { ...movement, has_pr: movement.has_pr || events.length > 0, sets: movement.sets.map((set) => ({ ...set, has_pr: set.has_pr || prSetIds.has(Number(set.id)) })) };
@@ -840,7 +881,7 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
       {tab === 'performed' ? <>
         {focusRows.length ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>SESSION FOCUS</Text><View style={styles.focusCard}><LinearGradient colors={['rgba(85,29,139,0.22)', 'rgba(6,7,11,0.94)', '#05060A']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><View style={styles.focusChart}><ProgrammingMuscleRegionArt level="session" primary={(recap.muscle_focus?.primary || []).map((row) => row.muscle_id)} secondary={(recap.muscle_focus?.secondary || []).map((row) => row.muscle_id)} style={styles.focusAnatomy} /></View><View style={styles.focusBreakdown}><Text style={styles.focusSummary}>Performed muscle emphasis</Text>{focusRows.slice(0, 5).map((row, index) => { const relative = Math.round(Number(row.score || 0) / maxFocusScore * 100); const primaryCount = recap.muscle_focus?.primary?.length || 0; return <View key={row.muscle_id} style={styles.focusRow}><View style={styles.focusRowTop}><Text style={styles.focusName}>{formatMuscle(row.muscle_id)}</Text><Text style={styles.focusRank}>#{index + 1} · {index < primaryCount ? 'PRIMARY' : 'SECONDARY'}</Text></View><View style={styles.focusTrack}><View style={[styles.focusFill, { width: `${Math.max(relative, 7)}%`, backgroundColor: ['#B45CFF', '#E347CF', '#4A9FFF', '#58D68D', '#FF785A'][index % 5] }]} /></View></View>; })}<Text style={styles.evidenceSource}>Performed SetLog targets · relative governed ranking. No invented percentages.</Text></View></View></View> : null}
         <View style={styles.sectionShell}><View style={styles.sectionHeading}><Text style={styles.sectionLabel}>MOVEMENTS <Text style={styles.countBadge}>{performedMovements.length}</Text></Text><Text style={styles.sectionMeta}>Collapsed · tap for full evidence</Text></View></View><View style={styles.movementStack}>{shownMovements.length ? shownMovements.map((movement, index) => <PerformedMovementCard key={movement.item_id || `${movement.label}-${index}`} movement={movement} unit={unit} onVideo={openVideo} onOpenHistory={onOpenMovementHistory} initialExpanded={Number(movement.item_id) === Number(initialExpandedItemId)} />) : <View style={styles.emptyCard}><Ionicons name="document-text-outline" size={25} color={SLColors.textMuted} /><Text style={styles.emptyTitle}>No performed sets were recorded</Text><Text style={styles.emptyBody}>This historical Session has no persisted SetLog evidence.</Text></View>}</View>{hiddenMovementCount > 0 ? <View style={styles.sectionShell}><Pressable accessibilityRole="button" accessibilityState={{ expanded: showAllMovements }} onPress={() => setShowAllMovements((value) => !value)} style={({ pressed }) => [styles.moreMovements, pressed && styles.pressed]}><Text style={styles.moreMovementsText}>{showAllMovements ? 'Show fewer movements' : `${hiddenMovementCount} more movement${hiddenMovementCount === 1 ? '' : 's'}`}</Text><Ionicons name={showAllMovements ? 'chevron-up' : 'chevron-down'} size={18} color={SLColors.textSecondary} /></Pressable></View> : null}
-        {projections.length ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>PERFORMANCE PROJECTIONS</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.projectionRail}>{projections.map((movement) => <View key={movement.item_id || movement.label} style={styles.projectionCard}><LinearGradient colors={['rgba(105,44,171,0.22)', '#07080D']} style={StyleSheet.absoluteFillObject} /><Text numberOfLines={1} style={styles.projectionName}>{movement.label}</Text><View style={styles.projectionBody}><View><Text style={styles.projectionMetric}>{movement.projection?.label || 'Estimated 1RM'} · PROJECTED</Text><Text style={styles.projectionValue}>{formatCalculatedWeightFromKg(movement.projection?.value_kg, unit) || '—'}</Text></View><View style={styles.projectionSparkline}><MovementTrendChart compact trend={movement.trend} unit={unit} color="#C06BFF" /></View></View><Text style={styles.projectionBasis}>Canonical best set · {movement.projection?.method === 'epley_rpe_adjusted_v1' ? 'Epley/RPE method' : movement.projection?.method || 'governed method'}</Text></View>)}</ScrollView></View> : null}
+        {projections.length ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>PERFORMANCE PROJECTIONS</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.projectionRail}>{projections.map((movement) => <View key={movement.item_id || movement.label} style={styles.projectionCard}><LinearGradient colors={['rgba(105,44,171,0.22)', '#07080D']} style={StyleSheet.absoluteFillObject} /><Text numberOfLines={1} style={styles.projectionName}>{movement.label}</Text><View style={styles.projectionBody}><View><Text style={styles.projectionMetric}>{movement.projection?.label || strengthMetricForMovementClass(movement.kind).label} · PROJECTED</Text><Text style={styles.projectionValue}>{formatCalculatedWeightFromKg(movement.projection?.value_kg, unit) || '—'}</Text></View><View style={styles.projectionSparkline}><MovementTrendChart compact trend={movement.trend} unit={unit} color="#C06BFF" /></View></View><Text style={styles.projectionBasis}>Canonical best set · {movement.projection?.method?.startsWith('epley_rpe_adjusted') ? 'Epley/RPE method' : movement.projection?.method || 'governed method'}</Text></View>)}</ScrollView></View> : null}
         {recap.session.volume_trend?.points?.length ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>VOLUME TREND</Text><View style={styles.volumeTrendCard}><LinearGradient colors={['rgba(55,33,92,0.26)', '#06070B']} style={StyleSheet.absoluteFillObject} /><View style={styles.volumeTrendHeading}><View><Text style={styles.projectionMetric}>CURRENT BLOCK · TOTAL VOLUME</Text><Text style={styles.volumeTrendValue}>{sessionVolume}</Text></View>{recap.session.volume_trend.delta_kg != null ? <View style={styles.volumeDelta}><Text style={styles.volumeDeltaValue}>{formatWeightDeltaFromKg(recap.session.volume_trend.delta_kg, unit)}</Text><Text style={styles.volumeDeltaLabel}>vs previous Session</Text></View> : null}</View><VolumeBars points={recap.session.volume_trend.points} /></View></View> : null}
         {hasReflection ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>ATHLETE REFLECTION</Text><View style={styles.detailCard}><View style={styles.reflectionHeader}><View style={styles.reflectionFacts}>{recap.reflection.session_rpe != null ? <Text style={styles.factPill}>Session RPE {numberLabel(recap.reflection.session_rpe)}</Text> : null}{recap.reflection.strength ? <Text style={styles.factPill}>{recap.reflection.strength}</Text> : null}{recap.reflection.fatigue ? <Text style={styles.factPill}>{recap.reflection.fatigue} fatigue</Text> : null}</View></View>{recap.reflection.note ? <Text style={styles.quote}>{recap.reflection.note}</Text> : null}</View></View> : null}
         {feedback ? <View style={styles.sectionShell}><Text style={styles.sectionLabel}>POST SESSION FEEDBACK</Text><View style={styles.feedbackCard}><LinearGradient colors={['rgba(93,42,145,0.19)', '#07080D']} style={StyleSheet.absoluteFillObject} /><View style={styles.feedbackHeader}><View style={styles.feedbackAvatar}>{recap.coach_feedback.author?.avatar_url ? <Image accessibilityIgnoresInvertColors source={{ uri: absoluteAssetUrl(recap.coach_feedback.author.avatar_url)! }} style={styles.feedbackAvatarImage} /> : <Text style={styles.feedbackAvatarText}>{feedbackInitials || 'C'}</Text>}</View><View style={styles.feedbackIdentity}><Text style={styles.feedbackAuthor}>{recap.coach_feedback.author?.name || 'Coach feedback'}</Text><Text style={styles.detailMeta}>{dateLabel(recap.coach_feedback.feedback_at)}</Text></View>{recap.coach_feedback.reviewed ? <View style={styles.reviewedBadge}><Text style={styles.reviewedBadgeText}>REVIEWED</Text></View> : null}</View><Text style={styles.feedbackQuote}>{feedback}</Text></View></View> : null}

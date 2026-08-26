@@ -1,4 +1,5 @@
 import { fetchJson } from '@/lib/api';
+import { strengthMetricForMovementClass } from '@/lib/movement-strength-metric';
 
 export { samePrimaryHistoryObservation } from '@/lib/canonical-movement-history-contract';
 
@@ -27,6 +28,8 @@ export type CanonicalHistorySet = Readonly<{
   rpe?: number | null;
   rir?: number | null;
   e10rm_kg?: number | null;
+  e1rm_kg?: number | null;
+  strength_metric_kg?: number | null;
   performed_label?: string | null;
   comparison_scope?: string | null;
   load_convention?: string | null;
@@ -42,6 +45,8 @@ export type CanonicalHistoryPoint = Readonly<{
   performed_at?: string | null;
   equipment?: CanonicalHistoryEquipment | null;
   e10rm_kg?: number | null;
+  e1rm_kg?: number | null;
+  strength_metric_kg?: number | null;
   weight_kg?: number | null;
   reps?: number | null;
   rir?: number | null;
@@ -64,9 +69,12 @@ export type CanonicalHistoryExposure = Readonly<{
   total_volume_kg: number;
   best_set?: CanonicalHistorySet | null;
   e10rm_kg?: number | null;
+  e1rm_kg?: number | null;
+  strength_metric_kg?: number | null;
 }>;
 
 export type CanonicalHistoryExposureDetail = CanonicalHistoryExposure & Readonly<{
+  strength_metric?: CanonicalMovementHistory['strength_metric'];
   sets: CanonicalHistorySet[];
   duration_seconds?: number | null;
   session_notes?: string | null;
@@ -76,6 +84,14 @@ export type CanonicalHistoryExposureDetail = CanonicalHistoryExposure & Readonly
 }>;
 
 export type CanonicalMovementHistory = Readonly<{
+  strength_metric: {
+    key: 'e1rm' | 'e10rm';
+    metric: 'estimated_1rm_kg' | 'estimated_10rm_kg';
+    projection_metric: 'estimated_1rm' | 'estimated_10rm';
+    label: 'Estimated 1RM' | 'Estimated 10RM';
+    short_label: 'e1RM' | 'e10RM';
+    method: string;
+  };
   identity_resolution: {
     status: 'resolved';
     subject_type: 'core' | 'accessory';
@@ -191,6 +207,71 @@ function queryParams(query: MovementHistoryQuery) {
   return params;
 }
 
+function normalizeStrengthValue(
+  row: { strength_metric_kg?: number | null; e10rm_kg?: number | null; e1rm_kg?: number | null },
+  expected: ReturnType<typeof strengthMetricForMovementClass>,
+  reportedKey?: 'e1rm' | 'e10rm' | null,
+) {
+  if (row.strength_metric_kg != null && reportedKey === expected.key) return Number(row.strength_metric_kg);
+  const source = row.strength_metric_kg ?? row.e1rm_kg ?? row.e10rm_kg;
+  if (source == null || !Number.isFinite(Number(source))) return null;
+  // Older payloads exposed an Epley e1RM value under e10rm_kg. Correct that
+  // compatibility boundary for Accessories without mutating SetLog evidence.
+  if (!reportedKey) return expected.key === 'e10rm' ? Number(source) * 0.75 : Number(source);
+  if (reportedKey === expected.key) return Number(source);
+  return expected.key === 'e10rm' ? Number(source) * 0.75 : Number(source) / 0.75;
+}
+
+function normalizeStrengthRow<T extends { strength_metric_kg?: number | null; e10rm_kg?: number | null; e1rm_kg?: number | null }>(
+  row: T,
+  expected: ReturnType<typeof strengthMetricForMovementClass>,
+  reportedKey?: 'e1rm' | 'e10rm' | null,
+) {
+  const value = normalizeStrengthValue(row, expected, reportedKey);
+  return { ...row, strength_metric_kg: value, [`${expected.key}_kg`]: value } as T;
+}
+
+function normalizeHistoryStrengthMetric(history: CanonicalMovementHistory): CanonicalMovementHistory {
+  const expected = strengthMetricForMovementClass(history.identity_resolution.subject_type);
+  const reportedKey = history.strength_metric?.key || null;
+  const normalizeExposure = (row: CanonicalHistoryExposure) => ({
+    ...normalizeStrengthRow(row, expected, reportedKey),
+    best_set: row.best_set ? normalizeStrengthRow(row.best_set, expected, reportedKey) : row.best_set,
+  });
+  const strength = history.statistics.estimated_strength_pr;
+  const strengthFactor = reportedKey === expected.key ? 1 : expected.key === 'e10rm' ? 0.75 : 1 / 0.75;
+  return {
+    ...history,
+    strength_metric: {
+      key: expected.key,
+      metric: expected.metric,
+      projection_metric: expected.projectionMetric,
+      label: expected.label,
+      short_label: expected.shortLabel,
+      method: expected.method,
+    },
+    performance_trend: history.performance_trend.map((row) => normalizeStrengthRow(row, expected, reportedKey)),
+    load_progression: history.load_progression.map((row) => normalizeStrengthRow(row, expected, reportedKey)),
+    load_rep_profile: history.load_rep_profile.map((row) => normalizeStrengthRow(row, expected, reportedKey)),
+    equipment_breakdown: history.equipment_breakdown.map((row) => ({
+      ...row,
+      best_performance: row.best_performance ? normalizeStrengthRow(row.best_performance, expected, reportedKey) : row.best_performance,
+    })),
+    statistics: {
+      ...history.statistics,
+      estimated_strength_pr: strength ? {
+        ...strength,
+        value_kg: strength.value_kg * strengthFactor,
+        delta_kg: strength.delta_kg == null ? strength.delta_kg : strength.delta_kg * strengthFactor,
+      } : strength,
+      load_pr: history.statistics.load_pr ? normalizeStrengthRow(history.statistics.load_pr, expected, reportedKey) : history.statistics.load_pr,
+      rep_pr_at_load: history.statistics.rep_pr_at_load ? normalizeStrengthRow(history.statistics.rep_pr_at_load, expected, reportedKey) : history.statistics.rep_pr_at_load,
+      best_n_rep_load: history.statistics.best_n_rep_load ? normalizeStrengthRow(history.statistics.best_n_rep_load, expected, reportedKey) : history.statistics.best_n_rep_load,
+    },
+    exposures: history.exposures.map(normalizeExposure),
+  };
+}
+
 export async function fetchCanonicalMovementHistory(query: MovementHistoryQuery) {
   const response = await fetchJson<{ ok: boolean; error?: string; movement_history?: CanonicalMovementHistory }>(
     `/workouts/mobile/athletes/${query.athleteId}/movement-history?${queryParams(query).toString()}`,
@@ -210,7 +291,7 @@ export async function fetchCanonicalMovementHistory(query: MovementHistoryQuery)
   ) {
     throw new Error('Movement History identity could not be resolved safely.');
   }
-  return history;
+  return normalizeHistoryStrengthMetric(history);
 }
 
 export async function fetchCanonicalMovementExposure(query: MovementHistoryQuery, exposureId: string) {
@@ -227,7 +308,14 @@ export async function fetchCanonicalMovementExposure(query: MovementHistoryQuery
   if (!response.ok || !response.json?.ok || !response.json.exposure) {
     throw new Error(response.json?.error || 'Exposure evidence could not load.');
   }
-  return response.json.exposure;
+  const expected = strengthMetricForMovementClass(query.coreMovementId ? 'core' : 'accessory');
+  const detail = response.json.exposure;
+  const reportedKey = detail.strength_metric?.key || null;
+  return {
+    ...normalizeStrengthRow(detail, expected, reportedKey),
+    best_set: detail.best_set ? normalizeStrengthRow(detail.best_set, expected, reportedKey) : detail.best_set,
+    sets: detail.sets.map((row) => normalizeStrengthRow(row, expected, reportedKey)),
+  } as CanonicalHistoryExposureDetail;
 }
 
 export async function setCanonicalMovementFavorite(

@@ -16,7 +16,7 @@ import type {
   MovementHistoryUnit,
 } from '@/lib/canonical-movement-history';
 
-type Metric = 'e10rm' | 'load';
+type Metric = 'strength' | 'load';
 
 type PlotPoint = CanonicalHistoryPoint & Readonly<{
   x: number;
@@ -45,7 +45,7 @@ function numberLabel(value: number, maximumFractionDigits = 0) {
 
 function chartWeightLabel(valueKg: number, unit: MovementHistoryUnit, metric: Metric, digits = 1) {
   const displayed = displayValue(valueKg, unit);
-  return metric === 'e10rm'
+  return metric === 'strength'
     ? formatCalculatedWeightValue(displayed, unit) ?? '—'
     : numberLabel(displayed, digits);
 }
@@ -59,12 +59,14 @@ function effortLabel(point: CanonicalHistoryPoint) {
 export function AnalyticalHistoryChart({
   points,
   metric,
+  metricLabel,
   unit,
   color,
   onOpenExposure,
 }: {
   points: CanonicalHistoryPoint[];
   metric: Metric;
+  metricLabel?: string;
   unit: MovementHistoryUnit;
   color: string;
   onOpenExposure: (exposureId: string) => void;
@@ -74,7 +76,7 @@ export function AnalyticalHistoryChart({
   const selectedIndexRef = useRef<number | null>(points.length ? points.length - 1 : null);
   const gestureStartX = useRef<number | null>(null);
   const metricPoints = useMemo(() => points.filter((point) => (
-    metric === 'e10rm' ? point.e10rm_kg != null : point.weight_kg != null
+    metric === 'strength' ? point.strength_metric_kg != null : point.weight_kg != null
   )), [metric, points]);
   useEffect(() => {
     const next = metricPoints.length ? metricPoints.length - 1 : null;
@@ -83,7 +85,7 @@ export function AnalyticalHistoryChart({
   }, [metricPoints.length]);
 
   const plot = useMemo(() => {
-    const values = metricPoints.map((point) => Number(metric === 'e10rm' ? point.e10rm_kg : point.weight_kg));
+    const values = metricPoints.map((point) => Number(metric === 'strength' ? point.strength_metric_kg : point.weight_kg));
     const timestamps = metricPoints.map((point) => new Date(point.performed_at || `${point.date}T12:00:00`).getTime());
     const low = values.length ? Math.min(...values) : 0;
     const high = values.length ? Math.max(...values) : 1;
@@ -147,7 +149,7 @@ export function AnalyticalHistoryChart({
 
   return (
     <View
-      accessibilityLabel={`${metric === 'e10rm' ? 'Estimated performance' : 'Load progression'} chart with ${plot.rows.length} real observation${plot.rows.length === 1 ? '' : 's'}`}
+      accessibilityLabel={`${metric === 'strength' ? 'Estimated performance' : 'Load progression'} chart with ${plot.rows.length} real observation${plot.rows.length === 1 ? '' : 's'}`}
       onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))}
       onMoveShouldSetResponder={() => true}
       onResponderGrant={(event) => {
@@ -167,8 +169,8 @@ export function AnalyticalHistoryChart({
         <View style={styles.inspection} pointerEvents="none">
           <View>
             <Text style={[styles.inspectionValue, { color }]}>
-              {chartWeightLabel(metric === 'e10rm' ? Number(selected.e10rm_kg) : Number(selected.weight_kg), unit, metric)} {unit}
-              {metric === 'e10rm' ? ' e10RM' : ` × ${selected.reps ?? '—'}`}
+              {chartWeightLabel(metric === 'strength' ? Number(selected.strength_metric_kg) : Number(selected.weight_kg), unit, metric)} {unit}
+              {metric === 'strength' ? ` ${metricLabel || 'estimated strength'}` : ` × ${selected.reps ?? '—'}`}
             </Text>
             <Text style={styles.inspectionEvidence}>
               {numberLabel(displayValue(Number(selected.weight_kg || 0), unit), 1)} {unit} × {selected.reps ?? '—'} · {effortLabel(selected)}
