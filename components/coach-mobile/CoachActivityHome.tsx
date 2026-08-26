@@ -640,7 +640,12 @@ function ActivityEvidence({ activity, displayUnit }: { activity: CoachHomeActivi
       : evidence.delta
         ? `  +${evidence.delta}`
         : '';
-    return <Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{value}{evidence.reps ? ` × ${evidence.reps}` : ''}{delta}</Text>;
+    const effort = evidence.rpe != null
+      ? ` @ ${evidence.rpe} RPE`
+      : evidence.rir != null
+        ? ` @ ${evidence.rir} RIR`
+        : '';
+    return <View style={styles.evidenceRow}><Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{value}{evidence.reps ? ` × ${evidence.reps}` : ''}{effort}{delta}</Text>{evidence.record_count && evidence.record_count > 1 ? <MiniBadge color={COACH_V2.gold} text={`${evidence.record_count} RECORDS`} /> : null}</View>;
   }
   if (activity.type === 'readiness_check_in') return <Text style={[styles.evidenceText, { color: COACH_V2.green }]}>Readiness {evidence.score?.toFixed(1)}{evidence.delta != null ? `  ${evidence.delta >= 0 ? '↑' : '↓'} ${Math.abs(evidence.delta).toFixed(1)}` : ''}</Text>;
   if (activity.type === 'programming_alert') return <Text style={[styles.evidenceText, { color: COACH_V2.gold }]}>{evidence.days_remaining == null ? 'Coverage required now' : `${Math.max(0, evidence.days_remaining)} day${evidence.days_remaining === 1 ? '' : 's'} remaining`}</Text>;

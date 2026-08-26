@@ -34,7 +34,7 @@ for (const visual of [
 ]) {
   assert.match(home, new RegExp(visual));
 }
-assert.match(home, /<MuscleMap/);
+assert.match(home, /<ProgrammingMuscleRegionArt/);
 assert.match(home, /thumbnail_url/);
 assert.match(home, /function ActivityVideoArtwork/);
 assert.match(home, /source=\{\{ uri: thumbnailUrl! \}\}/);
@@ -52,6 +52,8 @@ assert.match(home, /PROGRAM_ART/);
 assert.match(home, /<SLAthleteAvatar/);
 assert.match(home, /formatCoachWeight/);
 assert.match(home, /formatCoachVolume/);
+assert.match(home, /evidence\.record_count/);
+assert.match(home, /RECORDS/);
 
 assert.match(home, /<SwipeActionRow/);
 assert.doesNotMatch(home, /PanResponder\.create/);
@@ -85,6 +87,9 @@ for (const type of [
 }
 assert.match(contract, /state: 'active' \| 'dismissed' \| 'handled' \| 'auto_resolved'/);
 assert.match(contract, /destination: CoachDestination/);
+assert.match(contract, /source_set_log_id\?: number \| null/);
+assert.match(contract, /record_count\?: number/);
+assert.match(contract, /accomplishment_ids\?: number\[\]/);
 
 assert.match(shell, /<StrengthLedgerAppHeader/);
 const coachDashboardOptions = shell.match(/name="coach-dashboard"[\s\S]*?<Tabs\.Screen/)?.[0] || '';

@@ -50,10 +50,30 @@ export type CoachHomeActivity = {
     days_remaining?: number | null;
     unread_count?: number;
     current_value?: number | null;
+    event_type?: string | null;
     prior_value?: number | null;
     weight_kg?: number | null;
     reps?: number | null;
+    rpe?: number | null;
+    rir?: number | null;
     unit?: string | null;
+    source_set_log_id?: number | null;
+    source_revision?: number | null;
+    record_count?: number;
+    accomplishment_ids?: number[];
+    record_types?: string[];
+    records?: {
+      id: number;
+      event_type?: string | null;
+      metric?: string | null;
+      scope?: string | null;
+      comparison_bucket?: string | null;
+      current_value?: number | null;
+      prior_value?: number | null;
+      delta?: number | null;
+      unit?: string | null;
+      calculation_version?: string | null;
+    }[];
   };
   artwork?: {
     kind?: 'performed_anatomy' | 'video_thumbnail' | 'pr_medallion' | 'readiness_chart' | 'programming' | 'message';
