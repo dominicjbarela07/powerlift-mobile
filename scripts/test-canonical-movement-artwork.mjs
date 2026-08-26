@@ -8,9 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { resolveCanonicalMovementArtwork } from '../lib/canonical-movement-artwork.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const repoRoot = path.resolve(root, '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
-const readRepo = (...parts) => fs.readFileSync(path.join(repoRoot, ...parts), 'utf8');
+const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT;
+const readBackend = (...parts) => fs.readFileSync(path.join(backendRoot, ...parts), 'utf8');
 const catalog = JSON.parse(read('assets', 'catalog', 'accessory-catalog-review.json')).movements;
 
 const fixtures = [
@@ -215,9 +215,11 @@ assert.doesNotMatch(read('components', 'coach-mobile', 'CompletedSessionRecap.ts
 assert.doesNotMatch(read('components', 'movement-history', 'CanonicalMovementHistoryScreen.tsx'), /<MuscleMap/);
 assert.doesNotMatch(read('app', '(tabs)', 'workout', 'session-workspace', '[workoutId].tsx'), /<MuscleMap/);
 
-const webProgrammingManagerPath = path.join(repoRoot, 'app', 'templates', 'programming_manager_dev.html');
-if (fs.existsSync(webProgrammingManagerPath)) {
-  const webProgrammingManager = readRepo('app', 'templates', 'programming_manager_dev.html');
+const webProgrammingManagerPath = backendRoot
+  ? path.join(backendRoot, 'app', 'templates', 'programming_manager_dev.html')
+  : null;
+if (webProgrammingManagerPath && fs.existsSync(webProgrammingManagerPath)) {
+  const webProgrammingManager = readBackend('app', 'templates', 'programming_manager_dev.html');
   assert.match(webProgrammingManager, /const stableIdentity = definition\.id \|\| definition\.movement_definition_id/);
   assert.match(webProgrammingManager, /const governedRegion = definition\.primary_muscle_group \|\| familyRegion/);
   assert.match(webProgrammingManager, /stableIdentity \? accessoryMuscleArtworkUrl\(governedRegion\) : ''/);
