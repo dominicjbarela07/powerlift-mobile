@@ -101,6 +101,7 @@ import {
   resolveSubstitutionAuthority,
 } from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
+import { createLatestRequestManager } from '@/lib/latest-request';
 import {
   cancelVideoUploadJob,
   enqueueVideoUpload,
@@ -1625,6 +1626,7 @@ export default function WorkoutViewerScreen() {
   const [unit, setUnit] = useState<'kg' | 'lb'>(() => normalizeReadinessUnit(user?.preferred_units));
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
+  const workoutRequestManagerRef = useRef(createLatestRequestManager<WorkoutPayload>());
   const acceptedLoadByItemIdRef = useRef<Record<number, SetLoggerLoadEvidence>>({});
   const [acceptedSetEvidenceItemIds, setAcceptedSetEvidenceItemIds] = useState<
     ReadonlySet<number>
@@ -6266,13 +6268,13 @@ export default function WorkoutViewerScreen() {
 
     const silent = !!opts?.silent;
 
-    try {
-      if (silent) setRefreshing(true);
-      else if (!dataRef.current) setLoading(true);
-      else setRefreshing(true);
+    if (silent) setRefreshing(true);
+    else if (!dataRef.current) setLoading(true);
+    else setRefreshing(true);
 
-      setError(null);
-
+    setError(null);
+    const requestedWorkoutId = String(workoutId);
+    const requestResult = await workoutRequestManagerRef.current.run(async (signal) => {
       if (isIdealWorkoutDetailPreview) {
         const fixturePayload = (
           loggerScenario
@@ -6282,21 +6284,14 @@ export default function WorkoutViewerScreen() {
         const payload = hydrateWorkoutDetailEquipmentSelections(
           fixturePayload as unknown as Record<string, any>,
         ) as WorkoutPayload;
-        if (!unitPreferenceHydratedRef.current) {
-          if (unitLocalOverrideRef.current == null) {
-            setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
-          }
-          unitPreferenceHydratedRef.current = true;
-        }
-        setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
-        setData(payload);
-        restoreScrollSoon();
-        return true;
+        return payload;
       }
 
+      const query = new URLSearchParams({ history: 'summary' });
+      if (coachPreviewRequested) query.set('view', 'coach-preview');
       const { ok, status, json } = await fetchJson(
-        `${API_BASE}/workouts/mobile/${workoutId}${coachPreviewRequested ? '?view=coach-preview' : ''}`,
-        { method: 'GET', auth: true }
+        `${API_BASE}/workouts/mobile/${requestedWorkoutId}?${query.toString()}`,
+        { method: 'GET', auth: true, signal }
       );
 
       const payload = json as WorkoutPayload;
@@ -6310,31 +6305,45 @@ export default function WorkoutViewerScreen() {
       ) {
         throw new Error('Athlete View could not be verified as read-only.');
       }
-
-      if (!unitPreferenceHydratedRef.current) {
-        if (unitLocalOverrideRef.current == null) {
-          setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
-        }
-        unitPreferenceHydratedRef.current = true;
+      if (String(payload.workout?.id) !== requestedWorkoutId) {
+        throw new Error('Training Session response did not match the requested Session.');
       }
-      setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
-      setData(payload);
-      restoreScrollSoon();
-      return true;
-    } catch (err: any) {
+      return payload;
+    });
+
+    if (requestResult.kind === 'cancelled' || requestResult.kind === 'obsolete') {
+      return false;
+    }
+
+    if (requestResult.kind === 'error') {
+      const err: any = requestResult.error;
       console.log('Training Session fetch error', err);
       setError(err?.message || 'Error loading Training Session');
-      if (!silent && !dataRef.current) {
-        setData(null);
-      }
-      return false;
-    } finally {
+      if (!silent && !dataRef.current) setData(null);
       if (silent) setRefreshing(false);
       else {
         setLoading(false);
         setRefreshing(false);
       }
+      return false;
     }
+
+    const payload = requestResult.value;
+    if (!unitPreferenceHydratedRef.current) {
+      if (unitLocalOverrideRef.current == null) {
+        setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
+      }
+      unitPreferenceHydratedRef.current = true;
+    }
+    setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
+    setData(payload);
+    restoreScrollSoon();
+    if (silent) setRefreshing(false);
+    else {
+      setLoading(false);
+      setRefreshing(false);
+    }
+    return true;
   }, [
     idealWorkoutDetailLifecycle,
     isIdealWorkoutDetailPreview,
@@ -6831,7 +6840,25 @@ export default function WorkoutViewerScreen() {
   ]);
 
   useEffect(() => {
-    fetchWorkout();
+    workoutRequestManagerRef.current.cancel();
+    dataRef.current = null;
+    setData(null);
+    setError(null);
+    setLoading(true);
+    setRefreshing(false);
+    setAcceptedSetEvidenceItemIds(new Set());
+    setCoreWheel(null);
+    setAccessoryWheel(null);
+    setSupersetRoundLogger(null);
+    setExpandedCompletedMovements({});
+    setExpandedCoreDetails({});
+    scrollYRef.current = 0;
+  }, [workoutId]);
+
+  useEffect(() => {
+    const requestManager = workoutRequestManagerRef.current;
+    void fetchWorkout();
+    return () => requestManager.cancel();
   }, [fetchWorkout]);
 
   const onRefresh = useCallback(async () => {
