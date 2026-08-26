@@ -117,3 +117,19 @@ separate mandatory gates.
 - both TestFlight OTA and TestFlight build wrappers run the lineage guard; the
   guarded OTA pipeline additionally verifies the exact remote launch asset is
   byte-identical to the locally validated route-complete Hermes artifact.
+
+## 2026-08-26 Program Timeline regression addendum
+
+The active Program Timeline feature entered history at `a59f1b3`, including a
+stable-ID route helper and the Training Hub action-dispatch branch. Programming
+Manager consolidation at `4437b06` replaced the surrounding Training Hub source
+with a state that retained the visible CTA and emitted action, but dropped the
+consumer that performed navigation. The broken behavior therefore existed in
+both canonical DEV and its config-only TestFlight projection; it was not caused
+by candidate-only source drift or Expo Router preloading.
+
+Canonical repair `9c5db52` restores navigation through one governed route
+builder, preserves optional athlete context, guards repeated taps, and re-arms
+the control when Training Hub regains focus. `test-program-timeline-v2.mjs` is
+now a protected-fix contract and the sixteenth release-critical product area so
+ancestry alone cannot certify this behavior again.

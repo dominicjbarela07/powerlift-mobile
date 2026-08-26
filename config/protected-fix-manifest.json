@@ -74,6 +74,12 @@
       "description": "Session Workspace uses one authoritative app-shell presentation boundary.",
       "acceptedCommits": ["427d573208ebcc560d27a61fd9121f6a31b18e5b"],
       "behaviorTests": ["scripts/test-session-workspace-layout.mjs"]
+    },
+    {
+      "id": "athlete-program-timeline-navigation",
+      "description": "The active Program Timeline control launches the canonical stable-ID route from Athlete Training Hub.",
+      "acceptedCommits": ["9c5db526b4efeafda40457ae3ca73f169463998f"],
+      "behaviorTests": ["scripts/test-program-timeline-v2.mjs"]
     }
   ]
 }
