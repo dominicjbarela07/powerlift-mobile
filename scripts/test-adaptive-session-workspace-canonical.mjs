@@ -5,7 +5,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const repoRoot = path.resolve(root, '..');
+const repoRoot = [path.resolve(root, '..'), path.resolve(root, '..', '..')]
+  .find((candidate) => fs.existsSync(path.join(candidate, 'app', 'blueprints', 'workouts.py')));
+if (!repoRoot) throw new Error('Could not locate the Strength Ledger backend root.');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 const requireMatch = (source, pattern, message) => {
   if (!pattern.test(source)) throw new Error(message);
@@ -78,7 +80,7 @@ requireMatch(workspace, /sessionToolkitShell: \{[^}]*alignItems: 'flex-end'[\s\S
 requireMatch(workspace, /const \{ expansion, expandedItemsOpacity, collapsedAnchorOpacity \} = useFloatingNavigationMotion\(\{[\s\S]*reduceMotion[\s\S]*panelMotionStyle[\s\S]*translateY:[\s\S]*scale:[\s\S]*<Animated\.View/, 'the floating toolkit must share the tab-row motion choreography and respect reduced motion.');
 requireMatch(workspace, /accessibilityLabel="Close Session tools"[\s\S]*onPress=\{\(\) => onExpandedChange\(false\)\}[\s\S]*sessionToolkitDismissLayer/, 'tapping outside the expanded toolkit must close it.');
 requireNoMatch(workspace, /SessionUnitFloatingControl|function UnitToggle|styles\.unitToggle/, 'the standalone and inline unit toggles must not remain in the workspace.');
-requireMatch(workspaceRoute, /preferred_units: plan\.metadataPatch\.displayUnit === 'lb' \? 'lbs' : 'kg'/, 'unit changes must persist through canonical Session setup.');
+requireNoMatch(workspaceRoute, /preferred_units: plan\.metadataPatch\.displayUnit/, 'presentation-only unit changes must never persist through Session setup.');
 requireMatch(workspace, /function collapsedLoadPresentation[\s\S]*kind === 'accessory'[\s\S]*validManualLow[\s\S]*label: 'Manual'[\s\S]*label: 'Calculated'/, 'Core rows show manual only for a positive explicit load and otherwise use calculated targets; Accessories show neither.');
 requireMatch(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'collapsed movement artwork must be the visual anchor.');
 requireMatch(workspace, /import \{ CanonicalMovementArtwork \} from '@\/components\/movement\/CanonicalMovementArtwork';/, 'the workspace must reuse the canonical individual-movement artwork resolver.');
@@ -89,7 +91,7 @@ requireNoMatch(workspace, /SLAccessoryIcon|resolveAccessoryIconName/, 'the works
 requireMatch(backend, /if "preferred_units" in data:[\s\S]*next_athlete\.preferred_units/, 'the setup mutation must persist the athlete unit preference.');
 requireMatch(workspaceRoute, /movement_definition_id: movementDefinitionId/, 'accessory equipment identity must persist through the canonical identity contract.');
 requireMatch(workspaceRoute, /isCoreVariantSelection = setup\.lift === 'VR'[\s\S]*target_low_lb[\s\S]*target_high_lb/, 'every Core variant must persist an explicit coach-authored load range.');
-requireMatch(workspace, /function createSessionWorkspaceDraft[\s\S]*linkedBackdown[\s\S]*movementDraftFromItem\(item, displayUnit, linkedBackdown\)/, 'existing movements must enter the canonical Session draft with linked backdown data.');
+requireMatch(workspace, /function createSessionWorkspaceDraft[\s\S]*linkedBackdown[\s\S]*movementDraftFromItem\(item, storageUnit, linkedBackdown\)/, 'existing movements must enter the canonical Session draft with linked backdown data in a fixed internal storage unit.');
 requireMatch(tabLayout, /sceneStyle: styles\.tabScene[\s\S]*tabScene: \{[^}]*paddingTop: 0[^}]*\}/, 'the tab shell must provide the Session Workspace with a route-owned full-width canvas.');
 requireNoMatch(tabLayout, /tabScene: \{[^}]*paddingHorizontal/, 'the Session Workspace must not inherit an additional shell gutter around its route-owned layout.');
 requireMatch(workspace, /function FullCustomSetEditor/, 'Full Custom per-set prescriptions must remain editable in the inline movement workspace.');

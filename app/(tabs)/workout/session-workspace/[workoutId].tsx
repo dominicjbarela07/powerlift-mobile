@@ -520,7 +520,9 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const [reorderSaving, setReorderSaving] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [roster, setRoster] = useState<RosterAthlete[]>([]);
-  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>('kg');
+  const [workspaceDisplayUnit, setWorkspaceDisplayUnit] = useState<'kg' | 'lb'>(() => (
+    normalizeDisplayWeightUnit(user?.preferred_units)
+  ));
   const hasLoadedSessionRef = useRef(false);
   const loadRequestRevisionRef = useRef(0);
   const loadedWorkoutIdRef = useRef<string | null>(null);
@@ -600,10 +602,8 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   }, []);
 
   useEffect(() => {
-    setWorkspaceDisplayUnit(normalizeDisplayWeightUnit(
-      payload?.athlete?.preferred_units || user?.preferred_units,
-    ));
-  }, [payload?.athlete?.id, payload?.athlete?.preferred_units, user?.preferred_units]);
+    setWorkspaceDisplayUnit(normalizeDisplayWeightUnit(user?.preferred_units));
+  }, [user?.preferred_units]);
 
   useEffect(() => {
     if (!authReady || user?.role !== 'coach') return;
@@ -1243,9 +1243,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       const setupPatch = {
         ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
         ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
-        ...(plan.metadataPatch.displayUnit !== undefined ? {
-          preferred_units: plan.metadataPatch.displayUnit === 'lb' ? 'lbs' : 'kg',
-        } : {}),
       };
       if (Object.keys(setupPatch).length) {
         await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
@@ -1294,7 +1291,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         }));
       }
 
-      setWorkspaceDisplayUnit(plan.displayUnit);
       await loadSession(true);
       return true;
     } catch (err: any) {
@@ -1415,6 +1411,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         pendingMovementId={null}
         reduceMotion={reduceMotion}
         displayUnit={workspaceDisplayUnit}
+        onDisplayUnitChange={setWorkspaceDisplayUnit}
         athleteOptions={roster.map((athlete) => ({
           id: athlete.id,
           name: String(athlete.name || 'Athlete'),
