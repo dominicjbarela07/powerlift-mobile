@@ -60,6 +60,10 @@ import { formatLoggerWeightRangeKg, roundLoggerDisplayWeight } from '@/lib/logge
 import { setSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
 import { programmedSetCountForDraft } from '@/lib/session-programmed-set-count';
 import {
+  buildSessionWorkspaceMetadataPatch,
+  sessionWorkspaceMetadataIsDirty,
+} from '@/lib/session-workspace-persistence';
+import {
   accessoryRepDisplayText,
   accessoryRepRangeAfterLowerChange,
   accessoryRepRangeAfterUpperChange,
@@ -207,13 +211,11 @@ export type SessionWorkspaceSavePlan = {
   title: string;
   athleteId: number | null;
   scheduledDate: string;
-  displayUnit: CoachDisplayUnit;
   notes: string;
   metadataPatch: {
     title?: string;
     athleteId?: number | null;
     scheduledDate?: string;
-    displayUnit?: CoachDisplayUnit;
     notes?: string;
   };
   movementUpdates: SessionWorkspaceMovementSave[];
@@ -228,7 +230,6 @@ type SessionWorkspaceDraft = {
   title: string;
   athleteId: number | null;
   scheduledDate: string;
-  displayUnit: CoachDisplayUnit;
   notes: string;
   items: Record<number, SessionMovementItem>;
   kinds: Record<number, MovementKind>;
@@ -275,6 +276,7 @@ type Props = {
   onChangeAccessory: (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => void;
   onOpenMovementHistory?: (item: SessionMovementItem) => void;
   onCalculateLoad: (request: CalculatedLoadRequest) => Promise<CalculatedLoadResult>;
+  onDisplayUnitChange: (unit: CoachDisplayUnit) => void;
   onSaveSession: (plan: SessionWorkspaceSavePlan) => Promise<boolean>;
   renderLifecycleActions: (guard: GuardAction, restricted: boolean) => React.ReactNode;
 };
@@ -326,9 +328,11 @@ export function SessionEditingWorkspace(props: Props) {
   const insets = useSafeAreaInsets();
   const { width: viewportWidth, fontScale } = useWindowDimensions();
   const useAccessibilityReflow = viewportWidth < 360 || fontScale >= 1.3;
+  const draftStorageUnitRef = useRef(displayUnit);
+  const draftStorageUnit = draftStorageUnitRef.current;
   const incomingSession = useMemo(
-    () => createSessionWorkspaceDraft({ title, athleteId, scheduledDate, displayUnit, notes, coreItems, accessoryItems }),
-    [accessoryItems, athleteId, coreItems, displayUnit, notes, scheduledDate, title],
+    () => createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageUnit: draftStorageUnit, notes, coreItems, accessoryItems }),
+    [accessoryItems, athleteId, coreItems, draftStorageUnit, notes, scheduledDate, title],
   );
   const incomingSessionSignature = useMemo(() => sessionWorkspaceSignature(incomingSession), [incomingSession]);
   const [persistedSession, setPersistedSession] = useState<SessionWorkspaceDraft>(() => cloneSessionWorkspaceDraft(incomingSession));
@@ -473,16 +477,9 @@ export function SessionEditingWorkspace(props: Props) {
   }, [selectedId]);
 
   const changeEditorDisplayUnit = useCallback((unit: CoachDisplayUnit) => {
-    if (unit === sessionDraft.displayUnit || savingSession) return;
-    setSessionDraft((current) => ({
-      ...current,
-      displayUnit: unit,
-      movements: Object.fromEntries(Object.entries(current.movements).map(([id, movement]) => [
-        id,
-        convertMovementDraftUnit(movement, current.displayUnit, unit),
-      ])),
-    }));
-  }, [savingSession, sessionDraft.displayUnit]);
+    if (unit === displayUnit || savingSession) return;
+    props.onDisplayUnitChange(unit);
+  }, [displayUnit, props, savingSession]);
 
   const discardWorkspaceChanges = useCallback(() => {
     setSessionDraft(cloneSessionWorkspaceDraft(persistedSession));
@@ -501,7 +498,7 @@ export function SessionEditingWorkspace(props: Props) {
     setSavingSession(true);
     acceptIncomingSessionRef.current = true;
     try {
-      const success = await props.onSaveSession(buildSessionWorkspaceSavePlan(sessionDraft, persistedSession));
+      const success = await props.onSaveSession(buildSessionWorkspaceSavePlan(sessionDraft, persistedSession, draftStorageUnit));
       if (!success) {
         acceptIncomingSessionRef.current = false;
         return false;
@@ -515,7 +512,7 @@ export function SessionEditingWorkspace(props: Props) {
     } finally {
       setSavingSession(false);
     }
-  }, [persistedSession, props, savingSession, sessionDirty, sessionDraft]);
+  }, [draftStorageUnit, persistedSession, props, savingSession, sessionDirty, sessionDraft]);
 
   const resolveDirty = useCallback((action: () => void) => {
     if (!sessionDirty) {
@@ -565,10 +562,10 @@ export function SessionEditingWorkspace(props: Props) {
   const addMovement = useCallback(() => {
     Alert.alert('Add Movement', 'Choose the movement category.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Core', onPress: () => props.onAddCore(sessionDraft.displayUnit, (item) => addSessionDraftMovement(item, 'core', setSessionDraft, setSelectedId)) },
-      { text: 'Accessory', onPress: () => props.onAddAccessory((item) => addSessionDraftMovement(item, 'accessory', setSessionDraft, setSelectedId)) },
+      { text: 'Core', onPress: () => props.onAddCore(displayUnit, (item) => addSessionDraftMovement(item, 'core', draftStorageUnit, setSessionDraft, setSelectedId)) },
+      { text: 'Accessory', onPress: () => props.onAddAccessory((item) => addSessionDraftMovement(item, 'accessory', draftStorageUnit, setSessionDraft, setSelectedId)) },
     ]);
-  }, [props, sessionDraft.displayUnit]);
+  }, [displayUnit, draftStorageUnit, props]);
 
   const selectAthlete = useCallback((nextAthleteId: number) => {
     setSessionDraft((current) => ({ ...current, athleteId: nextAthleteId }));
@@ -778,8 +775,8 @@ export function SessionEditingWorkspace(props: Props) {
                         draft={draft}
                         dirty={false}
                         editable={editable && capabilities.can_edit_movement !== false}
-                        storageUnit={sessionDraft.displayUnit}
-                        displayUnit={sessionDraft.displayUnit}
+                        storageUnit={draftStorageUnit}
+                        displayUnit={displayUnit}
                         calculatedTarget={calculatedTarget}
                         backdownCalculatedTarget={backdownCalculatedTarget}
                         calculatingTarget={calculatingTarget}
@@ -802,11 +799,11 @@ export function SessionEditingWorkspace(props: Props) {
                     ) : (
                       <VisualMovementRow
                         key={item.id}
-                        item={movementItemWithDraft(item, sessionDraft.movements[item.id], sessionDraft.displayUnit)}
+                        item={movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)}
                         kind={kind}
                         pending={pendingMovementId === item.id}
                         onOpen={openMovement}
-                        displayUnit={sessionDraft.displayUnit}
+                        displayUnit={displayUnit}
                         calculatedLoad={calculatedRows[item.id] || null}
                       />
                     ))}
@@ -829,7 +826,7 @@ export function SessionEditingWorkspace(props: Props) {
         expanded={toolkitExpanded}
         reduceMotion={reduceMotion}
         restricted={sessionDirty}
-        unit={sessionDraft.displayUnit}
+        unit={displayUnit}
         canAddMovement={!!capabilities.can_add_movement}
         canAthleteView={capabilities.can_open_athlete_view !== false}
         canChangeDate={editable}
@@ -1892,11 +1889,11 @@ function ensureCoreVariantManualLoad(draft: CoachMovementDraft, displayUnit: Coa
   return { ...draft, targetLowLb: range.low, targetHighLb: range.high };
 }
 
-function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, displayUnit, notes, coreItems, accessoryItems }: {
+function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageUnit, notes, coreItems, accessoryItems }: {
   title: string;
   athleteId?: number | null;
   scheduledDate?: string | null;
-  displayUnit: CoachDisplayUnit;
+  storageUnit: CoachDisplayUnit;
   notes: string;
   coreItems: SessionMovementItem[];
   accessoryItems: SessionMovementItem[];
@@ -1911,13 +1908,12 @@ function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, displayU
     const linkedBackdown = String(item.variant || '').toUpperCase() === 'TOP'
       ? allItems.find((candidate) => candidate.parent_item_id === item.id) || null
       : null;
-    return [item.id, ensureCoreVariantManualLoad(movementDraftFromItem(item, displayUnit, linkedBackdown), displayUnit)];
+    return [item.id, ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit, linkedBackdown), storageUnit)];
   }));
   return {
     title,
     athleteId: athleteId ?? null,
     scheduledDate: String(scheduledDate || '').slice(0, 10),
-    displayUnit,
     notes,
     items,
     kinds,
@@ -1941,23 +1937,6 @@ function cloneSessionWorkspaceDraft(draft: SessionWorkspaceDraft): SessionWorksp
   };
 }
 
-function convertMovementDraftUnit(draft: CoachMovementDraft, sourceUnit: CoachDisplayUnit, targetUnit: CoachDisplayUnit): CoachMovementDraft {
-  if (sourceUnit === targetUnit) return { ...draft, plannedSets: draft.plannedSets.map((row) => ({ ...row })) };
-  const convert = (value: string) => convertLoadDisplayValue(value, sourceUnit, targetUnit);
-  return {
-    ...draft,
-    targetLowLb: convert(draft.targetLowLb),
-    targetHighLb: convert(draft.targetHighLb),
-    backdownTargetLowLb: convert(draft.backdownTargetLowLb),
-    backdownTargetHighLb: convert(draft.backdownTargetHighLb),
-    plannedSets: draft.plannedSets.map((row) => ({
-      ...row,
-      targetLb: convert(row.targetLb),
-      rangeLb: convert(row.rangeLb),
-    })),
-  };
-}
-
 function sessionWorkspaceSignature(draft: SessionWorkspaceDraft) {
   return JSON.stringify({
     ...draft,
@@ -1967,11 +1946,7 @@ function sessionWorkspaceSignature(draft: SessionWorkspaceDraft) {
 }
 
 function sessionWorkspaceDraftIsDirty(current: SessionWorkspaceDraft, persisted: SessionWorkspaceDraft) {
-  if (current.title.trim() !== persisted.title.trim()
-    || current.athleteId !== persisted.athleteId
-    || current.scheduledDate !== persisted.scheduledDate
-    || current.displayUnit !== persisted.displayUnit
-    || current.notes.trim() !== persisted.notes.trim()
+  if (sessionWorkspaceMetadataIsDirty(current, persisted)
     || JSON.stringify(current.coreOrder) !== JSON.stringify(persisted.coreOrder)
     || JSON.stringify(current.accessoryOrder) !== JSON.stringify(persisted.accessoryOrder)) return true;
   const currentIds = [...current.coreOrder, ...current.accessoryOrder].sort((a, b) => a - b);
@@ -1981,14 +1956,13 @@ function sessionWorkspaceDraftIsDirty(current: SessionWorkspaceDraft, persisted:
     const currentMovement = current.movements[id];
     const persistedMovement = persisted.movements[id];
     if (!currentMovement || !persistedMovement) return true;
-    const comparableCurrent = convertMovementDraftUnit(currentMovement, current.displayUnit, persisted.displayUnit);
     const identityChanged = current.kinds[id] === 'accessory'
       && Number(current.items[id]?.movement_identity?.id || 0) !== Number(persisted.items[id]?.movement_identity?.id || 0);
-    return identityChanged || movementDraftIsDirty(comparableCurrent, persistedMovement);
+    return identityChanged || movementDraftIsDirty(currentMovement, persistedMovement);
   });
 }
 
-function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted: SessionWorkspaceDraft): SessionWorkspaceSavePlan {
+function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted: SessionWorkspaceDraft, storageUnit: CoachDisplayUnit): SessionWorkspaceSavePlan {
   const currentIds = [...current.coreOrder, ...current.accessoryOrder];
   const persistedIds = [...persisted.coreOrder, ...persisted.accessoryOrder];
   const movementUpdates: SessionWorkspaceMovementSave[] = [];
@@ -1998,12 +1972,10 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     const kind = current.kinds[id];
     const item = current.items[id];
     if (!movement || !kind || !item) return;
-    const comparable = persisted.movements[id]
-      ? convertMovementDraftUnit(movement, current.displayUnit, persisted.displayUnit)
-      : null;
+    const comparable = persisted.movements[id] ? movement : null;
     const identityChanged = kind === 'accessory'
       && Number(item.movement_identity?.id || 0) !== Number(persisted.items[id]?.movement_identity?.id || 0);
-    const patch = movementProgrammingPatch(movement, kind, current.displayUnit);
+    const patch = movementProgrammingPatch(movement, kind, storageUnit);
     if (kind === 'accessory' && item.movement_identity?.id) {
       patch.movement_definition_id = item.movement_identity.id;
     }
@@ -2028,15 +2000,8 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     title: current.title.trim(),
     athleteId: current.athleteId,
     scheduledDate: current.scheduledDate,
-    displayUnit: current.displayUnit,
     notes: current.notes,
-    metadataPatch: {
-      ...(current.title.trim() !== persisted.title.trim() ? { title: current.title.trim() } : {}),
-      ...(current.athleteId !== persisted.athleteId ? { athleteId: current.athleteId } : {}),
-      ...(current.scheduledDate !== persisted.scheduledDate ? { scheduledDate: current.scheduledDate } : {}),
-      ...(current.displayUnit !== persisted.displayUnit ? { displayUnit: current.displayUnit } : {}),
-      ...(current.notes.trim() !== persisted.notes.trim() ? { notes: current.notes } : {}),
-    },
+    metadataPatch: buildSessionWorkspaceMetadataPatch(current, persisted),
     movementUpdates,
     movementCreates,
     deletedMovementIds: persistedIds.filter((id) => id > 0 && !currentIds.includes(id)),
@@ -2050,11 +2015,12 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
 function addSessionDraftMovement(
   item: SessionMovementItem,
   kind: MovementKind,
+  storageUnit: CoachDisplayUnit,
   setDraft: React.Dispatch<React.SetStateAction<SessionWorkspaceDraft>>,
   setSelectedId: React.Dispatch<React.SetStateAction<number | null>>,
 ) {
   setDraft((current) => {
-    const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, current.displayUnit), current.displayUnit);
+    const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit), storageUnit);
     return {
       ...current,
       items: { ...current.items, [item.id]: item },
