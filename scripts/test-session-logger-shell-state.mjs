@@ -49,7 +49,7 @@ assert.match(
 );
 assert.match(
   logger,
-  /<KeyboardAvoidingView[\s\S]*?<Tabs\.Screen options=\{\{ headerShown: loggerHeaderShown \}\}/,
+  /<View style=\{styles\.screen\}>[\s\S]*?<Tabs\.Screen options=\{\{ headerShown: loggerHeaderShown \}\}/,
   'the normal Logger must actively restore shared header ownership after recap reuse',
 );
 assert.doesNotMatch(
