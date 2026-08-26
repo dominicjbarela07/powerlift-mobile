@@ -34,13 +34,13 @@ and no visual/runtime defect is known.
 
 ## Current release parity manifest
 
-- DEV SOURCE BASE: `1c9c6dc` plus the current parity-policy commit
-- TESTFLIGHT SOURCE: release projection from current `testflight` branch
+- DEV SOURCE: the current pushed head of `dev/canonical-mobile`
+- TESTFLIGHT SOURCE: a release projection descended from that exact DEV head
 - EXCLUDED DEV-ONLY SCOPES:
   - `ACCESSORY_REBUILD_DEV_ONLY`
   - `DEV_MOCKS_AND_EXPERIMENTS`
   - `NATIVE_3D_RENDERER_EXPERIMENT`
-- TESTFLIGHT-ONLY HOTFIXES: none after reconciliation
+- TESTFLIGHT-ONLY PRODUCT HOTFIXES: forbidden; back-propagation to canonical DEV is mandatory
 - BACK-PROPAGATED HOTFIXES: logger crash isolation, rest timer and countdown
   behavior, Repeat Last Set, final-set completion, post-Session correction,
   recognition, Review Hub/Calendar, completed recap, and release OTA guards

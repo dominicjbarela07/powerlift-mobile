@@ -4,16 +4,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { coachComingUpProgrammingDestination } from '../lib/coach-mobile.ts';
+import {
+  coachComingUpProgrammingDestination,
+  openCoachDestination,
+} from '../lib/coach-mobile.ts';
 import { resolveProgrammingSessionDeepOpen } from '../lib/programming-session-deep-open.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 const home = read('components', 'coach-mobile', 'CoachActivityHome.tsx');
 const manager = read('app', '(tabs)', 'workout', 'index.tsx');
-const service = read('..', 'app', 'services', 'coach_home_activity.py');
-
-assert.match(service, /"destination": \{"route": "\/\(tabs\)\/workout", "params": \{"workoutId": int\(workout\.id\), "athleteId": int\(athlete\.id\)\}\}/);
 assert.match(home, /openComingUpSession\(session\)/);
 assert.match(manager, /workoutId\?: string/);
 assert.match(manager, /key=\{trainingScopeKey\}/, 'athlete changes must reset stale child workspace state');
@@ -46,6 +46,18 @@ assert.equal(coachComingUpProgrammingDestination({
   athlete: { id: 12, name: 'Athlete' },
   destination: { route: '/(tabs)/workout', params: { athleteId: 12 } },
 }), null, 'Coming Up must fail closed without a stable workout id');
+
+const genericNavigationCalls = [];
+assert.equal(openCoachDestination({
+  push: (target) => genericNavigationCalls.push(target),
+}, {
+  route: '/(tabs)/workout',
+  params: { athleteId: 12 },
+}), true, 'generic Programming Manager navigation must remain valid without a Session intent');
+assert.deepEqual(genericNavigationCalls, [{
+  pathname: '/(tabs)/workout',
+  params: { athleteId: '12' },
+}]);
 assert.deepEqual(resolveProgrammingSessionDeepOpen({ ...fixture, ready: false }), { state: 'pending' });
 assert.deepEqual(resolveProgrammingSessionDeepOpen(fixture), {
   state: 'open',

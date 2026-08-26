@@ -18,6 +18,18 @@ explicit TestFlight release track and an already-pushed release HEAD so the
 binary's embedded fallback source is the same approved release projection as
 the OTA channel, never the Production source tree.
 
+Canonical DEV (`dev/canonical-mobile`) is the authoritative product-source
+lineage. TestFlight is an ephemeral release projection cut from that exact DEV
+commit. A release projection may differ only in the allowlisted release
+configuration recorded in `config/protected-fix-manifest.json`; product behavior
+must never evolve independently on a release branch.
+
+Any emergency change made in an isolated TestFlight or Production worktree is
+incomplete until the equivalent source and regression guard have been committed
+to canonical DEV. A later candidate must descend from the current canonical DEV
+head. Previously accepted behavior may not be intentionally removed unless the
+product owner explicitly authorizes that regression.
+
 Promotion must add the approved change to the current known-good TestFlight head. It must never replace that head with development HEAD or merge the development branch wholesale.
 
 ## Cumulative accepted-invariant gate
@@ -31,8 +43,11 @@ Logger shell, equipment, rich Plan / Compare, immediate workspace-mode
 switching, and the consolidated Week Programming Manager.
 
 Release branches must be based on the latest known-good cumulative TestFlight
-lineage. A successful focused delta test is not evidence that the candidate is
-cumulative. `scripts/eas-update-testflight.sh` must delegate to
+lineage as represented by canonical DEV. `scripts/test-release-source-lineage.mjs`
+must prove the candidate descends from the current canonical DEV head, contains
+the protected-fix provenance, and carries no candidate-only product files. A
+successful focused delta test is not evidence that the candidate is cumulative.
+`scripts/eas-update-testflight.sh` must delegate to
 `scripts/publish-validated-ios-ota.mjs`, so the single route-complete,
 native-compatible artifact that passed the invariant gate is the exact artifact
 uploaded and downloaded for byte-equality verification.

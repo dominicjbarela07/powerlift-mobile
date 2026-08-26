@@ -35,6 +35,9 @@ fi
 
 export EXPO_PUBLIC_API_BASE="${EXPECTED_API_BASE}"
 
+git fetch origin dev/canonical-mobile --quiet
+node scripts/test-release-source-lineage.mjs
+
 node <<'NODE'
 const app = require('./app.json').expo;
 const eas = require('./eas.json');

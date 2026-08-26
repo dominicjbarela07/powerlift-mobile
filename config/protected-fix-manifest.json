@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "canonicalDevBranch": "dev/canonical-mobile",
+  "releaseProjectionPaths": ["app.json", "eas.json"],
+  "protectedFixes": [
+    {
+      "id": "self-coached-governed-swap",
+      "description": "Self-coached athletes receive free governed Swap authority.",
+      "acceptedCommits": ["d26a2c2c6c7fd0c496f8a38f4c6a8af82d5bfb66"],
+      "behaviorTests": ["scripts/test-accessory-swap-session-gating.mjs"]
+    },
+    {
+      "id": "post-evidence-swap-lock",
+      "description": "The first persisted SetLog locks movement identity replacement.",
+      "acceptedCommits": ["cb3e30853fb99d080b157958b2729d1240f61b92"],
+      "behaviorTests": ["scripts/test-accessory-swap-session-gating.mjs"]
+    },
+    {
+      "id": "coach-coming-up-session-direct-open",
+      "description": "Coach Coming Up opens the exact Session Workspace in athlete Programming Manager context.",
+      "acceptedCommits": ["04b3de5056da23afeacf3595477f60cea1a5d8e5"],
+      "behaviorTests": ["scripts/test-coach-home-coming-up-direct-open.mjs"]
+    },
+    {
+      "id": "rich-plan-compare",
+      "description": "Completed Session recap retains the rich Plan / Compare renderer.",
+      "acceptedCommits": ["cbf5d3426c44aa6817b67074a16c24229dbc6d79"],
+      "behaviorTests": ["scripts/test-session-recap-plan-compare.mjs"]
+    },
+    {
+      "id": "accessory-e10rm",
+      "description": "Accessory strength metrics use e10RM while Core and Core Variant use e1RM.",
+      "acceptedCommits": ["538e8fdd0202e245e27cf256f5cabfd31b199d82"],
+      "behaviorTests": ["scripts/test-accessory-strength-metric-policy.mjs"]
+    },
+    {
+      "id": "canonical-individual-movement-artwork",
+      "description": "Individual Accessory artwork uses focused canonical muscle-region PNGs.",
+      "acceptedCommits": ["4706e1a413e20c69494f702c04528bf7124bcb0c", "1fe9df70d8e4bde8f9bbf7367861dee2c9393206"],
+      "behaviorTests": ["scripts/test-individual-movement-artwork-hard-rule.mjs"]
+    },
+    {
+      "id": "canonical-movement-history",
+      "description": "Last exposure and Movement History remain governed by exact canonical identity.",
+      "acceptedCommits": ["a1af1a91586e60b8a46c2cb51abc32fae551ac00"],
+      "behaviorTests": ["scripts/test-movement-history-launch.mjs"]
+    },
+    {
+      "id": "historical-ledger-preservation",
+      "description": "Typed historical Ledger identity and reconstructed Journey evidence remain visible.",
+      "acceptedCommits": ["e63330e52415358f0e2609ee6f21e9672566d01f"],
+      "behaviorTests": ["scripts/test-journey-historical-reconstruction.mjs"]
+    },
+    {
+      "id": "floating-display-unit-system",
+      "description": "The selected local display unit controls every mobile weight surface.",
+      "acceptedCommits": ["a899c4894e5b8e2dce11c7645763102fb7a7f456"],
+      "behaviorTests": ["scripts/test-global-weight-unit-toggle.mjs"]
+    },
+    {
+      "id": "consolidated-programming-manager-week",
+      "description": "Programming Manager owns the consolidated Week workspace without redundant Week Detail.",
+      "acceptedCommits": ["4437b06291e7b3930da2c8d7f4f79da5bfd369a4"],
+      "behaviorTests": ["scripts/test-mobile-programming-manager-consolidation.mjs"]
+    },
+    {
+      "id": "machine-equipment-picker",
+      "description": "Machine and cable movements retain the required equipment-selection path.",
+      "acceptedCommits": ["f1ee8c8fccf94f392ea08e2604cf78a2112dce66", "69eb078c62682d4961fbfaa224c9e841556f8794"],
+      "behaviorTests": ["scripts/test-equipment-gating-regression.mjs"]
+    },
+    {
+      "id": "session-workspace-shell-composition",
+      "description": "Session Workspace uses one authoritative app-shell presentation boundary.",
+      "acceptedCommits": ["427d573208ebcc560d27a61fd9121f6a31b18e5b"],
+      "behaviorTests": ["scripts/test-session-workspace-layout.mjs"]
+    }
+  ]
+}

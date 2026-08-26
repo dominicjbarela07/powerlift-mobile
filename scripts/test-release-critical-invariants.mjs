@@ -8,11 +8,13 @@ const areas = [
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
+  ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],
+  ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
+  ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
-  ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
+  ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],
-  ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['Session Workspace composition', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs']],
 ];
 

@@ -45,6 +45,9 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
 });
 
+if (branch === 'testflight') {
+  run(process.execPath, ['scripts/test-release-source-lineage.mjs']);
+}
 run('npm', ['run', 'test:release-critical-invariants']);
 run(process.execPath, ['scripts/test-testflight-source-parity.mjs', '--release-projection', '.']);
 
