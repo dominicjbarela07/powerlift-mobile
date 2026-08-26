@@ -2,9 +2,21 @@ import assert from 'node:assert/strict';
 
 import {
   movementHistorySheetRoute,
+  movementHistorySheetRouteForCanonicalIdentity,
   resolveMovementHistoryLaunchForItem,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '../lib/movement-history-launch.ts';
+
+assert.deepEqual(
+  movementHistorySheetRouteForCanonicalIdentity({ coreMovementId: 2, athleteId: 3 }),
+  { pathname: '/movement-history-sheet', params: { coreMovementId: '2', athleteId: '3' } },
+  'Core IDs must never be serialized in the general movement-definition namespace',
+);
+assert.deepEqual(
+  movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: 2, identityType: 'core', athleteId: 3 }),
+  { pathname: '/movement-history-sheet', params: { coreMovementId: '2', athleteId: '3' } },
+  'typed compatibility callers must preserve the Core namespace',
+);
 
 const prime = {
   id: 25,

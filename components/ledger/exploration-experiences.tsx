@@ -127,7 +127,11 @@ export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }
   const totalVolume = movements.reduce((sum, movement) => sum + movement.volume_kg, 0);
   const maxVolume = Math.max(1, ...movements.map((movement) => movement.volume_kg));
   const openMovement = (movement: LedgerMovementProgress) => router.push(
-    movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id }) as any,
+    movementHistorySheetRouteForCanonicalIdentity(
+      kind === 'variants'
+        ? { coreMovementId: movement.id }
+        : { movementDefinitionId: movement.id },
+    ) as any,
   );
   const sorted = [...movements].sort((left, right) => tab === 'History'
     ? String(right.last_performed_on || '').localeCompare(String(left.last_performed_on || ''))

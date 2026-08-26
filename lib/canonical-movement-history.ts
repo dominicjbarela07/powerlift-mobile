@@ -76,6 +76,13 @@ export type CanonicalHistoryExposureDetail = CanonicalHistoryExposure & Readonly
 }>;
 
 export type CanonicalMovementHistory = Readonly<{
+  identity_resolution: {
+    status: 'resolved';
+    subject_type: 'core' | 'accessory';
+    subject_id: number;
+    membership_set_log_count: number;
+    membership_sha256: string;
+  };
   schema_version: 'canonical-movement-history-v2';
   scope: 'exact_identity' | 'exact_core_identity';
   comparison_allowed: boolean;
@@ -192,7 +199,18 @@ export async function fetchCanonicalMovementHistory(query: MovementHistoryQuery)
   if (!response.ok || !response.json?.ok || !response.json.movement_history) {
     throw new Error(response.json?.error || 'Movement History could not load.');
   }
-  return response.json.movement_history;
+  const history = response.json.movement_history;
+  const expectedType = query.coreMovementId ? 'core' : 'accessory';
+  const expectedId = Number(query.coreMovementId || query.movementDefinitionId);
+  const resolution = history.identity_resolution;
+  if (
+    resolution?.status !== 'resolved'
+    || resolution.subject_type !== expectedType
+    || Number(resolution.subject_id) !== expectedId
+  ) {
+    throw new Error('Movement History identity could not be resolved safely.');
+  }
+  return history;
 }
 
 export async function fetchCanonicalMovementExposure(query: MovementHistoryQuery, exposureId: string) {

@@ -108,6 +108,11 @@ assert.match(api, /equipment_context_definition_id/);
 assert.match(api, /equipment_not_recorded/);
 assert.match(api, /movement-history\/exposures\/\$\{encodeURIComponent\(exposureId\)\}/);
 assert.match(api, /favorite\?athlete_id=\$\{athleteId\}/);
+assert.match(api, /identity_resolution/);
+assert.match(api, /resolution\?\.status !== 'resolved'/);
+assert.match(api, /resolution\.subject_type !== expectedType/);
+assert.match(api, /Number\(resolution\.subject_id\) !== expectedId/);
+assert.match(api, /Movement History identity could not be resolved safely/);
 
 assert.match(screen, /EQUIPMENT BREAKDOWN[\s\S]*PERFORMANCE TREND[\s\S]*LOAD PROGRESSION[\s\S]*KEY STATISTICS[\s\S]*EXPOSURE HISTORY/);
 assert.match(screen, /fetchCanonicalMovementExposure\(query, exposureId\)/);
@@ -159,7 +164,7 @@ assert.match(rootLayout, /name="movement-history-sheet"[\s\S]*presentation: 'tra
 assert.match(logger, /movementHistorySheetRoute/);
 assert.doesNotMatch(logger, /pathname: '\/\(tabs\)\/workout\/movement-history'/);
 assert.match(logger, /resolveMovementHistoryLaunchForItem/);
-assert.match(launch, /performed_core_movement\?\.id \|\| item\.core_movement\?\.id/);
+assert.match(launch, /normalized\.kind === 'core'[\s\S]*normalized\.effective\?\.id/);
 assert.match(launch, /coreMovementId/);
 assert.match(sheetRoute, /params\.coreMovementId/);
 assert.match(screen, /CanonicalMovementArtwork/);
@@ -176,6 +181,9 @@ assert.match(coachReview, /onOpenMovementHistory/);
 assert.match(coachReview, /movementHistorySheetRoute/);
 assert.match(programmingRoute, /movementHistorySheetRoute/);
 assert.match(ledgerExperiences, /movementHistorySheetRouteForCanonicalIdentity/);
+assert.match(ledgerExperiences, /kind === 'variants'[\s\S]*coreMovementId/);
+assert.match(ledgerRoute, /mode === 'variant'[\s\S]*coreMovementId/);
+assert.match(launch, /identityType === 'core'[\s\S]*coreMovementId/);
 
 for (const source of [screen, chart]) {
   const sizes = [...source.matchAll(/fontSize:\s*([0-9]+(?:\.[0-9]+)?)/g)].map((match) => Number(match[1]));

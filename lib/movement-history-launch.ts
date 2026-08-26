@@ -64,9 +64,9 @@ export function resolveMovementHistoryLaunchForItem({
   );
   const equipmentContextDefinitionId = positiveId(normalized.equipment?.id);
 
-  const coreMovementId = positiveId(
-    item.performed_core_movement?.id || item.core_movement?.id,
-  );
+  const coreMovementId = normalized.kind === 'core'
+    ? positiveId(normalized.effective?.id)
+    : null;
   if (coreMovementId) {
     return {
       ok: true,
@@ -77,7 +77,9 @@ export function resolveMovementHistoryLaunchForItem({
     };
   }
 
-  const movementDefinitionId = positiveId(normalized.effective?.id);
+  const movementDefinitionId = normalized.kind === 'accessory'
+    ? positiveId(normalized.effective?.id)
+    : null;
   if (!movementDefinitionId) {
     return {
       ok: false,
@@ -160,17 +162,31 @@ export function movementHistorySheetRoute(target: MovementHistoryLaunchTarget) {
 
 export function movementHistorySheetRouteForCanonicalIdentity({
   movementDefinitionId,
+  coreMovementId,
+  identityType,
   athleteId,
   equipmentContextDefinitionId,
 }: {
-  movementDefinitionId: number;
+  movementDefinitionId?: number | null;
+  coreMovementId?: number | null;
+  identityType?: 'accessory' | 'core' | null;
   athleteId?: number | null;
   equipmentContextDefinitionId?: number | null;
 }) {
+  const resolvedCoreMovementId = positiveId(coreMovementId)
+    || (identityType === 'core' ? positiveId(movementDefinitionId) : null);
+  const resolvedMovementDefinitionId = identityType === 'core'
+    ? null
+    : positiveId(movementDefinitionId);
+  if (!resolvedCoreMovementId && !resolvedMovementDefinitionId) {
+    throw new Error('A typed governed movement identity is required to open Movement History.');
+  }
   return {
     pathname: '/movement-history-sheet' as const,
     params: {
-      movementDefinitionId: String(movementDefinitionId),
+      ...(resolvedCoreMovementId
+        ? { coreMovementId: String(resolvedCoreMovementId) }
+        : { movementDefinitionId: String(resolvedMovementDefinitionId) }),
       ...(positiveId(athleteId) ? { athleteId: String(athleteId) } : {}),
       ...(positiveId(equipmentContextDefinitionId)
         ? { equipmentContextDefinitionId: String(equipmentContextDefinitionId) }

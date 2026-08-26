@@ -17,6 +17,8 @@ export type LoggerMovementIdentityItem = EquipmentAwareWorkoutItem & {
   selected_sub_movement?: string | null;
   effective_movement_identity?: LoggerIdentityReference | null;
   performed_canonical_movement_identity?: LoggerIdentityReference | null;
+  core_movement?: LoggerIdentityReference | null;
+  performed_core_movement?: LoggerIdentityReference | null;
   legacy?: {
     effective_movement_definition_id?: number | null;
     effective_movement_identity?: LoggerIdentityReference | null;
@@ -24,6 +26,7 @@ export type LoggerMovementIdentityItem = EquipmentAwareWorkoutItem & {
 };
 
 export type LoggerMovementIdentity = Readonly<{
+  kind: 'core' | 'accessory';
   programmed: LoggerIdentityReference | null;
   effective: LoggerIdentityReference | null;
   equipment: LoggerIdentityReference | null;
@@ -49,6 +52,20 @@ function withId(
 export function resolveLoggerMovementIdentity(
   item: LoggerMovementIdentityItem,
 ): LoggerMovementIdentity {
+  const performedCore = withId(item.performed_core_movement);
+  const programmedCore = withId(item.core_movement);
+  if (performedCore || programmedCore) {
+    const effective = performedCore || programmedCore;
+    return {
+      kind: 'core',
+      programmed: programmedCore,
+      effective,
+      equipment: null,
+      displayName: effective?.display_name || item.movement || 'Movement',
+      canonicalIdentityComplete: Boolean(effective),
+    };
+  }
+
   const equipment = activeEquipmentIdentity(item) as LoggerIdentityReference | null;
   const equipmentId = positiveId(equipment?.id);
   const serverEffective = withId(item.effective_movement_identity);
@@ -72,6 +89,7 @@ export function resolveLoggerMovementIdentity(
   );
 
   return {
+    kind: 'accessory',
     programmed,
     effective,
     equipment,

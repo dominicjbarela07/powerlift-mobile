@@ -83,18 +83,27 @@ export default function MovementHistoryRoute() {
   const params = useLocalSearchParams<{
     athleteId?: string;
     movementDefinitionId?: string;
+    coreMovementId?: string;
+    identityType?: string;
     equipmentContextDefinitionId?: string;
     equipmentDefinitionId?: string;
   }>();
   const movementDefinitionId = Number(Array.isArray(params.movementDefinitionId) ? params.movementDefinitionId[0] : params.movementDefinitionId);
+  const coreMovementId = Number(Array.isArray(params.coreMovementId) ? params.coreMovementId[0] : params.coreMovementId);
   const athleteId = Number(Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId);
   const equipmentDefinitionId = Number(Array.isArray(params.equipmentContextDefinitionId ?? params.equipmentDefinitionId)
     ? (params.equipmentContextDefinitionId ?? params.equipmentDefinitionId)?.[0]
     : (params.equipmentContextDefinitionId ?? params.equipmentDefinitionId));
-  if (Number.isFinite(movementDefinitionId) && movementDefinitionId > 0) {
+  if ((Number.isFinite(coreMovementId) && coreMovementId > 0)
+    || (Number.isFinite(movementDefinitionId) && movementDefinitionId > 0)) {
     return <Redirect href={movementHistorySheetRouteForCanonicalIdentity({
       athleteId,
-      movementDefinitionId,
+      ...(Number.isFinite(coreMovementId) && coreMovementId > 0
+        ? { coreMovementId }
+        : {
+            movementDefinitionId,
+            identityType: params.identityType === 'core' ? 'core' : 'accessory',
+          }),
       equipmentContextDefinitionId: equipmentDefinitionId,
     }) as never} />;
   }
