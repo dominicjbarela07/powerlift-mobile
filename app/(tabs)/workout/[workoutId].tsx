@@ -30,7 +30,7 @@ let Notifications: any = null;
 if (Platform.OS !== 'web') {
   Notifications = require('expo-notifications');
 }
-import { Tabs, useLocalSearchParams, useRouter } from 'expo-router';
+import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
@@ -43,6 +43,11 @@ try {
   VideoThumbnails = null;
 }
 import RefreshScreen from '@/components/refresh-screen';
+import {
+  createSessionLoggerRecoveryGate,
+  sessionLoggerMovementCount,
+  validateSessionLoggerPayload,
+} from '@/lib/session-logger-resume';
 import SetVideoPlayerModal, {
   type SetVideoSummary,
 } from '@/components/SetVideoPlayerModal';
@@ -1627,6 +1632,14 @@ export default function WorkoutViewerScreen() {
   const unitPreferenceHydratedRef = useRef(false);
   const [data, setData] = useState<WorkoutPayload | null>(null);
   const workoutRequestManagerRef = useRef(createLatestRequestManager<WorkoutPayload>());
+  const resumeRefreshRef = useRef<() => void>(() => undefined);
+  const loggerAppStateRef = useRef(AppState.currentState);
+  const loggerRecoveryGateRef = useRef(createSessionLoggerRecoveryGate());
+  const bodyRecoveryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const screenMountedRef = useRef(true);
+  const hasFocusedLoggerRef = useRef(false);
+  const [bodyRenderGeneration, setBodyRenderGeneration] = useState(0);
+  const [bodyRecoveryFailed, setBodyRecoveryFailed] = useState(false);
   const acceptedLoadByItemIdRef = useRef<Record<number, SetLoggerLoadEvidence>>({});
   const [acceptedSetEvidenceItemIds, setAcceptedSetEvidenceItemIds] = useState<
     ReadonlySet<number>
@@ -3493,10 +3506,15 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
+      const previousState = loggerAppStateRef.current;
+      loggerAppStateRef.current = state;
       setSessionClockForeground(state === 'active');
       if (state === 'active') setSessionNowMs(Date.now());
       if (state === 'active') feedbackDispatch({ type: 'APP_RESUMED' });
       else feedbackDispatch({ type: 'APP_BACKGROUNDED' });
+      if (state === 'active' && previousState !== 'active') {
+        resumeRefreshRef.current();
+      }
       if (state === 'active' && restActive && restEndAtMsRef.current) {
         const remaining = Math.max(
           0,
@@ -6258,7 +6276,10 @@ export default function WorkoutViewerScreen() {
     }
   };
 
-  const fetchWorkout = useCallback(async (opts?: { silent?: boolean }) => {
+  const fetchWorkout = useCallback(async (opts?: {
+    silent?: boolean;
+    reason?: 'initial' | 'foreground' | 'focus' | 'body_recovery' | 'manual';
+  }) => {
     if (!workoutId) {
       setError('Missing Session id');
       setLoading(false);
@@ -6308,16 +6329,37 @@ export default function WorkoutViewerScreen() {
       if (String(payload.workout?.id) !== requestedWorkoutId) {
         throw new Error('Training Session response did not match the requested Session.');
       }
+      const validation = validateSessionLoggerPayload({
+        candidate: payload,
+        current: dataRef.current,
+        requestedWorkoutId,
+      });
+      if (!validation.ok) {
+        console.warn('[SessionLogger] rejected incoherent Session payload', {
+          reason: validation.reason,
+          request_reason: opts?.reason || 'initial',
+          workout_id: requestedWorkoutId,
+        });
+        throw new Error('Training Session refresh was incomplete. Your current Session remains available.');
+      }
       return payload;
     });
 
     if (requestResult.kind === 'cancelled' || requestResult.kind === 'obsolete') {
+      if (
+        screenMountedRef.current
+        && !workoutRequestManagerRef.current.hasActiveRequest()
+      ) {
+        setLoading(false);
+        setRefreshing(false);
+      }
       return false;
     }
 
     if (requestResult.kind === 'error') {
       const err: any = requestResult.error;
       console.log('Training Session fetch error', err);
+      if (!screenMountedRef.current) return false;
       setError(err?.message || 'Error loading Training Session');
       if (!silent && !dataRef.current) setData(null);
       if (silent) setRefreshing(false);
@@ -6329,6 +6371,7 @@ export default function WorkoutViewerScreen() {
     }
 
     const payload = requestResult.value;
+    if (!screenMountedRef.current) return false;
     if (!unitPreferenceHydratedRef.current) {
       if (unitLocalOverrideRef.current == null) {
         setUnit(normalizeReadinessUnit(payload.athlete?.preferred_units));
@@ -6336,6 +6379,10 @@ export default function WorkoutViewerScreen() {
       unitPreferenceHydratedRef.current = true;
     }
     setAcceptedSetEvidenceItemIds(new Set(persistedSetLogItemIds(payload.workout)));
+    // Publish the accepted payload to event callbacks and React in one ownership
+    // step. A later foreground callback can never observe an older dataRef while
+    // the screen is already rendering the new Session.
+    dataRef.current = payload;
     setData(payload);
     restoreScrollSoon();
     if (silent) setRefreshing(false);
@@ -6351,6 +6398,92 @@ export default function WorkoutViewerScreen() {
     coachPreviewRequested,
     workoutId,
   ]);
+
+  const remountLoggerBody = useCallback(() => {
+    pendingRestoreScrollYRef.current = scrollYRef.current;
+    scrollViewportHeightRef.current = 0;
+    scrollContentHeightRef.current = 0;
+    setBodyRecoveryFailed(false);
+    setBodyRenderGeneration((generation) => generation + 1);
+    requestAnimationFrame(() => requestAnimationFrame(restoreScrollSoon));
+  }, []);
+
+  const revalidateActiveLogger = useCallback((
+    reason: 'foreground' | 'focus' | 'body_recovery',
+  ) => {
+    const current = dataRef.current;
+    if (!current?.workout || String(current.workout.id) !== String(workoutId)) return;
+    if (!loggerRecoveryGateRef.current.beginLifecycleRecovery(Date.now())) return;
+    if (__DEV__) {
+      console.info('[SessionLoggerLifecycle] revalidate retained Session', {
+        reason,
+        route_workout_id: String(workoutId),
+        active_workout_id: String(current.workout.id),
+        movement_count: sessionLoggerMovementCount(current),
+        request_active: workoutRequestManagerRef.current.hasActiveRequest(),
+      });
+    }
+    remountLoggerBody();
+    void fetchWorkout({ silent: true, reason });
+  }, [fetchWorkout, remountLoggerBody, workoutId]);
+
+  useEffect(() => {
+    resumeRefreshRef.current = () => revalidateActiveLogger('foreground');
+    return () => {
+      resumeRefreshRef.current = () => undefined;
+    };
+  }, [revalidateActiveLogger]);
+
+  useFocusEffect(useCallback(() => {
+    if (!hasFocusedLoggerRef.current) {
+      hasFocusedLoggerRef.current = true;
+      return undefined;
+    }
+    revalidateActiveLogger('focus');
+    return undefined;
+  }, [revalidateActiveLogger]));
+
+  const assessLoggerBodyHealth = useCallback(() => {
+    if (bodyRecoveryTimerRef.current) clearTimeout(bodyRecoveryTimerRef.current);
+    bodyRecoveryTimerRef.current = setTimeout(() => {
+      bodyRecoveryTimerRef.current = null;
+      const current = dataRef.current;
+      const status = String(current?.workout?.status || '').toLowerCase();
+      const expectsMovementBody = status === 'in_progress'
+        && sessionLoggerMovementCount(current) > 0;
+      const bodyIsLaidOut = scrollViewportHeightRef.current > 1
+        && scrollContentHeightRef.current > 1;
+      if (!expectsMovementBody || bodyIsLaidOut) {
+        loggerRecoveryGateRef.current.markBodyHealthy();
+        setBodyRecoveryFailed(false);
+        return;
+      }
+      if (!loggerRecoveryGateRef.current.acquireBodyRecovery()) {
+        if (__DEV__) {
+          console.warn('[SessionLoggerLifecycle] body recovery exhausted', {
+            workout_id: current?.workout?.id ?? null,
+            movement_count: sessionLoggerMovementCount(current),
+            viewport_height: scrollViewportHeightRef.current,
+            content_height: scrollContentHeightRef.current,
+          });
+        }
+        setBodyRecoveryFailed(true);
+        return;
+      }
+      remountLoggerBody();
+      void fetchWorkout({ silent: true, reason: 'body_recovery' }).then(() => {
+        assessLoggerBodyHealth();
+      });
+    }, 300);
+  }, [fetchWorkout, remountLoggerBody]);
+
+  const retryLoggerBody = useCallback(() => {
+    loggerRecoveryGateRef.current.reset();
+    remountLoggerBody();
+    void fetchWorkout({ silent: true, reason: 'body_recovery' }).then(() => {
+      assessLoggerBodyHealth();
+    });
+  }, [assessLoggerBodyHealth, fetchWorkout, remountLoggerBody]);
 
   const refreshAfterStaleConflict = useCallback(async () => {
     feedbackDispatch({ type: 'STALE_REFRESH_STARTED' });
@@ -6841,6 +6974,8 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     workoutRequestManagerRef.current.cancel();
+    loggerRecoveryGateRef.current.reset();
+    hasFocusedLoggerRef.current = false;
     dataRef.current = null;
     setData(null);
     setError(null);
@@ -6853,6 +6988,9 @@ export default function WorkoutViewerScreen() {
     setExpandedCompletedMovements({});
     setExpandedCoreDetails({});
     scrollYRef.current = 0;
+    scrollViewportHeightRef.current = 0;
+    scrollContentHeightRef.current = 0;
+    setBodyRecoveryFailed(false);
   }, [workoutId]);
 
   useEffect(() => {
@@ -6866,11 +7004,14 @@ export default function WorkoutViewerScreen() {
   }, [fetchWorkout]);
 
   useEffect(() => {
+    screenMountedRef.current = true;
     const acceptedSheetHandoffController = acceptedSheetHandoffControllerRef.current;
     const canonicalSetSubmissionController = canonicalSetSubmissionControllerRef.current;
     const processedSetResults = processedSetResultsRef.current;
     const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
     return () => {
+      screenMountedRef.current = false;
+      if (bodyRecoveryTimerRef.current) clearTimeout(bodyRecoveryTimerRef.current);
       // Do not cancel the active rest completion notification here. The global
       // serializable timer owns it after the Logger unmounts.
       if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
@@ -8116,11 +8257,7 @@ export default function WorkoutViewerScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 92 : 0}
-    >
+    <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
       <SessionCommandStrip
         restActive={restActive}
@@ -8164,6 +8301,7 @@ export default function WorkoutViewerScreen() {
 
       {/* Scrollable Training Session content */}
       <RefreshScreen
+        key={`session-logger-body:${workout.id}:${bodyRenderGeneration}`}
         ref={scrollRef}
         style={styles.scrollShell}
         refreshing={refreshing}
@@ -8177,9 +8315,11 @@ export default function WorkoutViewerScreen() {
         }}
         onLayout={(event) => {
           scrollViewportHeightRef.current = event.nativeEvent.layout.height;
+          assessLoggerBodyHealth();
         }}
         onContentSizeChange={(_width, height) => {
           scrollContentHeightRef.current = height;
+          assessLoggerBodyHealth();
         }}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
@@ -8632,6 +8772,27 @@ export default function WorkoutViewerScreen() {
             </View>
           )}
       </RefreshScreen>
+
+      {bodyRecoveryFailed ? (
+        <View style={styles.bodyRecoveryOverlay} accessibilityRole="alert">
+          <Ionicons name="refresh-circle-outline" size={32} color={SLColors.accentViolet} />
+          <Text style={styles.bodyRecoveryTitle}>Session view needs to reconnect</Text>
+          <Text style={styles.bodyRecoveryBody}>
+            Your logged sets and timer are preserved. Retry loading this Session view.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry Session view"
+            onPress={retryLoggerBody}
+            style={({ pressed }) => [
+              styles.bodyRecoveryButton,
+              pressed && styles.bodyRecoveryButtonPressed,
+            ]}
+          >
+            <Text style={styles.bodyRecoveryButtonText}>Retry Session View</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       <SetVideoPlayerModal
         visible={setVideoPlayer.visible}
@@ -10298,7 +10459,7 @@ export default function WorkoutViewerScreen() {
         visible={swapAccVisible}
       />
 
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -12220,6 +12381,47 @@ const styles = StyleSheet.create({
   scrollShell: {
     flex: 1,
     backgroundColor: 'transparent',
+  },
+  bodyRecoveryOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    top: 132,
+    zIndex: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingHorizontal: 28,
+    backgroundColor: SLColors.black,
+  },
+  bodyRecoveryTitle: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+    textAlign: 'center',
+  },
+  bodyRecoveryBody: {
+    color: SLColors.textMuted,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
+    lineHeight: 21,
+    textAlign: 'center',
+  },
+  bodyRecoveryButton: {
+    minHeight: 48,
+    minWidth: 210,
+    marginTop: 8,
+    paddingHorizontal: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.lg,
+    backgroundColor: SLColors.accentViolet,
+  },
+  bodyRecoveryButtonPressed: {
+    opacity: 0.78,
+  },
+  bodyRecoveryButtonText: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
   },
 
   center: {
