@@ -23,7 +23,7 @@ assert.match(experience, /Load earlier history/);
 assert.match(experience, /entry\.source\.href/);
 assert.match(experience, /entry\.source_kind === 'persisted'/);
 assert.match(experience, /formatJourneyDate\(overview\.earliest_record\.date\)/);
-assert.match(experience, /formatJourneyWeight\(performance\.weight_kg, unit\)/);
+assert.match(experience, /journeyPerformanceDetail\(entry\.event_type, performance, unit, entry\.detail\)/);
 assert.doesNotMatch(experience.slice(experience.indexOf('function journeyMomentFromEntry')), /displayWeight\(performance\./, 'Journey PR evidence must not round exact historical values to plate increments');
 
 // The legacy collector can still support the isolated old Index study, but the

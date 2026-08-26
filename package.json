@@ -86,6 +86,7 @@
     "test:session-content-snapshot": "node --import tsx scripts/test-session-content-snapshot.mjs",
     "test:training-hub-session-labels": "node --import tsx scripts/test-training-hub-session-labels.mjs",
     "test:preferred-unit-display": "node --import tsx scripts/test-preferred-unit-display.mjs",
+    "test:journey-unit-propagation": "node --import tsx scripts/test-journey-unit-propagation.mjs",
     "test:floating-display-unit": "node scripts/test-floating-display-unit-control.mjs",
     "test:session-recap-trends": "node --import tsx scripts/test-session-recap-trends.mjs",
     "test:session-recap-plan-compare": "node --import tsx scripts/test-session-recap-plan-compare.mjs",

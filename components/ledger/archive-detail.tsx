@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
-import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLTrophy } from '@/components/ui';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { ledgerHrefFor } from './routing';
 import { fetchArchiveDetail, type ArchiveItem, type ArchiveItemType } from '@/lib/ledger-archive';
 import { useAuth } from '@/context/AuthContext';
 import { formatWeightFromKg, normalizeDisplayWeightUnit, type DisplayWeightUnit } from '@/lib/display-units';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
 const first = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
 const ArchiveDetailUnitContext = React.createContext<DisplayWeightUnit>('lb');
@@ -59,14 +60,15 @@ function dateLabel(value?: string): string {
 export function ArchiveDetailExperience() {
   const router = useRouter();
   const { user } = useAuth();
-  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
-  const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string }>();
+  const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
+  const params = useLocalSearchParams<{ itemType?: string; sourceId?: string; collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string }>();
   const itemType = first(params.itemType) as ArchiveItemType;
   const sourceId = Number(first(params.sourceId));
   const athleteId = Number(first(params.athlete_id)) || undefined;
   const [item, setItem] = useState<ArchiveDetailItem | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'unavailable' | 'unauthorized' | 'error'>('loading');
   const [reloadToken, setReloadToken] = useState(0);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
 
   useEffect(() => {
     if (!itemType || !Number.isInteger(sourceId)) { setState('unavailable'); return; }
@@ -81,10 +83,11 @@ export function ArchiveDetailExperience() {
       ));
   }, [athleteId, itemType, reloadToken, sourceId]);
 
-  const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to) } } as never);
+  const back = () => router.replace({ pathname: ledgerHrefFor('archive') as never, params: { collection: first(params.collection), q: first(params.q), athlete_id: athleteId ? String(athleteId) : undefined, date_from: first(params.date_from), date_to: first(params.date_to), displayUnit } } as never);
   const meta = TYPE_META[itemType] || TYPE_META.session;
 
   return <ArchiveDetailUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-detail">
+    <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-detail-unit-toggle" />
     <Pressable accessibilityLabel="Back to Archive results" onPress={back} style={styles.back}><Ionicons name="chevron-back" size={20} color={SLColors.iconPrimary} /><Text typographyRole="shortButtonLabel" style={styles.backText}>Archive</Text></Pressable>
     {state === 'loading' ? <DetailState loading icon="layers-outline" title="Opening source evidence" body="Retrieving the current authorized record…" /> : null}
     {state === 'unauthorized' ? <DetailState icon="lock-closed-outline" title="Archive access unavailable" body="Your session or access to this athlete's Archive could not be verified." /> : null}

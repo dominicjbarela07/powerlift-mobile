@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Text, TextInput } from '@/components/ui/sl-text';
-import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLTrophy } from '@/components/ui';
 import { SLColors, SLFontFamilies, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import {
@@ -22,6 +22,7 @@ import {
 } from '@/lib/ledger-archive';
 import { SectionLabel } from './primitives';
 import { useAuth } from '@/context/AuthContext';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   convertDisplayWeightValue,
   formatCompactVolumeValueFromKg,
@@ -187,10 +188,10 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 }
 
 export function ArchiveFoundationExperience() {
-  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string }>();
+  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string }>();
   const router = useRouter();
   const { user } = useAuth();
-  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
+  const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const requestedCollection = first(params.collection) as ArchiveCollection | undefined;
   const initialScope: ArchiveScope = COLLECTIONS.includes(requestedCollection as ArchiveCollection) ? requestedCollection! : 'overview';
   const initialQuery = first(params.q) || '';
@@ -212,6 +213,7 @@ export function ArchiveFoundationExperience() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<ArchiveFailure | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const { unit: displayUnit, setUnit: setDisplayUnit } = useSurfaceWeightUnit(preferredDisplayUnit, first(params.displayUnit));
   const filterCount = activeFilterCount(filters, movementFilter, naturalAlbumFilter);
   const browsingResults = scope !== 'overview' || Boolean(committedQuery) || filterCount > 0;
 
@@ -371,8 +373,9 @@ export function ArchiveFoundationExperience() {
       athleteId,
       dateFrom: filters.dateFrom || undefined,
       dateTo: filters.dateTo || undefined,
+      displayUnit,
     }) as never);
-  }, [athleteId, committedQuery, filters.dateFrom, filters.dateTo, router, scope]);
+  }, [athleteId, committedQuery, displayUnit, filters.dateFrom, filters.dateTo, router, scope]);
 
   const chooseMovement = useCallback((movement: { id: number; name: string }) => {
     setScope('training');
@@ -389,6 +392,7 @@ export function ArchiveFoundationExperience() {
   }, [clearSearch, resetFilters]);
 
   return <ArchiveDisplayUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-experience">
+    <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-unit-toggle" />
     <ArchiveHeading />
     {browsingResults || toolsOpen ? <SearchBar
       filterCount={filterCount}

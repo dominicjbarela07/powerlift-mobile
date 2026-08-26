@@ -1,4 +1,5 @@
 import { fetchJson } from '@/lib/api';
+import type { DisplayWeightUnit } from '@/lib/display-units';
 
 export type ArchiveCollection = 'training' | 'media' | 'competition';
 export type ArchiveItemType = 'session' | 'set' | 'video' | 'meet' | 'movement' | 'historical_performance';
@@ -111,7 +112,7 @@ export function fetchArchiveDetail(itemType: ArchiveItemType, sourceId: number, 
 export function archiveDetailHref(
   itemType: ArchiveItemType,
   sourceId: number,
-  returnState: { collection?: ArchiveCollection; q?: string; athleteId?: number; dateFrom?: string; dateTo?: string } = {},
+  returnState: { collection?: ArchiveCollection; q?: string; athleteId?: number; dateFrom?: string; dateTo?: string; displayUnit?: DisplayWeightUnit } = {},
 ): string {
   return `/(tabs)/ledger/archive/${itemType}/${sourceId}${queryString({
     collection: returnState.collection,
@@ -119,5 +120,6 @@ export function archiveDetailHref(
     athlete_id: returnState.athleteId,
     date_from: returnState.dateFrom,
     date_to: returnState.dateTo,
+    displayUnit: returnState.displayUnit,
   })}`;
 }

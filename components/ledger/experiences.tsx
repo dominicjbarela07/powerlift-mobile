@@ -11,7 +11,8 @@ import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-contro
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
-import { formatCalculatedWeightValue, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
+import { formatCalculatedWeightValue, formatWeightFromKg, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
+import { journeyPerformanceDetail } from '@/lib/journey-weight-presentation';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { ArchiveRequestError, archiveDetailHref } from '@/lib/ledger-archive';
 import {
@@ -282,7 +283,7 @@ export function JourneyExperience() {
   const [includeSessions, setIncludeSessions] = useState(false);
   const [overview, setOverview] = useState<JourneyOverview | null>(null);
   const [blocks, setBlocks] = useState<JourneyBlock[]>([]);
-  const [allMoments, setAllMoments] = useState<JourneyEvent[]>([]);
+  const [journeyEntries, setJourneyEntries] = useState<JourneyEntry[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [journeyLoading, setJourneyLoading] = useState(true);
@@ -290,6 +291,7 @@ export function JourneyExperience() {
   const [journeyError, setJourneyError] = useState<string | null>(null);
   const [journeyErrorKind, setJourneyErrorKind] = useState<LedgerRequestFailureKind | null>(null);
   const { unit, setUnit } = useSurfaceWeightUnit(overview?.athlete.preferred_units);
+  const allMoments = useMemo(() => journeyEntries.map((entry) => journeyMomentFromEntry(entry, unit)), [journeyEntries, unit]);
   const availableYears = useMemo(() => [...new Set(allMoments.map((event) => event.year))].sort().reverse(), [allMoments]);
   const activeYear = selectedYear && availableYears.includes(selectedYear)
     ? selectedYear
@@ -310,7 +312,7 @@ export function JourneyExperience() {
         const page = bootstrap.timeline;
         setOverview(nextOverview);
         setBlocks(nextBlocks);
-        setAllMoments(page.items.map((entry) => journeyMomentFromEntry(entry, unit)));
+        setJourneyEntries(page.items);
         setNextCursor(page.next_cursor ?? null);
         setHasMore(page.has_more);
         setJourneyError(null);
@@ -320,7 +322,7 @@ export function JourneyExperience() {
         if (!active) return;
         setOverview(null);
         setBlocks([]);
-        setAllMoments([]);
+        setJourneyEntries([]);
         console.warn('Journey historical projection request failed', error);
         const kind = error instanceof JourneyRequestError && (error.status === 401 || error.status === 403)
           ? 'unauthorized'
@@ -334,7 +336,7 @@ export function JourneyExperience() {
         if (active) setJourneyLoading(false);
       });
     return () => { active = false; };
-  }, [includeSessions, unit]);
+  }, [includeSessions]);
 
   useEffect(() => loadJourney(), [loadJourney]);
 
@@ -343,7 +345,7 @@ export function JourneyExperience() {
     setLoadingMore(true);
     try {
       const page = await fetchJourneyTimelinePage({ limit: 24, cursor: nextCursor, includeSessions });
-      setAllMoments((current) => [...current, ...page.items.map((entry) => journeyMomentFromEntry(entry, unit))]);
+      setJourneyEntries((current) => [...current, ...page.items]);
       setNextCursor(page.next_cursor ?? null);
       setHasMore(page.has_more);
     } catch (error) {
@@ -369,7 +371,7 @@ export function JourneyExperience() {
       </View>
       <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
-      {view === 'Overview' ? <JourneyOverviewView overview={overview} /> : null}
+      {view === 'Overview' ? <JourneyOverviewView overview={overview} unit={unit} /> : null}
       {view === 'Blocks' ? <JourneyBlocksView blocks={blocks} unit={unit} /> : null}
       {view === 'Timeline' ? <>
         <View style={styles.journeyYearRail} accessibilityRole="tablist">
@@ -388,7 +390,7 @@ export function JourneyExperience() {
           {combinedError ? <LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => loadJourney()} /> : null}
           {!combinedError && moments.length === 0 ? <LedgerRoomState kind="empty" message="No career moments match this year." /> : null}
           {moments.map((moment, index) => {
-            return <JourneyMoment key={moment.id} event={moment} expanded={expanded === moment.id} isLast={index === moments.length - 1} onPress={() => setExpanded(expanded === moment.id ? '' : moment.id)} onOpenEvidence={(reference) => router.push(reference.href as any)} />;
+            return <JourneyMoment key={moment.id} event={moment} expanded={expanded === moment.id} isLast={index === moments.length - 1} onPress={() => setExpanded(expanded === moment.id ? '' : moment.id)} onOpenEvidence={(reference) => router.push({ pathname: reference.href as any, params: { displayUnit: unit } } as any)} />;
           })}
           {hasMore ? <Pressable accessibilityRole="button" disabled={loadingMore} onPress={() => void loadMore()} style={({ pressed }) => [styles.journeyLoadMore, pressed && styles.pressed]}><Text style={styles.journeyLoadMoreText}>{loadingMore ? 'Loading earlier history…' : 'Load earlier history'}</Text><Ionicons name="arrow-down" size={15} color="#B999F1" /></Pressable> : null}
         </View>
@@ -398,9 +400,8 @@ export function JourneyExperience() {
   );
 }
 
-function JourneyOverviewView({ overview }: { overview: JourneyOverview }) {
+function JourneyOverviewView({ overview, unit }: { overview: JourneyOverview; unit: LedgerUnit }) {
   const summary = overview.lifetime;
-  const unit: LedgerUnit = overview.athlete.preferred_units?.toLowerCase().startsWith('kg') ? 'kg' : 'lb';
   const reported = overview.bodyweight_context;
   const latestReportedKg = reported.latest?.reported_bodyweight_kg ?? reported.latest?.weight_kg;
   const latestReportedDate = reported.latest?.training_date ?? reported.latest?.date;
@@ -458,9 +459,7 @@ function formatJourneyRange(start?: string | null, end?: string | null): string 
 }
 
 function formatJourneyWeight(valueKg: number, unit: LedgerUnit): string {
-  const converted = kgToDisplay(valueKg, unit);
-  const rounded = Math.round(converted * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  return formatWeightFromKg(valueKg, unit)?.replace(/ (?:kg|lb)$/, '') ?? '—';
 }
 
 function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyEvent {
@@ -487,18 +486,13 @@ function journeyMomentFromEntry(entry: JourneyEntry, unit: LedgerUnit): JourneyE
   };
   const visual = presentation[entry.event_type] ?? presentation.IMPORTED_HISTORY;
   const performance = entry.performance;
-  let detail = entry.detail;
+  const detail = journeyPerformanceDetail(entry.event_type, performance, unit, entry.detail);
   const contextualEvidence = (entry.evidence ?? {}) as Record<string, any>;
   const reportedBodyweight = contextualEvidence.reported_bodyweight;
   const accomplishmentTags = Array.isArray(contextualEvidence.accomplishments)
     ? contextualEvidence.accomplishments.map((row: any) => ({ label: String(row.label || 'Achievement').toUpperCase(), tone: '#C289FF' }))
     : [];
   const completion = contextualEvidence.completion;
-  if (entry.event_type === 'E1RM_PR' && performance?.e1rm_kg != null) {
-    detail = `${displayCalculatedWeight(performance.e1rm_kg, unit)} ${unit} estimated 1RM`;
-  } else if ((entry.event_type === 'WEIGHT_PR' || entry.event_type === 'REP_PR') && performance?.weight_kg != null) {
-    detail = `${formatJourneyWeight(performance.weight_kg, unit)} ${unit}${performance.reps ? ` × ${performance.reps}` : ''}`;
-  }
   const sourceHref = entry.source.href;
   const sourceKind: JourneyEvidenceReference['kind'] = entry.source.type === 'set_video_attachment'
     ? 'video'
