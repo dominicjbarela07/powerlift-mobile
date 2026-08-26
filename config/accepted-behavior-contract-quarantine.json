@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "policy": "Every newly discovered test-* script is release-blocking by default. Entries below are historical harnesses that are not executable contracts of the clean canonical release worktree; removal from quarantine is mandatory when repaired.",
+  "groups": [
+    {
+      "id": "dev-fixture-or-cross-repo-only",
+      "reason": "Depends on intentionally absent DEV-only fixtures, preview routes, generated mock libraries, or a backend checkout outside the clean mobile release worktree.",
+      "tests": [
+        "test-accessory-intelligence-canonical-logger.mjs",
+        "test-accessory-muscle-region-assets.mjs",
+        "test-adaptive-session-workspace-canonical.mjs",
+        "test-animation-library.mjs",
+        "test-bottom-tab-glass.mjs",
+        "test-calendar-pagination.mjs",
+        "test-canonical-logger-lifecycle.mjs",
+        "test-coach-mobile-live.mjs",
+        "test-coach-roster-first.mjs",
+        "test-core-logger-identity-rail.mjs",
+        "test-core-logger-top-backdown-timeline.mjs",
+        "test-dev-live-return-control.mjs",
+        "test-dev-mock-plate-club-renderer.mjs",
+        "test-e1rm-session-insight.mjs",
+        "test-equipment-selection.mjs",
+        "test-logger-canonical-weight.mjs",
+        "test-logger-visual-context.mjs",
+        "test-modal-preview-registry.mjs",
+        "test-other-milestones.mjs",
+        "test-rep-max-recognition.mjs",
+        "test-rpe-pr-recognition.mjs",
+        "test-settings-trustworthiness.mjs",
+        "test-streak-achievements.mjs",
+        "test-trophy-system.mjs",
+        "test-ui-mock-library-dual-preview.mjs",
+        "test-ui-mock-library-registry.mjs",
+        "test-ui-mock-library-resolvers.mjs",
+        "test-volume-achievements.mjs",
+        "test-weight-pr-celebration.mjs"
+      ]
+    },
+    {
+      "id": "superseded-source-shape-snapshot",
+      "reason": "Asserts an obsolete component/source shape that was replaced by a newer accepted canonical contract; it is retained only as migration debt and cannot define current product behavior.",
+      "tests": [
+        "test-anatomy-framing.mjs",
+        "test-athlete-home-trends.mjs",
+        "test-athlete-training-hub-storyboard-v2.mjs",
+        "test-calculated-weight-display.mjs",
+        "test-coach-mobile-presentation-parity.mjs",
+        "test-coach-session-editor-production-pass.mjs",
+        "test-equipment-presentation.mjs",
+        "test-ledger-explorations.mjs",
+        "test-ledger-index-v2-polish.mjs",
+        "test-milestones-layout.mjs",
+        "test-mobile-programming-manager-visual-family.mjs",
+        "test-movement-quick-editor.mjs",
+        "test-preferred-unit-display.mjs",
+        "test-profile-photo.mjs",
+        "test-programming-visual-semantics.mjs",
+        "test-review-hub-canonical-parity.mjs",
+        "test-session-muscle-focus-artwork.mjs",
+        "test-typography-system.mjs",
+        "test-volume-taxonomy-and-per-lift-independence.mjs"
+      ]
+    },
+    {
+      "id": "generated-artifact-only",
+      "reason": "Requires large locally generated rendering artifacts that are deliberately excluded from the source release projection and are validated by their runtime consumer contracts instead.",
+      "tests": [
+        "test-logger-plate-render-assets.mjs",
+        "test-plate-stack-catalog.mjs"
+      ]
+    }
+  ]
+}

@@ -56,7 +56,11 @@ assert.match(sheet, /useSLReducedMotion/, 'sheet motion obeys the app accessibil
 
 assert.match(route, /returnTo: 'training-hub'/, 'Training Hub marks the canonical Session destination with its return context');
 assert.match(route, /lifecycleStatus: session\.status \|\| session\.kind \|\| null/, 'the preview consumes authoritative Session lifecycle state');
-assert.match(logger, /returnTo === 'training-hub' && router\.canGoBack\(\)[\s\S]*router\.back\(\)/, 'Logger returns to the mounted Hub instead of pushing a duplicate');
+assert.match(
+  logger,
+  /\(returnTo === 'training-hub' \|\| returnTo === 'program-timeline'\) && router\.canGoBack\(\)[\s\S]*router\.back\(\)/,
+  'Logger returns to the mounted Hub or Program Timeline instead of pushing a duplicate',
+);
 assert.match(logger, /router\.replace\('\/\(tabs\)\/workout'/, 'Logger has a safe Hub fallback when no back stack exists');
 
 console.log('training hub Session preview bottom sheet contract: ok');

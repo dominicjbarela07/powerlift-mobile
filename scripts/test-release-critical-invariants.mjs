@@ -17,6 +17,7 @@ const areas = [
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],
   ['Session Workspace composition', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],
+  ['visible control action reachability', ['scripts/test-major-visible-control-actions.mjs']],
 ];
 
 const failures = [];

@@ -123,6 +123,8 @@
     "audit:workspace-system": "node scripts/audit-workspace-system.mjs",
     "test:ota-native-compatibility": "node scripts/assert-ota-native-compatibility.mjs",
     "test:ota-route-bundle": "node scripts/assert-ota-route-bundle.mjs",
+    "test:accepted-behavior-contracts": "node scripts/test-accepted-behavior-contracts.mjs",
+    "test:visible-control-actions": "node scripts/test-major-visible-control-actions.mjs",
     "test:release-critical-invariants": "node scripts/test-release-critical-invariants.mjs",
     "test:release-source-lineage": "node scripts/test-release-source-lineage.mjs",
     "test:accessory-strength-metric": "node --import tsx scripts/test-accessory-strength-metric-policy.mjs",

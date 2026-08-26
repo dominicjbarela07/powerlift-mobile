@@ -19,8 +19,8 @@ assert.equal(ordered[1].x, PLATE_METADATA[45].thickness + PLATE_METADATA[25].thi
 assert.deepEqual(ordered.map((item) => Number(item.x.toFixed(5))), [0.02223, 0.05976, 0.08322]);
 assert.equal(platePlacements([]).length, 0);
 assert.throws(() => platePlacements([99]), /Unsupported plate denomination/);
-assert.equal(PLATE_METADATA[45].nodeName, 'plate_45');
-assert.equal(PLATE_METADATA[2.5].nodeName, 'plate_2_5');
+assert.equal(PLATE_METADATA[45].key, '45');
+assert.equal(PLATE_METADATA[2.5].key, '2.5');
 
 const original = PLATE_METADATA[35].thickness;
 const before = platePlacements([35, 45])[1].x;

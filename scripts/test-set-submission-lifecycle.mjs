@@ -247,9 +247,13 @@ assert.equal(ordinaryState.recognition.queuedEvents.length, 0);
 
 assert.equal(feedbackMotionDuration(180, true), 0);
 const feedbackSurface = fs.readFileSync(new URL('../components/workout-logger/logger-feedback.tsx', import.meta.url), 'utf8');
-assert.match(feedbackSurface, /if \(reduceMotion\) \{[\s\S]*nextContextOpacity\.setValue\(1\)/);
-assert.match(feedbackSurface, />Current Best</);
-assert.match(feedbackSurface, />New Best</);
+assert.match(
+  feedbackSurface,
+  /if \(reduceMotion\) \{[\s\S]*evidenceOpacity\.setValue\(1\)[\s\S]*onPhaseChangeRef\.current\?\.\('8 · Complete'\)/,
+  'reduced motion settles directly on durable evidence without replaying choreography',
+);
+assert.match(feedbackSurface, /formerLabel=\{recordCategory \? `FORMER \$\{recordCategory\}` : 'CURRENT BEST'\}/);
+assert.match(feedbackSurface, /newLabel=\{recordCategory \? `NEW \$\{recordCategory\}` : 'NEW BEST'\}/);
 assert.doesNotMatch(feedbackSurface, /SUBMIT_STARTED|SUBMIT_SUCCEEDED|fetchJson/);
 
 console.log('[set-submission-lifecycle] canonical acceptance, dedupe, dwell, replay, failure, cleanup, and presentation separation tests passed');
