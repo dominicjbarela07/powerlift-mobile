@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildProgramTimelinePayload } from '../lib/program-timeline.ts';
+import { buildProgramTimelineRoute, PROGRAM_TIMELINE_PATHNAME } from '../lib/program-timeline-navigation.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const raw = {
@@ -80,6 +81,17 @@ const hub = fs.readFileSync(path.join(root, 'components/training-hub/AthleteTrai
 const index = fs.readFileSync(path.join(root, 'app/(tabs)/workout/index.tsx'), 'utf8');
 const detail = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 
+assert.deepEqual(buildProgramTimelineRoute({ programId: 44 }), {
+  pathname: PROGRAM_TIMELINE_PATHNAME,
+  params: { programId: '44' },
+}, 'an active Program must launch through the canonical Timeline route');
+assert.deepEqual(buildProgramTimelineRoute({ programId: 44, athleteId: 3 }), {
+  pathname: PROGRAM_TIMELINE_PATHNAME,
+  params: { programId: '44', athleteId: '3' },
+}, 'coach-preview launches must preserve the authoritative athlete context');
+assert.equal(buildProgramTimelineRoute({ programId: null }), null, 'no active Program must fail closed');
+assert.equal(buildProgramTimelineRoute({ programId: 0 }), null, 'an invalid Program identity must fail closed');
+
 assert.match(component, /FlatList<ProgramTimelineBlock>/, 'long Programs must virtualize compact Block territories');
 assert.doesNotMatch(component, /SectionList|blockNavigator/, 'the rejected giant Week chronology and horizontal Block tabs must not return');
 assert.match(component, /BlockTerritory/, 'Blocks must render as continuous map territories');
@@ -100,7 +112,15 @@ assert.match(route, /returnTo: 'program-timeline'/, 'Session drill-down must pre
 assert.match(detail, /returnTo === 'program-timeline'/, 'Session detail must return to Program Timeline');
 assert.match(hub, /type: 'program-timeline'; id: number/, 'active Program must have a dedicated action');
 assert.match(hub, />Program Timeline</, 'active Program CTA must be named truthfully');
+assert.match(hub, /testID="training-hub-program-timeline"/, 'the Program Timeline control must remain addressable by behavioral navigation tests');
+assert.match(hub, /accessibilityRole="button"[\s\S]*?hitSlop=\{8\}[\s\S]*?onPress=\{\(\) => onAction\(\{ type: 'program-timeline', id: program\.id \}\)\}/, 'the visible Timeline control must keep a real iPhone-sized Pressable hit target');
 assert.match(hub, /PROGRAM HISTORY/, 'completed-program history remains a separate destination');
+const noActiveProgramSource = hub.slice(hub.indexOf('function NoActiveProgram'), hub.indexOf('function ProgramHero'));
+assert.doesNotMatch(noActiveProgramSource, /type: 'program-timeline'/, 'no-active-Program state must not expose a dead Timeline action');
+assert.match(index, /buildProgramTimelineRoute\(\{ programId, athleteId: rosterAthleteId \}\)/, 'all Training Hub Timeline launches must use the canonical route contract');
+assert.match(index, /if \(programTimelineOpeningRef\.current\) return;[\s\S]*?programTimelineOpeningRef\.current = true;[\s\S]*?router\.push\(route as any\)/, 'repeated taps must not stack duplicate Timeline routes');
+assert.match(index, /useFocusEffect\([\s\S]*?programTimelineOpeningRef\.current = false;/, 'returning from Timeline must re-arm the Training Hub control');
 assert.match(index, /openProgramTimeline\(action\.id\)/, 'Training Hub must route the active Program action');
+assert.match(route, /if \(router\.canGoBack\(\)\) router\.back\(\)/, 'Timeline back must unwind to Training Hub when launched from it');
 
 console.log('Program Timeline V3 contracts passed.');

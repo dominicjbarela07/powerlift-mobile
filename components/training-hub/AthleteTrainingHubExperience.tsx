@@ -241,8 +241,13 @@ export function AthleteTrainingHubExperience({
       ) : null}
 
       <Pressable
+        accessibilityHint="Opens the active Program from start to finish"
+        accessibilityLabel="Program Timeline"
+        accessibilityRole="button"
+        hitSlop={8}
         onPress={() => onAction({ type: 'program-timeline', id: program.id })}
         style={({ pressed }) => [styles.historyAction, pressed && styles.pressed]}
+        testID="training-hub-program-timeline"
       >
         <View style={styles.historyIdentity}>
           <View style={styles.historyIcon}><Ionicons color={SLColors.text} name="map-outline" size={18} /></View>

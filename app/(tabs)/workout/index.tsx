@@ -93,6 +93,7 @@ import {
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
 import { resolveProgrammingSessionDeepOpen } from '@/lib/programming-session-deep-open';
+import { buildProgramTimelineRoute } from '@/lib/program-timeline-navigation';
 import { SLColors, SLFontFamilies, SLLayout, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 
 const SESSION_SWIPE_ACTIONS_WIDTH = 116;
@@ -635,6 +636,7 @@ export default function TrainingIndexScreen() {
   );
   const hasLoadedTrainingRef = useRef(false);
   const trainingRequestSequenceRef = useRef(0);
+  const programTimelineOpeningRef = useRef(false);
 
   const loadTraining = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
     const requestSequence = ++trainingRequestSequenceRef.current;
@@ -720,6 +722,7 @@ export default function TrainingIndexScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      programTimelineOpeningRef.current = false;
       const silent = hasLoadedTrainingRef.current;
       hasLoadedTrainingRef.current = true;
       loadTraining({ silent, showRefreshIndicator: false });
@@ -771,6 +774,17 @@ export default function TrainingIndexScreen() {
       pathname: '/(tabs)/workout/session-history',
       params: rosterAthleteId ? { athleteId: rosterAthleteId } : {},
     } as any);
+  };
+
+  const openProgramTimeline = (programId: number) => {
+    if (programTimelineOpeningRef.current) return;
+    const route = buildProgramTimelineRoute({ programId, athleteId: rosterAthleteId });
+    if (!route) {
+      Alert.alert('Program Timeline unavailable', 'This Program does not have a stable identity yet.');
+      return;
+    }
+    programTimelineOpeningRef.current = true;
+    router.push(route as any);
   };
 
   const addSessionForDate = (date?: string | null) => {
@@ -890,6 +904,7 @@ export default function TrainingIndexScreen() {
               onAction={(action) => {
                 if (action.type === 'session') openWorkout(action.id);
                 if (action.type === 'block') openBlockDetails();
+                if (action.type === 'program-timeline') openProgramTimeline(action.id);
                 if (action.type === 'program-history') openSessionHistory();
                 if (action.type === 'message-coach') openMessages();
               }}
