@@ -9,6 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 const route = read('app', '(tabs)', 'workout', 'session-workspace', '[workoutId].tsx');
 const workspace = read('components', 'coach-mobile', 'SessionEditingWorkspace.tsx');
+const substitutionPicker = read('components', 'movement', 'GovernedAccessoryPickerModal.tsx');
 
 assert.match(
   workspace,
@@ -24,6 +25,26 @@ assert.match(
   route,
   /function AccessoryEditorModal[\s\S]*useState<AccessoryPickerStep>\('discovery'\)[\s\S]*testID="accessory-picker-body"/,
   'the add-accessory modal must mount the staged canonical picker',
+);
+assert.match(
+  route,
+  /<AccessoryEditorModal[\s\S]*state=\{accessoryEditor\}[\s\S]*onApply=\{applyAccessorySetup\}[\s\S]*onDone=\{closeAccessoryEditorAfterSuccess\}/,
+  'the live Session Workspace must actually render the canonical staged accessory drilldown',
+);
+assert.doesNotMatch(
+  route,
+  /GovernedAccessoryPickerModal|GovernedAccessorySubstitutionPickerModal/,
+  'the Session Workspace must never mount the compact substitution/library index as Add Accessory',
+);
+assert.match(
+  substitutionPicker,
+  /context: 'in-session-substitution'[\s\S]*export function GovernedAccessorySubstitutionPickerModal/,
+  'the former flat picker must be explicitly constrained to the in-Session substitution workflow',
+);
+assert.match(
+  route,
+  /import \{ SLMotionPressable as Pressable \} from '@\/components\/ui\/sl-motion'/,
+  'every drilldown control must inherit canonical tactile press feedback',
 );
 assert.match(
   route,
@@ -54,12 +75,15 @@ assert.match(
   'result rows must expose governed muscle and execution context',
 );
 assert.match(route, /What are you trying to train\?[\s\S]*By Muscle[\s\S]*By Movement/, 'discovery must start with muscle-first and direct-search modes');
+assert.match(route, /useState<'muscle' \| 'movement'>\('muscle'\)/, 'muscle-guided discovery must be the default instead of a flat All index');
+assert.match(route, /selectLibraryMode\('favorites'\)[\s\S]*selectLibraryMode\('recent'\)[\s\S]*selectLibraryMode\('custom'\)/, 'Favorites, Recent, and My Movements must remain deliberate shortcuts');
 assert.match(route, /ACCESSORY_PICKER_REGIONS[\s\S]*selectedRegion\.muscles/, 'regional navigation must drill into governed primary-muscle targets');
 assert.match(route, /function AnatomyTargetArt[\s\S]*focusedAccessoryMuscleRegionKey\(primary\)[\s\S]*accessoryMuscleRegionAsset\(region\)/, 'muscle discovery must use the governed focused muscle-group PNG library');
 assert.doesNotMatch(route, /<MuscleMap/, 'individual movement picker surfaces must never render full-figure anatomy');
 assert.match(route, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/, 'individual picker results must use the canonical identity artwork component');
 assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'exact movement selection must pass through review, apply, and success states');
 assert.match(route, /Confirm & Add to Session[\s\S]*Continue Editing Session/, 'the live picker must provide deliberate confirmation and return-to-Session actions');
+assert.match(route, /addAccessoryCompletionRef\.current\([\s\S]*movement_identity:[\s\S]*id: movementDefinitionId/, 'selection must return to the same dirty Session draft with stable governed identity');
 assert.match(route, /Can(?:'|&apos;)t find it\? Create custom movement/, 'the coach-owned custom movement entrypoint must be visible');
 assert.match(route, /movement-definitions\/similarity/, 'custom creation must use advisory similarity review');
 assert.match(route, /movement-definitions'[,\s\S]*confirm_similar/, 'custom creation must use the shared backend identity endpoint');

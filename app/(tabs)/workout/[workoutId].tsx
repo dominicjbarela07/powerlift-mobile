@@ -80,7 +80,7 @@ import {
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
 import {
-  GovernedAccessoryPickerModal,
+  GovernedAccessorySubstitutionPickerModal,
   type GovernedAccessoryIdentity,
 } from '@/components/movement/GovernedAccessoryPickerModal';
 import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-logger/readiness-modal';
@@ -10501,7 +10501,8 @@ export default function WorkoutViewerScreen() {
       />
 
       {/* Accessory substitution modal */}
-      <GovernedAccessoryPickerModal
+      <GovernedAccessorySubstitutionPickerModal
+        context="in-session-substitution"
         visible={swapPickerVisible}
         athleteId={data?.athlete?.id || null}
         title={substitutionAuthority === 'self_governed' ? 'Swap Accessory' : 'Choose Approved Substitute'}
