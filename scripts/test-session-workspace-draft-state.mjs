@@ -36,7 +36,7 @@ assert.match(workspace, /renderLifecycleActions\(guardLifecycle, sessionDirty\)/
 assert.match(workspace, /restricted=\{sessionDirty\}/, 'dirty state restricts the floating toolkit');
 assert.match(route, /renderLifecycleActions=\{\(guard, restricted\)[\s\S]*onlyDelete=\{restricted\}/, 'dirty toolkit keeps only the destructive Session action');
 assert.match(workspace, /!restricted && canRename[\s\S]*!restricted && canChangeDate[\s\S]*canAddMovement \? <ToolkitAction icon="add-circle-outline" label="Add Movement"/, 'dirty toolkit keeps Add Movement while hiding Rename Session and Change Date');
-assert.match(workspace, /!restricted && \(canAthleteView \|\| canReorder\)[\s\S]*label="Athlete View"[\s\S]*label="Reorder Movements"/, 'dirty toolkit hides Athlete View and Reorder with the other clean-state navigation tools');
+assert.match(workspace, /\(canAthleteView \|\| \(!restricted && canReorder\)\)[\s\S]*canAthleteView \? <ToolkitAction[^>]*label="Athlete View"[\s\S]*!restricted && canReorder/, 'dirty toolkit keeps guarded Athlete View available while retaining Reorder as a clean-state editing action');
 assert.doesNotMatch(workspace, /onReorder=\{\(\) => resolveDirty|resolveDirty\(\(\) => props\.onDeleteMovement|resolveDirty\(open\)/, 'internal Session editing actions never trigger persistence guards');
 
 assert.match(route, /onSaveSession=\{saveSessionDraft\}/, 'the route receives one Session save command');

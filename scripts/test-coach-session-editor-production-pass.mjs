@@ -206,12 +206,12 @@ assert.match(route, /styles\.sessionActionText[\s\S]*\{action\.label\}/, 'toolki
 assert.match(tabLayout, /useSessionEditorOverlayOpen\(\)/, 'the floating control observes movement editor visibility');
 assert.match(tabLayout, /startsWith\('\/workout\/session-workspace\/'\)[\s\S]*&& sessionEditorOverlayOpen/, 'the floating control observes the workspace-owned editing overlay state');
 assert.match(tabLayout, /if \(hidesNavigationForSessionEditor\) return null/, 'the floating control cannot overlap open movement editor actions');
-assert.match(workspace, /setSessionEditorOverlayOpen\(sessionDirty\)/, 'only Session-boundary dirty protection may hide shell navigation');
+assert.match(workspace, /useLayoutEffect\(\(\) => \{[\s\S]*setSessionEditorOverlayOpen\(true\)[\s\S]*setSessionEditorOverlayOpen\(false\)/, 'the mounted Session Workspace owns and releases the shell overlay boundary deterministically');
 assert.doesNotMatch(workspace, /setSessionEditorOverlayOpen\(Boolean\(selectedItem\)/, 'expanding a workout item must not hide the tab row');
 assert.match(workspace, /const currentCoreItems = useMemo\([\s\S]*\[sessionDraft\.coreOrder, sessionDraft\.items\]/, 'calculated-load inputs must retain stable identity between unrelated workspace renders');
 assert.match(workspace, /const currentAccessoryItems = useMemo\([\s\S]*\[sessionDraft\.accessoryOrder, sessionDraft\.items\]/, 'accessory item collections must retain stable identity between unrelated workspace renders');
 assert.doesNotMatch(workspace, /const currentCoreItems = sessionDraft\.coreOrder\.map/, 'the calculated-load effect must not depend on a freshly allocated array that creates a request/render loop');
-assert.match(workspace, /bottom=\{props\.sheetPresentation[\s\S]*insets\.bottom \+ SLSpacing\.xs \+ SL_TAB_ROW_CONTROL\.shellHeight \+ SLSpacing\.md\}[\s\S]*sessionToolkit: \{ position: 'absolute', right: SLLayout\.screenGutter/, 'the Session toolkit sits above the bottom tab row with a canonical gap and stays sheet-local when embedded');
+assert.match(workspace, /bottom=\{props\.sheetPresentation[\s\S]*SLSpacing\.md[\s\S]*insets\.bottom \+ SLSpacing\.md\}[\s\S]*sessionToolkit: \{ position: 'absolute', right: SLLayout\.screenGutter/, 'the Session toolkit uses the sheet-local inset when embedded and the route-safe-area inset when standalone');
 assert.match(workspace, /sessionToolkitShell: \{[^}]*alignItems: 'flex-end'[\s\S]*sessionToolkitPanel: \{ width: 264[^}]*borderRadius: SLRadius\.lg[\s\S]*sessionToolkitMaterial: \{[^}]*SL_TAB_ROW_CONTROL\.translucentFallback[\s\S]*sessionToolkitTrigger: \{[^}]*width: SL_TAB_ROW_CONTROL\.shellHeight/, 'the Session tools use canonical material in a compact rectangular panel with a separate trigger');
 assert.match(overlayState, /useSyncExternalStore/, 'overlay visibility is subscribed without coupling it to route navigation state');
 assert.match(workspace, /content: \{ paddingTop: 6, paddingBottom: 160 \}/, 'the Session root canvas stays edge to edge without page-level horizontal padding');
@@ -235,13 +235,13 @@ assert.match(workspace, /sessionNotesText: \{[^\n]*fontSize: 16[^\n]*lineHeight:
 assert.match(workspace, /sessionNotesText: \{[^\n]*width: '100%'[^\n]*flexShrink: 1/, 'Session notes reserve full card width and wrap as the card grows');
 assert.match(workspace, /expandedMovementName: \{[^\n]*fontSize: 20[^\n]*lineHeight: 25/, 'movement names retain the approved 18–22 pt hierarchy');
 
-assert.match(logger, /\?view=coach-preview/, 'logger requests the authorized preview payload');
+assert.match(logger, /coachPreviewRequested[\s\S]*query\.set\('view', 'coach-preview'\)/, 'logger requests the authorized preview payload');
 assert.match(logger, /const canLogFromServer = !isCoachAthletePreview/, 'Athlete View disables logging');
 assert.match(logger, /const canEdit =\s*!isCoachAthletePreview/, 'Athlete View disables editing');
-assert.match(logger, /const handleReturnToCoachEditor = \(\) => \{\s*router\.replace\(\{\s*pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'Coach Editor return targets the exact Session workspace');
+assert.match(logger, /const handleReturnToCoachEditor = \(\) => \{[\s\S]*returnTo === 'programming-workspace-preview'[\s\S]*router\.back\(\)[\s\S]*pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'Coach Editor return restores the retained Programming Workspace or its exact standalone fallback');
 assert.match(logger, /section: returnSection === 'accessories' \? 'accessories' : 'core'/, 'Coach Editor return restores the active Session section');
 assert.match(logger, /onPress=\{handleReturnToCoachEditor\}/, 'Athlete View return control uses deterministic Session workspace navigation');
-assert.doesNotMatch(logger.match(/const handleReturnToCoachEditor = \(\) => \{[\s\S]*?\n  \};/)?.[0] || '', /router\.canGoBack\(\)|router\.back\(\)/, 'Coach Editor return never falls through the ambient tab history');
+assert.match(logger, /returnTo === 'programming-workspace-preview' && router\.canGoBack\(\)/, 'router back is restricted to the explicit retained Workspace handoff contract');
 
 assert.match(bootstrap, /status: 'draft'[\s\S]*core_items: \[\][\s\S]*acc_items: \[\]/, 'mobile creation establishes a server-backed draft before programming');
 assert.match(bootstrap, /editSessionId[\s\S]*router\.replace\([\s\S]*session-workspace/, 'legacy edit links safely redirect to the Adaptive Session Workspace');

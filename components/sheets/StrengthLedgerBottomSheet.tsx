@@ -30,6 +30,7 @@ type Props = Readonly<{
   presentationBoundary?: 'viewport' | 'app-shell';
   motionPreset?: 'standard' | 'deliberate';
   onDismiss: () => void;
+  onPresent?: () => void;
   onRequestClose?: () => void;
   testID?: string;
   visible: boolean;
@@ -42,6 +43,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   presentationBoundary = 'viewport',
   motionPreset = 'standard',
   onDismiss,
+  onPresent,
   onRequestClose,
   testID,
   visible,
@@ -52,6 +54,8 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const translateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const dismissingRef = useRef(false);
+  const onPresentRef = useRef(onPresent);
+  onPresentRef.current = onPresent;
   const topBoundary = presentationBoundary === 'app-shell'
     ? insets.top + STRENGTH_LEDGER_APP_HEADER.contentHeight
     : Math.max(insets.top + 8, 28);
@@ -123,6 +127,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
     if (reduceMotion) {
       translateY.setValue(0);
       backdropOpacity.setValue(1);
+      onPresentRef.current?.();
       return;
     }
     translateY.setValue(Math.max(height, 640));
@@ -148,7 +153,9 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
             toValue: 0,
             useNativeDriver: true,
           }),
-    ]).start();
+    ]).start(({ finished }) => {
+      if (finished) onPresentRef.current?.();
+    });
   }, [backdropOpacity, deliberateMotion, height, reduceMotion, translateY, visible]);
 
   const dragResponder = useMemo(() => PanResponder.create({

@@ -1163,11 +1163,11 @@ function SessionFloatingToolkit({ bottom, expanded, reduceMotion, restricted, un
               <ToolkitAction icon="swap-horizontal-outline" label={`Units: ${unit.toUpperCase()}`} color={SLColors.info} disabled={unitDisabled} onPress={() => onChangeUnit(nextUnit)} />
             </View>
             <View style={styles.sessionToolkitDivider} />
-            {!restricted && (canAthleteView || canReorder) ? <>
+            {(canAthleteView || (!restricted && canReorder)) ? <>
               <View style={styles.sessionToolkitGroup}>
                 <ToolkitSectionHeader label="Workspace" color={SLColors.accentViolet} />
                 {canAthleteView ? <ToolkitAction icon="eye-outline" label="Athlete View" color={SLColors.accentViolet} onPress={onAthleteView} /> : null}
-                {canReorder ? <ToolkitAction icon="swap-vertical-outline" label="Reorder Movements" color={SLColors.accentViolet} onPress={onReorder} /> : null}
+                {!restricted && canReorder ? <ToolkitAction icon="swap-vertical-outline" label="Reorder Movements" color={SLColors.accentViolet} onPress={onReorder} /> : null}
               </View>
               <View style={styles.sessionToolkitDivider} />
             </> : null}

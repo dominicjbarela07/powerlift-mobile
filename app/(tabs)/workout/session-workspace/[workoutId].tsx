@@ -477,6 +477,7 @@ export type MobileSessionWorkspaceContentProps = Readonly<{
   section?: string | null;
   embedded?: boolean;
   onClose?: () => void;
+  onOpenAthleteView?: (context: { section: WorkspaceSection }) => void;
   registerDismissRequest?: (handler: (() => void) | null) => void;
 }>;
 
@@ -681,6 +682,10 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
 
   const openAthleteView = () => {
     if (!workout?.id) return;
+    if (props.onOpenAthleteView) {
+      props.onOpenAthleteView({ section: activeSection });
+      return;
+    }
     router.push({
       pathname: '/workout/[workoutId]',
       params: {

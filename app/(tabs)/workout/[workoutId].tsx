@@ -115,6 +115,7 @@ import {
   prepareSessionStartTiming,
   resumeSessionTiming,
 } from '@/lib/session-timing-telemetry';
+import { sessionWorkspacePreviewFallbackParams } from '@/lib/session-workspace-preview-handoff';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import {
   cancelVideoUploadJob,
@@ -1600,9 +1601,11 @@ export default function WorkoutViewerScreen() {
     athleteView,
     returnSection,
     coachAthleteId,
+    coachProgramId,
     coachProgrammingBlockId,
     coachProgrammingWeek,
     coachProgrammingDay,
+    coachWorkspaceMode,
   } = useLocalSearchParams<{
     workoutId?: string;
     loggerScenario?: string;
@@ -1611,9 +1614,11 @@ export default function WorkoutViewerScreen() {
     athleteView?: string;
     returnSection?: string;
     coachAthleteId?: string;
+    coachProgramId?: string;
     coachProgrammingBlockId?: string;
     coachProgrammingWeek?: string;
     coachProgrammingDay?: string;
+    coachWorkspaceMode?: string;
   }>();
   const coachPreviewRequested = athleteView === 'coach-preview';
   const router = useRouter();
@@ -7283,6 +7288,26 @@ export default function WorkoutViewerScreen() {
   };
 
   const handleReturnToCoachEditor = () => {
+    if (returnTo === 'programming-workspace-preview' && router.canGoBack()) {
+      router.back();
+      return;
+    }
+    if (returnTo === 'programming-workspace-preview') {
+      router.replace({
+        pathname: '/(tabs)/workout' as any,
+        params: sessionWorkspacePreviewFallbackParams({
+          workoutId: Number(workout.id),
+          athleteId: coachAthleteId ? Number(coachAthleteId) : null,
+          programId: coachProgramId ? Number(coachProgramId) : null,
+          blockId: coachProgrammingBlockId ? Number(coachProgrammingBlockId) : null,
+          week: coachProgrammingWeek ? Number(coachProgrammingWeek) : null,
+          day: coachProgrammingDay || null,
+          section: returnSection === 'accessories' ? 'accessories' : 'core',
+          workspaceMode: coachWorkspaceMode === 'team' ? 'team' : 'self',
+        }),
+      });
+      return;
+    }
     router.replace({
       pathname: '/workout/session-workspace/[workoutId]' as any,
       params: {
@@ -7297,6 +7322,10 @@ export default function WorkoutViewerScreen() {
   };
 
   const handleBackToTrainingHub = () => {
+    if (isCoachAthletePreview) {
+      handleReturnToCoachEditor();
+      return;
+    }
     if ((returnTo === 'training-hub' || returnTo === 'program-timeline') && router.canGoBack()) {
       router.back();
       return;
