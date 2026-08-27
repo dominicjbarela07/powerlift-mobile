@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { Gesture, GestureDetector, Swipeable } from 'react-native-gesture-handler';
 
 import { SLMotionEntrance, SLMotionPressable, SLProfileAvatar } from '@/components/ui';
@@ -67,6 +68,15 @@ import { scopeProgrammingPayload } from '@/lib/programming-program-scope';
 import { compactProgrammingWeekdayLabel } from '@/lib/programming-weekday-label';
 import { formatSessionContentSnapshot } from '@/lib/session-content-snapshot';
 import { sessionDurationPresentation } from '@/lib/session-duration';
+import {
+  IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF,
+  beginSessionWorkspacePreview,
+  beginSessionWorkspaceRestoration,
+  completeSessionWorkspaceDismissal,
+  completeSessionWorkspaceRestoration,
+  sessionWorkspacePreviewRouteParams,
+  type SessionWorkspacePreviewHandoff,
+} from '@/lib/session-workspace-preview-handoff';
 import {
   trainingHubSessionDayLabel,
   trainingHubSessionStatusLabel,
@@ -980,12 +990,18 @@ function IndividualProgrammingHome({
   onConsumeDirectOpen: () => void;
 }) {
   const router = useRouter();
+  const programmingFocused = useIsFocused();
   const activeProgram = hub?.active_program || null;
   const currentBlock = hub?.current_block || null;
   const [programLibraryOpen, setProgramLibraryOpen] = useState(false);
   const [workspaceSelection, setWorkspaceSelection] = useState<ProgrammingWorkspaceSelection | null>(null);
+  const [workspaceSheetVisible, setWorkspaceSheetVisible] = useState(false);
+  const [previewHandoff, setPreviewHandoff] = useState<SessionWorkspacePreviewHandoff>(
+    IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF,
+  );
   const workspaceSheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const workspaceDismissRequestRef = useRef<() => void>(() => undefined);
+  const previewRouteHasBlurredRef = useRef(false);
   const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
   const followProgrammingOffset = useCallback((offsetY: number) => {
@@ -1031,14 +1047,62 @@ function IndividualProgrammingHome({
   const openSessionWorkspace = useCallback((workoutId?: number | null, context?: ProgrammingReturnContext) => {
     if (!workoutId) return;
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
+    previewRouteHasBlurredRef.current = false;
+    setPreviewHandoff(IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF);
     setWorkspaceSelection({ workoutId, context });
+    setWorkspaceSheetVisible(true);
   }, [dismissWorkspaceSheet]);
 
   const finishWorkspaceDismiss = useCallback(() => {
+    const completedHandoff = completeSessionWorkspaceDismissal(previewHandoff);
+    if (completedHandoff.phase === 'previewing') {
+      setWorkspaceSheetVisible(false);
+      setPreviewHandoff(completedHandoff);
+      router.push({
+        pathname: '/workout/[workoutId]',
+        params: sessionWorkspacePreviewRouteParams(completedHandoff.context),
+      });
+      return;
+    }
+    setWorkspaceSheetVisible(false);
     setWorkspaceSelection(null);
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
     void onRefresh();
-  }, [dismissWorkspaceSheet, onRefresh]);
+  }, [dismissWorkspaceSheet, onRefresh, previewHandoff, router]);
+
+  const finishWorkspacePresent = useCallback(() => {
+    if (previewHandoff.phase !== 'restoring') return;
+    previewRouteHasBlurredRef.current = false;
+    setPreviewHandoff((current) => completeSessionWorkspaceRestoration(current));
+  }, [previewHandoff.phase]);
+
+  const requestWorkspaceAthletePreview = useCallback((previewContext?: { section: 'core' | 'accessories' }) => {
+    if (!workspaceSelection) return;
+    const athleteId = managedAthleteId || hub?.athlete?.id || null;
+    setPreviewHandoff(beginSessionWorkspacePreview({
+      workoutId: workspaceSelection.workoutId,
+      athleteId,
+      programId: activeProgram?.id || null,
+      blockId: workspaceSelection.context?.blockId || null,
+      week: workspaceSelection.context?.week || null,
+      day: workspaceSelection.context?.day || null,
+      section: previewContext?.section || 'core',
+      workspaceMode: coachMode ? 'team' : 'self',
+    }));
+    previewRouteHasBlurredRef.current = false;
+    workspaceSheetRef.current?.dismiss();
+  }, [activeProgram?.id, coachMode, hub?.athlete?.id, managedAthleteId, workspaceSelection]);
+
+  useEffect(() => {
+    if (previewHandoff.phase !== 'previewing') return;
+    if (!programmingFocused) {
+      previewRouteHasBlurredRef.current = true;
+      return;
+    }
+    if (!previewRouteHasBlurredRef.current) return;
+    setPreviewHandoff((current) => beginSessionWorkspaceRestoration(current));
+    setWorkspaceSheetVisible(true);
+  }, [previewHandoff.phase, programmingFocused]);
 
   useEffect(() => {
     const intentKey = directWorkoutId
@@ -1177,10 +1241,11 @@ function IndividualProgrammingHome({
           ref={workspaceSheetRef}
           accessibilityLabel="Session Workspace"
           onDismiss={finishWorkspaceDismiss}
+          onPresent={finishWorkspacePresent}
           onRequestClose={requestWorkspaceDismiss}
           presentationBoundary="app-shell"
           testID="programming-session-workspace-sheet"
-          visible
+          visible={workspaceSheetVisible}
         >
           <MobileSessionWorkspaceContent
             key={workspaceSelection.workoutId}
@@ -1191,6 +1256,7 @@ function IndividualProgrammingHome({
             programmingWeek={workspaceSelection.context?.week || null}
             programmingDay={workspaceSelection.context?.day || null}
             onClose={dismissWorkspaceSheet}
+            onOpenAthleteView={requestWorkspaceAthletePreview}
             registerDismissRequest={registerWorkspaceDismissRequest}
           />
         </StrengthLedgerBottomSheet>

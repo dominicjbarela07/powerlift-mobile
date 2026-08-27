@@ -100,6 +100,7 @@
     "test:programming-week-copy-indexing": "node --import tsx scripts/test-programming-week-copy-indexing.mjs",
     "test:coach-session-editor-production-pass": "node --import tsx scripts/test-coach-session-editor-production-pass.mjs",
     "test:session-workspace-draft-state": "node scripts/test-session-workspace-draft-state.mjs",
+    "test:session-workspace-athlete-preview": "node --import tsx scripts/test-session-workspace-athlete-preview-handoff.mjs",
     "test:session-workspace-unit-presentation": "node --import tsx scripts/test-session-workspace-unit-presentation.mjs",
     "test:session-workspace-accessory-artwork": "node --import tsx scripts/test-session-workspace-accessory-artwork.mjs",
     "test:session-logger-resume": "node --import tsx scripts/test-session-logger-resume-contract.mjs",
