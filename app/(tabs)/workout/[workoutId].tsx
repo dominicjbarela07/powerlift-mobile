@@ -106,6 +106,15 @@ import {
   resolveSubstitutionAuthority,
 } from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
+import {
+  createClientEventId,
+  createLifecycleTimingEvent,
+  createPerformedSetTiming,
+  discardPreparedSessionTiming,
+  finishSessionTiming,
+  prepareSessionStartTiming,
+  resumeSessionTiming,
+} from '@/lib/session-timing-telemetry';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import {
   cancelVideoUploadJob,
@@ -339,7 +348,7 @@ type SetSubmissionAttempt = {
 };
 
 function createSetSubmissionId(): string {
-  return `set-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+  return createClientEventId('set');
 }
 
 type SetVideoPlayerState = {
@@ -2393,6 +2402,18 @@ export default function WorkoutViewerScreen() {
     while (logged.has(index)) index += 1;
     return index;
   }, [data?.workout?.core_items]);
+  const prescribedRestSecondsForItem = useCallback((itemId: number): number | null => {
+    const item = [
+      ...(data?.workout?.core_items || []),
+      ...(data?.workout?.accessory_groups || []).flatMap((group) => group.items || []),
+    ].find((row: any) => Number(row?.id) === Number(itemId)) as any;
+    // Only a governed programming field qualifies. The athlete's ad-hoc rest
+    // timer selection is observed UI state and must not masquerade as a
+    // prescribed rest snapshot.
+    const raw = item?.prescribed_rest_seconds ?? item?.rest_prescription_seconds;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed) : null;
+  }, [data?.workout?.accessory_groups, data?.workout?.core_items]);
   useEffect(() => {
     const items = [
       ...(data?.workout?.core_items || []),
@@ -3505,6 +3526,13 @@ export default function WorkoutViewerScreen() {
   }, [deliverRestTimerCue, restActive, workoutId]);
 
   useEffect(() => {
+    if (!workoutId || String(data?.workout?.status || '').toLowerCase() !== 'in_progress') return;
+    void resumeSessionTiming(workoutId, data?.workout?.started_at).catch((error) => {
+      console.warn('Session timing resume failed', error);
+    });
+  }, [data?.workout?.started_at, data?.workout?.status, workoutId]);
+
+  useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       const previousState = loggerAppStateRef.current;
       loggerAppStateRef.current = state;
@@ -4496,6 +4524,11 @@ export default function WorkoutViewerScreen() {
                     ...entry,
                     client_submission_id:
                       `${roundSubmissionId}:${entry.item_id}`,
+                    timing: createPerformedSetTiming(
+                      Number(workoutId),
+                      `${roundSubmissionId}:${entry.item_id}`,
+                      prescribedRestSecondsForItem(entry.item_id),
+                    ),
                   })),
                 },
               },
@@ -5035,6 +5068,7 @@ export default function WorkoutViewerScreen() {
       return;
     }
     const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
       itemId,
@@ -5049,6 +5083,7 @@ export default function WorkoutViewerScreen() {
             body: {
               ...canonicalPayload,
               client_submission_id: clientSubmissionId,
+              timing,
             },
             auth: true,
           }
@@ -5131,6 +5166,7 @@ export default function WorkoutViewerScreen() {
       actual_rpe: rpe,
     };
     const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
       itemId,
@@ -5145,6 +5181,7 @@ export default function WorkoutViewerScreen() {
             body: {
               ...canonicalPayload,
               client_submission_id: clientSubmissionId,
+              timing,
             },
             auth: true,
           }
@@ -5219,6 +5256,7 @@ export default function WorkoutViewerScreen() {
       actual_rpe: rpe,
     };
     const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
       itemId,
@@ -5233,6 +5271,7 @@ export default function WorkoutViewerScreen() {
             body: {
               ...canonicalPayload,
               client_submission_id: clientSubmissionId,
+              timing,
             },
             auth: true,
           }
@@ -5297,6 +5336,7 @@ export default function WorkoutViewerScreen() {
       actual_rpe: rpe,
     };
     const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
       itemId,
@@ -5312,6 +5352,7 @@ export default function WorkoutViewerScreen() {
             body: {
               ...canonicalPayload,
               client_submission_id: clientSubmissionId,
+              timing,
             },
           }
         );
@@ -5653,6 +5694,7 @@ export default function WorkoutViewerScreen() {
       return;
     }
     const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
       itemId,
@@ -5665,6 +5707,7 @@ export default function WorkoutViewerScreen() {
         {
           ...canonicalPayload,
           client_submission_id: clientSubmissionId,
+          timing,
         }
       ),
     });
@@ -5804,6 +5847,8 @@ export default function WorkoutViewerScreen() {
         return;
       }
 
+      const timingEvent = await prepareSessionStartTiming(wkId);
+
       // Step 2: mark status as in_progress
       const begun = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/begin`,
@@ -5811,11 +5856,15 @@ export default function WorkoutViewerScreen() {
           method: 'POST',
           auth: true,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reason ? { tardy_reason: reason } : {}),
+          body: JSON.stringify({
+            ...(reason ? { tardy_reason: reason } : {}),
+            timing_event: timingEvent,
+          }),
         }
       );
 
       if (!begun.ok || !begun.json?.ok) {
+        await discardPreparedSessionTiming(wkId);
         Alert.alert('Error', begun.json?.error || `Failed to begin session (HTTP ${begun.status})`);
         return;
       }
@@ -5823,6 +5872,9 @@ export default function WorkoutViewerScreen() {
       // Pull fresh Training Session data (status, logs, etc.).
       await fetchWorkout();
     } catch (err) {
+      // Preserve the stable start event on an ambiguous network failure. If
+      // the server committed before the response was lost, retry must replay
+      // the same event rather than manufacture a second Session start.
       console.error('beginWorkout error', err);
       Alert.alert('Error', 'Failed to begin session');
     } finally {
@@ -5920,10 +5972,13 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           auth: true,
-          body: sessionTimes ? {
-            session_started_at: sessionTimes.startedAt,
-            session_ended_at: sessionTimes.endedAt,
-          } : undefined,
+          body: {
+            ...(sessionTimes ? {
+              session_started_at: sessionTimes.startedAt,
+              session_ended_at: sessionTimes.endedAt,
+            } : {}),
+            timing_event: createLifecycleTimingEvent(wkId, 'session_completed'),
+          },
         }
       );
 
@@ -5931,6 +5986,8 @@ export default function WorkoutViewerScreen() {
         Alert.alert('Error', done.json?.error || `Failed to complete session (HTTP ${done.status})`);
         return false;
       }
+
+      await finishSessionTiming(wkId);
 
       // Completion owns the timer lifecycle. Clear both the local countdown and
       // persisted/global presenter before entering any post-session surface.
@@ -6248,13 +6305,19 @@ export default function WorkoutViewerScreen() {
 
       const canceled = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/cancel`,
-        { method: 'POST', auth: true }
+        {
+          method: 'POST',
+          auth: true,
+          body: { timing_event: createLifecycleTimingEvent(wkId, 'session_canceled') },
+        }
       );
 
       if (!canceled.ok || !canceled.json?.ok) {
         Alert.alert('Error', canceled.json?.error || `Failed to cancel session (HTTP ${canceled.status})`);
         return;
       }
+
+      await finishSessionTiming(wkId);
 
       // Refresh local data
       await fetchWorkout();
