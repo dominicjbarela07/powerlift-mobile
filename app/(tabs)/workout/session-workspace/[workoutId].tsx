@@ -7,12 +7,12 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -57,10 +57,6 @@ import {
   resolveMovementHistoryLaunchForItem,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '@/lib/movement-history-launch';
-import {
-  GovernedAccessoryPickerModal,
-  type GovernedAccessoryIdentity,
-} from '@/components/movement/GovernedAccessoryPickerModal';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -1483,28 +1479,18 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         onCancel={cancelTrainingLiftEditor}
         onApply={applyTrainingLiftSetup}
       />
-      <GovernedAccessoryPickerModal
-        visible={!!accessoryEditor}
-        title={accessoryEditor?.mode === 'add' ? 'Add Accessory' : 'Change Accessory'}
+      <AccessoryEditorModal
+        state={accessoryEditor}
+        groups={accessoryGroups}
         athleteId={payload?.athlete?.id || null}
-        currentIdentityId={accessoryEditor?.setup.movementDefinitionId || null}
+        athleteAnatomy={{ sex: payload?.athlete?.sex, anatomy_display_preference: payload?.athlete?.anatomy_display_preference }}
         canCreateCustom={workspaceEditable && workspaceCapabilities.can_add_movement !== false}
+        saving={accessorySaving}
+        onChange={(setup) => setAccessoryEditor((current) => current ? { ...current, setup } : current)}
         onCancel={cancelAccessoryEditor}
-        onSelect={async (identity: GovernedAccessoryIdentity) => {
-          if (!accessoryEditor) return;
-          const setup: AccessorySetup = {
-            ...accessoryEditor.setup,
-            movement: identity.display_name,
-            movementDefinitionId: identity.id,
-            ownershipScope: identity.ownership_scope || '',
-            libraryScope: identity.library_scope || '',
-            family: identity.family || '',
-            primaryMuscleGroup: identity.primary_muscle_group || '',
-            secondaryMuscleGroups: identity.secondary_muscle_groups || [],
-            executionFamily: identity.execution_family || '',
-          };
-          if (await applyAccessorySetup(setup)) closeAccessoryEditorAfterSuccess();
-        }}
+        onApply={applyAccessorySetup}
+        onCreateCustom={createCustomAccessoryDefinition}
+        onDone={closeAccessoryEditorAfterSuccess}
       />
       <ReorderEditorModal
         state={reorderEditor}

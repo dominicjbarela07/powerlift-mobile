@@ -41,6 +41,8 @@ type PickerMode = 'all' | 'favorites' | 'recent' | 'custom';
 type CustomStep = 'name' | 'primary' | 'secondary' | 'execution' | 'review';
 
 type Props = {
+  /** This compact index is reserved for in-Session substitution authority. */
+  context: 'in-session-substitution';
   visible: boolean;
   athleteId: number | null;
   title?: string;
@@ -59,7 +61,8 @@ const MODES: { key: PickerMode; label: string; icon: keyof typeof Ionicons.glyph
   { key: 'custom', label: 'My Movements', icon: 'person-outline' },
 ];
 
-export function GovernedAccessoryPickerModal({
+export function GovernedAccessorySubstitutionPickerModal({
+  context: _context,
   visible,
   athleteId,
   title = 'Choose Accessory',

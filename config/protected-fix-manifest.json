@@ -80,6 +80,12 @@
       "description": "The active Program Timeline control launches the canonical stable-ID route from Athlete Training Hub.",
       "acceptedCommits": ["9c5db526b4efeafda40457ae3ca73f169463998f"],
       "behaviorTests": ["scripts/test-program-timeline-v2.mjs"]
+    },
+    {
+      "id": "session-workspace-canonical-accessory-drilldown",
+      "description": "Session Workspace Add Accessory mounts the canonical guided muscle-first discovery flow rather than the substitution-only flat picker.",
+      "acceptedCommits": ["f900c69f484ae34d53ebb408eb42590d8b1511a2"],
+      "behaviorTests": ["scripts/test-session-workspace-accessory-picker.mjs"]
     }
   ]
 }

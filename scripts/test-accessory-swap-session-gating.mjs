@@ -86,7 +86,7 @@ assert.doesNotMatch(
 );
 assert.match(
   loggerSource,
-  /<GovernedAccessoryPickerModal[\s\S]*visible=\{swapPickerVisible\}[\s\S]*onSelect=\{\(identity\) =>/,
+  /<GovernedAccessorySubstitutionPickerModal[\s\S]*context="in-session-substitution"[\s\S]*visible=\{swapPickerVisible\}[\s\S]*onSelect=\{\(identity\) =>/,
   'accessory substitution must remain wired through the governed movement picker',
 );
 assert.match(loggerSource, /approvedOnly=\{substitutionAuthority !== 'self_governed'\}/, 'picker restriction must follow server relationship authority rather than UI mode');
