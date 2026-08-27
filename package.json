@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
-    "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js"
+    "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js",
+    "test:session-timing-telemetry": "node --import tsx scripts/test-session-timing-telemetry.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",

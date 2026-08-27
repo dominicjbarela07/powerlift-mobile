@@ -26,6 +26,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { API_BASE, registerPushToken } from '@/lib/api';
 import { bootLog } from '@/lib/bootLogger';
 import { isUpdateReloadSafe, subscribeUpdateSafety } from '@/lib/updateSafety';
+import { initializeSessionTimingTelemetry } from '@/lib/session-timing-telemetry';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 bootLog('app_start', { platform: Platform.OS });
@@ -437,6 +438,10 @@ export default function RootLayout() {
     GeistMono_400Regular,
     GeistMono_600SemiBold,
   });
+
+  useEffect(() => {
+    void initializeSessionTimingTelemetry();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {

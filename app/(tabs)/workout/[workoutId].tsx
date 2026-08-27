@@ -62,6 +62,15 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
 import {
+  createClientEventId,
+  createLifecycleTimingEvent,
+  createPerformedSetTiming,
+  discardPreparedSessionTiming,
+  finishSessionTiming,
+  prepareSessionStartTiming,
+  resumeSessionTiming,
+} from '@/lib/session-timing-telemetry';
+import {
   createSessionTimeDraft,
   formatSessionTimeLabel,
   parseSessionTimeDraft,
@@ -109,6 +118,11 @@ type SetLog = {
   upload_status?: string | null;
   video_url?: string | null;
   video?: SetVideoSummary | null;
+};
+
+type SetSubmissionAttempt = {
+  id: string;
+  signature: string;
 };
 
 type SetVideoPlayerState = {
@@ -1680,6 +1694,27 @@ export default function WorkoutViewerScreen() {
   };
 
   const [savingItemId, setSavingItemId] = useState<number | null>(null);
+  const setSubmissionAttemptsRef = useRef<Record<string, SetSubmissionAttempt>>({});
+  const submissionForAttempt = useCallback((key: string, payload: object) => {
+    const signature = JSON.stringify(payload);
+    const existing = setSubmissionAttemptsRef.current[key];
+    if (existing?.signature === signature) return existing.id;
+    const id = createClientEventId('set');
+    setSubmissionAttemptsRef.current[key] = { id, signature };
+    return id;
+  }, []);
+  const clearSubmissionAttempt = useCallback((key: string) => {
+    delete setSubmissionAttemptsRef.current[key];
+  }, []);
+  const prescribedRestSecondsForItem = useCallback((itemId: number): number | null => {
+    const item = [
+      ...(data?.workout?.core_items || []),
+      ...(data?.workout?.accessory_groups || []).flatMap((group) => group.items || []),
+    ].find((row: any) => Number(row?.id) === Number(itemId)) as any;
+    const raw = item?.prescribed_rest_seconds ?? item?.rest_prescription_seconds;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed) : null;
+  }, [data?.workout?.accessory_groups, data?.workout?.core_items]);
   const [videoUploadBySetLogId, setVideoUploadBySetLogId] = useState<
     Record<number, { uploading?: boolean; queued?: boolean; uploaded?: boolean; error?: string | null; permanent?: boolean; job?: QueuedVideoUploadJob | null }>
   >({});
@@ -2270,6 +2305,13 @@ export default function WorkoutViewerScreen() {
 
     return () => sub.remove();
   }, [restActive]);
+
+  useEffect(() => {
+    if (!workoutId || String(data?.workout?.status || '').toLowerCase() !== 'in_progress') return;
+    void resumeSessionTiming(workoutId, data?.workout?.started_at).catch((error) => {
+      console.warn('Session timing resume failed', error);
+    });
+  }, [data?.workout?.started_at, data?.workout?.status, workoutId]);
 
   useEffect(() => {
     const status = String(data?.workout?.status || '').toLowerCase();
@@ -2909,6 +2951,13 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const canonicalPayload = {
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const attemptKey = `straight:${itemId}`;
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
     try {
       setSavingItemId(itemId);
@@ -2919,9 +2968,13 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
+            ...canonicalPayload,
+            client_submission_id: clientSubmissionId,
+            timing: createPerformedSetTiming(
+              Number(workoutId),
+              clientSubmissionId,
+              prescribedRestSecondsForItem(itemId),
+            ),
           },
           auth: true,
         }
@@ -2930,6 +2983,7 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to log set (HTTP ${status})`);
       }
+      clearSubmissionAttempt(attemptKey);
 
       setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
@@ -2993,6 +3047,13 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const canonicalPayload = {
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const attemptKey = `top:${itemId}`;
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
     try {
       setSavingItemId(itemId);
@@ -3003,9 +3064,13 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
+            ...canonicalPayload,
+            client_submission_id: clientSubmissionId,
+            timing: createPerformedSetTiming(
+              Number(workoutId),
+              clientSubmissionId,
+              prescribedRestSecondsForItem(itemId),
+            ),
           },
           auth: true,
         }
@@ -3014,6 +3079,7 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to log top set (HTTP ${status})`);
       }
+      clearSubmissionAttempt(attemptKey);
 
       setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
@@ -3069,6 +3135,13 @@ export default function WorkoutViewerScreen() {
       const it = data?.workout?.core_items?.find((x: any) => x?.id === itemId);
       return it?.reps != null ? String(it.reps) : '';
     })();
+    const canonicalPayload = {
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const attemptKey = `backdown:${itemId}`;
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
     try {
       setSavingItemId(itemId);
@@ -3079,9 +3152,13 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           body: {
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
+            ...canonicalPayload,
+            client_submission_id: clientSubmissionId,
+            timing: createPerformedSetTiming(
+              Number(workoutId),
+              clientSubmissionId,
+              prescribedRestSecondsForItem(itemId),
+            ),
           },
           auth: true,
         }
@@ -3090,6 +3167,7 @@ export default function WorkoutViewerScreen() {
       if (!ok || !json?.ok) {
         throw new Error(json?.error || `Failed to log backdown set (HTTP ${status})`);
       }
+      clearSubmissionAttempt(attemptKey);
 
       setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
@@ -3136,6 +3214,14 @@ export default function WorkoutViewerScreen() {
     if (unit === 'lb') weightInUnit = roundToNearestGymIncrementLb(weightInUnit);
 
     const weightKg = unit === 'kg' ? weightInUnit : weightInUnit * KG_PER_LB;
+    const canonicalPayload = {
+      set_index: setIndex,
+      actual_weight_kg: weightKg,
+      actual_reps: reps,
+      actual_rpe: rpe,
+    };
+    const attemptKey = `full-custom:${itemId}:${setIndex}`;
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
     try {
       setSavingItemId(itemId);
@@ -3147,15 +3233,19 @@ export default function WorkoutViewerScreen() {
           method: 'POST',
           auth: true,
           body: {
-            set_index: setIndex,
-            actual_weight_kg: weightKg,
-            actual_reps: reps,
-            actual_rpe: rpe,
+            ...canonicalPayload,
+            client_submission_id: clientSubmissionId,
+            timing: createPerformedSetTiming(
+              Number(workoutId),
+              clientSubmissionId,
+              prescribedRestSecondsForItem(itemId),
+            ),
           },
         }
       );
 
       if (!ok || !json?.ok) throw new Error(json?.error || `Failed (HTTP ${status})`);
+      clearSubmissionAttempt(attemptKey);
 
       setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
@@ -3224,6 +3314,8 @@ export default function WorkoutViewerScreen() {
       actual_weight_kg: number;
       actual_reps: number;
       actual_rir?: number | null;
+      client_submission_id?: string;
+      timing?: ReturnType<typeof createPerformedSetTiming>;
     }
   ) {
     console.log('logAccessorySet payload', { workoutId, itemId, payload });
@@ -3290,6 +3382,13 @@ export default function WorkoutViewerScreen() {
     const weightKg = unit === 'kg'
       ? weightInUnit
       : weightInUnit * KG_PER_LB;
+    const canonicalPayload = {
+      actual_weight_kg: weightKg,
+      actual_reps: Number(reps),
+      actual_rir: rir ?? undefined,
+    };
+    const attemptKey = `accessory:${itemId}`;
+    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
 
     try {
       setSavingItemId(itemId);
@@ -3299,11 +3398,16 @@ export default function WorkoutViewerScreen() {
         Number(workoutId),
         itemId,
         {
-          actual_weight_kg: weightKg,
-          actual_reps: Number(reps),
-          actual_rir: rir ?? undefined,
+          ...canonicalPayload,
+          client_submission_id: clientSubmissionId,
+          timing: createPerformedSetTiming(
+            Number(workoutId),
+            clientSubmissionId,
+            prescribedRestSecondsForItem(itemId),
+          ),
         }
       );
+      clearSubmissionAttempt(attemptKey);
 
       setTimerPickerVisible(true);
       markAutoAdvanceAfterLog(itemId);
@@ -3422,6 +3526,8 @@ export default function WorkoutViewerScreen() {
         return;
       }
 
+      const timingEvent = await prepareSessionStartTiming(wkId);
+
       // Step 2: mark status as in_progress
       const begun = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/begin`,
@@ -3429,11 +3535,15 @@ export default function WorkoutViewerScreen() {
           method: 'POST',
           auth: true,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reason ? { tardy_reason: reason } : {}),
+          body: JSON.stringify({
+            ...(reason ? { tardy_reason: reason } : {}),
+            timing_event: timingEvent,
+          }),
         }
       );
 
       if (!begun.ok || !begun.json?.ok) {
+        await discardPreparedSessionTiming(wkId);
         Alert.alert('Error', begun.json?.error || `Failed to begin workout (HTTP ${begun.status})`);
         return;
       }
@@ -3527,10 +3637,13 @@ export default function WorkoutViewerScreen() {
         {
           method: 'POST',
           auth: true,
-          body: sessionTimes ? {
-            session_started_at: sessionTimes.startedAt,
-            session_ended_at: sessionTimes.endedAt,
-          } : {},
+          body: {
+            ...(sessionTimes ? {
+              session_started_at: sessionTimes.startedAt,
+              session_ended_at: sessionTimes.endedAt,
+            } : {}),
+            timing_event: createLifecycleTimingEvent(wkId, 'session_completed'),
+          },
         }
       );
 
@@ -3538,6 +3651,8 @@ export default function WorkoutViewerScreen() {
         Alert.alert('Error', done.json?.error || `Failed to complete workout (HTTP ${done.status})`);
         return false;
       }
+
+      await finishSessionTiming(wkId);
 
       // Refresh local data
       await fetchWorkout();
@@ -3738,13 +3853,19 @@ export default function WorkoutViewerScreen() {
 
       const canceled = await fetchJson(
         `${API_BASE}/workouts/mobile/${wkId}/cancel`,
-        { method: 'POST', auth: true }
+        {
+          method: 'POST',
+          auth: true,
+          body: { timing_event: createLifecycleTimingEvent(wkId, 'session_canceled') },
+        }
       );
 
       if (!canceled.ok || !canceled.json?.ok) {
         Alert.alert('Error', canceled.json?.error || `Failed to cancel workout (HTTP ${canceled.status})`);
         return;
       }
+
+      await finishSessionTiming(wkId);
 
       // Refresh local data
       await fetchWorkout();
