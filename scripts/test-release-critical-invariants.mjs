@@ -8,6 +8,7 @@ const areas = [
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs']],
   ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
+  ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],

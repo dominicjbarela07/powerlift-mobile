@@ -107,6 +107,11 @@ import {
 } from '@/lib/accessory-swap-eligibility';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
 import {
+  criticalMutationFailureMessage,
+  isApiRequestError,
+  shouldSurfaceRequestFailure,
+} from '@/lib/api-request-policy';
+import {
   createClientEventId,
   createLifecycleTimingEvent,
   createPerformedSetTiming,
@@ -2356,7 +2361,7 @@ export default function WorkoutViewerScreen() {
       },
       onFailure: (error: any) => {
         handleCanonicalSetFailure(error);
-        setError(error?.message || fallbackError);
+        setError(criticalMutationFailureMessage(error, fallbackError));
       },
       onSettled: () => setSavingItemId(null),
     });
@@ -4541,7 +4546,7 @@ export default function WorkoutViewerScreen() {
           persisted: true,
         });
         closeSupersetRoundLogger();
-        await fetchWorkout({ silent: true });
+        await fetchWorkout({ silent: true, reason: 'post_set' });
         return;
       }
       const parsedByItemId = new Map(
@@ -5070,9 +5075,9 @@ export default function WorkoutViewerScreen() {
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
-      await fetchWorkout();
+      await fetchWorkout({ silent: true, reason: 'post_set' });
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
-      if (selectedVideo && !videoError) await fetchWorkout({ silent: true });
+      if (selectedVideo && !videoError) await fetchWorkout({ silent: true, reason: 'post_set' });
       if (videoError) setError(videoError);
 
       // Prefill next set weight with the weight just used (saves re-typing)
@@ -5168,9 +5173,9 @@ export default function WorkoutViewerScreen() {
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
-      await fetchWorkout();
+      await fetchWorkout({ silent: true, reason: 'post_set' });
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
-      if (selectedVideo && !videoError) await fetchWorkout({ silent: true });
+      if (selectedVideo && !videoError) await fetchWorkout({ silent: true, reason: 'post_set' });
       if (videoError) setError(videoError);
       setTopInputs((prev) => ({
         ...prev,
@@ -5258,9 +5263,9 @@ export default function WorkoutViewerScreen() {
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
-      await fetchWorkout();
+      await fetchWorkout({ silent: true, reason: 'post_set' });
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
-      if (selectedVideo && !videoError) await fetchWorkout({ silent: true });
+      if (selectedVideo && !videoError) await fetchWorkout({ silent: true, reason: 'post_set' });
       if (videoError) setError(videoError);
 
       // Prefill next set weight with the weight just used (saves re-typing)
@@ -5336,9 +5341,9 @@ export default function WorkoutViewerScreen() {
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
-      await fetchWorkout();
+      await fetchWorkout({ silent: true, reason: 'post_set' });
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
-      if (selectedVideo && !videoError) await fetchWorkout({ silent: true });
+      if (selectedVideo && !videoError) await fetchWorkout({ silent: true, reason: 'post_set' });
       if (videoError) setError(videoError);
 
       // optional convenience: carry weight forward
@@ -5687,9 +5692,9 @@ export default function WorkoutViewerScreen() {
     try {
       markAutoAdvanceAfterAcceptedLog(itemId, json);
       rememberScroll();
-      await fetchWorkout();
+      await fetchWorkout({ silent: true, reason: 'post_set' });
       const videoError = await attachSelectedVideoToLoggedSet(json?.set?.id, selectedVideo || null);
-      if (selectedVideo && !videoError) await fetchWorkout({ silent: true });
+      if (selectedVideo && !videoError) await fetchWorkout({ silent: true, reason: 'post_set' });
       if (videoError) setError(videoError);
 
       // Prefill next set weight with the weight just used (saves re-typing)
@@ -6311,7 +6316,7 @@ export default function WorkoutViewerScreen() {
 
   const fetchWorkout = useCallback(async (opts?: {
     silent?: boolean;
-    reason?: 'initial' | 'foreground' | 'focus' | 'body_recovery' | 'manual';
+    reason?: 'initial' | 'foreground' | 'focus' | 'body_recovery' | 'manual' | 'post_set';
   }) => {
     if (!workoutId) {
       setError('Missing Session id');
@@ -6326,7 +6331,7 @@ export default function WorkoutViewerScreen() {
     else if (!dataRef.current) setLoading(true);
     else setRefreshing(true);
 
-    setError(null);
+    if (!silent) setError(null);
     const requestedWorkoutId = String(workoutId);
     const requestResult = await workoutRequestManagerRef.current.run(async (signal) => {
       if (isIdealWorkoutDetailPreview) {
@@ -6345,7 +6350,14 @@ export default function WorkoutViewerScreen() {
       if (coachPreviewRequested) query.set('view', 'coach-preview');
       const { ok, status, json } = await fetchJson(
         `${API_BASE}/workouts/mobile/${requestedWorkoutId}?${query.toString()}`,
-        { method: 'GET', auth: true, signal }
+        {
+          method: 'GET',
+          auth: true,
+          signal,
+          requestImportance: silent || opts?.reason === 'post_set'
+            ? 'background-refresh'
+            : 'foreground-read',
+        }
       );
 
       const payload = json as WorkoutPayload;
@@ -6391,9 +6403,19 @@ export default function WorkoutViewerScreen() {
 
     if (requestResult.kind === 'error') {
       const err: any = requestResult.error;
-      console.log('Training Session fetch error', err);
+      console.warn('[SessionLogger] Training Session refresh failed', {
+        kind: isApiRequestError(err) ? err.kind : 'unknown',
+        method: isApiRequestError(err) ? err.method : 'GET',
+        path: isApiRequestError(err) ? err.path : `/workouts/mobile/${requestedWorkoutId}`,
+        importance: isApiRequestError(err) ? err.importance : (silent ? 'background-refresh' : 'foreground-read'),
+        elapsed_ms: isApiRequestError(err) ? err.elapsedMs : null,
+        request_id: isApiRequestError(err) ? err.requestId : null,
+        request_reason: opts?.reason || 'initial',
+      });
       if (!screenMountedRef.current) return false;
-      setError(err?.message || 'Error loading Training Session');
+      if (shouldSurfaceRequestFailure(err) && !silent && !dataRef.current) {
+        setError(err?.message || 'Error loading Training Session');
+      }
       if (!silent && !dataRef.current) setData(null);
       if (silent) setRefreshing(false);
       else {

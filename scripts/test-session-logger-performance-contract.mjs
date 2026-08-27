@@ -17,7 +17,7 @@ assert.match(
 );
 assert.match(
   logger,
-  /fetchJson\([\s\S]*?\{ method: 'GET', auth: true, signal \}/,
+  /fetchJson\([\s\S]*?\{[\s\S]*?method: 'GET',[\s\S]*?auth: true,[\s\S]*?signal,[\s\S]*?\}/,
   'Logger route fetch must pass its AbortSignal to the network layer.',
 );
 assert.match(

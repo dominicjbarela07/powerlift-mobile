@@ -8,6 +8,10 @@ import { Platform } from 'react-native';
 import { API_BASE, PRODUCTION_API_BASE, WEB_BASE } from '@/lib/api-base';
 import { resolveProductionIdealRequest } from '@/lib/release-preview-stubs';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import {
+  ApiRequestError,
+  type ApiRequestImportance,
+} from '@/lib/api-request-policy';
 
 export { API_BASE, PRODUCTION_API_BASE, WEB_BASE } from '@/lib/api-base';
 
@@ -43,16 +47,24 @@ export async function getResolvedTimezone(): Promise<string> {
   return (await getManualTimezonePreference()) || getDeviceTimezone() || FALLBACK_TIMEZONE;
 }
 
-type FetchJsonResult<T> = {
+export type FetchJsonResult<T> = {
   ok: boolean;
   status: number;
   json: T | null;
   raw: string;
+  failure?: {
+    kind: 'http' | 'malformed-response';
+    method: string;
+    path: string;
+    requestId: string;
+    elapsedMs: number;
+  } | null;
 };
 
 type ApiFetchInit = RequestInit & {
   auth?: boolean;
   timeoutMs?: number;
+  requestImportance?: ApiRequestImportance;
 };
 
 export type AccountStatePayload = {
@@ -117,8 +129,20 @@ function notifyAccountStateBlock(payload: AccountStatePayload, context: { path: 
   }
 }
 
-function createTimeoutError(timeoutMs: number) {
-  return new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`);
+let requestSequence = 0;
+
+function createRequestId() {
+  requestSequence = (requestSequence + 1) % 1_000_000;
+  return `mobile-${Date.now().toString(36)}-${requestSequence.toString(36)}`;
+}
+
+function diagnosticPath(path: string) {
+  try {
+    const parsed = new URL(path, API_BASE);
+    return parsed.pathname;
+  } catch {
+    return path.split('?')[0] || path;
+  }
 }
 
 function mobileAppVersionHeaders(): Record<string, string> {
@@ -154,7 +178,15 @@ export async function fetchJson<T = any>(
   if (idealResult) return idealResult;
 
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
-  const { auth: authMode, timeoutMs = FETCH_TIMEOUT_MS, ...fetchInit } = init;
+  const {
+    auth: authMode,
+    timeoutMs = FETCH_TIMEOUT_MS,
+    requestImportance = method === 'GET' ? 'foreground-read' : 'critical-mutation',
+    ...fetchInit
+  } = init;
+  const requestId = createRequestId();
+  const requestPath = diagnosticPath(path);
+  const requestStartedAt = Date.now();
   const rawBody: any = (init as any).body;
   const bodyIsPresent = rawBody !== undefined && rawBody !== null;
 
@@ -221,6 +253,7 @@ export async function fetchJson<T = any>(
 
   const mergedHeaders: Record<string, string> = {
     ...defaultHeaders,
+    'X-Strength-Ledger-Request-ID': requestId,
     ...callerHeaders,
   };
 
@@ -300,12 +333,49 @@ export async function fetchJson<T = any>(
       signal: controller.signal,
     });
   } catch (err: any) {
+    const elapsedMs = Date.now() - requestStartedAt;
     if (didTimeout) {
-      throw createTimeoutError(timeoutMs);
+      const timeoutError = new ApiRequestError({
+        kind: 'timeout',
+        message: `Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`,
+        method,
+        path: requestPath,
+        timeoutMs,
+        importance: requestImportance,
+        requestId,
+        elapsedMs,
+      });
+      console.warn('[ApiRequest]', {
+        kind: timeoutError.kind,
+        method,
+        path: requestPath,
+        importance: requestImportance,
+        elapsed_ms: elapsedMs,
+        request_id: requestId,
+      });
+      throw timeoutError;
     }
-    // Caller-driven cancellation is control flow. Preserve AbortError so route
-    // request-generation guards can ignore obsolete work without surfacing it.
-    throw err;
+    const cancelled = Boolean(callerSignal?.aborted || controller.signal.aborted || err?.name === 'AbortError');
+    const requestError = new ApiRequestError({
+      kind: cancelled ? 'cancelled' : 'network',
+      message: cancelled ? 'Request cancelled.' : 'The request could not reach Strength Ledger.',
+      method,
+      path: requestPath,
+      importance: requestImportance,
+      requestId,
+      elapsedMs,
+    });
+    if (!cancelled) {
+      console.warn('[ApiRequest]', {
+        kind: requestError.kind,
+        method,
+        path: requestPath,
+        importance: requestImportance,
+        elapsed_ms: elapsedMs,
+        request_id: requestId,
+      });
+    }
+    throw requestError;
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
     if (removeCallerAbortListener) removeCallerAbortListener();
@@ -350,6 +420,23 @@ export async function fetchJson<T = any>(
     status: res.status,
     json,
     raw,
+    failure: !res.ok
+      ? {
+          kind: 'http',
+          method,
+          path: requestPath,
+          requestId,
+          elapsedMs: Date.now() - requestStartedAt,
+        }
+      : trimmed.length > 0 && json == null
+        ? {
+            kind: 'malformed-response',
+            method,
+            path: requestPath,
+            requestId,
+            elapsedMs: Date.now() - requestStartedAt,
+          }
+        : null,
   };
 }
 
