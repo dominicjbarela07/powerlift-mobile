@@ -21,6 +21,7 @@ import { AppShell } from '@/components/AppShell';
 import { RestTimerCompletionPresenter } from '@/components/rest-timer-completion-presenter';
 import { isRestTimerNotification } from '@/lib/rest-timer-completion-core';
 import { acknowledgeGlobalRestTimerCompletion } from '@/lib/rest-timer-completion';
+import { initializeSessionTimingTelemetry } from '@/lib/session-timing-telemetry';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -464,6 +465,10 @@ export default function RootLayout() {
     'Exo2-SemiBold': require('@/assets/fonts/Exo2-SemiBold.ttf'),
     'Exo2-Bold': require('@/assets/fonts/Exo2-Bold.ttf'),
   });
+
+  useEffect(() => {
+    void initializeSessionTimingTelemetry();
+  }, []);
 
   useEffect(() => {
     if (__DEV__ && fontError) {

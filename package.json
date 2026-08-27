@@ -19,6 +19,7 @@
     "test:e1rm-session-insight": "node scripts/test-e1rm-session-insight.mjs",
     "test:logger-reward-loop": "node scripts/test-logger-reward-loop.mjs",
     "test:set-submission-lifecycle": "node scripts/test-set-submission-lifecycle.mjs",
+    "test:session-timing-telemetry": "node --import tsx scripts/test-session-timing-telemetry.mjs",
     "test:transient-recognition-delivery": "node scripts/test-transient-recognition-delivery.mjs",
     "test:readiness-modal": "node scripts/test-readiness-modal.mjs",
     "test:motion-system": "node scripts/test-motion-system.mjs",
