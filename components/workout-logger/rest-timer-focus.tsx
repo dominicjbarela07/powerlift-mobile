@@ -352,30 +352,27 @@ export function RestTimerFocus({
           </Text>
         </Animated.View>
 
-        {ready ? (
-          <View
-            accessible
-            accessibilityLabel="Rest timer complete"
-            style={styles.readyCheck}
-          >
-            <Ionicons name="checkmark" size={21} color={SLColors.textStrong} />
-          </View>
-        ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Stop rest timer"
-            onPress={onStop}
-            style={({ pressed }) => [
-              styles.stopButton,
-              pressed && styles.stopButtonPressed,
-            ]}
-          >
-            <Ionicons name="stop-outline" size={13} color={SLColors.textSubtle} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={ready ? 'Dismiss completed rest timer' : 'Stop rest timer'}
+          onPress={onStop}
+          style={({ pressed }) => [
+            styles.stopButton,
+            ready && styles.readyCheck,
+            pressed && styles.stopButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name={ready ? 'checkmark' : 'stop-outline'}
+            size={ready ? 21 : 13}
+            color={ready ? SLColors.textStrong : SLColors.textSubtle}
+          />
+          {!ready ? (
             <Text typographyRole="shortButtonLabel" style={styles.stopLabel}>
               Stop
             </Text>
-          </Pressable>
-        )}
+          ) : null}
+        </Pressable>
       </Animated.View>
     </View>
   );
@@ -498,6 +495,7 @@ const styles = StyleSheet.create({
   },
   stopButtonPressed: {
     opacity: 0.48,
+    transform: [{ scale: 0.98 }],
   },
   stopLabel: {
     color: SLColors.textSubtle,

@@ -10,6 +10,7 @@ import {
   beginRestTimerState,
   canPresentRestTimerCompletion,
   createActiveRestTimer,
+  deriveRestTimerRemainingSeconds,
   isCanonicalSessionLoggerRoute,
   isRestTimerCompletionOwnedByCurrentLogger,
   isRestTimerNotification,
@@ -35,6 +36,8 @@ const timerA = createActiveRestTimer({
 let state = beginRestTimerState(EMPTY_REST_TIMER_COMPLETION_STATE, timerA).state;
 state = attachRestTimerNotificationState(state, timerA.timerId, 'notification-a');
 assert.equal(state.active?.notificationId, 'notification-a');
+assert.equal(deriveRestTimerRemainingSeconds(state.active, now), 90);
+assert.equal(deriveRestTimerRemainingSeconds(state.active, timerA.endAtMs), 0);
 
 const pending = reconcileRestTimerCompletionState(state, timerA.endAtMs);
 assert.equal(pending.active, null);
@@ -105,6 +108,9 @@ assert.strictEqual(
   state,
   'a stale stop must not cancel the current timer',
 );
+const stoppedAtZero = stopRestTimerState(pending, 'timer-a');
+assert.equal(stoppedAtZero.state.pending, null, 'Stop must recover an already-expired timer');
+assert.equal(stoppedAtZero.notificationId, 'notification-a');
 
 const timerB = createActiveRestTimer({
   timerId: 'timer-b',

@@ -35,6 +35,7 @@
     "test:exact-accessory-history": "node scripts/test-exact-accessory-history.mjs",
     "test:movement-history-launch": "node --import tsx scripts/test-movement-history-launch.mjs",
     "test:rest-timer-refinement": "node --import tsx scripts/test-rest-timer-refinement.mjs",
+    "test:rest-timer-zero-deadlock": "node --import tsx scripts/test-rest-timer-zero-deadlock.mjs",
     "test:rest-timer-last-used": "node --import tsx scripts/test-rest-timer-last-used.mjs",
     "test:session-logger-three-zone-header": "node --import tsx scripts/test-session-logger-three-zone-header.mjs",
     "test:logger-visual-context": "node --import tsx scripts/test-logger-visual-context.mjs",

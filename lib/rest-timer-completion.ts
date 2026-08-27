@@ -10,7 +10,7 @@ import {
   stopRestTimerState,
   type RestTimerCompletionState,
 } from '@/lib/rest-timer-completion-core';
-import { clearRestTimerExpiry, persistRestTimerExpiry } from '@/lib/rest-timer-storage';
+import { clearRestTimerExpiry } from '@/lib/rest-timer-storage';
 
 const GLOBAL_REST_TIMER_STORAGE_KEY = 'strength-ledger:rest-timer-completion:v2';
 type Listener = (state: RestTimerCompletionState) => void;
@@ -126,10 +126,7 @@ export function beginGlobalRestTimer(input: {
   currentState = transition.state;
   stateRevision += 1;
   emit();
-  void Promise.all([
-    persistRestTimerExpiry(timer.workoutId, timer.endAtMs),
-    persistState(),
-  ]).catch(() => undefined);
+  void persistState().catch(() => undefined);
   return { timerId: timer.timerId, replacedNotificationId: transition.replacedNotificationId };
 }
 
@@ -165,11 +162,13 @@ export async function reconcileGlobalRestTimerCompletion(
 
 export async function stopGlobalRestTimer(timerId?: string | null): Promise<string | null> {
   const previousActive = currentState.active;
+  const previousPending = currentState.pending;
   const transition = stopRestTimerState(currentState, timerId);
   if (transition.state === currentState) return null;
   currentState = transition.state;
   stateRevision += 1;
   if (previousActive) await clearRestTimerExpiry(previousActive.workoutId).catch(() => undefined);
+  if (previousPending) await clearRestTimerExpiry(previousPending.workoutId).catch(() => undefined);
   emit();
   await persistState().catch(() => undefined);
   return transition.notificationId;

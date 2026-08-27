@@ -252,11 +252,10 @@ import {
   loadLastUsedRestTimerSeconds,
   persistLastUsedRestTimerSeconds,
 } from '@/lib/rest-timer-preference';
+import { clearRestTimerExpiry } from '@/lib/rest-timer-storage';
+import { deriveRestTimerRemainingSeconds } from '@/lib/rest-timer-completion-core';
 import {
-  clearRestTimerExpiry,
-  loadRestTimerExpiry,
-} from '@/lib/rest-timer-storage';
-import {
+  acknowledgeGlobalRestTimerCompletion,
   attachGlobalRestTimerNotification,
   beginGlobalRestTimer,
   getRestTimerCompletionState,
@@ -316,9 +315,6 @@ const CORE_FAMILY_LIFT_CODE = {
   bench: 'BN',
   deadlift: 'DL',
 } as const;
-const REST_TIMER_ZERO_HOLD_MS = 650;
-const REST_TIMER_READY_HOLD_MS = 900;
-const REST_TIMER_RETURN_MS = 250;
 
 type SetLog = {
   id: number;
@@ -2443,17 +2439,12 @@ export default function WorkoutViewerScreen() {
 
   const [restSeconds, setRestSeconds] = useState(0);
   const [restActive, setRestActive] = useState(false);
-  const [restTimerZeroVisible, setRestTimerZeroVisible] = useState(false);
-  const [restTimerReadyVisible, setRestTimerReadyVisible] = useState(false);
   const [restTimerHeaderOrigin, setRestTimerHeaderOrigin] =
     useState<RestTimerHeaderOrigin | null>(null);
   const restCountdownAudioRef = useRef<RestTimerCountdownAudioWindow | null>(null);
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restEndAtMsRef = useRef<number | null>(null);
   const lastRestCueSecondRef = useRef<number | null>(null);
-  const restFocusReturnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const restZeroAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const restReadyDismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restNotifIdRef = useRef<string | null>(null);
   const restTimerIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
@@ -3382,21 +3373,6 @@ export default function WorkoutViewerScreen() {
         .catch(() => undefined);
     }
     lastRestCueSecondRef.current = null;
-    if (restFocusReturnTimerRef.current) {
-      clearTimeout(restFocusReturnTimerRef.current);
-      restFocusReturnTimerRef.current = null;
-    }
-    if (restReadyDismissTimerRef.current) {
-      clearTimeout(restReadyDismissTimerRef.current);
-      restReadyDismissTimerRef.current = null;
-    }
-
-    if (restZeroAdvanceTimerRef.current) {
-      clearTimeout(restZeroAdvanceTimerRef.current);
-      restZeroAdvanceTimerRef.current = null;
-    }
-    setRestTimerZeroVisible(false);
-    setRestTimerReadyVisible(false);
     setRestSeconds(seconds);
     setRestActive(true);
     feedbackDispatch({ type: 'TIMER_ACTIVE' });
@@ -3427,9 +3403,12 @@ export default function WorkoutViewerScreen() {
       restTimerRef.current = null;
     }
     restEndAtMsRef.current = null;
-    const activeGlobalTimer = getRestTimerCompletionState().active;
+    const globalTimerState = getRestTimerCompletionState();
+    const activeGlobalTimer = globalTimerState.active;
+    const pendingGlobalTimer = globalTimerState.pending;
     const timerId = restTimerIdRef.current
-      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null);
+      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null)
+      ?? (pendingGlobalTimer?.workoutId === String(workoutId) ? pendingGlobalTimer.timerId : null);
     restTimerIdRef.current = null;
     if (timerId) {
       void stopGlobalRestTimer(timerId).then((notificationId) => {
@@ -3442,21 +3421,7 @@ export default function WorkoutViewerScreen() {
       void clearRestTimerExpiry(workoutId).catch(() => undefined);
     }
     lastRestCueSecondRef.current = null;
-    if (restReadyDismissTimerRef.current) {
-      clearTimeout(restReadyDismissTimerRef.current);
-      restReadyDismissTimerRef.current = null;
-    }
-    if (restZeroAdvanceTimerRef.current) {
-      clearTimeout(restZeroAdvanceTimerRef.current);
-      restZeroAdvanceTimerRef.current = null;
-    }
-    if (restFocusReturnTimerRef.current) {
-      clearTimeout(restFocusReturnTimerRef.current);
-      restFocusReturnTimerRef.current = null;
-    }
     restCountdownAudioRef.current?.reset();
-    setRestTimerZeroVisible(false);
-    setRestTimerReadyVisible(false);
     setRestActive(false);
     setRestSeconds(0);
     feedbackDispatch({ type: 'TIMER_IDLE' });
@@ -3482,14 +3447,15 @@ export default function WorkoutViewerScreen() {
     }
 
     const tick = () => {
-      const remaining = Math.max(
-        0,
-        Math.ceil((restEndAtMsRef.current! - Date.now()) / 1000)
-      );
+      const activeTimer = getRestTimerCompletionState().active;
+      const remaining = activeTimer?.workoutId === String(workoutId)
+        ? deriveRestTimerRemainingSeconds(activeTimer, Date.now())
+        : 0;
 
       setRestSeconds(remaining);
 
       if (
+        activeTimer?.workoutId === String(workoutId) &&
         remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
         remaining >= 0 &&
         lastRestCueSecondRef.current !== remaining
@@ -3502,9 +3468,7 @@ export default function WorkoutViewerScreen() {
         cancelRestEndNotification();
         setRestActive(false);
         restEndAtMsRef.current = null;
-        if (workoutId) {
-          void clearRestTimerExpiry(workoutId).catch(() => undefined);
-        }
+        restTimerIdRef.current = null;
         feedbackDispatch({ type: 'TIMER_IDLE' });
         void reconcileGlobalRestTimerCompletion();
 
@@ -3548,14 +3512,15 @@ export default function WorkoutViewerScreen() {
       if (state === 'active' && previousState !== 'active') {
         resumeRefreshRef.current();
       }
-      if (state === 'active' && restActive && restEndAtMsRef.current) {
-        const remaining = Math.max(
-          0,
-          Math.ceil((restEndAtMsRef.current - Date.now()) / 1000)
-        );
+      if (state === 'active') {
+        const activeTimer = getRestTimerCompletionState().active;
+        const remaining = activeTimer?.workoutId === String(workoutId)
+          ? deriveRestTimerRemainingSeconds(activeTimer, Date.now())
+          : 0;
         setRestSeconds(remaining);
 
         if (
+          activeTimer?.workoutId === String(workoutId) &&
           remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
           remaining >= 0 &&
           lastRestCueSecondRef.current !== remaining
@@ -3564,36 +3529,46 @@ export default function WorkoutViewerScreen() {
           deliverRestTimerCue(remaining);
         }
 
-        if (remaining <= 0) {
+        if (!activeTimer || activeTimer.workoutId !== String(workoutId) || remaining <= 0) {
           setRestActive(false);
           restEndAtMsRef.current = null;
-          if (workoutId) {
-            void clearRestTimerExpiry(workoutId).catch(() => undefined);
-          }
+          restTimerIdRef.current = null;
+          feedbackDispatch({ type: 'TIMER_IDLE' });
           void reconcileGlobalRestTimerCompletion();
+        } else {
+          restTimerIdRef.current = activeTimer.timerId;
+          restEndAtMsRef.current = activeTimer.endAtMs;
+          setRestActive(true);
         }
       }
     });
 
     return () => sub.remove();
-  }, [deliverRestTimerCue, restActive, workoutId]);
+  }, [deliverRestTimerCue, workoutId]);
 
   useEffect(() => {
     let cancelled = false;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (!workoutId || status !== 'in_progress') return undefined;
-    void hydrateRestTimerCompletion().then((snapshot) => {
-      if (cancelled || snapshot.active?.workoutId !== String(workoutId)) return;
-      restTimerIdRef.current = snapshot.active.timerId;
-    }).catch(() => undefined);
-    void loadRestTimerExpiry(workoutId).then((stored) => {
-      if (cancelled || !stored || restEndAtMsRef.current) return;
-      const remaining = Math.max(
-        0,
-        Math.ceil((stored.endAtMs - Date.now()) / 1000),
-      );
-      if (remaining <= 0) return;
-      restEndAtMsRef.current = stored.endAtMs;
+    void hydrateRestTimerCompletion().then(() => reconcileGlobalRestTimerCompletion()).then((snapshot) => {
+      if (cancelled) return;
+      const activeTimer = snapshot.active?.workoutId === String(workoutId)
+        ? snapshot.active
+        : null;
+      const remaining = deriveRestTimerRemainingSeconds(activeTimer, Date.now());
+      if (!activeTimer || remaining <= 0) {
+        restTimerIdRef.current = null;
+        restEndAtMsRef.current = null;
+        setRestSeconds(0);
+        setRestActive(false);
+        feedbackDispatch({ type: 'TIMER_IDLE' });
+        if (snapshot.pending?.workoutId === String(workoutId)) {
+          void acknowledgeGlobalRestTimerCompletion(snapshot.pending.timerId);
+        }
+        return;
+      }
+      restTimerIdRef.current = activeTimer.timerId;
+      restEndAtMsRef.current = activeTimer.endAtMs;
       setRestSeconds(remaining);
       setRestActive(true);
       feedbackDispatch({ type: 'TIMER_ACTIVE' });
@@ -3629,16 +3604,6 @@ export default function WorkoutViewerScreen() {
     if (workoutId) {
       void clearRestTimerExpiry(workoutId).catch(() => undefined);
     }
-    if (restReadyDismissTimerRef.current) {
-      clearTimeout(restReadyDismissTimerRef.current);
-      restReadyDismissTimerRef.current = null;
-    }
-    if (restZeroAdvanceTimerRef.current) {
-      clearTimeout(restZeroAdvanceTimerRef.current);
-      restZeroAdvanceTimerRef.current = null;
-    }
-    setRestTimerZeroVisible(false);
-    setRestTimerReadyVisible(false);
     if (restActive) setRestActive(false);
     if (restSeconds !== 0) setRestSeconds(0);
     if (timerPickerVisible) {
@@ -7088,9 +7053,6 @@ export default function WorkoutViewerScreen() {
       acceptedSheetHandoffController.reset();
       timerHandoffReleaseController.reset();
       if (recognitionTimerRef.current) clearTimeout(recognitionTimerRef.current);
-      if (restFocusReturnTimerRef.current) clearTimeout(restFocusReturnTimerRef.current);
-      if (restZeroAdvanceTimerRef.current) clearTimeout(restZeroAdvanceTimerRef.current);
-      if (restReadyDismissTimerRef.current) clearTimeout(restReadyDismissTimerRef.current);
     };
   }, []);
 
@@ -7193,8 +7155,7 @@ export default function WorkoutViewerScreen() {
     restSeconds,
     DEFAULT_REST_TIMER_CUE_CONFIG,
   );
-  const restTimerFocusVisible =
-    restTimerPromoted || restTimerZeroVisible || restTimerReadyVisible;
+  const restTimerFocusVisible = restTimerPromoted && restActive && restSeconds > 0;
   const devAccessoryAccentFor = (iconName: SLAccessoryIconName | null) => {
     switch (iconName) {
       case 'dumbbell-press':
@@ -8367,7 +8328,7 @@ export default function WorkoutViewerScreen() {
       />
       <RestTimerFocus
         visible={restTimerFocusVisible}
-        ready={restTimerReadyVisible}
+        ready={false}
         seconds={restSeconds}
         reduceMotion={reduceMotion}
         headerOrigin={restTimerHeaderOrigin}

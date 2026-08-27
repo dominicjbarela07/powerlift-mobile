@@ -62,28 +62,24 @@ assert.match(
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Light/);
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Medium/);
 assert.match(workoutRoute, /Haptics\.NotificationFeedbackType\.Success/);
-assert.match(workoutRoute, /restTimerPromoted \|\| restTimerZeroVisible \|\| restTimerReadyVisible/);
-assert.match(workoutRoute, /<RestTimerFocus[\s\S]*visible=\{restTimerFocusVisible\}[\s\S]*ready=\{restTimerReadyVisible\}/);
-assert.match(workoutRoute, /REST_TIMER_ZERO_HOLD_MS = 650/);
-assert.match(workoutRoute, /REST_TIMER_READY_HOLD_MS = 900/);
-assert.match(workoutRoute, /REST_TIMER_RETURN_MS = 250/);
+assert.match(workoutRoute, /restTimerPromoted && restActive && restSeconds > 0/);
+assert.match(workoutRoute, /<RestTimerFocus[\s\S]*visible=\{restTimerFocusVisible\}[\s\S]*ready=\{false\}/);
+assert.doesNotMatch(workoutRoute, /restTimerZeroVisible|restTimerReadyVisible/);
 assert.doesNotMatch(workoutRoute, /presentRestTimerReady\(/);
 assert.match(workoutRoute, /remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
 assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)[\s\S]*remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
-assert.match(workoutRoute, /restReadyDismissTimerRef\.current/);
-assert.match(workoutRoute, /restZeroAdvanceTimerRef\.current/);
 assert.match(workoutRoute, /onRestTimerLayout=\{handleRestTimerLayout\}/);
 assert.match(restTimerPresenter, /isRestTimerNotification\(notification\.request\.content\.data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
 assert.match(workoutRoute, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*endAtMs: endAt/);
-assert.match(restTimerRuntime, /persistRestTimerExpiry\(timer\.workoutId, timer\.endAtMs\)/);
-assert.match(workoutRoute, /loadRestTimerExpiry\(workoutId\)[\s\S]*restEndAtMsRef\.current = stored\.endAtMs/);
+assert.doesNotMatch(restTimerRuntime, /persistRestTimerExpiry/);
+assert.doesNotMatch(workoutRoute, /loadRestTimerExpiry/);
 assert.match(workoutRoute, /clearRestTimerExpiry\(workoutId\)/);
 assert.match(restTimerStorage, /REST_TIMER_STORAGE_PREFIX = 'strength-ledger:rest-timer:v1'/);
 assert.match(restTimerStorage, /endAtMs <= nowMs[\s\S]*AsyncStorage\.removeItem\(key\)/);
 
 assert.match(focusSurface, /StyleSheet\.absoluteFillObject/);
 assert.match(focusSurface, /pointerEvents="box-none"/);
-assert.match(focusSurface, /import \{ BlurView \} from 'expo-blur'/);
+assert.match(focusSurface, /import\s*\{\s*BlurView\s*\}\s*from 'expo-blur'/);
 assert.match(focusSurface, /<BlurView[\s\S]*intensity=\{68\}/);
 assert.match(focusSurface, /experimentalBlurMethod="dimezisBlurView"/);
 assert.match(focusSurface, /tint="systemThickMaterialDark"/);
@@ -224,8 +220,6 @@ assert.doesNotMatch(
   /useEffect|set_logs|loggedSets|save|submission/i,
   'Timer start remains explicit and must not be coupled to set completion.',
 );
-assert.match(stopTimerBody, /setRestTimerZeroVisible\(false\)/);
-assert.match(stopTimerBody, /setRestTimerReadyVisible\(false\)/);
 assert.match(stopTimerBody, /setRestActive\(false\)/);
 assert.match(stopTimerBody, /setRestSeconds\(0\)/);
 

@@ -79,6 +79,14 @@ export function createActiveRestTimer(input: {
   });
 }
 
+export function deriveRestTimerRemainingSeconds(
+  timer: ActiveRestTimer | null | undefined,
+  nowMs: number,
+): number {
+  if (!timer || !Number.isFinite(timer.endAtMs) || !Number.isFinite(nowMs)) return 0;
+  return Math.max(0, Math.ceil((timer.endAtMs - nowMs) / 1000));
+}
+
 export function beginRestTimerState(
   state: RestTimerCompletionState,
   timer: ActiveRestTimer,
@@ -129,13 +137,19 @@ export function stopRestTimerState(
   state: RestTimerCompletionState,
   timerId?: string | null,
 ): { state: RestTimerCompletionState; notificationId: string | null } {
-  if (!state.active || (timerId && state.active.timerId !== timerId)) {
-    return { state, notificationId: null };
+  if (state.active && (!timerId || state.active.timerId === timerId)) {
+    return {
+      state: Object.freeze({ active: null, pending: state.pending }),
+      notificationId: state.active.notificationId,
+    };
   }
-  return {
-    state: Object.freeze({ active: null, pending: state.pending }),
-    notificationId: state.active.notificationId,
-  };
+  if (state.pending && (!timerId || state.pending.timerId === timerId)) {
+    return {
+      state: Object.freeze({ active: state.active, pending: null }),
+      notificationId: state.pending.notificationId,
+    };
+  }
+  return { state, notificationId: null };
 }
 
 export function acknowledgeRestTimerCompletionState(

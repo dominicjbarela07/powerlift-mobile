@@ -6,6 +6,7 @@ const areas = [
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs']],
+  ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
