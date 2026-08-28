@@ -149,6 +149,7 @@ export default function CoachSessionReviewScreen() {
     outcomes: review.review_controls?.outcomes || [],
     priorities: review.review_controls?.priorities || [],
     saving,
+    onDraftChange: setDraft,
     onSave: save,
   } : null, [draft, review, save, saving]);
 
@@ -159,6 +160,7 @@ export default function CoachSessionReviewScreen() {
       impactSummary={detail?.workout?.impact_summary}
       preferredUnits={detail?.athlete?.preferred_units}
       viewerMode="coach"
+      parentProvidesTopSafeArea
       coachReview={coachReview}
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}
       refreshing={refreshing}

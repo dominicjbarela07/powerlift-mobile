@@ -11,6 +11,7 @@ const areas = [
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
+  ['Coach Session review shared cross-tab tools', ['scripts/test-coach-session-review-cross-tab.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],
   ['Coach Calendar direct filter controls', ['scripts/test-coach-calendar-v2.mjs']],
   ['relationship-scoped athlete coaching scratchpad', ['scripts/test-athlete-coaching-scratchpad.mjs']],

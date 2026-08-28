@@ -67,7 +67,8 @@ assertIncludes(completedRecap, [
   'PRIVATE COACH NOTE',
   'Complete Review',
   'Performed SetLog targets',
-  'BEST SET TREND · EXACT IDENTITY',
+  "movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'",
+  '} · EXACT MOVEMENT',
 ], 'Canonical completed Session review surface');
 
 assertIncludes(video, [

@@ -20,7 +20,8 @@ assert.match(ceremony, /if \(!animateEntry \|\| reduceMotion\)/, 'reduced motion
 assert.match(ceremony, /const reducedMotionHold = setTimeout\([\s\S]*1100\)/, 'reduced motion must retain an observable completion moment');
 assert.match(ceremony, /if \(finished\) ceremonyCompleteRef\.current\?\.\(\)/, 'normal choreography must hand off only after it finishes');
 
-assert.match(recap, /<SafeAreaView edges=\{\['top'\]\}/, 'recap must own the top safe area exactly once');
+assert.match(recap, /<SafeAreaView edges=\{parentProvidesTopSafeArea \? \[\] : \['top'\]\}/, 'recap must own the top safe area exactly once unless the app shell already owns it');
+assert.doesNotMatch(recap, /<SafeAreaView edges=\{\['top'\]\}/, 'recap must not unconditionally duplicate a parent app-shell top inset');
 assert.doesNotMatch(recap, /styles\.topBar, \{ paddingTop: Math\.max\(insets\.top/, 'recap top bar must not apply a second top inset');
 assert.match(recap, /accessibilityLabel="Done reviewing completed session recap"[\s\S]*onPress=\{onDone \|\| onClose\}/, 'Done must be a real accessible action');
 
