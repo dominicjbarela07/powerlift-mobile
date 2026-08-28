@@ -18,9 +18,11 @@ import {
   toLocalYMD,
   withCoachCalendarSessionDate,
 } from '../lib/coach-calendar.ts';
+import { resolveCompactDropdownLayout } from '../lib/compact-dropdown.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const routeSource = fs.readFileSync(path.resolve(here, '../app/(tabs)/coach-calendar.tsx'), 'utf8');
+const dropdownSource = fs.readFileSync(path.resolve(here, '../components/ui/sl-compact-dropdown.tsx'), 'utf8');
 
 const monday = fromLocalYMD('2026-08-10');
 assert.equal(toLocalYMD(monday), '2026-08-10');
@@ -86,12 +88,55 @@ assert.equal(selectedAthleteLabel(athletes, []), 'All Athletes');
 assert.equal(selectedAthleteLabel(athletes, [1]), 'Amanda');
 assert.equal(selectedAthleteLabel(athletes, [1, 2]), 'All Athletes');
 
+const belowLayout = resolveCompactDropdownLayout({
+  anchor: { x: 12, y: 84, width: 132, height: 36 },
+  estimatedHeight: 296,
+  insets: { top: 47, right: 0, bottom: 34, left: 0 },
+  minWidth: 240,
+  preferredMaxHeight: 304,
+  viewportHeight: 852,
+  viewportWidth: 393,
+});
+assert.equal(belowLayout.placement, 'below');
+assert.equal(belowLayout.left, 12);
+assert.equal(belowLayout.width, 240);
+assert.ok(belowLayout.top > 120);
+
+const aboveLayout = resolveCompactDropdownLayout({
+  anchor: { x: 330, y: 760, width: 56, height: 36 },
+  estimatedHeight: 296,
+  insets: { top: 47, right: 0, bottom: 34, left: 0 },
+  minWidth: 196,
+  preferredMaxHeight: 304,
+  viewportHeight: 852,
+  viewportWidth: 393,
+});
+assert.equal(aboveLayout.placement, 'above');
+assert.ok(aboveLayout.left + aboveLayout.width <= 385, 'menu must remain inside the right viewport gutter');
+assert.ok(aboveLayout.top >= 55, 'menu must remain below the safe-area ceiling');
+
 assert.match(routeSource, /useState<CoachCalendarView>\('month'\)/);
 assert.match(routeSource, /\(\['month', 'agenda'\] as CoachCalendarView\[\]\)/);
 assert.doesNotMatch(routeSource, /\(\['week', 'month', 'agenda'\] as CoachCalendarView\[\]\)/);
 assert.match(routeSource, /function WeekBoard/);
-assert.match(routeSource, /function AthleteFilterRail/);
-assert.match(routeSource, /Filter Calendar by athlete/);
+assert.doesNotMatch(routeSource, /function AthleteFilterRail/);
+assert.doesNotMatch(routeSource, /athleteFilterRail|athleteRailChip/);
+assert.doesNotMatch(routeSource, /Athletes × schedule/i);
+assert.match(routeSource, /selectedAthleteLabel\(athletes, selectedAthleteIds\)/);
+assert.match(routeSource, /testID="coach-calendar-athlete-selector"/);
+assert.match(routeSource, /testID="coach-calendar-status-selector"/);
+assert.match(routeSource, /menuTestID="coach-calendar-athlete-menu"/);
+assert.match(routeSource, /menuTestID="coach-calendar-status-menu"/);
+assert.match(routeSource, /onValueChange=\{\(value\) => setSelectedAthleteIds\(value === 'all' \? \[\] : \[Number\(value\)\]\)\}/);
+assert.match(routeSource, /onValueChange=\{setStatusFilter\}/);
+assert.match(routeSource, /statusFilter === 'all'[\s\S]*?'All Statuses'/);
+assert.match(routeSource, /\.slice\(0, 1\)/, 'persisted athlete lens remains explicitly single-select');
+assert.doesNotMatch(routeSource, /FilterModal|Calendar Filters|Search athletes|filterOpen|filterSearch/);
+assert.match(routeSource, /testID=\{`coach-calendar-view-\$\{mode\}`\}/);
+assert.match(routeSource, /style=\{styles\.compactHeader\}/);
+assert.match(routeSource, /style=\{styles\.headerControlRow\}/);
+assert.match(routeSource, /style=\{styles\.compactSegmentedControl\}/);
+assert.doesNotMatch(routeSource, /styles\.modeRow|styles\.segmentedControl/);
 assert.doesNotMatch(routeSource, /styles\.matrixHeader/);
 assert.doesNotMatch(routeSource, /styles\.matrixRow/);
 assert.match(routeSource, /coachCalendarRequestRange/);
@@ -138,5 +183,13 @@ for (const category of ['Reminder', 'Weigh-in', 'Travel', 'Team Check-in', 'Prog
   assert.ok(routeSource.includes(`'${category}'`), `Missing canonical calendar category: ${category}`);
 }
 assert.doesNotMatch(routeSource, /const ITEM_CATEGORIES = \[[^\]]*'Meet'/s);
+
+assert.match(dropdownSource, /measureInWindow/, 'shared dropdown must anchor to the visible trigger');
+assert.match(dropdownSource, /resolveCompactDropdownLayout/, 'shared dropdown must apply safe-area collision positioning');
+assert.match(dropdownSource, /testID \? `\$\{testID\}-backdrop`/, 'shared dropdown must expose outside-tap dismissal');
+assert.match(dropdownSource, /accessibilityRole="menuitem"/, 'shared dropdown rows must be accessible menu items');
+assert.match(dropdownSource, /accessibilityState=\{\{ selected \}\}/, 'shared dropdown must expose selected state');
+assert.match(dropdownSource, /SLMotionPressable/, 'triggers and rows must use the tactile control primitive');
+assert.match(dropdownSource, /numberOfLines=\{1\}/, 'long labels must truncate instead of wrapping the compact header');
 
 console.log('Coach Calendar V2 helper and route regression checks passed.');

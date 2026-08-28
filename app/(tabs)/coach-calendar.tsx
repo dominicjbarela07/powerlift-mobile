@@ -29,7 +29,7 @@ import {
   SLTabRowControlItem,
   SLTabRowControlShell,
 } from '@/components/navigation/sl-tab-row-control';
-import { SLAthleteAvatar, SLButton, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
+import { SLAthleteAvatar, SLButton, SLCompactDropdown, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLLayout, SLSpacing, SLStatusTones, type SLStatusTone } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
@@ -45,6 +45,7 @@ import {
   isCoachCalendarDropTargetValid,
   isCalendarSessionMovable,
   monthGridRows,
+  selectedAthleteLabel,
   startOfCalendarWeek,
   toLocalYMD,
   withCoachCalendarSessionDate,
@@ -139,7 +140,6 @@ type ItemDraft = {
   athleteId: number | null;
 };
 
-const ATHLETE_CHIP_LIMIT = 4;
 // Deprecated Week implementation remains temporarily source-compatible while
 // old update bundles age out. It is no longer represented by active state,
 // navigation, or the visible mode selector.
@@ -160,13 +160,13 @@ const ITEM_CATEGORIES = [
   'Personal Note',
   'Do Not Schedule',
 ];
-const STATUS_FILTERS: Array<{ key: CoachCalendarStatusFilter; label: string }> = [
-  { key: 'all', label: 'All' },
-  { key: 'needs', label: 'Needs' },
-  { key: 'assigned', label: 'Assigned' },
-  { key: 'in_progress', label: 'In Progress' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'draft', label: 'Draft' },
+const STATUS_FILTERS: Array<{ value: CoachCalendarStatusFilter; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'needs', label: 'Needs' },
+  { value: 'assigned', label: 'Assigned' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'draft', label: 'Draft' },
 ];
 
 function statusTone(status: string): SLStatusTone {
@@ -247,8 +247,6 @@ export default function CoachCalendarScreen() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<CoachCalendarStatusFilter>('all');
   const [selectedAthleteIds, setSelectedAthleteIds] = useState<number[]>([]);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [filterSearch, setFilterSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const [dayDetail, setDayDetail] = useState<CalendarDay | null>(null);
   const [selectedSession, setSelectedSession] = useState<CalendarSession | null>(null);
@@ -366,6 +364,10 @@ export default function CoachCalendarScreen() {
     [rangeEndKey, rangeStartKey, visibleDays],
   );
   const athleteById = useMemo(() => new Map(athletes.map((athlete) => [athlete.id, athlete])), [athletes]);
+  const athleteFilterOptions = useMemo(() => [
+    { value: 'all', label: 'All Athletes' },
+    ...athletes.map((athlete) => ({ value: String(athlete.id), label: athlete.name })),
+  ], [athletes]);
   const monthPrefix = `${anchor.getFullYear()}-${String(anchor.getMonth() + 1).padStart(2, '0')}`;
   const activeMonthDays = useMemo(
     () => rangeDays.filter((day) => day.date.startsWith(monthPrefix)),
@@ -582,41 +584,66 @@ export default function CoachCalendarScreen() {
   const rangeLabel = view === 'month'
     ? anchor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
     : `${formatCalendarDate(toLocalYMD(range.start), { month: 'short', day: 'numeric' })} – ${formatCalendarDate(toLocalYMD(addCalendarDays(range.end, -1)), { month: 'short', day: 'numeric' })}`;
+  const athleteSelectorLabel = selectedAthleteLabel(athletes, selectedAthleteIds);
+  const statusSelectorLabel = statusFilter === 'all'
+    ? 'All Statuses'
+    : STATUS_FILTERS.find((filter) => filter.value === statusFilter)?.label || 'All Statuses';
 
   return (
     <SLScreen edges="none" padded={false}>
       <View style={styles.screen}>
-        <View style={styles.headerRow}>
-          <View>
+        <View style={styles.compactHeader}>
+          <View style={styles.headerIdentityRow}>
             <Text typographyRole="pageTitle" style={styles.title}>Calendar</Text>
-            <Text style={styles.subtitle}>Athletes × schedule</Text>
+            <SLCompactDropdown
+              accessibilityHint="Selects which Session statuses appear immediately"
+              accessibilityLabel={`Calendar status filter, ${statusSelectorLabel}`}
+              label={statusSelectorLabel}
+              menuTestID="coach-calendar-status-menu"
+              minMenuWidth={196}
+              onValueChange={setStatusFilter}
+              options={STATUS_FILTERS}
+              style={styles.statusSelector}
+              testID="coach-calendar-status-selector"
+              value={statusFilter}
+            />
           </View>
-          <Pressable accessibilityLabel="Calendar filters" onPress={() => setFilterOpen(true)} style={styles.iconButton}>
-            <Ionicons color={SLColors.text} name="options-outline" size={20} />
-          </Pressable>
+
+          <View style={styles.headerControlRow}>
+            <SLCompactDropdown
+              accessibilityHint="Selects which athlete appears immediately"
+              accessibilityLabel={`Calendar athlete selector, ${athleteSelectorLabel}`}
+              icon="people-outline"
+              label={athleteSelectorLabel}
+              menuTestID="coach-calendar-athlete-menu"
+              minMenuWidth={240}
+              onValueChange={(value) => setSelectedAthleteIds(value === 'all' ? [] : [Number(value)])}
+              options={athleteFilterOptions}
+              style={styles.athleteSelector}
+              testID="coach-calendar-athlete-selector"
+              value={selectedAthleteIds[0] ? String(selectedAthleteIds[0]) : 'all'}
+            />
+
+            <View accessibilityLabel="Calendar view" style={styles.compactSegmentedControl}>
+              {(['month', 'agenda'] as CoachCalendarView[]).map((mode) => (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: view === mode }}
+                  key={mode}
+                  onPress={() => selectCalendarView(mode)}
+                  style={[styles.compactSegment, view === mode && styles.segmentActive]}
+                  testID={`coach-calendar-view-${mode}`}
+                >
+                  <Text numberOfLines={1} style={[styles.segmentText, view === mode && styles.segmentTextActive]}>
+                    {mode[0].toUpperCase() + mode.slice(1)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
         </View>
 
         {data?.new_coach_experience ? <NewCoachExperience experience={data.new_coach_experience} /> : null}
-
-        <AthleteFilterRail
-          athletes={athletes}
-          onAthleteToggle={(athleteId) => setSelectedAthleteIds((current) => (
-            current.length === 1 && current[0] === athleteId ? [] : [athleteId]
-          ))}
-          onSelectAll={() => setSelectedAthleteIds([])}
-          onOpenFilters={() => setFilterOpen(true)}
-          selectedAthleteIds={selectedAthleteIds}
-        />
-
-        <View style={styles.modeRow}>
-          <View style={styles.segmentedControl}>
-            {(['month', 'agenda'] as CoachCalendarView[]).map((mode) => (
-              <Pressable key={mode} onPress={() => selectCalendarView(mode)} style={[styles.segment, view === mode && styles.segmentActive]}>
-                <Text style={[styles.segmentText, view === mode && styles.segmentTextActive]}>{mode[0].toUpperCase() + mode.slice(1)}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
 
         <View style={styles.rangeRow}>
           <Pressable accessibilityLabel="Previous date range" onPress={() => shiftAnchor(-1)} style={styles.rangeArrow}>
@@ -680,18 +707,6 @@ export default function CoachCalendarScreen() {
           </SLTabRowControlShell>
         </View>
       </View>
-
-      <FilterModal
-        athletes={athletes}
-        onClose={() => setFilterOpen(false)}
-        search={filterSearch}
-        selectedAthleteIds={selectedAthleteIds}
-        setSearch={setFilterSearch}
-        setSelectedAthleteIds={setSelectedAthleteIds}
-        setStatusFilter={setStatusFilter}
-        statusFilter={statusFilter}
-        visible={filterOpen}
-      />
 
       <CreateModal
         athletes={visibleAthletes}
@@ -765,70 +780,6 @@ export default function CoachCalendarScreen() {
 
 function SummaryValue({ label, value, color }: { label: string; value: number; color: string }) {
   return <View style={styles.summaryValue}><View style={[styles.summaryDot, { backgroundColor: color }]} /><Text style={styles.summaryNumber}>{value}</Text><Text style={styles.summaryLabel}>{label}</Text></View>;
-}
-
-function AthleteFilterRail({ athletes, selectedAthleteIds, onSelectAll, onAthleteToggle, onOpenFilters }: {
-  athletes: CalendarAthlete[];
-  selectedAthleteIds: number[];
-  onSelectAll: () => void;
-  onAthleteToggle: (athleteId: number) => void;
-  onOpenFilters: () => void;
-}) {
-  const selected = new Set(selectedAthleteIds);
-  const allSelected = selectedAthleteIds.length === 0;
-  const featuredAthletes = athletes.slice(0, ATHLETE_CHIP_LIMIT);
-  const overflowAthletes = athletes.slice(ATHLETE_CHIP_LIMIT);
-  const overflowSelected = overflowAthletes.some((athlete) => selected.has(athlete.id));
-
-  return (
-    <ScrollView
-      accessibilityLabel="Filter Calendar by athlete"
-      contentContainerStyle={styles.athleteFilterRail}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.athleteFilterRailScroll}
-    >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: allSelected }}
-        onPress={onSelectAll}
-        style={[styles.athleteRailChip, allSelected && styles.athleteRailChipActive]}
-      >
-        <Ionicons color={allSelected ? SLColors.accentViolet : SLColors.textMuted} name="people-outline" size={15} />
-        <Text style={[styles.athleteRailChipText, allSelected && styles.athleteRailChipTextActive]}>All</Text>
-      </Pressable>
-      {featuredAthletes.map((athlete) => {
-        const isSelected = !allSelected && selected.has(athlete.id);
-        return (
-          <Pressable
-            accessibilityLabel={`Filter by ${athlete.name}`}
-            accessibilityRole="button"
-            accessibilityState={{ selected: isSelected }}
-            key={athlete.id}
-            onPress={() => onAthleteToggle(athlete.id)}
-            style={[styles.athleteRailChip, isSelected && styles.athleteRailChipActive]}
-          >
-            <SLAthleteAvatar imageUrl={athlete.avatar_url} name={athlete.name} size={23} />
-            <Text numberOfLines={1} style={[styles.athleteRailChipText, isSelected && styles.athleteRailChipTextActive]}>
-              {athlete.name.trim().split(/\s+/)[0] || athlete.name}
-            </Text>
-          </Pressable>
-        );
-      })}
-      {overflowAthletes.length ? (
-        <Pressable
-          accessibilityLabel={`Search and filter ${overflowAthletes.length} more athletes`}
-          accessibilityRole="button"
-          accessibilityState={{ selected: overflowSelected }}
-          onPress={onOpenFilters}
-          style={[styles.athleteRailChip, styles.athleteOverflowChip, overflowSelected && styles.athleteRailChipActive]}
-        >
-          <Ionicons color={overflowSelected ? SLColors.accentViolet : SLColors.textMuted} name="search-outline" size={14} />
-          <Text style={[styles.athleteRailChipText, overflowSelected && styles.athleteRailChipTextActive]}>+{overflowAthletes.length}</Text>
-        </Pressable>
-      ) : null}
-    </ScrollView>
-  );
 }
 
 type WeekDragState = { athleteId: number; session: CalendarSession; targetDate: string } | null;
@@ -1654,17 +1605,6 @@ function Sheet({ children, onClose, title, visible, height = 'auto' }: { childre
   return <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}><View style={styles.modalOverlay}><Pressable onPress={onClose} style={StyleSheet.absoluteFill} /><View style={[styles.sheet, height !== 'auto' && { maxHeight: height }]}><View style={styles.sheetHeader}><Text style={styles.sheetTitle}>{title}</Text><Pressable accessibilityLabel={`Close ${title}`} onPress={onClose} style={styles.sheetClose}><Ionicons color={SLColors.text} name="close" size={21} /></Pressable></View>{children}</View></View></Modal>;
 }
 
-function FilterModal({ visible, athletes, selectedAthleteIds, setSelectedAthleteIds, statusFilter, setStatusFilter, search, setSearch, onClose }: {
-  visible: boolean; athletes: CalendarAthlete[]; selectedAthleteIds: number[]; setSelectedAthleteIds: (ids: number[]) => void;
-  statusFilter: CoachCalendarStatusFilter; setStatusFilter: (value: CoachCalendarStatusFilter) => void; search: string; setSearch: (value: string) => void; onClose: () => void;
-}) {
-  const filtered = athletes.filter((athlete) => athlete.name.toLowerCase().includes(search.trim().toLowerCase()));
-  const toggle = (id: number) => {
-    setSelectedAthleteIds(selectedAthleteIds.length === 1 && selectedAthleteIds[0] === id ? [] : [id]);
-  };
-  return <Sheet onClose={onClose} title="Calendar Filters" visible={visible} height={680}><ScrollView contentContainerStyle={styles.sheetBody} keyboardShouldPersistTaps="handled"><TextInput accessibilityLabel="Search athletes" onChangeText={setSearch} placeholder="Search athletes" placeholderTextColor={SLColors.textSubtle} style={styles.input} value={search} /><View style={styles.filterSectionHeader}><Text style={styles.fieldLabel}>ATHLETE LENS</Text><Pressable onPress={() => setSelectedAthleteIds([])}><Text style={styles.linkText}>All Athletes</Text></Pressable></View>{filtered.map((athlete) => { const selected = selectedAthleteIds.length === 1 && selectedAthleteIds[0] === athlete.id; return <Pressable key={athlete.id} onPress={() => toggle(athlete.id)} style={styles.filterAthleteRow}><SLAthleteAvatar imageUrl={athlete.avatar_url} name={athlete.name} size={36} /><Text style={styles.filterAthleteName}>{athlete.name}</Text><Ionicons color={selected ? SLColors.accentViolet : SLColors.textSubtle} name={selected ? 'radio-button-on' : 'radio-button-off'} size={22} /></Pressable>; })}<Text style={[styles.fieldLabel, styles.statusLabel]}>STATUS</Text><View style={styles.filterChips}>{STATUS_FILTERS.map((filter) => <Pressable key={filter.key} onPress={() => setStatusFilter(filter.key)} style={[styles.filterChip, statusFilter === filter.key && styles.filterChipActive]}><Text style={[styles.filterChipText, statusFilter === filter.key && styles.filterChipTextActive]}>{filter.label}</Text></Pressable>)}</View><SLButton fullWidth label="Done" onPress={onClose} /></ScrollView></Sheet>;
-}
-
 function CreateModal({ visible, draft, setDraft, athletes, onClose, onSession, onCustom }: { visible: boolean; draft: ItemDraft; setDraft: React.Dispatch<React.SetStateAction<ItemDraft>>; athletes: CalendarAthlete[]; onClose: () => void; onSession: () => void; onCustom: () => void }) {
   return <Sheet onClose={onClose} title="Create Calendar Item" visible={visible}><View style={styles.sheetBody}><Text style={styles.fieldLabel}>DATE</Text><InlineDatePicker value={draft.date} onChange={(date) => setDraft((current) => ({ ...current, date }))} /><Text style={styles.fieldLabel}>ATHLETE</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.athleteChips}><ChoiceChip label="Team" selected={draft.athleteId == null} onPress={() => setDraft((current) => ({ ...current, athleteId: null }))} />{athletes.map((athlete) => <ChoiceChip key={athlete.id} label={athlete.name} selected={draft.athleteId === athlete.id} onPress={() => setDraft((current) => ({ ...current, athleteId: athlete.id }))} />)}</ScrollView><Pressable disabled={!draft.athleteId} onPress={onSession} style={[styles.createChoice, !draft.athleteId && styles.disabled]}><View style={styles.createIcon}><Ionicons color={SLColors.accentViolet} name="barbell-outline" size={22} /></View><View style={styles.createCopy}><Text style={styles.createTitle}>Create Session</Text><Text style={styles.createMeta}>{draft.athleteId ? 'Add a Training Session for this athlete.' : 'Choose an athlete first.'}</Text></View><Ionicons color={SLColors.textSubtle} name="chevron-forward" size={19} /></Pressable><Pressable onPress={onCustom} style={styles.createChoice}><View style={[styles.createIcon, styles.customCreateIcon]}><Ionicons color={SLStatusTones.review.icon} name="calendar-outline" size={22} /></View><View style={styles.createCopy}><Text style={styles.createTitle}>Add Custom Item</Text><Text style={styles.createMeta}>Meet, check-in, travel, or other event.</Text></View><Ionicons color={SLColors.textSubtle} name="chevron-forward" size={19} /></Pressable></View></Sheet>;
 }
@@ -1713,17 +1653,16 @@ function ChoiceChip({ label, selected, onPress }: { label: string; selected: boo
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, paddingTop: 10 }, center: { flex: 1, justifyContent: 'center' },
-  headerRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, paddingHorizontal: 10 }, title: { color: SLColors.textStrong, fontSize: 29, fontWeight: '800' }, subtitle: { color: SLColors.textMuted, fontSize: 13, marginTop: 1 }, iconButton: { alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderStrong, borderRadius: 14, borderWidth: 1, height: 44, justifyContent: 'center', width: 44 },
-  athleteFilterRailScroll: { flexGrow: 0, height: 42 },
-  athleteFilterRail: { alignItems: 'center', gap: 7, paddingBottom: 8, paddingHorizontal: 10 },
-  athleteRailChip: { alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.borderHairline, borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 6, minHeight: 34, paddingHorizontal: 9 },
-  athleteRailChipActive: { backgroundColor: SLColors.accentSoft, borderColor: SLColors.accentViolet },
-  athleteRailChipText: { color: SLColors.textMuted, fontSize: 11, fontWeight: '800', maxWidth: 76 },
-  athleteRailChipTextActive: { color: SLColors.accentViolet },
-  athleteOverflowChip: { paddingHorizontal: 10 },
-  modeRow: { alignItems: 'center', flexDirection: 'row', marginBottom: 8, paddingHorizontal: 10 },
-  segmentedControl: { backgroundColor: SLColors.surfaceEmbedded, borderColor: SLColors.borderHairline, borderRadius: 12, borderWidth: 1, flex: 1, flexDirection: 'row', padding: 3 }, segment: { alignItems: 'center', borderRadius: 9, flex: 1, justifyContent: 'center', minHeight: 32 }, segmentActive: { backgroundColor: SLColors.accentSoft }, segmentText: { color: SLColors.textMuted, fontSize: 11, fontWeight: '700' }, segmentTextActive: { color: SLColors.accentViolet },
+  screen: { flex: 1, paddingTop: 6 }, center: { flex: 1, justifyContent: 'center' },
+  compactHeader: { gap: 4, minHeight: 82, paddingHorizontal: 10 },
+  headerIdentityRow: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'space-between', minHeight: 42 },
+  headerControlRow: { alignItems: 'center', flexDirection: 'row', gap: 8, minHeight: 36 },
+  title: { color: SLColors.textStrong, flex: 1, fontSize: 29, fontWeight: '800' },
+  statusSelector: { height: 36, width: 144 },
+  athleteSelector: { flex: 1, height: 36, minWidth: 0 },
+  compactSegmentedControl: { backgroundColor: SLColors.surfaceEmbedded, borderColor: SLColors.borderHairline, borderRadius: 12, borderWidth: 1, flexDirection: 'row', height: 36, padding: 2, width: 148 },
+  compactSegment: { alignItems: 'center', borderRadius: 9, flex: 1, justifyContent: 'center', minWidth: 0 },
+  segmentActive: { backgroundColor: SLColors.accentSoft }, segmentText: { color: SLColors.textMuted, fontSize: 10, fontWeight: '700' }, segmentTextActive: { color: SLColors.accentViolet },
   summaryStrip: { alignItems: 'center', backgroundColor: SLColors.surfaceEmbedded, borderColor: SLColors.borderHairline, borderRadius: 12, borderWidth: 1, flexDirection: 'row', gap: 8, marginHorizontal: 10, minHeight: 38, paddingHorizontal: 10 }, summaryValue: { alignItems: 'center', flexDirection: 'row', flexShrink: 1, gap: 4 }, summaryDot: { borderRadius: 4, height: 7, width: 7 }, summaryNumber: { color: SLColors.text, fontSize: 12, fontWeight: '800' }, summaryLabel: { color: SLColors.textMuted, fontSize: 9 },
   rangeRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', minHeight: 50 }, rangeArrow: { alignItems: 'center', height: 42, justifyContent: 'center', width: 42 }, rangeLabelButton: { alignItems: 'center', flex: 1 }, rangeLabel: { color: SLColors.text, fontSize: 15, fontWeight: '800' }, todayHint: { color: SLColors.accentViolet, fontSize: 9, marginTop: 1, textTransform: 'uppercase' },
   fabDock: { position: 'absolute', right: SLLayout.screenGutter, zIndex: 30 }, fabShell: { width: SL_TAB_ROW_CONTROL.shellHeight },

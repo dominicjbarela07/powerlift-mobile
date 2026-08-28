@@ -12,6 +12,7 @@ const areas = [
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],
+  ['Coach Calendar direct filter controls', ['scripts/test-coach-calendar-v2.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],

@@ -6,6 +6,7 @@ export { SLProfileAvatar } from './sl-profile-avatar';
 export { SLActionChip } from './sl-action-chip';
 export { SLButton } from './sl-button';
 export { SLCard } from './sl-card';
+export { SLCompactDropdown, type SLCompactDropdownOption } from './sl-compact-dropdown';
 export { SLDivider } from './sl-divider';
 export { SLField } from './sl-field';
 export { SLIconButton } from './sl-icon-button';
