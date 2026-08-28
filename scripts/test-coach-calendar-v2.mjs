@@ -4,10 +4,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   addCalendarDays,
+  addCalendarMonths,
   calendarRange,
   coachCalendarDateAtPoint,
+  coachCalendarMonthKey,
+  coachCalendarMonthWindow,
   calendarSessionMatchesStatus,
   coachCalendarRequestRange,
+  coachCalendarSessionLabelWindow,
   fromLocalYMD,
   isCoachCalendarDropTargetValid,
   isCalendarSessionMovable,
@@ -28,6 +32,15 @@ const monday = fromLocalYMD('2026-08-10');
 assert.equal(toLocalYMD(monday), '2026-08-10');
 assert.equal(toLocalYMD(startOfCalendarWeek(monday)), '2026-08-09');
 assert.equal(toLocalYMD(addCalendarDays(monday, 7)), '2026-08-17');
+assert.equal(toLocalYMD(addCalendarMonths(monday, 1)), '2026-09-01');
+assert.equal(toLocalYMD(addCalendarMonths(monday, -1)), '2026-07-01');
+assert.equal(coachCalendarMonthKey(monday), '2026-08');
+assert.deepEqual(coachCalendarMonthWindow(monday).map(toLocalYMD), ['2026-07-01', '2026-08-01', '2026-09-01']);
+
+const namedSessions = [{ label: 'W5 Pull' }, { label: 'Very Long Secondary Session Name' }];
+assert.deepEqual(coachCalendarSessionLabelWindow(namedSessions, false), { visible: [], overflow: 0 });
+assert.deepEqual(coachCalendarSessionLabelWindow(namedSessions, true), { visible: [namedSessions[0]], overflow: 1 });
+assert.deepEqual(coachCalendarSessionLabelWindow([], true), { visible: [], overflow: 0 });
 
 const month = calendarRange('month', fromLocalYMD('2026-08-11'));
 assert.equal(monthGridRows(Array.from({ length: 42 }, (_, index) => index)).length, 6);
@@ -149,6 +162,18 @@ assert.match(routeSource, /\.slice\(0, 2\)/);
 assert.doesNotMatch(routeSource, /customItems\.slice\(0, 1\)/);
 assert.doesNotMatch(routeSource, /meets\.slice\(0, 1\)/);
 assert.match(routeSource, /function MonthBoard/);
+assert.match(routeSource, /function MonthGridPage/);
+assert.match(routeSource, /singleAthleteMode=\{selectedAthleteIds\.length === 1\}/, 'exactly one athlete activates named Session cells');
+assert.match(routeSource, /coachCalendarSessionLabelWindow\(day\.sessions, singleAthleteMode\)/, 'single-athlete cells use the bounded label projection');
+assert.match(routeSource, /numberOfLines=\{1\} ellipsizeMode="tail"[^>]*style=\{\[styles\.monthSessionPillText/, 'long Session titles remain single-line and ellipsized');
+assert.match(routeSource, /monthSessionOverflow[^>]*>\+\{sessionLabels\.overflow\}/, 'multiple Sessions expose a compact overflow count');
+assert.match(routeSource, /singleAthleteMode \? \([\s\S]*styles\.monthSessionPill[\s\S]*\) : \([\s\S]*styles\.monthDots/, 'aggregate mode preserves dot treatment');
+assert.match(routeSource, /testID="coach-calendar-month-pager"/);
+assert.match(routeSource, /coachCalendarMonthWindow\(anchor\)/, 'the pager keeps a bounded previous-current-next window');
+assert.match(routeSource, /activeOffsetX\(\[-18, 18\]\)/, 'horizontal month paging requires horizontal intent');
+assert.match(routeSource, /failOffsetY\(\[-14, 14\]\)/, 'vertical scrolling wins gesture arbitration');
+assert.match(routeSource, /runOnJS\(onMonthPage\)\(direction\)/, 'settled paging updates the canonical month state');
+assert.match(routeSource, /onMonthPage=\{shiftAnchor\}/, 'paging and arrow controls share the same month transition');
 assert.match(routeSource, /function MonthDraggableSessionRow/);
 assert.match(routeSource, /function AgendaBoard/);
 assert.match(routeSource, /function CalendarSessionCard/);

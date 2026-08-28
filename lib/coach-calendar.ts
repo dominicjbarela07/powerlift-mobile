@@ -29,6 +29,23 @@ export function addCalendarDays(date: Date, days: number) {
   return next;
 }
 
+export function addCalendarMonths(date: Date, months: number) {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1, 12, 0, 0, 0);
+}
+
+export function coachCalendarMonthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+export function coachCalendarMonthWindow(anchor: Date) {
+  return [-1, 0, 1].map((offset) => addCalendarMonths(anchor, offset));
+}
+
+export function coachCalendarSessionLabelWindow<T>(sessions: T[], singleAthleteMode: boolean) {
+  if (!singleAthleteMode || !sessions.length) return { visible: [] as T[], overflow: 0 };
+  return { visible: sessions.slice(0, 1), overflow: Math.max(0, sessions.length - 1) };
+}
+
 export function startOfCalendarWeek(date: Date) {
   const next = new Date(date);
   next.setHours(12, 0, 0, 0);
