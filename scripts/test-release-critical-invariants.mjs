@@ -13,6 +13,7 @@ const areas = [
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],
   ['Coach Calendar direct filter controls', ['scripts/test-coach-calendar-v2.mjs']],
+  ['relationship-scoped athlete coaching scratchpad', ['scripts/test-athlete-coaching-scratchpad.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],

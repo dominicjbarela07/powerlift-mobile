@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { CompletedSessionRecapPayload } from '@/components/coach-mobile/CompletedSessionRecap';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import {
   CoachCardChevron,
   CoachSparkline,
@@ -622,13 +623,16 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
 
             <View onLayout={(event) => { notesY.current = event.nativeEvent.layout.y; }}>
               <SectionTitle title="Notes & Next Steps" />
-              <View style={styles.notesCard}>
-                <Ionicons color={COACH_V2.violetBright} name="document-text-outline" size={20} />
-                <View style={styles.notesCopy}>
-                  <Text style={styles.notesTitle}>{note?.title || 'No pinned coaching note'}</Text>
-                  <Text style={styles.notesText}>{note?.body_preview || 'Add coaching context from the athlete’s canonical workspace when it is needed.'}</Text>
-                </View>
-              </View>
+              <AthleteCoachingScratchpadTrigger
+                athleteId={athlete.id}
+                athleteName={athlete.name}
+                initialScratchpad={details?.coach_context?.scratchpad || (note ? {
+                  note_id: note.id,
+                  body_preview: note.body_preview,
+                  updated_at: note.updated_at,
+                } : null)}
+                variant="card"
+              />
             </View>
 
             {error ? (

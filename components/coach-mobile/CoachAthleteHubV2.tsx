@@ -13,6 +13,7 @@ import {
   CoachStatusBadge,
   COACH_V2,
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
+import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { SLAthleteAvatar, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
@@ -266,15 +267,19 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
               )) : <Text style={styles.emptyTraining}>No recent or upcoming Session evidence is available.</Text>}
             </View>
 
-            {summary.coach_context.pinned_note?.body_preview ? (
-              <View style={styles.contextCard}>
-                <Ionicons color={COACH_V2.violetBright} name="document-text-outline" size={18} />
-                <View style={styles.contextCopy}>
-                  <Text style={styles.contextLabel}>Coach Context</Text>
-                  <Text style={styles.contextText}>{summary.coach_context.pinned_note.body_preview}</Text>
-                </View>
-              </View>
-            ) : null}
+            <View style={styles.section}>
+              <CoachSectionHeading title="Notes & Next Steps" />
+              <AthleteCoachingScratchpadTrigger
+                athleteId={summary.athlete.id}
+                athleteName={summary.athlete.name}
+                initialScratchpad={summary.coach_context.scratchpad || (summary.coach_context.pinned_note ? {
+                  note_id: summary.coach_context.pinned_note.id,
+                  body_preview: summary.coach_context.pinned_note.body_preview,
+                  updated_at: summary.coach_context.pinned_note.updated_at,
+                } : null)}
+                variant="card"
+              />
+            </View>
           </>
         ) : null}
         <View style={styles.bottomSpace} />

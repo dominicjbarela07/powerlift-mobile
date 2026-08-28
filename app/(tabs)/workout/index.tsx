@@ -26,6 +26,7 @@ import { SLMotionEntrance, SLMotionPressable, SLProfileAvatar } from '@/componen
 import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { SLButton } from '@/components/ui/sl-button';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import {
   StrengthLedgerBottomSheet,
   type StrengthLedgerBottomSheetHandle,
@@ -2556,6 +2557,10 @@ export function ProgrammingStoryboard({
             <SLProfileAvatar name={athleteName} profilePhotoUrl={athleteAvatarUrl} size={46} statusColor={colors.violet} />
             {coachMode ? <Ionicons name="chevron-down" size={15} color={colors.subtle} /> : null}
           </Pressable>
+
+          {athleteId ? (
+            <AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="compact" />
+          ) : null}
 
           <View style={storyStyles.programCard}>
             <LinearGradient

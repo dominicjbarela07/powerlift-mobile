@@ -24,6 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -741,6 +742,13 @@ export function SessionEditingWorkspace(props: Props) {
         {lockedReason ? <Text style={styles.lockedReason}>{lockedReason}</Text> : null}
 
         <View style={styles.setupRegion}>
+          {sessionDraft.athleteId && (draftAthlete?.name || athleteName) ? (
+            <AthleteCoachingScratchpadTrigger
+              athleteId={sessionDraft.athleteId}
+              athleteName={draftAthlete?.name || athleteName || 'Athlete'}
+              variant="compact"
+            />
+          ) : null}
           <SessionNotesPreview
             value={sessionDraft.notes}
             draft={sessionDraft.notes}

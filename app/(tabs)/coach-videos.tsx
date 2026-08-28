@@ -6,6 +6,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import RefreshScreen from '@/components/refresh-screen';
 import { ReviewFilterRow } from '@/components/reviews/review-filter-row';
 import { ReviewItemCard } from '@/components/reviews/review-item-card';
+import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import {
@@ -115,6 +116,9 @@ export default function CoachReviewHubScreen() {
   ], [payload?.athletes]);
 
   const routeParams = selectedAthlete ? { athleteId: selectedAthlete } : undefined;
+  const scratchpadAthlete = selectedAthlete
+    ? payload?.athletes.find((athlete) => String(athlete.id) === selectedAthlete) || null
+    : null;
   const summary = payload?.summary;
 
   return (
@@ -145,6 +149,14 @@ export default function CoachReviewHubScreen() {
           selected={selectedAthlete}
           onSelect={setSelectedAthlete}
           accessibilityLabel="Filter reviews by athlete"
+        />
+      ) : null}
+
+      {scratchpadAthlete ? (
+        <AthleteCoachingScratchpadTrigger
+          athleteId={scratchpadAthlete.id}
+          athleteName={scratchpadAthlete.name}
+          variant="compact"
         />
       ) : null}
 

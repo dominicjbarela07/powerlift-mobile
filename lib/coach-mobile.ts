@@ -200,6 +200,14 @@ export type CoachRosterAthlete = {
       note_type?: string | null;
       updated_at?: string | null;
     } | null;
+    scratchpad?: {
+      relationship_id: number;
+      note_id: number | null;
+      body_preview?: string | null;
+      updated_at?: string | null;
+      version?: string | null;
+      is_empty?: boolean;
+    } | null;
   };
   meet_context?: {
     meet_plan_id: number;
@@ -333,6 +341,16 @@ export type CoachAthleteSummaryResponse = {
       body_preview?: string | null;
       note_type?: string | null;
       updated_at?: string | null;
+    } | null;
+    scratchpad?: {
+      relationship_id: number;
+      note_id: number | null;
+      body?: string;
+      body_preview?: string | null;
+      updated_at?: string | null;
+      updated_by?: { id: number; name: string } | null;
+      version?: string | null;
+      is_empty?: boolean;
     } | null;
   };
   quick_actions: Record<string, boolean>;
