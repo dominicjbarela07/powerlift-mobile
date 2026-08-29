@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   StyleSheet,
   View,
@@ -57,6 +58,9 @@ type SupersetRoundWorkspaceProps = {
   onToggle: () => void;
   onLogMovement: (itemId: number) => void;
   onOpenHistory: (itemId: number) => void;
+  onSwapMovement: (itemId: number) => void;
+  swapActionForItem: (itemId: number) => 'Swap' | 'Sub' | null;
+  swappingItemId?: number | null;
   onEditSet: (
     item: SupersetWorkspaceItem,
     log: SupersetWorkspaceLog,
@@ -90,6 +94,9 @@ export function SupersetRoundWorkspace({
   onToggle,
   onLogMovement,
   onOpenHistory,
+  onSwapMovement,
+  swapActionForItem,
+  swappingItemId = null,
   onEditSet,
   onDeleteSet,
 }: SupersetRoundWorkspaceProps) {
@@ -181,6 +188,8 @@ export function SupersetRoundWorkspace({
                 const logs = [...(movement.item.set_logs || [])]
                   .filter((log) => movement.loggedSetIndexes.includes(Number(log.set_index || 0)))
                   .sort((a, b) => Number(a.set_index || 0) - Number(b.set_index || 0));
+                const swapAction = swapActionForItem(movement.itemId);
+                const swapBusy = swappingItemId === movement.itemId;
                 return (
                   <View key={movement.itemId} style={styles.workItem}>
                     <View style={styles.workItemHeader}>
@@ -214,6 +223,28 @@ export function SupersetRoundWorkspace({
                         {movement.loggedRequiredSets} / {movement.requiredSets}
                       </Text>
                     </View>
+
+                    {swapAction ? (
+                      <Pressable
+                        accessibilityLabel={`${swapAction} ${movement.item.title}`}
+                        accessibilityRole="button"
+                        accessibilityState={{ busy: swapBusy, disabled: swapBusy }}
+                        disabled={swapBusy}
+                        onPress={() => onSwapMovement(movement.itemId)}
+                        style={({ pressed }) => [
+                          styles.movementAction,
+                          pressed && styles.controlPressed,
+                          swapBusy && styles.controlBusy,
+                        ]}
+                      >
+                        {swapBusy ? (
+                          <ActivityIndicator color={SLColors.accentViolet} size="small" />
+                        ) : (
+                          <Ionicons color={SLColors.accentViolet} name="swap-horizontal-outline" size={17} />
+                        )}
+                        <Text style={styles.movementActionText}>{swapBusy ? 'Updating…' : swapAction}</Text>
+                      </Pressable>
+                    ) : null}
 
                     {logs.length ? (
                       <View style={styles.movementEvidence}>
@@ -285,7 +316,10 @@ export function SupersetRoundWorkspace({
                 accessibilityRole="button"
                 key={item.id}
                 onPress={() => onOpenHistory(item.id)}
-                style={styles.historyRow}
+                style={({ pressed }) => [
+                  styles.historyRow,
+                  pressed && styles.controlPressed,
+                ]}
               >
                 <View style={styles.historyCopy}>
                   <Text numberOfLines={1} style={styles.historyTitle}>{item.title}</Text>
@@ -487,6 +521,30 @@ const styles = StyleSheet.create({
   },
   movementProgressComplete: {
     color: SLColors.success,
+  },
+  movementAction: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: SLColors.accentSoft,
+    borderColor: SLColors.borderFocus,
+    borderRadius: SLRadius.radiusControl,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: SLSpacing.xs,
+    minHeight: 40,
+    paddingHorizontal: SLSpacing.md,
+  },
+  movementActionText: {
+    color: SLColors.accentViolet,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '800',
+  },
+  controlPressed: {
+    opacity: 0.72,
+    transform: [{ scale: 0.985 }],
+  },
+  controlBusy: {
+    opacity: 0.72,
   },
   movementEvidence: {
     borderTopColor: SLColors.divider,

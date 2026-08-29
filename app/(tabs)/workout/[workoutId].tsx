@@ -2919,11 +2919,27 @@ export default function WorkoutViewerScreen() {
   useEffect(() => {
     const itemId = Number(swapAccItem?.id || 0);
     if (!itemId || !acceptedSetEvidenceItemIds.has(itemId)) return;
+    const authority = resolveSubstitutionAuthority({
+      serverAuthority: data?.permissions?.substitution_authority,
+      canHotSwap: data?.permissions?.can_hot_swap,
+      permissionIsSelfCoached: data?.permissions?.is_self_coached,
+      accountIsSelfCoached: user?.is_self_coached,
+      isCoachPreview: coachPreviewRequested,
+    });
+    if (authority === 'self_governed') return;
     setSwapPickerVisible(false);
     setSwapAccVisible(false);
     setSwapAccItem(null);
     setSwapAccIdentity(null);
-  }, [acceptedSetEvidenceItemIds, swapAccItem?.id]);
+  }, [
+    acceptedSetEvidenceItemIds,
+    coachPreviewRequested,
+    data?.permissions?.can_hot_swap,
+    data?.permissions?.is_self_coached,
+    data?.permissions?.substitution_authority,
+    swapAccItem?.id,
+    user?.is_self_coached,
+  ]);
 
   const openCanonicalMovementHistory = (item: WorkoutItem) => {
     const resolution = resolveMovementHistoryLaunchForItem({
@@ -2956,6 +2972,10 @@ export default function WorkoutViewerScreen() {
         && data?.permissions?.view_only === true,
       sessionLifecycle: deriveScreenMode(currentWorkout?.status),
       targetItemHasSetLogs: itemHasPersistedSetLogs(it),
+      targetItemHasRemainingSets: nextMissingSetIndex(
+        it.set_logs,
+        positiveInt(accessoryExecutionItem(it).sets),
+      ) != null,
       acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
     });
     if (!swapAction) return;
@@ -2977,9 +2997,19 @@ export default function WorkoutViewerScreen() {
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
+    const authority = resolveSubstitutionAuthority({
+      serverAuthority: data?.permissions?.substitution_authority,
+      canHotSwap: data?.permissions?.can_hot_swap,
+      permissionIsSelfCoached: data?.permissions?.is_self_coached,
+      accountIsSelfCoached: user?.is_self_coached,
+      isCoachPreview: coachPreviewRequested,
+    });
     if (
+      authority !== 'self_governed'
+      && (
       itemHasPersistedSetLogs(swapAccItem)
       || acceptedSetEvidenceItemIds.has(Number(swapAccItem.id))
+      )
     ) {
       setSwapPickerVisible(false);
       setSwapAccVisible(false);
@@ -7932,18 +7962,37 @@ export default function WorkoutViewerScreen() {
 
   const supersetWorkspaceItems = (
     items: WorkoutItem[],
-  ): SupersetWorkspaceItem[] => items.map((item) => ({
-    ...item,
-    title: simplifyMobileMovementName(item.movement) || 'Accessory',
-    timelineLabel: simplifyMobileMovementName(item.movement) || 'Accessory',
-    prescription: accessoryTargetLine(item),
-    historyLine: accessoryLookbackLine(item),
-    primaryMuscleRegion: accessoryMuscleRegion(item).key,
-    set_logs: (item.set_logs || []).map((log) => ({
-      ...log,
-      resultLine: loggedSetText(log, unit, item),
-    })),
-  }));
+  ): SupersetWorkspaceItem[] => items.map((item) => {
+    const executionItem = accessoryExecutionItem(item);
+    const executionName = accessoryExecutionName(item);
+    return {
+      ...item,
+      ...executionItem,
+      id: item.id,
+      title: simplifyMobileMovementName(executionName) || 'Accessory',
+      timelineLabel: simplifyMobileMovementName(executionName) || 'Accessory',
+      prescription: accessoryTargetLine(executionItem),
+      historyLine: accessoryLookbackLine(item),
+      primaryMuscleRegion: accessoryMuscleRegion(executionItem).key,
+      set_logs: (item.set_logs || []).map((log) => ({
+        ...log,
+        resultLine: loggedSetText(log, unit, item),
+      })),
+    };
+  });
+
+  const swapActionForAccessory = (item: WorkoutItem) => accessorySwapActionForItem({
+    substitutionAuthority,
+    hasApprovedSubstitutions: Array.isArray(item.approved_subs) && item.approved_subs.length > 0,
+    isCoachPreview: isCoachAthletePreview,
+    sessionLifecycle: screenMode,
+    targetItemHasSetLogs: itemHasPersistedSetLogs(item),
+    targetItemHasRemainingSets: nextMissingSetIndex(
+      item.set_logs,
+      positiveInt(accessoryExecutionItem(item).sets),
+    ) != null,
+    acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(item.id)),
+  });
 
   const buildAccessoryMovementPresentation = ({
     item,
@@ -8043,14 +8092,7 @@ export default function WorkoutViewerScreen() {
       expanded: accessoryIsExpanded,
       isComplete: accessoryIsComplete,
     });
-    const swapLabel = accessorySwapActionForItem({
-      substitutionAuthority,
-      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
-      isCoachPreview: isCoachAthletePreview,
-      sessionLifecycle: screenMode,
-      targetItemHasSetLogs: itemHasPersistedSetLogs(it),
-      acceptedPersistedSetLogForItem: acceptedSetEvidenceItemIds.has(Number(it.id)),
-    });
+    const swapLabel = swapActionForAccessory(it);
     const machineAccessory = isMachineAccessoryItem(it);
     const fixtureAccessoryKind = String(
       (it as any).dev_accessory_intelligence?.kind || '',
@@ -8749,9 +8791,22 @@ export default function WorkoutViewerScreen() {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,
                       );
-                      if (item) setMovementHistoryItem(item);
+                      if (item) openCanonicalMovementHistory(item);
+                    }}
+                    onSwapMovement={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      if (item) openSwapAcc(item);
                     }}
                     reduceMotion={reduceMotion}
+                    swapActionForItem={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      return item ? swapActionForAccessory(item) : null;
+                    }}
+                    swappingItemId={savingItemId}
                     onToggle={() => toggleMovementCard(detailKey)}
                   />
                 </View>
