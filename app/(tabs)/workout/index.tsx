@@ -476,6 +476,13 @@ type BlockActionMenuContext = {
   anchorY: number;
 };
 
+type SessionActionSheetState = {
+  session: HubSession;
+  context: ProgrammingReturnContext;
+  confirmation?: 'delete' | null;
+  message?: { tone: 'success' | 'error'; text: string } | null;
+} | null;
+
 type WeekTemplate = {
   id: number;
   name?: string | null;
@@ -1335,6 +1342,8 @@ function ActiveProgrammingRoadmap({
   const [blockActionConfirmed, setBlockActionConfirmed] = useState(false);
   const [programActionsOpen, setProgramActionsOpen] = useState(false);
   const [sessionAdd, setSessionAdd] = useState<SessionAddState>(null);
+  const [sessionActions, setSessionActions] = useState<SessionActionSheetState>(null);
+  const [sessionActionBusy, setSessionActionBusy] = useState(false);
   const [quickMoveSession, setQuickMoveSession] = useState<QuickMoveSessionState>(null);
   const [quickMoveBusy, setQuickMoveBusy] = useState(false);
   const [quickMoveError, setQuickMoveError] = useState('');
@@ -1517,6 +1526,7 @@ function ActiveProgrammingRoadmap({
   const saveSessionTemplate = async (session: HubSession) => {
     if (sessionActionSubmittingRef.current) return;
     sessionActionSubmittingRef.current = true;
+    setSessionActionBusy(true);
     try {
       const resp = await fetchJson<any>(`/workouts/mobile/${session.id}/programming-actions`, {
         method: 'POST',
@@ -1527,17 +1537,25 @@ function ActiveProgrammingRoadmap({
       });
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
-      Alert.alert('Session Template saved', `${json.template?.name || sessionTitle(session)} is now available in your Library.`);
+      setSessionActions((current) => current ? {
+        ...current,
+        message: { tone: 'success', text: `${json.template?.name || sessionTitle(session)} is now available in your Library.` },
+      } : current);
     } catch (error: any) {
-      Alert.alert('Template not saved', error?.message || 'This Session could not be saved as a template.');
+      setSessionActions((current) => current ? {
+        ...current,
+        message: { tone: 'error', text: error?.message || 'This Session could not be saved as a template.' },
+      } : current);
     } finally {
       sessionActionSubmittingRef.current = false;
+      setSessionActionBusy(false);
     }
   };
 
   const deleteProgrammingSession = async (session: HubSession) => {
     if (sessionActionSubmittingRef.current) return;
     sessionActionSubmittingRef.current = true;
+    setSessionActionBusy(true);
     try {
       const resp = await fetchJson<any>(`/workouts/mobile/${session.id}/delete`, {
         method: 'POST',
@@ -1545,35 +1563,21 @@ function ActiveProgrammingRoadmap({
       });
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      setSessionActions(null);
       await onRefresh();
     } catch (error: any) {
-      Alert.alert('Session not deleted', error?.message || 'This Session could not be deleted.');
+      setSessionActions((current) => current ? {
+        ...current,
+        message: { tone: 'error', text: error?.message || 'This Session could not be deleted.' },
+      } : current);
     } finally {
       sessionActionSubmittingRef.current = false;
+      setSessionActionBusy(false);
     }
   };
 
   const openSessionActions = (session: HubSession, context: ProgrammingReturnContext) => {
-    const movable = canDragProgrammingSession(session.status || session.kind);
-    Alert.alert(
-      sessionTitle(session),
-      'Session actions',
-      [
-        { text: 'Open Session', onPress: () => onOpenSession(session.id, context) },
-        { text: 'Copy Session To…', onPress: () => openQuickMoveSession(session, 'copy') },
-        ...(movable ? [{ text: 'Move Session To…', onPress: () => openQuickMoveSession(session, 'move') }] : []),
-        { text: 'Save as Session Template', onPress: () => void saveSessionTemplate(session) },
-        ...(movable ? [{ text: 'Delete Session…', style: 'destructive' as const, onPress: () => Alert.alert(
-          'Delete Session?',
-          'This permanently deletes editable programming. Completed or performed evidence remains protected by the server.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => void deleteProgrammingSession(session) },
-          ],
-        ) }] : []),
-        { text: 'Cancel', style: 'cancel' },
-      ],
-    );
+    setSessionActions({ session, context, confirmation: null, message: null });
   };
 
   const executeStoryboardSessionMove = async (session: HubSession, targetDate: string) => {
@@ -1756,6 +1760,27 @@ function ActiveProgrammingRoadmap({
           day: sessionAdd?.date || null,
         })}
         onRefresh={onRefresh}
+      />
+      <SessionActionsSheet
+        state={sessionActions}
+        busy={sessionActionBusy}
+        onClose={() => setSessionActions(null)}
+        onOpen={(session, context) => {
+          setSessionActions(null);
+          onOpenSession(session.id, context);
+        }}
+        onCopy={(session) => {
+          setSessionActions(null);
+          openQuickMoveSession(session, 'copy');
+        }}
+        onMove={(session) => {
+          setSessionActions(null);
+          openQuickMoveSession(session, 'move');
+        }}
+        onSaveTemplate={(session) => void saveSessionTemplate(session)}
+        onRequestDelete={() => setSessionActions((current) => current ? { ...current, confirmation: 'delete', message: null } : current)}
+        onCancelDelete={() => setSessionActions((current) => current ? { ...current, confirmation: null, message: null } : current)}
+        onDelete={(session) => void deleteProgrammingSession(session)}
       />
       <ProgrammingSessionMoveModal
         action={quickMoveSession?.action || 'move'}
@@ -3048,8 +3073,92 @@ function StoryboardDayPanel({ day, today, displayUnit, weekHasSessions, blockId,
   return <View style={storyStyles.dayPanel}><View style={storyStyles.dayArtworkFrame}><LinearGradient colors={completed ? ['rgba(25,93,64,0.34)', 'rgba(29,15,45,0.38)', '#080A0F'] : ['rgba(111,73,14,0.35)', 'rgba(31,17,48,0.38)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><View style={storyStyles.dayArtworkCopy}><Text style={[storyStyles.dayState, { color: storyboardSessionColor(session) }]}>{completed ? 'Completed' : sessionStatusText(session)}</Text><Text style={storyStyles.daySessionTitle}>{sessionTitle(session)}</Text><Text style={storyStyles.daySessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text></View><View style={storyStyles.dayAnatomy}><StoryboardSessionArtwork session={session} /></View><View style={[storyStyles.dayFocusRail, { backgroundColor: storyboardSessionColor(session) }]} /></View><View style={storyStyles.focusLegend}><View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#A865FF' }]} /><Text style={storyStyles.focusLegendText}>{focus.primary[0] ? storyboardMuscleLabel(focus.primary[0]) : 'Primary focus'}</Text></View>{focus.secondary[0] ? <View style={storyStyles.focusLegendItem}><View style={[storyStyles.focusLegendDot, { backgroundColor: '#E347CF' }]} /><Text style={storyStyles.focusLegendText}>{storyboardMuscleLabel(focus.secondary[0])}</Text></View> : null}</View>{completed ? <View style={storyStyles.dayEvidence}><MetricCell label="RPE" value={String(session.recap?.session_rpe ?? session.recap?.average_rpe ?? '—')} detail="Session" /><MetricCell label="Sets" value={String(session.recap?.logged_set_count ?? session.log_count ?? '—')} detail="Completed" /><MetricCell label="Duration" value={duration && !duration.isEstimate ? `${duration.minutes}m` : '—'} detail="Actual" /></View> : <View style={storyStyles.dayEvidence}><MetricCell label="Duration" value={duration ? `${duration.isEstimate ? '~' : ''}${duration.minutes}m` : '—'} detail={duration?.isEstimate ? 'Estimated' : 'Actual'} /><MetricCell label="Movements" value={String(session.preview?.movement_count || session.focus?.core_count || 0)} detail="Programmed" /></View>}<SLButton label={completed ? 'View Session' : 'Open Session'} onPress={() => onOpenSession(session.id, { blockId, week: weekIndex, day: day.key })} /></View>;
 }
 
+type ProgrammingManagerSheetProps = {
+  visible: boolean;
+  accessibilityLabel: string;
+  title: string;
+  eyebrow?: string;
+  subtitle?: string;
+  busy?: boolean;
+  heightFraction?: number;
+  scroll?: boolean;
+  keyboardAware?: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+};
+
+function ProgrammingManagerSheet({
+  visible,
+  accessibilityLabel,
+  title,
+  eyebrow,
+  subtitle,
+  busy = false,
+  heightFraction = 0.86,
+  scroll = true,
+  keyboardAware = false,
+  onClose,
+  children,
+}: ProgrammingManagerSheetProps) {
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const requestClose = useCallback(() => {
+    if (busy) return;
+    void Haptics.selectionAsync().catch(() => undefined);
+    sheetRef.current?.dismiss();
+  }, [busy]);
+  const body = scroll ? (
+    <ScrollView
+      bounces
+      contentContainerStyle={styles.programmingSheetScrollContent}
+      keyboardDismissMode="interactive"
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator
+      style={styles.programmingSheetScroll}
+    >
+      {children}
+    </ScrollView>
+  ) : children;
+
+  return (
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel={accessibilityLabel}
+      heightFraction={heightFraction}
+      motionPreset="deliberate"
+      onDismiss={onClose}
+      onRequestClose={requestClose}
+      visible={visible}
+    >
+      <KeyboardAvoidingView
+        behavior={keyboardAware && Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+        style={styles.programmingSheetKeyboard}
+      >
+        <View style={styles.programmingSheetHeader}>
+          <View style={styles.programmingSheetHeading}>
+            {eyebrow ? <Text style={styles.programmingSheetEyebrow}>{eyebrow}</Text> : null}
+            <Text numberOfLines={2} style={styles.programmingSheetTitle}>{title}</Text>
+            {subtitle ? <Text numberOfLines={3} style={styles.programmingSheetSubtitle}>{subtitle}</Text> : null}
+          </View>
+        </View>
+        <View style={styles.programmingSheetBody}>{body}</View>
+      </KeyboardAvoidingView>
+    </StrengthLedgerBottomSheet>
+  );
+}
+
 function StoryboardSheet({ visible, title, onClose, children }: { visible: boolean; title: string; onClose: () => void; children: React.ReactNode }) {
-  return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}><View style={storyStyles.sheetBackdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} /><View style={storyStyles.sheet}><View style={storyStyles.sheetHandle} /><View style={storyStyles.sheetHeader}><Text style={storyStyles.sheetTitle}>{title}</Text><Pressable accessibilityRole="button" accessibilityLabel={`Close ${title}`} onPress={onClose} style={storyStyles.iconButton}><Ionicons name="close" size={20} color={colors.textStrong} /></Pressable></View><ScrollView contentContainerStyle={storyStyles.sheetBody} keyboardShouldPersistTaps="handled">{children}</ScrollView></View></View></Modal>;
+  return (
+    <ProgrammingManagerSheet
+      accessibilityLabel={title}
+      heightFraction={0.82}
+      onClose={onClose}
+      title={title}
+      visible={visible}
+    >
+      {children}
+    </ProgrammingManagerSheet>
+  );
 }
 
 function MiniReadinessChart({ points }: { points: Array<{ date?: string | null; value?: number | null }> }) {
@@ -3333,26 +3442,18 @@ function SessionAddModal({
       : 'Move an eligible unassigned Session into this Training Program.'}`;
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.actionSheetScrim}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={busyId ? undefined : onClose} />
-        <View style={styles.sessionAddSheet}>
-          <View style={styles.weekActionSheetHeader}>
-            <View style={styles.programActionHeading}>
-              <Text style={styles.weekActionEyebrow}>Programming</Text>
-              <Text style={styles.weekActionTitle}>{title}</Text>
-              <Text style={styles.weekActionSubtitle}>{subtitle}</Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close add Training Session"
-              disabled={!!busyId}
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
+    <ProgrammingManagerSheet
+      accessibilityLabel={title}
+      busy={!!busyId}
+      eyebrow="Programming"
+      heightFraction={state.mode === 'choose' ? 0.58 : 0.82}
+      onClose={onClose}
+      scroll={false}
+      subtitle={subtitle}
+      title={title}
+      visible
+    >
+      <View style={styles.sessionAddSheet}>
 
           {!contextReady ? (
             <Text style={styles.weekActionWarning}>Training Program context is missing.</Text>
@@ -3462,9 +3563,8 @@ function SessionAddModal({
               </ScrollView>
             </>
           )}
-        </View>
       </View>
-    </Modal>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -3494,6 +3594,106 @@ function SessionAddChoice({
         <Text style={styles.sessionAddOptionMeta}>{detail}</Text>
       </View>
       <Ionicons name="chevron-forward" size={17} color={colors.subtle} />
+    </Pressable>
+  );
+}
+
+function SessionActionsSheet({
+  state,
+  busy,
+  onClose,
+  onOpen,
+  onCopy,
+  onMove,
+  onSaveTemplate,
+  onRequestDelete,
+  onCancelDelete,
+  onDelete,
+}: {
+  state: SessionActionSheetState;
+  busy: boolean;
+  onClose: () => void;
+  onOpen: (session: HubSession, context: ProgrammingReturnContext) => void;
+  onCopy: (session: HubSession) => void;
+  onMove: (session: HubSession) => void;
+  onSaveTemplate: (session: HubSession) => void;
+  onRequestDelete: () => void;
+  onCancelDelete: () => void;
+  onDelete: (session: HubSession) => void;
+}) {
+  const session = state?.session || null;
+  const context = state?.context || {};
+  const movable = session ? canDragProgrammingSession(session.status || session.kind) : false;
+  const feedback = () => void Haptics.selectionAsync().catch(() => undefined);
+  const invoke = (callback: () => void) => {
+    feedback();
+    callback();
+  };
+
+  return (
+    <ProgrammingManagerSheet
+      accessibilityLabel="Training Session actions"
+      busy={busy}
+      eyebrow={state?.confirmation === 'delete' ? 'Confirmation' : 'Session actions'}
+      heightFraction={state?.confirmation === 'delete' ? 0.54 : 0.66}
+      onClose={onClose}
+      subtitle={session?.date ? formatLongDate(session.date) : undefined}
+      title={session ? sessionTitle(session) : 'Training Session'}
+      visible={!!state}
+    >
+      {session ? state?.confirmation === 'delete' ? (
+        <View style={styles.sessionActionConfirmation}>
+          <View style={styles.sessionActionDangerIcon}>
+            <Ionicons name="trash-outline" size={23} color={colors.red} />
+          </View>
+          <Text style={styles.sessionActionConfirmationTitle}>Delete this editable Session?</Text>
+          <Text style={styles.sessionActionConfirmationCopy}>Programming is removed. Completed or performed evidence remains protected by the server.</Text>
+          {state.message ? <Text style={styles.weekActionWarning}>{state.message.text}</Text> : null}
+          <View style={styles.weekActionFooter}>
+            <Pressable disabled={busy} onPress={() => invoke(onCancelDelete)} style={({ pressed }) => [styles.weekActionSecondary, pressed && styles.pressed]}>
+              <Text style={styles.weekActionSecondaryText}>Keep Session</Text>
+            </Pressable>
+            <Pressable disabled={busy} onPress={() => invoke(() => onDelete(session))} style={({ pressed }) => [styles.sessionActionDelete, busy && styles.weekActionDisabled, pressed && styles.pressed]}>
+              {busy ? <ActivityIndicator color={colors.textStrong} /> : <Text style={styles.weekActionPrimaryText}>Delete Session</Text>}
+            </Pressable>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.sessionActionList}>
+          {state?.message ? (
+            <View style={[styles.sessionActionMessage, state.message.tone === 'error' && styles.sessionActionMessageError]}>
+              <Ionicons name={state.message.tone === 'success' ? 'checkmark-circle' : 'alert-circle'} size={18} color={state.message.tone === 'success' ? colors.green : colors.red} />
+              <Text style={styles.sessionActionMessageText}>{state.message.text}</Text>
+            </View>
+          ) : null}
+          <SessionActionRow icon="open-outline" label="Open Session" detail="Edit movements and prescription" disabled={busy} onPress={() => invoke(() => onOpen(session, context))} />
+          <SessionActionRow icon="copy-outline" label="Copy Session To…" detail="Create a draft on another date" disabled={busy} onPress={() => invoke(() => onCopy(session))} />
+          {movable ? <SessionActionRow icon="move-outline" label="Move Session To…" detail="Reschedule this editable Session" disabled={busy} onPress={() => invoke(() => onMove(session))} /> : null}
+          <SessionActionRow icon="bookmark-outline" label="Save as Session Template" detail="Reuse this canonical Session structure" disabled={busy} loading={busy} onPress={() => invoke(() => onSaveTemplate(session))} />
+          {movable ? <SessionActionRow danger icon="trash-outline" label="Delete Session…" detail="Remove editable programming" disabled={busy} onPress={() => invoke(onRequestDelete)} /> : null}
+        </View>
+      ) : null}
+    </ProgrammingManagerSheet>
+  );
+}
+
+function SessionActionRow({ icon, label, detail, danger = false, disabled = false, loading = false, onPress }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; detail: string; danger?: boolean; disabled?: boolean; loading?: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [styles.sessionActionRow, disabled && styles.weekActionDisabled, pressed && styles.pressed]}
+    >
+      <View style={[styles.sessionActionIcon, danger && styles.sessionActionIconDanger]}>
+        <Ionicons name={icon} size={19} color={danger ? colors.red : colors.violet} />
+      </View>
+      <View style={styles.sessionAddOptionCopy}>
+        <Text style={[styles.sessionAddOptionTitle, danger && styles.weekActionRowDanger]}>{label}</Text>
+        <Text style={styles.sessionAddOptionMeta}>{detail}</Text>
+      </View>
+      {loading ? <ActivityIndicator color={colors.violet} /> : <Ionicons name="chevron-forward" size={17} color={danger ? colors.red : colors.subtle} />}
     </Pressable>
   );
 }
@@ -3581,41 +3781,27 @@ function ProgramActionsModal({
 
   const activeProgramId = Number(activeProgram?.id || 0);
 
+  const sheetTitle = destructiveAction
+    ? `${destructiveAction.type === 'archive' ? 'Archive' : 'Delete'} Training Program`
+    : 'Training Programs';
+  const sheetSubtitle = destructiveAction
+    ? destructiveAction.program.name
+    : 'Manage this athlete’s programming lifecycle.';
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.actionSheetScrim}
-      >
-        <Pressable style={StyleSheet.absoluteFill} onPress={busy ? undefined : onClose} />
-        <View style={[styles.weekActionSheet, styles.programActionSheet]}>
-          <View style={styles.programActionSheetHandle} />
-          <View style={styles.weekActionSheetHeader}>
-            <View style={styles.programActionHeading}>
-              {!destructiveAction ? (
-                <Text style={styles.programActionEyebrow}>Programming lifecycle</Text>
-              ) : null}
-              <Text style={styles.weekActionTitle}>
-                {destructiveAction
-                  ? `${destructiveAction.type === 'archive' ? 'Archive' : 'Delete'} Training Program`
-                  : 'Training Programs'}
-              </Text>
-              <Text style={styles.weekActionSubtitle}>
-                {destructiveAction
-                  ? destructiveAction.program.name
-                  : 'Manage this athlete’s complete programming lifecycle.'}
-              </Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close Training Program actions"
-              disabled={busy}
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
+    <ProgrammingManagerSheet
+      accessibilityLabel="Training Program actions"
+      busy={busy}
+      eyebrow={destructiveAction ? 'Confirmation' : 'Programming lifecycle'}
+      heightFraction={0.88}
+      keyboardAware
+      onClose={onClose}
+      scroll={false}
+      subtitle={sheetSubtitle}
+      title={sheetTitle}
+      visible={visible}
+    >
+      <View style={[styles.weekActionSheet, styles.programActionSheet]}>
 
           {destructiveAction ? (
             <View style={styles.programConfirmationBody}>
@@ -3783,9 +3969,8 @@ function ProgramActionsModal({
               })}
             </ScrollView>
           )}
-        </View>
-      </KeyboardAvoidingView>
-    </Modal>
+      </View>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -3798,60 +3983,30 @@ function WeekActionPopout({
   onClose: () => void;
   onSelect: (action: WeekActionKey, week: RoadmapWeek) => void;
 }) {
-  const { height: viewportHeight } = useWindowDimensions();
-  const estimatedHeight = Math.min(560, viewportHeight - 144);
-  const top = Math.max(
-    72,
-    Math.min(
-      (context?.anchorY ?? viewportHeight / 2) - 48,
-      viewportHeight - estimatedHeight - 72,
-    ),
-  );
   const week = context?.week || null;
 
   return (
-    <Modal visible={!!context} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.actionPopoverScrim} onPress={onClose}>
-        <Pressable
-          accessibilityLabel={week ? `Week ${week.index} actions` : 'Week actions'}
-          accessibilityViewIsModal
-          onPress={(event) => event.stopPropagation()}
-          style={[styles.actionPopover, { maxHeight: estimatedHeight, top }]}
-        >
-          <View style={styles.actionPopoverHeader}>
-            <View>
-              <Text style={styles.weekActionTitle}>{week ? `Week ${week.index}` : 'Week'}</Text>
-              {week?.rangeLabel ? <Text style={styles.weekActionSubtitle}>{week.rangeLabel}</Text> : null}
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close week actions"
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
-          <ScrollView
-            bounces={false}
-            contentContainerStyle={styles.actionPopoverContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.actionGroupList}>
-              {weekActionGroups.map((group) => (
-                <ActionGroup
-                  key={group.title}
-                  title={group.title}
-                  actions={group.keys.map((key) => weekActionRows.find((row) => row.key === key)).filter(Boolean) as Array<{ key: WeekActionKey; label: string }>}
-                  dangerKeys={['clear']}
-                  onSelect={(key) => week && onSelect(key as WeekActionKey, week)}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <ProgrammingManagerSheet
+      accessibilityLabel={week ? `Week ${week.index} actions` : 'Week actions'}
+      eyebrow="Week actions"
+      heightFraction={0.72}
+      onClose={onClose}
+      subtitle={week?.rangeLabel || undefined}
+      title={week ? `Week ${week.index}` : 'Week'}
+      visible={!!context}
+    >
+      <View style={styles.actionGroupList}>
+        {weekActionGroups.map((group) => (
+          <ActionGroup
+            key={group.title}
+            title={group.title}
+            actions={group.keys.map((key) => weekActionRows.find((row) => row.key === key)).filter(Boolean) as Array<{ key: WeekActionKey; label: string }>}
+            dangerKeys={['clear']}
+            onSelect={(key) => week && onSelect(key as WeekActionKey, week)}
+          />
+        ))}
+      </View>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -3864,60 +4019,30 @@ function BlockActionPopout({
   onClose: () => void;
   onSelect: (action: BlockActionKey, block: ProgramBlockPayload) => void;
 }) {
-  const { height: viewportHeight } = useWindowDimensions();
-  const estimatedHeight = Math.min(480, viewportHeight - 144);
-  const top = Math.max(
-    72,
-    Math.min(
-      (context?.anchorY ?? viewportHeight / 2) - 48,
-      viewportHeight - estimatedHeight - 72,
-    ),
-  );
   const block = context?.block || null;
 
   return (
-    <Modal visible={!!context} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.actionPopoverScrim} onPress={onClose}>
-        <Pressable
-          accessibilityLabel={`Actions for ${block?.name || 'selected Training Block'}`}
-          accessibilityViewIsModal
-          onPress={(event) => event.stopPropagation()}
-          style={[styles.actionPopover, { maxHeight: estimatedHeight, top }]}
-        >
-          <View style={styles.actionPopoverHeader}>
-            <View>
-              <Text style={styles.weekActionTitle}>{block?.name || 'Selected Block'}</Text>
-              {block?.date_range_label ? <Text style={styles.weekActionSubtitle}>{block.date_range_label}</Text> : null}
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close block actions"
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
-          <ScrollView
-            bounces={false}
-            contentContainerStyle={styles.actionPopoverContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.actionGroupList}>
-              {blockActionGroups.map((group) => (
-                <ActionGroup
-                  key={group.title}
-                  title={group.title}
-                  actions={group.keys.map((key) => blockActionRows.find((row) => row.key === key)).filter(Boolean) as Array<{ key: BlockActionKey; label: string; danger?: boolean }>}
-                  dangerKeys={['clear']}
-                  onSelect={(key) => block && onSelect(key as BlockActionKey, block)}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <ProgrammingManagerSheet
+      accessibilityLabel={`Actions for ${block?.name || 'selected Training Block'}`}
+      eyebrow="Block actions"
+      heightFraction={0.66}
+      onClose={onClose}
+      subtitle={block?.date_range_label || undefined}
+      title={block?.name || 'Selected Block'}
+      visible={!!context}
+    >
+      <View style={styles.actionGroupList}>
+        {blockActionGroups.map((group) => (
+          <ActionGroup
+            key={group.title}
+            title={group.title}
+            actions={group.keys.map((key) => blockActionRows.find((row) => row.key === key)).filter(Boolean) as Array<{ key: BlockActionKey; label: string; danger?: boolean }>}
+            dangerKeys={['clear']}
+            onSelect={(key) => block && onSelect(key as BlockActionKey, block)}
+          />
+        ))}
+      </View>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -3944,7 +4069,10 @@ function ActionGroup<T extends string>({
             <Pressable
               key={action.key}
               accessibilityRole="button"
-              onPress={() => onSelect(action.key)}
+              onPress={() => {
+                void Haptics.selectionAsync().catch(() => undefined);
+                onSelect(action.key);
+              }}
               style={({ pressed }) => [styles.weekActionRow, pressed && styles.pressed]}
             >
               <Text style={[styles.weekActionRowText, danger && styles.weekActionRowDanger]}>
@@ -3986,6 +4114,18 @@ function WeekActionModal({
     )),
     [action, week, weeks]
   );
+  const availableWeekGroups = useMemo(() => {
+    if (!week) return [] as Array<{ title: string; weeks: RoadmapWeek[] }>;
+    const blockOrder = Array.from(new Set(weeks.map((candidate) => candidate.blockId)));
+    const currentBlockIndex = blockOrder.indexOf(week.blockId);
+    const previousBlockId = currentBlockIndex > 0 ? blockOrder[currentBlockIndex - 1] : null;
+    const groups = [
+      { title: 'Current Block', weeks: availableWeeks.filter((candidate) => candidate.blockId === week.blockId) },
+      { title: 'Previous Block', weeks: availableWeeks.filter((candidate) => candidate.blockId === previousBlockId) },
+      { title: 'Earlier / Later', weeks: availableWeeks.filter((candidate) => candidate.blockId !== week.blockId && candidate.blockId !== previousBlockId) },
+    ];
+    return groups.filter((group) => group.weeks.length);
+  }, [availableWeeks, week, weeks]);
   const [selectedWeekKey, setSelectedWeekKey] = useState('');
   const [templateName, setTemplateName] = useState('');
   const [templates, setTemplates] = useState<WeekTemplate[]>([]);
@@ -4076,26 +4216,30 @@ function WeekActionModal({
   if (action === 'edit-objective') extra.objective = objective;
   if (action === 'set-tag') extra.week_tag = weekTag;
 
-  return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.actionSheetScrim}>
-        <View style={styles.weekActionModal}>
-          <View style={styles.weekActionSheetHeader}>
-            <View>
-              <Text style={styles.weekActionEyebrow}>Week Action</Text>
-              <Text style={styles.weekActionTitle}>{weekActionLabel(action)}</Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close week action"
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
+  const copyContextLabel = action === 'copy-from' ? 'COPY INTO' : action === 'copy-to' ? 'COPY FROM' : null;
 
-          <Text style={styles.weekActionCopy}>{weekActionCopy(action)}</Text>
+  return (
+    <ProgrammingManagerSheet
+      accessibilityLabel={weekActionLabel(action)}
+      busy={busy}
+      eyebrow={action === 'edit-objective' ? 'Week objective' : action === 'set-tag' ? 'Week focus' : 'Week action'}
+      heightFraction={needsWeekChoice ? 0.91 : 0.78}
+      keyboardAware={action === 'edit-objective' || action === 'save-template'}
+      onClose={onClose}
+      subtitle={`Week ${week.index} · ${week.rangeLabel}`}
+      title={weekActionLabel(action)}
+      visible
+    >
+      <View style={styles.weekActionModal}>
+          {copyContextLabel ? (
+            <View style={styles.weekCopyContext}>
+              <Text style={styles.weekCopyContextLabel}>{copyContextLabel}</Text>
+              <Text style={styles.weekCopyContextTitle}>{week.blockName} · Week {week.index}</Text>
+              <Text style={styles.weekCopyContextMeta}>{week.rangeLabel} · {week.summary}</Text>
+            </View>
+          ) : null}
+
+          {!needsWeekChoice ? <Text style={styles.weekActionCopy}>{weekActionCopy(action)}</Text> : null}
 
           {action === 'edit-objective' ? (
             <View style={styles.weekActionField}>
@@ -4111,6 +4255,18 @@ function WeekActionModal({
                 style={[styles.weekActionInput, styles.weekActionTextArea]}
               />
               <Text style={styles.weekActionFieldHint}>{objective.length}/800</Text>
+              {objective.trim() ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    void Haptics.selectionAsync().catch(() => undefined);
+                    setObjective('');
+                  }}
+                  style={({ pressed }) => [styles.weekActionClear, pressed && styles.pressed]}
+                >
+                  <Text style={styles.weekActionClearText}>Clear Objective</Text>
+                </Pressable>
+              ) : null}
             </View>
           ) : null}
 
@@ -4140,25 +4296,45 @@ function WeekActionModal({
 
           {needsWeekChoice ? (
             <View style={styles.weekChoiceList}>
-              <Text style={styles.weekActionFieldLabel}>{action === 'copy-from' ? 'Source week' : 'Target week'}</Text>
-              {availableWeeks.length ? availableWeeks.map((candidate) => {
-                const candidateKey = roadmapWeekIdentityKey(candidate);
-                const selected = candidateKey === selectedWeekKey;
-                return (
-                  <Pressable
-                    key={candidateKey}
-                    onPress={() => setSelectedWeekKey(candidateKey)}
-                    style={[styles.weekChoiceRow, selected && styles.weekChoiceRowSelected]}
-                  >
-                    <View>
-                      <Text style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>{candidate.blockName}</Text>
-                      <Text style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>Week {candidate.index} · {candidate.rangeLabel}</Text>
-                      <Text style={styles.weekChoiceMeta}>{candidate.summary}</Text>
-                    </View>
-                    {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.violet} /> : null}
-                  </Pressable>
-                );
-              }) : (
+              <Text style={styles.weekActionFieldLabel}>{action === 'copy-from' ? 'CHOOSE SOURCE WEEK' : 'CHOOSE DESTINATION WEEK'}</Text>
+              {availableWeekGroups.length ? availableWeekGroups.map((group) => (
+                <View key={group.title} style={styles.weekCandidateGroup}>
+                  <Text style={styles.weekCandidateGroupTitle}>{group.title}</Text>
+                  <View style={styles.weekCandidateGrid}>
+                    {group.weeks.map((candidate) => {
+                      const candidateKey = roadmapWeekIdentityKey(candidate);
+                      const selected = candidateKey === selectedWeekKey;
+                      const sessionCount = storyboardWeekSessionCount(candidate);
+                      return (
+                        <Pressable
+                          key={candidateKey}
+                          accessibilityRole="radio"
+                          accessibilityState={{ selected }}
+                          onPress={() => {
+                            void Haptics.selectionAsync().catch(() => undefined);
+                            setSelectedWeekKey(candidateKey);
+                          }}
+                          style={({ pressed }) => [
+                            styles.weekCandidateCard,
+                            selected && styles.weekChoiceRowSelected,
+                            pressed && styles.pressed,
+                          ]}
+                        >
+                          <View style={styles.weekCandidateCardCopy}>
+                            <Text numberOfLines={1} style={[styles.weekChoiceTitle, selected && styles.weekChoiceTitleSelected]}>{candidate.blockName}</Text>
+                            <Text style={[styles.weekCandidateWeek, selected && styles.weekChoiceTitleSelected]}>Week {candidate.index}</Text>
+                            <Text style={styles.weekChoiceMeta}>{candidate.rangeLabel}</Text>
+                            <Text style={[styles.weekCandidateSessions, sessionCount ? styles.weekCandidatePopulated : styles.weekCandidateEmpty]}>
+                              {sessionCount} {sessionCount === 1 ? 'Session' : 'Sessions'}
+                            </Text>
+                          </View>
+                          {selected ? <Ionicons name="checkmark-circle" size={21} color={colors.violet} /> : <View style={styles.weekCandidateRadio} />}
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              )) : (
                 <Text style={styles.weekActionEmpty}>No other weeks available.</Text>
               )}
             </View>
@@ -4230,9 +4406,8 @@ function WeekActionModal({
               <Text style={styles.weekActionPrimaryText}>{busy ? 'Working...' : submitLabel}</Text>
             </Pressable>
           </View>
-        </View>
       </View>
-    </Modal>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -4305,23 +4480,18 @@ function BlockActionModal({
   if (action === 'apply-template') extra.template_id = selectedTemplateId;
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.actionSheetScrim}>
-        <View style={styles.weekActionModal}>
-          <View style={styles.weekActionSheetHeader}>
-            <View>
-              <Text style={styles.weekActionEyebrow}>Block Action</Text>
-              <Text style={styles.weekActionTitle}>{blockActionLabel(action)}</Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close block action"
-              onPress={onClose}
-              style={({ pressed }) => [styles.sheetCloseButton, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={18} color={colors.textStrong} />
-            </Pressable>
-          </View>
+    <ProgrammingManagerSheet
+      accessibilityLabel={blockActionLabel(action)}
+      busy={busy}
+      eyebrow="Block action"
+      heightFraction={needsTemplateChoice ? 0.82 : 0.66}
+      keyboardAware={action === 'save-template'}
+      onClose={onClose}
+      subtitle={block.date_range_label || undefined}
+      title={blockActionLabel(action)}
+      visible
+    >
+      <View style={styles.weekActionModal}>
 
           <Text style={styles.weekActionCopy}>{blockActionCopy(action)}</Text>
 
@@ -4391,9 +4561,8 @@ function BlockActionModal({
               <Text style={styles.weekActionPrimaryText}>{busy ? 'Working...' : submitLabel}</Text>
             </Pressable>
           </View>
-        </View>
       </View>
-    </Modal>
+    </ProgrammingManagerSheet>
   );
 }
 
@@ -6371,17 +6540,12 @@ const styles = StyleSheet.create({
     color: colors.textStrong,
   },
   sessionAddSheet: {
-    maxHeight: '88%',
-    backgroundColor: 'rgba(18, 14, 22, 0.99)',
-    borderTopWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.22)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 18,
-    paddingHorizontal: 18,
-    paddingBottom: 28,
+    flex: 1,
+    minHeight: 0,
     gap: 14,
-    ...SLShadows.shadowSheet,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
   sessionAddChoiceList: {
     gap: 9,
@@ -6405,6 +6569,78 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: SLRadius.md,
     backgroundColor: colors.violetSoft,
+  },
+  sessionActionList: {
+    gap: 8,
+  },
+  sessionActionRow: {
+    minHeight: 62,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(8, 8, 8, 0.16)',
+  },
+  sessionActionIcon: {
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(167, 139, 250, 0.12)',
+  },
+  sessionActionIconDanger: {
+    backgroundColor: 'rgba(248, 113, 113, 0.10)',
+  },
+  sessionActionMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(74, 222, 128, 0.26)',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(74, 222, 128, 0.08)',
+  },
+  sessionActionMessageError: {
+    borderColor: 'rgba(248, 113, 113, 0.28)',
+    backgroundColor: 'rgba(248, 113, 113, 0.08)',
+  },
+  sessionActionMessageText: {
+    ...SLTypography.body,
+    flex: 1,
+    color: colors.textStrong,
+  },
+  sessionActionConfirmation: {
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  sessionActionDangerIcon: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: 'rgba(248, 113, 113, 0.10)',
+  },
+  sessionActionConfirmationTitle: {
+    ...SLTypography.sectionTitle,
+    color: colors.textStrong,
+  },
+  sessionActionConfirmationCopy: {
+    ...SLTypography.body,
+    color: colors.muted,
+  },
+  sessionActionDelete: {
+    minHeight: 46,
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    borderRadius: SLRadius.md,
+    backgroundColor: colors.red,
   },
   sessionAddBack: {
     alignSelf: 'flex-start',
@@ -7125,6 +7361,48 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.62)',
   },
+  programmingSheetKeyboard: {
+    flex: 1,
+    minHeight: 0,
+  },
+  programmingSheetHeader: {
+    flexShrink: 0,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(167, 139, 250, 0.16)',
+  },
+  programmingSheetHeading: {
+    gap: 3,
+    paddingRight: 44,
+  },
+  programmingSheetEyebrow: {
+    ...SLTypography.label,
+    color: colors.violet,
+    textTransform: 'uppercase',
+  },
+  programmingSheetTitle: {
+    ...SLTypography.sectionTitle,
+    color: colors.textStrong,
+  },
+  programmingSheetSubtitle: {
+    ...SLTypography.body,
+    color: colors.muted,
+  },
+  programmingSheetBody: {
+    flex: 1,
+    minHeight: 0,
+  },
+  programmingSheetScroll: {
+    flex: 1,
+    minHeight: 0,
+  },
+  programmingSheetScrollContent: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 28,
+  },
   actionPopoverScrim: {
     backgroundColor: 'rgba(0, 0, 0, 0.34)',
     flex: 1,
@@ -7158,27 +7436,12 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   weekActionSheet: {
-    backgroundColor: 'rgba(18, 14, 22, 0.98)',
-    borderTopWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.18)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 18,
-    paddingHorizontal: 18,
-    paddingBottom: 28,
+    flex: 1,
+    minHeight: 0,
     gap: 16,
-    ...SLShadows.shadowSheet,
   },
   weekActionModal: {
-    maxHeight: '88%',
-    backgroundColor: 'rgba(18, 14, 22, 0.98)',
-    borderTopWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.18)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 18,
-    paddingHorizontal: 18,
-    paddingBottom: 28,
+    width: '100%',
     gap: 16,
   },
   weekActionSheetHeader: {
@@ -7235,14 +7498,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(10, 8, 12, 0.28)',
   },
   weekActionRow: {
-    minHeight: 54,
+    minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
     borderTopWidth: 1,
     borderColor: 'rgba(222, 198, 166, 0.08)',
-    paddingVertical: 13,
+    paddingVertical: 10,
     paddingHorizontal: 14,
   },
   weekActionRowText: {
@@ -7287,6 +7550,90 @@ const styles = StyleSheet.create({
     ...SLTypography.caption,
     color: colors.subtle,
     textAlign: 'right',
+  },
+  weekActionClear: {
+    alignSelf: 'flex-start',
+    minHeight: 42,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  weekActionClearText: {
+    ...SLTypography.label,
+    color: colors.red,
+  },
+  weekCopyContext: {
+    gap: 3,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.34)',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(167, 139, 250, 0.09)',
+  },
+  weekCopyContextLabel: {
+    ...SLTypography.caption,
+    color: colors.violet,
+    textTransform: 'uppercase',
+  },
+  weekCopyContextTitle: {
+    ...SLTypography.cardTitle,
+    color: colors.textStrong,
+  },
+  weekCopyContextMeta: {
+    ...SLTypography.caption,
+    color: colors.muted,
+  },
+  weekCandidateGroup: {
+    gap: 7,
+  },
+  weekCandidateGroupTitle: {
+    ...SLTypography.caption,
+    color: colors.muted,
+    textTransform: 'uppercase',
+  },
+  weekCandidateGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  weekCandidateCard: {
+    width: '48.7%',
+    minHeight: 126,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 8,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(8, 8, 8, 0.16)',
+  },
+  weekCandidateCardCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2,
+  },
+  weekCandidateWeek: {
+    ...SLTypography.body,
+    color: colors.textStrong,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  weekCandidateSessions: {
+    ...SLTypography.caption,
+    marginTop: 5,
+  },
+  weekCandidatePopulated: {
+    color: colors.amber,
+  },
+  weekCandidateEmpty: {
+    color: colors.subtle,
+  },
+  weekCandidateRadio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: colors.line,
   },
   weekChoiceRow: {
     minHeight: 58,
@@ -7374,12 +7721,11 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   programActionSheet: {
-    maxHeight: '82%',
-    borderTopLeftRadius: SLRadius.radiusSheet,
-    borderTopRightRadius: SLRadius.radiusSheet,
-    paddingTop: 10,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(10, 9, 13, 0.995)',
+    flex: 1,
+    minHeight: 0,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
   programActionSheetHandle: {
     alignSelf: 'center',

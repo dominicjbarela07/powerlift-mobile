@@ -24,7 +24,7 @@ const areas = [
   ['platform-wide analytical chart fidelity', ['scripts/test-chart-fidelity-standard.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
-  ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],
+  ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs', 'scripts/test-programming-manager-overlay-system.mjs']],
   ['Session Workspace composition and presentation-only units', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs', 'scripts/test-session-workspace-unit-presentation.mjs']],
   ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs']],
   ['Session Workspace canonical accessory drilldown', ['scripts/test-session-workspace-accessory-picker.mjs']],

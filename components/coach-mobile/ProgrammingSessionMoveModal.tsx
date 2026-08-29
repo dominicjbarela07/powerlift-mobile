@@ -1,21 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Modal,
   Pressable,
   StyleSheet,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 import { Text } from '@/components/ui/sl-text';
 import {
   SLColors,
   SLFontFamilies,
   SLRadius,
-  SLShadows,
   SLTypography,
 } from '@/constants/theme';
+import {
+  StrengthLedgerBottomSheet,
+  type StrengthLedgerBottomSheetHandle,
+} from '@/components/sheets/StrengthLedgerBottomSheet';
 
 type Props = {
   action?: 'copy' | 'move';
@@ -42,6 +45,7 @@ export function ProgrammingSessionMoveModal({
   onCancel,
   onConfirm,
 }: Props) {
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const initial = parseDateOnly(currentDate) || new Date();
   const [monthCursor, setMonthCursor] = useState(
     new Date(initial.getFullYear(), initial.getMonth(), 1)
@@ -63,7 +67,7 @@ export function ProgrammingSessionMoveModal({
   const actionLabel = action === 'copy' ? 'Copy Session' : 'Move Session';
   const busyLabel = action === 'copy' ? 'Copying...' : 'Moving...';
   const close = () => {
-    if (!busy) onCancel();
+    if (!busy) sheetRef.current?.dismiss();
   };
   const inAllowedRange = (dateValue: string) => {
     if (minimumDate && dateValue < minimumDate) return false;
@@ -72,10 +76,16 @@ export function ProgrammingSessionMoveModal({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
-      <View style={styles.scrim}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
-        <View accessibilityViewIsModal style={styles.modal}>
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel={actionLabel}
+      heightFraction={0.82}
+      motionPreset="deliberate"
+      onDismiss={onCancel}
+      onRequestClose={close}
+      visible={visible}
+    >
+      <View style={styles.modal}>
           <View style={styles.header}>
             <View style={styles.headingCopy}>
               <Text style={styles.eyebrow}>{actionLabel}</Text>
@@ -84,15 +94,6 @@ export function ProgrammingSessionMoveModal({
                 Currently {formatFullDate(currentDate)}
               </Text>
             </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Close ${action === 'copy' ? 'Copy' : 'Move'} Session`}
-              disabled={busy}
-              onPress={close}
-              style={({ pressed }) => [styles.close, pressed && styles.pressed]}
-            >
-              <Ionicons name="close" size={19} color={SLColors.textStrong} />
-            </Pressable>
           </View>
 
           <View style={styles.monthRow}>
@@ -100,9 +101,10 @@ export function ProgrammingSessionMoveModal({
               accessibilityRole="button"
               accessibilityLabel="Previous month"
               disabled={busy}
-              onPress={() => setMonthCursor((value) => (
-                new Date(value.getFullYear(), value.getMonth() - 1, 1)
-              ))}
+              onPress={() => {
+                void Haptics.selectionAsync().catch(() => undefined);
+                setMonthCursor((value) => new Date(value.getFullYear(), value.getMonth() - 1, 1));
+              }}
               style={({ pressed }) => [styles.monthButton, pressed && styles.pressed]}
             >
               <Ionicons name="chevron-back" size={19} color={SLColors.textStrong} />
@@ -112,9 +114,10 @@ export function ProgrammingSessionMoveModal({
               accessibilityRole="button"
               accessibilityLabel="Next month"
               disabled={busy}
-              onPress={() => setMonthCursor((value) => (
-                new Date(value.getFullYear(), value.getMonth() + 1, 1)
-              ))}
+              onPress={() => {
+                void Haptics.selectionAsync().catch(() => undefined);
+                setMonthCursor((value) => new Date(value.getFullYear(), value.getMonth() + 1, 1));
+              }}
               style={({ pressed }) => [styles.monthButton, pressed && styles.pressed]}
             >
               <Ionicons name="chevron-forward" size={19} color={SLColors.textStrong} />
@@ -138,7 +141,10 @@ export function ProgrammingSessionMoveModal({
                   accessibilityLabel={day ? formatFullDate(dateValue) : undefined}
                   accessibilityState={day ? { disabled: !enabled, selected } : undefined}
                   disabled={!enabled || busy}
-                  onPress={() => setSelectedDate(dateValue)}
+                  onPress={() => {
+                    void Haptics.selectionAsync().catch(() => undefined);
+                    setSelectedDate(dateValue);
+                  }}
                   style={({ pressed }) => [
                     styles.day,
                     selected && styles.daySelected,
@@ -172,7 +178,10 @@ export function ProgrammingSessionMoveModal({
                 accessibilityRole="button"
                 accessibilityLabel={`${action === 'copy' ? 'Copy' : 'Move'} Session to selected date`}
                 disabled={busy}
-                onPress={() => onConfirm(selectedDate)}
+                onPress={() => {
+                  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
+                  void onConfirm(selectedDate);
+                }}
                 style={({ pressed }) => [
                   styles.primary,
                   busy && styles.disabled,
@@ -184,9 +193,8 @@ export function ProgrammingSessionMoveModal({
               </Pressable>
             </View>
           </View>
-        </View>
       </View>
-    </Modal>
+    </StrengthLedgerBottomSheet>
   );
 }
 
@@ -239,20 +247,13 @@ function calendarDaysForMonth(monthCursor: Date) {
 }
 
 const styles = StyleSheet.create({
-  scrim: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 18,
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
-  },
   modal: {
+    flex: 1,
+    minHeight: 0,
     gap: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.28)',
-    borderRadius: SLRadius.xl,
-    backgroundColor: 'rgba(18, 14, 22, 0.99)',
-    ...SLShadows.shadowSheet,
+    paddingHorizontal: 14,
+    paddingTop: 4,
+    paddingBottom: 18,
   },
   header: {
     flexDirection: 'row',
@@ -278,16 +279,6 @@ const styles = StyleSheet.create({
     ...SLTypography.body,
     marginTop: 4,
     color: SLColors.textMuted,
-  },
-  close: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: SLColors.borderSubtle,
-    borderRadius: SLRadius.md,
-    backgroundColor: 'rgba(5, 5, 5, 0.28)',
   },
   monthRow: {
     flexDirection: 'row',
