@@ -43,7 +43,15 @@ const canonicalRootContracts = new Map(Object.entries({
   'components/ui/sl-screen.tsx': ['safe', 'content', 'scroll', 'scrollContent', 'scrollMotion', 'padded'],
   'app/(tabs)/coach-videos.tsx': ['screen'],
   'components/reviews/review-list-screen.tsx': ['screen'],
-  'app/(tabs)/coach-session-review.tsx': ['screen'],
+  'components/coach-mobile/CoachSessionReviewerV3.tsx': ['screen', 'content'],
+  'components/coach-mobile/CompletedSessionRecap.tsx': [
+    'screen',
+    'content',
+    'sectionShell',
+    'compareFilters',
+    'compareMovementStack',
+    'comparisonLegend',
+  ],
   'app/(tabs)/coach-video-review.tsx': ['screen', 'scrollContent'],
   'app/(tabs)/coach-video-archive.tsx': ['screen', 'scrollContent'],
   'app/(tabs)/coach-calendar.tsx': ['screen', 'monthContent', 'agendaContent'],
@@ -57,16 +65,9 @@ const canonicalRootContracts = new Map(Object.entries({
   ],
   'components/coach-mobile/SessionEditingWorkspace.tsx': ['root', 'content'],
   'components/ledger/primitives.tsx': ['screen', 'content'],
-  'components/ledger/v2/index-screen.tsx': ['page'],
-  'components/ledger/v2/journey-screen.tsx': ['page'],
-  'components/ledger/v2/strength-screen.tsx': ['page'],
-  'components/ledger/v2/achievements-screen.tsx': ['page'],
-  'components/ledger/v2/catalog-screen.tsx': ['page'],
-  'components/ledger/v2/muscle-screen.tsx': ['page'],
-  'components/ledger/v2/archive-screen.tsx': ['page'],
   'app/(tabs)/create-workout.tsx': ['screen', 'content'],
   'app/(tabs)/accessory-catalog-review.tsx': ['screen', 'content'],
-  'app/coach-team-brief.tsx': ['screenContent', 'content'],
+  'app/coach-team-brief.tsx': ['screen', 'content'],
   'app/(tabs)/coach-invite-athlete.tsx': ['content'],
   'app/(tabs)/link-coach.tsx': ['screen', 'content'],
   'app/login.tsx': ['screen', 'scrollContent'],
@@ -74,6 +75,7 @@ const canonicalRootContracts = new Map(Object.entries({
 }));
 
 const fullBleedSurfaceContracts = new Map(Object.entries({
+  'components/coach-mobile/CoachSessionReviewerV3.tsx': ['tabs'],
   'components/calendar/AthleteCalendarExperience.tsx': [
     'focusedWeekSection',
     'lensHandleButton',
