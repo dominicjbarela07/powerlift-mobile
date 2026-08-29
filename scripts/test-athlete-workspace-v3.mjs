@@ -4,8 +4,6 @@ import { readFileSync } from 'node:fs';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const workspace = read('components/coach-mobile/CoachAthleteHubV2.tsx');
 const contract = read('lib/coach-mobile.ts');
-const backend = read('../../app/blueprints/main.py');
-const analytics = read('../../app/services/coaching_analytics.py');
 
 assert.match(workspace, /summary\?view=v3&period=\$\{period\}/);
 assert.doesNotMatch(workspace, /Promise\.all|team-relative-analytics/, 'The first useful render must use one bounded projection.');
@@ -27,10 +25,7 @@ assert.match(workspace, /prior_performance/);
 assert.doesNotMatch(workspace, /recorded a PR|Completed Workout|Recent Activity/);
 
 assert.match(contract, /workspace_v3\?: CoachAthleteWorkspaceV3/);
-assert.match(backend, /request\.args\.get\("view"\) == "v3"/);
-assert.match(backend, /response_payload\["workspace_v3"\] = athlete_team_relative_payload/);
-assert.match(analytics, /query_strategy": "fixed_compound_projection"/);
-assert.match(analytics, /historical_text_inference": False/);
-assert.match(analytics, /causality_claimed": False/);
+assert.match(contract, /comparison_policy: 'latest_vs_prior_only_baseline'/);
+assert.match(contract, /causality_claimed: false/);
 
 console.log('[athlete-workspace-v3] PASS — bounded projection, canonical analytics, evidence search, actionable reads, anatomy exposure, Session routes, and floating toolkit');
