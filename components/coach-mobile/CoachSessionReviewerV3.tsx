@@ -6,6 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
+import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
@@ -24,7 +25,7 @@ import {
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
-import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
+import { analyticalMetricDefinition, type AnalyticalXDomainMode } from '@/lib/chart-fidelity';
 
 type ReviewerTab = 'overview' | 'performed' | 'plan' | 'coach';
 
@@ -150,8 +151,14 @@ function chartValue(valueKg: number, unit: DisplayWeightUnit) {
   return unit === 'kg' ? valueKg : valueKg * 2.2046226218;
 }
 
-function EvidenceChart({ points, unit, label = 'Estimated strength' }: { points?: Record<string, any>[]; unit: DisplayWeightUnit; label?: string }) {
-  const rows = (points || []).map((row) => ({ date: String(row.date || ''), value: chartValue(Number(row.metric_value ?? row.score), unit), meta: row })).filter((row) => Number.isFinite(row.value));
+function EvidenceChart({ points, unit, label = 'Estimated strength', axisMode }: { points?: Record<string, any>[]; unit: DisplayWeightUnit; label?: string; axisMode: AnalyticalXDomainMode }) {
+  const rows = (points || []).map((row, index) => ({
+    id: String(row.exposure_id || row.set_log_id || row.workout_id || `${row.date || 'observation'}:${index}`),
+    date: String(row.date || ''),
+    performedAt: row.performed_at ? String(row.performed_at) : null,
+    value: chartValue(Number(row.metric_value ?? row.score), unit),
+    meta: row,
+  })).filter((row) => Number.isFinite(row.value));
   return <AnalyticalTimeSeriesChart
     emptyBody="A real prior exact-movement observation is required."
     emptyTitle="No exact comparable history"
@@ -160,6 +167,7 @@ function EvidenceChart({ points, unit, label = 'Estimated strength' }: { points?
     series={[{ key: 'performance', label, color: '#A35CFF', points: rows }]}
     showLegend={false}
     testID="coach-reviewer-movement-evidence-chart"
+    xDomainMode={axisMode}
     tooltipRows={(selection) => {
       const row = selection.values[0]?.meta as Record<string, any> | undefined;
       return row ? [formatBest(row, unit), row.current ? 'This Session' : 'Exact comparable exposure'] : [];
@@ -199,7 +207,7 @@ function WhatChanged({ analytics, unit }: { analytics: ReviewerAnalytics; unit: 
   return <Section title="WHAT CHANGED SINCE LAST COMPARABLE SESSION"><View style={styles.tableCard}>{rows.map(([label, value]) => <View key={label} style={styles.changeRow}><Text style={styles.changeLabel}>{label}</Text><Text style={styles.changeValue}>{value}</Text></View>)}</View></Section>;
 }
 
-function MovementCard({ movement, unit, onHistory }: { movement: AnalyticsMovement; unit: DisplayWeightUnit; onHistory?: () => void }) {
+function MovementCard({ movement, unit, axisMode, onAxisModeChange, onHistory }: { movement: AnalyticsMovement; unit: DisplayWeightUnit; axisMode: AnalyticalXDomainMode; onAxisModeChange: (mode: AnalyticalXDomainMode) => void; onHistory?: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const state = STATE[movement.comparison?.state || 'not_comparable'];
   const previous = movement.previous_best;
@@ -220,8 +228,8 @@ function MovementCard({ movement, unit, onHistory }: { movement: AnalyticsMoveme
       </View>
       <Text style={styles.subsectionTitle}>RAW SETLOG EVIDENCE</Text>
       <View style={styles.rawTable}><View style={styles.rawHeader}><Text style={styles.rawIndex}>SET</Text><Text style={styles.rawCell}>LOAD</Text><Text style={styles.rawCell}>REPS</Text><Text style={styles.rawCell}>EFFORT</Text><Text style={styles.rawCell}>VOLUME</Text></View>{(movement.raw_sets || movement.sets || []).map((row, index) => <View key={row.id || index} style={styles.rawRow}><Text style={styles.rawIndex}>{row.set_index || index + 1}</Text><Text style={styles.rawCell}>{formatWeightFromKg(row.actual_weight_kg, unit) || '—'}</Text><Text style={styles.rawCell}>{row.actual_reps ?? '—'}</Text><Text style={styles.rawCell}>{row.actual_rir != null ? `${num(row.actual_rir)} RIR` : row.actual_rpe != null ? `RPE ${num(row.actual_rpe)}` : '—'}</Text><Text style={styles.rawCell}>{formatCompactVolumeValueFromKg(Number(row.actual_weight_kg || 0) * Number(row.actual_reps || 0), unit) || '—'}</Text></View>)}</View>
-      <Text style={styles.subsectionTitle}>ESTIMATED STRENGTH TREND</Text>
-      <EvidenceChart points={movement.history} unit={unit} label={movement.trend?.metric_label || 'Estimated strength'} />
+      <View style={styles.trendHeading}><Text style={styles.subsectionTitle}>ESTIMATED STRENGTH TREND</Text><ChartAxisModeToggle value={axisMode} onChange={onAxisModeChange} testID="coach-reviewer-axis-mode" /></View>
+      <EvidenceChart points={movement.history} unit={unit} label={movement.trend?.metric_label || 'Estimated strength'} axisMode={axisMode} />
       {onHistory ? <Pressable accessibilityRole="button" onPress={onHistory} style={({ pressed }) => [styles.historyButton, pressed && styles.pressed]}><Ionicons name="time-outline" color={SLColors.accentMuted} size={19} /><Text style={styles.historyButtonText}>Open Full Movement History</Text><Ionicons name="chevron-forward" color={SLColors.textSecondary} size={18} /></Pressable> : null}
     </View> : null}
   </View>;
@@ -274,6 +282,7 @@ export function CoachSessionReviewerV3({ recap, preferredUnits, coachReview, coa
   const insets = useSafeAreaInsets();
   const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits);
   const [tab, setTab] = useState<ReviewerTab>('overview');
+  const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');
   const analytics = recap.reviewer_v3 as ReviewerAnalytics | null | undefined;
   const performed = recap.performed_movements || [];
   if (!analytics) return <SafeAreaView style={styles.loading}><ActivityIndicator color={SLColors.accentMuted} /><Text style={styles.loadingText}>Preparing canonical Session evidence…</Text></SafeAreaView>;
@@ -282,7 +291,7 @@ export function CoachSessionReviewerV3({ recap, preferredUnits, coachReview, coa
     <View style={styles.tabs}>{([{ key: 'overview', label: 'Overview' }, { key: 'performed', label: 'Performed' }, { key: 'plan', label: 'Plan / Compare' }, { key: 'coach', label: 'Coach' }] as { key: ReviewerTab; label: string }[]).map((row) => <Pressable key={row.key} accessibilityRole="tab" accessibilityState={{ selected: tab === row.key }} onPress={() => setTab(row.key)} style={({ pressed }) => [styles.tab, tab === row.key && styles.tabSelected, pressed && styles.pressed]}><Text style={[styles.tabText, tab === row.key && styles.tabTextSelected]}>{row.label}</Text></Pressable>)}</View>
     <ScrollView contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 18) + 86 }]} refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={SLColors.accentMuted} /> : undefined} showsVerticalScrollIndicator={false}>
       {tab === 'overview' ? <><SessionRead analytics={analytics} /><WhatChanged analytics={analytics} unit={unit} /><Recovery analytics={analytics} /><Reflection analytics={analytics} /></> : null}
-      {tab === 'performed' ? <Section title="MOVEMENT PROGRESSION" meta={`${analytics.movements?.length || 0} movements`}>{(analytics.movements || []).map((movement, index) => <MovementCard key={movement.item_id || `${movement.label}-${index}`} movement={movement} unit={unit} onHistory={onOpenMovementHistory ? () => { const canonical = performed.find((row) => Number(row.item_id) === Number(movement.item_id)); if (canonical) onOpenMovementHistory(canonical, unit); } : undefined} />)}</Section> : null}
+      {tab === 'performed' ? <Section title="MOVEMENT PROGRESSION" meta={`${analytics.movements?.length || 0} movements`}>{(analytics.movements || []).map((movement, index) => <MovementCard key={movement.item_id || `${movement.label}-${index}`} movement={movement} unit={unit} axisMode={historyAxisMode} onAxisModeChange={setHistoryAxisMode} onHistory={onOpenMovementHistory ? () => { const canonical = performed.find((row) => Number(row.item_id) === Number(movement.item_id)); if (canonical) onOpenMovementHistory(canonical, unit); } : undefined} />)}</Section> : null}
       {tab === 'plan' ? <PlanCompareExperience edgeToEdge recap={recap} performedMovements={performed} unit={unit} onOpenHistory={onOpenMovementHistory} /> : null}
       {tab === 'coach' ? <><CoachRead analytics={analytics} />{coachReview ? <CoachTools review={coachReview} /> : <Section title="COACH REVIEW TOOLS"><View style={styles.contextCard}><Text style={styles.contextSummary}>{coachReviewUnavailableReason || 'Review tools are unavailable.'}</Text></View></Section>}</> : null}
     </ScrollView>
@@ -297,6 +306,7 @@ const styles = StyleSheet.create({
   readCard: { overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: '#343846', backgroundColor: '#07090E', padding: 10 }, metricGrid: { flexDirection: 'row', flexWrap: 'wrap' }, metricTile: { width: '50%', minHeight: 78, padding: 9, flexDirection: 'row', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#252936' }, metricIcon: { width: 30, height: 30, borderRadius: 9, alignItems: 'center', justifyContent: 'center' }, metricCopy: { flex: 1 }, metricLabel: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9, textTransform: 'uppercase' }, metricValue: { marginTop: 2, fontFamily: SLFontFamilies.display, fontSize: 14 }, metricDetail: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 9, lineHeight: 12 }, synthesis: { marginTop: 10, padding: 11, borderRadius: 11, backgroundColor: 'rgba(119,62,177,0.12)', color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 17 },
   tableCard: { borderRadius: 14, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F', overflow: 'hidden' }, changeRow: { minHeight: 42, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#272B34' }, changeLabel: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 11 }, changeValue: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 11 },
   movementCard: { marginBottom: 9, borderRadius: 15, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F', overflow: 'hidden' }, movementHeader: { minHeight: 98, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 9 }, movementHeaderCopy: { flex: 1 }, movementTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 16 }, bestCompare: { marginTop: 5, gap: 2 }, lastBest: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 10 }, todayBest: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, literal: { marginTop: 5, fontFamily: SLFontFamilies.bodyBold, fontSize: 10, textTransform: 'uppercase' }, stateColumn: { alignSelf: 'stretch', alignItems: 'flex-end', justifyContent: 'space-between' }, stateBadge: { paddingHorizontal: 7, paddingVertical: 5, borderRadius: 8, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 3 }, stateBadgeText: { fontFamily: SLFontFamilies.bodyBold, fontSize: 8 }, trajectoryRow: { paddingHorizontal: 11, paddingVertical: 8, flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#242832' }, trajectory: { flex: 1, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 9 }, confidence: { color: '#A66CF1', fontFamily: SLFontFamilies.bodyBold, fontSize: 8 }, movementExpanded: { padding: 10, borderTopWidth: 1, borderTopColor: '#292D37' }, derivedGrid: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 12, borderWidth: 1, borderColor: '#282C35', overflow: 'hidden' }, subsectionTitle: { marginTop: 14, marginBottom: 7, color: '#C378FF', fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.7 },
+  trendHeading: { minHeight: 48, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 },
   rawTable: { borderRadius: 11, borderWidth: 1, borderColor: '#282C35', overflow: 'hidden' }, rawHeader: { minHeight: 30, paddingHorizontal: 7, flexDirection: 'row', alignItems: 'center', backgroundColor: '#10131A' }, rawRow: { minHeight: 37, paddingHorizontal: 7, flexDirection: 'row', alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#292D36' }, rawIndex: { width: 32, color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, rawCell: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 9 },
   chartWrap: { minHeight: 225, borderRadius: 12, borderWidth: 1, borderColor: '#282C35', backgroundColor: '#06080C', paddingTop: 10, overflow: 'hidden' }, chartMetric: { marginLeft: 12, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 10 }, pointHit: { position: 'absolute', width: 40, height: 40 }, tooltip: { position: 'absolute', top: 34, width: 146, borderRadius: 9, borderWidth: 1, borderColor: '#7741A5', backgroundColor: '#11131B', padding: 8 }, tooltipDate: { color: '#C378FF', fontFamily: SLFontFamilies.bodyBold, fontSize: 8 }, tooltipValue: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, tooltipMeta: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8 }, chartEmpty: { height: 150, borderRadius: 12, borderWidth: 1, borderColor: '#282C35', alignItems: 'center', justifyContent: 'center' }, chartEmptyTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 12 }, chartEmptyBody: { marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 10 }, historyButton: { marginTop: 11, minHeight: 48, borderRadius: 12, borderWidth: 1, borderColor: '#6C3A92', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 13, gap: 8 }, historyButtonText: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 11 },
   contextCard: { borderRadius: 15, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F', padding: 10 }, contextSummary: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 18 }, recoveryGrid: { marginTop: 8, flexDirection: 'row', flexWrap: 'wrap' }, recoveryChart: { marginTop: 12, borderTopWidth: 1, borderTopColor: '#282C35', paddingTop: 10 }, legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'center' }, legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 }, legendDot: { width: 7, height: 7, borderRadius: 4 }, legendText: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8 }, reflectionGrid: { flexDirection: 'row', flexWrap: 'wrap' }, athleteNote: { marginTop: 8, padding: 10, borderRadius: 11, backgroundColor: 'rgba(224,91,216,0.1)', flexDirection: 'row', gap: 8 }, athleteNoteText: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 16 },

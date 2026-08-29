@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';
+import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { Text } from '@/components/ui/sl-text';
@@ -40,6 +41,7 @@ import {
 } from '@/lib/display-units';
 import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
+import type { AnalyticalXDomainMode } from '@/lib/chart-fidelity';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import {
   buildLoadRepProfileLayout,
@@ -211,6 +213,7 @@ export function CanonicalMovementHistoryScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [range, setRange] = useState<MovementHistoryDateRange>('all');
+  const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');
   const [equipmentDefinitionId, setEquipmentDefinitionId] = useState<number | null>(null);
   const [filterPreset, setFilterPreset] = useState<FilterPreset>('all');
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
@@ -409,13 +412,15 @@ export function CanonicalMovementHistoryScreen({
 
             <NumberedSection number="1" title="PERFORMANCE TREND" subtitle={`${history.strength_metric.short_label} from best ${unknownEquipmentSeries ? 'recorded' : 'comparable'} set`}>
               <View style={styles.chartUnitRow}><Text style={styles.chartUnit}>{history.strength_metric.short_label} ({unit})</Text><RangePills selected={range} onSelect={setRange} /></View>
-              <AnalyticalHistoryChart points={history.performance_trend} metric="strength" metricLabel={history.strength_metric.short_label} unit={unit} color="#A865FF" onOpenExposure={(id) => void openExposure(id)} />
+              <View style={styles.axisModeRow}><ChartAxisModeToggle value={historyAxisMode} onChange={setHistoryAxisMode} testID="movement-history-performance-axis-mode" /></View>
+              <AnalyticalHistoryChart points={history.performance_trend} metric="strength" metricLabel={history.strength_metric.short_label} unit={unit} color="#A865FF" xDomainMode={historyAxisMode} onOpenExposure={(id) => void openExposure(id)} />
               <Text style={styles.chartFootnote}>{unknownEquipmentSeries ? 'Unknown-equipment historical series · not compared with named implementations · ' : ''}Canonical Epley estimate · recorded RPE, or recorded RIR when RPE is absent</Text>
             </NumberedSection>
 
             <NumberedSection number="2" title="LOAD PROGRESSION" subtitle={unknownEquipmentSeries ? 'Best recorded set over time' : 'Best comparable set over time'} tone="#EF3C8C">
               <View style={styles.chartUnitRow}><Text style={styles.chartUnit}>Load ({unit})</Text><RangePills selected={range} onSelect={setRange} /></View>
-              <AnalyticalHistoryChart points={history.load_progression} metric="load" unit={unit} color="#EF3C8C" onOpenExposure={(id) => void openExposure(id)} />
+              <View style={styles.axisModeRow}><ChartAxisModeToggle value={historyAxisMode} onChange={setHistoryAxisMode} testID="movement-history-load-axis-mode" /></View>
+              <AnalyticalHistoryChart points={history.load_progression} metric="load" unit={unit} color="#EF3C8C" xDomainMode={historyAxisMode} onOpenExposure={(id) => void openExposure(id)} />
               <View style={styles.legendRow}><View style={styles.legendRing} /><Text style={styles.legendText}>Point label = reps on the exact set</Text></View>
             </NumberedSection>
 
@@ -656,6 +661,7 @@ const styles = StyleSheet.create({
   analyticsTitle: { fontSize: 12, lineHeight: 16, fontWeight: '700', letterSpacing: 0.35 },
   analyticsSubtitle: { flex: 1, color: '#878A94', fontSize: 10.5, lineHeight: 14 },
   chartUnitRow: { minHeight: 28, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  axisModeRow: { minHeight: 38, alignItems: 'flex-end', justifyContent: 'center' },
   chartUnit: { color: '#A3A0AA', fontSize: 12, lineHeight: 16 },
   rangePills: { flexDirection: 'row', gap: 2 },
   rangePill: { minWidth: 31, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },

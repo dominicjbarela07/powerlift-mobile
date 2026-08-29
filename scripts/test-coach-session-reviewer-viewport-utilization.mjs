@@ -35,7 +35,7 @@ assert.match(styleBody(recap, 'executionCard'), /padding:\s*12/, 'Session Execut
 assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*9/, 'Movement cards keep internal readable padding');
 
 assert.match(reviewer, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
-assert.match(analyticalChart, /const left = width < 330 \? 43 : 48/, 'Evidence charts retain responsive axis geometry');
+assert.match(analyticalChart, /buildYAxisGutter\(yLabels, 9\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
 assert.match(analyticalChart, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
 assert.match(analyticalChart, /Math\.min\(Math\.max\(4, selectedDate\.x - tooltipWidth \/ 2\), Math\.max\(4, width - tooltipWidth - 4\)\)/, 'Evidence chart tooltips remain clamped to the available width');
 

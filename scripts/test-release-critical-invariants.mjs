@@ -21,7 +21,7 @@ const areas = [
   ['Settings account identity and mode parity', ['scripts/test-settings-account-parity.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
   ['Team Brief coaching analytics and team-relative Athlete Workspace', ['scripts/test-team-brief-v2.mjs']],
-  ['platform-wide analytical chart fidelity', ['scripts/test-chart-fidelity-standard.mjs']],
+  ['platform-wide analytical chart fidelity', ['scripts/test-chart-fidelity-standard.mjs', 'scripts/test-accessory-trend-axis-mode.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs', 'scripts/test-programming-manager-overlay-system.mjs']],

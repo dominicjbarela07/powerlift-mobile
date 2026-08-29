@@ -126,6 +126,7 @@
     "test:coach-home-activity-first": "node --import tsx scripts/test-coach-home-activity-first.mjs",
     "test:team-brief-v2": "node --import tsx scripts/test-team-brief-v2.mjs",
     "test:chart-fidelity": "node --import tsx scripts/test-chart-fidelity-standard.mjs",
+    "test:accessory-trend-axis-mode": "node --import tsx scripts/test-accessory-trend-axis-mode.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",
     "test:coach-more-navigation": "node --import tsx scripts/test-coach-more-navigation-sheet.mjs",

@@ -3,8 +3,10 @@ import { readFileSync } from 'node:fs';
 
 import {
   analyticalMetricDefinition,
+  buildAnalyticalXLayout,
   buildNumericScale,
   buildTimeTicks,
+  buildYAxisGutter,
   formatAnalyticalValue,
   nearestTimeIndex,
 } from '../lib/chart-fidelity.ts';
@@ -28,8 +30,15 @@ assert.ok(timeTicks.length >= 3 && timeTicks.length <= 5, 'time axes expose 3–
 assert.equal(new Set(timeTicks.map((row) => row.label)).size, timeTicks.length, 'time ticks must not duplicate labels');
 assert.equal(nearestTimeIndex([10, 20, 30], 24), 1, 'scrubbing selects the nearest dated observation');
 
+const observations = dates.map((date, index) => ({ key: `exposure-${index + 1}`, date }));
+const timeLayout = buildAnalyticalXLayout({ observations, mode: 'chronological', plotLeft: 52, plotRight: 12, width: 390 });
+const instanceLayout = buildAnalyticalXLayout({ observations, mode: 'observationIndex', plotLeft: 52, plotRight: 12, width: 390 });
+assert.deepEqual(timeLayout.observations.map((row) => row.key), instanceLayout.observations.map((row) => row.key), 'axis mode must not change the evidence series');
+assert.ok(instanceLayout.ticks.every((tick) => tick.label.startsWith('#')), 'instance mode labels comparable observations by ordinal');
+assert.ok(buildYAxisGutter(['5 lb', '1,250 lb']) > buildYAxisGutter(['5 lb', '50 lb']), 'Y-axis gutter expands for formatted values instead of colliding with the plot');
+
 const shared = read('components/charts/AnalyticalTimeSeriesChart.tsx');
-for (const contract of ['buildNumericScale', 'buildTimeTicks', 'onResponderMove', 'tooltip', 'selectedDate', 'accessibilityLabel']) assert.match(shared, new RegExp(contract));
+for (const contract of ['buildNumericScale', 'buildAnalyticalXLayout', 'buildYAxisGutter', 'xDomainMode', 'onResponderMove', 'tooltip', 'selectedDate', 'accessibilityLabel']) assert.match(shared, new RegExp(contract));
 
 const consumers = {
   'Team Brief': read('app/coach-team-brief.tsx'),
@@ -50,5 +59,7 @@ assert.doesNotMatch(read('app/coach-team-outliers.tsx'), /row\.value\.toFixed\(1
 const movementHistory = read('components/movement-history/AnalyticalHistoryChart.tsx');
 assert.match(movementHistory, /onResponderMove|PanResponder/);
 assert.match(movementHistory, /selected|tooltip/i);
+assert.match(movementHistory, /buildAnalyticalXLayout/);
+assert.match(read('components/charts/ChartAxisModeToggle.tsx'), /TIME[\s\S]*INSTANCES/);
 
 console.log('[chart-fidelity-standard] PASS — metric-aware axes, meaningful time ticks, touch/scrub inspection, and primary analytical consumers are protected');
