@@ -13,9 +13,15 @@ const substitutionPicker = read('components', 'movement', 'GovernedAccessoryPick
 
 assert.match(
   workspace,
-  /Alert\.alert\('Add Movement'[\s\S]*props\.onAddAccessory\(\(item\) => addSessionDraftMovement\(item, 'accessory'/,
-  'the live Session Workspace Add Movement action must enter the accessory draft flow',
+  /<SessionWorkspacePromptSheet[\s\S]*onAddAccessory=\{\(\) => \{[\s\S]*props\.onAddAccessory\(\(item\) => addSessionDraftMovement\(item, 'accessory'/,
+  'the Session Workspace must wire the canonical prompt to the accessory draft flow',
 );
+assert.match(
+  workspace,
+  /function SessionWorkspacePromptSheet[\s\S]*label="Accessory" onPress=\{onAddAccessory\}/,
+  'the canonical Add Movement prompt must expose a reachable Accessory action',
+);
+assert.doesNotMatch(workspace, /Alert\.alert\('Add Movement'/, 'Add Movement must not regress to a native Alert menu');
 assert.match(
   route,
   /const openAddAccessoryEditor[\s\S]*setAccessoryEditor\(\{[\s\S]*mode: 'add'/,

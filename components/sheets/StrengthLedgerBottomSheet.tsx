@@ -197,7 +197,12 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
             >
               <View style={styles.dragHandle} />
             </View>
-            <Pressable accessibilityLabel={`Close ${accessibilityLabel}`} accessibilityRole="button" onPress={requestClose} style={styles.closeButton}>
+            <Pressable
+              accessibilityLabel={`Close ${accessibilityLabel}`}
+              accessibilityRole="button"
+              onPress={requestClose}
+              style={({ pressed }) => [styles.closeButton, pressed ? styles.closeButtonPressed : null]}
+            >
               <Ionicons color={SLColors.textPrimary} name="close" size={21} />
             </Pressable>
           </View>
@@ -216,5 +221,6 @@ const styles = StyleSheet.create({
   dragZone: { width: '76%', height: 34, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
   dragHandle: { width: 46, height: 5, borderRadius: 3, backgroundColor: '#5C6070' },
   closeButton: { position: 'absolute', top: 4, right: 10, width: 34, height: 34, borderRadius: 17, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
+  closeButtonPressed: { opacity: 0.74, transform: [{ scale: 0.96 }] },
   content: { flex: 1, minHeight: 0 },
 });

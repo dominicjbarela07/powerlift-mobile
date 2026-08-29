@@ -94,6 +94,11 @@ assert.match(manager, /source_block_id = selectedWeek\?\.blockId/);
 assert.match(manager, /target_block_week_index = selectedWeek\.index/);
 assert.match(manager, /source_block_week_index = selectedWeek\?\.index/);
 assert.match(manager, />\{candidate\.blockName\}<\/Text>/);
-assert.match(manager, /Week \{candidate\.index\} · \{candidate\.rangeLabel\}/);
+assert.match(manager, />Week \{candidate\.index\}<\/Text>/);
+assert.match(manager, /\{candidate\.rangeLabel\}<\/Text>/);
+assert.match(manager, /COPY INTO/);
+assert.match(manager, /COPY FROM/);
+assert.match(manager, /CHOOSE SOURCE WEEK/);
+assert.match(manager, /CHOOSE DESTINATION WEEK/);
 
 console.log('Programming Week copy indexing parity checks passed.');

@@ -4,13 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   BackHandler,
   Keyboard,
   KeyboardAvoidingView,
   LayoutAnimation,
-  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -23,7 +21,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
-import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
@@ -83,6 +81,13 @@ import {
 
 export type SessionWorkspaceSection = 'core' | 'accessories';
 export type MovementKind = 'core' | 'accessory';
+
+type SessionWorkspacePrompt =
+  | null
+  | { kind: 'message'; title: string; message: string }
+  | { kind: 'dirty'; continueAction: () => void }
+  | { kind: 'add-movement' }
+  | { kind: 'remove-movement'; itemId: number; movementName: string };
 
 export type MovementHistorySet = {
   weight_kg?: number | null;
@@ -356,6 +361,7 @@ export function SessionEditingWorkspace(props: Props) {
   const [editingAthlete, setEditingAthlete] = useState(false);
   const [editingDate, setEditingDate] = useState(false);
   const [toolkitExpanded, setToolkitExpanded] = useState(false);
+  const [workspacePrompt, setWorkspacePrompt] = useState<SessionWorkspacePrompt>(null);
   const [calculatedRows, setCalculatedRows] = useState<Record<number, CalculatedLoadResult>>({});
   const listScrollRef = useRef<ScrollView>(null);
   const calculationRevisionRef = useRef(0);
@@ -498,7 +504,7 @@ export function SessionEditingWorkspace(props: Props) {
   const saveWorkspaceChanges = useCallback(async () => {
     if (!sessionDirty || savingSession) return !sessionDirty;
     if (!sessionDraft.title.trim()) {
-      Alert.alert('Session title required', 'Enter a Session title before saving.');
+      setWorkspacePrompt({ kind: 'message', title: 'Session title required', message: 'Enter a Session title before saving.' });
       return false;
     }
     setSavingSession(true);
@@ -513,7 +519,7 @@ export function SessionEditingWorkspace(props: Props) {
       return true;
     } catch {
       acceptIncomingSessionRef.current = false;
-      Alert.alert('Could not save Session', 'Your Session edits are still available.');
+      setWorkspacePrompt({ kind: 'message', title: 'Could not save Session', message: 'Your Session edits are still available.' });
       return false;
     } finally {
       setSavingSession(false);
@@ -525,30 +531,8 @@ export function SessionEditingWorkspace(props: Props) {
       action();
       return;
     }
-    Alert.alert(
-      'Unsaved Session changes',
-      'Save or discard the current Session changes before continuing.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Discard Changes',
-          style: 'destructive',
-          onPress: () => {
-            discardWorkspaceChanges();
-            action();
-          },
-        },
-        {
-          text: saveLabel,
-          onPress: () => {
-            void saveWorkspaceChanges().then((success) => {
-              if (success) action();
-            });
-          },
-        },
-      ],
-    );
-  }, [discardWorkspaceChanges, saveLabel, saveWorkspaceChanges, sessionDirty]);
+    setWorkspacePrompt({ kind: 'dirty', continueAction: action });
+  }, [sessionDirty]);
 
   const openMovement = useCallback((item: SessionMovementItem) => {
     const nextId = selectedId === item.id ? null : item.id;
@@ -566,12 +550,8 @@ export function SessionEditingWorkspace(props: Props) {
   }, []);
 
   const addMovement = useCallback(() => {
-    Alert.alert('Add Movement', 'Choose the movement category.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Core', onPress: () => props.onAddCore(displayUnit, (item) => addSessionDraftMovement(item, 'core', draftStorageUnit, setSessionDraft, setSelectedId)) },
-      { text: 'Accessory', onPress: () => props.onAddAccessory((item) => addSessionDraftMovement(item, 'accessory', draftStorageUnit, setSessionDraft, setSelectedId)) },
-    ]);
-  }, [displayUnit, draftStorageUnit, props]);
+    setWorkspacePrompt({ kind: 'add-movement' });
+  }, []);
 
   const selectAthlete = useCallback((nextAthleteId: number) => {
     setSessionDraft((current) => ({ ...current, athleteId: nextAthleteId }));
@@ -587,17 +567,7 @@ export function SessionEditingWorkspace(props: Props) {
 
   const deleteSelectedMovement = useCallback(() => {
     if (!selectedItem) return;
-    Alert.alert('Remove movement?', `Remove ${movementName(selectedItem)} from this Session?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: () => {
-          setSessionDraft((current) => removeSessionDraftMovement(current, selectedItem.id));
-          setSelectedId(null);
-        },
-      },
-    ]);
+    setWorkspacePrompt({ kind: 'remove-movement', itemId: selectedItem.id, movementName: movementName(selectedItem) });
   }, [selectedItem]);
 
   const changeSelectedAccessory = useCallback(() => {
@@ -646,7 +616,7 @@ export function SessionEditingWorkspace(props: Props) {
       const selectedName = movementName(choice).trim();
       const movementDefinitionId = Number(choice.movement_identity?.id || 0);
       if (!selectedName || !Number.isInteger(movementDefinitionId) || movementDefinitionId <= 0) {
-        Alert.alert('Governed movement required', 'Choose a canonical or coach-owned custom movement.');
+        setWorkspacePrompt({ kind: 'message', title: 'Governed movement required', message: 'Choose a canonical or coach-owned custom movement.' });
         return;
       }
       setSessionDraft((current) => {
@@ -890,6 +860,38 @@ export function SessionEditingWorkspace(props: Props) {
         }}
       />
 
+      <SessionWorkspacePromptSheet
+        prompt={workspacePrompt}
+        saveLabel={saveLabel}
+        saving={savingSession}
+        onDismiss={() => setWorkspacePrompt(null)}
+        onAddCore={() => {
+          setWorkspacePrompt(null);
+          props.onAddCore(displayUnit, (item) => addSessionDraftMovement(item, 'core', draftStorageUnit, setSessionDraft, setSelectedId));
+        }}
+        onAddAccessory={() => {
+          setWorkspacePrompt(null);
+          props.onAddAccessory((item) => addSessionDraftMovement(item, 'accessory', draftStorageUnit, setSessionDraft, setSelectedId));
+        }}
+        onDiscardAndContinue={(action) => {
+          setWorkspacePrompt(null);
+          discardWorkspaceChanges();
+          action();
+        }}
+        onRemoveMovement={(itemId) => {
+          setWorkspacePrompt(null);
+          setSessionDraft((current) => removeSessionDraftMovement(current, itemId));
+          setSelectedId(null);
+        }}
+        onSaveAndContinue={(action) => {
+          void saveWorkspaceChanges().then((success) => {
+            if (!success) return;
+            setWorkspacePrompt(null);
+            action();
+          });
+        }}
+      />
+
       {sessionDirty ? (
         <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.inlineActionBarLayer}>
           <MovementActionBar
@@ -903,6 +905,93 @@ export function SessionEditingWorkspace(props: Props) {
         </KeyboardAvoidingView>
       ) : null}
     </View>
+  );
+}
+
+function SessionWorkspacePromptSheet({
+  prompt,
+  saveLabel,
+  saving,
+  onDismiss,
+  onAddCore,
+  onAddAccessory,
+  onDiscardAndContinue,
+  onRemoveMovement,
+  onSaveAndContinue,
+}: {
+  prompt: SessionWorkspacePrompt;
+  saveLabel: string;
+  saving: boolean;
+  onDismiss: () => void;
+  onAddCore: () => void;
+  onAddAccessory: () => void;
+  onDiscardAndContinue: (action: () => void) => void;
+  onRemoveMovement: (itemId: number) => void;
+  onSaveAndContinue: (action: () => void) => void;
+}) {
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const close = () => sheetRef.current?.dismiss();
+  const title = prompt?.kind === 'dirty'
+    ? 'Unsaved Session changes'
+    : prompt?.kind === 'add-movement'
+      ? 'Add Movement'
+      : prompt?.kind === 'remove-movement'
+        ? 'Remove movement?'
+        : prompt?.title || 'Session Workspace';
+  const message = prompt?.kind === 'dirty'
+    ? 'Save or discard the current Session changes before continuing.'
+    : prompt?.kind === 'add-movement'
+      ? 'Choose the governed movement category to add.'
+      : prompt?.kind === 'remove-movement'
+        ? `Remove ${prompt.movementName} from this Session?`
+        : prompt?.kind === 'message'
+          ? prompt.message
+          : '';
+
+  return (
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel={title}
+      heightFraction={prompt?.kind === 'add-movement' ? 0.44 : 0.40}
+      motionPreset="deliberate"
+      onDismiss={onDismiss}
+      onRequestClose={close}
+      visible={!!prompt}
+    >
+      <View style={styles.workspacePromptBody}>
+        <View style={styles.workspacePromptCopy}>
+          <Text style={styles.workspacePromptEyebrow}>Session Workspace</Text>
+          <Text style={styles.workspacePromptTitle}>{title}</Text>
+          <Text style={styles.workspacePromptMessage}>{message}</Text>
+        </View>
+
+        {prompt?.kind === 'add-movement' ? (
+          <View style={styles.workspacePromptChoiceRow}>
+            <View style={styles.workspacePromptChoice}><SLButton fullWidth label="Core" onPress={onAddCore} size="md" variant="secondary" /></View>
+            <View style={styles.workspacePromptChoice}><SLButton fullWidth label="Accessory" onPress={onAddAccessory} size="md" variant="primary" /></View>
+          </View>
+        ) : null}
+
+        {prompt?.kind === 'dirty' ? (
+          <View style={styles.workspacePromptActions}>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} label="Cancel" onPress={close} size="sm" variant="secondary" /></View>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} label="Discard" onPress={() => onDiscardAndContinue(prompt.continueAction)} size="sm" variant="danger" /></View>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth disabled={saving} loading={saving} label={saveLabel} onPress={() => onSaveAndContinue(prompt.continueAction)} size="sm" variant="primary" /></View>
+          </View>
+        ) : null}
+
+        {prompt?.kind === 'remove-movement' ? (
+          <View style={styles.workspacePromptActions}>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth label="Cancel" onPress={close} size="sm" variant="secondary" /></View>
+            <View style={styles.workspacePromptAction}><SLButton fullWidth label="Remove" onPress={() => onRemoveMovement(prompt.itemId)} size="sm" variant="danger" /></View>
+          </View>
+        ) : null}
+
+        {prompt?.kind === 'message' ? (
+          <SLButton fullWidth label="Close" onPress={close} size="sm" variant="secondary" />
+        ) : null}
+      </View>
+    </StrengthLedgerBottomSheet>
   );
 }
 
@@ -1050,24 +1139,23 @@ function SessionCompactIdentity({
 }
 
 function SessionRenameModal({ draft, visible, onChange, onDismiss, onConfirm }: { draft: string; visible: boolean; onChange: (value: string) => void; onDismiss: () => void; onConfirm: () => void }) {
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const disabled = !draft.trim();
+  const close = () => sheetRef.current?.dismiss();
   return (
-    <Modal
-      animationType="fade"
-      onRequestClose={onDismiss}
-      presentationStyle="overFullScreen"
-      statusBarTranslucent
-      transparent
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel="Rename Session"
+      heightFraction={0.48}
+      motionPreset="deliberate"
+      onDismiss={onDismiss}
+      onRequestClose={close}
       visible={visible}
     >
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.renameModalLayer}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close Rename Session" onPress={onDismiss} style={StyleSheet.absoluteFill} />
         <View accessibilityViewIsModal style={styles.renameModalCard}>
           <View style={styles.renameModalHeader}>
             <Text style={styles.renameModalTitle}>Rename Session</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="Close Rename Session" hitSlop={8} onPress={onDismiss} style={({ pressed }) => [styles.renameModalClose, pressed && styles.pressed]}>
-              <Ionicons name="close" size={22} color={palette.text} />
-            </Pressable>
           </View>
           <TextInput
             accessibilityLabel="Session title"
@@ -1081,33 +1169,32 @@ function SessionRenameModal({ draft, visible, onChange, onDismiss, onConfirm }: 
             value={draft}
           />
           <View style={styles.renameModalActions}>
-            <View style={styles.renameModalAction}><SLButton fullWidth label="Cancel" onPress={onDismiss} size="sm" variant="secondary" /></View>
+            <View style={styles.renameModalAction}><SLButton fullWidth label="Cancel" onPress={close} size="sm" variant="secondary" /></View>
             <View style={styles.renameModalAction}><SLButton fullWidth disabled={disabled} label="Rename" onPress={onConfirm} size="sm" variant="primary" /></View>
           </View>
         </View>
       </KeyboardAvoidingView>
-    </Modal>
+    </StrengthLedgerBottomSheet>
   );
 }
 
 function SessionDatePickerModal({ scheduledDate, visible, onDismiss, onSelect }: { scheduledDate?: string | null; visible: boolean; onDismiss: () => void; onSelect: (event: DateTimePickerEvent, date?: Date) => void }) {
+  const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
+  const close = () => sheetRef.current?.dismiss();
   return (
-    <Modal
-      animationType="fade"
-      onRequestClose={onDismiss}
-      presentationStyle="overFullScreen"
-      statusBarTranslucent
-      transparent
+    <StrengthLedgerBottomSheet
+      ref={sheetRef}
+      accessibilityLabel="Session Date"
+      heightFraction={0.58}
+      motionPreset="deliberate"
+      onDismiss={onDismiss}
+      onRequestClose={close}
       visible={visible}
     >
       <View style={styles.datePickerModalLayer}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Close date picker" onPress={onDismiss} style={StyleSheet.absoluteFill} />
         <View accessibilityViewIsModal style={styles.datePickerModalCard}>
           <View style={styles.datePickerModalHeader}>
             <Text style={styles.datePickerModalTitle}>Session Date</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel="Close date picker" hitSlop={8} onPress={onDismiss} style={({ pressed }) => [styles.datePickerModalClose, pressed && styles.pressed]}>
-              <Ionicons name="close" size={22} color={palette.text} />
-            </Pressable>
           </View>
           <DateTimePicker
             accentColor={SLColors.accentViolet}
@@ -1120,7 +1207,7 @@ function SessionDatePickerModal({ scheduledDate, visible, onDismiss, onSelect }:
           />
         </View>
       </View>
-    </Modal>
+    </StrengthLedgerBottomSheet>
   );
 }
 
@@ -2296,20 +2383,29 @@ const styles = StyleSheet.create({
   athleteChoiceSelected: { borderColor: SLColors.borderSelected, backgroundColor: palette.violetSoft },
   athleteChoiceText: { flexShrink: 1, color: palette.muted },
   athleteChoiceTextSelected: { color: palette.text },
-  renameModalLayer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLLayout.screenGutter, backgroundColor: 'rgba(0,0,0,0.72)' },
-  renameModalCard: { width: '100%', maxWidth: 380, overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, backgroundColor: SLColors.surfaceMedia, paddingHorizontal: SLSpacing.md, paddingBottom: SLSpacing.md, ...SLShadows.level2 },
+  renameModalLayer: { flex: 1, justifyContent: 'flex-start', paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm },
+  renameModalCard: { width: '100%', gap: SLSpacing.sm, paddingBottom: SLSpacing.md },
   renameModalHeader: { minHeight: SLControlSize.minimumTouchTarget + SLSpacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.sm },
   renameModalTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 18, lineHeight: 24 },
   renameModalClose: { width: SLControlSize.minimumTouchTarget, height: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md },
   renameModalInput: { minHeight: 48, color: palette.text, backgroundColor: SLColors.surfaceFlat, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.lineStrong, borderRadius: SLRadius.md, paddingHorizontal: SLSpacing.md, paddingVertical: SLSpacing.sm, fontFamily: SLFontFamilies.display, fontSize: 16 },
   renameModalActions: { flexDirection: 'row', gap: SLSpacing.sm, paddingTop: SLSpacing.md },
   renameModalAction: { flex: 1, minWidth: 0 },
-  datePickerModalLayer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLLayout.screenGutter, backgroundColor: 'rgba(0,0,0,0.72)' },
-  datePickerModalCard: { width: '100%', maxWidth: 380, overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, backgroundColor: SLColors.surfaceMedia, paddingHorizontal: SLSpacing.md, paddingBottom: SLSpacing.md, ...SLShadows.level2 },
+  datePickerModalLayer: { flex: 1, justifyContent: 'flex-start', paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm },
+  datePickerModalCard: { width: '100%', gap: SLSpacing.sm, paddingBottom: SLSpacing.md },
   datePickerModalHeader: { minHeight: SLControlSize.minimumTouchTarget + SLSpacing.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.sm },
   datePickerModalTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 18, lineHeight: 24 },
   datePickerModalClose: { width: SLControlSize.minimumTouchTarget, height: SLControlSize.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md },
   datePickerModalControl: { width: '100%', backgroundColor: SLColors.surfaceMedia },
+  workspacePromptBody: { flex: 1, justifyContent: 'space-between', gap: SLSpacing.lg, paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.sm, paddingBottom: SLSpacing.md },
+  workspacePromptCopy: { gap: SLSpacing.xs },
+  workspacePromptEyebrow: { color: palette.violet, textTransform: 'uppercase', fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16 },
+  workspacePromptTitle: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 20, lineHeight: 26 },
+  workspacePromptMessage: { color: palette.muted, fontFamily: SLFontFamilies.body, fontSize: 15, lineHeight: 21 },
+  workspacePromptChoiceRow: { flexDirection: 'row', gap: SLSpacing.sm },
+  workspacePromptChoice: { flex: 1, minWidth: 0 },
+  workspacePromptActions: { flexDirection: 'row', gap: SLSpacing.sm },
+  workspacePromptAction: { flex: 1, minWidth: 0 },
   lockedReason: { color: palette.red, fontFamily: SLFontFamilies.body, fontSize: 12 },
   setupRegion: { gap: 8, marginBottom: 10 },
   compactSectionLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16, textTransform: 'uppercase' },
