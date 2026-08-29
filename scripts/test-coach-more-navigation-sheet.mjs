@@ -61,6 +61,8 @@ assert.match(sheet, /pendingDestinationRef[\s\S]*sheetRef\.current\?\.dismiss\(\
 assert.match(sheet, /setIsOpen\(false\)[\s\S]*router\.(?:navigate|push)/, 'navigation must occur only after sheet dismissal');
 
 assert.match(primitive, /PanResponder\.create/);
+assert.match(primitive, /onStartShouldSetPanResponder: \(\) => true/, 'the sheet drag zone must own its gesture from finger-down');
+assert.match(primitive, /style=\{styles\.dragZone\}[\s\S]*\.\.\.dragResponder\.panHandlers/, 'the sheet must isolate drag handling to a dedicated drag zone');
 assert.match(primitive, /gesture\.dy >= DISMISS_DISTANCE \|\| gesture\.vy >= DISMISS_VELOCITY/);
 assert.match(primitive, /Pressable accessibilityLabel=\{`Dismiss \$\{accessibilityLabel\}`\}/, 'backdrop must dismiss');
 assert.match(primitive, /Pressable accessibilityLabel=\{`Close \$\{accessibilityLabel\}`\}/, 'X must dismiss');

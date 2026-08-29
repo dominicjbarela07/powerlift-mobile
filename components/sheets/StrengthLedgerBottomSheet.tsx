@@ -159,7 +159,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   }, [backdropOpacity, deliberateMotion, height, reduceMotion, translateY, visible]);
 
   const dragResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+    onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gesture) => translateY.setValue(Math.max(0, gesture.dy)),
     onPanResponderRelease: (_, gesture) => {
       if (gesture.dy >= DISMISS_DISTANCE || gesture.vy >= DISMISS_VELOCITY) {
@@ -189,8 +189,14 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
             },
           ]}
         >
-          <View style={styles.chrome} {...dragResponder.panHandlers}>
-            <View style={styles.dragHandle} />
+          <View style={styles.chrome}>
+            <View
+              accessibilityLabel={`Drag to dismiss ${accessibilityLabel}`}
+              style={styles.dragZone}
+              {...dragResponder.panHandlers}
+            >
+              <View style={styles.dragHandle} />
+            </View>
             <Pressable accessibilityLabel={`Close ${accessibilityLabel}`} accessibilityRole="button" onPress={requestClose} style={styles.closeButton}>
               <Ionicons color={SLColors.textPrimary} name="close" size={21} />
             </Pressable>
@@ -206,7 +212,8 @@ const styles = StyleSheet.create({
   stage: { flex: 1, justifyContent: 'flex-end' },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.72)' },
   sheet: { width: '100%', overflow: 'hidden', borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: SLColors.canvas, ...SLShadows.shadowSheet },
-  chrome: { position: 'relative', height: 34, flexShrink: 0, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
+  chrome: { position: 'relative', height: 34, flexShrink: 0, alignItems: 'center' },
+  dragZone: { width: '76%', height: 34, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 8 },
   dragHandle: { width: 46, height: 5, borderRadius: 3, backgroundColor: '#5C6070' },
   closeButton: { position: 'absolute', top: 4, right: 10, width: 34, height: 34, borderRadius: 17, borderWidth: 1, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
   content: { flex: 1, minHeight: 0 },
