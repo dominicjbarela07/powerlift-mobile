@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 
 const areas = [
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
-  ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs']],
+  ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs', 'scripts/test-superset-self-coach-swap-history.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],

@@ -86,6 +86,7 @@ export function accessorySwapActionForItem({
   isCoachPreview,
   sessionLifecycle,
   targetItemHasSetLogs,
+  targetItemHasRemainingSets = true,
   acceptedPersistedSetLogForItem,
 }: {
   substitutionAuthority: SubstitutionAuthority;
@@ -93,14 +94,19 @@ export function accessorySwapActionForItem({
   isCoachPreview: boolean;
   sessionLifecycle: string | null | undefined;
   targetItemHasSetLogs: boolean;
+  targetItemHasRemainingSets?: boolean;
   acceptedPersistedSetLogForItem?: boolean;
 }): AccessorySwapAction {
   if (isCoachPreview) return null;
-  if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
   if (!SWAPPABLE_SESSION_LIFECYCLES.has(String(sessionLifecycle || '').trim().toLowerCase())) {
     return null;
   }
+  if (!targetItemHasRemainingSets) return null;
+  // Self-coached execution can change the movement used by future sets while
+  // every existing SetLog retains its immutable performed-identity snapshot.
+  // Coach-restricted substitutions remain locked after the first accepted set.
   if (substitutionAuthority === 'self_governed') return 'Swap';
+  if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
   if (substitutionAuthority === 'coach_restricted' && hasApprovedSubstitutions) return 'Sub';
   return null;
 }

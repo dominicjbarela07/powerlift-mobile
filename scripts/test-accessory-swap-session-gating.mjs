@@ -14,6 +14,7 @@ const resolve = (overrides = {}) => accessorySwapActionForItem({
   isCoachPreview: false,
   sessionLifecycle: 'active_session',
   targetItemHasSetLogs: false,
+  targetItemHasRemainingSets: true,
   acceptedPersistedSetLogForItem: false,
   ...overrides,
 });
@@ -26,11 +27,11 @@ const untouchedFour = { id: 34, set_logs: [] };
 const serverLocked = { id: 35, set_logs: [], has_performed_evidence: true };
 
 assert.equal(resolve(), 'Swap', 'active Session + untouched target shows Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), null, 'first persisted target SetLog removes Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, '2/3 target completion remains identity-locked');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree) }), null, 'completed target remains identity-locked');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(serverLocked) }), null, 'server evidence projection locks even without embedded rows');
-assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), null, 'successful persistence hides Swap immediately');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), 'Swap', 'self-coach can swap future sets after first persisted SetLog');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', 'self-coach can swap the final remaining set at 2/3');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree), targetItemHasRemainingSets: false }), null, 'completed target has no future identity slot to swap');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(serverLocked) }), 'Swap', 'self-coach server evidence does not rewrite or block future-set identity');
+assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), 'Swap', 'accepted persistence keeps self-coach future-set Swap available');
 assert.equal(resolve({ acceptedPersistedSetLogForItem: false }), 'Swap', 'failed first persistence keeps target Swap');
 
 const multiItemSession = {
@@ -38,7 +39,7 @@ const multiItemSession = {
   accessory_groups: [{ items: [twoOfThree, untouched, untouchedFour] }],
 };
 assert.deepEqual(persistedSetLogItemIds(multiItemSession), [10, 32], 'persisted evidence is indexed by its own movement item');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, 'accessory A at 2/3 is locked');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', 'self-coach accessory A at 2/3 retains future-set Swap');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) }), 'Swap', 'accessory B at 0/3 remains swappable');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
