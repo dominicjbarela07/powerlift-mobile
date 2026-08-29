@@ -35,8 +35,10 @@ const weekAction = functionSource(manager, 'WeekActionModal', 'BlockActionModal'
 assert.match(weekAction, /roadmapWeekIdentityKey\(candidate\) !== roadmapWeekIdentityKey\(state\.week\)/, 'the current week must be excluded from Copy From/To candidates');
 assert.match(weekAction, /COPY INTO/);
 assert.match(weekAction, /COPY FROM/);
-assert.match(weekAction, /CHOOSE SOURCE WEEK/);
-assert.match(weekAction, /CHOOSE DESTINATION WEEK/);
+assert.match(weekAction, /Select the populated week you want to copy/);
+assert.match(weekAction, /Select the week you want to copy into/);
+assert.match(weekAction, /Upcoming empty weeks/);
+assert.match(weekAction, /Copying…/);
 assert.match(weekAction, /Current Block/);
 assert.match(weekAction, /Previous Block/);
 assert.match(weekAction, /Earlier \/ Later/);

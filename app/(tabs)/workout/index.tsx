@@ -100,6 +100,11 @@ import {
   type ServerProgrammingBlockWeek,
 } from '@/lib/programming-week-identity';
 import {
+  compactCopiedSessionTitle,
+  rankProgrammingWeekCopyCandidates,
+  type ProgrammingWeekCopyCandidate,
+} from '@/lib/programming-week-copy';
+import {
   movementCardStateAccent,
   type MovementCardMaterialState,
 } from '@/lib/movement-card-material';
@@ -1349,6 +1354,7 @@ function ActiveProgrammingRoadmap({
   const [quickMoveError, setQuickMoveError] = useState('');
   const [quickMoveFollowTarget, setQuickMoveFollowTarget] = useState<QuickMoveFollowTarget | null>(null);
   const quickMoveSubmittingRef = useRef(false);
+  const weekActionSubmittingRef = useRef(false);
   const sessionActionSubmittingRef = useRef(false);
   const sessionSwipeRefs = useRef<Record<number, Swipeable | null>>({});
   const weekListOffset = useRef(0);
@@ -1615,7 +1621,8 @@ function ActiveProgrammingRoadmap({
       setWeekActionWarning('Week action context is missing.');
       return;
     }
-    const payload = {
+    if (weekActionSubmittingRef.current) return;
+    const payload: Record<string, any> = {
       action: action.replaceAll('-', '_'),
       athlete_id: athleteId,
       program_id: activeProgram.id,
@@ -1628,6 +1635,7 @@ function ActiveProgrammingRoadmap({
       ...(extra || {}),
     };
     try {
+      weekActionSubmittingRef.current = true;
       setWeekActionBusy(true);
       setWeekActionWarning('');
       const resp = await fetchJson<any>('/workouts/mobile/programming/week-actions', {
@@ -1641,6 +1649,19 @@ function ActiveProgrammingRoadmap({
         return;
       }
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
+      const destinationBlockId = Number(json.target_block_id || payload.target_block_id || week.blockId);
+      const destinationWeekIndex = Number(json.target_block_week_index || payload.target_block_week_index || week.index);
+      if ((action === 'copy-to' || action === 'copy-from') && destinationBlockId && destinationWeekIndex) {
+        setSelectedBlockId(destinationBlockId);
+        setExpandedWeek(destinationWeekIndex);
+        setQuickMoveFollowTarget({
+          blockId: destinationBlockId,
+          week: destinationWeekIndex,
+          date: String(json.target_week_start || payload.target_week_start || week.startDate),
+          sessionId: Number(json.created?.[0]?.id || 0),
+        });
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
+      }
       setWeekAction(null);
       setWeekActionConfirmed(false);
       await onRefresh();
@@ -1648,6 +1669,7 @@ function ActiveProgrammingRoadmap({
       setWeekActionWarning(err?.message || 'Week action could not be completed.');
     } finally {
       setWeekActionBusy(false);
+      weekActionSubmittingRef.current = false;
     }
   };
 
@@ -4087,6 +4109,26 @@ function ActionGroup<T extends string>({
   );
 }
 
+function weekCopyPlanningCandidate(week: RoadmapWeek & { startDate: string }): ProgrammingWeekCopyCandidate {
+  return {
+    key: roadmapWeekIdentityKey(week),
+    blockId: week.blockId,
+    blockName: week.blockName,
+    blockOrder: week.blockOrder,
+    weekIndex: week.index,
+    startDate: week.startDate,
+    sessionCount: storyboardWeekSessionCount(week),
+  };
+}
+
+function weekCopySessionPreview(week: RoadmapWeek) {
+  return week.days
+    .flatMap((day) => day.sessions)
+    .map((session) => compactCopiedSessionTitle(sessionTitle(session)))
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
 function WeekActionModal({
   state,
   weeks,
@@ -4106,6 +4148,7 @@ function WeekActionModal({
 }) {
   const action = state?.action || null;
   const week = state?.week || null;
+  const isCopyAction = action === 'copy-from' || action === 'copy-to';
   const availableWeeks = useMemo(
     () => weeks.filter((candidate) => (
       candidate.startDate
@@ -4114,6 +4157,19 @@ function WeekActionModal({
     )),
     [action, week, weeks]
   );
+  const rankedCopyWeeks = useMemo(() => {
+    if (!week || !isCopyAction || !week.startDate) return [] as RoadmapWeek[];
+    const planningRows = availableWeeks
+      .filter((candidate): candidate is RoadmapWeek & { startDate: string } => Boolean(candidate.startDate))
+      .map(weekCopyPlanningCandidate);
+    const rankedKeys = rankProgrammingWeekCopyCandidates(
+      action,
+      weekCopyPlanningCandidate(week as RoadmapWeek & { startDate: string }),
+      planningRows,
+    ).map((candidate) => candidate.key);
+    const byKey = new Map(availableWeeks.map((candidate) => [roadmapWeekIdentityKey(candidate), candidate]));
+    return rankedKeys.map((key) => byKey.get(key)).filter((candidate): candidate is RoadmapWeek => Boolean(candidate));
+  }, [action, availableWeeks, isCopyAction, week]);
   const availableWeekGroups = useMemo(() => {
     if (!week) return [] as Array<{ title: string; weeks: RoadmapWeek[] }>;
     const blockOrder = Array.from(new Set(weeks.map((candidate) => candidate.blockId)));
@@ -4133,12 +4189,15 @@ function WeekActionModal({
   const [templateError, setTemplateError] = useState('');
   const [objective, setObjective] = useState('');
   const [weekTag, setWeekTag] = useState('');
+  const [expandedCopyBlocks, setExpandedCopyBlocks] = useState<Record<number, boolean>>({});
   const needsWeekChoice = action === 'copy-to' || action === 'copy-from' || action === 'shift';
   const needsTemplateChoice = action === 'apply-template';
 
   useEffect(() => {
     if (!state) return;
-    const firstWeek = weeks.find((candidate) => (
+    const firstWeek = (state.action === 'copy-from' || state.action === 'copy-to')
+      ? rankedCopyWeeks[0]
+      : weeks.find((candidate) => (
       candidate.startDate
       && roadmapWeekIdentityKey(candidate) !== roadmapWeekIdentityKey(state.week)
       && (state.action !== 'shift' || candidate.blockId === state.week.blockId)
@@ -4149,7 +4208,8 @@ function WeekActionModal({
     setTemplateError('');
     setObjective(state.week.objective?.text || '');
     setWeekTag(state.week.tag?.key || '');
-  }, [state, weeks]);
+    setExpandedCopyBlocks({});
+  }, [rankedCopyWeeks, state, weeks]);
 
   useEffect(() => {
     if (action !== 'apply-template') return;
@@ -4217,6 +4277,174 @@ function WeekActionModal({
   if (action === 'set-tag') extra.week_tag = weekTag;
 
   const copyContextLabel = action === 'copy-from' ? 'COPY INTO' : action === 'copy-to' ? 'COPY FROM' : null;
+  const copySourceWeek = action === 'copy-from' ? selectedWeek : action === 'copy-to' ? week : null;
+  const copyDestinationWeek = action === 'copy-from' ? week : action === 'copy-to' ? selectedWeek : null;
+  const copySessionCount = copySourceWeek ? storyboardWeekSessionCount(copySourceWeek) : 0;
+  const copyDestinationCount = copyDestinationWeek ? storyboardWeekSessionCount(copyDestinationWeek) : 0;
+  if (isCopyAction && copyDestinationCount > 0) extra.confirm_conflicts = true;
+
+  if (isCopyAction) {
+    const recommendedWeeks = rankedCopyWeeks.slice(0, 3);
+    const primaryWeeks = action === 'copy-from'
+      ? rankedCopyWeeks.filter((candidate) => candidate.blockId === week.blockId)
+      : rankedCopyWeeks.filter((candidate) => storyboardWeekSessionCount(candidate) === 0);
+    const secondaryWeeks = action === 'copy-from'
+      ? rankedCopyWeeks.filter((candidate) => candidate.blockId !== week.blockId)
+      : rankedCopyWeeks.filter((candidate) => storyboardWeekSessionCount(candidate) > 0);
+    const secondaryBlocks = Array.from(secondaryWeeks.reduce((groups, candidate) => {
+      const existing = groups.get(candidate.blockId) || { blockId: candidate.blockId, name: candidate.blockName, weeks: [] as RoadmapWeek[] };
+      existing.weeks.push(candidate);
+      groups.set(candidate.blockId, existing);
+      return groups;
+    }, new Map<number, { blockId: number; name: string; weeks: RoadmapWeek[] }>()).values());
+    const renderCandidate = (candidate: RoadmapWeek, compact = false) => {
+      const candidateKey = roadmapWeekIdentityKey(candidate);
+      const selected = candidateKey === selectedWeekKey;
+      const sessionCount = storyboardWeekSessionCount(candidate);
+      const preview = weekCopySessionPreview(candidate);
+      return (
+        <SLMotionPressable
+          key={`${compact ? 'recommended' : 'candidate'}:${candidateKey}`}
+          accessibilityRole="radio"
+          accessibilityState={{ selected }}
+          onPress={() => {
+            void Haptics.selectionAsync().catch(() => undefined);
+            setSelectedWeekKey(candidateKey);
+          }}
+          pressScale={0.985}
+          style={({ pressed }) => [
+            compact ? styles.weekCopyRecommendedCard : styles.weekCopyCandidateRow,
+            selected && styles.weekCopyCandidateSelected,
+            pressed && styles.pressed,
+          ]}
+        >
+          <View style={styles.weekCopyCandidateIcon}>
+            <Ionicons name="calendar-outline" size={21} color={selected ? colors.violet : colors.muted} />
+          </View>
+          <View style={styles.weekCopyCandidateBody}>
+            <View style={styles.weekCopyCandidateHeading}>
+              <View style={styles.weekCopyCandidateHeadingCopy}>
+                <Text numberOfLines={1} style={[styles.weekCopyCandidateTitle, selected && styles.weekChoiceTitleSelected]}>{candidate.blockName} · Week {candidate.index}</Text>
+                <Text style={styles.weekChoiceMeta}>{candidate.rangeLabel}</Text>
+              </View>
+              {selected ? <Ionicons name="checkmark-circle" size={21} color={colors.violet} /> : <View style={styles.weekCandidateRadio} />}
+            </View>
+            {preview.length ? (
+              <View style={styles.weekCopySplitRow}>
+                {preview.map((title, index) => <Text key={`${title}:${index}`} numberOfLines={1} style={styles.weekCopySplitChip}>{title}</Text>)}
+              </View>
+            ) : null}
+            <Text style={[styles.weekCandidateSessions, sessionCount ? styles.weekCandidatePopulated : styles.weekCandidateEmpty]}>
+              {sessionCount ? `${sessionCount} Session${sessionCount === 1 ? '' : 's'}` : 'Empty week'}
+            </Text>
+          </View>
+        </SLMotionPressable>
+      );
+    };
+
+    return (
+      <ProgrammingManagerSheet
+        accessibilityLabel={action === 'copy-from' ? 'Copy From' : 'Copy To'}
+        busy={busy}
+        eyebrow="Week action"
+        heightFraction={0.94}
+        onClose={onClose}
+        scroll={false}
+        subtitle={action === 'copy-from' ? 'Select the populated week you want to copy' : 'Select the week you want to copy into'}
+        title={action === 'copy-from' ? 'Copy From' : 'Copy To'}
+        visible
+      >
+        <View style={styles.weekCopyShell}>
+          <View style={styles.weekCopyContext}>
+            <View style={styles.weekCopyContextCopy}>
+              <Text style={styles.weekCopyContextLabel}>{copyContextLabel}</Text>
+              <Text style={styles.weekCopyContextTitle}>{week.blockName} · Week {week.index}</Text>
+              <Text style={styles.weekCopyContextMeta}>{week.rangeLabel} · {storyboardWeekSessionCount(week) ? `${storyboardWeekSessionCount(week)} Sessions` : 'No sessions planned'}</Text>
+            </View>
+            <View style={styles.weekCopyContextIcon}><Ionicons name={action === 'copy-from' ? 'calendar-outline' : 'clipboard-outline'} size={25} color={colors.violet} /></View>
+          </View>
+
+          <ScrollView
+            bounces
+            contentContainerStyle={styles.weekCopyPickerContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator
+            style={styles.weekCopyPicker}
+          >
+            {action === 'copy-from' && recommendedWeeks.length ? (
+              <View style={styles.weekCopySection}>
+                <Text style={styles.weekCopySectionTitle}>Recommended</Text>
+                <Text style={styles.weekCopySectionHint}>Closest populated weeks first</Text>
+                <ScrollView horizontal contentContainerStyle={styles.weekCopyRecommendedRail} showsHorizontalScrollIndicator={false}>
+                  {recommendedWeeks.map((candidate) => renderCandidate(candidate, true))}
+                </ScrollView>
+              </View>
+            ) : null}
+
+            <View style={styles.weekCopySection}>
+              <Text style={styles.weekCopySectionTitle}>{action === 'copy-from' ? `This block · ${week.blockName}` : 'Upcoming empty weeks'}</Text>
+              <Text style={styles.weekCopySectionHint}>{action === 'copy-from' ? 'Populated weeks in this block' : 'Empty destinations are prioritized'}</Text>
+              <View style={styles.weekCopyCandidateList}>
+                {primaryWeeks.length ? primaryWeeks.map((candidate) => renderCandidate(candidate)) : <Text style={styles.weekActionEmpty}>{action === 'copy-from' ? 'No populated source weeks are available in this block.' : 'No empty destination weeks are available.'}</Text>}
+              </View>
+            </View>
+
+            {secondaryBlocks.map((group) => {
+              const expanded = !!expandedCopyBlocks[group.blockId];
+              return (
+                <View key={group.blockId} style={styles.weekCopyCollapsedBlock}>
+                  <SLMotionPressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded }}
+                    onPress={() => {
+                      void Haptics.selectionAsync().catch(() => undefined);
+                      setExpandedCopyBlocks((current) => ({ ...current, [group.blockId]: !current[group.blockId] }));
+                    }}
+                    pressScale={0.99}
+                    style={({ pressed }) => [styles.weekCopyCollapsedHeader, pressed && styles.pressed]}
+                  >
+                    <View>
+                      <Text style={styles.weekCopySectionTitle}>{group.name}</Text>
+                      <Text style={styles.weekCopySectionHint}>{group.weeks.length} {action === 'copy-from' ? 'populated' : 'already populated'} week{group.weeks.length === 1 ? '' : 's'}</Text>
+                    </View>
+                    <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.muted} />
+                  </SLMotionPressable>
+                  {expanded ? <View style={styles.weekCopyCandidateList}>{group.weeks.map((candidate) => renderCandidate(candidate))}</View> : null}
+                </View>
+              );
+            })}
+
+            {!rankedCopyWeeks.length ? <Text style={styles.weekActionEmpty}>{action === 'copy-from' ? 'No populated source weeks are available.' : 'No destination weeks are available.'}</Text> : null}
+          </ScrollView>
+
+          <View style={styles.weekCopySummary}>
+            {copySourceWeek && copyDestinationWeek ? (
+              <>
+                <View style={styles.weekCopySummaryRoute}>
+                  <Text numberOfLines={1} style={styles.weekCopySummaryWeek}>{copySourceWeek.blockName} · W{copySourceWeek.index}</Text>
+                  <Ionicons name="arrow-forward" size={16} color={colors.muted} />
+                  <Text numberOfLines={1} style={styles.weekCopySummaryWeek}>{copyDestinationWeek.blockName} · W{copyDestinationWeek.index}</Text>
+                </View>
+                <Text style={styles.weekCopySummaryMeta}>{copyDestinationCount ? `${copyDestinationCount} existing Session${copyDestinationCount === 1 ? '' : 's'} · New copies will be appended as drafts.` : 'Empty destination · Sessions will be created as drafts.'}</Text>
+              </>
+            ) : <Text style={styles.weekCopySummaryMeta}>Select a week to preview the copy.</Text>}
+            {warning ? <Text style={styles.weekActionWarning}>{warning}</Text> : null}
+            <SLMotionPressable
+              accessibilityRole="button"
+              disabled={!canConfirm || copySessionCount < 1}
+              onPress={() => onSubmit(action, week, extra)}
+              pressScale={0.985}
+              style={({ pressed }) => [styles.weekCopyPrimary, (!canConfirm || copySessionCount < 1) && styles.weekActionDisabled, pressed && canConfirm && styles.pressed]}
+            >
+              <LinearGradient colors={['#5E23C7', '#8A2B8D']} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFillObject} />
+              {busy ? <ActivityIndicator size="small" color={colors.textStrong} /> : <Ionicons name="copy-outline" size={18} color={colors.textStrong} />}
+              <Text style={styles.weekActionPrimaryText}>{busy ? 'Copying…' : `Copy ${copySessionCount} Session${copySessionCount === 1 ? '' : 's'}`}</Text>
+            </SLMotionPressable>
+          </View>
+        </View>
+      </ProgrammingManagerSheet>
+    );
+  }
 
   return (
     <ProgrammingManagerSheet
@@ -4296,7 +4524,7 @@ function WeekActionModal({
 
           {needsWeekChoice ? (
             <View style={styles.weekChoiceList}>
-              <Text style={styles.weekActionFieldLabel}>{action === 'copy-from' ? 'CHOOSE SOURCE WEEK' : 'CHOOSE DESTINATION WEEK'}</Text>
+              <Text style={styles.weekActionFieldLabel}>CHOOSE DESTINATION WEEK</Text>
               {availableWeekGroups.length ? availableWeekGroups.map((group) => (
                 <View key={group.title} style={styles.weekCandidateGroup}>
                   <Text style={styles.weekCandidateGroupTitle}>{group.title}</Text>
@@ -7562,12 +7790,28 @@ const styles = StyleSheet.create({
     color: colors.red,
   },
   weekCopyContext: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 3,
     padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.34)',
     borderRadius: SLRadius.md,
     backgroundColor: 'rgba(167, 139, 250, 0.09)',
+  },
+  weekCopyContextCopy: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3,
+  },
+  weekCopyContextIcon: {
+    width: 54,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(167, 139, 250, 0.10)',
   },
   weekCopyContextLabel: {
     ...SLTypography.caption,
@@ -7581,6 +7825,154 @@ const styles = StyleSheet.create({
   weekCopyContextMeta: {
     ...SLTypography.caption,
     color: colors.muted,
+  },
+  weekCopyShell: {
+    flex: 1,
+    minHeight: 0,
+    gap: 12,
+  },
+  weekCopyPicker: {
+    flex: 1,
+    minHeight: 0,
+  },
+  weekCopyPickerContent: {
+    gap: 16,
+    paddingBottom: 10,
+  },
+  weekCopySection: {
+    gap: 7,
+  },
+  weekCopySectionTitle: {
+    ...SLTypography.label,
+    color: colors.violet,
+    textTransform: 'uppercase',
+  },
+  weekCopySectionHint: {
+    ...SLTypography.caption,
+    color: colors.subtle,
+  },
+  weekCopyRecommendedRail: {
+    gap: 8,
+    paddingRight: 4,
+  },
+  weekCopyRecommendedCard: {
+    width: 218,
+    minHeight: 144,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 9,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(8, 8, 12, 0.45)',
+  },
+  weekCopyCandidateList: {
+    gap: 8,
+  },
+  weekCopyCandidateRow: {
+    width: '100%',
+    minHeight: 92,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    backgroundColor: 'rgba(8, 8, 12, 0.42)',
+  },
+  weekCopyCandidateSelected: {
+    borderColor: 'rgba(167, 139, 250, 0.78)',
+    backgroundColor: 'rgba(93, 35, 199, 0.15)',
+  },
+  weekCopyCandidateIcon: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: SLRadius.sm,
+    backgroundColor: 'rgba(167, 139, 250, 0.09)',
+  },
+  weekCopyCandidateBody: {
+    flex: 1,
+    minWidth: 0,
+    gap: 4,
+  },
+  weekCopyCandidateHeading: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  weekCopyCandidateHeadingCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  weekCopyCandidateTitle: {
+    ...SLTypography.body,
+    color: colors.textStrong,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  weekCopySplitRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  weekCopySplitChip: {
+    ...SLTypography.caption,
+    color: colors.muted,
+    maxWidth: 92,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: SLRadius.pill,
+    backgroundColor: 'rgba(167, 139, 250, 0.09)',
+  },
+  weekCopyCollapsedBlock: {
+    gap: 8,
+    borderWidth: 1,
+    borderColor: colors.lineSoft,
+    borderRadius: SLRadius.md,
+    padding: 10,
+    backgroundColor: 'rgba(8, 8, 12, 0.30)',
+  },
+  weekCopyCollapsedHeader: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  weekCopySummary: {
+    gap: 8,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.lineSoft,
+  },
+  weekCopySummaryRoute: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+  weekCopySummaryWeek: {
+    ...SLTypography.caption,
+    color: colors.textStrong,
+    flexShrink: 1,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  weekCopySummaryMeta: {
+    ...SLTypography.caption,
+    color: colors.muted,
+    textAlign: 'center',
+  },
+  weekCopyPrimary: {
+    minHeight: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: SLRadius.md,
+    overflow: 'hidden',
   },
   weekCandidateGroup: {
     gap: 7,
