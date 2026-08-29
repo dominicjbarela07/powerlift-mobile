@@ -33,6 +33,28 @@ export type TimeTick = Readonly<{
   label: string;
 }>;
 
+export type AnalyticalXDomainMode = 'chronological' | 'observationIndex';
+
+export type AnalyticalXObservation = Readonly<{
+  key: string;
+  date: string;
+  timestamp?: number | null;
+}>;
+
+export type AnalyticalXTick = Readonly<{
+  index: number;
+  key: string;
+  date: string;
+  label: string;
+  x: number;
+  textAnchor: 'start' | 'middle' | 'end';
+}>;
+
+export type AnalyticalXLayout = Readonly<{
+  observations: readonly Readonly<AnalyticalXObservation & { timestamp: number; x: number }>[];
+  ticks: readonly AnalyticalXTick[];
+}>;
+
 const METRIC_CONFIG: Record<string, AnalyticalMetricDefinition> = {
   max_progression: {
     key: 'max_progression', label: 'Max progression', kind: 'percentage', unit: '%', axisUnit: '%', includeZero: true, signed: true, maximumFractionDigits: 1,
@@ -164,6 +186,15 @@ function dateTimestamp(value: string) {
   return Number.isFinite(timestamp) ? timestamp : 0;
 }
 
+export function estimateAxisLabelWidth(label: string, fontSize = 9) {
+  return Math.ceil(String(label).length * fontSize * 0.58);
+}
+
+export function buildYAxisGutter(labels: readonly string[], fontSize = 9) {
+  const widest = labels.reduce((maximum, label) => Math.max(maximum, estimateAxisLabelWidth(label, fontSize)), 0);
+  return Math.max(43, widest + 10);
+}
+
 export function formatTimeTick(date: string, spanDays: number) {
   const parsed = new Date(dateTimestamp(date));
   if (!date || Number.isNaN(parsed.getTime())) return date;
@@ -191,6 +222,127 @@ export function buildTimeTicks(rawDates: readonly string[], width = 320): readon
     labels.add(label);
     return [{ ...row, index, label }];
   });
+}
+
+function tickIndexes(count: number, maximumTicks: number) {
+  if (count <= 0) return [];
+  if (count === 1) return [0];
+  const indexes = new Set<number>([0, count - 1]);
+  for (let slot = 1; slot < maximumTicks - 1; slot += 1) {
+    indexes.add(Math.round(slot * (count - 1) / Math.max(1, maximumTicks - 1)));
+  }
+  return [...indexes].sort((left, right) => left - right);
+}
+
+function chronologicalTickIndexes(timestamps: readonly number[], maximumTicks: number) {
+  if (timestamps.length <= maximumTicks) return timestamps.map((_timestamp, index) => index);
+  const indexes = new Set<number>([0, timestamps.length - 1]);
+  const first = timestamps[0];
+  const span = Math.max(1, timestamps.at(-1)! - first);
+  for (let slot = 1; slot < maximumTicks - 1; slot += 1) {
+    const target = first + span * slot / (maximumTicks - 1);
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+    timestamps.forEach((timestamp, index) => {
+      const distance = Math.abs(timestamp - target);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+    indexes.add(nearestIndex);
+  }
+  return [...indexes].sort((left, right) => left - right);
+}
+
+export function buildAnalyticalXLayout({
+  observations,
+  mode,
+  plotLeft,
+  plotRight,
+  width,
+  fontSize = 9,
+}: {
+  observations: readonly AnalyticalXObservation[];
+  mode: AnalyticalXDomainMode;
+  plotLeft: number;
+  plotRight: number;
+  width: number;
+  fontSize?: number;
+}): AnalyticalXLayout {
+  const normalized = observations
+    .map((row, sourceIndex) => ({
+      ...row,
+      sourceIndex,
+      timestamp: Number(row.timestamp) > 0 ? Number(row.timestamp) : dateTimestamp(row.date),
+    }))
+    .filter((row) => row.date && row.timestamp > 0)
+    .sort((left, right) => left.timestamp - right.timestamp || left.sourceIndex - right.sourceIndex);
+  if (!normalized.length) return { observations: [], ticks: [] };
+
+  const plotWidth = Math.max(1, width - plotLeft - plotRight);
+  const minTime = normalized[0].timestamp;
+  const maxTime = normalized.at(-1)!.timestamp;
+  const timeSpan = Math.max(1, maxTime - minTime);
+  const positioned = normalized.map((row, index) => ({
+    key: row.key,
+    date: row.date,
+    timestamp: row.timestamp,
+    x: normalized.length === 1
+      ? plotLeft + plotWidth / 2
+      : mode === 'observationIndex'
+        ? plotLeft + (index / (normalized.length - 1)) * plotWidth
+        : plotLeft + ((row.timestamp - minTime) / timeSpan) * plotWidth,
+  }));
+
+  const spanDays = Math.max(0, (maxTime - minTime) / 86_400_000);
+  const labels = positioned.map((row, index) => mode === 'observationIndex' ? `#${index + 1}` : formatTimeTick(row.date, spanDays));
+  const widest = Math.max(...labels.map((label) => estimateAxisLabelWidth(label, fontSize)), 1);
+  const maximumTicks = Math.max(2, Math.min(5, Math.floor(plotWidth / Math.max(54, widest + 18))));
+  const maximumCandidateTicks = Math.min(positioned.length, maximumTicks);
+  const candidateIndexes = mode === 'chronological'
+    ? chronologicalTickIndexes(positioned.map((row) => row.timestamp), maximumCandidateTicks)
+    : tickIndexes(positioned.length, maximumCandidateTicks);
+  const candidates = candidateIndexes.map((index) => ({
+    index,
+    row: positioned[index],
+    label: labels[index],
+    width: estimateAxisLabelWidth(labels[index], fontSize),
+  }));
+
+  const accepted: typeof candidates = [];
+  candidates.forEach((candidate) => {
+    const previous = accepted.at(-1);
+    const isLast = candidate.index === positioned.length - 1;
+    if (!previous) {
+      accepted.push(candidate);
+      return;
+    }
+    const clearance = previous.width / 2 + candidate.width / 2 + 10;
+    if (candidate.row.x - previous.row.x >= clearance) {
+      accepted.push(candidate);
+      return;
+    }
+    if (isLast && previous.index !== 0) accepted.splice(accepted.length - 1, 1, candidate);
+  });
+
+  return {
+    observations: positioned,
+    ticks: accepted.map((candidate) => ({
+      index: candidate.index,
+      key: candidate.row.key,
+      date: candidate.row.date,
+      label: candidate.label,
+      x: candidate.row.x,
+      textAnchor: positioned.length === 1
+        ? 'middle'
+        : candidate.index === 0
+          ? 'start'
+          : candidate.index === positioned.length - 1
+            ? 'end'
+            : 'middle',
+    })),
+  };
 }
 
 export function nearestTimeIndex(timestamps: readonly number[], target: number) {

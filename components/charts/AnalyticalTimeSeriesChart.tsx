@@ -4,14 +4,18 @@ import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
 import {
+  buildAnalyticalXLayout,
   buildNumericScale,
-  buildTimeTicks,
+  buildYAxisGutter,
   formatAnalyticalValue,
   type AnalyticalMetricDefinition,
+  type AnalyticalXDomainMode,
 } from '@/lib/chart-fidelity';
 
 export type AnalyticalChartPoint = Readonly<{
+  id?: string;
   date: string;
+  performedAt?: string | null;
   value?: number | null;
   meta?: Readonly<Record<string, unknown>>;
 }>;
@@ -47,10 +51,13 @@ type Props = Readonly<{
   selectedInitially?: 'latest' | 'none';
   tooltipRows?: (selection: AnalyticalSelection) => readonly string[];
   formatSeriesValue?: (seriesKey: string, value: number) => string;
+  onPointPress?: (selection: AnalyticalSelection) => void;
+  xDomainMode?: AnalyticalXDomainMode;
   testID?: string;
 }>;
 
 type NormalizedPoint = Readonly<{
+  key: string;
   date: string;
   timestamp: number;
   x: number;
@@ -82,61 +89,72 @@ export function AnalyticalTimeSeriesChart({
   selectedInitially = 'latest',
   tooltipRows,
   formatSeriesValue,
+  onPointPress,
+  xDomainMode = 'chronological',
   testID,
 }: Props) {
   const [width, setWidth] = useState(320);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selectedRef = useRef<number | null>(null);
+  const gestureStartX = useRef<number | null>(null);
   const plot = useMemo(() => {
-    const dateMap = new Map<string, number>();
+    const dateMap = new Map<string, { date: string; time: number }>();
     series.forEach((item) => item.points.forEach((point) => {
-      const time = timestamp(point.date);
-      if (time > 0 && point.value != null && Number.isFinite(Number(point.value))) dateMap.set(point.date, time);
+      const time = timestamp(point.performedAt || point.date);
+      if (time > 0 && point.value != null && Number.isFinite(Number(point.value))) {
+        dateMap.set(point.id || point.date, { date: point.performedAt || point.date, time });
+      }
     }));
     band.forEach((point) => {
       const time = timestamp(point.date);
-      if (time > 0 && (Number.isFinite(Number(point.low)) || Number.isFinite(Number(point.high)))) dateMap.set(point.date, time);
+      if (time > 0 && (Number.isFinite(Number(point.low)) || Number.isFinite(Number(point.high)))) dateMap.set(point.date, { date: point.date, time });
     });
-    const dates = [...dateMap.entries()].sort((left, right) => left[1] - right[1]);
+    const dates = [...dateMap.entries()].sort((left, right) => left[1].time - right[1].time);
     const values = [
       ...series.flatMap((item) => item.points.map((point) => Number(point.value)).filter(Number.isFinite)),
       ...band.flatMap((point) => [Number(point.low), Number(point.high)].filter(Number.isFinite)),
     ];
     if (!dates.length || !values.length) return null;
-    const left = width < 330 ? 43 : 48;
     const right = 12;
     const top = 54;
     const bottom = 30;
     const chartHeight = Math.max(78, height - top - bottom);
     const scale = buildNumericScale(values, metric, height < 180 ? 4 : 5);
-    const minTime = dates[0][1];
-    const maxTime = dates.at(-1)![1];
-    const timeSpan = Math.max(1, maxTime - minTime);
-    const x = (time: number) => left + ((time - minTime) / timeSpan) * Math.max(1, width - left - right);
+    const yLabels = scale.ticks.map((tick) => formatAnalyticalValue(tick, metric, { axis: true, signed: metric.signed }));
+    const left = buildYAxisGutter(yLabels, 9);
+    const xLayout = buildAnalyticalXLayout({
+      observations: dates.map(([key, row]) => ({ key, date: row.date, timestamp: row.time })),
+      mode: xDomainMode,
+      plotLeft: left,
+      plotRight: right,
+      width,
+    });
+    const xByKey = new Map(xLayout.observations.map((row) => [row.key, row.x]));
     const y = (value: number) => top + ((scale.maximum - value) / Math.max(1e-9, scale.maximum - scale.minimum)) * chartHeight;
-    const normalizedDates: NormalizedPoint[] = dates.map(([date, dateTimestamp]) => ({ date, timestamp: dateTimestamp, x: dates.length === 1 ? left + (width - left - right) / 2 : x(dateTimestamp) }));
+    const normalizedDates: NormalizedPoint[] = xLayout.observations.map((row) => ({ key: row.key, date: row.date, timestamp: row.timestamp, x: row.x }));
     const rows = series.map((item) => ({
       ...item,
       points: item.points.flatMap((point) => {
         const value = Number(point.value);
-        const time = timestamp(point.date);
-        return !Number.isFinite(value) || time <= 0 ? [] : [{ ...point, value, x: dates.length === 1 ? normalizedDates[0].x : x(time), y: y(value) }];
+        const key = point.id || point.date;
+        const x = xByKey.get(key);
+        return !Number.isFinite(value) || x == null ? [] : [{ ...point, key, value, x, y: y(value) }];
       }),
     }));
     const bandRows = band.flatMap((point) => {
       const low = Number(point.low);
       const high = Number(point.high);
-      const time = timestamp(point.date);
-      return !Number.isFinite(low) || !Number.isFinite(high) || time <= 0 ? [] : [{ date: point.date, low, high, x: dates.length === 1 ? normalizedDates[0].x : x(time), lowY: y(low), highY: y(high) }];
+      const x = xByKey.get(point.date);
+      return !Number.isFinite(low) || !Number.isFinite(high) || x == null ? [] : [{ date: point.date, low, high, x, lowY: y(low), highY: y(high) }];
     });
     const upper = pathFor(bandRows.map((point) => ({ x: point.x, y: point.highY })));
     const lower = pathFor([...bandRows].reverse().map((point) => ({ x: point.x, y: point.lowY }))).replace(/^M/, 'L');
     return {
       left, right, top, bottom, chartHeight, scale, y, rows, normalizedDates,
-      timeTicks: buildTimeTicks(normalizedDates.map((point) => point.date), width),
+      xTicks: xLayout.ticks,
       bandPath: upper && lower ? `${upper} ${lower} Z` : '',
     };
-  }, [band, height, metric, series, width]);
+  }, [band, height, metric, series, width, xDomainMode]);
 
   useEffect(() => {
     const next = plot && selectedInitially === 'latest' ? plot.normalizedDates.length - 1 : null;
@@ -163,7 +181,7 @@ export function AnalyticalTimeSeriesChart({
     date: selectedDate.date,
     index: selectedIndex!,
     values: plot.rows.flatMap((item) => {
-      const point = item.points.find((row) => row.date === selectedDate.date);
+      const point = item.points.find((row) => row.key === selectedDate.key);
       return point ? [{ key: item.key, label: item.label, color: item.color, value: point.value, meta: point.meta }] : [];
     }),
   } : null;
@@ -172,12 +190,29 @@ export function AnalyticalTimeSeriesChart({
   const tooltipLeft = selectedDate ? Math.min(Math.max(4, selectedDate.x - tooltipWidth / 2), Math.max(4, width - tooltipWidth - 4)) : 4;
 
   return <View
-    accessibilityLabel={`${metric.label} analytical chart with ${plot.normalizedDates.length} dated observation${plot.normalizedDates.length === 1 ? '' : 's'}. Drag horizontally to inspect values.`}
+    accessibilityLabel={`${metric.label} analytical chart with ${plot.normalizedDates.length} observation${plot.normalizedDates.length === 1 ? '' : 's'} in ${xDomainMode === 'chronological' ? 'time' : 'instance'} mode. Drag horizontally to inspect values.`}
     accessible
     onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))}
     onMoveShouldSetResponder={() => true}
-    onResponderGrant={(event) => selectNearest(event.nativeEvent.locationX)}
+    onResponderGrant={(event) => { gestureStartX.current = event.nativeEvent.locationX; selectNearest(event.nativeEvent.locationX); }}
     onResponderMove={(event) => selectNearest(event.nativeEvent.locationX)}
+    onResponderRelease={(event) => {
+      const moved = gestureStartX.current == null ? 0 : Math.abs(event.nativeEvent.locationX - gestureStartX.current);
+      const index = selectedRef.current;
+      if (moved <= 10 && index != null && onPointPress) {
+        const selected = plot.normalizedDates[index];
+        const pressedSelection: AnalyticalSelection = {
+          date: selected.date,
+          index,
+          values: plot.rows.flatMap((item) => {
+            const point = item.points.find((row) => row.key === selected.key);
+            return point ? [{ key: item.key, label: item.label, color: item.color, value: point.value, meta: point.meta }] : [];
+          }),
+        };
+        onPointPress(pressedSelection);
+      }
+      gestureStartX.current = null;
+    }}
     style={[styles.frame, { minHeight: height }]}
     testID={testID}
   >
@@ -199,11 +234,7 @@ export function AnalyticalTimeSeriesChart({
         })}
       </React.Fragment>)}
       {selectedDate ? <Line x1={selectedDate.x} x2={selectedDate.x} y1={plot.top} y2={plot.top + plot.chartHeight} stroke="#B878FF" strokeDasharray="3 4" strokeWidth={1} /> : null}
-      {plot.timeTicks.map((tick, index) => {
-        const point = plot.normalizedDates[tick.index];
-        const anchor = index === 0 ? 'start' : index === plot.timeTicks.length - 1 ? 'end' : 'middle';
-        return point ? <SvgText key={`${tick.date}:${index}`} x={point.x} y={height - 8} textAnchor={anchor} fill="#858A97" fontSize="9">{tick.label}</SvgText> : null;
-      })}
+      {plot.xTicks.map((tick) => <SvgText key={`${tick.key}:${tick.index}`} x={tick.x} y={height - 8} textAnchor={tick.textAnchor} fill="#858A97" fontSize="9">{tick.label}</SvgText>)}
     </Svg>
     {selection ? <View pointerEvents="none" style={[styles.tooltip, { left: tooltipLeft, width: tooltipWidth }]}>
       <Text style={styles.tooltipDate}>{fullDate(selection.date).toUpperCase()}</Text>
