@@ -41,12 +41,12 @@ import {
   formatCompactVolumeValueFromKg,
   formatWeightDeltaFromKg,
   formatWeightFromKg,
-  normalizeDisplayWeightUnit,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { useCoachMoreNavigation } from '@/components/navigation/CoachMoreNavigationSheet';
 
 type WorkoutRecapResponse = {
   ok?: boolean;
@@ -185,6 +185,7 @@ function shortDate(value?: string | null) {
 }
 
 export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSummary }: Props) {
+  const { open: openMoreNavigation } = useCoachMoreNavigation();
   const { user } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -410,7 +411,10 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   };
   const program = () => navigate({ pathname: '/(tabs)/workout', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
   const schedule = () => navigate({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
-  const more = () => navigate({ pathname: '/(tabs)/coach-more', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
+  const more = () => {
+    onClose();
+    setTimeout(() => openMoreNavigation({ athleteId: String(athlete.id), athleteName: athlete.name }), 0);
+  };
   const note = details?.coach_context?.pinned_note || athlete.coach_context?.pinned_note;
   const scrollToNotes = () => scrollRef.current?.scrollTo({ y: Math.max(0, notesY.current - 20), animated: !reduceMotion });
   const openPrimaryReason = () => {

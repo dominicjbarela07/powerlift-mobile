@@ -23,6 +23,10 @@ import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 import { StrengthLedgerAppHeader } from '@/components/navigation/StrengthLedgerAppHeader';
+import {
+  CoachMoreNavigationProvider,
+  useCoachMoreNavigation,
+} from '@/components/navigation/CoachMoreNavigationSheet';
 import { useFloatingNavigationMotion } from '@/components/navigation/floating-navigation-motion';
 import {
   SL_TAB_ROW_CONTROL,
@@ -80,6 +84,7 @@ function FilteredTabBar({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
   const { width: viewportWidth } = useWindowDimensions();
   const [isExpanded, setIsExpanded] = useState(false);
   const [reduceTransparency, setReduceTransparency] = useState(false);
@@ -292,7 +297,8 @@ function FilteredTabBar({
           </Animated.View>
         ) : null}
         {displayedRoutes.map((route) => {
-        const isFocused = route.key === activeRoute?.key;
+        const isMoreRoute = route.name === 'coach-more';
+        const isFocused = isMoreRoute ? isMoreOpen : route.key === activeRoute?.key;
         const isStateFocused = route.key === state.routes[state.index]?.key;
         const color = isFocused ? SLColors.review : SLColors.textMuted;
         const routeCfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
@@ -324,6 +330,11 @@ function FilteredTabBar({
           }
 
           void Haptics.selectionAsync().catch(() => undefined);
+
+          if (isMoreRoute) {
+            openMore();
+            return;
+          }
 
           const event = navigation.emit({
             type: 'tabPress',
@@ -605,14 +616,15 @@ export default function TabsLayout() {
   }
 
   return (
-    <View
-      style={styles.safeArea}
-      onStartShouldSetResponderCapture={() => {
-        requestTabRowCollapse();
-        return false;
-      }}
-    >
-      <Tabs
+    <CoachMoreNavigationProvider enabled={isCoach && !isIndividual && viewMode === 'coach'}>
+      <View
+        style={styles.safeArea}
+        onStartShouldSetResponderCapture={() => {
+          requestTabRowCollapse();
+          return false;
+        }}
+      >
+        <Tabs
         key={workspaceKey}
         screenOptions={{
           header: () => (
@@ -740,7 +752,7 @@ export default function TabsLayout() {
           options={{
             title: 'More',
             headerShown: false,
-            href: isCoach && !isIndividual && viewMode === 'coach' ? '/(tabs)/coach-more' as any : null,
+            href: null,
           }}
         />
 
@@ -1052,8 +1064,9 @@ export default function TabsLayout() {
             href: viewMode === 'athlete' || isIndividual ? '/(tabs)/ledger/home' : null,
           }}
         />
-      </Tabs>
-    </View>
+        </Tabs>
+      </View>
+    </CoachMoreNavigationProvider>
   );
 }
 

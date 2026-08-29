@@ -127,6 +127,7 @@
     "test:chart-fidelity": "node --import tsx scripts/test-chart-fidelity-standard.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",
+    "test:coach-more-navigation": "node --import tsx scripts/test-coach-more-navigation-sheet.mjs",
     "audit:ui-mock-library-routes": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
     "audit:ui-constitution": "node scripts/audit-ui-constitution.js && node scripts/audit-transparent-screen-roots.js && node scripts/audit-mobile-horizontal-layout.mjs",
     "audit:transparent-screen-roots": "node scripts/audit-transparent-screen-roots.js",
