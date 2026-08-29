@@ -48,9 +48,10 @@ assert.match(brief, /action="View all" index="4"/);
 assert.match(methodology, /Object\.entries\(brief\.methodology\)/);
 assert.match(methodology, /does not attribute athlete outcomes causally/);
 
-assert.match(athleteWorkspace, /team-relative-analytics\?period=4W/);
-assert.match(athleteWorkspace, /title="Progress vs Team"/);
-assert.match(athleteWorkspace, /coach-athlete-analytics\/\[athleteId\]/);
+assert.match(athleteWorkspace, /summary\?view=v3&period=\$\{period\}/);
+assert.match(athleteWorkspace, /CoachAnalyticsTrend/);
+assert.match(athleteWorkspace, /workspace_v3/);
+assert.doesNotMatch(athleteWorkspace, /team-relative-analytics/, 'Athlete Workspace must use the bounded additive summary projection.');
 
 for (const route of ['coach-team-brief', 'coach-team-outliers', 'coach-team-methodology']) {
   assert.match(root, new RegExp(`name="${route}"`));

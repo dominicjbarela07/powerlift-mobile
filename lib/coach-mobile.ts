@@ -354,8 +354,11 @@ export type CoachAthleteSummaryResponse = {
     } | null;
   };
   quick_actions: Record<string, boolean>;
+  workspace_v3?: CoachAthleteWorkspaceV3 | null;
   error?: string;
 };
+
+export type CoachAthleteWorkspaceV3 = Omit<CoachAthleteTeamRelativeResponse, 'ok' | 'error'>;
 
 export type CoachTeamBriefResponse = {
   ok: boolean;
@@ -501,7 +504,24 @@ export type CoachAnalyticsAthlete = {
   metrics: Record<CoachAnalyticsMetricKey, CoachAnalyticsMetric> & {
     readiness_trend: CoachAnalyticsMetric & { history?: { date: string; value: number }[] };
     volume_trend: CoachAnalyticsMetric & { volume_kg?: number | null };
+    recovery_context?: {
+      comparison_policy: 'latest_vs_prior_only_baseline';
+      causality_claimed: false;
+      readiness: CoachRecoveryObservation;
+      sleep_hours: CoachRecoveryObservation;
+      stress: CoachRecoveryObservation;
+      energy: CoachRecoveryObservation;
+      soreness: CoachRecoveryObservation;
+    };
   };
+};
+
+export type CoachRecoveryObservation = {
+  current?: number | null;
+  prior_only_baseline?: number | null;
+  delta?: number | null;
+  baseline_observations: number;
+  history: { date: string; value: number }[];
 };
 
 export type CoachAnalyticsOutlier = {
@@ -527,8 +547,10 @@ export type CoachAthleteTeamRelativeResponse = {
   };
   bands: CoachTeamBriefResponse['bands'];
   outliers: CoachAnalyticsOutlier[];
+  highlights?: CoachTeamBriefResponse['highlights'];
   methodology: Record<string, string>;
   data_quality: CoachTeamBriefResponse['data_quality'];
+  meta?: Record<string, unknown>;
   error?: string;
 };
 

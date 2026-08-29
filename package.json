@@ -85,6 +85,7 @@
     "test:home-training-hero": "node scripts/test-home-training-hero.mjs",
     "test:athlete-home-v3": "node --import tsx scripts/test-athlete-home-v3.mjs",
     "test:athlete-home-trends": "node --import tsx scripts/test-athlete-home-trends.mjs",
+    "test:athlete-workspace-v3": "node --import tsx scripts/test-athlete-workspace-v3.mjs",
     "test:recovery-day-check-in-state": "node --import tsx scripts/test-recovery-day-check-in-state.mjs",
     "test:settings-trustworthiness": "node scripts/test-settings-trustworthiness.mjs",
     "test:settings-account-parity": "node --import tsx scripts/test-settings-account-parity.mjs",
