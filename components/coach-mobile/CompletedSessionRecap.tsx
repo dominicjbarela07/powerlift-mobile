@@ -292,6 +292,7 @@ export type CompletedSessionRecapPayload = {
     programming_notes?: string | null;
     movements: Record<string, any>[];
   };
+  reviewer_v3?: Record<string, any> | null;
 };
 
 export type CompletedRecapImpactSummary = {
@@ -753,7 +754,7 @@ function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { 
   </View>;
 }
 
-function PlanCompareExperience({ recap, performedMovements, unit, onOpenHistory }: { recap: CompletedSessionRecapPayload; performedMovements: CompletedRecapMovement[]; unit: DisplayWeightUnit; onOpenHistory?: (movement: CompletedRecapMovement, displayUnit: DisplayWeightUnit) => void }) {
+export function PlanCompareExperience({ recap, performedMovements, unit, onOpenHistory }: { recap: CompletedSessionRecapPayload; performedMovements: CompletedRecapMovement[]; unit: DisplayWeightUnit; onOpenHistory?: (movement: CompletedRecapMovement, displayUnit: DisplayWeightUnit) => void }) {
   const rows = useMemo(() => buildSessionRecapComparisons(recap.plan.movements, performedMovements) as PlanComparisonRow[], [performedMovements, recap.plan.movements]);
   const [filter, setFilter] = useState<PlanCompareFilter>('all');
   const [expandedKey, setExpandedKey] = useState<string | null>(() => rows[0]?.key || null);
@@ -778,7 +779,7 @@ function ReviewToggle({ label, value, onChange }: { label: string; value: boolea
   return <View style={styles.reviewToggle}><Text style={styles.reviewToggleText}>{label}</Text><Switch value={value} onValueChange={onChange} trackColor={{ false: SLColors.borderStandard, true: SLColors.accentSoft }} thumbColor={value ? SLColors.accentViolet : SLColors.textMuted} /></View>;
 }
 
-function CoachTools({ review }: { review: CoachReviewContext }) {
+export function CoachTools({ review }: { review: CoachReviewContext }) {
   const draft = review.draft;
   const update = <K extends keyof CoachReviewDraft>(key: K, value: CoachReviewDraft[K]) => review.onDraftChange({ ...draft, [key]: value });
   return <View style={styles.sectionShell}><Text style={styles.sectionLabel}>COACH REVIEW TOOLS</Text><View style={styles.coachToolsCard}><Text style={styles.fieldLabel}>ATHLETE FEEDBACK</Text><TextInput multiline value={draft.coach_feedback} onChangeText={(value) => update('coach_feedback', value)} placeholder="Write actionable feedback…" placeholderTextColor={SLColors.textMuted} style={styles.textarea} /><Text style={styles.fieldLabel}>PRIVATE COACH NOTE</Text><TextInput multiline value={draft.coach_note} onChangeText={(value) => update('coach_note', value)} placeholder="Private programming context…" placeholderTextColor={SLColors.textMuted} style={styles.textarea} />{review.outcomes?.length ? <><Text style={styles.fieldLabel}>OUTCOME</Text><View style={styles.reviewChoices}>{review.outcomes.map((row) => <ReviewChoice key={row.value} label={row.label} selected={draft.review_outcome === row.value} onPress={() => update('review_outcome', draft.review_outcome === row.value ? '' : row.value)} />)}</View></> : null}{review.priorities?.length ? <><Text style={styles.fieldLabel}>PRIORITY</Text><View style={styles.reviewChoices}>{review.priorities.map((row) => <ReviewChoice key={row.value} label={row.label} selected={draft.review_priority === row.value} onPress={() => update('review_priority', draft.review_priority === row.value ? '' : row.value)} />)}</View></> : null}<View style={styles.followupGroup}><ReviewToggle label="Adjust programming" value={draft.followup_adjust_programming} onChange={(value) => update('followup_adjust_programming', value)} /><ReviewToggle label="Message athlete" value={draft.followup_message_athlete} onChange={(value) => update('followup_message_athlete', value)} /><ReviewToggle label="Consider training max update" value={draft.followup_consider_tm} onChange={(value) => update('followup_consider_tm', value)} /><ReviewToggle label="Monitor next Session" value={draft.followup_monitor_next} onChange={(value) => update('followup_monitor_next', value)} /><ReviewToggle label="Send feedback as message" value={draft.send_feedback_message} onChange={(value) => update('send_feedback_message', value)} /></View><View style={styles.reviewActions}><Pressable disabled={!!review.saving} onPress={() => review.onSave(draft, 'save')} style={({ pressed }) => [styles.reviewSecondary, pressed && styles.pressed]}>{review.saving === 'save' ? <ActivityIndicator color={SLColors.accentMuted} /> : <Text style={styles.reviewSecondaryText}>Save Draft</Text>}</Pressable><Pressable disabled={!!review.saving} onPress={() => review.onSave(draft, 'complete')} style={({ pressed }) => [styles.reviewPrimary, pressed && styles.pressed]}>{review.saving === 'complete' ? <ActivityIndicator color={SLColors.white} /> : <><Ionicons name="checkmark" size={20} color={SLColors.white} /><Text style={styles.reviewPrimaryText}>Complete Review</Text></>}</Pressable></View></View></View>;

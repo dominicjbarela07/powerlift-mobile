@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
   ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
@@ -18,6 +19,7 @@ const areas = [
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
+  ['Team Brief coaching analytics and team-relative Athlete Workspace', ['scripts/test-team-brief-v2.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],

@@ -477,7 +477,6 @@ export default function TabsLayout() {
   const isAccessoryCatalogReviewRoute = pathname.includes('/accessory-catalog-review');
   const canUseAccessoryCatalogReview = canAccessAccessoryCatalogReview(user);
   const isIdealStatePreview = __DEV__ && devPreviewSession?.mode === 'ideal';
-  const isCoachHomePath = viewMode === 'coach' && pathname.includes('/coach-dashboard');
   useEffect(() => {
     if (!user) {
       router.replace('/login');
@@ -636,29 +635,25 @@ export default function TabsLayout() {
                   router.replace('/(tabs)/athlete-dashboard');
                 }
               }}
-              rightAction={isIndividual ? {
+              rightAction={viewMode === 'coach' ? {
+                accessibilityLabel: 'Open Team Brief',
+                icon: 'reader-outline',
+                onPress: () => router.push('/coach-team-brief' as any),
+                size: 20,
+              } : isIndividual ? {
                 accessibilityLabel: 'Create Session',
                 icon: 'add-circle-outline',
                 onPress: () => router.push('/create-workout'),
                 size: 23,
-              } : isCoachHomePath ? {
-                accessibilityLabel: 'Open Coach Calendar',
-                icon: 'calendar-outline',
-                onPress: () => router.push('/(tabs)/coach-calendar'),
-                size: 20,
               } : {
-                accessibilityLabel: viewMode === 'coach' ? 'Open Team Brief' : 'Open messages',
-                icon: viewMode === 'athlete' ? 'chatbubbles-outline' : 'reader-outline',
+                accessibilityLabel: 'Open messages',
+                icon: 'chatbubbles-outline',
                 onPress: () => {
-                  if (viewMode === 'athlete') {
-                    refreshMessageNotifications();
-                    router.push('/(tabs)/messages');
-                  } else if (viewMode === 'coach') {
-                    router.push('/coach-team-brief' as any);
-                  }
+                  refreshMessageNotifications();
+                  router.push('/(tabs)/messages');
                 },
-                showNotificationDot: viewMode === 'athlete' && hasMessageNotifications,
-                size: viewMode === 'athlete' ? 21 : 20,
+                showNotificationDot: hasMessageNotifications,
+                size: 21,
               }}
               topInset={insets.top}
             />
@@ -844,7 +839,7 @@ export default function TabsLayout() {
 
         <Tabs.Screen
           name="coach-session-review"
-          options={{ href: null, title: 'Session Review' }}
+          options={{ href: null, headerShown: false, title: 'Session Review' }}
         />
 
         <Tabs.Screen
