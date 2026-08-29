@@ -148,7 +148,9 @@ assert.doesNotMatch(screen, /index >= plotted\.length/);
 assert.match(chart, /Canvas/);
 assert.match(chart, /Skia\.Path\.Make/);
 assert.match(chart, /onResponderMove/);
-assert.match(chart, /new Date\(point\.performed_at \|\| `\$\{point\.date\}T12:00:00`\)\.getTime\(\)/);
+assert.match(chart, /buildAnalyticalXLayout/);
+assert.match(chart, /date: point\.performed_at \|\| point\.date/);
+assert.match(chart, /mode: xDomainMode/);
 assert.match(chart, /point\.reps/);
 assert.doesNotMatch(chart, /Polyline|MiniTrend|Sparkline/);
 
