@@ -427,6 +427,24 @@ export type CoachTeamBriefResponse = {
     event_id?: number | null;
     asset?: string | null;
     occurred_at?: string | null;
+    workout_id?: number | null;
+    workout_item_id?: number | null;
+    source_set_log_id?: number | null;
+    core_movement_id?: number | null;
+    movement_name?: string | null;
+    pr_type?: string | null;
+    current_performance?: CoachPrPerformance | null;
+    prior_performance?: CoachPrPerformance | null;
+    current_value?: number | null;
+    prior_value?: number | null;
+    delta?: number | null;
+    unit?: string | null;
+    first_record?: boolean;
+    record_count?: number;
+    record_types?: string[];
+    comparison_policy?: 'exact_core_movement' | 'related_reference' | string;
+    preferred_units?: string | null;
+    destination?: CoachDestination | null;
   }[];
   methodology: Record<string, string>;
   data_quality: {
@@ -437,6 +455,14 @@ export type CoachTeamBriefResponse = {
     notes: string[];
   };
   error?: string;
+};
+
+export type CoachPrPerformance = {
+  set_log_id?: number | null;
+  weight_kg?: number | null;
+  reps?: number | null;
+  rpe?: number | null;
+  rir?: number | null;
 };
 
 export type CoachAnalyticsMetricKey = 'max_progression' | 'dots_progression' | 'adherence' | 'pr_rate';
