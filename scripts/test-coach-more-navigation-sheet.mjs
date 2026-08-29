@@ -65,7 +65,8 @@ assert.match(primitive, /onStartShouldSetPanResponder: \(\) => true/, 'the sheet
 assert.match(primitive, /style=\{styles\.dragZone\}[\s\S]*\.\.\.dragResponder\.panHandlers/, 'the sheet must isolate drag handling to a dedicated drag zone');
 assert.match(primitive, /gesture\.dy >= DISMISS_DISTANCE \|\| gesture\.vy >= DISMISS_VELOCITY/);
 assert.match(primitive, /Pressable accessibilityLabel=\{`Dismiss \$\{accessibilityLabel\}`\}/, 'backdrop must dismiss');
-assert.match(primitive, /Pressable accessibilityLabel=\{`Close \$\{accessibilityLabel\}`\}/, 'X must dismiss');
+assert.match(primitive, /<Pressable[\s\S]*?accessibilityLabel=\{`Close \$\{accessibilityLabel\}`\}[\s\S]*?onPress=\{requestClose\}/, 'X must dismiss');
+assert.match(primitive, /style=\{\(\{ pressed \}\) => \[styles\.closeButton, pressed \? styles\.closeButtonPressed : null\]\}/, 'X must retain an immediate pressed state');
 
 assert.match(tabs, /CoachMoreNavigationProvider enabled=\{isCoach && !isIndividual && viewMode === 'coach'\}/);
 assert.match(tabs, /const isMoreRoute = route\.name === 'coach-more'/);
