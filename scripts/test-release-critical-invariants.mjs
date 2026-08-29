@@ -18,6 +18,7 @@ const areas = [
   ['relationship-scoped athlete coaching scratchpad', ['scripts/test-athlete-coaching-scratchpad.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
+  ['Settings account identity and mode parity', ['scripts/test-settings-account-parity.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
   ['Team Brief coaching analytics and team-relative Athlete Workspace', ['scripts/test-team-brief-v2.mjs']],
   ['platform-wide analytical chart fidelity', ['scripts/test-chart-fidelity-standard.mjs']],
