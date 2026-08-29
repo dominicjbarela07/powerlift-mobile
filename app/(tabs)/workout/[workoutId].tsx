@@ -287,6 +287,7 @@ import {
 } from '@/lib/sequential-group-transition';
 import {
   activeEquipmentIdentity,
+  activeEquipmentPresentation,
   equipmentSnapshotForSet,
   isMachineAccessoryItem,
   needsEquipmentSelection,
@@ -7965,11 +7966,13 @@ export default function WorkoutViewerScreen() {
   ): SupersetWorkspaceItem[] => items.map((item) => {
     const executionItem = accessoryExecutionItem(item);
     const executionName = accessoryExecutionName(item);
+    const equipmentPresentation = activeEquipmentPresentation(executionItem);
     return {
       ...item,
       ...executionItem,
       id: item.id,
       title: simplifyMobileMovementName(executionName) || 'Accessory',
+      equipmentContext: equipmentPresentation?.contextLabel || null,
       timelineLabel: simplifyMobileMovementName(executionName) || 'Accessory',
       prescription: accessoryTargetLine(executionItem),
       historyLine: accessoryLookbackLine(item),
@@ -8111,16 +8114,17 @@ export default function WorkoutViewerScreen() {
                 ? 'bodyweight'
                 : 'portable');
     const currentEquipment = activeEquipmentIdentity(it) as GeneralMovementIdentity | null;
-    const currentManufacturer = currentEquipment?.manufacturer?.display_name
+    const currentEquipmentPresentation = activeEquipmentPresentation(it);
+    const currentManufacturer = currentEquipmentPresentation?.manufacturerName
       || (currentEquipment?.equipment_context?.option_kind === 'other'
         ? 'Other'
         : currentEquipment?.material_parameters?.custom_manufacturer_name)
       || null;
     const currentEquipmentName = currentManufacturer || 'Other';
-    const currentEquipmentVariant = currentEquipment?.equipment_type || null;
-    const currentEquipmentVariantLabel = currentEquipmentVariant
-      ? equipmentPresentationLabel(currentEquipmentVariant, 'Machine')
-      : null;
+    const currentEquipmentVariantLabel = currentEquipmentPresentation?.equipmentTypeLabel
+      || (currentEquipment?.equipment_type
+        ? equipmentPresentationLabel(currentEquipment.equipment_type, 'Machine')
+        : null);
     const accessoryVariantLabel = accessoryKind === 'machine'
       ? currentEquipment
         ? `${currentManufacturer || 'Custom equipment'} · current equipment`

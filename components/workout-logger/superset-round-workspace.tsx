@@ -41,6 +41,7 @@ export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
 
 export type SupersetWorkspaceItem = SupersetRoundSourceItem & Readonly<{
   title: string;
+  equipmentContext?: string | null;
   prescription: string;
   historyLine?: string | null;
   timelineLabel?: string | null;
@@ -212,6 +213,11 @@ export function SupersetRoundWorkspace({
                             <Text style={styles.suggestedPill}>NEXT</Text>
                           ) : null}
                         </View>
+                        {movement.item.equipmentContext ? (
+                          <Text numberOfLines={1} style={styles.workEquipmentContext}>
+                            {movement.item.equipmentContext}
+                          </Text>
+                        ) : null}
                         <Text style={styles.workPrescription}>
                           {movement.item.prescription}
                         </Text>
@@ -511,6 +517,12 @@ const styles = StyleSheet.create({
     color: SLColors.textSecondary,
     fontSize: SLTypography.label.fontSize,
     fontWeight: '600',
+    marginTop: 3,
+  },
+  workEquipmentContext: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '700',
     marginTop: 3,
   },
   movementProgress: {
