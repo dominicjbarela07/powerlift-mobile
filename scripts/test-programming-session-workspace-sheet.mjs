@@ -47,7 +47,7 @@ assert.match(sheet, /PanResponder\.create/, 'the shared handle must support drag
 assert.match(sheet, /DISMISS_DISTANCE|DISMISS_VELOCITY/, 'drag dismissal must use deliberate distance and velocity thresholds.');
 assert.match(sheet, /Animated\.spring\(translateY/, 'entry and cancelled drags must use the established weighted spring.');
 assert.match(sheet, /useSLReducedMotion\(\)/, 'sheet motion must respect reduced-motion settings.');
-assert.match(sheet, /<View style=\{styles\.chrome\} \{\.\.\.dragResponder\.panHandlers\}>[\s\S]*?<View style=\{styles\.content\}>\{children\}<\/View>/, 'only sheet chrome may own the drag gesture; inner content owns vertical scrolling.');
+assert.match(sheet, /<View style=\{styles\.chrome\}>[\s\S]*?style=\{styles\.dragZone\}[\s\S]*?\{\.\.\.dragResponder\.panHandlers\}[\s\S]*?<View style=\{styles\.content\}>\{children\}<\/View>/, 'only the dedicated sheet chrome drag zone may own the gesture; inner content owns vertical scrolling.');
 assert.match(sheet, /Dismiss \$\{accessibilityLabel\}[\s\S]*?onPress=\{requestClose\}/, 'backdrop dismissal must use the same guarded close path.');
 
 console.log('[programming-session-workspace-sheet] ok');
