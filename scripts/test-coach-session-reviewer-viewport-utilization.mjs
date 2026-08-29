@@ -10,6 +10,7 @@ const reviewer = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
 const recap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 const calendar = read('app/(tabs)/coach-calendar.tsx');
 const teamBrief = read('app/coach-team-brief.tsx');
+const analyticalChart = read('components/charts/AnalyticalTimeSeriesChart.tsx');
 
 function styleBody(source, name) {
   const match = source.match(new RegExp(`${name}: \\{([^}]*)\\}`));
@@ -33,9 +34,10 @@ assert.match(styleBody(reviewer, 'readCard'), /padding:\s*10/, 'Reviewer cards k
 assert.match(styleBody(recap, 'executionCard'), /padding:\s*12/, 'Session Execution keeps internal readable padding');
 assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*9/, 'Movement cards keep internal readable padding');
 
-assert.match(reviewer, /const left = 43, right = 12/, 'Evidence charts retain their axis geometry');
-assert.match(reviewer, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
-assert.match(reviewer, /Math\.min\(Math\.max\(8, selectedPoint\.x - 72\), Math\.max\(8, width - 154\)\)/, 'Evidence chart tooltips remain clamped to the available width');
+assert.match(reviewer, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
+assert.match(analyticalChart, /const left = width < 330 \? 43 : 48/, 'Evidence charts retain responsive axis geometry');
+assert.match(analyticalChart, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
+assert.match(analyticalChart, /Math\.min\(Math\.max\(4, selectedDate\.x - tooltipWidth \/ 2\), Math\.max\(4, width - tooltipWidth - 4\)\)/, 'Evidence chart tooltips remain clamped to the available width');
 
 assertNoPageInset(calendar, 'monthContent');
 assertNoPageInset(calendar, 'agendaContent');

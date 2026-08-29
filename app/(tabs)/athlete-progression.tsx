@@ -3,12 +3,14 @@ import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from 
 import { Text } from '@/components/ui/sl-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle, Line, Polyline } from 'react-native-svg';
+import Svg, { Circle, Polyline } from 'react-native-svg';
 import { Redirect } from 'expo-router';
 
 import { SLMotionEntrance, SLMotionPressable } from '@/components/ui';
+import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 import {
   formatCalculatedWeightDeltaFromKg,
   formatCalculatedWeightFromKg,
@@ -330,7 +332,7 @@ function AthleteProgressionScreen() {
             </View>
           </View>
           <Legend series={chart.series} />
-          <HeroChart series={chart.series} formatValue={chart.formatValue} emptyTitle={chart.emptyTitle} />
+          <CanonicalHeroChart series={chart.series} metric={metric} unit={unit} emptyTitle={chart.emptyTitle} />
         </View>
         <InsightCard insight={insight} />
         <SupportingMetrics payload={payload} selected={metric} unit={unit} />
@@ -343,93 +345,22 @@ function AthleteProgressionScreen() {
   );
 }
 
-function HeroChart({
-  series,
-  formatValue,
-  emptyTitle,
-}: {
-  series: ChartSeries[];
-  formatValue: (value: number) => string;
-  emptyTitle: string;
-}) {
-  const populated = series.filter((item) => item.points.length >= 2);
-  const allValues = populated.flatMap((item) => item.points.map((point) => point.value));
-  const allDates = populated.flatMap((item) => item.points.map((point) => point.date || ''));
-
-  if (allValues.length < 2) {
-    return (
-      <View style={styles.chartEmpty}>
-        <Ionicons name="analytics-outline" size={30} color={colors.violet} />
-        <Text style={styles.chartEmptyTitle}>{emptyTitle}</Text>
-        <Text style={styles.chartEmptyBody}>Log a few sessions to start building your progress story.</Text>
-      </View>
-    );
-  }
-
-  const width = 330;
-  const height = 250;
-  const left = 38;
-  const right = 12;
-  const top = 16;
-  const bottom = 34;
-  const innerWidth = width - left - right;
-  const innerHeight = height - top - bottom;
-  const min = Math.min(...allValues);
-  const max = Math.max(...allValues);
-  const spread = Math.max(1, max - min);
-  const yMin = Math.max(0, min - spread * 0.12);
-  const yMax = max + spread * 0.12;
-  const ySpread = Math.max(1, yMax - yMin);
-  const gridValues = [0, 0.5, 1].map((ratio) => yMin + (1 - ratio) * ySpread);
-
-  const pointToCoord = (point: ChartPoint, index: number, count: number) => {
-    const x = left + (count <= 1 ? innerWidth / 2 : (index / (count - 1)) * innerWidth);
-    const y = top + innerHeight - ((point.value - yMin) / ySpread) * innerHeight;
-    return { x, y };
-  };
-
-  const firstDate = allDates.filter(Boolean)[0];
-  const lastDate = allDates.filter(Boolean).slice(-1)[0];
-
-  return (
-    <View style={styles.chartWrap}>
-      <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
-        {gridValues.map((value, index) => {
-          const y = top + (index / 2) * innerHeight;
-          return (
-            <React.Fragment key={`${value}-${index}`}>
-              <Line x1={left} x2={width - right} y1={y} y2={y} stroke="rgba(255,255,255,0.07)" strokeWidth={1} strokeDasharray="4 4" />
-              <Line x1={left} x2={left} y1={top} y2={top + innerHeight} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-            </React.Fragment>
-          );
-        })}
-        {populated.map((item) => {
-          const path = item.points.map((point, index) => {
-            const coord = pointToCoord(point, index, item.points.length);
-            return `${coord.x},${coord.y}`;
-          }).join(' ');
-          return (
-            <React.Fragment key={item.key}>
-              <Polyline points={path} fill="none" stroke={item.color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
-              {item.points.map((point, index) => {
-                const coord = pointToCoord(point, index, item.points.length);
-                return <Circle key={`${item.key}-${index}`} cx={coord.x} cy={coord.y} r={4} fill={item.color} />;
-              })}
-            </React.Fragment>
-          );
-        })}
-      </Svg>
-      <View style={styles.yLabels}>
-        <Text style={styles.axisLabel}>{formatValue(yMax)}</Text>
-        <Text style={styles.axisLabel}>{formatValue((yMin + yMax) / 2)}</Text>
-        <Text style={styles.axisLabel}>{formatValue(yMin)}</Text>
-      </View>
-      <View style={styles.xLabels}>
-        <Text style={styles.axisLabel}>{formatChartDate(firstDate)}</Text>
-        <Text style={styles.axisLabel}>{formatChartDate(lastDate)}</Text>
-      </View>
-    </View>
-  );
+function CanonicalHeroChart({ series, metric, unit, emptyTitle }: { series: ChartSeries[]; metric: MetricKey; unit: DisplayUnit; emptyTitle: string }) {
+  const definition = metric === 'e1rm' || metric === 'top_weight'
+    ? analyticalMetricDefinition(metric, { label: metricTitle(metric), kind: 'weight', unit, axisUnit: unit, includeZero: false, maximumFractionDigits: 0 })
+    : metric === 'volume'
+      ? analyticalMetricDefinition(metric, { label: 'Training volume', kind: 'volume', unit, axisUnit: unit, includeZero: true, maximumFractionDigits: 0 })
+      : metric === 'avg_rpe'
+        ? analyticalMetricDefinition('rpe', { label: 'Average RPE' })
+        : analyticalMetricDefinition('readiness');
+  return <AnalyticalTimeSeriesChart
+    emptyBody="Log a few Sessions to establish a source-backed progress trend."
+    emptyTitle={emptyTitle}
+    height={270}
+    metric={definition}
+    series={series.map((item) => ({ ...item, points: item.points.map((point) => ({ date: point.date || '', value: point.value })) }))}
+    testID={`athlete-progression-${metric}-chart`}
+  />;
 }
 
 function Legend({ series }: { series: ChartSeries[] }) {
@@ -827,12 +758,6 @@ function parseDate(value?: string | null) {
   if (!value) return null;
   const date = new Date(`${value}T12:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function formatChartDate(value?: string | null) {
-  const date = parseDate(value);
-  if (!date) return '';
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 function formatMilestoneDate(value?: string | null) {

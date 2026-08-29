@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Svg, { Line, Polyline } from 'react-native-svg';
 
+import { AnalyticalTimeSeriesChart, type AnalyticalSelection } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
@@ -23,6 +23,7 @@ import { canonicalAccessoryMuscleRegionKey, type AccessoryMuscleRegionKey } from
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { ledgerHrefFor } from './routing';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
+import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 
 type ExplorationKind = 'accessories' | 'variants';
 
@@ -52,14 +53,50 @@ function volumeNumber(valueKg: number, unit: LedgerUnit) {
   return Math.round(kilogramsToDisplayValue(valueKg, unit)).toLocaleString('en-US');
 }
 
-function MiniTrend({ values, tone, height = 54 }: { values: readonly number[]; tone: string; height?: number }) {
-  if (values.length < 2) return <View style={[styles.emptyTrend, { height }]}><Text style={styles.emptyTrendText}>More exact evidence is needed for a trend.</Text></View>;
-  const width = 310;
-  const low = Math.min(...values);
-  const high = Math.max(...values);
-  const spread = Math.max(1, high - low);
-  const points = values.map((value, index) => `${8 + index * ((width - 16) / (values.length - 1))},${height - 8 - ((value - low) / spread) * (height - 16)}`).join(' ');
-  return <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}><Line x1="7" x2={width - 7} y1={height - 7} y2={height - 7} stroke="#29313B" /><Polyline points={points} fill="none" stroke={tone} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></Svg>;
+function MovementPerformanceTrend({ sets, tone, unit, comparable }: {
+  sets: readonly LedgerMovementSet[];
+  tone: string;
+  unit: LedgerUnit;
+  comparable: boolean;
+}) {
+  const points = comparable ? [...sets].reverse().flatMap((set) => {
+    if (!set.date || set.weight_kg == null) return [];
+    return [{
+      date: set.date,
+      value: kilogramsToDisplayValue(set.weight_kg, unit),
+      meta: { reps: set.reps, rpe: set.rpe, rir: set.rir },
+    }];
+  }) : [];
+  const metric = analyticalMetricDefinition('movement_load', {
+    label: 'Exact performed load',
+    kind: 'weight',
+    unit,
+    axisUnit: unit,
+    maximumFractionDigits: unit === 'kg' ? 1 : 0,
+  });
+  const tooltipRows = (selection: AnalyticalSelection) => {
+    const meta = selection.values[0]?.meta;
+    if (!meta) return [];
+    const reps = typeof meta.reps === 'number' ? `${meta.reps} rep${meta.reps === 1 ? '' : 's'}` : null;
+    const effort = typeof meta.rpe === 'number'
+      ? `RPE ${meta.rpe}`
+      : typeof meta.rir === 'number'
+        ? `${meta.rir} RIR`
+        : null;
+    return [reps, effort].filter((value): value is string => Boolean(value));
+  };
+  return <AnalyticalTimeSeriesChart
+    series={[{ key: 'exact_load', label: 'Exact load', color: tone, points }]}
+    metric={metric}
+    height={220}
+    showLegend={false}
+    tooltipRows={tooltipRows}
+    emptyTitle={comparable ? 'More exact evidence is needed' : 'Comparable progression unavailable'}
+    emptyBody={comparable
+      ? 'A real dated exposure is required before this trend can be drawn.'
+      : 'This movement policy does not permit a comparable load trend.'}
+    testID="ledger-movement-performance-chart"
+  />;
 }
 
 function useExploration() {
@@ -179,7 +216,6 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
   const tone = mode === 'variant' ? FAMILY_TONES[movement.core_family || ''] || '#A66AE4' : '#9A66E7';
   const sets = history?.sets ?? [];
   const comparable = Boolean(history?.comparison_allowed);
-  const trend = comparable ? [...sets].reverse().map((set) => set.weight_kg) : [];
   const bestSet = comparable ? [...sets].sort((left, right) => right.weight_kg - left.weight_kg || (right.reps || 0) - (left.reps || 0))[0] : sets[0];
 
   return <View testID="ledger-movement-detail-experience" style={styles.page}>
@@ -191,7 +227,7 @@ export function MovementDetailExperience({ movementId, mode }: { movementId: num
     {tab === 'PRs' ? <View style={styles.inset}><View style={styles.policyNotice}><Ionicons name="shield-checkmark-outline" size={20} color="#C5A4F1" /><View style={styles.policyCopy}><Text style={styles.policyTitle}>Recognition follows governed identity.</Text><Text style={styles.policyBody}>{mode === 'variant' ? 'Only canonical core accomplishment events appear as PRs. Exact set history remains available below.' : 'Accessory recognition is currently disabled by the movement identity platform, so no PR was invented for this movement.'}</Text></View></View></View> : null}
     {tab !== 'PRs' ? <>
       <View style={styles.inset}><View style={styles.detailMetrics}><View><Text style={styles.detailMetricValue}>{movement.set_count}</Text><Text style={styles.detailMetricLabel}>SETS</Text></View><View><Text style={styles.detailMetricValue}>{movement.session_count}</Text><Text style={styles.detailMetricLabel}>SESSIONS</Text></View><View><Text style={styles.detailMetricValue}>{volumeNumber(movement.volume_kg, unit)}</Text><Text style={styles.detailMetricLabel}>{unit.toUpperCase()} VOLUME</Text></View></View></View>
-      <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>PERFORMANCE OVER TIME</Text><Text style={styles.sectionMeta}>{comparable ? 'EXACT IDENTITY' : 'CONTEXT ONLY'}</Text></View><View style={styles.detailTrend}><MiniTrend values={trend} tone={tone} height={116} /></View></View>
+      <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>PERFORMANCE OVER TIME</Text><Text style={styles.sectionMeta}>{comparable ? 'EXACT IDENTITY' : 'CONTEXT ONLY'}</Text></View><View style={styles.detailTrend}><MovementPerformanceTrend sets={sets} tone={tone} unit={unit} comparable={comparable} /></View></View>
       <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>{tab === 'History' ? 'COMPLETE RECENT HISTORY' : 'RECENT EVIDENCE'}</Text><Text style={styles.sectionMeta}>{historyLoading ? 'LOADING' : `${sets.length} SETS`}</Text></View><View style={styles.setList}>{sets.slice(0, tab === 'History' ? 49 : 6).map((set) => <SetEvidenceRow key={set.id} set={set} tone={tone} unit={unit} onPress={() => router.push(`/(tabs)/ledger/archive/set/${set.id}` as any)} />)}</View></View>
       <View style={styles.inset}><View style={styles.equipmentCard}><Text style={styles.sectionKicker}>EQUIPMENT CONTEXT</Text><Text style={styles.equipmentTitle}>{[movement.equipment_manufacturer, movement.equipment_model].filter(Boolean).join(' · ') || prettify(movement.equipment_type)}</Text><Text style={styles.equipmentBody}>{movement.comparison_scope ? `${prettify(movement.comparison_scope)} · ${prettify(movement.comparison_confidence)} confidence` : 'Comparison policy unavailable'}</Text></View></View>
     </> : null}
@@ -334,8 +370,6 @@ const styles = StyleSheet.create({
   detailMetricValue: { color: '#ECE9F0', fontSize: 18, lineHeight: 21, fontWeight: '600', textAlign: 'center' },
   detailMetricLabel: { color: '#737B87', fontSize: 6, lineHeight: 8, letterSpacing: 0.5, textAlign: 'center' },
   detailTrend: { padding: 10, borderRadius: 12, borderWidth: 1, borderColor: '#2D343E', backgroundColor: '#090C11' },
-  emptyTrend: { alignItems: 'center', justifyContent: 'center' },
-  emptyTrendText: { color: '#717A86', fontSize: 8.5 },
   setList: { overflow: 'hidden', borderRadius: 11, borderWidth: 1, borderColor: '#2B313A', backgroundColor: '#090B0F' },
   setRow: { minHeight: 54, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#292F38' },
   setDate: { color: '#C6C2CA', fontSize: 8.5, lineHeight: 11, fontWeight: '600' },

@@ -3,8 +3,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Image, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
 
+import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { CoachMaterialLayer } from '@/components/coach-mobile/coach-material-layer';
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
@@ -12,6 +12,7 @@ import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import { analyticalMetricDefinition, formatAnalyticalValue } from '@/lib/chart-fidelity';
 import type { CoachAnalyticsAthlete, CoachAnalyticsMetricKey, CoachAnalyticsOutlier, CoachTeamBriefResponse } from '@/lib/coach-mobile';
 
 type PeriodKey = CoachTeamBriefResponse['period']['key'];
@@ -19,12 +20,12 @@ type TrendPoint = CoachTeamBriefResponse['progress']['series'][number];
 type LiftKey = 'total' | 'squat' | 'bench' | 'deadlift';
 
 const PERIODS: PeriodKey[] = ['7D', '4W', '12W', '6M', 'YTD', 'ALL'];
-const METRIC_LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS', adherence: 'Adherence', pr_rate: 'PR Rate' };
+const METRIC_LABELS: Record<CoachAnalyticsMetricKey, string> = { max_progression: 'Max Progression', dots_progression: 'Estimated DOTS Progression', adherence: 'Adherence', pr_rate: 'PR Rate' };
 const LIFT_LABELS: Record<LiftKey, string> = { total: 'Total', squat: 'Squat', bench: 'Bench', deadlift: 'Deadlift' };
 
-function metricText(value?: number | null, suffix = '%') {
+function metricText(value?: number | null, metric: CoachAnalyticsMetricKey = 'max_progression') {
   if (value == null) return '—';
-  return `${value > 0 ? '+' : ''}${value.toFixed(1)}${suffix}`;
+  return formatAnalyticalValue(value, analyticalMetricDefinition(metric));
 }
 
 function compactNumber(value?: number | null) {
@@ -136,19 +137,30 @@ function SnapshotCard({ brief }: { brief: CoachTeamBriefResponse }) {
 }
 
 function TeamTrendChart({ metric, points }: { metric: CoachAnalyticsMetricKey; points: TrendPoint[] }) {
-  const geometry = useMemo(() => {
-    const usable = points.filter((point) => point.team_average != null);
-    if (usable.length < 2) return null;
-    const values = usable.flatMap((point) => [point.team_average, point.low, point.high]).filter((value): value is number => value != null);
-    const min = Math.min(...values, metric === 'adherence' ? 0 : 0); const max = Math.max(...values, metric === 'adherence' ? 100 : 1); const span = Math.max(1, max - min);
-    const x = (index: number) => 14 + (index / Math.max(1, usable.length - 1)) * 292; const y = (value: number) => 118 - ((value - min) / span) * 94;
-    const line = usable.map((point, index) => `${index ? 'L' : 'M'}${x(index)},${y(point.team_average as number)}`).join(' ');
-    const upper = usable.map((point, index) => `${index ? 'L' : 'M'}${x(index)},${y(point.high ?? point.team_average as number)}`).join(' ');
-    const lower = usable.slice().reverse().map((point, reverseIndex) => { const index = usable.length - reverseIndex - 1; return `L${x(index)},${y(point.low ?? point.team_average as number)}`; }).join(' ');
-    return { usable, line, band: `${upper}${lower}Z`, x, y, min, max };
-  }, [metric, points]);
-  if (!geometry) return <View style={styles.chartEmpty}><Text style={styles.chartEmptyTitle}>Insufficient comparable history</Text><Text style={styles.chartEmptyCopy}>At least two real observations are required before this trend is drawn.</Text></View>;
-  return <View accessible accessibilityLabel={`${METRIC_LABELS[metric]} team trend from ${geometry.min.toFixed(1)} to ${geometry.max.toFixed(1)}`}><Svg height={150} viewBox="0 0 320 150" width="100%"><Defs><SvgGradient id="teamBand" x1="0" y1="0" x2="0" y2="1"><Stop offset="0" stopColor={COACH_V2.violetBright} stopOpacity="0.2" /><Stop offset="1" stopColor={COACH_V2.violetBright} stopOpacity="0.02" /></SvgGradient></Defs><Path d={geometry.band} fill="url(#teamBand)" /><Path d={geometry.line} fill="none" stroke={COACH_V2.violetBright} strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} />{geometry.usable.map((point, index) => <Circle cx={geometry.x(index)} cy={geometry.y(point.team_average as number)} fill={index === geometry.usable.length - 1 ? COACH_V2.green : COACH_V2.violetBright} key={`${point.date}-${index}`} r={index === geometry.usable.length - 1 ? 4 : 2.4} />)}</Svg><View style={styles.chartDates}><Text style={styles.chartDate}>{geometry.usable[0].date.slice(5)}</Text><Text style={styles.chartDate}>{geometry.usable[geometry.usable.length - 1].date.slice(5)}</Text></View></View>;
+  const usable = points.filter((point) => point.team_average != null);
+  const definition = analyticalMetricDefinition(metric);
+  return <AnalyticalTimeSeriesChart
+    band={usable.map((point) => ({ date: point.date, low: point.low, high: point.high }))}
+    bandLabel="Cohort range"
+    emptyBody="At least two real comparable observations are required before this trend is established."
+    emptyTitle="Insufficient comparable history"
+    height={226}
+    metric={definition}
+    series={[{ key: 'team_average', label: 'Team average', color: COACH_V2.violetBright, points: usable.map((point) => ({ date: point.date, value: point.team_average, meta: { athletes: point.n } })) }]}
+    showLegend={false}
+    testID="team-brief-progress-chart"
+    tooltipRows={(selection) => {
+      const current = usable.find((point) => point.date === selection.date);
+      const index = usable.findIndex((point) => point.date === selection.date);
+      const previous = index > 0 ? usable[index - 1]?.team_average : null;
+      const value = selection.values[0]?.value;
+      const delta = previous != null && value != null ? value - previous : null;
+      return [
+        `${current?.n || 0} athlete${current?.n === 1 ? '' : 's'} represented`,
+        delta == null ? 'First comparable point' : `${formatAnalyticalValue(delta, definition, { signed: true })} vs prior point`,
+      ];
+    }}
+  />;
 }
 
 function LegendDot({ color, label }: { color: string; label: string }) { return <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: color }]} /><Text style={styles.legendText}>{label}</Text></View>; }
@@ -161,15 +173,15 @@ function LiftPerformance({ lift }: { lift?: CoachTeamBriefResponse['lifts'][stri
 function OutlierStrip({ onOpen, outliers, supported }: { onOpen: (row: CoachAnalyticsOutlier) => void; outliers: CoachAnalyticsOutlier[]; supported: boolean }) {
   if (!supported) return <Card tone="neutral"><View style={styles.inlineEmpty}><Ionicons color={COACH_V2.gold} name="people-outline" size={24} /><Text style={styles.chartEmptyTitle}>Cohort too small for outlier claims</Text><Text style={styles.chartEmptyCopy}>Individual values remain visible in the Athlete Matrix. Robust outlier bands require four comparable athletes.</Text></View></Card>;
   if (!outliers.length) return <Card tone="on_track"><View style={styles.inlineEmpty}><Ionicons color={COACH_V2.green} name="checkmark-circle-outline" size={25} /><Text style={styles.chartEmptyTitle}>No athletes outside the normal band</Text><Text style={styles.chartEmptyCopy}>No actionable cohort exceptions were detected in this period.</Text></View></Card>;
-  return <ScrollView contentContainerStyle={styles.outlierRail} horizontal showsHorizontalScrollIndicator={false}>{outliers.slice(0, 5).map((row) => { const color = row.direction === 'below' ? COACH_V2.magenta : COACH_V2.green; return <Pressable key={`${row.athlete_id}:${row.metric}`} accessibilityLabel={`Open ${row.name} outlier detail`} accessibilityRole="button" onPress={() => onOpen(row)} style={({ pressed }) => [styles.outlierCard, { borderColor: `${color}66` }, pressed && styles.pressed]}><CoachMaterialLayer borderRadius={13} emphasis="standard" tone={row.direction === 'below' ? 'critical' : 'on_track'} /><Text style={[styles.outlierDirection, { color }]}>{row.direction === 'below' ? 'BELOW RANGE' : 'ABOVE RANGE'}</Text><Text numberOfLines={1} style={styles.outlierName}>{row.name}</Text><Text style={[styles.outlierValue, { color }]}>{metricText(row.value)}</Text><Text style={styles.outlierMetric}>{METRIC_LABELS[row.metric]}</Text><View style={styles.outlierFooter}><Text style={styles.outlierOpen}>View evidence</Text><Ionicons color={COACH_V2.muted} name="chevron-forward" size={16} /></View></Pressable>; })}</ScrollView>;
+  return <ScrollView contentContainerStyle={styles.outlierRail} horizontal showsHorizontalScrollIndicator={false}>{outliers.slice(0, 5).map((row) => { const color = row.direction === 'below' ? COACH_V2.magenta : COACH_V2.green; return <Pressable key={`${row.athlete_id}:${row.metric}`} accessibilityLabel={`Open ${row.name} outlier detail`} accessibilityRole="button" onPress={() => onOpen(row)} style={({ pressed }) => [styles.outlierCard, { borderColor: `${color}66` }, pressed && styles.pressed]}><CoachMaterialLayer borderRadius={13} emphasis="standard" tone={row.direction === 'below' ? 'critical' : 'on_track'} /><Text style={[styles.outlierDirection, { color }]}>{row.direction === 'below' ? 'BELOW RANGE' : 'ABOVE RANGE'}</Text><Text numberOfLines={1} style={styles.outlierName}>{row.name}</Text><Text style={[styles.outlierValue, { color }]}>{metricText(row.value, row.metric)}</Text><Text style={styles.outlierMetric}>{METRIC_LABELS[row.metric]}</Text><View style={styles.outlierFooter}><Text style={styles.outlierOpen}>View evidence</Text><Ionicons color={COACH_V2.muted} name="chevron-forward" size={16} /></View></Pressable>; })}</ScrollView>;
 }
 
 function AthleteMatrix({ athletes, onOpen }: { athletes: CoachAnalyticsAthlete[]; onOpen: (athlete: CoachAnalyticsAthlete) => void }) {
   const sorted = useMemo(() => [...athletes].sort((a, b) => (b.metrics.max_progression.value ?? -999) - (a.metrics.max_progression.value ?? -999)), [athletes]);
-  return <Card><View style={styles.matrixHeader}><Text style={[styles.matrixHeaderText, styles.matrixName]}>ATHLETE</Text><Text style={styles.matrixHeaderText}>MAX</Text><Text style={styles.matrixHeaderText}>DOTS</Text><Text style={styles.matrixHeaderText}>ADH.</Text><Text style={styles.matrixHeaderText}>PR RATE</Text></View>{sorted.map((athlete) => <Pressable key={athlete.athlete_id} accessibilityLabel={`Open ${athlete.name} analytics`} accessibilityRole="button" onPress={() => onOpen(athlete)} style={({ pressed }) => [styles.matrixRow, pressed && styles.pressed]}><View style={styles.matrixName}><Text numberOfLines={1} style={styles.matrixAthlete}>{athlete.name}</Text><Text numberOfLines={1} style={styles.matrixContext}>{athlete.block?.name || athlete.program?.name || 'No active block'}</Text></View><MatrixValue metric={athlete.metrics.max_progression} /><MatrixValue metric={athlete.metrics.dots_progression} /><MatrixValue metric={athlete.metrics.adherence} /><MatrixValue metric={athlete.metrics.pr_rate} /><Ionicons color={COACH_V2.subtle} name="chevron-forward" size={14} /></Pressable>)}</Card>;
+  return <Card><View style={styles.matrixHeader}><Text style={[styles.matrixHeaderText, styles.matrixName]}>ATHLETE</Text><Text style={styles.matrixHeaderText}>MAX</Text><Text style={styles.matrixHeaderText}>DOTS</Text><Text style={styles.matrixHeaderText}>ADH.</Text><Text style={styles.matrixHeaderText}>PR RATE</Text></View>{sorted.map((athlete) => <Pressable key={athlete.athlete_id} accessibilityLabel={`Open ${athlete.name} analytics`} accessibilityRole="button" onPress={() => onOpen(athlete)} style={({ pressed }) => [styles.matrixRow, pressed && styles.pressed]}><View style={styles.matrixName}><Text numberOfLines={1} style={styles.matrixAthlete}>{athlete.name}</Text><Text numberOfLines={1} style={styles.matrixContext}>{athlete.block?.name || athlete.program?.name || 'No active block'}</Text></View><MatrixValue metric={athlete.metrics.max_progression} metricKey="max_progression" /><MatrixValue metric={athlete.metrics.dots_progression} metricKey="dots_progression" /><MatrixValue metric={athlete.metrics.adherence} metricKey="adherence" /><MatrixValue metric={athlete.metrics.pr_rate} metricKey="pr_rate" /><Ionicons color={COACH_V2.subtle} name="chevron-forward" size={14} /></Pressable>)}</Card>;
 }
 
-function MatrixValue({ metric }: { metric: CoachAnalyticsAthlete['metrics']['adherence'] }) { const color = metric.cohort_state === 'below' ? COACH_V2.magenta : metric.cohort_state === 'above' ? COACH_V2.green : metric.value == null ? COACH_V2.subtle : COACH_V2.text; return <Text numberOfLines={1} style={[styles.matrixValue, { color }]}>{metricText(metric.value)}</Text>; }
+function MatrixValue({ metric, metricKey }: { metric: CoachAnalyticsAthlete['metrics']['adherence']; metricKey: CoachAnalyticsMetricKey }) { const color = metric.cohort_state === 'below' ? COACH_V2.magenta : metric.cohort_state === 'above' ? COACH_V2.green : metric.value == null ? COACH_V2.subtle : COACH_V2.text; return <Text numberOfLines={1} style={[styles.matrixValue, { color }]}>{metricText(metric.value, metricKey)}</Text>; }
 
 function ImpactGrid({ impact }: { impact: CoachTeamBriefResponse['coaching_impact'] }) {
   const cells: { label: string; value: string | number }[] = [

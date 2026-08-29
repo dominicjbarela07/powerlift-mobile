@@ -3,13 +3,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-native';
-import Svg, { Circle, Line, Polygon, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
+import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
 import { formatCalculatedWeightValue, formatWeightFromKg, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
 import { journeyPerformanceDetail } from '@/lib/journey-weight-presentation';
@@ -550,33 +551,16 @@ function JourneyMoment({ event, expanded, isLast, onPress, onOpenEvidence }: { e
   );
 }
 
-function StrengthTrendPlot({ points, color, label }: { points: readonly number[]; color: string; label: string }) {
-  if (points.length < 2) {
-    return <View accessibilityLabel={label} style={styles.strengthTrendPlot}><Text style={styles.strengthRepMeta}>Not enough qualifying evidence to draw a trend.</Text></View>;
-  }
-  const width = 320;
-  const height = 118;
-  const inset = 9;
-  const low = Math.min(...points);
-  const high = Math.max(...points);
-  const spread = Math.max(1, high - low);
-  const coordinates = points.map((point, index) => ({
-    x: inset + (index * (width - inset * 2)) / (points.length - 1),
-    y: height - inset - ((point - low) / spread) * (height - inset * 2),
-  }));
-  const linePoints = coordinates.map(({ x, y }) => `${x},${y}`).join(' ');
-  const areaPoints = `${inset},${height - inset} ${linePoints} ${width - inset},${height - inset}`;
-
-  return (
-    <View accessibilityLabel={label} style={styles.strengthTrendPlot}>
-      <Svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
-        {[0.25, 0.5, 0.75].map((position) => <Line key={position} x1={inset} x2={width - inset} y1={height * position} y2={height * position} stroke="#242934" strokeWidth="1" />)}
-        <Polygon points={areaPoints} fill={`${color}16`} />
-        <Polyline points={linePoints} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {coordinates.map(({ x, y }, index) => <Circle key={`${x}-${y}`} cx={x} cy={y} r={index === coordinates.length - 1 ? 4.5 : 2.6} fill={index === coordinates.length - 1 ? '#F7F3FF' : color} stroke={color} strokeWidth={index === coordinates.length - 1 ? 2 : 0} />)}
-      </Svg>
-    </View>
-  );
+function CanonicalStrengthTrendPlot({ points, dates, color, label, unit }: { points: readonly number[]; dates: readonly string[]; color: string; label: string; unit: LedgerUnit }) {
+  return <AnalyticalTimeSeriesChart
+    emptyBody="At least two qualifying estimated-strength observations are required."
+    emptyTitle="Not enough qualifying evidence"
+    height={220}
+    metric={analyticalMetricDefinition('estimated_1rm', { label, kind: 'weight', unit, axisUnit: unit, includeZero: false, maximumFractionDigits: 0 })}
+    series={[{ key: 'estimated_strength', label: 'Estimated strength', color, points: points.map((value, index) => ({ date: dates[index] || '', value })) }]}
+    showLegend={false}
+    testID="ledger-estimated-strength-chart"
+  />;
 }
 
 export function StrengthExperience() {
@@ -719,7 +703,7 @@ export function StrengthExperience() {
 
       <View style={styles.strengthCurrent}>
         <View style={styles.strengthCurrentHeader}><View><Kicker tone={focusedProfile.color}>CURRENT STRENGTH · {focusLift.key.toUpperCase()}</Kicker><View style={styles.strengthCurrentValueRow}><Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.strengthCurrentValue}>{focusLift.best ?? '—'}</Text>{focusLift.best != null ? <Text style={styles.strengthCurrentUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.strengthCurrentMetric}>estimated 1RM · {progression?.range?.label || range}</Text></View><View style={[styles.strengthDirection, { borderColor: `${focusedProfile.color}70` }]}><Ionicons name="trending-up" size={18} color={focusedProfile.color} /><Text style={[styles.strengthDirectionValue, { color: focusedProfile.color }]}>{focusedProfile.delta != null ? `+${focusedProfile.delta}` : '—'}</Text><Text style={styles.strengthDirectionLabel}>IN RANGE</Text></View></View>
-        <StrengthTrendPlot points={focusLift.points} color={focusedProfile.color} label={`${focusLift.key} estimated strength trend${focusLift.best == null ? '' : ` ending at ${focusLift.best} ${unit}`}`} />
+        <CanonicalStrengthTrendPlot points={focusLift.points} dates={focusedProfile.pointDates.map((date) => date || '')} color={focusedProfile.color} label={`${focusLift.key} estimated strength`} unit={unit} />
         {trendDateLabels.length ? <View style={styles.strengthCurrentDates}>{trendDateLabels.map((label, index) => <Text key={`${label}-${index}`} style={[styles.strengthCurrentDate, index === trendDateLabels.length - 1 && { color: focusedProfile.color }]}>{label}</Text>)}</View> : null}
         <View style={styles.strengthCurrentRead}><View style={[styles.strengthStatusDot, { backgroundColor: focusedProfile.color }]} /><Text style={styles.strengthCurrentReadText}>{focusLift.points.length >= 2 ? `${focusLift.points.length} source-backed estimates define this range.` : 'More qualifying sets are needed before a trustworthy trend is available.'}</Text></View>
       </View>

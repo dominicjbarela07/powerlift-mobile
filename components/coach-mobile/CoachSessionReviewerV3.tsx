@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
@@ -19,12 +19,12 @@ import {
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
 import {
-  formatCalculatedWeightFromKg,
   formatCompactVolumeValueFromKg,
   formatWeightFromKg,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
+import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 
 type ReviewerTab = 'overview' | 'performed' | 'plan' | 'coach';
 
@@ -150,62 +150,21 @@ function chartValue(valueKg: number, unit: DisplayWeightUnit) {
   return unit === 'kg' ? valueKg : valueKg * 2.2046226218;
 }
 
-type EvidencePlotPoint = Record<string, any> & {
-  value: number;
-  x: number;
-  y: number;
-};
-
-type EvidencePlot = {
-  rows: EvidencePlotPoint[];
-  ticks: number[];
-  path: string;
-  height?: number;
-  left?: number;
-  right?: number;
-  top?: number;
-  bottom?: number;
-  low?: number;
-  high?: number;
-};
-
 function EvidenceChart({ points, unit, label = 'Estimated strength' }: { points?: Record<string, any>[]; unit: DisplayWeightUnit; label?: string }) {
-  const [width, setWidth] = useState(310);
-  const [selected, setSelected] = useState<number | null>(null);
-  const plot = useMemo<EvidencePlot>(() => {
-    const rows = (points || []).map((row) => ({ ...row, value: chartValue(Number(row.metric_value ?? row.score), unit) })).filter((row) => Number.isFinite(row.value));
-    if (!rows.length) return { rows: [], ticks: [], path: '' };
-    const values = rows.map((row) => row.value);
-    const actualMin = Math.min(...values);
-    const actualMax = Math.max(...values);
-    const reference = Math.max(Math.abs(actualMin), Math.abs(actualMax), 1);
-    const honestPadding = Math.max((actualMax - actualMin) * 0.25, reference * 0.08);
-    const low = Math.max(0, actualMin - honestPadding);
-    const high = actualMax + honestPadding;
-    const ticks = [low, low + (high - low) / 2, high];
-    const left = 43, right = 12, top = 16, bottom = 28, height = 170;
-    const x = (index: number) => left + (rows.length === 1 ? (width - left - right) / 2 : index * (width - left - right) / (rows.length - 1));
-    const y = (value: number) => top + (high - value) * (height - top - bottom) / Math.max(high - low, 1);
-    const path = rows.map((row, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(row.value)}`).join(' ');
-    return { rows: rows.map((row, index) => ({ ...row, x: x(index), y: y(row.value) })) as EvidencePlotPoint[], ticks, path, height, left, right, top, bottom, low, high };
-  }, [points, unit, width]);
-  useEffect(() => setSelected(plot.rows.length ? plot.rows.length - 1 : null), [plot.rows.length]);
-  if (!plot.rows.length) return <View style={styles.chartEmpty}><Text style={styles.chartEmptyTitle}>No exact comparable history</Text><Text style={styles.chartEmptyBody}>A real prior observation is required.</Text></View>;
-  const selectedPoint = selected == null ? null : plot.rows[selected];
-  return <View onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))} style={styles.chartWrap}>
-    <Text style={styles.chartMetric}>{label} ({unit})</Text>
-    <Svg accessibilityLabel={`${label} history with numerical axes`} width={width} height={170}>
-      {plot.ticks.map((tick, index) => {
-        const y = 16 + (plot.ticks[2] - tick) * (170 - 16 - 28) / Math.max(plot.ticks[2] - plot.ticks[0], 1);
-        return <React.Fragment key={tick}><Line x1={43} x2={width - 12} y1={y} y2={y} stroke="#242833" strokeWidth="1" /><SvgText x="38" y={y + 4} textAnchor="end" fill="#8D91A0" fontSize="10">{num(tick, 0)}</SvgText></React.Fragment>;
-      })}
-      <Path d={plot.path} fill="none" stroke="#A35CFF" strokeWidth="3" />
-      {plot.rows.map((point, index) => <Circle key={`${point.set_log_id || index}`} cx={point.x} cy={point.y} r={selected === index ? 6 : 4} fill={point.current ? '#D893FF' : '#7E54EF'} stroke={selected === index ? '#FFFFFF' : 'none'} strokeWidth="2" />)}
-      {plot.rows.map((point, index) => <SvgText key={`${index}-date`} x={point.x} y="163" textAnchor="middle" fill="#858997" fontSize="9">{String(point.date || '').slice(5).replace('-', '/')}</SvgText>)}
-    </Svg>
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFillObject}>{plot.rows.map((point, index) => <Pressable key={`${index}-hit`} accessibilityRole="button" accessibilityLabel={`Inspect ${point.date}`} onPress={() => setSelected(index)} style={[styles.pointHit, { left: point.x - 20, top: point.y + 18 }]} />)}</View>
-    {selectedPoint ? <View style={[styles.tooltip, { left: Math.min(Math.max(8, selectedPoint.x - 72), Math.max(8, width - 154)) }]}><Text style={styles.tooltipDate}>{selectedPoint.current ? 'THIS SESSION' : dateLabel(selectedPoint.date).toUpperCase()}</Text><Text style={styles.tooltipValue}>{formatBest(selectedPoint, unit)}</Text><Text style={styles.tooltipMeta}>{formatCalculatedWeightFromKg(selectedPoint.metric_value, unit) || '—'} estimated strength</Text></View> : null}
-  </View>;
+  const rows = (points || []).map((row) => ({ date: String(row.date || ''), value: chartValue(Number(row.metric_value ?? row.score), unit), meta: row })).filter((row) => Number.isFinite(row.value));
+  return <AnalyticalTimeSeriesChart
+    emptyBody="A real prior exact-movement observation is required."
+    emptyTitle="No exact comparable history"
+    height={224}
+    metric={analyticalMetricDefinition('estimated_strength', { label, kind: 'weight', unit, axisUnit: unit, includeZero: false, maximumFractionDigits: 0 })}
+    series={[{ key: 'performance', label, color: '#A35CFF', points: rows }]}
+    showLegend={false}
+    testID="coach-reviewer-movement-evidence-chart"
+    tooltipRows={(selection) => {
+      const row = selection.values[0]?.meta as Record<string, any> | undefined;
+      return row ? [formatBest(row, unit), row.current ? 'This Session' : 'Exact comparable exposure'] : [];
+    }}
+  />;
 }
 
 function SessionRead({ analytics }: { analytics: ReviewerAnalytics }) {
@@ -281,21 +240,19 @@ function Recovery({ analytics }: { analytics: ReviewerAnalytics }) {
 }
 
 function RecoveryChart({ points }: { points: Record<string, any>[] }) {
-  const width = 330, height = 150, left = 34, right = 10, top = 12, bottom = 24;
   const rows = points.slice(-8);
-  const axisMax = Math.max(
-    10,
-    ...rows.flatMap((row) => ['readiness', 'sleep', 'stress', 'energy']
-      .map((key) => Number(row[key]))
-      .filter((value) => Number.isFinite(value))),
-  );
-  const x = (index: number) => left + (rows.length <= 1 ? 0 : index * (width - left - right) / (rows.length - 1));
-  const y = (value: number) => top + (axisMax - value) * (height - top - bottom) / axisMax;
   const series = [
-    ['readiness', '#38D381'], ['sleep', '#5AAEFF'], ['stress', '#FF8A3D'], ['energy', '#E05BD8'],
+    ['readiness', 'Readiness', '#38D381'], ['sleep', 'Sleep', '#5AAEFF'], ['stress', 'Stress', '#FF8A3D'], ['energy', 'Energy', '#E05BD8'],
   ] as const;
-  const ticks = [0, axisMax / 2, axisMax];
-  return <View style={styles.recoveryChart}><Svg accessibilityLabel={`Readiness context chart with 0 to ${num(axisMax)} numerical axis`} width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>{ticks.map((tick) => <React.Fragment key={tick}><Line x1={left} x2={width - right} y1={y(tick)} y2={y(tick)} stroke="#252934" /><SvgText x={left - 6} y={y(tick) + 4} textAnchor="end" fill="#858997" fontSize="9">{num(tick)}</SvgText></React.Fragment>)}{series.map(([key, color]) => { const valid = rows.map((row, index) => ({ value: Number(row[key]), index })).filter((row) => Number.isFinite(row.value)); const path = valid.map((row, index) => `${index ? 'L' : 'M'} ${x(row.index)} ${y(row.value)}`).join(' '); return <React.Fragment key={key}><Path d={path} fill="none" stroke={color} strokeWidth="2" />{valid.map((row) => <Circle key={`${key}-${row.index}`} cx={x(row.index)} cy={y(row.value)} r="3" fill={color} />)}</React.Fragment>; })}{rows.map((row, index) => <SvgText key={`${index}-date`} x={x(index)} y={height - 5} textAnchor="middle" fill="#858997" fontSize="8">{String(row.date || '').slice(5).replace('-', '/')}</SvgText>)}</Svg><View style={styles.legend}>{series.map(([key, color]) => <View key={key} style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: color }]} /><Text style={styles.legendText}>{key[0].toUpperCase() + key.slice(1)}</Text></View>)}</View></View>;
+  return <AnalyticalTimeSeriesChart
+    emptyBody="Two dated readiness observations are required."
+    emptyTitle="No recovery trend yet"
+    formatSeriesValue={(key, value) => key === 'sleep' ? `${num(value)} h` : `${num(value)} / 10`}
+    height={226}
+    metric={analyticalMetricDefinition('recovery_context', { label: 'Recovery context', kind: 'score', minimum: 0, maximum: 10, maximumFractionDigits: 1 })}
+    series={series.map(([key, label, color]) => ({ key, label, color, points: rows.map((row) => ({ date: String(row.date || ''), value: Number.isFinite(Number(row[key])) ? Number(row[key]) : null })) }))}
+    testID="coach-reviewer-recovery-chart"
+  />;
 }
 
 function Reflection({ analytics }: { analytics: ReviewerAnalytics }) {

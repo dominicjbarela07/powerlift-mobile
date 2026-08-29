@@ -123,6 +123,7 @@
     "test:coach-home-coming-up-direct-open": "node --import tsx scripts/test-coach-home-coming-up-direct-open.mjs",
     "test:coach-home-activity-first": "node --import tsx scripts/test-coach-home-activity-first.mjs",
     "test:team-brief-v2": "node --import tsx scripts/test-team-brief-v2.mjs",
+    "test:chart-fidelity": "node --import tsx scripts/test-chart-fidelity-standard.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
     "test:shipping-navigation": "node --import tsx scripts/test-shipping-navigation-parity.mjs",
     "audit:ui-mock-library-routes": "node --import tsx scripts/test-ui-mock-library-registry.mjs",
