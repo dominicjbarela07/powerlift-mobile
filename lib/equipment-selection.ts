@@ -1,3 +1,5 @@
+import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
+
 export type EquipmentSelectionContinuation =
   | { kind: 'none' }
   | { kind: 'accessory_set'; itemId: number }
@@ -228,6 +230,43 @@ export function activeEquipmentIdentity(
   const prescribed = item.movement_identity;
   if (isConfiguredMachineIdentity(prescribed)) return prescribed;
   return null;
+}
+
+export type ActiveEquipmentPresentation = Readonly<{
+  identity: EquipmentIdentityLike;
+  manufacturerName: string;
+  equipmentTypeLabel: string;
+  contextLabel: string;
+}>;
+
+/**
+ * Resolves compact athlete-facing context for the equipment that is actually
+ * active on a machine movement. A manufacturer is required because generic or
+ * unresolved equipment copy is not useful context on a movement card.
+ */
+export function activeEquipmentPresentation(
+  item: EquipmentAwareWorkoutItem | null | undefined,
+): ActiveEquipmentPresentation | null {
+  const identity = activeEquipmentIdentity(item);
+  if (!identity) return null;
+
+  const manufacturerName = String(
+    identity.manufacturer?.display_name
+      || identity.material_parameters?.custom_manufacturer_name
+      || '',
+  ).trim();
+  if (!manufacturerName) return null;
+
+  const equipmentTypeLabel = equipmentPresentationLabel(
+    identity.equipment_type || identity.loading_implementation,
+    'Machine',
+  );
+  return {
+    identity,
+    manufacturerName,
+    equipmentTypeLabel,
+    contextLabel: `${manufacturerName} · ${equipmentTypeLabel}`,
+  };
 }
 
 export function needsEquipmentSelection(
