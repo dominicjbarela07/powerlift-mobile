@@ -182,11 +182,11 @@ export default function CoachSessionReviewScreen() {
     />;
   }
 
-  return <SafeAreaView style={styles.screen}><View style={styles.stateCard}>{loading ? <ActivityIndicator color={SLColors.accentMuted} /> : <Ionicons name="alert-circle-outline" size={27} color={SLColors.danger} />}<Text style={styles.stateTitle}>{loading ? 'Loading Session review' : 'Session review unavailable'}</Text>{error ? <Text style={styles.stateBody}>{error}</Text> : null}{!loading ? <Pressable onPress={() => { void load(); }} style={({ pressed }) => [styles.retry, pressed && styles.pressed]}><Text style={styles.retryText}>Try Again</Text></Pressable> : null}</View></SafeAreaView>;
+  return <SafeAreaView style={styles.stateScreen}><View style={styles.stateCard}>{loading ? <ActivityIndicator color={SLColors.accentMuted} /> : <Ionicons name="alert-circle-outline" size={27} color={SLColors.danger} />}<Text style={styles.stateTitle}>{loading ? 'Loading Session review' : 'Session review unavailable'}</Text>{error ? <Text style={styles.stateBody}>{error}</Text> : null}{!loading ? <Pressable onPress={() => { void load(); }} style={({ pressed }) => [styles.retry, pressed && styles.pressed]}><Text style={styles.retryText}>Try Again</Text></Pressable> : null}</View></SafeAreaView>;
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20, backgroundColor: '#020306' },
+  stateScreen: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20, backgroundColor: '#020306' },
   stateCard: { width: '100%', maxWidth: 420, alignItems: 'center', padding: 28, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.object },
   stateTitle: { marginTop: 12, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 19 },
   stateBody: { marginTop: 7, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 18, textAlign: 'center' },
