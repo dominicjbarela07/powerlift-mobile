@@ -10,6 +10,7 @@ const userStories = [
   ['Programming Manager Session swipe actions', 'scripts/test-programming-session-swipe-hotfix.mjs'],
   ['Coach Queue swipe actions', 'scripts/test-coach-queue-swipe-gesture.mjs'],
   ['Immediate account-mode transition', 'scripts/test-mobile-mode-transition.mjs'],
+  ['Coach More navigation launcher', 'scripts/test-coach-more-navigation-sheet.mjs'],
 ];
 
 const failures = [];

@@ -26,6 +26,7 @@ import {
 import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideoPlayerModal';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
@@ -39,6 +40,7 @@ import {
   formatCompactVolumeValueFromKg,
   formatWeightDeltaFromKg,
   formatWeightFromKg,
+  kilogramsToDisplayValue,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
@@ -52,8 +54,10 @@ import { setCompletedSessionRecapOpen } from '@/lib/session-editor-overlay-state
 import { equipmentPresentationLabel, equipmentPresentationParts } from '@/lib/equipment-presentation';
 import {
   buildSessionRecapTrendPlot,
+  chronologicalTrendPoints,
   formatSessionRecapTrendDelta,
   formatSessionRecapTrendValue,
+  trendPointMetricValue,
   type SessionRecapTrendPoint,
 } from '@/lib/session-recap-trend';
 import {
@@ -66,6 +70,7 @@ import {
   type SessionRecapSetComparison,
 } from '@/lib/session-recap-plan-compare';
 import { estimateMovementStrengthKg, strengthMetricForMovementClass } from '@/lib/movement-strength-metric';
+import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 
 export type CompletedRecapSet = {
   id: number;
@@ -444,6 +449,40 @@ function effortLabel(set: Pick<CompletedRecapSet, 'actual_rpe' | 'actual_rir'>) 
 }
 
 function MovementTrendChart({
+  trend,
+  unit,
+  compact = false,
+  color = '#A865FF',
+}: {
+  trend?: CompletedRecapMovement['trend'];
+  unit: DisplayWeightUnit;
+  compact?: boolean;
+  color?: string;
+}) {
+  if (compact) return <CompactMovementTrendChart compact trend={trend} unit={unit} color={color} />;
+  const points = chronologicalTrendPoints(trend?.points).map((point) => {
+    const canonical = trendPointMetricValue(point);
+    const value = canonical == null ? null : trend?.metric_unit === 'kg' ? kilogramsToDisplayValue(canonical, unit) : canonical;
+    return { date: String(point.date || ''), value, meta: point };
+  });
+  const isWeight = trend?.metric_unit === 'kg';
+  return <AnalyticalTimeSeriesChart
+    emptyBody="A real prior comparable exposure is required before this trend is established."
+    emptyTitle="Comparison unavailable"
+    height={226}
+    metric={analyticalMetricDefinition(String(trend?.metric || 'best_set'), { label: trend?.metric_label || 'Best-set performance', kind: isWeight ? 'weight' : 'score', unit: isWeight ? unit : trend?.metric_unit || undefined, axisUnit: isWeight ? unit : trend?.metric_unit || undefined, includeZero: false, maximumFractionDigits: 1 })}
+    series={[{ key: 'performance', label: trend?.metric_label || 'Best-set performance', color, points }]}
+    showLegend={false}
+    testID="session-recap-movement-trend-chart"
+    tooltipRows={(selection) => {
+      const point = selection.values[0]?.meta as TrendPoint | undefined;
+      const effort = point?.rir != null ? `${numberLabel(point.rir)} RIR` : point?.rpe != null ? `RPE ${numberLabel(point.rpe)}` : null;
+      return [point?.current ? 'This Session' : 'Exact comparable exposure', point?.reps ? `${numberLabel(point.reps, 0)} reps${effort ? ` · ${effort}` : ''}` : effort].filter(Boolean) as string[];
+    }}
+  />;
+}
+
+function CompactMovementTrendChart({
   trend,
   unit,
   compact = false,

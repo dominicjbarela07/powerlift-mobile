@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -41,6 +41,11 @@ import {
   kilogramsToDisplayValue,
   normalizeDisplayWeightUnit,
 } from '@/lib/display-units';
+import {
+  personalTrainingProfileHeaders,
+  resolvePersonalTrainingProfileMode,
+  resolveSettingsIdentityName,
+} from '@/lib/settings-account-parity';
 
 const FALLBACK_TIMEZONES = [
   'Africa/Cairo',
@@ -312,6 +317,7 @@ export default function SettingsScreen() {
   const { height: viewportHeight } = useWindowDimensions();
   const auth = useAuth() as any;
   const refreshAccountState = auth?.refreshAccountState;
+  const applyAccountStatePayload = auth?.applyAccountStatePayload;
   const [loggingOut, setLoggingOut] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [timezone, setTimezone] = useState<string>(getDeviceTimezone() || 'America/Los_Angeles');
@@ -377,6 +383,7 @@ export default function SettingsScreen() {
   const [downgradeModalOpen, setDowngradeModalOpen] = useState(false);
   const [downgradeError, setDowngradeError] = useState<string | null>(null);
   const [downgradeSubmitting, setDowngradeSubmitting] = useState(false);
+  const settingsLoadGenerationRef = useRef(0);
 
   const deviceTimezone = useMemo(() => getDeviceTimezone(), []);
   const timezoneOptions = useMemo(() => supportedTimezones(deviceTimezone), [deviceTimezone]);
@@ -573,11 +580,19 @@ export default function SettingsScreen() {
   );
   const mobileModeSummary =
     activeMobileMode === 'individual' ? 'Self-Coach' : activeMobileMode === 'coach' ? 'Coach' : 'Athlete';
-  const hasTrainingProfile = isIndividual || activeMobileMode === 'athlete' || !!trainingProfile;
+  const personalTrainingProfileMode = useMemo(
+    () => resolvePersonalTrainingProfileMode({ activeMode: activeMobileMode, availableModes: safeBackendMobileModes }),
+    [activeMobileMode, safeBackendMobileModes],
+  );
+  const personalProfileHeaders = useMemo(
+    () => personalTrainingProfileHeaders(personalTrainingProfileMode),
+    [personalTrainingProfileMode],
+  );
+  const hasTrainingProfile = !!trainingProfile;
   const showVideoFeedbackNotifications = activeMobileMode === 'athlete' && !isIndividual;
   const showVideoSubmissionNotifications = isCoach && activeMobileMode === 'coach' && !isIndividual;
   const showNotificationsSection = showVideoFeedbackNotifications || showVideoSubmissionNotifications;
-  const showLinkCoachEntry = !isIndividual && (role === 'athlete' || isCoach);
+  const showLinkCoachEntry = !isIndividual && !!linkCoachStatus?.athlete;
   const linkCoachAlreadyLinked = linkCoachStatus?.already_linked === true || !!linkCoachStatus?.athlete?.coach_id;
   const linkCoachPendingCount = Array.isArray(linkCoachStatus?.pending_invites)
     ? linkCoachStatus?.pending_invites?.length || 0
@@ -649,17 +664,20 @@ export default function SettingsScreen() {
   }, [timezoneOptions, timezoneSearch]);
 
   const loadMobileSettings = useCallback(async () => {
+    const generation = settingsLoadGenerationRef.current + 1;
+    settingsLoadGenerationRef.current = generation;
     try {
       setTimezoneLoading(true);
       setMobileSettingsLoaded(false);
       setProfileEditor(null);
       const resp = await fetchJson<any>('/mobile/settings', { method: 'GET' });
+      if (settingsLoadGenerationRef.current !== generation) return;
       const json = resp.json || {};
       if (!resp.ok || !json.ok) throw new Error(json.error || `HTTP ${resp.status}`);
       setNotifyVideoFeedback(json.notify_video_feedback !== false);
       setNotifyVideoSubmissions(json.notify_video_submissions !== false);
       if (Array.isArray(json.available_mobile_modes) || json.mobile_mode) {
-        await auth?.applyAccountStatePayload?.({
+        await applyAccountStatePayload?.({
           user: {
             ...json,
             preferred_units: normalizeUnits(
@@ -675,15 +693,28 @@ export default function SettingsScreen() {
           ? json.video_ml_training_consent
           : null
       );
-      setTrainingProfile(json.training_profile || null);
-      setLinkCoachStatus(json.link_coach || null);
+      let personalProfilePayload = json;
+      if (!json.training_profile && personalTrainingProfileMode && personalTrainingProfileMode !== activeMobileMode) {
+        const personalResp = await fetchJson<any>('/mobile/settings', {
+          method: 'GET',
+          headers: personalProfileHeaders,
+        });
+        if (settingsLoadGenerationRef.current !== generation) return;
+        if (personalResp.ok && personalResp.json?.ok) personalProfilePayload = personalResp.json;
+      }
+      const nextTrainingProfile = personalProfilePayload.training_profile || null;
+      setTrainingProfile(nextTrainingProfile);
+      setLinkCoachStatus(personalProfilePayload.link_coach || null);
       setMobileSettingsLoaded(true);
-      if (hasTrainingProfile) {
-        setTimezone(json.timezone || deviceTimezone || 'America/Los_Angeles');
-        setTimezoneSource(json.timezone_source || 'device');
-        await setManualTimezonePreference(json.timezone_source === 'manual' ? json.timezone : null);
+      if (nextTrainingProfile) {
+        setTimezone(personalProfilePayload.timezone || deviceTimezone || 'America/Los_Angeles');
+        setTimezoneSource(personalProfilePayload.timezone_source || 'device');
+        await setManualTimezonePreference(
+          personalProfilePayload.timezone_source === 'manual' ? personalProfilePayload.timezone : null,
+        );
       }
     } catch (err) {
+      if (settingsLoadGenerationRef.current !== generation) return;
       console.warn('Failed to load mobile settings', err);
       setMobileSettingsLoaded(false);
       setTrainingProfile(null);
@@ -691,9 +722,9 @@ export default function SettingsScreen() {
       setTimezone(deviceTimezone || 'America/Los_Angeles');
       setTimezoneSource(deviceTimezone ? 'device' : 'fallback');
     } finally {
-      setTimezoneLoading(false);
+      if (settingsLoadGenerationRef.current === generation) setTimezoneLoading(false);
     }
-  }, [deviceTimezone, hasTrainingProfile]);
+  }, [activeMobileMode, applyAccountStatePayload, deviceTimezone, personalProfileHeaders, personalTrainingProfileMode]);
 
   useEffect(() => {
     loadMobileSettings();
@@ -791,6 +822,7 @@ export default function SettingsScreen() {
       setProfileError(null);
       const basicResp = await fetchJson<any>('/mobile/training-profile/basic', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: {
           name: detailsDraft.name,
           sex: detailsDraft.sex,
@@ -802,6 +834,7 @@ export default function SettingsScreen() {
 
       const contextResp = await fetchJson<any>('/mobile/training-profile/context', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: {
           relationship_started_at: trainingProfile?.context?.relationship_started_date || '',
           preferred_units: units,
@@ -831,6 +864,7 @@ export default function SettingsScreen() {
       setProfileError(null);
       const resp = await fetchJson<any>('/mobile/settings', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: { preferred_units: units } as any,
       });
       const json = resp.json || {};
@@ -850,6 +884,7 @@ export default function SettingsScreen() {
       setProfileError(null);
       const resp = await fetchJson<any>('/mobile/training-profile/training-maxes', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: {
           squat_tm: displayValueToKg(maxesDraft.squat_tm, profileUnits),
           bench_tm: displayValueToKg(maxesDraft.bench_tm, profileUnits),
@@ -882,6 +917,7 @@ export default function SettingsScreen() {
       setProfileError(null);
       const resp = await fetchJson<any>('/mobile/training-profile/context', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: {
           relationship_started_at: contextDraft.relationship_started_at,
           preferred_units: profileUnits,
@@ -960,6 +996,7 @@ export default function SettingsScreen() {
       setTimezoneSaving(true);
       const resp = await fetchJson<any>('/mobile/settings', {
         method: 'PATCH',
+        headers: personalProfileHeaders,
         body: { timezone: nextTimezone } as any,
       });
       const json = resp.json || {};
@@ -984,8 +1021,6 @@ export default function SettingsScreen() {
   };
 
   const chooseAndUploadAvatar = async () => {
-    if (!hasTrainingProfile) return;
-
     try {
       setUploadingAvatar(true);
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -1053,7 +1088,7 @@ export default function SettingsScreen() {
   };
 
   const handleUpdateAvatar = () => {
-    if (!hasTrainingProfile || uploadingAvatar) return;
+    if (uploadingAvatar) return;
     if (!auth.user?.profilePhotoUrl) {
       void chooseAndUploadAvatar();
       return;
@@ -1404,12 +1439,11 @@ export default function SettingsScreen() {
     </View>
   );
 
-  const profileName =
-    trainingProfile?.name ||
-    auth?.user?.name ||
-    auth?.profile?.name ||
-    auth?.user?.email ||
-    'Strength Ledger';
+  const profileName = resolveSettingsIdentityName({
+    personalProfileName: trainingProfile?.name,
+    accountName: auth?.user?.user_name || auth?.user?.name || auth?.profile?.name,
+    email: auth?.user?.email,
+  });
   const displayMobileMode = activeMobileMode;
   const profileDescriptor =
     displayMobileMode === 'individual'
@@ -1630,10 +1664,9 @@ export default function SettingsScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${profileName}, ${identityDescriptor}`}
-          accessibilityHint={hasTrainingProfile ? 'Opens profile settings.' : 'Profile editing is unavailable for this account.'}
-          style={({ pressed }) => [styles.identityCard, pressed && hasTrainingProfile && styles.rowButtonPressed]}
-          onPress={hasTrainingProfile ? () => openProfileEditor('details') : undefined}
-          disabled={!hasTrainingProfile}
+          accessibilityHint={hasTrainingProfile ? 'Opens profile settings.' : 'Opens profile photo management.'}
+          style={({ pressed }) => [styles.identityCard, pressed && styles.rowButtonPressed]}
+          onPress={hasTrainingProfile ? () => openProfileEditor('details') : handleUpdateAvatar}
         >
           <SLProfileAvatar
             accessibilityLabel={`${profileName} profile photo`}
@@ -1648,7 +1681,7 @@ export default function SettingsScreen() {
             <ThemedText numberOfLines={2} style={styles.identityName}>{profileName}</ThemedText>
             <ThemedText numberOfLines={2} style={styles.identityDescriptor}>{identityDescriptor}</ThemedText>
           </View>
-          {hasTrainingProfile ? <Ionicons name="chevron-forward" size={23} color={SLColors.textSubtle} /> : null}
+          <Ionicons name="chevron-forward" size={23} color={SLColors.textSubtle} />
         </Pressable>
 
         {settingsGroup(
@@ -1664,13 +1697,15 @@ export default function SettingsScreen() {
               summary: accountTransitionsLoading ? 'Loading…' : accountTypeTitle,
               onPress: canChangeAccountType ? openAccountTypeTransition : undefined,
             })}
-            {settingsRow({
-              icon: 'person-add-outline',
-              title: 'Connected Coach',
-              summary: linkCoachAlreadyLinked ? 'Linked' : 'Not linked',
-              onPress: () => setSettingsPanel('coach'),
-              accent: 'amber',
-            })}
+            {showLinkCoachEntry
+              ? settingsRow({
+                  icon: 'person-add-outline',
+                  title: 'Connected Coach',
+                  summary: linkCoachAlreadyLinked ? 'Linked' : 'Not linked',
+                  onPress: () => setSettingsPanel('coach'),
+                  accent: 'amber',
+                })
+              : null}
             {settingsRow({
               icon: 'shield-checkmark-outline',
               title: 'Account Access',
@@ -1688,7 +1723,7 @@ export default function SettingsScreen() {
           </>
         , 'Account')}
 
-        {settingsGroup(
+        {trainingProfile ? settingsGroup(
           <>
             {settingsRow({
               icon: 'scale-outline',
@@ -1721,7 +1756,7 @@ export default function SettingsScreen() {
               onPress: timezoneSaving || timezoneLoading ? undefined : () => setTimezoneModalOpen(true),
             })}
           </>
-        , 'Training')}
+        , activeMobileMode === 'coach' ? 'Personal Training' : 'Training') : null}
 
         {settingsGroup(
           <>

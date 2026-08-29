@@ -76,7 +76,9 @@ assertIncludes(reviewerV3, [
 ], 'Coach Session Reviewer V3');
 assertIncludes(reviewerV3, [
   'accessibilityRole="button"',
-  'onPress={() => setSelected(index)}',
+  'AnalyticalTimeSeriesChart',
+  'coach-reviewer-movement-evidence-chart',
+  'coach-reviewer-recovery-chart',
 ], 'Interactive reviewer evidence');
 if (/<MuscleMap\b/.test(reviewerV3)) {
   throw new Error('Reviewer V3 must use canonical individual-movement artwork, never full-body MuscleMap');

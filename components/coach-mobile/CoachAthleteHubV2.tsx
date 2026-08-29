@@ -15,6 +15,7 @@ import {
 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { useCoachMoreNavigation } from '@/components/navigation/CoachMoreNavigationSheet';
 import { SLAthleteAvatar, SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
@@ -30,6 +31,7 @@ import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 
 export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAthleteSummaryResponse }) {
   const router = useRouter();
+  const { open: openMoreNavigation } = useCoachMoreNavigation();
   const params = useLocalSearchParams<{ athleteId?: string; athleteName?: string }>();
   const { user } = useAuth();
   const routeAthleteId = Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId;
@@ -150,8 +152,8 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
 
   const openMore = useCallback(() => {
     if (!summary) return;
-    router.push({ pathname: '/(tabs)/coach-more', params: { athleteId: String(summary.athlete.id), athleteName: summary.athlete.name } } as any);
-  }, [router, summary]);
+    openMoreNavigation({ athleteId: String(summary.athlete.id), athleteName: summary.athlete.name });
+  }, [openMoreNavigation, summary]);
 
   const actions = useMemo(() => [
     { label: 'Message', icon: 'chatbubble-ellipses-outline' as const, onPress: openMessage },
