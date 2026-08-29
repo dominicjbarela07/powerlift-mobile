@@ -102,6 +102,7 @@
     "test:training-hub-coach-context": "node scripts/test-training-hub-coach-context.mjs",
     "test:mobile-programming-manager-visual-family": "node --import tsx scripts/test-mobile-programming-manager-visual-family.mjs",
     "test:programming-week-copy-indexing": "node --import tsx scripts/test-programming-week-copy-indexing.mjs",
+    "test:copy-week-ux-convergence": "node --import tsx scripts/test-copy-week-ux-convergence.mjs",
     "test:programming-manager-overlays": "node --import tsx scripts/test-programming-manager-overlay-system.mjs",
     "test:coach-session-editor-production-pass": "node --import tsx scripts/test-coach-session-editor-production-pass.mjs",
     "test:session-workspace-draft-state": "node scripts/test-session-workspace-draft-state.mjs",
