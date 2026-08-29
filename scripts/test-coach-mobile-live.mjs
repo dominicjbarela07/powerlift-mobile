@@ -90,13 +90,12 @@ assert.match(source.contract, /'\/\(tabs\)\/coach-roster': '\/\(tabs\)\/coach-da
 
 assert.match(source.hubRoute, /<CoachAthleteHubV2/);
 assert.match(source.hub, /\/coach\/mobile\/athletes\/\$\{athleteId\}\/summary/);
-for (const section of ['What Needs You', 'Current Training', 'Recent Signals', 'Recent Training']) assert.match(source.hub, new RegExp(section));
-for (const action of ['Message', 'Program', 'Review', 'More']) assert.match(source.hub, new RegExp(`label: '${action}'`));
-assert.ok(source.hub.indexOf('What Needs You') < source.hub.indexOf('Current Training'));
-assert.ok(source.hub.indexOf('Current Training') < source.hub.indexOf('Recent Signals'));
-assert.ok(source.hub.indexOf('Recent Signals') < source.hub.indexOf('Recent Training'));
-assert.match(source.hub, /reported_bodyweight/);
-assert.match(source.hub, /week_summary/);
+for (const section of ['Athlete Read', 'Progress', 'Programming & Exposure', 'Recent Wins', 'Athlete Signals']) assert.match(source.hub, new RegExp(section));
+for (const action of ['Programming', 'Schedule', 'Review Hub', 'Check-Ins', 'Message Athlete', 'Full Analytics']) assert.match(source.hub, new RegExp(action));
+assert.ok(source.hub.indexOf('Athlete Read') < source.hub.indexOf('Programming & Exposure'));
+assert.match(source.hub, /summary\?view=v3&period=\$\{period\}/);
+assert.match(source.hub, /CoachAnalyticsTrend/);
+assert.match(source.hub, /AthleteCoachingScratchpadTrigger/);
 
 assert.match(source.detailRoute, /<CoachAttentionDetailV2/);
 assert.match(source.detail, /Recommended Action/);
