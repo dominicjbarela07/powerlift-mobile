@@ -271,7 +271,12 @@ type Props = {
   onRefresh: () => void;
   onCloseWorkspace: () => void;
   onOpenAthleteView: () => void;
-  onOpenReorder: (order: { coreIds: number[]; accessoryIds: number[] }, onApply: (order: { coreIds: number[]; accessoryIds: number[] }) => void) => void;
+  onOpenReorder: (draft: {
+    coreIds: number[];
+    accessoryIds: number[];
+    coreItems: SessionMovementItem[];
+    accessoryItems: SessionMovementItem[];
+  }, onApply: (order: { coreIds: number[]; accessoryIds: number[] }) => void) => void;
   onAddCore: (displayUnit: CoachDisplayUnit, onAdd: (item: SessionMovementItem) => void) => void;
   onAddAccessory: (onAdd: (item: SessionMovementItem) => void) => void;
   onChangeAccessory: (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => void;
@@ -668,10 +673,15 @@ export function SessionEditingWorkspace(props: Props) {
 
   const openReorder = useCallback(() => {
     props.onOpenReorder(
-      { coreIds: sessionDraft.coreOrder, accessoryIds: sessionDraft.accessoryOrder },
+      {
+        coreIds: sessionDraft.coreOrder,
+        accessoryIds: sessionDraft.accessoryOrder,
+        coreItems: currentCoreItems.map((item) => movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)),
+        accessoryItems: currentAccessoryItems.map((item) => movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)),
+      },
       (order) => setSessionDraft((current) => ({ ...current, coreOrder: order.coreIds, accessoryOrder: order.accessoryIds })),
     );
-  }, [props, sessionDraft.accessoryOrder, sessionDraft.coreOrder]);
+  }, [currentAccessoryItems, currentCoreItems, draftStorageUnit, props, sessionDraft.accessoryOrder, sessionDraft.coreOrder, sessionDraft.movements]);
 
   const guardLifecycle = useCallback<GuardAction>((action) => resolveDirty(action), [resolveDirty]);
   const registerDismissRequest = props.registerDismissRequest;
@@ -1171,11 +1181,11 @@ function SessionFloatingToolkit({ bottom, expanded, reduceMotion, restricted, un
               <ToolkitAction icon="swap-horizontal-outline" label={`Units: ${unit.toUpperCase()}`} color={SLColors.info} disabled={unitDisabled} onPress={() => onChangeUnit(nextUnit)} />
             </View>
             <View style={styles.sessionToolkitDivider} />
-            {(canAthleteView || (!restricted && canReorder)) ? <>
+            {(canAthleteView || canReorder) ? <>
               <View style={styles.sessionToolkitGroup}>
                 <ToolkitSectionHeader label="Workspace" color={SLColors.accentViolet} />
                 {canAthleteView ? <ToolkitAction icon="eye-outline" label="Athlete View" color={SLColors.accentViolet} onPress={onAthleteView} /> : null}
-                {!restricted && canReorder ? <ToolkitAction icon="swap-vertical-outline" label="Reorder Movements" color={SLColors.accentViolet} onPress={onReorder} /> : null}
+                {canReorder ? <ToolkitAction icon="swap-vertical-outline" label="Reorder Movements" color={SLColors.accentViolet} onPress={onReorder} /> : null}
               </View>
               <View style={styles.sessionToolkitDivider} />
             </> : null}

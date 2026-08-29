@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
   ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
@@ -11,16 +12,19 @@ const areas = [
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
+  ['Coach Session review shared cross-tab tools', ['scripts/test-coach-session-review-cross-tab.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],
   ['Coach Calendar direct filter controls', ['scripts/test-coach-calendar-v2.mjs']],
   ['relationship-scoped athlete coaching scratchpad', ['scripts/test-athlete-coaching-scratchpad.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
+  ['Team Brief coaching analytics and team-relative Athlete Workspace', ['scripts/test-team-brief-v2.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs']],
   ['Session Workspace composition and presentation-only units', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs', 'scripts/test-session-workspace-unit-presentation.mjs']],
+  ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs']],
   ['Session Workspace canonical accessory drilldown', ['scripts/test-session-workspace-accessory-picker.mjs']],
   ['Session Workspace Athlete View handoff', ['scripts/test-session-workspace-athlete-preview-handoff.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],

@@ -52,13 +52,35 @@ assertIncludes(session, [
   'getCoachSessionReview',
   'saveCoachSessionReview',
   'view=coach-preview',
-  'CompletedSessionRecap',
-  'viewerMode="coach"',
+  'CoachSessionReviewerV3',
   'coachReview={coachReview}',
   'followup_adjust_programming',
   'if (saving) return',
   "action: 'save' | 'complete'",
 ], 'Session review workspace');
+
+const reviewerV3 = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
+assertIncludes(reviewerV3, [
+  'SESSION READ',
+  'WHAT CHANGED SINCE LAST COMPARABLE SESSION',
+  'MOVEMENT PROGRESSION',
+  'RAW SETLOG EVIDENCE',
+  'ESTIMATED STRENGTH TREND',
+  'CONTEXT & RECOVERY',
+  'COACH READ',
+  'PlanCompareExperience',
+  'CoachTools',
+  'CanonicalMovementArtwork',
+  'FloatingDisplayUnitRegistration',
+  'Open Full Movement History',
+], 'Coach Session Reviewer V3');
+assertIncludes(reviewerV3, [
+  'accessibilityRole="button"',
+  'onPress={() => setSelected(index)}',
+], 'Interactive reviewer evidence');
+if (/<MuscleMap\b/.test(reviewerV3)) {
+  throw new Error('Reviewer V3 must use canonical individual-movement artwork, never full-body MuscleMap');
+}
 
 const completedRecap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 assertIncludes(completedRecap, [
@@ -67,7 +89,8 @@ assertIncludes(completedRecap, [
   'PRIVATE COACH NOTE',
   'Complete Review',
   'Performed SetLog targets',
-  'BEST SET TREND · EXACT IDENTITY',
+  "movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'",
+  '} · EXACT MOVEMENT',
 ], 'Canonical completed Session review surface');
 
 assertIncludes(video, [

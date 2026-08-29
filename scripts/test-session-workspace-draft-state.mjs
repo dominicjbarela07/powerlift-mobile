@@ -36,14 +36,17 @@ assert.match(workspace, /renderLifecycleActions\(guardLifecycle, sessionDirty\)/
 assert.match(workspace, /restricted=\{sessionDirty\}/, 'dirty state restricts the floating toolkit');
 assert.match(route, /renderLifecycleActions=\{\(guard, restricted\)[\s\S]*onlyDelete=\{restricted\}/, 'dirty toolkit keeps only the destructive Session action');
 assert.match(workspace, /!restricted && canRename[\s\S]*!restricted && canChangeDate[\s\S]*canAddMovement \? <ToolkitAction icon="add-circle-outline" label="Add Movement"/, 'dirty toolkit keeps Add Movement while hiding Rename Session and Change Date');
-assert.match(workspace, /\(canAthleteView \|\| \(!restricted && canReorder\)\)[\s\S]*canAthleteView \? <ToolkitAction[^>]*label="Athlete View"[\s\S]*!restricted && canReorder/, 'dirty toolkit keeps guarded Athlete View available while retaining Reorder as a clean-state editing action');
+assert.match(workspace, /\(canAthleteView \|\| canReorder\)[\s\S]*canAthleteView \? <ToolkitAction[^>]*label="Athlete View"[\s\S]*canReorder \? <ToolkitAction[^>]*label="Reorder Movements"/, 'Reorder remains a visible editing action in both clean and dirty Session states');
+assert.doesNotMatch(workspace, /!restricted && canReorder|restricted \?[^\n]*Reorder Movements/, 'Session dirtiness never gates Reorder availability');
 assert.doesNotMatch(workspace, /onReorder=\{\(\) => resolveDirty|resolveDirty\(\(\) => props\.onDeleteMovement|resolveDirty\(open\)/, 'internal Session editing actions never trigger persistence guards');
 
 assert.match(route, /onSaveSession=\{saveSessionDraft\}/, 'the route receives one Session save command');
 assert.match(route, /const saveSessionDraft = async[\s\S]*\/rename[\s\S]*\/setup[\s\S]*\/programming-notes[\s\S]*deletedMovementIds[\s\S]*movementUpdates[\s\S]*movementCreates[\s\S]*items\/reorder[\s\S]*loadSession\(true\)/, 'the route orchestrates granular canonical mutations and refetches only after success');
 assert.match(route, /catch \(err: any\) \{[\s\S]*Could not save Session[\s\S]*return false/, 'partial failure returns one Session-level error without clearing local edits');
 assert.match(route, /addCoreCompletionRef[\s\S]*nextDraftMovementIdRef[\s\S]*addAccessoryCompletionRef/, 'new movements enter local temporary Session state before save');
+assert.match(workspace, /coreItems: currentCoreItems\.map[\s\S]*accessoryItems: currentAccessoryItems\.map[\s\S]*movementItemWithDraft/, 'Reorder receives the complete current in-memory draft, including unsaved movement presentation and newly added movements');
 assert.match(route, /reorderCompletionRef[\s\S]*reorderCompletionRef\.current\(nextOrder\)/, 'reorder changes return to the local Session draft before save');
+assert.match(route, /const cancelReorderEditor[\s\S]*reorderCompletionRef\.current = null[\s\S]*setReorderEditor\(null\)/, 'Cancel closes Reorder without applying or reconstructing the Session draft');
 assert.match(route, /loadedWorkoutIdRef[\s\S]*sessionChanged[\s\S]*setPayload\(null\)[\s\S]*addAccessoryCompletionRef\.current = null/, 'changing Sessions clears every prior workspace and picker reference before hydration');
 assert.match(route, /method: 'POST'[\s\S]*body: \{ confirm: true \}[\s\S]*\+\+loadRequestRevisionRef\.current[\s\S]*setPayload\(null\)[\s\S]*closeToProgrammingHome/, 'deletion invalidates late requests and clears the deleted Session before navigation');
 assert.match(route, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)/, 'the signed-in viewer preference initializes the presentation-only workspace unit');

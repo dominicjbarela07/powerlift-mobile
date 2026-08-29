@@ -450,6 +450,36 @@ function RootStack() {
             presentation: 'fullScreenModal',
           }}
         />
+        <Stack.Screen
+          name="coach-team-outliers"
+          options={{
+            animation: 'slide_from_right',
+            contentStyle: styles.modalScene,
+            gestureEnabled: true,
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen
+          name="coach-athlete-analytics/[athleteId]"
+          options={{
+            animation: 'slide_from_right',
+            contentStyle: styles.modalScene,
+            gestureEnabled: true,
+            headerShown: false,
+            presentation: 'card',
+          }}
+        />
+        <Stack.Screen
+          name="coach-team-methodology"
+          options={{
+            animation: 'slide_from_bottom',
+            contentStyle: styles.modalScene,
+            gestureEnabled: true,
+            headerShown: false,
+            presentation: 'fullScreenModal',
+          }}
+        />
       </Stack>
       <RestTimerCompletionPresenter userId={user?.id ?? user?.user_id} />
     </>

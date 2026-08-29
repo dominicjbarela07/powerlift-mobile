@@ -180,6 +180,7 @@ export default function SessionRecapCertificationScreen() {
         },
         outcomes: [{ value: 'on_track', label: 'On Track' }, { value: 'adjust', label: 'Adjust' }],
         priorities: [{ value: 'normal', label: 'Normal' }, { value: 'high', label: 'High' }],
+        onDraftChange: () => undefined,
         onSave: () => undefined,
       } : undefined}
       onClose={() => undefined}

@@ -322,6 +322,8 @@ type AccessoryEditorState = {
 type ReorderEditorState = {
   coreIds: number[];
   accessoryIds: number[];
+  coreItems: SessionMovementItem[];
+  accessoryItems: SessionMovementItem[];
 };
 
 type TrainingLiftSetup = {
@@ -881,6 +883,8 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     setReorderEditor({
       coreIds: order.coreIds,
       accessoryIds: order.accessoryIds,
+      coreItems: order.coreItems,
+      accessoryItems: order.accessoryItems,
     });
   };
 
@@ -1494,8 +1498,6 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       />
       <ReorderEditorModal
         state={reorderEditor}
-        coreItems={coreItems}
-        accessoryItems={accessoryItems}
         saving={reorderSaving}
         reduceMotion={reduceMotion}
         onChange={setReorderEditor}
@@ -2975,8 +2977,6 @@ function TrainingLiftOptionCard({
 
 function ReorderEditorModal({
   state,
-  coreItems,
-  accessoryItems,
   saving,
   reduceMotion,
   onChange,
@@ -2984,8 +2984,6 @@ function ReorderEditorModal({
   onApply,
 }: {
   state: ReorderEditorState | null;
-  coreItems: WorkoutItem[];
-  accessoryItems: WorkoutItem[];
   saving: boolean;
   reduceMotion: boolean;
   onChange: (state: ReorderEditorState) => void;
@@ -2993,8 +2991,8 @@ function ReorderEditorModal({
   onApply: (state: ReorderEditorState) => void | Promise<void>;
 }) {
   const visible = !!state;
-  const coreById = useMemo(() => mapItemsById(coreItems), [coreItems]);
-  const accessoryById = useMemo(() => mapItemsById(accessoryItems), [accessoryItems]);
+  const coreById = useMemo(() => mapItemsById(state?.coreItems || []), [state?.coreItems]);
+  const accessoryById = useMemo(() => mapItemsById(state?.accessoryItems || []), [state?.accessoryItems]);
   const [dragging, setDragging] = useState(false);
 
   const moveItem = (kind: 'core' | 'accessory', id: number, targetIndex: number) => {
@@ -3092,7 +3090,7 @@ function ReorderSection({
 }: {
   title: string;
   ids: number[];
-  itemsById: Map<number, WorkoutItem>;
+  itemsById: Map<number, SessionMovementItem>;
   kind: 'core' | 'accessory';
   onMove: (kind: 'core' | 'accessory', id: number, targetIndex: number) => void;
   onDraggingChange: (dragging: boolean) => void;
@@ -3688,11 +3686,11 @@ function defaultAccessorySetup(groups: MovementPresetGroup[]): AccessorySetup {
   };
 }
 
-function mapItemsById(items: WorkoutItem[]) {
+function mapItemsById(items: SessionMovementItem[]) {
   return new Map(items.map((item) => [item.id, item]));
 }
 
-function accessoryPrescriptionText(item: WorkoutItem) {
+function accessoryPrescriptionText(item: SessionMovementItem) {
   const sets = numberText(item.sets);
   const reps = String(item.reps_text || numberText(item.reps) || '').trim();
   const rir = item.rir_target != null ? `@ ${formatNumber(item.rir_target)} RIR` : '';
@@ -3720,7 +3718,7 @@ function designationLabel(value?: string | null, kind?: 'core' | 'accessory') {
   return kind === 'core' ? 'Core Lift' : 'Accessory';
 }
 
-function workspaceMovementName(item: WorkoutItem, kind: EditKind) {
+function workspaceMovementName(item: SessionMovementItem, kind: EditKind) {
   const movement = String(item.movement || item.original_movement || liftName(item.lift) || '').trim() || 'Training item';
   if (kind !== 'core') return movement;
   const designation = designationLabel(item.designation, kind);

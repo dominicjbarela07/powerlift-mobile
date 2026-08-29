@@ -25,7 +25,7 @@ import {
   formatCoachVolume,
   formatCoachWeight,
 } from '@/lib/coach-mobile-v2';
-import type { CoachAthleteSummaryResponse, CoachRecentTrainingSession } from '@/lib/coach-mobile';
+import type { CoachAthleteSummaryResponse, CoachAthleteTeamRelativeResponse, CoachRecentTrainingSession } from '@/lib/coach-mobile';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 
 export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAthleteSummaryResponse }) {
@@ -40,6 +40,7 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
   const requestRef = useRef(0);
   const previewMode = Boolean(previewSummary);
   const [summary, setSummary] = useState<CoachAthleteSummaryResponse | null>(previewSummary || null);
+  const [teamRelative, setTeamRelative] = useState<CoachAthleteTeamRelativeResponse | null>(null);
   const [loading, setLoading] = useState(!previewSummary);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +48,10 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
   useEffect(() => {
     requestKeyRef.current = requestKey;
     requestRef.current += 1;
-    if (!previewMode) setSummary(null);
+    if (!previewMode) {
+      setSummary(null);
+      setTeamRelative(null);
+    }
   }, [previewMode, requestKey]);
 
   useEffect(() => {
@@ -71,7 +75,10 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
     else setLoading(true);
     setError(null);
     try {
-      const response = await fetchJson(`/coach/mobile/athletes/${athleteId}/summary`, { method: 'GET' });
+      const [response, analyticsResponse] = await Promise.all([
+        fetchJson(`/coach/mobile/athletes/${athleteId}/summary`, { method: 'GET' }),
+        fetchJson<CoachAthleteTeamRelativeResponse>(`/coach/mobile/athletes/${athleteId}/team-relative-analytics?period=4W`, { method: 'GET' }).catch(() => null),
+      ]);
       const payload = response.json as CoachAthleteSummaryResponse | null;
       if (!current()) return;
       if (response.status === 401) {
@@ -90,6 +97,7 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
         ...payload,
         athlete: { ...payload.athlete, ...normalizeProfilePhotoPayload(payload.athlete) },
       });
+      if (analyticsResponse?.ok && analyticsResponse.json?.ok) setTeamRelative(analyticsResponse.json);
     } catch (loadError) {
       if (!current()) return;
       console.warn('Athlete Hub V2 load failed', loadError);
@@ -260,6 +268,21 @@ export function CoachAthleteHubV2({ previewSummary }: { previewSummary?: CoachAt
               </View>
             </View>
 
+            {teamRelative ? (
+              <View style={styles.section}>
+                <CoachSectionHeading action="Deep dive" onAction={() => router.push({ pathname: '/coach-athlete-analytics/[athleteId]', params: { athleteId: String(summary.athlete.id), period: teamRelative.period.key } } as any)} title="Progress vs Team" />
+                <Pressable accessibilityLabel={`Open ${summary.athlete.name} progress versus team`} accessibilityRole="button" onPress={() => router.push({ pathname: '/coach-athlete-analytics/[athleteId]', params: { athleteId: String(summary.athlete.id), period: teamRelative.period.key } } as any)} style={({ pressed }) => [styles.teamRelativeCard, pressed && styles.pressed]}>
+                  {(['max_progression', 'dots_progression', 'adherence', 'pr_rate'] as const).map((key) => {
+                    const metric = teamRelative.athlete.metrics[key];
+                    const color = metric.cohort_state === 'below' ? COACH_V2.magenta : metric.cohort_state === 'above' ? COACH_V2.green : COACH_V2.text;
+                    const label = key === 'max_progression' ? 'Max Prog.' : key === 'dots_progression' ? 'DOTS Prog.' : key === 'adherence' ? 'Adherence' : 'PR Rate';
+                    return <View key={key} style={styles.teamRelativeMetric}><Text style={[styles.teamRelativeValue, { color }]}>{metric.value == null ? '—' : `${metric.value > 0 ? '+' : ''}${metric.value.toFixed(1)}%`}</Text><Text style={styles.teamRelativeLabel}>{label}</Text><Text style={styles.teamRelativeTeam}>Team {metric.team_average == null ? '—' : `${metric.team_average.toFixed(1)}%`}</Text></View>;
+                  })}
+                  <Ionicons color={COACH_V2.violetBright} name="chevron-forward" size={18} />
+                </Pressable>
+              </View>
+            ) : null}
+
             <View style={styles.section}>
               <CoachSectionHeading action="View all" onAction={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(summary.athlete.id) } } as any)} title="Recent Training" />
               {(summary.recent_training || []).length ? (summary.recent_training || []).map((session) => (
@@ -360,6 +383,11 @@ const styles = StyleSheet.create({
   signalLabel: { marginTop: 7, color: COACH_V2.subtle, fontSize: 8, lineHeight: 10, fontWeight: '800', textTransform: 'uppercase' },
   signalValue: { marginTop: 4, color: COACH_V2.text, fontSize: 16, fontWeight: '700' },
   signalDelta: { marginTop: 2, fontSize: 9, fontWeight: '800' },
+  teamRelativeCard: { minHeight: 96, borderRadius: 11, borderWidth: 1, borderColor: `${COACH_V2.violet}66`, backgroundColor: '#0E0A15', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, gap: 4 },
+  teamRelativeMetric: { flex: 1, minWidth: 0, alignItems: 'center', paddingVertical: 10 },
+  teamRelativeValue: { color: COACH_V2.text, fontSize: 15, fontWeight: '900' },
+  teamRelativeLabel: { color: COACH_V2.muted, fontSize: 7, fontWeight: '800', textTransform: 'uppercase', marginTop: 4, textAlign: 'center' },
+  teamRelativeTeam: { color: COACH_V2.subtle, fontSize: 7, marginTop: 4 },
   trainingRow: { minHeight: 76, borderRadius: 10, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10 },
   sessionIcon: { width: 46, height: 46, borderRadius: 8, borderWidth: 1, backgroundColor: '#080A0F', alignItems: 'center', justifyContent: 'center' },
   trainingRowCopy: { flex: 1, minWidth: 0, gap: 2 },

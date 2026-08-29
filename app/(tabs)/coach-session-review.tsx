@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
-  CompletedSessionRecap,
   type CoachReviewDraft,
   type CompletedSessionRecapPayload,
 } from '@/components/coach-mobile/CompletedSessionRecap';
+import { CoachSessionReviewerV3 } from '@/components/coach-mobile/CoachSessionReviewerV3';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies, SLRadius } from '@/constants/theme';
 import { fetchJson, getCoachSessionReview, saveCoachSessionReview, type CoachReviewItem } from '@/lib/api';
@@ -149,24 +150,22 @@ export default function CoachSessionReviewScreen() {
     outcomes: review.review_controls?.outcomes || [],
     priorities: review.review_controls?.priorities || [],
     saving,
+    onDraftChange: setDraft,
     onSave: save,
   } : null, [draft, review, save, saving]);
 
   const recap = detail?.workout?.completed_recap;
   if (recap && review) {
-    return <CompletedSessionRecap
+    return <CoachSessionReviewerV3
       recap={recap}
       impactSummary={detail?.workout?.impact_summary}
       preferredUnits={detail?.athlete?.preferred_units}
-      viewerMode="coach"
       coachReview={coachReview}
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}
       refreshing={refreshing}
       onRefresh={() => { void load(true); }}
       onClose={() => router.back()}
       onDone={() => router.back()}
-      onViewCalendar={() => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(detail?.athlete?.id || '') } } as any)}
-      onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || ''), athleteName: detail?.athlete?.name || '' } } as any)}
       onOpenMovementHistory={(movement) => {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
           athleteId: detail?.athlete?.id,

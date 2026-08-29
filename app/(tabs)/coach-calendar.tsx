@@ -19,7 +19,7 @@ import {
   View,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NewCoachExperience, type NewCoachExperiencePayload } from '@/components/NewCoachExperience';
@@ -33,13 +33,18 @@ import { SLAthleteAvatar, SLButton, SLCompactDropdown, SLErrorState, SLLoadingSt
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLLayout, SLSpacing, SLStatusTones, type SLStatusTone } from '@/constants/theme';
 import { fetchJson } from '@/lib/api';
+import { resolveCalendarSessionStatus } from '@/lib/calendar-session-status';
 import {
   addCalendarDays,
   calendarRange,
   calendarSessionMatchesStatus,
+  calendarSessionNeedsAction,
   calendarStatusLabel,
   coachCalendarDateAtPoint,
+  coachCalendarMonthKey,
+  coachCalendarMonthWindow,
   coachCalendarRequestRange,
+  coachCalendarSessionLabelWindow,
   formatCalendarDate,
   fromLocalYMD,
   isCoachCalendarDropTargetValid,
@@ -182,6 +187,16 @@ function statusColor(status: string) {
   return SLStatusTones[statusTone(status)].icon;
 }
 
+function sessionPillMaterial(session: CalendarSession) {
+  if (calendarSessionNeedsAction(session)) return SLStatusTones.danger;
+  const resolved = resolveCalendarSessionStatus(session.status);
+  if (resolved.tone === 'green') return SLStatusTones.success;
+  if (resolved.tone === 'gold') return SLStatusTones.warning;
+  if (resolved.tone === 'red') return SLStatusTones.danger;
+  if (resolved.tone === 'violet') return SLStatusTones.accent;
+  return SLStatusTones.neutral;
+}
+
 function calendarSessionContext(session: CalendarSession) {
   return [...new Set([
     session.program?.name,
@@ -260,6 +275,7 @@ export default function CoachCalendarScreen() {
   const [moveDate, setMoveDate] = useState(toLocalYMD(new Date()));
   const [moving, setMoving] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [monthPageCache, setMonthPageCache] = useState<Record<string, CalendarDay[]>>({});
 
   const range = useMemo(() => calendarRange(view, anchor), [anchor, view]);
   const requestRange = useMemo(
@@ -267,7 +283,13 @@ export default function CoachCalendarScreen() {
     [anchor, view],
   );
   const loadSequence = useRef(0);
+  const monthPageCacheRef = useRef<Record<string, CalendarDay[]>>({});
   const athleteFilterHydrated = useRef(false);
+
+  const replaceMonthPageCache = useCallback((next: Record<string, CalendarDay[]>) => {
+    monthPageCacheRef.current = next;
+    setMonthPageCache(next);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -322,6 +344,10 @@ export default function CoachCalendarScreen() {
         return;
       }
       setData(response.json);
+      if (view === 'month') {
+        const key = coachCalendarMonthKey(anchor);
+        replaceMonthPageCache({ ...monthPageCacheRef.current, [key]: response.json.days || [] });
+      }
     } catch {
       if (sequence === loadSequence.current) setError('Network error. Pull to refresh or try again.');
     } finally {
@@ -330,9 +356,47 @@ export default function CoachCalendarScreen() {
         setRefreshing(false);
       }
     }
-  }, [requestRange.end, requestRange.start]);
+  }, [anchor, replaceMonthPageCache, requestRange.end, requestRange.start, view]);
 
   useFocusEffect(useCallback(() => { void loadCalendar(false); }, [loadCalendar]));
+
+  useEffect(() => {
+    if (view !== 'month' || !data) return undefined;
+    const controller = new AbortController();
+    const months = coachCalendarMonthWindow(anchor);
+    const keepKeys = new Set(months.map(coachCalendarMonthKey));
+    const missing = months.filter((month) => !monthPageCacheRef.current[coachCalendarMonthKey(month)]);
+
+    const prefetch = async () => {
+      const loaded = await Promise.all(missing.map(async (month) => {
+        const monthRange = coachCalendarRequestRange('month', month);
+        const query = new URLSearchParams({
+          start: toLocalYMD(monthRange.start),
+          end: toLocalYMD(monthRange.end),
+          athlete_id: 'ALL',
+          include_completed: '1',
+        });
+        const response = await fetchJson<CalendarResponse>(`/coach/mobile/calendar?${query}`, {
+          method: 'GET',
+          signal: controller.signal,
+        });
+        if (!response.ok || !response.json?.ok) return null;
+        return [coachCalendarMonthKey(month), response.json.days || []] as const;
+      }));
+      if (controller.signal.aborted) return;
+      const next: Record<string, CalendarDay[]> = {};
+      Object.entries(monthPageCacheRef.current).forEach(([key, days]) => {
+        if (keepKeys.has(key)) next[key] = days;
+      });
+      loaded.forEach((entry) => {
+        if (entry) next[entry[0]] = entry[1];
+      });
+      replaceMonthPageCache(next);
+    };
+
+    void prefetch().catch(() => undefined);
+    return () => controller.abort();
+  }, [anchor, data, replaceMonthPageCache, view]);
 
   const athletes = data?.athletes || [];
   useEffect(() => {
@@ -351,12 +415,13 @@ export default function CoachCalendarScreen() {
     () => athletes.filter((athlete) => !selectedAthleteIds.length || selectedAthleteSet.has(athlete.id)),
     [athletes, selectedAthleteIds.length, selectedAthleteSet]
   );
-  const visibleDays = useMemo(() => (data?.days || []).map((day) => ({
+  const filterCalendarDays = useCallback((source: CalendarDay[]) => source.map((day) => ({
     ...day,
     sessions: (day.sessions || []).filter((session) => athleteVisible(session.athlete_id) && calendarSessionMatchesStatus(session, statusFilter)),
     meets: (day.meets || []).filter((meet) => athleteVisible(meet.athlete_id)),
     custom_items: (day.custom_items || []).filter((item) => athleteVisible(item.athlete_id)),
-  })), [athleteVisible, data?.days, statusFilter]);
+  })), [athleteVisible, statusFilter]);
+  const visibleDays = useMemo(() => filterCalendarDays(data?.days || []), [data?.days, filterCalendarDays]);
   const rangeStartKey = toLocalYMD(range.start);
   const rangeEndKey = toLocalYMD(range.end);
   const rangeDays = useMemo(
@@ -368,10 +433,15 @@ export default function CoachCalendarScreen() {
     { value: 'all', label: 'All Athletes' },
     ...athletes.map((athlete) => ({ value: String(athlete.id), label: athlete.name })),
   ], [athletes]);
-  const monthPrefix = `${anchor.getFullYear()}-${String(anchor.getMonth() + 1).padStart(2, '0')}`;
+  const monthPrefix = coachCalendarMonthKey(anchor);
+  const monthPages = useMemo(() => coachCalendarMonthWindow(anchor).map((month) => ({
+    anchor: month,
+    days: filterCalendarDays(monthPageCache[coachCalendarMonthKey(month)] || []),
+  })), [anchor, filterCalendarDays, monthPageCache]);
+  const currentMonthPage = monthPages[1]?.days.length ? monthPages[1].days : rangeDays;
   const activeMonthDays = useMemo(
-    () => rangeDays.filter((day) => day.date.startsWith(monthPrefix)),
-    [monthPrefix, rangeDays],
+    () => currentMonthPage.filter((day) => day.date.startsWith(monthPrefix)),
+    [currentMonthPage, monthPrefix],
   );
   const monthSessions = useMemo(() => activeMonthDays.flatMap((day) => day.sessions), [activeMonthDays]);
   const visibleSessionCount = monthSessions.length;
@@ -664,8 +734,9 @@ export default function CoachCalendarScreen() {
           <MonthBoard
             anchor={anchor}
             athleteById={athleteById}
-            days={rangeDays}
+            days={currentMonthPage}
             key={toLocalYMD(range.start)}
+            monthPages={monthPages}
             monthSummary={{
               completed: visibleCompletedCount,
               draft: visibleDraftCount,
@@ -676,6 +747,7 @@ export default function CoachCalendarScreen() {
             onAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }}
             onCustomPress={setSelectedCustomItem}
             onMeetPress={(meet) => router.push({ pathname: '/(tabs)/coach-athlete/[athleteId]', params: { athleteId: String(meet.athlete_id), athleteName: meet.athlete_name } } as any)}
+            onMonthPage={shiftAnchor}
             onMove={moveSession}
             onRefresh={() => loadCalendar(true)}
             onSelectDate={setSelectedDate}
@@ -683,6 +755,7 @@ export default function CoachCalendarScreen() {
             reduceMotion={reduceMotion}
             refreshing={refreshing}
             selectedDate={selectedDate}
+            singleAthleteMode={selectedAthleteIds.length === 1}
             today={data?.today || toLocalYMD(new Date())}
           />
         ) : null}
@@ -1178,15 +1251,17 @@ function MeetChip({ meet }: { meet: CalendarMeet }) {
 
 type MonthDragState = { session: CalendarSession; targetDate: string | null } | null;
 
-function MonthBoard({ anchor, athleteById, days, monthSummary, refreshing, moving, reduceMotion, selectedDate, today, onRefresh, onSelectDate, onSessionPress, onCustomPress, onMeetPress, onAdd, onMove }: {
+function MonthBoard({ anchor, athleteById, days, monthPages, monthSummary, refreshing, moving, reduceMotion, selectedDate, singleAthleteMode, today, onRefresh, onSelectDate, onSessionPress, onCustomPress, onMeetPress, onAdd, onMonthPage, onMove }: {
   anchor: Date;
   athleteById: ReadonlyMap<number, CalendarAthlete>;
   days: CalendarDay[];
+  monthPages: Array<{ anchor: Date; days: CalendarDay[] }>;
   monthSummary: { sessions: number; completed: number; upcoming: number; draft: number };
   refreshing: boolean;
   moving: boolean;
   reduceMotion: boolean;
   selectedDate: string;
+  singleAthleteMode: boolean;
   today: string;
   onRefresh: () => void;
   onSelectDate: (date: string) => void;
@@ -1194,6 +1269,7 @@ function MonthBoard({ anchor, athleteById, days, monthSummary, refreshing, movin
   onCustomPress: (item: CalendarCustomItem) => void;
   onMeetPress: (meet: CalendarMeet) => void;
   onAdd: (day: CalendarDay) => void;
+  onMonthPage: (direction: number) => void;
   onMove: (session: CalendarSession, date: string) => void;
 }) {
   const rootRef = useRef<View | null>(null);
@@ -1205,8 +1281,9 @@ function MonthBoard({ anchor, athleteById, days, monthSummary, refreshing, movin
   const dragX = useSharedValue(0);
   const dragY = useSharedValue(0);
   const dragScale = useSharedValue(1);
+  const pagerX = useSharedValue(0);
   const [dragState, setDragState] = useState<MonthDragState>(null);
-  const rows = monthGridRows(days);
+  const [pageWidth, setPageWidth] = useState(0);
   const selectedDay = days.find((day) => day.date === selectedDate)
     || days.find((day) => fromLocalYMD(day.date).getMonth() === anchor.getMonth() && allDayItems(day).length)
     || days.find((day) => fromLocalYMD(day.date).getMonth() === anchor.getMonth())
@@ -1294,60 +1371,69 @@ function MonthBoard({ anchor, athleteById, days, monthSummary, refreshing, movin
       { scale: dragScale.value },
     ],
   }));
+  const pagerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: pagerX.value }] }));
+
+  useEffect(() => {
+    if (pageWidth > 0) pagerX.value = -pageWidth;
+  }, [anchor, pageWidth, pagerX]);
+
+  const monthPagingGesture = useMemo(() => Gesture.Pan()
+    .enabled(!dragState && pageWidth > 0)
+    .activeOffsetX([-18, 18])
+    .failOffsetY([-14, 14])
+    .onUpdate((event) => {
+      pagerX.value = -pageWidth + Math.max(-pageWidth, Math.min(pageWidth, event.translationX));
+    })
+    .onEnd((event) => {
+      const direction = event.translationX < -pageWidth * 0.2 || event.velocityX < -520
+        ? 1
+        : event.translationX > pageWidth * 0.2 || event.velocityX > 520
+          ? -1
+          : 0;
+      const destination = direction === 1 ? -pageWidth * 2 : direction === -1 ? 0 : -pageWidth;
+      pagerX.value = withTiming(destination, { duration: reduceMotion ? 1 : 240 }, (finished) => {
+        if (finished && direction) runOnJS(onMonthPage)(direction);
+      });
+    })
+    .onFinalize((_event, success) => {
+      if (!success) pagerX.value = withTiming(-pageWidth, { duration: reduceMotion ? 1 : 180 });
+    }), [dragState, onMonthPage, pageWidth, pagerX, reduceMotion]);
 
   return (
     <View onLayout={() => requestAnimationFrame(refreshMonthGeometry)} ref={rootRef} style={styles.monthBoardRoot}>
     <ScrollView refreshControl={<RefreshControl enabled={!dragState} refreshing={refreshing} onRefresh={onRefresh} tintColor={SLColors.accentViolet} />} scrollEnabled={!dragState} style={styles.viewScroll} contentContainerStyle={styles.monthContent}>
-      <View style={styles.monthGridCard}>
-      <View style={styles.monthSummaryStrip}>
-        <MonthSummaryValue color={SLStatusTones.success.icon} icon="calendar-outline" label="Sessions" value={monthSummary.sessions} />
-        <MonthSummaryValue color={SLStatusTones.success.icon} icon="checkmark-circle" label="Completed" value={monthSummary.completed} />
-        <MonthSummaryValue color={SLColors.accentViolet} icon="time-outline" label="Upcoming" value={monthSummary.upcoming} />
-        <MonthSummaryValue color={SLStatusTones.neutral.icon} icon="ellipse-outline" label="Draft" value={monthSummary.draft} />
-      </View>
-      <View style={styles.monthWeekdays}>{['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => <Text key={`${day}-${index}`} style={styles.monthWeekday}>{day}</Text>)}</View>
-      {rows.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.monthRow}>
-          {row.map((day) => {
-            const inMonth = fromLocalYMD(day.date).getMonth() === anchor.getMonth();
-            const count = day.sessions.length + day.custom_items.length + day.meets.length;
-            const validDropTarget = !!dragState && isCoachCalendarDropTargetValid({
-              session: dragState.session,
-              destinationDate: day.date,
-              today,
-              targetAthleteId: dragState.session.athlete_id,
-            });
-            return (
-              <Pressable
-                accessibilityLabel={`${formatCalendarDate(day.date)}, ${count} items`}
-                accessibilityState={{ disabled: !!dragState && !validDropTarget, selected: day.date === selectedDate }}
-                disabled={!!dragState}
-                key={day.date}
-                onPress={() => onSelectDate(day.date)}
-                ref={(ref) => {
-                  if (ref) cellRefs.current.set(day.date, ref);
-                  else cellRefs.current.delete(day.date);
-                }}
-                style={[
-                  styles.monthDay,
-                  day.is_today && styles.monthDayToday,
-                  day.date === selectedDate && styles.monthDaySelected,
-                  dragState && !validDropTarget && styles.monthDayDragInvalid,
-                  validDropTarget && styles.monthDayDragValid,
-                  dragState?.targetDate === day.date && styles.monthDayDragTarget,
-                ]}
-              >
-                <Text style={[styles.monthDate, !inMonth && styles.monthDateOutside, (day.is_today || day.date === selectedDate) && styles.dateTodayText]}>{fromLocalYMD(day.date).getDate()}</Text>
-                <View style={styles.monthDots}>
-                  {day.sessions.slice(0, 3).map((session) => <View key={session.workout_id} style={[styles.monthDot, { backgroundColor: statusColor(session.status) }]} />)}
-                  {!!day.custom_items.length && <View style={[styles.monthDot, { backgroundColor: SLStatusTones.review.icon }]} />}
+      <GestureDetector gesture={monthPagingGesture}>
+        <View
+          onLayout={({ nativeEvent }) => setPageWidth(nativeEvent.layout.width)}
+          style={styles.monthPagerViewport}
+          testID="coach-calendar-month-pager"
+        >
+          <Animated.View style={[styles.monthPagerTrack, pageWidth ? { width: pageWidth * 3 } : null, pagerStyle]}>
+            {monthPages.map((page, pageIndex) => {
+              const isCurrent = pageIndex === 1;
+              return (
+                <View
+                  key={coachCalendarMonthKey(page.anchor)}
+                  pointerEvents={isCurrent ? 'auto' : 'none'}
+                  style={[styles.monthPagerPage, pageWidth ? { width: pageWidth } : null]}
+                >
+                  <MonthGridPage
+                    anchor={page.anchor}
+                    cellRefs={isCurrent ? cellRefs : undefined}
+                    days={page.days}
+                    dragState={isCurrent ? dragState : null}
+                    monthSummary={isCurrent ? monthSummary : summarizeMonth(page.anchor, page.days)}
+                    onSelectDate={onSelectDate}
+                    selectedDate={selectedDate}
+                    singleAthleteMode={singleAthleteMode}
+                    today={today}
+                  />
                 </View>
-              </Pressable>
-            );
-          })}
+              );
+            })}
+          </Animated.View>
         </View>
-      ))}
-      </View>
+      </GestureDetector>
       {selectedDay ? <View style={styles.monthAgenda}>
         <View style={styles.agendaDayHeader}>
           <View><Text style={styles.sectionTitle}>{formatCalendarDate(selectedDay.date, { weekday: 'long', month: 'short', day: 'numeric' })}</Text><Text style={styles.sectionMeta}>{allDayItems(selectedDay).length} item{allDayItems(selectedDay).length === 1 ? '' : 's'}</Text></View>
@@ -1383,6 +1469,124 @@ function MonthBoard({ anchor, athleteById, days, monthSummary, refreshing, movin
         </View>
       </Animated.View>
     ) : null}
+    </View>
+  );
+}
+
+function completeMonthPageDays(anchor: Date, days: CalendarDay[]) {
+  const byDate = new Map(days.map((day) => [day.date, day]));
+  const pageRange = calendarRange('month', anchor);
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = toLocalYMD(addCalendarDays(pageRange.start, index));
+    return byDate.get(date) || {
+      date,
+      is_today: false,
+      counts: {},
+      sessions: [],
+      meets: [],
+      custom_items: [],
+    };
+  });
+}
+
+function summarizeMonth(anchor: Date, days: CalendarDay[]) {
+  const prefix = coachCalendarMonthKey(anchor);
+  const sessions = days.filter((day) => day.date.startsWith(prefix)).flatMap((day) => day.sessions);
+  return {
+    sessions: sessions.length,
+    completed: sessions.filter((session) => ['completed', 'logged', 'done'].includes(String(session.status || '').toLowerCase())).length,
+    upcoming: sessions.filter((session) => ['assigned', 'in_progress'].includes(String(session.status || '').toLowerCase())).length,
+    draft: sessions.filter((session) => String(session.status || '').toLowerCase() === 'draft').length,
+  };
+}
+
+function MonthGridPage({ anchor, cellRefs, days, dragState, monthSummary, onSelectDate, selectedDate, singleAthleteMode, today }: {
+  anchor: Date;
+  cellRefs?: React.MutableRefObject<Map<string, View>>;
+  days: CalendarDay[];
+  dragState: MonthDragState;
+  monthSummary: { sessions: number; completed: number; upcoming: number; draft: number };
+  onSelectDate: (date: string) => void;
+  selectedDate: string;
+  singleAthleteMode: boolean;
+  today: string;
+}) {
+  const rows = monthGridRows(completeMonthPageDays(anchor, days));
+  return (
+    <View style={styles.monthGridCard}>
+      <View style={styles.monthSummaryStrip}>
+        <MonthSummaryValue color={SLStatusTones.success.icon} icon="calendar-outline" label="Sessions" value={monthSummary.sessions} />
+        <MonthSummaryValue color={SLStatusTones.success.icon} icon="checkmark-circle" label="Completed" value={monthSummary.completed} />
+        <MonthSummaryValue color={SLColors.accentViolet} icon="time-outline" label="Upcoming" value={monthSummary.upcoming} />
+        <MonthSummaryValue color={SLStatusTones.neutral.icon} icon="ellipse-outline" label="Draft" value={monthSummary.draft} />
+      </View>
+      <View style={styles.monthWeekdays}>{['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => <Text key={`${day}-${index}`} style={styles.monthWeekday}>{day}</Text>)}</View>
+      {rows.map((row, rowIndex) => (
+        <View key={rowIndex} style={styles.monthRow}>
+          {row.map((day) => {
+            const inMonth = fromLocalYMD(day.date).getMonth() === anchor.getMonth();
+            const count = day.sessions.length + day.custom_items.length + day.meets.length;
+            const isToday = day.is_today || day.date === today;
+            const sessionLabels = coachCalendarSessionLabelWindow(day.sessions, singleAthleteMode);
+            const validDropTarget = !!dragState && isCoachCalendarDropTargetValid({
+              session: dragState.session,
+              destinationDate: day.date,
+              today,
+              targetAthleteId: dragState.session.athlete_id,
+            });
+            const sessionNames = day.sessions.map((session) => session.label).filter(Boolean).join(', ');
+            return (
+              <Pressable
+                accessibilityLabel={`${formatCalendarDate(day.date)}, ${count} items${sessionNames ? `, ${sessionNames}` : ''}`}
+                accessibilityState={{ disabled: !!dragState && !validDropTarget, selected: day.date === selectedDate }}
+                disabled={!!dragState}
+                key={day.date}
+                onPress={() => onSelectDate(day.date)}
+                ref={(ref) => {
+                  if (!cellRefs) return;
+                  if (ref) cellRefs.current.set(day.date, ref);
+                  else cellRefs.current.delete(day.date);
+                }}
+                style={[
+                  styles.monthDay,
+                  singleAthleteMode && styles.monthDaySingleAthlete,
+                  isToday && styles.monthDayToday,
+                  day.date === selectedDate && styles.monthDaySelected,
+                  dragState && !validDropTarget && styles.monthDayDragInvalid,
+                  validDropTarget && styles.monthDayDragValid,
+                  dragState?.targetDate === day.date && styles.monthDayDragTarget,
+                ]}
+              >
+                <Text style={[styles.monthDate, !inMonth && styles.monthDateOutside, (isToday || day.date === selectedDate) && styles.dateTodayText]}>{fromLocalYMD(day.date).getDate()}</Text>
+                {singleAthleteMode ? (
+                  <View style={styles.monthSessionLabels}>
+                    {sessionLabels.visible.map((session) => {
+                      const material = sessionPillMaterial(session);
+                      return (
+                        <View key={session.workout_id} style={[styles.monthSessionPill, { backgroundColor: material.background, borderColor: material.border }]}>
+                          <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.monthSessionPillText, { color: material.text }]}>{session.label}</Text>
+                        </View>
+                      );
+                    })}
+                    {sessionLabels.overflow ? <Text numberOfLines={1} style={styles.monthSessionOverflow}>+{sessionLabels.overflow}</Text> : null}
+                    {!sessionLabels.visible.length && (day.custom_items.length || day.meets.length) ? (
+                      <View style={styles.monthDots}>
+                        {!!day.custom_items.length && <View style={[styles.monthDot, { backgroundColor: SLStatusTones.review.icon }]} />}
+                        {!!day.meets.length && <View style={[styles.monthDot, { backgroundColor: SLStatusTones.danger.icon }]} />}
+                      </View>
+                    ) : null}
+                  </View>
+                ) : (
+                  <View style={styles.monthDots}>
+                    {day.sessions.slice(0, 3).map((session) => <View key={session.workout_id} style={[styles.monthDot, { backgroundColor: statusColor(session.status) }]} />)}
+                    {!!day.custom_items.length && <View style={[styles.monthDot, { backgroundColor: SLStatusTones.review.icon }]} />}
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+      ))}
     </View>
   );
 }
@@ -1706,6 +1910,9 @@ const styles = StyleSheet.create({
   viewScroll: { flex: 1 },
   monthBoardRoot: { flex: 1, overflow: 'visible' },
   monthContent: { gap: 10, overflow: 'hidden', paddingBottom: 110, paddingHorizontal: 10 },
+  monthPagerViewport: { overflow: 'hidden', width: '100%' },
+  monthPagerTrack: { flexDirection: 'row' },
+  monthPagerPage: { flexShrink: 0 },
   monthGridCard: { backgroundColor: '#05070A', borderColor: SLColors.borderStrong, borderRadius: 16, borderWidth: 1, overflow: 'hidden', paddingBottom: 8 },
   monthSummaryStrip: { borderBottomColor: SLColors.borderHairline, borderBottomWidth: 1, flexDirection: 'row', minHeight: 64 },
   monthSummaryValue: { alignItems: 'center', borderRightColor: SLColors.borderHairline, borderRightWidth: StyleSheet.hairlineWidth, flex: 1, flexDirection: 'row', gap: 6, justifyContent: 'center', paddingHorizontal: 4 },
@@ -1715,6 +1922,7 @@ const styles = StyleSheet.create({
   monthWeekday: { color: SLColors.textMuted, fontSize: 10, fontWeight: '800', textAlign: 'center', width: `${100 / 7}%` },
   monthRow: { flexDirection: 'row', paddingHorizontal: 4 },
   monthDay: { alignItems: 'center', height: 48, justifyContent: 'center', width: `${100 / 7}%` },
+  monthDaySingleAthlete: { height: 68, justifyContent: 'flex-start', paddingHorizontal: 2, paddingTop: 5 },
   monthDayToday: { backgroundColor: `${SLStatusTones.warning.icon}18`, borderColor: `${SLStatusTones.warning.icon}99`, borderRadius: 18, borderWidth: 1 },
   monthDaySelected: { backgroundColor: SLColors.accentSoft, borderColor: SLColors.accentViolet, borderRadius: 18, borderWidth: 1 },
   monthDayDragInvalid: { opacity: 0.24 },
@@ -1724,6 +1932,10 @@ const styles = StyleSheet.create({
   monthDateOutside: { color: SLColors.textSubtle },
   monthDots: { flexDirection: 'row', gap: 2, height: 6, marginTop: 3 },
   monthDot: { borderRadius: 2, height: 4, width: 4 },
+  monthSessionLabels: { alignItems: 'center', marginTop: 3, minHeight: 26, width: '100%' },
+  monthSessionPill: { borderRadius: 5, borderWidth: 1, justifyContent: 'center', maxWidth: '100%', minHeight: 18, paddingHorizontal: 3, width: '100%' },
+  monthSessionPillText: { fontSize: 8, fontWeight: '800', lineHeight: 11, textAlign: 'center' },
+  monthSessionOverflow: { color: SLColors.textMuted, fontSize: 8, fontWeight: '800', lineHeight: 10, marginTop: 1 },
   monthAgenda: { backgroundColor: '#05070A', borderColor: SLColors.borderStrong, borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
   monthAgendaEmpty: { paddingBottom: 16, paddingHorizontal: 14 },
   monthDragPreview: { alignItems: 'center', backgroundColor: SLColors.object, borderColor: SLColors.accentViolet, borderRadius: 14, borderWidth: 1, elevation: 12, flexDirection: 'row', gap: 9, left: 0, minHeight: 60, paddingHorizontal: 12, position: 'absolute', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.42, shadowRadius: 14, top: 0, width: 216, zIndex: 50 },

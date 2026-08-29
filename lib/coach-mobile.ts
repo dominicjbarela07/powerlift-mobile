@@ -375,6 +375,134 @@ export type CoachTeamBriefResponse = {
     action_label: string;
     destination: CoachDestination;
   }[];
+  period: {
+    key: '7D' | '4W' | '12W' | '6M' | 'YTD' | 'ALL';
+    start?: string | null;
+    end: string;
+    prior_start?: string | null;
+    prior_end?: string | null;
+    options: ('7D' | '4W' | '12W' | '6M' | 'YTD' | 'ALL')[];
+  };
+  snapshot: {
+    active_athletes: number;
+    sessions_completed: number;
+    sessions_planned: number;
+    adherence_pct?: number | null;
+    adherence_delta?: number | null;
+    pr_count: number;
+    pr_delta?: number | null;
+    sets_logged: number;
+    planned_sets?: number;
+    volume_kg: number;
+    volume_delta_pct?: number | null;
+    programming_coverage_pct?: number | null;
+    reviews_completed: number;
+    reviews_pending: number;
+  };
+  progress: {
+    default_metric: CoachAnalyticsMetricKey;
+    metrics: CoachAnalyticsMetricKey[];
+    series: { date: string; team_average?: number | null; low?: number | null; high?: number | null; n: number }[];
+    series_by_metric?: Partial<Record<CoachAnalyticsMetricKey, { date: string; team_average?: number | null; low?: number | null; high?: number | null; n: number }[]>>;
+    athlete_series_by_metric?: Partial<Record<CoachAnalyticsMetricKey, Record<string, { date: string; value?: number | null }[]>>>;
+    band_method: string;
+  };
+  lifts: Record<string, {
+    team_average_progression?: number | null;
+    top_athlete?: { athlete_id: number; name: string; value: number } | null;
+    lowest_athlete?: { athlete_id: number; name: string; value: number } | null;
+    athletes_with_evidence: number;
+  }>;
+  athletes: CoachAnalyticsAthlete[];
+  bands: Partial<Record<CoachAnalyticsMetricKey, CoachAnalyticsBand>>;
+  outliers: CoachAnalyticsOutlier[];
+  coaching_impact: Record<string, number | string | null | undefined>;
+  history_rollups: { monthly: Record<string, number | string | null>[]; through: string };
+  highlights: {
+    key: string;
+    type: string;
+    title: string;
+    supporting_line?: string | null;
+    athlete_id?: number | null;
+    event_id?: number | null;
+    asset?: string | null;
+    occurred_at?: string | null;
+  }[];
+  methodology: Record<string, string>;
+  data_quality: {
+    athletes: number;
+    comparable_max_progression?: number;
+    comparable_dots_progression?: number;
+    cohort_band_supported: boolean;
+    notes: string[];
+  };
+  error?: string;
+};
+
+export type CoachAnalyticsMetricKey = 'max_progression' | 'dots_progression' | 'adherence' | 'pr_rate';
+
+export type CoachAnalyticsBand = {
+  low?: number | null;
+  high?: number | null;
+  median?: number | null;
+  n: number;
+  method: string;
+};
+
+export type CoachAnalyticsMetric = {
+  value?: number | null;
+  unit: string;
+  label?: string;
+  team_average?: number | null;
+  cohort_state?: 'below' | 'within' | 'above' | 'insufficient';
+  current?: number | null;
+  prior?: number | null;
+  completed?: number;
+  planned?: number;
+  prs?: number;
+  planned_sets?: number;
+  by_lift?: Record<string, number | null>;
+  evidence: { level: string; observations: number; minimum: number; limitation?: string | null };
+};
+
+export type CoachAnalyticsAthlete = {
+  athlete_id: number;
+  name: string;
+  preferred_units?: string | null;
+  active: boolean;
+  program?: { id: number; name: string } | null;
+  block?: { id: number; name: string } | null;
+  metrics: Record<CoachAnalyticsMetricKey, CoachAnalyticsMetric> & {
+    readiness_trend: CoachAnalyticsMetric & { history?: { date: string; value: number }[] };
+    volume_trend: CoachAnalyticsMetric & { volume_kg?: number | null };
+  };
+};
+
+export type CoachAnalyticsOutlier = {
+  athlete_id: number;
+  name: string;
+  metric: CoachAnalyticsMetricKey;
+  value?: number | null;
+  unit: string;
+  direction: 'below' | 'above';
+  band: CoachAnalyticsBand;
+  potential_factors: string[];
+  interpretation: string;
+};
+
+export type CoachAthleteTeamRelativeResponse = {
+  ok: boolean;
+  generated_at: string;
+  period: CoachTeamBriefResponse['period'];
+  athlete: CoachAnalyticsAthlete;
+  progress: {
+    team_series_by_metric: Partial<Record<CoachAnalyticsMetricKey, { date: string; team_average?: number | null; low?: number | null; high?: number | null; n: number }[]>>;
+    athlete_series_by_metric: Partial<Record<CoachAnalyticsMetricKey, { date: string; value?: number | null }[]>>;
+  };
+  bands: CoachTeamBriefResponse['bands'];
+  outliers: CoachAnalyticsOutlier[];
+  methodology: Record<string, string>;
+  data_quality: CoachTeamBriefResponse['data_quality'];
   error?: string;
 };
 
