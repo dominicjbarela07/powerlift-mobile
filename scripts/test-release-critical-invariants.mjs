@@ -1,7 +1,9 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['Athlete Meet Packet V2 lifecycle and operational toolkit', ['scripts/test-athlete-meet-packet-v2.mjs']],
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
+  ['Coach Check-Ins V2 command center and evidence lifecycle', ['scripts/test-coach-check-ins-v2.mjs']],
   ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs', 'scripts/test-superset-self-coach-swap-history.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
@@ -10,7 +12,7 @@ const areas = [
   ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
-  ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs']],
+  ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs', 'scripts/test-machine-brand-keyboard-selection.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
   ['Coach Session review shared cross-tab tools', ['scripts/test-coach-session-review-cross-tab.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],

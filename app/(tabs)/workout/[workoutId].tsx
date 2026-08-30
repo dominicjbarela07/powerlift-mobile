@@ -3831,6 +3831,7 @@ export default function WorkoutViewerScreen() {
 
   const closeIdentityPicker = () => {
     identityPickerRequestRef.current += 1;
+    Keyboard.dismiss();
     setIdentityPickerItem(null);
     setIdentityPickerRows([]);
     setIdentityPickerError(null);
@@ -3950,6 +3951,7 @@ export default function WorkoutViewerScreen() {
     setIdentityPickerManufacturer(identity);
     setIdentityPickerQuery('');
     setIdentityPickerError(null);
+    Keyboard.dismiss();
   };
 
   const chooseEquipmentVariant = async (
@@ -9800,7 +9802,11 @@ export default function WorkoutViewerScreen() {
       </Modal>
 
       <Modal visible={!!identityPickerItem} transparent animationType="slide" onRequestClose={closeIdentityPicker}>
-        <View style={styles.coreWheelBackdrop}>
+        <KeyboardAvoidingView
+          style={styles.coreWheelBackdrop}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+        >
           <TouchableWithoutFeedback onPress={closeIdentityPicker}><View style={styles.coreWheelBackdropHit} /></TouchableWithoutFeedback>
           <View
             style={[
@@ -9946,7 +9952,8 @@ export default function WorkoutViewerScreen() {
                 {identityPickerError ? <Text style={styles.movementHistoryEmpty}>{identityPickerError}</Text> : null}
                 <ScrollView
                   style={[styles.movementHistoryList, styles.equipmentPickerList]}
-                  keyboardShouldPersistTaps="handled"
+                  keyboardShouldPersistTaps="always"
+                  keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
                 >
                   {identityPickerRows.map((row) => {
                     const other = row.equipment_context?.option_kind === 'other'
@@ -10006,7 +10013,7 @@ export default function WorkoutViewerScreen() {
               </>
             ) : null}
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Cancel / Resume confirmation modal */}
