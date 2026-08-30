@@ -18,6 +18,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 
+import {
+  AthleteMeetPacketV2,
+  type MeetPacketPayload,
+  type MeetPacketWarmup,
+} from '@/components/meet-packet/AthleteMeetPacketV2';
+
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { SLTrophy } from '@/components/ui';
@@ -430,7 +436,8 @@ function weightClassOptionsForFederation(federation?: string | null, sex?: strin
 export default function AthleteMeetPlanScreen() {
   const router = useRouter();
   const { token, user } = useAuth();
-  const displayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
+  const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
+  const [displayUnit, setDisplayUnit] = useState<DisplayWeightUnit>(preferredDisplayUnit);
 
   const [payload, setPayload] = useState<MeetPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -458,6 +465,10 @@ export default function AthleteMeetPlanScreen() {
   const [newMeetBagItem, setNewMeetBagItem] = useState('');
   const [savingAttemptId, setSavingAttemptId] = useState<number | null>(null);
   const [attemptDraft, setAttemptDraft] = useState<AttemptResultDraft | null>(null);
+
+  useEffect(() => {
+    setDisplayUnit(preferredDisplayUnit);
+  }, [preferredDisplayUnit]);
   const openAttemptDraft = useCallback((attempt: MeetAttempt) => {
     const existing = attempt.result;
     const existingNotes = existing?.notes || '';
@@ -908,6 +919,87 @@ export default function AthleteMeetPlanScreen() {
     },
     [loadMeetPlan, token, router]
   );
+
+  const saveMeetDetailsV2 = useCallback(async (draft: {
+    location: string;
+    flight_platform: string;
+    weight_class: string;
+    weigh_in_bodyweight: string;
+    squat_rack_height: string;
+    bench_rack_height: string;
+    bench_safety_height: string;
+  }) => {
+    if (!token) return false;
+    try {
+      const bodyweight = Number.parseFloat(draft.weigh_in_bodyweight);
+      const res: any = await fetchJson('/meet-planner/mobile/athlete/current/details', {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: draft.location,
+          flight_platform: draft.flight_platform,
+          weight_class: draft.weight_class,
+          weigh_in_bodyweight_kg: Number.isFinite(bodyweight) ? displayMeetWeightToKg(bodyweight, displayUnit) : null,
+          squat_rack_height: draft.squat_rack_height,
+          bench_rack_height: draft.bench_rack_height,
+          bench_safety_height: draft.bench_safety_height,
+        }),
+      });
+      const json = res?.json ?? res;
+      if (res?.ok !== true) {
+        setError(String(json?.error || json?.message || 'Could not save meet details.'));
+        return false;
+      }
+      await loadMeetPlan({ silent: true, showRefreshIndicator: false });
+      return true;
+    } catch (err) {
+      console.log('Meet Packet V2 details save error', err);
+      setError('Network error while saving meet details.');
+      return false;
+    }
+  }, [displayUnit, loadMeetPlan, token]);
+
+  const toggleMeetWarmupV2 = useCallback(async (warmup: MeetPacketWarmup, completed: boolean) => {
+    if (!token) return false;
+    try {
+      const res: any = await fetchJson(`/meet-planner/mobile/athlete/warmups/${warmup.id}/completion`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed }),
+      });
+      const json = res?.json ?? res;
+      if (res?.ok !== true) {
+        setError(String(json?.error || json?.message || 'Could not update warmup.'));
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log('Meet Packet V2 warmup completion error', err);
+      setError('Network error while updating warmup.');
+      return false;
+    }
+  }, [token]);
+
+  const saveMeetBagV2 = useCallback(async (items: string[], checkedItems: string[]) => {
+    if (!token) return false;
+    try {
+      const res: any = await fetchJson('/meet-planner/mobile/athlete/current/meet-bag', {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, checked_items: checkedItems }),
+      });
+      const json = res?.json ?? res;
+      if (res?.ok !== true) {
+        setError(String(json?.error || json?.message || 'Could not save meet bag.'));
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log('Meet Packet V2 bag save error', err);
+      setError('Network error while saving meet bag.');
+      return false;
+    }
+  }, [token]);
 
   const attemptsForLift = payload?.attempts?.[activeLift] || [];
   const warmupsForLift = payload?.warmups?.[activeLift] || [];
@@ -2384,6 +2476,57 @@ export default function AthleteMeetPlanScreen() {
         <ThemedView style={styles.screenCentered}>
           <ThemedText variant="error" style={styles.errorText}>{error}</ThemedText>
         </ThemedView>
+      </SafeAreaView>
+    );
+  }
+
+  if (hasMeetPlan && payload?.meet) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+        <AthleteMeetPacketV2
+          payload={payload as MeetPacketPayload}
+          unit={displayUnit}
+          onUnitChange={setDisplayUnit}
+          onStartMeet={() => updateMeetStatusConfirmed('start')}
+          onFinishMeet={() => updateMeetStatusConfirmed('finish')}
+          onOpenAttempt={(attempt) => openAttemptDraft(attempt as MeetAttempt)}
+          onSaveDetails={saveMeetDetailsV2}
+          onSaveMeetBag={saveMeetBagV2}
+          onToggleWarmup={toggleMeetWarmupV2}
+        />
+        {attemptDraft ? (
+          <Modal transparent animationType="fade" visible onRequestClose={() => setAttemptDraft(null)}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 18 : 0}
+              style={styles.modalKeyboardWrap}
+            >
+              <View style={styles.modalBackdrop}>
+                <Pressable style={styles.modalBackdropPressable} onPress={() => setAttemptDraft(null)} />
+                <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modalScrollContent} showsVerticalScrollIndicator={false}>
+                  <View style={styles.attemptModalCard}>
+                    <View style={styles.attemptModalHeader}>
+                      <View>
+                        <Text style={styles.attemptModalEyebrow}>{resultLabel(attemptDraft.result)}</Text>
+                        <Text style={styles.attemptModalTitle}>Log {liftLabels[(attemptDraft.attempt.lift as LiftKey) || activeLift] || liftLabels[activeLift]} {attemptLabel(attemptDraft.attempt.attempt_number)}</Text>
+                      </View>
+                      <Pressable onPress={() => setAttemptDraft(null)} style={styles.modalCloseButton}><Ionicons name="close" size={18} color={SLColors.text} /></Pressable>
+                    </View>
+                    <View style={styles.attemptModalStrategy}><Text style={styles.attemptModalStrategyLabel}>Plan</Text><Text style={styles.attemptModalStrategyText}>{attemptPlanLabel(attemptDraft.attempt, displayUnit)}</Text>{attemptStrategyNote(attemptDraft.attempt) ? <Text style={styles.attemptModalStrategyNote}>{attemptStrategyNote(attemptDraft.attempt)}</Text> : null}</View>
+                    <View style={styles.modalFieldGroup}>
+                      <Text style={styles.modalLabel}>Result</Text>
+                      <View style={styles.resultChoiceRow}>{(['good', 'miss', 'skipped'] as const).map((value) => <Pressable key={value} onPress={() => setAttemptDraft((current) => current ? { ...current, result: value, missReason: value === 'miss' ? current.missReason : '' } : current)} style={[styles.resultChoice, value === 'good' ? styles.resultChoiceGood : value === 'miss' ? styles.resultChoiceMiss : styles.resultChoiceSkipped, attemptDraft.result === value ? value === 'good' ? styles.resultChoiceGoodActive : value === 'miss' ? styles.resultChoiceMissActive : styles.resultChoiceSkippedActive : null]}><Text style={styles.resultChoiceText}>{value === 'good' ? 'Good Lift' : value === 'miss' ? 'No Lift' : 'Skipped'}</Text></Pressable>)}</View>
+                    </View>
+                    <View style={styles.modalFieldGroup}><Text style={styles.modalLabel}>Actual weight</Text><HorizontalWheelSelector options={meetWeightOptionsForAttempt(attemptDraft.attempt, displayUnit)} value={attemptDraft.actualWeightKg || meetWeightOptionsForAttempt(attemptDraft.attempt, displayUnit)[0]} onChange={(value) => setAttemptDraft((current) => current ? { ...current, actualWeightKg: value } : current)} /><Text style={styles.modalWeightHint}>{displayUnit} · official meet increments</Text></View>
+                    {attemptDraft.result === 'miss' ? <View style={styles.modalFieldGroup}><Text style={styles.modalLabel}>Why did it miss?</Text><View style={styles.optionWrap}>{(['technical', 'strength', 'command', 'depth', 'grip', 'other'] as const).map((reason) => <Pressable key={reason} onPress={() => setAttemptDraft((current) => current ? { ...current, missReason: reason } : current)} style={[styles.reasonPill, attemptDraft.missReason === reason && styles.reasonPillActive]}><Text style={styles.reasonPillText}>{reason.charAt(0).toUpperCase() + reason.slice(1)}</Text></Pressable>)}</View></View> : null}
+                    <View style={styles.modalFieldGroup}><Text style={styles.modalLabel}>Notes</Text><TextInput value={attemptDraft.notes} onChangeText={(value) => setAttemptDraft((current) => current ? { ...current, notes: value } : current)} placeholder="Optional note for coach" placeholderTextColor={SLColors.textSubtle} style={[styles.modalInput, styles.modalTextArea]} multiline /></View>
+                    <View style={styles.modalActionsRow}><Pressable onPress={() => setAttemptDraft(null)} style={styles.modalCancelButton}><Text style={styles.modalCancelText}>Cancel</Text></Pressable><Pressable disabled={savingAttemptId === attemptDraft.attempt.id || !attemptDraft.result} onPress={submitAttemptResult} style={[styles.modalSaveButton, (savingAttemptId === attemptDraft.attempt.id || !attemptDraft.result) && styles.disabledButton]}>{savingAttemptId === attemptDraft.attempt.id ? <ActivityIndicator color={SLColors.textStrong} /> : <Text style={styles.modalSaveText}>Save Result</Text>}</Pressable></View>
+                  </View>
+                </ScrollView>
+              </View>
+            </KeyboardAvoidingView>
+          </Modal>
+        ) : null}
       </SafeAreaView>
     );
   }

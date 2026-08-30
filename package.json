@@ -129,6 +129,7 @@
     "test:coach-home-activity-first": "node --import tsx scripts/test-coach-home-activity-first.mjs",
     "test:coach-check-ins-v2": "node --import tsx scripts/test-coach-check-ins-v2.mjs",
     "test:team-brief-v2": "node --import tsx scripts/test-team-brief-v2.mjs",
+    "test:athlete-meet-packet-v2": "node --import tsx scripts/test-athlete-meet-packet-v2.mjs",
     "test:chart-fidelity": "node --import tsx scripts/test-chart-fidelity-standard.mjs",
     "test:accessory-trend-axis-mode": "node --import tsx scripts/test-accessory-trend-axis-mode.mjs",
     "test:bottom-tab-glass": "node scripts/test-bottom-tab-glass.mjs",
