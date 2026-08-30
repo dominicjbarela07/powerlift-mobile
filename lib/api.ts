@@ -1398,6 +1398,162 @@ export async function submitCheckInAnswers(
     body: { answers } as any,
   });
 }
+
+export type CoachCheckInQuestion = {
+  id?: number;
+  prompt: string;
+  question_type: string;
+  question_type_label?: string;
+  required: boolean;
+  position?: number;
+  options?: string[];
+  config?: Record<string, any>;
+  evidence_semantic?: string;
+  canonical_evidence?: boolean;
+};
+
+export type CoachCheckInAssignment = {
+  id: number;
+  athlete_id: number;
+  active: boolean;
+  cadence: string;
+  cadence_label: string;
+  weekdays: number[];
+  due_time_local?: string | null;
+  athlete_timezone?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  next_due_at?: string | null;
+};
+
+export type CoachCheckInForm = {
+  id: number;
+  title: string;
+  description?: string | null;
+  state: 'active' | 'archived' | string;
+  is_active: boolean;
+  question_count: number;
+  assigned_athlete_count: number;
+  cadence?: string | null;
+  cadence_label: string;
+  delivery_time_local?: string | null;
+  timezone_semantics: string;
+  submission_count: number;
+  completion_rate?: number | null;
+  average_response_hours?: number | null;
+  questions: CoachCheckInQuestion[];
+  assignments: CoachCheckInAssignment[];
+  analytics: {
+    window: string;
+    completion_rate?: number | null;
+    overdue_rate?: number | null;
+    average_response_hours?: number | null;
+    trend: { week_start: string; completion_rate?: number | null; average_response_hours?: number | null; due: number; submitted: number }[];
+  };
+};
+
+export type CoachCheckInAthlete = {
+  id: number;
+  name: string;
+  avatar_url?: string | null;
+  coverage_state: 'covered' | 'needs_coverage' | 'overdue' | string;
+  active_form_count: number;
+  forms: { id: number; title: string; assignment_id: number; cadence_label: string; due_time_local?: string | null; next_due_at?: string | null }[];
+  next_due_at?: string | null;
+  last_submission_at?: string | null;
+  last_submission_id?: number | null;
+  overdue_count: number;
+};
+
+export type CoachCheckInSubmissionCard = {
+  id: number;
+  form_id: number;
+  assignment_id: number;
+  athlete?: { id: number; name: string; avatar_url?: string | null } | null;
+  form_title: string;
+  state: string;
+  due_at?: string | null;
+  submitted_at?: string | null;
+  reviewed_at?: string | null;
+  is_late: boolean;
+  evidence: Record<string, { label: string; value: string; numeric_value?: number | null }>;
+  excerpt?: string | null;
+};
+
+export type CoachCheckInTemplate = {
+  key: string;
+  name: string;
+  title: string;
+  description: string;
+  cadence: string;
+  recommended_due: string;
+  featured?: boolean;
+  questions: CoachCheckInQuestion[];
+};
+
+export type CoachCheckInsCommandCenter = {
+  ok: boolean;
+  error?: string;
+  summary: { active_forms: number; covered_athletes: number; total_athletes: number; awaiting_review: number; overdue: number };
+  forms: CoachCheckInForm[];
+  athletes: CoachCheckInAthlete[];
+  inbox: { needs_review: CoachCheckInSubmissionCard[]; overdue: CoachCheckInSubmissionCard[]; recently_reviewed: CoachCheckInSubmissionCard[] };
+  templates: CoachCheckInTemplate[];
+  supported_question_types: { key: string; label: string }[];
+  supported_cadences: { key: string; label: string }[];
+  meta: { generated_at: string; query_strategy: string; athlete_scope?: number | null; timezone_semantics: string; causality_claimed: boolean };
+};
+
+export type CoachCheckInReview = {
+  ok: boolean;
+  error?: string;
+  submission: CoachCheckInSubmissionCard;
+  check_in_read: { headline: string; detail: string; tone: string; comparison_policy: string; causality_claimed: boolean; prior_submission_count: number };
+  evidence: { question_id: number; prompt: string; semantic: string; display_value: string; numeric_value?: number | null; prior_only_baseline?: number | null; delta_from_baseline?: number | null; direction: string; adverse: boolean }[];
+  changes_since_last: { semantic: string; label: string; direction: string; delta: number; adverse: boolean }[];
+  responses: { question_id: number; prompt: string; question_type: string; question_type_label: string; semantic: string; value: any; display_value: string; prior_only_baseline?: number | null; delta_from_baseline?: number | null; direction: string; adverse: boolean }[];
+  free_context: { prompt: string; value: string }[];
+  coach_interpretation?: string | null;
+  tags: string[];
+  actions: Record<string, boolean>;
+};
+
+export async function getCoachCheckIns(athleteId?: number): Promise<FetchJsonResult<CoachCheckInsCommandCenter>> {
+  const query = athleteId ? `?athlete_id=${athleteId}` : '';
+  return fetchJson(`/check-ins/mobile/coach${query}`, { method: 'GET', auth: true });
+}
+
+export async function getCoachCheckInReview(submissionId: number): Promise<FetchJsonResult<CoachCheckInReview>> {
+  return fetchJson(`/check-ins/mobile/coach/submissions/${submissionId}`, { method: 'GET', auth: true });
+}
+
+export async function markCoachCheckInReviewed(submissionId: number, payload: { coach_interpretation?: string; tags?: string[]; send_feedback_message?: boolean }): Promise<FetchJsonResult<{ ok: boolean; error?: string; review?: CoachCheckInReview }>> {
+  return fetchJson(`/check-ins/mobile/coach/submissions/${submissionId}/review`, { method: 'POST', auth: true, body: payload as any });
+}
+
+export async function createCoachCheckInForm(payload: { template_key?: string; title?: string; description?: string; questions?: CoachCheckInQuestion[] }): Promise<FetchJsonResult<{ ok: boolean; error?: string; form_id?: number; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson('/check-ins/mobile/coach/forms', { method: 'POST', auth: true, body: payload as any });
+}
+
+export async function updateCoachCheckInForm(formId: number, payload: { title?: string; description?: string; questions?: CoachCheckInQuestion[] }): Promise<FetchJsonResult<{ ok: boolean; error?: string; form_id?: number; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson(`/check-ins/mobile/coach/forms/${formId}`, { method: 'PUT', auth: true, body: payload as any });
+}
+
+export async function duplicateCoachCheckInForm(formId: number): Promise<FetchJsonResult<{ ok: boolean; error?: string; form_id?: number; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson(`/check-ins/mobile/coach/forms/${formId}/duplicate`, { method: 'POST', auth: true });
+}
+
+export async function changeCoachCheckInFormState(formId: number, action: 'archive' | 'restore'): Promise<FetchJsonResult<{ ok: boolean; error?: string; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson(`/check-ins/mobile/coach/forms/${formId}/state`, { method: 'POST', auth: true, body: { action } as any });
+}
+
+export async function updateCoachCheckInAssignments(formId: number, payload: { athlete_ids: number[]; cadence: string; weekdays?: number[]; due_time_local?: string; start_date?: string; end_date?: string | null; replace?: boolean }): Promise<FetchJsonResult<{ ok: boolean; error?: string; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson(`/check-ins/mobile/coach/forms/${formId}/assignments`, { method: 'PUT', auth: true, body: payload as any });
+}
+
+export async function toggleCoachCheckInAssignment(assignmentId: number): Promise<FetchJsonResult<{ ok: boolean; error?: string; active?: boolean; command_center?: CoachCheckInsCommandCenter }>> {
+  return fetchJson(`/check-ins/mobile/coach/assignments/${assignmentId}/toggle`, { method: 'POST', auth: true });
+}
 // ------- MESSAGING ----------------------------------------------------------
 export type MessengerAttachment = {
   id?: number;
