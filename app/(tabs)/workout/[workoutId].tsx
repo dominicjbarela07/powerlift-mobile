@@ -2459,6 +2459,7 @@ export default function WorkoutViewerScreen() {
 
   const closeEquipmentPicker = () => {
     equipmentPickerRequestRef.current += 1;
+    Keyboard.dismiss();
     setEquipmentPickerItem(null);
     setEquipmentPickerRows([]);
     setEquipmentPickerQuery('');
@@ -2466,6 +2467,13 @@ export default function WorkoutViewerScreen() {
     setEquipmentPickerManufacturer(null);
     setEquipmentPickerContinuation({ kind: 'none' });
     setEquipmentPickerLoading(false);
+  };
+
+  const selectEquipmentManufacturer = (row: EquipmentIdentityLike) => {
+    setEquipmentPickerManufacturer(row);
+    setEquipmentPickerQuery('');
+    setEquipmentPickerError(null);
+    Keyboard.dismiss();
   };
 
   const loadEquipmentManufacturers = async (item: WorkoutItem) => {
@@ -5778,7 +5786,11 @@ export default function WorkoutViewerScreen() {
         animationType="slide"
         onRequestClose={closeEquipmentPicker}
       >
-        <View style={styles.coreWheelBackdrop}>
+        <KeyboardAvoidingView
+          style={styles.coreWheelBackdrop}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+        >
           <TouchableWithoutFeedback onPress={closeEquipmentPicker}>
             <View style={styles.coreWheelBackdropHit} />
           </TouchableWithoutFeedback>
@@ -5859,7 +5871,8 @@ export default function WorkoutViewerScreen() {
                     ) : null}
                     <ScrollView
                       style={styles.equipmentPickerList}
-                      keyboardShouldPersistTaps="handled"
+                      keyboardShouldPersistTaps="always"
+                      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
                     >
                       {equipmentPickerRows
                         .filter((row) => {
@@ -5875,11 +5888,7 @@ export default function WorkoutViewerScreen() {
                             <TouchableOpacity
                               key={`${row.id}:${row.key}`}
                               style={styles.equipmentPickerOption}
-                              onPress={() => {
-                                setEquipmentPickerManufacturer(row);
-                                setEquipmentPickerQuery('');
-                                setEquipmentPickerError(null);
-                              }}
+                              onPress={() => selectEquipmentManufacturer(row)}
                             >
                               <View style={styles.equipmentPickerOptionCopy}>
                                 <Text style={styles.equipmentPickerOptionTitle}>
@@ -5906,7 +5915,7 @@ export default function WorkoutViewerScreen() {
               </>
             ) : null}
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal
