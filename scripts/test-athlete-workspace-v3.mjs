@@ -7,7 +7,7 @@ const contract = read('lib/coach-mobile.ts');
 
 assert.match(workspace, /summary\?view=v3&period=\$\{period\}/);
 assert.doesNotMatch(workspace, /Promise\.all|team-relative-analytics/, 'The first useful render must use one bounded projection.');
-for (const section of ['Athlete Read', 'Progress', 'MOVEMENT SIGNALS', 'Programming & Exposure', 'Recent Wins', 'Athlete Signals']) {
+for (const section of ['Athlete Read', 'Explore Athlete', 'Progress Over Time', 'MOVEMENT SIGNALS', 'Programming & Exposure', 'Last Session Read', 'Upcoming Programming', 'Recent Wins', 'Athlete Signals']) {
   assert.match(workspace, new RegExp(section));
 }
 for (const read of ['Progress', 'Readiness', 'Execution', 'Attention']) assert.match(workspace, new RegExp(`label="${read}"`));
@@ -15,6 +15,16 @@ for (const route of ['ledger/strength', 'ledger/muscle-groups', 'coach-session-r
 assert.match(workspace, /ProgrammingMuscleRegionArt/);
 assert.match(workspace, /AnalyticalTimeSeriesChart/);
 assert.match(workspace, /athlete-workspace-readiness-chart/);
+assert.match(workspace, /athlete-workspace-muscle-exposure-chart/);
+assert.match(workspace, /training-hub\/movement-history\?/);
+assert.match(workspace, /CanonicalMovementHistoryScreen/);
+assert.match(workspace, /core_movement_id.*movement_definition_id/s);
+assert.match(workspace, /History unavailable — governed movement identity is missing/);
+assert.match(workspace, /Session titles are never used to infer anatomy/);
+assert.match(workspace, /FloatingDisplayUnitRegistration/);
+assert.match(workspace, /athlete-workspace-unit-toggle/);
+assert.match(workspace, /Review Full Session/);
+assert.match(workspace, /View Full Muscle History/);
 assert.match(contract, /prior_only_baseline/);
 assert.match(workspace, /primary=.*secondary=/s);
 assert.match(workspace, /StrengthLedgerBottomSheet/);
