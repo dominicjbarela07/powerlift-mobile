@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.78)' },
   backdropHit: { ...StyleSheet.absoluteFillObject },
   sheet: {
+    width: '100%',
     maxHeight: '93%',
     minHeight: '72%',
     borderTopLeftRadius: 28,
@@ -359,4 +360,3 @@ const styles = StyleSheet.create({
   confirmText: { color: '#FFFFFF', fontSize: 17, lineHeight: 22, fontFamily: SLFontFamilies.sansBold, letterSpacing: 0.1 },
   disabled: { opacity: 0.55 },
 });
-
