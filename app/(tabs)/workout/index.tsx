@@ -5866,7 +5866,7 @@ const storyStyles = StyleSheet.create({
   iconButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   topbarAction: { minWidth: 84, height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, borderWidth: 1, borderColor: 'rgba(168,101,255,0.28)', borderRadius: SLRadius.lg, backgroundColor: 'rgba(80,36,112,0.12)' },
   topbarActionText: { color: colors.violet, fontSize: 12, lineHeight: 16, fontFamily: SLFontFamilies.sansBold },
-  scroll: { paddingTop: 10, paddingHorizontal: PROGRAMMING_OUTER_GUTTER, paddingBottom: 110, gap: 12 },
+  scroll: { paddingTop: 10, paddingBottom: 110, gap: 12 },
   athleteRow: { flexDirection: 'row', alignItems: 'center', minHeight: 72, gap: 10 },
   athleteCopy: { flex: 1 },
   athleteName: { color: colors.textStrong, fontSize: 20, lineHeight: 25, fontFamily: SLFontFamilies.sansBold },

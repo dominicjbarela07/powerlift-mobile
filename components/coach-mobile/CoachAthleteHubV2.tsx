@@ -316,7 +316,7 @@ function Toolkit({ onMessage, pendingReviews, router, summary }: { onMessage: ()
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: COACH_V2.black }, content: { gap: 10, paddingTop: 8, paddingHorizontal: 5 }, flex: { flex: 1, minWidth: 0 },
+  screen: { backgroundColor: COACH_V2.black }, content: { gap: 10, paddingTop: 8 }, flex: { flex: 1, minWidth: 0 },
   hero: { minHeight: 132, gap: 10, borderRadius: 13, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: '#100B18', padding: 10 }, heroIdentity: { flexDirection: 'row', alignItems: 'center', gap: 10 }, programStrip: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9, borderRadius: 9, borderWidth: 1, borderColor: '#3D2A50', backgroundColor: '#0A0910', paddingHorizontal: 10 }, heroActions: { flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderColor: COACH_V2.border, paddingTop: 9 }, name: { color: COACH_V2.text, fontSize: 19, fontWeight: '800' }, meta: { color: COACH_V2.muted, fontSize: 9.5, lineHeight: 13 }, heroAction: { minHeight: 42, flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }, tiny: { color: COACH_V2.text, fontSize: 8 },
   explore: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 9, borderRadius: 11, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, paddingHorizontal: 12 }, exploreCopy: { flex: 1, color: COACH_V2.muted, fontSize: 12 },
   quickRow: { gap: 7, paddingRight: 6 }, quickChip: { minHeight: 38, flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 19, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: '#0D0A13', paddingHorizontal: 11 }, quickText: { color: COACH_V2.text, fontSize: 9.5, fontWeight: '800' },

@@ -422,7 +422,7 @@ function LoadingState() { return <View style={styles.center}><ActivityIndicator 
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) { return <View style={styles.center}><InlineError text={error} /><SLButton label="Try Again" onPress={onRetry} /></View>; }
 
 const styles = StyleSheet.create({
-  screen:{flex:1,backgroundColor:C.canvas}, page:{paddingHorizontal:10,paddingTop:12,paddingBottom:120,gap:12}, center:{flex:1,minHeight:560,backgroundColor:C.canvas,alignItems:'center',justifyContent:'center',gap:14,padding:24}, flex:{flex:1}, disabled:{opacity:.35}, pressed:{opacity:.78,transform:[{scale:.99}]},
+  screen:{flex:1,backgroundColor:C.canvas}, page:{paddingTop:12,paddingBottom:120,gap:12}, center:{flex:1,minHeight:560,backgroundColor:C.canvas,alignItems:'center',justifyContent:'center',gap:14,padding:24}, flex:{flex:1}, disabled:{opacity:.35}, pressed:{opacity:.78,transform:[{scale:.99}]},
   titleRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}, pageTitle:{color:C.text,fontFamily:SLFontFamilies.display,fontSize:30,fontWeight:'700'}, subtitle:{color:C.muted,fontSize:13,marginTop:2},
   screenHeader:{flexDirection:'row',alignItems:'center',gap:10,minHeight:54}, headerTitle:{flex:1,alignItems:'center'}, headerText:{color:C.text,fontFamily:SLFontFamilies.display,fontSize:20,fontWeight:'700',textAlign:'center'}, headerSpacer:{width:46},
   iconButton:{width:46,height:46,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:C.surface,alignItems:'center',justifyContent:'center'}, miniIcon:{width:30,height:30,borderRadius:9,borderWidth:1,borderColor:C.line,alignItems:'center',justifyContent:'center'},

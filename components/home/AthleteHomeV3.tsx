@@ -536,7 +536,7 @@ function relativeDay(value?: string | null, today?: string | null) { const date 
 function titleCase(value?: string | null) { return String(value || '').replaceAll('_', ' ').replace(/\b\w/g, match => match.toUpperCase()); }
 
 const styles = StyleSheet.create({
-  page: { gap: 11, paddingTop: 8, paddingHorizontal: 10, paddingBottom: 112 },
+  page: { gap: 11, paddingTop: 8, paddingBottom: 112 },
   flex: { flex: 1, minWidth: 0 },
   greetingRow: { minHeight: 46, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 2 },
   greeting: { color: '#DAD7E1', fontSize: 13, lineHeight: 18 },

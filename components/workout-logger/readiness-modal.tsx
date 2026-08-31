@@ -330,8 +330,8 @@ export function ReadinessModal({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: SLColors.surfaceScrim, paddingHorizontal: 8 },
-  sheet: { width: '100%', maxWidth: 520, maxHeight: '94%', alignSelf: 'center', backgroundColor: SLColors.surfaceFloating, borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderTopColor: SLColors.borderFocus, overflow: 'hidden', ...SLShadows.level3 },
+  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: SLColors.surfaceScrim },
+  sheet: { width: '100%', maxHeight: '94%', backgroundColor: SLColors.surfaceFloating, borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderTopColor: SLColors.borderFocus, overflow: 'hidden', ...SLShadows.level3 },
   headerRow: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12 },
   headerCopy: { flex: 1, paddingRight: 10 },
   title: { ...SLTypography.hero, color: SLColors.text, fontWeight: '900', letterSpacing: -0.6 },

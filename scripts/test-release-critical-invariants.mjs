@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['platform-wide mobile full-width layout', ['scripts/test-mobile-full-width-enforcement.mjs']],
   ['Athlete Meet Packet V2 lifecycle and operational toolkit', ['scripts/test-athlete-meet-packet-v2.mjs']],
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
   ['Coach Check-Ins V2 command center and evidence lifecycle', ['scripts/test-coach-check-ins-v2.mjs']],

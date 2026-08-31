@@ -13,7 +13,8 @@ const [shell, appHeader, ui, home, hubSheet, rosterRoute, hub, detail] = await P
   read('components/coach-mobile/CoachAttentionDetailV2.tsx'),
 ]);
 
-assert.match(shell, /tabScene:[\s\S]*paddingHorizontal: SLLayout\.screenGutter/);
+const tabScene = shell.match(/tabScene:\s*\{([^}]*)\}/)?.[1] || '';
+assert.doesNotMatch(tabScene, /(?:margin|padding)(?:Horizontal|Left|Right|Start|End)?\s*:/, 'The tab scene must provide a full-width page canvas.');
 assert.match(shell, /<StrengthLedgerAppHeader/);
 assert.match(appHeader, /contentHeight: 42/);
 assert.match(appHeader, /controlSize: 40/);
@@ -28,7 +29,7 @@ assert.match(home, /<SLScreen edges="none"/);
 assert.doesNotMatch(home, /CoachBrandHeader/);
 assert.doesNotMatch(ui, /CoachBrandHeader/);
 for (const screen of [home, hub, detail]) {
-  assert.doesNotMatch(screen, /content:\s*\{[^}]*paddingHorizontal/s, 'The shared shell must remain the only page-gutter owner.');
+  assert.doesNotMatch(screen, /content:\s*\{[^}]*paddingHorizontal/s, 'Coach screen roots must remain full width.');
   assert.match(screen, /backgroundColor: COACH_V2\.black/, 'Coach V2 screens must retain OLED black.');
   assert.doesNotMatch(screen, /BlurView|glassmorphism/i);
 }
