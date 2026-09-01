@@ -1,19 +1,39 @@
 {
-  "recordedAt": "2026-08-24T10:18:48-07:00",
-  "platform": "ios",
-  "bundleIdentifier": "com.dominicbarela.strengthcoachui",
-  "appStoreVersion": "2.0.2",
-  "appStoreBuildNumber": "24",
-  "runtimeVersion": "2.0.2",
-  "easBuildId": "3020a018-e240-4449-9255-c5caa5d162f5",
-  "easBuildFingerprint": "9e5511e49f1a11e041fce7aa4554360af985f3d7",
-  "nativeDependencyFingerprint": "0773ae5d9ae9c7b144b1e2a970b1cae8bb4b259f16280be700036044689c1748",
+  "schemaVersion": 2,
+  "recordedAt": "2026-09-01T03:07:49-07:00",
   "channel": "production",
   "branch": "production-live-2.0.2",
-  "activeUpdateGroup": "f047a607-3a0b-4be2-9eaf-83f83dfe016f",
-  "activeIosUpdateId": "01a034c7-9f13-7d99-bd98-1592d43f1c34",
-  "activeUpdateSourceCommit": "1df67d9ea5577a0ace93599ce4b1d8b099cc0e8f",
+  "runtimeVersion": "2.0.2",
   "nativeBuildRequiredForRuntimeChange": true,
   "nativeBuildAuthorization": "NOT_GRANTED",
-  "appStoreSubmissionAuthorization": "NOT_GRANTED"
+  "storeSubmissionAuthorization": "NOT_GRANTED",
+  "platforms": {
+    "ios": {
+      "applicationIdentifier": "com.dominicbarela.strengthcoachui",
+      "storeVersion": "2.0.2",
+      "storeBuildNumber": "24",
+      "easBuildId": "3020a018-e240-4449-9255-c5caa5d162f5",
+      "easBuildFingerprint": "9e5511e49f1a11e041fce7aa4554360af985f3d7",
+      "nativeDependencyFingerprint": "0773ae5d9ae9c7b144b1e2a970b1cae8bb4b259f16280be700036044689c1748",
+      "activeUpdateGroup": "7ec2eeb4-5f61-4568-87e1-7de3f97eb7e8",
+      "activeUpdateId": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
+      "activeUpdateSourceCommit": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
+      "activeLaunchAssetKey": "0b45163b6d3a4446b690c40adda0120b",
+      "activeLaunchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
+      "activeLaunchAssetBytes": 6957842
+    },
+    "android": {
+      "applicationIdentifier": "com.strengthledger.app",
+      "storeVersion": "2.0.2",
+      "storeBuildNumber": "12",
+      "easBuildId": "f6b00553-aef8-48cf-afbf-0e65cfe4a813",
+      "easBuildFingerprint": "b85f9a73022fdd8320893eb7e6a9eddedea109ce",
+      "nativeDependencyFingerprint": "25ffc691cdb6b94a2e1458d1d63cec6f0343fc3ff6a12bb8b7f853a1b8ee9e6e",
+      "embeddedSourceCommit": "5aaad1c2c92f126b0343af7c44bd29d373229ec9",
+      "activeUpdateGroup": null,
+      "activeUpdateId": null,
+      "activeUpdateSourceCommit": "5aaad1c2c92f126b0343af7c44bd29d373229ec9",
+      "activeManifestStatus": 204
+    }
+  }
 }
