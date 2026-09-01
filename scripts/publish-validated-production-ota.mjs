@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
+  PRODUCTION_PLATFORMS,
   assertLiveEasBuild,
+  assertProductionPlatformParity,
   assertProductionOtaCompatible,
   assertPublicationScope,
   calculateNativeDependencyFingerprint,
@@ -19,8 +21,8 @@ const valueFor = (flag) => {
   const index = args.indexOf(flag);
   return index >= 0 ? args[index + 1] : undefined;
 };
-const target = valueFor('--platform');
-const scope = valueFor('--release-scope');
+const target = valueFor('--platform') ?? 'all';
+const scope = valueFor('--release-scope') ?? 'shared';
 const reason = valueFor('--reason');
 const message = valueFor('--message');
 const prepareOnly = args.includes('--prepare-only');
@@ -38,6 +40,8 @@ const run = (command, commandArgs, options = {}) => execFileSync(command, comman
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',
 });
+
+run(process.execPath, ['scripts/verify-production-channel-parity.mjs']);
 
 for (const platform of platforms) {
   const nativeDependencyFingerprint = calculateNativeDependencyFingerprint(platform, root);
@@ -217,6 +221,7 @@ async function fetchManifestBundle(url, platform, expectedUpdateId) {
 }
 
 const verified = {};
+const resolvedByPlatform = new Map();
 for (const update of published) {
   const direct = await fetchManifestBundle(update.manifestPermalink, update.platform, update.id);
   const local = localBundles.get(update.platform);
@@ -239,6 +244,7 @@ for (const update of published) {
   if (!local.bytes.equals(resolved.bytes)) {
     throw new Error(`Production channel serves bytes different from validated ${update.platform} export.`);
   }
+  resolvedByPlatform.set(update.platform, resolved);
   verified[update.platform] = {
     updateId: update.id,
     bytes: local.length,
@@ -263,6 +269,63 @@ if (JSON.stringify(groupPlatforms) !== JSON.stringify(expectedPlatforms)) {
   );
 }
 
+for (const update of groupView) {
+  if (update.gitCommitHash !== sourceSha) {
+    throw new Error(
+      `Published ${update.platform} source mismatch: ${update.gitCommitHash || '<missing>'} `
+      + `(expected ${sourceSha}).`,
+    );
+  }
+}
+
+const postBaseline = structuredClone(baseline);
+for (const update of published) {
+  const resolved = resolvedByPlatform.get(update.platform);
+  const live = postBaseline.platforms[update.platform];
+  live.activeUpdateGroup = update.group;
+  live.activeUpdateId = update.id;
+  live.activeUpdateSourceCommit = sourceSha;
+  live.activeLaunchAssetKey = resolved.manifest.launchAsset.key;
+  live.activeLaunchAssetSha256 = crypto.createHash('sha256').update(resolved.bytes).digest('hex');
+  live.activeLaunchAssetBytes = resolved.bytes.length;
+  live.activeManifestStatus = 200;
+}
+
+const parityStates = {};
+for (const platform of PRODUCTION_PLATFORMS) {
+  const expected = platformBaseline(postBaseline, platform);
+  const selectedUpdate = published.find((update) => update.platform === platform);
+  const resolved = selectedUpdate
+    ? resolvedByPlatform.get(platform)
+    : await fetchManifestBundle(app.updates.url, platform, expected.activeUpdateId);
+  const viewedGroup = selectedUpdate
+    ? groupView
+    : JSON.parse(run('npx', [
+      'eas-cli',
+      'update:view',
+      expected.activeUpdateGroup,
+      '--json',
+    ], { capture: true }));
+  const viewedUpdate = viewedGroup.find(
+    (candidate) => candidate.id === resolved.manifest.id && candidate.platform === platform,
+  );
+  parityStates[platform] = {
+    platform,
+    channel: postBaseline.channel,
+    status: 200,
+    embeddedFallback: false,
+    branch: resolved.manifest.metadata?.branchName,
+    runtimeVersion: resolved.manifest.runtimeVersion,
+    group: viewedUpdate?.group,
+    updateId: resolved.manifest.id,
+    sourceCommit: viewedUpdate?.gitCommitHash,
+    launchAssetKey: resolved.manifest.launchAsset.key,
+    launchAssetSha256: crypto.createHash('sha256').update(resolved.bytes).digest('hex'),
+    launchAssetBytes: resolved.bytes.length,
+  };
+}
+const platformParity = assertProductionPlatformParity({ baseline: postBaseline, states: parityStates });
+
 console.log(JSON.stringify({
   ok: true,
   sourceSha,
@@ -273,5 +336,7 @@ console.log(JSON.stringify({
   target,
   scope,
   reason: reason || null,
+  platformParity,
+  parityStates,
   verified,
 }, null, 2));

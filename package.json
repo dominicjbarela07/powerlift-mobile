@@ -147,6 +147,7 @@
     "test:visible-control-actions": "node scripts/test-major-visible-control-actions.mjs",
     "test:release-critical-invariants": "node scripts/test-release-critical-invariants.mjs",
     "test:production-release-policy": "node scripts/test-production-release-policy.mjs",
+    "verify:production:parity": "node scripts/verify-production-channel-parity.mjs",
     "test:session-logger-request-policy": "node --import tsx scripts/test-session-logger-request-policy.mjs",
     "test:release-source-lineage": "node scripts/test-release-source-lineage.mjs",
     "test:accessory-strength-metric": "node --import tsx scripts/test-accessory-strength-metric-policy.mjs",
