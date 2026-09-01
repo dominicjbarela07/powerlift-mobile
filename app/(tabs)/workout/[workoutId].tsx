@@ -53,6 +53,7 @@ import SetVideoPlayerModal, {
 } from '@/components/SetVideoPlayerModal';
 import {
   CompletedSessionRecap,
+  type CompletedRecapMovement,
   type CompletedSessionRecapPayload,
 } from '@/components/coach-mobile/CompletedSessionRecap';
 import {
@@ -2910,6 +2911,8 @@ export default function WorkoutViewerScreen() {
     useState<EquipmentSelectionContinuation>({ kind: 'none' });
   const [identityPickerManufacturer, setIdentityPickerManufacturer] =
     useState<GeneralMovementIdentity | null>(null);
+  const [pendingPostSessionEquipmentItemId, setPendingPostSessionEquipmentItemId] =
+    useState<number | null>(null);
   const identityPickerRequestRef = useRef(0);
   const [swapAccForm, setSwapAccForm] = useState({
     sets: '',
@@ -5930,6 +5933,46 @@ export default function WorkoutViewerScreen() {
     await beginWorkoutConfirmed();
   };
 
+  const resumeCompletedSessionForEquipmentCorrection = (movement: CompletedRecapMovement) => {
+    const itemId = Number(movement.item_id || 0);
+    if (!itemId || movement.kind !== 'accessory') {
+      Alert.alert(
+        'Equipment correction unavailable',
+        'This historical movement does not expose a governed accessory equipment identity.',
+      );
+      return;
+    }
+    const resume = () => {
+      setPendingPostSessionEquipmentItemId(itemId);
+      requestAnimationFrame(() => { void beginWorkoutConfirmed(); });
+    };
+    if ((data?.workout as any)?.post_session_submitted_at) {
+      Alert.alert(
+        'Resume Session to correct equipment?',
+        'This reopens the same Session and removes its submitted reflection. Existing SetLogs keep their immutable performed snapshots until you amend that evidence in the logger.',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => setPendingPostSessionEquipmentItemId(null) },
+          { text: 'Resume & Correct', style: 'destructive', onPress: resume },
+        ],
+      );
+      return;
+    }
+    resume();
+  };
+
+  useEffect(() => {
+    if (!pendingPostSessionEquipmentItemId || data?.workout?.status !== 'in_progress') return;
+    const accessoryItem = (data.workout.accessory_groups || [])
+      .flatMap((group) => group.items || [])
+      .find((item) => Number(item.id) === pendingPostSessionEquipmentItemId);
+    setPendingPostSessionEquipmentItemId(null);
+    if (!accessoryItem) {
+      Alert.alert('Equipment correction unavailable', 'The original movement could not be restored in this Session.');
+      return;
+    }
+    requestAnimationFrame(() => openIdentityPicker(accessoryItem));
+  }, [data?.workout?.accessory_groups, data?.workout?.status, pendingPostSessionEquipmentItemId]);
+
   const submitTardyReason = async () => {
     const reason = tardyReason.trim();
     if (!reason) {
@@ -8351,6 +8394,7 @@ export default function WorkoutViewerScreen() {
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
             preferredUnits={athlete.preferred_units}
+            sessionTimeZone={workout.scheduled_timezone}
             viewerMode={coachPreviewRequested ? 'coach' : 'athlete'}
             refreshing={refreshing}
             onRefresh={onRefresh}
@@ -8360,6 +8404,14 @@ export default function WorkoutViewerScreen() {
             onViewCalendar={coachPreviewRequested
               ? () => router.push({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id) } } as any)
               : () => router.push('/(tabs)/athlete-calendar' as any)}
+            onOpenProgramming={coachPreviewRequested
+              ? () => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(athlete.id) } } as any)
+              : undefined}
+            onResumeSession={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
+            onEditSetEvidence={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
+            onEditSessionNotes={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
+            onViewSessionHistory={coachPreviewRequested ? undefined : () => router.push('/(tabs)/workout/session-history' as any)}
+            onCorrectEquipment={coachPreviewRequested ? undefined : resumeCompletedSessionForEquipmentCorrection}
             onOpenMovementHistory={(movement) => {
               const resolution = resolveMovementHistoryLaunchFromMeasurement({
                 athleteId: athlete.id,

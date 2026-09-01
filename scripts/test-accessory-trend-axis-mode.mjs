@@ -49,7 +49,7 @@ assert.ok(buildYAxisGutter(['-1,250 lb', '+12,500 lb'], 10) > buildYAxisGutter([
 
 const toggle = read('components/charts/ChartAxisModeToggle.tsx');
 const sharedChart = read('components/charts/AnalyticalTimeSeriesChart.tsx');
-const reviewer = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
+const reviewer = read('components/coach-mobile/CompletedSessionRecap.tsx');
 const history = read('components/movement-history/CanonicalMovementHistoryScreen.tsx');
 const historyChart = read('components/movement-history/AnalyticalHistoryChart.tsx');
 assert.match(toggle, /TIME[\s\S]*INSTANCES/);

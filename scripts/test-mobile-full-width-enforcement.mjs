@@ -29,7 +29,7 @@ for (const contract of [
   'app/(tabs)/workout/index.tsx',
   'components/coach-mobile/SessionEditingWorkspace.tsx',
   'app/(tabs)/workout/[workoutId].tsx',
-  'components/coach-mobile/CoachSessionReviewerV3.tsx',
+  'components/coach-mobile/CompletedSessionRecap.tsx',
   'components/meet-packet/AthleteMeetPacketV2.tsx',
   'components/coach-mobile/CoachCheckInsV2.tsx',
   'components/ledger/primitives.tsx',

@@ -43,7 +43,7 @@ for (const contract of ['buildNumericScale', 'buildAnalyticalXLayout', 'buildYAx
 const consumers = {
   'Team Brief': read('app/coach-team-brief.tsx'),
   'Team outlier/deep dive': read('components/coach-mobile/CoachAnalyticsTrend.tsx'),
-  'Coach Session Reviewer': read('components/coach-mobile/CoachSessionReviewerV3.tsx'),
+  'Canonical post-Session reviewer': read('components/coach-mobile/CompletedSessionRecap.tsx'),
   'Athlete Progression': read('app/(tabs)/athlete-progression.tsx'),
   'Ledger strength': read('components/ledger/experiences.tsx'),
   'Ledger movement detail': read('components/ledger/exploration-experiences.tsx'),

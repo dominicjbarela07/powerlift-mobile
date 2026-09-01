@@ -6,7 +6,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
-const reviewer = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
+const adapter = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
 const recap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 const calendar = read('app/(tabs)/coach-calendar.tsx');
 const teamBrief = read('app/coach-team-brief.tsx');
@@ -23,18 +23,19 @@ function assertNoPageInset(source, name) {
   assert.doesNotMatch(body, /(?:margin|padding)(?:Horizontal|Left|Right|Start|End)?\s*:/, `${name} must not add a page-level horizontal gutter`);
 }
 
-assertNoPageInset(reviewer, 'content');
-assert.doesNotMatch(styleBody(reviewer, 'tabs'), /margin(?:Horizontal|Left|Right|Start|End)?\s*:/, 'Reviewer tab rail must span the viewport');
-assert.match(styleBody(reviewer, 'tabs'), /padding:\s*3/, 'Reviewer tab rail keeps its component-owned inset');
-assert.match(reviewer, /<PlanCompareExperience edgeToEdge\b/, 'Reviewer Plan / Compare uses the edge-to-edge contract');
-assert.match(reviewer, /<CoachTools review=\{coachReview\}/, 'Reviewer renders the canonical coach tools inside the edge-to-edge section contract');
+assertNoPageInset(recap, 'canonicalContent');
+assert.doesNotMatch(styleBody(recap, 'tabs'), /margin(?:Horizontal|Left|Right|Start|End)?\s*:/, 'Reviewer tab rail must span the viewport');
+assert.match(styleBody(recap, 'tabs'), /padding:\s*3/, 'Reviewer tab rail keeps its component-owned inset');
+assert.match(recap, /<PlanCompareExperience edgeToEdge\b/, 'Reviewer Plan / Compare uses the edge-to-edge contract');
+assert.match(recap, /<CoachTools review=\{coachReview\}/, 'Reviewer renders the canonical coach tools inside the edge-to-edge section contract');
+assert.match(adapter, /<CompletedSessionRecap/, 'coach and athlete roles must share one post-Session runtime');
 
 for (const name of ['sectionShell', 'compareFilters', 'compareMovementStack', 'comparisonLegend']) assertNoPageInset(recap, name);
-assert.match(styleBody(reviewer, 'readCard'), /padding:\s*10/, 'Reviewer cards keep internal readable padding');
+assert.match(styleBody(recap, 'sessionReadCard'), /padding:\s*9/, 'Reviewer cards keep internal readable padding');
 assert.match(styleBody(recap, 'executionCard'), /padding:\s*12/, 'Session Execution keeps internal readable padding');
 assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*9/, 'Movement cards keep internal readable padding');
 
-assert.match(reviewer, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
+assert.match(recap, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
 assert.match(analyticalChart, /buildYAxisGutter\(yLabels, 9\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
 assert.match(analyticalChart, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
 assert.match(analyticalChart, /Math\.min\(Math\.max\(4, selectedDate\.x - tooltipWidth \/ 2\), Math\.max\(4, width - tooltipWidth - 4\)\)/, 'Evidence chart tooltips remain clamped to the available width');
