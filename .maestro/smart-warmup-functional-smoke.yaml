@@ -1,0 +1,73 @@
+# Preconditions: authenticated DEV Session Logger, in-progress Session, and an
+# untouched eligible Core warmup sheet open on its first Standard step.
+appId: host.exp.Exponent
+---
+- openLink: ${EXPO_DEV_URL}
+- tapOn:
+    text: "Resume Session"
+    optional: true
+- tapOn:
+    text: ".*Resume.*Squat.*warmups.*"
+    optional: true
+- assertVisible: "Edit warmup configuration"
+- assertVisible: "Complete Warmup Set"
+- assertVisible: "Set warmup rest timer, suggested 1:00"
+
+- tapOn:
+    id: "smart-warmup-edit-configuration"
+- assertVisible: "Warmup Configuration"
+- tapOn: "gradual"
+- tapOn: "standard"
+- tapOn: "55 lb"
+- tapOn: "competition"
+- tapOn:
+    id: "smart-warmup-config-done"
+- assertVisible:
+    text: "55 lb Bar · Competition Collars"
+
+- tapOn:
+    id: "smart-warmup-rest-timer"
+- assertVisible: "Start Timer"
+- tapOn: "Start Timer"
+- assertVisible: "Stop warmup rest timer"
+- pressKey: HOME
+- openLink: ${EXPO_DEV_URL}
+- assertVisible: "Stop warmup rest timer"
+- tapOn:
+    id: "smart-warmup-rest-timer-stop"
+
+- tapOn:
+    id: "smart-warmup-complete-set"
+- assertVisible:
+    text: "1 / .* COMPLETE"
+
+- tapOn: "Close Competition Squat warmup"
+- tapOn:
+    text: ".*Resume.*Squat.*warmups.*"
+- assertVisible:
+    text: "1 / .* COMPLETE"
+- assertVisible: "Complete Warmup Set"
+- pressKey: HOME
+- openLink: ${EXPO_DEV_URL}
+- assertVisible:
+    text: "1 / .* COMPLETE"
+- assertVisible: "Complete Warmup Set"
+
+# Continue normal steps until the diagnostic interaction becomes authoritative.
+- repeat:
+    times: 8
+    commands:
+      - tapOn:
+          id: "smart-warmup-complete-set"
+          optional: true
+      - tapOn:
+          id: "smart-warmup-feedback-expected"
+          optional: true
+
+- assertVisible: "Suggested starting load"
+- assertVisible: "Undo Last Warmup"
+- tapOn:
+    id: "smart-warmup-return-to-logger"
+- assertNotVisible: "Competition Squat warmup"
+- assertVisible:
+    text: ".*415 lb.*435 lb.*"

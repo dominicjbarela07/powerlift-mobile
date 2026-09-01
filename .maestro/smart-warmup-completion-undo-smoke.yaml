@@ -1,0 +1,27 @@
+appId: host.exp.Exponent
+---
+- openLink: ${EXPO_DEV_URL}
+- tapOn:
+    text: ".*Warmup Summary.*"
+- assertVisible: "Suggested starting load"
+- tapOn:
+    id: "smart-warmup-undo-last"
+- assertNotVisible: "Suggested starting load"
+- assertVisible: "How did that move?"
+- tapOn:
+    id: "smart-warmup-feedback-expected"
+- assertVisible: "Suggested starting load"
+- tapOn:
+    id: "smart-warmup-inspect-.*"
+- assertVisible: "Undo Completion"
+- tapOn:
+    id: "smart-warmup-undo-.*"
+- assertNotVisible: "Suggested starting load"
+- assertVisible: "How did that move?"
+- tapOn:
+    id: "smart-warmup-feedback-expected"
+- assertVisible: "Suggested starting load"
+- tapOn:
+    id: "smart-warmup-return-to-logger"
+- assertVisible:
+    text: ".*415 lb.*435 lb.*"

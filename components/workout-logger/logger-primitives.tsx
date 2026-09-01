@@ -3,6 +3,8 @@ import { Image, type ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from '
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import { SLButton, SLMotionPressable } from '@/components/ui';
+import { FloatingUtilityButton } from '@/components/ui/floating-control-coordinator';
+import { SurfaceWeightUnitToggle } from '@/components/ui/surface-weight-unit-toggle';
 import type { LoggerPlateStack } from '@/lib/logger-visual-context';
 
 export function MovementCompleteSummary({
@@ -40,24 +42,7 @@ export function LogSheetUnitToggle({
   unit: 'kg' | 'lb';
   onChange: (unit: 'kg' | 'lb') => void;
 }) {
-  return (
-    <View style={styles.unitTogglePill}>
-      {(['kg', 'lb'] as const).map((option) => {
-        const active = unit === option;
-        return (
-          <SLMotionPressable
-            key={option}
-            style={[styles.unitToggleOption, active && styles.unitToggleOptionActive]}
-            onPress={() => onChange(option)}
-          >
-            <Text style={[styles.unitToggleText, active && styles.unitToggleTextActive]}>
-              {option}
-            </Text>
-          </SLMotionPressable>
-        );
-      })}
-    </View>
-  );
+  return <SurfaceWeightUnitToggle unit={unit} onChange={onChange} />;
 }
 
 export function SessionUnitFloatingControl({
@@ -73,17 +58,19 @@ export function SessionUnitFloatingControl({
 }) {
   const nextUnit = unit === 'kg' ? 'lb' : 'kg';
   return (
-    <SLMotionPressable
-      accessibilityRole="button"
-      accessibilityLabel={`Display unit: ${unit}. Switch to ${nextUnit}`}
-      accessibilityHint="Switches every Session weight display to the other unit."
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={() => onChange(nextUnit)}
-      style={[styles.sessionUnitFloatingControl, { bottom }, disabled && styles.sessionUnitFloatingControlDisabled]}
+    <View
+      pointerEvents="box-none"
+      style={[styles.sessionUnitFloatingControlPosition, { bottom }]}
     >
-      <Text style={styles.sessionUnitFloatingControlText}>{unit}</Text>
-    </SLMotionPressable>
+      <FloatingUtilityButton
+        accessibilityLabel={`Display unit: ${unit}. Switch to ${nextUnit}`}
+        accessibilityHint="Switches every Session weight display to the other unit."
+        disabled={disabled}
+        label={unit}
+        onPress={() => onChange(nextUnit)}
+        testID="session-unit-floating-control"
+      />
+    </View>
   );
 }
 
@@ -233,28 +220,10 @@ const styles = StyleSheet.create({
   unitToggleTextActive: {
     color: SLColors.textStrong,
   },
-  sessionUnitFloatingControl: {
+  sessionUnitFloatingControlPosition: {
     position: 'absolute',
     right: 0,
-    width: 48,
-    height: 48,
-    borderRadius: SLRadius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: SLColors.focus,
-    borderWidth: 1,
-    borderColor: SLColors.borderSubtle,
     zIndex: 10,
-    ...SLShadows.card,
-  },
-  sessionUnitFloatingControlDisabled: {
-    opacity: 0.45,
-  },
-  sessionUnitFloatingControlText: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '800',
-    textTransform: 'lowercase',
   },
   loggerPlateStackVisual: {
     width: '100%',

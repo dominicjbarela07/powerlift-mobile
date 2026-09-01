@@ -348,6 +348,12 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
     CORE_MOVEMENT_SESSION_COMPLETED: { eyebrow: 'Movement work logged', severity: 'completion', metric: 'sets' },
   };
   const config = map[event.event_type]; if (!config) return null;
+  const isCalculatedWeightMetric = ['CORE_E1RM_PR', 'CORE_BLOCK_E1RM_BEST'].includes(event.event_type);
+  const formatWeightMetric = (value: number | null | undefined) => {
+    if (!isCalculatedWeightMetric) return formatLoggerWeightKg(value, displayUnit);
+    if (value == null || !Number.isFinite(Number(value))) return '?';
+    return formatCalculatedWeightFromKgValue(Number(value), displayUnit) || '?';
+  };
   const eyebrow = event.event_type === 'CORE_RPE_PR' && mode === 'historical'
     ? 'Movement Efficiency'
     : event.event_type === 'CORE_REP_MAX_PR' && mode === 'historical'
@@ -382,9 +388,9 @@ export function recognitionPresentation(event: LoggerRecognitionEvent, displayUn
   const delta = event.delta != null && (event.delta > 0 || isRpeMetric)
     ? `${!isRpeMetric && event.delta > 0 ? '+' : ''}${deltaValue}`
     : null;
-  const spokenValue = isWeightMetric ? `${formatLoggerWeightKg(event.current_value, displayUnit)} ${spokenUnit}` : value;
+  const spokenValue = isWeightMetric ? `${formatWeightMetric(event.current_value)} ${spokenUnit}` : value;
   const spokenDetail = event.prior_value == null ? null : isWeightMetric
-    ? `Previous ${formatLoggerWeightKg(event.prior_value, displayUnit)} ${spokenUnit}`
+    ? `Previous ${formatWeightMetric(event.prior_value)} ${spokenUnit}`
     : detail;
   const progression = event.prior_value == null ? null : config.metric === 'reps'
     ? `${load} ${displayUnit} × ${count(event.prior_value)} → ${load} ${displayUnit} × ${count(event.current_value)}`

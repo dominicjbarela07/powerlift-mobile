@@ -28,9 +28,11 @@ import {
 } from '@/constants/theme';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
+import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';
 import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
 import { logSetActionPresentation, type LoggerFeedbackState, type PrescribedOpportunity } from '@/lib/logger-feedback';
+import { loggerRepMetricCopy } from '@/lib/logger-prescription-copy';
 import type { LoggerPlateStackPresentation, LoggerProgressContext } from '@/lib/logger-visual-context';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import {
@@ -264,6 +266,7 @@ export function CoreMovementLedgerRow({
   expanded,
   detailRows,
   auxAction,
+  warmupAction,
   expandedIdentityContext,
   sessionIndex,
   sessionLifecycle,
@@ -289,6 +292,7 @@ export function CoreMovementLedgerRow({
   expanded?: boolean;
   detailRows?: ActiveMovementDetailRow[];
   auxAction?: React.ReactNode;
+  warmupAction?: React.ReactNode;
   expandedIdentityContext?: React.ReactNode;
   sessionIndex?: number;
   sessionLifecycle?: SessionMovementCardLifecycle;
@@ -303,6 +307,7 @@ export function CoreMovementLedgerRow({
 }) {
   const { width: viewportWidth, fontScale } = useWindowDimensions();
   const compactMovementLayout = viewportWidth < 390 || fontScale >= 1.2;
+  const currentRepMetric = loggerRepMetricCopy(loggerFocus?.currentSetRepsLabel);
   const isPreSessionCard = sessionLifecycle === 'pre_session';
   const stateLabel = coreLoggerMovementStateLabel(state);
   const movementHeaderMetadata = coreLoggerHeaderMetadataLines({
@@ -413,14 +418,6 @@ export function CoreMovementLedgerRow({
             />
           </View>
           <View style={styles.activeMovementHeadingCopy}>
-            <Text
-              maxFontSizeMultiplier={1.2}
-              numberOfLines={1}
-              typographyRole="shortTechnicalLabel"
-              style={styles.activeMovementEyebrow}
-            >
-              Movement {sessionIndex}
-            </Text>
             <Text
               maxFontSizeMultiplier={1.35}
               typographyRole="movementName"
@@ -537,6 +534,14 @@ export function CoreMovementLedgerRow({
             styles.activeMovementWorkspace,
             canonicalExpandedWorkspace && styles.activeMovementWorkspaceExpanded,
           ]}>
+            {warmupAction ? (
+              <View style={[
+                styles.coreWarmupAction,
+                canonicalExpandedWorkspace && styles.coreWarmupActionExpanded,
+              ]}>
+                {warmupAction}
+              </View>
+            ) : null}
             {!loggerFocus && sessionRail.length ? <SetRail steps={sessionRail} /> : null}
             {loggerFocus?.accessoryPresentation ? (
               loggerFocus.canLog && loggerFocus.onLogSet ? (
@@ -554,8 +559,12 @@ export function CoreMovementLedgerRow({
                 styles.activeNextSetRow,
                 visualContext?.plateStack && styles.activeNextSetRowWithPlate,
                 compactMovementLayout && styles.activeNextSetRowCompact,
+                canonicalExpandedWorkspace && styles.activeNextSetRowExpanded,
               ]}>
-                <View style={styles.activeNextSetHero}>
+                <View style={[
+                  styles.activeNextSetHero,
+                  canonicalExpandedWorkspace && styles.activeNextSetHeroExpanded,
+                ]}>
                   <View style={styles.activeNextSetCopy}>
                     <Text
                       maxFontSizeMultiplier={1.2}
@@ -645,49 +654,68 @@ export function CoreMovementLedgerRow({
                   </View>
                   {visualContext?.plateStack ? (
                     visualContext.plateStack.mode === 'range' ? (
-                      <View style={[styles.activeNextSetPlateStage, styles.activeNextSetPlateRangeStage]}>
+                      <View style={[
+                        styles.activeNextSetPlateStage,
+                        styles.activeNextSetPlateRangeStage,
+                        canonicalExpandedWorkspace && styles.activeNextSetPlateRangeStageExpanded,
+                      ]}>
                         <View style={styles.activeNextSetPlateRangeRow}>
                           {visualContext.plateStack.endpoints.map((endpoint, endpointIndex) => (
-                            <View
-                              key={`${endpoint.displayLabel}-${endpointIndex}`}
-                              style={styles.activeNextSetPlateEndpoint}
-                            >
-                              <Text
-                                adjustsFontSizeToFit
-                                maxFontSizeMultiplier={1.15}
-                                minimumFontScale={0.78}
-                                numberOfLines={1}
-                                style={styles.activeNextSetPlateEndpointLabel}
-                              >
-                                {endpoint.displayLabel}
-                              </Text>
-                              {endpoint.plateStack ? (
-                                <LoggerPlateStackVisual
-                                  plateStack={endpoint.plateStack}
-                                  style={[
-                                    styles.activeNextSetPlateRange,
-                                    endpoint.plateStack.presentationStyle,
-                                  ]}
-                                />
-                              ) : (
-                                <View
-                                  accessibilityLabel={`${endpoint.displayLabel} plate stack unavailable`}
-                                  style={styles.activeNextSetPlateUnavailable}
+                            <React.Fragment key={`${endpoint.displayLabel}-${endpointIndex}`}>
+                              {endpointIndex > 0 ? (
+                                <Text
+                                  accessibilityElementsHidden
+                                  importantForAccessibility="no-hide-descendants"
+                                  style={styles.activeNextSetPlateRangeSeparator}
                                 >
-                                  <Ionicons name="barbell-outline" size={32} color={SLColors.textSubtle} />
-                                  <Text style={styles.activeNextSetPlateUnavailableText}>Stack unavailable</Text>
-                                </View>
-                              )}
-                            </View>
+                                  –
+                                </Text>
+                              ) : null}
+                              <View
+                                style={styles.activeNextSetPlateEndpoint}
+                              >
+                                <Text
+                                  adjustsFontSizeToFit
+                                  maxFontSizeMultiplier={1.15}
+                                  minimumFontScale={0.78}
+                                  numberOfLines={1}
+                                  style={styles.activeNextSetPlateEndpointLabel}
+                                >
+                                  {endpoint.displayLabel}
+                                </Text>
+                                {endpoint.plateStack ? (
+                                  <LoggerPlateStackVisual
+                                    plateStack={endpoint.plateStack}
+                                    style={[
+                                      styles.activeNextSetPlateRange,
+                                      canonicalExpandedWorkspace && styles.activeNextSetPlateRangeExpanded,
+                                      endpoint.plateStack.presentationStyle,
+                                    ]}
+                                  />
+                                ) : (
+                                  <View
+                                    accessibilityLabel={`${endpoint.displayLabel} plate stack unavailable`}
+                                    style={styles.activeNextSetPlateUnavailable}
+                                  >
+                                    <Ionicons name="barbell-outline" size={32} color={SLColors.textSubtle} />
+                                    <Text style={styles.activeNextSetPlateUnavailableText}>Stack unavailable</Text>
+                                  </View>
+                                )}
+                              </View>
+                            </React.Fragment>
                           ))}
                         </View>
                       </View>
                     ) : visualContext.plateStack.endpoints[0]?.plateStack ? (
-                      <View style={styles.activeNextSetPlateStage}>
+                      <View style={[
+                        styles.activeNextSetPlateStage,
+                        canonicalExpandedWorkspace && styles.activeNextSetPlateStageExpanded,
+                      ]}>
                         <LoggerPlateStackVisual
                           plateStack={visualContext.plateStack.endpoints[0].plateStack}
                           style={[
                             styles.activeNextSetPlate,
+                            canonicalExpandedWorkspace && styles.activeNextSetPlateExpanded,
                             visualContext.plateStack.endpoints[0].plateStack.presentationStyle,
                           ]}
                         />
@@ -695,10 +723,13 @@ export function CoreMovementLedgerRow({
                     ) : null
                   ) : null}
                 </View>
-                <View style={styles.activeNextSetMetricRow}>
+                <View style={[
+                  styles.activeNextSetMetricRow,
+                  canonicalExpandedWorkspace && styles.activeNextSetMetricRowExpanded,
+                ]}>
                   <View style={styles.activeNextSetMetricBlock}>
-                    <Text typographyRole="numeric" style={styles.activeNextSetMetricValue}>{metricValue(loggerFocus.currentSetRepsLabel, 'reps')}</Text>
-                    <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetMetricLabel}>Rep</Text>
+                    <Text typographyRole="numeric" style={styles.activeNextSetMetricValue}>{currentRepMetric.value}</Text>
+                    <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetMetricLabel}>{currentRepMetric.unitLabel}</Text>
                   </View>
                   <View style={styles.activeNextSetMetricCenterDivider} />
                   <View style={styles.activeNextSetMetricBlock}>
@@ -858,10 +889,13 @@ export function CoreMovementLedgerRow({
   );
 }
 
-function setTimelinePrescription(row: ActiveMovementDetailRow) {
+function setTimelinePrescription(row: ActiveMovementDetailRow, compact = false) {
   if (row.state === 'completed' && row.resultText) return row.resultText;
   const target = String(row.target || '').trim();
   const prescription = String(row.prescription || '').trim();
+  // The expanded canonical card already owns sets/reps/effort. Its timeline
+  // repeats only the per-set load target so 3-5 set prescriptions stay usable.
+  if (compact && target) return target;
   if (!target) return prescription || 'Planned';
   if (!prescription) return target;
   const normalizedTarget = target.toLowerCase().replace(/[@\s]/g, '');
@@ -889,13 +923,36 @@ function SetTimeline({
   onCompletedSetSwipeTooltipStarted?: () => void;
 }) {
   const completedCount = rows.filter((row) => row.state === 'completed').length;
+  if (compact) {
+    return (
+      <View style={[
+        styles.setTimeline,
+        styles.setTimelineCompact,
+        openSurface && styles.setTimelineOpenSurface,
+      ]}>
+        <CompactSetTimeline
+          reduceMotion={reduceMotion}
+          rows={rows.map((row, index) => ({
+            key: row.key,
+            label: String(row.timelineLabel || '').trim()
+              || row.label.match(/\d+/)?.[0]
+              || String(index + 1),
+            state: row.state,
+            resultText: row.resultText || setTimelinePrescription(row, false),
+            onEdit: row.state === 'completed' ? row.onEdit : undefined,
+            onRemove: row.state === 'completed' ? row.onDelete : undefined,
+          }))}
+          totalCount={totalCount}
+        />
+      </View>
+    );
+  }
   return (
     <View style={[
       styles.setTimeline,
-      compact && styles.setTimelineCompact,
       openSurface && styles.setTimelineOpenSurface,
     ]}>
-      <View style={[styles.setTimelineHeader, compact && styles.setTimelineHeaderCompact]}>
+      <View style={styles.setTimelineHeader}>
         <Text style={styles.setTimelineTitle}>SET TIMELINE</Text>
         <Text style={styles.setTimelineProgress}>
           {completedCount} / {totalCount} SETS COMPLETED
@@ -912,10 +969,10 @@ function SetTimeline({
           const stateLabel = isCompleted ? 'Completed' : 'Upcoming';
           const supportingLabel = compact
             ? isCompleted
-              ? null
+              ? 'Completed'
               : isActive
                 ? 'Ready to log'
-                : null
+                : 'Pending'
             : isCompleted
               ? 'Logged'
               : isActive
@@ -972,7 +1029,7 @@ function SetTimeline({
 
                 <View style={[styles.setTimelineCopy, compact && styles.setTimelineCopyCompact]}>
                   <Text style={[styles.setTimelinePrescription, compact && styles.setTimelinePrescriptionCompact]}>
-                    {setTimelinePrescription(row)}
+                    {setTimelinePrescription(row, compact)}
                     {!compact ? <Text style={styles.setTimelineInlineState}> · {stateLabel}</Text> : null}
                   </Text>
                   {supportingLabel || row.videoStatus ? (
@@ -1114,6 +1171,12 @@ export function CoreSchemeDetail({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
+  coreWarmupAction: {
+    marginBottom: 12,
+  },
+  coreWarmupActionExpanded: {
+    marginBottom: 0,
+  },
   completedSetSwipeFrame: {
     position: 'relative',
     overflow: 'hidden',
@@ -1248,14 +1311,6 @@ const styles = StyleSheet.create({
     minHeight: 58,
     marginTop: 12,
   },
-  activeMovementEyebrow: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.micro.fontSize,
-    lineHeight: SLTypography.micro.lineHeight,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: 0.7,
-  },
   activeMovementTitle: {
     color: SLColors.textStrong,
     fontSize: SLTypography.title.fontSize,
@@ -1384,7 +1439,7 @@ const styles = StyleSheet.create({
   },
   activeMovementWorkspaceExpanded: {
     marginTop: 0,
-    gap: 12,
+    gap: 7,
   },
   activeNextSetRow: {
     flexDirection: 'column',
@@ -1400,11 +1455,18 @@ const styles = StyleSheet.create({
     minHeight: 346,
     paddingTop: 16,
   },
+  activeNextSetRowExpanded: {
+    minHeight: 212,
+    paddingTop: 4,
+  },
   activeNextSetHero: {
     position: 'relative',
     minHeight: 265,
     width: '100%',
     overflow: 'visible',
+  },
+  activeNextSetHeroExpanded: {
+    minHeight: 152,
   },
   activeNextSetCopy: {
     position: 'absolute',
@@ -1418,6 +1480,10 @@ const styles = StyleSheet.create({
     width: 390,
     height: 310,
   },
+  activeNextSetPlateExpanded: {
+    width: 278,
+    height: 166,
+  },
   activeNextSetPlateStage: {
     position: 'absolute',
     top: -20,
@@ -1428,11 +1494,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'visible',
   },
+  activeNextSetPlateStageExpanded: {
+    top: -7,
+    left: -8,
+    right: -8,
+    height: 166,
+  },
   activeNextSetPlateRangeStage: {
     top: 18,
     left: 0,
     right: 0,
     height: 238,
+  },
+  activeNextSetPlateRangeStageExpanded: {
+    top: 16,
+    height: 133,
   },
   activeNextSetPlateRangeRow: {
     width: '100%',
@@ -1458,10 +1534,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     zIndex: 2,
   },
+  activeNextSetPlateRangeSeparator: {
+    color: SLColors.textMuted,
+    fontFamily: SLFontFamilies.numeric,
+    fontSize: SLTypography.title.fontSize,
+    lineHeight: SLTypography.title.lineHeight * 1.05,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
   activeNextSetPlateRange: {
     width: '100%',
     height: 204,
     marginTop: -5,
+  },
+  activeNextSetPlateRangeExpanded: {
+    height: 122,
+    marginTop: -8,
   },
   activeNextSetPlateUnavailable: {
     flex: 1,
@@ -1535,10 +1623,13 @@ const styles = StyleSheet.create({
   activeNextSetMetricRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    borderTopWidth: 1,
-    borderTopColor: SLColors.borderSubtle,
     paddingTop: 13,
     width: '100%',
+  },
+  activeNextSetMetricRowExpanded: {
+    minHeight: 57,
+    paddingTop: 5,
+    paddingBottom: 3,
   },
   activeNextSetMetricBlock: {
     flex: 1,
@@ -1649,8 +1740,8 @@ const styles = StyleSheet.create({
     borderRadius: SLRadius.none,
     backgroundColor: 'transparent',
     paddingHorizontal: 2,
-    paddingTop: 14,
-    paddingBottom: 3,
+    paddingTop: 8,
+    paddingBottom: 1,
   },
   setTimelineHeader: {
     minHeight: 24,
@@ -1663,7 +1754,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   setTimelineHeaderCompact: {
-    marginBottom: 4,
+    minHeight: 20,
+    marginBottom: 2,
   },
   setTimelineTitle: {
     color: SLColors.accentMuted,
@@ -1688,7 +1780,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   setTimelineRowCompact: {
-    minHeight: 64,
+    minHeight: 50,
   },
   setTimelineRowSeparated: {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -1702,7 +1794,7 @@ const styles = StyleSheet.create({
   },
   setTimelineNodeColumnCompact: {
     width: 46,
-    paddingTop: 10,
+    paddingTop: 6,
   },
   setTimelineNodeColumnSemantic: {
     width: 64,
@@ -1719,9 +1811,9 @@ const styles = StyleSheet.create({
     backgroundColor: SLColors.surface,
   },
   setTimelineNodeCompact: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   setTimelineNodeSemantic: {
     width: 58,
@@ -1729,9 +1821,9 @@ const styles = StyleSheet.create({
     borderRadius: 17,
   },
   setTimelineNodeSemanticCompact: {
-    width: 54,
-    height: 32,
-    borderRadius: 16,
+    width: 52,
+    height: 30,
+    borderRadius: 15,
   },
   setTimelineNodeActive: {
     borderColor: SLColors.accentViolet,
@@ -1776,14 +1868,14 @@ const styles = StyleSheet.create({
     backgroundColor: SLColors.borderStandard,
   },
   setTimelineConnectorCompact: {
-    top: 49,
-    bottom: -16,
+    top: 38,
+    bottom: -12,
   },
   setTimelineConnectorSemantic: {
     top: 48,
   },
   setTimelineConnectorSemanticCompact: {
-    top: 43,
+    top: 38,
   },
   setTimelineConnectorCompleted: {
     backgroundColor: SLColors.success,
@@ -1797,7 +1889,7 @@ const styles = StyleSheet.create({
     paddingRight: 6,
   },
   setTimelineCopyCompact: {
-    paddingVertical: 8,
+    paddingVertical: 4,
     paddingLeft: 8,
     paddingRight: 4,
   },
@@ -1809,7 +1901,7 @@ const styles = StyleSheet.create({
   },
   setTimelinePrescriptionCompact: {
     fontSize: SLTypography.caption.fontSize,
-    lineHeight: 18,
+    lineHeight: 17,
   },
   setTimelineInlineState: {
     color: SLColors.textMuted,
@@ -1824,8 +1916,8 @@ const styles = StyleSheet.create({
   },
   setTimelineSupportingCompact: {
     fontSize: SLTypography.caption.fontSize,
-    lineHeight: 18,
-    marginTop: 1,
+    lineHeight: 16,
+    marginTop: 0,
   },
   setTimelineSupportingActive: {
     color: SLColors.accentMuted,

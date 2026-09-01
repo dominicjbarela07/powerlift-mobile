@@ -26,7 +26,9 @@ export const PLATE_METADATA: Record<PlateDenominationLb, PlateMetadata> = {
   2.5: { key: '2.5', thickness: 0.01444 },
 };
 
-export const PLATE_DENOMINATIONS_DESCENDING: readonly PlateDenominationLb[] = [45, 35, 25, 10, 5, 2.5];
+// Physical loading intentionally excludes 35 lb plates. The 35 lb mesh stays
+// registered only as the render-equivalent artwork for canonical 15 kg plates.
+export const PLATE_DENOMINATIONS_DESCENDING: readonly PlateDenominationLb[] = [45, 25, 10, 5, 2.5];
 
 export function isPlateDenomination(value: number): value is PlateDenominationLb {
   return Object.prototype.hasOwnProperty.call(PLATE_METADATA, value);

@@ -1,7 +1,9 @@
 import type { ImageSourcePropType, ImageStyle } from 'react-native';
 
 import { SLColors } from '@/constants/theme';
-import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
+import { resolvePhysicalPlateStackRender, resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
+import type { SmartWarmupEnvelope, SmartWarmupLoading } from '@/lib/smart-warmup';
+import { resolveLoggerPhysicalLoading } from '@/lib/logger-physical-loading';
 import {
   KG_PER_LB,
   formatLoggerWeightKg,
@@ -96,6 +98,7 @@ type LoggerVisualItem = {
   last_best?: Record<string, unknown> | null;
   prev_best?: Record<string, unknown> | null;
   progress_context?: LoggerProgressEvidence | null;
+  smart_warmup?: SmartWarmupEnvelope | null;
 };
 
 const LIFT_IDENTITIES: Record<PlateClubLiftKey, LoggerLiftIdentity> = {
@@ -230,11 +233,17 @@ export function resolveLoggerProgressContext(
 function resolveLoggerPlateStackEndpoint(
   identity: LoggerLiftIdentity,
   endpoint: ResolvedLoggerPrescribedWeightEndpoint,
+  physicalLoading: SmartWarmupLoading | null | undefined,
 ): LoggerPlateStackEndpoint {
-  const render = resolvePlateStackRender({
-    weight: endpoint.requestedWeight,
-    unit: endpoint.requestedUnit,
-  });
+  // `undefined` means this WorkoutItem has no movement-scoped physical setup,
+  // so the historical generic catalog fallback remains legal. `null` means a
+  // setup exists but no authoritative physical stack matched; fail closed
+  // instead of leaking the catalog's default 45 lb / 20 kg bar assumption.
+  const render = physicalLoading === undefined
+    ? resolvePlateStackRender({ weight: endpoint.requestedWeight, unit: endpoint.requestedUnit })
+    : physicalLoading
+      ? resolvePhysicalPlateStackRender(physicalLoading)
+      : null;
 
   return Object.freeze({
     requestedWeight: endpoint.requestedWeight,
@@ -262,8 +271,13 @@ export function resolveLoggerPlateStack(
   if (identity.key === 'accessory') return null;
 
   if (!prescribedWeight || prescribedWeight.requestedUnit !== unit) return null;
-  const endpoints = prescribedWeight.endpoints.map((endpoint) =>
-    resolveLoggerPlateStackEndpoint(identity, endpoint));
+  const warmup = item.smart_warmup?.session || null;
+  const endpoints = prescribedWeight.endpoints.map((endpoint) => {
+    const physicalLoading = warmup
+      ? resolveLoggerPhysicalLoading(warmup.allowed_working_loads, endpoint)
+      : undefined;
+    return resolveLoggerPlateStackEndpoint(identity, endpoint, physicalLoading);
+  });
 
   if (endpoints.length === 1 && !endpoints[0]?.plateStack) return null;
 

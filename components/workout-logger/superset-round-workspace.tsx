@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   ActivityIndicator,
-  Pressable,
   StyleSheet,
   View,
 } from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
-import { CompletedSetSwipeRow } from '@/components/workout-logger/core-loggers';
+import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';
 import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import {
@@ -252,43 +252,40 @@ export function SupersetRoundWorkspace({
                       </Pressable>
                     ) : null}
 
-                    {logs.length ? (
-                      <View style={styles.movementEvidence}>
-                        {logs.map((log) => {
-                          const persistedLog = log as SupersetWorkspaceLog;
-                          const canModifyLog = canLog && Number.isFinite(Number(persistedLog.id));
-                          return (
-                            <CompletedSetSwipeRow
-                              key={`${movement.itemId}:${persistedLog.id || persistedLog.set_index}`}
-                              onDelete={canModifyLog
-                                ? () => onDeleteSet(movement.item, persistedLog)
-                                : undefined}
-                              onEdit={canModifyLog
-                                ? () => onEditSet(movement.item, persistedLog)
-                                : undefined}
-                              reduceMotion={reduceMotion}
-                            >
-                              <View style={styles.timelineMovement}>
-                                <View style={[styles.timelineDot, styles.timelineDotComplete]} />
-                                <View style={styles.timelineCopy}>
-                                  <Text numberOfLines={1} style={styles.timelineTitle}>
-                                    Set {persistedLog.set_index}
-                                  </Text>
-                                  <Text numberOfLines={1} style={[
-                                    styles.timelineState,
-                                    styles.timelineStateComplete,
-                                  ]}>
-                                    {persistedLog.resultLine || 'Logged'}
-                                  </Text>
-                                </View>
-                              </View>
-                            </CompletedSetSwipeRow>
+                    <View style={styles.movementEvidence}>
+                      <CompactSetTimeline
+                        reduceMotion={reduceMotion}
+                        rows={Array.from({ length: movement.requiredSets }, (_, setOffset) => {
+                          const setIndex = setOffset + 1;
+                          const persistedLog = logs.find(
+                            (candidate) => Number(candidate.set_index || 0) === setIndex,
+                          ) as SupersetWorkspaceLog | undefined;
+                          const canModifyLog = Boolean(
+                            canLog
+                            && persistedLog
+                            && Number.isFinite(Number(persistedLog.id)),
                           );
+                          return {
+                            key: `${movement.itemId}:${setIndex}`,
+                            label: String(setIndex),
+                            state: persistedLog
+                              ? 'completed' as const
+                              : movement.nextSetIndex === setIndex
+                                ? 'active' as const
+                                : 'locked' as const,
+                            resultText: persistedLog?.resultLine || 'Logged',
+                            onEdit: canModifyLog && persistedLog
+                              ? () => onEditSet(movement.item, persistedLog)
+                              : undefined,
+                            onRemove: canModifyLog && persistedLog
+                              ? () => onDeleteSet(movement.item, persistedLog)
+                              : undefined,
+                          };
                         })}
-                      </View>
-                    ) : (
-                      <Text style={styles.noSetsYet}>No sets logged yet</Text>
-                    )}
+                        title={`SET TIMELINE · ${positionLabel}`}
+                        totalCount={movement.requiredSets}
+                      />
+                    </View>
 
                     {canLog && movement.nextSetIndex != null ? (
                       <SLButton

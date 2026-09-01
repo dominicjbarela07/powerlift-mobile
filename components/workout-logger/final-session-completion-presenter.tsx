@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';

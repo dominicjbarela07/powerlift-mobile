@@ -11,6 +11,10 @@ const areas = [
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs']],
+  ['Smart Warmup lifecycle and physical configuration', ['scripts/test-smart-warmup-engine.mjs']],
+  ['expanded Core Logger workspace density', ['scripts/test-expanded-core-card-compaction.mjs']],
+  ['canonical compact Set Timeline', ['scripts/test-set-timeline-storyboard.mjs']],
+  ['movement-scoped Logger physical loading', ['scripts/test-logger-movement-physical-loading.mjs']],
   ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
@@ -35,6 +39,7 @@ const areas = [
   ['Session Workspace Athlete View handoff', ['scripts/test-session-workspace-athlete-preview-handoff.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],
   ['visible control action reachability', ['scripts/test-major-visible-control-actions.mjs']],
+  ['Production Android/iOS release parity guard', ['scripts/test-production-release-policy.mjs']],
 ];
 
 const failures = [];
