@@ -61,36 +61,40 @@ assertIncludes(session, [
 
 const reviewerV3 = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
 assertIncludes(reviewerV3, [
+  'CompletedSessionRecap',
+  'viewerMode="coach"',
+  'onOpenProgramming',
+], 'Coach Session Reviewer compatibility boundary');
+
+const completedRecap = read('components/coach-mobile/CompletedSessionRecap.tsx');
+assertIncludes(completedRecap, [
   'SESSION READ',
-  'WHAT CHANGED SINCE LAST COMPARABLE SESSION',
+  'WHAT CHANGED',
   'MOVEMENT PROGRESSION',
-  'RAW SETLOG EVIDENCE',
-  'ESTIMATED STRENGTH TREND',
+  'Actual persisted SetLogs',
   'CONTEXT & RECOVERY',
   'COACH READ',
   'PlanCompareExperience',
   'CoachTools',
   'CanonicalMovementArtwork',
   'FloatingDisplayUnitRegistration',
-  'Open Full Movement History',
-], 'Coach Session Reviewer V3');
-assertIncludes(reviewerV3, [
+  'Open exact governed history',
+], 'Canonical role-aware post-Session surface');
+assertIncludes(completedRecap, [
   'accessibilityRole="button"',
   'AnalyticalTimeSeriesChart',
-  'coach-reviewer-movement-evidence-chart',
-  'coach-reviewer-recovery-chart',
+  'canonical-post-session-recovery-chart',
 ], 'Interactive reviewer evidence');
-if (/<MuscleMap\b/.test(reviewerV3)) {
+if (/<MuscleMap\b/.test(completedRecap)) {
   throw new Error('Reviewer V3 must use canonical individual-movement artwork, never full-body MuscleMap');
 }
 
-const completedRecap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 assertIncludes(completedRecap, [
   'COACH REVIEW TOOLS',
   'ATHLETE FEEDBACK',
   'PRIVATE COACH NOTE',
   'Complete Review',
-  'Performed SetLog targets',
+  'Actual persisted SetLogs',
   "movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'",
   '} · EXACT MOVEMENT',
 ], 'Canonical completed Session review surface');

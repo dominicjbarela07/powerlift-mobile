@@ -10,16 +10,17 @@ const layout = fs.readFileSync(path.join(root, 'app/(tabs)/_layout.tsx'), 'utf8'
 
 assert.match(layout, /<StrengthLedgerAppHeader[\s\S]*topInset=\{insets\.top\}/, 'the global app shell must remain the single native top-inset owner');
 assert.match(layout, /name="coach-session-review"[\s\S]*?headerShown: false[\s\S]*?title: 'Session Review'/, 'Reviewer V3 must own its compact review header instead of rendering beneath the global brand header.');
-assert.match(reviewer, /<SafeAreaView edges=\{\['top'\]\}/, 'Reviewer V3 must own the native top safe area when its route header is hidden.');
+assert.match(reviewer, /<CompletedSessionRecap/, 'the coach route adapter must delegate to the one canonical post-Session runtime');
+assert.match(recap, /<SafeAreaView edges=\{parentProvidesTopSafeArea \? \[\] : \['top'\]\}/, 'the shared runtime must own the native top safe area when its route header is hidden.');
 
 assert.match(route, /const \[draft, setDraft\] = useState<CoachReviewDraft>/, 'the route must own the one canonical Session review draft');
 assert.match(route, /onDraftChange: setDraft/, 'shared tools must write directly to the route-owned draft');
 assert.match(recap, /const draft = review\.draft;/, 'the shared review tools must be controlled by canonical review state');
 assert.doesNotMatch(recap, /function CoachTools[\s\S]{0,180}useState/, 'review tools must not create a tab-local draft copy');
 
-assert.match(reviewer, /tab === 'performed'[\s\S]*tab === 'plan'[\s\S]*tab === 'coach'/, 'Performed, Plan / Compare, and Coach lenses must remain in Reviewer V3.');
-assert.match(reviewer, /tab === 'plan' \? <PlanCompareExperience[^>]*recap=\{recap\}/, 'Plan / Compare must reuse the canonical recap projection.');
-assert.match(reviewer, /tab === 'coach' \? <>[\s\S]*<CoachTools review=\{coachReview\}/, 'Reviewer V3 must pass the one route-owned review state to the shared Coach tools.');
+assert.match(recap, /tab === 'performed'[\s\S]*tab === 'plan'[\s\S]*tab === 'coach'/, 'Performed, Plan / Compare, and Coach lenses must remain in the shared runtime.');
+assert.match(recap, /tab === 'plan' \? recap\.plan\.available/, 'Plan / Compare must reuse the canonical recap projection.');
+assert.match(recap, /tab === 'coach' && viewerMode === 'coach'[\s\S]*<CoachTools review=\{coachReview\}/, 'the role-gated Coach lens must pass the one route-owned review state to the shared Coach tools.');
 assert.doesNotMatch(reviewer, /useState<CoachReviewDraft>|setDraft\(/, 'Reviewer V3 lenses must not create a private review draft.');
 
 for (const capability of [

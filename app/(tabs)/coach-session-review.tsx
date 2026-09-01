@@ -46,6 +46,7 @@ type DetailPayload = {
   workout?: {
     impact_summary?: Record<string, any> | null;
     completed_recap?: CompletedSessionRecapPayload | null;
+    scheduled_timezone?: string | null;
   };
 };
 
@@ -160,12 +161,14 @@ export default function CoachSessionReviewScreen() {
       recap={recap}
       impactSummary={detail?.workout?.impact_summary}
       preferredUnits={detail?.athlete?.preferred_units}
+      sessionTimeZone={detail?.workout?.scheduled_timezone}
       coachReview={coachReview}
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}
       refreshing={refreshing}
       onRefresh={() => { void load(true); }}
       onClose={() => router.back()}
       onDone={() => router.back()}
+      onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || '') } } as never)}
       onOpenMovementHistory={(movement) => {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
           athleteId: detail?.athlete?.id,

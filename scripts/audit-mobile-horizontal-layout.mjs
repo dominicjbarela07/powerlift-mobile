@@ -58,10 +58,10 @@ const canonicalRootContracts = new Map(Object.entries({
   'components/ui/sl-screen.tsx': ['safe', 'content', 'scroll', 'scrollContent', 'scrollMotion', 'padded'],
   'app/(tabs)/coach-videos.tsx': ['screen'],
   'components/reviews/review-list-screen.tsx': ['screen'],
-  'components/coach-mobile/CoachSessionReviewerV3.tsx': ['screen', 'content'],
   'components/coach-mobile/CompletedSessionRecap.tsx': [
     'screen',
     'content',
+    'canonicalContent',
     'sectionShell',
     'compareFilters',
     'compareMovementStack',
@@ -105,6 +105,7 @@ const fullWidthSheetContracts = new Map(Object.entries({
   'components/workout-logger/readiness-modal.tsx': ['sheet'],
   'components/workout-logger/substitution-confirmation-sheet.tsx': ['sheet'],
   'app/(tabs)/coach-calendar.tsx': ['sheet'],
+  'components/coach-mobile/CompletedSessionRecap.tsx': ['toolsSheet'],
 }));
 
 const sheetStageContracts = new Map(Object.entries({
@@ -112,7 +113,7 @@ const sheetStageContracts = new Map(Object.entries({
 }));
 
 const fullBleedSurfaceContracts = new Map(Object.entries({
-  'components/coach-mobile/CoachSessionReviewerV3.tsx': ['tabs'],
+  'components/coach-mobile/CompletedSessionRecap.tsx': ['tabs'],
   'components/calendar/AthleteCalendarExperience.tsx': [
     'focusedWeekSection',
     'lensHandleButton',

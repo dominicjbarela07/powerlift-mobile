@@ -3,11 +3,13 @@ import {
   ActivityIndicator,
   Image,
   type ImageSourcePropType,
+  Modal,
   Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Switch,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +29,7 @@ import SetVideoPlayerModal, { type SetVideoSummary } from '@/components/SetVideo
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
+import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
@@ -71,6 +74,12 @@ import {
 } from '@/lib/session-recap-plan-compare';
 import { estimateMovementStrengthKg, strengthMetricForMovementClass } from '@/lib/movement-strength-metric';
 import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
+import type { AnalyticalXDomainMode } from '@/lib/chart-fidelity';
+import {
+  formatSessionTimeLabel,
+  parseSessionLifecycleInstant,
+  resolveSessionTimeZone,
+} from '@/lib/post-session-times';
 
 export type CompletedRecapSet = {
   id: number;
@@ -179,6 +188,32 @@ export type CompletedRecapMovement = {
   } | null;
 };
 
+type ReviewerMovementEvidence = {
+  item_id?: number | null;
+  previous_best?: {
+    weight_kg?: number | null;
+    reps?: number | null;
+    rpe?: number | null;
+    rir?: number | null;
+    metric_value?: number | null;
+  } | null;
+  comparison?: {
+    state?: 'improved' | 'stable' | 'declined' | 'not_comparable';
+    literal?: string | null;
+    metric_delta_percent?: number | null;
+  } | null;
+  trajectory?: { state?: string | null; label?: string | null; sample_size?: number | null } | null;
+  confidence?: { state?: string | null; label?: string | null; sample_size?: number | null; scope?: string | null } | null;
+  volume?: {
+    current_kg?: number | null;
+    previous_kg?: number | null;
+    delta_percent?: number | null;
+    current_per_set_kg?: number | null;
+    previous_per_set_kg?: number | null;
+    per_set_delta_percent?: number | null;
+  } | null;
+};
+
 function normalizeMovementStrengthMetric(movement: CompletedRecapMovement): CompletedRecapMovement {
   const policy = strengthMetricForMovementClass(movement.kind);
   const alreadyGoverned = movement.trend?.metric === policy.metric
@@ -236,6 +271,7 @@ export type CompletedSessionRecapPayload = {
     label: string;
     date?: string | null;
     status: string;
+    started_at?: string | null;
     completed_at?: string | null;
     duration_seconds?: number | null;
     set_count: number;
@@ -341,10 +377,12 @@ type Props = {
   onClose: () => void;
   onDone?: () => void;
   initialTab?: RecapTab;
+  initialToolsOpen?: boolean;
   initialShowAllMovements?: boolean;
   initialScrollOffsetY?: number;
   initialExpandedItemId?: number;
   viewerMode?: 'athlete' | 'coach';
+  sessionTimeZone?: string | null;
   parentProvidesTopSafeArea?: boolean;
   coachReview?: CoachReviewContext | null;
   coachReviewUnavailableReason?: string | null;
@@ -353,9 +391,14 @@ type Props = {
   onLogNextSession?: () => void;
   onOpenProgramming?: () => void;
   onOpenMovementHistory?: (movement: CompletedRecapMovement) => void;
+  onResumeSession?: () => void;
+  onCorrectEquipment?: (movement: CompletedRecapMovement) => void;
+  onEditSetEvidence?: () => void;
+  onEditSessionNotes?: () => void;
+  onViewSessionHistory?: () => void;
 };
 
-type RecapTab = 'performed' | 'plan';
+export type RecapTab = 'overview' | 'performed' | 'plan' | 'coach';
 
 const INITIAL_MOVEMENT_COUNT = 6;
 const CANONICAL_PR_EVENT_TYPES = new Set([
@@ -366,7 +409,7 @@ const CANONICAL_PR_EVENT_TYPES = new Set([
 
 function numberLabel(value: unknown, decimals = 1) {
   const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return '—';
+  if (!Number.isFinite(parsed)) return 'Not recorded';
   return Number.isInteger(parsed) ? String(parsed) : parsed.toFixed(decimals).replace(/\.0$/, '');
 }
 
@@ -435,11 +478,12 @@ function setResultLabel(set: Pick<CompletedRecapSet, 'actual_weight_kg' | 'actua
     measurementType: movement.measurement?.measurement_type,
   }) || formatWeightFromKg(set.actual_weight_kg, unit) || null;
   const reps = Number(set.actual_reps);
-  const repsLabel = Number.isFinite(reps) && reps > 0 ? numberLabel(reps, 0) : '—';
-  if (type === 'duration' || type === 'time') return `${repsLabel} sec`;
-  if (type.includes('distance')) return [load, `${repsLabel} m`].filter(Boolean).join(' · ');
-  if (!load && repsLabel !== '—') return `${repsLabel} reps`;
-  return load ? `${load} × ${repsLabel}` : 'Performance unavailable';
+  const repsLabel = Number.isFinite(reps) && reps > 0 ? numberLabel(reps, 0) : null;
+  if (type === 'duration' || type === 'time') return repsLabel ? `${repsLabel} sec` : 'Duration not recorded';
+  if (type.includes('distance')) return [load, repsLabel ? `${repsLabel} m` : null].filter(Boolean).join(' · ') || 'Distance not recorded';
+  if (!load && repsLabel) return `${repsLabel} reps`;
+  if (load && repsLabel) return `${load} × ${repsLabel}`;
+  return load || 'Performance unavailable';
 }
 
 function effortLabel(set: Pick<CompletedRecapSet, 'actual_rpe' | 'actual_rir'>) {
@@ -453,11 +497,13 @@ function MovementTrendChart({
   unit,
   compact = false,
   color = '#A865FF',
+  axisMode = 'chronological',
 }: {
   trend?: CompletedRecapMovement['trend'];
   unit: DisplayWeightUnit;
   compact?: boolean;
   color?: string;
+  axisMode?: AnalyticalXDomainMode;
 }) {
   if (compact) return <CompactMovementTrendChart compact trend={trend} unit={unit} color={color} />;
   const points = chronologicalTrendPoints(trend?.points).map((point) => {
@@ -474,6 +520,7 @@ function MovementTrendChart({
     series={[{ key: 'performance', label: trend?.metric_label || 'Best-set performance', color, points }]}
     showLegend={false}
     testID="session-recap-movement-trend-chart"
+    xDomainMode={axisMode}
     tooltipRows={(selection) => {
       const point = selection.values[0]?.meta as TrendPoint | undefined;
       const effort = point?.rir != null ? `${numberLabel(point.rir)} RIR` : point?.rpe != null ? `RPE ${numberLabel(point.rpe)}` : null;
@@ -516,7 +563,7 @@ function CompactMovementTrendChart({
   }, [plot.points]);
 
   if (plot.points.length < 2) {
-    return <View style={styles.sparklineEmpty}><Text style={styles.sparklineEmptyText}>{plot.points.length === 1 ? 'FIRST COMPARABLE PERFORMANCE' : 'COMPARISON UNAVAILABLE'}</Text></View>;
+    return <View style={styles.sparklineEmpty}><Text style={styles.sparklineEmptyText}>{plot.points.length === 1 ? 'FIRST EXACT EXPOSURE' : 'HISTORY BUILDS NEXT TIME'}</Text></View>;
   }
   const selected = selectedIndex == null ? null : plot.points[selectedIndex];
   return (
@@ -565,7 +612,7 @@ function SetVideoButton({ set, fallbackSource, onPress }: { set: CompletedRecapS
 
 function VideoEvidencePreview({ set, fallbackSource }: { set: CompletedRecapSet; fallbackSource?: ImageSourcePropType | null }) {
   const thumbnail = videoThumbnailSource(set, fallbackSource);
-  return <View style={styles.videoEvidencePreview}>{thumbnail ? <Image accessibilityIgnoresInvertColors resizeMode="cover" source={thumbnail} style={styles.videoThumbnail} /> : null}<LinearGradient colors={['transparent', 'rgba(2,3,6,0.9)']} style={StyleSheet.absoluteFillObject} /><View style={styles.videoEvidencePlay}><Ionicons name="play" size={8} color={SLColors.textPrimary} /></View><Text style={styles.videoEvidenceLabel}>SET {set.set_index || '—'}</Text></View>;
+  return <View style={styles.videoEvidencePreview}>{thumbnail ? <Image accessibilityIgnoresInvertColors resizeMode="cover" source={thumbnail} style={styles.videoThumbnail} /> : null}<LinearGradient colors={['transparent', 'rgba(2,3,6,0.9)']} style={StyleSheet.absoluteFillObject} /><View style={styles.videoEvidencePlay}><Ionicons name="play" size={8} color={SLColors.textPrimary} /></View><Text style={styles.videoEvidenceLabel}>SET {set.set_index || 'RECORDED'}</Text></View>;
 }
 
 function ReadinessGauge({ label, value, color, suffix = '/10' }: { label: string; value: number; color: string; suffix?: string }) {
@@ -595,8 +642,9 @@ function EquipmentFooter({ equipment }: { equipment: CompletedRecapEquipment[] }
   return <View style={styles.equipmentFooter}>{equipment.map((row, index) => <View key={`${row.manufacturer_key || row.manufacturer || 'equipment'}-${row.model_key || row.model || index}`} style={styles.equipmentItem}>{row.manufacturer ? <ManufacturerBrandMark manufacturerName={row.manufacturer} compact /> : null}<View style={styles.equipmentCopy}><Text numberOfLines={1} style={styles.equipmentModel}>{row.manufacturer || 'Equipment'}</Text><Text numberOfLines={1} style={styles.equipmentImplementation}>{equipmentSecondaryLabel(row)}</Text></View></View>)}</View>;
 }
 
-function PerformedMovementCard({ movement, unit, onVideo, onOpenHistory, initialExpanded = false }: { movement: CompletedRecapMovement; unit: DisplayWeightUnit; onVideo: (set: CompletedRecapSet) => void; onOpenHistory?: (movement: CompletedRecapMovement) => void; initialExpanded?: boolean }) {
+function PerformedMovementCard({ movement, analysis, unit, onVideo, onOpenHistory, initialExpanded = false }: { movement: CompletedRecapMovement; analysis?: ReviewerMovementEvidence | null; unit: DisplayWeightUnit; onVideo: (set: CompletedRecapSet) => void; onOpenHistory?: (movement: CompletedRecapMovement) => void; initialExpanded?: boolean }) {
   const [expanded, setExpanded] = useState(initialExpanded);
+  const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');
   useEffect(() => setExpanded(initialExpanded), [initialExpanded]);
   const equipment = movement.equipment || [];
   const best = movement.best_set;
@@ -609,6 +657,16 @@ function PerformedMovementCard({ movement, unit, onVideo, onOpenHistory, initial
   const muscleLine = [movement.primary_muscle_group, ...(movement.secondary_muscle_groups || []).slice(0, 1)].filter(Boolean).map((row) => formatMuscle(String(row))).join(' · ');
   const videoSets = movement.sets.filter((set) => setVideoId(set) > 0);
   const previewVideo = videoSets[0] || null;
+  const previous = analysis?.previous_best;
+  const previousAsSet: CompletedRecapSet | null = previous ? {
+    id: 0,
+    actual_weight_kg: previous.weight_kg,
+    actual_reps: previous.reps,
+    actual_rpe: previous.rpe,
+    actual_rir: previous.rir,
+  } : null;
+  const comparisonState = analysis?.comparison?.state || ((movement.trend?.points?.length || 0) >= 2 ? (Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) > 0 ? 'improved' : Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) < 0 ? 'declined' : 'stable') : 'not_comparable');
+  const comparisonColor = comparisonState === 'improved' ? SLColors.success : comparisonState === 'declined' ? SLColors.danger : comparisonState === 'stable' ? '#53CBE8' : SLColors.textMuted;
   const trendPointCount = movement.trend?.points?.length || 0;
   const trendBadge = trendPointCount >= 2
     ? `${trendPointCount} SESSION TREND`
@@ -622,13 +680,14 @@ function PerformedMovementCard({ movement, unit, onVideo, onOpenHistory, initial
         <View style={styles.movementSummary}>
           <View style={styles.movementTitleRow}><View style={styles.movementTitleCopy}><Text style={styles.movementEyebrow}>{movement.kind === 'core' ? 'CORE LIFT' : 'ACCESSORY'}</Text><Text numberOfLines={1} style={styles.movementTitle}>{movement.label}</Text>{muscleLine ? <Text numberOfLines={1} style={styles.movementMuscles}>{muscleLine}</Text> : null}{equipment[0] ? <Text numberOfLines={1} style={styles.movementEquipment}>{equipment[0].label || equipmentSecondaryLabel(equipment[0])}</Text> : null}</View>{movement.has_pr ? <View style={styles.prBadge}><Image accessibilityIgnoresInvertColors source={sessionRecapHighlightAsset('pr')} style={styles.movementPrArtwork} /><Text style={styles.prBadgeText}>PR</Text></View> : null}<Ionicons name={expanded ? 'chevron-up' : 'chevron-forward'} size={18} color={SLColors.textSecondary} /></View>
           <View style={styles.movementEvidenceRow}><View style={styles.bestSetCopy}><Text style={styles.bestSetLabel}>{movement.sets.length} SET{movement.sets.length === 1 ? '' : 'S'} · BEST SET</Text><Text numberOfLines={1} style={styles.bestSetValue}>{bestAsSet ? setResultLabel(bestAsSet, movement, unit) : `${movement.sets.length} performed set${movement.sets.length === 1 ? '' : 's'}`}</Text>{bestAsSet && effortLabel(bestAsSet) ? <Text style={styles.bestSetEffort}>{effortLabel(bestAsSet)}</Text> : null}</View><View style={styles.sparklineWrap}><MovementTrendChart compact trend={movement.trend} unit={unit} />{delta && Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) !== 0 ? <Text style={[styles.delta, delta.startsWith('↑') ? styles.deltaUp : styles.deltaDown]}>{delta}</Text> : null}</View></View>
+          <View style={styles.movementComparisonGrid}><View style={styles.movementComparisonCell}><Text style={styles.movementComparisonLabel}>THIS SESSION</Text><Text numberOfLines={1} style={styles.movementComparisonValue}>{bestAsSet ? `${setResultLabel(bestAsSet, movement, unit)}${effortLabel(bestAsSet) ? ` · ${effortLabel(bestAsSet)}` : ''}` : 'Best-set evidence was not recorded.'}</Text></View><View style={styles.movementComparisonCell}><Text style={styles.movementComparisonLabel}>LAST COMPARABLE</Text><Text numberOfLines={1} style={styles.movementComparisonValue}>{previousAsSet ? `${setResultLabel(previousAsSet, movement, unit)}${effortLabel(previousAsSet) ? ` · ${effortLabel(previousAsSet)}` : ''}` : 'No prior exact comparison yet.'}</Text></View><View style={styles.movementComparisonChange}><Text style={[styles.movementComparisonState, { color: comparisonColor }]}>{comparisonState.replaceAll('_', ' ').toUpperCase()}</Text><Text style={styles.movementComparisonLiteral}>{analysis?.comparison?.literal || (previousAsSet ? 'Exact best-set change shown in the trend.' : 'Comparison will unlock after another exact exposure.')}</Text></View></View>
           <View style={styles.movementMetaRail}>{trendBadge ? <Text style={styles.movementMeta}>{trendBadge}</Text> : null}{videoSets.length ? <Text style={styles.movementMeta}>{videoSets.length} VIDEO{videoSets.length === 1 ? '' : 'S'}</Text> : null}{equipment[0]?.model ? <Text numberOfLines={1} style={styles.movementMeta}>{equipment[0].model.toUpperCase()}</Text> : null}</View>
         </View>
       </Pressable>
       {expanded ? <View style={styles.expandedEvidence}>
-        {bestAsSet && setVideoId(bestAsSet) > 0 ? <Pressable accessibilityRole="button" onPress={() => onVideo(bestAsSet)} style={({ pressed }) => [styles.bestVideoCard, pressed && styles.pressed]}><View style={styles.bestVideoMedia}>{videoThumbnailSource(bestAsSet, movementArtworkSource(movement)) ? <Image accessibilityIgnoresInvertColors resizeMode="cover" source={videoThumbnailSource(bestAsSet, movementArtworkSource(movement))!} style={styles.videoThumbnail} /> : null}<LinearGradient colors={['transparent', 'rgba(2,3,6,0.88)']} style={StyleSheet.absoluteFillObject} /><View style={styles.bestVideoPlay}><Ionicons name="play" size={16} color={SLColors.textPrimary} /></View><Text style={styles.bestVideoOverlay}>SET {bestAsSet.set_index || '—'}</Text></View><View style={styles.bestVideoCopy}><Text style={styles.detailKicker}>BEST SET VIDEO</Text><Text style={styles.bestVideoValue}>{setResultLabel(bestAsSet, movement, unit)}</Text><Text style={styles.detailMeta}>Exact SetLog evidence · tap to review</Text></View><Ionicons name="expand-outline" size={19} color={SLColors.textSecondary} /></Pressable> : null}
-        <View style={styles.setTable}><View style={styles.setHeader}><Text style={[styles.columnLabel, styles.setNumberColumn]}>SET</Text><Text style={[styles.columnLabel, styles.resultColumn]}>RESULT</Text><Text style={[styles.columnLabel, styles.effortColumn]}>EFFORT</Text><View style={styles.videoColumn} /></View>{movement.sets.map((set, index) => <View key={set.id || index} style={styles.setRow}><Text style={[styles.setValue, styles.setNumberColumn]}>{set.set_index || index + 1}</Text><View style={styles.resultColumnRow}><Text numberOfLines={1} style={styles.setValueStrong}>{setResultLabel(set, movement, unit)}</Text>{set.has_pr ? <Text style={styles.setPr}>PR</Text> : null}</View><Text style={[styles.setValue, styles.effortColumn]}>{effortLabel(set) || '—'}</Text><View style={styles.videoColumn}>{setVideoId(set) > 0 ? <SetVideoButton set={set} fallbackSource={movementArtworkSource(movement)} onPress={() => onVideo(set)} /> : null}</View></View>)}</View>
-        {(movement.trend?.points?.length || 0) >= 2 ? <View style={styles.trendDetail}><View style={styles.trendDetailHeader}><View><Text style={styles.detailKicker}>{movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'} · EXACT MOVEMENT</Text><Text style={styles.detailMeta}>{movement.trend?.state === 'limited_history' ? 'Two comparable Sessions' : `${movement.trend?.points?.length || 0} comparable Sessions`}</Text></View>{delta ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}</View><MovementTrendChart trend={movement.trend} unit={unit} /></View> : null}
+        {bestAsSet && setVideoId(bestAsSet) > 0 ? <Pressable accessibilityRole="button" onPress={() => onVideo(bestAsSet)} style={({ pressed }) => [styles.bestVideoCard, pressed && styles.pressed]}><View style={styles.bestVideoMedia}>{videoThumbnailSource(bestAsSet, movementArtworkSource(movement)) ? <Image accessibilityIgnoresInvertColors resizeMode="cover" source={videoThumbnailSource(bestAsSet, movementArtworkSource(movement))!} style={styles.videoThumbnail} /> : null}<LinearGradient colors={['transparent', 'rgba(2,3,6,0.88)']} style={StyleSheet.absoluteFillObject} /><View style={styles.bestVideoPlay}><Ionicons name="play" size={16} color={SLColors.textPrimary} /></View><Text style={styles.bestVideoOverlay}>SET {bestAsSet.set_index || 'RECORDED'}</Text></View><View style={styles.bestVideoCopy}><Text style={styles.detailKicker}>BEST SET VIDEO</Text><Text style={styles.bestVideoValue}>{setResultLabel(bestAsSet, movement, unit)}</Text><Text style={styles.detailMeta}>Exact SetLog evidence · tap to review</Text></View><Ionicons name="expand-outline" size={19} color={SLColors.textSecondary} /></Pressable> : null}
+        <View style={styles.setTable}><View style={styles.setHeader}><Text style={[styles.columnLabel, styles.setNumberColumn]}>SET</Text><Text style={[styles.columnLabel, styles.resultColumn]}>RESULT</Text><Text style={[styles.columnLabel, styles.effortColumn]}>EFFORT</Text><View style={styles.videoColumn} /></View>{movement.sets.map((set, index) => <View key={set.id || index} style={styles.setRow}><Text style={[styles.setValue, styles.setNumberColumn]}>{set.set_index || index + 1}</Text><View style={styles.resultColumnRow}><Text numberOfLines={1} style={styles.setValueStrong}>{setResultLabel(set, movement, unit)}</Text>{set.has_pr ? <Text style={styles.setPr}>PR</Text> : null}</View><Text numberOfLines={1} style={[styles.setValue, styles.effortColumn]}>{effortLabel(set) || 'Not logged'}</Text><View style={styles.videoColumn}>{setVideoId(set) > 0 ? <SetVideoButton set={set} fallbackSource={movementArtworkSource(movement)} onPress={() => onVideo(set)} /> : null}</View></View>)}</View>
+        {(movement.trend?.points?.length || 0) >= 2 ? <View style={styles.trendDetail}><View style={styles.trendDetailHeader}><View style={styles.trendDetailCopy}><Text style={styles.detailKicker}>{movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'} · EXACT MOVEMENT</Text><Text style={styles.detailMeta}>{movement.trend?.state === 'limited_history' ? 'Two comparable Sessions' : `${movement.trend?.points?.length || 0} comparable Sessions`}</Text></View>{delta ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}<ChartAxisModeToggle value={historyAxisMode} onChange={setHistoryAxisMode} testID={`post-session-axis-mode-${movement.item_id || 'movement'}`} /></View><MovementTrendChart trend={movement.trend} unit={unit} axisMode={historyAxisMode} /></View> : <View style={styles.limitedHistoryCard}><Text style={styles.limitedHistoryTitle}>No prior exact comparison yet</Text><Text style={styles.limitedHistoryBody}>This exact performed identity needs another comparable Session before a progression chart can be established.</Text></View>}
         {movement.measurement?.canonical_identity_id && onOpenHistory ? <Pressable accessibilityRole="button" accessibilityLabel={`Open exact Movement History for ${movement.label}`} onPress={() => onOpenHistory(movement)} style={({ pressed }) => [styles.historyAction, pressed && styles.pressed]}><View><Text style={styles.historyActionLabel}>MOVEMENT HISTORY</Text><Text style={styles.historyActionDetail}>{movement.kind === 'core' ? 'Exact governed Core evidence' : 'Canonical exact-movement evidence'}</Text></View><Ionicons name="analytics-outline" size={18} color={SLColors.accentMuted} /></Pressable> : null}
         {typeof __DEV__ !== 'undefined' && __DEV__ && movement.history_diagnostics ? <View style={styles.diagnosticCard}><Text style={styles.detailKicker}>DEV · HISTORY DIAGNOSTICS</Text><Text style={styles.diagnosticLine}>Movement {movement.history_diagnostics.canonical_key || movement.history_diagnostics.movement_definition_id || 'unresolved'} · comparison {movement.history_diagnostics.comparison_identity_key || movement.history_diagnostics.comparison_identity_id || 'unresolved'}</Text><Text style={styles.diagnosticLine}>Equipment configuration {movement.history_diagnostics.equipment_configuration_identity_id || 'none'} · {movement.history_diagnostics.identity_scope || 'no scope'}</Text><Text style={styles.diagnosticLine}>Metric {movement.trend?.metric || 'none'} · delta {movement.trend?.delta_value ?? movement.trend?.delta_kg ?? 'none'}</Text><Text style={styles.diagnosticLine}>{movement.history_diagnostics.historical_candidate_count || 0} candidates · {movement.history_diagnostics.accepted_candidate_count || 0} accepted · {movement.history_diagnostics.rejected_candidate_count || 0} rejected</Text>{movement.history_diagnostics.rejected?.map((row, index) => <Text key={`${row.reason}-${index}`} style={styles.diagnosticReason}>{row.reason || 'unspecified'} · {row.count || 0}</Text>)}</View> : null}
         <EquipmentFooter equipment={equipment} />
@@ -750,7 +809,7 @@ function ComparisonFilterBar({ filter, rows, onChange, edgeToEdge = false }: { f
 function TargetBand({ comparison }: { comparison: SessionRecapSetComparison }) {
   const reps = comparison.performed?.actual_reps == null ? null : Number(comparison.performed.actual_reps);
   const geometry = sessionRecapTargetGeometry(comparison.plan.repLow, comparison.plan.repHigh, reps);
-  if (!geometry || !comparison.performed) return <Text style={styles.targetUnavailable}>—</Text>;
+  if (!geometry || !comparison.performed) return <Text style={styles.targetUnavailable}>{comparison.performed ? 'Open target' : 'Not logged'}</Text>;
   const presentation = COMPARISON_PRESENTATION[comparison.kind];
   return <View style={styles.targetBand}>
     <View style={styles.targetBandRail}>
@@ -785,7 +844,7 @@ function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { 
         <View style={styles.comparePerformedColumn}><Text style={[styles.compareColumnKicker, { color: '#38C8F4' }]}>PERFORMED</Text><View style={styles.compareSetHeader}><Text style={[styles.compareTableLabel, styles.compareSetNumber]}>SET</Text><Text style={[styles.compareTableLabel, styles.compareLoad]}>LOAD</Text><Text style={[styles.compareTableLabel, styles.compareReps]}>REPS</Text><Text style={[styles.compareTableLabel, styles.compareEffort]}>EFFORT</Text><Text style={[styles.compareTableLabel, styles.compareTarget]}>COMPARE TO PLAN</Text></View>{row.comparisons.map((comparison) => {
           const performed = comparison.performed;
           const presentation = COMPARISON_PRESENTATION[comparison.kind];
-          return <View key={comparison.setIndex} style={styles.compareSetRow}><View style={styles.compareSetNumber}><View style={[styles.compareSetNumberBadge, { borderColor: `${presentation.color}88` }]}><Text style={styles.compareSetNumberText}>{comparison.setIndex}</Text></View></View><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareLoad]}>{performed ? (formatWeightFromKg(performed.actual_weight_kg, unit) || '—') : '—'}</Text><Text style={[styles.compareSetValue, styles.compareReps, comparison.kind === 'matched' && styles.compareSetMatched]}>{performed?.actual_reps ?? '—'}</Text><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareEffort]}>{performed ? (effortLabel(performed) || '—') : '—'}</Text><View style={styles.compareTarget}><TargetBand comparison={comparison} /></View></View>;
+          return <View key={comparison.setIndex} style={styles.compareSetRow}><View style={styles.compareSetNumber}><View style={[styles.compareSetNumberBadge, { borderColor: `${presentation.color}88` }]}><Text style={styles.compareSetNumberText}>{comparison.setIndex}</Text></View></View><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareLoad]}>{performed ? (formatWeightFromKg(performed.actual_weight_kg, unit) || 'Bodyweight') : 'Not logged'}</Text><Text style={[styles.compareSetValue, styles.compareReps, comparison.kind === 'matched' && styles.compareSetMatched]}>{performed?.actual_reps ?? 'Not logged'}</Text><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareEffort]}>{performed ? (effortLabel(performed) || 'Not recorded') : 'Not logged'}</Text><View style={styles.compareTarget}><TargetBand comparison={comparison} /></View></View>;
         })}<View style={styles.targetLegend}><View style={styles.targetLegendBand} /><Text style={styles.targetLegendText}>Target range</Text><View style={styles.targetLegendMarker} /><Text style={styles.targetLegendText}>Your performance</Text></View></View>
       </View>
       <Pressable disabled={!movement || !onOpenHistory} accessibilityRole="button" accessibilityLabel={`Open exact history for ${title}`} onPress={() => movement && onOpenHistory?.(movement, unit)} style={({ pressed }) => [styles.compareLastTime, pressed && styles.pressed]}><Ionicons name="time-outline" size={21} color={SLColors.accentMuted} /><View style={styles.compareLastTimeCopy}><Text style={styles.compareLastTimeLabel}>LAST TIME</Text><Text numberOfLines={2} style={styles.compareLastTimeValue}>{previous && movement ? `${setResultLabel({ actual_weight_kg: previous.weight_kg, actual_reps: previous.reps }, movement, unit)}${previous.rir != null ? ` @ ${numberLabel(previous.rir)} RIR` : previous.rpe != null ? ` @ RPE ${numberLabel(previous.rpe)}` : ''} · ${dateLabel(previous.date)}` : 'No previous exact exposure'}</Text></View>{movement && onOpenHistory ? <Ionicons name="chevron-forward" size={20} color={SLColors.textSecondary} /> : null}</Pressable>
@@ -828,13 +887,305 @@ function ActionButton({ icon, label, primary, onPress }: { icon: React.Component
   return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.actionButton, primary && styles.actionButtonPrimary, pressed && styles.pressed]}><Ionicons name={icon} size={18} color={primary ? SLColors.white : SLColors.textSecondary} /><Text style={[styles.actionButtonText, primary && styles.actionButtonTextPrimary]}>{label}</Text></Pressable>;
 }
 
-export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, refreshing, onRefresh, onClose, onDone, initialTab = 'performed', initialShowAllMovements = false, initialScrollOffsetY = 0, initialExpandedItemId, viewerMode = 'athlete', parentProvidesTopSafeArea = false, coachReview, coachReviewUnavailableReason, onViewLedger, onViewCalendar, onLogNextSession, onOpenProgramming, onOpenMovementHistory }: Props) {
+type ReviewerMetric = {
+  value?: number | null;
+  baseline?: number | null;
+  delta?: number | null;
+  sample_size?: number;
+};
+
+type ReviewerAnalytics = {
+  schema_version?: string;
+  comparator?: { workout_id?: number; label?: string; date?: string; matched_movement_count?: number } | null;
+  session_read?: {
+    performance?: { state?: string; label?: string; counts?: Record<string, number>; comparable_count?: number };
+    execution?: { logged_sets?: number; planned_sets?: number | null; completion_percent?: number | null };
+    recovery?: { state?: string; label?: string };
+    reflection?: { state?: string; label?: string };
+    synthesis?: string;
+  };
+  what_changed?: {
+    movement_outcomes?: Record<string, number>;
+    volume?: { current_kg?: number; previous_kg?: number | null; delta_percent?: number | null };
+    normalized_volume_per_set?: { current_kg?: number | null; previous_kg?: number | null; delta_percent?: number | null };
+    logged_sets?: { current?: number; previous?: number | null; delta?: number | null };
+    average_effort_rpe_equivalent?: { current?: number | null; previous?: number | null; delta?: number | null };
+    pr_count?: number;
+    session_rpe?: { current?: number | null; previous?: number | null; delta?: number | null };
+  };
+  duration?: {
+    current_seconds?: number | null;
+    baseline_seconds?: number | null;
+    delta_seconds?: number | null;
+    delta_percent?: number | null;
+    sample_size?: number;
+    comparison_label?: string | null;
+  };
+  movements?: ReviewerMovementEvidence[];
+  recovery?: {
+    state?: string;
+    label?: string;
+    summary?: string;
+    sample_size?: number;
+    metrics?: Record<string, ReviewerMetric>;
+    trend?: Record<string, any>[];
+  };
+  reflection?: {
+    state?: string;
+    label?: string;
+    sample_size?: number;
+    session_rpe?: ReviewerMetric;
+    fatigue?: { value?: string | null; higher_than_prior_count?: number; prior_count?: number };
+    strength?: string | null;
+    note?: string;
+  };
+  coach_read?: {
+    performance?: string;
+    recovery?: string;
+    reflection?: string;
+    execution?: string;
+    takeaways?: string[];
+    attention?: { kind?: string; label?: string; item_id?: number }[];
+  };
+};
+
+type RecoveryMetricKey = 'readiness' | 'sleep' | 'stress' | 'energy' | 'soreness';
+
+const RECOVERY_PRESENTATION: Record<RecoveryMetricKey, { label: string; color: string; icon: React.ComponentProps<typeof Ionicons>['name']; suffix: string; maximum: number }> = {
+  readiness: { label: 'Readiness', color: '#38D381', icon: 'pulse-outline', suffix: ' / 10', maximum: 10 },
+  sleep: { label: 'Sleep', color: '#5AAEFF', icon: 'moon-outline', suffix: ' h', maximum: 12 },
+  stress: { label: 'Stress', color: '#FF9A42', icon: 'flame-outline', suffix: ' / 10', maximum: 10 },
+  energy: { label: 'Energy', color: '#E05BD8', icon: 'flash-outline', suffix: ' / 10', maximum: 10 },
+  soreness: { label: 'Soreness', color: '#F3AC33', icon: 'body-outline', suffix: ' / 10', maximum: 10 },
+};
+
+function humanize(value?: string | null) {
+  const text = String(value || '').trim().replaceAll('_', ' ');
+  return text ? text.replace(/\b\w/g, (letter) => letter.toUpperCase()) : 'Not reported';
+}
+
+function signed(value: number | null | undefined, suffix = '', digits = 1) {
+  if (value == null || !Number.isFinite(Number(value))) return null;
+  const numeric = Number(value);
+  if (Math.abs(numeric) < 0.05) return `No material change${suffix}`;
+  return `${numeric > 0 ? '+' : '−'}${Math.abs(numeric).toFixed(digits).replace(/\.0$/, '')}${suffix}`;
+}
+
+function fallbackReviewerAnalytics(recap: CompletedSessionRecapPayload): ReviewerAnalytics {
+  const states = recap.performed_movements.map((movement) => {
+    const delta = Number(movement.trend?.delta_value ?? movement.trend?.delta_kg);
+    if (!Number.isFinite(delta) || (movement.trend?.points?.length || 0) < 2) return 'not_comparable';
+    if (Math.abs(delta) < 0.01) return 'stable';
+    return delta > 0 ? 'improved' : 'declined';
+  });
+  const counts = states.reduce<Record<string, number>>((result, state) => ({ ...result, [state]: (result[state] || 0) + 1 }), {});
+  const comparable = (counts.improved || 0) + (counts.stable || 0) + (counts.declined || 0);
+  const planned = Number(recap.highlights?.prescribed_set_count || 0) || null;
+  const recovery = recap.readiness_context || {};
+  const currentVolume = Number(recap.session.total_volume_kg || 0);
+  const previousVolume = recap.session.volume_trend?.points?.filter((row) => !row.current).at(-1)?.volume_kg;
+  const reflectionAvailable = recap.reflection.session_rpe != null || !!recap.reflection.strength || !!recap.reflection.fatigue || !!recap.reflection.note;
+  const strongest = recap.performed_movements.find((movement) => Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) > 0);
+  const synthesis = comparable
+    ? `${counts.improved || 0} of ${comparable} comparable movements improved${strongest ? `, led by ${strongest.label}` : ''}. ${recap.session.set_count} persisted sets define this completed Session.`
+    : `This Session contains ${recap.session.set_count} persisted sets. Exact progression will become more specific as comparable performed identities accumulate.`;
+  const movements = recap.performed_movements.map((movement) => {
+    const points = movement.trend?.points || [];
+    const previous = [...points].reverse().find((point) => !point.current) || null;
+    const delta = Number(movement.trend?.delta_value ?? movement.trend?.delta_kg);
+    const state = !previous || !Number.isFinite(delta) ? 'not_comparable' : Math.abs(delta) < 0.01 ? 'stable' : delta > 0 ? 'improved' : 'declined';
+    return {
+      item_id: movement.item_id,
+      previous_best: previous,
+      comparison: {
+        state,
+        literal: previous
+          ? state === 'stable' ? 'Governed best-set performance remained within normal variance.' : `Governed best-set performance ${delta > 0 ? 'improved' : 'declined'} from the prior exact exposure.`
+          : 'No reliable prior exact comparison.',
+      },
+      confidence: { state: previous ? 'limited' : 'unavailable', label: previous ? 'Exact comparison available' : 'No reliable comparison', sample_size: points.length, scope: movement.measurement?.comparison_scope },
+    } satisfies ReviewerMovementEvidence;
+  });
+  return {
+    session_read: {
+      performance: { state: comparable ? 'mixed' : 'insufficient_evidence', label: comparable ? 'Mixed' : 'Building history', counts, comparable_count: comparable },
+      execution: { logged_sets: recap.session.set_count, planned_sets: planned, completion_percent: recap.highlights?.prescription_completion_percent },
+      recovery: { state: recap.readiness_context ? 'recorded' : 'unavailable', label: recap.readiness_context ? 'Recorded' : 'Not submitted' },
+      reflection: { state: reflectionAvailable ? 'recorded' : 'unavailable', label: reflectionAvailable ? 'Recorded' : 'Not submitted' },
+      synthesis,
+    },
+    what_changed: {
+      movement_outcomes: counts,
+      volume: { current_kg: currentVolume, previous_kg: previousVolume, delta_percent: previousVolume ? ((currentVolume - previousVolume) / previousVolume) * 100 : null },
+      logged_sets: { current: recap.session.set_count, previous: null, delta: null },
+      pr_count: recap.highlights?.pr_count || 0,
+      session_rpe: { current: recap.reflection.session_rpe, previous: null, delta: null },
+    },
+    duration: { current_seconds: recap.session.duration_seconds, baseline_seconds: null, sample_size: 0 },
+    movements,
+    recovery: {
+      state: recap.readiness_context ? 'recorded' : 'insufficient_history',
+      label: recap.readiness_context ? 'Session context recorded' : 'Readiness not submitted',
+      summary: recap.readiness_context ? 'Current readiness values are shown without implying causation. A recent baseline will appear when enough prior observations are available.' : 'The athlete did not submit pre-Session readiness context. Future check-ins can establish a reliable comparison.',
+      sample_size: 0,
+      metrics: {
+        readiness: { value: recovery.readiness_score }, sleep: { value: recovery.sleep_hours ?? recovery.sleep_quality }, stress: { value: recovery.stress }, energy: { value: recovery.energy }, soreness: { value: recovery.soreness },
+      },
+      trend: [],
+    },
+    reflection: {
+      state: reflectionAvailable ? 'recorded' : 'unavailable', label: reflectionAvailable ? 'Athlete reflection recorded' : 'Reflection not submitted', sample_size: 0,
+      session_rpe: { value: recap.reflection.session_rpe }, strength: recap.reflection.strength, fatigue: { value: recap.reflection.fatigue, prior_count: 0 }, note: recap.reflection.note || undefined,
+    },
+    coach_read: {
+      performance: comparable ? `${counts.improved || 0} improved · ${counts.stable || 0} stable · ${counts.declined || 0} declined` : 'Exact comparison is still building',
+      recovery: recap.readiness_context ? 'Current context recorded' : 'Readiness not submitted',
+      reflection: reflectionAvailable ? 'Athlete reflection recorded' : 'Reflection not submitted',
+      execution: planned ? `${recap.session.set_count} / ${planned} sets` : `${recap.session.set_count} logged sets`,
+      attention: [],
+    },
+  };
+}
+
+function PostSessionSection({ title, meta, children }: { title: string; meta?: string | null; children: React.ReactNode }) {
+  return <View style={styles.canonicalSection}><View style={styles.canonicalSectionHeading}><Text style={styles.canonicalSectionTitle}>{title}</Text>{meta ? <Text numberOfLines={2} style={styles.canonicalSectionMeta}>{meta}</Text> : null}</View>{children}</View>;
+}
+
+function PostSessionMetricTile({ icon, label, value, detail, tone = '#B46CFF' }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; value: string; detail?: string | null; tone?: string }) {
+  return <View style={styles.canonicalMetricTile}><View style={[styles.canonicalMetricIcon, { backgroundColor: `${tone}18` }]}><Ionicons name={icon} color={tone} size={17} /></View><View style={styles.canonicalMetricCopy}><Text style={styles.canonicalMetricLabel}>{label}</Text><Text style={[styles.canonicalMetricValue, { color: tone }]}>{value}</Text>{detail ? <Text style={styles.canonicalMetricDetail}>{detail}</Text> : null}</View></View>;
+}
+
+function formatDurationComparison(analytics: ReviewerAnalytics, recap: CompletedSessionRecapPayload) {
+  const duration = analytics.duration || {};
+  const current = duration.current_seconds ?? recap.session.duration_seconds;
+  if (current == null) return { value: 'Duration not recorded', detail: 'A start and end time are needed before duration can be compared.' };
+  const baseline = duration.baseline_seconds;
+  const deltaSeconds = duration.delta_seconds ?? (baseline == null ? null : Number(current) - Number(baseline));
+  if (baseline == null || deltaSeconds == null) return { value: durationLabel(current) || 'Duration recorded', detail: 'First comparable duration recorded for this Session type.' };
+  const deltaMinutes = Math.max(1, Math.round(Math.abs(deltaSeconds) / 60));
+  const direction = deltaSeconds < 0 ? 'faster' : deltaSeconds > 0 ? 'slower' : 'in line';
+  return {
+    value: durationLabel(current) || 'Duration recorded',
+    detail: direction === 'in line' ? 'In line with the recent comparable baseline.' : `${deltaMinutes} min ${direction} than the recent comparable baseline. Pace is context, not a quality score.`,
+  };
+}
+
+function SessionReadOverview({ analytics, recap }: { analytics: ReviewerAnalytics; recap: CompletedSessionRecapPayload }) {
+  const read = analytics.session_read || {};
+  const performance = read.performance || {};
+  const counts = performance.counts || {};
+  const execution = read.execution || {};
+  const duration = formatDurationComparison(analytics, recap);
+  const executionValue = execution.planned_sets
+    ? `${execution.logged_sets ?? recap.session.set_count} / ${execution.planned_sets}`
+    : `${execution.logged_sets ?? recap.session.set_count} logged`;
+  return <>
+    <PostSessionSection title="SESSION READ" meta={analytics.comparator ? `vs ${analytics.comparator.label || 'comparable Session'} · ${dateLabel(analytics.comparator.date)}` : 'Point-in-time evidence'}>
+      <View style={styles.sessionReadCard}><LinearGradient colors={['rgba(119,62,177,0.18)', '#07090E']} style={StyleSheet.absoluteFillObject} /><View style={styles.canonicalMetricGrid}>
+        <PostSessionMetricTile icon="trending-up-outline" label="Performance" value={`${counts.improved || 0} improved · ${counts.stable || 0} stable · ${counts.declined || 0} declined`} detail={performance.comparable_count ? `${performance.comparable_count} exact comparable movements` : 'Another exact exposure will unlock comparison.'} tone={counts.declined ? '#62B7FF' : '#38D381'} />
+        <PostSessionMetricTile icon="clipboard-outline" label="Execution" value={executionValue} detail={execution.planned_sets ? `${execution.logged_sets ?? recap.session.set_count} logged · ${Math.max(0, Number(execution.planned_sets) - Number(execution.logged_sets ?? recap.session.set_count))} missed · ${Math.max(0, Number(execution.logged_sets ?? recap.session.set_count) - Number(execution.planned_sets))} unplanned · ${numberLabel(execution.completion_percent)}% adherence` : 'Plan completion is unavailable for this historical Session.'} tone="#B46CFF" />
+        <PostSessionMetricTile icon="pulse-outline" label="Recovery" value={read.recovery?.label || 'Context unavailable'} detail="Compared only with prior observations when a reliable baseline exists." tone={read.recovery?.state === 'below_baseline' ? '#FF9A42' : '#38D381'} />
+        <PostSessionMetricTile icon="chatbubble-ellipses-outline" label="Reflection" value={read.reflection?.label || 'Not submitted'} detail="Athlete-reported effort, feel, fatigue, and notes." tone="#E05BD8" />
+      </View><View style={styles.durationRead}><View style={styles.durationReadIcon}><Ionicons name="time-outline" size={19} color="#53CBE8" /></View><View style={styles.durationReadCopy}><Text style={styles.durationReadValue}>{duration.value}</Text><Text style={styles.durationReadDetail}>{duration.detail}</Text></View></View><Text style={styles.sessionNarrative}>{read.synthesis || fallbackReviewerAnalytics(recap).session_read?.synthesis}</Text></View>
+    </PostSessionSection>
+  </>;
+}
+
+function WhatChangedOverview({ analytics, recap, unit }: { analytics: ReviewerAnalytics; recap: CompletedSessionRecapPayload; unit: DisplayWeightUnit }) {
+  const changed = analytics.what_changed || {};
+  const volume = changed.volume || {};
+  const normalized = changed.normalized_volume_per_set || {};
+  const sets = changed.logged_sets || {};
+  const effort = changed.average_effort_rpe_equivalent || {};
+  const sessionRpe = changed.session_rpe || { current: recap.reflection.session_rpe };
+  const duration = formatDurationComparison(analytics, recap);
+  const currentVolume = formatCompactVolumeValueFromKg(volume.current_kg ?? recap.session.total_volume_kg, unit) || 'Volume not recorded';
+  const previousVolume = formatCompactVolumeValueFromKg(volume.previous_kg, unit);
+  const currentPerSet = normalized.current_kg ?? ((volume.current_kg ?? recap.session.total_volume_kg) / Math.max(1, recap.session.set_count));
+  const rows = [
+    { label: 'Movement outcomes', value: `${changed.movement_outcomes?.improved || 0} improved · ${changed.movement_outcomes?.stable || 0} stable · ${changed.movement_outcomes?.declined || 0} declined` },
+    { label: 'Total volume', value: previousVolume ? `${currentVolume} vs ${previousVolume}${signed(volume.delta_percent, '%') ? ` · ${signed(volume.delta_percent, '%')}` : ''}` : `${currentVolume} · Previous comparable volume is not available yet.` },
+    { label: 'Normalized volume / set', value: normalized.previous_kg != null ? `${formatWeightFromKg(currentPerSet, unit)} vs ${formatWeightFromKg(normalized.previous_kg, unit)}${signed(normalized.delta_percent, '%') ? ` · ${signed(normalized.delta_percent, '%')}` : ''}` : `${formatWeightFromKg(currentPerSet, unit) || 'Not recorded'} · Baseline will unlock with a comparable Session.` },
+    { label: 'Logged sets', value: sets.previous != null ? `${sets.current ?? recap.session.set_count} vs ${sets.previous}${sets.delta != null ? ` · ${sets.delta > 0 ? '+' : ''}${sets.delta}` : ''}` : `${sets.current ?? recap.session.set_count} this Session · Prior count unavailable.` },
+    { label: 'Average effort', value: effort.previous != null ? `${numberLabel(effort.current)} vs ${numberLabel(effort.previous)} RPE-equivalent${signed(effort.delta) ? ` · ${signed(effort.delta)}` : ''}` : effort.current != null ? `${numberLabel(effort.current)} RPE-equivalent · Prior average unavailable.` : 'Set-level effort was not recorded consistently enough to compare.' },
+    { label: 'Session RPE', value: sessionRpe.current != null ? sessionRpe.previous != null ? `${numberLabel(sessionRpe.current)} vs ${numberLabel(sessionRpe.previous)}${signed(sessionRpe.delta) ? ` · ${signed(sessionRpe.delta)}` : ''}` : `${numberLabel(sessionRpe.current)} / 10 · Comparable reflection baseline unavailable.` : 'No Session RPE was recorded for this Session.' },
+    { label: 'Session duration', value: `${duration.value} · ${duration.detail}` },
+    { label: 'Recovery context', value: analytics.recovery?.summary || 'A reliable recovery baseline is not available yet.' },
+    { label: 'PR evidence', value: `${changed.pr_count ?? recap.highlights?.pr_count ?? 0} verified record${Number(changed.pr_count ?? recap.highlights?.pr_count ?? 0) === 1 ? '' : 's'} in this Session` },
+  ];
+  return <PostSessionSection title="WHAT CHANGED SINCE LAST COMPARABLE SESSION"><View style={styles.changedCard}>{rows.map((row) => <View key={row.label} style={styles.changedRow}><Text style={styles.changedLabel}>{row.label}</Text><Text style={styles.changedValue}>{row.value}</Text></View>)}</View></PostSessionSection>;
+}
+
+function RecoveryOverview({ analytics, recap }: { analytics: ReviewerAnalytics; recap: CompletedSessionRecapPayload }) {
+  const recovery = analytics.recovery || {};
+  const metrics = recovery.metrics || {};
+  const fallback = recap.readiness_context || {};
+  const hydrated: Record<RecoveryMetricKey, ReviewerMetric> = {
+    readiness: metrics.readiness || { value: fallback.readiness_score },
+    sleep: metrics.sleep || { value: fallback.sleep_hours ?? fallback.sleep_quality },
+    stress: metrics.stress || { value: fallback.stress },
+    energy: metrics.energy || { value: fallback.energy },
+    soreness: metrics.soreness || { value: fallback.soreness },
+  };
+  const available = (Object.keys(RECOVERY_PRESENTATION) as RecoveryMetricKey[]).filter((key) => hydrated[key].value != null || (recovery.trend || []).some((row) => row[key] != null));
+  const [selected, setSelected] = useState<RecoveryMetricKey>(available[0] || 'readiness');
+  useEffect(() => {
+    if (!available.includes(selected) && available[0]) setSelected(available[0]);
+  }, [available, selected]);
+  const presentation = RECOVERY_PRESENTATION[selected];
+  const selectedMetric = hydrated[selected];
+  const points = (recovery.trend || []).flatMap((row, index) => {
+    const value = Number(row[selected]);
+    return Number.isFinite(value) ? [{ id: `${row.date || 'observation'}:${index}`, date: String(row.date || ''), value, meta: row }] : [];
+  });
+  const band = selectedMetric.baseline != null && points.length ? points.map((point) => ({ date: point.date, low: Number(selectedMetric.baseline) - 0.04, high: Number(selectedMetric.baseline) + 0.04 })) : [];
+  return <PostSessionSection title="CONTEXT & RECOVERY" meta={recovery.sample_size ? `${recovery.sample_size} prior observations` : 'Current Session context'}><View style={styles.recoveryCard}><Text style={styles.recoverySummary}>{recovery.summary || 'Readiness context is presented as correlation-aware evidence, not a causal explanation.'}</Text>{available.length ? <><View style={styles.canonicalMetricGrid}>{available.map((key) => {
+    const item = hydrated[key];
+    const row = RECOVERY_PRESENTATION[key];
+    return <PostSessionMetricTile key={key} icon={row.icon} label={row.label} value={item.value == null ? 'Not recorded' : `${numberLabel(item.value)}${row.suffix}`} detail={item.baseline == null ? 'A reliable recent baseline is not available yet.' : `${numberLabel(item.baseline)}${row.suffix} recent average${signed(item.delta, row.suffix.trim()) ? ` · ${signed(item.delta, row.suffix.trim())}` : ''}`} tone={row.color} />;
+  })}</View><View style={styles.recoverySelector}>{available.map((key) => <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected: selected === key }} onPress={() => setSelected(key)} style={({ pressed }) => [styles.recoverySelectorButton, selected === key && styles.recoverySelectorButtonActive, pressed && styles.pressed]}><Text style={[styles.recoverySelectorText, selected === key && styles.recoverySelectorTextActive]}>{RECOVERY_PRESENTATION[key].label}</Text></Pressable>)}</View><AnalyticalTimeSeriesChart band={band} bandLabel={band.length ? 'Recent baseline' : undefined} emptyTitle={`${presentation.label} history is still building`} emptyBody={`The current ${presentation.label.toLowerCase()} value is shown above. Another dated observation will establish a trend.`} formatSeriesValue={(_key, value) => `${numberLabel(value)}${presentation.suffix}`} height={228} metric={analyticalMetricDefinition(`post_session_${selected}`, { label: presentation.label, kind: selected === 'sleep' ? 'hours' : 'score', unit: selected === 'sleep' ? 'h' : '/10', axisUnit: selected === 'sleep' ? 'h' : undefined, minimum: 0, maximum: presentation.maximum, maximumFractionDigits: 1 })} series={[{ key: selected, label: presentation.label, color: presentation.color, points }]} showLegend={false} testID="canonical-post-session-recovery-chart" tooltipRows={(selection) => [(selection.values[0]?.meta as any)?.current ? 'This Session' : 'Prior readiness observation', selectedMetric.baseline != null ? `Recent baseline ${numberLabel(selectedMetric.baseline)}${presentation.suffix}` : 'Baseline not yet established']} /></> : <View style={styles.premiumEmpty}><Ionicons name="moon-outline" size={25} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>Readiness context was not submitted</Text><Text style={styles.premiumEmptyBody}>Sleep, stress, energy, soreness, and readiness comparisons will become available after future pre-Session check-ins.</Text></View></View>}</View></PostSessionSection>;
+}
+
+function ReflectionOverview({ analytics, recap }: { analytics: ReviewerAnalytics; recap: CompletedSessionRecapPayload }) {
+  const reflection = analytics.reflection || {};
+  const rpe = reflection.session_rpe || { value: recap.reflection.session_rpe };
+  const strength = reflection.strength ?? recap.reflection.strength;
+  const fatigue = reflection.fatigue || { value: recap.reflection.fatigue };
+  const note = reflection.note || recap.reflection.note;
+  const hasReflection = rpe.value != null || !!strength || !!fatigue.value || !!note;
+  return <PostSessionSection title="ATHLETE REFLECTION" meta={reflection.label || (hasReflection ? 'Athlete-reported context' : 'Not submitted')}><View style={styles.recoveryCard}>{hasReflection ? <><View style={styles.reflectionMetricRail}><PostSessionMetricTile icon="speedometer-outline" label="Session RPE" value={rpe.value == null ? 'Not recorded' : `${numberLabel(rpe.value)} / 10`} detail={rpe.baseline == null ? 'A comparable effort baseline is not available yet.' : `${numberLabel(rpe.baseline)} recent average${signed(rpe.delta) ? ` · ${signed(rpe.delta)}` : ''}`} tone="#F3AC33" /><PostSessionMetricTile icon="body-outline" label="Session Feel" value={humanize(strength)} detail={strength ? 'Athlete-reported Session feel.' : 'No Session feel was submitted.'} tone="#38D381" /><PostSessionMetricTile icon="battery-half-outline" label="Fatigue" value={humanize(fatigue.value)} detail={fatigue.prior_count ? `Higher than ${fatigue.higher_than_prior_count || 0} of the prior ${fatigue.prior_count} comparable reflections.` : 'A fatigue ranking will appear as comparable reflections accumulate.'} tone="#E05BD8" /></View>{note ? <View style={styles.athleteReflectionNote}><Ionicons name="chatbox-ellipses-outline" color="#E05BD8" size={19} /><Text style={styles.athleteReflectionNoteText}>{note}</Text></View> : null}</> : <View style={styles.premiumEmpty}><Ionicons name="chatbubble-ellipses-outline" size={25} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>Athlete reflection was not submitted</Text><Text style={styles.premiumEmptyBody}>Session RPE, feel, fatigue, and comments can be added during the post-Session check-in on a future completion.</Text></View></View>}</View></PostSessionSection>;
+}
+
+function CoachReadOverview({ analytics }: { analytics: ReviewerAnalytics }) {
+  const read = analytics.coach_read || {};
+  const attention = read.attention || [];
+  const rows = [
+    ['Performance', read.performance || 'Exact comparison is still building', '#38D381', 'trending-up-outline'],
+    ['Recovery', read.recovery || 'Readiness context unavailable', '#FF9A42', 'bed-outline'],
+    ['Reflection', read.reflection || 'Athlete reflection unavailable', '#E05BD8', 'chatbox-outline'],
+    ['Execution', read.execution || 'Execution summary unavailable', '#B46CFF', 'clipboard-outline'],
+  ] as const;
+  return <><PostSessionSection title="COACH READ"><View style={styles.coachReadCard}>{rows.map(([label, value, color, icon]) => <View key={label} style={styles.coachReadRow}><Ionicons name={icon} color={color} size={18} /><Text style={styles.coachReadLabel}>{label}</Text><Text style={[styles.coachReadValue, { color }]}>{value}</Text></View>)}</View></PostSessionSection><PostSessionSection title="COACH ATTENTION" meta="Actionable evidence only"><View style={styles.coachAttentionCard}>{attention.length ? attention.map((row, index) => <View key={`${row.kind || 'attention'}-${index}`} style={styles.coachAttentionRow}><View style={styles.coachAttentionIcon}><Ionicons name="alert-circle-outline" size={17} color="#FF6A55" /></View><Text style={styles.coachAttentionText}>{row.label}</Text></View>) : <View style={styles.premiumEmpty}><Ionicons name="checkmark-circle-outline" size={25} color={SLColors.success} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>No material coaching exception detected</Text><Text style={styles.premiumEmptyBody}>The evidence does not currently require an attention item. Review the shared Session truth before choosing an outcome.</Text></View></View>}</View></PostSessionSection></>;
+}
+
+function CompactHighlight({ kind, label, value, detail, tone }: { kind: SessionRecapHighlightKind; label: string; value: string; detail: string; tone: string }) {
+  return <View style={styles.compactHighlight}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={sessionRecapHighlightAsset(kind)} style={styles.compactHighlightArt} /><View style={styles.compactHighlightCopy}><Text style={[styles.compactHighlightLabel, { color: tone }]}>{label}</Text><Text style={styles.compactHighlightValue}>{value}</Text><Text numberOfLines={2} style={styles.compactHighlightDetail}>{detail}</Text></View></View>;
+}
+
+function PostSessionToolsSheet({ visible, movements, onClose, onResumeSession, onCorrectEquipment, onEditSetEvidence, onEditSessionNotes, onOpenMovementHistory, onViewSessionHistory }: { visible: boolean; movements: CompletedRecapMovement[]; onClose: () => void; onResumeSession?: () => void; onCorrectEquipment?: (movement: CompletedRecapMovement) => void; onEditSetEvidence?: () => void; onEditSessionNotes?: () => void; onOpenMovementHistory?: (movement: CompletedRecapMovement) => void; onViewSessionHistory?: () => void }) {
+  const equipmentMovements = movements.filter((movement) => movement.kind === 'accessory' && movement.equipment?.length);
+  const run = (action?: () => void) => { onClose(); requestAnimationFrame(() => action?.()); };
+  return <Modal transparent animationType="slide" visible={visible} onRequestClose={onClose}><View style={styles.toolsBackdrop}><TouchableWithoutFeedback onPress={onClose}><View style={StyleSheet.absoluteFillObject} /></TouchableWithoutFeedback><View style={styles.toolsSheet}><View style={styles.toolsHandle} /><View style={styles.toolsHeader}><Text style={styles.toolsTitle}>Post-Session Tools</Text><Pressable accessibilityRole="button" accessibilityLabel="Close post-Session tools" onPress={onClose} style={({ pressed }) => [styles.toolsClose, pressed && styles.pressed]}><Ionicons name="close" size={21} color={SLColors.textPrimary} /></Pressable></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.toolsContent}>{onResumeSession ? <Pressable accessibilityRole="button" onPress={() => run(onResumeSession)} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><View style={styles.toolIcon}><Ionicons name="play-circle-outline" size={19} color="#A96CFF" /></View><View style={styles.toolCopy}><Text style={styles.toolLabel}>Resume Session</Text><Text style={styles.toolDetail}>Return this exact Session to Active. No duplicate Session is created.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable> : null}{onEditSetEvidence ? <Pressable accessibilityRole="button" onPress={() => run(onEditSetEvidence)} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><View style={styles.toolIcon}><Ionicons name="create-outline" size={19} color="#53CBE8" /></View><View style={styles.toolCopy}><Text style={styles.toolLabel}>Edit Set Evidence</Text><Text style={styles.toolDetail}>Resume the same Session to amend permitted load, reps, effort, or video evidence.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable> : null}{onEditSessionNotes ? <Pressable accessibilityRole="button" onPress={() => run(onEditSessionNotes)} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><View style={styles.toolIcon}><Ionicons name="document-text-outline" size={19} color="#E05BD8" /></View><View style={styles.toolCopy}><Text style={styles.toolLabel}>Session Notes</Text><Text style={styles.toolDetail}>Return to the Session check-in to revise athlete-authorized reflection evidence.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable> : null}{onViewSessionHistory ? <Pressable accessibilityRole="button" onPress={() => run(onViewSessionHistory)} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><View style={styles.toolIcon}><Ionicons name="time-outline" size={19} color="#B7C0CF" /></View><View style={styles.toolCopy}><Text style={styles.toolLabel}>Full Session History</Text><Text style={styles.toolDetail}>Open the athlete-owned completed Session archive.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable> : null}{onCorrectEquipment ? <View style={styles.toolSubsection}><Text style={styles.toolSubsectionTitle}>CORRECT EQUIPMENT</Text>{equipmentMovements.length ? equipmentMovements.map((movement) => <Pressable key={movement.item_id || movement.label} accessibilityRole="button" onPress={() => run(() => onCorrectEquipment(movement))} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><ManufacturerBrandMark compact manufacturerName={movement.equipment?.[0]?.manufacturer || 'Equipment'} /><View style={styles.toolCopy}><Text style={styles.toolLabel}>{movement.label}</Text><Text style={styles.toolDetail}>{movement.equipment?.map((row) => row.label).filter(Boolean).join(' · ') || 'Choose the performed manufacturer and setup.'}</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable>) : <View style={styles.premiumEmpty}><Ionicons name="barbell-outline" size={24} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>No equipment-specific movement to correct</Text><Text style={styles.premiumEmptyBody}>This Session did not record a governed machine or equipment identity.</Text></View></View>}</View> : null}{onOpenMovementHistory ? <View style={styles.toolSubsection}><Text style={styles.toolSubsectionTitle}>MOVEMENT HISTORY</Text>{movements.slice(0, 8).map((movement) => <Pressable key={`history-${movement.item_id || movement.label}`} accessibilityRole="button" onPress={() => run(() => onOpenMovementHistory(movement))} style={({ pressed }) => [styles.toolRow, pressed && styles.pressed]}><CanonicalMovementArtwork movement={movement} size={42} /><View style={styles.toolCopy}><Text style={styles.toolLabel}>{movement.label}</Text><Text style={styles.toolDetail}>Open exact governed history and comparable exposures.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable>)}</View> : null}</ScrollView></View></View></Modal>;
+}
+
+export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, refreshing, onRefresh, onClose, onDone, initialTab = 'overview', initialToolsOpen = false, initialShowAllMovements = false, initialScrollOffsetY = 0, initialExpandedItemId, viewerMode = 'athlete', sessionTimeZone, parentProvidesTopSafeArea = false, coachReview, coachReviewUnavailableReason, onViewLedger, onViewCalendar, onLogNextSession, onOpenProgramming, onOpenMovementHistory, onResumeSession, onCorrectEquipment, onEditSetEvidence, onEditSessionNotes, onViewSessionHistory }: Props) {
   const insets = useSafeAreaInsets();
   const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits);
   const [tab, setTab] = useState<RecapTab>(initialTab);
   const [showAllMovements, setShowAllMovements] = useState(initialShowAllMovements);
   const [showAccomplishments, setShowAccomplishments] = useState(false);
   const [video, setVideo] = useState<{ id: number; summary?: SetVideoSummary | null } | null>(null);
+  const [toolsOpen, setToolsOpen] = useState(initialToolsOpen);
   const canonicalPrEvents = useMemo(() => recap.accomplishments.filter((row) => CANONICAL_PR_EVENT_TYPES.has(String(row.event_type || '').toUpperCase())), [recap.accomplishments]);
   const performedMovements = useMemo(() => recap.performed_movements.map((rawMovement) => {
     const movement = normalizeMovementStrengthMetric(rawMovement);
@@ -878,12 +1229,26 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
 
   useEffect(() => { setCompletedSessionRecapOpen(true); return () => setCompletedSessionRecapOpen(false); }, []);
   useEffect(() => setTab(initialTab), [initialTab]);
+  useEffect(() => setToolsOpen(initialToolsOpen), [initialToolsOpen]);
   useEffect(() => setShowAllMovements(initialShowAllMovements), [initialShowAllMovements]);
 
   const openVideo = (set: CompletedRecapSet) => { const id = setVideoId(set); if (id > 0) setVideo({ id, summary: set.video || null }); };
   const meta = [dateLabel(recap.session.date), durationLabel(recap.session.duration_seconds)].filter(Boolean).join(' · ');
   const bodyweight = recap.session.reported_bodyweight?.reported_bodyweight_kg ?? recap.readiness_context?.bodyweight_kg;
-  const sessionVolume = formatCompactVolumeValueFromKg(recapHighlights.session_volume_kg ?? impactSummary?.session_volume_kg ?? recap.session.total_volume_kg, unit) || '—';
+  const sessionVolume = formatCompactVolumeValueFromKg(recapHighlights.session_volume_kg ?? impactSummary?.session_volume_kg ?? recap.session.total_volume_kg, unit) || 'Volume not recorded';
+  const analytics = useMemo(() => ({ ...fallbackReviewerAnalytics(recap), ...((recap.reviewer_v3 || {}) as ReviewerAnalytics) }), [recap]);
+  const movementOutcomes = analytics.session_read?.performance?.counts || {};
+  const primaryTimeZone = resolveSessionTimeZone(sessionTimeZone, Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const startedAt = parseSessionLifecycleInstant(recap.session.started_at);
+  const explicitCompletedAt = parseSessionLifecycleInstant(recap.session.completed_at);
+  const completedAt = explicitCompletedAt || (startedAt && recap.session.duration_seconds != null ? new Date(startedAt.getTime() + Number(recap.session.duration_seconds) * 1000) : null);
+  const primaryStart = startedAt ? formatSessionTimeLabel(startedAt, { sessionDate: recap.session.date, timeZone: primaryTimeZone }) : null;
+  const primaryEnd = completedAt ? formatSessionTimeLabel(completedAt, { sessionDate: recap.session.date, timeZone: primaryTimeZone }) : null;
+  const easternStart = primaryTimeZone === 'America/Los_Angeles' && startedAt ? formatSessionTimeLabel(startedAt, { sessionDate: recap.session.date, timeZone: 'America/New_York' }) : null;
+  const easternEnd = primaryTimeZone === 'America/Los_Angeles' && completedAt ? formatSessionTimeLabel(completedAt, { sessionDate: recap.session.date, timeZone: 'America/New_York' }) : null;
+  const sessionTimeLine = primaryStart && primaryEnd
+    ? `${primaryStart}–${primaryEnd}${easternStart && easternEnd ? ` PT (${easternStart}–${easternEnd} ET)` : ''}`
+    : 'Start and end time were not both recorded.';
   const deepActions = [
     onViewLedger ? { icon: 'list-outline' as const, label: 'View in Ledger', onPress: onViewLedger } : null,
     onViewCalendar ? { icon: 'calendar-outline' as const, label: 'View on Calendar', onPress: onViewCalendar } : null,
@@ -891,6 +1256,45 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
     viewerMode === 'athlete' && onLogNextSession ? { icon: 'pulse-outline' as const, label: 'Log Next Session', onPress: onLogNextSession, primary: true } : null,
   ].filter(Boolean) as { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; onPress: () => void; primary?: boolean }[];
 
+  const visibleTabs: { key: RecapTab; label: string }[] = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'performed', label: 'Performed' },
+    { key: 'plan', label: 'Plan / Compare' },
+    ...(viewerMode === 'coach' ? [{ key: 'coach' as const, label: 'Coach' }] : []),
+  ];
+  const equipmentCorrectionAvailable = viewerMode === 'athlete' && !!onCorrectEquipment;
+  const hasAthleteTools = viewerMode === 'athlete' && Boolean(onResumeSession || onEditSetEvidence || onEditSessionNotes || onViewSessionHistory || onOpenMovementHistory || equipmentCorrectionAvailable);
+
+  return <SafeAreaView edges={parentProvidesTopSafeArea ? [] : ['top']} style={styles.screen}>
+    <FloatingControlCoordinator context="screen">
+      <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="canonical-post-session-unit-toggle" />
+      <View style={styles.topBar}><Pressable accessibilityRole="button" accessibilityLabel="Back from post-Session review" onPress={onClose} style={({ pressed }) => [styles.topButton, pressed && styles.pressed]}><Ionicons name="chevron-back" size={23} color={SLColors.textPrimary} /></Pressable><View style={styles.topBarCopy}><Text numberOfLines={1} style={styles.topTitle}>{recap.session.label}</Text><Text style={styles.topSubtitle}>{viewerMode === 'coach' ? 'Coach Post-Session' : 'Post-Session'}</Text></View>{hasAthleteTools ? <Pressable accessibilityRole="button" accessibilityLabel="Open post-Session tools" onPress={() => setToolsOpen(true)} style={({ pressed }) => [styles.completeMark, pressed && styles.pressed]}><Ionicons name="ellipsis-horizontal" size={22} color={SLColors.textPrimary} /></Pressable> : <Pressable accessibilityRole="button" accessibilityLabel="Done reviewing completed Session" onPress={onDone || onClose} style={({ pressed }) => [styles.completeMark, pressed && styles.pressed]}><Ionicons name="checkmark" size={23} color={SLColors.textPrimary} /></Pressable>}</View>
+      <ScrollView contentOffset={{ x: 0, y: initialScrollOffsetY }} contentContainerStyle={[styles.canonicalContent, { paddingBottom: Math.max(insets.bottom, 18) + 94 }]} refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={SLColors.accent} /> : undefined} showsVerticalScrollIndicator={false}>
+        <View style={styles.canonicalHero}><LinearGradient colors={['#140A20', '#07080E', '#020306']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><LinearGradient colors={['rgba(61,20,112,0.02)', 'rgba(136,47,218,0.2)', 'rgba(224,66,204,0.05)']} end={{ x: 1, y: 0.7 }} start={{ x: 0, y: 0.45 }} style={styles.heroAtmosphere} />{focusRows.length ? <View style={styles.canonicalHeroAnatomy}><ProgrammingMuscleRegionArt level="session" primary={(recap.muscle_focus?.primary || []).map((row) => row.muscle_id)} secondary={(recap.muscle_focus?.secondary || []).map((row) => row.muscle_id)} /></View> : <Image accessibilityIgnoresInvertColors resizeMode="contain" source={SESSION_RECAP_ARCHIVE_ART} style={styles.canonicalHeroArchiveArt} />}<LinearGradient colors={['rgba(3,3,7,0.99)', 'rgba(3,3,7,0.8)', 'rgba(3,3,7,0.04)']} end={{ x: 1, y: 0.5 }} locations={[0, 0.6, 1]} start={{ x: 0, y: 0.5 }} style={styles.canonicalHeroShade} /><View style={styles.canonicalHeroCopy}><View style={styles.completedBadge}><Ionicons name="checkmark-circle" size={12} color={SLColors.success} /><Text style={styles.completedBadgeText}>COMPLETED</Text></View><Text numberOfLines={2} style={styles.canonicalHeroTitle}>{recap.session.label}</Text><View style={styles.heroIdentity}><View style={styles.athleteInitials}>{recap.athlete.avatar_url ? <Image accessibilityIgnoresInvertColors source={{ uri: absoluteAssetUrl(recap.athlete.avatar_url)! }} style={styles.athleteAvatar} /> : <Text style={styles.athleteInitialsText}>{athleteInitials || 'SL'}</Text>}</View><View style={styles.heroIdentityCopy}><Text style={styles.heroAthlete}>{recap.athlete.name}</Text><Text style={styles.heroMeta}>{dateLabel(recap.session.date)}</Text></View></View><Text style={styles.sessionTimes}>{sessionTimeLine}</Text></View><View style={styles.canonicalHeroMetrics}><SummaryMetric icon="barbell-outline" value={String(recap.session.movement_count)} label="Movements" /><SummaryMetric icon="list-outline" value={String(recap.session.set_count)} label="Sets" /><SummaryMetric icon="stats-chart-outline" value={sessionVolume} label="Volume" /><SummaryMetric icon="pulse-outline" value={recap.reflection.session_rpe == null ? 'Not logged' : numberLabel(recap.reflection.session_rpe)} label="Session RPE" /></View></View>
+
+        <View style={styles.compactHighlightRail}>{Number(highlights.session_streak || 0) > 0 ? <CompactHighlight kind="streak" tone="#FF746F" label="SESSION STREAK" value={numberLabel(highlights.session_streak, 0)} detail="Completed Sessions in sequence" /> : null}<CompactHighlight kind="pr" tone={Number(highlights.pr_count || 0) > 0 ? SLColors.warning : SLColors.textMuted} label="PR EVIDENCE" value={numberLabel(highlights.pr_count || 0, 0)} detail={Number(highlights.pr_count || 0) > 0 ? `${firstPrMovement?.label || 'Verified performance'}${firstPrDelta ? ` · ${firstPrDelta}` : ''}` : 'No verified PR was recorded in this Session.'} /><CompactHighlight kind="prescription" tone={showPerfectPlan ? SLColors.success : '#53CBE8'} label="EXECUTION" value={recapHighlights.prescribed_set_count ? `${numberLabel(recapHighlights.completed_prescribed_set_count, 0)} / ${numberLabel(recapHighlights.prescribed_set_count, 0)}` : `${recap.session.set_count} logged`} detail={recapHighlights.prescribed_set_count ? `${numberLabel(highlights.prescription_completion_percent, 0)}% of persisted plan` : 'No comparable prescription count is available.'} /></View>
+
+        <View style={styles.tabs}>{visibleTabs.map((row) => <Pressable key={row.key} accessibilityRole="tab" accessibilityState={{ selected: tab === row.key }} onPress={() => setTab(row.key)} style={({ pressed }) => [styles.tab, tab === row.key && styles.tabActive, pressed && styles.pressed]}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72} style={[styles.tabText, tab === row.key && styles.tabTextActive]}>{row.label}</Text></Pressable>)}</View>
+
+        {tab === 'overview' ? <><SessionReadOverview analytics={analytics} recap={recap} /><WhatChangedOverview analytics={analytics} recap={recap} unit={unit} /><RecoveryOverview analytics={analytics} recap={recap} />{bodyweight ? <PostSessionSection title="BODYWEIGHT CONTEXT"><View style={styles.bodyweightContextCard}><View><Text style={styles.bodyweightContextValue}>{formatWeightFromKg(bodyweight, unit) || 'Bodyweight value unavailable'}</Text><Text style={styles.bodyweightContextDetail}>Reported for this Session and shown as context, not as a causal performance claim.</Text></View><Ionicons name="scale-outline" size={28} color="#53CBE8" /></View></PostSessionSection> : null}<ReflectionOverview analytics={analytics} recap={recap} />{feedback ? <PostSessionSection title="COACH FEEDBACK" meta={recap.coach_feedback.reviewed ? 'Reviewed' : 'Athlete-visible'}><View style={styles.feedbackCard}><LinearGradient colors={['rgba(93,42,145,0.19)', '#07080D']} style={StyleSheet.absoluteFillObject} /><View style={styles.feedbackHeader}><View style={styles.feedbackAvatar}>{recap.coach_feedback.author?.avatar_url ? <Image accessibilityIgnoresInvertColors source={{ uri: absoluteAssetUrl(recap.coach_feedback.author.avatar_url)! }} style={styles.feedbackAvatarImage} /> : <Text style={styles.feedbackAvatarText}>{feedbackInitials || 'C'}</Text>}</View><View style={styles.feedbackIdentity}><Text style={styles.feedbackAuthor}>{recap.coach_feedback.author?.name || 'Coach feedback'}</Text><Text style={styles.detailMeta}>{dateLabel(recap.coach_feedback.feedback_at)}</Text></View></View><Text style={styles.feedbackQuote}>{feedback}</Text></View></PostSessionSection> : null}</> : null}
+
+        {tab === 'performed' ? <><PostSessionSection title="PERFORMED MUSCLE EMPHASIS" meta="Actual persisted SetLogs">{focusRows.length ? <View style={styles.focusCard}><LinearGradient colors={['rgba(85,29,139,0.22)', 'rgba(6,7,11,0.94)', '#05060A']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} /><View style={styles.focusChart}><ProgrammingMuscleRegionArt level="session" primary={(recap.muscle_focus?.primary || []).map((row) => row.muscle_id)} secondary={(recap.muscle_focus?.secondary || []).map((row) => row.muscle_id)} style={styles.focusAnatomy} /></View><View style={styles.focusBreakdown}><Text style={styles.focusSummary}>Ranked performed emphasis</Text>{focusRows.slice(0, 5).map((row, index) => { const relative = Math.round(Number(row.score || 0) / maxFocusScore * 100); const primaryCount = recap.muscle_focus?.primary?.length || 0; return <View key={row.muscle_id} style={styles.focusRow}><View style={styles.focusRowTop}><Text style={styles.focusName}>{formatMuscle(row.muscle_id)}</Text><Text style={styles.focusRank}>#{index + 1} · {index < primaryCount ? 'PRIMARY' : 'SECONDARY'}</Text></View><View style={styles.focusTrack}><View style={[styles.focusFill, { width: `${Math.max(relative, 7)}%`, backgroundColor: ['#B45CFF', '#E347CF', '#4A9FFF', '#58D68D', '#FF785A'][index % 5] }]} /></View></View>; })}<Text style={styles.evidenceSource}>Relative governed ranking only. No unsupported percentages are presented.</Text></View></View> : <View style={styles.premiumEmpty}><Ionicons name="body-outline" size={25} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>Performed muscle emphasis is unavailable</Text><Text style={styles.premiumEmptyBody}>Historical SetLogs do not contain enough governed muscle taxonomy to rank this Session.</Text></View></View>}</PostSessionSection><PostSessionSection title="MOVEMENT PROGRESSION" meta={`${performedMovements.length} performed movement${performedMovements.length === 1 ? '' : 's'}`}><View style={styles.movementStack}>{shownMovements.length ? shownMovements.map((movement, index) => <PerformedMovementCard key={movement.item_id || `${movement.label}-${index}`} movement={movement} analysis={(analytics.movements || []).find((row) => Number(row.item_id) === Number(movement.item_id))} unit={unit} onVideo={openVideo} onOpenHistory={onOpenMovementHistory} initialExpanded={Number(movement.item_id) === Number(initialExpandedItemId)} />) : <View style={styles.premiumEmpty}><Ionicons name="document-text-outline" size={25} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>No performed SetLog evidence was recorded</Text><Text style={styles.premiumEmptyBody}>This historical Session preserves its identity and reflection, but movement analytics require persisted set evidence.</Text></View></View>}</View>{hiddenMovementCount > 0 ? <Pressable accessibilityRole="button" accessibilityState={{ expanded: showAllMovements }} onPress={() => setShowAllMovements((value) => !value)} style={({ pressed }) => [styles.moreMovements, pressed && styles.pressed]}><Text style={styles.moreMovementsText}>{showAllMovements ? 'Show fewer movements' : `${hiddenMovementCount} more movement${hiddenMovementCount === 1 ? '' : 's'}`}</Text><Ionicons name={showAllMovements ? 'chevron-up' : 'chevron-down'} size={18} color={SLColors.textSecondary} /></Pressable> : null}</PostSessionSection></> : null}
+
+        {tab === 'plan' ? recap.plan.available === false ? <PostSessionSection title="PLAN / COMPARE"><View style={styles.premiumEmpty}><Ionicons name="lock-closed-outline" size={25} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>Prescription details are unavailable in this workspace</Text><Text style={styles.premiumEmptyBody}>Performed evidence remains visible. Coach-authored prescription details stay with their authorized coaching workspace.</Text></View></View></PostSessionSection> : <PlanCompareExperience edgeToEdge recap={recap} performedMovements={performedMovements} unit={unit} onOpenHistory={onOpenMovementHistory} /> : null}
+
+        {tab === 'coach' && viewerMode === 'coach' ? <><CoachReadOverview analytics={analytics} />{onOpenProgramming ? <Pressable accessibilityRole="button" onPress={onOpenProgramming} style={({ pressed }) => [styles.programmingAction, pressed && styles.pressed]}><Ionicons name="options-outline" size={19} color={SLColors.accentMuted} /><View style={styles.programmingActionCopy}><Text style={styles.programmingActionTitle}>Open Programming</Text><Text style={styles.programmingActionDetail}>Use the evidence above to adjust the athlete’s next plan.</Text></View><Ionicons name="chevron-forward" size={18} color={SLColors.textMuted} /></Pressable> : null}{coachReview ? <CoachTools review={coachReview} /> : <PostSessionSection title="COACH REVIEW TOOLS"><View style={styles.premiumEmpty}><Ionicons name="lock-closed-outline" size={24} color={SLColors.textMuted} /><View style={styles.premiumEmptyCopy}><Text style={styles.premiumEmptyTitle}>Review controls are unavailable</Text><Text style={styles.premiumEmptyBody}>{coachReviewUnavailableReason || 'This review cannot be edited from the current coaching workspace.'}</Text></View></View></PostSessionSection>}</> : null}
+
+        {deepActions.length ? <View style={styles.nextActions}>{deepActions.map((action) => <ActionButton key={action.label} {...action} />)}</View> : null}
+      </ScrollView>
+      <SetVideoPlayerModal visible={!!video} videoId={video?.id || null} initialVideo={video?.summary || null} initialUrl={video?.summary?.url || null} onClose={() => setVideo(null)} />
+      <PostSessionToolsSheet visible={toolsOpen} movements={performedMovements} onClose={() => setToolsOpen(false)} onResumeSession={onResumeSession} onCorrectEquipment={equipmentCorrectionAvailable ? onCorrectEquipment : undefined} onEditSetEvidence={onEditSetEvidence} onEditSessionNotes={onEditSessionNotes} onOpenMovementHistory={onOpenMovementHistory} onViewSessionHistory={onViewSessionHistory} />
+    </FloatingControlCoordinator>
+  </SafeAreaView>;
+
+  /* Retired athlete-recap renderer retained as non-executable source during
+     contract migration. The canonical role-aware return above is the only
+     post-Session runtime. This block is removed after downstream source-only
+     assertions finish migrating to the canonical contract.
   if (!hasPerformedEvidence) {
     return <SafeAreaView edges={parentProvidesTopSafeArea ? [] : ['top']} style={styles.screen}>
       <View style={styles.topBar}><Pressable accessibilityRole="button" accessibilityLabel="Back from Session review" onPress={onClose} style={({ pressed }) => [styles.topButton, pressed && styles.pressed]}><Ionicons name="chevron-back" size={23} color={SLColors.textPrimary} /></Pressable><View style={styles.topBarCopy}><Text numberOfLines={1} style={styles.topTitle}><Text style={styles.topDot}>• </Text>{recap.session.label}</Text><Text style={styles.topSubtitle}>{viewerMode === 'coach' ? 'Coach Session Review' : 'Session Recap'}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Done reviewing completed session recap" onPress={onDone || onClose} style={({ pressed }) => [styles.completeMark, pressed && styles.pressed]}><Ionicons name="checkmark" size={23} color={SLColors.textPrimary} /></Pressable></View>
@@ -934,6 +1338,7 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
     <SetVideoPlayerModal visible={!!video} videoId={video?.id || null} initialVideo={video?.summary || null} initialUrl={video?.summary?.url || null} onClose={() => setVideo(null)} />
     </FloatingControlCoordinator>
   </SafeAreaView>;
+  */
 }
 
 const styles = StyleSheet.create({
@@ -944,7 +1349,8 @@ const styles = StyleSheet.create({
   highlightRail: { flexDirection: 'row', gap: 7, paddingTop: 8 }, highlightCard: { position: 'relative', flex: 1, minWidth: 0, minHeight: 154, overflow: 'hidden', alignItems: 'center', padding: 8, borderRadius: SLRadius.lg, borderWidth: 1, backgroundColor: '#07080D' }, highlightArtwork: { width: 62, height: 62, marginTop: 1 }, highlightCopy: { width: '100%', alignItems: 'center', marginTop: -2 }, highlightLabel: { fontFamily: SLFontFamilies.bodyBold, fontSize: 7, letterSpacing: 0.55, textAlign: 'center' }, highlightValue: { width: '100%', marginTop: 4, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 15, textAlign: 'center' }, highlightDetail: { marginTop: 3, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 7.5, lineHeight: 10, textAlign: 'center' }, accomplishmentList: { marginTop: 8, paddingHorizontal: 12, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#07090E' }, accomplishmentRow: { flexDirection: 'row', alignItems: 'center', gap: 9, minHeight: 54, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderSubtle }, archiveAccomplishmentArt: { width: 37, height: 37 }, accomplishmentTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 11, textTransform: 'capitalize' },
   tabs: { flexDirection: 'row', padding: 3, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#080A10' }, tab: { flex: 1, minHeight: 39, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md }, tabActive: { borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: SLColors.surfaceSelected }, tabText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 11 }, tabTextActive: { color: SLColors.textPrimary },
   focusCard: { position: 'relative', flexDirection: 'row', minHeight: 245, overflow: 'hidden', marginTop: 8, padding: 12, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: '#39244F', backgroundColor: '#05060A' }, focusChart: { width: 162, height: 222, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, focusAnatomy: { transform: [{ scale: 0.57 }] }, focusBreakdown: { flex: 1, justifyContent: 'center', gap: 9, marginLeft: -8 }, focusSummary: { marginBottom: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 13 }, focusRow: { gap: 4 }, focusRowTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 }, focusName: { flex: 1, color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, focusRank: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 6.2 }, focusTrack: { height: 5, overflow: 'hidden', borderRadius: 3, backgroundColor: SLColors.surfaceInset }, focusFill: { height: 5, borderRadius: 3 }, evidenceSource: { marginTop: 5, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7, lineHeight: 10 },
-  movementStack: { gap: 9, paddingHorizontal: 12 }, movementCard: { overflow: 'hidden', borderRadius: SLRadius.xl, borderWidth: 1, borderColor: '#292D38', backgroundColor: '#06070B', ...SLShadows.level1 }, coreMovementCard: { borderLeftWidth: 2, borderLeftColor: SLColors.accent }, movementHeader: { flexDirection: 'row', alignItems: 'flex-start', padding: 10 }, movementMedia: { width: 76, alignItems: 'center', gap: 6 }, artwork: { position: 'relative', width: 72, height: 86, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#3B2852', backgroundColor: SLColors.surfaceMedia }, artworkImage: { width: 66, height: 77 }, artworkMap: { transform: [{ scale: 0.92 }] }, videoEvidencePreview: { position: 'relative', width: 72, height: 38, overflow: 'hidden', borderRadius: 8, borderWidth: 1, borderColor: '#3A3D49', backgroundColor: SLColors.surfaceMedia }, videoEvidencePlay: { position: 'absolute', top: 8, left: 26, width: 20, height: 20, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.74)', backgroundColor: 'rgba(2,3,6,0.66)' }, videoEvidenceLabel: { position: 'absolute', left: 4, bottom: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8 }, movementSummary: { flex: 1, minWidth: 0, marginLeft: 10 }, movementTitleRow: { flexDirection: 'row', alignItems: 'center' }, movementTitleCopy: { flex: 1, minWidth: 0 }, movementEyebrow: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5, letterSpacing: 0.8 }, movementTitle: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 15 }, movementMuscles: { marginTop: 2, color: '#CA79FF', fontFamily: SLFontFamilies.body, fontSize: 8.5 }, movementEquipment: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5 }, prBadge: { alignItems: 'center', justifyContent: 'center', width: 34, height: 37, marginHorizontal: 4 }, movementPrArtwork: { position: 'absolute', width: 32, height: 32 }, prBadgeText: { position: 'absolute', bottom: -1, color: SLColors.warning, fontFamily: SLFontFamilies.display, fontSize: 7 }, movementEvidenceRow: { flexDirection: 'row', alignItems: 'flex-end', marginTop: 10 }, bestSetCopy: { flex: 1, minWidth: 0 }, bestSetLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 6.8, letterSpacing: 0.55 }, bestSetValue: { marginTop: 3, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10.5 }, bestSetEffort: { marginTop: 2, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8 }, sparklineWrap: { width: 96, minHeight: 42, justifyContent: 'flex-end' }, sparklineEmpty: { height: 38, alignItems: 'center', justifyContent: 'center' }, sparklineEmptyText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.35, textAlign: 'center' }, trendPlot: { position: 'relative', width: '100%', minHeight: 118 }, trendPlotCompact: { minHeight: 42 }, trendPointTarget: { position: 'absolute', width: 34, height: 34, borderRadius: 17 }, trendInspection: { position: 'absolute', top: 2, right: 5, alignItems: 'flex-end', paddingHorizontal: 7, paddingVertical: 4, borderRadius: 7, borderWidth: StyleSheet.hairlineWidth, borderColor: '#624081', backgroundColor: 'rgba(7,8,13,0.92)' }, trendInspectionDate: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.45 }, trendInspectionValue: { marginTop: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 11 }, trendInspectionMeta: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 6.5 }, trendAxis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }, trendAxisLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 6.5 }, delta: { position: 'absolute', right: 0, bottom: -2, overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 5, fontFamily: SLFontFamilies.bodyBold, fontSize: 7 }, deltaUp: { color: SLColors.success, backgroundColor: 'rgba(39,190,104,0.12)' }, deltaDown: { color: SLColors.danger, backgroundColor: 'rgba(255,84,104,0.12)' }, deltaUpText: { color: SLColors.success }, deltaDownText: { color: SLColors.danger }, movementMetaRail: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 7 }, movementMeta: { overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, color: SLColors.textMuted, backgroundColor: '#10121A', fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.35 }, expandedEvidence: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStandard },
+  movementStack: { gap: 9 }, movementCard: { overflow: 'hidden', borderRadius: SLRadius.xl, borderWidth: 1, borderColor: '#292D38', backgroundColor: '#06070B', ...SLShadows.level1 }, coreMovementCard: { borderLeftWidth: 2, borderLeftColor: SLColors.accent }, movementHeader: { flexDirection: 'row', alignItems: 'flex-start', padding: 10 }, movementMedia: { width: 76, alignItems: 'center', gap: 6 }, artwork: { position: 'relative', width: 72, height: 86, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#3B2852', backgroundColor: SLColors.surfaceMedia }, artworkImage: { width: 66, height: 77 }, artworkMap: { transform: [{ scale: 0.92 }] }, videoEvidencePreview: { position: 'relative', width: 72, height: 38, overflow: 'hidden', borderRadius: 8, borderWidth: 1, borderColor: '#3A3D49', backgroundColor: SLColors.surfaceMedia }, videoEvidencePlay: { position: 'absolute', top: 8, left: 26, width: 20, height: 20, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.74)', backgroundColor: 'rgba(2,3,6,0.66)' }, videoEvidenceLabel: { position: 'absolute', left: 4, bottom: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8 }, movementSummary: { flex: 1, minWidth: 0, marginLeft: 10 }, movementTitleRow: { flexDirection: 'row', alignItems: 'center' }, movementTitleCopy: { flex: 1, minWidth: 0 }, movementEyebrow: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5, letterSpacing: 0.8 }, movementTitle: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 15 }, movementMuscles: { marginTop: 2, color: '#CA79FF', fontFamily: SLFontFamilies.body, fontSize: 8.5 }, movementEquipment: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5 }, prBadge: { alignItems: 'center', justifyContent: 'center', width: 34, height: 37, marginHorizontal: 4 }, movementPrArtwork: { position: 'absolute', width: 32, height: 32 }, prBadgeText: { position: 'absolute', bottom: -1, color: SLColors.warning, fontFamily: SLFontFamilies.display, fontSize: 7 }, movementEvidenceRow: { flexDirection: 'row', alignItems: 'flex-end', marginTop: 10 }, bestSetCopy: { flex: 1, minWidth: 0 }, bestSetLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 6.8, letterSpacing: 0.55 }, bestSetValue: { marginTop: 3, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10.5 }, bestSetEffort: { marginTop: 2, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8 }, sparklineWrap: { width: 96, minHeight: 42, justifyContent: 'flex-end' }, sparklineEmpty: { height: 38, alignItems: 'center', justifyContent: 'center' }, sparklineEmptyText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.35, textAlign: 'center' }, trendPlot: { position: 'relative', width: '100%', minHeight: 118 }, trendPlotCompact: { minHeight: 42 }, trendPointTarget: { position: 'absolute', width: 34, height: 34, borderRadius: 17 }, trendInspection: { position: 'absolute', top: 2, right: 5, alignItems: 'flex-end', paddingHorizontal: 7, paddingVertical: 4, borderRadius: 7, borderWidth: StyleSheet.hairlineWidth, borderColor: '#624081', backgroundColor: 'rgba(7,8,13,0.92)' }, trendInspectionDate: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.45 }, trendInspectionValue: { marginTop: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 11 }, trendInspectionMeta: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 6.5 }, trendAxis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }, trendAxisLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 6.5 }, delta: { position: 'absolute', right: 0, bottom: -2, overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 5, fontFamily: SLFontFamilies.bodyBold, fontSize: 7 }, deltaUp: { color: SLColors.success, backgroundColor: 'rgba(39,190,104,0.12)' }, deltaDown: { color: SLColors.danger, backgroundColor: 'rgba(255,84,104,0.12)' }, deltaUpText: { color: SLColors.success }, deltaDownText: { color: SLColors.danger }, movementMetaRail: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 7 }, movementMeta: { overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, color: SLColors.textMuted, backgroundColor: '#10121A', fontFamily: SLFontFamilies.bodyBold, fontSize: 5.8, letterSpacing: 0.35 }, expandedEvidence: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStandard },
+  movementComparisonGrid: { overflow: 'hidden', marginTop: 10, borderRadius: 9, borderWidth: StyleSheet.hairlineWidth, borderColor: '#303440', backgroundColor: '#080A10' }, movementComparisonCell: { minHeight: 42, justifyContent: 'center', paddingHorizontal: 8, paddingVertical: 6, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#282C35' }, movementComparisonLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 6.4, letterSpacing: 0.55 }, movementComparisonValue: { marginTop: 3, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 8.4 }, movementComparisonChange: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 8, paddingVertical: 7 }, movementComparisonState: { fontFamily: SLFontFamilies.bodyBold, fontSize: 7, letterSpacing: 0.65 }, movementComparisonLiteral: { marginTop: 3, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 7.6, lineHeight: 10.5 },
   bestVideoCard: { flexDirection: 'row', alignItems: 'center', gap: 10, margin: 10, padding: 9, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#694096', backgroundColor: '#0A0C13' }, bestVideoMedia: { position: 'relative', width: 118, height: 76, overflow: 'hidden', borderRadius: 9, backgroundColor: SLColors.surfaceMedia }, bestVideoPlay: { position: 'absolute', top: 24, left: 45, width: 30, height: 30, alignItems: 'center', justifyContent: 'center', borderRadius: 15, borderWidth: 1, borderColor: 'rgba(255,255,255,0.78)', backgroundColor: 'rgba(2,3,6,0.64)' }, bestVideoOverlay: { position: 'absolute', left: 7, bottom: 5, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 7 }, bestVideoCopy: { flex: 1, minWidth: 0 }, bestVideoValue: { marginTop: 3, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 11 }, detailKicker: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 8, letterSpacing: 0.8 }, detailMeta: { marginTop: 2, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8 }, setTable: { paddingHorizontal: 10 }, setHeader: { flexDirection: 'row', alignItems: 'center', minHeight: 28 }, setRow: { flexDirection: 'row', alignItems: 'center', minHeight: 47, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderSubtle }, columnLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5, letterSpacing: 0.65 }, setValue: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 9 }, setValueStrong: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, setNumberColumn: { width: 28 }, resultColumn: { flex: 1.4 }, resultColumnRow: { flex: 1.4, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 4 }, effortColumn: { width: 65 }, videoColumn: { width: 54, alignItems: 'flex-end' }, setPr: { overflow: 'hidden', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 5, color: SLColors.warning, backgroundColor: 'rgba(255,181,32,0.12)', fontFamily: SLFontFamilies.bodyBold, fontSize: 6.5 }, videoButton: { width: 50, height: 32, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceMedia }, videoThumbnail: { ...StyleSheet.absoluteFillObject }, videoPlay: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)', backgroundColor: 'rgba(3,4,8,0.72)' }, trendDetail: { margin: 10, padding: 10, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: '#05070B' }, trendDetailHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 7 }, trendDeltaValue: { fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, historyAction: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: 10, marginTop: 0, paddingHorizontal: 11, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft }, historyActionLabel: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 8, letterSpacing: 0.7 }, historyActionDetail: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8 }, diagnosticCard: { margin: 10, marginTop: 0, padding: 10, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#315D79', backgroundColor: '#07101A' }, diagnosticLine: { marginTop: 5, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8, lineHeight: 12 }, diagnosticReason: { marginTop: 3, color: SLColors.warning, fontFamily: SLFontFamilies.body, fontSize: 7.5 }, equipmentFooter: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, padding: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStandard }, equipmentItem: { flexDirection: 'row', alignItems: 'center', flexGrow: 1, gap: 8 }, equipmentCopy: { flex: 1, minWidth: 70 }, equipmentModel: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, equipmentImplementation: { marginTop: 2, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5 },
   moreMovements: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset }, moreMovementsText: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, emptyCard: { alignItems: 'center', padding: 26, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#07090E' }, emptyTitle: { marginTop: 9, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 13 }, emptyBody: { marginTop: 5, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 10, textAlign: 'center' },
   projectionRail: { gap: 8, paddingTop: 8 }, projectionCard: { position: 'relative', width: 238, minHeight: 124, overflow: 'hidden', padding: 12, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#39264E', backgroundColor: '#07090E' }, projectionName: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, projectionBody: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 9 }, projectionMetric: { marginTop: 8, color: SLColors.accentMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5 }, projectionValue: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 22 }, projectionSparkline: { width: 94, height: 43 }, projectionBasis: { marginTop: 7, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5, lineHeight: 11 },
@@ -960,5 +1366,29 @@ const styles = StyleSheet.create({
   compareLastTime: { minHeight: 53, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 11, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#292D36' }, compareLastTimeCopy: { flex: 1, minWidth: 0 }, compareLastTimeLabel: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7, letterSpacing: 0.65 }, compareLastTimeValue: { marginTop: 3, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8.5 }, comparisonLegend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 4, paddingVertical: 9, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#272A32' }, comparisonLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 }, comparisonLegendText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.5 },
   planNotice: { flexDirection: 'row', alignItems: 'center', gap: 9, padding: 12, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderFocus, backgroundColor: SLColors.accentSoft }, planNoticeText: { flex: 1, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 10, lineHeight: 15 }, planStack: { gap: 9, marginTop: 10, marginBottom: 10 }, planRow: { flexDirection: 'row', padding: 13, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#07090E' }, planIndex: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: SLColors.surfaceInset }, planIndexText: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.display, fontSize: 9 }, planCopy: { flex: 1, minWidth: 0, marginLeft: 10 }, planTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 13 }, substitutionLabel: { marginTop: 4, color: SLColors.warning, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5 }, compareLabel: { marginTop: 8, color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7, letterSpacing: 0.8 }, planPrescription: { marginTop: 2, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 10 }, performedPrescription: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10, lineHeight: 15 }, planNotes: { marginTop: 7, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 9, lineHeight: 14 },
   coachToolsCard: { marginTop: 8, padding: 12, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: '#315D79', backgroundColor: '#07101A' }, fieldLabel: { marginTop: 8, marginBottom: 5, color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 8, letterSpacing: 0.75 }, textarea: { minHeight: 82, padding: 11, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderStandard, color: SLColors.textPrimary, backgroundColor: '#05080E', fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 16, textAlignVertical: 'top' }, reviewChoices: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 }, reviewChoice: { paddingHorizontal: 9, paddingVertical: 7, borderRadius: 9, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceInset }, reviewChoiceSelected: { borderColor: SLColors.borderSelected, backgroundColor: SLColors.accentSoft }, reviewChoiceText: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 8 }, reviewChoiceTextSelected: { color: SLColors.accentMuted }, followupGroup: { marginTop: 8 }, reviewToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 46, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderSubtle }, reviewToggleText: { flex: 1, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 10 }, reviewActions: { flexDirection: 'row', gap: 8, marginTop: 10 }, reviewSecondary: { flex: 1, minHeight: 46, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderFocus, backgroundColor: SLColors.surfaceInset }, reviewSecondaryText: { color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, reviewPrimary: { flex: 1.4, minHeight: 46, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: SLRadius.md, backgroundColor: SLColors.accentViolet }, reviewPrimaryText: { color: SLColors.white, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 },
+  canonicalContent: { gap: 12 },
+  canonicalHero: { position: 'relative', minHeight: 256, overflow: 'hidden', borderBottomWidth: 1, borderBottomColor: '#4D286B', backgroundColor: '#07080E' },
+  canonicalHeroAnatomy: { position: 'absolute', top: -24, right: -18, width: 205, height: 222, alignItems: 'center', justifyContent: 'center', transform: [{ scale: 0.67 }] },
+  canonicalHeroArchiveArt: { position: 'absolute', top: -8, right: -18, width: 205, height: 205, opacity: 0.58 },
+  canonicalHeroShade: { position: 'absolute', top: 0, left: 0, bottom: 68, width: '82%' },
+  canonicalHeroCopy: { zIndex: 2, width: '64%', minHeight: 188, padding: 15 },
+  completedBadge: { alignSelf: 'flex-start', minHeight: 24, flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 7, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(47,203,115,0.42)', backgroundColor: 'rgba(24,122,70,0.14)' },
+  completedBadgeText: { color: SLColors.success, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5, letterSpacing: 0.8 },
+  canonicalHeroTitle: { marginTop: 10, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 28, lineHeight: 31 },
+  sessionTimes: { marginTop: 9, color: '#9AA0AD', fontFamily: SLFontFamilies.body, fontSize: 8.5, lineHeight: 12 },
+  canonicalHeroMetrics: { position: 'absolute', left: 0, right: 0, bottom: 0, minHeight: 68, flexDirection: 'row', paddingHorizontal: 7, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(174,104,255,0.28)', backgroundColor: 'rgba(4,5,9,0.95)' },
+  compactHighlightRail: { flexDirection: 'row', gap: 6 },
+  compactHighlight: { flex: 1, minWidth: 0, minHeight: 92, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', padding: 7, borderRadius: 13, borderWidth: 1, borderColor: '#2F3340', backgroundColor: '#07090E' },
+  compactHighlightArt: { width: 38, height: 38, marginRight: 5 }, compactHighlightCopy: { flex: 1, minWidth: 0 }, compactHighlightLabel: { fontFamily: SLFontFamilies.bodyBold, fontSize: 6.3, letterSpacing: 0.45 }, compactHighlightValue: { marginTop: 2, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 13 }, compactHighlightDetail: { marginTop: 2, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 6.5, lineHeight: 9 },
+  canonicalSection: { gap: 7 }, canonicalSectionHeading: { minHeight: 25, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 5 }, canonicalSectionTitle: { color: '#C378FF', fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.85 }, canonicalSectionMeta: { flex: 1, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8, lineHeight: 10, textAlign: 'right' },
+  sessionReadCard: { overflow: 'hidden', borderRadius: 15, borderWidth: 1, borderColor: '#343846', backgroundColor: '#07090E', padding: 9 }, canonicalMetricGrid: { flexDirection: 'row', flexWrap: 'wrap' }, canonicalMetricTile: { width: '50%', minHeight: 82, flexDirection: 'row', gap: 7, padding: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#252936' }, canonicalMetricIcon: { width: 29, height: 29, borderRadius: 9, alignItems: 'center', justifyContent: 'center' }, canonicalMetricCopy: { flex: 1, minWidth: 0 }, canonicalMetricLabel: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.6, letterSpacing: 0.4, textTransform: 'uppercase' }, canonicalMetricValue: { marginTop: 3, fontFamily: SLFontFamilies.bodyBold, fontSize: 10.5, lineHeight: 14 }, canonicalMetricDetail: { marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 7.7, lineHeight: 11 },
+  durationRead: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 9, padding: 10, borderRadius: 11, borderWidth: 1, borderColor: '#26475A', backgroundColor: 'rgba(20,72,92,0.14)' }, durationReadIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(83,203,232,0.12)' }, durationReadCopy: { flex: 1 }, durationReadValue: { color: '#EAFBFF', fontFamily: SLFontFamilies.display, fontSize: 15 }, durationReadDetail: { marginTop: 3, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 8.2, lineHeight: 12 }, sessionNarrative: { marginTop: 9, padding: 11, borderRadius: 11, backgroundColor: 'rgba(119,62,177,0.12)', color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 10.5, lineHeight: 16 },
+  changedCard: { overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F' }, changedRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 11, paddingVertical: 7, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#272B34' }, changedLabel: { width: 94, color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 8.5 }, changedValue: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 8.5, lineHeight: 12, textAlign: 'right' },
+  recoveryCard: { borderRadius: 15, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F', padding: 9 }, recoverySummary: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 10.5, lineHeight: 16 }, recoverySelector: { flexDirection: 'row', gap: 5, marginTop: 9, marginBottom: 7 }, recoverySelectorButton: { flex: 1, minHeight: 34, alignItems: 'center', justifyContent: 'center', borderRadius: 9, borderWidth: 1, borderColor: '#2C303B', backgroundColor: '#080A0F' }, recoverySelectorButtonActive: { borderColor: '#8B47C1', backgroundColor: '#241132' }, recoverySelectorText: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 7.5 }, recoverySelectorTextActive: { color: '#E7CCFF' }, reflectionMetricRail: { flexDirection: 'row', flexWrap: 'wrap' }, athleteReflectionNote: { marginTop: 8, padding: 10, borderRadius: 11, backgroundColor: 'rgba(224,91,216,0.1)', flexDirection: 'row', gap: 8 }, athleteReflectionNoteText: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 10, lineHeight: 15 },
+  bodyweightContextCard: { minHeight: 74, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: 12, borderRadius: 14, borderWidth: 1, borderColor: '#26475A', backgroundColor: '#071018' }, bodyweightContextValue: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 20 }, bodyweightContextDetail: { maxWidth: 280, marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8, lineHeight: 12 },
+  premiumEmpty: { minHeight: 88, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, borderColor: '#2B2E38', backgroundColor: '#07090E' }, premiumEmptyCopy: { flex: 1 }, premiumEmptyTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 11 }, premiumEmptyBody: { marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8.5, lineHeight: 13 },
+  coachReadCard: { overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F' }, coachReadRow: { minHeight: 49, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#292D36' }, coachReadLabel: { width: 73, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 9 }, coachReadValue: { flex: 1, fontFamily: SLFontFamilies.bodyBold, fontSize: 9, textAlign: 'right' }, coachAttentionCard: { borderRadius: 14, borderWidth: 1, borderColor: '#2A2E38', backgroundColor: '#080A0F', padding: 7 }, coachAttentionRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9, padding: 7 }, coachAttentionIcon: { width: 31, height: 31, borderRadius: 10, backgroundColor: 'rgba(255,92,83,0.12)', alignItems: 'center', justifyContent: 'center' }, coachAttentionText: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 9.5, lineHeight: 14 }, programmingAction: { minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, borderRadius: 14, borderWidth: 1, borderColor: '#6C3A92', backgroundColor: '#0A0810' }, programmingActionCopy: { flex: 1 }, programmingActionTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, programmingActionDetail: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8 },
+  trendDetailCopy: { flex: 1, minWidth: 0 }, limitedHistoryCard: { margin: 10, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#2B2F3A', backgroundColor: '#07090E' }, limitedHistoryTitle: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, limitedHistoryBody: { marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8, lineHeight: 12 },
+  toolsBackdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.72)' }, toolsSheet: { width: '100%', maxHeight: '84%', overflow: 'hidden', borderTopLeftRadius: 22, borderTopRightRadius: 22, borderWidth: 1, borderBottomWidth: 0, borderColor: '#3A3E49', backgroundColor: '#0A0C12' }, toolsHandle: { alignSelf: 'center', width: 42, height: 4, marginTop: 9, borderRadius: 2, backgroundColor: '#5B5F6B' }, toolsHeader: { minHeight: 56, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#2B2F38' }, toolsTitle: { flex: 1, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 17 }, toolsClose: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: '#12151C' }, toolsContent: { paddingBottom: 28 }, toolRow: { minHeight: 68, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 13, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#262A33' }, toolIcon: { width: 35, height: 35, alignItems: 'center', justifyContent: 'center', borderRadius: 11, borderWidth: 1, borderColor: '#343846', backgroundColor: '#11141B' }, toolCopy: { flex: 1, minWidth: 0 }, toolLabel: { color: SLColors.textPrimary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10 }, toolDetail: { marginTop: 4, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 8, lineHeight: 12 }, toolSubsection: { marginTop: 10, borderTopWidth: 1, borderTopColor: '#343843' }, toolSubsectionTitle: { paddingHorizontal: 13, paddingTop: 13, paddingBottom: 4, color: SLColors.accentMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 8, letterSpacing: 0.8 },
   nextActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 }, actionButton: { flexGrow: 1, minWidth: 105, minHeight: 45, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 10, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#080A10' }, actionButtonPrimary: { borderColor: SLColors.accentViolet, backgroundColor: SLColors.accentViolet }, actionButtonText: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 9 }, actionButtonTextPrimary: { color: SLColors.white },
 });
