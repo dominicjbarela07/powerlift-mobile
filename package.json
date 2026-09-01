@@ -10,7 +10,10 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
-    "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js"
+    "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js",
+    "test:production-release-policy": "node scripts/test-production-release-policy.mjs",
+    "verify:production:parity": "node scripts/verify-production-channel-parity.mjs",
+    "release:production:ota": "bash scripts/eas-update-production.sh"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",

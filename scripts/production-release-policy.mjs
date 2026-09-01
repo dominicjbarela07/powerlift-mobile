@@ -3,11 +3,28 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+export const PRODUCTION_PLATFORMS = Object.freeze(['android', 'ios']);
+
 export function readProductionBaseline(root = process.cwd()) {
-  return JSON.parse(fs.readFileSync(
+  const baseline = JSON.parse(fs.readFileSync(
     path.join(root, 'config', 'production-mobile-baseline.json'),
     'utf8',
   ));
+  if (baseline.schemaVersion !== 2 || !baseline.platforms) {
+    throw new Error('Production OTA blocked: platform-aware baseline schema v2 is required.');
+  }
+  return baseline;
+}
+
+export function platformBaseline(baseline, platform) {
+  if (!PRODUCTION_PLATFORMS.includes(platform)) {
+    throw new Error(`Production OTA blocked: unsupported platform ${platform || '<missing>'}.`);
+  }
+  const selected = baseline.platforms?.[platform];
+  if (!selected) {
+    throw new Error(`Production OTA blocked: ${platform} has no governed live baseline.`);
+  }
+  return selected;
 }
 
 export function runtimeFromExpoConfig(expo) {
@@ -16,7 +33,14 @@ export function runtimeFromExpoConfig(expo) {
   throw new Error('Production OTA blocked: runtimeVersion is not explicit or appVersion-owned.');
 }
 
-export function calculateIosNativeDependencyFingerprint(root = process.cwd()) {
+function packageVersion(root) {
+  return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+}
+
+export function calculateNativeDependencyFingerprint(platform, root = process.cwd()) {
+  if (!PRODUCTION_PLATFORMS.includes(platform)) {
+    throw new Error(`Production OTA blocked: unsupported native projection platform ${platform}.`);
+  }
   const nodeModules = path.join(root, 'node_modules');
   if (!fs.existsSync(nodeModules)) {
     throw new Error('Production OTA blocked: node_modules is missing. Run npm ci in this worktree.');
@@ -31,14 +55,19 @@ export function calculateIosNativeDependencyFingerprint(root = process.cwd()) {
     maxBuffer: 32 * 1024 * 1024,
   }));
   const app = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8')).expo;
-  const rnConfig = runJson(['react-native-config', '--platform', 'ios', '--json']);
+  const rnConfig = runJson(['react-native-config', '--platform', platform, '--json']);
   const reactNativeDependencies = Object.fromEntries(
     Object.entries(rnConfig.dependencies)
-      .filter(([, value]) => value.platforms?.ios)
-      .map(([name, value]) => [name, value.platforms.ios.version])
+      .filter(([, value]) => value.platforms?.[platform])
+      .map(([name, value]) => [name, packageVersion(value.root)])
       .sort(([left], [right]) => left.localeCompare(right)),
   );
-  const expoConfig = runJson(['resolve', '--platform', 'apple', '--json']);
+  const expoConfig = runJson([
+    'resolve',
+    '--platform',
+    platform === 'ios' ? 'apple' : 'android',
+    '--json',
+  ]);
   const expoModules = Object.fromEntries(
     expoConfig.modules
       .map((module) => [module.packageName, module.packageVersion])
@@ -53,14 +82,87 @@ export function calculateIosNativeDependencyFingerprint(root = process.cwd()) {
   return crypto.createHash('sha256').update(JSON.stringify(projection)).digest('hex');
 }
 
+export function requestedPlatforms(target) {
+  if (target === 'all') return [...PRODUCTION_PLATFORMS];
+  if (PRODUCTION_PLATFORMS.includes(target)) return [target];
+  throw new Error(`Production OTA blocked: --platform must be all, android, or ios (received ${target || '<missing>'}).`);
+}
+
+export function assertPublicationScope({ target = 'all', scope = 'shared', reason } = {}) {
+  const platforms = requestedPlatforms(target);
+  if (scope === 'shared') {
+    if (target !== 'all') {
+      throw new Error(
+        'Production OTA blocked: shared releases must explicitly publish Android + iOS with --platform all.',
+      );
+    }
+    return platforms;
+  }
+  if (scope === 'platform-specific') {
+    if (target === 'all') {
+      throw new Error('Production OTA blocked: platform-specific releases must name exactly one platform.');
+    }
+    if (!reason || reason.trim().length < 20) {
+      throw new Error('Production OTA blocked: platform-specific releases require a substantive --reason.');
+    }
+    return platforms;
+  }
+  throw new Error('Production OTA blocked: --release-scope must be shared or platform-specific.');
+}
+
+export function assertProductionPlatformParity({ baseline, states }) {
+  if (baseline.runtimeVersion !== '2.0.2') {
+    throw new Error(
+      `PRODUCTION 2.0.2 PLATFORM PARITY: FAIL\n`
+      + `governed runtime is ${baseline.runtimeVersion || '<missing>'}, expected 2.0.2`,
+    );
+  }
+
+  const failures = [];
+  for (const platform of PRODUCTION_PLATFORMS) {
+    const live = platformBaseline(baseline, platform);
+    const state = states?.[platform];
+    if (!state) {
+      failures.push(`${platform}: Production manifest is missing`);
+      continue;
+    }
+    if (state.status === 204 || state.embeddedFallback) {
+      failures.push(`${platform}: HTTP 204 / embedded fallback is forbidden`);
+      continue;
+    }
+    const comparisons = [
+      ['HTTP status', state.status, 200],
+      ['platform', state.platform, platform],
+      ['channel', state.channel, baseline.channel],
+      ['branch', state.branch, baseline.branch],
+      ['runtime', state.runtimeVersion, baseline.runtimeVersion],
+      ['update group', state.group, live.activeUpdateGroup],
+      ['update ID', state.updateId, live.activeUpdateId],
+      ['source commit', state.sourceCommit, live.activeUpdateSourceCommit],
+      ['launch asset key', state.launchAssetKey, live.activeLaunchAssetKey],
+      ['launch asset SHA-256', state.launchAssetSha256, live.activeLaunchAssetSha256],
+      ['launch asset bytes', state.launchAssetBytes, live.activeLaunchAssetBytes],
+    ];
+    for (const [label, actual, expected] of comparisons) {
+      if (actual !== expected) {
+        failures.push(`${platform} ${label}: resolved=${actual ?? '<missing>'}, expected=${expected ?? '<missing>'}`);
+      }
+    }
+  }
+
+  if (failures.length) {
+    throw new Error(`PRODUCTION 2.0.2 PLATFORM PARITY: FAIL\n${failures.join('\n')}`);
+  }
+  return 'PRODUCTION 2.0.2 PLATFORM PARITY: PASS';
+}
+
 export function assertProductionOtaCompatible(candidate, baseline) {
+  const live = platformBaseline(baseline, candidate.platform);
   const comparisons = [
-    ['platform', candidate.platform, baseline.platform],
-    ['bundle identifier', candidate.bundleIdentifier, baseline.bundleIdentifier],
-    ['app version', candidate.appVersion, baseline.appStoreVersion],
-    ['target build number', String(candidate.buildNumber ?? ''), baseline.appStoreBuildNumber],
+    ['application identifier', candidate.applicationIdentifier, live.applicationIdentifier],
+    ['app version', candidate.appVersion, live.storeVersion],
     ['runtime', candidate.runtimeVersion, baseline.runtimeVersion],
-    ['native dependency fingerprint', candidate.nativeDependencyFingerprint, baseline.nativeDependencyFingerprint],
+    ['native dependency fingerprint', candidate.nativeDependencyFingerprint, live.nativeDependencyFingerprint],
     ['channel', candidate.channel, baseline.channel],
     ['branch', candidate.branch, baseline.branch],
   ];
@@ -68,6 +170,29 @@ export function assertProductionOtaCompatible(candidate, baseline) {
   if (failures.length) {
     const detail = failures
       .map(([label, actual, expected]) => `${label}: candidate=${actual || '<missing>'}, live=${expected}`)
+      .join('\n');
+    throw new Error(
+      `PRODUCTION MOBILE BLOCKED — native build required. Native build not authorized.\n${detail}`,
+    );
+  }
+}
+
+export function assertLiveEasBuild(build, baseline, platform) {
+  const live = platformBaseline(baseline, platform);
+  const comparisons = [
+    ['build id', build.id, live.easBuildId],
+    ['platform', String(build.platform || '').toLowerCase(), platform],
+    ['distribution', String(build.distribution || '').toLowerCase(), 'store'],
+    ['channel', build.channel, baseline.channel],
+    ['app version', build.appVersion, live.storeVersion],
+    ['build number', String(build.appBuildVersion ?? ''), live.storeBuildNumber],
+    ['runtime', build.runtimeVersion, baseline.runtimeVersion],
+    ['EAS build fingerprint', build.fingerprint?.hash, live.easBuildFingerprint],
+  ];
+  const failures = comparisons.filter(([, actual, expected]) => actual !== expected);
+  if (failures.length) {
+    const detail = failures
+      .map(([label, actual, expected]) => `${label}: EAS=${actual || '<missing>'}, baseline=${expected}`)
       .join('\n');
     throw new Error(
       `PRODUCTION MOBILE BLOCKED — native build required. Native build not authorized.\n${detail}`,
