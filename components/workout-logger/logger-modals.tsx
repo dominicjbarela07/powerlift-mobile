@@ -1,18 +1,17 @@
 // @ts-nocheck
 
 import React from 'react';
-import { BlurView } from 'expo-blur';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
-  StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLConfirmationModal } from '@/components/ui/sl-confirmation-modal';
+import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLColors } from '@/constants/theme';
 import {
   normalizeRestTimerSeconds,
@@ -88,58 +87,20 @@ export function CancelResumeModal({
   actionLoading,
   onClose,
   onConfirm,
-  styles,
 }: any) {
-  return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalCard}>
-          <Text style={styles.postSessionTitle}>
-            {workoutStatus === 'completed' ? 'Resume this training session?' : 'Cancel this training session?'}
-          </Text>
-
-          {workoutStatus !== 'completed' ? (
-            <Text style={styles.postSessionSubtitle}>
-              This will discard this training session, remove all logged sets, clear the session timer, and return the session to its assigned state.
-            </Text>
-          ) : null}
-
-          <View style={styles.modalActionsRow}>
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                styles.actionSecondary,
-                { flex: 1 },
-              ]}
-              onPress={onClose}
-            >
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  styles.actionSecondaryText,
-                ]}
-              >
-                Keep Session
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                workoutStatus === 'completed' ? styles.actionPrimary : styles.actionDanger,
-                { flex: 1 },
-              ]}
-              onPress={onConfirm}
-            >
-              <Text style={[styles.actionButtonText, workoutStatus === 'completed' ? styles.actionPrimaryText : styles.actionDangerText]}>
-                {workoutStatus === 'completed' ? 'Resume Session' : 'Cancel Session'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
+  const resuming = workoutStatus === 'completed';
+  return <SLConfirmationModal
+    body={resuming ? undefined : 'This will discard this training session, remove all logged sets, clear the session timer, and return the session to its assigned state.'}
+    cancelLabel="Keep Session"
+    confirmLabel={resuming ? 'Resume Session' : 'Cancel Session'}
+    confirmTone={resuming ? 'primary' : 'danger'}
+    loading={Boolean(actionLoading)}
+    onCancel={onClose}
+    onConfirm={onConfirm}
+    testID="cancel-resume-session-confirmation"
+    title={resuming ? 'Resume this training session?' : 'Cancel this training session?'}
+    visible={visible}
+  />;
 }
 
 export function RestTimerPickerModal({
@@ -152,6 +113,7 @@ export function RestTimerPickerModal({
   onMounted,
   onClose,
   styles,
+  embedded = false,
 }: any) {
   React.useEffect(() => {
     if (visible) onMounted?.();
@@ -197,19 +159,8 @@ export function RestTimerPickerModal({
     if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
   }, []);
 
-  return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={[styles.coreWheelBackdrop, styles.restTimerPickerBackdrop]}>
-        <BlurView
-          experimentalBlurMethod="dimezisBlurView"
-          intensity={28}
-          pointerEvents="none"
-          style={StyleSheet.absoluteFill}
-          tint="dark"
-        />
-        <View style={[styles.coreWheelBackdropHit, styles.restTimerPickerBackdropHit]} />
-        <View style={[styles.coreWheelSheet, styles.restTimerPickerSheet]}>
-          <View style={styles.coreWheelHandle} />
+  const pickerSurface = (
+        <View style={[styles.coreWheelSheet, styles.restTimerPickerSheet, { flex: 1, maxWidth: undefined, borderWidth: 0, borderRadius: 0 }]}>
           <View style={styles.coreWheelHeaderRow}>
             <View style={styles.coreWheelHeaderCopy}>
               <Text style={styles.coreWheelTitle}>Rest Timer</Text>
@@ -291,7 +242,15 @@ export function RestTimerPickerModal({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </Modal>
   );
+  return <StrengthLedgerBottomSheet
+    accessibilityLabel="Rest Timer"
+    contentSwipeEnabled={false}
+    heightFraction={embedded ? 0.62 : 0.56}
+    onDismiss={() => onClose('dismissed')}
+    onRequestClose={() => onClose('dismissed')}
+    visible={visible}
+  >
+    {pickerSurface}
+  </StrengthLedgerBottomSheet>;
 }

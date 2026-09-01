@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState, type ReactNode } from 'react';
+import React, { forwardRef, useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   Pressable,
   type PressableProps,
   type PressableStateCallbackType,
   type StyleProp,
+  type TouchableOpacityProps,
+  type View,
   type ViewStyle,
 } from 'react-native';
 
@@ -14,27 +16,37 @@ import { previewMotionDuration, useSLMotionPreviewOverrides } from '@/lib/motion
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-type MotionPressableProps = Omit<PressableProps, 'style'> & {
+type MotionPressableProps = Omit<PressableProps, 'style' | 'onPress'> & {
   style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+  onPress?: (event: Parameters<NonNullable<PressableProps['onPress']>>[0]) => unknown | Promise<unknown>;
+  onAsyncError?: (error: unknown) => void;
   pressScale?: number;
   pressedOpacity?: number;
   disableNativePressAnimation?: boolean;
+  disabledOpacity?: number;
 };
 
-export function SLMotionPressable({
+export const SLMotionPressable = forwardRef<View, MotionPressableProps>(function SLMotionPressable({
   style,
   pressScale = SLMotion.pressScale,
-  pressedOpacity = 1,
+  pressedOpacity = 0.84,
   disableNativePressAnimation = false,
+  disabledOpacity = SLOpacity.disabled,
   onPressIn,
   onPressOut,
+  onPress,
+  onAsyncError,
   disabled,
+  accessibilityState,
   ...props
-}: MotionPressableProps) {
+}: MotionPressableProps, forwardedRef) {
   const reduceMotion = useSLReducedMotion();
   const previewMotion = useSLMotionPreviewOverrides();
   const scale = useRef(new Animated.Value(1)).current;
   const [pressed, setPressed] = useState(false);
+  const [pending, setPending] = useState(false);
+  const pendingRef = useRef(false);
+  const isDisabled = disabled || pending;
   const resolvedStyle = typeof style === 'function'
     ? style({ pressed } as PressableStateCallbackType)
     : style;
@@ -57,7 +69,9 @@ export function SLMotionPressable({
   return (
     <AnimatedPressable
       {...props}
-      disabled={disabled}
+      accessibilityState={{ ...accessibilityState, busy: pending, disabled: isDisabled }}
+      disabled={isDisabled}
+      ref={forwardedRef as never}
       onPressIn={(event) => {
         setPressed(true);
         settle(pressScale);
@@ -68,13 +82,56 @@ export function SLMotionPressable({
         settle(1);
         onPressOut?.(event);
       }}
+      onPress={(event) => {
+        if (!onPress || pendingRef.current) return;
+        let result: unknown;
+        try {
+          result = onPress(event);
+        } catch (error) {
+          onAsyncError?.(error);
+          return;
+        }
+        if (!result || typeof (result as Promise<unknown>).then !== 'function') return;
+        pendingRef.current = true;
+        setPending(true);
+        void Promise.resolve(result).then(
+          () => undefined,
+          (error) => {
+            if (onAsyncError) onAsyncError(error);
+            else if (__DEV__) console.error('[tactile-pressable] async action failed', error);
+          },
+        ).finally(() => {
+          pendingRef.current = false;
+          setPending(false);
+        });
+      }}
       style={[
         resolvedStyle,
         {
-          opacity: disabled ? SLOpacity.disabled : pressed ? pressedOpacity : 1,
+          opacity: disabled ? disabledOpacity : pending ? SLOpacity.loading : pressed ? pressedOpacity : 1,
           transform: disableNativePressAnimation ? undefined : [{ scale }],
         },
       ]}
+    />
+  );
+});
+
+/**
+ * Migration-compatible tactile replacement for React Native TouchableOpacity.
+ * New product code should prefer SLMotionPressable, SLButton, or SLIconButton.
+ */
+export function SLTactileOpacity({
+  activeOpacity = 0.72,
+  style,
+  ...props
+}: Omit<TouchableOpacityProps, 'style'> & {
+  style?: StyleProp<ViewStyle>;
+}) {
+  return (
+    <SLMotionPressable
+      {...props}
+      pressedOpacity={activeOpacity}
+      style={style}
     />
   );
 }

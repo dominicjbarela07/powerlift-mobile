@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, TouchableOpacity, View } from 'react-native';
+import { AccessibilityInfo, Animated, View } from 'react-native';
+import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 

@@ -89,15 +89,16 @@ function finalizeResolution(
   const upper = resolveEndpoint(bounds.upperWeightKg, requestedUnit);
   if (!lower || !upper) return null;
 
-  // Canonical gym-increment rounding can make near-identical source bounds
-  // resolve to one visible load. Do not render duplicate stacks in that case.
-  const endpoints = lower.requestedWeight === upper.requestedWeight
+  // Prescription shape is authoritative. A narrow range remains a range even
+  // when display rounding makes its endpoints look alike; warmups and display
+  // formatting may never collapse the programmed envelope into a single load.
+  const endpoints = bounds.lowerWeightKg === bounds.upperWeightKg
     ? Object.freeze([lower])
     : Object.freeze([lower, upper]);
   const resolution = endpoints.length === 1 ? 'exact' : 'range';
   const displayLabel = resolution === 'exact'
     ? lower.displayLabel
-    : `${lower.displayValue}–${upper.displayValue} ${requestedUnit}`;
+    : `${lower.displayLabel} – ${upper.displayLabel}`;
 
   return Object.freeze({
     canonicalWeightKg: lower.canonicalWeightKg,

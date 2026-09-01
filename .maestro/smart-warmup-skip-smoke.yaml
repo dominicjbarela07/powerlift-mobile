@@ -1,0 +1,12 @@
+# Preconditions: authenticated DEV Session Logger, in-progress Session, and an
+# untouched eligible Core warmup sheet open on its first step.
+appId: host.exp.Exponent
+---
+- assertVisible: "Competition Squat warmup"
+- assertVisible:
+    id: "smart-warmup-skip"
+- tapOn:
+    id: "smart-warmup-skip"
+- assertNotVisible: "Competition Squat warmup"
+- assertVisible:
+    text: ".*Squat.*"

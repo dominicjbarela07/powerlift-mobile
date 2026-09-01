@@ -159,12 +159,12 @@ assert.doesNotMatch(workspace, /Log Round|ROUND TIMELINE|onLogRound/);
 assert.match(workspace, /onOpenHistory\(item\.id\)/);
 assert.match(
   workspace,
-  /<CompletedSetSwipeRow[\s\S]*?onDelete=\{canModifyLog[\s\S]*?onEdit=\{canModifyLog/,
-  'each completed superset movement must reuse the canonical edit/delete swipe gesture',
+  /<CompactSetTimeline[\s\S]*?movement\.requiredSets[\s\S]*?onEdit:[\s\S]*?onEditSet[\s\S]*?onRemove:[\s\S]*?onDeleteSet/,
+  'each superset movement must use the compact timeline while preserving edit/delete authority',
 );
 assert.match(
   workspace,
-  /const canModifyLog = canLog && Number\.isFinite\(Number\(persistedLog\.id\)\)/,
+  /const canModifyLog = Boolean\([\s\S]*?canLog[\s\S]*?persistedLog[\s\S]*?Number\.isFinite\(Number\(persistedLog\.id\)\)/,
   'only persisted completed superset logs may expose mutation gestures',
 );
 assert.match(

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { AccessibilityInfo, Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from 'react-native';
+import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { SLTrophy } from '@/components/ui/sl-trophy';
 import { Ionicons } from '@expo/vector-icons';
@@ -807,7 +808,7 @@ const styles = {
   repMaxEvidenceTitle: { ...SLTypography.sectionTitle, width: '100%' as const, color: SLColors.review, fontWeight: '700' as const, letterSpacing: 1, textAlign: 'center' as const },
   repMaxProgression: { ...SLTypography.cardTitle, width: '100%' as const, color: SLColors.textStrong, textAlign: 'center' as const, marginTop: SLSpacing.md },
   repMaxEvidenceMovement: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: SLSpacing.md, textAlign: 'center' as const },
-  rpeBody: { flex: 1, minHeight: 260, backgroundColor: '#000000' },
+  rpeBody: { flex: 1, minHeight: 260, backgroundColor: SLColors.canvasRaised },
   rpeHeader: { minHeight: 62, flexDirection: 'row' as const, alignItems: 'center' as const, gap: SLSpacing.sm, paddingHorizontal: SLSpacing.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(177, 132, 238, 0.14)' },
   rpeHeaderCopy: { flex: 1 },
   rpeEyebrow: { ...SLTypography.sectionLabel, color: '#BDA0F4', letterSpacing: 1.1 },

@@ -37,9 +37,10 @@ assert.match(experience, /Finish Meet/);
 assert.match(experience, /checked_items/);
 assert.doesNotMatch(experience, /disabled=!meet\.can_start_meet/);
 
-assert.match(sheet, /PanResponder/);
-assert.match(sheet, /DISMISS_DISTANCE/);
-assert.match(sheet, /Drag to dismiss/);
+assert.match(sheet, /GestureHandlerRootView[\s\S]*GestureDetector/);
+assert.match(sheet, /shouldDismissBottomSheet/);
+assert.match(sheet, /Swipe down to close/);
+assert.doesNotMatch(sheet, /PanResponder/);
 assert.ok(fs.existsSync(bagAsset), 'generated meet bag asset must ship with the route');
 const stat = fs.statSync(bagAsset);
 assert.ok(stat.size > 100_000, 'meet bag must be a real raster render rather than a placeholder');

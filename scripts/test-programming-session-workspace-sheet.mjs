@@ -13,6 +13,7 @@ const route = read('app', '(tabs)', 'workout', 'session-workspace', '[workoutId]
 const editor = read('components', 'coach-mobile', 'SessionEditingWorkspace.tsx');
 const athleteHub = read('components', 'coach-mobile', 'CoachAthleteHubSheet.tsx');
 const sheet = read('components', 'sheets', 'StrengthLedgerBottomSheet.tsx');
+const gesture = read('lib', 'bottom-sheet-gesture.ts');
 
 assert.match(manager, /useState<ProgrammingWorkspaceSelection \| null>\(null\)/, 'Programming Manager must own the open workspace state.');
 assert.match(manager, /setWorkspaceSelection\(\{ workoutId, context \}\)/, 'opening a Session must preserve its block, Week, and day context in-place.');
@@ -43,11 +44,14 @@ assert.match(sheet, /presentationStyle="overFullScreen"/, 'the primitive must pr
 assert.match(sheet, /heightFraction = 0\.93[\s\S]*Math\.min\(0\.93, heightFraction\)/, 'the shared sheet must retain its near-full-height default while allowing compact contextual sheets.');
 assert.match(sheet, /useSafeAreaInsets\(\)/, 'the shared sheet must respect device safe areas.');
 assert.match(sheet, /STRENGTH_LEDGER_APP_HEADER\.contentHeight/, 'app-shell sheets must share the root header geometry rather than inventing another inset.');
-assert.match(sheet, /PanResponder\.create/, 'the shared handle must support drag-down dismissal.');
-assert.match(sheet, /DISMISS_DISTANCE|DISMISS_VELOCITY/, 'drag dismissal must use deliberate distance and velocity thresholds.');
+assert.match(sheet, /GestureHandlerRootView[\s\S]*GestureDetector/, 'the modal-local gesture root must own drag-down dismissal at runtime.');
+assert.match(sheet, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/, 'body drag and nested scroll must use explicit simultaneous gesture arbitration.');
+assert.doesNotMatch(sheet, /PanResponder\.create/, 'the shared sheet must not regress to a responder implementation that loses the native ScrollView gesture race.');
+assert.match(sheet, /shouldDismissBottomSheet/, 'drag dismissal must use the canonical threshold contract.');
+assert.match(gesture, /BOTTOM_SHEET_DISMISS_DISTANCE = 96[\s\S]*BOTTOM_SHEET_DISMISS_VELOCITY = 0\.85/, 'canonical drag dismissal must use deliberate distance and velocity thresholds.');
 assert.match(sheet, /Animated\.spring\(translateY/, 'entry and cancelled drags must use the established weighted spring.');
 assert.match(sheet, /useSLReducedMotion\(\)/, 'sheet motion must respect reduced-motion settings.');
-assert.match(sheet, /<View style=\{styles\.chrome\}>[\s\S]*?style=\{styles\.dragZone\}[\s\S]*?\{\.\.\.dragResponder\.panHandlers\}[\s\S]*?<View style=\{styles\.content\}>\{children\}<\/View>/, 'only the dedicated sheet chrome drag zone may own the gesture; inner content owns vertical scrolling.');
-assert.match(sheet, /Dismiss \$\{accessibilityLabel\}[\s\S]*?onPress=\{requestClose\}/, 'backdrop dismissal must use the same guarded close path.');
+assert.match(sheet, /GestureDetector gesture=\{contentSwipeEnabled \? bodyDismissGesture : Gesture\.Native\(\)\}[\s\S]*GestureDetector gesture=\{chromeDismissGesture\}/, 'both sheet body and chrome must be draggable while preserving explicit content-swipe opt-outs.');
+assert.match(sheet, /Dismiss \$\{accessibilityLabel\}[\s\S]*?onPress=\{\(\) => requestClose\('backdrop'\)\}/, 'backdrop dismissal must use the same guarded close path with an explicit close reason.');
 
 console.log('[programming-session-workspace-sheet] ok');

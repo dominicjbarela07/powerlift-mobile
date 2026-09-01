@@ -74,9 +74,10 @@ assert.match(workspacePrompt, /Remove movement\?/);
 assert.match(workspacePrompt, /Discard/);
 assert.doesNotMatch(workspace, /Alert\.alert/, 'Session Workspace actions and confirmations must not regress to native Alert overlays');
 
-assert.match(canonicalSheet, /Drag to dismiss/);
-assert.match(canonicalSheet, /DISMISS_DISTANCE/);
-assert.match(canonicalSheet, /PanResponder\.create/);
+assert.match(canonicalSheet, /Swipe down to close/);
+assert.match(canonicalSheet, /shouldDismissBottomSheet/);
+assert.match(canonicalSheet, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/);
+assert.doesNotMatch(canonicalSheet, /PanResponder/);
 assert.match(canonicalSheet, /paddingBottom: Math\.max\(insets\.bottom, 10\)/);
 
 console.log('Programming Manager canonical overlay, copy workflow, tactile, and dismissal contracts passed.');

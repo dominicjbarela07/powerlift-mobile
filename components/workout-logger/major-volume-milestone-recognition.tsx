@@ -336,7 +336,7 @@ export function MajorVolumeMilestoneRecognition({
 
 const styles = StyleSheet.create({
   stage: {
-    backgroundColor: '#000000',
+    backgroundColor: SLColors.canvas,
     minHeight: 520,
     overflow: 'hidden',
     position: 'relative',

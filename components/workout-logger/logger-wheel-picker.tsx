@@ -3,11 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';

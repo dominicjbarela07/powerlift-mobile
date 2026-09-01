@@ -1,6 +1,18 @@
-import { useGlobalSearchParams, useRouter, useSegments } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AppState, Platform, Pressable, StyleSheet, View } from 'react-native';
+import {
+  useGlobalSearchParams,
+  useRouter,
+  useSegments } from 'expo-router';
+import React,
+  { useCallback,
+  useEffect,
+  useMemo,
+  useState } from 'react';
+import { AppState,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLFontFamilies } from '@/constants/theme';

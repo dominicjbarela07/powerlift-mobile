@@ -7,8 +7,6 @@ import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Pressable,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
   Modal,
@@ -23,6 +21,7 @@ import {
   UIManager,
   LayoutAnimation,
 } from 'react-native';
+import { SLMotionPressable as Pressable, SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { resolveAccessoryIconName, SLProfileAvatar, type SLAccessoryIconName } from '@/components/ui';
@@ -76,10 +75,15 @@ import {
 } from '@/components/workout-logger/logger-modals';
 import {
   LogSheetUnitToggle,
-  SessionUnitFloatingControl,
 } from '@/components/workout-logger/logger-primitives';
+import {
+  FloatingControlStack,
+  FloatingUtilityButton,
+} from '@/components/ui/floating-control-coordinator';
 import { LoggerWheelPicker } from '@/components/workout-logger/logger-wheel-picker';
 import { SubstitutionConfirmationSheet } from '@/components/workout-logger/substitution-confirmation-sheet';
+import { StrengthLedgerSheetModalAdapter } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { SmartWarmupSheet } from '@/components/workout-logger/smart-warmup-sheet';
 import {
   GovernedAccessorySubstitutionPickerModal,
   type GovernedAccessoryIdentity,
@@ -171,7 +175,6 @@ import { triggerAcceptedSetHaptic, triggerSessionCompletionHaptic, triggerSubmis
 import {
   KG_PER_LB,
   formatLoggerWeightKg,
-  formatLoggerWeightRangeKg,
   roundLoggerDisplayWeight,
   roundToNearestGymIncrementLb,
 } from '@/lib/logger-weight-format';
@@ -269,6 +272,8 @@ import {
   reconcileGlobalRestTimerCompletion,
   stopGlobalRestTimer,
 } from '@/lib/rest-timer-completion';
+import { formatWarmupPhysicalConfiguration } from '@/lib/smart-warmup';
+import type { SmartWarmupEnvelope } from '@/lib/smart-warmup';
 import { coreSetTimelineLabel } from '@/lib/core-logger-timeline';
 import {
   buildSupersetRoundModel,
@@ -480,6 +485,18 @@ type WorkoutItem = {
   rir_target: number | null;
   target_low_kg: number | null;
   target_high_kg: number | null;
+  core_prescription?: {
+    contract_version: string;
+    low_kg: number;
+    high_kg: number;
+    midpoint_kg: number;
+    source: string;
+    provenance: 'manual' | 'calculated' | string;
+    mode: string;
+    reps: number | null;
+    effort?: { mode: string; value: number } | null;
+    training_max_kg?: number | null;
+  } | null;
   baseline_low_kg: number | null;
   baseline_high_kg: number | null;
   actual_weight_kg: number | null;
@@ -528,6 +545,7 @@ type WorkoutItem = {
   parent_item_id?: number | string | null;
   dev_core_family?: keyof typeof CORE_FAMILY_LIFT_CODE | null;
   dev_visual_coverage?: string[];
+  smart_warmup?: SmartWarmupEnvelope | null;
 };
 
 type AccessoryGroup = {
@@ -640,7 +658,11 @@ function formatTargetRange(
   if (lowKg == null || highKg == null) return null;
   if (lowKg === 0 && highKg === 0) return null;
 
-  return formatLoggerWeightRangeKg(lowKg, highKg, unit);
+  const low = formatLoggerWeightKg(lowKg, unit);
+  const high = formatLoggerWeightKg(highKg, unit);
+  return low === high
+    ? `${low} ${unit}`
+    : `${low} ${unit} – ${high} ${unit}`;
 }
 
 function computeManualRangeKg(ps: PlannedSet): { lowKg: number | null; highKg: number | null } {
@@ -2130,6 +2152,7 @@ export default function WorkoutViewerScreen() {
     if (ref) inputRefs.current[key] = ref;
   };
   const [refreshing, setRefreshing] = useState(false);
+  const [warmupItemId, setWarmupItemId] = useState<number | null>(null);
   const dataRef = useRef<WorkoutPayload | null>(null);
 
   const rememberScroll = () => {
@@ -3358,7 +3381,7 @@ export default function WorkoutViewerScreen() {
     );
   };
 
-  const openTimerPicker = useCallback(() => {
+  const openTimerPicker = useCallback((prescribedSeconds?: number) => {
     const requestId = timerPickerOpenRequestRef.current + 1;
     timerPickerOpenRequestRef.current = requestId;
     const activeTimerSeconds = restActive && restSeconds > 0 ? restSeconds : null;
@@ -3367,7 +3390,8 @@ export default function WorkoutViewerScreen() {
       if (timerPickerOpenRequestRef.current !== requestId) return;
       const initialSeconds = resolveRestTimerPickerInitialSeconds({
         activeTimerSeconds,
-        sessionSelectedSeconds: sessionRestTimerSeconds,
+        sessionSelectedSeconds: prescribedSeconds ? null : sessionRestTimerSeconds,
+        prescribedSeconds,
         lastUsedSeconds,
       });
       setTimerPickerValue(initialSeconds);
@@ -3385,7 +3409,7 @@ export default function WorkoutViewerScreen() {
       });
     };
 
-    if (activeTimerSeconds || sessionRestTimerSeconds) {
+    if (activeTimerSeconds || sessionRestTimerSeconds || prescribedSeconds) {
       presentPicker(null);
       return;
     }
@@ -6368,6 +6392,9 @@ export default function WorkoutViewerScreen() {
         return;
       }
 
+      // Cancellation invalidates the server-owned Warmup state; close any
+      // mounted Warmup projection before reloading the canonical Session.
+      setWarmupItemId(null);
       await finishSessionTiming(wkId);
 
       // Refresh local data
@@ -7192,6 +7219,9 @@ export default function WorkoutViewerScreen() {
   }
 
   const { workout, athlete } = data;
+  const warmupSheetItem = warmupItemId == null
+    ? null
+    : workout.core_items.find((item) => item.id === warmupItemId) || null;
   const isCoachAthletePreview = coachPreviewRequested
     && data.view_mode === 'coach_preview'
     && data.permissions?.view_only === true;
@@ -7439,6 +7469,12 @@ export default function WorkoutViewerScreen() {
         ? ` @${(item.pct * 100).toFixed(1)}%`
         : '';
     return `${sets}×${reps}${rpe || pct}`;
+  };
+
+  const compactCorePrescriptionText = (item: WorkoutItem, fallbackSets?: number) => {
+    const scheme = compactSchemeText(item, fallbackSets);
+    const load = formatTargetRange(item.target_low_kg, item.target_high_kg, unit);
+    return load ? `${scheme} · ${load}` : scheme;
   };
 
   const makeMovementLoggerFocus = ({
@@ -8457,11 +8493,15 @@ export default function WorkoutViewerScreen() {
         onStop={stopRestTimer}
       />
 
-      <SessionUnitFloatingControl
-        unit={unit}
-        bottom={insets.bottom + 74}
-        onChange={switchDisplayUnit}
-      />
+      <FloatingControlStack context="tab-screen">
+        <FloatingUtilityButton
+          accessibilityHint="Changes only the weights shown in this Session."
+          accessibilityLabel={`Display unit ${unit}. Switch to ${unit === 'kg' ? 'lb' : 'kg'}`}
+          label={unit}
+          onPress={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
+          testID="session-logger-unit-toggle"
+        />
+      </FloatingControlStack>
 
       <LoggerFeedbackSurface
         saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
@@ -8703,16 +8743,16 @@ export default function WorkoutViewerScreen() {
                 : isFullCustom
                 ? 'Full Custom'
                 : 'Straight Sets';
-            const topSchemeText = compactSchemeText(core, totalSets);
+            const topSchemeText = compactCorePrescriptionText(core, totalSets);
             const backdownSchemeText = (() => {
               if (!isTop || !backdownsForThisTop.length) return null;
               const totalBackdownSets = backdownsForThisTop.reduce((sum, bd) => sum + positiveInt(bd.sets), 0);
               const firstBackdown = backdownsForThisTop[0];
-              return compactSchemeText(firstBackdown, totalBackdownSets);
+              return compactCorePrescriptionText(firstBackdown, totalBackdownSets);
             })();
             const schemeNode = !isTop && !isFullCustom ? (
               <>
-                {compactSchemeText(core, totalSets)}
+                {compactCorePrescriptionText(core, totalSets)}
               </>
             ) : isTop ? (
               <>
@@ -8727,7 +8767,7 @@ export default function WorkoutViewerScreen() {
               `${coreCompletionTotal || 0} planned sets`
             );
             const headerPrescription = !isTop && !isFullCustom
-              ? compactSchemeText(core, totalSets)
+              ? compactCorePrescriptionText(core, totalSets)
               : isTop
               ? [topSchemeText, backdownSchemeText].filter(Boolean).join(' → ')
               : `${coreCompletionTotal || 0} planned sets`;
@@ -8780,6 +8820,34 @@ export default function WorkoutViewerScreen() {
                   }
                   expanded={detailsExpanded}
                   detailRows={detailsExpanded ? movementPresentation.detailRows : undefined}
+                  warmupAction={(
+                    isActiveSession
+                    && (
+                      (!hasAnyLogs && (
+                        core.smart_warmup?.eligible
+                        || core.smart_warmup?.session?.status === 'active'
+                      ))
+                      || core.smart_warmup?.session?.status === 'completed'
+                    )
+                  ) ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={core.smart_warmup?.session?.status === 'active' ? `Resume ${liftDisplayName(core)} warmups` : core.smart_warmup?.session?.status === 'completed' ? `Review ${liftDisplayName(core)} warmup summary` : `Begin ${liftDisplayName(core)} warmups`}
+                      onPress={() => setWarmupItemId(core.id)}
+                      style={styles.smartWarmupEntry}
+                    >
+                      <Ionicons name="flame-outline" size={20} color={SLColors.accentViolet} />
+                      <View style={styles.smartWarmupEntryCopy}>
+                        <Text style={styles.smartWarmupEntryTitle}>{core.smart_warmup?.session?.status === 'active' ? 'Resume Warmups' : core.smart_warmup?.session?.status === 'completed' ? 'Warmup Summary' : 'Begin Warmups'}</Text>
+                        <Text style={styles.smartWarmupEntryDetail}>
+                          {core.smart_warmup?.session
+                            ? formatWarmupPhysicalConfiguration(core.smart_warmup.session.loading_configuration, unit)
+                            : 'Built from today’s prescribed range'}
+                        </Text>
+                      </View>
+                      <Ionicons name="chevron-forward" size={20} color={SLColors.textMuted} />
+                    </Pressable>
+                  ) : null}
                   meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
                   top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit, core)}
                   movementNote={core.notes}
@@ -8990,7 +9058,7 @@ export default function WorkoutViewerScreen() {
         onClose={() => setSetVideoPlayer({ visible: false, videoId: null, initialUrl: null, initialVideo: null })}
       />
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={!!coreWheel?.visible}
         transparent
         animationType={reduceMotion ? 'none' : 'slide'}
@@ -9091,9 +9159,9 @@ export default function WorkoutViewerScreen() {
             </View>
           ) : null}
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={!!accessoryWheel?.visible}
         transparent
         animationType={reduceMotion ? 'none' : 'slide'}
@@ -9188,9 +9256,9 @@ export default function WorkoutViewerScreen() {
             </View>
           ) : null}
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         animationType={reduceMotion ? 'none' : 'slide'}
         onRequestClose={closeSupersetRoundLogger}
         transparent
@@ -9221,11 +9289,8 @@ export default function WorkoutViewerScreen() {
                       <Text style={styles.supersetRoundContext}>
                         SUPERSET {supersetRoundLogger.groupLabel} · ROUND {supersetRoundLogger.roundIndex} OF {supersetRoundLogger.roundCount}
                       </Text>
-                      <View style={styles.supersetRoundStepRow}>
-                        <Text accessibilityLiveRegion="polite" style={styles.supersetRoundStep}>
-                          MOVEMENT {supersetRoundLogger.activeIndex + 1} OF {supersetRoundLogger.entries.length}
-                        </Text>
-                        {supersetRoundCapturedIndex != null ? (
+                      {supersetRoundCapturedIndex != null ? (
+                        <View style={styles.supersetRoundStepRow}>
                           <Animated.View
                             style={[
                               styles.supersetRoundCapturedCue,
@@ -9235,8 +9300,8 @@ export default function WorkoutViewerScreen() {
                             <Ionicons color={SLColors.success} name="checkmark" size={13} />
                             <Text style={styles.supersetRoundCapturedCueText}>Captured</Text>
                           </Animated.View>
-                        ) : null}
-                      </View>
+                        </View>
+                      ) : null}
                     </View>
                     <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
                   </View>
@@ -9477,9 +9542,9 @@ export default function WorkoutViewerScreen() {
             })() : null}
           </View>
         </KeyboardAvoidingView>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={!!pendingRowVideoUpload}
         transparent
         animationType="slide"
@@ -9554,9 +9619,9 @@ export default function WorkoutViewerScreen() {
             </View>
           ) : null}
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
-      <Modal
+      <StrengthLedgerSheetModalAdapter
         visible={false && !!movementHistoryItem}
         transparent
         animationType="slide"
@@ -9851,7 +9916,7 @@ export default function WorkoutViewerScreen() {
             );
           })() : null}
         </View>
-      </Modal>
+      </StrengthLedgerSheetModalAdapter>
 
       <Modal visible={!!identityPickerItem} transparent animationType="slide" onRequestClose={closeIdentityPicker}>
         <KeyboardAvoidingView
@@ -10082,7 +10147,6 @@ export default function WorkoutViewerScreen() {
             cancelWorkout();
           }
         }}
-        styles={styles}
       />
 
       <FinalSessionCompletionPresenter
@@ -10575,16 +10639,41 @@ export default function WorkoutViewerScreen() {
       </Modal>
 
       {/* Shared rest timer picker (popup modal) */}
-      <RestTimerPickerModal
-        visible={timerPickerVisible}
-        timerWheelRef={timerWheelRef}
-        timerPickerValue={timerPickerValue}
-        setTimerPickerValue={setTimerPickerValue}
-        startRestTimer={confirmRestTimerSelection}
-        saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
-        onMounted={handleTimerPickerMounted}
-        onClose={resolveActiveTimerHandoff}
-        styles={styles}
+      {!warmupSheetItem ? <RestTimerPickerModal
+          visible={timerPickerVisible}
+          timerWheelRef={timerWheelRef}
+          timerPickerValue={timerPickerValue}
+          setTimerPickerValue={setTimerPickerValue}
+          startRestTimer={confirmRestTimerSelection}
+          saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
+          onMounted={handleTimerPickerMounted}
+          onClose={resolveActiveTimerHandoff}
+          styles={styles}
+        /> : null}
+
+      <SmartWarmupSheet
+        item={warmupSheetItem}
+        workoutId={Number(workout.id)}
+        preferredUnit={unit}
+        visible={Boolean(warmupSheetItem)}
+        onClose={() => setWarmupItemId(null)}
+        onRefresh={onRefresh}
+        onOpenRestTimerPicker={openTimerPicker}
+        restTimerActive={restActive}
+        restTimerSeconds={restSeconds}
+        onStopRestTimer={stopRestTimer}
+        restTimerPicker={<RestTimerPickerModal
+          embedded
+          visible={timerPickerVisible}
+          timerWheelRef={timerWheelRef}
+          timerPickerValue={timerPickerValue}
+          setTimerPickerValue={setTimerPickerValue}
+          startRestTimer={confirmRestTimerSelection}
+          saveConfirmationVisible={false}
+          onMounted={handleTimerPickerMounted}
+          onClose={resolveActiveTimerHandoff}
+          styles={styles}
+        />}
       />
 
       {/* Readiness survey modal (mobile only, shown on Begin Session). */}
@@ -10658,6 +10747,21 @@ export default function WorkoutViewerScreen() {
 }
 
 const styles = StyleSheet.create({
+  smartWarmupEntry: {
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: SLRadius.radiusCard,
+    borderWidth: 1,
+    borderColor: SLColors.borderSelected,
+    backgroundColor: SLColors.accentVioletSoft,
+  },
+  smartWarmupEntryCopy: { flex: 1 },
+  smartWarmupEntryTitle: { ...SLTypography.bodyStrong, color: SLColors.textStrong },
+  smartWarmupEntryDetail: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 2 },
   muted: {
     color: SLColors.textMuted,
     marginTop: 4,
@@ -12555,7 +12659,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: SLColors.canvas,
   },
   completionCeremonyScreen: {
     flex: 1,
@@ -13109,12 +13213,6 @@ const styles = StyleSheet.create({
     fontSize: SLTypography.label.fontSize,
     fontWeight: '900',
     letterSpacing: 0.75,
-  },
-  supersetRoundStep: {
-    color: SLColors.accentMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '800',
-    letterSpacing: 0.65,
   },
   supersetRoundStepRow: {
     alignItems: 'center',

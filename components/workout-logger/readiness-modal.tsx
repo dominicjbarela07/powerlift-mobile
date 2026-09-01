@@ -2,19 +2,18 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Animated,
   KeyboardAvoidingView,
-  Modal,
   Platform,
-  Pressable,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
 import { SLMaterialOverlay } from '@/components/ui/sl-workspace';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { StrengthLedgerBottomSheet, StrengthLedgerBottomSheetScrollView } from '@/components/sheets/StrengthLedgerBottomSheet';
 
 import { SLColors, SLMotion, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import {
@@ -202,11 +201,15 @@ export function ReadinessModal({
   };
 
   return (
-    <Modal
+    <StrengthLedgerBottomSheet
+      accessibilityLabel={isDaily ? 'Daily Readiness Check-In' : 'Pre-Session Readiness Check-In'}
+      dismissalBlocked={submitting}
+      dismissalBlockedMessage="Finish saving the readiness check before closing."
+      motionPreset={reduceMotion ? 'standard' : 'deliberate'}
+      onDismiss={onCancel}
+      onRequestClose={onCancel}
+      showCloseButton={false}
       visible={visible}
-      transparent
-      animationType={reduceMotion ? 'none' : 'fade'}
-      onRequestClose={() => !submitting && onCancel()}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -235,7 +238,7 @@ export function ReadinessModal({
             </Pressable>
           </View>
 
-          <ScrollView
+          <StrengthLedgerBottomSheetScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
@@ -322,10 +325,10 @@ export function ReadinessModal({
             >
               <Text typographyRole="shortButtonLabel" style={styles.cancelText}>Cancel</Text>
             </Pressable>
-          </ScrollView>
+          </StrengthLedgerBottomSheetScrollView>
         </View>
       </KeyboardAvoidingView>
-    </Modal>
+    </StrengthLedgerBottomSheet>
   );
 }
 

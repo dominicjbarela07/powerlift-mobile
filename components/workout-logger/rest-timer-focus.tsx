@@ -1,13 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
+import {
+  Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import React from 'react';
 import {
   Animated,
-  Pressable,
   StyleSheet,
   useWindowDimensions,
   View,
 } from 'react-native';
+import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 
 import { Text } from '@/components/ui/sl-text';
 import {

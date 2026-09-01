@@ -60,13 +60,14 @@ assert.match(sheet, /Haptics\.selectionAsync/);
 assert.match(sheet, /pendingDestinationRef[\s\S]*sheetRef\.current\?\.dismiss\(\)/, 'selection must dismiss before navigating');
 assert.match(sheet, /setIsOpen\(false\)[\s\S]*router\.(?:navigate|push)/, 'navigation must occur only after sheet dismissal');
 
-assert.match(primitive, /PanResponder\.create/);
-assert.match(primitive, /onStartShouldSetPanResponder: \(\) => true/, 'the sheet drag zone must own its gesture from finger-down');
-assert.match(primitive, /style=\{styles\.dragZone\}[\s\S]*\.\.\.dragResponder\.panHandlers/, 'the sheet must isolate drag handling to a dedicated drag zone');
-assert.match(primitive, /gesture\.dy >= DISMISS_DISTANCE \|\| gesture\.vy >= DISMISS_VELOCITY/);
-assert.match(primitive, /Pressable accessibilityLabel=\{`Dismiss \$\{accessibilityLabel\}`\}/, 'backdrop must dismiss');
-assert.match(primitive, /<Pressable[\s\S]*?accessibilityLabel=\{`Close \$\{accessibilityLabel\}`\}[\s\S]*?onPress=\{requestClose\}/, 'X must dismiss');
-assert.match(primitive, /style=\{\(\{ pressed \}\) => \[styles\.closeButton, pressed \? styles\.closeButtonPressed : null\]\}/, 'X must retain an immediate pressed state');
+assert.match(primitive, /GestureHandlerRootView[\s\S]*GestureDetector/);
+assert.match(primitive, /Gesture\.Simultaneous\(createDismissGesture\(true, bodyDrag\), Gesture\.Native\(\)\)/, 'sheet-body drag must arbitrate with native scrolling');
+assert.match(primitive, /GestureDetector gesture=\{chromeDismissGesture\}/, 'the sheet chrome must own a dedicated drag gesture');
+assert.match(primitive, /shouldDismissBottomSheet/);
+assert.match(primitive, /Pressable accessibilityLabel=\{`Dismiss \$\{accessibilityLabel\}`\}[\s\S]*onPress=\{\(\) => requestClose\('backdrop'\)\}/, 'backdrop must dismiss');
+assert.match(primitive, /<Pressable[\s\S]*?accessibilityLabel=\{`Close \$\{accessibilityLabel\}`\}[\s\S]*?onPress=\{\(\) => requestClose\('close-button'\)\}/, 'X must dismiss');
+assert.match(primitive, /SLMotionPressable as Pressable/, 'X and backdrop controls must retain canonical immediate press feedback');
+assert.doesNotMatch(primitive, /PanResponder/, 'the shared sheet must not lose nested-scroll gesture arbitration');
 
 assert.match(tabs, /CoachMoreNavigationProvider enabled=\{isCoach && !isIndividual && viewMode === 'coach'\}/);
 assert.match(tabs, /const isMoreRoute = route\.name === 'coach-more'/);
