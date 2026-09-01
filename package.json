@@ -14,6 +14,7 @@
     "test:session-timing-telemetry": "node scripts/test-session-timing-telemetry.mjs",
     "test:production-android-accessory-recovery": "node scripts/test-production-android-accessory-recovery.mjs",
     "test:production-release-policy": "node scripts/test-production-release-policy.mjs",
+    "verify:production:parity": "node scripts/verify-production-channel-parity.mjs",
     "test:release-critical-invariants": "node scripts/test-release-critical-invariants.mjs",
     "release:production:ota": "bash scripts/eas-update-production.sh"
   },

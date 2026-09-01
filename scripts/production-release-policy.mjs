@@ -88,7 +88,7 @@ export function requestedPlatforms(target) {
   throw new Error(`Production OTA blocked: --platform must be all, android, or ios (received ${target || '<missing>'}).`);
 }
 
-export function assertPublicationScope({ target, scope, reason }) {
+export function assertPublicationScope({ target = 'all', scope = 'shared', reason } = {}) {
   const platforms = requestedPlatforms(target);
   if (scope === 'shared') {
     if (target !== 'all') {
@@ -108,6 +108,52 @@ export function assertPublicationScope({ target, scope, reason }) {
     return platforms;
   }
   throw new Error('Production OTA blocked: --release-scope must be shared or platform-specific.');
+}
+
+export function assertProductionPlatformParity({ baseline, states }) {
+  if (baseline.runtimeVersion !== '2.0.2') {
+    throw new Error(
+      `PRODUCTION 2.0.2 PLATFORM PARITY: FAIL\n`
+      + `governed runtime is ${baseline.runtimeVersion || '<missing>'}, expected 2.0.2`,
+    );
+  }
+
+  const failures = [];
+  for (const platform of PRODUCTION_PLATFORMS) {
+    const live = platformBaseline(baseline, platform);
+    const state = states?.[platform];
+    if (!state) {
+      failures.push(`${platform}: Production manifest is missing`);
+      continue;
+    }
+    if (state.status === 204 || state.embeddedFallback) {
+      failures.push(`${platform}: HTTP 204 / embedded fallback is forbidden`);
+      continue;
+    }
+    const comparisons = [
+      ['HTTP status', state.status, 200],
+      ['platform', state.platform, platform],
+      ['channel', state.channel, baseline.channel],
+      ['branch', state.branch, baseline.branch],
+      ['runtime', state.runtimeVersion, baseline.runtimeVersion],
+      ['update group', state.group, live.activeUpdateGroup],
+      ['update ID', state.updateId, live.activeUpdateId],
+      ['source commit', state.sourceCommit, live.activeUpdateSourceCommit],
+      ['launch asset key', state.launchAssetKey, live.activeLaunchAssetKey],
+      ['launch asset SHA-256', state.launchAssetSha256, live.activeLaunchAssetSha256],
+      ['launch asset bytes', state.launchAssetBytes, live.activeLaunchAssetBytes],
+    ];
+    for (const [label, actual, expected] of comparisons) {
+      if (actual !== expected) {
+        failures.push(`${platform} ${label}: resolved=${actual ?? '<missing>'}, expected=${expected ?? '<missing>'}`);
+      }
+    }
+  }
+
+  if (failures.length) {
+    throw new Error(`PRODUCTION 2.0.2 PLATFORM PARITY: FAIL\n${failures.join('\n')}`);
+  }
+  return 'PRODUCTION 2.0.2 PLATFORM PARITY: PASS';
 }
 
 export function assertProductionOtaCompatible(candidate, baseline) {
