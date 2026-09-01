@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "recordedAt": "2026-09-01T03:07:49-07:00",
+  "recordedAt": "2026-09-01T03:26:12-07:00",
   "channel": "production",
   "branch": "production-live-2.0.2",
   "runtimeVersion": "2.0.2",
@@ -30,10 +30,13 @@
       "easBuildFingerprint": "b85f9a73022fdd8320893eb7e6a9eddedea109ce",
       "nativeDependencyFingerprint": "25ffc691cdb6b94a2e1458d1d63cec6f0343fc3ff6a12bb8b7f853a1b8ee9e6e",
       "embeddedSourceCommit": "5aaad1c2c92f126b0343af7c44bd29d373229ec9",
-      "activeUpdateGroup": null,
-      "activeUpdateId": null,
-      "activeUpdateSourceCommit": "5aaad1c2c92f126b0343af7c44bd29d373229ec9",
-      "activeManifestStatus": 204
+      "activeUpdateGroup": "b9687f12-f5b1-4e08-b832-c986f0d14876",
+      "activeUpdateId": "01a05c7f-48f2-701c-8968-1c619536f57e",
+      "activeUpdateSourceCommit": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
+      "activeLaunchAssetKey": "186993c49695389859854f21416d0ae5",
+      "activeLaunchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
+      "activeLaunchAssetBytes": 6978422,
+      "activeManifestStatus": 200
     }
   }
 }
