@@ -54,3 +54,13 @@ in `../runtime/` because Metro requires statically bundled local assets.
 - Status: user supplied
 - Treatment: white background removed as a transparent runtime derivative;
   supplied source retained unchanged.
+
+## Watson
+
+- File: `watson.png`
+- Manufacturer: Watson
+- Status: user supplied
+- Source SHA-256: `10a72be0ede6ecbe19a020e2aca3f9cc3346bbbe8b1f6308f5588bcfdca7a96e`
+- Runtime SHA-256: `74bf2d557a5a415eb7b281f6d7ffe24b70e0f177217cd4d25416024a4e78a873`
+- Treatment: white background removed as a transparent runtime derivative;
+  supplied source retained unchanged.

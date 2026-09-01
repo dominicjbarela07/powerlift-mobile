@@ -308,6 +308,15 @@
       "sourceFile": "source/pitshark.jpeg",
       "runtimeFile": "runtime/pit-shark.png",
       "runtimeTreatment": "White background removed as a transparent runtime derivative; supplied source retained unchanged."
+    },
+    {
+      "key": "watson",
+      "manufacturer": "Watson",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/watson.png",
+      "runtimeFile": "runtime/watson.png",
+      "runtimeTreatment": "White background removed as a transparent runtime derivative; supplied source retained unchanged."
     }
   ]
 }

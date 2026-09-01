@@ -30,7 +30,8 @@ export type ManufacturerLogoAssetKey =
   | 'mega-mass'
   | 'icarian'
   | 'gymleco'
-  | 'pit-shark';
+  | 'pit-shark'
+  | 'watson';
 
 export type ManufacturerRegistryEntry = Readonly<{
   key: string;
@@ -305,6 +306,14 @@ export const MANUFACTURER_REGISTRY: readonly ManufacturerRegistryEntry[] = Objec
     logoAssetKey: 'pit-shark',
     logoSurface: 'light',
     opticalScale: 0.92,
+  },
+  {
+    key: 'watson',
+    displayName: 'Watson',
+    aliases: ['watson', 'watson gym equipment'],
+    logoAssetKey: 'watson',
+    logoSurface: 'light',
+    opticalScale: 0.94,
   },
 ]);
 

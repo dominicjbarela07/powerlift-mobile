@@ -41,4 +41,5 @@ export const MANUFACTURER_LOGO_ASSETS: Readonly<
   icarian: require('@/assets/images/manufacturer-logos/runtime/icarian.png'),
   gymleco: require('@/assets/images/manufacturer-logos/runtime/gymleco.png'),
   'pit-shark': require('@/assets/images/manufacturer-logos/runtime/pit-shark.png'),
+  watson: require('@/assets/images/manufacturer-logos/runtime/watson.png'),
 });
