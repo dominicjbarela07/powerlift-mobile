@@ -23,6 +23,11 @@ assert.equal(
   baseline.platforms.android.nativeDependencyFingerprint,
   'Android candidate must retain the live build 12 native dependency projection.',
 );
+assert.equal(
+  calculateNativeDependencyFingerprint('ios'),
+  baseline.platforms.ios.nativeDependencyFingerprint,
+  'iOS candidate must retain the live build 24 native dependency projection.',
+);
 
 assert.deepEqual(
   assertPublicationScope({ target: 'all', scope: 'shared' }),
