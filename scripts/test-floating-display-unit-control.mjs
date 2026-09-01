@@ -5,13 +5,17 @@ const read = (file) => fs.readFileSync(new URL(`../${file}`, import.meta.url), '
 const coordinator = read('components/ui/floating-control-coordinator.tsx');
 
 assert.match(coordinator, /position: 'absolute'/);
-assert.match(coordinator, /right: SLSpacing\.md/);
-assert.match(coordinator, /minHeight: 48/);
-assert.match(coordinator, /minWidth: 48/);
+assert.match(coordinator, /size: SL_TAB_ROW_CONTROL\.shellHeight/);
+assert.match(coordinator, /itemSize: SL_TAB_ROW_CONTROL\.itemSize/);
+assert.match(coordinator, /rightInset: SLLayout\.screenGutter/);
+assert.match(coordinator, /right: SL_FLOATING_CONTROL\.rightInset/);
+assert.match(coordinator, /height: SL_FLOATING_CONTROL\.size/);
+assert.match(coordinator, /width: SL_FLOATING_CONTROL\.size/);
 assert.match(coordinator, /pointerEvents="box-none"/);
-assert.match(coordinator, /context === 'sheet'[\s\S]*safeBottom \+ 18/);
-assert.match(coordinator, /context === 'tab-screen'[\s\S]*safeBottom \+ 70/);
-assert.match(coordinator, /slot \* 60/);
+assert.match(coordinator, /context === 'sheet'[\s\S]*safeBottom \+ SL_FLOATING_CONTROL\.sheetBottomInset/);
+assert.match(coordinator, /context === 'tab-screen'[\s\S]*SL_TAB_ROW_CONTROL\.shellHeight[\s\S]*SL_FLOATING_CONTROL\.gap/);
+assert.match(coordinator, /slot \* \(SL_FLOATING_CONTROL\.size \+ SL_FLOATING_CONTROL\.gap\)/);
+assert.match(coordinator, /<SLTabRowControlShell/);
 assert.doesNotMatch(coordinator, /AsyncStorage|fetchJson|preferred_units\s*:/);
 
 for (const file of [
