@@ -20,7 +20,7 @@ import {
   workoutDetailEquipmentIdentityKey,
   workoutDetailMachineIdentityChoices,
   workoutDetailMachineVariantIdentity,
-} from '../dev-mocks/fixtures/workout-detail.ts';
+} from './fixtures/workout-detail.ts';
 import {
   MANUFACTURER_REGISTRY,
 } from '../lib/manufacturer-registry.ts';
