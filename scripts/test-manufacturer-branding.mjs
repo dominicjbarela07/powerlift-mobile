@@ -49,6 +49,7 @@ const requiredManufacturers = [
   'mega-mass',
   'gymleco',
   'pit-shark',
+  'watson',
 ];
 
 const registryKeys = new Set(MANUFACTURER_REGISTRY.map((entry) => entry.key));
@@ -132,6 +133,8 @@ const resolutionCases = [
   ['Gym Leco Fitness', 'gymleco'],
   ['Pit Shark', 'pit-shark'],
   ['PitShark Equipment', 'pit-shark'],
+  ['Watson', 'watson'],
+  ['WATSON GYM EQUIPMENT', 'watson'],
 ];
 for (const [input, expectedKey] of resolutionCases) {
   assert.equal(resolveManufacturerBrand(input).key, expectedKey, `Failed alias: ${input}`);
@@ -149,6 +152,7 @@ for (const manufacturer of [
   'Torque Fitness',
   'Icarian',
   'Pit Shark',
+  'Watson',
 ]) {
   assert.equal(
     resolveManufacturerBrand(manufacturer).logoSurface,
