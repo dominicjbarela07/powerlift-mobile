@@ -35,6 +35,7 @@ const areas = [
   ['Session Workspace Athlete View handoff', ['scripts/test-session-workspace-athlete-preview-handoff.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],
   ['visible control action reachability', ['scripts/test-major-visible-control-actions.mjs']],
+  ['Production Android/iOS release parity guard', ['scripts/test-production-release-policy.mjs']],
 ];
 
 const failures = [];

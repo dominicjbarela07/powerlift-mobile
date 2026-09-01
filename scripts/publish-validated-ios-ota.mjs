@@ -17,6 +17,13 @@ const message = valueFor('--message');
 const prepareOnly = args.includes('--prepare-only');
 const nodeModules = path.join(root, 'node_modules');
 
+if (branch.toLowerCase().includes('production')) {
+  throw new Error(
+    'Production publication is blocked in the iOS-only publisher. '
+    + 'Use scripts/eas-update-production.sh so shared releases target Android + iOS.',
+  );
+}
+
 if (!fs.existsSync(nodeModules)) {
   throw new Error('OTA blocked: node_modules is missing. Run npm ci in this worktree.');
 }
