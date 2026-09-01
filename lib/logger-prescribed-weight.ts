@@ -98,7 +98,7 @@ function finalizeResolution(
   const resolution = endpoints.length === 1 ? 'exact' : 'range';
   const displayLabel = resolution === 'exact'
     ? lower.displayLabel
-    : `${lower.displayLabel} – ${upper.displayLabel}`;
+    : `${lower.displayValue}–${upper.displayValue} ${requestedUnit}`;
 
   return Object.freeze({
     canonicalWeightKg: lower.canonicalWeightKg,

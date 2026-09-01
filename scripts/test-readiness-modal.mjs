@@ -140,6 +140,8 @@ assert.ok(component.includes('.onUpdate(({ x })'));
 assert.ok(component.includes('<GestureDetector gesture={railGesture}>'));
 assert.ok(!component.includes('onStartShouldSetResponder'), 'the rail must not compete with its ScrollView through the legacy responder API');
 assert.ok(component.includes('accessibilityState={{ busy: submitting, disabled: submitting }}'));
-assert.ok(component.includes('animationType={reduceMotion'));
+assert.ok(component.includes('<StrengthLedgerBottomSheet'));
+assert.ok(component.includes("motionPreset={reduceMotion ? 'standard' : 'deliberate'}"));
+assert.ok(component.includes('dismissalBlocked={submitting}'));
 
 console.log('[readiness-modal] unit, validation, retry, copy, and accessibility tests passed');
