@@ -81,6 +81,15 @@ import {
   parseSessionLifecycleInstant,
   resolveSessionTimeZone,
 } from '@/lib/post-session-times';
+import {
+  CANONICAL_PR_EVENT_TYPES,
+  accomplishmentMatchesMovement,
+  accomplishmentSetLogId,
+  buildPersonalBestEvidence,
+  finitePrNumber as finiteNumber,
+  type PersonalBestEvidence,
+  type PersonalBestSetEvidence,
+} from '@/lib/post-session-pr-evidence';
 
 export type CompletedRecapSet = {
   id: number;
@@ -399,11 +408,6 @@ type Props = {
 };
 
 export type RecapTab = 'overview' | 'performed' | 'personal_bests' | 'plan' | 'coach';
-const CANONICAL_PR_EVENT_TYPES = new Set([
-  'CORE_E1RM_PR', 'CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'CORE_RPE_PR',
-  'CORE_SAME_WEIGHT_REP_PR', 'CORE_BLOCK_E1RM_BEST', 'CORE_BLOCK_WEIGHT_BEST',
-  'CORE_BLOCK_REP_MAX_BEST', 'CORE_BLOCK_SAME_WEIGHT_REP_BEST',
-]);
 
 function numberLabel(value: unknown, decimals = 1) {
   const parsed = Number(value);
@@ -432,103 +436,94 @@ function absoluteAssetUrl(value?: string | null) {
   return path.startsWith('http') ? path : `${API_BASE}${path}`;
 }
 
-function normalizedEvidenceLabel(value: unknown) {
-  return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+type CanonicalPrEvidence = PersonalBestEvidence<CompletedRecapMovement>;
+
+function completedSetFromRecord(set: PersonalBestSetEvidence | null): CompletedRecapSet | null {
+  if (!set) return null;
+  return {
+    id: set.set_log_id,
+    actual_weight_kg: set.weight_kg,
+    actual_reps: set.reps,
+    actual_rpe: set.rpe,
+    actual_rir: set.rir,
+  };
 }
 
-function accomplishmentItemId(row: Record<string, any>) {
-  const parsed = Number(row.workout_item_id ?? row.source?.workout_item_id);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-}
-
-function accomplishmentSetLogId(row: Record<string, any>) {
-  const parsed = Number(row.source_set_log_id ?? row.trigger_set_log_id ?? row.source?.set_log_id);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-}
-
-function accomplishmentMatchesMovement(row: Record<string, any>, movement: CompletedRecapMovement) {
-  const itemId = accomplishmentItemId(row);
-  if (itemId != null && movement.item_id != null) return itemId === Number(movement.item_id);
-  const label = normalizedEvidenceLabel(row.movement_label ?? row.source?.movement_label);
-  return !!label && label === normalizedEvidenceLabel(movement.label);
-}
-
-type CanonicalPrEvidence = {
-  event: Record<string, any>;
-  movement: CompletedRecapMovement | null;
-};
-
-function prClassification(eventType?: string | null) {
-  const type = String(eventType || '').toUpperCase();
-  const scope = type.includes('BLOCK_') ? 'BLOCK ' : '';
-  if (type.includes('REP_MAX') || type.includes('SAME_WEIGHT_REP')) return `${scope}REP ${scope ? 'BEST' : 'PR'}`;
-  if (type.includes('WEIGHT')) return `${scope}LOAD ${scope ? 'BEST' : 'PR'}`;
-  if (type.includes('E1RM')) return `${scope}ESTIMATED STRENGTH ${scope ? 'BEST' : 'PR'}`;
-  if (type.includes('RPE')) return `${scope}EFFORT ${scope ? 'BEST' : 'PR'}`;
-  return `${scope}PERSONAL ${scope ? 'BEST' : 'RECORD'}`;
-}
-
-function finiteNumber(value: unknown) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : null;
-}
-
-function prSourceSet(event: Record<string, any>, movement?: CompletedRecapMovement | null) {
-  const setLogId = accomplishmentSetLogId(event);
-  return movement?.sets.find((set) => Number(set.id) === Number(setLogId))
-    || (movement?.best_set ? {
-      id: Number(movement.best_set.set_log_id || 0),
-      actual_weight_kg: movement.best_set.weight_kg,
-      actual_reps: movement.best_set.reps,
-      actual_rpe: movement.best_set.rpe,
-      actual_rir: movement.best_set.rir,
-    } : null);
+function prClassification(evidence: CanonicalPrEvidence) {
+  const { metric, target_reps: reps } = evidence.record;
+  const record = metric === 'rep_max_load' ? `${numberLabel(reps, 0)}RM`
+    : metric === 'same_load_reps' ? 'SAME-LOAD REP'
+    : metric === 'max_load' ? 'MAX LOAD'
+    : metric === 'estimated_1rm' ? 'ESTIMATED 1RM'
+    : metric === 'movement_volume' ? 'MOVEMENT VOLUME'
+    : metric === 'matched_performance_effort' ? 'MATCHED-PERFORMANCE EFFORT'
+    : 'PERSONAL RECORD';
+  const scopes = evidence.scopes.includes('career') && evidence.scopes.includes('block')
+    ? 'PR · BLOCK BEST'
+    : evidence.scopes.includes('block') ? 'BLOCK BEST' : 'PR';
+  return `${record} ${scopes}`;
 }
 
 function prEvidencePresentation(evidence: CanonicalPrEvidence, unit: DisplayWeightUnit) {
-  const { event, movement } = evidence;
-  const type = String(event.event_type || '').toUpperCase();
-  const sourceSet = prSourceSet(event, movement);
-  const current = finiteNumber(event.current_value);
-  const prior = finiteNumber(event.prior_value);
-  const eventDelta = finiteNumber(event.delta) ?? (current != null && prior != null ? current - prior : null);
+  const { movement, record } = evidence;
+  const sourceSet = completedSetFromRecord(record.source_set);
+  const priorSet = completedSetFromRecord(record.prior_set);
+  const current = record.current_value;
+  const prior = record.prior_value;
+  const eventDelta = record.delta;
   const percent = current != null && prior != null && Math.abs(prior) > 0.0001 ? ((current - prior) / Math.abs(prior)) * 100 : null;
-  const sourceWeight = finiteNumber(sourceSet?.actual_weight_kg ?? event.evidence?.actual_weight_kg);
-  const sourceReps = finiteNumber(sourceSet?.actual_reps ?? event.evidence?.actual_reps);
   const sourceEffort = sourceSet ? effortLabel(sourceSet) : null;
-  let currentLabel = movement && sourceSet
+  const priorEffort = priorSet ? effortLabel(priorSet) : null;
+  const rawCurrent = movement && sourceSet
     ? `${setResultLabel(sourceSet, movement, unit)}${sourceEffort ? ` · ${sourceEffort}` : ''}`
-    : current == null ? 'Verified performance' : numberLabel(current);
-  let priorLabel = prior == null ? 'First verified record' : numberLabel(prior);
+    : 'Persisted source SetLog unavailable';
+  const rawPrior = movement && priorSet
+    ? `${setResultLabel(priorSet, movement, unit)}${priorEffort ? ` · ${priorEffort}` : ''}`
+    : null;
+  let currentLabel = rawCurrent;
+  let priorLabel = rawPrior || 'No prior qualifying record';
   let deltaLabel = eventDelta == null ? 'New verified record' : signed(eventDelta) || 'No material change';
+  let derivedFromLabel: string | null = null;
 
-  if (type.includes('REP_MAX') || type.includes('SAME_WEIGHT_REP')) {
-    const currentReps = current ?? sourceReps;
-    currentLabel = `${currentReps == null ? 'Recorded' : numberLabel(currentReps, 0)} reps${sourceWeight != null ? ` @ ${formatWeightFromKg(sourceWeight, unit)}` : ''}`;
-    priorLabel = prior == null ? 'First verified rep record' : `${numberLabel(prior, 0)} reps${sourceWeight != null ? ` @ ${formatWeightFromKg(sourceWeight, unit)}` : ''}`;
-    deltaLabel = eventDelta == null ? 'New verified record' : `${signed(eventDelta, ' reps', 0)}${percent == null ? '' : ` · ${signed(percent, '%')}`}`;
-  } else if (type.includes('WEIGHT')) {
-    const currentKg = current ?? sourceWeight;
-    currentLabel = `${formatCalculatedWeightFromKg(currentKg, unit) || 'Recorded load'}${sourceReps ? ` × ${numberLabel(sourceReps, 0)}` : ''}${sourceEffort ? ` · ${sourceEffort}` : ''}`;
-    priorLabel = prior == null ? 'First verified load record' : `${formatCalculatedWeightFromKg(prior, unit) || numberLabel(prior)}${sourceReps ? ` × ${numberLabel(sourceReps, 0)}` : ''}`;
-    deltaLabel = eventDelta == null ? 'New verified record' : `${formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta)}${percent == null ? '' : ` · ${signed(percent, '%')}`}`;
-  } else if (type.includes('E1RM')) {
-    currentLabel = formatCalculatedWeightFromKg(current, unit) || currentLabel;
-    priorLabel = prior == null ? 'First verified estimate' : formatCalculatedWeightFromKg(prior, unit) || numberLabel(prior);
-    deltaLabel = eventDelta == null ? 'New verified record' : `${formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta)}${percent == null ? '' : ` · ${signed(percent, '%')}`}`;
-  } else if (type.includes('RPE')) {
-    currentLabel = sourceSet && movement ? `${setResultLabel(sourceSet, movement, unit)} · ${sourceEffort || `RPE ${numberLabel(current)}`}` : `RPE ${numberLabel(current)}`;
-    priorLabel = prior == null ? 'First verified effort record' : `Previous RPE ${numberLabel(prior)}`;
-    deltaLabel = eventDelta == null ? 'New verified record' : `${signed(eventDelta, ' RPE')} at matched performance`;
+  if (record.metric === 'rep_max_load') {
+    deltaLabel = eventDelta == null ? `First recorded ${numberLabel(record.target_reps, 0)}RM` : formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta) || 'No material change';
+  } else if (record.metric === 'same_load_reps') {
+    deltaLabel = eventDelta == null ? 'First qualifying rep record at this load' : signed(eventDelta, Math.abs(eventDelta) === 1 ? ' rep' : ' reps', 0) || 'No material change';
+  } else if (record.metric === 'max_load') {
+    deltaLabel = eventDelta == null ? 'First recorded max load' : `${formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta)}${percent == null ? '' : ` · ${signed(percent, '%')}`}`;
+  } else if (record.metric === 'estimated_1rm') {
+    currentLabel = formatCalculatedWeightFromKg(current, unit) || 'Estimate unavailable';
+    priorLabel = priorSet && prior != null ? formatCalculatedWeightFromKg(prior, unit) || numberLabel(prior) : 'No prior qualifying record';
+    derivedFromLabel = sourceSet && movement ? `Derived from ${rawCurrent}` : null;
+    deltaLabel = eventDelta == null ? 'First verified estimate' : `${formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta)}${percent == null ? '' : ` · ${signed(percent, '%')}`}`;
+  } else if (record.metric === 'movement_volume') {
+    currentLabel = formatCompactVolumeValueFromKg(current, unit) || 'Volume unavailable';
+    priorLabel = prior == null ? 'No prior qualifying record' : formatCompactVolumeValueFromKg(prior, unit) || numberLabel(prior);
+    deltaLabel = eventDelta == null ? 'First movement-volume record' : formatCalculatedWeightDeltaFromKg(eventDelta, unit) || signed(eventDelta) || 'No material change';
+  } else if (record.metric === 'matched_performance_effort') {
+    deltaLabel = eventDelta == null ? 'First matched-effort record' : `${signed(eventDelta, ' RPE')} at matched performance`;
   }
 
   return {
-    classification: prClassification(type),
+    classification: prClassification(evidence),
     currentLabel,
     priorLabel,
     deltaLabel,
-    previousDate: event.evidence?.prior_workout_date || event.prior_workout_date || null,
+    derivedFromLabel,
+    previousDate: record.prior_set?.date || null,
   };
+}
+
+function firstRecordChartCopy(evidence: CanonicalPrEvidence) {
+  const metric = evidence.record.metric;
+  if (metric === 'rep_max_load') return {
+    title: `FIRST VERIFIED ${numberLabel(evidence.record.target_reps, 0)}RM`,
+    body: 'A second qualifying set is required before a load-progression chart exists.',
+  };
+  if (metric === 'max_load') return { title: 'FIRST VERIFIED MAX LOAD', body: 'Max-load progression begins with the next qualifying performance.' };
+  if (metric === 'estimated_1rm') return { title: 'FIRST VERIFIED ESTIMATE', body: 'Estimated 1RM progression begins with the next qualifying source set.' };
+  if (metric === 'movement_volume') return { title: 'FIRST VERIFIED MOVEMENT VOLUME', body: 'Movement-volume progression begins with the next qualifying Session.' };
+  return { title: 'FIRST VERIFIED RECORD', body: 'A second qualifying performance is required before progression can be charted.' };
 }
 
 function movementRawChange(current: CompletedRecapSet | null, previous: CompletedRecapSet | null, unit: DisplayWeightUnit) {
@@ -1298,6 +1293,9 @@ function PersonalBestsExperience({ evidence, unit }: { evidence: CanonicalPrEvid
       <View style={styles.personalBestStack}>{evidence.map((row, index) => {
         const presentation = prEvidencePresentation(row, unit);
         const equipment = row.movement?.equipment?.[0];
+        const progression = row.record.progression;
+        const progressionPointCount = progression?.points?.length || 0;
+        const firstRecordCopy = firstRecordChartCopy(row);
         return <View key={row.event.id || `${row.event.event_type}-${index}`} style={styles.personalBestCard}>
           <LinearGradient colors={['rgba(126,72,13,0.11)', 'rgba(78,31,117,0.11)', '#07090E']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
           <View style={styles.personalBestHeader}>
@@ -1305,9 +1303,9 @@ function PersonalBestsExperience({ evidence, unit }: { evidence: CanonicalPrEvid
             <View style={styles.personalBestIdentity}><Text numberOfLines={2} style={styles.personalBestMovement}>{row.movement?.label || row.event.movement_label || 'Verified movement'}</Text><Text style={styles.personalBestType}>{presentation.classification}</Text>{equipment ? <Text numberOfLines={1} style={styles.personalBestEquipment}>{equipment.manufacturer || equipment.label} · {equipmentSecondaryLabel(equipment)}</Text> : null}</View>
             <Image accessibilityIgnoresInvertColors resizeMode="contain" source={SESSION_PR_CREST_ART} style={styles.personalBestMiniCrest} />
           </View>
-          <View style={styles.personalBestResult}><Text style={styles.personalBestResultLabel}>THIS SESSION</Text><Text style={styles.personalBestResultValue}>{presentation.currentLabel}</Text></View>
+          <View style={styles.personalBestResult}><Text style={styles.personalBestResultLabel}>THIS SESSION</Text><Text style={styles.personalBestResultValue}>{presentation.currentLabel}</Text>{presentation.derivedFromLabel ? <Text style={styles.personalBestDerivedFrom}>{presentation.derivedFromLabel}</Text> : null}</View>
           <View style={styles.personalBestPriorRail}><View style={styles.personalBestPriorCopy}><Text style={styles.personalBestPriorLabel}>PREVIOUS</Text><Text style={styles.personalBestPriorValue}>{presentation.priorLabel}</Text>{presentation.previousDate ? <Text style={styles.personalBestPriorDate}>{dateLabel(presentation.previousDate)}</Text> : null}</View><Text style={styles.personalBestDelta}>{presentation.deltaLabel}</Text></View>
-          {row.movement && (row.movement.trend?.points?.length || 0) >= 2 ? <View style={styles.personalBestTrend}><Text style={styles.personalBestTrendLabel}>EXACT MOVEMENT PROGRESSION</Text><MovementTrendChart compact card trend={row.movement.trend} unit={unit} color="#D786FF" /></View> : null}
+          {progression && progressionPointCount >= 2 ? <View style={styles.personalBestTrend}><Text style={styles.personalBestTrendLabel}>{String(progression.metric_label || 'RECORD PROGRESSION').toUpperCase()}</Text><MovementTrendChart compact card trend={{ ...progression, state: progressionPointCount >= 3 ? 'trend' : 'limited_history', points: progression.points || [] }} unit={unit} color="#D786FF" /></View> : <View style={styles.personalBestFirstInstance}><Ionicons name="sparkles-outline" size={19} color="#D7A245" /><View style={styles.personalBestFirstInstanceCopy}><Text style={styles.personalBestFirstInstanceTitle}>{firstRecordCopy.title}</Text><Text style={styles.personalBestFirstInstanceBody}>{firstRecordCopy.body}</Text></View></View>}
         </View>;
       })}</View>
     </PostSessionSection>
@@ -1347,27 +1345,21 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const showPerfectPlan = Number(recapHighlights.prescribed_set_count || 0) > 0
     && Number(recapHighlights.completed_prescribed_set_count || 0) >= 0
     && Number(highlights.prescription_completion_percent || 0) > 0;
-  const personalBestEvidence = useMemo<CanonicalPrEvidence[]>(() => canonicalPrEvents.map((event) => ({
-    event,
-    movement: performedMovements.find((movement) => accomplishmentMatchesMovement(event, movement)) || null,
-  })), [canonicalPrEvents, performedMovements]);
+  const personalBestEvidence = useMemo<CanonicalPrEvidence[]>(
+    () => buildPersonalBestEvidence(canonicalPrEvents, performedMovements),
+    [canonicalPrEvents, performedMovements],
+  );
   const feedback = String(recap.coach_feedback.feedback || '').trim();
   const hasReflection = recap.reflection.session_rpe != null || !!recap.reflection.strength || !!recap.reflection.fatigue || !!String(recap.reflection.note || '').trim();
   const focusRows = useMemo(() => [...(recap.muscle_focus?.primary || []), ...(recap.muscle_focus?.secondary || [])], [recap.muscle_focus]);
   const projections = performedMovements.filter((row) => row.projection?.value_kg);
-  const firstPr = canonicalPrEvents[0];
-  const firstPrMovement = performedMovements.find((movement) => firstPr && accomplishmentMatchesMovement(firstPr, movement));
-  const firstPrBest = firstPrMovement?.best_set ? {
-    id: Number(firstPrMovement.best_set.set_log_id || 0),
-    actual_weight_kg: firstPrMovement.best_set.weight_kg,
-    actual_reps: firstPrMovement.best_set.reps,
-  } : null;
-  const firstPrValue = firstPrBest && firstPrMovement
-    ? setResultLabel(firstPrBest, firstPrMovement, unit)
+  const firstPrEvidence = personalBestEvidence[0];
+  const firstPrMovement = firstPrEvidence?.movement || null;
+  const firstPrPresentation = firstPrEvidence ? prEvidencePresentation(firstPrEvidence, unit) : null;
+  const firstPrValue = firstPrPresentation
+    ? firstPrPresentation.currentLabel
     : `${numberLabel(highlights.pr_count, 0)} verified PR${Number(highlights.pr_count) === 1 ? '' : 's'}`;
-  const firstPrDelta = firstPrMovement?.trend?.delta_kg
-    ? formatCalculatedWeightDeltaFromKg(firstPrMovement.trend.delta_kg, unit)
-    : null;
+  const firstPrDelta = firstPrPresentation?.deltaLabel || null;
   const hasPerformedEvidence = performedMovements.length > 0 && recap.session.set_count > 0;
   const athleteInitials = recap.athlete.name.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
   const feedbackInitials = String(recap.coach_feedback.author?.name || 'Coach').split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
@@ -1563,6 +1555,7 @@ const styles = StyleSheet.create({
   personalBestResult: { marginTop: 12, padding: 12, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: '#654A20', backgroundColor: 'rgba(111,73,13,0.11)' },
   personalBestResultLabel: { color: '#D5A644', fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.7 },
   personalBestResultValue: { marginTop: 5, color: SLColors.textPrimary, fontFamily: SLFontFamilies.display, fontSize: 22, lineHeight: 27 },
+  personalBestDerivedFrom: { marginTop: 5, color: '#C9B1DA', fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 16 },
   personalBestPriorRail: { minHeight: 70, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingHorizontal: 4, paddingTop: 10 },
   personalBestPriorCopy: { flex: 1, minWidth: 0 },
   personalBestPriorLabel: { color: SLColors.textMuted, fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.65 },
@@ -1571,6 +1564,10 @@ const styles = StyleSheet.create({
   personalBestDelta: { maxWidth: '48%', color: SLColors.success, fontFamily: SLFontFamilies.display, fontSize: 16, lineHeight: 21, textAlign: 'right' },
   personalBestTrend: { marginTop: 4, padding: 9, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: '#31283D', backgroundColor: '#05070B' },
   personalBestTrendLabel: { marginBottom: 5, color: '#C37BFF', fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.65 },
+  personalBestFirstInstance: { marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 11, borderRadius: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: '#5A4320', backgroundColor: 'rgba(111,73,13,0.09)' },
+  personalBestFirstInstanceCopy: { flex: 1, minWidth: 0 },
+  personalBestFirstInstanceTitle: { color: '#E2B55A', fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.65 },
+  personalBestFirstInstanceBody: { marginTop: 3, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 15 },
   canonicalSection: { gap: 8 }, canonicalSectionHeading: { minHeight: 30, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 5 }, canonicalSectionTitle: { color: '#C378FF', fontFamily: SLFontFamilies.bodyBold, fontSize: 12, letterSpacing: 0.8 }, canonicalSectionMeta: { flex: 1, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 14, textAlign: 'right' },
   sessionReadCard: { overflow: 'hidden', borderRadius: 15, borderWidth: 1, borderColor: '#343846', backgroundColor: '#07090E', padding: 9 }, canonicalMetricGrid: { flexDirection: 'row', flexWrap: 'wrap' }, canonicalMetricTile: { width: '50%', minHeight: 112, flexDirection: 'row', gap: 8, padding: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#252936' }, canonicalMetricIcon: { width: 32, height: 32, borderRadius: 9, alignItems: 'center', justifyContent: 'center' }, canonicalMetricCopy: { flex: 1, minWidth: 0 }, canonicalMetricLabel: { color: SLColors.textSecondary, fontFamily: SLFontFamilies.bodyBold, fontSize: 10, letterSpacing: 0.4, textTransform: 'uppercase' }, canonicalMetricValue: { marginTop: 4, fontFamily: SLFontFamilies.bodyBold, fontSize: 13, lineHeight: 18 }, canonicalMetricDetail: { marginTop: 5, color: SLColors.textMuted, fontFamily: SLFontFamilies.body, fontSize: 11, lineHeight: 15 },
   durationRead: { minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 9, padding: 11, borderRadius: 11, borderWidth: 1, borderColor: '#26475A', backgroundColor: 'rgba(20,72,92,0.14)' }, durationReadIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(83,203,232,0.12)' }, durationReadCopy: { flex: 1 }, durationReadValue: { color: '#EAFBFF', fontFamily: SLFontFamilies.display, fontSize: 18 }, durationReadDetail: { marginTop: 4, color: SLColors.textSecondary, fontFamily: SLFontFamilies.body, fontSize: 12, lineHeight: 17 }, sessionNarrative: { marginTop: 9, padding: 12, borderRadius: 11, backgroundColor: 'rgba(119,62,177,0.12)', color: SLColors.textPrimary, fontFamily: SLFontFamilies.body, fontSize: 14, lineHeight: 20 },

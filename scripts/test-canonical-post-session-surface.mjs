@@ -9,6 +9,7 @@ const coachAdapter = read('components/coach-mobile/CoachSessionReviewerV3.tsx');
 const athleteRoute = read('app/(tabs)/workout/[workoutId].tsx');
 const coachRoute = read('app/(tabs)/coach-session-review.tsx');
 const certification = read('app/dev-session-recap-certification.tsx');
+const prEvidence = read('lib/post-session-pr-evidence.ts');
 const styleFontSize = (name) => {
   const style = surface.match(new RegExp(`\\b${name}: \\{([^}]*)\\}`));
   assert.ok(style, `missing ${name} style`);
@@ -47,6 +48,13 @@ assert.doesNotMatch(activeSurface, /shownMovements|hiddenMovementCount|showAllMo
 for (const label of ['THIS SESSION', 'LAST TIME', 'CHANGE', 'FIRST EXACT EXPOSURE']) assert.ok(activeSurface.includes(label), `collapsed movement evidence is missing ${label}`);
 assert.match(activeSurface, /<MovementTrendChart compact card trend=\{movement\.trend\}/, 'collapsed movement cards must keep progression visible and inspectable');
 assert.match(activeSurface, /SESSION_PR_CREST_ART/, 'Personal Bests must use the governed premium Session PR crest');
+assert.match(activeSurface, /buildPersonalBestEvidence\(canonicalPrEvents, performedMovements\)/, 'Personal Bests must normalize typed record evidence before presentation');
+assert.doesNotMatch(activeSurface, /currentReps = current/, 'a generic PR metric value must never be rendered as performed reps');
+assert.doesNotMatch(activeSurface, /movement\.trend.*personalBestTrend/, 'Personal Best cards must not inherit the movement generic e1RM chart');
+assert.match(activeSurface, /progression\.metric_label/, 'Personal Best chart labels must come from the record-specific progression contract');
+assert.match(prEvidence, /if \(value == null \|\| value === ''/, 'null PR evidence must fail closed instead of coercing to zero');
+assert.match(prEvidence, /movement\?\.sets.*Number\(set\.id\).*Number\(sourceId\)/, 'PR evidence must resolve the exact source SetLog ID');
+assert.doesNotMatch(prEvidence, /best_set/, 'PR source evidence must never fall back to an unrelated movement best set');
 
 for (const [name, minimum] of [
   ['movementComparisonValue', 13],
@@ -96,6 +104,7 @@ assert.match(certification, /reviewer_v3:/, 'the DEV proof fixture must exercise
 assert.match(certification, /canonical_identity_id: 9000 \+ itemId/, 'every proof movement must carry a stable governed identity for fail-closed artwork');
 assert.match(certification, /params\.tab === 'coach' \? 'coach'/, 'the DEV proof fixture must expose every role lens');
 assert.match(certification, /params\.tab === 'personal_bests' \? 'personal_bests'/, 'the DEV proof fixture must expose the conditional PR lens');
+assert.match(certification, /params\.scenario === 'first-pr'/, 'the DEV proof fixture must expose a first-instance PR with no fabricated chart');
 assert.match(certification, /onResumeSession=\{\(\) => undefined\}/, 'the DEV proof fixture must expose the athlete toolkit');
 assert.match(certification, /onOpenMovementHistory=\{\(\) => undefined\}/, 'the DEV proof fixture must expose exact governed movement history');
 

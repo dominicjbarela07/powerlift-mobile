@@ -110,8 +110,16 @@ function movement(
   };
 }
 
+const competitionBench = movement(1, 'Competition Bench Press', 'chest', ['front_delts', 'triceps'], 124.738, 4, { kind: 'core', lift: 'BN', pr: true, video: 'hinge', setCount: 4 });
+competitionBench.sets[0].actual_rpe = 6;
+competitionBench.sets[0].actual_rir = null;
+if (competitionBench.best_set) {
+  competitionBench.best_set.rpe = 6;
+  competitionBench.best_set.rir = null;
+}
+
 const movements = [
-  movement(1, 'Romanian Deadlift', 'hamstrings', ['glutes', 'lower_back'], 83.9146, 10, { kind: 'core', lift: 'DL', pr: true, video: 'hinge', setCount: 4 }),
+  competitionBench,
   movement(2, 'Machine Shoulder Press', 'front_delts', ['side_delts', 'triceps'], 70.3068, 10, { equipment: 'Newtech · Plate Loaded', pr: true, setCount: 4 }),
   movement(3, 'Walking Lunge', 'quads', ['glutes'], 61.235, 12, { equipment: 'Rogue · Dumbbells', pr: true }),
   movement(4, 'Machine Lateral Raise', 'side_delts', ['front_delts'], 36.2874, 13, { equipment: 'Matrix · Selectorized', video: 'machine' }),
@@ -155,9 +163,55 @@ const recap: CompletedSessionRecapPayload = {
     source: 'performed',
   },
   accomplishments: [
-    { id: 91, event_type: 'CORE_REP_MAX_PR', movement_label: 'Romanian Deadlift', workout_item_id: 1, source_set_log_id: 1001, current_value: 10, prior_value: 8, delta: 2, unit: 'reps' },
-    { id: 92, event_type: 'CORE_WEIGHT_PR', movement_label: 'Machine Shoulder Press', workout_item_id: 2, source_set_log_id: 2001, current_value: 70.3068, prior_value: 65.7709, delta: 4.5359, unit: 'kg' },
-    { id: 93, event_type: 'CORE_E1RM_PR', movement_label: 'Walking Lunge', workout_item_id: 3, source_set_log_id: 3001, current_value: 85.729, prior_value: 80.739, delta: 4.99, unit: 'kg' },
+    {
+      id: 91, event_type: 'CORE_REP_MAX_PR', movement_label: 'Competition Bench Press', workout_item_id: 1,
+      source_set_log_id: 1001, scope: 'career', current_value: 124.738, prior_value: 120.202, delta: 4.536,
+      comparison_bucket: 'reps:4', unit: 'kg', evidence: { actual_weight_kg: 124.738, actual_reps: 4, actual_rpe: 6, rep_count: 4, prior_source_set_log_id: 901 },
+      record_evidence: {
+        metric: 'rep_max_load', scope: 'career', target_reps: 4,
+        source_set: { set_log_id: 1001, date: '2026-08-13', workout_id: 742, weight_kg: 124.738, reps: 4, rpe: 6, rir: null },
+        prior_set: { set_log_id: 901, date: '2026-07-24', workout_id: 724, weight_kg: 120.202, reps: 4, rpe: 6, rir: null },
+        current_value: 124.738, prior_value: 120.202, delta: 4.536, unit: 'kg', first_record: false,
+        progression: {
+          metric: 'rep_max_load', metric_label: '4RM Progression', metric_unit: 'kg', direction: 'higher_is_better', state: 'trend', delta_value: 4.536,
+          points: [
+            { date: '2026-06-12', workout_id: 700, set_log_id: 701, metric_value: 111.13, weight_kg: 111.13, reps: 4 },
+            { date: '2026-06-26', workout_id: 707, set_log_id: 708, metric_value: 115.666, weight_kg: 115.666, reps: 4 },
+            { date: '2026-07-24', workout_id: 724, set_log_id: 901, metric_value: 120.202, weight_kg: 120.202, reps: 4, rpe: 6 },
+            { date: '2026-08-13', workout_id: 742, set_log_id: 1001, metric_value: 124.738, weight_kg: 124.738, reps: 4, rpe: 6, current: true },
+          ],
+        },
+      },
+    },
+    {
+      id: 94, event_type: 'CORE_BLOCK_REP_MAX_BEST', movement_label: 'Competition Bench Press', workout_item_id: 1,
+      source_set_log_id: 1001, scope: 'block', current_value: 124.738, prior_value: 120.202, delta: 4.536,
+      comparison_bucket: 'reps:4', unit: 'kg', evidence: { actual_weight_kg: 124.738, actual_reps: 4, actual_rpe: 6, rep_count: 4, prior_source_set_log_id: 901 },
+    },
+    {
+      id: 92, event_type: 'CORE_WEIGHT_PR', movement_label: 'Machine Shoulder Press', workout_item_id: 2, source_set_log_id: 2001, current_value: 70.3068, prior_value: 65.7709, delta: 4.5359, unit: 'kg',
+      record_evidence: {
+        metric: 'max_load', scope: 'career', source_set: { set_log_id: 2001, date: '2026-08-13', workout_id: 742, weight_kg: 70.3068, reps: 10, rir: 2 },
+        prior_set: { set_log_id: 1901, date: '2026-08-02', workout_id: 732, weight_kg: 65.7709, reps: 10, rir: 2 }, current_value: 70.3068, prior_value: 65.7709, delta: 4.5359, unit: 'kg', first_record: false,
+        progression: { metric: 'max_load', metric_label: 'Max Load Progression', metric_unit: 'kg', direction: 'higher_is_better', state: 'trend', delta_value: 4.5359, points: [
+          { date: '2026-07-10', workout_id: 710, set_log_id: 1801, metric_value: 61.235, weight_kg: 61.235, reps: 10 },
+          { date: '2026-08-02', workout_id: 732, set_log_id: 1901, metric_value: 65.7709, weight_kg: 65.7709, reps: 10 },
+          { date: '2026-08-13', workout_id: 742, set_log_id: 2001, metric_value: 70.3068, weight_kg: 70.3068, reps: 10, current: true },
+        ] },
+      },
+    },
+    {
+      id: 93, event_type: 'CORE_E1RM_PR', movement_label: 'Walking Lunge', workout_item_id: 3, source_set_log_id: 3001, current_value: 85.729, prior_value: 80.739, delta: 4.99, unit: 'kg',
+      record_evidence: {
+        metric: 'estimated_1rm', scope: 'career', source_set: { set_log_id: 3001, date: '2026-08-13', workout_id: 742, weight_kg: 61.235, reps: 12, rir: 2 },
+        prior_set: { set_log_id: 2901, date: '2026-08-02', workout_id: 732, weight_kg: 57.153, reps: 12, rir: 2 }, current_value: 85.729, prior_value: 80.739, delta: 4.99, unit: 'kg', first_record: false,
+        progression: { metric: 'estimated_1rm', metric_label: 'Estimated 1RM Progression', metric_unit: 'kg', direction: 'higher_is_better', state: 'trend', delta_value: 4.99, points: [
+          { date: '2026-07-10', workout_id: 710, set_log_id: 2801, metric_value: 75.75, weight_kg: 54.431, reps: 12 },
+          { date: '2026-08-02', workout_id: 732, set_log_id: 2901, metric_value: 80.739, weight_kg: 57.153, reps: 12 },
+          { date: '2026-08-13', workout_id: 742, set_log_id: 3001, metric_value: 85.729, weight_kg: 61.235, reps: 12, current: true },
+        ] },
+      },
+    },
   ],
   reflection: { session_rpe: 7, strength: 'strong', fatigue: 'medium', note: 'Felt strong today. Lower back held up well on RDLs. Lunges were brutal. 🔥', submitted_at: '2026-08-13T16:25:00-07:00' },
   coach_feedback: { feedback: 'Great execution today. Strong hamstring focus and excellent volume. RDL PR is solid—keep building consistency.', feedback_at: '2026-08-13T18:45:00-07:00', reviewed: true, reviewed_at: '2026-08-13T18:45:00-07:00', outcome: 'on_track', author: { id: 12, name: 'Coach John' } },
@@ -252,10 +306,42 @@ const sparseRecap: CompletedSessionRecapPayload = {
   reviewer_v3: null,
 };
 
+const firstRepPrCareer = {
+  ...recap.accomplishments[0],
+  prior_value: null,
+  delta: null,
+  evidence: { ...recap.accomplishments[0].evidence, prior_source_set_log_id: undefined },
+  record_evidence: {
+    ...recap.accomplishments[0].record_evidence,
+    prior_set: null,
+    prior_value: null,
+    delta: null,
+    first_record: true,
+    progression: {
+      ...recap.accomplishments[0].record_evidence.progression,
+      state: 'first_instance',
+      delta_value: null,
+      points: recap.accomplishments[0].record_evidence.progression.points.slice(-1),
+    },
+  },
+};
+const firstRepPrRecap: CompletedSessionRecapPayload = {
+  ...recap,
+  session: { ...recap.session, movement_count: 1, set_count: competitionBench.sets.length },
+  performed_movements: [competitionBench],
+  highlights: { ...recap.highlights, pr_count: 2, accomplishment_count: 2 },
+  accomplishments: [
+    firstRepPrCareer,
+    { ...recap.accomplishments[1], prior_value: null, delta: null },
+  ],
+};
+
 export default function SessionRecapCertificationScreen() {
   const params = useLocalSearchParams<{ mode?: string; units?: string; offset?: string; expand?: string; tab?: string; tools?: string; scenario?: string }>();
   const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
-  const activeRecap = params.scenario === 'sparse' ? sparseRecap : recap;
+  const activeRecap = params.scenario === 'sparse'
+    ? sparseRecap
+    : params.scenario === 'first-pr' ? firstRepPrRecap : recap;
   if (!__DEV__) return null;
   return <>
     <Stack.Screen options={{ headerShown: false }} />
