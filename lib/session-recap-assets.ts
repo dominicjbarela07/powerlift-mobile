@@ -15,6 +15,7 @@ const VIDEO_FIXTURE_ASSETS: Readonly<Record<string, ImageSourcePropType>> = {
 };
 
 export const SESSION_RECAP_ARCHIVE_ART = require('@/assets/images/post-session-ledger-concept-v1.png') as ImageSourcePropType;
+export const SESSION_PR_CREST_ART = require('@/assets/images/session-recap/session-pr-crest-v1.png') as ImageSourcePropType;
 
 export function sessionRecapHighlightAsset(kind: SessionRecapHighlightKind): ImageSourcePropType {
   return HIGHLIGHT_ASSETS[kind];

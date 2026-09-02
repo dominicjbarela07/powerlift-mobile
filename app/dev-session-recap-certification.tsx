@@ -112,11 +112,12 @@ function movement(
 
 const movements = [
   movement(1, 'Romanian Deadlift', 'hamstrings', ['glutes', 'lower_back'], 83.9146, 10, { kind: 'core', lift: 'DL', pr: true, video: 'hinge', setCount: 4 }),
-  movement(2, 'Machine Shoulder Press', 'front_delts', ['side_delts', 'triceps'], 70.3068, 10, { equipment: 'Newtech · Plate Loaded', setCount: 4 }),
-  movement(3, 'Walking Lunge', 'quads', ['glutes'], 61.235, 12, { equipment: 'Rogue · Dumbbells' }),
+  movement(2, 'Machine Shoulder Press', 'front_delts', ['side_delts', 'triceps'], 70.3068, 10, { equipment: 'Newtech · Plate Loaded', pr: true, setCount: 4 }),
+  movement(3, 'Walking Lunge', 'quads', ['glutes'], 61.235, 12, { equipment: 'Rogue · Dumbbells', pr: true }),
   movement(4, 'Machine Lateral Raise', 'side_delts', ['front_delts'], 36.2874, 13, { equipment: 'Matrix · Selectorized', video: 'machine' }),
   movement(5, 'Leg Extension', 'quads', [], 29.4835, 15, { equipment: 'Matrix · Selectorized' }),
   movement(6, 'Standing Calf Raise', 'calves', [], 40.8233, 15, { equipment: 'Bodymasters · Selectorized' }),
+  movement(7, 'Single-Arm Cable Rear Delt Cross-Body Fly', 'rear_delts', ['upper_back'], 12.247, 14, { equipment: 'Prime Fitness · Functional Trainer' }),
 ];
 
 const recap: CompletedSessionRecapPayload = {
@@ -128,7 +129,7 @@ const recap: CompletedSessionRecapPayload = {
     label: 'W4 Lower B', date: '2026-08-13', status: 'completed',
     started_at: '2026-08-13T15:39:00-07:00',
     completed_at: '2026-08-13T16:23:00-07:00', duration_seconds: 2640,
-    set_count: 20, movement_count: 6, video_count: 2, total_volume_kg: 7302.82,
+    set_count: 23, movement_count: 7, video_count: 2, total_volume_kg: 7817.19,
     reported_bodyweight: { reported_bodyweight_kg: 64.772, training_date: '2026-08-13', source: 'PRE_SESSION_READINESS' },
     volume_trend: {
       scope: 'current_training_block', delta_kg: 544.31,
@@ -137,15 +138,15 @@ const recap: CompletedSessionRecapPayload = {
         { date: '2026-07-24', workout_id: 724, volume_kg: 5352.39 },
         { date: '2026-08-02', workout_id: 732, volume_kg: 5896.7 },
         { date: '2026-08-09', workout_id: 739, volume_kg: 6758.51 },
-        { date: '2026-08-13', workout_id: 742, volume_kg: 7302.82, current: true },
+        { date: '2026-08-13', workout_id: 742, volume_kg: 7817.19, current: true },
       ],
     },
   },
   highlights: {
-    summary_id: 'session:742:certification', session_streak: 76, pr_count: 1,
-    accomplishment_count: 1, session_volume_kg: 7302.82,
-    all_prescribed_work_logged: true, prescribed_set_count: 20,
-    completed_prescribed_set_count: 20, prescription_completion_percent: 100,
+    summary_id: 'session:742:certification', session_streak: 76, pr_count: 3,
+    accomplishment_count: 3, session_volume_kg: 7817.19,
+    all_prescribed_work_logged: true, prescribed_set_count: 23,
+    completed_prescribed_set_count: 23, prescription_completion_percent: 100,
   },
   performed_movements: movements,
   muscle_focus: {
@@ -153,27 +154,31 @@ const recap: CompletedSessionRecapPayload = {
     secondary: [{ muscle_id: 'adductors', score: 2.5 }, { muscle_id: 'lower_back', score: 1.5 }],
     source: 'performed',
   },
-  accomplishments: [{ id: 91, event_type: 'CORE_REP_MAX_PR', movement_label: 'Romanian Deadlift', workout_item_id: 1, source_set_log_id: 1001 }],
+  accomplishments: [
+    { id: 91, event_type: 'CORE_REP_MAX_PR', movement_label: 'Romanian Deadlift', workout_item_id: 1, source_set_log_id: 1001, current_value: 10, prior_value: 8, delta: 2, unit: 'reps' },
+    { id: 92, event_type: 'CORE_WEIGHT_PR', movement_label: 'Machine Shoulder Press', workout_item_id: 2, source_set_log_id: 2001, current_value: 70.3068, prior_value: 65.7709, delta: 4.5359, unit: 'kg' },
+    { id: 93, event_type: 'CORE_E1RM_PR', movement_label: 'Walking Lunge', workout_item_id: 3, source_set_log_id: 3001, current_value: 85.729, prior_value: 80.739, delta: 4.99, unit: 'kg' },
+  ],
   reflection: { session_rpe: 7, strength: 'strong', fatigue: 'medium', note: 'Felt strong today. Lower back held up well on RDLs. Lunges were brutal. 🔥', submitted_at: '2026-08-13T16:25:00-07:00' },
   coach_feedback: { feedback: 'Great execution today. Strong hamstring focus and excellent volume. RDL PR is solid—keep building consistency.', feedback_at: '2026-08-13T18:45:00-07:00', reviewed: true, reviewed_at: '2026-08-13T18:45:00-07:00', outcome: 'on_track', author: { id: 12, name: 'Coach John' } },
   readiness_context: { sleep_quality: 7.5, stress: 4, energy: 8, soreness: 5, readiness_score: 7.5, bodyweight_kg: 64.772 },
   plan: { available: true, programming_notes: 'Controlled eccentric on all posterior-chain work.', movements: movements.map((row) => ({ item_id: row.item_id, label: row.label, sets: row.sets.length, reps: row.best_set?.reps, rir_target: 2 })) },
   reviewer_v3: {
     schema_version: 'coach-session-reviewer-v3',
-    comparator: { workout_id: 739, label: 'W3 Lower B', date: '2026-08-09', matched_movement_count: 6 },
+    comparator: { workout_id: 739, label: 'W3 Lower B', date: '2026-08-09', matched_movement_count: 7 },
     session_read: {
-      performance: { state: 'improved', label: 'Improving', counts: { improved: 3, stable: 2, declined: 1 }, comparable_count: 6 },
-      execution: { logged_sets: 20, planned_sets: 20, completion_percent: 100 },
+      performance: { state: 'improved', label: 'Improving', counts: { improved: 4, stable: 2, declined: 1 }, comparable_count: 7 },
+      execution: { logged_sets: 23, planned_sets: 23, completion_percent: 100 },
       recovery: { state: 'below_baseline', label: 'Below baseline' },
       reflection: { state: 'higher_effort', label: 'Higher effort' },
-      synthesis: 'Three of six comparable movements improved. Execution was complete; recovery entered below the recent baseline and should be monitored without implying causation.',
+      synthesis: 'Four of seven comparable movements improved. Recovery entered below the recent baseline.',
     },
     what_changed: {
-      movement_outcomes: { improved: 3, stable: 2, declined: 1 },
-      volume: { current_kg: 7302.82, previous_kg: 6758.51, delta_percent: 8.1 },
-      logged_sets: { current: 20, previous: 19, delta: 1 },
+      movement_outcomes: { improved: 4, stable: 2, declined: 1 },
+      volume: { current_kg: 7817.19, previous_kg: 6758.51, delta_percent: 15.7 },
+      logged_sets: { current: 23, previous: 20, delta: 3 },
       average_effort_rpe_equivalent: { current: 8.2, previous: 7.8, delta: 0.4 },
-      pr_count: 1,
+      pr_count: 3,
     },
     duration: { current_seconds: 2640, baseline_seconds: 3120, sample_size: 4 },
     recovery: {
@@ -200,7 +205,7 @@ const recap: CompletedSessionRecapPayload = {
       note: 'Felt strong today. Lower back held up well on RDLs. Lunges were brutal. 🔥',
     },
     coach_read: {
-      performance: '3 improved · 2 stable · 1 declined', recovery: 'Below recent sleep baseline', reflection: 'Higher effort', execution: '20 / 20 sets',
+      performance: '4 improved · 2 stable · 1 declined', recovery: 'Below recent sleep baseline', reflection: 'Higher effort', execution: '23 / 23 sets',
       attention: [{ kind: 'movement_decline', label: 'Machine lateral raise declined across the exact comparable exposure.', item_id: 4 }],
     },
   },
@@ -259,7 +264,7 @@ export default function SessionRecapCertificationScreen() {
       preferredUnits={params.units === 'kg' ? 'kg' : 'lbs'}
       sessionTimeZone="America/Los_Angeles"
       viewerMode={params.mode === 'coach' ? 'coach' : 'athlete'}
-      initialTab={params.tab === 'coach' ? 'coach' : params.tab === 'plan' ? 'plan' : params.tab === 'performed' ? 'performed' : 'overview'}
+      initialTab={params.tab === 'coach' ? 'coach' : params.tab === 'plan' ? 'plan' : params.tab === 'personal_bests' ? 'personal_bests' : params.tab === 'performed' ? 'performed' : 'overview'}
       initialToolsOpen={params.tools === '1'}
       initialScrollOffsetY={initialScrollOffsetY}
       initialExpandedItemId={Number(params.expand) || undefined}
