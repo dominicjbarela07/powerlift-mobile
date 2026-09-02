@@ -18,7 +18,7 @@ assert.match(component, /video_attachment_id/, 'video evidence must remain reach
 assert.match(component, /recap\.accomplishments/, 'accomplishments must render');
 assert.match(component, /recap\.reflection/, 'athlete reflection must render');
 assert.match(component, /recap\.coach_feedback/, 'coach feedback must render');
-assert.match(component, /export type RecapTab = 'overview' \| 'performed' \| 'plan' \| 'coach'/, 'the shared surface must expose the governed role-aware lenses');
+assert.match(component, /export type RecapTab = 'overview' \| 'performed' \| 'personal_bests' \| 'plan' \| 'coach'/, 'the shared surface must expose the governed role-aware lenses');
 assert.match(component, /viewerMode === 'coach' \? \[\{ key: 'coach' as const/, 'the Coach lens must remain role-gated');
 assert.match(component, /superset_group/, 'superset context must be preserved');
 assert.doesNotMatch(component, /Evidence recorded/, 'movement cards must render performance instead of database-state filler');
@@ -37,9 +37,11 @@ assert.match(component, /BEST SET VIDEO/, 'best-set video evidence must be visib
 assert.match(component, /WHAT CHANGED/, 'Session-level comparison analysis must be present');
 assert.match(component, /MOVEMENT PROGRESSION/, 'governed movement progression cards must be present');
 assert.match(component, /kind="streak"/, 'the Session Streak must render through the premium highlight artwork component');
+assert.match(component, /PersonalBestsExperience/, 'verified PR evidence must have a dedicated high-fidelity lens');
+assert.match(recapAssets, /SESSION_PR_CREST_ART = require\('@\/assets\/images\/session-recap\/session-pr-crest-v1\.png'\)/, 'Personal Bests must use the governed Session crest asset');
 assert.match(recapAssets, /streak: require\('@\/assets\/images\/session-recap\/session-streak-medallion-v1\.png'\)/, 'the Session Streak must use the canonical Ledger medallion asset');
 assert.match(certification, /const movements = \[/, 'the DEV certification route must use a deterministic full-evidence Session');
-assert.equal((certification.match(/movement\(\d+,/g) || []).length, 6, 'the certification Session must contain six canonical movements');
+assert.equal((certification.match(/movement\(\d+,/g) || []).length, 7, 'the certification Session must exceed the retired six-movement truncation threshold');
 assert.equal((certification.match(/video: '(hinge|machine)'/g) || []).length, 2, 'the certification Session must contain two video evidence fixtures');
 assert.match(certification, /volume_trend:/, 'the certification Session must exercise Session volume history');
 assert.match(certification, /readiness_context:/, 'the certification Session must exercise readiness evidence');
@@ -51,6 +53,7 @@ assert.match(certification, /Leg Extension/, 'certification must prove separate 
 assert.match(certification, /coachReview=\{params\.mode === 'coach'/, 'the certification route must exercise real coach review tools');
 assert.match(certification, /params\.tab === 'plan' \? 'plan'/, 'the certification route must exercise Plan\/Compare independently');
 assert.match(certification, /params\.tab === 'coach' \? 'coach'/, 'the certification route must exercise the role-gated Coach lens independently');
+assert.match(certification, /params\.tab === 'personal_bests' \? 'personal_bests'/, 'the certification route must exercise verified PR evidence independently');
 
 const athleteBranch = athleteRoute.indexOf('if (isFinishedSession && workout.completed_recap)');
 const athleteLogger = athleteRoute.indexOf('<KeyboardAvoidingView', athleteBranch);

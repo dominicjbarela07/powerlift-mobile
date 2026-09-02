@@ -33,10 +33,10 @@ assert.match(adapter, /<CompletedSessionRecap/, 'coach and athlete roles must sh
 for (const name of ['sectionShell', 'compareFilters', 'compareMovementStack', 'comparisonLegend']) assertNoPageInset(recap, name);
 assert.match(styleBody(recap, 'sessionReadCard'), /padding:\s*9/, 'Reviewer cards keep internal readable padding');
 assert.match(styleBody(recap, 'executionCard'), /padding:\s*12/, 'Session Execution keeps internal readable padding');
-assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*9/, 'Movement cards keep internal readable padding');
+assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*10/, 'Movement cards keep internal readable padding');
 
 assert.match(recap, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
-assert.match(analyticalChart, /buildYAxisGutter\(yLabels, 9\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
+assert.match(analyticalChart, /buildYAxisGutter\(yLabels, readableText \? 11 : 9\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
 assert.match(analyticalChart, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
 assert.match(analyticalChart, /Math\.min\(Math\.max\(4, selectedDate\.x - tooltipWidth \/ 2\), Math\.max\(4, width - tooltipWidth - 4\)\)/, 'Evidence chart tooltips remain clamped to the available width');
 
