@@ -25,13 +25,16 @@ export function resolveSubstitutionAuthority({
     return normalized;
   }
 
-  // Compatibility for a TestFlight client talking to a backend deployed
-  // before the explicit authority field. Both legacy signals are still
-  // server-derived relationship facts; UI mode never grants authority.
-  if (canHotSwap || permissionIsSelfCoached || accountIsSelfCoached) {
-    return 'self_governed';
+  // Explicit Session permissions are relationship-authoritative, including
+  // false. Cached account state is used only for older backends that omitted
+  // both Session-level fields; presentation mode never grants authority.
+  if (permissionIsSelfCoached != null) {
+    return permissionIsSelfCoached ? 'self_governed' : 'coach_restricted';
   }
-  return 'coach_restricted';
+  if (canHotSwap != null) {
+    return canHotSwap ? 'self_governed' : 'coach_restricted';
+  }
+  return accountIsSelfCoached ? 'self_governed' : 'coach_restricted';
 }
 
 export type ItemSetLogProjection = {
@@ -101,12 +104,12 @@ export function accessorySwapActionForItem({
   if (!SWAPPABLE_SESSION_LIFECYCLES.has(String(sessionLifecycle || '').trim().toLowerCase())) {
     return null;
   }
-  if (!targetItemHasRemainingSets) return null;
-  // Self-coached execution can change the movement used by future sets while
-  // every existing SetLog retains its immutable performed-identity snapshot.
-  // Coach-restricted substitutions remain locked after the first accepted set.
-  if (substitutionAuthority === 'self_governed') return 'Swap';
+  // Performed evidence is the permanent movement-level boundary. Once the
+  // server has accepted any set for this item, neither a free self-coach swap
+  // nor an approved substitution may remain reachable.
   if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
+  if (!targetItemHasRemainingSets) return null;
+  if (substitutionAuthority === 'self_governed') return 'Swap';
   if (substitutionAuthority === 'coach_restricted' && hasApprovedSubstitutions) return 'Sub';
   return null;
 }

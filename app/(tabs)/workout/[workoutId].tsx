@@ -2946,26 +2946,13 @@ export default function WorkoutViewerScreen() {
   useEffect(() => {
     const itemId = Number(swapAccItem?.id || 0);
     if (!itemId || !acceptedSetEvidenceItemIds.has(itemId)) return;
-    const authority = resolveSubstitutionAuthority({
-      serverAuthority: data?.permissions?.substitution_authority,
-      canHotSwap: data?.permissions?.can_hot_swap,
-      permissionIsSelfCoached: data?.permissions?.is_self_coached,
-      accountIsSelfCoached: user?.is_self_coached,
-      isCoachPreview: coachPreviewRequested,
-    });
-    if (authority === 'self_governed') return;
     setSwapPickerVisible(false);
     setSwapAccVisible(false);
     setSwapAccItem(null);
     setSwapAccIdentity(null);
   }, [
     acceptedSetEvidenceItemIds,
-    coachPreviewRequested,
-    data?.permissions?.can_hot_swap,
-    data?.permissions?.is_self_coached,
-    data?.permissions?.substitution_authority,
     swapAccItem?.id,
-    user?.is_self_coached,
   ]);
 
   const openCanonicalMovementHistory = (item: WorkoutItem) => {
@@ -3024,19 +3011,9 @@ export default function WorkoutViewerScreen() {
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
-    const authority = resolveSubstitutionAuthority({
-      serverAuthority: data?.permissions?.substitution_authority,
-      canHotSwap: data?.permissions?.can_hot_swap,
-      permissionIsSelfCoached: data?.permissions?.is_self_coached,
-      accountIsSelfCoached: user?.is_self_coached,
-      isCoachPreview: coachPreviewRequested,
-    });
     if (
-      authority !== 'self_governed'
-      && (
       itemHasPersistedSetLogs(swapAccItem)
       || acceptedSetEvidenceItemIds.has(Number(swapAccItem.id))
-      )
     ) {
       setSwapPickerVisible(false);
       setSwapAccVisible(false);

@@ -15,7 +15,7 @@ const swapAction = (overrides = {}) => accessorySwapActionForItem({
   ...overrides,
 });
 
-assert.equal(swapAction(), 'Swap', 'self-coach retains Swap while future sets remain');
+assert.equal(swapAction(), null, 'self-coach member loses Swap after its own first persisted set');
 assert.equal(
   swapAction({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }),
   null,
@@ -48,6 +48,11 @@ const beforeSwap = [
     set_logs: [{ id: 2, set_index: 1 }],
   },
 ];
+assert.equal(
+  swapAction({ targetItemHasSetLogs: false, acceptedPersistedSetLogForItem: false }),
+  'Swap',
+  'an untouched superset member remains independently swappable',
+);
 const afterSwap = [
   { ...beforeSwap[0], title: 'Hammer Curl' },
   beforeSwap[1],
@@ -98,4 +103,4 @@ assert.doesNotMatch(
   'superset History must not target the permanently disabled legacy modal',
 );
 
-console.log('[superset-self-coach-swap-history] future-set identity, immutable progress, exact History routing, and tactile reachability passed');
+console.log('[superset-self-coach-swap-history] per-member evidence lock, immutable progress, exact History routing, and tactile reachability passed');
