@@ -40,4 +40,7 @@ const sparse = buildSessionRecapTrendPlot({ points: [{ current: true, metric_val
 assert.equal(sparse.points.length, 1);
 assert.ok(Number.isFinite(sparse.points[0].y));
 
+const nullMetric = buildSessionRecapTrendPlot({ points: [{ current: true, metric_value: null, score: null, weight_kg: null }], width: 96, height: 38 });
+assert.equal(nullMetric.points.length, 0, 'null metric fields must not become fabricated zero chart points');
+
 console.log('session recap trend tests passed');

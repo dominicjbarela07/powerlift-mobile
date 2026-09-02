@@ -47,6 +47,7 @@ function dateValue(value?: string | null) {
 
 export function trendPointMetricValue(point: SessionRecapTrendPoint): number | null {
   for (const candidate of [point.metric_value, point.score, point.weight_kg]) {
+    if (candidate == null) continue;
     const parsed = Number(candidate);
     if (Number.isFinite(parsed)) return parsed;
   }
