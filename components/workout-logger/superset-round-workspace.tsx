@@ -10,6 +10,7 @@ import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { SLButton } from '@/components/ui/sl-button';
 import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';
+import { MovementLifecycleStatusLabel } from '@/components/workout-logger/movement-lifecycle-status-label';
 import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import {
@@ -73,7 +74,7 @@ type SupersetRoundWorkspaceProps = {
 };
 
 function statusLabel(status: SupersetRoundModel<SupersetWorkspaceItem>['status']) {
-  if (status === 'complete') return 'COMPLETE';
+  if (status === 'complete') return 'COMPLETED';
   if (status === 'in_progress') return 'IN PROGRESS';
   return 'NOT STARTED';
 }
@@ -132,12 +133,10 @@ export function SupersetRoundWorkspace({
         <View style={styles.headerCopy}>
           <View style={styles.eyebrowRow}>
             <Text style={styles.eyebrow}>SUPERSET {groupLabel}</Text>
-            <Text style={[
-              styles.status,
-              { color: stateAccent },
-            ]}>
-              {statusLabel(model.status)}
-            </Text>
+            <MovementLifecycleStatusLabel
+              label={statusLabel(model.status)}
+              style={[styles.status, { color: stateAccent }]}
+            />
           </View>
           <View style={styles.movementNames}>
             {model.items.map((item, index) => (
@@ -369,17 +368,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: SLSpacing.sm,
-    justifyContent: 'space-between',
     marginBottom: SLSpacing.sm,
   },
   eyebrow: {
+    flex: 1,
+    minWidth: 0,
     color: SLColors.accentViolet,
     fontSize: SLTypography.caption.fontSize,
     fontWeight: '900',
     letterSpacing: 0.9,
   },
   status: {
-    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.65,
   },

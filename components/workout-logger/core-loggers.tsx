@@ -29,6 +29,7 @@ import {
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
 import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';
+import { MovementLifecycleStatusLabel } from '@/components/workout-logger/movement-lifecycle-status-label';
 import { LoggerPlateStackVisual } from '@/components/workout-logger/logger-primitives';
 import { movementCardStateAccent } from '@/lib/movement-card-material';
 import { logSetActionPresentation, type LoggerFeedbackState, type PrescribedOpportunity } from '@/lib/logger-feedback';
@@ -41,6 +42,7 @@ import {
   coreLoggerVisibleExpandedContent,
   coreLoggerVisibleMovementNote,
 } from '@/lib/core-logger-header';
+import { MOVEMENT_STATUS_COLUMN_WIDTH } from '@/lib/movement-lifecycle-status-layout';
 import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';
 
 export type SetRailStep = {
@@ -419,7 +421,9 @@ export function CoreMovementLedgerRow({
           </View>
           <View style={styles.activeMovementHeadingCopy}>
             <Text
+              ellipsizeMode="tail"
               maxFontSizeMultiplier={1.35}
+              numberOfLines={2}
               typographyRole="movementName"
               style={styles.activeMovementTitle}
             >
@@ -455,12 +459,15 @@ export function CoreMovementLedgerRow({
             ) : null}
           </View>
           <View style={styles.activeMovementActions}>
-            <Text style={[
-              styles.activeMovementState,
-              state === 'complete' && styles.ledgerStateCompleted,
-              state === 'logged' && styles.ledgerStateActive,
-              canonicalMovementCard && { color: cardStateAccent },
-            ]}>{stateLabel}</Text>
+            <MovementLifecycleStatusLabel
+              label={stateLabel}
+              style={[
+                styles.activeMovementState,
+                state === 'complete' && styles.ledgerStateCompleted,
+                state === 'logged' && styles.ledgerStateActive,
+                canonicalMovementCard && { color: cardStateAccent },
+              ]}
+            />
             <SLMotionPressable
               accessibilityLabel={`${expanded ? 'Collapse' : 'Expand'} ${title}`}
               accessibilityRole="button"
@@ -802,20 +809,19 @@ export function CoreMovementLedgerRow({
       <View style={styles.ledgerMain}>
         <View style={styles.ledgerHeader}>
           <View style={styles.ledgerTitleColumn}>
-            <Text typographyRole="movementName" style={[styles.ledgerTitle, loggerFocus && styles.ledgerTitleActive]}>
+            <Text ellipsizeMode="tail" numberOfLines={2} typographyRole="movementName" style={[styles.ledgerTitle, loggerFocus && styles.ledgerTitleActive]}>
               {title}
             </Text>
           </View>
           <View style={styles.ledgerHeaderActions}>
-            <Text
+            <MovementLifecycleStatusLabel
+              label={stateLabel}
               style={[
                 styles.ledgerState,
                 state === 'complete' && styles.ledgerStateCompleted,
                 isActiveMovement && styles.ledgerStateActive,
               ]}
-            >
-              {stateLabel}
-            </Text>
+            />
             {auxAction}
             <SLMotionPressable style={styles.ledgerActionButton} onPress={onOpen}>
               <Text style={[styles.ledgerAction, expanded && styles.ledgerActionExpanded]}>
@@ -1338,7 +1344,9 @@ const styles = StyleSheet.create({
     color: SLColors.textStrong,
   },
   activeMovementActions: {
-    width: 76,
+    width: MOVEMENT_STATUS_COLUMN_WIDTH,
+    minWidth: MOVEMENT_STATUS_COLUMN_WIDTH,
+    flexShrink: 0,
     alignItems: 'flex-end',
     alignSelf: 'stretch',
     justifyContent: 'space-between',
@@ -2055,11 +2063,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   ledgerHeaderActions: {
+    minWidth: MOVEMENT_STATUS_COLUMN_WIDTH,
+    flexShrink: 0,
     alignItems: 'flex-end',
     gap: 5,
   },
   ledgerTitleColumn: {
     flex: 1,
+    minWidth: 0,
   },
   ledgerTitle: {
     color: SLColors.textStrong,
