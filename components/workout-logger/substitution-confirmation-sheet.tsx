@@ -98,7 +98,7 @@ export function SubstitutionConfirmationSheet({
             </TouchableOpacity>
             <View style={styles.headerCopy}>
               <Text adjustsFontSizeToFit maxFontSizeMultiplier={1.15} minimumFontScale={0.88} numberOfLines={1} style={styles.title}>Confirm Substitution</Text>
-              <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.subtitle}>Set the plan for the remaining work</Text>
+              <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.subtitle}>Set the plan before logging</Text>
             </View>
             <TouchableOpacity accessibilityLabel="Close substitution confirmation" accessibilityRole="button" disabled={saving} onPress={onCancel} style={styles.headerButton}>
               <Ionicons color={SLColors.textStrong} name="close" size={24} />
@@ -157,8 +157,8 @@ export function SubstitutionConfirmationSheet({
             {editablePrescription ? (
               <View style={styles.prescriptionSection}>
                 <View style={styles.sectionHeading}>
-                  <Text maxFontSizeMultiplier={1.2} style={styles.sectionKicker}>FUTURE SET PRESCRIPTION</Text>
-                  <Text maxFontSizeMultiplier={1.25} style={styles.sectionHint}>Remaining sets only</Text>
+                  <Text maxFontSizeMultiplier={1.2} style={styles.sectionKicker}>MOVEMENT PRESCRIPTION</Text>
+                  <Text maxFontSizeMultiplier={1.25} style={styles.sectionHint}>Applies to this movement</Text>
                 </View>
 
                 <View style={styles.wheelPanel}>
@@ -257,7 +257,7 @@ export function SubstitutionConfirmationSheet({
                       </View>
                       <View style={styles.amrapCopy}>
                         <Text maxFontSizeMultiplier={1.3} style={styles.amrapTitle}>As many reps as possible</Text>
-                        <Text maxFontSizeMultiplier={1.25} style={styles.amrapBody}>Each future set uses an AMRAP target. Sets and RIR remain editable above.</Text>
+                        <Text maxFontSizeMultiplier={1.25} style={styles.amrapBody}>Each set uses an AMRAP target. Sets and RIR remain editable above.</Text>
                       </View>
                     </View>
                   )}
@@ -279,7 +279,7 @@ export function SubstitutionConfirmationSheet({
               <LinearGradient colors={['#7838DF', '#B62574', '#D44762']} end={{ x: 1, y: 0 }} start={{ x: 0, y: 0 }} style={styles.confirmGradient}>
                 {saving ? <ActivityIndicator color="#FFFFFF" size="small" /> : (
                   <>
-                    <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.confirmText}>Use for Future Sets</Text>
+                    <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.confirmText}>Confirm Swap</Text>
                     <Ionicons color="#FFFFFF" name="arrow-forward" size={20} />
                   </>
                 )}

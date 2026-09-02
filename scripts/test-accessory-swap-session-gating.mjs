@@ -27,11 +27,11 @@ const untouchedFour = { id: 34, set_logs: [] };
 const serverLocked = { id: 35, set_logs: [], has_performed_evidence: true };
 
 assert.equal(resolve(), 'Swap', 'active Session + untouched target shows Swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), 'Swap', 'self-coach can swap future sets after first persisted SetLog');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', 'self-coach can swap the final remaining set at 2/3');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(oneOfThree) }), null, 'self-coach loses Swap after the first persisted SetLog');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, 'self-coach has no Swap at 2/3 persisted sets');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree), targetItemHasRemainingSets: false }), null, 'completed target has no future identity slot to swap');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(serverLocked) }), 'Swap', 'self-coach server evidence does not rewrite or block future-set identity');
-assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), 'Swap', 'accepted persistence keeps self-coach future-set Swap available');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(serverLocked) }), null, 'server performed-evidence authority hides Swap even before logs hydrate');
+assert.equal(resolve({ acceptedPersistedSetLogForItem: true }), null, 'accepted persistence hides Swap immediately');
 assert.equal(resolve({ acceptedPersistedSetLogForItem: false }), 'Swap', 'failed first persistence keeps target Swap');
 
 const multiItemSession = {
@@ -39,7 +39,7 @@ const multiItemSession = {
   accessory_groups: [{ items: [twoOfThree, untouched, untouchedFour] }],
 };
 assert.deepEqual(persistedSetLogItemIds(multiItemSession), [10, 32], 'persisted evidence is indexed by its own movement item');
-assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), 'Swap', 'self-coach accessory A at 2/3 retains future-set Swap');
+assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, 'self-coach accessory A at 2/3 is locked independently');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) }), 'Swap', 'accessory B at 0/3 remains swappable');
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
@@ -54,16 +54,34 @@ assert.equal(resolve({ isCoachPreview: true }), null, 'coach preview remains rea
 assert.equal(resolve({ targetItemHasSetLogs: false }), 'Swap', 'deleting target evidence restores eligibility while lifecycle allows');
 
 for (const mobileMode of ['athlete', 'individual']) {
-  assert.equal(resolveSubstitutionAuthority({ serverAuthority: null, canHotSwap: false, permissionIsSelfCoached: false, accountIsSelfCoached: true, isCoachPreview: false }), 'self_governed', `self-coached relationship remains free-swap in ${mobileMode} mode`);
+  assert.equal(resolveSubstitutionAuthority({ serverAuthority: null, canHotSwap: true, permissionIsSelfCoached: true, accountIsSelfCoached: true, isCoachPreview: false }), 'self_governed', `self-coached relationship remains free-swap in ${mobileMode} mode`);
+  assert.equal(resolve({ targetItemHasSetLogs: false }), 'Swap', `self-coach at 0/3 receives Swap in ${mobileMode} mode`);
+  assert.equal(resolve({ targetItemHasSetLogs: true }), null, `self-coach at 1/3 or later receives no Swap in ${mobileMode} mode`);
+  assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(twoOfThree) }), null, `self-coach at 2/3 receives no Swap in ${mobileMode} mode`);
+  assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(threeOfThree), targetItemHasRemainingSets: false }), null, `self-coach at 3/3 receives no Swap in ${mobileMode} mode`);
 }
 assert.equal(resolveSubstitutionAuthority({ serverAuthority: 'coach_restricted', canHotSwap: false, permissionIsSelfCoached: false, accountIsSelfCoached: false, isCoachPreview: false }), 'coach_restricted', 'explicit external-coach authority remains restricted');
+assert.equal(resolveSubstitutionAuthority({ serverAuthority: null, canHotSwap: false, permissionIsSelfCoached: false, accountIsSelfCoached: true, isCoachPreview: false }), 'coach_restricted', 'explicit Session relationship false outranks stale cached self-coach state');
 assert.equal(resolveSubstitutionAuthority({ serverAuthority: 'self_governed', canHotSwap: true, permissionIsSelfCoached: true, accountIsSelfCoached: true, isCoachPreview: true }), 'none', 'coach preview cannot inherit the self athlete free-swap authority');
+
+for (const evidenceState of [untouched, oneOfThree, twoOfThree, threeOfThree]) {
+  assert.notEqual(resolve({
+    substitutionAuthority: 'coach_restricted',
+    targetItemHasSetLogs: itemHasPersistedSetLogs(evidenceState),
+    targetItemHasRemainingSets: evidenceState !== threeOfThree,
+  }), 'Swap', 'coached athlete never receives free Swap at any movement state');
+}
 
 const loggerSource = readFileSync(new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url), 'utf8');
 assert.match(
   loggerSource,
   /acceptedSetEvidenceItemIds\.has\(Number\(it\.id\)\)/,
   'logger applies accepted persistence evidence to the exact rendered movement item',
+);
+assert.doesNotMatch(
+  loggerSource,
+  /if \(authority === 'self_governed'\) return;/,
+  'self-coach authority cannot bypass accepted performed evidence',
 );
 assert.match(
   loggerSource,
