@@ -6,6 +6,7 @@ import {
   parseSessionLifecycleInstant,
   parseSessionTimeDraft,
   replaceSessionTimePart,
+  resolveSessionCompletionTiming,
 } from '../lib/post-session-times.ts';
 
 assert.equal(parseSessionLifecycleInstant('2026-08-20T15:00:00')?.toISOString(), '2026-08-20T15:00:00.000Z');
@@ -33,6 +34,27 @@ assert.equal(parsed.error, null);
 assert.equal(parsed.value?.durationSeconds, 9900);
 assert.match(parseSessionTimeDraft({ start: correctedEnd, end: draft.start }).error || '', /after session start/);
 
+const boundaryStart = new Date('2026-09-01T12:00:00.000Z');
+for (const [seconds, expectedDuration, unavailable] of [
+  [23 * 60 * 60 + 59 * 60, 23 * 60 * 60 + 59 * 60, false],
+  [24 * 60 * 60, 24 * 60 * 60, false],
+  [24 * 60 * 60 + 60, null, true],
+  [36 * 60 * 60, null, true],
+  [48 * 60 * 60, null, true],
+]) {
+  const decision = resolveSessionCompletionTiming({
+    start: boundaryStart,
+    end: new Date(boundaryStart.getTime() + seconds * 1000),
+  });
+  assert.equal(decision.error, null);
+  assert.equal(decision.durationUnavailable, unavailable);
+  assert.equal(decision.value?.durationSeconds ?? null, expectedDuration);
+}
+assert.match(resolveSessionCompletionTiming({
+  start: boundaryStart,
+  end: new Date(boundaryStart.getTime() + 25 * 60 * 60 * 1000),
+}, { manuallyCorrected: true }).error || '', /cannot exceed 24 hours/);
+
 const source = readFileSync(new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url), 'utf8');
 assert.match(source, /onPress=\{\(\) => openPostSessionTimePicker\(target\)\}/);
 assert.match(source, /value=\{postSessionTimePickerDraft \|\| new Date\(\)\}/);
@@ -45,6 +67,11 @@ assert.doesNotMatch(
 );
 assert.match(source, /session_started_at: sessionTimes\.startedAt/);
 assert.match(source, /session_ended_at: sessionTimes\.endedAt/);
+assert.match(source, /session_duration_unavailable: true/);
+assert.match(source, /reasonCode: 'performed_duration_unavailable'/);
+assert.equal((source.match(/resolveSessionCompletionTiming\(/g) || []).length, 2,
+  'Skip Reflection and full reflection must share the extended-Session decision');
+assert.match(source, /Duration not recorded/);
 assert.match(source, /setPostSessionForm\(nextForm\)/);
 assert.match(source, /onPress=\{closePostSessionTimePicker\}[\s\S]*?>Cancel</);
 

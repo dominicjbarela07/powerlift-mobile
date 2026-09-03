@@ -25,7 +25,8 @@ assert.match(telemetry, /state\.activeWorkoutId === normalizedWorkoutId && state
 assert.doesNotMatch(route, /catch \(err\) \{\s*if \(timingPrepared\) await discardPreparedSessionTiming/,
   'an ambiguous Begin response must not discard its stable event identity');
 assert.match(route, /prepareSessionStartTiming\(wkId\)[\s\S]*timing_event: timingEvent/);
-assert.match(route, /createLifecycleTimingEvent\(wkId, 'session_completed'\)/);
+assert.match(route, /createLifecycleTimingEvent\(wkId, 'session_completed', \{[\s\S]*reasonCode: 'performed_duration_unavailable'/,
+  'duration-unavailable completion must retain lifecycle telemetry without claiming performed elapsed time');
 assert.match(route, /createLifecycleTimingEvent\(wkId, 'session_canceled'\)/);
 assert.equal((route.match(/createPerformedSetTiming\(/g) || []).length, 5,
   'every SetLog writer present in Production 2.0.2 must emit performed timing');
