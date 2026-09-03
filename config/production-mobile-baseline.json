@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "recordedAt": "2026-09-01T03:26:12-07:00",
+  "recordedAt": "2026-09-02T17:33:24-07:00",
   "channel": "production",
   "branch": "production-live-2.0.2",
   "runtimeVersion": "2.0.2",
@@ -15,12 +15,12 @@
       "easBuildId": "3020a018-e240-4449-9255-c5caa5d162f5",
       "easBuildFingerprint": "9e5511e49f1a11e041fce7aa4554360af985f3d7",
       "nativeDependencyFingerprint": "0cfc536041db0182fd673236d0ab7e56e6a00e186fb09fd4cd27cc05035dfc77",
-      "activeUpdateGroup": "7ec2eeb4-5f61-4568-87e1-7de3f97eb7e8",
-      "activeUpdateId": "01a05051-47f5-7b6a-b930-b59c8d6a9248",
-      "activeUpdateSourceCommit": "a5d56d2205f93ab6b00b3be0ca836d4235b82a57",
-      "activeLaunchAssetKey": "0b45163b6d3a4446b690c40adda0120b",
-      "activeLaunchAssetSha256": "4c2c1543d3fff0b9dc5a405b8f42bbc284c1c5130c80153138790ddce49079c3",
-      "activeLaunchAssetBytes": 6957842
+      "activeUpdateGroup": "bd4cf833-25f2-4ea6-b6bc-1a9dc52bff7d",
+      "activeUpdateId": "01a064af-2145-7424-8502-016cd42a6811",
+      "activeUpdateSourceCommit": "48b0a57ab858d801ccab96c6b31959194b17abc1",
+      "activeLaunchAssetKey": "1b42ca0f9730bfbc94131db1d554fce3",
+      "activeLaunchAssetSha256": "8b777e7da5de339bd42978a79c417d75a4be200918def88913511e03af2d2c6d",
+      "activeLaunchAssetBytes": 6987368
     },
     "android": {
       "applicationIdentifier": "com.strengthledger.app",
@@ -30,12 +30,12 @@
       "easBuildFingerprint": "b85f9a73022fdd8320893eb7e6a9eddedea109ce",
       "nativeDependencyFingerprint": "25ffc691cdb6b94a2e1458d1d63cec6f0343fc3ff6a12bb8b7f853a1b8ee9e6e",
       "embeddedSourceCommit": "5aaad1c2c92f126b0343af7c44bd29d373229ec9",
-      "activeUpdateGroup": "b9687f12-f5b1-4e08-b832-c986f0d14876",
-      "activeUpdateId": "01a05c7f-48f2-701c-8968-1c619536f57e",
-      "activeUpdateSourceCommit": "3d5a38a22b893f67bfed0e7ee3d6e9a2c685ab95",
-      "activeLaunchAssetKey": "186993c49695389859854f21416d0ae5",
-      "activeLaunchAssetSha256": "d6f7b26b91b7c98752c3366e1d92a3184133d162b399bd9a4dc26e18d1b5360b",
-      "activeLaunchAssetBytes": 6978422,
+      "activeUpdateGroup": "bd4cf833-25f2-4ea6-b6bc-1a9dc52bff7d",
+      "activeUpdateId": "01a064af-2145-75b0-ba5f-4bc42523dc6d",
+      "activeUpdateSourceCommit": "48b0a57ab858d801ccab96c6b31959194b17abc1",
+      "activeLaunchAssetKey": "f880309c3c1f03c88098facb0891aece",
+      "activeLaunchAssetSha256": "a6904a46d6da2d2ffad692510a30c97d9979848c1b0a60643f829fbf78c8c943",
+      "activeLaunchAssetBytes": 7000510,
       "activeManifestStatus": 200
     }
   }
