@@ -31,7 +31,10 @@ export type ManufacturerLogoAssetKey =
   | 'icarian'
   | 'gymleco'
   | 'pit-shark'
-  | 'watson';
+  | 'watson'
+  | 'maxpump-fit'
+  | 'eagle-fitness-systems'
+  | 'flex-fitness-systems';
 
 export type ManufacturerRegistryEntry = Readonly<{
   key: string;
@@ -315,6 +318,35 @@ export const MANUFACTURER_REGISTRY: readonly ManufacturerRegistryEntry[] = Objec
     logoSurface: 'light',
     opticalScale: 0.94,
   },
+  {
+    key: 'maxpump-fit',
+    displayName: 'Maxpump Fit',
+    aliases: ['maxpump fit', 'max pump fit', 'max pump', 'maxpump', 'maxpumpfit'],
+    logoAssetKey: 'maxpump-fit',
+    opticalScale: 0.92,
+  },
+  {
+    key: 'eagle-fitness-systems',
+    displayName: 'Eagle Fitness Systems',
+    aliases: [
+      'eagle fitness systems',
+      'eagle performance systems',
+      'cybex eagle',
+      'eagle by cybex',
+      'eagle',
+    ],
+    logoAssetKey: 'eagle-fitness-systems',
+    logoSurface: 'light',
+    opticalScale: 0.94,
+  },
+  {
+    key: 'flex-fitness-systems',
+    displayName: 'Flex Fitness Systems',
+    aliases: ['flex fitness systems', 'flex systems', 'flex fitness', 'flex equipment', 'flex'],
+    logoAssetKey: 'flex-fitness-systems',
+    logoSurface: 'light',
+    opticalScale: 0.92,
+  },
 ]);
 
 export function normalizeManufacturerIdentity(value: string | null | undefined): string {
@@ -367,4 +399,34 @@ export function resolveManufacturerBrand(
     opticalScale: 1,
     usesFallback: true,
   };
+}
+
+export function manufacturerMatchesSearch(
+  query: string | null | undefined,
+  manufacturer: Readonly<{
+    key?: string | null;
+    display_name?: string | null;
+    aliases?: readonly string[] | null;
+  }> | null | undefined,
+): boolean {
+  const normalizedQuery = normalizeManufacturerIdentity(query);
+  if (!normalizedQuery) return true;
+
+  const normalizedKey = normalizeManufacturerIdentity(manufacturer?.key);
+  const registryEntry = MANUFACTURER_REGISTRY.find((entry) => (
+    normalizeManufacturerIdentity(entry.key) === normalizedKey
+    || entry.aliases.some((alias) => (
+      normalizeManufacturerIdentity(alias)
+      === normalizeManufacturerIdentity(manufacturer?.display_name)
+    ))
+  ));
+  const searchable = [
+    manufacturer?.display_name,
+    ...(manufacturer?.aliases || []),
+    registryEntry?.displayName,
+    ...(registryEntry?.aliases || []),
+  ];
+  return searchable.some((value) => (
+    normalizeManufacturerIdentity(value).includes(normalizedQuery)
+  ));
 }

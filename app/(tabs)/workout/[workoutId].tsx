@@ -68,6 +68,7 @@ import {
   type SupersetWorkspaceItem,
 } from '@/components/workout-logger/superset-round-workspace';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
+import { manufacturerMatchesSearch } from '@/lib/manufacturer-registry';
 import {
   CancelResumeModal,
   RestTimerPickerModal,
@@ -438,7 +439,12 @@ type GeneralMovementIdentity = {
   measurement_type?: string | null;
   sidedness?: string | null;
   implementation_key?: string | null;
-  manufacturer?: { id: number; key: string; display_name: string } | null;
+  manufacturer?: {
+    id: number;
+    key: string;
+    display_name: string;
+    aliases?: string[] | null;
+  } | null;
   equipment_model?: { id: number; key: string; display_name: string } | null;
   material_parameters?: {
     note?: string | null;
@@ -3806,6 +3812,7 @@ export default function WorkoutViewerScreen() {
       setIdentityPickerRows(
         (response.json.items || []).filter((row: GeneralMovementIdentity) => (
           !needle
+          || manufacturerMatchesSearch(needle, row.manufacturer)
           || [
             row.manufacturer?.display_name,
             row.display_name,

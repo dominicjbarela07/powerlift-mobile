@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "retrievedAt": "2026-07-26",
+  "retrievedAt": "2026-09-02",
   "policy": {
     "runtime": "Local transparent PNG derivatives are bundled for Metro compatibility.",
     "source": "Official vector or transparent raster source is retained where available.",
@@ -313,10 +313,42 @@
       "key": "watson",
       "manufacturer": "Watson",
       "status": "provided",
+      "sourcePage": "https://watsongym.co.uk/",
       "sourceAsset": "User-supplied local asset",
       "sourceFile": "source/watson.png",
       "runtimeFile": "runtime/watson.png",
       "runtimeTreatment": "White background removed as a transparent runtime derivative; supplied source retained unchanged."
+    },
+    {
+      "key": "maxpump-fit",
+      "manufacturer": "Maxpump Fit",
+      "status": "official",
+      "sourcePage": "https://www.maxpumpfit.com/index-en.html",
+      "sourceAsset": "https://www.maxpumpfit.com/assets/img/logo/white-logo.svg",
+      "sourceFile": "source/maxpump-fit.svg",
+      "runtimeFile": "runtime/maxpump-fit.png",
+      "runtimeTreatment": "Official white-and-red vector wordmark rasterized to an alpha-preserving PNG and enlarged for crisp OLED presentation; official source retained unchanged."
+    },
+    {
+      "key": "eagle-fitness-systems",
+      "manufacturer": "Eagle Fitness Systems",
+      "status": "public",
+      "sourcePage": "https://refitnation.com/product/eagle-fitness-systems-by-cybex-back-extension-machine/",
+      "identitySource": "https://cybexintl.eu/company/overview/heritage.aspx",
+      "sourceAsset": "https://refitnation.com/wp-content/uploads/2025/08/20250820_112212-1-scaled.jpg",
+      "sourceFile": "source/eagle-fitness-systems.jpg",
+      "runtimeFile": "runtime/eagle-fitness-systems.png",
+      "runtimeTreatment": "Authentic EAGLE FITNESS SYSTEMS by CYBEX machine decal isolated from an unwatermarked high-resolution equipment photograph; blue and white mark preserved without redrawing and placed on the established light logo surface."
+    },
+    {
+      "key": "flex-fitness-systems",
+      "manufacturer": "Flex Fitness Systems",
+      "status": "official",
+      "sourcePage": "https://flexfitness.com/",
+      "sourceAsset": "https://flexfitness.com/cdn/shop/files/cropped-foundedflex.jpg?v=1707781107&width=1200",
+      "sourceFile": "source/flex-fitness-systems.jpg",
+      "runtimeFile": "runtime/flex-fitness-systems.png",
+      "runtimeTreatment": "Official FLEX shark wordmark retained in its real red, gray, and black colors; only the connected near-white page background was removed, with the result placed on the established light logo surface."
     }
   ]
 }

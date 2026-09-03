@@ -1,0 +1,16 @@
+<svg width="170" height="50" viewBox="0 0 137 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M 46.731 11.752 L 54.07 24.462 L 73.76 4.496 L 82.506 4.496 L 57.265 30.003 L 66.132 45.353 L 58.989 45.353 L 52.741 34.533 L 36.676 50.596 L 27.934 50.596 L 49.54 28.988 L 39.591 11.752 L 46.731 11.752 Z" fill="url(#paint0_linear_443_290)" style="stroke-width: 1;" id="object-0"/>
+  <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; white-space: pre;" id="object-1" x="4.768" y="40.361">MA</text>
+    <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; white-space: pre;" id="object-2" x="61.179" y="40.389">PUMP</text>
+  <text style="fill: rgb(255, 0, 0); font-family: Agbalumo; font-size: 17.6958px; font-style: italic; white-space: pre; transform-box: fill-box; transform-origin: 12.9775px 16.745px;" transform="matrix(0.773638, -0.683311, 0.277698, 0.61717, -116.528595, -165.169128)" x="245.784" y="207.166" id="object-3">FIT</text>
+<defs>
+<linearGradient id="paint0_linear_443_290" x1="15.8316" y1="46.9995" x2="77.5485" y2="11.2317" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FF0808"/>
+<stop offset="1" stop-color="#860000"/>
+</linearGradient>
+<linearGradient id="paint1_linear_443_290" x1="-0.0188643" y1="50.8337" x2="44.8781" y2="33.1919" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FF0808"/>
+<stop offset="1" stop-color="#860000"/>
+</linearGradient>
+</defs>
+</svg>
