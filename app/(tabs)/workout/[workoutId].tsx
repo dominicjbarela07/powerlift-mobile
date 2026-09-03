@@ -188,6 +188,7 @@ import {
   resolveSetLoggerLoadDefault,
   type SetLoggerLoadEvidence,
 } from '@/lib/set-logger-load-default';
+import { canDeletePersistedSetLog } from '@/lib/set-log-delete-order';
 import {
   accessoryPerSetPrescription,
   accessoryPerSetRepsLabel,
@@ -7581,7 +7582,9 @@ export default function WorkoutViewerScreen() {
               movementName: liftDisplayName(item),
             })
         : undefined,
-      onDelete: canLog ? () => confirmDeleteSet(item.id, log) : undefined,
+      onDelete: canLog && canDeletePersistedSetLog(log, item.set_logs)
+        ? () => confirmDeleteSet(item.id, log)
+        : undefined,
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload
@@ -8004,7 +8007,9 @@ export default function WorkoutViewerScreen() {
               movementName: simplifyMobileMovementName(item.movement || item.lift || 'Accessory'),
             })
         : undefined,
-      onDelete: canLog ? () => confirmDeleteSet(item.id, log) : undefined,
+      onDelete: canLog && canDeletePersistedSetLog(log, item.set_logs)
+        ? () => confirmDeleteSet(item.id, log)
+        : undefined,
       onVideo: hasVideo
         ? () => openSetVideoPlayer(log)
         : canRetryUpload

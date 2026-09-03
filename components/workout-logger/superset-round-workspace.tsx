@@ -30,6 +30,7 @@ import {
   combineAccessoryMuscleRegions,
   type AccessoryMuscleRegionKey,
 } from '@/lib/accessory-muscle-group';
+import { canDeletePersistedSetLog } from '@/lib/set-log-delete-order';
 
 export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
   id: number;
@@ -276,7 +277,10 @@ export function SupersetRoundWorkspace({
                             onEdit: canModifyLog && persistedLog
                               ? () => onEditSet(movement.item, persistedLog)
                               : undefined,
-                            onRemove: canModifyLog && persistedLog
+                            onRemove: canModifyLog && persistedLog && canDeletePersistedSetLog(
+                              persistedLog,
+                              movement.item.set_logs,
+                            )
                               ? () => onDeleteSet(movement.item, persistedLog)
                               : undefined,
                           };
