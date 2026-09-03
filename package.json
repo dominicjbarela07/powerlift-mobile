@@ -52,6 +52,7 @@
     "test:core-logger-identity-rail": "node --import tsx scripts/test-core-logger-identity-rail.mjs",
     "test:expanded-core-card-compaction": "node scripts/test-expanded-core-card-compaction.mjs",
     "test:set-timeline-storyboard": "node --import tsx scripts/test-set-timeline-storyboard.mjs",
+    "test:setlog-delete-order": "node --import tsx scripts/test-setlog-delete-order.mjs",
     "test:logger-movement-physical-loading": "node --import tsx scripts/test-logger-movement-physical-loading.mjs",
     "test:accessory-identity-picker": "node scripts/test-accessory-identity-picker.mjs",
     "test:accessory-logger-prescription": "node --import tsx scripts/test-accessory-logger-prescription.mjs",

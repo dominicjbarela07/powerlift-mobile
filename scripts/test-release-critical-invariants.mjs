@@ -14,6 +14,7 @@ const areas = [
   ['Smart Warmup lifecycle and physical configuration', ['scripts/test-smart-warmup-engine.mjs']],
   ['expanded Core Logger workspace density', ['scripts/test-expanded-core-card-compaction.mjs']],
   ['canonical compact Set Timeline', ['scripts/test-set-timeline-storyboard.mjs']],
+  ['movement-scoped SetLog edit/delete order', ['scripts/test-setlog-delete-order.mjs']],
   ['movement-scoped Logger physical loading', ['scripts/test-logger-movement-physical-loading.mjs']],
   ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
