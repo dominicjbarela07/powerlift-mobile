@@ -1,3 +1,5 @@
+import { resolveCalendarToday } from './calendar-today';
+
 export type AthleteHomeState = 'training' | 'recovery' | 'achievement' | 'meet' | 'rest';
 
 export type HomeAction = {
@@ -124,6 +126,12 @@ export type HomeAchievement = {
   action?: HomeAction | null;
 };
 
+type DatedAthleteHomePayload = {
+  date?: string | null;
+  timezone?: string | null;
+  home_v3?: AthleteHomeV3Projection | null;
+};
+
 function lower(value: unknown) {
   return String(value || '').trim().toLowerCase();
 }
@@ -235,9 +243,67 @@ export function mergeAthleteHomeV3(today: any, root: any) {
   return { ...hydratedToday, home_v3: projection };
 }
 
-export function resolveHomeState(projection?: AthleteHomeV3Projection | null): AthleteHomeState {
+export function isQualifyingSameDayPrHero(
+  projection?: AthleteHomeV3Projection | null,
+  todayDate?: string | null,
+): boolean {
+  const evidence = projection?.state?.evidence || {};
+  const achievement = projection?.hero?.achievement;
+  const count = Number(evidence.same_day_pr_count || 0);
+  return Boolean(
+    todayDate
+    && evidence.qualifying_same_day_pr === true
+    && count > 0
+    && String(evidence.performed_date || '') === todayDate
+    && achievement?.id != null
+    && achievement?.workout_id != null
+    && String(evidence.same_day_pr_id ?? '') === String(achievement.id)
+    && String(evidence.same_day_pr_workout_id ?? '') === String(achievement.workout_id)
+  );
+}
+
+function todayContextFallback(
+  projection: AthleteHomeV3Projection | null | undefined,
+  todayDate?: string | null,
+): AthleteHomeState {
+  const session = projection?.hero?.session;
+  const status = lower(session?.status);
+  if (
+    session
+    && (!todayDate || session.date === todayDate)
+    && ['assigned', 'in_progress', 'completed', 'logged', 'done'].includes(status)
+  ) return 'training';
+  const today = projection?.week?.days?.find((day) => (
+    (todayDate && day.date === todayDate) || day.is_today === true
+  ));
+  if (today?.kind === 'meet') return 'meet';
+  if (['session', 'in_progress', 'completed'].includes(lower(today?.kind))) return 'training';
+  if (today?.kind === 'recovery' || projection?.state?.evidence?.recovery_event === true) return 'recovery';
+  return 'rest';
+}
+
+export function resolveHomeState(
+  projection?: AthleteHomeV3Projection | null,
+  todayDate?: string | null,
+): AthleteHomeState {
   const kind = lower(projection?.state?.kind);
+  if (kind === 'achievement' && !isQualifyingSameDayPrHero(projection, todayDate)) {
+    return todayContextFallback(projection, todayDate);
+  }
   return ['training', 'recovery', 'achievement', 'meet', 'rest'].includes(kind)
     ? kind as AthleteHomeState
     : 'rest';
+}
+
+export function isAthleteHomePayloadCurrent(
+  payload?: DatedAthleteHomePayload | null,
+  instant: Date = new Date(),
+  deviceTimezone: string | null | undefined = Intl.DateTimeFormat().resolvedOptions().timeZone,
+): boolean {
+  if (!payload?.date || Number.isNaN(instant.getTime())) return false;
+  return payload.date === resolveCalendarToday(
+    instant,
+    payload.timezone,
+    deviceTimezone,
+  ).date;
 }

@@ -39,6 +39,7 @@ const areas = [
   ['Session Workspace canonical accessory drilldown', ['scripts/test-session-workspace-accessory-picker.mjs']],
   ['Session Workspace Athlete View handoff', ['scripts/test-session-workspace-athlete-preview-handoff.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],
+  ['Athlete Training Hub same-day PR hero truth', ['scripts/test-training-hub-today-hero.mjs']],
   ['visible control action reachability', ['scripts/test-major-visible-control-actions.mjs']],
   ['Production Android/iOS release parity guard', ['scripts/test-production-release-policy.mjs']],
 ];

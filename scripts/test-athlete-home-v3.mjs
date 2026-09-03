@@ -17,7 +17,17 @@ const baseToday = {
 
 assert.equal(resolveHomeState({ state: { kind: 'meet' } }), 'meet');
 assert.equal(resolveHomeState({ state: { kind: 'training' } }), 'training');
-assert.equal(resolveHomeState({ state: { kind: 'achievement' } }), 'achievement');
+assert.equal(resolveHomeState({ state: { kind: 'achievement' } }, baseToday.date), 'rest', 'unqualified achievement fails closed');
+assert.equal(resolveHomeState({
+  state: { kind: 'achievement', evidence: {
+    qualifying_same_day_pr: true,
+    same_day_pr_count: 1,
+    same_day_pr_id: 88,
+    same_day_pr_workout_id: 9,
+    performed_date: baseToday.date,
+  } },
+  hero: { achievement: { id: 88, workout_id: 9 } },
+}, baseToday.date), 'achievement');
 assert.equal(resolveHomeState({ state: { kind: 'recovery' } }), 'recovery');
 assert.equal(resolveHomeState({ state: { kind: 'rest' } }), 'rest');
 
@@ -96,7 +106,7 @@ assert.match(route, /mergeAthleteHomeV3[\s\S]*AthleteHomeV3/, 'route merges the 
 assert.match(route, /preferredUnits=\{user\?\.preferred_units\}/, 'Home uses the authenticated preference even on a legacy dashboard response');
 assert.match(route, /ledger_strength[\s\S]*ledger\/strength/, 'strength card has a canonical Ledger destination');
 assert.match(route, /ledger_achievement[\s\S]*ledger\/achievements/, 'achievement card has a canonical Ledger destination');
-assert.match(route, /AsyncStorage\.getItem\(todayCacheKey\)[\s\S]*setToday\(normalizeTodayPayload\(cached\)\)/, 'cached Home evidence is restored before a background refresh');
+assert.match(route, /AsyncStorage\.getItem\(todayCacheKey\)[\s\S]*isAthleteHomePayloadCurrent\(cached\)[\s\S]*setToday\(normalizeTodayPayload\(cached\)\)/, 'only current-day cached Home evidence is restored before a background refresh');
 assert.match(route, /result\.kind === 'error'[\s\S]*setError\('Network error while loading Today\.'\)[\s\S]*return/, 'refresh failure becomes an explicit error state');
 assert.doesNotMatch(
   route.match(/if \(result\.kind === 'error'\)[\s\S]*?\n\s*}\n\n\s*const res/)?.[0] || '',

@@ -73,7 +73,7 @@ type Props = {
 
 export function AthleteHomeV3({ today, isIndividual = false, preferredUnits, onAction, supplementaryContent }: Props) {
   const home = today.home_v3 || {};
-  const state = resolveHomeState(home);
+  const state = resolveHomeState(home, today.date);
   const { unit, setUnit } = useSurfaceWeightUnit(preferredUnits ?? today.athlete?.preferred_units);
 
   return (
