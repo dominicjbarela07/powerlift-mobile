@@ -17,7 +17,7 @@ import { formatLoggerWeightKg } from '@/lib/logger-weight-format';
 import { resolvePhysicalPlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
 import { useSLReducedMotion } from '@/lib/motion';
 import { formatWarmupPhysicalConfiguration } from '@/lib/smart-warmup';
-import type { SmartWarmupEnvelope, SmartWarmupSession, SmartWarmupStep } from '@/lib/smart-warmup';
+import type { SmartWarmupEnvelope, SmartWarmupFeedback, SmartWarmupSession, SmartWarmupStep } from '@/lib/smart-warmup';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 
 type CoreWarmupItem = Readonly<{
@@ -35,6 +35,12 @@ const EMPTY_WARMUP_STEPS: SmartWarmupStep[] = [];
 const COLLAR_ASSET = require('@/assets/images/barbell_collar.png');
 const STYLE_STOPS = { minimal: 3, standard: 4, gradual: 5 } as const;
 const STYLE_HINTS = { minimal: 'Fewer sets\nbigger jumps', standard: 'Balanced\nprogression', gradual: 'More sets\nsmaller jumps' } as const;
+const FEEDBACK_OPTIONS = [
+  { key: 'flies', label: 'Flies' },
+  { key: 'expected', label: 'Normal' },
+  { key: 'heavy', label: 'Heavy' },
+  { key: 'very_heavy', label: 'Very Heavy' },
+] as const;
 
 function weightLabel(weightKg: number, unit: 'kg' | 'lb') {
   return `${formatLoggerWeightKg(weightKg, unit)} ${unit}`;
@@ -42,6 +48,11 @@ function weightLabel(weightKg: number, unit: 'kg' | 'lb') {
 
 function titleCase(value: string) {
   return `${value.slice(0, 1).toUpperCase()}${value.slice(1)}`;
+}
+
+function feedbackLabel(value: SmartWarmupFeedback) {
+  return FEEDBACK_OPTIONS.find((option) => option.key === value)?.label
+    || (value === 'fast' ? 'Flies' : value === 'slow' ? 'Heavy' : titleCase(value.replaceAll('_', ' ')));
 }
 
 function configSummary(warmup: SmartWarmupSession, displayUnit: 'kg' | 'lb') {
@@ -170,6 +181,7 @@ export function SmartWarmupSheet({
   const [customCollarEditing, setCustomCollarEditing] = useState(false);
   const [configurationChangedAfterProgress, setConfigurationChangedAfterProgress] = useState(false);
   const [configurationNotice, setConfigurationNotice] = useState<string | null>(null);
+  const [adaptationNotice, setAdaptationNotice] = useState<string | null>(null);
   const [inspectedSequence, setInspectedSequence] = useState<number | null>(null);
   const startAttemptRef = useRef<string | null>(null);
   const displayItemIdRef = useRef<number | null>(item?.id ?? null);
@@ -218,6 +230,7 @@ export function SmartWarmupSheet({
       setCustomCollarEditing(false);
       setConfigurationChangedAfterProgress(false);
       setConfigurationNotice(null);
+      setAdaptationNotice(null);
       setInspectedSequence(null);
       startAttemptRef.current = null;
     }
@@ -258,12 +271,26 @@ export function SmartWarmupSheet({
     setBusy(true);
     setPendingAction(typeof body.action === 'string' ? body.action : 'update');
     setError(null);
+    if (body.feedback) setAdaptationNotice(null);
     try {
       const { ok, json } = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${item.id}/warmup`, {
         method: 'PATCH', auth: true, body: body as any,
       });
       if (!ok || !json?.ok) throw new Error(json?.error || 'Warmup update failed');
       const nextWarmup = json.warmup?.session || null;
+      if (nextWarmup && body.action === 'complete_step' && typeof body.feedback === 'string') {
+        const previousCount = warmup?.progression.adaptations?.length || 0;
+        const nextAdaptations = nextWarmup.progression.adaptations || [];
+        if (nextAdaptations.length > previousCount) {
+          const latest = nextAdaptations[nextAdaptations.length - 1];
+          const remaining = Math.max(0, nextWarmup.progression.steps.length - nextWarmup.completed_steps.length);
+          const changed = JSON.stringify(latest?.previous_future_kg || []) !== JSON.stringify(latest?.adapted_future_kg || []);
+          setAdaptationNotice(changed
+            ? `${remaining} future warmup${remaining === 1 ? '' : 's'} updated`
+            : 'Warmup ramp confirmed');
+          void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
+        }
+      }
       setWarmup(nextWarmup);
       await onRefresh();
       return true;
@@ -411,6 +438,7 @@ export function SmartWarmupSheet({
               </Pressable>
             ) : null}
             {configurationNotice ? <Text accessibilityLiveRegion="polite" style={styles.configurationNotice}>{configurationNotice}</Text> : null}
+            {adaptationNotice ? <Text accessibilityLiveRegion="polite" style={styles.adaptationNotice}>{adaptationNotice}</Text> : null}
 
             <View style={styles.progressionSection}>
               <View style={styles.progressionHeader}><Text style={styles.progressionTitle}>WARMUP SETS</Text><Text style={styles.progressionCount}>{warmup.completed_steps.length} / {steps.length} COMPLETE</Text></View>
@@ -475,14 +503,15 @@ export function SmartWarmupSheet({
 
             {!inspectedStep && warmup.status === 'completed' && recommendation ? (
               <View style={styles.completeCard}>
-                <Text style={styles.completeSignal}>{warmup.progression.recommendation?.signal === 'strong' ? 'LOOKING STRONG TODAY ↗' : warmup.progression.recommendation?.signal === 'conservative' ? 'BUILD CONSERVATIVELY TODAY' : 'MOVING AS EXPECTED'}</Text>
+                <Text style={styles.completeSignal}>{warmup.progression.recommendation?.signal === 'strong' ? 'LOOKING STRONG TODAY ↗' : warmup.progression.recommendation?.signal === 'protective' ? 'PROTECT THE WORKING SET TODAY' : warmup.progression.recommendation?.signal === 'conservative' ? 'BUILD CONSERVATIVELY TODAY' : 'MOVING AS EXPECTED'}</Text>
                 <Text style={styles.completeLabel}>Suggested starting load</Text>
                 <Text style={styles.recommendation}>{weightLabel(recommendation, displayUnit)}</Text>
                 <Text style={styles.muted}>Inside today&apos;s prescribed range.</Text>
+                {warmup.progression.recommendation?.explanation ? <Text style={styles.recommendationExplanation}>{warmup.progression.recommendation.explanation}</Text> : null}
                 {recommendationRender ? <Image accessibilityLabel="Suggested starting load plate stack" resizeMode="contain" source={recommendationRender.imageSource} style={styles.plateStack} /> : null}
                 {recommendationLoading ? <Text style={styles.plates}>{`Per side: ${recommendationLoading.plates_per_side.length ? recommendationLoading.plates_per_side.map((plate) => `${plate.count}×${plate.denomination} ${recommendationLoading.unit}`).join(' · ') : 'Empty bar'}`}</Text> : null}
                 <Text style={styles.equation}>{configSummary(warmup, displayUnit)}</Text>
-                {warmup.diagnostic_feedback.map((entry) => <Text key={entry.sequence} style={styles.muted}>Warmup {entry.sequence}: {titleCase(entry.response)}</Text>)}
+                {warmup.diagnostic_feedback.map((entry) => <Text key={entry.sequence} style={styles.muted}>Warmup {entry.sequence}: {feedbackLabel(entry.response)}</Text>)}
                 {lastCompletedSequence != null ? <QuickUndoButton busy={busy} label="Undo Last Warmup" onPress={undoLastStep} sequence={lastCompletedSequence} undoing={pendingAction === 'undo_last_step'} /> : null}
                 <Pressable accessibilityRole="button" onPress={onClose} style={styles.primaryButton} testID="smart-warmup-return-to-logger"><Text style={styles.primaryButtonText}>Return to Logger</Text></Pressable>
                 <Text style={styles.inspectHint}>Tap any completed Warmup Set above to inspect or undo it.</Text>
@@ -595,7 +624,7 @@ function QuickUndoButton({ busy, label = 'Undo Last', onPress, sequence, undoing
   </Pressable>;
 }
 
-function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastCompletedSequence, onComplete, onDisplayUnitChange, onOpenRestTimerPicker, onStopRestTimer, onUndoLast, onSkip, restTimerActive, restTimerSeconds, undoing }: { step: SmartWarmupStep; displayUnit: 'kg' | 'lb'; busy: boolean; completing: boolean; lastCompletedSequence: number | null; onComplete: (feedback?: 'slow' | 'expected' | 'fast') => Promise<boolean>; onDisplayUnitChange: (unit: 'kg' | 'lb') => void; onOpenRestTimerPicker: (seconds: number) => void; onStopRestTimer?: () => void; onUndoLast: () => void; onSkip?: () => void; restTimerActive: boolean; restTimerSeconds: number; undoing: boolean }) {
+function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastCompletedSequence, onComplete, onDisplayUnitChange, onOpenRestTimerPicker, onStopRestTimer, onUndoLast, onSkip, restTimerActive, restTimerSeconds, undoing }: { step: SmartWarmupStep; displayUnit: 'kg' | 'lb'; busy: boolean; completing: boolean; lastCompletedSequence: number | null; onComplete: (feedback?: Exclude<SmartWarmupFeedback, 'fast' | 'slow'>) => Promise<boolean>; onDisplayUnitChange: (unit: 'kg' | 'lb') => void; onOpenRestTimerPicker: (seconds: number) => void; onStopRestTimer?: () => void; onUndoLast: () => void; onSkip?: () => void; restTimerActive: boolean; restTimerSeconds: number; undoing: boolean }) {
   const reduceMotion = useSLReducedMotion();
   const physicalRender = useMemo(() => resolvePhysicalPlateStackRender(step), [step]);
   const loadingConfig = { unit: step.unit, bar_key: step.bar_key, bar_weight_kg: step.bar_weight_kg, collar_key: step.collar_key, collar_weight_kg: step.collar_weight_kg, plates: [] } as SmartWarmupSession['loading_configuration'];
@@ -609,7 +638,7 @@ function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastComple
     {physicalRender ? <Image accessibilityLabel="Required plate stack" resizeMode="contain" source={physicalRender.imageSource} style={styles.plateStack} /> : null}
     <Text style={styles.plates}>{`Per side: ${step.plates_per_side.length ? step.plates_per_side.map((plate) => `${plate.count}×${plate.denomination} ${step.unit}`).join(' · ') : 'Empty bar'}`}</Text>
     <View style={styles.timerControl}><Pressable accessibilityLabel={`Set warmup rest timer, suggested ${restLabel}`} accessibilityRole="button" onPress={() => onOpenRestTimerPicker(step.rest_seconds)} style={styles.timerOpen} testID="smart-warmup-rest-timer"><View style={styles.timerCopy}><Ionicons name="timer-outline" size={20} color={SLColors.warning} /><View><Text style={styles.timerEyebrow}>{restTimerActive ? 'REST TIMER RUNNING' : 'REST TIMER'}</Text><Text style={styles.timerValue}>{restTimerActive ? activeRestLabel : restLabel}</Text></View></View><Text style={styles.timerAction}>Adjust</Text></Pressable>{restTimerActive && onStopRestTimer ? <Pressable accessibilityLabel="Stop warmup rest timer" accessibilityRole="button" onPress={onStopRestTimer} style={styles.timerStop} testID="smart-warmup-rest-timer-stop"><Text style={styles.timerStopText}>Stop</Text></Pressable> : null}</View>
-    {step.diagnostic ? <View><Text style={styles.feedbackPrompt}>How did that move?</Text><View style={styles.feedbackRow}>{(['slow', 'expected', 'fast'] as const).map((feedback) => <Pressable accessibilityLabel={`Warmup moved ${feedback}`} accessibilityRole="button" key={feedback} disabled={busy} onPress={() => onComplete(feedback)} style={[styles.feedback, feedback === 'slow' ? styles.slow : feedback === 'fast' ? styles.fast : null]} testID={`smart-warmup-feedback-${feedback}`}><Text style={styles.feedbackText}>{feedback}</Text></Pressable>)}</View></View> : (
+    {step.diagnostic ? <View><Text style={styles.feedbackPrompt}>How did that move?</Text><View style={styles.feedbackRow}>{FEEDBACK_OPTIONS.map((feedback) => <Pressable accessibilityLabel={`Warmup moved ${feedback.label.toLowerCase()}`} accessibilityRole="button" accessibilityState={{ disabled: busy }} key={feedback.key} disabled={busy} onPress={() => onComplete(feedback.key)} onPressIn={() => { if (!busy) void Haptics.selectionAsync().catch(() => undefined); }} style={[styles.feedback, feedback.key === 'flies' ? styles.flies : feedback.key === 'heavy' ? styles.heavy : feedback.key === 'very_heavy' ? styles.veryHeavy : null]} testID={`smart-warmup-feedback-${feedback.key}`}><Text numberOfLines={1} adjustsFontSizeToFit style={styles.feedbackText}>{feedback.label}</Text></Pressable>)}</View></View> : (
       <Pressable
         accessibilityLabel={completing ? 'Completing warmup set' : 'Complete Warmup Set'}
         accessibilityRole="button"
@@ -692,6 +721,7 @@ const styles = StyleSheet.create({
   previewHardware: { flex: 1, minWidth: 0, height: 96, alignItems: 'center', justifyContent: 'center' },
   previewBarAsset: { width: '118%', height: 92 },
   configurationNotice: { ...SLTypography.caption, color: SLColors.success, textAlign: 'center', marginTop: -2, marginBottom: 2 },
+  adaptationNotice: { ...SLTypography.caption, color: SLColors.accentViolet, textAlign: 'center', marginTop: -2, marginBottom: 2 },
   configStage: { ...StyleSheet.absoluteFillObject, zIndex: 20, justifyContent: 'flex-end' }, configBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.78)' }, configSheet: { maxHeight: '97%', paddingHorizontal: 14, paddingTop: 8, paddingBottom: 12, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: '#292B36', backgroundColor: '#07080C' }, configContent: { paddingBottom: 4 }, configHandle: { width: 48, height: 5, borderRadius: 3, alignSelf: 'center', backgroundColor: '#616575', marginBottom: 12 }, configHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, configHeaderCopy: { flex: 1, minWidth: 0 }, configTitle: { ...SLTypography.title, color: SLColors.textStrong, fontWeight: '800', fontSize: 23, lineHeight: 28 }, configSubtitle: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 4 }, configClose: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: '#17101F' },
   configDone: { minHeight: 54, marginTop: 14, borderRadius: 13, overflow: 'hidden' }, configDoneGradient: { flex: 1, minHeight: 54, alignItems: 'center', justifyContent: 'center' },
   customEditorStage: { ...StyleSheet.absoluteFillObject, zIndex: 40, justifyContent: 'flex-end' }, customEditorBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.68)' }, customEditorSheet: { paddingHorizontal: 16, paddingTop: 9, paddingBottom: 24, borderTopLeftRadius: 24, borderTopRightRadius: 24, borderWidth: 1, borderBottomWidth: 0, borderColor: SLColors.borderStrong, backgroundColor: '#0A0B10' }, customEditorHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }, customEditorTitle: { ...SLTypography.title, color: SLColors.textStrong, fontWeight: '800' }, customEditorSubtitle: { ...SLTypography.caption, color: SLColors.textMuted, marginTop: 4 }, customEditorInputRow: { minHeight: 72, marginTop: 18, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', borderRadius: 13, borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: '#06070A' }, customEditorInput: { flex: 1, minWidth: 0, color: SLColors.textStrong, fontSize: 30, lineHeight: 36 }, customEditorUnit: { ...SLTypography.title, color: SLColors.accentViolet },
@@ -700,6 +730,6 @@ const styles = StyleSheet.create({
   primaryButtonPressedMotion: { transform: [{ scale: 0.98 }] },
   primaryButtonCompleting: { backgroundColor: '#5F2CAF' },
   primaryButtonLoading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  primaryButtonText: { ...SLTypography.bodyStrong, color: '#FFFFFF' }, secondaryButton: { minHeight: 48, flexDirection: 'row', gap: 8, borderWidth: 1, borderColor: SLColors.borderSelected, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 10 }, secondaryButtonText: { ...SLTypography.label, color: SLColors.textStrong }, feedbackPrompt: { ...SLTypography.label, color: SLColors.textStrong, textAlign: 'center', marginVertical: 7 }, feedbackRow: { flexDirection: 'row', gap: 8 }, feedback: { flex: 1, minHeight: 42, borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.object }, slow: { backgroundColor: 'rgba(207,67,82,0.45)' }, fast: { backgroundColor: 'rgba(49,184,102,0.45)' }, feedbackText: { ...SLTypography.label, color: SLColors.textStrong, textTransform: 'capitalize' },
-  completeCard: { marginHorizontal: 8, padding: 16, borderRadius: SLRadius.radiusCard, borderWidth: 1, borderColor: SLColors.success, backgroundColor: '#08110B' }, completeSignal: { ...SLTypography.label, color: SLColors.success, textAlign: 'center' }, completeLabel: { ...SLTypography.caption, color: SLColors.textMuted, textAlign: 'center', marginTop: 12 }, recommendation: { fontSize: 40, lineHeight: 46, color: SLColors.success, fontWeight: '800', textAlign: 'center' }, optionRow: { gap: 8 }, loadOption: { paddingHorizontal: 13, paddingVertical: 10, borderRadius: 9, borderWidth: 1, borderColor: SLColors.borderHairline }, skip: { minHeight: 32, alignItems: 'center', justifyContent: 'center', marginTop: 2 }, skipText: { ...SLTypography.caption, color: SLColors.textMuted }, lockedCopy: { ...SLTypography.caption, color: SLColors.textMuted, textAlign: 'center', marginTop: 12 },
+  primaryButtonText: { ...SLTypography.bodyStrong, color: '#FFFFFF' }, secondaryButton: { minHeight: 48, flexDirection: 'row', gap: 8, borderWidth: 1, borderColor: SLColors.borderSelected, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 10 }, secondaryButtonText: { ...SLTypography.label, color: SLColors.textStrong }, feedbackPrompt: { ...SLTypography.label, color: SLColors.textStrong, textAlign: 'center', marginVertical: 7 }, feedbackRow: { flexDirection: 'row', gap: 6 }, feedback: { flex: 1, minWidth: 0, minHeight: 42, paddingHorizontal: 4, borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.object }, flies: { backgroundColor: 'rgba(49,184,102,0.45)' }, heavy: { backgroundColor: 'rgba(226,161,55,0.38)' }, veryHeavy: { backgroundColor: 'rgba(207,67,82,0.48)' }, feedbackText: { ...SLTypography.caption, color: SLColors.textStrong, fontWeight: '800', textAlign: 'center' },
+  completeCard: { marginHorizontal: 8, padding: 16, borderRadius: SLRadius.radiusCard, borderWidth: 1, borderColor: SLColors.success, backgroundColor: '#08110B' }, completeSignal: { ...SLTypography.label, color: SLColors.success, textAlign: 'center' }, completeLabel: { ...SLTypography.caption, color: SLColors.textMuted, textAlign: 'center', marginTop: 12 }, recommendation: { fontSize: 40, lineHeight: 46, color: SLColors.success, fontWeight: '800', textAlign: 'center' }, recommendationExplanation: { ...SLTypography.caption, color: SLColors.textStrong, textAlign: 'center', marginTop: 5, marginBottom: 2 }, optionRow: { gap: 8 }, loadOption: { paddingHorizontal: 13, paddingVertical: 10, borderRadius: 9, borderWidth: 1, borderColor: SLColors.borderHairline }, skip: { minHeight: 32, alignItems: 'center', justifyContent: 'center', marginTop: 2 }, skipText: { ...SLTypography.caption, color: SLColors.textMuted }, lockedCopy: { ...SLTypography.caption, color: SLColors.textMuted, textAlign: 'center', marginTop: 12 },
 });

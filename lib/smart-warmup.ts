@@ -22,6 +22,25 @@ export type SmartWarmupStep = SmartWarmupLoading & Readonly<{
   rest_seconds: number;
 }>;
 
+export type SmartWarmupFeedback = 'flies' | 'expected' | 'heavy' | 'very_heavy' | 'fast' | 'slow';
+
+export type SmartWarmupRecommendation = Readonly<{
+  recommended_target_kg: number;
+  signal: 'strong' | 'expected' | 'conservative' | 'protective';
+  loading: SmartWarmupLoading;
+  weighted_score?: number;
+  confidence?: number;
+  explanation?: string;
+  evidence?: readonly Readonly<{
+    sequence: number;
+    response: SmartWarmupFeedback;
+    total_kg: number | null;
+    intensity: number | null;
+    weight: number;
+    score: number;
+  }>[];
+}>;
+
 export type SmartWarmupSession = Readonly<{
   id: number;
   status: 'active' | 'completed' | 'skipped';
@@ -37,15 +56,29 @@ export type SmartWarmupSession = Readonly<{
   }>;
   progression: Readonly<{
     steps: readonly SmartWarmupStep[];
-    recommendation?: Readonly<{
+    current_target_kg?: number;
+    adaptations?: readonly Readonly<{
+      after_sequence: number;
+      response: SmartWarmupFeedback;
+      previous_future_kg: readonly number[];
+      adapted_future_kg: readonly number[];
       recommended_target_kg: number;
-      signal: 'strong' | 'expected' | 'conservative';
-      loading: SmartWarmupLoading;
+      evidence_weight: number;
+      reason: string;
+    }>[];
+    provisional_recommendation?: SmartWarmupRecommendation;
+    recommendation?: SmartWarmupRecommendation;
+    validation?: Readonly<{
+      strictly_ascending: boolean;
+      heavy_end_converges: boolean;
+      post_rounding_valid: boolean;
+      no_filler_steps: boolean;
+      rep_decay: boolean;
     }>;
   }>;
   completed_steps: readonly number[];
   last_completed_sequence: number | null;
-  diagnostic_feedback: readonly Readonly<{ sequence: number; response: 'slow' | 'expected' | 'fast'; total_kg: number }>[];
+  diagnostic_feedback: readonly Readonly<{ sequence: number; response: SmartWarmupFeedback; total_kg: number }>[];
   active_step_index: number;
   prescribed_low_kg: number;
   prescribed_high_kg: number;
