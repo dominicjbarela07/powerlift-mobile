@@ -7,6 +7,7 @@ import {
   parseSessionTimeDraft,
   replaceSessionDatePart,
   replaceSessionTimePart,
+  resolveSessionCompletionTiming,
   sessionTimePartsToInstant,
 } from '../lib/post-session-times.ts';
 
@@ -75,10 +76,33 @@ assert.match(parseSessionTimeDraft({
   end: new Date('2026-08-11T20:00:01.000Z'),
 }).error || '', /cannot exceed 24 hours/);
 
+const boundaryStart = new Date('2026-09-01T12:00:00.000Z');
+for (const [seconds, expectedDuration, unavailable] of [
+  [23 * 60 * 60 + 59 * 60, 23 * 60 * 60 + 59 * 60, false],
+  [24 * 60 * 60, 24 * 60 * 60, false],
+  [24 * 60 * 60 + 60, null, true],
+  [36 * 60 * 60, null, true],
+  [48 * 60 * 60, null, true],
+]) {
+  const decision = resolveSessionCompletionTiming({
+    start: boundaryStart,
+    end: new Date(boundaryStart.getTime() + seconds * 1000),
+  });
+  assert.equal(decision.error, null);
+  assert.equal(decision.durationUnavailable, unavailable);
+  assert.equal(decision.value?.durationSeconds ?? null, expectedDuration);
+}
+assert.match(resolveSessionCompletionTiming({
+  start: boundaryStart,
+  end: new Date(boundaryStart.getTime() + 25 * 60 * 60 * 1000),
+}, { manuallyCorrected: true }).error || '', /cannot exceed 24 hours/);
+
 const workoutSource = readFileSync(
   new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url),
   'utf8',
 );
+const trainingHubSource = readFileSync(new URL('../app/(tabs)/workout/index.tsx', import.meta.url), 'utf8');
+const calendarSource = readFileSync(new URL('../components/calendar/AthleteCalendarExperience.tsx', import.meta.url), 'utf8');
 assert.match(workoutSource, /postSessionTimePickerDraft/);
 assert.match(workoutSource, /postSessionTimeRow/);
 assert.match(workoutSource, /display="spinner"/);
@@ -91,6 +115,16 @@ assert.doesNotMatch(
 );
 assert.match(workoutSource, /session_started_at: sessionTimes\.startedAt/);
 assert.match(workoutSource, /session_ended_at: sessionTimes\.endedAt/);
+assert.match(workoutSource, /session_duration_unavailable: true/);
+assert.match(workoutSource, /reasonCode: 'performed_duration_unavailable'/);
+assert.equal((workoutSource.match(/resolveSessionCompletionTiming\(/g) || []).length, 2,
+  'Skip Reflection and full reflection must share the extended-Session decision');
+assert.match(trainingHubSource, /sessionState === 'complete'[\s\S]*Duration not recorded/,
+  'completed Training Hub rows must distinguish unknown performed duration from estimates');
+assert.match(trainingHubSource, /label="Duration"[\s\S]*'Not recorded'/,
+  'completed Training Hub evidence must not render unknown duration as a dash');
+assert.match(calendarSource, /label="DURATION"[\s\S]*'Not recorded'/,
+  'completed athlete calendar evidence must render unknown duration explicitly');
 assert.match(workoutSource, /const completed = await completeWorkout/);
 assert.match(workoutSource, /if \(completed\) \{[\s\S]*?setPostSessionVisible\(false\)/);
 

@@ -196,3 +196,22 @@ export function parseSessionTimeDraft(
     error: null,
   };
 }
+
+export function resolveSessionCompletionTiming(
+  draft: SessionTimeDraft,
+  options: { manuallyCorrected?: boolean } = {},
+): {
+  value: ParsedSessionTimeDraft | null;
+  durationUnavailable: boolean;
+  error: string | null;
+} {
+  const parsed = parseSessionTimeDraft(draft);
+  if (parsed.value) return { ...parsed, durationUnavailable: false };
+  const durationSeconds = isValidDate(draft.start) && isValidDate(draft.end)
+    ? Math.round((draft.end.getTime() - draft.start.getTime()) / 1000)
+    : Number.NaN;
+  if (!options.manuallyCorrected && durationSeconds > 24 * 60 * 60) {
+    return { value: null, durationUnavailable: true, error: null };
+  }
+  return { ...parsed, durationUnavailable: false };
+}

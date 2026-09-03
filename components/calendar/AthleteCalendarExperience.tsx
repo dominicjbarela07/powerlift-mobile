@@ -812,7 +812,7 @@ function SessionLensCard({
           <View style={styles.metricGrid}>
             <Metric label="SETS" value={String(session.performance?.completedSets || 0)} />
             <Metric label="REPS" value={String(session.performance?.totalReps || 0)} />
-            <Metric label="DURATION" value={session.performance?.actualDurationMinutes ? `${session.performance.actualDurationMinutes} min` : '—'} />
+            <Metric label="DURATION" value={session.performance?.actualDurationMinutes != null ? `${session.performance.actualDurationMinutes} min` : 'Not recorded'} />
             <Metric label="SESSION RPE" value={formatNumber(session.reflection?.sessionRpe)} />
           </View>
           {bestSet ? (

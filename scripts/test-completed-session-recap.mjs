@@ -35,6 +35,8 @@ assert.doesNotMatch(component, /<Polyline/, 'movement trends must not regress to
 assert.doesNotMatch(component, /implementation_key\.replace/, 'internal equipment keys must never be user-facing copy');
 assert.match(component, /BEST SET VIDEO/, 'best-set video evidence must be visible in expanded analysis');
 assert.match(component, /WHAT CHANGED/, 'Session-level comparison analysis must be present');
+assert.match(component, /Duration not recorded/, 'unknown duration must use explicit premium-safe copy');
+assert.match(component, /recap\.session\.duration_seconds != null[\s\S]*explicitCompletedAt/, 'unknown duration must not render lifecycle start-to-completion as performed time');
 assert.match(component, /MOVEMENT PROGRESSION/, 'governed movement progression cards must be present');
 assert.match(component, /kind="streak"/, 'the Session Streak must render through the premium highlight artwork component');
 assert.match(component, /PersonalBestsExperience/, 'verified PR evidence must have a dedicated high-fidelity lens');
