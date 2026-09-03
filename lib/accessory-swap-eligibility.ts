@@ -1,4 +1,4 @@
-export type AccessorySwapAction = 'Swap' | 'Sub' | null;
+export type AccessorySwapAction = 'Swap' | null;
 
 export type SubstitutionAuthority =
   | 'self_governed'
@@ -105,11 +105,9 @@ export function accessorySwapActionForItem({
     return null;
   }
   // Performed evidence is the permanent movement-level boundary. Once the
-  // server has accepted any set for this item, neither a free self-coach swap
-  // nor an approved substitution may remain reachable.
+  // server has accepted any set for this item, Swap may not remain reachable.
   if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
   if (!targetItemHasRemainingSets) return null;
   if (substitutionAuthority === 'self_governed') return 'Swap';
-  if (substitutionAuthority === 'coach_restricted' && hasApprovedSubstitutions) return 'Sub';
   return null;
 }

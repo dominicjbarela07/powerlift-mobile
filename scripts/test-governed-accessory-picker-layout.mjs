@@ -11,13 +11,13 @@ const source = fs.readFileSync(
 
 assert.match(
   source,
-  /<ScrollView[\s\S]*horizontal[\s\S]*style=\{styles\.modeRail\}[\s\S]*contentContainerStyle=\{styles\.modes\}/,
-  'the horizontal mode selector must have an explicit bounded viewport',
+  /SWAPPING[\s\S]*SIMILAR MOVEMENTS[\s\S]*Browse by Muscle Group[\s\S]*QUICK ACCESS/,
+  'the replacement workspace must preserve a compact, deliberate discovery hierarchy',
 );
 assert.match(
   source,
-  /modeRail:\s*\{[^}]*flexGrow: 0[^}]*flexShrink: 0[^}]*height: 62/,
-  'the horizontal mode selector must not consume the results area',
+  /shell:\s*\{[^}]*flex: 1[^}]*backgroundColor: '#000000'[^}]*\}/,
+  'the page-level canvas stays full-width OLED black',
 );
 assert.match(
   source,
@@ -26,5 +26,6 @@ assert.match(
 );
 assert.match(source, /keyboardShouldPersistTaps="handled"/);
 assert.match(source, /Create Governed Movement/);
+assert.doesNotMatch(source, /FULL LIBRARY|modeRail/, 'the giant default library rail is removed');
 
-console.log('[governed-accessory-picker-layout] bounded mode rail and contiguous results layout passed');
+console.log('[governed-accessory-picker-layout] contextual full-width discovery layout passed');

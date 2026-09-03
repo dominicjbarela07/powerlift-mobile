@@ -44,6 +44,10 @@ type Props = Readonly<{
   performingName: string;
   performingIdentity?: GovernedAccessoryIdentity | null;
   editablePrescription: boolean;
+  previousPrescription: string;
+  replacementPrescription: string;
+  prescriptionModified: boolean;
+  equipmentUnresolved?: boolean;
   sets: string;
   rir: string;
   repTarget: AccessoryRepTarget;
@@ -51,6 +55,7 @@ type Props = Readonly<{
   onSetsChange: (value: string) => void;
   onRirChange: (value: string) => void;
   onRepTargetChange: (value: AccessoryRepTarget) => void;
+  onResetPrescription: () => void;
   onBack: () => void;
   onCancel: () => void;
   onConfirm: () => void;
@@ -65,6 +70,10 @@ export function SubstitutionConfirmationSheet({
   performingName,
   performingIdentity,
   editablePrescription,
+  previousPrescription,
+  replacementPrescription,
+  prescriptionModified,
+  equipmentUnresolved = false,
   sets,
   rir,
   repTarget,
@@ -72,6 +81,7 @@ export function SubstitutionConfirmationSheet({
   onSetsChange,
   onRirChange,
   onRepTargetChange,
+  onResetPrescription,
   onBack,
   onCancel,
   onConfirm,
@@ -97,8 +107,8 @@ export function SubstitutionConfirmationSheet({
               <Ionicons color={SLColors.textStrong} name="arrow-back" size={22} />
             </TouchableOpacity>
             <View style={styles.headerCopy}>
-              <Text adjustsFontSizeToFit maxFontSizeMultiplier={1.15} minimumFontScale={0.88} numberOfLines={1} style={styles.title}>Confirm Substitution</Text>
-              <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.subtitle}>Set the plan before logging</Text>
+              <Text adjustsFontSizeToFit maxFontSizeMultiplier={1.15} minimumFontScale={0.88} numberOfLines={1} style={styles.title}>Configure Swap</Text>
+              <Text maxFontSizeMultiplier={1.2} numberOfLines={1} style={styles.subtitle}>Review before changing this Session</Text>
             </View>
             <TouchableOpacity accessibilityLabel="Close substitution confirmation" accessibilityRole="button" disabled={saving} onPress={onCancel} style={styles.headerButton}>
               <Ionicons color={SLColors.textStrong} name="close" size={24} />
@@ -121,8 +131,9 @@ export function SubstitutionConfirmationSheet({
                   testID="substitution-programmed-artwork"
                 />
                 <View style={styles.identityCopy}>
-                  <Text maxFontSizeMultiplier={1.2} style={styles.programmedKicker}>PROGRAMMED</Text>
+                  <Text maxFontSizeMultiplier={1.2} style={styles.programmedKicker}>FROM</Text>
                   <Text maxFontSizeMultiplier={1.35} numberOfLines={2} style={styles.programmedName}>{programmedName}</Text>
+                  <Text maxFontSizeMultiplier={1.2} style={styles.identityPrescription}>{previousPrescription}</Text>
                 </View>
               </View>
 
@@ -143,13 +154,14 @@ export function SubstitutionConfirmationSheet({
                 />
                 <View style={styles.identityCopy}>
                   <View style={styles.performingKickerRow}>
-                    <Text maxFontSizeMultiplier={1.2} style={styles.performingKicker}>PERFORMING</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles.performingKicker}>TO</Text>
                     <View style={styles.canonicalPill}>
                       <Ionicons color={SLColors.success} name="checkmark-circle" size={14} />
                       <Text maxFontSizeMultiplier={1.15} style={styles.canonicalPillText}>CANONICAL</Text>
                     </View>
                   </View>
                   <Text maxFontSizeMultiplier={1.35} numberOfLines={3} style={styles.performingName}>{performingName}</Text>
+                  <Text maxFontSizeMultiplier={1.2} style={styles.performingPrescription}>{replacementPrescription}</Text>
                 </View>
               </LinearGradient>
             </View>
@@ -158,7 +170,11 @@ export function SubstitutionConfirmationSheet({
               <View style={styles.prescriptionSection}>
                 <View style={styles.sectionHeading}>
                   <Text maxFontSizeMultiplier={1.2} style={styles.sectionKicker}>MOVEMENT PRESCRIPTION</Text>
-                  <Text maxFontSizeMultiplier={1.25} style={styles.sectionHint}>Applies to this movement</Text>
+                  {prescriptionModified ? (
+                    <TouchableOpacity accessibilityRole="button" disabled={saving} onPress={onResetPrescription}>
+                      <Text maxFontSizeMultiplier={1.25} style={styles.resetText}>Reset to Previous Prescription</Text>
+                    </TouchableOpacity>
+                  ) : <Text maxFontSizeMultiplier={1.25} style={styles.sectionHint}>Initialized from previous</Text>}
                 </View>
 
                 <View style={styles.wheelPanel}>
@@ -269,6 +285,17 @@ export function SubstitutionConfirmationSheet({
                 <Text maxFontSizeMultiplier={1.3} style={styles.preservedPrescriptionText}>The programmed sets, reps, and RIR will remain unchanged.</Text>
               </View>
             )}
+
+            {equipmentUnresolved ? (
+              <View style={styles.equipmentRow}>
+                <View style={styles.equipmentIcon}><Ionicons color={SLColors.accentViolet} name="barbell-outline" size={21} /></View>
+                <View style={styles.identityCopy}>
+                  <Text style={styles.equipmentLabel}>EQUIPMENT</Text>
+                  <Text style={styles.equipmentValue}>Choose when ready</Text>
+                  <Text style={styles.equipmentHint}>Exact equipment will be required before the first set.</Text>
+                </View>
+              </View>
+            ) : null}
           </ScrollView>
 
           <View style={styles.footer}>
@@ -321,6 +348,7 @@ const styles = StyleSheet.create({
   identityCopy: { flex: 1, minWidth: 0 },
   programmedKicker: { color: SLColors.textSubtle, fontSize: SLTypography.micro.fontSize, lineHeight: 16, fontFamily: SLFontFamilies.sansBold, letterSpacing: 1.1 },
   programmedName: { marginTop: 3, color: SLColors.textPrimary, fontSize: 18, lineHeight: 23, fontFamily: SLFontFamilies.sansSemiBold },
+  identityPrescription: { marginTop: 5, color: SLColors.textMuted, fontSize: 13, lineHeight: 18, fontFamily: SLFontFamilies.sansMedium },
   transitionRail: { height: 34, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 26 },
   transitionLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(164,105,233,0.32)' },
   transitionBadge: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(164,105,233,0.54)', backgroundColor: '#110B1A' },
@@ -331,10 +359,12 @@ const styles = StyleSheet.create({
   canonicalPill: { minHeight: 24, flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(80,221,124,0.48)', backgroundColor: 'rgba(19,92,55,0.18)' },
   canonicalPillText: { color: SLColors.success, fontSize: 10, lineHeight: 14, fontFamily: SLFontFamilies.sansBold, letterSpacing: 0.6 },
   performingName: { marginTop: 7, color: '#FFFFFF', fontSize: 23, lineHeight: 29, fontFamily: SLFontFamilies.sansBold, letterSpacing: -0.3 },
+  performingPrescription: { marginTop: 6, color: '#E9D9F8', fontSize: 14, lineHeight: 19, fontFamily: SLFontFamilies.sansSemiBold },
   prescriptionSection: { gap: SLSpacing.md },
   sectionHeading: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: SLSpacing.xs },
   sectionKicker: { color: SLColors.accentViolet, fontSize: SLTypography.label.fontSize, lineHeight: 20, fontFamily: SLFontFamilies.sansBold, letterSpacing: 1.1 },
   sectionHint: { color: SLColors.textSubtle, fontSize: SLTypography.caption.fontSize, lineHeight: 18, fontFamily: SLFontFamilies.sansMedium },
+  resetText: { color: SLColors.accentViolet, fontSize: SLTypography.caption.fontSize, lineHeight: 18, fontFamily: SLFontFamilies.sansSemiBold },
   wheelPanel: { paddingHorizontal: SLSpacing.sm, paddingBottom: SLSpacing.sm, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: '#080910' },
   primaryWheels: { marginTop: SLSpacing.sm },
   repSection: { gap: SLSpacing.sm },
@@ -352,6 +382,11 @@ const styles = StyleSheet.create({
   amrapBody: { marginTop: 4, color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, lineHeight: 19, fontFamily: SLFontFamilies.sansMedium },
   preservedPrescription: { minHeight: 74, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.md, padding: SLSpacing.lg, borderRadius: SLRadius.xl, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceFlat },
   preservedPrescriptionText: { flex: 1, color: SLColors.textPrimary, fontSize: SLTypography.label.fontSize, lineHeight: 21, fontFamily: SLFontFamilies.sansMedium },
+  equipmentRow: { minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.md, padding: SLSpacing.md, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStandard, backgroundColor: SLColors.surfaceFlat },
+  equipmentIcon: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: 'rgba(118,55,191,0.18)' },
+  equipmentLabel: { color: SLColors.textSubtle, fontSize: 10, lineHeight: 14, letterSpacing: 1, fontFamily: SLFontFamilies.sansBold },
+  equipmentValue: { color: SLColors.textStrong, fontSize: 15, lineHeight: 20, fontFamily: SLFontFamilies.sansSemiBold },
+  equipmentHint: { marginTop: 2, color: SLColors.textMuted, fontSize: 12, lineHeight: 17, fontFamily: SLFontFamilies.sansMedium },
   footer: { flexDirection: 'row', alignItems: 'center', gap: SLSpacing.sm, paddingHorizontal: SLSpacing.lg, paddingTop: SLSpacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderHairline, backgroundColor: '#030408' },
   cancelButton: { minWidth: 82, minHeight: 56, alignItems: 'center', justifyContent: 'center', paddingHorizontal: SLSpacing.md, borderRadius: SLRadius.lg },
   cancelText: { color: SLColors.textSecondary, fontSize: SLTypography.label.fontSize, fontFamily: SLFontFamilies.sansSemiBold },

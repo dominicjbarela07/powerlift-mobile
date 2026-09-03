@@ -6,7 +6,7 @@ const areas = [
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
   ['canonical shared athlete and coach post-Session surface', ['scripts/test-canonical-post-session-surface.mjs', 'scripts/test-post-session-times.mjs']],
   ['Coach Check-Ins V2 command center and evidence lifecycle', ['scripts/test-coach-check-ins-v2.mjs']],
-  ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs', 'scripts/test-superset-self-coach-swap-history.mjs']],
+  ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs', 'scripts/test-self-coached-accessory-swap-v2.mjs', 'scripts/test-superset-self-coach-swap-history.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],
