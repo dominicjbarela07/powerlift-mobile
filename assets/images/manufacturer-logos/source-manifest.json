@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "retrievedAt": "2026-09-02",
+  "policy": {
+    "runtime": "Local transparent PNG derivatives are bundled for Metro compatibility.",
+    "source": "Official vector or transparent raster source is retained where available.",
+    "provided": "User-supplied source artwork is retained unchanged and identified separately from vendor-verified official sources.",
+    "public": "A public trademark reference is retained with source provenance when an official current brand site no longer exists.",
+    "fallback": "A manufacturer-name badge is rendered when official artwork could not be verified or acquired.",
+    "trademarkNotice": "Manufacturer marks remain the property of their respective owners and are used only to identify equipment represented in athlete history."
+  },
+  "assets": [
+    {
+      "key": "hammer-strength",
+      "manufacturer": "Hammer Strength",
+      "status": "official",
+      "sourcePage": "https://www.lifefitness.com/en-us/brands/hammer-strength",
+      "sourceAsset": "https://www.lifefitness.com/Kentico13CoreBase/media/LFMedia/Development-Images/header-white-hammer.svg",
+      "sourceFile": "source/hammer-strength.svg",
+      "runtimeFile": "runtime/hammer-strength.png"
+    },
+    {
+      "key": "life-fitness",
+      "manufacturer": "Life Fitness",
+      "status": "official",
+      "sourcePage": "https://www.lifefitness.com/en-us",
+      "sourceAsset": "https://www.lifefitness.com/Kentico13CoreBase/media/LFMedia/Development-Images/lf-sm-white-brand-logo-new.svg",
+      "sourceFile": "source/life-fitness.svg",
+      "runtimeFile": "runtime/life-fitness.png"
+    },
+    {
+      "key": "prime-fitness",
+      "manufacturer": "Prime Fitness",
+      "status": "official",
+      "sourcePage": "https://www.primefitnessusa.com/",
+      "sourceAsset": "https://www.primefitnessusa.com/cdn/shop/files/PRIME_Logo_1200x1200.png?v=1624891489",
+      "sourceFile": "source/prime-fitness.png",
+      "runtimeFile": "runtime/prime-fitness.png"
+    },
+    {
+      "key": "arsenal-strength",
+      "manufacturer": "Arsenal Strength",
+      "status": "official",
+      "sourcePage": "https://www.myarsenalstrength.com/",
+      "sourceAsset": "https://www.myarsenalstrength.com/hs-fs/hubfs/arsenal_newLogo-white_website.png?width=842&height=279&name=arsenal_newLogo-white_website.png",
+      "sourceFile": "source/arsenal-strength.png",
+      "runtimeFile": "runtime/arsenal-strength.png"
+    },
+    {
+      "key": "rogers-athletic",
+      "manufacturer": "Rogers Athletic",
+      "status": "official",
+      "sourcePage": "https://rogersathletic.com/",
+      "sourceAsset": "https://rogersathletic.com/wp-content/uploads/2023/01/rogers-logo-rev-1024x194.png",
+      "sourceFile": "source/rogers-athletic.png",
+      "runtimeFile": "runtime/rogers-athletic.png"
+    },
+    {
+      "key": "atlantis",
+      "manufacturer": "Atlantis",
+      "status": "official",
+      "sourcePage": "https://atlantisstrength.com/build-yourself/discover-our-new-brand-website",
+      "sourceAsset": "https://atlantisstrength.com/app/uploads/2022/02/atlantis_logo_en-1434x830.png",
+      "sourceFile": "source/atlantis.png",
+      "runtimeFile": "runtime/atlantis.png",
+      "runtimeTreatment": "Monochrome white derivative for dark-UI legibility; official source retained unchanged."
+    },
+    {
+      "key": "nautilus",
+      "manufacturer": "Nautilus",
+      "status": "official",
+      "sourcePage": "https://www.corehandf.com/",
+      "sourceAsset": "https://www.corehandf.com/cdn/shop/files/logoasociate_Nautilus-3.png?v=6995767340358844735",
+      "sourceFile": "source/nautilus.png",
+      "runtimeFile": "runtime/nautilus.png",
+      "runtimeTreatment": "Monochrome white derivative for dark-UI legibility; official source retained unchanged."
+    },
+    {
+      "key": "precor",
+      "manufacturer": "Precor",
+      "status": "official",
+      "sourcePage": "https://www.precor.com/en-US",
+      "sourceAsset": "https://www.precor.com/_next/static/media/logo-white.00iz6wi8kloo5.svg",
+      "sourceFile": "source/precor.svg",
+      "runtimeFile": "runtime/precor.png"
+    },
+    {
+      "key": "hoist",
+      "manufacturer": "Hoist",
+      "status": "official",
+      "sourcePage": "https://www.hoistfitness.com/",
+      "sourceAsset": "https://www.hoistfitness.com/cdn/shop/files/Hoist-Fitness-Logo-White_b2ace6e4-dd4d-4244-94fa-23f246a93b85.png?v=1704273603",
+      "sourceFile": "source/hoist.png",
+      "runtimeFile": "runtime/hoist.png"
+    },
+    {
+      "key": "legend-fitness",
+      "manufacturer": "Legend Fitness",
+      "status": "official",
+      "sourcePage": "https://www.legendfitness.com/",
+      "sourceAsset": "https://www.legendfitness.com/wp-content/themes/legend-fitness/img/new-logo.png",
+      "sourceFile": "source/legend-fitness.png",
+      "runtimeFile": "runtime/legend-fitness.png"
+    },
+    {
+      "key": "rogue",
+      "manufacturer": "Rogue",
+      "status": "official",
+      "sourcePage": "https://www.roguefitness.com/",
+      "sourceAsset": "https://assets.roguefitness.com/UI/logos/rogue-logo-classic_ifo2pb.svg",
+      "sourceFile": "source/rogue.svg",
+      "runtimeFile": "runtime/rogue.png"
+    },
+    {
+      "key": "sorinex",
+      "manufacturer": "Sorinex",
+      "status": "official",
+      "sourcePage": "https://www.sorinex.com/",
+      "sourceAsset": "Official inline header/footer SVG",
+      "sourceFile": "source/sorinex.svg",
+      "runtimeFile": "runtime/sorinex.png"
+    },
+    {
+      "key": "elitefts",
+      "manufacturer": "EliteFTS",
+      "status": "official",
+      "sourcePage": "https://elitefts.com/",
+      "sourceAsset": "https://elitefts.com/cdn/shop/files/tagline-red-gray-800_2.png?v=1752332040&width=470",
+      "sourceFile": "source/elitefts.png",
+      "runtimeFile": "runtime/elitefts.png"
+    },
+    {
+      "key": "technogym",
+      "manufacturer": "Technogym",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/technogym.jpg",
+      "runtimeFile": "runtime/technogym.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "panatta",
+      "manufacturer": "Panatta",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/panatta.png",
+      "runtimeFile": "runtime/panatta.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "cybex",
+      "manufacturer": "Cybex",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/cybex.png",
+      "runtimeFile": "runtime/cybex.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "matrix",
+      "manufacturer": "Matrix",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/matrix.png",
+      "runtimeFile": "runtime/matrix.png",
+      "runtimeTreatment": "Connected outer background removed and runtime derivative normalized; supplied source retained unchanged."
+    },
+    {
+      "key": "strive",
+      "manufacturer": "Strive",
+      "status": "fallback",
+      "reason": "No current official source artwork could be verified."
+    },
+    {
+      "key": "nebula",
+      "manufacturer": "Nebula",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/nebula.png",
+      "runtimeFile": "runtime/nebula.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "bodymasters",
+      "manufacturer": "Bodymasters",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/bodymaster.jpg",
+      "runtimeFile": "runtime/bodymasters.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "gym80",
+      "manufacturer": "gym80",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/gym80.png",
+      "runtimeFile": "runtime/gym80.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "eleiko",
+      "manufacturer": "Eleiko",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/eleiko.png",
+      "runtimeFile": "runtime/eleiko.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "keiser",
+      "manufacturer": "Keiser",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/keiser.png",
+      "runtimeFile": "runtime/keiser.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "freemotion",
+      "manufacturer": "FreeMotion",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/freemotion.png",
+      "runtimeFile": "runtime/freemotion.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "star-trac",
+      "manufacturer": "Star Trac",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/startrac.jpg",
+      "runtimeFile": "runtime/star-trac.png",
+      "runtimeTreatment": "Connected outer checker background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "torque-fitness",
+      "manufacturer": "Torque Fitness",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/torquefitness.png",
+      "runtimeFile": "runtime/torque-fitness.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "sportsart",
+      "manufacturer": "SportsArt",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/sportsart.png",
+      "runtimeFile": "runtime/sportsart.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "newtech",
+      "manufacturer": "Newtech",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/newtech.png",
+      "runtimeFile": "runtime/newtech.png",
+      "runtimeTreatment": "Connected outer background removed; supplied source retained unchanged."
+    },
+    {
+      "key": "glutebuilder",
+      "manufacturer": "GluteBuilder",
+      "status": "official",
+      "sourcePage": "https://glute-builder.com/pages/home",
+      "sourceAsset": "https://glute-builder.com/cdn/shop/files/logo-600x62.png?v=1750933635&width=600",
+      "sourceFile": "source/glutebuilder.png",
+      "runtimeFile": "runtime/glutebuilder.png",
+      "runtimeTreatment": "Official transparent PNG retained unchanged."
+    },
+    {
+      "key": "mega-mass",
+      "manufacturer": "Mega Mass",
+      "status": "official",
+      "sourcePage": "https://megamasseurope.com/",
+      "sourceAsset": "https://megamasseurope.com/wp-content/uploads/2025/09/logo-4-scaled.png",
+      "sourceFile": "source/mega-mass.png",
+      "runtimeFile": "runtime/mega-mass.png",
+      "runtimeTreatment": "Orange MEGAMASS equipment wordmark tightly cropped from the official-distributor header; black presentation background removed without recoloring; verified against commercial machine photography at https://megamasseurope.com/shop/."
+    },
+    {
+      "key": "icarian",
+      "manufacturer": "Icarian",
+      "status": "public",
+      "sourcePage": "https://freebiesupply.com/logos/icarian-logo/",
+      "sourceAsset": "https://cdn.freebiesupply.com/logos/thumbs/2x/icarian-logo.png",
+      "sourceFile": "source/icarian.png",
+      "runtimeFile": "runtime/icarian.png",
+      "runtimeTreatment": "Transparent public trademark wordmark cropped to remove empty canvas; artwork was not redrawn."
+    },
+    {
+      "key": "gymleco",
+      "manufacturer": "Gymleco",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/gymleco.jpg",
+      "runtimeFile": "runtime/gymleco.png",
+      "runtimeTreatment": "Black background removed and white wordmark retained as a transparent runtime derivative; supplied source retained unchanged."
+    },
+    {
+      "key": "pit-shark",
+      "manufacturer": "Pit Shark",
+      "status": "provided",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/pitshark.jpeg",
+      "runtimeFile": "runtime/pit-shark.png",
+      "runtimeTreatment": "White background removed as a transparent runtime derivative; supplied source retained unchanged."
+    },
+    {
+      "key": "watson",
+      "manufacturer": "Watson",
+      "status": "provided",
+      "sourcePage": "https://watsongym.co.uk/",
+      "sourceAsset": "User-supplied local asset",
+      "sourceFile": "source/watson.png",
+      "runtimeFile": "runtime/watson.png",
+      "runtimeTreatment": "White background removed as a transparent runtime derivative; supplied source retained unchanged."
+    },
+    {
+      "key": "maxpump-fit",
+      "manufacturer": "Maxpump Fit",
+      "status": "official",
+      "sourcePage": "https://www.maxpumpfit.com/index-en.html",
+      "sourceAsset": "https://www.maxpumpfit.com/assets/img/logo/white-logo.svg",
+      "sourceFile": "source/maxpump-fit.svg",
+      "runtimeFile": "runtime/maxpump-fit.png",
+      "runtimeTreatment": "Official white-and-red vector wordmark rasterized to an alpha-preserving PNG and enlarged for crisp OLED presentation; official source retained unchanged."
+    },
+    {
+      "key": "eagle-fitness-systems",
+      "manufacturer": "Eagle Fitness Systems",
+      "status": "public",
+      "sourcePage": "https://refitnation.com/product/eagle-fitness-systems-by-cybex-back-extension-machine/",
+      "identitySource": "https://cybexintl.eu/company/overview/heritage.aspx",
+      "sourceAsset": "https://refitnation.com/wp-content/uploads/2025/08/20250820_112212-1-scaled.jpg",
+      "sourceFile": "source/eagle-fitness-systems.jpg",
+      "runtimeFile": "runtime/eagle-fitness-systems.png",
+      "runtimeTreatment": "Authentic EAGLE FITNESS SYSTEMS by CYBEX machine decal isolated from an unwatermarked high-resolution equipment photograph; blue and white mark preserved without redrawing and placed on the established light logo surface."
+    },
+    {
+      "key": "flex-fitness-systems",
+      "manufacturer": "Flex Fitness Systems",
+      "status": "official",
+      "sourcePage": "https://flexfitness.com/",
+      "sourceAsset": "https://flexfitness.com/cdn/shop/files/cropped-foundedflex.jpg?v=1707781107&width=1200",
+      "sourceFile": "source/flex-fitness-systems.jpg",
+      "runtimeFile": "runtime/flex-fitness-systems.png",
+      "runtimeTreatment": "Official FLEX shark wordmark retained in its real red, gray, and black colors; only the connected near-white page background was removed, with the result placed on the established light logo surface."
+    }
+  ]
+}

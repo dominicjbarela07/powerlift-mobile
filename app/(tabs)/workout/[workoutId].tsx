@@ -59,6 +59,7 @@ import {
   SessionIntentPanel,
   type WorkoutProgressSetSegment,
 } from '@/components/workout-logger/session-shell';
+import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE, fetchJson, getDeviceTimezone, getResolvedTimezone, removeVideoAttachment } from '@/lib/api';
 import {
@@ -86,6 +87,7 @@ import {
   type QueuedVideoUploadJob,
 } from '@/lib/videoUploadQueue';
 import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
+import { manufacturerMatchesSearch } from '@/lib/manufacturer-registry';
 import {
   activeEquipmentIdentity,
   isMachineAccessoryItem,
@@ -5822,9 +5824,17 @@ export default function WorkoutViewerScreen() {
                         <Text style={styles.equipmentPickerHeaderButtonText}>Close</Text>
                       </TouchableOpacity>
                     </View>
-                    <Text style={styles.equipmentPickerManufacturerName}>
-                      {equipmentPickerManufacturer.manufacturer?.display_name || 'Other'}
-                    </Text>
+                    <View style={styles.equipmentPickerManufacturerBrand}>
+                      <ManufacturerBrandMark
+                        compact
+                        manufacturerName={
+                          equipmentPickerManufacturer.manufacturer?.display_name || 'Other'
+                        }
+                      />
+                      <Text style={styles.equipmentPickerManufacturerName}>
+                        {equipmentPickerManufacturer.manufacturer?.display_name || 'Other'}
+                      </Text>
+                    </View>
                     {(['plate_loaded', 'selectorized'] as const).map((equipmentType) => (
                       <TouchableOpacity
                         key={equipmentType}
@@ -5878,9 +5888,8 @@ export default function WorkoutViewerScreen() {
                         .filter((row) => {
                           const needle = equipmentPickerQuery.trim().toLowerCase();
                           if (!needle) return true;
-                          return String(row.manufacturer?.display_name || row.display_name || '')
-                            .toLowerCase()
-                            .includes(needle);
+                          return manufacturerMatchesSearch(needle, row.manufacturer)
+                            || String(row.display_name || '').toLowerCase().includes(needle);
                         })
                         .map((row) => {
                           const status = row.equipment_context?.remembered_status;
@@ -5890,6 +5899,10 @@ export default function WorkoutViewerScreen() {
                               style={styles.equipmentPickerOption}
                               onPress={() => selectEquipmentManufacturer(row)}
                             >
+                              <ManufacturerBrandMark
+                                compact
+                                manufacturerName={row.manufacturer?.display_name || 'Other'}
+                              />
                               <View style={styles.equipmentPickerOptionCopy}>
                                 <Text style={styles.equipmentPickerOptionTitle}>
                                   {row.manufacturer?.display_name || 'Other'}
@@ -8575,9 +8588,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   equipmentPickerManufacturerName: {
+    flex: 1,
     color: '#C4B5FD',
     fontSize: 16,
     fontWeight: '800',
+  },
+  equipmentPickerManufacturerBrand: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
     marginBottom: 8,
   },
   equipmentPickerSearch: {

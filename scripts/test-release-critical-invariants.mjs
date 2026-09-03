@@ -8,7 +8,10 @@ const areas = [
     'scripts/test-production-canonical-accessory-hotfix.mjs',
     'scripts/test-catalog-canonical-identity-gate.mjs',
   ]],
-  ['machine equipment and manufacturer selection', ['scripts/test-production-equipment-picker-hotfix.mjs']],
+  ['machine equipment and manufacturer selection', [
+    'scripts/test-production-equipment-picker-hotfix.mjs',
+    'scripts/test-manufacturer-branding.mjs',
+  ]],
   ['movement substitution identity and evidence lock', [
     'scripts/test-production-canonical-movement-swap.mjs',
     'scripts/test-accessory-swap-session-gating.mjs',
