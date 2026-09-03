@@ -27,7 +27,11 @@ import { ReadinessModal, type ReadinessModalValues } from '@/components/workout-
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson, isAccountStateBlockedPayload } from '@/lib/api';
 import { mergeAthleteHomeWeekPreview } from '@/lib/athlete-home-week';
-import { mergeAthleteHomeV3, type AthleteHomeV3Projection } from '@/lib/athlete-home-v3';
+import {
+  isAthleteHomePayloadCurrent,
+  mergeAthleteHomeV3,
+  type AthleteHomeV3Projection,
+} from '@/lib/athlete-home-v3';
 import { mergeCanonicalDailyReadiness } from '@/lib/daily-readiness-home';
 import { createLatestRequestManager } from '@/lib/latest-request';
 import { classifyTodayResponse } from '@/lib/today-response';
@@ -78,6 +82,7 @@ type TodaySession = {
 
 type TodayPayload = {
   date: string;
+  timezone?: string | null;
   athlete?: {
     id?: number;
     name?: string | null;
@@ -236,7 +241,7 @@ function normalizeTodayPayload(payload: TodayPayload): TodayPayload {
 
 const PATCH_NOTE_VERSION = 'strength_ledger_mobile_2_0_athlete_tour_seen';
 const INDIVIDUAL_TODAY_WELCOME_VERSION = 'strength_ledger_individual_today_welcome_seen_v1';
-const TODAY_CACHE_VERSION = 'strength_ledger.today.cache.v1';
+const TODAY_CACHE_VERSION = 'strength_ledger.today.cache.v2';
 const REST_DAY_IMAGE = require('@/assets/images/chair.png');
 const TRAINING_DAY_IMAGE = require('@/assets/images/gym_vibe.jpg');
 
@@ -292,9 +297,11 @@ export default function AthleteDashboard() {
       .then((raw) => {
         if (!mounted || !raw) return;
         const cached = JSON.parse(raw) as TodayPayload;
-        if (cached?.date) {
+        if (cached?.date && isAthleteHomePayloadCurrent(cached)) {
           setToday(normalizeTodayPayload(cached));
           setLoading(false);
+        } else {
+          void AsyncStorage.removeItem(todayCacheKey).catch(() => undefined);
         }
       })
       .catch(() => undefined);
@@ -421,6 +428,13 @@ export default function AthleteDashboard() {
             res?.json,
           ),
         );
+        if (!isAthleteHomePayloadCurrent(normalized)) {
+          todayRef.current = null;
+          setToday(null);
+          void AsyncStorage.removeItem(todayCacheKey).catch(() => undefined);
+          setError('Today changed while refreshing. Please retry.');
+          return;
+        }
         setToday(normalized);
         setError(null);
         void AsyncStorage.setItem(todayCacheKey, JSON.stringify(normalized)).catch(() => undefined);
@@ -452,6 +466,20 @@ export default function AthleteDashboard() {
     });
     return () => subscription.remove();
   }, [loadToday]);
+
+  useEffect(() => {
+    const invalidateAtDateRollover = () => {
+      const current = todayRef.current;
+      if (!current || isAthleteHomePayloadCurrent(current)) return;
+      todayRef.current = null;
+      setToday(null);
+      setLoading(true);
+      void AsyncStorage.removeItem(todayCacheKey).catch(() => undefined);
+      void loadToday();
+    };
+    const timer = setInterval(invalidateAtDateRollover, 30_000);
+    return () => clearInterval(timer);
+  }, [loadToday, todayCacheKey]);
 
   const openDailyReadiness = React.useCallback(() => {
     const current = todayRef.current;
