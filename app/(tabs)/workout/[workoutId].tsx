@@ -3003,11 +3003,9 @@ export default function WorkoutViewerScreen() {
     });
     if (!swapAction) return;
     setSwapAccItem(it);
-    const identity = resolveLoggerMovementIdentity(it);
-    setSwapAccIdentity(
-      identity.effective
-      || null
-    );
+    // The programmed/effective identity is context, never a selectable
+    // replacement. A deliberate new governed identity is required.
+    setSwapAccIdentity(null);
     setSwapAccForm({
       sets: (it.performed_sets ?? it.sets) != null ? String(it.performed_sets ?? it.sets) : '',
       rir: (it.performed_rir_target ?? it.rir_target) != null ? String(it.performed_rir_target ?? it.rir_target) : '',
@@ -3017,6 +3015,22 @@ export default function WorkoutViewerScreen() {
     ));
     setSwapPickerVisible(true);
   };
+
+  const resetSwapPrescription = () => {
+    if (!swapAccItem) return;
+    setSwapAccForm({
+      sets: (swapAccItem.performed_sets ?? swapAccItem.sets) != null ? String(swapAccItem.performed_sets ?? swapAccItem.sets) : '',
+      rir: (swapAccItem.performed_rir_target ?? swapAccItem.rir_target) != null ? String(swapAccItem.performed_rir_target ?? swapAccItem.rir_target) : '',
+    });
+    setSwapRepTarget(accessoryRepTargetFromText(
+      swapAccItem.performed_reps_text || swapAccItem.reps_text || (swapAccItem.reps != null ? String(swapAccItem.reps) : '10'),
+    ));
+  };
+
+  const swapPreviousPrescription = swapAccItem ? accessoryTargetLine(swapAccItem) : '';
+  const swapReplacementPrescription = swapAccItem
+    ? `${positiveInt(Number(swapAccForm.sets || 0))}×${accessoryRepTargetText(swapRepTarget) || '—'}${swapAccForm.rir === '' ? '' : ` @${swapAccForm.rir} RIR`}`
+    : '';
 
   const saveSwapAcc = async () => {
     if (!workoutId || !swapAccItem) return;
@@ -3085,13 +3099,29 @@ export default function WorkoutViewerScreen() {
       }
 
       const savedItem = json.item as WorkoutItem | undefined;
+      if (savedItem) {
+        const projectSavedItem = (payload: WorkoutPayload | null) => payload ? {
+          ...payload,
+          workout: {
+            ...payload.workout,
+            accessory_groups: payload.workout.accessory_groups.map((group) => ({
+              ...group,
+              items: group.items.map((item) => Number(item.id) === Number(savedItem.id)
+                ? { ...item, ...savedItem, set_logs: item.set_logs || [] }
+                : item),
+            })),
+          },
+        } : payload;
+        dataRef.current = projectSavedItem(dataRef.current);
+        setData((current) => projectSavedItem(current));
+      }
       setSwapAccVisible(false);
       setSwapAccItem(null);
       rememberScroll();
-      await fetchWorkout();
-      if (savedItem?.performed_canonical_movement_identity?.requires_equipment_configuration) {
-        openIdentityPicker(savedItem);
-      }
+      // The accepted response is projected synchronously. Reconciliation is
+      // silent and must never launch equipment selection; that gate belongs
+      // immediately before the first performed SetLog.
+      void fetchWorkout({ silent: true, reason: 'manual' });
     } catch (err: any) {
       console.log('saveSwapAcc error', err);
       setError(err?.message || 'Error swapping accessory');
@@ -10695,20 +10725,13 @@ export default function WorkoutViewerScreen() {
         context="in-session-substitution"
         visible={swapPickerVisible}
         athleteId={data?.athlete?.id || null}
-        title={substitutionAuthority === 'self_governed' ? 'Swap Accessory' : 'Choose Approved Substitute'}
-        currentIdentityId={swapAccIdentity?.id || null}
-        approvedOnly={substitutionAuthority !== 'self_governed'}
+        title="Swap Accessory"
+        currentIdentity={(swapAccItem ? resolveLoggerMovementIdentity(swapAccItem).effective : null) as GovernedAccessoryIdentity | null}
+        currentPrescription={swapPreviousPrescription}
         canCreateCustom={
           substitutionAuthority === 'self_governed'
           && (data?.permissions?.can_create_custom_movement !== false || user?.is_self_coached === true)
         }
-        approvedIdentities={(() => {
-          const identities = [
-            swapAccItem?.movement_identity,
-            ...(swapAccItem?.approved_sub_identities || []),
-          ].filter((value): value is GeneralMovementIdentity => !!value?.id);
-          return [...new Map(identities.map((value) => [Number(value.id), value])).values()] as GovernedAccessoryIdentity[];
-        })()}
         onCancel={() => {
           setSwapPickerVisible(false);
           setSwapAccItem(null);
@@ -10721,7 +10744,8 @@ export default function WorkoutViewerScreen() {
       />
 
       <SubstitutionConfirmationSheet
-        editablePrescription={!!data?.permissions?.can_browse_hot_swap_catalog}
+        editablePrescription={substitutionAuthority === 'self_governed'}
+        equipmentUnresolved={swapAccIdentity?.requires_equipment_configuration === true}
         onBack={() => {
           setSwapAccVisible(false);
           setSwapPickerVisible(true);
@@ -10729,13 +10753,17 @@ export default function WorkoutViewerScreen() {
         onCancel={() => setSwapAccVisible(false)}
         onConfirm={saveSwapAcc}
         onRepTargetChange={setSwapRepTarget}
+        onResetPrescription={resetSwapPrescription}
         onRirChange={(rir) => setSwapAccForm((value) => ({ ...value, rir }))}
         onSetsChange={(sets) => setSwapAccForm((value) => ({ ...value, sets }))}
         performingIdentity={swapAccIdentity}
         performingName={swapAccIdentity?.display_name || 'Choose movement'}
-        programmedIdentity={swapAccItem?.movement_identity || null}
-        programmedName={swapAccItem?.movement || swapAccItem?.original_movement || 'Accessory'}
+        programmedIdentity={(swapAccItem ? resolveLoggerMovementIdentity(swapAccItem).effective : null) as GeneralMovementIdentity | null}
+        programmedName={swapAccItem ? accessoryExecutionName(swapAccItem) : 'Accessory'}
+        previousPrescription={swapPreviousPrescription}
+        prescriptionModified={swapReplacementPrescription !== swapPreviousPrescription}
         repTarget={swapRepTarget}
+        replacementPrescription={swapReplacementPrescription}
         rir={swapAccForm.rir}
         saving={savingItemId === swapAccItem?.id}
         sets={swapAccForm.sets}

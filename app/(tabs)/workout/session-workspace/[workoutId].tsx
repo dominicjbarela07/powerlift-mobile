@@ -28,7 +28,13 @@ import Animated, {
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 import { normalizeDisplayWeightUnit } from '@/lib/display-units';
-import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
+import {
+  ACCESSORY_EXECUTION_FAMILIES,
+  ACCESSORY_MUSCLE_GROUPS,
+  ACCESSORY_PICKER_REGIONS,
+  accessoryTaxonomyLabel,
+  type AccessoryPickerRegion,
+} from '@/lib/canonical-accessory-discovery';
 import {
   mapCoachSessionEditorPayload,
 } from '@/lib/coach-session-editor';
@@ -360,58 +366,6 @@ type AccessorySetup = {
   executionFamily: string;
   customNotes: string;
 };
-
-const ACCESSORY_MUSCLE_GROUPS = [
-  ['chest', 'Chest'],
-  ['front_delts', 'Front Delts'],
-  ['side_delts', 'Side Delts'],
-  ['rear_delts', 'Rear Delts'],
-  ['lats', 'Lats'],
-  ['upper_back', 'Upper Back'],
-  ['traps', 'Traps'],
-  ['biceps', 'Biceps'],
-  ['triceps', 'Triceps'],
-  ['forearms', 'Forearms'],
-  ['quads', 'Quads'],
-  ['hamstrings', 'Hamstrings'],
-  ['glutes', 'Glutes'],
-  ['adductors', 'Adductors'],
-  ['abductors', 'Abductors'],
-  ['calves', 'Calves'],
-  ['abs', 'Abs'],
-  ['obliques', 'Obliques'],
-  ['lower_back', 'Lower Back'],
-  ['serratus', 'Serratus'],
-  ['hip_flexors', 'Hip Flexors'],
-  ['neck', 'Neck'],
-] as const;
-
-const ACCESSORY_EXECUTION_FAMILIES = [
-  ['FREE_WEIGHT', 'Free Weight'],
-  ['MACHINE', 'Machine'],
-  ['CABLE', 'Cable'],
-  ['BODYWEIGHT', 'Bodyweight'],
-  ['BAND', 'Band'],
-  ['OTHER_PORTABLE', 'Other Portable'],
-] as const;
-
-type AccessoryPickerRegion = Readonly<{
-  key: string;
-  label: string;
-  artwork: AccessoryRegionalArtworkKey;
-  muscles: readonly string[];
-}>;
-
-const ACCESSORY_PICKER_REGIONS = [
-  { key: 'chest', label: 'Chest', artwork: 'chest', muscles: ['chest', 'serratus'] },
-  { key: 'back', label: 'Back', artwork: 'back_region', muscles: ['lats', 'upper_back', 'traps', 'lower_back'] },
-  { key: 'shoulders', label: 'Shoulders', artwork: 'side_delts', muscles: ['front_delts', 'side_delts', 'rear_delts'] },
-  { key: 'arms', label: 'Arms', artwork: 'arms', muscles: ['biceps', 'triceps', 'forearms'] },
-  { key: 'legs', label: 'Legs', artwork: 'quads', muscles: ['quads', 'hamstrings', 'adductors', 'abductors', 'calves'] },
-  { key: 'glutes_hips', label: 'Glutes / Hips', artwork: 'glutes', muscles: ['glutes', 'hip_flexors'] },
-  { key: 'core', label: 'Core', artwork: 'core', muscles: ['abs', 'obliques'] },
-  { key: 'other', label: 'Other', artwork: 'neck', muscles: ['neck'] },
-] as const satisfies readonly AccessoryPickerRegion[];
 
 type AccessoryPickerStep =
   | 'discovery'
@@ -3517,16 +3471,6 @@ function movementPresetSearchText(value?: MovementPreset | string | null) {
   return [movementPresetName(value), ...(value.aliases || [])]
     .join(' ')
     .toLowerCase();
-}
-
-function accessoryTaxonomyLabel(value?: string | null) {
-  const normalized = String(value || '').trim();
-  if (!normalized) return '';
-  const muscle = ACCESSORY_MUSCLE_GROUPS.find(([key]) => key === normalized.toLowerCase());
-  if (muscle) return muscle[1];
-  const execution = ACCESSORY_EXECUTION_FAMILIES.find(([key]) => key === normalized.toUpperCase());
-  if (execution) return execution[1];
-  return equipmentPresentationLabel(normalized, normalized);
 }
 
 function movementResultContext(value?: MovementPreset | null) {

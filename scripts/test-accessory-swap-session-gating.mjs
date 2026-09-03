@@ -44,7 +44,7 @@ assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) 
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted' }), null, 'externally coached athlete without approved choices does not gain Swap');
-assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), 'Sub', 'approved substitution is visible for an untouched target');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), null, 'coached athlete never receives in-Logger Swap even with approved choices');
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), null, 'target evidence removes approved substitution');
 assert.equal(resolve({ substitutionAuthority: 'none', hasApprovedSubstitutions: true }), null, 'read-only viewer receives no substitution action');
 assert.equal(resolve({ sessionLifecycle: 'pre_session' }), 'Swap', 'pre-Session untouched target shows Swap');
@@ -108,7 +108,8 @@ assert.match(
   /<GovernedAccessorySubstitutionPickerModal[\s\S]*context="in-session-substitution"[\s\S]*visible=\{swapPickerVisible\}[\s\S]*onSelect=\{\(identity\) =>/,
   'accessory substitution must remain wired through the governed movement picker',
 );
-assert.match(loggerSource, /approvedOnly=\{substitutionAuthority !== 'self_governed'\}/, 'picker restriction must follow server relationship authority rather than UI mode');
+assert.match(loggerSource, /editablePrescription=\{substitutionAuthority === 'self_governed'\}/, 'editable Swap configuration must follow relationship authority rather than UI mode');
+assert.doesNotMatch(loggerSource, /approvedOnly=/, 'the self-coached Swap picker must not retain a coached-athlete substitution lane');
 assert.doesNotMatch(loggerSource, /title=\{data\?\.permissions\?\.can_browse_hot_swap_catalog/, 'ambiguous catalog-boolean copy gate must not choose the approved-substitution experience');
 
 const authSource = readFileSync(new URL('../context/AuthContext.tsx', import.meta.url), 'utf8');
