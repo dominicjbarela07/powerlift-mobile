@@ -42,4 +42,7 @@ export const MANUFACTURER_LOGO_ASSETS: Readonly<
   gymleco: require('@/assets/images/manufacturer-logos/runtime/gymleco.png'),
   'pit-shark': require('@/assets/images/manufacturer-logos/runtime/pit-shark.png'),
   watson: require('@/assets/images/manufacturer-logos/runtime/watson.png'),
+  'maxpump-fit': require('@/assets/images/manufacturer-logos/runtime/maxpump-fit.png'),
+  'eagle-fitness-systems': require('@/assets/images/manufacturer-logos/runtime/eagle-fitness-systems.png'),
+  'flex-fitness-systems': require('@/assets/images/manufacturer-logos/runtime/flex-fitness-systems.png'),
 });

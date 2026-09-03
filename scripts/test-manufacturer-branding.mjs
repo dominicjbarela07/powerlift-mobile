@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   MANUFACTURER_REGISTRY,
+  manufacturerMatchesSearch,
   resolveManufacturerBrand,
 } from '../lib/manufacturer-registry.ts';
 
@@ -50,6 +51,9 @@ const requiredManufacturers = [
   'gymleco',
   'pit-shark',
   'watson',
+  'maxpump-fit',
+  'eagle-fitness-systems',
+  'flex-fitness-systems',
 ];
 
 const registryKeys = new Set(MANUFACTURER_REGISTRY.map((entry) => entry.key));
@@ -135,6 +139,13 @@ const resolutionCases = [
   ['PitShark Equipment', 'pit-shark'],
   ['Watson', 'watson'],
   ['WATSON GYM EQUIPMENT', 'watson'],
+  ['Max Pump', 'maxpump-fit'],
+  ['MAXPUMPFIT', 'maxpump-fit'],
+  ['Eagle', 'eagle-fitness-systems'],
+  ['Eagle Performance Systems', 'eagle-fitness-systems'],
+  ['Cybex Eagle', 'eagle-fitness-systems'],
+  ['Flex Systems', 'flex-fitness-systems'],
+  ['FLEX FITNESS SYSTEMS', 'flex-fitness-systems'],
 ];
 for (const [input, expectedKey] of resolutionCases) {
   assert.equal(resolveManufacturerBrand(input).key, expectedKey, `Failed alias: ${input}`);
@@ -153,6 +164,8 @@ for (const manufacturer of [
   'Icarian',
   'Pit Shark',
   'Watson',
+  'Eagle Fitness Systems',
+  'Flex Fitness Systems',
 ]) {
   assert.equal(
     resolveManufacturerBrand(manufacturer).logoSurface,
@@ -160,6 +173,24 @@ for (const manufacturer of [
     `${manufacturer} requires a light logo surface`,
   );
 }
+
+const apiManufacturer = (key, display_name, aliases = []) => ({ key, display_name, aliases });
+assert.equal(
+  manufacturerMatchesSearch('Max Pump', apiManufacturer('maxpump_fit', 'Maxpump Fit', ['Max Pump'])),
+  true,
+);
+assert.equal(
+  manufacturerMatchesSearch('Eagle Performance', apiManufacturer('eagle_fitness_systems', 'Eagle Fitness Systems')),
+  true,
+);
+assert.equal(
+  manufacturerMatchesSearch('Flex Systems', apiManufacturer('flex_fitness_systems', 'Flex Fitness Systems')),
+  true,
+);
+assert.equal(
+  manufacturerMatchesSearch('unrelated brand', apiManufacturer('watson', 'Watson')),
+  false,
+);
 for (const manufacturer of ['Atlantis', 'Matrix', 'Nautilus', 'Panatta']) {
   assert.equal(
     resolveManufacturerBrand(manufacturer).logoSurface,
@@ -182,6 +213,11 @@ assert.match(
   workoutLoggerSource,
   /manufacturerName=\{row\.manufacturer\}/,
   'Related machine history must use each row manufacturer',
+);
+assert.match(
+  workoutLoggerSource,
+  /manufacturerMatchesSearch\(needle, row\.manufacturer\)/,
+  'The live equipment picker must search governed manufacturer aliases',
 );
 
 const localLogoCount = MANUFACTURER_REGISTRY.filter((entry) => entry.logoAssetKey).length;
