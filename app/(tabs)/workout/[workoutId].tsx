@@ -219,6 +219,7 @@ import {
   parseSessionTimeDraft,
   replaceSessionDatePart,
   replaceSessionTimePart,
+  resolveSessionCompletionTiming,
   resolveSessionTimeZone,
 } from '@/lib/post-session-times';
 import { buildReadinessPayload, createReadinessSubmissionGate, normalizeReadinessUnit, persistReadinessThenBegin } from '@/lib/readiness';
@@ -2782,6 +2783,7 @@ export default function WorkoutViewerScreen() {
   );
   const finalSessionEndTransitionRef = useRef(false);
   const [postSessionTimeError, setPostSessionTimeError] = useState<string | null>(null);
+  const [postSessionTimeManuallyCorrected, setPostSessionTimeManuallyCorrected] = useState(false);
   const [postSessionFallbackTimeZone, setPostSessionFallbackTimeZone] = useState(
     () => getDeviceTimezone() || 'America/Los_Angeles',
   );
@@ -6000,9 +6002,11 @@ export default function WorkoutViewerScreen() {
   const completeWorkout = async ({
     skipIncompleteWarning = false,
     sessionTimes = null,
+    durationUnavailable = false,
   }: {
     skipIncompleteWarning?: boolean;
     sessionTimes?: { startedAt: string; endedAt: string } | null;
+    durationUnavailable?: boolean;
   } = {}) => {
     if (!data?.workout) return false;
     const wkId = data.workout.id;
@@ -6037,7 +6041,10 @@ export default function WorkoutViewerScreen() {
               session_started_at: sessionTimes.startedAt,
               session_ended_at: sessionTimes.endedAt,
             } : {}),
-            timing_event: createLifecycleTimingEvent(wkId, 'session_completed'),
+            ...(durationUnavailable ? { session_duration_unavailable: true } : {}),
+            timing_event: createLifecycleTimingEvent(wkId, 'session_completed', {
+              ...(durationUnavailable ? { reasonCode: 'performed_duration_unavailable' } : {}),
+            }),
           },
         }
       );
@@ -6120,6 +6127,7 @@ export default function WorkoutViewerScreen() {
       sessionEnd: timeDraft.end,
     });
     setPostSessionTimeError(null);
+    setPostSessionTimeManuallyCorrected(false);
     setPostSessionTimePicker(null);
     setPostSessionTimePickerDraft(null);
     setPostSessionTimePickerMode('date');
@@ -6182,6 +6190,7 @@ export default function WorkoutViewerScreen() {
       return;
     }
     setPostSessionForm(nextForm);
+    setPostSessionTimeManuallyCorrected(true);
     setPostSessionTimeError(null);
     closePostSessionTimePicker();
   };
@@ -6271,19 +6280,20 @@ export default function WorkoutViewerScreen() {
   };
 
   const skipPostSessionAndComplete = async () => {
-    const parsed = parseSessionTimeDraft({
-      start: postSessionForm.sessionStart,
-      end: postSessionForm.sessionEnd,
-    });
-    if (!parsed.value) {
-      setPostSessionTimeError(parsed.error);
+    const timing = resolveSessionCompletionTiming(
+      { start: postSessionForm.sessionStart, end: postSessionForm.sessionEnd },
+      { manuallyCorrected: postSessionTimeManuallyCorrected },
+    );
+    if (timing.error) {
+      setPostSessionTimeError(timing.error);
       return;
     }
     setPostSessionSubmitting(true);
     try {
       const completed = await completeWorkout({
         skipIncompleteWarning: true,
-        sessionTimes: parsed.value,
+        sessionTimes: timing.value,
+        durationUnavailable: timing.durationUnavailable,
       });
       if (completed) {
         closePostSessionTimePicker();
@@ -6295,12 +6305,12 @@ export default function WorkoutViewerScreen() {
   };
 
   const submitPostSessionAndComplete = async () => {
-    const parsedTimes = parseSessionTimeDraft({
-      start: postSessionForm.sessionStart,
-      end: postSessionForm.sessionEnd,
-    });
-    if (!parsedTimes.value) {
-      setPostSessionTimeError(parsedTimes.error);
+    const timing = resolveSessionCompletionTiming(
+      { start: postSessionForm.sessionStart, end: postSessionForm.sessionEnd },
+      { manuallyCorrected: postSessionTimeManuallyCorrected },
+    );
+    if (timing.error) {
+      setPostSessionTimeError(timing.error);
       return;
     }
     if (
@@ -6341,7 +6351,8 @@ export default function WorkoutViewerScreen() {
 
       const completed = await completeWorkout({
         skipIncompleteWarning: true,
-        sessionTimes: parsedTimes.value,
+        sessionTimes: timing.value,
+        durationUnavailable: timing.durationUnavailable,
       });
       if (completed) {
         closePostSessionTimePicker();

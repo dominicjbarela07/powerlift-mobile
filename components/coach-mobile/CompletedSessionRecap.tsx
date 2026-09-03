@@ -416,7 +416,7 @@ function numberLabel(value: unknown, decimals = 1) {
 }
 
 function durationLabel(seconds?: number | null) {
-  if (seconds == null || !Number.isFinite(Number(seconds))) return null;
+  if (seconds == null || !Number.isFinite(Number(seconds))) return 'Duration not recorded';
   const minutes = Math.max(0, Math.round(Number(seconds) / 60));
   return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`;
 }
@@ -1393,14 +1393,16 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const primaryTimeZone = resolveSessionTimeZone(sessionTimeZone, Intl.DateTimeFormat().resolvedOptions().timeZone);
   const startedAt = parseSessionLifecycleInstant(recap.session.started_at);
   const explicitCompletedAt = parseSessionLifecycleInstant(recap.session.completed_at);
-  const completedAt = explicitCompletedAt || (startedAt && recap.session.duration_seconds != null ? new Date(startedAt.getTime() + Number(recap.session.duration_seconds) * 1000) : null);
+  const completedAt = recap.session.duration_seconds != null
+    ? (explicitCompletedAt || (startedAt ? new Date(startedAt.getTime() + Number(recap.session.duration_seconds) * 1000) : null))
+    : null;
   const primaryStart = startedAt ? formatSessionTimeLabel(startedAt, { sessionDate: recap.session.date, timeZone: primaryTimeZone }) : null;
   const primaryEnd = completedAt ? formatSessionTimeLabel(completedAt, { sessionDate: recap.session.date, timeZone: primaryTimeZone }) : null;
   const easternStart = primaryTimeZone === 'America/Los_Angeles' && startedAt ? formatSessionTimeLabel(startedAt, { sessionDate: recap.session.date, timeZone: 'America/New_York' }) : null;
   const easternEnd = primaryTimeZone === 'America/Los_Angeles' && completedAt ? formatSessionTimeLabel(completedAt, { sessionDate: recap.session.date, timeZone: 'America/New_York' }) : null;
   const sessionTimeLine = primaryStart && primaryEnd
     ? `${primaryStart}–${primaryEnd}${easternStart && easternEnd ? ` PT (${easternStart}–${easternEnd} ET)` : ''}`
-    : 'Start and end time were not both recorded.';
+    : 'Duration not recorded';
   const deepActions = [
     onViewLedger ? { icon: 'list-outline' as const, label: 'View in Ledger', onPress: onViewLedger } : null,
     onViewCalendar ? { icon: 'calendar-outline' as const, label: 'View on Calendar', onPress: onViewCalendar } : null,
