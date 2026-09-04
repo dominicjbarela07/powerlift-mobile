@@ -43,7 +43,7 @@ assert.match(component, /PersonalBestsExperience/, 'verified PR evidence must ha
 assert.match(recapAssets, /SESSION_PR_CREST_ART = require\('@\/assets\/images\/session-recap\/session-pr-crest-v1\.png'\)/, 'Personal Bests must use the governed Session crest asset');
 assert.match(recapAssets, /streak: require\('@\/assets\/images\/session-recap\/session-streak-medallion-v1\.png'\)/, 'the Session Streak must use the canonical Ledger medallion asset');
 assert.match(certification, /const movements = \[/, 'the DEV certification route must use a deterministic full-evidence Session');
-assert.equal((certification.match(/movement\(\d+,/g) || []).length, 7, 'the certification Session must exceed the retired six-movement truncation threshold');
+assert.ok((certification.match(/movement\(\d+,/g) || []).length >= 7, 'the certification Session must exceed the retired six-movement truncation threshold');
 assert.equal((certification.match(/video: '(hinge|machine)'/g) || []).length, 2, 'the certification Session must contain two video evidence fixtures');
 assert.match(certification, /volume_trend:/, 'the certification Session must exercise Session volume history');
 assert.match(certification, /readiness_context:/, 'the certification Session must exercise readiness evidence');

@@ -306,6 +306,66 @@ const sparseRecap: CompletedSessionRecapPayload = {
   reviewer_v3: null,
 };
 
+const relatedLegPress = movement(8, 'Leg Press', 'quads', ['glutes'], 222.26, 12, {
+  equipment: 'Rogers Athletic · Plate Loaded',
+});
+relatedLegPress.sets[0].actual_rir = 1;
+if (relatedLegPress.best_set) relatedLegPress.best_set.rir = 1;
+relatedLegPress.trend = relatedLegPress.trend ? {
+  ...relatedLegPress.trend,
+  state: 'first_comparable_performance',
+  delta_kg: null,
+  delta_value: null,
+  points: relatedLegPress.trend.points?.slice(-1),
+} : null;
+relatedLegPress.projection = null;
+relatedLegPress.related_history = {
+  state: 'context_available',
+  relationship: 'same_governed_movement_family',
+  movement_family_id: 408,
+  comparison_confidence: 'context_only',
+  ranking_policy: 'canonical_related_history_order_v1',
+  reference_only: true,
+  loads_comparable: false,
+  references: [
+    {
+      movement_definition_id: 9802,
+      movement_family_id: 408,
+      display_name: 'Cybex Leg Press',
+      manufacturer: 'Cybex',
+      equipment_model: 'VR3 Leg Press',
+      equipment_type: 'machine',
+      loading_implementation: 'selectorized_machine',
+      load_convention: 'machine_stack_display',
+      measurement_type: 'load_reps',
+      last_performed_on: '2026-08-02',
+      last_set: { set_log_id: 98002, weight_kg: 204.116, reps: 12, rir: 1, date: '2026-08-02' },
+      reference_only: true,
+      loads_comparable: false,
+    },
+    {
+      movement_definition_id: 9803,
+      movement_family_id: 408,
+      display_name: 'Hammer Strength Leg Press',
+      manufacturer: 'Hammer Strength',
+      equipment_type: 'machine',
+      loading_implementation: 'plate_loaded_machine',
+      load_convention: 'plate_total',
+      measurement_type: 'load_reps',
+      last_performed_on: '2026-07-10',
+      last_set: { set_log_id: 98003, weight_kg: 195.044, reps: 10, rpe: 8, date: '2026-07-10' },
+      reference_only: true,
+      loads_comparable: false,
+    },
+  ],
+};
+const relatedHistoryRecap: CompletedSessionRecapPayload = {
+  ...sparseRecap,
+  workout_id: 744,
+  session: { ...sparseRecap.session, label: 'Related Equipment Context', set_count: relatedLegPress.sets.length },
+  performed_movements: [relatedLegPress],
+};
+
 const firstRepPrCareer = {
   ...recap.accomplishments[0],
   prior_value: null,
@@ -341,6 +401,7 @@ export default function SessionRecapCertificationScreen() {
   const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
   const activeRecap = params.scenario === 'sparse'
     ? sparseRecap
+    : params.scenario === 'related' ? relatedHistoryRecap
     : params.scenario === 'first-pr' ? firstRepPrRecap : recap;
   if (!__DEV__) return null;
   return <>

@@ -14,6 +14,7 @@
     "test:coach-session-reviewer-v3": "node scripts/test-review-hub-canonical-parity.mjs && node scripts/test-coach-session-reviewer-viewport-utilization.mjs",
     "test:canonical-post-session": "node --import tsx scripts/test-canonical-post-session-surface.mjs",
     "test:post-session-pr-evidence": "node --import tsx scripts/test-post-session-pr-evidence.mjs",
+    "test:post-session-related-history": "node --import tsx scripts/test-post-session-related-history.mjs",
     "test:core-variant-creator-policy": "node scripts/assert-core-variant-creator-policy.js",
     "test:adaptive-session-workspace-canonical": "node scripts/test-adaptive-session-workspace-canonical.mjs",
     "test:session-workspace-layout": "node scripts/test-session-workspace-layout.mjs && node scripts/test-programming-session-workspace-sheet.mjs",
