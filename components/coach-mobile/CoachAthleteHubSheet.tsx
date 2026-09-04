@@ -48,6 +48,7 @@ import {
   formatWeightFromKg,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
+import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import { useSLReducedMotion } from '@/lib/motion';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
@@ -146,7 +147,10 @@ function movementPrescription(
   if (!performed.length) return 'Performed evidence recorded';
   const evidenceSet = performed.find((set) => Number(set.actual_weight_kg) > 0) || performed[0];
   const weight = Number(evidenceSet.actual_weight_kg) > 0
-    ? formatWeightFromKg(evidenceSet.actual_weight_kg, displayUnit)
+    ? formatPerformedLoad(evidenceSet.actual_weight_kg, displayUnit, {
+      loadConvention: movement.measurement?.load_convention,
+      measurementType: movement.measurement?.measurement_type,
+    }) || formatWeightFromKg(evidenceSet.actual_weight_kg, displayUnit)
     : null;
   const reps = evidenceSet.actual_reps == null ? null : `${evidenceSet.actual_reps} reps`;
   return [

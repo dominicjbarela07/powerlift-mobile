@@ -1,5 +1,6 @@
 import { fetchJson } from '@/lib/api';
 import { strengthMetricForMovementClass } from '@/lib/movement-strength-metric';
+import { isAssistanceLoad } from '@/lib/performed-load-semantics';
 
 export { samePrimaryHistoryObservation } from '@/lib/canonical-movement-history-contract';
 
@@ -85,11 +86,11 @@ export type CanonicalHistoryExposureDetail = CanonicalHistoryExposure & Readonly
 
 export type CanonicalMovementHistory = Readonly<{
   strength_metric: {
-    key: 'e1rm' | 'e10rm';
-    metric: 'estimated_1rm_kg' | 'estimated_10rm_kg';
-    projection_metric: 'estimated_1rm' | 'estimated_10rm';
-    label: 'Estimated 1RM' | 'Estimated 10RM';
-    short_label: 'e1RM' | 'e10RM';
+    key: 'e1rm' | 'e10rm' | 'assistance';
+    metric: 'estimated_1rm_kg' | 'estimated_10rm_kg' | 'assistance_load_kg';
+    projection_metric: 'estimated_1rm' | 'estimated_10rm' | 'assistance_load';
+    label: 'Estimated 1RM' | 'Estimated 10RM' | 'Assistance Required';
+    short_label: 'e1RM' | 'e10RM' | 'Assistance';
     method: string;
   };
   identity_resolution: {
@@ -231,9 +232,57 @@ function normalizeStrengthRow<T extends { strength_metric_kg?: number | null; e1
   return { ...row, strength_metric_kg: value, [`${expected.key}_kg`]: value } as T;
 }
 
-function normalizeHistoryStrengthMetric(history: CanonicalMovementHistory): CanonicalMovementHistory {
+export function normalizeHistoryStrengthMetric(history: CanonicalMovementHistory): CanonicalMovementHistory {
+  const assisted = isAssistanceLoad({
+    loadConvention: typeof history.movement.load_convention === 'string' ? history.movement.load_convention : null,
+    measurementType: typeof history.movement.measurement_type === 'string' ? history.movement.measurement_type : null,
+  });
+  if (assisted) {
+    const normalizeAssistanceRow = <T extends { weight_kg?: number | null; strength_metric_kg?: number | null; e10rm_kg?: number | null; e1rm_kg?: number | null; pr_indicators?: string[] }>(row: T) => ({
+      ...row,
+      strength_metric_kg: finiteHistoryNumber(row.weight_kg),
+      e10rm_kg: null,
+      e1rm_kg: null,
+      ...(row.pr_indicators ? { pr_indicators: [] } : {}),
+    });
+    const normalizeExposure = (row: CanonicalHistoryExposure) => ({
+      ...row,
+      strength_metric_kg: finiteHistoryNumber(row.best_set?.weight_kg),
+      e10rm_kg: null,
+      e1rm_kg: null,
+      best_set: row.best_set ? normalizeAssistanceRow(row.best_set) : row.best_set,
+    });
+    return {
+      ...history,
+      strength_metric: {
+        key: 'assistance',
+        metric: 'assistance_load_kg',
+        projection_metric: 'assistance_load',
+        label: 'Assistance Required',
+        short_label: 'Assistance',
+        method: 'recorded_assistance_v1',
+      },
+      performance_trend: history.performance_trend.map(normalizeAssistanceRow),
+      load_progression: history.load_progression.map(normalizeAssistanceRow),
+      load_rep_profile: history.load_rep_profile.map(normalizeAssistanceRow),
+      equipment_breakdown: history.equipment_breakdown.map((row) => ({
+        ...row,
+        best_performance: row.best_performance ? normalizeAssistanceRow(row.best_performance) : row.best_performance,
+      })),
+      statistics: {
+        ...history.statistics,
+        estimated_strength_pr: null,
+        load_pr: null,
+        best_n_rep_load: null,
+        rep_pr_at_load: history.statistics.rep_pr_at_load
+          ? normalizeAssistanceRow(history.statistics.rep_pr_at_load)
+          : history.statistics.rep_pr_at_load,
+      },
+      exposures: history.exposures.map(normalizeExposure),
+    };
+  }
   const expected = strengthMetricForMovementClass(history.identity_resolution.subject_type);
-  const reportedKey = history.strength_metric?.key || null;
+  const reportedKey = history.strength_metric?.key === 'assistance' ? null : history.strength_metric?.key || null;
   const normalizeExposure = (row: CanonicalHistoryExposure) => ({
     ...normalizeStrengthRow(row, expected, reportedKey),
     best_set: row.best_set ? normalizeStrengthRow(row.best_set, expected, reportedKey) : row.best_set,
@@ -272,6 +321,12 @@ function normalizeHistoryStrengthMetric(history: CanonicalMovementHistory): Cano
   };
 }
 
+function finiteHistoryNumber(value: unknown) {
+  if (value == null || value === '' || typeof value === 'boolean') return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export async function fetchCanonicalMovementHistory(query: MovementHistoryQuery) {
   const response = await fetchJson<{ ok: boolean; error?: string; movement_history?: CanonicalMovementHistory }>(
     `/workouts/mobile/athletes/${query.athleteId}/movement-history?${queryParams(query).toString()}`,
@@ -308,9 +363,34 @@ export async function fetchCanonicalMovementExposure(query: MovementHistoryQuery
   if (!response.ok || !response.json?.ok || !response.json.exposure) {
     throw new Error(response.json?.error || 'Exposure evidence could not load.');
   }
-  const expected = strengthMetricForMovementClass(query.coreMovementId ? 'core' : 'accessory');
   const detail = response.json.exposure;
-  const reportedKey = detail.strength_metric?.key || null;
+  const detailSemantics = {
+    loadConvention: detail.sets.find((row) => row.load_convention)?.load_convention || detail.equipment?.load_convention,
+    measurementType: detail.sets.find((row) => row.measurement_type)?.measurement_type || detail.equipment?.measurement_type,
+  };
+  if (isAssistanceLoad(detailSemantics)) {
+    const normalizeAssistanceRow = <T extends { weight_kg?: number | null; strength_metric_kg?: number | null; e10rm_kg?: number | null; e1rm_kg?: number | null; pr_indicators?: string[] }>(row: T) => ({
+      ...row,
+      strength_metric_kg: finiteHistoryNumber(row.weight_kg),
+      e10rm_kg: null,
+      e1rm_kg: null,
+      ...(row.pr_indicators ? { pr_indicators: [] } : {}),
+    });
+    return {
+      ...detail,
+      strength_metric_kg: finiteHistoryNumber(detail.best_set?.weight_kg),
+      e10rm_kg: null,
+      e1rm_kg: null,
+      strength_metric: {
+        key: 'assistance', metric: 'assistance_load_kg', projection_metric: 'assistance_load',
+        label: 'Assistance Required', short_label: 'Assistance', method: 'recorded_assistance_v1',
+      },
+      best_set: detail.best_set ? normalizeAssistanceRow(detail.best_set) : detail.best_set,
+      sets: detail.sets.map(normalizeAssistanceRow),
+    } as CanonicalHistoryExposureDetail;
+  }
+  const expected = strengthMetricForMovementClass(query.coreMovementId ? 'core' : 'accessory');
+  const reportedKey = detail.strength_metric?.key === 'assistance' ? null : detail.strength_metric?.key || null;
   return {
     ...normalizeStrengthRow(detail, expected, reportedKey),
     best_set: detail.best_set ? normalizeStrengthRow(detail.best_set, expected, reportedKey) : detail.best_set,

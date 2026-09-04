@@ -1,4 +1,6 @@
 import type { SessionRecapTrend } from './session-recap-trend';
+import { isAssistanceLoad } from './performed-load-semantics';
+import { compareMovementPerformance } from './movement-performance-semantics';
 
 export const CANONICAL_PR_EVENT_TYPES = new Set([
   'CORE_E1RM_PR', 'CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'CORE_RPE_PR',
@@ -213,4 +215,37 @@ export function buildPersonalBestEvidence<TMovement extends Record<string, any>>
     }
   }
   return [...groups.values()];
+}
+
+export function personalBestEvidenceMatchesLoadSemantics(
+  evidence: PersonalBestEvidence<Record<string, any>>,
+) {
+  const measurement = evidence.movement?.measurement || {};
+  const semantics = {
+    loadConvention: measurement.load_convention,
+    measurementType: measurement.measurement_type,
+  };
+  if (!isAssistanceLoad(semantics)) return true;
+
+  const current = evidence.record.source_set;
+  const previous = evidence.record.prior_set;
+  if (!current || !previous) return false;
+  const comparison = compareMovementPerformance(
+    { weightKg: current.weight_kg, reps: current.reps, rpe: current.rpe, rir: current.rir },
+    { weightKg: previous.weight_kg, reps: previous.reps, rpe: previous.rpe, rir: previous.rir },
+    semantics,
+  );
+  if (comparison.state !== 'improved') return false;
+
+  if (evidence.record.metric === 'rep_max_load') {
+    return comparison.repsMatched && comparison.loadDeltaKg != null && comparison.loadDeltaKg < 0;
+  }
+  if (evidence.record.metric === 'same_load_reps') {
+    return comparison.loadMatched && comparison.repsDelta != null && comparison.repsDelta > 0;
+  }
+  if (evidence.record.metric === 'matched_performance_effort') {
+    return comparison.loadMatched && comparison.repsMatched
+      && comparison.reserveDelta != null && comparison.reserveDelta > 0;
+  }
+  return false;
 }

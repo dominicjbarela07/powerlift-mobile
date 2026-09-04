@@ -26,6 +26,7 @@ const areas = [
   ['Coach Calendar direct filter controls', ['scripts/test-coach-calendar-v2.mjs']],
   ['relationship-scoped athlete coaching scratchpad', ['scripts/test-athlete-coaching-scratchpad.mjs']],
   ['movement-class strength metrics', ['scripts/test-accessory-strength-metric-policy.mjs']],
+  ['assisted movement evidence semantics', ['scripts/test-assisted-movement-semantics.mjs']],
   ['immediate mode switching', ['scripts/test-mobile-mode-transition.mjs']],
   ['Settings account identity and mode parity', ['scripts/test-settings-account-parity.mjs']],
   ['grouped PR coaching recognition', ['scripts/test-coach-home-activity-first.mjs']],
