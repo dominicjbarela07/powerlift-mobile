@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
@@ -252,6 +252,7 @@ function withCalendarSessionDate(
 
 export default function CoachCalendarScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ athleteId?: string }>();
   const insets = useSafeAreaInsets();
   const [view, setView] = useState<CoachCalendarView>('month');
   const [anchor, setAnchor] = useState(() => new Date());
@@ -285,6 +286,7 @@ export default function CoachCalendarScreen() {
   const loadSequence = useRef(0);
   const monthPageCacheRef = useRef<Record<string, CalendarDay[]>>({});
   const athleteFilterHydrated = useRef(false);
+  const appliedAthleteParamRef = useRef<string | null>(null);
 
   const replaceMonthPageCache = useCallback((next: Record<string, CalendarDay[]>) => {
     monthPageCacheRef.current = next;
@@ -399,6 +401,15 @@ export default function CoachCalendarScreen() {
   }, [anchor, data, replaceMonthPageCache, view]);
 
   const athletes = data?.athletes || [];
+  useEffect(() => {
+    const raw = Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId;
+    if (!raw || appliedAthleteParamRef.current === raw || !athletes.length) return;
+    const athleteId = Number(raw);
+    if (!Number.isInteger(athleteId) || !athletes.some((athlete) => athlete.id === athleteId)) return;
+    appliedAthleteParamRef.current = raw;
+    setSelectedAthleteIds([athleteId]);
+    router.setParams({ athleteId: undefined });
+  }, [athletes, params.athleteId, router]);
   useEffect(() => {
     if (!athletes.length || !selectedAthleteIds.length) return;
     const rosterIds = new Set(athletes.map((athlete) => athlete.id));
@@ -647,6 +658,14 @@ export default function CoachCalendarScreen() {
     } as any);
   }, [router]);
 
+  const openMeetDay = useCallback((meet: CalendarMeet) => {
+    setDayDetail(null);
+    router.push({
+      pathname: '/(tabs)/coach-athlete/[athleteId]',
+      params: { athleteId: String(meet.athlete_id), athleteName: meet.athlete_name },
+    } as any);
+  }, [router]);
+
   if (loading && !data) {
     return <SLScreen edges="none"><View style={styles.center}><SLLoadingState title="Loading Calendar" message="Building the coaching week…" /></View></SLScreen>;
   }
@@ -746,7 +765,7 @@ export default function CoachCalendarScreen() {
             moving={moving}
             onAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }}
             onCustomPress={setSelectedCustomItem}
-            onMeetPress={(meet) => router.push({ pathname: '/(tabs)/coach-athlete/[athleteId]', params: { athleteId: String(meet.athlete_id), athleteName: meet.athlete_name } } as any)}
+            onMeetPress={openMeetDay}
             onMonthPage={shiftAnchor}
             onMove={moveSession}
             onRefresh={() => loadCalendar(true)}
@@ -760,7 +779,7 @@ export default function CoachCalendarScreen() {
           />
         ) : null}
         {!error && view === 'agenda' ? (
-          <AgendaBoard athleteById={athleteById} days={rangeDays} onCustomPress={setSelectedCustomItem} onDayAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }} onMeetPress={(meet) => router.push({ pathname: '/(tabs)/coach-athlete/[athleteId]', params: { athleteId: String(meet.athlete_id), athleteName: meet.athlete_name } } as any)} onRefresh={() => loadCalendar(true)} onSelectDate={setSelectedDate} onSessionPress={setSelectedSession} refreshing={refreshing} selectedDate={selectedDate} today={data?.today || toLocalYMD(new Date())} />
+          <AgendaBoard athleteById={athleteById} days={rangeDays} onCustomPress={setSelectedCustomItem} onDayAdd={(day) => { setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }} onMeetPress={openMeetDay} onRefresh={() => loadCalendar(true)} onSelectDate={setSelectedDate} onSessionPress={setSelectedSession} refreshing={refreshing} selectedDate={selectedDate} today={data?.today || toLocalYMD(new Date())} />
         ) : null}
 
         <View
@@ -796,6 +815,7 @@ export default function CoachCalendarScreen() {
         onAdd={(day) => { setDayDetail(null); setItemDraft(emptyDraft(day.date)); setCreateOpen(true); }}
         onClose={() => setDayDetail(null)}
         onCustom={setSelectedCustomItem}
+        onMeet={openMeetDay}
         onSession={setSelectedSession}
       />
 
@@ -1246,7 +1266,7 @@ function CustomChip({ item, onPress }: { item: CalendarCustomItem; onPress: (ite
 }
 
 function MeetChip({ meet }: { meet: CalendarMeet }) {
-  return <View style={styles.meetChip}><Text numberOfLines={1} style={styles.chipTitle}>{meet.meet_name || 'Meet'}</Text><Text style={styles.chipMeta}>Meet</Text></View>;
+  return <View style={styles.meetChip}><Text numberOfLines={1} style={styles.chipTitle}>{meet.meet_name || 'Meet Day'}</Text><Text style={styles.chipMeta}>Meet Day</Text></View>;
 }
 
 type MonthDragState = { session: CalendarSession; targetDate: string | null } | null;
@@ -1799,7 +1819,7 @@ function CalendarAgendaRow({ entry, onSessionPress, onMeetPress, onCustomPress }
   }
   if (entry.kind === 'meet') {
     const meet = entry.item;
-    return <AgendaRow icon="flag-outline" meta={`${meet.athlete_name} · Meet`} onPress={() => onMeetPress(meet)} title={meet.meet_name || 'Meet'} tone="review" />;
+    return <AgendaRow icon="flag-outline" meta={`${meet.athlete_name} · Meet Day`} onPress={() => onMeetPress(meet)} title={meet.meet_name || 'Meet Day'} tone="review" />;
   }
   const item = entry.item;
   return <AgendaRow icon="calendar-outline" meta={`${item.time ? `${item.time} · ` : ''}${item.athlete_name || 'Team'} · ${item.category}`} onPress={() => onCustomPress(item)} title={item.title} tone="info" />;
@@ -1813,9 +1833,9 @@ function CreateModal({ visible, draft, setDraft, athletes, onClose, onSession, o
   return <Sheet onClose={onClose} title="Create Calendar Item" visible={visible}><View style={styles.sheetBody}><Text style={styles.fieldLabel}>DATE</Text><InlineDatePicker value={draft.date} onChange={(date) => setDraft((current) => ({ ...current, date }))} /><Text style={styles.fieldLabel}>ATHLETE</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.athleteChips}><ChoiceChip label="Team" selected={draft.athleteId == null} onPress={() => setDraft((current) => ({ ...current, athleteId: null }))} />{athletes.map((athlete) => <ChoiceChip key={athlete.id} label={athlete.name} selected={draft.athleteId === athlete.id} onPress={() => setDraft((current) => ({ ...current, athleteId: athlete.id }))} />)}</ScrollView><Pressable disabled={!draft.athleteId} onPress={onSession} style={[styles.createChoice, !draft.athleteId && styles.disabled]}><View style={styles.createIcon}><Ionicons color={SLColors.accentViolet} name="barbell-outline" size={22} /></View><View style={styles.createCopy}><Text style={styles.createTitle}>Create Session</Text><Text style={styles.createMeta}>{draft.athleteId ? 'Add a Training Session for this athlete.' : 'Choose an athlete first.'}</Text></View><Ionicons color={SLColors.textSubtle} name="chevron-forward" size={19} /></Pressable><Pressable onPress={onCustom} style={styles.createChoice}><View style={[styles.createIcon, styles.customCreateIcon]}><Ionicons color={SLStatusTones.review.icon} name="calendar-outline" size={22} /></View><View style={styles.createCopy}><Text style={styles.createTitle}>Add Custom Item</Text><Text style={styles.createMeta}>Meet, check-in, travel, or other event.</Text></View><Ionicons color={SLColors.textSubtle} name="chevron-forward" size={19} /></Pressable></View></Sheet>;
 }
 
-function DayDetailModal({ day, onClose, onSession, onCustom, onAdd }: { day: CalendarDay | null; onClose: () => void; onSession: (session: CalendarSession) => void; onCustom: (item: CalendarCustomItem) => void; onAdd: (day: CalendarDay) => void }) {
+function DayDetailModal({ day, onClose, onSession, onMeet, onCustom, onAdd }: { day: CalendarDay | null; onClose: () => void; onSession: (session: CalendarSession) => void; onMeet: (meet: CalendarMeet) => void; onCustom: (item: CalendarCustomItem) => void; onAdd: (day: CalendarDay) => void }) {
   const groups = day ? groupDayItemsByAthlete(day) : [];
-  return <Sheet onClose={onClose} title={day ? formatCalendarDate(day.date, { weekday: 'long', month: 'long', day: 'numeric' }) : 'Day Details'} visible={!!day} height={680}>{day ? <ScrollView contentContainerStyle={styles.sheetBody}>{!allDayItems(day).length ? <View style={styles.boardEmpty}><Text style={styles.emptyTitle}>Nothing scheduled</Text><Text style={styles.sectionMeta}>Create a Session or custom Calendar item.</Text></View> : null}{groups.map((group) => <View key={group.key} style={styles.dayDetailGroup}><Text style={styles.dayDetailGroupTitle}>{group.label}</Text>{group.sessions.map((session) => <AgendaRow icon="barbell-outline" key={session.workout_id} meta={calendarStatusLabel(session.status)} onPress={() => { onClose(); onSession(session); }} title={session.label} tone={statusTone(session.status)} />)}{group.meets.map((meet) => <AgendaRow icon="flag-outline" key={meet.meet_plan_id} meta="Meet" onPress={() => {}} title={meet.meet_name || 'Meet'} tone="review" />)}{group.customItems.map((item) => <AgendaRow icon="calendar-outline" key={item.id} meta={item.time || item.category} onPress={() => { onClose(); onCustom(item); }} title={item.title} tone="info" />)}</View>)}<SLButton fullWidth iconLeft="add" label={`Add to ${formatCalendarDate(day.date, { month: 'short', day: 'numeric' })}`} onPress={() => onAdd(day)} /></ScrollView> : null}</Sheet>;
+  return <Sheet onClose={onClose} title={day ? formatCalendarDate(day.date, { weekday: 'long', month: 'long', day: 'numeric' }) : 'Day Details'} visible={!!day} height={680}>{day ? <ScrollView contentContainerStyle={styles.sheetBody}>{!allDayItems(day).length ? <View style={styles.boardEmpty}><Text style={styles.emptyTitle}>Nothing scheduled</Text><Text style={styles.sectionMeta}>Create a Session or custom Calendar item.</Text></View> : null}{groups.map((group) => <View key={group.key} style={styles.dayDetailGroup}><Text style={styles.dayDetailGroupTitle}>{group.label}</Text>{group.sessions.map((session) => <AgendaRow icon="barbell-outline" key={session.workout_id} meta={calendarStatusLabel(session.status)} onPress={() => { onClose(); onSession(session); }} title={session.label} tone={statusTone(session.status)} />)}{group.meets.map((meet) => <AgendaRow icon="flag-outline" key={meet.meet_plan_id} meta="Meet Day" onPress={() => onMeet(meet)} title={meet.meet_name || 'Meet Day'} tone="review" />)}{group.customItems.map((item) => <AgendaRow icon="calendar-outline" key={item.id} meta={item.time || item.category} onPress={() => { onClose(); onCustom(item); }} title={item.title} tone="info" />)}</View>)}<SLButton fullWidth iconLeft="add" label={`Add to ${formatCalendarDate(day.date, { month: 'short', day: 'numeric' })}`} onPress={() => onAdd(day)} /></ScrollView> : null}</Sheet>;
 }
 
 function groupDayItemsByAthlete(day: CalendarDay) {

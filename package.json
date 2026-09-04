@@ -134,6 +134,7 @@
     "test:coach-home-return-state": "node --import tsx scripts/test-coach-home-return-state.mjs",
     "test:coach-home-coming-up-direct-open": "node --import tsx scripts/test-coach-home-coming-up-direct-open.mjs",
     "test:coach-home-activity-first": "node --import tsx scripts/test-coach-home-activity-first.mjs",
+    "test:coach-meet-day-visibility": "node --import tsx scripts/test-coach-meet-day-visibility.mjs",
     "test:coach-check-ins-v2": "node --import tsx scripts/test-coach-check-ins-v2.mjs",
     "test:team-brief-v2": "node --import tsx scripts/test-team-brief-v2.mjs",
     "test:athlete-meet-packet-v2": "node --import tsx scripts/test-athlete-meet-packet-v2.mjs",
