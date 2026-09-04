@@ -17,6 +17,11 @@ import {
   movementHistorySheetRoute,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '@/lib/movement-history-launch';
+import {
+  advanceCoachSessionReviewVisit,
+  canonicalCoachSessionReviewIdentity,
+  coachSessionReviewPresentationKey,
+} from '@/lib/coach-session-review-presentation';
 
 type Option = { value: string; label: string };
 type ReviewPayload = {
@@ -77,9 +82,19 @@ function draftFromReview(payload: ReviewPayload): CoachReviewDraft {
 }
 
 export default function CoachSessionReviewScreen() {
-  const router = useRouter();
   const params = useLocalSearchParams<{ workoutId?: string }>();
-  const workoutId = Number(params.workoutId);
+  const reviewIdentity = canonicalCoachSessionReviewIdentity(params.workoutId);
+  const [visitRevision, setVisitRevision] = useState(0);
+
+  return <CoachSessionReviewContent
+    key={coachSessionReviewPresentationKey(reviewIdentity, visitRevision)}
+    workoutId={reviewIdentity ? Number(reviewIdentity) : Number.NaN}
+    onEndVisit={() => setVisitRevision(advanceCoachSessionReviewVisit)}
+  />;
+}
+
+function CoachSessionReviewContent({ workoutId, onEndVisit }: { workoutId: number; onEndVisit: () => void }) {
+  const router = useRouter();
   const [detail, setDetail] = useState<DetailPayload | null>(null);
   const [review, setReview] = useState<ReviewPayload | null>(null);
   const [draft, setDraft] = useState<CoachReviewDraft>(emptyDraft);
@@ -125,6 +140,11 @@ export default function CoachSessionReviewScreen() {
 
   useEffect(() => { void load(); }, [load]);
 
+  const closeReview = useCallback(() => {
+    onEndVisit();
+    router.back();
+  }, [onEndVisit, router]);
+
   const save = useCallback(async (nextDraft: CoachReviewDraft, action: 'save' | 'complete') => {
     if (saving) return;
     try {
@@ -134,7 +154,7 @@ export default function CoachSessionReviewScreen() {
       const result = await saveCoachSessionReview(workoutId, { ...nextDraft, action });
       if (!result.ok || !(result.json as any)?.ok) throw new Error((result.json as any)?.error || 'Could not save this review.');
       if (action === 'complete') {
-        Alert.alert('Review completed', 'The review is now in history.', [{ text: 'Done', onPress: () => router.back() }]);
+        Alert.alert('Review completed', 'The review is now in history.', [{ text: 'Done', onPress: closeReview }]);
       } else {
         Alert.alert('Draft saved', 'Your review notes were saved.');
         await load(true);
@@ -144,7 +164,7 @@ export default function CoachSessionReviewScreen() {
     } finally {
       setSaving(null);
     }
-  }, [load, router, saving, workoutId]);
+  }, [closeReview, load, saving, workoutId]);
 
   const coachReview = useMemo(() => review && review.review_controls?.editable !== false ? {
     draft,
@@ -166,8 +186,8 @@ export default function CoachSessionReviewScreen() {
       coachReviewUnavailableReason={review.review_controls?.edit_unavailable_reason}
       refreshing={refreshing}
       onRefresh={() => { void load(true); }}
-      onClose={() => router.back()}
-      onDone={() => router.back()}
+      onClose={closeReview}
+      onDone={closeReview}
       onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || '') } } as never)}
       onOpenMovementHistory={(movement) => {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
