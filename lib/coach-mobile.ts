@@ -3,6 +3,13 @@ export type CoachDestination = {
   params?: Record<string, string | number | null>;
 };
 
+export type CoachMeetContext = {
+  meet_plan_id: number;
+  meet_name?: string | null;
+  meet_date: string;
+  days_until_meet?: number | null;
+};
+
 export type CoachHomeActivityType =
   | 'completed_session'
   | 'video_submitted'
@@ -209,12 +216,7 @@ export type CoachRosterAthlete = {
       is_empty?: boolean;
     } | null;
   };
-  meet_context?: {
-    meet_plan_id: number;
-    meet_name?: string | null;
-    meet_date?: string | null;
-    days_until_meet?: number | null;
-  } | null;
+  meet_context?: CoachMeetContext | null;
 };
 
 export type CoachRecentTrainingSession = CoachSessionReference & {
@@ -334,6 +336,7 @@ export type CoachAthleteSummaryResponse = {
   pending_video_reviews: { count: number; items?: unknown[] };
   pending_session_reviews: { count: number; items?: unknown[] };
   unread_messages?: { thread_id?: number | null; count: number; last_message_at?: string | null } | null;
+  meet_context?: CoachMeetContext | null;
   coach_context: {
     pinned_note?: {
       id: number;

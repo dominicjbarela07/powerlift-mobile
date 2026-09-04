@@ -22,6 +22,12 @@
       "behaviorTests": ["scripts/test-coach-home-coming-up-direct-open.mjs"]
     },
     {
+      "id": "mobile-coach-meet-day-visibility",
+      "description": "Relationship-scoped MeetPlan context remains visible as Meet Day across Coach Home, Athlete Hub, and Calendar without replacing Session behavior.",
+      "acceptedCommits": ["3bd31b8ead932e792ec8ff68764a1911643837c9"],
+      "behaviorTests": ["scripts/test-coach-meet-day-visibility.mjs"]
+    },
+    {
       "id": "rich-plan-compare",
       "description": "Completed Session recap retains the rich Plan / Compare renderer.",
       "acceptedCommits": ["cbf5d3426c44aa6817b67074a16c24229dbc6d79"],

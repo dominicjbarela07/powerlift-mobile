@@ -26,6 +26,11 @@ import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/c
 import { Text } from '@/components/ui/sl-text';
 import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
+import {
+  coachMeetTimingLabel,
+  formatCoachMeetDate,
+  normalizeCoachMeetContext,
+} from '@/lib/coach-meet-day';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import {
   attentionActionLabel,
@@ -398,6 +403,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
     })));
   }
   const horizon = details?.programming_horizon || athlete.programming_horizon;
+  const meet = normalizeCoachMeetContext(details?.meet_context || athlete.meet_context);
   const horizonText = horizon?.programmed_through_date
     ? `Programmed through ${shortDate(horizon.programmed_through_date)}`
     : 'No upcoming programming coverage';
@@ -485,6 +491,18 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <QuickAction icon="ellipsis-horizontal" label="More" onPress={more} />
               </View>
             </View>
+            {meet ? (
+              <Pressable accessibilityLabel={`Open ${athlete.name} Meet Day in Calendar`} accessibilityRole="button" onPress={schedule} style={({ pressed }) => [styles.meetDayCard, pressed && styles.pressed]}>
+                <LinearGradient colors={['rgba(95,72,15,0.42)', 'rgba(24,18,4,0.96)']} style={StyleSheet.absoluteFillObject} />
+                <View style={styles.meetDayIcon}><Ionicons color={COACH_V2.gold} name="trophy" size={28} /></View>
+                <View style={styles.meetDayCopy}>
+                  <Text style={styles.meetDayEyebrow}>Meet Day · {coachMeetTimingLabel(meet)}</Text>
+                  <Text numberOfLines={1} style={styles.meetDayTitle}>{meet.meet_name || 'Meet Day'}</Text>
+                  <Text numberOfLines={1} style={styles.meetDayDate}>{formatCoachMeetDate(meet.meet_date)}</Text>
+                </View>
+                <CoachCardChevron />
+              </Pressable>
+            ) : null}
             {primaryReason ? (
               <Pressable accessibilityRole="button" onPress={openPrimaryReason} style={({ pressed }) => [styles.attentionCard, pressed && styles.pressed]}>
                 <LinearGradient colors={['rgba(255,71,103,0.24)', 'rgba(37,8,18,0.96)']} style={StyleSheet.absoluteFillObject} />
@@ -785,6 +803,12 @@ const styles = StyleSheet.create({
   quickAction: { minWidth: 50, flex: 1, alignItems: 'center', gap: 4, paddingVertical: 6 },
   quickActionLabel: { color: COACH_V2.text, fontSize: 9, fontWeight: '700' },
   pressed: { opacity: 0.72, transform: [{ scale: 0.99 }] },
+  meetDayCard: { minHeight: 92, overflow: 'hidden', borderRadius: 13, borderWidth: 1, borderColor: `${COACH_V2.gold}66`, flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12 },
+  meetDayIcon: { width: 50, height: 50, borderRadius: 25, borderWidth: 1, borderColor: `${COACH_V2.gold}55`, backgroundColor: 'rgba(99,75,11,0.22)', alignItems: 'center', justifyContent: 'center' },
+  meetDayCopy: { flex: 1, minWidth: 0, gap: 4 },
+  meetDayEyebrow: { color: COACH_V2.gold, fontSize: 9, fontWeight: '900', letterSpacing: 0.5, textTransform: 'uppercase' },
+  meetDayTitle: { color: COACH_V2.text, fontSize: 16, lineHeight: 20, fontWeight: '800' },
+  meetDayDate: { color: COACH_V2.muted, fontSize: 10 },
   attentionCard: { minHeight: 92, overflow: 'hidden', borderRadius: 13, borderWidth: 1, borderColor: `${COACH_V2.magenta}66`, flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12 },
   attentionIcon: { width: 48, height: 48, borderRadius: 13, backgroundColor: `${COACH_V2.magenta}15`, alignItems: 'center', justifyContent: 'center' },
   attentionCopy: { flex: 1, minWidth: 0, gap: 5 },
