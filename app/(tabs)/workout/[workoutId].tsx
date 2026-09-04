@@ -179,7 +179,8 @@ import {
   roundLoggerDisplayWeight,
   roundToNearestGymIncrementLb,
 } from '@/lib/logger-weight-format';
-import { formatPerformedLoad, type PerformedLoadSemantics } from '@/lib/performed-load-semantics';
+import { formatPerformedLoad, isAssistanceLoad, type PerformedLoadSemantics } from '@/lib/performed-load-semantics';
+import { movementLoadPolicy } from '@/lib/movement-performance-semantics';
 import {
   resolveLoggerPrescribedWeight,
   type ResolvedLoggerPrescribedWeight,
@@ -1585,7 +1586,7 @@ function defaultAccessoryRir(item: WorkoutItem) {
   return formatWheelNumber(Number(accessoryExecutionItem(item).rir_target ?? 2));
 }
 
-function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb', metric: 'rpe' | 'rir') {
+function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb', metric: 'rpe' | 'rir', item?: WorkoutItem | null) {
   const count = logs.length;
   const header = `${count}/${totalSets || count} sets logged`;
   if (!count) return { meta: header, top: null };
@@ -1601,13 +1602,24 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
     ? metricValues.reduce((sum, value) => sum + Number(value), 0) / metricValues.length
     : null;
 
+  const loadSemantics = itemLoadSemantics(item);
+  const assistance = isAssistanceLoad(loadSemantics);
   const top = [...logs].sort((a, b) => {
+    if (assistance) {
+      const loadDifference = Number(a.actual_weight_kg || 0) - Number(b.actual_weight_kg || 0);
+      if (Math.abs(loadDifference) > 0.0005) return loadDifference;
+      const repDifference = Number(b.actual_reps || 0) - Number(a.actual_reps || 0);
+      if (repDifference) return repDifference;
+      const aReserve = a.actual_rir ?? (a.actual_rpe == null ? 0 : 10 - a.actual_rpe);
+      const bReserve = b.actual_rir ?? (b.actual_rpe == null ? 0 : 10 - b.actual_rpe);
+      return Number(bReserve) - Number(aReserve);
+    }
     const aScore = Number(a.actual_weight_kg || 0) * (1 + Number(a.actual_reps ?? 0) / 30);
     const bScore = Number(b.actual_weight_kg || 0) * (1 + Number(b.actual_reps ?? 0) / 30);
     return bScore - aScore;
   })[0] || null;
 
-  const avgParts = [`${formatWeight(avgWeightKg, unit)} ${unit}`, `× ${formatWheelNumber(avgReps)}`];
+  const avgParts = [formatPerformedLoad(avgWeightKg, unit, loadSemantics) || `${formatWeight(avgWeightKg, unit)} ${unit}`, `× ${formatWheelNumber(avgReps)}`];
   if (avgMetric != null) {
     avgParts.push(metric === 'rpe' ? `@${formatWheelNumber(avgMetric)} avg` : `@${formatWheelNumber(avgMetric)} RIR avg`);
   } else {
@@ -1616,7 +1628,7 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
 
   const topMetric = metric === 'rpe' ? top?.actual_rpe : top?.actual_rir;
   const topLine = top
-    ? `Top: ${formatWeight(top.actual_weight_kg, unit)} ${unit}${top.actual_reps === 0 ? ' × Failed' : top.actual_reps != null ? ` × ${top.actual_reps}` : ''}${topMetric != null ? (metric === 'rpe' ? ` @${formatWheelNumber(Number(topMetric))}` : ` @${formatWheelNumber(Number(topMetric))} RIR`) : ''}`
+    ? `Top: ${formatPerformedLoad(top.actual_weight_kg, unit, loadSemantics) || `${formatWeight(top.actual_weight_kg, unit)} ${unit}`}${top.actual_reps === 0 ? ' × Failed' : top.actual_reps != null ? ` × ${top.actual_reps}` : ''}${topMetric != null ? (metric === 'rpe' ? ` @${formatWheelNumber(Number(topMetric))}` : ` @${formatWheelNumber(Number(topMetric))} RIR`) : ''}`
     : null;
 
   return {
@@ -8194,7 +8206,7 @@ export default function WorkoutViewerScreen() {
     const accessoryDetailKey = `acc:${it.id}`;
     const accessoryIsComplete = totalSets > 0 && loggedCount >= totalSets;
     const accessoryIsExpanded = !!expandedCompletedMovements[accessoryDetailKey];
-    const accessorySummary = completedSetSummary(logs, totalSets, unit, 'rir');
+    const accessorySummary = completedSetSummary(logs, totalSets, unit, 'rir', it);
     const accessoryState = accessoryIsComplete ? 'complete' : loggedCount > 0 ? 'logged' : 'not_started';
     const lookbackLine = accessoryLookbackLine(it);
     const movementPresentation = buildAccessoryMovementPresentation({
@@ -8212,16 +8224,17 @@ export default function WorkoutViewerScreen() {
       (it as any).dev_accessory_intelligence?.kind || '',
     ).trim();
     const normalizedAccessoryName = String(it.movement || '').toLowerCase();
+    const governedLoadKind = movementLoadPolicy(itemLoadSemantics(it)).kind;
     const accessoryKind = machineAccessory
       ? 'machine'
       : fixtureAccessoryKind
-        || (normalizedAccessoryName.includes('cable')
+        || (governedLoadKind === 'added_bodyweight'
+          ? 'weighted_bodyweight'
+          : governedLoadKind === 'assistance'
+            ? 'assisted_bodyweight'
+            : normalizedAccessoryName.includes('cable')
           ? 'cable'
-          : normalizedAccessoryName.includes('weighted')
-            ? 'weighted_bodyweight'
-            : normalizedAccessoryName.includes('assisted')
-              ? 'assisted_bodyweight'
-              : /(pull-?up|chin-?up|dip|push-?up)/.test(normalizedAccessoryName)
+            : governedLoadKind === 'bodyweight' || /(pull-?up|chin-?up|dip|push-?up)/.test(normalizedAccessoryName)
                 ? 'bodyweight'
                 : 'portable');
     const currentEquipment = activeEquipmentIdentity(it) as GeneralMovementIdentity | null;
@@ -8764,7 +8777,7 @@ export default function WorkoutViewerScreen() {
                 backdownsForThisTop.reduce((sum, bd) => sum + loggedSetIndexCount(bd.set_logs || []), 0)
               : loggedSetIndexCount(logs);
             const coreIsComplete = coreCompletionTotal > 0 && coreCompletionLoggedCount >= coreCompletionTotal;
-            const coreSummary = completedSetSummary(coreCompletionLogs, coreCompletionTotal, unit, 'rpe');
+            const coreSummary = completedSetSummary(coreCompletionLogs, coreCompletionTotal, unit, 'rpe', core);
             const variantLabel =
               isTop
                 ? 'Top + Backdown'
@@ -9663,7 +9676,7 @@ export default function WorkoutViewerScreen() {
           </TouchableWithoutFeedback>
           {movementHistoryItem ? (() => {
             const history = movementHistoryItem.movement_history || null;
-            const assisted = history?.loading_behavior === 'assisted';
+            const assisted = isAssistanceLoad(itemLoadSemantics(movementHistoryItem));
             const historyIdentity = movementHistoryItem.performed_movement_identity
               || movementHistoryItem.movement_identity
               || null;

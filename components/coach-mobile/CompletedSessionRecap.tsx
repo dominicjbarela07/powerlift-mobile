@@ -46,7 +46,11 @@ import {
   kilogramsToDisplayValue,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
-import { formatPerformedLoad } from '@/lib/performed-load-semantics';
+import { formatPerformedLoad, isAssistanceLoad } from '@/lib/performed-load-semantics';
+import {
+  compareMovementPerformance,
+  formatMovementPerformanceComparison,
+} from '@/lib/movement-performance-semantics';
 import {
   SESSION_RECAP_ARCHIVE_ART,
   SESSION_PR_CREST_ART,
@@ -92,6 +96,7 @@ import {
   accomplishmentMatchesMovement,
   accomplishmentSetLogId,
   buildPersonalBestEvidence,
+  personalBestEvidenceMatchesLoadSemantics,
   finitePrNumber as finiteNumber,
   type PersonalBestEvidence,
   type PersonalBestSetEvidence,
@@ -231,7 +236,53 @@ type ReviewerMovementEvidence = {
   } | null;
 };
 
+function recapMovementLoadSemantics(movement: CompletedRecapMovement) {
+  return {
+    loadConvention: movement.measurement?.load_convention,
+    measurementType: movement.measurement?.measurement_type,
+  };
+}
+
+function recapSetPerformance(set?: CompletedRecapSet | CompletedRecapMovement['best_set'] | TrendPoint | null) {
+  if (!set) return null;
+  const row = set as Record<string, any>;
+  return {
+    weightKg: row.actual_weight_kg ?? row.weight_kg,
+    reps: row.actual_reps ?? row.reps,
+    rpe: row.actual_rpe ?? row.rpe,
+    rir: row.actual_rir ?? row.rir,
+  };
+}
+
 function normalizeMovementStrengthMetric(movement: CompletedRecapMovement): CompletedRecapMovement {
+  const semantics = recapMovementLoadSemantics(movement);
+  if (isAssistanceLoad(semantics)) {
+    const points = (movement.trend?.points || []).map((point) => ({
+      ...point,
+      score: finiteNumber(point.weight_kg),
+      metric_value: finiteNumber(point.weight_kg),
+    }));
+    const previous = [...points].filter((point) => !point.current).at(-1) || points.at(-2);
+    const current = [...points].reverse().find((point) => point.current) || points.at(-1);
+    const delta = current?.weight_kg == null || previous?.weight_kg == null
+      ? null
+      : Number(current.weight_kg) - Number(previous.weight_kg);
+    return {
+      ...movement,
+      trend: movement.trend ? {
+        ...movement.trend,
+        metric: 'assistance_load_kg',
+        metric_label: 'Assistance required',
+        metric_unit: 'kg',
+        direction: 'lower_is_better',
+        points,
+        delta_value: delta,
+        delta_kg: delta,
+        strength_metric: null,
+      } : movement.trend,
+      projection: null,
+    };
+  }
   const policy = strengthMetricForMovementClass(movement.kind);
   const alreadyGoverned = movement.trend?.metric === policy.metric
     && (!movement.projection || movement.projection.metric === policy.projectionMetric);
@@ -510,6 +561,16 @@ function prEvidencePresentation(evidence: CanonicalPrEvidence, unit: DisplayWeig
   } else if (record.metric === 'matched_performance_effort') {
     deltaLabel = eventDelta == null ? 'First matched-effort record' : `${signed(eventDelta, ' RPE')} at matched performance`;
   }
+  if (movement && sourceSet && priorSet && isAssistanceLoad(recapMovementLoadSemantics(movement))) {
+    deltaLabel = formatMovementPerformanceComparison(
+      compareMovementPerformance(
+        recapSetPerformance(sourceSet),
+        recapSetPerformance(priorSet),
+        recapMovementLoadSemantics(movement),
+      ),
+      unit,
+    );
+  }
 
   return {
     classification: prClassification(evidence),
@@ -541,7 +602,7 @@ function movementRawChange(current: CompletedRecapSet | null, previous: Complete
     const percent = Math.abs(previousWeight) > 0.0001 ? deltaKg / Math.abs(previousWeight) * 100 : null;
     return {
       delta: formatCalculatedWeightDeltaFromKg(deltaKg, unit) || signed(deltaKg) || 'No material change',
-      percent: percent == null ? null : signed(percent, '%'),
+      percent: percent == null || Math.abs(deltaKg) < 0.0005 ? null : signed(percent, '%'),
     };
   }
   const currentReps = finiteNumber(current?.actual_reps);
@@ -549,7 +610,7 @@ function movementRawChange(current: CompletedRecapSet | null, previous: Complete
   if (currentReps != null && previousReps != null) {
     const deltaReps = currentReps - previousReps;
     const percent = Math.abs(previousReps) > 0.0001 ? deltaReps / Math.abs(previousReps) * 100 : null;
-    return { delta: signed(deltaReps, ' reps', 0) || 'No material change', percent: percent == null ? null : signed(percent, '%') };
+    return { delta: signed(deltaReps, ' reps', 0) || 'No material change', percent: percent == null || deltaReps === 0 ? null : signed(percent, '%') };
   }
   return { delta: 'First exact exposure', percent: null };
 }
@@ -852,9 +913,19 @@ function PerformedMovementCard({ movement, analysis, unit, onVideo, onOpenHistor
     actual_rpe: previous.rpe,
     actual_rir: previous.rir,
   } : null;
-  const comparisonState = analysis?.comparison?.state || ((movement.trend?.points?.length || 0) >= 2 ? (Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) > 0 ? 'improved' : Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) < 0 ? 'declined' : 'stable') : 'not_comparable');
+  const semanticComparison = compareMovementPerformance(
+    recapSetPerformance(bestAsSet),
+    recapSetPerformance(previousAsSet),
+    recapMovementLoadSemantics(movement),
+  );
+  const assistance = isAssistanceLoad(recapMovementLoadSemantics(movement));
+  const comparisonState = assistance
+    ? semanticComparison.state
+    : analysis?.comparison?.state || semanticComparison.state;
   const comparisonColor = comparisonState === 'improved' ? SLColors.success : comparisonState === 'declined' ? SLColors.danger : comparisonState === 'stable' ? '#53CBE8' : SLColors.textMuted;
-  const rawChange = movementRawChange(bestAsSet, previousAsSet, unit);
+  const rawChange = assistance
+    ? { delta: formatMovementPerformanceComparison(semanticComparison, unit), percent: null }
+    : movementRawChange(bestAsSet, previousAsSet, unit);
   const interpretation = comparisonState === 'not_comparable' ? 'FIRST EXACT EXPOSURE' : comparisonState.replaceAll('_', ' ').toUpperCase();
   const trendPointCount = movement.trend?.points?.length || 0;
   const relatedContext = resolveSessionRecapRelatedHistory(movement);
@@ -877,14 +948,14 @@ function PerformedMovementCard({ movement, analysis, unit, onVideo, onOpenHistor
             </View>
             <View style={styles.movementComparisonChange}><View style={styles.movementChangeValues}><Text style={styles.movementComparisonLabel}>CHANGE</Text><Text style={[styles.movementChangeValue, { color: comparisonColor }]}>{rawChange.delta}{rawChange.percent ? ` · ${rawChange.percent}` : ''}</Text></View><View style={[styles.movementStateBadge, { borderColor: `${comparisonColor}77`, backgroundColor: `${comparisonColor}12` }]}><Text numberOfLines={1} style={[styles.movementComparisonState, { color: comparisonColor }]}>{interpretation}</Text></View></View>
           </View>
-          {relatedContext ? <RelatedHistoryContextPanel context={relatedContext} movement={movement} currentSet={bestAsSet} currentEquipment={currentEquipment} unit={unit} /> : movement.kind === 'accessory' && movement.trend?.state === 'first_comparable_performance' ? <ExactFirstPerformancePanel /> : <View style={styles.movementTrendPanel}><View style={styles.movementTrendHeading}><Text style={styles.movementComparisonLabel}>{movement.trend?.metric_label?.toUpperCase() || 'PROGRESSION'} · EXACT MOVEMENT</Text>{delta && Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) !== 0 ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}</View><MovementTrendChart compact card trend={movement.trend} unit={unit} /></View>}
+          {relatedContext ? <RelatedHistoryContextPanel context={relatedContext} movement={movement} currentSet={bestAsSet} currentEquipment={currentEquipment} unit={unit} /> : movement.kind === 'accessory' && movement.trend?.state === 'first_comparable_performance' ? <ExactFirstPerformancePanel /> : <View style={styles.movementTrendPanel}><View style={styles.movementTrendHeading}><Text style={styles.movementComparisonLabel}>{movement.trend?.metric_label?.toUpperCase() || 'PROGRESSION'} · EXACT MOVEMENT{assistance ? ' · LESS IS STRONGER' : ''}</Text>{delta && Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) !== 0 ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}</View><MovementTrendChart compact card trend={movement.trend} unit={unit} /></View>}
           <View style={styles.movementMetaRail}>{trendBadge ? <Text style={styles.movementMeta}>{trendBadge}</Text> : null}{videoSets.length ? <Text style={styles.movementMeta}>{videoSets.length} VIDEO{videoSets.length === 1 ? '' : 'S'}</Text> : null}{equipment[0]?.model ? <Text numberOfLines={1} style={styles.movementMeta}>{equipment[0].model.toUpperCase()}</Text> : null}</View>
         </View>
       </Pressable>
       {expanded ? <View style={styles.expandedEvidence}>
         {bestAsSet && setVideoId(bestAsSet) > 0 ? <Pressable accessibilityRole="button" onPress={() => onVideo(bestAsSet)} style={({ pressed }) => [styles.bestVideoCard, pressed && styles.pressed]}><View style={styles.bestVideoMedia}>{videoThumbnailSource(bestAsSet, movementArtworkSource(movement)) ? <Image accessibilityIgnoresInvertColors resizeMode="cover" source={videoThumbnailSource(bestAsSet, movementArtworkSource(movement))!} style={styles.videoThumbnail} /> : null}<LinearGradient colors={['transparent', 'rgba(2,3,6,0.88)']} style={StyleSheet.absoluteFillObject} /><View style={styles.bestVideoPlay}><Ionicons name="play" size={16} color={SLColors.textPrimary} /></View><Text style={styles.bestVideoOverlay}>SET {bestAsSet.set_index || 'RECORDED'}</Text></View><View style={styles.bestVideoCopy}><Text style={styles.detailKicker}>BEST SET VIDEO</Text><Text style={styles.bestVideoValue}>{setResultLabel(bestAsSet, movement, unit)}</Text><Text style={styles.detailMeta}>Exact SetLog evidence · tap to review</Text></View><Ionicons name="expand-outline" size={19} color={SLColors.textSecondary} /></Pressable> : null}
         <View style={styles.setTable}><View style={styles.setHeader}><Text style={[styles.columnLabel, styles.setNumberColumn]}>SET</Text><Text style={[styles.columnLabel, styles.resultColumn]}>RESULT</Text><Text style={[styles.columnLabel, styles.effortColumn]}>EFFORT</Text><View style={styles.videoColumn} /></View>{movement.sets.map((set, index) => <View key={set.id || index} style={styles.setRow}><Text style={[styles.setValue, styles.setNumberColumn]}>{set.set_index || index + 1}</Text><View style={styles.resultColumnRow}><Text numberOfLines={1} style={styles.setValueStrong}>{setResultLabel(set, movement, unit)}</Text>{set.has_pr ? <Text style={styles.setPr}>PR</Text> : null}</View><Text numberOfLines={1} style={[styles.setValue, styles.effortColumn]}>{effortLabel(set) || 'Not logged'}</Text><View style={styles.videoColumn}>{setVideoId(set) > 0 ? <SetVideoButton set={set} fallbackSource={movementArtworkSource(movement)} onPress={() => onVideo(set)} /> : null}</View></View>)}</View>
-        {(movement.trend?.points?.length || 0) >= 2 ? <View style={styles.trendDetail}><View style={styles.trendDetailHeader}><View style={styles.trendDetailCopy}><Text style={styles.detailKicker}>{movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'} · EXACT MOVEMENT</Text><Text style={styles.detailMeta}>{movement.trend?.state === 'limited_history' ? 'Two comparable Sessions' : `${movement.trend?.points?.length || 0} comparable Sessions`}</Text></View>{delta ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}<ChartAxisModeToggle value={historyAxisMode} onChange={setHistoryAxisMode} testID={`post-session-axis-mode-${movement.item_id || 'movement'}`} /></View><MovementTrendChart trend={movement.trend} unit={unit} axisMode={historyAxisMode} /></View> : relatedContext ? <RelatedHistoryContextPanel context={relatedContext} movement={movement} currentSet={bestAsSet} currentEquipment={currentEquipment} unit={unit} expanded /> : movement.kind === 'accessory' && movement.trend?.state === 'first_comparable_performance' ? <ExactFirstPerformancePanel expanded /> : <View style={styles.limitedHistoryCard}><Text style={styles.limitedHistoryTitle}>No prior exact comparison yet</Text><Text style={styles.limitedHistoryBody}>This exact performed identity needs another comparable Session before a progression chart can be established.</Text></View>}
+        {(movement.trend?.points?.length || 0) >= 2 ? <View style={styles.trendDetail}><View style={styles.trendDetailHeader}><View style={styles.trendDetailCopy}><Text style={styles.detailKicker}>{movement.trend?.metric_label?.toUpperCase() || 'BEST SET TREND'} · EXACT MOVEMENT{assistance ? ' · LESS IS STRONGER' : ''}</Text><Text style={styles.detailMeta}>{movement.trend?.state === 'limited_history' ? 'Two comparable Sessions' : `${movement.trend?.points?.length || 0} comparable Sessions`}</Text></View>{delta ? <Text style={[styles.trendDeltaValue, delta.startsWith('↑') ? styles.deltaUpText : styles.deltaDownText]}>{delta}</Text> : null}<ChartAxisModeToggle value={historyAxisMode} onChange={setHistoryAxisMode} testID={`post-session-axis-mode-${movement.item_id || 'movement'}`} /></View><MovementTrendChart trend={movement.trend} unit={unit} axisMode={historyAxisMode} /></View> : relatedContext ? <RelatedHistoryContextPanel context={relatedContext} movement={movement} currentSet={bestAsSet} currentEquipment={currentEquipment} unit={unit} expanded /> : movement.kind === 'accessory' && movement.trend?.state === 'first_comparable_performance' ? <ExactFirstPerformancePanel expanded /> : <View style={styles.limitedHistoryCard}><Text style={styles.limitedHistoryTitle}>No prior exact comparison yet</Text><Text style={styles.limitedHistoryBody}>This exact performed identity needs another comparable Session before a progression chart can be established.</Text></View>}
         {movement.measurement?.canonical_identity_id && onOpenHistory ? <Pressable accessibilityRole="button" accessibilityLabel={`Open exact Movement History for ${movement.label}`} onPress={() => onOpenHistory(movement)} style={({ pressed }) => [styles.historyAction, pressed && styles.pressed]}><View><Text style={styles.historyActionLabel}>MOVEMENT HISTORY</Text><Text style={styles.historyActionDetail}>{movement.kind === 'core' ? 'Exact governed Core evidence' : 'Canonical exact-movement evidence'}</Text></View><Ionicons name="analytics-outline" size={18} color={SLColors.accentMuted} /></Pressable> : null}
         {typeof __DEV__ !== 'undefined' && __DEV__ && movement.history_diagnostics ? <View style={styles.diagnosticCard}><Text style={styles.detailKicker}>DEV · HISTORY DIAGNOSTICS</Text><Text style={styles.diagnosticLine}>Movement {movement.history_diagnostics.canonical_key || movement.history_diagnostics.movement_definition_id || 'unresolved'} · comparison {movement.history_diagnostics.comparison_identity_key || movement.history_diagnostics.comparison_identity_id || 'unresolved'}</Text><Text style={styles.diagnosticLine}>Equipment configuration {movement.history_diagnostics.equipment_configuration_identity_id || 'none'} · {movement.history_diagnostics.identity_scope || 'no scope'}</Text><Text style={styles.diagnosticLine}>Metric {movement.trend?.metric || 'none'} · delta {movement.trend?.delta_value ?? movement.trend?.delta_kg ?? 'none'}</Text><Text style={styles.diagnosticLine}>{movement.history_diagnostics.historical_candidate_count || 0} candidates · {movement.history_diagnostics.accepted_candidate_count || 0} accepted · {movement.history_diagnostics.rejected_candidate_count || 0} rejected</Text>{movement.history_diagnostics.rejected?.map((row, index) => <Text key={`${row.reason}-${index}`} style={styles.diagnosticReason}>{row.reason || 'unspecified'} · {row.count || 0}</Text>)}</View> : null}
         <EquipmentFooter equipment={equipment} />
@@ -1041,7 +1112,7 @@ function PlanComparisonCard({ row, expanded, unit, onToggle, onOpenHistory }: { 
         <View style={styles.comparePerformedColumn}><Text style={[styles.compareColumnKicker, { color: '#38C8F4' }]}>PERFORMED</Text><View style={styles.compareSetHeader}><Text style={[styles.compareTableLabel, styles.compareSetNumber]}>SET</Text><Text style={[styles.compareTableLabel, styles.compareLoad]}>LOAD</Text><Text style={[styles.compareTableLabel, styles.compareReps]}>REPS</Text><Text style={[styles.compareTableLabel, styles.compareEffort]}>EFFORT</Text><Text style={[styles.compareTableLabel, styles.compareTarget]}>COMPARE TO PLAN</Text></View>{row.comparisons.map((comparison) => {
           const performed = comparison.performed;
           const presentation = COMPARISON_PRESENTATION[comparison.kind];
-          return <View key={comparison.setIndex} style={styles.compareSetRow}><View style={styles.compareSetNumber}><View style={[styles.compareSetNumberBadge, { borderColor: `${presentation.color}88` }]}><Text style={styles.compareSetNumberText}>{comparison.setIndex}</Text></View></View><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareLoad]}>{performed ? (formatWeightFromKg(performed.actual_weight_kg, unit) || 'Bodyweight') : 'Not logged'}</Text><Text style={[styles.compareSetValue, styles.compareReps, comparison.kind === 'matched' && styles.compareSetMatched]}>{performed?.actual_reps ?? 'Not logged'}</Text><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareEffort]}>{performed ? (effortLabel(performed) || 'Not recorded') : 'Not logged'}</Text><View style={styles.compareTarget}><TargetBand comparison={comparison} /></View></View>;
+          return <View key={comparison.setIndex} style={styles.compareSetRow}><View style={styles.compareSetNumber}><View style={[styles.compareSetNumberBadge, { borderColor: `${presentation.color}88` }]}><Text style={styles.compareSetNumberText}>{comparison.setIndex}</Text></View></View><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareLoad]}>{performed && movement ? setResultLabel({ actual_weight_kg: performed.actual_weight_kg }, movement, unit) : performed ? (formatWeightFromKg(performed.actual_weight_kg, unit) || 'Bodyweight') : 'Not logged'}</Text><Text style={[styles.compareSetValue, styles.compareReps, comparison.kind === 'matched' && styles.compareSetMatched]}>{performed?.actual_reps ?? 'Not logged'}</Text><Text numberOfLines={1} style={[styles.compareSetValue, styles.compareEffort]}>{performed ? (effortLabel(performed) || 'Not recorded') : 'Not logged'}</Text><View style={styles.compareTarget}><TargetBand comparison={comparison} /></View></View>;
         })}<View style={styles.targetLegend}><View style={styles.targetLegendBand} /><Text style={styles.targetLegendText}>Target range</Text><View style={styles.targetLegendMarker} /><Text style={styles.targetLegendText}>Your performance</Text></View></View>
       </View>
       <Pressable disabled={!movement || !onOpenHistory} accessibilityRole="button" accessibilityLabel={`Open exact history for ${title}`} onPress={() => movement && onOpenHistory?.(movement, unit)} style={({ pressed }) => [styles.compareLastTime, pressed && styles.pressed]}><Ionicons name="time-outline" size={21} color={SLColors.accentMuted} /><View style={styles.compareLastTimeCopy}><Text style={styles.compareLastTimeLabel}>LAST TIME</Text><Text numberOfLines={2} style={styles.compareLastTimeValue}>{previous && movement ? `${setResultLabel({ actual_weight_kg: previous.weight_kg, actual_reps: previous.reps }, movement, unit)}${previous.rir != null ? ` @ ${numberLabel(previous.rir)} RIR` : previous.rpe != null ? ` @ RPE ${numberLabel(previous.rpe)}` : ''} · ${dateLabel(previous.date)}` : 'No previous exact exposure'}</Text></View>{movement && onOpenHistory ? <Ionicons name="chevron-forward" size={20} color={SLColors.textSecondary} /> : null}</Pressable>
@@ -1164,16 +1235,18 @@ function humanize(value?: string | null) {
 function signed(value: number | null | undefined, suffix = '', digits = 1) {
   if (value == null || !Number.isFinite(Number(value))) return null;
   const numeric = Number(value);
-  if (Math.abs(numeric) < 0.05) return `No material change${suffix}`;
+  if (Math.abs(numeric) < 0.05) return 'No material change';
   return `${numeric > 0 ? '+' : '−'}${Math.abs(numeric).toFixed(digits).replace(/\.0$/, '')}${suffix}`;
 }
 
 function fallbackReviewerAnalytics(recap: CompletedSessionRecapPayload): ReviewerAnalytics {
   const states = recap.performed_movements.map((movement) => {
-    const delta = Number(movement.trend?.delta_value ?? movement.trend?.delta_kg);
-    if (!Number.isFinite(delta) || (movement.trend?.points?.length || 0) < 2) return 'not_comparable';
-    if (Math.abs(delta) < 0.01) return 'stable';
-    return delta > 0 ? 'improved' : 'declined';
+    const previous = previousExposureForMovement(movement);
+    return compareMovementPerformance(
+      recapSetPerformance(movement.best_set),
+      recapSetPerformance(previous),
+      recapMovementLoadSemantics(movement),
+    ).state;
   });
   const counts = states.reduce<Record<string, number>>((result, state) => ({ ...result, [state]: (result[state] || 0) + 1 }), {});
   const comparable = (counts.improved || 0) + (counts.stable || 0) + (counts.declined || 0);
@@ -1182,22 +1255,33 @@ function fallbackReviewerAnalytics(recap: CompletedSessionRecapPayload): Reviewe
   const currentVolume = Number(recap.session.total_volume_kg || 0);
   const previousVolume = recap.session.volume_trend?.points?.filter((row) => !row.current).at(-1)?.volume_kg;
   const reflectionAvailable = recap.reflection.session_rpe != null || !!recap.reflection.strength || !!recap.reflection.fatigue || !!recap.reflection.note;
-  const strongest = recap.performed_movements.find((movement) => Number(movement.trend?.delta_value ?? movement.trend?.delta_kg) > 0);
+  const strongest = recap.performed_movements.find((movement) => {
+    const previous = previousExposureForMovement(movement);
+    return compareMovementPerformance(
+      recapSetPerformance(movement.best_set),
+      recapSetPerformance(previous),
+      recapMovementLoadSemantics(movement),
+    ).state === 'improved';
+  });
   const synthesis = comparable
     ? `${counts.improved || 0} of ${comparable} comparable movements improved${strongest ? `, led by ${strongest.label}` : ''}. ${recap.session.set_count} persisted sets define this completed Session.`
     : `This Session contains ${recap.session.set_count} persisted sets. Exact progression will become more specific as comparable performed identities accumulate.`;
   const movements = recap.performed_movements.map((movement) => {
     const points = movement.trend?.points || [];
     const previous = [...points].reverse().find((point) => !point.current) || null;
-    const delta = Number(movement.trend?.delta_value ?? movement.trend?.delta_kg);
-    const state = !previous || !Number.isFinite(delta) ? 'not_comparable' : Math.abs(delta) < 0.01 ? 'stable' : delta > 0 ? 'improved' : 'declined';
+    const comparison = compareMovementPerformance(
+      recapSetPerformance(movement.best_set),
+      recapSetPerformance(previous),
+      recapMovementLoadSemantics(movement),
+    );
+    const state = comparison.state;
     return {
       item_id: movement.item_id,
       previous_best: previous,
       comparison: {
         state,
         literal: previous
-          ? state === 'stable' ? 'Governed best-set performance remained within normal variance.' : `Governed best-set performance ${delta > 0 ? 'improved' : 'declined'} from the prior exact exposure.`
+          ? state === 'stable' ? 'Governed best-set performance matched the prior exact exposure.' : state === 'not_comparable' ? 'The recorded dimensions changed in conflicting directions.' : `Governed best-set performance ${state} from the prior exact exposure.`
           : 'No reliable prior exact comparison.',
       },
       confidence: { state: previous ? 'limited' : 'unavailable', label: previous ? 'Exact comparison available' : 'No reliable comparison', sample_size: points.length, scope: movement.measurement?.comparison_scope },
@@ -1240,6 +1324,73 @@ function fallbackReviewerAnalytics(recap: CompletedSessionRecapPayload): Reviewe
       reflection: reflectionAvailable ? 'Athlete reflection recorded' : 'Reflection not submitted',
       execution: planned ? `${recap.session.set_count} / ${planned} sets` : `${recap.session.set_count} logged sets`,
       attention: [],
+    },
+  };
+}
+
+function reconcileReviewerAnalytics(
+  analytics: ReviewerAnalytics,
+  movements: CompletedRecapMovement[],
+): ReviewerAnalytics {
+  if (!movements.some((movement) => isAssistanceLoad(recapMovementLoadSemantics(movement)))) return analytics;
+  const rows = movements.map((movement) => {
+    const existing = (analytics.movements || []).find((row) => Number(row.item_id) === Number(movement.item_id));
+    if (!isAssistanceLoad(recapMovementLoadSemantics(movement))) return existing || { item_id: movement.item_id };
+    const previous = existing?.previous_best || previousExposureForMovement(movement);
+    const comparison = compareMovementPerformance(
+      recapSetPerformance(movement.best_set),
+      recapSetPerformance(previous),
+      recapMovementLoadSemantics(movement),
+    );
+    return {
+      ...existing,
+      item_id: movement.item_id,
+      previous_best: previous,
+      comparison: {
+        ...existing?.comparison,
+        state: comparison.state,
+        literal: formatMovementPerformanceComparison(comparison, 'kg'),
+        metric_delta_percent: null,
+      },
+    } satisfies ReviewerMovementEvidence;
+  });
+  const counts = rows.reduce<Record<string, number>>((result, row) => {
+    const state = row.comparison?.state || 'not_comparable';
+    result[state] = (result[state] || 0) + 1;
+    return result;
+  }, {});
+  const comparable = (counts.improved || 0) + (counts.stable || 0) + (counts.declined || 0);
+  const label = !comparable ? 'Building history'
+    : counts.improved === comparable ? 'Improved'
+      : counts.declined === comparable ? 'Declined'
+        : counts.stable === comparable ? 'Stable'
+          : 'Mixed';
+  const performanceSummary = comparable
+    ? `${counts.improved || 0} improved · ${counts.stable || 0} stable · ${counts.declined || 0} declined`
+    : 'Exact comparison is still building';
+  return {
+    ...analytics,
+    movements: rows,
+    session_read: {
+      ...analytics.session_read,
+      performance: {
+        ...analytics.session_read?.performance,
+        state: comparable ? label.toLowerCase() : 'insufficient_evidence',
+        label,
+        counts,
+        comparable_count: comparable,
+      },
+      synthesis: comparable
+        ? `${performanceSummary}. Assistance movements use lower-assistance, rep, and effort semantics.`
+        : analytics.session_read?.synthesis,
+    },
+    what_changed: {
+      ...analytics.what_changed,
+      movement_outcomes: counts,
+    },
+    coach_read: {
+      ...analytics.coach_read,
+      performance: performanceSummary,
     },
   };
 }
@@ -1423,26 +1574,42 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const [video, setVideo] = useState<{ id: number; summary?: SetVideoSummary | null } | null>(null);
   const [toolsOpen, setToolsOpen] = useState(initialToolsOpen);
   const canonicalPrEvents = useMemo(() => recap.accomplishments.filter((row) => CANONICAL_PR_EVENT_TYPES.has(String(row.event_type || '').toUpperCase())), [recap.accomplishments]);
-  const performedMovements = useMemo(() => recap.performed_movements.map((rawMovement) => {
-    const movement = normalizeMovementStrengthMetric(rawMovement);
-    const events = canonicalPrEvents.filter((row) => accomplishmentMatchesMovement(row, movement));
+  const normalizedPerformedMovements = useMemo(
+    () => recap.performed_movements.map(normalizeMovementStrengthMetric),
+    [recap.performed_movements],
+  );
+  const personalBestEvidence = useMemo<CanonicalPrEvidence[]>(
+    () => buildPersonalBestEvidence(canonicalPrEvents, normalizedPerformedMovements)
+      .filter(personalBestEvidenceMatchesLoadSemantics),
+    [canonicalPrEvents, normalizedPerformedMovements],
+  );
+  const validCanonicalPrEvents = useMemo(
+    () => personalBestEvidence.flatMap((evidence) => evidence.events),
+    [personalBestEvidence],
+  );
+  const performedMovements = useMemo(() => normalizedPerformedMovements.map((movement) => {
+    const events = validCanonicalPrEvents.filter((row) => accomplishmentMatchesMovement(row, movement));
     const prSetIds = new Set(events.map(accomplishmentSetLogId).filter((id): id is number => id != null));
-    return { ...movement, has_pr: movement.has_pr || events.length > 0, sets: movement.sets.map((set) => ({ ...set, has_pr: set.has_pr || prSetIds.has(Number(set.id)) })) };
-  }), [canonicalPrEvents, recap.performed_movements]);
+    const assistance = isAssistanceLoad(recapMovementLoadSemantics(movement));
+    return {
+      ...movement,
+      has_pr: assistance ? events.length > 0 : movement.has_pr || events.length > 0,
+      sets: movement.sets.map((set) => ({
+        ...set,
+        has_pr: assistance ? prSetIds.has(Number(set.id)) : set.has_pr || prSetIds.has(Number(set.id)),
+      })),
+    };
+  }), [normalizedPerformedMovements, validCanonicalPrEvents]);
   const recapHighlights = recap.highlights || {};
   const highlights = {
     session_streak: recapHighlights.session_streak ?? impactSummary?.session_streak,
-    pr_count: recapHighlights.pr_count ?? canonicalPrEvents.length,
+    pr_count: personalBestEvidence.length,
     prescription_completion_percent: recapHighlights.prescription_completion_percent ?? (impactSummary?.all_prescribed_work_logged ? 100 : null),
     all_prescribed_work_logged: recapHighlights.all_prescribed_work_logged ?? impactSummary?.all_prescribed_work_logged,
   };
   const showPerfectPlan = Number(recapHighlights.prescribed_set_count || 0) > 0
     && Number(recapHighlights.completed_prescribed_set_count || 0) >= 0
     && Number(highlights.prescription_completion_percent || 0) > 0;
-  const personalBestEvidence = useMemo<CanonicalPrEvidence[]>(
-    () => buildPersonalBestEvidence(canonicalPrEvents, performedMovements),
-    [canonicalPrEvents, performedMovements],
-  );
   const feedback = String(recap.coach_feedback.feedback || '').trim();
   const hasReflection = recap.reflection.session_rpe != null || !!recap.reflection.strength || !!recap.reflection.fatigue || !!String(recap.reflection.note || '').trim();
   const focusRows = useMemo(() => [...(recap.muscle_focus?.primary || []), ...(recap.muscle_focus?.secondary || [])], [recap.muscle_focus]);
@@ -1482,7 +1649,10 @@ export function CompletedSessionRecap({ recap, impactSummary, preferredUnits, re
   const meta = [dateLabel(recap.session.date), durationLabel(recap.session.duration_seconds)].filter(Boolean).join(' · ');
   const bodyweight = recap.session.reported_bodyweight?.reported_bodyweight_kg ?? recap.readiness_context?.bodyweight_kg;
   const sessionVolume = formatCompactVolumeValueFromKg(recapHighlights.session_volume_kg ?? impactSummary?.session_volume_kg ?? recap.session.total_volume_kg, unit) || 'Volume not recorded';
-  const analytics = useMemo(() => ({ ...fallbackReviewerAnalytics(recap), ...((recap.reviewer_v3 || {}) as ReviewerAnalytics) }), [recap]);
+  const analytics = useMemo(() => reconcileReviewerAnalytics(
+    { ...fallbackReviewerAnalytics(recap), ...((recap.reviewer_v3 || {}) as ReviewerAnalytics) },
+    performedMovements,
+  ), [performedMovements, recap]);
   const movementOutcomes = analytics.session_read?.performance?.counts || {};
   const primaryTimeZone = resolveSessionTimeZone(sessionTimeZone, Intl.DateTimeFormat().resolvedOptions().timeZone);
   const startedAt = parseSessionLifecycleInstant(recap.session.started_at);

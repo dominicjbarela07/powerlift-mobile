@@ -48,7 +48,7 @@ assert.doesNotMatch(activeSurface, /shownMovements|hiddenMovementCount|showAllMo
 for (const label of ['THIS SESSION', 'LAST TIME', 'CHANGE', 'FIRST EXACT EXPOSURE']) assert.ok(activeSurface.includes(label), `collapsed movement evidence is missing ${label}`);
 assert.match(activeSurface, /<MovementTrendChart compact card trend=\{movement\.trend\}/, 'collapsed movement cards must keep progression visible and inspectable');
 assert.match(activeSurface, /SESSION_PR_CREST_ART/, 'Personal Bests must use the governed premium Session PR crest');
-assert.match(activeSurface, /buildPersonalBestEvidence\(canonicalPrEvents, performedMovements\)/, 'Personal Bests must normalize typed record evidence before presentation');
+assert.match(activeSurface, /buildPersonalBestEvidence\(canonicalPrEvents, normalizedPerformedMovements\)[\s\S]*personalBestEvidenceMatchesLoadSemantics/, 'Personal Bests must normalize typed record evidence and enforce governed load semantics before presentation');
 assert.doesNotMatch(activeSurface, /currentReps = current/, 'a generic PR metric value must never be rendered as performed reps');
 assert.doesNotMatch(activeSurface, /movement\.trend.*personalBestTrend/, 'Personal Best cards must not inherit the movement generic e1RM chart');
 assert.match(activeSurface, /progression\.metric_label/, 'Personal Best chart labels must come from the record-specific progression contract');

@@ -48,9 +48,9 @@ function numberLabel(value: number, maximumFractionDigits = 0) {
   return value.toLocaleString('en-US', { maximumFractionDigits });
 }
 
-function chartWeightLabel(valueKg: number, unit: MovementHistoryUnit, metric: Metric, digits = 1) {
+function chartWeightLabel(valueKg: number, unit: MovementHistoryUnit, metric: Metric, digits = 1, estimated = true) {
   const displayed = displayValue(valueKg, unit);
-  return metric === 'strength'
+  return metric === 'strength' && estimated
     ? formatCalculatedWeightValue(displayed, unit) ?? '—'
     : numberLabel(displayed, digits);
 }
@@ -67,6 +67,7 @@ export function AnalyticalHistoryChart({
   metricLabel,
   unit,
   color,
+  estimated = true,
   xDomainMode = 'chronological',
   onOpenExposure,
 }: {
@@ -75,6 +76,7 @@ export function AnalyticalHistoryChart({
   metricLabel?: string;
   unit: MovementHistoryUnit;
   color: string;
+  estimated?: boolean;
   xDomainMode?: AnalyticalXDomainMode;
   onOpenExposure: (exposureId: string) => void;
 }) {
@@ -99,7 +101,7 @@ export function AnalyticalHistoryChart({
     const minY = Math.max(0, low - spread * 0.22);
     const maxY = high + spread * 0.22;
     const gridValues = [0, 0.25, 0.5, 0.75, 1].map((ratio) => minY + (maxY - minY) * ratio).reverse();
-    const gridLabels = gridValues.map((value) => `${chartWeightLabel(value, unit, metric, 0)} ${unit}`);
+    const gridLabels = gridValues.map((value) => `${chartWeightLabel(value, unit, metric, 0, estimated)} ${unit}`);
     const left = buildYAxisGutter(gridLabels, 10);
     const xLayout = buildAnalyticalXLayout({
       observations: metricPoints.map((point) => ({ key: point.exposure_id, date: point.performed_at || point.date })),
@@ -119,7 +121,7 @@ export function AnalyticalHistoryChart({
       return [{ ...point, x: position.x, y, value }];
     });
     return { rows, minY, maxY, gridValues, gridLabels, left, xTicks: xLayout.ticks };
-  }, [metric, metricPoints, unit, width, xDomainMode]);
+  }, [estimated, metric, metricPoints, unit, width, xDomainMode]);
 
   const linePath = useMemo(() => {
     const path = Skia.Path.Make();
@@ -162,7 +164,7 @@ export function AnalyticalHistoryChart({
 
   return (
     <View
-      accessibilityLabel={`${metric === 'strength' ? 'Estimated performance' : 'Load progression'} chart with ${plot.rows.length} real observation${plot.rows.length === 1 ? '' : 's'} in ${xDomainMode === 'chronological' ? 'time' : 'instance'} mode`}
+      accessibilityLabel={`${metric === 'strength' ? estimated ? 'Estimated performance' : 'Assistance required' : 'Load progression'} chart with ${plot.rows.length} real observation${plot.rows.length === 1 ? '' : 's'} in ${xDomainMode === 'chronological' ? 'time' : 'instance'} mode`}
       onLayout={(event) => setWidth(Math.max(280, Math.round(event.nativeEvent.layout.width)))}
       onMoveShouldSetResponder={() => true}
       onResponderGrant={(event) => {
@@ -182,11 +184,11 @@ export function AnalyticalHistoryChart({
         <View style={styles.inspection} pointerEvents="none">
           <View>
             <Text style={[styles.inspectionValue, { color }]}>
-              {chartWeightLabel(metric === 'strength' ? Number(selected.strength_metric_kg) : Number(selected.weight_kg), unit, metric)} {unit}
+              {chartWeightLabel(metric === 'strength' ? Number(selected.strength_metric_kg) : Number(selected.weight_kg), unit, metric, 1, estimated)} {unit}
               {metric === 'strength' ? ` ${metricLabel || 'estimated strength'}` : ` × ${selected.reps ?? '—'}`}
             </Text>
             <Text style={styles.inspectionEvidence}>
-              {numberLabel(displayValue(Number(selected.weight_kg || 0), unit), 1)} {unit} × {selected.reps ?? '—'} · {effortLabel(selected)}
+              {numberLabel(displayValue(Number(selected.weight_kg || 0), unit), 1)} {unit}{metric === 'strength' && !estimated ? ' assistance' : ''} × {selected.reps ?? '—'} · {effortLabel(selected)}
             </Text>
           </View>
           <View style={styles.inspectionDateWrap}>
