@@ -98,6 +98,12 @@
       "description": "Completed accessory recaps preserve exact-equipment progression while explicitly separating governed same-family related-equipment context on first exact exposure.",
       "acceptedCommits": ["db4ab29995b8966b2e687114b3435e72b9b3ce30"],
       "behaviorTests": ["scripts/test-post-session-related-history.mjs"]
+    },
+    {
+      "id": "coach-session-review-scroll-lifecycle",
+      "description": "Coach Session Review presentation state resets on canonical Session identity or visit changes while preserving same-review child navigation continuity.",
+      "acceptedCommits": ["75f9d657ad89600789457923caeaa3416d4143f1"],
+      "behaviorTests": ["scripts/test-coach-session-review-scroll-lifecycle.mjs"]
     }
   ]
 }
