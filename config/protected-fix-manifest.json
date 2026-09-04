@@ -92,6 +92,12 @@
       "description": "Session Workspace Add Accessory mounts the canonical guided muscle-first discovery flow rather than the substitution-only flat picker.",
       "acceptedCommits": ["f900c69f484ae34d53ebb408eb42590d8b1511a2"],
       "behaviorTests": ["scripts/test-session-workspace-accessory-picker.mjs"]
+    },
+    {
+      "id": "post-session-related-accessory-history",
+      "description": "Completed accessory recaps preserve exact-equipment progression while explicitly separating governed same-family related-equipment context on first exact exposure.",
+      "acceptedCommits": ["db4ab29995b8966b2e687114b3435e72b9b3ce30"],
+      "behaviorTests": ["scripts/test-post-session-related-history.mjs"]
     }
   ]
 }
