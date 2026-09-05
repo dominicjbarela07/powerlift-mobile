@@ -302,7 +302,9 @@ import {
 import {
   activeEquipmentIdentity,
   activeEquipmentPresentation,
+  equipmentSelectionStatusLabels,
   equipmentSnapshotForSet,
+  equipmentTypeSelectionStatusLabels,
   isMachineAccessoryItem,
   needsEquipmentSelection,
   orderEquipmentChoices,
@@ -459,7 +461,13 @@ type GeneralMovementIdentity = {
   } | null;
   equipment_context?: {
     remembered_status?: string | null;
+    usage_status?: 'used' | 'not_used' | string | null;
+    is_current?: boolean | null;
     last_used_at?: string | null;
+    used_equipment_type_keys?: string[] | null;
+    equipment_type_last_used_at?: Record<string, string | null> | null;
+    used_equipment_definition_ids?: number[] | null;
+    used_equipment_model_ids?: number[] | null;
     option_kind?: 'catalog' | 'other' | 'unknown' | string;
   } | null;
   comparison_policy?: { confidence: string; comparison_scope: string; recognition_enabled: false } | null;
@@ -654,6 +662,14 @@ function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
     measurementType: identity?.measurement_type,
     loadingBehavior: item?.movement_history?.loading_behavior,
   };
+}
+
+function canonicalMovementIdentityId(item?: WorkoutItem | null): number | null {
+  const identity = item?.performed_canonical_movement_identity
+    || item?.effective_movement_identity
+    || item?.movement_identity
+    || null;
+  return identity?.id == null ? null : Number(identity.id);
 }
 
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
@@ -3831,22 +3847,10 @@ export default function WorkoutViewerScreen() {
           query,
           family,
           item.movement_identity?.family_display_name || item.movement,
+          canonicalMovementIdentityId(item),
         ) as GeneralMovementIdentity[],
         activeEquipment?.id,
-      ).sort((left, right) => {
-        const activeManufacturerKey = activeEquipment?.manufacturer?.key || null;
-        const activeOther = activeEquipment?.equipment_context?.option_kind === 'other'
-          || activeEquipment?.key.includes('-other-');
-        const isActiveManufacturer = (identity: GeneralMovementIdentity) => (
-          activeOther
-            ? identity.equipment_context?.option_kind === 'other'
-            : Boolean(
-                activeManufacturerKey
-                && identity.manufacturer?.key === activeManufacturerKey,
-              )
-        );
-        return Number(isActiveManufacturer(right)) - Number(isActiveManufacturer(left));
-      });
+      );
       if (requestId === identityPickerRequestRef.current) {
         setIdentityPickerRows(rows);
         setIdentityPickerLoading(false);
@@ -3862,7 +3866,7 @@ export default function WorkoutViewerScreen() {
       if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not load equipment choices.');
       if (requestId !== identityPickerRequestRef.current) return;
       const needle = query.trim().toLowerCase();
-      setIdentityPickerRows(
+      setIdentityPickerRows(orderEquipmentChoices(
         (response.json.items || []).filter((row: GeneralMovementIdentity) => (
           !needle
           || manufacturerMatchesSearch(needle, row.manufacturer)
@@ -3872,7 +3876,8 @@ export default function WorkoutViewerScreen() {
             item.movement,
           ].filter(Boolean).join(' ').toLowerCase().includes(needle)
         )),
-      );
+        activeEquipmentIdentity(item)?.id,
+      ));
     } catch (error: any) {
       if (requestId !== identityPickerRequestRef.current) return;
       setIdentityPickerError(error?.message || 'Could not load equipment choices.');
@@ -4048,6 +4053,7 @@ export default function WorkoutViewerScreen() {
               '',
               item.movement_identity?.family_id,
               item.movement_identity?.family_display_name || item.movement,
+              canonicalMovementIdentityId(item),
             ) as GeneralMovementIdentity[],
             activeEquipmentIdentity(item)?.id,
           )
@@ -10076,6 +10082,11 @@ export default function WorkoutViewerScreen() {
                           && activeIdentity
                           && activeVariant === variant.key,
                         );
+                        const status = equipmentTypeSelectionStatusLabels(
+                          identityPickerManufacturer,
+                          variant.key,
+                          current,
+                        ).join(' · ');
                         return (
                           <TouchableOpacity
                             key={variant.key}
@@ -10088,15 +10099,20 @@ export default function WorkoutViewerScreen() {
                             <Text style={styles.equipmentVariantLabel}>
                               {variant.label}
                             </Text>
-                            {current ? (
-                              <Text style={styles.identityPickerCurrent}>CURRENT</Text>
-                            ) : (
-                              <Ionicons
-                                name="chevron-forward"
-                                size={18}
-                                color={SLColors.textMuted}
-                              />
-                            )}
+                            <Text
+                              numberOfLines={1}
+                              style={[
+                                styles.identityPickerStatus,
+                                current && styles.identityPickerCurrent,
+                              ]}
+                            >
+                              {status}
+                            </Text>
+                            <Ionicons
+                              name="chevron-forward"
+                              size={18}
+                              color={SLColors.textMuted}
+                            />
                           </TouchableOpacity>
                         );
                       })}
@@ -10148,12 +10164,10 @@ export default function WorkoutViewerScreen() {
                         );
                     const manufacturerName = row.manufacturer?.display_name
                       || 'Other';
-                    const rememberedStatus = row.equipment_context?.remembered_status;
-                    const status = current || rememberedStatus === 'current'
-                      ? 'CURRENT'
-                      : rememberedStatus === 'used_before'
-                        ? 'USED BEFORE'
-                        : 'NEVER USED';
+                    const status = equipmentSelectionStatusLabels(
+                      row,
+                      current,
+                    ).join(' · ');
                     return (
                       <TouchableOpacity
                         key={row.id}
@@ -12030,6 +12044,7 @@ const styles = StyleSheet.create({
   },
   equipmentVariantLabel: {
     color: SLColors.textStrong,
+    flex: 1,
     fontSize: SLTypography.body.fontSize,
     fontWeight: '900',
   },

@@ -30,6 +30,6 @@ const ordered = orderEquipmentChoices([
 assert.equal(
   ordered[0].key,
   'cybex',
-  'Only authoritative movement-scoped used_before status may receive prior-use ordering priority.',
+  'Historical usage and recency must not override alphabetical display-name order.',
 );
 console.log('Equipment usage semantics regression passed.');

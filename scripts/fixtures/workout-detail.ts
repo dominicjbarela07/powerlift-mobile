@@ -130,7 +130,13 @@ type FixtureIdentity = {
   } | null;
   equipment_context?: {
     remembered_status?: string | null;
+    usage_status?: 'used' | 'not_used' | string | null;
+    is_current?: boolean | null;
     last_used_at?: string | null;
+    used_equipment_type_keys?: string[] | null;
+    equipment_type_last_used_at?: Record<string, string | null> | null;
+    used_equipment_definition_ids?: number[] | null;
+    used_equipment_model_ids?: number[] | null;
     option_kind?: 'catalog' | 'other' | 'unknown' | string;
   } | null;
   comparison_policy: {
@@ -196,13 +202,21 @@ const machineIdentity = ({
   brand,
   equipmentType,
   rememberedStatus = null,
+  usageStatus,
   lastUsedAt = null,
+  usedEquipmentTypeKeys = [],
+  equipmentTypeLastUsedAt = {},
+  usedEquipmentDefinitionIds = [],
   optionKind = 'catalog',
 }: {
   brand: string;
   equipmentType: string;
   rememberedStatus?: string | null;
+  usageStatus?: 'used' | 'not_used';
   lastUsedAt?: string | null;
+  usedEquipmentTypeKeys?: string[];
+  equipmentTypeLastUsedAt?: Record<string, string | null>;
+  usedEquipmentDefinitionIds?: number[];
   optionKind?: 'catalog' | 'other';
 }): FixtureIdentity => {
   const other = optionKind === 'other' || brand === 'Other';
@@ -244,7 +258,13 @@ const machineIdentity = ({
     material_parameters: null,
     equipment_context: {
       remembered_status: rememberedStatus,
+      usage_status: usageStatus || (lastUsedAt ? 'used' : 'not_used'),
+      is_current: rememberedStatus === 'current',
       last_used_at: lastUsedAt,
+      used_equipment_type_keys: usedEquipmentTypeKeys,
+      equipment_type_last_used_at: equipmentTypeLastUsedAt,
+      used_equipment_definition_ids: usedEquipmentDefinitionIds,
+      used_equipment_model_ids: [],
       option_kind: optionKind,
     },
     comparison_policy: {
@@ -268,7 +288,11 @@ function normalizedWorkoutDetailMachineIdentity(
       ? 'Plate Loaded'
       : 'Selectorized',
     rememberedStatus: identity.equipment_context?.remembered_status || null,
+    usageStatus: identity.equipment_context?.usage_status === 'used' ? 'used' : 'not_used',
     lastUsedAt: identity.equipment_context?.last_used_at || null,
+    usedEquipmentTypeKeys: identity.equipment_context?.used_equipment_type_keys || [],
+    equipmentTypeLastUsedAt: identity.equipment_context?.equipment_type_last_used_at || {},
+    usedEquipmentDefinitionIds: identity.equipment_context?.used_equipment_definition_ids || [],
     optionKind: other ? 'other' : 'catalog',
   });
 }
@@ -456,9 +480,10 @@ export function workoutDetailMachineIdentityChoices(
   query = '',
   _familyId?: number | null,
   familyDisplayName?: string | null,
+  movementDefinitionId?: number | null,
 ) {
   const needle = query.trim().toLowerCase();
-  const manufacturerChoices = [
+  const unscopedManufacturerChoices = [
     ...MANUFACTURER_REGISTRY.map((manufacturer) => (
       REGISTRY_MACHINE_IDENTITIES.find((identity) => (
         identity.manufacturer?.key === manufacturer.key
@@ -470,6 +495,38 @@ export function workoutDetailMachineIdentityChoices(
     )).filter(Boolean),
     OTHER_MACHINE_IDENTITIES[0],
   ] as FixtureIdentity[];
+  const manufacturerChoices = unscopedManufacturerChoices.map((identity) => {
+    const manufacturerKey = identity.manufacturer?.key || 'other';
+    const evidence = Number(movementDefinitionId) === INCLINE_PRESS_FAMILY_ID
+      ? MACHINE_EVIDENCE.filter((row) => (
+          (row.identity.manufacturer?.key || 'other') === manufacturerKey
+          && Boolean(row.last)
+        ))
+      : [];
+    const typeLastUsedAt = Object.fromEntries(evidence.map((row) => [
+      variantKeyForEquipmentType(row.identity.equipment_type),
+      row.last?.date || null,
+    ]));
+    const lastUsedAt = evidence
+      .map((row) => row.last?.date || '')
+      .filter(Boolean)
+      .sort()
+      .at(-1) || null;
+    return {
+      ...identity,
+      equipment_context: {
+        ...identity.equipment_context,
+        remembered_status: evidence.length ? 'used_before' : 'never_used',
+        usage_status: evidence.length ? 'used' : 'not_used',
+        is_current: false,
+        last_used_at: lastUsedAt,
+        used_equipment_type_keys: Object.keys(typeLastUsedAt).sort(),
+        equipment_type_last_used_at: typeLastUsedAt,
+        used_equipment_definition_ids: evidence.map((row) => row.identity.id).sort(),
+        used_equipment_model_ids: [],
+      },
+    } as FixtureIdentity;
+  });
   return manufacturerChoices
     .filter((identity) => {
       if (!needle) return true;
@@ -495,7 +552,14 @@ export function workoutDetailMachineVariantIdentity(
         : identity.manufacturer?.key === manufacturerKey
     )
   )) || null;
-  return baseIdentity;
+  if (!baseIdentity) return null;
+  return {
+    ...baseIdentity,
+    equipment_context: {
+      ...baseIdentity.equipment_context,
+      ...manufacturerChoice.equipment_context,
+    },
+  };
 }
 
 export function applyWorkoutDetailMachineIdentity(

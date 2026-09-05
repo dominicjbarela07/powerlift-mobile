@@ -19,7 +19,7 @@ const areas = [
   ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
-  ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs', 'scripts/test-machine-brand-keyboard-selection.mjs']],
+  ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-canonical-equipment-picker.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs', 'scripts/test-machine-brand-keyboard-selection.mjs']],
   ['rich Plan / Compare', ['scripts/test-session-recap-plan-compare.mjs']],
   ['Coach Session review shared cross-tab tools', ['scripts/test-coach-session-review-cross-tab.mjs', 'scripts/test-coach-session-review-scroll-lifecycle.mjs']],
   ['Coach Coming Up exact Session navigation', ['scripts/test-coach-home-coming-up-direct-open.mjs']],

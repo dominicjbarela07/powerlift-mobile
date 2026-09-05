@@ -62,6 +62,7 @@
     "test:accessory-logger-prescription": "node --import tsx scripts/test-accessory-logger-prescription.mjs",
     "test:equipment-gating-regression": "node --import tsx scripts/test-equipment-gating-regression.mjs",
     "test:equipment-selection": "node --import tsx scripts/test-equipment-selection.mjs",
+    "test:canonical-equipment-picker": "node --import tsx scripts/test-canonical-equipment-picker.mjs",
     "test:superset-equipment-context": "node --import tsx scripts/test-superset-equipment-context.mjs",
     "test:manufacturer-branding": "node --import tsx scripts/test-manufacturer-branding.mjs",
     "test:typography-system": "node scripts/test-typography-system.mjs",
