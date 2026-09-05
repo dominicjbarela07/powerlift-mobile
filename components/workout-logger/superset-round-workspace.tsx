@@ -43,6 +43,7 @@ export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
 
 export type SupersetWorkspaceItem = SupersetRoundSourceItem & Readonly<{
   title: string;
+  canConfigureEquipment?: boolean;
   equipmentContext?: string | null;
   prescription: string;
   historyLine?: string | null;
@@ -59,6 +60,7 @@ type SupersetRoundWorkspaceProps = {
   canLog: boolean;
   reduceMotion?: boolean;
   onToggle: () => void;
+  onConfigureEquipment: (itemId: number) => void;
   onLogMovement: (itemId: number) => void;
   onOpenHistory: (itemId: number) => void;
   onSwapMovement: (itemId: number) => void;
@@ -95,6 +97,7 @@ export function SupersetRoundWorkspace({
   canLog,
   reduceMotion = false,
   onToggle,
+  onConfigureEquipment,
   onLogMovement,
   onOpenHistory,
   onSwapMovement,
@@ -230,26 +233,44 @@ export function SupersetRoundWorkspace({
                       </Text>
                     </View>
 
-                    {swapAction ? (
-                      <Pressable
-                        accessibilityLabel={`${swapAction} ${movement.item.title}`}
-                        accessibilityRole="button"
-                        accessibilityState={{ busy: swapBusy, disabled: swapBusy }}
-                        disabled={swapBusy}
-                        onPress={() => onSwapMovement(movement.itemId)}
-                        style={({ pressed }) => [
-                          styles.movementAction,
-                          pressed && styles.controlPressed,
-                          swapBusy && styles.controlBusy,
-                        ]}
-                      >
-                        {swapBusy ? (
-                          <ActivityIndicator color={SLColors.accentViolet} size="small" />
-                        ) : (
-                          <Ionicons color={SLColors.accentViolet} name="swap-horizontal-outline" size={17} />
-                        )}
-                        <Text style={styles.movementActionText}>{swapBusy ? 'Updating…' : swapAction}</Text>
-                      </Pressable>
+                    {movement.item.canConfigureEquipment || swapAction ? (
+                      <View style={styles.movementActions}>
+                        {movement.item.canConfigureEquipment ? (
+                          <Pressable
+                            accessibilityLabel={`Configure equipment for ${positionLabel}, ${movement.item.title}`}
+                            accessibilityRole="button"
+                            onPress={() => onConfigureEquipment(movement.itemId)}
+                            style={({ pressed }) => [
+                              styles.movementAction,
+                              pressed && styles.controlPressed,
+                            ]}
+                          >
+                            <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={17} />
+                            <Text style={styles.movementActionText}>Equipment</Text>
+                          </Pressable>
+                        ) : null}
+                        {swapAction ? (
+                          <Pressable
+                            accessibilityLabel={`${swapAction} ${movement.item.title}`}
+                            accessibilityRole="button"
+                            accessibilityState={{ busy: swapBusy, disabled: swapBusy }}
+                            disabled={swapBusy}
+                            onPress={() => onSwapMovement(movement.itemId)}
+                            style={({ pressed }) => [
+                              styles.movementAction,
+                              pressed && styles.controlPressed,
+                              swapBusy && styles.controlBusy,
+                            ]}
+                          >
+                            {swapBusy ? (
+                              <ActivityIndicator color={SLColors.accentViolet} size="small" />
+                            ) : (
+                              <Ionicons color={SLColors.accentViolet} name="swap-horizontal-outline" size={17} />
+                            )}
+                            <Text style={styles.movementActionText}>{swapBusy ? 'Updating…' : swapAction}</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
                     ) : null}
 
                     <View style={styles.movementEvidence}>
@@ -545,6 +566,12 @@ const styles = StyleSheet.create({
     gap: SLSpacing.xs,
     minHeight: 40,
     paddingHorizontal: SLSpacing.md,
+  },
+  movementActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SLSpacing.sm,
   },
   movementActionText: {
     color: SLColors.accentViolet,

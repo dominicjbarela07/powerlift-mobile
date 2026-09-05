@@ -64,6 +64,7 @@
     "test:equipment-selection": "node --import tsx scripts/test-equipment-selection.mjs",
     "test:canonical-equipment-picker": "node --import tsx scripts/test-canonical-equipment-picker.mjs",
     "test:superset-equipment-context": "node --import tsx scripts/test-superset-equipment-context.mjs",
+    "test:superset-equipment-control": "node --import tsx scripts/test-superset-equipment-control.mjs",
     "test:manufacturer-branding": "node --import tsx scripts/test-manufacturer-branding.mjs",
     "test:typography-system": "node scripts/test-typography-system.mjs",
     "audit:mobile-typography": "node scripts/audit-mobile-typography-minimum.mjs",
