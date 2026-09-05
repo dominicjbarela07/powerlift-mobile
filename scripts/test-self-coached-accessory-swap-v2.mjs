@@ -63,7 +63,7 @@ assert.match(sheet, /Single[\s\S]*Range[\s\S]*AMRAP/, 'canonical prescription co
 assert.match(sheet, /onPress=\{onResetPrescription\}[\s\S]*Reset to Previous Prescription/, 'reset-to-previous is reachable');
 assert.match(logger, /performed_canonical_movement_definition_id: swapAccIdentity\.id[\s\S]*sets: sets[\s\S]*reps_text: repsText[\s\S]*rir: rir/, 'confirmation persists stable movement identity and modified prescription');
 assert.doesNotMatch(logger, /savedItem\?\.performed_canonical_movement_identity[\s\S]*openIdentityPicker\(savedItem\)/, 'confirming Swap cannot auto-open equipment');
-assert.doesNotMatch(picker, /openIdentityPicker|equipment.*onPress/, 'movement selection cannot auto-open equipment');
+assert.doesNotMatch(picker, /openIdentityPicker|onSelect\(identity\)[\s\S]{0,160}equipment/i, 'movement selection cannot auto-open exact equipment configuration');
 assert.match(sheet, /equipmentUnresolved[\s\S]*Choose when ready/, 'equipment may remain unresolved during planning');
 assert.match(logger, /openAccessoryWheel[\s\S]*needsEquipmentSelection\(item\)[\s\S]*openIdentityPicker/, 'single accessory logging enforces equipment before first evidence');
 assert.match(logger, /openSupersetRoundLogger[\s\S]*needsEquipmentSelection\(item\)[\s\S]*openIdentityPicker/, 'superset logging enforces the same first-evidence equipment boundary');

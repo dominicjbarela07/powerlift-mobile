@@ -11,6 +11,7 @@ const areas = [
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],
   ['Swap and Session Workspace muscle drill-down anatomy', ['scripts/test-swap-muscle-thumbnail-framing.mjs']],
+  ['Swap muscle-result equipment-type narrowing', ['scripts/test-swap-equipment-type-filter.mjs']],
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs', 'scripts/test-movement-lifecycle-status-layout.mjs', 'scripts/test-pre-session-accessory-last-best.mjs']],
   ['Smart Warmup lifecycle and physical configuration', ['scripts/test-smart-warmup-engine.mjs']],
   ['expanded Core Logger workspace density', ['scripts/test-expanded-core-card-compaction.mjs']],

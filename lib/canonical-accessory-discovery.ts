@@ -35,6 +35,60 @@ export const ACCESSORY_EXECUTION_FAMILIES = [
   ['OTHER_PORTABLE', 'Other Portable'],
 ] as const;
 
+export type AccessoryExecutionFamilyKey = (typeof ACCESSORY_EXECUTION_FAMILIES)[number][0];
+
+const SWAP_EQUIPMENT_TYPE_FILTER_ORDER: readonly AccessoryExecutionFamilyKey[] = [
+  'FREE_WEIGHT',
+  'MACHINE',
+  'CABLE',
+  'BAND',
+  'BODYWEIGHT',
+  'OTHER_PORTABLE',
+];
+
+export const SWAP_EQUIPMENT_TYPE_FILTERS = SWAP_EQUIPMENT_TYPE_FILTER_ORDER.map((key) => ({
+  key,
+  label: key === 'OTHER_PORTABLE'
+    ? 'Other'
+    : ACCESSORY_EXECUTION_FAMILIES.find(([familyKey]) => familyKey === key)?.[1] || key,
+}));
+
+export type AccessoryExecutionFamilyFacet = Readonly<{
+  key?: string | null;
+  count?: number | null;
+}>;
+
+export function governedAccessoryExecutionFamilyKey(value?: string | null): AccessoryExecutionFamilyKey | null {
+  const normalized = String(value || '').trim().toUpperCase();
+  return ACCESSORY_EXECUTION_FAMILIES.some(([key]) => key === normalized)
+    ? normalized as AccessoryExecutionFamilyKey
+    : null;
+}
+
+/**
+ * Keeps Swap equipment chips on governed definition metadata. Server facets
+ * cover the complete muscle result set; row fallback preserves compatibility
+ * with an older additive API response without inspecting movement names.
+ */
+export function availableSwapEquipmentTypeFilters(
+  facets?: readonly AccessoryExecutionFamilyFacet[] | null,
+  fallbackItems: readonly AccessoryDiscoveryIdentity[] = [],
+) {
+  const available = new Set<AccessoryExecutionFamilyKey>();
+  if (facets?.length) {
+    facets.forEach((facet) => {
+      const key = governedAccessoryExecutionFamilyKey(facet.key);
+      if (key && Number(facet.count || 0) > 0) available.add(key);
+    });
+  } else {
+    fallbackItems.forEach((item) => {
+      const key = governedAccessoryExecutionFamilyKey(item.execution_family);
+      if (key) available.add(key);
+    });
+  }
+  return SWAP_EQUIPMENT_TYPE_FILTERS.filter(({ key }) => available.has(key));
+}
+
 export type AccessoryPickerRegion = Readonly<{
   key: string;
   label: string;
