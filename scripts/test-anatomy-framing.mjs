@@ -84,10 +84,14 @@ for (const relative of [
   'components/coach-mobile/CompletedSessionRecap.tsx',
   'app/(tabs)/coach-calendar.tsx',
   'app/(tabs)/workout/index.tsx',
-  'app/(tabs)/workout/session-workspace/[workoutId].tsx',
 ]) {
   assert.match(source(relative), /ProgrammingMuscleRegionArt/, `${relative} bypasses the shared aggregate anatomy renderer`);
 }
+assert.match(
+  source('app/(tabs)/workout/session-workspace/[workoutId].tsx'),
+  /GovernedMuscleThumbnail/,
+  'Session Workspace muscle discovery must use the shared governed group thumbnail renderer',
+);
 
 const canonicalArtwork = source('lib/canonical-movement-artwork.ts');
 assert.match(canonicalArtwork, /focusedAccessoryMuscleRegionKey/, 'individual accessory artwork must remain governed by focused muscle-region PNG identity');

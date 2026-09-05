@@ -627,6 +627,8 @@ type WorkoutPayload = {
     name: string;
     preferred_units?: string | null;
     bodyweight_kg?: number | null;
+    anatomy_display_preference?: string | null;
+    sex?: string | null;
     profilePhotoUrl?: string | null;
     profilePhotoVersion?: string | null;
   };
@@ -10779,6 +10781,10 @@ export default function WorkoutViewerScreen() {
         context="in-session-substitution"
         visible={swapPickerVisible}
         athleteId={data?.athlete?.id || null}
+        athleteAnatomy={{
+          anatomy_display_preference: data?.athlete?.anatomy_display_preference,
+          sex: data?.athlete?.sex,
+        }}
         title="Swap Accessory"
         currentIdentity={(swapAccItem ? resolveLoggerMovementIdentity(swapAccItem).effective : null) as GovernedAccessoryIdentity | null}
         currentPrescription={swapPreviousPrescription}
