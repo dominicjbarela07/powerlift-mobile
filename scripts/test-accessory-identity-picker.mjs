@@ -33,7 +33,7 @@ assert.match(
 );
 assert.match(
   source,
-  /styles\.movementHistorySheet,[\s\S]*styles\.equipmentPickerSheet[\s\S]*Choose Manufacturer[\s\S]*Which manufacturer(?:&apos;|')s machine are you using\?/,
+  /styles\.movementHistorySheet,[\s\S]*styles\.equipmentPickerSheet[\s\S]*Choose Manufacturer[\s\S]*Which manufacturer(?:&apos;|'|’)s machine (?:did you use|are you using)\?/,
   'live and Ideal State must share the dedicated tall equipment picker',
 );
 assert.match(

@@ -302,6 +302,7 @@ import {
 import {
   activeEquipmentIdentity,
   activeEquipmentPresentation,
+  equipmentSelectionOperation,
   equipmentSelectionStatusLabels,
   equipmentSnapshotForSet,
   equipmentTypeSelectionStatusLabels,
@@ -2981,8 +2982,6 @@ export default function WorkoutViewerScreen() {
     useState<EquipmentSelectionContinuation>({ kind: 'none' });
   const [identityPickerManufacturer, setIdentityPickerManufacturer] =
     useState<GeneralMovementIdentity | null>(null);
-  const [pendingPostSessionEquipmentItemId, setPendingPostSessionEquipmentItemId] =
-    useState<number | null>(null);
   const identityPickerRequestRef = useRef(0);
   const [swapAccForm, setSwapAccForm] = useState({
     sets: '',
@@ -3979,10 +3978,18 @@ export default function WorkoutViewerScreen() {
       auth: true,
       body: equipmentVariant
         ? {
+            ...(continuation.kind === 'evidence_correction'
+              ? { intent: 'evidence_correction' }
+              : {}),
             manufacturer_key: identity.manufacturer?.key || 'other',
             equipment_type: equipmentVariant,
           }
-        : { movement_definition_id: identity.id },
+        : {
+            ...(continuation.kind === 'evidence_correction'
+              ? { intent: 'evidence_correction' }
+              : {}),
+            movement_definition_id: identity.id,
+          },
     });
     if (!response.ok || !response.json?.ok) {
       setIdentityPickerError(response.json?.error || 'Could not save equipment choice.');
@@ -4048,6 +4055,18 @@ export default function WorkoutViewerScreen() {
     item: WorkoutItem,
     continuation: EquipmentSelectionContinuation = { kind: 'none' },
   ) => {
+    const operation = continuation.kind === 'none'
+      ? equipmentSelectionOperation({
+          sessionStatus: data?.workout?.status,
+          plannedSetCount: item.performed_sets ?? item.sets,
+          loggedSetCount: (item.set_logs || []).length,
+        })
+      : 'configuration';
+    const resolvedContinuation: EquipmentSelectionContinuation = (
+      continuation.kind === 'none' && operation === 'evidence_correction'
+        ? { kind: 'evidence_correction' }
+        : continuation
+    );
     const open = () => {
       const initialRows = isIdealWorkoutDetailPreview
         ? orderEquipmentChoices(
@@ -4065,13 +4084,13 @@ export default function WorkoutViewerScreen() {
       setIdentityPickerRows(initialRows);
       setIdentityPickerLoading(false);
       setIdentityPickerError(null);
-      setIdentityPickerContinuation(continuation);
+      setIdentityPickerContinuation(resolvedContinuation);
       setIdentityPickerManufacturer(null);
     };
     if (
       continuation.kind === 'none'
+      && operation === 'future_sets'
       && activeEquipmentIdentity(item)
-      && (item.set_logs || []).length > 0
     ) {
       Alert.alert(
         'Change equipment for upcoming sets?',
@@ -6002,7 +6021,7 @@ export default function WorkoutViewerScreen() {
     await beginWorkoutConfirmed();
   };
 
-  const resumeCompletedSessionForEquipmentCorrection = (movement: CompletedRecapMovement) => {
+  const correctCompletedSessionEquipment = (movement: CompletedRecapMovement) => {
     const itemId = Number(movement.item_id || 0);
     if (!itemId || movement.kind !== 'accessory') {
       Alert.alert(
@@ -6011,36 +6030,18 @@ export default function WorkoutViewerScreen() {
       );
       return;
     }
-    const resume = () => {
-      setPendingPostSessionEquipmentItemId(itemId);
-      requestAnimationFrame(() => { void beginWorkoutConfirmed(); });
-    };
-    if ((data?.workout as any)?.post_session_submitted_at) {
+    const accessoryItem = (data?.workout?.accessory_groups || [])
+      .flatMap((group) => group.items || [])
+      .find((item) => Number(item.id) === itemId);
+    if (!accessoryItem) {
       Alert.alert(
-        'Resume Session to correct equipment?',
-        'This reopens the same Session and removes its submitted reflection. Existing SetLogs keep their immutable performed snapshots until you amend that evidence in the logger.',
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => setPendingPostSessionEquipmentItemId(null) },
-          { text: 'Resume & Correct', style: 'destructive', onPress: resume },
-        ],
+        'Equipment correction unavailable',
+        'The performed movement could not be found in this completed Session.',
       );
       return;
     }
-    resume();
+    openIdentityPicker(accessoryItem, { kind: 'evidence_correction' });
   };
-
-  useEffect(() => {
-    if (!pendingPostSessionEquipmentItemId || data?.workout?.status !== 'in_progress') return;
-    const accessoryItem = (data.workout.accessory_groups || [])
-      .flatMap((group) => group.items || [])
-      .find((item) => Number(item.id) === pendingPostSessionEquipmentItemId);
-    setPendingPostSessionEquipmentItemId(null);
-    if (!accessoryItem) {
-      Alert.alert('Equipment correction unavailable', 'The original movement could not be restored in this Session.');
-      return;
-    }
-    requestAnimationFrame(() => openIdentityPicker(accessoryItem));
-  }, [data?.workout?.accessory_groups, data?.workout?.status, pendingPostSessionEquipmentItemId]);
 
   const submitTardyReason = async () => {
     const reason = tardyReason.trim();
@@ -8471,7 +8472,7 @@ export default function WorkoutViewerScreen() {
     queueAccessoryWheelLog(repeatedWheel);
   };
 
-  if (isFinishedSession && workout.completed_recap) {
+  if (isFinishedSession && workout.completed_recap && !identityPickerItem) {
     const completionSummaryId = workout.impact_summary?.summary_id || null;
     const shouldShowCompletionCeremony = Boolean(
       completionSummaryId
@@ -8519,7 +8520,7 @@ export default function WorkoutViewerScreen() {
             onEditSetEvidence={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
             onEditSessionNotes={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
             onViewSessionHistory={coachPreviewRequested ? undefined : () => router.push('/(tabs)/workout/session-history' as any)}
-            onCorrectEquipment={coachPreviewRequested ? undefined : resumeCompletedSessionForEquipmentCorrection}
+            onCorrectEquipment={coachPreviewRequested ? undefined : correctCompletedSessionEquipment}
             onOpenMovementHistory={(movement) => {
               const resolution = resolveMovementHistoryLaunchFromMeasurement({
                 athleteId: athlete.id,
@@ -10013,12 +10014,18 @@ export default function WorkoutViewerScreen() {
             {identityPickerItem ? (
               <>
                 <View style={styles.equipmentPickerMovementContext}>
-                  <Text style={styles.equipmentPickerMovementKicker}>EQUIPMENT FOR</Text>
+                  <Text style={styles.equipmentPickerMovementKicker}>
+                    {identityPickerContinuation.kind === 'evidence_correction'
+                      ? 'EQUIPMENT USED FOR'
+                      : 'EQUIPMENT FOR'}
+                  </Text>
                   <Text style={styles.equipmentPickerMovementTitle}>
                     {simplifyMobileMovementName(identityPickerItem.movement) || 'Accessory'}
                   </Text>
                   <Text style={styles.equipmentPickerMovementMeta}>
-                    {identityPickerContinuation.kind === 'group_round'
+                    {identityPickerContinuation.kind === 'evidence_correction'
+                      ? 'Completed evidence correction'
+                      : identityPickerContinuation.kind === 'group_round'
                       ? `Superset ${identityPickerContinuation.groupLabel} · Round ${identityPickerContinuation.roundIndex}`
                       : 'Upcoming set'}
                   </Text>
@@ -10037,7 +10044,11 @@ export default function WorkoutViewerScreen() {
                         <Ionicons name="arrow-back" size={20} color={SLColors.textStrong} />
                       </TouchableOpacity>
                       <View style={styles.equipmentPickerHeaderCopy}>
-                        <Text style={styles.coreWheelTitle}>Which version are you using?</Text>
+                        <Text style={styles.coreWheelTitle}>
+                          {identityPickerContinuation.kind === 'evidence_correction'
+                            ? 'Which version did you use?'
+                            : 'Which version are you using?'}
+                        </Text>
                       </View>
                       <TouchableOpacity
                         style={styles.equipmentPickerHeaderAction}
@@ -10134,7 +10145,9 @@ export default function WorkoutViewerScreen() {
                   <View style={styles.equipmentPickerHeaderCopy}>
                     <Text style={styles.coreWheelTitle}>Choose Manufacturer</Text>
                     <Text style={styles.coreWheelSubtitle}>
-                      Which manufacturer&apos;s machine are you using?
+                      {identityPickerContinuation.kind === 'evidence_correction'
+                        ? 'Which manufacturer’s machine did you use?'
+                        : 'Which manufacturer’s machine are you using?'}
                     </Text>
                   </View>
                   <TouchableOpacity

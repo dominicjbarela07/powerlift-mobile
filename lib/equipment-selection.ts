@@ -2,6 +2,7 @@ import { equipmentPresentationLabel } from '@/lib/equipment-presentation';
 
 export type EquipmentSelectionContinuation =
   | { kind: 'none' }
+  | { kind: 'evidence_correction' }
   | { kind: 'accessory_set'; itemId: number }
   | {
       kind: 'group_round';
@@ -63,6 +64,34 @@ export type EquipmentAwareWorkoutItem = {
     kind?: string | null;
   } | null;
 };
+
+export type EquipmentSelectionOperation =
+  | 'configuration'
+  | 'future_sets'
+  | 'evidence_correction';
+
+export function equipmentSelectionOperation({
+  sessionStatus,
+  plannedSetCount,
+  loggedSetCount,
+}: {
+  sessionStatus?: string | null;
+  plannedSetCount?: number | null;
+  loggedSetCount?: number | null;
+}): EquipmentSelectionOperation {
+  const logged = Math.max(0, Number(loggedSetCount) || 0);
+  const planned = Math.max(0, Number(plannedSetCount) || 0);
+  if (logged === 0) return 'configuration';
+
+  const status = String(sessionStatus || '').trim().toLowerCase();
+  if (['completed', 'logged', 'done'].includes(status)) {
+    return 'evidence_correction';
+  }
+  if (status === 'in_progress' && planned > 0 && logged >= planned) {
+    return 'evidence_correction';
+  }
+  return 'future_sets';
+}
 
 const MACHINE_EQUIPMENT_TERMS = [
   'machine',

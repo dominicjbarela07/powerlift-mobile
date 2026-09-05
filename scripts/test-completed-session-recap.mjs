@@ -58,9 +58,10 @@ assert.match(certification, /params\.tab === 'plan' \? 'plan'/, 'the certificati
 assert.match(certification, /params\.tab === 'coach' \? 'coach'/, 'the certification route must exercise the role-gated Coach lens independently');
 assert.match(certification, /params\.tab === 'personal_bests' \? 'personal_bests'/, 'the certification route must exercise verified PR evidence independently');
 
-const athleteBranch = athleteRoute.indexOf('if (isFinishedSession && workout.completed_recap)');
+const athleteBranch = athleteRoute.indexOf('if (isFinishedSession && workout.completed_recap && !identityPickerItem)');
 const athleteLogger = athleteRoute.indexOf('<KeyboardAvoidingView', athleteBranch);
 assert.ok(athleteBranch >= 0 && athleteLogger > athleteBranch, 'completed athlete sessions must branch to recap before logger UI');
+assert.match(athleteRoute, /openIdentityPicker\(accessoryItem, \{ kind: 'evidence_correction' \}\)/, 'the canonical picker may overlay completed recap only for an explicit evidence correction');
 
 assert.match(coachRoute, /loadedCompletedSession/);
 assert.match(coachRoute, /user\?\.role !== 'coach' && !!payload && !loadedCompletedSession/, 'athlete deep links must wait for lifecycle data before redirecting');
