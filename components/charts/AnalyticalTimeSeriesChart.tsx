@@ -54,6 +54,7 @@ type Props = Readonly<{
   onPointPress?: (selection: AnalyticalSelection) => void;
   xDomainMode?: AnalyticalXDomainMode;
   readableText?: boolean;
+  largeReadableText?: boolean;
   testID?: string;
 }>;
 
@@ -93,6 +94,7 @@ export function AnalyticalTimeSeriesChart({
   onPointPress,
   xDomainMode = 'chronological',
   readableText = false,
+  largeReadableText = false,
   testID,
 }: Props) {
   const [width, setWidth] = useState(320);
@@ -118,12 +120,13 @@ export function AnalyticalTimeSeriesChart({
     ];
     if (!dates.length || !values.length) return null;
     const right = 12;
-    const top = 54;
-    const bottom = 30;
+    const top = largeReadableText ? 82 : 54;
+    const bottom = largeReadableText ? 42 : 30;
     const chartHeight = Math.max(78, height - top - bottom);
     const scale = buildNumericScale(values, metric, height < 180 ? 4 : 5);
     const yLabels = scale.ticks.map((tick) => formatAnalyticalValue(tick, metric, { axis: true, signed: metric.signed }));
-    const left = buildYAxisGutter(yLabels, readableText ? 11 : 9);
+    const axisFontSize = largeReadableText ? 16 : readableText ? 11 : 9;
+    const left = buildYAxisGutter(yLabels, axisFontSize);
     const xLayout = buildAnalyticalXLayout({
       observations: dates.map(([key, row]) => ({ key, date: row.date, timestamp: row.time })),
       mode: xDomainMode,
@@ -156,7 +159,7 @@ export function AnalyticalTimeSeriesChart({
       xTicks: xLayout.ticks,
       bandPath: upper && lower ? `${upper} ${lower} Z` : '',
     };
-  }, [band, height, metric, readableText, series, width, xDomainMode]);
+  }, [band, height, largeReadableText, metric, readableText, series, width, xDomainMode]);
 
   useEffect(() => {
     const next = plot && selectedInitially === 'latest' ? plot.normalizedDates.length - 1 : null;
@@ -164,7 +167,7 @@ export function AnalyticalTimeSeriesChart({
     setSelectedIndex(next);
   }, [plot, selectedInitially]);
 
-  if (!plot) return <View style={[styles.empty, { minHeight: height }]}><Text style={styles.emptyTitle}>{emptyTitle}</Text><Text style={styles.emptyBody}>{emptyBody}</Text></View>;
+  if (!plot) return <View style={[styles.empty, { minHeight: height }]}><Text style={[styles.emptyTitle, largeReadableText && styles.emptyTitleLarge]}>{emptyTitle}</Text><Text style={[styles.emptyBody, largeReadableText && styles.emptyBodyLarge]}>{emptyBody}</Text></View>;
 
   const selectNearest = (locationX: number) => {
     let best = 0;
@@ -188,7 +191,9 @@ export function AnalyticalTimeSeriesChart({
     }),
   } : null;
   const contextualRows = selection ? tooltipRows?.(selection) || [] : [];
-  const tooltipWidth = Math.min(190, Math.max(142, width * 0.48));
+  const tooltipWidth = largeReadableText
+    ? Math.min(246, Math.max(206, width * 0.62))
+    : Math.min(190, Math.max(142, width * 0.48));
   const tooltipLeft = selectedDate ? Math.min(Math.max(4, selectedDate.x - tooltipWidth / 2), Math.max(4, width - tooltipWidth - 4)) : 4;
 
   return <View
@@ -224,7 +229,7 @@ export function AnalyticalTimeSeriesChart({
         const isZero = Math.abs(tick) < 1e-9;
         return <React.Fragment key={tick}>
           <Line x1={plot.left} x2={width - plot.right} y1={y} y2={y} stroke={isZero ? '#424654' : '#20242E'} strokeWidth={isZero ? 1.2 : 0.8} />
-          <SvgText x={plot.left - 6} y={y + 3.5} textAnchor="end" fill="#A4A8B3" fontSize={readableText ? 11 : 9}>{formatAnalyticalValue(tick, metric, { axis: true, signed: metric.signed })}</SvgText>
+          <SvgText x={plot.left - 6} y={y + (largeReadableText ? 5.5 : 3.5)} textAnchor="end" fill="#A4A8B3" fontSize={largeReadableText ? 16 : readableText ? 11 : 9}>{formatAnalyticalValue(tick, metric, { axis: true, signed: metric.signed })}</SvgText>
         </React.Fragment>;
       })}
       {plot.bandPath ? <Path d={plot.bandPath} fill="rgba(151,105,255,0.13)" stroke="rgba(151,105,255,0.25)" strokeWidth={0.7} /> : null}
@@ -236,12 +241,12 @@ export function AnalyticalTimeSeriesChart({
         })}
       </React.Fragment>)}
       {selectedDate ? <Line x1={selectedDate.x} x2={selectedDate.x} y1={plot.top} y2={plot.top + plot.chartHeight} stroke="#B878FF" strokeDasharray="3 4" strokeWidth={1} /> : null}
-      {plot.xTicks.map((tick) => <SvgText key={`${tick.key}:${tick.index}`} x={tick.x} y={height - 8} textAnchor={tick.textAnchor} fill="#A4A8B3" fontSize={readableText ? 11 : 9}>{tick.label}</SvgText>)}
+      {plot.xTicks.map((tick) => <SvgText key={`${tick.key}:${tick.index}`} x={tick.x} y={height - (largeReadableText ? 10 : 8)} textAnchor={tick.textAnchor} fill="#A4A8B3" fontSize={largeReadableText ? 16 : readableText ? 11 : 9}>{tick.label}</SvgText>)}
     </Svg>
     {selection ? <View pointerEvents="none" style={[styles.tooltip, { left: tooltipLeft, width: tooltipWidth }]}>
-      <Text style={[styles.tooltipDate, readableText && styles.tooltipDateReadable]}>{fullDate(selection.date).toUpperCase()}</Text>
-      {selection.values.map((row) => <View key={row.key} style={styles.tooltipValueRow}><View style={[styles.tooltipDot, { backgroundColor: row.color }]} /><Text style={[styles.tooltipLabel, readableText && styles.tooltipLabelReadable]}>{row.label}</Text><Text style={[styles.tooltipValue, readableText && styles.tooltipValueReadable]}>{formatSeriesValue?.(row.key, row.value) ?? formatAnalyticalValue(row.value, metric)}</Text></View>)}
-      {contextualRows.map((row, index) => <Text key={`${row}:${index}`} numberOfLines={1} style={[styles.tooltipMeta, readableText && styles.tooltipMetaReadable]}>{row}</Text>)}
+      <Text style={[styles.tooltipDate, readableText && styles.tooltipDateReadable, largeReadableText && styles.tooltipDateLarge]}>{fullDate(selection.date).toUpperCase()}</Text>
+      {selection.values.map((row) => <View key={row.key} style={styles.tooltipValueRow}><View style={[styles.tooltipDot, { backgroundColor: row.color }]} /><Text style={[styles.tooltipLabel, readableText && styles.tooltipLabelReadable, largeReadableText && styles.tooltipLabelLarge]}>{row.label}</Text><Text style={[styles.tooltipValue, readableText && styles.tooltipValueReadable, largeReadableText && styles.tooltipValueLarge]}>{formatSeriesValue?.(row.key, row.value) ?? formatAnalyticalValue(row.value, metric)}</Text></View>)}
+      {contextualRows.map((row, index) => <Text key={`${row}:${index}`} numberOfLines={1} style={[styles.tooltipMeta, readableText && styles.tooltipMetaReadable, largeReadableText && styles.tooltipMetaLarge]}>{row}</Text>)}
     </View> : null}
     {showLegend && (plot.rows.length > 1 || bandLabel) ? <View style={styles.legend}>{plot.rows.map((item) => <View key={item.key} style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: item.color }]} /><Text style={styles.legendText}>{item.label}</Text></View>)}{bandLabel ? <View style={styles.legendItem}><View style={[styles.legendBand]} /><Text style={styles.legendText}>{bandLabel}</Text></View> : null}</View> : null}
   </View>;
@@ -252,17 +257,23 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, borderRadius: 12, backgroundColor: '#07090E' },
   emptyTitle: { color: '#E8E4ED', fontSize: 14, fontWeight: '800', textAlign: 'center' },
   emptyBody: { marginTop: 5, color: '#858A97', fontSize: 10.5, lineHeight: 15, textAlign: 'center' },
+  emptyTitleLarge: { fontSize: 18, lineHeight: 23 },
+  emptyBodyLarge: { fontSize: 16, lineHeight: 22 },
   tooltip: { position: 'absolute', zIndex: 3, top: 5, minHeight: 44, borderRadius: 9, borderWidth: 1, borderColor: '#71439A', backgroundColor: 'rgba(12,13,20,0.96)', paddingHorizontal: 8, paddingVertical: 6 },
   tooltipDate: { color: '#C885FF', fontSize: 8, fontWeight: '800', letterSpacing: 0.5 },
   tooltipDateReadable: { fontSize: 10 },
+  tooltipDateLarge: { fontSize: 16, lineHeight: 20 },
   tooltipValueRow: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 5 },
   tooltipDot: { width: 6, height: 6, borderRadius: 3 },
   tooltipLabel: { flex: 1, color: '#A8A5B0', fontSize: 8.5 },
   tooltipLabelReadable: { fontSize: 11 },
+  tooltipLabelLarge: { fontSize: 16, lineHeight: 20 },
   tooltipValue: { color: '#F4F0F8', fontSize: 9, fontWeight: '800' },
   tooltipValueReadable: { fontSize: 12 },
+  tooltipValueLarge: { fontSize: 18, lineHeight: 22 },
   tooltipMeta: { color: '#858A97', fontSize: 7.8, lineHeight: 11 },
   tooltipMetaReadable: { fontSize: 10.5, lineHeight: 15 },
+  tooltipMetaLarge: { fontSize: 16, lineHeight: 21 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 48, paddingBottom: 7 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 7, height: 7, borderRadius: 4 },

@@ -68,11 +68,11 @@ assertIncludes(reviewerV3, [
 
 const completedRecap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 assertIncludes(completedRecap, [
-  'SESSION READ',
-  'WHAT CHANGED',
+  'SESSION RESULT',
+  'LAST COMPARABLE SESSION',
   'MOVEMENT PROGRESSION',
   'Actual persisted SetLogs',
-  'CONTEXT & RECOVERY',
+  'RECOVERY CONTEXT',
   'COACH READ',
   'PlanCompareExperience',
   'CoachTools',

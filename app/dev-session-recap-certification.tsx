@@ -396,10 +396,122 @@ const firstRepPrRecap: CompletedSessionRecapPayload = {
   ],
 };
 
+const visualAssistedPullUp = movement(9, 'Assisted Pull-Up', 'lats', ['biceps', 'upper_back'], 31.7515, 10, {
+  equipment: 'Life Fitness · Assisted Pull-Up',
+  setCount: 10,
+});
+visualAssistedPullUp.measurement = {
+  ...visualAssistedPullUp.measurement,
+  measurement_type: 'assisted_reps',
+  load_convention: 'assistance_load',
+};
+visualAssistedPullUp.projection = null;
+visualAssistedPullUp.sets = visualAssistedPullUp.sets.map((set) => ({ ...set, actual_rir: 1 }));
+visualAssistedPullUp.best_set = visualAssistedPullUp.best_set ? { ...visualAssistedPullUp.best_set, rir: 1 } : null;
+visualAssistedPullUp.trend = {
+  metric: 'assistance_load_kg', metric_label: 'Assistance required', metric_unit: 'kg', direction: 'lower_is_better',
+  scope: 'exact_movement_identity', state: 'trend', delta_kg: -4.5359, delta_value: -4.5359,
+  points: [
+    { date: '2026-08-07', workout_id: 780, set_log_id: 7801, weight_kg: 43.0913, reps: 10, rir: 1, metric_value: 43.0913 },
+    { date: '2026-08-14', workout_id: 787, set_log_id: 7871, weight_kg: 40.8233, reps: 10, rir: 1, metric_value: 40.8233 },
+    { date: '2026-08-21', workout_id: 794, set_log_id: 7941, weight_kg: 38.5554, reps: 10, rir: 1, metric_value: 38.5554 },
+    { date: '2026-08-28', workout_id: 801, set_log_id: 8011, weight_kg: 36.2874, reps: 10, rir: 1, metric_value: 36.2874 },
+    { date: '2026-09-04', workout_id: 808, set_log_id: visualAssistedPullUp.sets[0].id, weight_kg: 31.7515, reps: 10, rir: 1, metric_value: 31.7515, current: true },
+  ],
+};
+
+const visualStableRow = movement(10, 'Chest-Supported Row', 'upper_back', ['lats', 'biceps'], 54.4311, 10, {
+  equipment: 'Prime Fitness · Selectorized',
+  setCount: 9,
+});
+
+const visualRecap: CompletedSessionRecapPayload = {
+  ...recap,
+  workout_id: 808,
+  session: {
+    ...recap.session,
+    label: 'W6 Back', date: '2026-09-04',
+    started_at: '2026-09-04T07:51:00-07:00', completed_at: '2026-09-04T09:00:00-07:00', duration_seconds: 4140,
+    set_count: 19, movement_count: 2, video_count: 0, total_volume_kg: 7665.7,
+    reported_bodyweight: null,
+  },
+  highlights: {
+    summary_id: 'session:808:visual-convergence', session_streak: 0, pr_count: 0,
+    accomplishment_count: 0, session_volume_kg: 7665.7,
+    all_prescribed_work_logged: true, prescribed_set_count: 19,
+    completed_prescribed_set_count: 19, prescription_completion_percent: 100,
+  },
+  performed_movements: [visualAssistedPullUp, visualStableRow],
+  muscle_focus: {
+    primary: [{ muscle_id: 'lats', score: 9 }, { muscle_id: 'upper_back', score: 8 }],
+    secondary: [{ muscle_id: 'biceps', score: 5 }], source: 'performed',
+  },
+  accomplishments: [],
+  reflection: { session_rpe: 9, strength: 'typical', fatigue: 'typical', note: null, submitted_at: '2026-09-04T09:02:00-07:00' },
+  coach_feedback: { feedback: null, feedback_at: null, reviewed: false, reviewed_at: null, outcome: null, author: null },
+  readiness_context: { sleep_hours: 7.5, stress: 3, energy: 3, soreness: 3, readiness_score: 4 },
+  plan: { available: true, programming_notes: 'Maintain current pulling progression.', movements: [visualAssistedPullUp, visualStableRow].map((row) => ({ item_id: row.item_id, label: row.label, sets: row.sets.length, reps: row.best_set?.reps, rir_target: 1 })) },
+  reviewer_v3: {
+    schema_version: 'coach-session-reviewer-v3',
+    comparator: { workout_id: 801, label: 'W5 Back', date: '2026-08-28', matched_movement_count: 2 },
+    session_read: {
+      performance: { state: 'improved', label: 'Good Session', counts: { improved: 1, stable: 1, declined: 0 }, comparable_count: 2 },
+      execution: { logged_sets: 19, planned_sets: 19, completion_percent: 100 },
+      recovery: { state: 'within_baseline', label: 'Typical' },
+      reflection: { state: 'typical', label: 'Typical' },
+      synthesis: 'More total work than the last comparable Session with slightly lower effort. Recovery was within the normal range.',
+    },
+    what_changed: {
+      movement_outcomes: { improved: 1, stable: 1, declined: 0 },
+      volume: { current_kg: 7665.7, previous_kg: 5715.26, delta_percent: 34.1 },
+      normalized_volume_per_set: { current_kg: 403.46, previous_kg: 357.2, delta_percent: 13 },
+      logged_sets: { current: 19, previous: 16, delta: 3 },
+      average_effort_rpe_equivalent: { current: 9, previous: 9.3, delta: -0.3 },
+      pr_count: 0,
+      session_rpe: { current: 9, previous: 9.3, delta: -0.3 },
+    },
+    duration: { current_seconds: 4140, baseline_seconds: 4200, delta_seconds: -60, sample_size: 4 },
+    movements: [
+      { item_id: 9, previous_best: { weight_kg: 36.2874, reps: 10, rir: 1 }, comparison: { state: 'improved', literal: '10 lb less assistance at matched reps & effort', metric_delta_percent: null } },
+      { item_id: 10, previous_best: { weight_kg: 54.4311, reps: 10, rir: 2 }, comparison: { state: 'stable', literal: 'Matched prior best-set performance', metric_delta_percent: 0 } },
+    ],
+    recovery: {
+      state: 'within_baseline', label: 'Typical', sample_size: 9,
+      summary: 'Readiness was near the recent baseline entering this Session.',
+      metrics: {
+        readiness: { value: 4, baseline: 4.2, delta: -0.2 },
+        sleep: { value: 7.5, baseline: 7.5, delta: 0 },
+        stress: { value: 3, baseline: 2.3, delta: 0.7 },
+        energy: { value: 3, baseline: 2.7, delta: 0.3 },
+        soreness: { value: 3, baseline: 2.4, delta: 0.6 },
+      },
+      trend: [
+        { date: '2026-08-07', readiness: 3.6, sleep: 7.1, stress: 2.1, energy: 2.8, soreness: 2.2 },
+        { date: '2026-08-11', readiness: 4.7, sleep: 7.4, stress: 2.4, energy: 3.1, soreness: 2.5 },
+        { date: '2026-08-14', readiness: 5.2, sleep: 7.8, stress: 2.0, energy: 3.4, soreness: 2.1 },
+        { date: '2026-08-18', readiness: 4.3, sleep: 7.3, stress: 2.5, energy: 2.8, soreness: 2.6 },
+        { date: '2026-08-21', readiness: 5.5, sleep: 7.7, stress: 2.2, energy: 3.5, soreness: 2.3 },
+        { date: '2026-08-25', readiness: 5.1, sleep: 7.5, stress: 2.4, energy: 3.2, soreness: 2.5 },
+        { date: '2026-08-28', readiness: 5.2, sleep: 7.6, stress: 2.3, energy: 3.0, soreness: 2.4 },
+        { date: '2026-09-01', readiness: 4.2, sleep: 7.4, stress: 2.6, energy: 2.7, soreness: 2.6 },
+        { date: '2026-09-04', readiness: 4, sleep: 7.5, stress: 3, energy: 3, soreness: 3, current: true },
+      ],
+    },
+    reflection: {
+      state: 'typical', label: 'Typical', sample_size: 8,
+      session_rpe: { value: 9, baseline: 9.1, delta: -0.1 },
+      strength: 'typical', fatigue: { value: 'typical', higher_than_prior_count: 3, prior_count: 8 },
+    },
+    coach_read: { performance: '1 improved · 1 stable · 0 declined', recovery: 'Within recent baseline', reflection: 'Typical', execution: '19 / 19 sets', attention: [] },
+  },
+};
+
 export default function SessionRecapCertificationScreen() {
   const params = useLocalSearchParams<{ mode?: string; units?: string; offset?: string; expand?: string; tab?: string; tools?: string; scenario?: string }>();
   const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
-  const activeRecap = params.scenario === 'sparse'
+  const activeRecap = params.scenario === 'visual'
+    ? visualRecap
+    : params.scenario === 'sparse'
     ? sparseRecap
     : params.scenario === 'related' ? relatedHistoryRecap
     : params.scenario === 'first-pr' ? firstRepPrRecap : recap;

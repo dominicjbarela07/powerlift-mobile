@@ -31,16 +31,17 @@ assert.match(surface, /contentScrollRef\.current\?\.scrollTo\(\{ y: 0, animated:
 assert.match(surface, /requestAnimationFrame\(resetScrollOwners\)/, 'tab scroll reset must repeat after the next native layout frame');
 assert.match(surface, /tabsScrollRef\.current\?\.scrollToEnd/, 'later evidence lenses must remain visibly selected in the horizontal tab rail');
 
-for (const section of ['SESSION READ', 'WHAT CHANGED', 'CONTEXT & RECOVERY', 'ATHLETE REFLECTION', 'MOVEMENT PROGRESSION', 'COACH READ', 'COACH ATTENTION']) {
+for (const section of ['SESSION RESULT', 'LAST COMPARABLE SESSION', 'RECOVERY CONTEXT', 'ATHLETE REFLECTION', 'MOVEMENT PROGRESSION', 'COACH READ', 'COACH ATTENTION']) {
   assert.ok(surface.includes(section), `canonical evidence surface is missing ${section}`);
 }
 assert.match(surface, /AnalyticalTimeSeriesChart/, 'analytics must use the canonical inspectable chart primitive');
 assert.match(surface, /ChartAxisModeToggle/, 'movement history must preserve TIME / INSTANCES inspection');
 assert.match(surface, /xDomainMode=\{axisMode\}/, 'axis mode must change geometry without changing evidence');
-assert.match(surface, /const \[selected, setSelected\].*'readiness'/, 'recovery must show one explicitly selected metric at a time');
+assert.match(surface, /available\.includes\('readiness'\) \? 'readiness'/, 'the Overview recovery story must prefer the readiness trend');
 assert.match(surface, /kind: selected === 'sleep' \? 'hours' : 'score'/, 'sleep and score charts must remain unit-honest');
-assert.match(surface, /observationLabel = points\.length \? `\$\{points\.length\}/, 'recovery labels must use the selected metric’s plotted point count');
 assert.match(surface, /readableText/, 'post-Session charts must opt into the readable axis and tooltip treatment');
+assert.match(surface, /largeReadableText/, 'the Overview recovery chart must opt into the 16-point axis and tooltip treatment');
+assert.match(surface, /selectedInitially="latest"/, 'the Overview recovery chart must emphasize the current Session point');
 
 const activeSurface = surface.split('/* Retired athlete-recap renderer')[0];
 assert.match(activeSurface, /performedMovements\.length \? performedMovements\.map/, 'all performed movements must always render');
@@ -59,9 +60,12 @@ assert.doesNotMatch(prEvidence, /best_set/, 'PR source evidence must never fall 
 for (const [name, minimum] of [
   ['movementComparisonValue', 13],
   ['setValueStrong', 13],
-  ['canonicalMetricValue', 13],
-  ['changedValue', 12],
-  ['recoverySummary', 13],
+  ['overviewNarrative', 17],
+  ['overviewComparisonLabel', 18],
+  ['overviewComparisonDetail', 16],
+  ['overviewRecoveryMetricLabel', 18],
+  ['overviewRecoveryMetricDetail', 16],
+  ['overviewReflectionDetail', 16],
   ['coachReadValue', 12],
   ['personalBestResultValue', 20],
 ]) assert.ok(styleFontSize(name) >= minimum, `${name} must remain readable at mobile width`);
@@ -73,7 +77,8 @@ assert.equal(crest.subarray(1, 4).toString('ascii'), 'PNG', 'the Session PR cres
 assert.equal(crest[25], 6, 'the Session PR crest must retain genuine RGBA transparency');
 
 for (const sparseState of [
-  'Readiness context was not submitted',
+  'Baseline building',
+  'Duration baseline started',
   'No prior exact comparison yet',
   'Performed muscle emphasis is unavailable',
   'No performed SetLog evidence was recorded',
@@ -93,7 +98,7 @@ assert.match(coachRoute, /onOpenProgramming=/, 'Coach must be able to deep-link 
 assert.match(coachRoute, /review\.review_controls\?\.editable !== false/, 'Coach controls must retain server authorization');
 assert.match(surface, /CoachTools review=\{coachReview\}/, 'feedback, notes, outcomes, and completion must remain on the canonical coach draft');
 
-assert.match(surface, /canonicalContent: \{ gap: 12 \}/, 'the post-Session canvas must not add a page gutter');
+assert.match(surface, /canonicalContent: \{ gap: 14 \}/, 'the post-Session canvas must not add a page gutter');
 assert.match(surface, /toolsSheet: \{ width: '100%'/, 'the post-Session toolkit must be full width');
 assert.match(surface, /movementStack: \{ gap: 10 \}/, 'movement cards must not add nested horizontal gutters');
 assert.match(surface, /sessionRecapHighlightAsset/, 'premium PR, streak, and prescription assets must remain canonical');
@@ -105,6 +110,7 @@ assert.match(certification, /canonical_identity_id: 9000 \+ itemId/, 'every proo
 assert.match(certification, /params\.tab === 'coach' \? 'coach'/, 'the DEV proof fixture must expose every role lens');
 assert.match(certification, /params\.tab === 'personal_bests' \? 'personal_bests'/, 'the DEV proof fixture must expose the conditional PR lens');
 assert.match(certification, /params\.scenario === 'first-pr'/, 'the DEV proof fixture must expose a first-instance PR with no fabricated chart');
+assert.match(certification, /params\.scenario === 'visual'/, 'the DEV proof fixture must expose the reference-matched Overview story');
 assert.match(certification, /onResumeSession=\{\(\) => undefined\}/, 'the DEV proof fixture must expose the athlete toolkit');
 assert.match(certification, /onOpenMovementHistory=\{\(\) => undefined\}/, 'the DEV proof fixture must expose exact governed movement history');
 

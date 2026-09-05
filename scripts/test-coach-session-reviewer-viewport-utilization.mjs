@@ -13,7 +13,8 @@ const teamBrief = read('app/coach-team-brief.tsx');
 const analyticalChart = read('components/charts/AnalyticalTimeSeriesChart.tsx');
 
 function styleBody(source, name) {
-  const match = source.match(new RegExp(`${name}: \\{([^}]*)\\}`));
+  const styleSource = source.slice(source.indexOf('const styles = StyleSheet.create'));
+  const match = styleSource.match(new RegExp(`\\b${name}: \\{([^}]*)\\}`));
   assert.ok(match, `${name} style must exist`);
   return match[1];
 }
@@ -36,7 +37,8 @@ assert.match(styleBody(recap, 'executionCard'), /padding:\s*12/, 'Session Execut
 assert.match(styleBody(recap, 'compareMovementHeader'), /padding:\s*10/, 'Movement cards keep internal readable padding');
 
 assert.match(recap, /AnalyticalTimeSeriesChart/, 'Reviewer evidence uses the shared analytical chart');
-assert.match(analyticalChart, /buildYAxisGutter\(yLabels, readableText \? 11 : 9\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
+assert.match(analyticalChart, /axisFontSize = largeReadableText \? 16 : readableText \? 11 : 9/, 'Evidence charts allocate their Y-axis gutter from the rendered label size');
+assert.match(analyticalChart, /buildYAxisGutter\(yLabels, axisFontSize\)/, 'Evidence charts allocate their Y-axis gutter from the rendered labels');
 assert.match(analyticalChart, /onLayout=\{\(event\) => setWidth\(Math\.max\(280, Math\.round\(event\.nativeEvent\.layout\.width\)\)\)\}/, 'Evidence charts expand from actual available width');
 assert.match(analyticalChart, /Math\.min\(Math\.max\(4, selectedDate\.x - tooltipWidth \/ 2\), Math\.max\(4, width - tooltipWidth - 4\)\)/, 'Evidence chart tooltips remain clamped to the available width');
 
