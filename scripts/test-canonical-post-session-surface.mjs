@@ -92,8 +92,9 @@ for (const tool of ['Resume Session', 'Edit Set Evidence', 'Session Notes', 'Ful
 assert.match(athleteRoute, /onResumeSession=.*beginWorkout/, 'Resume must use the existing governed lifecycle transition');
 assert.match(athleteRoute, /onEditSetEvidence=.*beginWorkout/, 'Set evidence editing must reopen the same Session logger');
 assert.match(athleteRoute, /onEditSessionNotes=.*beginWorkout/, 'Session note editing must preserve the same-Session lifecycle');
-assert.match(athleteRoute, /resumeCompletedSessionForEquipmentCorrection/, 'equipment correction must use the governed identity picker path');
-assert.match(athleteRoute, /Existing SetLogs keep their immutable performed snapshots/, 'equipment correction must disclose immutable performed evidence semantics');
+assert.match(athleteRoute, /correctCompletedSessionEquipment/, 'equipment correction must use the governed identity picker path');
+assert.match(athleteRoute, /openIdentityPicker\(accessoryItem, \{ kind: 'evidence_correction' \}\)/, 'equipment correction must be explicit and must not resume the Session');
+assert.doesNotMatch(athleteRoute, /resumeCompletedSessionForEquipmentCorrection|Resume Session to correct equipment\?|Resume & Correct/, 'equipment correction must never expose a Session resume flow');
 assert.match(athleteRoute, /onViewSessionHistory=.*session-history/, 'full Session history must be reachable');
 
 assert.match(coachRoute, /onOpenProgramming=/, 'Coach must be able to deep-link from evidence to Programming');

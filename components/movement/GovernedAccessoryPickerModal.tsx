@@ -11,7 +11,10 @@ import { fetchJson } from '@/lib/api';
 import {
   ACCESSORY_PICKER_REGIONS,
   accessoryTaxonomyLabel,
+  availableSwapEquipmentTypeFilters,
   rankSimilarAccessoryMovements,
+  type AccessoryExecutionFamilyFacet,
+  type AccessoryExecutionFamilyKey,
   type AccessoryPickerRegion,
   type SimilarAccessoryCandidate,
 } from '@/lib/canonical-accessory-discovery';
@@ -102,6 +105,8 @@ export function GovernedAccessorySubstitutionPickerModal({
   const [mode, setMode] = useState<PickerMode>('search');
   const [selectedRegion, setSelectedRegion] = useState<AccessoryPickerRegion | null>(null);
   const [selectedMuscle, setSelectedMuscle] = useState('');
+  const [selectedExecutionFamily, setSelectedExecutionFamily] = useState<AccessoryExecutionFamilyKey | ''>('');
+  const [executionFamilyFacets, setExecutionFamilyFacets] = useState<AccessoryExecutionFamilyFacet[]>([]);
   const [query, setQuery] = useState('');
   const [rows, setRows] = useState<GovernedAccessoryIdentity[]>([]);
   const [similar, setSimilar] = useState<SimilarAccessoryCandidate<GovernedAccessoryIdentity>[]>([]);
@@ -140,6 +145,8 @@ export function GovernedAccessorySubstitutionPickerModal({
     setMode('search');
     setSelectedRegion(null);
     setSelectedMuscle('');
+    setSelectedExecutionFamily('');
+    setExecutionFamilyFacets([]);
     setQuery('');
     setRows([]);
     setCustomStep(null);
@@ -188,12 +195,14 @@ export function GovernedAccessorySubstitutionPickerModal({
     const timer = setTimeout(() => {
       const params = new URLSearchParams({ athlete_id: String(athleteId), limit: '24' });
       if (query.trim()) params.set('q', query.trim());
+      if (currentIdentity?.id) params.set('exclude_movement_definition_id', String(currentIdentity.id));
       if (mode === 'favorites') params.set('favorites_only', '1');
       if (mode === 'recent') params.set('recent_only', '1');
       if (mode === 'custom') params.set('custom_only', '1');
       if (mode === 'muscle' && selectedMuscle) {
         params.set('primary_muscle_group', selectedMuscle);
         params.set('include_secondary', '1');
+        if (selectedExecutionFamily) params.set('execution_family', selectedExecutionFamily);
       }
       setLoading(true);
       setError('');
@@ -204,7 +213,18 @@ export function GovernedAccessorySubstitutionPickerModal({
           if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
           const grouped = json.result_groups;
           const items = grouped ? [...(grouped.primary?.items || []), ...(grouped.secondary?.items || [])] : (json.items || []);
-          setRows(uniqueIdentities(items, currentIdentity?.id));
+          const nextRows = uniqueIdentities(items, currentIdentity?.id);
+          const facets = Array.isArray(grouped?.execution_families)
+            ? grouped.execution_families
+            : [];
+          if (mode === 'muscle' && facets.length) {
+            setExecutionFamilyFacets(facets);
+          } else if (mode === 'muscle' && !selectedExecutionFamily) {
+            setExecutionFamilyFacets(
+              availableSwapEquipmentTypeFilters(null, nextRows).map(({ key }) => ({ key, count: 1 })),
+            );
+          }
+          setRows(nextRows);
         })
         .catch((reason) => {
           if (requestId === requestRef.current) {
@@ -215,7 +235,12 @@ export function GovernedAccessorySubstitutionPickerModal({
         .finally(() => requestId === requestRef.current && setLoading(false));
     }, query.trim() ? 220 : 0);
     return () => clearTimeout(timer);
-  }, [athleteId, currentIdentity?.id, customStep, mode, query, selectedMuscle, step, visible]);
+  }, [athleteId, currentIdentity?.id, customStep, mode, query, selectedExecutionFamily, selectedMuscle, step, visible]);
+
+  const equipmentTypeFilters = useMemo(
+    () => availableSwapEquipmentTypeFilters(executionFamilyFacets, rows),
+    [executionFamilyFacets, rows],
+  );
 
   const resultTitle = useMemo(() => {
     if (mode === 'favorites') return 'Favorites';
@@ -232,6 +257,7 @@ export function GovernedAccessorySubstitutionPickerModal({
   };
   const openSearch = (nextQuery: string) => {
     setQuery(nextQuery);
+    if (step === 'results' && mode === 'muscle') return;
     setMode('search');
     if (nextQuery.trim()) setStep('results');
   };
@@ -329,9 +355,9 @@ export function GovernedAccessorySubstitutionPickerModal({
 
             {step === 'regions' ? <><Text style={styles.pageTitle}>What are you trying to train?</Text><Text style={styles.pageMeta}>Choose a region, then an exact governed muscle target.</Text><View style={styles.regionGrid}>{ACCESSORY_PICKER_REGIONS.map((region) => <Pressable key={region.key} onPress={() => { setSelectedRegion(region); setStep('muscles'); }} style={({ pressed }) => [styles.regionCard, pressed && styles.pressed]}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(region.artwork).source} style={styles.regionArtwork} /><Text style={styles.regionLabel}>{region.label}</Text></Pressable>)}</View></> : null}
 
-            {step === 'muscles' && selectedRegion ? <><View style={styles.regionHero}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} style={styles.regionHeroArtwork} /><View style={styles.rowCopy}><Text style={styles.pageTitle}>{selectedRegion.label}</Text><Text style={styles.pageMeta}>Choose the primary muscle target.</Text></View></View>{selectedRegion.muscles.map((muscle) => <Pressable key={muscle} onPress={() => { setSelectedMuscle(muscle); setMode('muscle'); setQuery(''); setStep('results'); }} style={({ pressed }) => [styles.row, pressed && styles.pressed]}><MuscleArtwork athlete={athleteAnatomy} muscle={muscle} /><Text style={[styles.rowTitle, styles.rowCopy]}>{accessoryTaxonomyLabel(muscle)}</Text><Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /></Pressable>)}</> : null}
+            {step === 'muscles' && selectedRegion ? <><View style={styles.regionHero}><Image accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryRegionalArtworkAsset(selectedRegion.artwork).source} style={styles.regionHeroArtwork} /><View style={styles.rowCopy}><Text style={styles.pageTitle}>{selectedRegion.label}</Text><Text style={styles.pageMeta}>Choose the primary muscle target.</Text></View></View>{selectedRegion.muscles.map((muscle) => <Pressable key={muscle} onPress={() => { setSelectedMuscle(muscle); setSelectedExecutionFamily(''); setExecutionFamilyFacets([]); setMode('muscle'); setQuery(''); setStep('results'); }} style={({ pressed }) => [styles.row, pressed && styles.pressed]}><MuscleArtwork athlete={athleteAnatomy} muscle={muscle} /><Text style={[styles.rowTitle, styles.rowCopy]}>{accessoryTaxonomyLabel(muscle)}</Text><Ionicons color={SLColors.textMuted} name="chevron-forward" size={20} /></Pressable>)}</> : null}
 
-            {step === 'results' ? <><Text style={styles.pageTitle}>{resultTitle}</Text>{mode === 'muscle' ? <Text style={styles.pageMeta}>Primary matches first, followed by movements that also train this target.</Text> : null}{loading ? <ActivityIndicator color={SLColors.accent} style={styles.loading} /> : null}{!loading ? rows.map((identity) => renderIdentity(identity)) : null}{!loading && !rows.length ? <Text style={styles.empty}>{error || (mode === 'search' ? 'Type a movement name or governed taxonomy term.' : 'No matching accessory movements.')}</Text> : null}{canCreateCustom && mode === 'custom' ? <Pressable onPress={() => void beginCustom()} style={styles.primaryAction}><Ionicons color={SLColors.textStrong} name="add-circle-outline" size={20} /><Text style={styles.primaryActionText}>Create Governed Movement</Text></Pressable> : null}</> : null}
+            {step === 'results' ? <><Text style={styles.pageTitle}>{resultTitle}</Text>{mode === 'muscle' ? <><Text style={styles.pageMeta}>Primary matches first, followed by movements that also train this target.</Text><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.equipmentFilterRail} testID="swap-equipment-type-filters"><Pressable accessibilityRole="button" accessibilityState={{ selected: !selectedExecutionFamily }} onPress={() => setSelectedExecutionFamily('')} style={[styles.equipmentFilterChip, !selectedExecutionFamily && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, !selectedExecutionFamily && styles.equipmentFilterTextActive]}>All</Text></Pressable>{equipmentTypeFilters.map((filter) => <Pressable accessibilityLabel={`Filter by ${filter.label}`} accessibilityRole="button" accessibilityState={{ selected: selectedExecutionFamily === filter.key }} key={filter.key} onPress={() => setSelectedExecutionFamily(filter.key)} style={[styles.equipmentFilterChip, selectedExecutionFamily === filter.key && styles.equipmentFilterChipActive]}><Text style={[styles.equipmentFilterText, selectedExecutionFamily === filter.key && styles.equipmentFilterTextActive]}>{filter.label}</Text></Pressable>)}</ScrollView></> : null}{loading ? <ActivityIndicator color={SLColors.accent} style={styles.loading} /> : null}{!loading ? rows.map((identity) => renderIdentity(identity)) : null}{!loading && !rows.length ? <Text style={styles.empty}>{error || (mode === 'search' ? 'Type a movement name or governed taxonomy term.' : 'No matching accessory movements.')}</Text> : null}{canCreateCustom && mode === 'custom' ? <Pressable onPress={() => void beginCustom()} style={styles.primaryAction}><Ionicons color={SLColors.textStrong} name="add-circle-outline" size={20} /><Text style={styles.primaryActionText}>Create Governed Movement</Text></Pressable> : null}</> : null}
           </ScrollView>
         </> : <ScrollView contentContainerStyle={styles.customBody} keyboardShouldPersistTaps="handled" style={styles.scroll}>
           <Text style={styles.stepLabel}>STEP {['name', 'primary', 'secondary', 'execution', 'review'].indexOf(customStep) + 1} OF 5</Text>
@@ -364,6 +390,7 @@ const styles = StyleSheet.create({
   browseButton: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 7, paddingHorizontal: 16, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#9A5BE8', backgroundColor: '#4b1f78' }, browseCopy: { flex: 1, minWidth: 0 }, browseTitle: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' }, browseMeta: { color: '#D8C6ED', fontSize: 12, marginTop: 3 },
   accelerators: { flexDirection: 'row', gap: 8 }, accelerator: { flex: 1, minHeight: 68, alignItems: 'center', justifyContent: 'center', gap: 7, paddingHorizontal: 5, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, acceleratorText: { color: SLColors.textStrong, fontSize: 12, textAlign: 'center', fontWeight: '600' },
   pageTitle: { color: SLColors.textStrong, fontSize: 22, lineHeight: 28, fontWeight: '700', marginTop: 4 }, pageMeta: { color: SLColors.textMuted, fontSize: 13, lineHeight: 19, marginBottom: 5 }, regionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 }, regionCard: { width: '48%', flexGrow: 1, minHeight: 138, alignItems: 'center', justifyContent: 'center', padding: 10, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, regionArtwork: { width: 86, height: 86 }, regionLabel: { color: SLColors.textStrong, fontSize: 14, fontWeight: '700', marginTop: 4 }, regionHero: { minHeight: 100, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: SLRadius.lg, backgroundColor: '#0d0b12' }, regionHeroArtwork: { width: 82, height: 82 }, muscleArtwork: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center', borderRadius: 10, overflow: 'hidden', backgroundColor: '#15111d' },
+  equipmentFilterRail: { gap: 8, paddingBottom: 3 }, equipmentFilterChip: { minHeight: 38, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 19, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, equipmentFilterChipActive: { borderColor: SLColors.accentViolet, backgroundColor: '#26153b' }, equipmentFilterText: { color: SLColors.textMuted, fontSize: 13, fontWeight: '600' }, equipmentFilterTextActive: { color: SLColors.textStrong },
   empty: { color: SLColors.textMuted, textAlign: 'center', paddingVertical: 32 }, loading: { marginVertical: 28 }, loadingCompact: { marginVertical: 12 }, primaryAction: { minHeight: 52, marginTop: 10, borderRadius: SLRadius.md, backgroundColor: '#5f26b8', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }, primaryActionText: { color: SLColors.textStrong, fontWeight: '700', fontSize: 15 },
   customBody: { paddingHorizontal: SLSpacing.md, paddingVertical: 20, paddingBottom: 40 }, stepLabel: { color: SLColors.accent, letterSpacing: 1.2, fontSize: 12, marginBottom: 14 }, customInput: { minHeight: 52, borderRadius: SLRadius.md, borderWidth: 1, borderColor: '#382c4a', backgroundColor: '#0d0b12', color: SLColors.textStrong, padding: 14, fontSize: 16 }, choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 }, choice: { paddingHorizontal: 13, minHeight: 42, justifyContent: 'center', borderRadius: 21, borderWidth: 1, borderColor: '#30293d', backgroundColor: '#0d0b12' }, choiceActive: { borderColor: SLColors.accent, backgroundColor: '#26153b' }, choiceText: { color: SLColors.textStrong, fontSize: 13 }, review: { padding: 16, gap: 12, borderWidth: 1, borderColor: '#382c4a', borderRadius: SLRadius.md, backgroundColor: '#0d0b12' }, reviewMatches: { gap: 8 },
 });
