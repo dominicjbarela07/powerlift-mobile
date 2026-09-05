@@ -4,27 +4,18 @@ import {
   type MajorVolumeMedallionFamily,
   type MajorVolumeMedallionThresholdLb,
 } from '@/lib/major-volume-milestones';
-import type { AccomplishmentEvent, CurrentBest, LedgerUnit } from '@/lib/ledger-data';
+import { canonicalCompetitionLiftKey } from '@/lib/strength-standard-identity';
+import type {
+  AccomplishmentEvent,
+  CurrentBest,
+  LedgerUnit,
+  StrengthMetric,
+  StrengthStandardProjection,
+  StrengthTierDefinition,
+} from '@/lib/ledger-data';
 
-export const TOTAL_CLUB_THRESHOLDS: Record<LedgerUnit, readonly number[]> = {
-  lb: [250, 500, 750, 1000, 1500, 2000, 2500],
-  kg: [100, 225, 350, 450, 675, 900, 1125],
-};
-
-export const CORE_LIFT_MILESTONE_THRESHOLDS: Record<'squat' | 'bench' | 'deadlift', Record<LedgerUnit, readonly number[]>> = {
-  squat: {
-    lb: [95, 135, 185, 225, 275, 315, 365, 405, 455, 495, 545, 585, 635, 675, 725],
-    kg: [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340],
-  },
-  bench: {
-    lb: [95, 135, 185, 225, 275, 315, 365, 405, 455, 495, 545, 585],
-    kg: [40, 60, 80, 100, 120, 140, 160, 180, 200],
-  },
-  deadlift: {
-    lb: [95, 135, 185, 225, 275, 315, 365, 405, 455, 495, 545, 585, 635, 675, 725, 765, 815, 855, 895],
-    kg: [40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380],
-  },
-};
+export const STRENGTH_STANDARD_VERSION = 'opl_2026_09_04_b8b9bf6e_v1' as const;
+export const STRENGTH_KG_TO_LB = 2.2046226218;
 
 export const TOTAL_TROPHY_TIER_NAMES = [
   'Steel',
@@ -62,12 +53,19 @@ export type CanonicalTotal = Readonly<{
 }>;
 
 export type TotalClubState = Readonly<{
+  metric: StrengthMetric;
+  standardVersion: typeof STRENGTH_STANDARD_VERSION;
+  tiers: readonly StrengthTierDefinition[];
+  currentKg: number;
   current: number;
   thresholds: readonly number[];
   earnedTierIndex: number;
   nextTierIndex: number | null;
+  priorKg: number;
   prior: number;
+  nextKg: number | null;
   next: number | null;
+  remainingKg: number | null;
   remaining: number | null;
   progress: number;
 }>;
@@ -85,14 +83,6 @@ function evidenceNumber(event: AccomplishmentEvent, key: string): number | null 
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
-function coreLiftKey(value?: string | null): 'squat' | 'bench' | 'deadlift' | null {
-  const normalized = (value || '').trim().toLowerCase();
-  if (normalized.includes('squat')) return 'squat';
-  if (normalized.includes('bench')) return 'bench';
-  if (normalized.includes('deadlift')) return 'deadlift';
-  return null;
-}
-
 function evidenceString(event: AccomplishmentEvent, key: string): string | null {
   const value = event.evidence?.[key];
   return typeof value === 'string' && value.trim() ? value.trim().toLowerCase() : null;
@@ -101,13 +91,13 @@ function evidenceString(event: AccomplishmentEvent, key: string): string | null 
 export function canonicalLiftWeightBests(items: readonly CurrentBest[]): CanonicalLiftWeightBest[] {
   return (['squat', 'bench', 'deadlift'] as const).flatMap((key) => {
     const best = items
-      .filter((item) => item.metric === 'weight' && coreLiftKey(item.core_movement_key || item.movement_label) === key)
+      .filter((item) => item.metric === 'weight' && canonicalCompetitionLiftKey(item.core_movement_key) === key)
       .sort((left, right) => right.best_value - left.best_value)[0];
     if (!best || !Number.isFinite(best.best_value) || best.best_value <= 0) return [];
     return [{
       key,
       weightKg: best.best_value,
-      roundedLb: Math.round((best.best_value * 2.2046226218) / 5) * 5,
+      roundedLb: Math.round(best.best_value * STRENGTH_KG_TO_LB),
       sourceSetLogId: best.event?.source_set_log_id ?? null,
     }];
   });
@@ -116,34 +106,85 @@ export function canonicalLiftWeightBests(items: readonly CurrentBest[]): Canonic
 export function canonicalTotal(items: readonly CurrentBest[]): CanonicalTotal {
   const lifts = canonicalLiftWeightBests(items);
   const complete = lifts.length === 3;
-  const lb = complete ? lifts.reduce((sum, lift) => sum + lift.roundedLb, 0) : 0;
+  const kg = complete ? lifts.reduce((sum, lift) => sum + lift.weightKg, 0) : 0;
   return {
     complete,
-    lb,
-    kg: complete ? Math.round((lb / 2.2046226218) / 2.5) * 2.5 : 0,
+    lb: complete ? Math.round(kg * STRENGTH_KG_TO_LB) : 0,
+    kg,
     lifts,
   };
 }
 
-export function totalClubState(total: CanonicalTotal, unit: LedgerUnit): TotalClubState {
-  const thresholds = TOTAL_CLUB_THRESHOLDS[unit];
-  const current = unit === 'lb' ? total.lb : total.kg;
-  const earnedTierIndex = thresholds.reduce((highest, threshold, index) => threshold <= current ? index : highest, -1);
-  const nextTierIndex = thresholds.findIndex((threshold) => threshold > current);
+function displayStrengthKg(valueKg: number, unit: LedgerUnit): number {
+  return unit === 'lb'
+    ? Math.round(valueKg * STRENGTH_KG_TO_LB)
+    : Math.round(valueKg * 100) / 100;
+}
+
+export function supportedStrengthStandard(
+  candidate?: StrengthStandardProjection | null,
+): StrengthStandardProjection | null {
+  if (!candidate || candidate.status !== 'supported') return null;
+  if (candidate.version !== STRENGTH_STANDARD_VERSION || candidate.canonical_unit !== 'kg') return null;
+  if (candidate.display_conversion !== STRENGTH_KG_TO_LB || (candidate.sex !== 'M' && candidate.sex !== 'F')) return null;
+  const metrics: StrengthMetric[] = ['total', 'squat', 'bench', 'deadlift'];
+  for (const metric of metrics) {
+    const tiers = candidate.metrics[metric];
+    if (!tiers || tiers.length !== TOTAL_TROPHY_TIER_NAMES.length) return null;
+    if (tiers.some((tier, index) => (
+      tier.tier !== index + 1
+      || tier.name !== TOTAL_TROPHY_TIER_NAMES[index]
+      || !Number.isFinite(tier.threshold_kg)
+      || tier.threshold_kg <= 0
+      || Math.round(tier.threshold_kg * STRENGTH_KG_TO_LB) !== tier.display_lb
+      || (index > 0 && tier.threshold_kg <= tiers[index - 1].threshold_kg)
+    ))) return null;
+  }
+  return candidate;
+}
+
+export function strengthTierState(
+  currentKg: number,
+  metric: StrengthMetric,
+  standard: StrengthStandardProjection,
+  unit: LedgerUnit,
+): TotalClubState | null {
+  const supported = supportedStrengthStandard(standard);
+  const tiers = supported?.metrics[metric];
+  if (!supported || !tiers || !Number.isFinite(currentKg) || currentKg < 0) return null;
+  const earnedTierIndex = tiers.reduce((highest, tier, index) => tier.threshold_kg <= currentKg ? index : highest, -1);
+  const nextTierIndex = tiers.findIndex((tier) => tier.threshold_kg > currentKg);
   const resolvedNextTierIndex = nextTierIndex < 0 ? null : nextTierIndex;
-  const prior = earnedTierIndex >= 0 ? thresholds[earnedTierIndex] : 0;
-  const next = resolvedNextTierIndex == null ? null : thresholds[resolvedNextTierIndex];
-  const progress = next == null ? 1 : Math.max(0, Math.min(1, (current - prior) / Math.max(1, next - prior)));
+  const priorKg = earnedTierIndex >= 0 ? tiers[earnedTierIndex].threshold_kg : 0;
+  const nextKg = resolvedNextTierIndex == null ? null : tiers[resolvedNextTierIndex].threshold_kg;
+  const remainingKg = nextKg == null ? null : Math.max(0, nextKg - currentKg);
+  const progress = nextKg == null ? 1 : Math.max(0, Math.min(1, (currentKg - priorKg) / Math.max(Number.EPSILON, nextKg - priorKg)));
   return {
-    current,
-    thresholds,
+    metric,
+    standardVersion: STRENGTH_STANDARD_VERSION,
+    tiers,
+    currentKg,
+    current: displayStrengthKg(currentKg, unit),
+    thresholds: tiers.map((tier) => unit === 'lb' ? tier.display_lb : tier.threshold_kg),
     earnedTierIndex,
     nextTierIndex: resolvedNextTierIndex,
-    prior,
-    next,
-    remaining: next == null ? null : Math.max(0, next - current),
+    priorKg,
+    prior: displayStrengthKg(priorKg, unit),
+    nextKg,
+    next: nextKg == null ? null : displayStrengthKg(nextKg, unit),
+    remainingKg,
+    remaining: remainingKg == null ? null : displayStrengthKg(remainingKg, unit),
     progress,
   };
+}
+
+export function totalClubState(
+  total: CanonicalTotal,
+  standard: StrengthStandardProjection,
+  unit: LedgerUnit,
+): TotalClubState | null {
+  if (!total.complete) return strengthTierState(0, 'total', standard, unit);
+  return strengthTierState(total.kg, 'total', standard, unit);
 }
 
 export function majorVolumeMedallionEvidence(event: AccomplishmentEvent): MajorVolumeMedallionEvidence | null {

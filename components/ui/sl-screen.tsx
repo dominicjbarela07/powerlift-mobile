@@ -16,6 +16,7 @@ type ScreenEdges = 'top' | 'bottom' | 'both' | 'none';
 
 type SLScreenProps = ViewProps & {
   children: ReactNode;
+  disableEntranceMotion?: boolean;
   padded?: boolean;
   edges?: ScreenEdges;
   contentStyle?: StyleProp<ViewStyle>;
@@ -41,11 +42,12 @@ export function SLScreen({
   edges = 'both',
   style,
   contentStyle,
+  disableEntranceMotion = false,
   ...props
 }: SLScreenProps) {
   return (
     <SafeAreaView edges={safeEdges(edges)} style={[style, styles.safe]} {...props}>
-      <SLMotionEntrance style={[styles.content, padded ? styles.padded : null, contentStyle]}>{children}</SLMotionEntrance>
+      <SLMotionEntrance disabled={disableEntranceMotion} style={[styles.content, padded ? styles.padded : null, contentStyle]}>{children}</SLMotionEntrance>
     </SafeAreaView>
   );
 }

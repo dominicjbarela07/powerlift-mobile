@@ -76,6 +76,7 @@
     "test:ledger-v2-storyboard": "node --import tsx scripts/test-ledger-v2-storyboard.mjs",
     "test:ledger-v2-release-path": "node --import tsx scripts/test-ledger-v2-release-path.mjs",
     "test:ledger-rewards": "node --import tsx scripts/test-ledger-rewards.mjs",
+    "test:data-driven-strength-tiers": "node --import tsx scripts/test-data-driven-strength-tiers.mjs",
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",

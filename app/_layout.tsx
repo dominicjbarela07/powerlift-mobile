@@ -209,7 +209,7 @@ function RootStack() {
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
   const isIndividual = activeMobileMode === 'individual';
   const isDevSessionRecapCertification =
-    __DEV__ && pathname === '/dev-session-recap-certification';
+    __DEV__ && (pathname === '/dev-session-recap-certification' || pathname === '/dev-strength-tier-certification');
 
   const notificationModuleRef = useRef<ExpoNotificationsModule | null>(null);
 
@@ -430,6 +430,7 @@ function RootStack() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="dev-strength-tier-certification" options={{ animation: 'none', headerShown: false }} />
         <Stack.Screen
           name="movement-history-sheet"
           options={{

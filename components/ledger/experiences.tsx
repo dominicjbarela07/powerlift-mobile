@@ -11,7 +11,7 @@ import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-contro
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
-import { canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
+import { canonicalCompetitionLiftKey, canonicalLiftKey, displayCalculatedWeight, displayWeight, kgToDisplay, type LedgerRange, type LedgerRequestFailureKind, type LedgerUnit } from '@/lib/ledger-data';
 import { formatCalculatedWeightValue, formatWeightFromKg, kilogramsToDisplayValue, roundCalculatedWeightForDisplay } from '@/lib/display-units';
 import { journeyPerformanceDetail } from '@/lib/journey-weight-presentation';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
@@ -25,8 +25,8 @@ import {
   type JourneyOverview,
 } from '@/lib/ledger-journey';
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
-import { CORE_LIFT_MILESTONE_THRESHOLDS } from '@/lib/ledger-rewards';
-import { canRenderGymTotal, displayWeightFromCanonicalLb, plateClubLabel, readablePlateClubLabel } from '@/lib/milestones-layout';
+import { strengthTierState, supportedStrengthStandard } from '@/lib/ledger-rewards';
+import { canRenderGymTotal, displayWeightFromCanonicalLb } from '@/lib/milestones-layout';
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
@@ -605,7 +605,7 @@ export function StrengthExperience() {
       .filter((item) => canonicalLiftKey(item.core_movement_key || item.movement_label) === key && item.metric === 'e1rm')
       .sort((left, right) => right.best_value - left.best_value)[0];
     const weightBest = currentBests
-      .filter((item) => canonicalLiftKey(item.core_movement_key || item.movement_label) === key && item.metric === 'weight')
+      .filter((item) => canonicalCompetitionLiftKey(item.core_movement_key) === key && item.metric === 'weight')
       .sort((left, right) => right.best_value - left.best_value)[0];
     const currentKg = live?.current_e1rm_kg ?? e1rmBest?.best_value;
     const peakKg = live?.best_e1rm_kg ?? e1rmBest?.best_value;
@@ -647,7 +647,7 @@ export function StrengthExperience() {
       currentReps: typeof repEvent?.current_value === 'number' ? repEvent.current_value : null,
       topHistory,
       canonicalWeightBestKg: weightBest?.best_value ?? null,
-      sourceSetLogId: e1rmBest?.event?.source_set_log_id ?? repEvent?.source_set_log_id ?? weightEvents[0]?.source_set_log_id ?? null,
+      sourceSetLogId: weightBest?.event?.source_set_log_id ?? e1rmBest?.event?.source_set_log_id ?? repEvent?.source_set_log_id ?? weightEvents[0]?.source_set_log_id ?? null,
       reportedBodyweight: bodyweightEvent?.reported_bodyweight ?? null,
     };
   }), [accomplishments, baseProfile, currentBests, progression, unit]);
@@ -655,13 +655,20 @@ export function StrengthExperience() {
   const focusedProfile = profile[focusLiftIndex];
   const exactEvidenceHref = focusedProfile.sourceSetLogId ? archiveDetailHref('set', focusedProfile.sourceSetLogId) : null;
   const liftKey = canonicalLiftKey(focusLift.key);
+  const strengthStandard = supportedStrengthStandard(progression?.strength_standard);
+  const strengthTier = strengthStandard && liftKey
+    ? strengthTierState(focusedProfile.canonicalWeightBestKg ?? 0, liftKey, strengthStandard, unit)
+    : null;
+  const currentStrengthTier = strengthTier && strengthTier.earnedTierIndex >= 0
+    ? strengthTier.tiers[strengthTier.earnedTierIndex]
+    : null;
+  const nextStrengthTier = strengthTier?.nextTierIndex == null
+    ? null
+    : strengthTier.tiers[strengthTier.nextTierIndex];
   const canonicalWeightLb = focusedProfile.canonicalWeightBestKg == null
     ? null
     : Math.round(kilogramsToDisplayValue(focusedProfile.canonicalWeightBestKg, 'lb') / 5) * 5;
   const milestoneCurrent = canonicalWeightLb == null ? null : displayWeightFromCanonicalLb(canonicalWeightLb, unit);
-  const milestoneThresholds = liftKey ? CORE_LIFT_MILESTONE_THRESHOLDS[liftKey][unit] : [];
-  const currentMilestone = milestoneCurrent == null ? null : milestoneThresholds.filter((threshold) => threshold <= milestoneCurrent).at(-1) ?? null;
-  const nextStrengthMilestone = milestoneCurrent == null ? milestoneThresholds[0] ?? null : milestoneThresholds.find((threshold) => threshold > milestoneCurrent) ?? null;
   const strengthPlateRender = milestoneCurrent != null && canRenderGymTotal(milestoneCurrent, unit)
     ? resolvePlateStackRender({ weight: milestoneCurrent, unit })
     : null;
@@ -677,7 +684,7 @@ export function StrengthExperience() {
     ['Readiness', readiness == null ? '—' : Number(readiness).toFixed(1), progression?.readiness?.trend || 'check-in context'],
     ['Qualifying trend', `${focusLift.points.length} POINTS`, 'source-backed estimates'],
     ['Estimate confidence', progression?.strength_story?.confidence?.toUpperCase() || '—', 'movement identity matched'],
-    ['Canonical bests', String(currentBests.filter((item) => canonicalLiftKey(item.core_movement_key) === liftKey).length), 'valid current projections'],
+    ['Canonical bests', String(currentBests.filter((item) => canonicalCompetitionLiftKey(item.core_movement_key) === liftKey).length), 'exact competition-lift projections'],
   ];
   const trendDateLabels = focusedProfile.pointDates.length >= 2
     ? [focusedProfile.pointDates[0], focusedProfile.pointDates[Math.floor((focusedProfile.pointDates.length - 1) / 2)], focusedProfile.pointDates.at(-1)]
@@ -715,10 +722,10 @@ export function StrengthExperience() {
         style={({ pressed }) => [styles.strengthMilestoneLink, { borderColor: `${focusedProfile.color}66` }, pressed && styles.pressed]}
       >
         <View style={styles.strengthMilestoneCopy}>
-          <Kicker tone={focusedProfile.color}>WEIGHT MILESTONES</Kicker>
-          <Text style={styles.strengthMilestoneTitle}>{currentMilestone == null ? 'No earned plate club yet.' : readablePlateClubLabel(plateClubLabel(currentMilestone, unit))}</Text>
-          <Text style={styles.strengthMilestoneMeta}>{milestoneCurrent == null ? 'A canonical Weight PR establishes milestone progress.' : nextStrengthMilestone == null ? `${milestoneCurrent} ${unit.toUpperCase()} · highest approved threshold reached` : `${milestoneCurrent} ${unit.toUpperCase()} current PR · ${nextStrengthMilestone - milestoneCurrent} ${unit.toUpperCase()} to next`}</Text>
-          <View style={styles.strengthMilestoneAction}><Text style={[styles.strengthMilestoneActionText, { color: focusedProfile.color }]}>Open milestone progression</Text><Ionicons name="arrow-forward" size={14} color={focusedProfile.color} /></View>
+          <Kicker tone={focusedProfile.color}>CURRENT STRENGTH TIER</Kicker>
+          <Text style={styles.strengthMilestoneTitle}>{!strengthStandard ? 'Verified sex-specific standard unavailable.' : currentStrengthTier ? `${currentStrengthTier.name} · Tier ${currentStrengthTier.tier}` : 'No tier earned yet.'}</Text>
+          <Text style={styles.strengthMilestoneMeta}>{!strengthStandard ? 'A supported male or female identity is required; Strength Ledger will not guess.' : focusedProfile.canonicalWeightBestKg == null ? 'An exact governed competition-lift Weight PR establishes tier progress.' : nextStrengthTier == null ? `${strengthTier?.current} ${unit.toUpperCase()} current PR · Obsidian threshold reached` : `${strengthTier?.current} ${unit.toUpperCase()} current PR · ${strengthTier?.remaining} ${unit.toUpperCase()} to ${nextStrengthTier.name} (${strengthTier?.next} ${unit.toUpperCase()}, P${nextStrengthTier.actual_percentile.toFixed(1)})`}</Text>
+          <View style={styles.strengthMilestoneAction}><Text style={[styles.strengthMilestoneActionText, { color: focusedProfile.color }]}>Open seven-tier progression</Text><Ionicons name="arrow-forward" size={14} color={focusedProfile.color} /></View>
         </View>
         <View style={styles.strengthMilestoneArtifact}>{strengthPlateRender?.imageSource ? <Image source={strengthPlateRender.imageSource} resizeMode="contain" style={styles.strengthMilestonePlate} /> : <Ionicons name="barbell-outline" size={37} color="#596371" />}</View>
       </Pressable>

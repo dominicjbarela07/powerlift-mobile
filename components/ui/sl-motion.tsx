@@ -138,6 +138,7 @@ export function SLTactileOpacity({
 
 type MotionEntranceProps = {
   children: ReactNode;
+  disabled?: boolean;
   motionKey?: string | number;
   delay?: number;
   distance?: number;
@@ -146,6 +147,7 @@ type MotionEntranceProps = {
 
 export function SLMotionEntrance({
   children,
+  disabled = false,
   motionKey = 'initial',
   delay = 0,
   distance = SLSpacing.sm,
@@ -153,12 +155,13 @@ export function SLMotionEntrance({
 }: MotionEntranceProps) {
   const reduceMotion = useSLReducedMotion();
   const previewMotion = useSLMotionPreviewOverrides();
-  const progress = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+  const motionDisabled = disabled || reduceMotion;
+  const progress = useRef(new Animated.Value(motionDisabled ? 1 : 0)).current;
   const entranceDuration = motionDuration(previewMotionDuration(previewMotion?.entranceMs ?? SLMotion.componentMs, previewMotion), reduceMotion);
 
   useEffect(() => {
     progress.stopAnimation();
-    if (reduceMotion) {
+    if (motionDisabled) {
       progress.setValue(1);
       return undefined;
     }
@@ -172,7 +175,7 @@ export function SLMotionEntrance({
     });
     animation.start();
     return () => animation.stop();
-  }, [delay, entranceDuration, motionKey, progress, reduceMotion]);
+  }, [delay, entranceDuration, motionDisabled, motionKey, progress]);
 
   return (
     <Animated.View

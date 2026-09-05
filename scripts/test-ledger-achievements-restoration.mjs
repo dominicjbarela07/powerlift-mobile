@@ -25,7 +25,10 @@ assert.match(achievements, /ledger-medallion-gallery/);
 assert.match(achievements, /VolumeAchievementExperience/);
 assert.match(achievements, /ledger-pr-history/);
 assert.match(achievements, /resolvePlateStackRender/);
-assert.match(achievements, /resolveMilestoneRenderAsset/);
+assert.match(achievements, /strengthTierState/);
+assert.match(achievements, /supportedStrengthStandard/);
+assert.match(achievements, /actual_percentile/);
+assert.match(achievements, /verified male or female strength standard/);
 assert.match(achievements, /SL_TOTAL_TROPHY_ASSETS/);
 assert.match(achievements, /majorVolumeMedallionAsset/);
 
@@ -33,6 +36,8 @@ assert.match(data, /fetchLedgerAccomplishmentHistory[\s\S]*fetchLedgerAccomplish
 assert.match(rewards, /event\.evidence\?\.\[key\]/, 'medallions use stored accomplishment evidence');
 assert.match(rewards, /isMajorVolumeMedallionThresholdLb/, 'unknown medallion thresholds are rejected');
 assert.match(rewards, /lifts\.length === 3/, 'Total Club state requires all canonical lift PRs');
+assert.match(rewards, /canonicalCompetitionLiftKey\(item\.core_movement_key\)/, 'strength tiers use exact governed competition-lift identity');
+assert.match(rewards, /STRENGTH_KG_TO_LB/, 'pounds remain a display projection of canonical kilograms');
 assert.doesNotMatch(rewards, /Date\.now|new Date\(\)/, 'reward projection does not manufacture chronology');
 
 assert.match(index, /room: 'achievements'/);

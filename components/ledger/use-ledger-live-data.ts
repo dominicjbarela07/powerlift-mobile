@@ -14,18 +14,36 @@ import {
 
 type LedgerLiveDataOptions = Readonly<{
   allowPartial?: boolean;
+  /** Deterministic development-only evidence for visual certification routes. */
+  fixture?: LedgerLiveDataFixture;
+}>;
+
+export type LedgerLiveDataFixture = Readonly<{
+  progression: LedgerProgression;
+  currentBests: readonly CurrentBest[];
+  accomplishments?: readonly AccomplishmentEvent[];
 }>;
 
 export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiveDataOptions = {}) {
   const allowPartial = Boolean(options.allowPartial);
-  const [progression, setProgression] = useState<LedgerProgression | null>(null);
-  const [currentBests, setCurrentBests] = useState<CurrentBest[]>([]);
-  const [accomplishments, setAccomplishments] = useState<AccomplishmentEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const fixture = __DEV__ ? options.fixture : undefined;
+  const [progression, setProgression] = useState<LedgerProgression | null>(fixture?.progression ?? null);
+  const [currentBests, setCurrentBests] = useState<CurrentBest[]>(fixture ? [...fixture.currentBests] : []);
+  const [accomplishments, setAccomplishments] = useState<AccomplishmentEvent[]>(fixture ? [...(fixture.accomplishments ?? [])] : []);
+  const [loading, setLoading] = useState(!fixture);
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<LedgerRequestFailureKind | null>(null);
 
   const reload = useCallback(async () => {
+    if (fixture) {
+      setProgression(fixture.progression);
+      setCurrentBests([...fixture.currentBests]);
+      setAccomplishments([...(fixture.accomplishments ?? [])]);
+      setError(null);
+      setErrorKind(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     setErrorKind(null);
@@ -71,7 +89,7 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
     } finally {
       setLoading(false);
     }
-  }, [allowPartial, range]);
+  }, [allowPartial, fixture, range]);
 
   useEffect(() => {
     void reload();

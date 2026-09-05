@@ -30,7 +30,7 @@ import { fetchLedgerExplorationIndex, type LedgerExplorationIndex, type LedgerMo
 import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
 import { fetchJourneyBootstrap, type JourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
-import { canonicalTotal, totalClubState } from '@/lib/ledger-rewards';
+import { canonicalTotal, supportedStrengthStandard, totalClubState } from '@/lib/ledger-rewards';
 import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
@@ -399,10 +399,11 @@ export function LedgerIndexExperience() {
       .filter((best) => canonicalLiftKey(best.core_movement_key || best.movement_label) === canonicalLiftKey(lift.key))
       .sort((left, right) => (left.metric === 'weight' ? -1 : 1) - (right.metric === 'weight' ? -1 : 1) || right.best_value - left.best_value)[0]);
     const completeTotal = canonicalTotal(currentBests);
-    const club = totalClubState(completeTotal, unit);
-    const trophyIndex = Math.max(0, club.earnedTierIndex);
+    const standard = supportedStrengthStandard(progression?.strength_standard);
+    const club = standard ? totalClubState(completeTotal, standard, unit) : null;
+    const trophyIndex = Math.max(0, club?.earnedTierIndex ?? -1);
     return { prs, latest, unit, liftBests, trophyIndex };
-  }, [accomplishments, currentBests, unit]);
+  }, [accomplishments, currentBests, progression?.strength_standard, unit]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
   if (error) return <View testID="ledger-home-experience" style={styles.state}><Ionicons name={errorKind === 'unauthorized' ? 'lock-closed-outline' : 'alert-circle-outline'} size={32} color="#B994F3" /><Text style={styles.stateTitle}>{error}</Text><Pressable onPress={() => void reload()} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable></View>;

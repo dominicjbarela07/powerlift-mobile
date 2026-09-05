@@ -85,14 +85,14 @@ assert.doesNotMatch(liftPresentations, /currentLb|current:\s*\{/, 'lift presenta
 assert.match(screen, /LIFT_PRESENTATIONS\.map\(\(lift\): Lift =>/, 'every competition lift must render independently from canonical current-best responses');
 assert.match(screen, /currentLb: canonicalWeight == null \? null :/, 'missing lift evidence must remain a per-lift empty state');
 assert.match(screen, /liveLifts\.map\(\(lift\) => <LiftRow/, 'all three competition lift rows must remain visible independently');
-assert.match(screen, /hasCompleteStrengthTotal \? <View/, 'only the combined strength-total hero may require all three lifts');
+assert.match(screen, /section === 'clubs' && hasCompleteStrengthTotal && club \? <View/, 'only the combined strength-total hero may require all three lifts');
 assert.match(screen, /VOLUME_PRESENTATION\.lifts\.map/, 'per-lift career volume cards must render independently');
 assert.match(screen, /competition_total_volume_kg \?\? pointDerivedCompetitionVolumeKg/, 'competition total volume must accept any available governed lift volume');
 assert.match(screen, /item\.metric === 'weight'/, 'Plate Club must use canonical weight records rather than e1RM estimates');
-assert.match(screen, /displayWeightFromCanonicalLb\(canonicalCurrentLb \?\? 0, unit\)/, 'the active display value must derive from one canonical PR or a bounded empty-state fallback');
-assert.match(screen, /onPress=\{\(\) => setUnit\(unit === 'lb' \? 'kg' : 'lb'\)\}/, 'the unit control must switch the active derived display unit');
-assert.match(screen, /canRenderGymTotal\(current, unit\)/, 'hero plate loading must validate the displayed current PR in its active unit');
-assert.match(screen, /resolvePlateStackRender\(\{ weight: current, unit \}\)/, 'hero loading must resolve the displayed current PR through the shared unit-aware catalog');
+assert.match(screen, /const current = lift\.tierState\?\.current \?\? 0/, 'the active tier display must derive from canonical-kg evidence through the shared unit-aware tier resolver');
+assert.match(screen, /<FloatingDisplayUnitRegistration unit=\{unit\} onChange=\{setUnit\} testID="ledger-achievements-unit-toggle" \/>/, 'the governed floating unit control must switch the active derived display unit');
+assert.match(screen, /canRenderGymTotal\(heroWeight, unit\)/, 'hero plate loading must validate its separately gym-rounded art weight in the active unit');
+assert.match(screen, /resolvePlateStackRender\(\{ weight: heroWeight, unit \}\)/, 'hero loading must resolve its art-only weight through the shared unit-aware catalog');
 assert.doesNotMatch(screen, /resolveHeroRender|canonicalHeroLoading/, 'the hero must not bypass the shared resolver through the legacy lift-specific registry');
 assert.match(screen, /testID=\{`\$\{liftKey\}-pr-empty-state`\}/, 'missing PRs must render a bounded empty state instead of crashing');
 assert.match(screen, /testID=\{`\$\{liftKey\}-pr-render-unavailable`\}/, 'uncatalogued PR heroes must use a bounded honest fallback');
@@ -105,20 +105,19 @@ assert.match(screen, /liftHeroMetric: \{ flex: 1, flexShrink: 1, minWidth: 0/, '
 assert.doesNotMatch(screen, /typographyRole="heroNumeric" numberOfLines=\{1\} ellipsizeMode="clip"/, 'PR values must never use destructive clipping');
 assert.doesNotMatch(screen, /liftMetricBlock: \{[^}]*overflow/, 'the PR metric block must not clip numeric values');
 
-assert.match(screen, /onLayout=\{captureRailWidth\}/, 'milestone cell width must derive from the rendered card viewport');
+assert.match(screen, /const renderedCellWidth = Math\.max\(88, Math\.min\(106, \(windowWidth - 52\) \/ 3\.45\)\)/, 'tier cell width must derive from the rendered device viewport');
 assert.match(screen, /style=\{\[styles\.liftMilestoneStop, \{ width: renderedCellWidth \}\]\}/, 'every milestone stop must use the shared equal-cell width');
 assert.doesNotMatch(screen, /liftMilestoneStop: \{ width: 104/, 'milestone cells must not retain the Pro Max-only fixed width');
-assert.match(screen, /typographyRole="caption" numberOfLines=\{2\} ellipsizeMode="clip"/, 'Plate Club labels must use a two-line Exo 2 word role without tail ellipsis');
-assert.match(screen, /kg: \[40, 60, 80, 100, 120/, 'KG Plate Clubs must start at 40 kg and advance in 20 kg steps');
-assert.match(screen, /poundsForMilestoneModel\(target, unit\)/, 'KG milestone art must resolve through the explicit plate-model mapping');
-assert.match(screen, /plateClubLabel\(target, unit\)/, 'club labels must derive from the displayed unit ladder rather than a converted pound total');
+assert.match(screen, /typographyRole="caption" numberOfLines=\{2\} ellipsizeMode="clip"/, 'strength-tier labels must use a two-line Exo 2 word role without tail ellipsis');
+assert.match(screen, /\(tierState\?\.tiers \?\? \[\]\)\.map/, 'per-lift thresholds must come from the supported versioned standard rather than an embedded plate ladder');
+assert.match(screen, /tier\.actual_percentile\.toFixed\(1\)/, 'each strength tier must expose the empirical percentile represented by its rounded kg threshold');
+assert.match(screen, /SL_TOTAL_TROPHY_ASSETS\[tierIndex\]/, 'the established seven-tier trophy family must remain the tier artwork authority');
 
 assert.match(screen, /useFocusEffect\(useCallback/, 'the screen must restore a safe top position whenever it receives focus');
 assert.match(screen, /scrollTo\(\{ x: 0, y: 0, animated: false \}\)/, 'focus restoration must begin below the fixed app header');
 assert.doesNotMatch(screen, /unitControlStrip/, 'the unit toggle must not be moved into an in-flow strip');
-assert.match(screen, /style=\{\[styles\.navButton, styles\.unitControl\]\}/, 'the unit toggle must occupy the intentional header-control position');
-assert.doesNotMatch(screen, /unitControl: \{[^}]*position: 'absolute'/, 'the unit toggle must not overlap scrolling content');
-assert.match(screen, /navButton: \{ width: 44, height: 44,[^}]*borderRadius: 22/, 'the header unit toggle must remain circular with a stable touch target');
+assert.match(screen, /<FloatingControlCoordinator context="tab-screen">/, 'the unit toggle must remain coordinated with the shared floating-control layer');
+assert.match(screen, /navButton: \{ width: 44, height: 44,[^}]*borderRadius: 22/, 'the header navigation control must remain circular with a stable touch target');
 assert.match(screen, /requestedUnit === 'kg' \|\| requestedUnit === 'lb'/, 'an explicit Achievements route unit must remain a local display override');
 assert.match(screen, /normalizeDisplayWeightUnit\(user\?\.preferred_units\)/, 'Achievements must otherwise initialize from the signed-in viewer preference');
 assert.match(tabs, /name="ledger"/, 'the canonical Ledger route must be registered in the shipping tab navigator');

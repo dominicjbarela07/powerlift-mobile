@@ -1,8 +1,29 @@
 import { fetchJson } from '@/lib/api';
 import { formatCalculatedWeightValue, kilogramsToDisplayValue } from '@/lib/display-units';
+export { canonicalCompetitionLiftKey } from '@/lib/strength-standard-identity';
 
 export type LedgerRange = '30d' | '90d' | '180d' | '1y' | 'all';
 export type LedgerUnit = 'kg' | 'lb';
+export type StrengthMetric = 'total' | 'squat' | 'bench' | 'deadlift';
+export type StrengthTierDefinition = Readonly<{
+  tier: number;
+  name: string;
+  target_percentile: number;
+  actual_percentile: number;
+  threshold_kg: number;
+  display_lb: number;
+}>;
+export type StrengthStandardProjection = Readonly<{
+  status: 'supported' | 'unsupported';
+  reason?: string | null;
+  version: string;
+  canonical_unit: 'kg';
+  display_conversion: number;
+  sex?: 'M' | 'F' | null;
+  sex_label?: string | null;
+  metrics: Partial<Record<StrengthMetric, readonly StrengthTierDefinition[]>>;
+  dataset?: Readonly<Record<string, unknown>>;
+}>;
 
 export type LedgerArcPoint = { date?: string | null; value_kg?: number | null };
 export type LedgerLift = {
@@ -26,7 +47,8 @@ export type LedgerStoryItem = {
 };
 
 export type LedgerProgression = {
-  athlete?: { id?: number | null; name?: string | null; preferred_units?: string | null } | null;
+  athlete?: { id?: number | null; name?: string | null; preferred_units?: string | null; sex?: string | null } | null;
+  strength_standard?: StrengthStandardProjection | null;
   range?: { start_date?: string | null; end_date?: string | null; label?: string | null } | null;
   strength_story?: { title?: string | null; body?: string | null; confidence?: string | null; primary_lift?: string | null } | null;
   big_three_arc?: { lifts?: LedgerLift[]; estimated_total_kg?: number | null; estimated_total_change_kg?: number | null } | null;
