@@ -8114,6 +8114,8 @@ export default function WorkoutViewerScreen() {
       ...executionItem,
       id: item.id,
       title: simplifyMobileMovementName(executionName) || 'Accessory',
+      canConfigureEquipment:
+        !isCoachAthletePreview && isMachineAccessoryItem(item),
       equipmentContext: equipmentPresentation?.contextLabel || null,
       timelineLabel: simplifyMobileMovementName(executionName) || 'Accessory',
       prescription: accessoryTargetLine(executionItem),
@@ -8968,6 +8970,12 @@ export default function WorkoutViewerScreen() {
                     expanded={Boolean(expandedCompletedMovements[detailKey])}
                     groupLabel={grp.group}
                     model={roundModel}
+                    onConfigureEquipment={(itemId) => {
+                      const item = grp.items.find(
+                        (candidate) => candidate.id === itemId,
+                      );
+                      if (item) openIdentityPicker(item);
+                    }}
                     onDeleteSet={(item, log) =>
                       confirmDeleteSet(item.id, log as SetLog)}
                     onEditSet={(item, log) =>
