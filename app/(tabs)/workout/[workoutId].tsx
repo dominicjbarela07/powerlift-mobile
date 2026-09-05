@@ -243,6 +243,10 @@ import {
   exactAccessoryLastExposure,
 } from '@/lib/exact-accessory-history';
 import {
+  accessoryLastBestInlineText,
+  buildAccessoryLastBestCue,
+} from '@/lib/accessory-last-best';
+import {
   resolveLoggerLiftIdentity,
   resolveLoggerPlateStack,
   resolveLoggerProgressContext,
@@ -640,7 +644,11 @@ function formatWeight(
 }
 
 function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
-  const identity = item?.performed_movement_identity || item?.movement_identity || null;
+  const identity = item?.performed_canonical_movement_identity
+    || item?.performed_movement_identity
+    || item?.effective_movement_identity
+    || item?.movement_identity
+    || null;
   return {
     loadConvention: identity?.load_convention,
     measurementType: identity?.measurement_type,
@@ -8074,7 +8082,12 @@ export default function WorkoutViewerScreen() {
   };
 
   const accessoryLookbackLine = (item: WorkoutItem) => {
-    const line = formatLookbackLine(getLookbackBest(item), unit, item);
+    const cue = buildAccessoryLastBestCue({
+      history: item.movement_history,
+      semantics: itemLoadSemantics(item),
+      unit,
+    });
+    const line = accessoryLastBestInlineText(cue);
     const devContext = isIdealWorkoutDetailPreview
       ? (item as any).dev_accessory_intelligence
       : null;
@@ -8209,6 +8222,11 @@ export default function WorkoutViewerScreen() {
     const accessorySummary = completedSetSummary(logs, totalSets, unit, 'rir', it);
     const accessoryState = accessoryIsComplete ? 'complete' : loggedCount > 0 ? 'logged' : 'not_started';
     const lookbackLine = accessoryLookbackLine(it);
+    const lastBestCue = buildAccessoryLastBestCue({
+      history: it.movement_history,
+      semantics: itemLoadSemantics(it),
+      unit,
+    });
     const movementPresentation = buildAccessoryMovementPresentation({
       item: executionItem,
       logs,
@@ -8320,6 +8338,7 @@ export default function WorkoutViewerScreen() {
           meta={accessoryIsComplete ? accessorySummary.meta : `${loggedCount}/${totalSets || 0} sets logged`}
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
           movementNote={it.notes}
+          priorPerformanceCue={accessoryIsComplete ? null : lastBestCue}
           visualContext={movementVisualContextFor(it)}
           submissionStatus={feedbackState.submission.status}
           submissionItemId={feedbackState.submission.activeItemId}
