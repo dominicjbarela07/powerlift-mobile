@@ -34,8 +34,8 @@ assert.match(component, /@shopify\/react-native-skia/, 'movement trend plots mus
 assert.doesNotMatch(component, /<Polyline/, 'movement trends must not regress to bare SVG polylines');
 assert.doesNotMatch(component, /implementation_key\.replace/, 'internal equipment keys must never be user-facing copy');
 assert.match(component, /BEST SET VIDEO/, 'best-set video evidence must be visible in expanded analysis');
-assert.match(component, /WHAT CHANGED/, 'Session-level comparison analysis must be present');
-assert.match(component, /Duration not recorded/, 'unknown duration must use explicit premium-safe copy');
+assert.match(component, /`SINCE \$\{analytics\.comparator\.label\.toUpperCase\(\)\}`/, 'Session-level comparison analysis must remain present in the conclusion-led Overview');
+assert.match(component, /Duration baseline started/, 'unknown duration must use explicit premium-safe baseline copy');
 assert.match(component, /recap\.session\.duration_seconds != null[\s\S]*explicitCompletedAt/, 'unknown duration must not render lifecycle start-to-completion as performed time');
 assert.match(component, /MOVEMENT PROGRESSION/, 'governed movement progression cards must be present');
 assert.match(component, /kind="streak"/, 'the Session Streak must render through the premium highlight artwork component');
