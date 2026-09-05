@@ -10,6 +10,7 @@ const athleteRoute = read('app/(tabs)/workout/[workoutId].tsx');
 const coachRoute = read('app/(tabs)/coach-session-review.tsx');
 const certification = read('app/dev-session-recap-certification.tsx');
 const prEvidence = read('lib/post-session-pr-evidence.ts');
+const shell = read('lib/post-session-shell.ts');
 const styleFontSize = (name) => {
   const style = surface.match(new RegExp(`\\b${name}: \\{([^}]*)\\}`));
   assert.ok(style, `missing ${name} style`);
@@ -22,10 +23,11 @@ assert.match(coachAdapter, /return <CompletedSessionRecap/, 'coach review must d
 assert.match(coachAdapter, /viewerMode="coach"/, 'the compatibility boundary must select coach capabilities explicitly');
 assert.doesNotMatch(coachAdapter, /StyleSheet\.create|AnalyticalTimeSeriesChart|PlanCompareExperience/, 'the coach boundary must not grow a duplicate visual implementation');
 
-assert.match(surface, /export type RecapTab = 'overview' \| 'performed' \| 'personal_bests' \| 'plan' \| 'coach'/);
-for (const label of ['Overview', 'Performed', 'Personal Bests', 'Plan / Compare']) assert.ok(surface.includes(`label: '${label}'`), `shared tab rail is missing ${label}`);
-assert.match(surface, /personalBestEvidence\.length \? \[\{ key: 'personal_bests' as const, label: 'Personal Bests' \}\] : \[\]/, 'Personal Bests must exist only when verified canonical PR evidence exists');
-assert.match(surface, /viewerMode === 'coach' \? \[\{ key: 'coach' as const, label: 'Coach' \}\] : \[\]/, 'Coach must be the only role-gated lens');
+assert.match(surface, /export type RecapTab = PostSessionTabKey/);
+for (const label of ['Overview', 'Performed', 'Plan / Compare', 'Personal Bests', 'Coach']) assert.ok(shell.includes(`label: '${label}'`), `shared tab rail is missing ${label}`);
+assert.match(shell, /hasPersonalBests \? \[\{ key: 'personal_bests' as const, label: 'Personal Bests' \}\] : \[\]/, 'Personal Bests must exist only when verified canonical PR evidence exists');
+assert.match(shell, /viewerMode === 'coach' \? \[\{ key: 'coach' as const, label: 'Coach' \}\] : \[\]/, 'Coach must be the only role-gated lens');
+assert.ok(shell.indexOf("key: 'plan'") < shell.indexOf("key: 'personal_bests'"), 'Plan / Compare must precede conditional Personal Bests');
 assert.match(surface, /tab === 'coach' && viewerMode === 'coach'/, 'athletes must not reach coach-only controls');
 assert.match(surface, /contentScrollRef\.current\?\.scrollTo\(\{ y: 0, animated: false \}\)/, 'changing evidence lenses must reset the shared vertical scroll owner');
 assert.match(surface, /requestAnimationFrame\(resetScrollOwners\)/, 'tab scroll reset must repeat after the next native layout frame');

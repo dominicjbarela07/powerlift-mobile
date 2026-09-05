@@ -8,6 +8,7 @@ const athleteRoute = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workou
 const coachRoute = fs.readFileSync(path.join(root, 'app/(tabs)/workout/session-workspace/[workoutId].tsx'), 'utf8');
 const certification = fs.readFileSync(path.join(root, 'app/dev-session-recap-certification.tsx'), 'utf8');
 const recapAssets = fs.readFileSync(path.join(root, 'lib/session-recap-assets.ts'), 'utf8');
+const shell = fs.readFileSync(path.join(root, 'lib/post-session-shell.ts'), 'utf8');
 
 assert.match(component, /recap\.performed_movements\.map/, 'performed SetLog projections must drive the primary movement list');
 assert.match(component, /actual_weight_kg/, 'actual load evidence must render');
@@ -18,8 +19,8 @@ assert.match(component, /video_attachment_id/, 'video evidence must remain reach
 assert.match(component, /recap\.accomplishments/, 'accomplishments must render');
 assert.match(component, /recap\.reflection/, 'athlete reflection must render');
 assert.match(component, /recap\.coach_feedback/, 'coach feedback must render');
-assert.match(component, /export type RecapTab = 'overview' \| 'performed' \| 'personal_bests' \| 'plan' \| 'coach'/, 'the shared surface must expose the governed role-aware lenses');
-assert.match(component, /viewerMode === 'coach' \? \[\{ key: 'coach' as const/, 'the Coach lens must remain role-gated');
+assert.match(component, /export type RecapTab = PostSessionTabKey/, 'the shared surface must expose the governed role-aware lenses');
+assert.match(shell, /viewerMode === 'coach' \? \[\{ key: 'coach' as const/, 'the Coach lens must remain role-gated');
 assert.match(component, /superset_group/, 'superset context must be preserved');
 assert.doesNotMatch(component, /Evidence recorded/, 'movement cards must render performance instead of database-state filler');
 assert.doesNotMatch(component, /0 COMPARABLE/, 'the UI must not claim zero history from an unwired contract');

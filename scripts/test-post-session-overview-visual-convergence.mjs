@@ -6,6 +6,7 @@ import fs from 'node:fs';
 const surface = fs.readFileSync('components/coach-mobile/CompletedSessionRecap.tsx', 'utf8');
 const chart = fs.readFileSync('components/charts/AnalyticalTimeSeriesChart.tsx', 'utf8');
 const fixture = fs.readFileSync('app/dev-session-recap-certification.tsx', 'utf8');
+const shell = fs.readFileSync('lib/post-session-shell.ts', 'utf8');
 const activeSurface = surface.split('/* Retired athlete-recap renderer')[0];
 
 function styleBody(source, name) {
@@ -34,10 +35,10 @@ for (const marker of orderedMarkers) {
   priorIndex = index;
 }
 
-assert.match(activeSurface, /tab !== 'overview' \? <>[\s\S]*styles\.canonicalHero[\s\S]*tabsScrollRef/, 'the legacy hero and tab matrix must not precede the Overview story');
-assert.match(activeSurface, /Post-Session \$\{activeTabLabel\}/, 'the header must identify Post-Session Overview directly');
+assert.match(activeSurface, /styles\.canonicalHero[\s\S]*ref=\{tabsScrollRef\}[\s\S]*tab === 'overview' \? <><SessionReadOverview/, 'the redesigned Overview must render inside the stable canonical shell');
+assert.match(activeSurface, /<Text style=\{styles\.topSubtitle\}>Post-Session Review<\/Text>/, 'the header must identify the canonical Post-Session surface');
 assert.match(activeSurface, /EVIDENCE LENSES/, 'deeper evidence lenses must remain reachable from the header menu');
-assert.match(activeSurface, /viewerMode === 'coach' \? \[\{ key: 'coach'/, 'Coach tools must remain role-gated');
+assert.match(shell, /viewerMode === 'coach' \? \[\{ key: 'coach'/, 'Coach tools must remain role-gated');
 
 for (const marker of ['SESSION RESULT', 'Good Session', 'improved ·', 'stable ·', 'declined', 'Duration', 'Sets logged']) {
   assert.ok(activeSurface.includes(marker), `Session result hero is missing ${marker}`);

@@ -4,7 +4,7 @@ const areas = [
   ['platform-wide mobile full-width layout', ['scripts/test-mobile-full-width-enforcement.mjs']],
   ['Athlete Meet Packet V2 lifecycle and operational toolkit', ['scripts/test-athlete-meet-packet-v2.mjs']],
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
-  ['canonical shared athlete and coach post-Session surface', ['scripts/test-canonical-post-session-surface.mjs', 'scripts/test-post-session-overview-visual-convergence.mjs', 'scripts/test-post-session-times.mjs', 'scripts/test-post-session-related-history.mjs']],
+  ['canonical shared athlete and coach post-Session surface', ['scripts/test-canonical-post-session-surface.mjs', 'scripts/test-post-session-shell-restoration.mjs', 'scripts/test-post-session-overview-visual-convergence.mjs', 'scripts/test-post-session-times.mjs', 'scripts/test-post-session-related-history.mjs']],
   ['Coach Check-Ins V2 command center and evidence lifecycle', ['scripts/test-coach-check-ins-v2.mjs']],
   ['substitution authority', ['scripts/test-accessory-swap-session-gating.mjs', 'scripts/test-self-coached-accessory-swap-v2.mjs', 'scripts/test-superset-self-coach-swap-history.mjs']],
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
