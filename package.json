@@ -39,6 +39,7 @@
     "test:canonical-movement-history-v2": "node --import tsx scripts/test-canonical-movement-history-v2.mjs",
     "test:canonical-movement-artwork": "node --import tsx scripts/test-canonical-movement-artwork.mjs",
     "test:exact-accessory-history": "node scripts/test-exact-accessory-history.mjs",
+    "test:pre-session-accessory-last-best": "node --import tsx scripts/test-pre-session-accessory-last-best.mjs",
     "test:movement-history-launch": "node --import tsx scripts/test-movement-history-launch.mjs",
     "test:rest-timer-refinement": "node --import tsx scripts/test-rest-timer-refinement.mjs",
     "test:rest-timer-zero-deadlock": "node --import tsx scripts/test-rest-timer-zero-deadlock.mjs",

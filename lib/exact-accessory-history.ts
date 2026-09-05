@@ -11,6 +11,8 @@ export type ExactAccessoryHistoryPayload<TSet extends ExactAccessoryHistorySet =
   identity_scope?: string | null;
   comparison_allowed?: boolean | null;
   comparison_identity_key?: string | null;
+  comparison_scope?: string | null;
+  identity_resolution_source?: string | null;
   most_recent_logged_set?: TSet | null;
   best_logged_set?: TSet | null;
   recent_sets?: TSet[] | null;

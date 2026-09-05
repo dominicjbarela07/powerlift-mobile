@@ -44,6 +44,7 @@ import {
 } from '@/lib/core-logger-header';
 import { MOVEMENT_STATUS_COLUMN_WIDTH } from '@/lib/movement-lifecycle-status-layout';
 import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';
+import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';
 
 export type SetRailStep = {
   key: string;
@@ -264,6 +265,7 @@ export function CoreMovementLedgerRow({
   meta,
   top,
   movementNote,
+  priorPerformanceCue,
   loggerFocus,
   expanded,
   detailRows,
@@ -290,6 +292,7 @@ export function CoreMovementLedgerRow({
   meta?: string | null;
   top?: string | null;
   movementNote?: string | null;
+  priorPerformanceCue?: AccessoryLastBestCue | null;
   loggerFocus?: MovementLoggerFocusModel | null;
   expanded?: boolean;
   detailRows?: ActiveMovementDetailRow[];
@@ -483,6 +486,38 @@ export function CoreMovementLedgerRow({
             </SLMotionPressable>
           </View>
         </View>
+
+        {priorPerformanceCue ? (
+          <View
+            accessible
+            accessibilityLabel={priorPerformanceCue.accessibilityLabel}
+            style={[
+              styles.priorPerformanceCue,
+              expanded && styles.priorPerformanceCueExpanded,
+            ]}
+          >
+            <View style={styles.priorPerformanceIcon}>
+              <Ionicons
+                color={priorPerformanceCue.kind === 'last_best' ? SLColors.success : SLColors.textMuted}
+                name={priorPerformanceCue.kind === 'last_best' ? 'time-outline' : 'sparkles-outline'}
+                size={18}
+              />
+            </View>
+            <View style={styles.priorPerformanceCopy}>
+              <Text typographyRole="shortTechnicalLabel" style={styles.priorPerformanceEyebrow}>
+                {priorPerformanceCue.eyebrow}
+              </Text>
+              <Text numberOfLines={2} typographyRole="bodyStrong" style={styles.priorPerformancePrimary}>
+                {priorPerformanceCue.primary}
+              </Text>
+            </View>
+            {priorPerformanceCue.supporting ? (
+              <Text numberOfLines={2} typographyRole="supportingBody" style={styles.priorPerformanceSupporting}>
+                {priorPerformanceCue.supporting}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
 
         {visibleProgressContext ? (
           <View
@@ -1365,6 +1400,61 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  priorPerformanceCue: {
+    alignItems: 'center',
+    backgroundColor: SLColors.surfaceEmbedded,
+    borderColor: SLColors.borderStrong,
+    borderRadius: SLRadius.radiusRow,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 9,
+    minHeight: 54,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  priorPerformanceCueExpanded: {
+    backgroundColor: 'transparent',
+    borderBottomColor: SLColors.borderSubtle,
+    borderLeftWidth: 0,
+    borderRadius: SLRadius.none,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+    paddingHorizontal: 2,
+    paddingVertical: 11,
+  },
+  priorPerformanceIcon: {
+    alignItems: 'center',
+    backgroundColor: SLColors.accentVioletSoft,
+    borderRadius: SLRadius.pill,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  priorPerformanceCopy: {
+    flex: 1,
+    gap: 1,
+    minWidth: 0,
+  },
+  priorPerformanceEyebrow: {
+    color: SLColors.accentMuted,
+    fontSize: SLTypography.label.fontSize,
+    fontWeight: '900',
+    letterSpacing: 0.65,
+  },
+  priorPerformancePrimary: {
+    color: SLColors.textStrong,
+    fontSize: SLTypography.body.fontSize,
+    fontWeight: '800',
+    lineHeight: SLTypography.body.lineHeight,
+  },
+  priorPerformanceSupporting: {
+    color: SLColors.textSecondary,
+    flexShrink: 1,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: SLTypography.caption.lineHeight,
+    maxWidth: 110,
+    textAlign: 'right',
   },
   movementProgressContext: {
     minHeight: 68,
