@@ -177,6 +177,8 @@ assert.deepEqual(
 const choices = workoutDetailMachineIdentityChoices(
   '',
   machine.movement_identity.family_id,
+  machine.movement_identity.family_display_name || machine.movement,
+  machine.movement_identity.id,
 );
 const ordered = orderEquipmentChoices(choices, machine.performed_movement_identity.id);
 assert.equal(
@@ -191,8 +193,15 @@ assert.deepEqual(
 );
 assert.equal(
   ordered[0].manufacturer?.display_name,
-  'Hammer Strength',
-  'The active manufacturer must remain first.',
+  'Arsenal Strength',
+  'Canonical display-name ordering must not prioritize current or recent equipment.',
+);
+assert.deepEqual(
+  ordered.slice(0, -1).map((choice) => choice.manufacturer?.display_name),
+  ordered.slice(0, -1).map((choice) => choice.manufacturer?.display_name).sort(
+    (left, right) => left.localeCompare(right, 'en-US', { sensitivity: 'base' }),
+  ),
+  'The complete governed manufacturer collection must be alphabetical.',
 );
 assert.equal(
   ordered.at(-1)?.equipment_context?.option_kind,
@@ -211,6 +220,7 @@ assert.equal(
     'manufacturer-that-does-not-exist',
     machine.movement_identity.family_id,
     machine.movement,
+    machine.movement_identity.id,
   ).length,
   0,
   'An empty list is allowed only after a non-matching search query.',
@@ -238,6 +248,7 @@ const highRowChoices = workoutDetailMachineIdentityChoices(
   '',
   highRow.movement_identity.family_id,
   highRow.movement_identity.family_display_name || highRow.movement,
+  highRow.movement_identity.id,
 );
 assert.equal(
   highRowChoices.length,
@@ -259,6 +270,7 @@ assert.equal(
     'prime',
     highRow.movement_identity.family_id,
     highRow.movement,
+    highRow.movement_identity.id,
   ).at(0)?.manufacturer?.display_name,
   'Prime Fitness',
   'Search must filter the already-populated manufacturer catalog.',
@@ -533,8 +545,8 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /Choose Manufacturer[\s\S]*CURRENT[\s\S]*USED BEFORE[\s\S]*NEVER USED[\s\S]*ManufacturerBrandMark compact manufacturerName=\{manufacturerName\}/,
-  'Equipment choices must resolve local manufacturer branding through the shared component.',
+  /Choose Manufacturer[\s\S]*equipmentSelectionStatusLabels\([\s\S]*\.join\('\s·\s'\)[\s\S]*ManufacturerBrandMark compact manufacturerName=\{manufacturerName\}/,
+  'Equipment choices must keep current state separate from movement-scoped Used/Not Used and retain shared branding.',
 );
 assert.match(
   routeSource,

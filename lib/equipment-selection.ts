@@ -38,7 +38,13 @@ export type EquipmentIdentityLike = {
   } | null;
   equipment_context?: {
     remembered_status?: string | null;
+    usage_status?: 'used' | 'not_used' | string | null;
+    is_current?: boolean | null;
     last_used_at?: string | null;
+    used_equipment_type_keys?: string[] | null;
+    equipment_type_last_used_at?: Record<string, string | null> | null;
+    used_equipment_definition_ids?: number[] | null;
+    used_equipment_model_ids?: number[] | null;
     option_kind?: 'catalog' | 'other' | 'unknown' | string;
   } | null;
   comparison_policy?: {
@@ -275,35 +281,94 @@ export function needsEquipmentSelection(
   return isMachineAccessoryItem(item) && !activeEquipmentIdentity(item);
 }
 
-function optionPriority(
-  identity: EquipmentIdentityLike,
-  activeIdentityId: number | null,
-): number {
-  if (Number(identity.id) === Number(activeIdentityId)) return 0;
-  const rememberedStatus = identity.equipment_context?.remembered_status;
-  if (rememberedStatus === 'current') return 1;
-  if (rememberedStatus === 'used_before') return 2;
-  if (identity.equipment_context?.option_kind === 'other') return 90;
+function canonicalEquipmentChoiceLabel(identity: EquipmentIdentityLike): string {
+  return String(identity.manufacturer?.display_name || identity.display_name || '').trim();
+}
+
+function equipmentChoiceSection(identity: EquipmentIdentityLike): number {
+  if (identity.equipment_context?.option_kind === 'other') return 2;
   if (
     identity.equipment_context?.option_kind === 'unknown'
     || identity.identity_specificity === 'unknown'
-  ) return 95;
-  return 10;
+  ) return 1;
+  return 0;
 }
 
 export function orderEquipmentChoices<T extends EquipmentIdentityLike>(
   choices: readonly T[],
   activeIdentityId?: number | null,
 ): T[] {
+  // Current and historical state are presentation metadata, never sort keys.
+  // Keep the parameter for source compatibility with existing consumers.
+  void activeIdentityId;
   return [...choices].sort((left, right) => {
-    const priorityDelta = optionPriority(left, activeIdentityId ?? null)
-      - optionPriority(right, activeIdentityId ?? null);
-    if (priorityDelta !== 0) return priorityDelta;
-    const leftUsed = Date.parse(left.equipment_context?.last_used_at || '') || 0;
-    const rightUsed = Date.parse(right.equipment_context?.last_used_at || '') || 0;
-    if (leftUsed !== rightUsed) return rightUsed - leftUsed;
-    return left.display_name.localeCompare(right.display_name);
+    const sectionDelta = equipmentChoiceSection(left) - equipmentChoiceSection(right);
+    if (sectionDelta !== 0) return sectionDelta;
+    const leftLabel = canonicalEquipmentChoiceLabel(left);
+    const rightLabel = canonicalEquipmentChoiceLabel(right);
+    const caseInsensitiveDelta = leftLabel.localeCompare(rightLabel, 'en-US', {
+      sensitivity: 'base',
+    });
+    if (caseInsensitiveDelta !== 0) return caseInsensitiveDelta;
+    const exactLabelDelta = leftLabel.localeCompare(rightLabel, 'en-US', {
+      sensitivity: 'variant',
+    });
+    if (exactLabelDelta !== 0) return exactLabelDelta;
+    const keyDelta = String(left.manufacturer?.key || left.key).localeCompare(
+      String(right.manufacturer?.key || right.key),
+      'en-US',
+    );
+    if (keyDelta !== 0) return keyDelta;
+    return Number(left.id) - Number(right.id);
   });
+}
+
+function normalizedUsageValue(value: unknown): string {
+  return String(value || '').trim().toLocaleLowerCase('en-US').replace(/[\s-]+/g, '_');
+}
+
+export function equipmentWasPreviouslyUsed(
+  identity: EquipmentIdentityLike | null | undefined,
+): boolean {
+  if (!identity) return false;
+  const usageStatus = normalizedUsageValue(identity.equipment_context?.usage_status);
+  if (usageStatus) return usageStatus === 'used';
+  // Backward compatibility for payloads predating movement-scoped usage_status.
+  // A legacy "current" value is intentionally not treated as historical use.
+  return normalizedUsageValue(identity.equipment_context?.remembered_status) === 'used_before';
+}
+
+export function equipmentSelectionStatusLabels(
+  identity: EquipmentIdentityLike | null | undefined,
+  current: boolean,
+): string[] {
+  return [
+    ...(current ? ['CURRENT'] : []),
+    equipmentWasPreviouslyUsed(identity) ? 'USED' : 'NOT USED',
+  ];
+}
+
+export function equipmentTypeWasPreviouslyUsed(
+  identity: EquipmentIdentityLike | null | undefined,
+  equipmentType: string | null | undefined,
+): boolean {
+  if (!identity) return false;
+  const requestedType = normalizedUsageValue(equipmentType);
+  if (!requestedType) return false;
+  return (identity.equipment_context?.used_equipment_type_keys || []).some(
+    (candidate) => normalizedUsageValue(candidate) === requestedType,
+  );
+}
+
+export function equipmentTypeSelectionStatusLabels(
+  identity: EquipmentIdentityLike | null | undefined,
+  equipmentType: string | null | undefined,
+  current: boolean,
+): string[] {
+  return [
+    ...(current ? ['CURRENT'] : []),
+    equipmentTypeWasPreviouslyUsed(identity, equipmentType) ? 'USED' : 'NOT USED',
+  ];
 }
 
 export function equipmentSnapshotForSet(

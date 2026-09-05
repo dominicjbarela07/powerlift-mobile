@@ -68,8 +68,8 @@ assert.match(
 );
 assert.match(
   source,
-  /rememberedStatus === 'used_before'[\s\S]*'USED BEFORE'/,
-  'server manufacturer usage status must drive the compact picker badge',
+  /equipmentSelectionStatusLabels\([\s\S]*row,[\s\S]*current,[\s\S]*\)\.join\(' · '\)/,
+  'movement-scoped server usage must remain distinct from the current-selection badge',
 );
 assert.doesNotMatch(
   source,

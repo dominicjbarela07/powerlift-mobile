@@ -18,6 +18,11 @@ export function createWorkoutDetailFixture(): never {
 
 export function hydrateWorkoutDetailEquipmentSelections<T>(payload: T): T { return payload; }
 export function rememberWorkoutDetailEquipmentSelection() {}
-export function workoutDetailMachineIdentityChoices(): never[] { return []; }
+export function workoutDetailMachineIdentityChoices(
+  _query = '',
+  _familyId?: number | null,
+  _familyDisplayName?: string | null,
+  _movementDefinitionId?: number | null,
+): never[] { return []; }
 export function workoutDetailMachineVariantIdentity(): null { return null; }
 export function applyWorkoutDetailMachineIdentity<T>(item: T): T { return item; }
