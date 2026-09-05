@@ -14,6 +14,7 @@ import {
 import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { GovernedMuscleThumbnail } from '@/components/anatomy/GovernedMuscleThumbnail';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -56,8 +57,6 @@ import {
   accessoryRegionalArtworkAsset,
   type AccessoryRegionalArtworkKey,
 } from '@/lib/accessory-muscle-region-assets';
-import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { focusedAccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import {
   movementHistorySheetRoute,
   resolveMovementHistoryLaunchForItem,
@@ -1756,8 +1755,15 @@ function AnatomyTargetArt({
   scale?: number;
   size?: 'thumbnail' | 'card';
 }) {
-  const region = focusedAccessoryMuscleRegionKey(primary);
-  return <View style={[styles.anatomyTargetArt, style]}>{region ? <Image accessibilityLabel={`${accessoryTaxonomyLabel(primary)} focused muscle-group artwork`} accessibilityIgnoresInvertColors resizeMode="contain" source={accessoryMuscleRegionAsset(region).source} style={StyleSheet.absoluteFillObject} /> : <Ionicons name="help-outline" size={26} color={colors.muted} />}</View>;
+  return (
+    <GovernedMuscleThumbnail
+      athlete={_athlete}
+      primary={primary}
+      secondary={_secondary}
+      style={[styles.anatomyTargetArt, style]}
+      testID={`workspace-muscle-thumbnail-${primary}`}
+    />
+  );
 }
 
 function AccessoryEditorModal({

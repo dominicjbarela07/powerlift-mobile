@@ -84,7 +84,7 @@ assert.match(route, /What are you trying to train\?[\s\S]*By Muscle[\s\S]*By Mov
 assert.match(route, /useState<'muscle' \| 'movement'>\('muscle'\)/, 'muscle-guided discovery must be the default instead of a flat All index');
 assert.match(route, /selectLibraryMode\('favorites'\)[\s\S]*selectLibraryMode\('recent'\)[\s\S]*selectLibraryMode\('custom'\)/, 'Favorites, Recent, and My Movements must remain deliberate shortcuts');
 assert.match(route, /ACCESSORY_PICKER_REGIONS[\s\S]*selectedRegion\.muscles/, 'regional navigation must drill into governed primary-muscle targets');
-assert.match(route, /function AnatomyTargetArt[\s\S]*focusedAccessoryMuscleRegionKey\(primary\)[\s\S]*accessoryMuscleRegionAsset\(region\)/, 'muscle discovery must use the governed focused muscle-group PNG library');
+assert.match(route, /function AnatomyTargetArt[\s\S]*<GovernedMuscleThumbnail[\s\S]*primary=\{primary\}[\s\S]*secondary=\{_secondary\}/, 'muscle discovery must use the shared governed Dynamic Anatomy thumbnail');
 assert.doesNotMatch(route, /<MuscleMap/, 'individual movement picker surfaces must never render full-figure anatomy');
 assert.match(route, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/, 'individual picker results must use the canonical identity artwork component');
 assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'exact movement selection must pass through review, apply, and success states');
