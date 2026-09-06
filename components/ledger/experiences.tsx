@@ -30,6 +30,7 @@ import { canRenderGymTotal, displayWeightFromCanonicalLb } from '@/lib/milestone
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
+import { StrengthExperience as StrengthStoryboardExperience } from './StrengthExperience';
 import { ArchiveFoundationExperience } from './archive-foundation';
 import { useLedgerLiveData } from './use-ledger-live-data';
 import { fetchJourneyArchiveEvents } from './journey-live-events';
@@ -356,7 +357,7 @@ export function JourneyExperience() {
     } finally {
       setLoadingMore(false);
     }
-  }, [includeSessions, loadingMore, nextCursor, unit]);
+  }, [includeSessions, loadingMore, nextCursor]);
 
   if (journeyLoading) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind="loading" message="Loading preserved career evidence." /></View>;
   if (combinedError && !overview) return <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience"><LedgerRoomState kind={combinedErrorKind} message={combinedError} onRetry={() => loadJourney()} /></View>;
@@ -563,7 +564,7 @@ function CanonicalStrengthTrendPlot({ points, dates, color, label, unit }: { poi
   />;
 }
 
-export function StrengthExperience() {
+export function LegacyStrengthStudy() {
   const router = useRouter();
   const openArchive = useArchiveNavigation();
   const [focusLiftIndex, setFocusLiftIndex] = useState(2);
@@ -791,7 +792,7 @@ export function ExperienceForScreen({ screen }: { screen: LedgerScreen }) {
   switch (screen) {
     case 'home': return <HomeExperience />;
     case 'journey': return <JourneyExperience />;
-    case 'strength': return <StrengthExperience />;
+    case 'strength': return <StrengthStoryboardExperience />;
     case 'achievements': return null;
     case 'accessories': return null;
     case 'variants': return null;

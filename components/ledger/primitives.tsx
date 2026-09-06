@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef } from 'react';
 import {
   Animated,
   ImageBackground,
@@ -20,20 +20,30 @@ import { FloatingControlCoordinator } from '@/components/ui/floating-control-coo
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
 
+const LedgerScrollToTopContext = createContext<() => void>(() => {});
+
+export function useLedgerScrollToTop() {
+  return useContext(LedgerScrollToTopContext);
+}
+
 export function LedgerFrame({ active, children }: React.PropsWithChildren<{ active: LedgerRoom }>) {
   const router = useRouter();
   const isIndex = active === 'home';
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollToTop = useCallback(() => scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false }), []);
 
   return (
     <SLScreen edges="none" padded={false} style={styles.screen}>
       <FloatingControlCoordinator context="tab-screen">
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         {!isIndex ? <View style={styles.backRow}>
           <Pressable accessibilityLabel="Back to The Ledger" onPress={() => router.replace(ledgerHrefFor('home') as any)} style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
             <Ionicons name="chevron-back" size={23} color={SLColors.iconPrimary} />
           </Pressable>
         </View> : null}
-        <AnimatedEntrance key={active}>{children}</AnimatedEntrance>
+        <LedgerScrollToTopContext.Provider value={scrollToTop}>
+          <AnimatedEntrance key={active}>{children}</AnimatedEntrance>
+        </LedgerScrollToTopContext.Provider>
       </ScrollView>
       </FloatingControlCoordinator>
     </SLScreen>

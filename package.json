@@ -85,6 +85,7 @@
     "test:legacy-strength-trophy-retirement": "node --import tsx scripts/test-legacy-strength-trophy-retirement.mjs",
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",
     "test:achievements-storyboard": "node scripts/test-achievements-storyboard-convergence.mjs",
+    "test:strength-storyboard": "node scripts/test-strength-storyboard-convergence.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
     "test:anatomy-system": "node --import tsx scripts/test-anatomy-system.mjs",

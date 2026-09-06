@@ -1,0 +1,82 @@
+appId: host.exp.Exponent
+---
+- tapOn:
+    id: strength-tiers-back
+    optional: true
+- tapOn:
+    id: strength-detail-back
+    optional: true
+- tapOn:
+    id: strength-tab-overview
+    optional: true
+- assertVisible:
+    id: ledger-strength-experience
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/01-strength-overview-native
+- tapOn:
+    id: strength-tab-progression
+- assertVisible:
+    id: strength-lift-selector
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/02-lift-selector-native
+- tapOn:
+    id: strength-select-squat
+- assertVisible:
+    id: strength-lift-hero-squat
+- tapOn:
+    id: strength-detail-back
+- tapOn:
+    id: strength-select-bench
+- assertVisible:
+    id: strength-lift-hero-bench
+- tapOn:
+    id: strength-detail-back
+- tapOn:
+    id: strength-select-deadlift
+- assertVisible:
+    id: ledger-strength-lift-detail
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/03-deadlift-progression-native
+- tapOn:
+    id: strength-range-180d
+- assertVisible:
+    id: strength-range-180d
+- tapOn:
+    id: strength-range-90d
+- tapOn:
+    id: strength-lift-tab-evidence
+- assertVisible:
+    id: strength-evidence-panel
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/04-deadlift-evidence-native
+- tapOn:
+    id: strength-lift-tab-standards
+- assertVisible:
+    id: strength-standards-panel
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/05-deadlift-standards-native
+- tapOn:
+    id: strength-lift-tab-progression
+- scrollUntilVisible:
+    element:
+      id: strength-tier-entry
+    direction: DOWN
+- tapOn:
+    id: strength-tier-entry
+- assertVisible:
+    id: strength-tiers-deadlift
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/06-deadlift-tiers-native
+- tapOn:
+    id: strength-tiers-back
+- tapOn:
+    id: strength-detail-back
+- tapOn:
+    id: strength-tab-records
+- assertVisible:
+    id: strength-records
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/07-records-native
+- tapOn:
+    id: strength-tab-analysis
+- assertVisible:
+    id: strength-analysis
+- takeScreenshot: docs/validation/strength-storyboard-convergence-2026-09-06/08-analysis-native
+- tapOn:
+    id: ledger-strength-unit-toggle
+- assertVisible: Display unit kg. Switch to lb
+- tapOn:
+    id: ledger-strength-unit-toggle
