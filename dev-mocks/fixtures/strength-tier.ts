@@ -1,5 +1,5 @@
 import type { CurrentBest, LedgerProgression, StrengthMetric, StrengthStandardProjection, StrengthStandingProjection, StrengthTierStateProjection } from '@/lib/ledger-data';
-import { STRENGTH_KG_TO_LB, STRENGTH_STANDARD_VERSION, TOTAL_TROPHY_TIER_NAMES } from '@/lib/ledger-rewards';
+import { STRENGTH_KG_TO_LB, STRENGTH_STANDARD_VERSION, STRENGTH_TIER_LABELS } from '@/lib/ledger-rewards';
 import type { LedgerLiveDataFixture } from '@/components/ledger/use-ledger-live-data';
 
 type Sex = 'M' | 'F';
@@ -48,7 +48,7 @@ function standard(sex: Sex): StrengthStandardProjection {
       metric,
       TABLES[sex][metric].map((thresholdKg, index) => ({
         tier: index + 1,
-        name: TOTAL_TROPHY_TIER_NAMES[index],
+        name: STRENGTH_TIER_LABELS[index],
         target_percentile: TARGETS[index],
         actual_percentile: ACTUAL_PERCENTILES[sex][metric][index],
         threshold_kg: thresholdKg,
@@ -85,8 +85,8 @@ export function strengthTierCertificationFixture(
   scenario: StrengthTierCertificationScenario = 'mid',
 ): LedgerLiveDataFixture {
   const loadScenarios: Record<Sex, Record<StrengthTierCertificationScenario, readonly [number, number, number]>> = {
-    M: { mid: [205, 135, 250], below: [140, 90, 170], tier7: [315, 210, 330] },
-    F: { mid: [125, 70, 150], below: [80, 40, 100], tier7: [190, 110, 210] },
+    M: { mid: [193, 110, 189.2], below: [140, 90, 170], tier7: [315, 210, 330] },
+    F: { mid: [105, 57.5, 127.5], below: [80, 40, 100], tier7: [190, 110, 210] },
   };
   const loads = loadScenarios[sex][scenario];
   const currentBests = [

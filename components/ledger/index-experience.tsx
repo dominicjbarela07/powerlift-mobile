@@ -30,8 +30,8 @@ import { fetchLedgerExplorationIndex, type LedgerExplorationIndex, type LedgerMo
 import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
 import { fetchJourneyBootstrap, type JourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
-import { canonicalTotal, projectedStrengthTierState, supportedStrengthStandard, totalClubState } from '@/lib/ledger-rewards';
-import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
+import { canonicalTotal, projectedStrengthTierState, supportedStrengthStandard, totalStrengthTierState } from '@/lib/ledger-rewards';
+import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
 import { ledgerHrefFor, type LedgerRoom } from './routing';
 import { useLedgerLiveData } from './use-ledger-live-data';
@@ -400,12 +400,12 @@ export function LedgerIndexExperience() {
       .sort((left, right) => (left.metric === 'weight' ? -1 : 1) - (right.metric === 'weight' ? -1 : 1) || right.best_value - left.best_value)[0]);
     const completeTotal = canonicalTotal(currentBests);
     const standard = supportedStrengthStandard(projectedStandard ?? progression?.strength_standard);
-    const club = standard
+    const totalTierState = standard
       ? projectedStrengthTierState(strengthStanding?.metrics.total, 'total', standard, unit)
-        ?? totalClubState(completeTotal, standard, unit)
+        ?? totalStrengthTierState(completeTotal, standard, unit)
       : null;
-    const trophyIndex = Math.max(0, club?.earnedTierIndex ?? -1);
-    return { prs, latest, unit, liftBests, trophyIndex };
+    const strengthTierIndex = Math.max(0, totalTierState?.earnedTierIndex ?? -1);
+    return { prs, latest, unit, liftBests, strengthTierIndex };
   }, [accomplishments, currentBests, progression?.strength_standard, projectedStandard, strengthStanding, unit]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
@@ -446,7 +446,7 @@ export function LedgerIndexExperience() {
   const bodyweightTrendLine = reportedBodyweightComparison
     ? `${displayWeight(reportedBodyweightComparison.start.reported_bodyweight_kg, model.unit)} → ${displayWeight(reportedBodyweightComparison.end.reported_bodyweight_kg, model.unit)} ${model.unit.toUpperCase()} · ${reportedBodyweightComparison.span_days} days`
     : null;
-  const trophyArtifact = SL_TOTAL_TROPHY_ASSETS[model.trophyIndex];
+  const strengthTierArtifact = SL_STRENGTH_TIER_ASSETS[model.strengthTierIndex];
   const openRoom = (room: LedgerRoom) => router.push(ledgerHrefFor(room) as any);
   const latestTitle = latestJourneyEntry?.movement?.label || model.latest?.movement_label || latestJourneyEntry?.title || 'No entry recorded yet';
   const latestValue = latestJourneyEntry ? journeyPerformance(latestJourneyEntry, model.unit) : eventPerformance(model.latest, model.unit);
@@ -491,7 +491,7 @@ export function LedgerIndexExperience() {
         <View style={styles.snapshotStats}>
           <SnapshotStat value={lifetimeSets == null ? '—' : lifetimeSets.toLocaleString()} label="SETS" tone="#64D7DC" image={LEDGER_INDEX_ASSETS.careerSets} />
           <SnapshotStat value={lifetimePrs == null ? '—' : lifetimePrs.toLocaleString()} label="PRs" tone="#E1B95B" image={LEDGER_INDEX_ASSETS.careerPr} assetShape="tall" />
-          <SnapshotStat value={lifetimeAchievements == null ? '—' : lifetimeAchievements.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={trophyArtifact} assetShape="tall" />
+          <SnapshotStat value={lifetimeAchievements == null ? '—' : lifetimeAchievements.toLocaleString()} label="ACHIEVEMENTS" tone="#D36BDE" image={strengthTierArtifact} assetShape="tall" />
         </View>
       </View>
 
@@ -526,7 +526,7 @@ export function LedgerIndexExperience() {
 
     <View style={styles.sectionInset}>
       <View style={styles.sectionHeading}><Text style={styles.sectionTitle}>YOUR RECORD</Text><Text style={styles.sectionMeta}>FULL LEDGER INDEX</Text></View>
-      <View style={styles.chapterIndex}>{CHAPTERS.map((chapter) => <ChapterRow key={chapter.room} chapter={chapter} onPress={() => openRoom(chapter.room)} image={chapter.room === 'achievements' ? trophyArtifact : ledgerIndexChapterAsset(chapter.room)} />)}</View>
+      <View style={styles.chapterIndex}>{CHAPTERS.map((chapter) => <ChapterRow key={chapter.room} chapter={chapter} onPress={() => openRoom(chapter.room)} image={chapter.room === 'achievements' ? strengthTierArtifact : ledgerIndexChapterAsset(chapter.room)} />)}</View>
     </View>
 
     <View style={styles.sectionInset}>

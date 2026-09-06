@@ -16,9 +16,8 @@ import {
   canonicalMajorVolumeMedallions,
   canonicalPrHistory,
   resolveLedgerClubsRuntimeState,
-  strengthTierRoman,
   type MajorVolumeMedallionEvidence,
-  type TotalClubState,
+  type StrengthTierState,
 } from '@/lib/ledger-rewards';
 import { majorVolumeMedallionAsset } from '@/lib/major-volume-medallion-assets';
 import { useAuth } from '@/context/AuthContext';
@@ -30,7 +29,7 @@ import {
   parseDisplayWeightUnit,
 } from '@/lib/display-units';
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
-import { SL_TOTAL_TROPHY_ASSETS } from '@/lib/trophy-assets';
+import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
 import {
   canRenderGymTotal,
   displayWeightFromCanonicalLb,
@@ -79,7 +78,7 @@ type AchievementSection = 'hub' | 'milestones' | 'clubs' | 'trophies' | 'medalli
 type Detail = { label: string; value: string; state: MilestoneState; remaining?: string; sourceHref?: string; note?: string; actionLabel?: string } | null;
 type LiftKey = Exclude<StrengthMetric, 'total'>;
 type LiftPresentation = { key: LiftKey; name: string; icon: keyof typeof Ionicons.glyphMap; tone: string; glow: string; softTone: string };
-type Lift = LiftPresentation & { canonicalWeightKg: number | null; currentLb: number | null; sourceSetLogId?: number | null; tierState: TotalClubState | null };
+type Lift = LiftPresentation & { canonicalWeightKg: number | null; currentLb: number | null; sourceSetLogId?: number | null; tierState: StrengthTierState | null };
 type StreakItem = { id: string; title: string; description: string; value: number; unit: string; thresholds: readonly number[]; icon: keyof typeof Ionicons.glyphMap; tone: string };
 type OtherMilestoneRow = typeof OTHER[number] & { current: number };
 
@@ -110,14 +109,14 @@ const STREAK_PRESENTATIONS = [
   { id: 'perfect-weeks', title: 'Perfect Weeks', description: 'Weeks with 100% compliance.', unit: 'weeks', thresholds: [1, 5, 10, 25, 50, 100], icon: 'trophy-outline' as const, tone: '#F3BE43' },
 ] as const;
 
-const LB_TOTAL_TROPHY_TIERS = [
-  { name: 'Steel', color: '#C7CED7', glow: '#626C79', size: 19 },
-  { name: 'Bronze', color: '#D68B50', glow: '#7E3F23', size: 21 },
-  { name: 'Silver', color: '#D5DAE5', glow: '#6E7586', size: 22 },
-  { name: 'Gold', color: '#FFD467', glow: '#9D6513', size: 24 },
-  { name: 'Platinum', color: '#A5DDF5', glow: '#4F7895', size: 25 },
-  { name: 'Diamond', color: '#8BEAFF', glow: '#2789B6', size: 27 },
-  { name: 'Obsidian', color: '#C788FF', glow: '#6520A7', size: 29 },
+const STRENGTH_TIER_ART_PRESENTATION = [
+  { color: '#C7CED7' },
+  { color: '#D68B50' },
+  { color: '#D5DAE5' },
+  { color: '#FFD467' },
+  { color: '#A5DDF5' },
+  { color: '#8BEAFF' },
+  { color: '#C788FF' },
 ] as const;
 
 const number = (value: number) => value.toLocaleString('en-US');
@@ -134,14 +133,14 @@ function SectionHeader({ title, icon }: { title: string; icon: keyof typeof Ioni
   return <View style={styles.sectionHeading}><Ionicons name={icon} size={18} color="#A85CFF" /><ThemedText typographyRole="bodyStrong" style={styles.sectionTitle}>{title}</ThemedText></View>;
 }
 
-function TotalTierTrophy({ tierIndex, state, current = false }: { tierIndex: number; state: MilestoneState; current?: boolean }) {
-  const tier = LB_TOTAL_TROPHY_TIERS[Math.min(tierIndex, LB_TOTAL_TROPHY_TIERS.length - 1)];
+function StrengthTierTrophy({ tierIndex, state, current = false }: { tierIndex: number; state: MilestoneState; current?: boolean }) {
+  const tier = STRENGTH_TIER_ART_PRESENTATION[Math.min(tierIndex, STRENGTH_TIER_ART_PRESENTATION.length - 1)];
   const isEarned = state === 'completed';
   const isProgress = state === 'progress';
-  const customTrophy = SL_TOTAL_TROPHY_ASSETS[tierIndex];
-  const imageStyle = tierIndex === 6 ? styles.totalTierTrophyObsidian : styles.totalTierTrophyImage;
+  const customTrophy = SL_STRENGTH_TIER_ASSETS[tierIndex];
+  const imageStyle = tierIndex === 6 ? styles.totalTierTrophyFinal : styles.totalTierTrophyImage;
   return <View style={[styles.totalTrophy, { borderColor: isEarned || isProgress ? tier.color : '#354050', backgroundColor: '#141922' }, current && styles.totalTrophyCurrent]}>
-    {customTrophy ? <Image source={customTrophy} style={[imageStyle, !isEarned && styles.totalTierTrophyLocked]} resizeMode="contain" /> : <SLTrophy size={tier.size} tier="steel" muted={!isEarned} />}
+    <Image source={customTrophy} style={[imageStyle, !isEarned && styles.totalTierTrophyLocked]} resizeMode="contain" />
   </View>;
 }
 
@@ -303,7 +302,7 @@ function AchievementsHub({
   prCount,
   onOpen,
 }: {
-  club: TotalClubState;
+  club: StrengthTierState;
   unit: Unit;
   totalComplete: boolean;
   plateSource?: ImageSourcePropType;
@@ -322,14 +321,14 @@ function AchievementsHub({
     <View style={styles.hubHero}>
       <View style={styles.hubHeroArtifact}>
         <Image
-          source={SL_TOTAL_TROPHY_ASSETS[Math.max(0, club.earnedTierIndex)]}
+          source={SL_STRENGTH_TIER_ASSETS[Math.max(0, club.earnedTierIndex)]}
           resizeMode="contain"
           style={[styles.hubHeroTrophy, club.earnedTierIndex < 0 && styles.totalTierTrophyLocked]}
         />
       </View>
       <View style={styles.hubHeroCopy}>
         <ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>ACHIEVEMENTS</ThemedText>
-        <ThemedText typographyRole="sectionTitle" style={styles.hubTitle}>{currentTier == null ? 'Below Tier I' : `${currentTier.name} · Tier ${strengthTierRoman(currentTier.tier)}`}</ThemedText>
+        <ThemedText typographyRole="sectionTitle" style={styles.hubTitle}>{currentTier == null ? 'Below Tier I' : currentTier.name}</ThemedText>
         <ThemedText typographyRole="supportingBody" style={styles.hubCopy}>{totalComplete ? `${number(club.current)} ${unit.toUpperCase()} total · ${earnedTrophies} ${earnedTrophies === 1 ? 'tier' : 'tiers'} earned${nextTier ? ` · ${number(club.next ?? 0)} ${unit.toUpperCase()} unlocks ${nextTier.name}` : ''}.` : 'A Total tier appears when exact governed weight PRs exist for Competition Squat, Competition Bench Press, and Competition Deadlift.'}</ThemedText>
       </View>
     </View>
@@ -341,14 +340,14 @@ function AchievementsHub({
 
     <View style={styles.hubPair}>
       <Pressable testID="achievement-family-clubs" onPress={() => onOpen('clubs')} style={({ pressed }) => [styles.clubDoorway, pressed && styles.pressed]}>
-        <ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>TOTAL CLUBS</ThemedText>
+        <ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>TOTAL STRENGTH TIERS</ThemedText>
         <ThemedText typographyRole="heroNumeric" style={styles.clubDoorwayValue}>{totalComplete ? number(club.current) : '—'}</ThemedText>
         <ThemedText typographyRole="unit" style={styles.clubDoorwayUnit}>CURRENT TOTAL</ThemedText>
         <View style={styles.clubDoorwayPath}>{club.thresholds.map((threshold, index) => <View key={threshold} style={[styles.clubDoorwayStop, index <= club.earnedTierIndex && styles.clubDoorwayStopEarned, index === club.nextTierIndex && styles.clubDoorwayStopNext]} />)}</View>
       </Pressable>
       <Pressable testID="achievement-family-trophies" onPress={() => onOpen('trophies')} style={({ pressed }) => [styles.trophyDoorway, pressed && styles.pressed]}>
-        <ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>TROPHY CABINET</ThemedText>
-        <View style={styles.trophyDoorwayArtifacts}>{[0, 3, 6].map((tierIndex) => <Image key={tierIndex} source={SL_TOTAL_TROPHY_ASSETS[tierIndex]} resizeMode="contain" style={[styles.trophyDoorwayImage, tierIndex > club.earnedTierIndex && styles.totalTierTrophyLocked]} />)}</View>
+        <ThemedText typographyRole="shortTechnicalLabel" style={styles.hubKicker}>STRENGTH TIER CABINET</ThemedText>
+        <View style={styles.trophyDoorwayArtifacts}>{[0, 3, 6].map((tierIndex) => <Image key={tierIndex} source={SL_STRENGTH_TIER_ASSETS[tierIndex]} resizeMode="contain" style={[styles.trophyDoorwayImage, tierIndex > club.earnedTierIndex && styles.totalTierTrophyLocked]} />)}</View>
         <ThemedText typographyRole="supportingBody" style={styles.hubCopy}>{earnedTrophies} of 7 earned</ThemedText>
       </Pressable>
     </View>
@@ -366,18 +365,19 @@ function AchievementsHub({
   </View>;
 }
 
-function TrophyCabinet({ club, unit, complete, onOpen }: { club: TotalClubState; unit: Unit; complete: boolean; onOpen: (label: string, value: string, state: MilestoneState, remaining?: string, sourceHref?: string, note?: string, actionLabel?: string) => void }) {
-  return <View testID="ledger-trophy-cabinet" style={styles.cabinet}>
-    <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>TROPHY CABINET</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Seven sex-specific Total tiers calibrated from the governed OpenPowerlifting cohort. Kilograms are canonical.</ThemedText></View>
+function StrengthTierCabinet({ club, unit, complete, onOpen }: { club: StrengthTierState; unit: Unit; complete: boolean; onOpen: (label: string, value: string, state: MilestoneState, remaining?: string, sourceHref?: string, note?: string, actionLabel?: string) => void }) {
+  return <View testID="ledger-strength-tier-cabinet" style={styles.cabinet}>
+    <View style={styles.cabinetHeader}><ThemedText typographyRole="sectionTitle" style={styles.cabinetTitle}>STRENGTH TIER CABINET</ThemedText><ThemedText typographyRole="supportingBody" style={styles.cabinetCopy}>Seven sex-specific Total tiers calibrated from the Strength Ledger OpenPowerlifting reference standard. Kilograms are canonical.</ThemedText></View>
     {!complete ? <AchievementRequestState kind="empty" message="A complete canonical total is not available yet" /> : null}
     <View style={styles.cabinetGrid}>{club.thresholds.map((threshold, tierIndex) => {
       const state: MilestoneState = tierIndex <= club.earnedTierIndex ? 'completed' : tierIndex === club.nextTierIndex ? 'progress' : 'locked';
       const remaining = state === 'progress' && club.remaining != null ? `${number(club.remaining)} ${unit.toUpperCase()} remaining` : undefined;
       const tier = club.tiers[tierIndex];
-      return <Pressable key={threshold} testID={`total-trophy-${tierIndex}`} onPress={() => onOpen(`${tier.name} Total Tier ${strengthTierRoman(tier.tier)}`, `${number(threshold)} ${unit.toUpperCase()}`, state, remaining, '/(tabs)/ledger/strength', state === 'completed' ? `Earned from exact Competition Squat, Bench Press, and Deadlift weight PRs. This threshold is approximately the ${tier.actual_percentile.toFixed(1)}th percentile of the governed cohort. Tier dates are derived, not stored.` : `Canonical ${tier.threshold_kg} kg threshold · approximately the ${tier.actual_percentile.toFixed(1)}th percentile.`, 'Open Strength evidence')} style={({ pressed }) => [styles.cabinetItem, state === 'progress' && styles.cabinetItemProgress, pressed && styles.pressed]}>
-        <Image source={SL_TOTAL_TROPHY_ASSETS[tierIndex]} resizeMode="contain" style={[styles.cabinetTrophyImage, state !== 'completed' && styles.totalTierTrophyLocked]} />
-        <ThemedText typographyRole="modalTitle" style={styles.cabinetItemTitle}>{tier.name} · Tier {strengthTierRoman(tier.tier)}</ThemedText>
+      return <Pressable key={threshold} testID={`total-strength-tier-${tier.tier}`} onPress={() => onOpen(`Total · ${tier.name}`, `${number(threshold)} ${unit.toUpperCase()}`, state, remaining, '/(tabs)/ledger/strength', state === 'completed' ? `Earned from exact Competition Squat, Bench Press, and Deadlift weight PRs. This threshold is approximately the ${tier.actual_percentile.toFixed(1)}th percentile of the governed cohort. Current standing is recomputed; no achievement date is invented.` : `Canonical ${tier.threshold_kg} kg threshold · approximately the ${tier.actual_percentile.toFixed(1)}th percentile.`, 'Open Strength evidence')} style={({ pressed }) => [styles.cabinetItem, state === 'progress' && styles.cabinetItemProgress, pressed && styles.pressed]}>
+        <Image source={SL_STRENGTH_TIER_ASSETS[tierIndex]} resizeMode="contain" style={[styles.cabinetTrophyImage, state !== 'completed' && styles.totalTierTrophyLocked]} />
+        <ThemedText typographyRole="modalTitle" style={styles.cabinetItemTitle}>{tier.name}</ThemedText>
         <ThemedText typographyRole="milestoneThreshold" style={styles.cabinetThreshold}>{number(threshold)} {unit.toUpperCase()}</ThemedText>
+        <ThemedText typographyRole="caption" style={styles.cabinetPercentile}>~P{tier.actual_percentile.toFixed(1)}</ThemedText>
         <ThemedText typographyRole="shortTechnicalLabel" style={[styles.cabinetState, state === 'completed' && styles.cabinetStateEarned]}>{state === 'completed' ? 'EARNED' : state === 'progress' ? 'NEXT' : 'LOCKED'}</ThemedText>
       </Pressable>;
     })}</View>
@@ -561,18 +561,18 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
             : !strengthStandard && (section === 'hub' || section === 'milestones' || section === 'clubs' || section === 'trophies') ? <AchievementRequestState kind="unavailable" message="A verified male or female strength standard is required before strength tiers can be shown" />
             : section === 'hub' && club ? <AchievementsHub club={club} unit={unit} totalComplete={hasCompleteStrengthTotal} plateSource={hubPlateSource} latestMedallion={volumeMedallions[0]} hasVolume={hasVolumeData} prCount={prHistory.length} onOpen={openSection} />
               : section === 'streaks' ? (liveStreaks.length ? <StreakContent items={liveStreaks} /> : <AchievementRequestState kind="empty" message="No streak evidence yet" />)
-                : section === 'trophies' && club ? <TrophyCabinet club={club} unit={unit} complete={hasCompleteStrengthTotal} onOpen={openDetail} />
+                : section === 'trophies' && club ? <StrengthTierCabinet club={club} unit={unit} complete={hasCompleteStrengthTotal} onOpen={openDetail} />
                   : section === 'medallions' ? <MedallionGallery items={volumeMedallions} onOpen={openDetail} unit={unit} />
                     : section === 'volume' ? (hasVolumeData ? <VolumeAchievementExperience data={volumeDataset} unit={unit} /> : <AchievementRequestState kind="empty" message="No canonical volume evidence yet" />)
                       : section === 'prs' ? <PrHistory events={prHistory} onOpen={(event) => { if (event.source_set_log_id) router.push(archiveDetailHref('set', event.source_set_log_id) as any); }} unit={unit} />
                         : <>
           {section === 'clubs' && hasCompleteStrengthTotal && club ? <View testID="ledger-total-clubs" style={[styles.hero, { minHeight: 386 }]}>
-            <View style={styles.heroTop}><View style={styles.trophyScene}><View style={styles.trophyPedestal}><Image source={SL_TOTAL_TROPHY_ASSETS[highestCompletedTier]} style={[styles.heroTrophyImage, currentTotalTier == null && styles.totalTierTrophyLocked]} resizeMode="contain" /></View></View><View style={styles.heroCopy}><ThemedText typographyRole="shortTechnicalLabel" style={styles.eyebrow}>CURRENT TOTAL</ThemedText><ThemedText typographyRole="sectionTitle" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.heroTierTitle}>{currentTotalTier ? `${currentTotalTier.name} · Tier ${strengthTierRoman(currentTotalTier.tier)}` : 'Below Tier I'}</ThemedText><ThemedText typographyRole="heroNumeric" adjustsFontSizeToFit minimumFontScale={0.55} numberOfLines={1} style={styles.heroValue}>{number(total.current)} <ThemedText typographyRole="unit" style={styles.heroUnit}>{unit.toUpperCase()}</ThemedText></ThemedText><ThemedText typographyRole="caption" style={styles.heroMeta}>{currentTotalTier ? `Reference cohort position ~P${currentTotalTier.actual_percentile.toFixed(1)}` : `Tier I begins at ${number(club.thresholds[0])} ${unit.toUpperCase()}`}</ThemedText></View><View style={styles.nextBlock}><ThemedText typographyRole="shortTechnicalLabel" adjustsFontSizeToFit minimumFontScale={0.5} numberOfLines={nextTotalTier ? 1 : 2} style={styles.nextLabel}>{nextTotalTier ? `NEXT · TIER ${strengthTierRoman(nextTotalTier.tier)}` : 'TIER VII COMPLETE'}</ThemedText><ThemedText typographyRole="shortTechnicalLabel" adjustsFontSizeToFit minimumFontScale={0.6} numberOfLines={1} style={styles.nextValue}>{nextTotalTier ? nextTotalTier.name.toUpperCase() : 'OBSIDIAN'}</ThemedText><ThemedText typographyRole="caption" style={styles.nextSub}>{club.next == null ? 'Highest tier reached' : `${number(total.next)} ${unit.toUpperCase()} · ${number(remaining)} to go`}</ThemedText></View></View>
-            <ThemedText typographyRole="supportingBody" style={styles.percentileContext}>{nextTotalTier ? `Tier ${strengthTierRoman(nextTotalTier.tier)} is approximately P${nextTotalTier.actual_percentile.toFixed(1)} among ${strengthStandard?.sex_label?.toLowerCase()} raw SBD lifters in the governed OpenPowerlifting reference cohort.` : `Tier VII is approximately P${currentTotalTier?.actual_percentile.toFixed(1)} among ${strengthStandard?.sex_label?.toLowerCase()} raw SBD lifters in the governed OpenPowerlifting reference cohort.`}</ThemedText>
+            <View style={styles.heroTop}><View style={styles.trophyScene}><View style={styles.trophyPedestal}><Image source={SL_STRENGTH_TIER_ASSETS[highestCompletedTier]} style={[styles.heroTrophyImage, currentTotalTier == null && styles.totalTierTrophyLocked]} resizeMode="contain" /></View></View><View style={styles.heroCopy}><ThemedText typographyRole="shortTechnicalLabel" style={styles.eyebrow}>CURRENT TOTAL</ThemedText><ThemedText typographyRole="sectionTitle" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.heroTierTitle}>{currentTotalTier?.name ?? 'Below Tier I'}</ThemedText><ThemedText typographyRole="heroNumeric" adjustsFontSizeToFit minimumFontScale={0.55} numberOfLines={1} style={styles.heroValue}>{number(total.current)} <ThemedText typographyRole="unit" style={styles.heroUnit}>{unit.toUpperCase()}</ThemedText></ThemedText><ThemedText typographyRole="caption" style={styles.heroMeta}>{currentTotalTier ? `Reference cohort position ~P${currentTotalTier.actual_percentile.toFixed(1)}` : `Tier I begins at ${number(club.thresholds[0])} ${unit.toUpperCase()}`}</ThemedText></View><View style={styles.nextBlock}><ThemedText typographyRole="shortTechnicalLabel" adjustsFontSizeToFit minimumFontScale={0.5} numberOfLines={nextTotalTier ? 1 : 2} style={styles.nextLabel}>{nextTotalTier ? 'NEXT TIER' : 'TIER VII COMPLETE'}</ThemedText><ThemedText typographyRole="shortTechnicalLabel" adjustsFontSizeToFit minimumFontScale={0.6} numberOfLines={1} style={styles.nextValue}>{nextTotalTier?.name.toUpperCase() ?? 'TIER VII'}</ThemedText><ThemedText typographyRole="caption" style={styles.nextSub}>{club.next == null ? 'Highest tier reached' : `${number(total.next)} ${unit.toUpperCase()} · ${number(remaining)} to go`}</ThemedText></View></View>
+            <ThemedText typographyRole="supportingBody" style={styles.percentileContext}>{nextTotalTier ? `${nextTotalTier.name} is approximately P${nextTotalTier.actual_percentile.toFixed(1)} among ${strengthStandard?.sex_label?.toLowerCase()} raw SBD lifters in the governed OpenPowerlifting reference cohort.` : `Tier VII is approximately P${currentTotalTier?.actual_percentile.toFixed(1)} among ${strengthStandard?.sex_label?.toLowerCase()} raw SBD lifters in the governed OpenPowerlifting reference cohort.`}</ThemedText>
             <View style={styles.progressRow}><View style={styles.progressTrack}><View style={[styles.progressBar, { width: `${totalProgress * 100}%` }]} /></View><ThemedText typographyRole="percentage" style={styles.progressPercent}>{Math.round(totalProgress * 100)}%</ThemedText></View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentOffset={{ x: Math.max(0, totalMilestones.indexOf(total.next) - 2) * 103, y: 0 }} contentContainerStyle={[styles.totalPath, { paddingBottom: 0 }]}>{totalMilestones.map((value, tierIndex) => { const state = stateFor(total.current, value, total.next); const tier = club.tiers[tierIndex]; const isCurrent = tierIndex === club.earnedTierIndex; return <Pressable key={value} testID={`total-club-tier-${tier.tier}`} onPress={() => openDetail(`${tier.name} · Total Tier ${strengthTierRoman(tier.tier)}`, `${number(value)} ${unit.toUpperCase()}`, state, state === 'progress' ? `${number(remaining)} ${unit.toUpperCase()} remaining` : undefined, undefined, `Canonical ${tier.threshold_kg} kg threshold · approximately P${tier.actual_percentile.toFixed(1)} in the governed ${strengthStandard?.sex_label?.toLowerCase()} raw SBD cohort.`)} style={styles.totalStop}><TotalTierTrophy tierIndex={tierIndex} state={state} current={isCurrent} /><ThemedText typographyRole="shortTechnicalLabel" style={[styles.totalTierName, state === 'locked' && styles.mutedText, isCurrent && styles.totalTierNameCurrent]}>{tier.name} · Tier {strengthTierRoman(tier.tier)}</ThemedText><ThemedText typographyRole="milestoneThreshold" style={[styles.totalLabel, state === 'locked' && styles.mutedText]}>{number(value)} {unit.toUpperCase()}</ThemedText><ThemedText typographyRole="caption" style={[styles.totalPercentile, state === 'locked' && styles.mutedText]}>~P{tier.actual_percentile.toFixed(1)}</ThemedText></Pressable>; })}</ScrollView>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentOffset={{ x: Math.max(0, totalMilestones.indexOf(total.next) - 2) * 103, y: 0 }} contentContainerStyle={[styles.totalPath, { paddingBottom: 0 }]}>{totalMilestones.map((value, tierIndex) => { const state = stateFor(total.current, value, total.next); const tier = club.tiers[tierIndex]; const isCurrent = tierIndex === club.earnedTierIndex; return <Pressable key={value} testID={`total-strength-tier-${tier.tier}`} onPress={() => openDetail(`Total · ${tier.name}`, `${number(value)} ${unit.toUpperCase()}`, state, state === 'progress' ? `${number(remaining)} ${unit.toUpperCase()} remaining` : undefined, undefined, `Canonical ${tier.threshold_kg} kg threshold · approximately P${tier.actual_percentile.toFixed(1)} in the governed ${strengthStandard?.sex_label?.toLowerCase()} raw SBD cohort.`)} style={styles.totalStop}><StrengthTierTrophy tierIndex={tierIndex} state={state} current={isCurrent} /><ThemedText typographyRole="shortTechnicalLabel" style={[styles.totalTierName, state === 'locked' && styles.mutedText, isCurrent && styles.totalTierNameCurrent]}>{tier.name}</ThemedText><ThemedText typographyRole="milestoneThreshold" style={[styles.totalLabel, state === 'locked' && styles.mutedText]}>{number(value)} {unit.toUpperCase()}</ThemedText><ThemedText typographyRole="caption" style={[styles.totalPercentile, state === 'locked' && styles.mutedText]}>~P{tier.actual_percentile.toFixed(1)}</ThemedText></Pressable>; })}</ScrollView>
           </View> : null}
-          <SectionHeader title={section === 'clubs' ? 'Core Lift Club Contributions' : 'Strength PR Milestones'} icon="barbell-outline" />
+          <SectionHeader title={section === 'clubs' ? 'Core Lift Tier Contributions' : 'Strength Tier Milestones'} icon="barbell-outline" />
           {liveLifts.map((lift) => <LiftRow key={lift.name} lift={lift} unit={unit} onOpen={openDetail} />)}
           {section === 'milestones' && liveOther.length ? <><SectionHeader title="Other Milestones" icon="star-outline" />{liveOther.map((row) => <OtherRow key={row.id} row={row} />)}</> : null}
         </>}
@@ -621,7 +621,7 @@ function LiftRow({ lift, unit, onOpen }: { lift: Lift; unit: Unit; onOpen: (labe
   return <View style={styles.liftCase}>
     <View style={[styles.liftSummary, compact && styles.liftSummaryCompact, { height: compact ? 132 : HERO_SLEEVE_WINDOW_TUNING.headerHeight, minHeight: compact ? 132 : HERO_SLEEVE_WINDOW_TUNING.headerHeight }]}>
       <View style={[styles.liftIdentityColumn, compact && styles.liftIdentityColumnCompact]}><View style={[styles.liftIdentityArtwork, compact && styles.liftIdentityArtworkCompact]}><Image source={identityAsset} style={[styles.liftIdentityImage, compact && styles.liftIdentityImageCompact]} resizeMode="contain" /></View></View>
-      <View style={[styles.liftMetricBlock, proMax && styles.liftMetricBlockProMax]}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.liftName, { color: lift.tone }]}>{lift.name === 'Bench' ? 'BENCH PRESS' : lift.name.toUpperCase()}</ThemedText><ThemedText typographyRole="shortTechnicalLabel" style={styles.liftCurrentLabel}>{currentTier ? `${currentTier.name.toUpperCase()} · TIER ${strengthTierRoman(currentTier.tier)}` : hasCurrent ? 'BELOW TIER I' : 'CURRENT PR'}</ThemedText><View style={styles.liftHeroMetricRow}><ThemedText typographyRole="heroNumeric" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.62} style={styles.liftHeroMetric}>{hasCurrent ? number(tierCurrent) : '—'}</ThemedText>{hasCurrent ? <ThemedText typographyRole="unit" numberOfLines={1} style={styles.liftHeroUnit}>{unit.toUpperCase()}</ThemedText> : null}</View>{tierState?.next != null && hasCurrent ? <ThemedText typographyRole="caption" style={styles.liftTierMeta}>{number(tierState.remaining ?? 0)} {unit.toUpperCase()} to {tierState.tiers[tierState.nextTierIndex ?? 0].name} · Tier {strengthTierRoman(tierState.tiers[tierState.nextTierIndex ?? 0].tier)}</ThemedText> : null}</View>
+      <View style={[styles.liftMetricBlock, proMax && styles.liftMetricBlockProMax]}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.liftName, { color: lift.tone }]}>{lift.name === 'Bench' ? 'BENCH PRESS' : lift.name.toUpperCase()}</ThemedText><ThemedText typographyRole="shortTechnicalLabel" style={styles.liftCurrentLabel}>{currentTier?.name.toUpperCase() ?? (hasCurrent ? 'BELOW TIER I' : 'CURRENT PR')}</ThemedText><View style={styles.liftHeroMetricRow}><ThemedText typographyRole="heroNumeric" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.62} style={styles.liftHeroMetric}>{hasCurrent ? number(tierCurrent) : '—'}</ThemedText>{hasCurrent ? <ThemedText typographyRole="unit" numberOfLines={1} style={styles.liftHeroUnit}>{unit.toUpperCase()}</ThemedText> : null}</View>{tierState?.next != null && hasCurrent ? <ThemedText typographyRole="caption" style={styles.liftTierMeta}>{number(tierState.remaining ?? 0)} {unit.toUpperCase()} to {tierState.tiers[tierState.nextTierIndex ?? 0].name}</ThemedText> : null}</View>
       <View style={[styles.heroSleeveStage, {
         position: 'absolute',
         right: compact ? 8 : HERO_SLEEVE_WINDOW_TUNING.right,
@@ -676,12 +676,12 @@ function LiftRow({ lift, unit, onOpen }: { lift: Lift; unit: Unit; onOpen: (labe
           const sourceHref = isLatestClub && lift.sourceSetLogId
             ? archiveDetailHref('set', lift.sourceSetLogId)
             : undefined;
-          return <Pressable key={tier.tier} testID={`${liftKey}-strength-tier-${tier.tier}`} style={[styles.liftMilestoneStop, { width: renderedCellWidth }]} onPress={() => onOpen(`${lift.name} · ${tier.name} Tier ${strengthTierRoman(tier.tier)}`, `${number(target)} ${unit.toUpperCase()}`, milestoneState, milestoneState === 'progress' ? `${number(tierState?.remaining ?? 0)} ${unit.toUpperCase()} remaining` : undefined, sourceHref, `Canonical ${tier.threshold_kg} kg threshold · approximately the ${tier.actual_percentile.toFixed(1)}th percentile of the governed cohort.`, sourceHref ? 'Open source evidence' : undefined)}>
+          return <Pressable key={tier.tier} testID={`${liftKey}-strength-tier-${tier.tier}`} style={[styles.liftMilestoneStop, { width: renderedCellWidth }]} onPress={() => onOpen(`${lift.name} · ${tier.name}`, `${number(target)} ${unit.toUpperCase()}`, milestoneState, milestoneState === 'progress' ? `${number(tierState?.remaining ?? 0)} ${unit.toUpperCase()} remaining` : undefined, sourceHref, `Canonical ${tier.threshold_kg} kg threshold · approximately the ${tier.actual_percentile.toFixed(1)}th percentile of the governed cohort.`, sourceHref ? 'Open source evidence' : undefined)}>
             {isLatestClub ? <View pointerEvents="none" style={[styles.latestClubFrame, { borderColor: lift.tone }]} /> : null}
             <ThemedText typographyRole="milestoneThreshold" style={[styles.liftMilestoneValue, isLatestClub && { color: lift.tone }]}>{number(target)}</ThemedText>
-            <Image source={SL_TOTAL_TROPHY_ASSETS[tierIndex]} resizeMode="contain" style={[styles.liftTierTrophy, milestoneState !== 'completed' && styles.totalTierTrophyLocked]} />
+            <Image source={SL_STRENGTH_TIER_ASSETS[tierIndex]} resizeMode="contain" style={[styles.liftTierTrophy, milestoneState !== 'completed' && styles.totalTierTrophyLocked]} />
             <View style={[styles.liftStateMarker, milestoneState === 'progress' ? { borderWidth: 0 } : { borderColor: markerColor }, isLatestClub && { backgroundColor: '#111722' }]}>{milestoneState === 'progress' ? <Arc progress={tierState?.progress ?? 0} color={lift.tone} trackColor="#59677A" size={25} width={2} /> : null}<Ionicons name={isLatestClub ? 'star' : milestoneState === 'completed' ? 'checkmark' : 'lock-closed'} size={isLatestClub ? 15 : 14} color={pending ? '#8D98A7' : lift.tone} /></View>
-            <ThemedText typographyRole="caption" numberOfLines={2} ellipsizeMode="clip" adjustsFontSizeToFit minimumFontScale={0.82} style={[styles.clubLabel, milestoneState === 'locked' && styles.mutedText, { color: clubTone }, isLatestClub && { fontWeight: '800' }]}>{tier.name}{'\n'}Tier {strengthTierRoman(tier.tier)} · P{tier.actual_percentile.toFixed(1)}</ThemedText>
+            <ThemedText typographyRole="caption" numberOfLines={2} ellipsizeMode="clip" adjustsFontSizeToFit minimumFontScale={0.82} style={[styles.clubLabel, milestoneState === 'locked' && styles.mutedText, { color: clubTone }, isLatestClub && { fontWeight: '800' }]}>{tier.name}{'\n'}P{tier.actual_percentile.toFixed(1)}</ThemedText>
           </Pressable>;
         })}
       </ScrollView>
@@ -783,6 +783,7 @@ const styles = StyleSheet.create({
   cabinetTrophyImage: { width: 132, height: 138 },
   cabinetItemTitle: { color: '#EAEBEF', fontSize: 14, lineHeight: 18 },
   cabinetThreshold: { color: '#AEB4BE', fontSize: 12, lineHeight: 15, marginTop: 2 },
+  cabinetPercentile: { color: '#8E98A8', fontSize: 10.5, lineHeight: 14, marginTop: 1 },
   cabinetState: { color: '#717A88', fontSize: 8, lineHeight: 10, letterSpacing: 0.7, marginTop: 6 },
   cabinetStateEarned: { color: '#E5B854' },
   medallionGallery: { paddingTop: 8 },
@@ -806,7 +807,7 @@ const styles = StyleSheet.create({
   screen: { backgroundColor: 'transparent' }, canvas: { flex: 1, backgroundColor: 'transparent' }, content: { paddingTop: SLLayout.screenTop, paddingBottom: SLLayout.tabBarClearance + SLLayout.floatingUtilityClearance, gap: 8 },
   navHeader: { height: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }, navButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: '#0D121B', borderWidth: 1, borderColor: '#202936' }, headerSelector: { flex: 1, height: 44, flexDirection: 'row', padding: 3, borderRadius: 12, backgroundColor: '#10151F', borderWidth: 1, borderColor: '#202836' }, headerSelectorOption: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, borderRadius: 9 }, headerSelectorActive: { backgroundColor: '#28124B', borderWidth: 1, borderColor: '#7D38C6', shadowColor: '#9D55FF', shadowOpacity: 0.34, shadowRadius: 9, shadowOffset: { width: 0, height: 2 } }, headerSelectorText: { fontFamily: SLFontFamilies.bodySemiBold, fontWeight: '400', fontSize: 12, lineHeight: 16, color: '#939BA8' }, headerSelectorTextActive: { color: '#F2EDFF' },
   introRow: { flexDirection: 'row', alignItems: 'center', marginTop: 11, marginBottom: 6 }, intro: { ...SLTypography.rowMeta, color: '#B7BFCD', flex: 1 }, unitControl: { backgroundColor: '#171123', borderColor: '#8D4BE4' }, unitControlText: { ...SLTypography.label, color: '#F5EFFF', letterSpacing: 0.5 },
-  hero: { minHeight: 380, overflow: 'hidden', paddingTop: 19, paddingBottom: 13, paddingHorizontal: 16, borderRadius: 17, borderWidth: 1, borderColor: '#293245', shadowColor: '#000000', shadowOpacity: 0.55, shadowRadius: 14, shadowOffset: { width: 0, height: 8 } }, heroTop: { flexDirection: 'row', alignItems: 'center', minHeight: 132 }, trophyScene: { width: 88, alignItems: 'center', justifyContent: 'center' }, trophyGlow: { position: 'absolute', width: 102, height: 70, borderRadius: 51, backgroundColor: 'rgba(255,176,33,0.18)', shadowColor: '#CE8B19', shadowOpacity: 0.75, shadowRadius: 18 }, trophyAura: { position: 'absolute', left: -20, top: -15 }, trophyPedestal: { width: 94, height: 110, alignItems: 'center', justifyContent: 'center' }, heroTrophyImage: { width: 104, height: 114 }, heroCopy: { flex: 1, minWidth: 0, marginLeft: 2, alignSelf: 'center' }, eyebrow: { ...SLTypography.utilityLabel, color: '#B9C0CE', letterSpacing: 0.7 }, heroTierTitle: { color: '#F2D188', fontSize: 16, lineHeight: 20, marginTop: 3 }, heroValue: { fontFamily: SLTypography.hero.fontFamily, fontSize: 32, lineHeight: 38, color: '#F7F8FB', letterSpacing: -1.1, marginTop: 1 }, heroUnit: { ...SLTypography.cardTitle, color: '#BB70FF', letterSpacing: 0 }, heroMeta: { ...SLTypography.rowMeta, color: '#9AA4B3', marginTop: 1 }, nextBlock: { width: 116, alignSelf: 'center', paddingLeft: 10, borderLeftWidth: 1, borderColor: '#2B3445' }, nextLabel: { ...SLTypography.micro, color: '#B596D8', letterSpacing: 0.35 }, nextValue: { ...SLTypography.sectionTitle, color: '#F3F4F7', marginTop: 3, fontSize: 11, lineHeight: 15 }, nextUnit: { ...SLTypography.label, color: '#B86DFF' }, nextSub: { ...SLTypography.micro, color: '#A5AFBE', marginTop: 3 }, percentileContext: { color: '#A9B0BC', fontSize: 10.5, lineHeight: 15, marginTop: 2 }, progressRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10 }, progressTrack: { flex: 1, height: 12, borderRadius: 8, overflow: 'hidden', backgroundColor: '#202735', borderWidth: 1, borderColor: '#2C3545' }, progressBar: { height: '100%', borderRadius: 7, backgroundColor: '#A14FFF', shadowColor: '#A14FFF', shadowOpacity: 0.8, shadowRadius: 7 }, progressPercent: { ...SLTypography.label, color: '#ECEDF2' }, totalPath: { paddingTop: 16, paddingBottom: 5, gap: 12, paddingRight: 18 }, totalStop: { minWidth: 92, alignItems: 'center' }, totalTrophy: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 }, totalTrophyCurrent: { borderWidth: 2.5, shadowColor: '#B86DFF', shadowOpacity: 0.85, shadowRadius: 10, shadowOffset: { width: 0, height: 2 } }, totalTrophyInset: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1 }, totalTierTrophyImage: { width: 70, height: 76, marginTop: -6 }, totalTierTrophyObsidian: { width: 80, height: 88, marginTop: -12 }, totalTierTrophyLocked: { opacity: 0.42 }, totalEarned: { backgroundColor: '#141922', borderColor: '#E2B64C', shadowColor: '#E5A51B', shadowOpacity: 0.63, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }, totalProgress: { backgroundColor: '#201B34', borderColor: '#A961FF' }, totalLocked: { backgroundColor: '#141922', borderColor: '#354050' }, totalTierName: { color: '#BFC5CF', fontSize: 8, lineHeight: 10, marginTop: 8, textAlign: 'center' }, totalTierNameCurrent: { color: '#E9C8FF' }, totalLabel: { ...SLTypography.label, color: '#E4E7EC', marginTop: 2 }, totalPercentile: { color: '#939DAC', fontSize: 8.5, lineHeight: 11, marginTop: 1 }, totalUnit: { ...SLTypography.micro, color: '#929CAC', marginTop: 1 },
+  hero: { minHeight: 380, overflow: 'hidden', paddingTop: 19, paddingBottom: 13, paddingHorizontal: 16, borderRadius: 17, borderWidth: 1, borderColor: '#293245', shadowColor: '#000000', shadowOpacity: 0.55, shadowRadius: 14, shadowOffset: { width: 0, height: 8 } }, heroTop: { flexDirection: 'row', alignItems: 'center', minHeight: 132 }, trophyScene: { width: 88, alignItems: 'center', justifyContent: 'center' }, trophyGlow: { position: 'absolute', width: 102, height: 70, borderRadius: 51, backgroundColor: 'rgba(255,176,33,0.18)', shadowColor: '#CE8B19', shadowOpacity: 0.75, shadowRadius: 18 }, trophyAura: { position: 'absolute', left: -20, top: -15 }, trophyPedestal: { width: 94, height: 110, alignItems: 'center', justifyContent: 'center' }, heroTrophyImage: { width: 104, height: 114 }, heroCopy: { flex: 1, minWidth: 0, marginLeft: 2, alignSelf: 'center' }, eyebrow: { ...SLTypography.utilityLabel, color: '#B9C0CE', letterSpacing: 0.7 }, heroTierTitle: { color: '#F2D188', fontSize: 16, lineHeight: 20, marginTop: 3 }, heroValue: { fontFamily: SLTypography.hero.fontFamily, fontSize: 32, lineHeight: 38, color: '#F7F8FB', letterSpacing: -1.1, marginTop: 1 }, heroUnit: { ...SLTypography.cardTitle, color: '#BB70FF', letterSpacing: 0 }, heroMeta: { ...SLTypography.rowMeta, color: '#9AA4B3', marginTop: 1 }, nextBlock: { width: 116, alignSelf: 'center', paddingLeft: 10, borderLeftWidth: 1, borderColor: '#2B3445' }, nextLabel: { ...SLTypography.micro, color: '#B596D8', letterSpacing: 0.35 }, nextValue: { ...SLTypography.sectionTitle, color: '#F3F4F7', marginTop: 3, fontSize: 11, lineHeight: 15 }, nextUnit: { ...SLTypography.label, color: '#B86DFF' }, nextSub: { ...SLTypography.micro, color: '#A5AFBE', marginTop: 3 }, percentileContext: { color: '#A9B0BC', fontSize: 10.5, lineHeight: 15, marginTop: 2 }, progressRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10 }, progressTrack: { flex: 1, height: 12, borderRadius: 8, overflow: 'hidden', backgroundColor: '#202735', borderWidth: 1, borderColor: '#2C3545' }, progressBar: { height: '100%', borderRadius: 7, backgroundColor: '#A14FFF', shadowColor: '#A14FFF', shadowOpacity: 0.8, shadowRadius: 7 }, progressPercent: { ...SLTypography.label, color: '#ECEDF2' }, totalPath: { paddingTop: 16, paddingBottom: 5, gap: 12, paddingRight: 18 }, totalStop: { minWidth: 92, alignItems: 'center' }, totalTrophy: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 }, totalTrophyCurrent: { borderWidth: 2.5, shadowColor: '#B86DFF', shadowOpacity: 0.85, shadowRadius: 10, shadowOffset: { width: 0, height: 2 } }, totalTrophyInset: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1 }, totalTierTrophyImage: { width: 70, height: 76, marginTop: -6 }, totalTierTrophyFinal: { width: 80, height: 88, marginTop: -12 }, totalTierTrophyLocked: { opacity: 0.42 }, totalEarned: { backgroundColor: '#141922', borderColor: '#E2B64C', shadowColor: '#E5A51B', shadowOpacity: 0.63, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }, totalProgress: { backgroundColor: '#201B34', borderColor: '#A961FF' }, totalLocked: { backgroundColor: '#141922', borderColor: '#354050' }, totalTierName: { color: '#BFC5CF', fontSize: 8, lineHeight: 10, marginTop: 8, textAlign: 'center' }, totalTierNameCurrent: { color: '#E9C8FF' }, totalLabel: { ...SLTypography.label, color: '#E4E7EC', marginTop: 2 }, totalPercentile: { color: '#939DAC', fontSize: 8.5, lineHeight: 11, marginTop: 1 }, totalUnit: { ...SLTypography.micro, color: '#929CAC', marginTop: 1 },
   sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 17, marginBottom: 7 }, sectionTitle: { fontFamily: SLFontFamilies.bodySemiBold, fontWeight: '400', fontSize: 14, lineHeight: 18, color: '#C8CED9', letterSpacing: 0.55, textTransform: 'uppercase' },
   liftCase: { overflow: 'hidden', borderRadius: 15, borderWidth: 1, borderColor: '#222D3F', shadowColor: '#000', shadowOpacity: 0.32, shadowRadius: 9, shadowOffset: { width: 0, height: 5 } },
   liftSummary: { minHeight: 124, flexDirection: 'row', alignItems: 'center', paddingLeft: 8, paddingRight: 14, paddingVertical: 10 },

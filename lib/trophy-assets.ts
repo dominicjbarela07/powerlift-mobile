@@ -20,7 +20,12 @@ export const SL_TROPHY_ASSETS: Record<SLTrophyTier, ImageSourcePropType> = {
   obsidian: require('@/assets/images/total-tier-obsidian.png'),
 };
 
-export const SL_TOTAL_TROPHY_ASSETS = SL_TROPHY_TIERS.map((tier) => SL_TROPHY_ASSETS[tier]);
+/**
+ * Presentation art indexed by the governed Strength Tier number (I–VII).
+ * The metal filenames are historical art-production details only; no metal
+ * name or pound-club requirement crosses this strength-achievement boundary.
+ */
+export const SL_STRENGTH_TIER_ASSETS = SL_TROPHY_TIERS.map((tier) => SL_TROPHY_ASSETS[tier]);
 
 export function isLegacyTrophyGlyph(name: string) {
   return name === 'trophy'

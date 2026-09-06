@@ -111,7 +111,7 @@ assert.match(indexExperience, /progression\?\.readiness\?\.average/, 'Readiness 
 assert.match(indexExperience, /loadConvention === 'assistance_load'/, 'Latest Entry labels assisted load only from its canonical load convention');
 assert.match(indexExperience, /RAW_COMPLETION_EVENT_TYPES/, 'Latest Entry must reject raw completion event labels');
 assert.doesNotMatch(indexExperience, /const latest = events\[0\]/, 'Latest Entry must not render the first raw accomplishment event');
-assert.match(indexExperience, /LEDGER_INDEX_ASSETS\.careerPr[\s\S]*SL_TOTAL_TROPHY_ASSETS/, 'purpose-built PR artwork and approved trophies power distinct Career Snapshot concepts');
+assert.match(indexExperience, /LEDGER_INDEX_ASSETS\.careerPr[\s\S]*SL_STRENGTH_TIER_ASSETS/, 'purpose-built PR artwork and governed strength-tier trophies power distinct Career Snapshot concepts');
 assert.doesNotMatch(indexExperience, /borderLeftWidth/, 'Index hierarchy cannot use colored accent rails');
 assert.match(indexMaturity, /completedWorkouts >= 500[\s\S]*completedWorkouts >= 100[\s\S]*completedWorkouts >= 10/, 'maturity comes from one deterministic canonical-workout resolver');
 assert.match(indexMaturity, /anniversary[\s\S]*major-pr[\s\S]*achievement[\s\S]*meet[\s\S]*reviewed-video[\s\S]*strength-change[\s\S]*rediscovery/, 'daily evidence priority is deterministic');

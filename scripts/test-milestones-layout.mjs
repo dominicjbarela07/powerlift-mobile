@@ -13,8 +13,6 @@ import {
   milestoneCellWidth,
   milestoneScrollOffset,
   milestoneWindowStart,
-  plateClubLabel,
-  readablePlateClubLabel,
   roundToGymWeight,
 } from '../lib/milestones-layout.ts';
 
@@ -40,13 +38,10 @@ for (const [device, viewportWidth] of [
   assert.ok(viewportWidth - occupied < MILESTONE_VISIBLE_CELL_COUNT, `${device} width allocation must not waste a full cell`);
 }
 
-assert.equal(milestoneWindowStart([95, 135, 185, 225, 275, 315, 365, 405], 315), 4);
-assert.equal(milestoneWindowStart([585, 635, 675, 725], 725), 0);
+assert.equal(milestoneWindowStart([150, 175, 195, 215, 240, 275, 315], 240), 3);
+assert.equal(milestoneWindowStart([590, 655, 730, 825], 825), 0);
 assert.equal(milestoneScrollOffset(4, 90), 376);
 
-assert.equal(readablePlateClubLabel('Plate Club'), 'Plate Club');
-assert.equal(readablePlateClubLabel('2¼ Plate Club'), '2¼\nPlate Club');
-assert.equal(readablePlateClubLabel('5 Plate Club'), '5\nPlate Club');
 
 assert.deepEqual(
   [60, 50, 40, 30, 25, 22.5].map(kgTotalToPlateModelTotalLb),
@@ -73,14 +68,6 @@ assert.equal(displayWeightFromCanonicalLb(455, 'kg'), 207.5);
 assert.equal(gymTotalToPlateModelTotalLb(205, 'kg'), 465, '205 kg must preserve four 20 kg, one 10 kg, and one 2.5 kg plate per side');
 assert.equal(gymTotalToPlateModelTotalLb(142.5, 'kg'), 320, '142.5 kg must preserve three 20 kg and one 1.25 kg plate per side');
 assert.equal(gymTotalToPlateModelTotalLb(455, 'lb'), 455, 'valid 5 lb totals must retain their exact pound loading');
-assert.equal(plateClubLabel(40, 'kg'), 'Half Plate Club');
-assert.equal(plateClubLabel(60, 'kg'), '1 Plate Club');
-assert.equal(plateClubLabel(80, 'kg'), '1½ Plate Club');
-assert.equal(plateClubLabel(300, 'kg'), '7 Plate Club');
-assert.equal(plateClubLabel(585, 'lb'), '6 Plate Club');
-assert.equal(plateClubLabel(635, 'lb'), '6½ Plate Club');
-assert.equal(plateClubLabel(725, 'lb'), '7½ Plate Club');
-assert.equal(plateClubLabel(895, 'lb'), '9½ Plate Club');
 
 assert.doesNotMatch(liftPresentations, /currentLb|current:\s*\{/, 'lift presentation policy must not embed athlete PR values');
 assert.match(screen, /LIFT_PRESENTATIONS\.map\(\(lift\): Lift =>/, 'every competition lift must render independently from canonical current-best responses');
@@ -113,7 +100,7 @@ assert.doesNotMatch(screen, /liftMilestoneStop: \{ width: 104/, 'milestone cells
 assert.match(screen, /typographyRole="caption" numberOfLines=\{2\} ellipsizeMode="clip"/, 'strength-tier labels must use a two-line Exo 2 word role without tail ellipsis');
 assert.match(screen, /\(tierState\?\.tiers \?\? \[\]\)\.map/, 'per-lift thresholds must come from the supported versioned standard rather than an embedded plate ladder');
 assert.match(screen, /tier\.actual_percentile\.toFixed\(1\)/, 'each strength tier must expose the empirical percentile represented by its rounded kg threshold');
-assert.match(screen, /SL_TOTAL_TROPHY_ASSETS\[tierIndex\]/, 'the established seven-tier trophy family must remain the tier artwork authority');
+assert.match(screen, /SL_STRENGTH_TIER_ASSETS\[tierIndex\]/, 'the governed Tier I–VII artwork registry must remain the tier artwork authority');
 
 assert.match(screen, /useFocusEffect\(useCallback/, 'the screen must restore a safe top position whenever it receives focus');
 assert.match(screen, /scrollTo\(\{ x: 0, y: 0, animated: false \}\)/, 'focus restoration must begin below the fixed app header');

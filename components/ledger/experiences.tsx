@@ -25,7 +25,7 @@ import {
   type JourneyOverview,
 } from '@/lib/ledger-journey';
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
-import { projectedStrengthTierState, strengthTierRoman, strengthTierState, supportedStrengthStandard } from '@/lib/ledger-rewards';
+import { projectedStrengthTierState, strengthTierState, supportedStrengthStandard } from '@/lib/ledger-rewards';
 import { canRenderGymTotal, displayWeightFromCanonicalLb } from '@/lib/milestones-layout';
 import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
@@ -724,8 +724,8 @@ export function StrengthExperience() {
       >
         <View style={styles.strengthMilestoneCopy}>
           <Kicker tone={focusedProfile.color}>CURRENT STRENGTH TIER</Kicker>
-          <Text style={styles.strengthMilestoneTitle}>{!strengthStandard ? 'Verified sex-specific standard unavailable.' : currentStrengthTier ? `${currentStrengthTier.name} · Tier ${strengthTierRoman(currentStrengthTier.tier)}` : 'Below Tier I.'}</Text>
-          <Text style={styles.strengthMilestoneMeta}>{!strengthStandard ? 'A supported male or female identity is required; Strength Ledger will not guess.' : focusedProfile.canonicalWeightBestKg == null ? 'An exact governed competition-lift Weight PR establishes tier progress.' : nextStrengthTier == null ? `${strengthTier?.current} ${unit.toUpperCase()} current PR · Obsidian Tier VII reached (~P${currentStrengthTier?.actual_percentile.toFixed(1)})` : `${strengthTier?.current} ${unit.toUpperCase()} current PR · ${strengthTier?.remaining} ${unit.toUpperCase()} to ${nextStrengthTier.name} Tier ${strengthTierRoman(nextStrengthTier.tier)} (${strengthTier?.next} ${unit.toUpperCase()}, ~P${nextStrengthTier.actual_percentile.toFixed(1)})`}</Text>
+          <Text style={styles.strengthMilestoneTitle}>{!strengthStandard ? 'Verified sex-specific standard unavailable.' : currentStrengthTier?.name ?? 'Below Tier I.'}</Text>
+          <Text style={styles.strengthMilestoneMeta}>{!strengthStandard ? 'A supported male or female identity is required; Strength Ledger will not guess.' : focusedProfile.canonicalWeightBestKg == null ? 'An exact governed competition-lift Weight PR establishes tier progress.' : nextStrengthTier == null ? `${strengthTier?.current} ${unit.toUpperCase()} current PR · Tier VII reached (~P${currentStrengthTier?.actual_percentile.toFixed(1)})` : `${strengthTier?.current} ${unit.toUpperCase()} current PR · ${strengthTier?.remaining} ${unit.toUpperCase()} to ${nextStrengthTier.name} (${strengthTier?.next} ${unit.toUpperCase()}, ~P${nextStrengthTier.actual_percentile.toFixed(1)})`}</Text>
           <View style={styles.strengthMilestoneAction}><Text style={[styles.strengthMilestoneActionText, { color: focusedProfile.color }]}>Open seven-tier progression</Text><Ionicons name="arrow-forward" size={14} color={focusedProfile.color} /></View>
         </View>
         <View style={styles.strengthMilestoneArtifact}>{strengthPlateRender?.imageSource ? <Image source={strengthPlateRender.imageSource} resizeMode="contain" style={styles.strengthMilestonePlate} /> : <Ionicons name="barbell-outline" size={37} color="#596371" />}</View>

@@ -62,7 +62,7 @@ assert.match(resolver, /normalized\.includes\('squat'\)[\s\S]*normalized\.includ
 assert.match(resolver, /return null;/, 'genuinely unknown lift families retain a safe explicit fallback boundary');
 assert.match(resolver, /LEDGER_INDEX_ASSET_GOVERNANCE/, 'new Ledger artwork must publish governed asset metadata');
 assert.doesNotMatch(source, /resolvePlateStackRender|fallbackPlate|prMedallion/, 'valid core lifts, Sets, and PRs must not resolve through generic load imagery');
-assert.match(source, /SL_TOTAL_TROPHY_ASSETS/, 'Achievements must retain the approved trophy system');
+assert.match(source, /SL_STRENGTH_TIER_ASSETS/, 'Achievements must retain the governed Tier I–VII artwork');
 assert.match(source, /hero: \{ minHeight: 160, justifyContent: 'flex-end'/, 'Ledger hero must not restore the oversized top dead space');
 assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'Ledger hero must preserve the breathing room before Career Snapshot');
 assert.match(source, /heroCopy: \{ gap: 4, paddingHorizontal: 18, paddingBottom: 25 \}/, 'Ledger hero copy must preserve its intentional bottom breathing room');

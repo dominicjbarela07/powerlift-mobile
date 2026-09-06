@@ -8,11 +8,10 @@ import {
   STRENGTH_KG_TO_LB,
   STRENGTH_STANDARD_VERSION,
   projectedStrengthTierState,
-  strengthTierRoman,
   strengthTierState,
   supportedStrengthStandard,
-  totalClubState,
-  TOTAL_TROPHY_TIER_NAMES,
+  totalStrengthTierState,
+  STRENGTH_TIER_LABELS,
 } from '../lib/ledger-rewards.ts';
 
 const thresholds = {
@@ -40,7 +39,7 @@ const standard = (sex) => ({
   sex_label: sex === 'M' ? 'Male' : 'Female',
   metrics: Object.fromEntries(Object.entries(thresholds[sex]).map(([metric, values]) => [metric, values.map((thresholdKg, index) => ({
     tier: index + 1,
-    name: TOTAL_TROPHY_TIER_NAMES[index],
+    name: STRENGTH_TIER_LABELS[index],
     target_percentile: targetPercentiles[index],
     actual_percentile: targetPercentiles[index],
     threshold_kg: thresholdKg,
@@ -84,7 +83,7 @@ assert.equal(strengthTierState(430, 'total', standard('M'), 'kg').earnedTierInde
 assert.equal(strengthTierState(430, 'total', standard('F'), 'kg').earnedTierIndex, 5, 'sex-specific ladders must resolve independently');
 assert.equal(supportedStrengthStandard({ ...standard('M'), sex: null }), null, 'unknown sex must fail closed');
 assert.equal(supportedStrengthStandard({ ...standard('M'), version: 'legacy' }), null, 'unknown standard versions must fail closed');
-assert.deepEqual(Array.from({ length: 7 }, (_, index) => strengthTierRoman(index + 1)), ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']);
+assert.deepEqual(STRENGTH_TIER_LABELS, ['Tier I', 'Tier II', 'Tier III', 'Tier IV', 'Tier V', 'Tier VI', 'Tier VII']);
 
 const sparse = canonicalTotal([best(1, 'competition_squat', 180, 101)]);
 assert.equal(sparse.complete, false);
@@ -100,8 +99,8 @@ assert.equal(dense.kg, 580, 'canonical total must be the unrounded sum of kg evi
 assert.equal(dense.lb, 1279, 'lb total must be one exact conversion of the canonical kg total');
 assert.deepEqual(dense.lifts.map((lift) => lift.sourceSetLogId), [101, 102, 103]);
 
-const clubKg = totalClubState(dense, standard('M'), 'kg');
-const clubLb = totalClubState(dense, standard('M'), 'lb');
+const clubKg = totalStrengthTierState(dense, standard('M'), 'kg');
+const clubLb = totalStrengthTierState(dense, standard('M'), 'lb');
 assert.equal(clubKg.earnedTierIndex, 2);
 assert.equal(clubLb.earnedTierIndex, clubKg.earnedTierIndex);
 assert.equal(clubKg.nextKg, 590);

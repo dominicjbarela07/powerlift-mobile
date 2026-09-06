@@ -7,7 +7,7 @@ import {
   resolveLedgerClubsRuntimeState,
   STRENGTH_KG_TO_LB,
   STRENGTH_STANDARD_VERSION,
-  TOTAL_TROPHY_TIER_NAMES,
+  STRENGTH_TIER_LABELS,
 } from '../lib/ledger-rewards.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -53,7 +53,7 @@ const standard = (sex) => ({
   sex_label: sex === 'M' ? 'Male' : 'Female',
   metrics: Object.fromEntries(Object.entries(thresholds[sex]).map(([metric, values]) => [metric, values.map((thresholdKg, index) => ({
     tier: index + 1,
-    name: TOTAL_TROPHY_TIER_NAMES[index],
+    name: STRENGTH_TIER_LABELS[index],
     target_percentile: percentiles[index],
     actual_percentile: percentiles[index],
     threshold_kg: thresholdKg,
@@ -100,16 +100,16 @@ const standing = (sex, currentBests) => {
   };
 };
 
-const maleItems = [best(1, 'squat', 193), best(2, 'bench', 110), best(3, 'deadlift', 189)];
+const maleItems = [best(1, 'squat', 193), best(2, 'bench', 110), best(3, 'deadlift', 189.2)];
 const maleStanding = standing('M', maleItems);
 const maleKg = resolveLedgerClubsRuntimeState(maleItems, standard('M'), maleStanding, 'kg');
 const maleLb = resolveLedgerClubsRuntimeState(maleItems, standard('M'), maleStanding, 'lb');
-assert.equal(maleKg.total.kg, 492, 'the supplied athlete scenario must total approximately 492 canonical kg');
+assert.equal(maleKg.total.kg, 492.2, 'the supplied athlete scenario must total approximately 492 canonical kg');
 assert.equal(maleKg.totalState.earnedTierIndex, 0, '492 kg male Total must be Tier I');
 assert.equal(maleKg.totalState.nextTierIndex, 1, '492 kg male Total must target Tier II');
 assert.equal(maleKg.totalState.nextKg, 500);
 assert.equal(maleLb.totalState.next, 1102, '500 canonical kg must render as 1,102 lb');
-assert.equal(maleLb.totalState.remaining, 18, 'remaining display must derive from 8 canonical kg');
+assert.equal(maleLb.totalState.remaining, 17, 'remaining display must derive from the canonical kg gap');
 assert.ok(!maleLb.totalState.thresholds.includes(1500), '1,500 lb must never be an active Total threshold');
 assert.deepEqual(maleKg.totalState.thresholds, thresholds.M.total);
 assert.deepEqual(maleKg.lifts.map((lift) => lift.tierState.thresholds), [thresholds.M.squat, thresholds.M.bench, thresholds.M.deadlift]);

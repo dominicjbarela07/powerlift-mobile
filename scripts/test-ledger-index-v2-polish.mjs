@@ -20,7 +20,7 @@ assert.doesNotMatch(index, /resolvePlateStackRender|plateArtwork|fallbackPlate/,
 assert.match(index, /liftArtworkFallback[\s\S]*barbell-outline/, 'a genuinely unknown core family retains a safe neutral fallback');
 assert.match(index, /careerSets/, 'Sets uses purpose-built logged-work artwork');
 assert.match(index, /careerPr/, 'PR count uses purpose-built record artwork');
-assert.match(index, /SL_TOTAL_TROPHY_ASSETS/, 'Achievements retain the approved trophy system');
+assert.match(index, /SL_STRENGTH_TIER_ASSETS/, 'Achievements retain the governed Tier I–VII artwork');
 
 assert.match(index, /eventReps[\s\S]*actual_reps[\s\S]*rep_count/, 'performed reps come from structured canonical evidence');
 assert.match(index, /source_set_log_id \? `set:\$\{event\.source_set_log_id\}`/, 'same-performance PR evidence is grouped by source SetLog');

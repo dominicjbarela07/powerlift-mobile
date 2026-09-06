@@ -38,7 +38,7 @@ for (const [surface, source] of [['Strength', strength], ['Ledger index', index]
 assert.match(achievements, /resolveLedgerClubsRuntimeState\(/, 'Achievements must resolve the governed live Clubs projection');
 assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\[key\]/, 'per-lift achievement rows must prefer the server projection');
 assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\.total/, 'Total trophies must prefer the server projection');
-assert.match(achievements, /strengthTierRoman\(tier\.tier\)/, 'achievement cards must show Tier I–VII names');
+assert.match(achievements, /\{tier\.name\}/, 'achievement cards must show the serialized Tier I–VII identity');
 assert.match(achievements, /OpenPowerlifting reference cohort/, 'Clubs must explain the competitive percentile cohort');
 assert.match(achievements, /actual_percentile/, 'achievement details must explain cohort position');
 assert.match(achievements, /numberOfLines=\{1\} adjustsFontSizeToFit minimumFontScale=\{0\.6\} style=\{styles\.heroTierTitle\}/, 'long Tier VII titles must remain on one line so the current total stays visible');

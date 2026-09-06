@@ -19,21 +19,15 @@ import type {
 export const STRENGTH_STANDARD_VERSION = 'opl_2026_09_04_b8b9bf6e_v1' as const;
 export const STRENGTH_KG_TO_LB = 2.2046226218;
 
-export const TOTAL_TROPHY_TIER_NAMES = [
-  'Steel',
-  'Bronze',
-  'Silver',
-  'Gold',
-  'Platinum',
-  'Diamond',
-  'Obsidian',
+export const STRENGTH_TIER_LABELS = [
+  'Tier I',
+  'Tier II',
+  'Tier III',
+  'Tier IV',
+  'Tier V',
+  'Tier VI',
+  'Tier VII',
 ] as const;
-export const STRENGTH_TIER_ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'] as const;
-
-export function strengthTierRoman(tier: number): string {
-  return STRENGTH_TIER_ROMAN[tier - 1] ?? String(tier);
-}
-
 export const CAREER_PR_EVENT_TYPES = new Set([
   'CORE_WEIGHT_PR',
   'CORE_E1RM_PR',
@@ -59,7 +53,7 @@ export type CanonicalTotal = Readonly<{
   lifts: readonly CanonicalLiftWeightBest[];
 }>;
 
-export type TotalClubState = Readonly<{
+export type StrengthTierState = Readonly<{
   metric: StrengthMetric;
   standardVersion: typeof STRENGTH_STANDARD_VERSION;
   tiers: readonly StrengthTierDefinition[];
@@ -82,14 +76,14 @@ export type LedgerClubsLiftState = Readonly<{
   canonicalWeightKg: number | null;
   currentLb: number | null;
   sourceSetLogId: number | null;
-  tierState: TotalClubState | null;
+  tierState: StrengthTierState | null;
 }>;
 
 export type LedgerClubsRuntimeState = Readonly<{
   standard: StrengthStandardProjection | null;
   standing: StrengthStandingProjection | null;
   total: CanonicalTotal;
-  totalState: TotalClubState | null;
+  totalState: StrengthTierState | null;
   lifts: readonly LedgerClubsLiftState[];
 }>;
 
@@ -153,10 +147,10 @@ export function supportedStrengthStandard(
   const metrics: StrengthMetric[] = ['total', 'squat', 'bench', 'deadlift'];
   for (const metric of metrics) {
     const tiers = candidate.metrics[metric];
-    if (!tiers || tiers.length !== TOTAL_TROPHY_TIER_NAMES.length) return null;
+    if (!tiers || tiers.length !== STRENGTH_TIER_LABELS.length) return null;
     if (tiers.some((tier, index) => (
       tier.tier !== index + 1
-      || tier.name !== TOTAL_TROPHY_TIER_NAMES[index]
+      || tier.name !== STRENGTH_TIER_LABELS[index]
       || !Number.isFinite(tier.threshold_kg)
       || tier.threshold_kg <= 0
       || Math.round(tier.threshold_kg * STRENGTH_KG_TO_LB) !== tier.display_lb
@@ -171,7 +165,7 @@ export function strengthTierState(
   metric: StrengthMetric,
   standard: StrengthStandardProjection,
   unit: LedgerUnit,
-): TotalClubState | null {
+): StrengthTierState | null {
   const supported = supportedStrengthStandard(standard);
   const tiers = supported?.metrics[metric];
   if (!supported || !tiers || !Number.isFinite(currentKg) || currentKg < 0) return null;
@@ -210,7 +204,7 @@ export function projectedStrengthTierState(
   metric: StrengthMetric,
   standard: StrengthStandardProjection,
   unit: LedgerUnit,
-): TotalClubState | null {
+): StrengthTierState | null {
   const supported = supportedStrengthStandard(standard);
   const tiers = supported?.metrics[metric];
   if (
@@ -259,11 +253,11 @@ export function projectedStrengthTierState(
   };
 }
 
-export function totalClubState(
+export function totalStrengthTierState(
   total: CanonicalTotal,
   standard: StrengthStandardProjection,
   unit: LedgerUnit,
-): TotalClubState | null {
+): StrengthTierState | null {
   if (!total.complete) return strengthTierState(0, 'total', standard, unit);
   return strengthTierState(total.kg, 'total', standard, unit);
 }
@@ -290,7 +284,7 @@ export function resolveLedgerClubsRuntimeState(
   const total = canonicalTotal(currentBests);
   const totalState = standard
     ? projectedStrengthTierState(standing?.metrics.total, 'total', standard, unit)
-      ?? totalClubState(total, standard, unit)
+      ?? totalStrengthTierState(total, standard, unit)
     : null;
   const lifts = (['squat', 'bench', 'deadlift'] as const).map((key): LedgerClubsLiftState => {
     const canonicalWeightBest = currentBests
