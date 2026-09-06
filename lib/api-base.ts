@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 export const PRODUCTION_API_BASE = 'https://app.strengthledger.fit';
 
 const DEV_API_BASE = Platform.OS === 'android'
-  ? 'http://10.0.2.2:5000'
-  : 'http://127.0.0.1:5000';
+  ? 'http://10.0.2.2:9081'
+  : 'http://127.0.0.1:9081';
 
 function normalizeBaseUrl(value: string | undefined | null): string | null {
   const trimmed = String(value || '').trim().replace(/\/$/, '');
