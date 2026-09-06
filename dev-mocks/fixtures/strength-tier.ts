@@ -114,6 +114,14 @@ export function strengthTierCertificationFixture(
     };
   };
   const totalKg = loads.reduce((sum, value) => sum + value, 0);
+  const medallionEvents = (['total', 'squat', 'bench', 'deadlift'] as const).map((family, index) => ({
+    id: 100 + index,
+    event_type: family === 'total' ? 'TOTAL_LIFETIME_VOLUME_MILESTONE' : 'CORE_LIFETIME_VOLUME_MILESTONE',
+    occurred_at: `2026-08-${String(24 - index).padStart(2, '0')}T17:00:00Z`,
+    movement_label: family === 'total' ? 'Complete Training Volume' : `Competition ${family === 'bench' ? 'Bench Press' : family[0].toUpperCase() + family.slice(1)}`,
+    source_set_log_id: null,
+    evidence: { threshold_lb: 100_000, ...(family === 'total' ? {} : { lift_family: family }) },
+  }));
   const strengthStanding: StrengthStandingProjection = {
     status: 'supported',
     version: STRENGTH_STANDARD_VERSION,
@@ -136,7 +144,7 @@ export function strengthTierCertificationFixture(
   return {
     progression,
     currentBests,
-    accomplishments: currentBests.map((item) => item.event),
+    accomplishments: [...currentBests.map((item) => item.event), ...medallionEvents],
     strengthStandard,
     strengthStanding,
   };
