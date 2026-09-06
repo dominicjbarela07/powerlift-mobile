@@ -3,8 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "start:canonical-dev": "node scripts/start-canonical-dev-metro.mjs",
+    "start": "node scripts/start-canonical-dev-metro.mjs",
     "certify:canonical-dev": "node scripts/certify-canonical-dev-metro.mjs",
     "test:canonical-dev-metro-lineage": "node scripts/test-canonical-dev-metro-lineage-policy.mjs",
     "reset-project": "node ./scripts/reset-project.js",

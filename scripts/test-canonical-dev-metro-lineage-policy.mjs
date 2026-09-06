@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   CANONICAL_DEV_METRO_PORT,
@@ -48,4 +49,8 @@ for (const invalid of [
 assert.throws(() => assertCanonicalMetroSnapshot({ ...snapshot, listener: { port: 8082, processes: snapshot.listener.processes } }), /port is 8082/);
 assert.throws(() => assertCanonicalMetroSnapshot({ ...snapshot, manifest: { ...snapshot.manifest, projectRoot: '/tmp/isolated-worktree' } }), /manifest project root/);
 
-console.log('[canonical DEV Metro lineage] fixed root, branch, SHA, clean-state, port, listener, and manifest guards passed');
+const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+assert.equal(packageJson.scripts.start, 'node scripts/start-canonical-dev-metro.mjs');
+assert.equal(packageJson.scripts['start:canonical-dev'], undefined);
+
+console.log('[canonical DEV Metro lineage] npm start, fixed root, branch, SHA, clean-state, port, listener, and manifest guards passed');

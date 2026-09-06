@@ -10,7 +10,7 @@ Canonical mobile DEV evidence must come from:
 Start the server with:
 
 ```bash
-npm run start:canonical-dev
+npm start
 ```
 
 After Metro is listening and before accepting screenshots, certify the live
