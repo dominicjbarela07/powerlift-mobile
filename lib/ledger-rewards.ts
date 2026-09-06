@@ -11,6 +11,7 @@ import type {
   LedgerUnit,
   StrengthMetric,
   StrengthStandardProjection,
+  StrengthTierStateProjection,
   StrengthTierDefinition,
 } from '@/lib/ledger-data';
 
@@ -26,6 +27,11 @@ export const TOTAL_TROPHY_TIER_NAMES = [
   'Diamond',
   'Obsidian',
 ] as const;
+export const STRENGTH_TIER_ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'] as const;
+
+export function strengthTierRoman(tier: number): string {
+  return STRENGTH_TIER_ROMAN[tier - 1] ?? String(tier);
+}
 
 export const CAREER_PR_EVENT_TYPES = new Set([
   'CORE_WEIGHT_PR',
@@ -175,6 +181,64 @@ export function strengthTierState(
     remainingKg,
     remaining: remainingKg == null ? null : displayStrengthKg(remainingKg, unit),
     progress,
+  };
+}
+
+/**
+ * Present a server-owned standing without recalculating unlock identity on the
+ * client. Older DEV backends remain supported through `strengthTierState`.
+ */
+export function projectedStrengthTierState(
+  projection: StrengthTierStateProjection | null | undefined,
+  metric: StrengthMetric,
+  standard: StrengthStandardProjection,
+  unit: LedgerUnit,
+): TotalClubState | null {
+  const supported = supportedStrengthStandard(standard);
+  const tiers = supported?.metrics[metric];
+  if (
+    !supported
+    || !tiers
+    || !projection
+    || projection.status !== 'supported'
+    || projection.version !== supported.version
+    || projection.sex !== supported.sex
+    || projection.metric !== metric
+  ) return null;
+
+  const earnedTierIndex = projection.earned_tier == null
+    ? -1
+    : tiers.findIndex((tier) => tier.tier === projection.earned_tier?.tier && tier.threshold_kg === projection.earned_tier?.threshold_kg);
+  const nextTierIndex = projection.next_tier == null
+    ? null
+    : tiers.findIndex((tier) => tier.tier === projection.next_tier?.tier && tier.threshold_kg === projection.next_tier?.threshold_kg);
+  if (projection.earned_tier != null && earnedTierIndex < 0) return null;
+  if (projection.next_tier != null && (nextTierIndex == null || nextTierIndex < 0)) return null;
+
+  const currentKg = typeof projection.current_kg === 'number' && Number.isFinite(projection.current_kg)
+    ? Math.max(0, projection.current_kg)
+    : 0;
+  const priorKg = earnedTierIndex >= 0 ? tiers[earnedTierIndex].threshold_kg : 0;
+  const nextKg = nextTierIndex == null ? null : tiers[nextTierIndex].threshold_kg;
+  const remainingKg = typeof projection.remaining_kg === 'number' && Number.isFinite(projection.remaining_kg)
+    ? Math.max(0, projection.remaining_kg)
+    : nextKg == null ? null : Math.max(0, nextKg - currentKg);
+  return {
+    metric,
+    standardVersion: STRENGTH_STANDARD_VERSION,
+    tiers,
+    currentKg,
+    current: displayStrengthKg(currentKg, unit),
+    thresholds: tiers.map((tier) => unit === 'lb' ? tier.display_lb : tier.threshold_kg),
+    earnedTierIndex,
+    nextTierIndex,
+    priorKg,
+    prior: displayStrengthKg(priorKg, unit),
+    nextKg,
+    next: nextKg == null ? null : displayStrengthKg(nextKg, unit),
+    remainingKg,
+    remaining: remainingKg == null ? null : displayStrengthKg(remainingKg, unit),
+    progress: Math.max(0, Math.min(1, Number(projection.progress ?? 0))),
   };
 }
 

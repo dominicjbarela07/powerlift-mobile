@@ -10,6 +10,8 @@ import {
   type LedgerRange,
   LedgerRequestError,
   type LedgerRequestFailureKind,
+  type StrengthStandardProjection,
+  type StrengthStandingProjection,
 } from '@/lib/ledger-data';
 
 type LedgerLiveDataOptions = Readonly<{
@@ -22,6 +24,8 @@ export type LedgerLiveDataFixture = Readonly<{
   progression: LedgerProgression;
   currentBests: readonly CurrentBest[];
   accomplishments?: readonly AccomplishmentEvent[];
+  strengthStandard?: StrengthStandardProjection | null;
+  strengthStanding?: StrengthStandingProjection | null;
 }>;
 
 export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiveDataOptions = {}) {
@@ -30,6 +34,8 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
   const [progression, setProgression] = useState<LedgerProgression | null>(fixture?.progression ?? null);
   const [currentBests, setCurrentBests] = useState<CurrentBest[]>(fixture ? [...fixture.currentBests] : []);
   const [accomplishments, setAccomplishments] = useState<AccomplishmentEvent[]>(fixture ? [...(fixture.accomplishments ?? [])] : []);
+  const [strengthStandard, setStrengthStandard] = useState<StrengthStandardProjection | null>(fixture?.strengthStandard ?? fixture?.progression.strength_standard ?? null);
+  const [strengthStanding, setStrengthStanding] = useState<StrengthStandingProjection | null>(fixture?.strengthStanding ?? null);
   const [loading, setLoading] = useState(!fixture);
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<LedgerRequestFailureKind | null>(null);
@@ -39,6 +45,8 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
       setProgression(fixture.progression);
       setCurrentBests([...fixture.currentBests]);
       setAccomplishments([...(fixture.accomplishments ?? [])]);
+      setStrengthStandard(fixture.strengthStandard ?? fixture.progression.strength_standard ?? null);
+      setStrengthStanding(fixture.strengthStanding ?? null);
       setError(null);
       setErrorKind(null);
       setLoading(false);
@@ -62,7 +70,13 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
           throw authorizationFailure?.reason ?? failures[0]?.reason;
         }
         if (progressionResult.status === 'fulfilled') setProgression(progressionResult.value);
-        if (currentBestsResult.status === 'fulfilled') setCurrentBests(currentBestsResult.value);
+        if (currentBestsResult.status === 'fulfilled') {
+          setCurrentBests(currentBestsResult.value.items);
+          setStrengthStandard(currentBestsResult.value.strengthStandard ?? (progressionResult.status === 'fulfilled' ? progressionResult.value.strength_standard ?? null : null));
+          setStrengthStanding(currentBestsResult.value.strengthStanding);
+        } else if (progressionResult.status === 'fulfilled') {
+          setStrengthStandard(progressionResult.value.strength_standard ?? null);
+        }
         if (accomplishmentsResult.status === 'fulfilled') setAccomplishments(accomplishmentsResult.value);
         if (failures.length) {
           console.warn('Ledger Index loaded with partial canonical data', failures.map((result) => result.reason instanceof LedgerRequestError ? { kind: result.reason.kind, status: result.reason.status } : { kind: 'error' }));
@@ -70,7 +84,9 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
       } else {
         const [nextProgression, nextCurrentBests, nextAccomplishments] = await Promise.all(requests);
         setProgression(nextProgression);
-        setCurrentBests(nextCurrentBests);
+        setCurrentBests(nextCurrentBests.items);
+        setStrengthStandard(nextCurrentBests.strengthStandard ?? nextProgression.strength_standard ?? null);
+        setStrengthStanding(nextCurrentBests.strengthStanding);
         setAccomplishments(nextAccomplishments);
       }
     } catch (caught) {
@@ -95,5 +111,5 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
     void reload();
   }, [reload]);
 
-  return { progression, currentBests, accomplishments, loading, error, errorKind, reload };
+  return { progression, currentBests, accomplishments, strengthStandard, strengthStanding, loading, error, errorKind, reload };
 }

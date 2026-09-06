@@ -1,8 +1,9 @@
-import type { CurrentBest, LedgerProgression, StrengthMetric, StrengthStandardProjection } from '@/lib/ledger-data';
+import type { CurrentBest, LedgerProgression, StrengthMetric, StrengthStandardProjection, StrengthStandingProjection, StrengthTierStateProjection } from '@/lib/ledger-data';
 import { STRENGTH_KG_TO_LB, STRENGTH_STANDARD_VERSION, TOTAL_TROPHY_TIER_NAMES } from '@/lib/ledger-rewards';
 import type { LedgerLiveDataFixture } from '@/components/ledger/use-ledger-live-data';
 
 type Sex = 'M' | 'F';
+export type StrengthTierCertificationScenario = 'mid' | 'below' | 'tier7';
 
 const TARGETS = [20, 40, 55, 70, 85, 95, 99] as const;
 const TABLES: Record<Sex, Record<StrengthMetric, readonly number[]>> = {
@@ -79,19 +80,64 @@ function best(id: number, key: 'competition_squat' | 'competition_bench' | 'comp
   };
 }
 
-export function strengthTierCertificationFixture(sex: Sex): LedgerLiveDataFixture {
-  const loads = sex === 'M' ? [205, 135, 250] as const : [125, 70, 150] as const;
+export function strengthTierCertificationFixture(
+  sex: Sex,
+  scenario: StrengthTierCertificationScenario = 'mid',
+): LedgerLiveDataFixture {
+  const loadScenarios: Record<Sex, Record<StrengthTierCertificationScenario, readonly [number, number, number]>> = {
+    M: { mid: [205, 135, 250], below: [140, 90, 170], tier7: [315, 210, 330] },
+    F: { mid: [125, 70, 150], below: [80, 40, 100], tier7: [190, 110, 210] },
+  };
+  const loads = loadScenarios[sex][scenario];
   const currentBests = [
     best(1, 'competition_squat', 'Competition Squat', loads[0]),
     best(2, 'competition_bench', 'Competition Bench Press', loads[1]),
     best(3, 'competition_deadlift', 'Competition Deadlift', loads[2]),
   ];
+  const strengthStandard = standard(sex);
+  const state = (metric: StrengthMetric, currentKg: number): StrengthTierStateProjection => {
+    const tiers = strengthStandard.metrics[metric] ?? [];
+    const earnedTier = [...tiers].reverse().find((tier) => tier.threshold_kg <= currentKg) ?? null;
+    const nextTier = tiers.find((tier) => tier.threshold_kg > currentKg) ?? null;
+    const priorKg = earnedTier?.threshold_kg ?? 0;
+    return {
+      status: 'supported',
+      version: STRENGTH_STANDARD_VERSION,
+      sex,
+      metric,
+      current_kg: currentKg,
+      earned_tier: earnedTier,
+      next_tier: nextTier,
+      remaining_kg: nextTier ? nextTier.threshold_kg - currentKg : null,
+      progress: nextTier ? Math.max(0, Math.min(1, (currentKg - priorKg) / (nextTier.threshold_kg - priorKg))) : 1,
+      evidence_complete: true,
+    };
+  };
+  const totalKg = loads.reduce((sum, value) => sum + value, 0);
+  const strengthStanding: StrengthStandingProjection = {
+    status: 'supported',
+    version: STRENGTH_STANDARD_VERSION,
+    sex,
+    evidence_authority: 'canonical_competition_weight_current_bests',
+    metrics: {
+      squat: state('squat', loads[0]),
+      bench: state('bench', loads[1]),
+      deadlift: state('deadlift', loads[2]),
+      total: { ...state('total', totalKg), component_metrics: ['squat', 'bench', 'deadlift'] },
+    },
+  };
   const progression: LedgerProgression = {
-    athlete: { id: 99001, name: sex === 'M' ? 'DEV Male Standard' : 'DEV Female Standard', preferred_units: 'kg', sex },
-    strength_standard: standard(sex),
+    athlete: { id: 99001, name: `DEV ${sex === 'M' ? 'Male' : 'Female'} ${scenario}`, preferred_units: 'kg', sex },
+    strength_standard: strengthStandard,
     range: { label: 'all time' },
     consistency: { sessions_completed: 48, best_streak: 8, training_age_years: 2, weeks: [] },
     metric_trends: { volume: { points: [], complete_training_volume_kg: 0, competition_total_volume_kg: 0 } },
   };
-  return { progression, currentBests, accomplishments: currentBests.map((item) => item.event) };
+  return {
+    progression,
+    currentBests,
+    accomplishments: currentBests.map((item) => item.event),
+    strengthStandard,
+    strengthStanding,
+  };
 }

@@ -7,6 +7,8 @@ import {
   canonicalTotal,
   STRENGTH_KG_TO_LB,
   STRENGTH_STANDARD_VERSION,
+  projectedStrengthTierState,
+  strengthTierRoman,
   strengthTierState,
   supportedStrengthStandard,
   totalClubState,
@@ -82,6 +84,7 @@ assert.equal(strengthTierState(430, 'total', standard('M'), 'kg').earnedTierInde
 assert.equal(strengthTierState(430, 'total', standard('F'), 'kg').earnedTierIndex, 5, 'sex-specific ladders must resolve independently');
 assert.equal(supportedStrengthStandard({ ...standard('M'), sex: null }), null, 'unknown sex must fail closed');
 assert.equal(supportedStrengthStandard({ ...standard('M'), version: 'legacy' }), null, 'unknown standard versions must fail closed');
+assert.deepEqual(Array.from({ length: 7 }, (_, index) => strengthTierRoman(index + 1)), ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']);
 
 const sparse = canonicalTotal([best(1, 'competition_squat', 180, 101)]);
 assert.equal(sparse.complete, false);
@@ -105,6 +108,28 @@ assert.equal(clubKg.nextKg, 590);
 assert.equal(clubKg.remainingKg, 10);
 assert.equal(clubLb.remaining, 22);
 assert.equal(clubLb.progress, clubKg.progress);
+
+const serverStanding = {
+  status: 'supported',
+  version: STRENGTH_STANDARD_VERSION,
+  sex: 'M',
+  metric: 'total',
+  current_kg: 580,
+  earned_tier: standard('M').metrics.total[2],
+  next_tier: standard('M').metrics.total[3],
+  remaining_kg: 10,
+  progress: clubKg.progress,
+  evidence_complete: true,
+};
+const projectedKg = projectedStrengthTierState(serverStanding, 'total', standard('M'), 'kg');
+const projectedLb = projectedStrengthTierState(serverStanding, 'total', standard('M'), 'lb');
+assert.equal(projectedKg.earnedTierIndex, 2, 'the client must honor the server-owned Tier III standing');
+assert.equal(projectedLb.earnedTierIndex, projectedKg.earnedTierIndex, 'projected standing identity must survive unit changes');
+assert.equal(projectedLb.nextTierIndex, projectedKg.nextTierIndex);
+assert.equal(projectedLb.progress, projectedKg.progress);
+assert.equal(projectedLb.next, 1301, 'lb presentation must derive from the canonical 590 kg Tier IV threshold');
+assert.equal(projectedStrengthTierState({ ...serverStanding, version: 'legacy' }, 'total', standard('M'), 'kg'), null, 'stale standing versions must fail closed');
+assert.equal(projectedStrengthTierState({ ...serverStanding, sex: 'F' }, 'total', standard('M'), 'kg'), null, 'standing sex must match the governed table');
 
 const governedOnly = canonicalLiftWeightBests([
   best(10, 'hack_squat', 400, 201, 'Hack Squat'),

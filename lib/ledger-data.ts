@@ -24,6 +24,29 @@ export type StrengthStandardProjection = Readonly<{
   metrics: Partial<Record<StrengthMetric, readonly StrengthTierDefinition[]>>;
   dataset?: Readonly<Record<string, unknown>>;
 }>;
+export type StrengthTierStateProjection = Readonly<{
+  status: 'supported' | 'unsupported';
+  reason?: string | null;
+  version: string;
+  sex?: 'M' | 'F' | null;
+  metric: StrengthMetric;
+  current_kg?: number | null;
+  earned_tier?: StrengthTierDefinition | null;
+  next_tier?: StrengthTierDefinition | null;
+  remaining_kg?: number | null;
+  progress?: number | null;
+  evidence_complete?: boolean;
+  source_set_log_id?: number | null;
+  component_metrics?: readonly Exclude<StrengthMetric, 'total'>[];
+}>;
+export type StrengthStandingProjection = Readonly<{
+  status: 'supported' | 'unsupported';
+  reason?: string | null;
+  version: string;
+  sex?: 'M' | 'F' | null;
+  evidence_authority?: string | null;
+  metrics: Partial<Record<StrengthMetric, StrengthTierStateProjection>>;
+}>;
 
 export type LedgerArcPoint = { date?: string | null; value_kg?: number | null };
 export type LedgerLift = {
@@ -134,9 +157,19 @@ type TimelineResponse = {
 };
 type CurrentBestResponse = {
   ok: boolean;
-  current_bests?: { items?: CurrentBest[] };
+  current_bests?: {
+    items?: CurrentBest[];
+    strength_standard?: StrengthStandardProjection | null;
+    strength_standing?: StrengthStandingProjection | null;
+  };
   error?: string;
 };
+
+export type CurrentBestSnapshot = Readonly<{
+  items: CurrentBest[];
+  strengthStandard: StrengthStandardProjection | null;
+  strengthStanding: StrengthStandingProjection | null;
+}>;
 
 export type LedgerRequestFailureKind = 'unauthorized' | 'unavailable' | 'error';
 
@@ -210,9 +243,13 @@ export async function fetchLedgerAccomplishmentHistory(maxPages = 20): Promise<A
   return [...new Map(items.map((item) => [item.id, item])).values()];
 }
 
-export async function fetchLedgerCurrentBests(): Promise<CurrentBest[]> {
+export async function fetchLedgerCurrentBests(): Promise<CurrentBestSnapshot> {
   const payload = await requireJson<CurrentBestResponse>('/workouts/mobile/accomplishments/current-bests?scope=career&limit=24');
-  return payload.current_bests?.items ?? [];
+  return {
+    items: payload.current_bests?.items ?? [],
+    strengthStandard: payload.current_bests?.strength_standard ?? null,
+    strengthStanding: payload.current_bests?.strength_standing ?? null,
+  };
 }
 
 export function kgToDisplay(valueKg: number, unit: LedgerUnit): number {
