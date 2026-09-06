@@ -53,8 +53,8 @@ const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.me
 const apiBaseSource = readFileSync(new URL('../lib/api-base.ts', import.meta.url), 'utf8');
 assert.equal(packageJson.scripts.start, 'node scripts/start-canonical-dev-metro.mjs');
 assert.equal(packageJson.scripts['start:canonical-dev'], undefined);
-assert.match(apiBaseSource, /http:\/\/10\.0\.2\.2:9081/, 'Android DEV must call the canonical Flask port');
-assert.match(apiBaseSource, /http:\/\/127\.0\.0\.1:9081/, 'iOS simulator DEV must call the canonical Flask port');
-assert.doesNotMatch(apiBaseSource, /(?:10\.0\.2\.2|127\.0\.0\.1):5000/, 'mobile DEV must never call macOS Control Center on port 5000');
+assert.match(apiBaseSource, /http:\/\/10\.0\.2\.2:5000/, 'Android DEV must call Flask on its normal default port');
+assert.match(apiBaseSource, /http:\/\/127\.0\.0\.1:5000/, 'iOS simulator DEV must call Flask on its normal default port');
+assert.doesNotMatch(apiBaseSource, /(?:10\.0\.2\.2|127\.0\.0\.1):9081/, 'mobile DEV must not depend on the retired custom backend port');
 
 console.log('[canonical DEV Metro lineage] npm start, fixed source, backend API port, listener, and manifest guards passed');

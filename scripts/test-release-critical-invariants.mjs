@@ -41,6 +41,7 @@ const areas = [
   ['data-driven sex-specific strength tiers', ['scripts/test-ledger-rewards.mjs', 'scripts/test-data-driven-strength-tiers.mjs', 'scripts/test-ledger-clubs-runtime-source.mjs', 'scripts/test-legacy-strength-trophy-retirement.mjs']],
   ['strength-tier certification app-shell integrity', ['scripts/test-strength-tier-certification-app-shell.mjs']],
   ['canonical DEV Metro source lineage', ['scripts/test-canonical-dev-metro-lineage-policy.mjs']],
+  ['background unread-summary network resilience', ['scripts/test-unread-summary-resilience.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-copy-week-ux-convergence.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs', 'scripts/test-programming-manager-overlay-system.mjs']],
   ['Session Workspace composition and presentation-only units', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs', 'scripts/test-session-workspace-unit-presentation.mjs']],
   ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs']],

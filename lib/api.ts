@@ -1748,8 +1748,9 @@ export async function getUnreadSummary(activeThreadId?: number | string | null):
         has_unread: !!json.has_unread,
       },
     };
-  } catch (err) {
-    console.error('Unread summary fetch error', err);
+  } catch {
+    // This is a background badge refresh. A temporarily unavailable backend
+    // must not trigger React Native's fatal LogBox or disrupt the active screen.
     return { ok: false, error: 'Network error' };
   }
 }

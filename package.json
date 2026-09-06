@@ -6,6 +6,7 @@
     "start": "node scripts/start-canonical-dev-metro.mjs",
     "certify:canonical-dev": "node scripts/certify-canonical-dev-metro.mjs",
     "test:canonical-dev-metro-lineage": "node scripts/test-canonical-dev-metro-lineage-policy.mjs",
+    "test:unread-summary-resilience": "node scripts/test-unread-summary-resilience.mjs",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
