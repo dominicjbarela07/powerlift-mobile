@@ -34,7 +34,7 @@ import {
   SL_TAB_ROW_SELECTED_LENS,
 } from '@/components/navigation/sl-tab-row-control';
 import { SLCanonicalIcon, SLMotionPressable, SLTrophy } from '@/components/ui';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, type AuthUser } from '@/context/AuthContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
@@ -55,6 +55,31 @@ function supportsNativeLiquidGlass() {
     return false;
   }
 }
+
+const DEV_STRENGTH_TIER_CERTIFICATION_USER: AuthUser = {
+  id: 99001,
+  user_id: 99001,
+  email: 'strength-tier-certification@dev.invalid',
+  user_name: 'Strength Tier Certification',
+  role: 'coach',
+  is_coach: true,
+  workspace_mode: 'individual',
+  available_mobile_modes: ['individual'],
+  mobile_mode: 'individual',
+  can_access_internal_self_coach_mobile_mode: true,
+  is_individual_workspace: true,
+  is_self_coached: true,
+  self_athlete_id: 99001,
+  account_state: 'READY',
+  can_access_product: true,
+  link_coach_required: false,
+  email_verified: true,
+  verification_required: false,
+  billing_required: false,
+  has_linked_athlete: true,
+  athlete_id: 99001,
+  preferred_units: 'kg',
+};
 
 function FilteredTabBar({
   state,
@@ -411,9 +436,24 @@ function FilteredTabBar({
 }
 
 export default function TabsLayout() {
-  const { user, activeMobileMode, workspaceKey } = useAuth();
+  const {
+    user: authenticatedUser,
+    activeMobileMode: authenticatedMobileMode,
+    workspaceKey: authenticatedWorkspaceKey,
+  } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const isDevStrengthTierCertification =
+    __DEV__
+    && pathname.endsWith('/ledger/dev-strength-tier-certification');
+  const user = authenticatedUser
+    ?? (isDevStrengthTierCertification ? DEV_STRENGTH_TIER_CERTIFICATION_USER : null);
+  const activeMobileMode = !authenticatedUser && isDevStrengthTierCertification
+    ? 'individual'
+    : authenticatedMobileMode;
+  const workspaceKey = !authenticatedUser && isDevStrengthTierCertification
+    ? 'dev-strength-tier-certification:individual'
+    : authenticatedWorkspaceKey;
   const insets = useSafeAreaInsets();
   const devPreviewSession = useDevLiveScreenSession();
   const [hasMessageNotifications, setHasMessageNotifications] = useState(false);

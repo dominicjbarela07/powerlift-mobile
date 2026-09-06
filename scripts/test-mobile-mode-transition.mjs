@@ -66,7 +66,9 @@ assert.match(settings, /setModeModalOpen\(false\);[\s\S]*?router\.replace\(nextM
 assert.match(settings, /const transition = auth\?\.switchMobileMode\?\.\(nextMode\)/);
 assert.doesNotMatch(settings, /getMobileViewMode|setMobileViewMode|saveMobileViewMode/);
 
-assert.match(tabs, /const \{ user, activeMobileMode, workspaceKey \} = useAuth\(\)/);
+assert.match(tabs, /user: authenticatedUser,[\s\S]*activeMobileMode: authenticatedMobileMode,[\s\S]*workspaceKey: authenticatedWorkspaceKey,[\s\S]*\} = useAuth\(\)/);
+assert.match(tabs, /const activeMobileMode = !authenticatedUser && isDevStrengthTierCertification[\s\S]*: authenticatedMobileMode/);
+assert.match(tabs, /const workspaceKey = !authenticatedUser && isDevStrengthTierCertification[\s\S]*: authenticatedWorkspaceKey/);
 assert.match(tabs, /const isIndividual = activeMobileMode === 'individual'/);
 assert.match(tabs, /<Tabs\s+key=\{workspaceKey\}/);
 assert.doesNotMatch(tabs, /getMobileViewMode|subscribeMobileViewModeChanged|mobileViewModeLoaded/);

@@ -15,7 +15,7 @@ export default function DevStrengthTierCertification() {
   return (
     <Redirect
       href={{
-        pathname: '/(tabs)/ledger/achievements',
+        pathname: '/(tabs)/ledger/dev-strength-tier-certification',
         params: {
           devStrengthTierCertification: '1',
           sex: sex === 'F' ? 'F' : 'M',
