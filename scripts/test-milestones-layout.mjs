@@ -20,6 +20,7 @@ import {
 
 const root = resolve(import.meta.dirname, '..');
 const screen = readFileSync(resolve(root, 'components/ledger/AchievementsExperience.tsx'), 'utf8');
+const rewards = readFileSync(resolve(root, 'lib/ledger-rewards.ts'), 'utf8');
 const tabs = readFileSync(resolve(root, 'app/(tabs)/_layout.tsx'), 'utf8');
 const liftPresentations = screen.slice(screen.indexOf('const LIFT_PRESENTATIONS:'), screen.indexOf('const VOLUME_PRESENTATION'));
 
@@ -83,16 +84,17 @@ assert.equal(plateClubLabel(895, 'lb'), '9½ Plate Club');
 
 assert.doesNotMatch(liftPresentations, /currentLb|current:\s*\{/, 'lift presentation policy must not embed athlete PR values');
 assert.match(screen, /LIFT_PRESENTATIONS\.map\(\(lift\): Lift =>/, 'every competition lift must render independently from canonical current-best responses');
-assert.match(screen, /currentLb: canonicalWeight == null \? null :/, 'missing lift evidence must remain a per-lift empty state');
+assert.match(screen, /resolveLedgerClubsRuntimeState\(/, 'the visible strength cards must use the shared live Clubs projection');
+assert.match(rewards, /currentLb: canonicalWeightKg == null \? null :/, 'missing lift evidence must remain a per-lift empty state');
 assert.match(screen, /liveLifts\.map\(\(lift\) => <LiftRow/, 'all three competition lift rows must remain visible independently');
 assert.match(screen, /section === 'clubs' && hasCompleteStrengthTotal && club \? <View/, 'only the combined strength-total hero may require all three lifts');
 assert.match(screen, /VOLUME_PRESENTATION\.lifts\.map/, 'per-lift career volume cards must render independently');
 assert.match(screen, /competition_total_volume_kg \?\? pointDerivedCompetitionVolumeKg/, 'competition total volume must accept any available governed lift volume');
-assert.match(screen, /item\.metric === 'weight'/, 'Plate Club must use canonical weight records rather than e1RM estimates');
-assert.match(screen, /const current = lift\.tierState\?\.current \?\? 0/, 'the active tier display must derive from canonical-kg evidence through the shared unit-aware tier resolver');
+assert.match(rewards, /item\.metric === 'weight'/, 'strength tiers must use canonical weight records rather than e1RM estimates');
+assert.match(screen, /const tierCurrent = lift\.tierState\?\.current \?\? 0/, 'the active tier display must derive from canonical-kg evidence through the shared unit-aware tier resolver');
 assert.match(screen, /<FloatingDisplayUnitRegistration unit=\{unit\} onChange=\{setUnit\} testID="ledger-achievements-unit-toggle" \/>/, 'the governed floating unit control must switch the active derived display unit');
-assert.match(screen, /canRenderGymTotal\(heroWeight, unit\)/, 'hero plate loading must validate its separately gym-rounded art weight in the active unit');
-assert.match(screen, /resolvePlateStackRender\(\{ weight: heroWeight, unit \}\)/, 'hero loading must resolve its art-only weight through the shared unit-aware catalog');
+assert.match(screen, /canRenderGymTotal\(current, unit\)/, 'hero plate loading must validate its separately gym-rounded art weight in the active unit');
+assert.match(screen, /resolvePlateStackRender\(\{ weight: current, unit \}\)/, 'hero loading must resolve its art-only weight through the shared unit-aware catalog');
 assert.doesNotMatch(screen, /resolveHeroRender|canonicalHeroLoading/, 'the hero must not bypass the shared resolver through the legacy lift-specific registry');
 assert.match(screen, /testID=\{`\$\{liftKey\}-pr-empty-state`\}/, 'missing PRs must render a bounded empty state instead of crashing');
 assert.match(screen, /testID=\{`\$\{liftKey\}-pr-render-unavailable`\}/, 'uncatalogued PR heroes must use a bounded honest fallback');

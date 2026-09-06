@@ -11,6 +11,7 @@ import type {
   LedgerUnit,
   StrengthMetric,
   StrengthStandardProjection,
+  StrengthStandingProjection,
   StrengthTierStateProjection,
   StrengthTierDefinition,
 } from '@/lib/ledger-data';
@@ -74,6 +75,22 @@ export type TotalClubState = Readonly<{
   remainingKg: number | null;
   remaining: number | null;
   progress: number;
+}>;
+
+export type LedgerClubsLiftState = Readonly<{
+  key: Exclude<StrengthMetric, 'total'>;
+  canonicalWeightKg: number | null;
+  currentLb: number | null;
+  sourceSetLogId: number | null;
+  tierState: TotalClubState | null;
+}>;
+
+export type LedgerClubsRuntimeState = Readonly<{
+  standard: StrengthStandardProjection | null;
+  standing: StrengthStandingProjection | null;
+  total: CanonicalTotal;
+  totalState: TotalClubState | null;
+  lifts: readonly LedgerClubsLiftState[];
 }>;
 
 export type MajorVolumeMedallionEvidence = Readonly<{
@@ -249,6 +266,49 @@ export function totalClubState(
 ): TotalClubState | null {
   if (!total.complete) return strengthTierState(0, 'total', standard, unit);
   return strengthTierState(total.kg, 'total', standard, unit);
+}
+
+/**
+ * Resolve the exact strength projection consumed by Ledger → Clubs.
+ *
+ * Historical achievement rows are intentionally absent from this boundary:
+ * standing is rebuilt from the current-bests endpoint's governed competition
+ * Weight PR evidence and the versioned, sex-specific server standard.
+ */
+export function resolveLedgerClubsRuntimeState(
+  currentBests: readonly CurrentBest[],
+  standardCandidate: StrengthStandardProjection | null | undefined,
+  standingCandidate: StrengthStandingProjection | null | undefined,
+  unit: LedgerUnit,
+): LedgerClubsRuntimeState {
+  const standard = supportedStrengthStandard(standardCandidate);
+  const standing = standingCandidate?.status === 'supported'
+    && standingCandidate.version === standard?.version
+    && standingCandidate.sex === standard?.sex
+    ? standingCandidate
+    : null;
+  const total = canonicalTotal(currentBests);
+  const totalState = standard
+    ? projectedStrengthTierState(standing?.metrics.total, 'total', standard, unit)
+      ?? totalClubState(total, standard, unit)
+    : null;
+  const lifts = (['squat', 'bench', 'deadlift'] as const).map((key): LedgerClubsLiftState => {
+    const canonicalWeightBest = currentBests
+      .filter((item) => item.metric === 'weight' && canonicalCompetitionLiftKey(item.core_movement_key) === key)
+      .sort((left, right) => right.best_value - left.best_value)[0];
+    const canonicalWeightKg = canonicalWeightBest?.best_value ?? null;
+    return {
+      key,
+      canonicalWeightKg,
+      currentLb: canonicalWeightKg == null ? null : Math.round(canonicalWeightKg * STRENGTH_KG_TO_LB / 5) * 5,
+      sourceSetLogId: canonicalWeightBest?.event?.source_set_log_id ?? null,
+      tierState: standard
+        ? projectedStrengthTierState(standing?.metrics[key], key, standard, unit)
+          ?? strengthTierState(canonicalWeightKg ?? 0, key, standard, unit)
+        : null,
+    };
+  });
+  return { standard, standing, total, totalState, lifts };
 }
 
 export function majorVolumeMedallionEvidence(event: AccomplishmentEvent): MajorVolumeMedallionEvidence | null {

@@ -11,16 +11,12 @@ import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/co
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
 import { useLedgerLiveData, type LedgerLiveDataFixture } from './use-ledger-live-data';
 import { archiveDetailHref } from '@/lib/ledger-archive';
-import { canonicalCompetitionLiftKey, fetchLedgerAccomplishmentHistory, type AccomplishmentEvent, type StrengthMetric } from '@/lib/ledger-data';
+import { fetchLedgerAccomplishmentHistory, type AccomplishmentEvent, type StrengthMetric } from '@/lib/ledger-data';
 import {
   canonicalMajorVolumeMedallions,
   canonicalPrHistory,
-  canonicalTotal,
-  projectedStrengthTierState,
+  resolveLedgerClubsRuntimeState,
   strengthTierRoman,
-  strengthTierState,
-  supportedStrengthStandard,
-  totalClubState,
   type MajorVolumeMedallionEvidence,
   type TotalClubState,
 } from '@/lib/ledger-rewards';
@@ -441,28 +437,17 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const timelineEvents = historyEvents.length ? historyEvents : liveData.accomplishments;
   const volumeMedallions = canonicalMajorVolumeMedallions(timelineEvents);
   const prHistory = canonicalPrHistory(timelineEvents);
-  const strengthStandard = supportedStrengthStandard(liveData.strengthStandard ?? progression?.strength_standard);
-  const strengthStanding = liveData.strengthStanding?.status === 'supported'
-    && liveData.strengthStanding.version === strengthStandard?.version
-    && liveData.strengthStanding.sex === strengthStandard?.sex
-    ? liveData.strengthStanding
-    : null;
-  const liveLifts = LIFT_PRESENTATIONS.map((lift): Lift => {
-    const canonicalWeightBest = currentBests
-      .filter((item) => item.metric === 'weight' && canonicalCompetitionLiftKey(item.core_movement_key) === lift.key)
-      .sort((left, right) => right.best_value - left.best_value)[0];
-    const canonicalWeight = canonicalWeightBest?.best_value;
-    return {
-      ...lift,
-      canonicalWeightKg: canonicalWeight ?? null,
-      currentLb: canonicalWeight == null ? null : Math.round(kilogramsToDisplayValue(canonicalWeight, 'lb') / 5) * 5,
-      sourceSetLogId: canonicalWeightBest?.event?.source_set_log_id ?? null,
-      tierState: strengthStandard
-        ? projectedStrengthTierState(strengthStanding?.metrics[lift.key], lift.key, strengthStandard, unit)
-          ?? strengthTierState(canonicalWeight ?? 0, lift.key, strengthStandard, unit)
-        : null,
-    };
-  });
+  const clubsRuntime = resolveLedgerClubsRuntimeState(
+    currentBests,
+    liveData.strengthStandard ?? progression?.strength_standard,
+    liveData.strengthStanding,
+    unit,
+  );
+  const strengthStandard = clubsRuntime.standard;
+  const liveLifts = LIFT_PRESENTATIONS.map((lift): Lift => ({
+    ...lift,
+    ...clubsRuntime.lifts.find((candidate) => candidate.key === lift.key)!,
+  }));
   const weeks = progression?.consistency?.weeks ?? [];
   const weeklyRates = weeks
     .filter((week) => (week.assigned ?? 0) > 0)
@@ -515,11 +500,8 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     return current == null ? [] : [{ ...row, current }];
   });
   const liftsWithCurrentPr = liveLifts.filter((lift): lift is Lift & { currentLb: number; canonicalWeightKg: number } => typeof lift.currentLb === 'number' && lift.currentLb > 0 && typeof lift.canonicalWeightKg === 'number');
-  const canonicalStrengthTotal = canonicalTotal(currentBests);
-  const club = strengthStandard
-    ? projectedStrengthTierState(strengthStanding?.metrics.total, 'total', strengthStandard, unit)
-      ?? totalClubState(canonicalStrengthTotal, strengthStandard, unit)
-    : null;
+  const canonicalStrengthTotal = clubsRuntime.total;
+  const club = clubsRuntime.totalState;
   const hasCompleteStrengthTotal = canonicalStrengthTotal.complete;
   const totalMilestones = [...(club?.thresholds ?? [])];
   const total = { current: club?.current ?? 0, next: club?.next ?? totalMilestones.at(-1) ?? club?.current ?? 0, prior: club?.prior ?? 0 };
@@ -541,9 +523,10 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   };
 
   useFocusEffect(useCallback(() => {
+    void reload();
     const frame = requestAnimationFrame(() => scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false }));
     return () => cancelAnimationFrame(frame);
-  }, []));
+  }, [reload]));
 
   useEffect(() => {
     if (requestedUnit === 'lb' || requestedUnit === 'kg') setUnit(requestedUnit);

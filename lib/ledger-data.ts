@@ -165,6 +165,8 @@ type CurrentBestResponse = {
   error?: string;
 };
 
+export const LEDGER_CLUBS_CURRENT_BESTS_PATH = '/workouts/mobile/accomplishments/current-bests?scope=career&limit=24' as const;
+
 export type CurrentBestSnapshot = Readonly<{
   items: CurrentBest[];
   strengthStandard: StrengthStandardProjection | null;
@@ -244,7 +246,7 @@ export async function fetchLedgerAccomplishmentHistory(maxPages = 20): Promise<A
 }
 
 export async function fetchLedgerCurrentBests(): Promise<CurrentBestSnapshot> {
-  const payload = await requireJson<CurrentBestResponse>('/workouts/mobile/accomplishments/current-bests?scope=career&limit=24');
+  const payload = await requireJson<CurrentBestResponse>(LEDGER_CLUBS_CURRENT_BESTS_PATH);
   return {
     items: payload.current_bests?.items ?? [],
     strengthStandard: payload.current_bests?.strength_standard ?? null,

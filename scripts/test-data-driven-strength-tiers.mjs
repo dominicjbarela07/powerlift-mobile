@@ -32,11 +32,12 @@ assert.match(rewards, /tier\.threshold_kg <= currentKg/, 'all tier comparisons m
 assert.match(rewards, /projectedStrengthTierState/, 'clients must consume the server-owned tier state');
 assert.doesNotMatch(rewards, /TOTAL_CLUB_THRESHOLDS|CORE_LIFT_MILESTONE_THRESHOLDS/, 'legacy arbitrary ladders must not remain active');
 
-for (const [surface, source] of [['Achievements', achievements], ['Strength', strength], ['Ledger index', index]]) {
+for (const [surface, source] of [['Strength', strength], ['Ledger index', index]]) {
   assert.match(source, /supportedStrengthStandard/, `${surface} must reject unsupported standard projections`);
 }
-assert.match(achievements, /projectedStrengthTierState\(strengthStanding\?\.metrics\[lift\.key\]/, 'per-lift achievement rows must prefer the server projection');
-assert.match(achievements, /projectedStrengthTierState\(strengthStanding\?\.metrics\.total/, 'Total trophies must prefer the server projection');
+assert.match(achievements, /resolveLedgerClubsRuntimeState\(/, 'Achievements must resolve the governed live Clubs projection');
+assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\[key\]/, 'per-lift achievement rows must prefer the server projection');
+assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\.total/, 'Total trophies must prefer the server projection');
 assert.match(achievements, /strengthTierRoman\(tier\.tier\)/, 'achievement cards must show Tier I–VII names');
 assert.match(achievements, /OpenPowerlifting reference cohort/, 'Clubs must explain the competitive percentile cohort');
 assert.match(achievements, /actual_percentile/, 'achievement details must explain cohort position');
