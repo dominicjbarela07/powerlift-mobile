@@ -39,6 +39,7 @@ const areas = [
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['data-driven sex-specific strength tiers', ['scripts/test-ledger-rewards.mjs', 'scripts/test-data-driven-strength-tiers.mjs', 'scripts/test-ledger-clubs-runtime-source.mjs', 'scripts/test-legacy-strength-trophy-retirement.mjs']],
+  ['canonical DEV Metro source lineage', ['scripts/test-canonical-dev-metro-lineage-policy.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-copy-week-ux-convergence.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs', 'scripts/test-programming-manager-overlay-system.mjs']],
   ['Session Workspace composition and presentation-only units', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs', 'scripts/test-session-workspace-unit-presentation.mjs']],
   ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs']],
