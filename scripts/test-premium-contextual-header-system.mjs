@@ -59,8 +59,9 @@ assert.match(ledgerExperiences, /<SLContextualHeader[\s\S]*title="Journey"/, 'Jo
 assert.doesNotMatch(ledgerExperiences, /journeyIntroTitle|journeyIntroBody/, 'Journey does not retain its duplicate intro shell');
 
 const ledgerIndex = read('components/ledger/index-experience.tsx');
-assert.match(ledgerIndex, /SLContextualHeader[\s\S]*title="The Ledger"/, 'The Ledger index starts with compact page identity');
-assert.doesNotMatch(ledgerIndex, /styles\.hero|styles\.pageTitle/, 'the Ledger index no longer spends a hero block on navigation identity');
+assert.match(ledgerIndex, /<ImageBackground source=\{LEDGER_INDEX_ASSETS\.hero\}/, 'The Ledger root preserves its governed atmospheric identity art');
+assert.match(ledgerIndex, /<Text style=\{styles\.pageTitle\}>THE LEDGER<\/Text>/, 'The Ledger root preserves its readable title over the atmospheric art');
+assert.doesNotMatch(ledgerIndex, /SLContextualHeader|SLPageHeader/, 'the atmospheric Ledger root does not restore a nested-page header shell');
 
 const archive = read('components/ledger/archive-foundation.tsx');
 assert.match(archive, /SLContextualHeader/, 'Archive uses the canonical contextual header');

@@ -14,7 +14,6 @@ import {
 import Svg, { Circle, Line, Polyline } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
-import { SLContextualHeader } from '@/components/ui/sl-contextual-header';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLSpacing } from '@/constants/theme';
@@ -474,7 +473,14 @@ export function LedgerIndexExperience() {
 
   return <View testID="ledger-home-experience" style={styles.page}>
     <FloatingDisplayUnitRegistration unit={model.unit} onChange={setUnit} testID="ledger-index-unit-toggle" />
-    <SLContextualHeader breadcrumb="Strength · Record · History" subtitle="Your training, written in results." title="The Ledger" />
+    <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
+      <View style={styles.heroScrim} />
+      <View style={styles.heroCopy}>
+        <Text style={styles.archiveKicker}>STRENGTH · RECORD · HISTORY</Text>
+        <Text style={styles.pageTitle}>THE LEDGER</Text>
+        <Text style={styles.pageSubtitle}>Your training, written in results.</Text>
+      </View>
+    </ImageBackground>
 
     <View style={styles.sectionInset}>
       <View style={styles.careerSnapshot}>
@@ -534,6 +540,13 @@ export function LedgerIndexExperience() {
 const styles = StyleSheet.create({
   page: { gap: 19, paddingBottom: 20, backgroundColor: '#000000' },
   sectionInset: { gap: 9, marginHorizontal: 12 },
+  hero: { minHeight: 160, justifyContent: 'flex-end', overflow: 'hidden', backgroundColor: '#000000' },
+  heroImage: { opacity: 0.96 },
+  heroScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.20)' },
+  heroCopy: { gap: 4, paddingHorizontal: 18, paddingBottom: 25 },
+  archiveKicker: { color: '#BFA0F2', fontSize: 10, lineHeight: 14, fontWeight: '700', letterSpacing: 1.25 },
+  pageTitle: { color: '#F5F2F7', fontSize: 39, lineHeight: 43, fontWeight: '800', letterSpacing: -0.7 },
+  pageSubtitle: { color: '#D1D2D6', fontSize: 14, lineHeight: 19, fontWeight: '600' },
   sectionKicker: { color: '#B58BEF', fontSize: 11, lineHeight: 15, fontWeight: '700', letterSpacing: 0.72 },
   careerSnapshot: { overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: '#393441', backgroundColor: '#08090C' },
   careerTop: { minHeight: 121, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 12 },

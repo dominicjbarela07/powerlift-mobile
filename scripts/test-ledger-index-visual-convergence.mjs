@@ -9,9 +9,7 @@ const resolver = await readFile(path.join(root, 'lib/ledger-index-assets.ts'), '
 
 for (const marker of [
   'ImageBackground',
-  'SLContextualHeader',
-  'title="The Ledger"',
-  'breadcrumb="Strength · Record · History"',
+  'LEDGER_INDEX_ASSETS.hero',
   'CareerBars',
   'ledgerCoreLiftAsset',
   'LEDGER_INDEX_ASSETS.careerSets',
@@ -35,6 +33,7 @@ for (const forbidden of ['journey-meet-team', 'achievement-material-v2']) {
 }
 
 const expectedAssets = new Map([
+  ['ledger-hero-plate-v1.png', [1200, 600]],
   ['ledger-chapter-journey-v1.png', [384, 384]],
   ['ledger-chapter-accessories-v1.png', [384, 384]],
   ['ledger-chapter-variants-v1.png', [384, 384]],
@@ -64,8 +63,10 @@ assert.match(resolver, /return null;/, 'genuinely unknown lift families retain a
 assert.match(resolver, /LEDGER_INDEX_ASSET_GOVERNANCE/, 'new Ledger artwork must publish governed asset metadata');
 assert.doesNotMatch(source, /resolvePlateStackRender|fallbackPlate|prMedallion/, 'valid core lifts, Sets, and PRs must not resolve through generic load imagery');
 assert.match(source, /SL_STRENGTH_TIER_ASSETS/, 'Achievements must retain the governed Tier I–VII artwork');
-assert.doesNotMatch(source, /LEDGER_INDEX_ASSETS\.hero/, 'the retired oversized Ledger identity hero must not return');
-assert.match(source, /<SLContextualHeader[^>]*title="The Ledger"/, 'Ledger identity must use the compact canonical contextual header');
-assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'Ledger sections must preserve readable content spacing after the compact header');
+assert.match(source, /<ImageBackground source=\{LEDGER_INDEX_ASSETS\.hero\}/, 'the governed Ledger atmospheric hero must remain visible');
+assert.match(source, /hero: \{ minHeight: 160, justifyContent: 'flex-end'/, 'the Ledger atmospheric hero must preserve its approved compact composition');
+assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'the Ledger hero must preserve the transition into Career Snapshot');
+assert.match(source, /heroCopy: \{ gap: 4, paddingHorizontal: 18, paddingBottom: 25 \}/, 'the Ledger hero copy must preserve its readable placement over the artwork');
+assert.doesNotMatch(source, /SLContextualHeader/, 'the root Ledger atmospheric hero must not be replaced by the nested-page contextual header shell');
 
-console.log('[ledger-index-visual] compact identity, composition, routes, governed artwork, and raster dimensions passed');
+console.log('[ledger-index-visual] atmospheric identity, compact composition, routes, governed artwork, and raster dimensions passed');
