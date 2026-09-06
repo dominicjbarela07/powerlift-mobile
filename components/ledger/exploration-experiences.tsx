@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AnalyticalTimeSeriesChart, type AnalyticalSelection } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { Text } from '@/components/ui/sl-text';
+import { SLCompactTabRail, SLContextualHeader } from '@/components/ui/sl-contextual-header';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
@@ -116,8 +117,9 @@ function State({ title, error, onRetry }: { title: string; error?: boolean; onRe
   return <View style={styles.state}><Ionicons name={error ? 'alert-circle-outline' : 'hourglass-outline'} size={28} color="#B68DEB" /><Text style={styles.stateTitle}>{title}</Text>{onRetry ? <Pressable onPress={onRetry} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable> : null}</View>;
 }
 
-function RoomHeader({ title, subtitle }: { title: string; subtitle: string }) {
-  return <View style={styles.roomHeader}><Text style={styles.roomKicker}>THE LEDGER</Text><Text style={styles.roomTitle}>{title}</Text><Text style={styles.roomSubtitle}>{subtitle}</Text></View>;
+function RoomHeader({ title, subtitle, backHref = ledgerHrefFor('home') }: { title: string; subtitle: string; backHref?: string }) {
+  const router = useRouter();
+  return <SLContextualHeader backAccessibilityLabel={`Back from ${title}`} breadcrumb="The Ledger" onBack={() => router.replace(backHref as any)} subtitle={subtitle} title={title} />;
 }
 
 function ContextBar({ data }: { data: LedgerExplorationIndex }) {
@@ -132,7 +134,12 @@ function ExplorationUnitToolbar({ unit, onChange }: { unit: LedgerUnit; onChange
 }
 
 function Tabs<T extends string>({ values, value, onChange }: { values: readonly T[]; value: T; onChange: (value: T) => void }) {
-  return <View accessibilityRole="tablist" style={styles.tabs}>{values.map((tab) => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: tab === value }} onPress={() => onChange(tab)} style={[styles.tab, tab === value && styles.tabActive]}><Text style={[styles.tabText, tab === value && styles.tabTextActive]}>{tab}</Text></Pressable>)}</View>;
+  return <SLCompactTabRail
+    items={values.map((tab) => ({ key: tab, label: tab }))}
+    onSelect={(tab) => onChange(tab as T)}
+    selectedKey={value}
+    style={styles.tabBleed}
+  />;
 }
 
 function MovementArtwork({ movement, size = 58 }: { movement: LedgerMovementProgress; size?: number }) {
@@ -267,7 +274,7 @@ export function MuscleDetailExperience({ region }: { region: AccessoryMuscleRegi
   const movements = data.movements.filter((movement) => canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family) === region).sort((left, right) => right.volume_kg - left.volume_kg);
   const max = Math.max(1, ...movements.map((movement) => movement.volume_kg));
   return <View testID="ledger-muscle-detail-experience" style={styles.page}>
-    <RoomHeader title={prettify(region)} subtitle="Exact movement contribution and performed volume." />
+    <RoomHeader backHref={ledgerHrefFor('muscle-groups')} title={prettify(region)} subtitle="Exact movement contribution and performed volume." />
     <View style={styles.inset}><View style={styles.muscleDetailHero}>{isGovernedMuscleId(region) ? <MuscleMap athlete={data.athlete} primary={[region]} size="card" view="auto" /> : null}<View style={styles.muscleDetailMetrics}><Text style={styles.sectionKicker}>ALL-TIME PERFORMED EVIDENCE</Text><Text style={styles.muscleDetailVolume}>{group ? volumeNumber(group.volume_kg, unit) : '—'}</Text><Text style={styles.muscleDetailUnit}>{unit.toUpperCase()} VOLUME</Text><View style={styles.detailMetrics}><View><Text style={styles.detailMetricValue}>{group?.set_count ?? 0}</Text><Text style={styles.detailMetricLabel}>SETS</Text></View><View><Text style={styles.detailMetricValue}>{group?.movement_count ?? 0}</Text><Text style={styles.detailMetricLabel}>MOVEMENTS</Text></View></View></View></View></View>
     <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>TOP MOVEMENTS</Text><Text style={styles.sectionMeta}>EXACT IDENTITIES</Text></View><View style={styles.movementList}>{movements.map((movement) => <View key={movement.id}><MovementRow movement={movement} unit={unit} tone="#A46DE4" onPress={() => router.push(movementHistorySheetRouteForCanonicalIdentity({ movementDefinitionId: movement.id }) as any)} /><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, movement.volume_kg / max * 100)}%`, backgroundColor: '#7653A5' }]} /></View></View>)}</View></View>
     <View style={styles.inset}><View style={styles.policyNotice}><Ionicons name="ribbon-outline" size={20} color="#C5A4F1" /><View style={styles.policyCopy}><Text style={styles.policyTitle}>Reward evidence remains canonical.</Text><Text style={styles.policyBody}>Muscle-level medallions are not shown because the accomplishment platform does not currently issue them. Per-lift and total volume medallions remain in Achievements.</Text></View></View></View>
@@ -309,10 +316,7 @@ function FilterGroup({ label, values, value, onChange, format = false }: { label
 const styles = StyleSheet.create({
   page: { gap: 18, paddingBottom: 22 },
   inset: { gap: 10, marginHorizontal: 14 },
-  roomHeader: { gap: 2, paddingHorizontal: 18, paddingTop: 2, paddingBottom: 2 },
-  roomKicker: { color: '#A98ADF', fontSize: 8, lineHeight: 11, fontWeight: '700', letterSpacing: 1 },
-  roomTitle: { color: '#F3EFF6', fontSize: 28, lineHeight: 33, fontWeight: '700', letterSpacing: -0.45 },
-  roomSubtitle: { maxWidth: 360, color: '#838B97', fontSize: 9, lineHeight: 13 },
+  tabBleed: { marginHorizontal: -14 },
   sectionKicker: { color: '#A98BDB', fontSize: 7.5, lineHeight: 10, fontWeight: '700', letterSpacing: 0.7 },
   sectionHeader: { minHeight: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionTitle: { color: '#B895E7', fontSize: 9.5, lineHeight: 12, fontWeight: '700', letterSpacing: 0.7 },
@@ -321,11 +325,6 @@ const styles = StyleSheet.create({
   stateTitle: { color: SLColors.textSecondary, textAlign: 'center' },
   retry: { minHeight: 42, justifyContent: 'center', paddingHorizontal: 18, borderRadius: 12, borderWidth: 1, borderColor: '#654D82' },
   retryText: { color: '#CDB6EC', fontSize: 11, fontWeight: '600' },
-  tabs: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#2D333C' },
-  tab: { flex: 1, minHeight: 34, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
-  tabActive: { borderBottomColor: '#A76DE6' },
-  tabText: { color: '#777F8B', fontSize: 8, lineHeight: 11, fontWeight: '600' },
-  tabTextActive: { color: '#C7A7ED' },
   contextBar: { overflow: 'hidden', borderRadius: 11, borderWidth: 1, borderColor: '#2E3540', backgroundColor: '#090C11' },
   contextPrimary: { gap: 2, padding: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#2B323C' },
   contextKicker: { color: '#B997E8', fontSize: 8.5, lineHeight: 11, fontWeight: '700' },

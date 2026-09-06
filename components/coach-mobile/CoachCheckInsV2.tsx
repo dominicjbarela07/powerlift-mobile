@@ -1,15 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
+import { SLCompactTabRail, SLContextualHeader, type SLContextualHeaderAction } from '@/components/ui';
 import { SLButton } from '@/components/ui/sl-button';
 import { Text, TextInput } from '@/components/ui/sl-text';
-import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
+import { SLFontFamilies } from '@/constants/theme';
 import {
   changeCoachCheckInFormState,
   createCoachCheckInForm,
@@ -257,7 +258,7 @@ function FormDetail({ data, form, onBack, onData, onAssign, onEdit, onAnalytics,
     if (!response.ok || !response.json?.ok || !response.json.command_center) { setError(response.json?.error || 'Unable to update Check-In.'); return; }
     onData(response.json.command_center); setActions(false);
   };
-  return <ScreenShell title={form.title} subtitle="Form settings" onBack={onBack} action={<IconButton icon="ellipsis-horizontal" label="Form actions" onPress={() => setActions(true)} />}>
+  return <ScreenShell title={form.title} subtitle="Form settings" onBack={onBack} action={{ accessibilityLabel: 'Form actions', icon: 'ellipsis-horizontal', onPress: () => setActions(true) }}>
     {error ? <InlineError text={error} /> : null}
     <View style={styles.detailCard}><View style={styles.metricRow}><Text style={styles.eyebrow}>BASIC INFO</Text><Pill label={form.is_active ? 'ACTIVE' : 'ARCHIVED'} tone={form.is_active ? 'success' : 'neutral'} /></View><Info label="Name" value={form.title} /><Info label="Description" value={form.description || 'No description'} /><Info label="Cadence" value={form.cadence_label} /><Info label="Delivery" value={form.delivery_time_local ? `${form.delivery_time_local} · Athlete local time` : 'Not scheduled'} /><Info label="Questions" value={`${form.question_count} questions`} /><Info label="Assigned Athletes" value={`${form.assigned_athlete_count} athletes`} /></View>
     <View style={styles.detailCard}><Text style={styles.eyebrow}>PERFORMANCE</Text><MetricLine label="Submissions" value={String(form.submission_count)} /><MetricLine label="Completion Rate" value={form.completion_rate == null ? 'No data' : `${Math.round(form.completion_rate)}%`} /><MetricLine label="Average Response Time" value={form.average_response_hours == null ? 'No data' : `${form.average_response_hours}h`} /></View>
@@ -332,7 +333,7 @@ function AssignmentEditor({ data, form, onBack, onSaved }: { data: CoachCheckIns
     <SearchField value={query} onChangeText={setQuery} placeholder="Search athletes" />
     {visibleAthletes.map((athlete) => <Pressable key={athlete.id} onPress={() => toggle(athlete.id)} style={({ pressed }) => [styles.athleteSelect, pressed && styles.pressed]}><View style={[styles.checkbox, selected.has(athlete.id) && styles.checkboxSelected]}>{selected.has(athlete.id) ? <Ionicons name="checkmark" color={C.text} size={15} /> : null}</View><Avatar athlete={athlete} /><View style={styles.flex}><Text style={styles.rowText}>{athlete.name}</Text><Text style={styles.meta}>{athlete.active_form_count} active forms</Text></View></Pressable>)}
     <SectionHeading title="SCHEDULE & CADENCE" />
-    <Segmented value={cadence} options={data.supported_cadences.map((row) => ({ key: row.key, label: row.label }))} onChange={setCadence} scroll />
+    <Segmented value={cadence} options={data.supported_cadences.map((row) => ({ key: row.key, label: row.label }))} onChange={setCadence} />
     {(cadence === 'weekly' || cadence === 'custom_weekdays') ? <View style={styles.weekdays}>{['M','T','W','T','F','S','S'].map((label, index) => <Pressable key={`${label}-${index}`} onPress={() => setWeekday(index)} style={[styles.day, weekday === index && styles.daySelected]}><Text style={[styles.dayText, weekday === index && styles.dayTextSelected]}>{label}</Text></Pressable>)}</View> : null}
     <Field label="Delivery time (athlete local)" value={time} onChangeText={setTime} placeholder="18:00" />
     <Text style={styles.sheetNote}>Every athlete receives this Check-In in their saved local timezone. No server-time conversion is exposed to them.</Text>
@@ -396,13 +397,12 @@ function TrendChart({ points, metric, unit, max }: { points: CoachCheckInForm['a
   </Svg><Text style={styles.chartHint}>{selected != null && points[selected]?.[metric] != null ? `${formatDate(points[selected].week_start)} · ${points[selected][metric]}${unit}` : points.length ? 'Weekly axis · tap a point for exact evidence' : 'No submissions in this window.'}</Text></View>;
 }
 
-function ScreenShell({ title, subtitle, onBack, action, children }: { title: string; subtitle?: string; onBack: () => void; action?: React.ReactNode; children: React.ReactNode }) {
-  return <ScrollView style={styles.screen} contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled"><View style={styles.screenHeader}><IconButton icon="chevron-back" label="Back" onPress={onBack} /><View style={styles.headerTitle}><Text numberOfLines={2} style={styles.headerText}>{title}</Text>{subtitle ? <Text style={styles.meta}>{subtitle}</Text> : null}</View>{action || <View style={styles.headerSpacer} />}</View>{children}</ScrollView>;
+function ScreenShell({ title, subtitle, onBack, action, children }: { title: string; subtitle?: string; onBack: () => void; action?: SLContextualHeaderAction; children: React.ReactNode }) {
+  return <ScrollView style={styles.screen} contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled"><SLContextualHeader action={action} onBack={onBack} subtitle={subtitle} title={title} />{children}</ScrollView>;
 }
 
-function Segmented({ value, options, onChange, scroll = false }: { value: string; options: { key: string; label: string }[]; onChange: (key: string) => void; scroll?: boolean }) {
-  const content = <View style={styles.segmented}>{options.map((row) => <Pressable key={row.key} accessibilityRole="button" accessibilityState={{ selected: value === row.key }} onPress={() => onChange(row.key)} style={({ pressed }) => [styles.segment, value === row.key && styles.segmentSelected, pressed && styles.pressed]}><Text style={[styles.segmentText, value === row.key && styles.segmentTextSelected]}>{row.label}</Text></Pressable>)}</View>;
-  return scroll ? <ScrollView horizontal showsHorizontalScrollIndicator={false}>{content}</ScrollView> : content;
+function Segmented({ value, options, onChange }: { value: string; options: { key: string; label: string }[]; onChange: (key: string) => void }) {
+  return <SLCompactTabRail items={options} onSelect={onChange} selectedKey={value} />;
 }
 
 function Avatar({ athlete }: { athlete: { name: string; avatar_url?: string | null } }) { return athlete.avatar_url ? <Image source={{ uri: athlete.avatar_url }} style={styles.avatar} /> : <View style={styles.avatarFallback}><Text style={styles.avatarText}>{athlete.name.split(/\s+/).map((part) => part[0]).slice(0,2).join('').toUpperCase()}</Text></View>; }
@@ -424,10 +424,8 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
 const styles = StyleSheet.create({
   screen:{flex:1,backgroundColor:C.canvas}, page:{paddingTop:12,paddingBottom:120,gap:12}, center:{flex:1,minHeight:560,backgroundColor:C.canvas,alignItems:'center',justifyContent:'center',gap:14,padding:24}, flex:{flex:1}, disabled:{opacity:.35}, pressed:{opacity:.78,transform:[{scale:.99}]},
   titleRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}, pageTitle:{color:C.text,fontFamily:SLFontFamilies.display,fontSize:30,fontWeight:'700'}, subtitle:{color:C.muted,fontSize:13,marginTop:2},
-  screenHeader:{flexDirection:'row',alignItems:'center',gap:10,minHeight:54}, headerTitle:{flex:1,alignItems:'center'}, headerText:{color:C.text,fontFamily:SLFontFamilies.display,fontSize:20,fontWeight:'700',textAlign:'center'}, headerSpacer:{width:46},
   iconButton:{width:46,height:46,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:C.surface,alignItems:'center',justifyContent:'center'}, miniIcon:{width:30,height:30,borderRadius:9,borderWidth:1,borderColor:C.line,alignItems:'center',justifyContent:'center'},
   snapshot:{flexDirection:'row',borderWidth:1,borderColor:C.line,borderRadius:14,overflow:'hidden',backgroundColor:C.surface}, snapshotCell:{flex:1,alignItems:'center',paddingVertical:12,borderRightWidth:StyleSheet.hairlineWidth,borderRightColor:C.line}, snapshotValue:{fontSize:22,fontWeight:'700'}, snapshotLabel:{color:C.muted,fontSize:9,textAlign:'center',lineHeight:12,textTransform:'uppercase',marginTop:3},
-  segmented:{flexDirection:'row',padding:3,borderRadius:12,backgroundColor:C.raised,borderWidth:1,borderColor:C.line,minWidth:'100%'}, segment:{flex:1,minHeight:40,paddingHorizontal:14,alignItems:'center',justifyContent:'center',borderRadius:9}, segmentSelected:{backgroundColor:'#5E2AA5'}, segmentText:{color:C.muted,fontSize:12,fontWeight:'600'}, segmentTextSelected:{color:C.text},
   sectionStack:{gap:10}, sectionHeading:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:5}, eyebrow:{color:C.violet,fontSize:11,fontWeight:'700',letterSpacing:.7}, sectionCount:{color:C.muted,fontSize:13},
   card:{borderWidth:1,borderColor:C.line,borderRadius:14,backgroundColor:C.surface,padding:12,gap:10}, dangerCard:{borderColor:'rgba(255,90,104,.38)'}, cardTop:{flexDirection:'row',alignItems:'center',gap:10}, cardTitle:{color:C.text,fontSize:16,fontWeight:'700'}, meta:{color:C.muted,fontSize:12,lineHeight:17}, rowText:{color:C.text,fontSize:14,fontWeight:'600'}, iconTile:{width:42,height:42,borderRadius:11,backgroundColor:C.raised,alignItems:'center',justifyContent:'center'},
   metricRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:10}, metricStrong:{color:C.text,fontSize:12,fontWeight:'600'}, track:{height:4,borderRadius:2,backgroundColor:C.line,overflow:'hidden'}, trackFill:{height:'100%',backgroundColor:C.green}, pill:{borderWidth:1,borderRadius:8,paddingHorizontal:7,paddingVertical:3}, pillText:{fontSize:9,fontWeight:'700'},

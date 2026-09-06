@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Text, TextInput } from '@/components/ui/sl-text';
-import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { FloatingDisplayUnitRegistration, SLCanonicalIcon, SLContextualHeader, SLTrophy } from '@/components/ui';
 import { SLColors, SLFontFamilies, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
 import {
@@ -393,7 +393,14 @@ export function ArchiveFoundationExperience() {
 
   return <ArchiveDisplayUnitContext.Provider value={displayUnit}><View style={styles.page} testID="ledger-archive-experience">
     <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} testID="ledger-archive-unit-toggle" />
-    <ArchiveHeading />
+    <SLContextualHeader
+      action={{ accessibilityLabel: 'Search and filter Archive', icon: 'search', onPress: () => setToolsOpen((open) => !open) }}
+      backAccessibilityLabel="Back to The Ledger"
+      breadcrumb="The Ledger"
+      onBack={() => router.replace('/(tabs)/ledger/home' as any)}
+      subtitle="Your training history, kept in context."
+      title="Archive"
+    />
     {browsingResults || toolsOpen ? <SearchBar
       filterCount={filterCount}
       filtersOpen={filtersOpen}
@@ -457,16 +464,6 @@ function archiveFilterWeightKg(value: string, unit: DisplayWeightUnit): string |
 function ArchiveEvidence({ item }: { item: ArchiveItem }) {
   const unit = React.useContext(ArchiveDisplayUnitContext);
   return <>{itemEvidence(item, unit)}</>;
-}
-
-function ArchiveHeading() {
-  return <View style={styles.heading}>
-    <View style={styles.headingSeal}><Ionicons name="archive-outline" size={25} color={SLColors.accentMuted} /></View>
-    <View style={styles.headingCopy}>
-      <Text typographyRole="pageTitle" style={styles.headingTitle}>Archive</Text>
-      <Text typographyRole="body" style={styles.headingBody}>Your training history, kept in context.</Text>
-    </View>
-  </View>;
 }
 
 function SearchBar({ query, setQuery, onSubmit, onClear, filtersOpen, onFilters, filterCount }: {
@@ -760,11 +757,6 @@ function groupByType(items: ArchiveItem[]): [string, ArchiveItem[]][] {
 
 const styles = StyleSheet.create({
   page: { gap: SLSpacing.lg, paddingBottom: SLSpacing.xl },
-  heading: { minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  headingSeal: { width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.surfaceSelected, borderWidth: 1, borderColor: SLColors.borderSelected },
-  headingCopy: { flex: 1, minWidth: 0, gap: 3 },
-  headingTitle: { color: SLColors.textStrong },
-  headingBody: { color: SLColors.textSecondary },
   searchShell: { borderRadius: SLRadius.radiusControl, backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.borderDefault, overflow: 'hidden' },
   searchRow: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 7 },
   searchInput: { flex: 1, minHeight: 50, color: SLColors.textPrimary, fontSize: 15 },

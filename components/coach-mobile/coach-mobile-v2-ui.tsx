@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { Text } from '@/components/ui/sl-text';
+import { SLContextualHeader } from '@/components/ui/sl-contextual-header';
 
 export const COACH_V2 = {
   black: '#000000',
@@ -38,24 +39,13 @@ export function CoachMobileHeader({
   primaryIcon?: keyof typeof Ionicons.glyphMap;
   primaryLabel?: string;
 }) {
-  return (
-    <View style={styles.header}>
-      {onBack ? (
-        <Pressable accessibilityLabel="Back" accessibilityRole="button" hitSlop={10} onPress={onBack} style={styles.headerButton}>
-          <Ionicons color={COACH_V2.text} name="chevron-back" size={23} />
-        </Pressable>
-      ) : <View style={styles.headerSpacer} />}
-      <View style={styles.headerCopy}>
-        {eyebrow ? <Text style={styles.headerEyebrow}>{eyebrow}</Text> : null}
-        <Text numberOfLines={1} style={styles.headerTitle}>{title}</Text>
-      </View>
-      {onPrimary ? (
-        <Pressable accessibilityLabel={primaryLabel} accessibilityRole="button" hitSlop={10} onPress={onPrimary} style={styles.headerButton}>
-          <Ionicons color={COACH_V2.text} name={primaryIcon} size={22} />
-        </Pressable>
-      ) : <View style={styles.headerSpacer} />}
-    </View>
-  );
+  return <SLContextualHeader
+    action={onPrimary ? { accessibilityLabel: primaryLabel, icon: primaryIcon, onPress: onPrimary } : undefined}
+    backAccessibilityLabel="Back"
+    breadcrumb={eyebrow}
+    onBack={onBack}
+    title={title}
+  />;
 }
 
 export function CoachSectionHeading({ action, onAction, title }: { action?: string; onAction?: () => void; title: string }) {
@@ -165,12 +155,6 @@ export function CoachCardChevron() {
 }
 
 const styles = StyleSheet.create({
-  header: { height: 58, flexDirection: 'row', alignItems: 'center', borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth },
-  headerButton: { width: 42, height: 42, borderRadius: 10, borderWidth: 1, borderColor: COACH_V2.border, backgroundColor: COACH_V2.surface, alignItems: 'center', justifyContent: 'center' },
-  headerSpacer: { width: 42 },
-  headerCopy: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
-  headerEyebrow: { color: COACH_V2.violetBright, fontSize: 9, fontWeight: '800', letterSpacing: 0.9, textTransform: 'uppercase' },
-  headerTitle: { color: COACH_V2.text, fontSize: 16, lineHeight: 21, fontWeight: '800' },
   sectionHeading: { minHeight: 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 },
   sectionTitle: { color: COACH_V2.text, fontSize: 12, fontWeight: '900', letterSpacing: 0.45, textTransform: 'uppercase' },
   sectionAction: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '700' },

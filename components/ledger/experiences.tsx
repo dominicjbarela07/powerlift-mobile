@@ -6,7 +6,7 @@ import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-nativ
 
 import { Text } from '@/components/ui/sl-text';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
-import { SLCanonicalIcon, SLTrophy } from '@/components/ui';
+import { SLCanonicalIcon, SLContextualHeader, SLTrophy } from '@/components/ui';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLRadius, SLSpacing } from '@/constants/theme';
 import { getAthleteVideoArchive } from '@/lib/api';
@@ -366,11 +366,13 @@ export function JourneyExperience() {
   return (
     <View style={[styles.page, styles.journeyPage]} testID="ledger-journey-experience">
       <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-journey-unit-toggle" />
-      <View style={styles.journeyIntro}>
-        <Kicker>YOUR COMPLETE RECORD</Kicker>
-        <Text style={styles.journeyIntroTitle}>Journey</Text>
-        <Text style={styles.journeyIntroBody}>From {formatJourneyDate(overview.earliest_record.date)} to today. Reconstructed from your preserved Strength Ledger evidence.</Text>
-      </View>
+      <SLContextualHeader
+        backAccessibilityLabel="Back to The Ledger"
+        breadcrumb="The Ledger"
+        onBack={() => router.replace('/(tabs)/ledger/home' as any)}
+        subtitle={`From ${formatJourneyDate(overview.earliest_record.date)} to today. Preserved source evidence.`}
+        title="Journey"
+      />
       <Segmented values={['Overview', 'Blocks', 'Timeline'] as const} value={view} onChange={setView} />
 
       {view === 'Overview' ? <JourneyOverviewView overview={overview} unit={unit} /> : null}
@@ -812,9 +814,6 @@ const styles = StyleSheet.create({
   ledgerRoomStateTitle: { color: SLColors.textMuted, fontSize: 15, lineHeight: 22, textAlign: 'center' },
   page: { gap: SLSpacing.md },
   journeyPage: { gap: 0 },
-  journeyIntro: { gap: 6, paddingTop: 2, paddingBottom: 18 },
-  journeyIntroTitle: { color: '#F7F5FA', fontSize: 34, lineHeight: 39, fontWeight: '700', letterSpacing: -0.8 },
-  journeyIntroBody: { maxWidth: 430, color: '#929AA7', fontSize: 13, lineHeight: 19 },
   journeyOverview: { gap: 14, paddingTop: 18 },
   journeyMetricGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   journeyMetricCard: { width: '48%', minHeight: 94, justifyContent: 'center', gap: 4, paddingHorizontal: 16, borderRadius: 16, borderWidth: 1, borderColor: '#30283D', backgroundColor: '#0B0D13' },

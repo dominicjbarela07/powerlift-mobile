@@ -57,10 +57,11 @@ for (const destination of LEDGER_DESTINATIONS) {
 }
 assert.equal(resolveLedgerDestination(undefined), null, 'missing destinations must never become Home');
 assert.equal(resolveLedgerDestination('unknown-room'), null, 'unknown destinations must never become Home');
-assert.match(primitives, /!isIndex \? <View[\s\S]*ledgerHrefFor\('home'\)/, 'rooms return explicitly to the Ledger index');
+assert.doesNotMatch(primitives, /backRow|backButton/, 'LedgerFrame does not inject the retired isolated back-button row');
+assert.match(read('components/ledger/exploration-experiences.tsx'), /SLContextualHeader[\s\S]*ledgerHrefFor\('home'\)/, 'exploration rooms return explicitly through the compact contextual header');
 assert.doesNotMatch(primitives, /DEV_MOCK_LIBRARY_HREF/, 'the Ledger foyer must not render a back action');
 assert.doesNotMatch(primitives, /accessibilityRole="tablist"|LEDGER_DESTINATIONS\.map|navItemActive/, 'no nested Ledger room tabs may return');
-assert.match(routeScreen, /screen === 'achievements'[\s\S]*?<LedgerAchievementsRoom \/>/, 'Achievements routes to the approved experience');
+assert.match(routeScreen, /screen === 'achievements'[\s\S]*?<LedgerAchievementsRoom\b/, 'Achievements routes to the approved experience');
 assert.match(ledgerLayout, /<Stack screenOptions=\{\{ headerShown: false \}\} \/>/, 'Ledger rooms use the shipping stack');
 assert.match(tabsLayout, /name="ledger"[\s\S]*href: viewMode === 'athlete' \|\| isIndividual \? '\/\(tabs\)\/ledger\/home' : null/, 'the Ledger is available in the shipping athlete navigation');
 
@@ -108,7 +109,7 @@ assert.match(indexExperience, /eventComparison[\s\S]*typeof event\.delta/, 'Rece
 assert.match(indexExperience, /completedTrainingWeeks[\s\S]*Last 8 completed weeks/, 'training frequency uses eight fully completed calendar weeks');
 assert.match(indexExperience, /completedVolumeWeeks[\s\S]*No adjacent-week comparison/, 'volume comparisons require adjacent fully completed weekly evidence');
 assert.match(indexExperience, /progression\?\.readiness\?\.average/, 'Readiness renders only when the governed aggregation exists');
-assert.match(indexExperience, /loadConvention === 'assistance_load'/, 'Latest Entry labels assisted load only from its canonical load convention');
+assert.match(indexExperience, /formatPerformedLoad\(performance\.weight_kg, unit,[\s\S]*loadConvention: journeyLoadConvention\(entry\)/, 'Latest Entry labels assisted load only through its canonical load convention');
 assert.match(indexExperience, /RAW_COMPLETION_EVENT_TYPES/, 'Latest Entry must reject raw completion event labels');
 assert.doesNotMatch(indexExperience, /const latest = events\[0\]/, 'Latest Entry must not render the first raw accomplishment event');
 assert.match(indexExperience, /LEDGER_INDEX_ASSETS\.careerPr[\s\S]*SL_STRENGTH_TIER_ASSETS/, 'purpose-built PR artwork and governed strength-tier trophies power distinct Career Snapshot concepts');
@@ -117,14 +118,14 @@ assert.match(indexMaturity, /completedWorkouts >= 500[\s\S]*completedWorkouts >=
 assert.match(indexMaturity, /anniversary[\s\S]*major-pr[\s\S]*achievement[\s\S]*meet[\s\S]*reviewed-video[\s\S]*strength-change[\s\S]*rediscovery/, 'daily evidence priority is deterministic');
 assert.match(experiences, /return <LedgerIndexExperience \/>/, 'the active Home route uses the maturity-aware Index');
 assert.doesNotMatch(experiences, /\?\? 'deadlift'|\|\| 'deadlift'/, 'Strength must not invent a default strongest lift');
-assert.match(experiences, /points\.length < 2[\s\S]*Not enough qualifying evidence to draw a trend/, 'Strength trends require real qualifying points');
+assert.match(experiences, /CanonicalStrengthTrendPlot[\s\S]*emptyBody="At least two qualifying estimated-strength observations are required\."/, 'Strength trends require real qualifying points');
 assert.match(experiences, /bodyweightEvent = liftEvents\.find[\s\S]*reportedBodyweight: bodyweightEvent\?\.reported_bodyweight/, 'Strength context uses an exact source event carrying reported bodyweight');
 assert.doesNotMatch(experiences, /\[0,\s*0\]|currentValue, currentValue/, 'Strength trends must not synthesize visual points');
 for (const state of ['loading', 'empty', 'unauthorized', 'unavailable', 'error']) {
   assert.match(experiences, new RegExp(`ledger-\\$\\{kind\\}-state|kind=.${state}`), `Ledger rooms must preserve a ${state} state`);
 }
 
-assert.match(achievements, /useLedgerLiveData\('all'\)/, 'Achievements uses canonical live data');
+assert.match(achievements, /useLedgerLiveData\('all', \{ fixture: devFixture \}\)/, 'Achievements uses canonical live data with an explicit DEV-only certification seam');
 assert.match(achievements, /LIFT_PRESENTATIONS\.map/, 'the milestone ladder keeps all canonical lifts visible while leaving absent evidence empty');
 assert.doesNotMatch(achievements, /const sourceKg = canonicalWeight \?\? estimate/, 'e1RM must not masquerade as a weight PR');
 assert.match(achievements, /hasVolumeData = totalVolumeKg > 0 \|\| competitionTotalVolumeKg > 0/, 'volume achievements require real positive canonical totals');
@@ -152,7 +153,7 @@ for (const surface of ['accessories', 'variants', 'muscle-groups', 'filters']) {
 for (const marker of ['ledger-context-bar', 'ledger-movement-detail-experience', 'ledger-muscle-detail-experience']) {
   assert.match(explorationExperiences, new RegExp(`testID="${marker}"`), `${marker} remains a concrete storyboard surface`);
 }
-assert.match(explorationExperiences, /accessoryMuscleRegionAsset/, 'muscle and movement surfaces use approved anatomy artwork');
+assert.match(explorationExperiences, /CanonicalMovementArtwork[\s\S]*MuscleMap/, 'muscle and movement surfaces use governed canonical artwork');
 assert.doesNotMatch(explorationExperiences, /fake fallback|fixture|sample data/i, 'deeper Ledger surfaces cannot substitute fictional evidence');
 
 console.log('[ledger] canonical shipping routes, storyboard surfaces, truthful states, and Archive pagination passed');

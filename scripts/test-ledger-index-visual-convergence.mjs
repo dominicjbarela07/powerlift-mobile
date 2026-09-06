@@ -9,7 +9,9 @@ const resolver = await readFile(path.join(root, 'lib/ledger-index-assets.ts'), '
 
 for (const marker of [
   'ImageBackground',
-  'LEDGER_INDEX_ASSETS.hero',
+  'SLContextualHeader',
+  'title="The Ledger"',
+  'breadcrumb="Strength · Record · History"',
   'CareerBars',
   'ledgerCoreLiftAsset',
   'LEDGER_INDEX_ASSETS.careerSets',
@@ -33,7 +35,6 @@ for (const forbidden of ['journey-meet-team', 'achievement-material-v2']) {
 }
 
 const expectedAssets = new Map([
-  ['ledger-hero-plate-v1.png', [1200, 600]],
   ['ledger-chapter-journey-v1.png', [384, 384]],
   ['ledger-chapter-accessories-v1.png', [384, 384]],
   ['ledger-chapter-variants-v1.png', [384, 384]],
@@ -63,8 +64,8 @@ assert.match(resolver, /return null;/, 'genuinely unknown lift families retain a
 assert.match(resolver, /LEDGER_INDEX_ASSET_GOVERNANCE/, 'new Ledger artwork must publish governed asset metadata');
 assert.doesNotMatch(source, /resolvePlateStackRender|fallbackPlate|prMedallion/, 'valid core lifts, Sets, and PRs must not resolve through generic load imagery');
 assert.match(source, /SL_STRENGTH_TIER_ASSETS/, 'Achievements must retain the governed Tier I–VII artwork');
-assert.match(source, /hero: \{ minHeight: 160, justifyContent: 'flex-end'/, 'Ledger hero must not restore the oversized top dead space');
-assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'Ledger hero must preserve the breathing room before Career Snapshot');
-assert.match(source, /heroCopy: \{ gap: 4, paddingHorizontal: 18, paddingBottom: 25 \}/, 'Ledger hero copy must preserve its intentional bottom breathing room');
+assert.doesNotMatch(source, /LEDGER_INDEX_ASSETS\.hero/, 'the retired oversized Ledger identity hero must not return');
+assert.match(source, /<SLContextualHeader[^>]*title="The Ledger"/, 'Ledger identity must use the compact canonical contextual header');
+assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'Ledger sections must preserve readable content spacing after the compact header');
 
-console.log('[ledger-index-visual] composition, routes, governed artwork, and raster dimensions passed');
+console.log('[ledger-index-visual] compact identity, composition, routes, governed artwork, and raster dimensions passed');

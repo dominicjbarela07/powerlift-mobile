@@ -16,6 +16,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ProgrammingMuscleRegionArt } from '@/components/anatomy/ProgrammingMuscleRegionArt';
+import { SLContextualHeader } from '@/components/ui';
 import { SLMotionEntrance, SLMotionPressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { SLColors, SLRadius, SLMotion, SLTypography } from '@/constants/theme';
@@ -507,21 +508,14 @@ export function AthleteProgramTimeline({
 
   return (
     <View style={styles.root}>
-      <View style={[styles.pageHeader, { paddingTop: insets.top + 6 }]}>
-        <SLMotionPressable accessibilityLabel="Back" accessibilityRole="button" onPress={onBack} style={styles.headerButton}>
-          <Ionicons color={SLColors.textStrong} name="chevron-back" size={25} />
-        </SLMotionPressable>
-        <View style={styles.headerCopy}>
-          <Text style={styles.headerTitle}>Program Timeline</Text>
-          <Text numberOfLines={1} style={styles.headerSubtitle}>{payload.program.name}</Text>
-        </View>
-        {!selectedIsCurrent ? (
-          <SLMotionPressable accessibilityLabel="Return to current Week" accessibilityRole="button" onPress={returnToCurrent} style={styles.currentHeaderButton}>
-            <Ionicons color={SLColors.warning} name="locate" size={17} />
-            <Text style={styles.currentHeaderText}>Current</Text>
-          </SLMotionPressable>
-        ) : <View style={styles.headerButtonPlaceholder} />}
-      </View>
+      <SLContextualHeader
+        action={!selectedIsCurrent ? { accessibilityLabel: 'Return to current Week', icon: 'locate', onPress: returnToCurrent } : undefined}
+        breadcrumb="Training"
+        onBack={onBack}
+        style={{ paddingTop: insets.top + 6 }}
+        subtitle={payload.program.name}
+        title="Program Timeline"
+      />
       <FlatList
         contentContainerStyle={{ paddingBottom: Math.max(28, insets.bottom + 18) }}
         data={payload.blocks}
@@ -554,14 +548,6 @@ export function AthleteProgramTimeline({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000000' },
   list: { flex: 1, backgroundColor: '#000000' },
-  pageHeader: { minHeight: 88, paddingHorizontal: 14, paddingBottom: 12, borderBottomColor: SLColors.borderHairline, borderBottomWidth: StyleSheet.hairlineWidth, alignItems: 'center', flexDirection: 'row' },
-  headerButton: { width: 48, height: 48, borderRadius: 15, backgroundColor: SLColors.surfaceInset, borderColor: SLColors.borderStandard, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  headerButtonPlaceholder: { width: 60 },
-  headerCopy: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
-  headerTitle: { ...SLTypography.screenTitle, color: SLColors.textStrong, fontSize: 22 },
-  headerSubtitle: { ...SLTypography.body, color: SLColors.textMuted, marginTop: 1 },
-  currentHeaderButton: { minWidth: 68, minHeight: 44, borderRadius: 14, borderColor: 'rgba(200,171,114,0.38)', borderWidth: 1, backgroundColor: 'rgba(200,171,114,0.08)', alignItems: 'center', justifyContent: 'center', gap: 1, paddingHorizontal: 8 },
-  currentHeaderText: { ...SLTypography.utilityLabel, color: SLColors.warning, fontSize: 9 },
   contextCard: { marginHorizontal: 12, marginTop: 12, marginBottom: 18, borderRadius: SLRadius.radiusCard, borderColor: SLColors.borderStandard, borderWidth: 1, backgroundColor: SLColors.surfaceInset, overflow: 'hidden', paddingBottom: 27 },
   programHero: { minHeight: 118, justifyContent: 'flex-end' },
   programImage: { opacity: 0.68 },

@@ -15,7 +15,10 @@ const api = read('lib/coach-mobile.ts');
 assert.match(tabs, /rightAction=\{viewMode === 'coach' \? \{[\s\S]*accessibilityLabel: 'Open Team Brief'[\s\S]*icon: 'reader-outline'[\s\S]*router\.push\('\/coach-team-brief'/);
 assert.doesNotMatch(tabs, /isCoachHomePath|accessibilityLabel: 'Open Coach Calendar'/);
 assert.match(brief, /router\.canGoBack\(\) \? router\.back\(\) : router\.replace\('\/\(tabs\)\/coach-dashboard'\)/);
-assert.match(brief, /accessibilityLabel="Close Team Brief"[\s\S]*onPress=\{close\}/);
+assert.match(brief, /<SLContextualHeader[\s\S]*backAccessibilityLabel="Close Team Brief"[\s\S]*onBack=\{close\}[\s\S]*title="Team Brief"/);
+assert.match(brief, /action=\{\{ accessibilityLabel: 'Open Team Brief methodology', icon: 'reader-outline'/);
+assert.match(brief, /<SLCompactTabRail[\s\S]*items=\{PERIODS\.map/);
+assert.doesNotMatch(brief, /headerSpacer|styles\.periodRail/, 'Team Brief must not restore the retired centered shell or undersized custom period rail.');
 
 assert.match(brief, /\['7D', '4W', '12W', '6M', 'YTD', 'ALL'\]/);
 assert.match(brief, /\/coach\/mobile\/team-brief\?period=/);

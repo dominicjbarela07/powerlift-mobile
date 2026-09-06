@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
+import { SLContextualHeader } from '@/components/ui';
 
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/AuthContext';
@@ -308,25 +309,11 @@ function CoachAnnouncementHub() {
 
   return (
     <ThemedView style={styles.screen}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => router.replace('/(tabs)/messages' as any)}
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-        >
-          <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
-        </Pressable>
-
-        <View style={styles.headerTextWrap}>
-          <Text typographyRole="pageTitle" style={styles.headerTitle}>Announcements</Text>
-        </View>
-
-        <Pressable
-          onPress={openCreate}
-          style={({ pressed }) => [styles.headerIconButton, pressed && styles.backButtonPressed]}
-        >
-          <Ionicons name="add" size={22} color={SLColors.textStrong} />
-        </Pressable>
-      </View>
+      <SLContextualHeader
+        action={{ accessibilityLabel: 'Create announcement', icon: 'add', onPress: openCreate }}
+        onBack={() => router.replace('/(tabs)/messages' as any)}
+        title="Announcements"
+      />
 
       {!!error && (
         <View style={styles.errorCard}>
@@ -623,20 +610,7 @@ function AthleteAnnouncementsScreen() {
 
   return (
     <ThemedView style={styles.screen}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => router.replace('/(tabs)/messages' as any)}
-          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-        >
-          <Ionicons name="chevron-back" size={22} color={SLColors.textStrong} />
-        </Pressable>
-
-        <View style={styles.headerTextWrap}>
-          <Text typographyRole="pageTitle" style={styles.headerTitle}>Announcements</Text>
-        </View>
-
-        <View style={styles.headerSpacer} />
-      </View>
+      <SLContextualHeader onBack={() => router.replace('/(tabs)/messages' as any)} title="Announcements" />
 
       {!!error && (
         <View style={styles.errorCard}>
@@ -809,54 +783,15 @@ const styles = StyleSheet.create({
     color: SLColors.text,
     fontSize: SLTypography.rowTitle.fontSize,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(148,163,184,0.08)',
-  },
-  backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: SLRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(15,23,42,0.92)',
-    borderWidth: 1,
-    borderColor: 'rgba(148,163,184,0.10)',
-  },
   backButtonPressed: {
     opacity: 0.84,
     transform: [{ scale: 0.98 }],
-  },
-  headerIconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: SLRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: SLColors.railViolet,
-  },
-  headerTextWrap: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 12,
-  },
-  headerTitle: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.cardTitle.fontSize,
-    fontWeight: '900',
   },
   headerSub: {
     color: SLColors.textMuted,
     fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
     marginTop: 2,
-  },
-  headerSpacer: {
-    width: 38,
   },
   listContent: {
     paddingTop: 12,

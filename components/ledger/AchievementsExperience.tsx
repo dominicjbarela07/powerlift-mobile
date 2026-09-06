@@ -6,7 +6,7 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, V
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
-import { SLCanonicalIcon, SLScreen, SLTrophy } from '@/components/ui';
+import { SLCanonicalIcon, SLCompactTabRail, SLContextualHeader, SLScreen, SLTrophy } from '@/components/ui';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/components/volume-achievements/VolumeAchievementExperience';
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
@@ -318,15 +318,11 @@ function formatPrEvent(event: AccomplishmentEvent, unit: Unit): { title: string;
 }
 
 function AchievementFamilyRail({ section, onSelect }: { section: AchievementSection; onSelect: (section: AchievementSection) => void }) {
-  return <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.familyRail} accessibilityRole="tablist">
-    {PRIMARY_ACHIEVEMENT_SECTIONS.map((item) => <Pressable
-      key={item}
-      accessibilityRole="tab"
-      accessibilityState={{ selected: item === section }}
-      onPress={() => onSelect(item)}
-      style={[styles.familyTab, item === section && styles.familyTabActive]}
-    ><ThemedText typographyRole="shortTechnicalLabel" style={[styles.familyTabText, item === section && styles.familyTabTextActive]}>{ACHIEVEMENT_SECTION_LABELS[item]}</ThemedText></Pressable>)}
-  </ScrollView>;
+  return <SLCompactTabRail
+    items={PRIMARY_ACHIEVEMENT_SECTIONS.map((item) => ({ key: item, label: ACHIEVEMENT_SECTION_LABELS[item] }))}
+    onSelect={(item) => onSelect(item as AchievementSection)}
+    selectedKey={section}
+  />;
 }
 
 function AchievementsHub({
@@ -702,7 +698,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     : activeArtifactLift
       ? `${activeArtifactLift.key === 'bench' ? 'Bench Press' : activeArtifactLift.name} Tiers`
       : null;
-  const headerTitle = artifactTitle ?? ACHIEVEMENT_SECTION_LABELS[section];
+  const headerTitle = artifactTitle ?? 'Achievements';
   const goBack = artifactDetail
     ? () => setArtifactDetail(null)
     : section === 'hub'
@@ -714,7 +710,13 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-achievements-unit-toggle" />
     <View style={styles.canvas}>
       <ScrollView ref={scrollRef} contentContainerStyle={styles.content} contentOffset={{ x: 0, y: 0 }} showsVerticalScrollIndicator={false}>
-        <View style={styles.navHeader}><Pressable onPress={goBack} style={styles.navButton} accessibilityLabel={artifactDetail ? 'Back to Achievements' : section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}><Ionicons name="chevron-back" size={25} color="#F4F6FA" /></Pressable><View style={styles.achievementHeaderTitle}><ThemedText typographyRole="shortTechnicalLabel" style={styles.achievementHeaderKicker}>{artifactDetail ? 'ACHIEVEMENTS' : 'THE LEDGER'}</ThemedText><ThemedText typographyRole="modalTitle" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.76} style={styles.achievementHeaderText}>{headerTitle}</ThemedText></View><View style={styles.navButton} /></View>
+        <SLContextualHeader
+          backAccessibilityLabel={artifactDetail ? 'Back to Achievements' : section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}
+          breadcrumb={artifactDetail ? 'Achievements' : section === 'hub' ? 'The Ledger' : ACHIEVEMENT_SECTION_LABELS[section]}
+          onBack={goBack}
+          testID="achievements-contextual-header"
+          title={headerTitle}
+        />
         {!artifactDetail ? <AchievementFamilyRail section={section} onSelect={openSection} /> : null}
         {loading ? <AchievementRequestState kind="loading" message="Loading achievements" />
           : error ? <AchievementRequestState kind={errorKind ?? 'error'} message={error} onRetry={() => void reload()} />
@@ -850,14 +852,6 @@ function LiftRow({ lift, unit, onOpen }: { lift: Lift; unit: Unit; onOpen: (lift
 
 const styles = StyleSheet.create({
   pressed: { opacity: 0.78 },
-  achievementHeaderTitle: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center' },
-  achievementHeaderKicker: { color: '#8E79AF', fontSize: 8, lineHeight: 10, letterSpacing: 1.1 },
-  achievementHeaderText: { color: '#F1EDF8', fontSize: 17, lineHeight: 21 },
-  familyRail: { gap: 7, paddingVertical: 8, paddingRight: 10 },
-  familyTab: { minHeight: 34, paddingHorizontal: 13, alignItems: 'center', justifyContent: 'center', borderRadius: 17, borderWidth: 1, borderColor: '#242A35', backgroundColor: '#0B0E14' },
-  familyTabActive: { borderColor: '#7541B8', backgroundColor: '#25133D' },
-  familyTabText: { color: '#7F8794', fontSize: 9, lineHeight: 11, letterSpacing: 0.5 },
-  familyTabTextActive: { color: '#E4D4FF' },
   hub: { gap: 11, paddingTop: 5 },
   hubHero: { minHeight: 190, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 18, borderWidth: 1, borderColor: '#40334C', backgroundColor: '#0E0B12' },
   hubHeroArtifact: { width: '43%', height: 184, alignItems: 'center', justifyContent: 'center', backgroundColor: '#141019' },
@@ -1019,7 +1013,6 @@ const styles = StyleSheet.create({
   requestStateCopy: { maxWidth: 330, color: '#9DA7B6', textAlign: 'center' },
   requestStateAction: { marginTop: 6, minHeight: 42, paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center', borderRadius: 12, borderWidth: 1, borderColor: '#7340AE', backgroundColor: '#1C1130' },
   screen: { backgroundColor: 'transparent' }, canvas: { flex: 1, backgroundColor: 'transparent' }, content: { paddingTop: SLLayout.screenTop, paddingBottom: SLLayout.tabBarClearance + SLLayout.floatingUtilityClearance, gap: 8 },
-  navHeader: { height: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }, navButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: '#0D121B', borderWidth: 1, borderColor: '#202936' }, headerSelector: { flex: 1, height: 44, flexDirection: 'row', padding: 3, borderRadius: 12, backgroundColor: '#10151F', borderWidth: 1, borderColor: '#202836' }, headerSelectorOption: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, borderRadius: 9 }, headerSelectorActive: { backgroundColor: '#28124B', borderWidth: 1, borderColor: '#7D38C6', shadowColor: '#9D55FF', shadowOpacity: 0.34, shadowRadius: 9, shadowOffset: { width: 0, height: 2 } }, headerSelectorText: { fontFamily: SLFontFamilies.bodySemiBold, fontWeight: '400', fontSize: 12, lineHeight: 16, color: '#939BA8' }, headerSelectorTextActive: { color: '#F2EDFF' },
   introRow: { flexDirection: 'row', alignItems: 'center', marginTop: 11, marginBottom: 6 }, intro: { ...SLTypography.rowMeta, color: '#B7BFCD', flex: 1 }, unitControl: { backgroundColor: '#171123', borderColor: '#8D4BE4' }, unitControlText: { ...SLTypography.label, color: '#F5EFFF', letterSpacing: 0.5 },
   hero: { minHeight: 380, overflow: 'hidden', paddingTop: 19, paddingBottom: 13, paddingHorizontal: 16, borderRadius: 17, borderWidth: 1, borderColor: '#293245', shadowColor: '#000000', shadowOpacity: 0.55, shadowRadius: 14, shadowOffset: { width: 0, height: 8 } }, heroTop: { flexDirection: 'row', alignItems: 'center', minHeight: 132 }, trophyScene: { width: 108, alignItems: 'center', justifyContent: 'center' }, trophyGlow: { position: 'absolute', width: 102, height: 70, borderRadius: 51, backgroundColor: 'rgba(255,176,33,0.18)', shadowColor: '#CE8B19', shadowOpacity: 0.75, shadowRadius: 18 }, trophyAura: { position: 'absolute', left: -20, top: -15 }, trophyPedestal: { width: 110, height: 130, alignItems: 'center', justifyContent: 'center' }, heroTrophyImage: { width: 126, height: 136 }, heroCopy: { flex: 1, minWidth: 0, marginLeft: 8, alignSelf: 'center' }, eyebrow: { ...SLTypography.utilityLabel, color: '#B9C0CE', letterSpacing: 0.7 }, heroTierTitle: { color: '#F2D188', fontSize: 18, lineHeight: 22, marginTop: 3 }, heroValue: { fontFamily: SLTypography.hero.fontFamily, fontSize: 34, lineHeight: 40, color: '#F7F8FB', letterSpacing: -1.1, marginTop: 1 }, heroUnit: { ...SLTypography.cardTitle, color: '#BB70FF', letterSpacing: 0 }, heroMeta: { ...SLTypography.rowMeta, color: '#9AA4B3', marginTop: 1 }, heroPercentileReadable: { color: '#DEC1FF', fontSize: 13, lineHeight: 17, marginTop: 3 }, clubNextReadable: { color: '#BFA4D8', fontSize: 8.5, lineHeight: 12, letterSpacing: 0.45, marginTop: 6 }, nextBlock: { width: 116, alignSelf: 'center', paddingLeft: 10, borderLeftWidth: 1, borderColor: '#2B3445' }, nextLabel: { ...SLTypography.micro, color: '#B596D8', letterSpacing: 0.35 }, nextValue: { ...SLTypography.sectionTitle, color: '#F3F4F7', marginTop: 3, fontSize: 11, lineHeight: 15 }, nextUnit: { ...SLTypography.label, color: '#B86DFF' }, nextSub: { ...SLTypography.micro, color: '#A5AFBE', marginTop: 3 }, percentileContext: { color: '#A9B0BC', fontSize: 10.5, lineHeight: 15, marginTop: 2 }, progressRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10 }, progressTrack: { flex: 1, height: 12, borderRadius: 8, overflow: 'hidden', backgroundColor: '#202735', borderWidth: 1, borderColor: '#2C3545' }, progressBar: { height: '100%', borderRadius: 7, backgroundColor: '#A14FFF', shadowColor: '#A14FFF', shadowOpacity: 0.8, shadowRadius: 7 }, progressPercent: { ...SLTypography.label, color: '#ECEDF2' }, totalPath: { paddingTop: 16, paddingBottom: 5, gap: 12, paddingRight: 18 }, totalStop: { minWidth: 92, alignItems: 'center' }, totalTrophy: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 }, totalTrophyCurrent: { borderWidth: 2.5, shadowColor: '#B86DFF', shadowOpacity: 0.85, shadowRadius: 10, shadowOffset: { width: 0, height: 2 } }, totalTrophyInset: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1 }, totalTierTrophyImage: { width: 70, height: 76, marginTop: -6 }, totalTierTrophyFinal: { width: 80, height: 88, marginTop: -12 }, totalTierTrophyLocked: { opacity: 0.42 }, totalEarned: { backgroundColor: '#141922', borderColor: '#E2B64C', shadowColor: '#E5A51B', shadowOpacity: 0.63, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }, totalProgress: { backgroundColor: '#201B34', borderColor: '#A961FF' }, totalLocked: { backgroundColor: '#141922', borderColor: '#354050' }, totalTierName: { color: '#BFC5CF', fontSize: 8, lineHeight: 10, marginTop: 8, textAlign: 'center' }, totalTierNameCurrent: { color: '#E9C8FF' }, totalLabel: { ...SLTypography.label, color: '#E4E7EC', marginTop: 2 }, totalPercentile: { color: '#939DAC', fontSize: 8.5, lineHeight: 11, marginTop: 1 }, totalUnit: { ...SLTypography.micro, color: '#929CAC', marginTop: 1 },
   sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 17, marginBottom: 7 }, sectionTitle: { fontFamily: SLFontFamilies.bodySemiBold, fontWeight: '400', fontSize: 14, lineHeight: 18, color: '#C8CED9', letterSpacing: 0.55, textTransform: 'uppercase' },

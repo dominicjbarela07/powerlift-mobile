@@ -16,6 +16,7 @@ import { AnalyticalHistoryChart } from '@/components/movement-history/Analytical
 import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
+import { SLContextualHeader } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { SLScreen } from '@/components/ui/sl-screen';
@@ -353,20 +354,17 @@ export function CanonicalMovementHistoryScreen({
   const closeHistory = onRequestClose || (() => router.back());
   const screenContent = (
     <>
+      <SLContextualHeader
+        action={{ accessibilityLabel: 'Movement History options', icon: 'ellipsis-horizontal', onPress: () => setFilterSheetOpen(true) }}
+        breadcrumb="Movement"
+        onBack={presentation === 'screen' ? closeHistory : undefined}
+        title="Movement History"
+      />
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void load(true)} tintColor="#A865FF" />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.navbar}>
-          {presentation === 'screen' ? <Pressable accessibilityLabel="Back from Movement History" accessibilityRole="button" hitSlop={10} onPress={closeHistory} style={styles.navButton}>
-            <Ionicons name="chevron-back" size={22} color="#B971FF" />
-          </Pressable> : <View style={styles.navButton} />}
-          <View style={styles.navTitle}><Ionicons name="analytics-outline" size={15} color="#B971FF" /><Text style={styles.navTitleText}>Movement History</Text></View>
-          <Pressable accessibilityLabel="Movement History options" accessibilityRole="button" style={styles.navButton} onPress={() => setFilterSheetOpen(true)}>
-            <Ionicons name="ellipsis-horizontal" size={21} color="#D5D3DC" />
-          </Pressable>
-        </View>
         {loading && !history ? <State icon="hourglass-outline" title="Loading exact movement evidence" /> : error && !history ? <State icon="alert-circle-outline" title={error} action="Try again" onAction={() => void load(false)} /> : history ? (
           <>
             <View style={styles.movementHeader}>
@@ -629,10 +627,6 @@ function DetailFact({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#020205' },
   content: { paddingHorizontal: 14, paddingBottom: SLLayout.tabBarClearance + 26 },
-  navbar: { height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  navButton: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  navTitle: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  navTitleText: { color: '#B971FF', fontSize: 17, lineHeight: 22, fontWeight: '600' },
   movementHeader: { minHeight: 104, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
   muscleArtworkFrame: { width: 96, height: 86, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coreArtwork: { width: 88, height: 82 },

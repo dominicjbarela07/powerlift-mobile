@@ -7,6 +7,7 @@ import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View, type I
 import Svg, { Circle, Line, Polygon } from 'react-native-svg';
 
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
+import { SLCompactTabRail, SLContextualHeader } from '@/components/ui/sl-contextual-header';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MILESTONE_RENDER_ORIENTATION_STYLE } from '@/lib/barbell/milestone-render-assets';
@@ -171,13 +172,14 @@ function sourceSetSummary(event: AccomplishmentEvent, unit: LedgerUnit) {
   };
 }
 
-function StrengthHeader({ title, kicker = 'THE LEDGER' }: { title: string; kicker?: string }) {
-  return <View style={styles.header}><Text style={styles.headerKicker}>{kicker}</Text><Text style={styles.headerTitle}>{title}</Text></View>;
-}
-
 function PrimaryTabs({ value, onChange }: { value: StrengthSection; onChange: (value: StrengthSection) => void }) {
   const items: readonly StrengthSection[] = ['overview', 'progression', 'records', 'analysis'];
-  return <View accessibilityRole="tablist" style={styles.primaryTabs}>{items.map((item) => <Pressable key={item} testID={`strength-tab-${item}`} accessibilityRole="tab" accessibilityState={{ selected: value === item }} onPress={() => onChange(item)} style={[styles.primaryTab, value === item && styles.primaryTabActive]}><Text style={[styles.primaryTabText, value === item && styles.primaryTabTextActive]}>{item[0].toUpperCase() + item.slice(1)}</Text></Pressable>)}</View>;
+  return <SLCompactTabRail
+    items={items.map((item) => ({ key: item, label: item[0].toUpperCase() + item.slice(1), testID: `strength-tab-${item}` }))}
+    onSelect={(item) => onChange(item as StrengthSection)}
+    selectedKey={value}
+    style={styles.headerBleed}
+  />;
 }
 
 function RangeTabs({ value, onChange }: { value: LedgerRange; onChange: (value: LedgerRange) => void }) {
@@ -296,7 +298,7 @@ function StandardsPanel({ profile, unit, sex, version }: { profile: LiftProfile;
 function TiersScreen({ profile, unit, sex, version, onBack }: { profile: LiftProfile; unit: LedgerUnit; sex?: string | null; version?: string | null; onBack: () => void }) {
   const state = profile.tierState;
   return <View testID={`strength-tiers-${profile.key}`} style={styles.page}>
-    <View style={styles.detailHeader}><Pressable testID="strength-tiers-back" accessibilityLabel="Back to lift progression" onPress={onBack} style={styles.detailBack}><Ionicons name="chevron-back" size={22} color="#F0EDF4" /></Pressable><View style={styles.detailHeaderCopy}><Text style={styles.headerKicker}>STRENGTH TIERS</Text><Text style={styles.detailHeaderTitle}>{profile.label}</Text></View><View style={styles.detailHeaderSpacer} /></View>
+    <SLContextualHeader backAccessibilityLabel="Back to lift progression" breadcrumb="Strength tiers" onBack={onBack} style={styles.headerBleed} testID="strength-tiers-header" title={profile.label} />
     <View style={styles.tiersIntro}><Text style={[styles.eyebrow, { color: profile.tone }]}>{profile.shortLabel} TIERS</Text><Text style={styles.tiersIntroMeta}>OpenPowerlifting · {sex === 'M' ? 'Male' : sex === 'F' ? 'Female' : 'Verified sex required'} · Raw</Text></View>
     {state ? <View style={styles.tierRows}>{[...state.tiers].reverse().map((tier) => { const index = tier.tier - 1; const status = index <= state.earnedTierIndex ? 'Earned' : index === state.nextTierIndex ? 'Next' : 'Locked'; return <View key={tier.tier} style={[styles.tierRow, status === 'Next' && { borderColor: profile.tone, backgroundColor: profile.softTone }]}><Image source={LIFT_TIER_ART[profile.key][index]} resizeMode="contain" style={[styles.tierRowArt, MILESTONE_RENDER_ORIENTATION_STYLE, status === 'Locked' && styles.locked]} /><Text style={styles.tierRowName}>{tier.name}</Text><View style={styles.tierRowMetric}><Text style={styles.tierRowValue}>{state.thresholds[index]} {unit.toUpperCase()}</Text><Text style={styles.tierRowPercentile}>~P{tier.actual_percentile.toFixed(1)}</Text></View><Text style={[styles.tierRowStatus, status === 'Earned' && { color: profile.tone }, status === 'Next' && { color: '#F5F2F8' }]}>{status}</Text></View>; })}<View style={[styles.currentTierSummary, { borderColor: profile.tone }]}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT</Text><Text style={styles.currentTierSummaryTitle}>{tierLabel(state)}</Text><Text style={styles.currentTierSummaryValue}>{state.current} {unit.toUpperCase()}</Text><Text style={styles.currentTierSummaryMeta}>{state.nextTierIndex == null ? 'Tier VII reached' : `${state.remaining} ${unit.toUpperCase()} to ${state.tiers[state.nextTierIndex].name}`}</Text></View></View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Strength tiers unavailable.</Text><Text style={styles.emptyBody}>A supported sex-specific governed standard is required.</Text></View>}
     <Text style={styles.versionText}>{version ?? 'No governed standard version returned'}</Text>
@@ -438,23 +440,16 @@ export function StrengthExperience() {
 
   if (showTiers && selectedLift) return <><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><TiersScreen profile={profile} unit={unit} sex={clubs.standard?.sex} version={clubs.standard?.version} onBack={closeTiers} /></>;
 
-  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><View style={styles.detailHeader}><Pressable testID="strength-detail-back" accessibilityLabel="Back to Strength" onPress={closeLift} style={styles.detailBack}><Ionicons name="chevron-back" size={22} color="#F0EDF4" /></Pressable><View style={styles.detailHeaderCopy}><Text style={styles.headerKicker}>STRENGTH</Text><Text style={styles.detailHeaderTitle}>{profile.label}</Text></View><View style={styles.detailHeaderSpacer} /></View><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onToggle={() => setShowLiftPicker((value) => !value)} onSelect={(key) => openLift(key, liftPanel)} /><LiftTabs value={liftPanel} onChange={changeLiftPanel} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} sex={clubs.standard?.sex} version={clubs.standard?.version} />}</View>;
+  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLContextualHeader backAccessibilityLabel="Back to Strength" breadcrumb="Strength" onBack={closeLift} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} /><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onToggle={() => setShowLiftPicker((value) => !value)} onSelect={(key) => openLift(key, liftPanel)} /><LiftTabs value={liftPanel} onChange={changeLiftPanel} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} sex={clubs.standard?.sex} version={clubs.standard?.version} />}</View>;
 
-  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><StrengthHeader title={section === 'overview' ? 'Strength' : section[0].toUpperCase() + section.slice(1)} /><PrimaryTabs value={section} onChange={changeSection} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
+  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLContextualHeader backAccessibilityLabel="Back to The Ledger" breadcrumb="The Ledger" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} testID="strength-contextual-header" title="Strength" /><PrimaryTabs value={section} onChange={changeSection} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
 }
 
 const styles = StyleSheet.create({
-  page: { gap: 18, paddingHorizontal: 14, paddingBottom: 28 },
+  page: { gap: 10, paddingHorizontal: 14, paddingBottom: 28 },
+  headerBleed: { marginHorizontal: -14 },
   sectionStack: { gap: 16 },
   pressed: { opacity: 0.76, transform: [{ scale: 0.99 }] },
-  header: { alignItems: 'center', gap: 3, paddingBottom: 2 },
-  headerKicker: { color: '#BFA5E7', fontSize: 12, lineHeight: 16, letterSpacing: 1.4 },
-  headerTitle: { color: '#F5F2F8', fontSize: 28, lineHeight: 34, fontWeight: '800', letterSpacing: -0.7 },
-  primaryTabs: { flexDirection: 'row', gap: 6 },
-  primaryTab: { flex: 1, minHeight: 39, alignItems: 'center', justifyContent: 'center', borderRadius: 20, borderWidth: 1, borderColor: '#313946', backgroundColor: '#0A0E14' },
-  primaryTabActive: { borderColor: '#9A43EA', backgroundColor: '#31134A' },
-  primaryTabText: { color: '#AEB6C2', fontSize: 11, lineHeight: 14, fontWeight: '700' },
-  primaryTabTextActive: { color: '#F4E9FF' },
   eyebrow: { color: '#C17AFF', fontSize: 11, lineHeight: 15, fontWeight: '800', letterSpacing: 0.8 },
   totalHero: { minHeight: 260, justifyContent: 'flex-end', overflow: 'hidden', borderRadius: 19, borderWidth: 1, borderColor: '#34404C', backgroundColor: '#080A0F' },
   totalHeroImage: { borderRadius: 19 },
@@ -505,11 +500,6 @@ const styles = StyleSheet.create({
   standardsEntryCopy: { flex: 1, minWidth: 0, gap: 3 },
   standardsEntryTitle: { color: '#F0EDF4', fontSize: 15, lineHeight: 19, fontWeight: '800' },
   standardsEntryBody: { color: '#9CA6B2', fontSize: 11, lineHeight: 16 },
-  detailHeader: { minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  detailBack: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 21, borderWidth: 1, borderColor: '#303947', backgroundColor: '#0B1017' },
-  detailHeaderCopy: { alignItems: 'center', gap: 1 },
-  detailHeaderTitle: { color: '#F5F2F7', fontSize: 21, lineHeight: 26, fontWeight: '800' },
-  detailHeaderSpacer: { width: 42 },
   liftPickerWrap: { zIndex: 2 },
   liftPickerButton: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'center', paddingHorizontal: 12, borderRadius: 14, borderWidth: 1, backgroundColor: '#090D13' },
   liftPickerThumb: { width: 46, height: 34, borderRadius: 8 },

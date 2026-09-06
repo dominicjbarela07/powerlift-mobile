@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import { fetchJson } from '@/lib/api';
 import { simplifyMobileMovementList } from '@/lib/mobileMovementNames';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { SLPageHeader } from '@/components/ui';
+import { SLContextualHeader } from '@/components/ui';
 
 type HubSession = {
   id: number;
@@ -85,9 +85,9 @@ export default function BlockDetailsScreen() {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.muted} />}
       >
-        <SLPageHeader
+        <SLContextualHeader
           title="Block Details"
-          backLabel="Return to Training Hub"
+          backAccessibilityLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
         {loading ? <StateLine title="Loading block" /> : error ? <StateLine title={error} tone="danger" /> : !block ? (
@@ -193,7 +193,7 @@ function formatShortDate(value?: string | null) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
-  scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
+  scroll: { paddingTop: 4, paddingBottom: 36, gap: 8 },
   kicker: { ...SLTypography.label, color: colors.subtle, textTransform: 'uppercase' },
   anchor: { flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, backgroundColor: colors.surface },
   anchorRail: { width: 3, backgroundColor: colors.violet },

@@ -16,7 +16,7 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { fetchJson } from '@/lib/api';
 import { SLColors, SLFontFamilies, SLTypography } from '@/constants/theme';
-import { SLPageHeader } from '@/components/ui';
+import { SLContextualHeader } from '@/components/ui';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { CurrentBestList, HistoricalAccomplishmentList, type CoreCurrentBest } from '@/components/core-accomplishments';
 import { feedbackAnalytics, type LoggerRecognitionEvent } from '@/lib/logger-feedback';
@@ -279,9 +279,9 @@ function MovementHistoryIndexScreen() {
         contentContainerStyle={styles.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.muted} />}
       >
-        <SLPageHeader
+        <SLContextualHeader
           title="Movement History"
-          backLabel="Return to Training Hub"
+          backAccessibilityLabel="Return to Training Hub"
           onBack={() => router.push('/(tabs)/workout' as any)}
         />
         <View style={styles.searchControlRow}>
@@ -675,7 +675,7 @@ function formatReadableDate(value: string) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   scrollView: { flex: 1, backgroundColor: 'transparent' },
-  scroll: { paddingTop: 16, paddingBottom: 36, gap: 24 },
+  scroll: { paddingTop: 4, paddingBottom: 36, gap: 8 },
   title: { fontFamily: SLFontFamilies.sansBold, fontSize: SLTypography.hero.fontSize, lineHeight: 34, color: colors.textStrong, letterSpacing: 0 },
   returnControl: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: 'rgba(10, 11, 11, 0.22)', paddingVertical: 8, paddingHorizontal: 10 },
   returnText: { ...SLTypography.label, color: colors.muted },

@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { createContext, useCallback, useContext, useEffect, useRef } from 'react';
 import {
   Animated,
@@ -14,11 +13,12 @@ import {
 } from 'react-native';
 
 import { Text } from '@/components/ui/sl-text';
+import { SLCompactTabRail } from '@/components/ui/sl-contextual-header';
 import { SLCanonicalIcon } from '@/components/ui/sl-trophy';
 import { SLScreen } from '@/components/ui/sl-screen';
 import { FloatingControlCoordinator } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
-import { ledgerHrefFor, type LedgerRoom } from './routing';
+import { type LedgerRoom } from './routing';
 
 const LedgerScrollToTopContext = createContext<() => void>(() => {});
 
@@ -27,8 +27,6 @@ export function useLedgerScrollToTop() {
 }
 
 export function LedgerFrame({ active, children }: React.PropsWithChildren<{ active: LedgerRoom }>) {
-  const router = useRouter();
-  const isIndex = active === 'home';
   const scrollRef = useRef<ScrollView>(null);
   const scrollToTop = useCallback(() => scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false }), []);
 
@@ -36,11 +34,6 @@ export function LedgerFrame({ active, children }: React.PropsWithChildren<{ acti
     <SLScreen edges="none" padded={false} style={styles.screen}>
       <FloatingControlCoordinator context="tab-screen">
       <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        {!isIndex ? <View style={styles.backRow}>
-          <Pressable accessibilityLabel="Back to The Ledger" onPress={() => router.replace(ledgerHrefFor('home') as any)} style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}>
-            <Ionicons name="chevron-back" size={23} color={SLColors.iconPrimary} />
-          </Pressable>
-        </View> : null}
         <LedgerScrollToTopContext.Provider value={scrollToTop}>
           <AnimatedEntrance key={active}>{children}</AnimatedEntrance>
         </LedgerScrollToTopContext.Provider>
@@ -97,14 +90,11 @@ export function Metric({ value, label, accent }: { value: string; label: string;
 }
 
 export function Segmented<T extends string>({ values, value, onChange }: { values: readonly T[]; value: T; onChange: (value: T) => void }) {
-  return (
-    <View style={styles.segmented}>
-      {values.map((option) => {
-        const selected = option === value;
-        return <Pressable key={option} onPress={() => onChange(option)} style={({ pressed }) => [styles.segment, selected && styles.segmentActive, pressed && styles.pressed]}><Text typographyRole="tabLabel" style={[styles.segmentText, selected && styles.segmentTextActive]}>{option}</Text></Pressable>;
-      })}
-    </View>
-  );
+  return <SLCompactTabRail
+    items={values.map((option) => ({ key: option, label: option }))}
+    onSelect={(option) => onChange(option as T)}
+    selectedKey={value}
+  />;
 }
 
 export function ProgressBar({ value, color = SLColors.accent }: { value: number; color?: string }) {
@@ -138,8 +128,6 @@ export const ledgerStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
-  backRow: { minHeight: 52, justifyContent: 'center', alignItems: 'flex-start' },
-  backButton: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.object, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
   content: { paddingBottom: SLLayout.tabBarClearance + 34 },
   pressed: { opacity: 0.74, transform: [{ scale: 0.985 }] },
   mediaHero: { overflow: 'hidden', justifyContent: 'flex-end', borderRadius: SLRadius.radiusCard, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault, backgroundColor: SLColors.surfaceInset },
@@ -158,11 +146,6 @@ const styles = StyleSheet.create({
   metric: { flex: 1, minWidth: 0, gap: 3 },
   metricValue: { color: SLColors.textStrong },
   metricLabel: { color: SLColors.textMuted },
-  segmented: { flexDirection: 'row', gap: 3, padding: 3, backgroundColor: SLColors.surfaceFlat, borderRadius: SLRadius.radiusControl, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderDefault },
-  segment: { flex: 1, minHeight: 38, alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.radiusControl - 3 },
-  segmentActive: { backgroundColor: SLColors.surfaceSelected },
-  segmentText: { color: SLColors.textMuted },
-  segmentTextActive: { color: SLColors.textStrong },
   track: { height: 6, overflow: 'hidden', borderRadius: 3, backgroundColor: SLColors.focus },
   fill: { height: '100%', borderRadius: 3 },
   action: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: SLSpacing.lg, borderRadius: SLRadius.radiusControl, backgroundColor: SLColors.textPrimary },

@@ -7,12 +7,17 @@ export { SLActionChip } from './sl-action-chip';
 export { SLButton } from './sl-button';
 export { SLCard } from './sl-card';
 export { SLCompactDropdown, type SLCompactDropdownOption } from './sl-compact-dropdown';
+export {
+  SLCompactTabRail,
+  SLContextualHeader,
+  type SLCompactTab,
+  type SLContextualHeaderAction,
+} from './sl-contextual-header';
 export { SLDivider } from './sl-divider';
 export { SLField } from './sl-field';
 export { SLIconButton } from './sl-icon-button';
 export { SLListRow } from './sl-list-row';
 export { SLAnimatedMetric, SLMotionEntrance, SLMotionPressable } from './sl-motion';
-export { SLPageHeader } from './sl-page-header';
 export { SLPriorityBadge } from './sl-priority-badge';
 export { SLQueueRow } from './sl-queue-row';
 export { SLScreen, SLScrollScreen } from './sl-screen';

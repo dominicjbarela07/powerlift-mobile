@@ -306,7 +306,6 @@ function CoachConversationPlaceholderScreen() {
           <Text style={styles.headerSub}>Athlete conversation</Text>
         </View>
 
-        <View style={styles.headerSpacer} />
       </View>
 
       <View style={styles.emptyWrap}>
@@ -644,7 +643,6 @@ function ThreadScreen() {
             <Text style={styles.headerSub}>Direct message</Text>
           </View>
 
-          <View style={styles.headerSpacer} />
         </View>
 
         {!!error && (
@@ -936,9 +934,6 @@ const styles = StyleSheet.create({
     fontSize: SLTypography.caption.fontSize,
     fontWeight: '600',
     marginTop: 2,
-  },
-  headerSpacer: {
-    width: 38,
   },
   errorCard: {
     flexDirection: 'row',

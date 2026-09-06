@@ -86,6 +86,7 @@
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",
     "test:achievements-storyboard": "node scripts/test-achievements-storyboard-convergence.mjs",
     "test:strength-storyboard": "node scripts/test-strength-storyboard-convergence.mjs",
+    "test:premium-header-system": "node scripts/test-premium-contextual-header-system.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
     "test:anatomy-system": "node --import tsx scripts/test-anatomy-system.mjs",

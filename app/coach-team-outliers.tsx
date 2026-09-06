@@ -5,7 +5,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { CoachAnalyticsTrend } from '@/components/coach-mobile/CoachAnalyticsTrend';
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
-import { SLErrorState, SLLoadingState, SLScreen } from '@/components/ui';
+import { SLErrorState, SLCompactTabRail, SLContextualHeader, SLLoadingState, SLScreen } from '@/components/ui';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
 import { Text } from '@/components/ui/sl-text';
 import { fetchJson } from '@/lib/api';
@@ -44,9 +44,23 @@ export default function CoachTeamOutliersScreen() {
 
   return (
     <SLScreen contentStyle={styles.screen} edges="top" padded={false}>
-      <View style={styles.header}><Pressable accessibilityLabel="Back to Team Brief" accessibilityRole="button" hitSlop={10} onPress={() => router.back()} style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}><Ionicons color={COACH_V2.text} name="chevron-back" size={23} /></Pressable><View style={styles.headerCopy}><Text style={styles.headerTitle}>OUTLIERS</Text><Text style={styles.headerSubtitle}>{brief ? `${brief.period.start || 'All time'} – ${brief.period.end}` : 'Team evidence'}</Text></View><View style={styles.headerSpacer} /></View>
+      <SLContextualHeader
+        backAccessibilityLabel="Back to Team Brief"
+        breadcrumb="Coach Analytics"
+        onBack={() => router.back()}
+        subtitle={brief ? `${brief.period.start || 'All time'} – ${brief.period.end}` : 'Team evidence'}
+        title="Outliers"
+      />
+      <SLCompactTabRail
+        items={([
+          { key: 'all', label: 'All' },
+          { key: 'below', label: 'Below Range' },
+          { key: 'above', label: 'Above Range' },
+        ] as const)}
+        onSelect={(value) => setFilter(value as Filter)}
+        selectedKey={filter}
+      />
       <ScrollView contentContainerStyle={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={COACH_V2.violetBright} />} showsVerticalScrollIndicator={false}>
-        <View style={styles.filters}>{(['all', 'below', 'above'] as Filter[]).map((value) => <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: filter === value }} onPress={() => setFilter(value)} style={({ pressed }) => [styles.filter, filter === value && styles.filterActive, pressed && styles.pressed]}><Text style={[styles.filterText, filter === value && styles.filterTextActive]}>{value === 'all' ? 'All' : value === 'below' ? 'Below Range' : 'Above Range'}</Text></Pressable>)}</View>
         {loading && !brief ? <SLLoadingState message="Comparing normalized athlete evidence." title="Loading outliers" /> : null}
         {error && !brief ? <SLErrorState actionLabel="Try Again" message={error} onActionPress={() => load()} title="Outliers unavailable" /> : null}
         {brief && !brief.data_quality.cohort_band_supported ? <View style={styles.empty}><Ionicons color={COACH_V2.gold} name="people-outline" size={28} /><Text style={styles.emptyTitle}>Cohort too small for outlier claims</Text><Text style={styles.emptyCopy}>Strength Ledger requires at least four comparable athletes before applying robust cohort bands. Individual evidence remains available in Athlete Deep Dive.</Text></View> : null}
@@ -67,5 +81,5 @@ function OutlierCard({ brief, onOpen, row }: { brief: CoachTeamBriefResponse; on
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: '#000' }, header: { minHeight: 70, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#20232B' }, iconButton: { width: 44, height: 44, borderRadius: 13, backgroundColor: '#0E0A15', borderWidth: 1, borderColor: '#30283A', alignItems: 'center', justifyContent: 'center' }, headerCopy: { flex: 1, alignItems: 'center' }, headerTitle: { color: COACH_V2.text, fontSize: 16, fontWeight: '900' }, headerSubtitle: { color: COACH_V2.muted, fontSize: 10, marginTop: 3 }, headerSpacer: { width: 44 }, content: { paddingVertical: 14, gap: 12 }, filters: { flexDirection: 'row', padding: 3, borderRadius: 20, backgroundColor: '#080A0F', borderWidth: 1, borderColor: '#232631' }, filter: { flex: 1, minHeight: 37, borderRadius: 17, alignItems: 'center', justifyContent: 'center' }, filterActive: { backgroundColor: '#261537' }, filterText: { color: COACH_V2.muted, fontSize: 10, fontWeight: '700' }, filterTextActive: { color: COACH_V2.violetBright }, empty: { minHeight: 220, borderRadius: 15, borderWidth: 1, borderColor: '#282C35', backgroundColor: '#090B10', alignItems: 'center', justifyContent: 'center', padding: 24 }, emptyTitle: { color: COACH_V2.text, fontSize: 16, fontWeight: '800', marginTop: 10, textAlign: 'center' }, emptyCopy: { color: COACH_V2.muted, fontSize: 12, lineHeight: 18, marginTop: 7, textAlign: 'center' }, card: { borderRadius: 15, borderWidth: 1, backgroundColor: '#090B10', padding: 13 }, cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 }, avatar: { width: 39, height: 39, borderRadius: 20, borderWidth: 1, backgroundColor: '#17111F', alignItems: 'center', justifyContent: 'center' }, avatarText: { color: COACH_V2.text, fontSize: 11, fontWeight: '800' }, cardTitle: { flex: 1, minWidth: 0 }, direction: { fontSize: 8, fontWeight: '900', letterSpacing: 0.45 }, name: { color: COACH_V2.text, fontSize: 14, fontWeight: '800', marginTop: 3 }, metric: { color: COACH_V2.muted, fontSize: 9, marginTop: 2 }, value: { fontSize: 20, fontWeight: '900' }, bandRow: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 4, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#252833' }, bandLabel: { color: COACH_V2.subtle, fontSize: 8, fontWeight: '800' }, bandValue: { color: COACH_V2.text, fontSize: 10, fontWeight: '800' }, factors: { marginTop: 12, padding: 11, borderRadius: 10, backgroundColor: '#0D0A12' }, factorsTitle: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }, factor: { color: COACH_V2.text, fontSize: 10, lineHeight: 15, marginTop: 5 }, caution: { color: COACH_V2.subtle, fontSize: 9, fontStyle: 'italic', marginTop: 8 }, pressed: { opacity: 0.74, transform: [{ scale: 0.987 }] }, bottomSpace: { height: 40 },
+  screen: { backgroundColor: '#000' }, content: { paddingVertical: 14, gap: 12 }, empty: { minHeight: 220, borderRadius: 15, borderWidth: 1, borderColor: '#282C35', backgroundColor: '#090B10', alignItems: 'center', justifyContent: 'center', padding: 24 }, emptyTitle: { color: COACH_V2.text, fontSize: 16, fontWeight: '800', marginTop: 10, textAlign: 'center' }, emptyCopy: { color: COACH_V2.muted, fontSize: 12, lineHeight: 18, marginTop: 7, textAlign: 'center' }, card: { borderRadius: 15, borderWidth: 1, backgroundColor: '#090B10', padding: 13 }, cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 }, avatar: { width: 39, height: 39, borderRadius: 20, borderWidth: 1, backgroundColor: '#17111F', alignItems: 'center', justifyContent: 'center' }, avatarText: { color: COACH_V2.text, fontSize: 11, fontWeight: '800' }, cardTitle: { flex: 1, minWidth: 0 }, direction: { fontSize: 8, fontWeight: '900', letterSpacing: 0.45 }, name: { color: COACH_V2.text, fontSize: 14, fontWeight: '800', marginTop: 3 }, metric: { color: COACH_V2.muted, fontSize: 9, marginTop: 2 }, value: { fontSize: 20, fontWeight: '900' }, bandRow: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 4, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#252833' }, bandLabel: { color: COACH_V2.subtle, fontSize: 8, fontWeight: '800' }, bandValue: { color: COACH_V2.text, fontSize: 10, fontWeight: '800' }, factors: { marginTop: 12, padding: 11, borderRadius: 10, backgroundColor: '#0D0A12' }, factorsTitle: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }, factor: { color: COACH_V2.text, fontSize: 10, lineHeight: 15, marginTop: 5 }, caution: { color: COACH_V2.subtle, fontSize: 9, fontStyle: 'italic', marginTop: 8 }, pressed: { opacity: 0.74, transform: [{ scale: 0.987 }] }, bottomSpace: { height: 40 },
 });
