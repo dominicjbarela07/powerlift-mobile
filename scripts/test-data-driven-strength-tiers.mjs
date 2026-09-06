@@ -14,6 +14,7 @@ const strength = read('components/ledger/experiences.tsx');
 const index = read('components/ledger/index-experience.tsx');
 const liveData = read('components/ledger/use-ledger-live-data.ts');
 const certification = read('app/dev-strength-tier-certification.tsx');
+const certificationDestination = read('app/(tabs)/ledger/achievements.tsx');
 const fixture = read('dev-mocks/fixtures/strength-tier.ts');
 
 assert.match(data, /strength_standard\?: StrengthStandardProjection/, 'progression payload must carry the governed standard');
@@ -49,9 +50,10 @@ assert.match(strength, /exact governed competition-lift Weight PR/);
 assert.match(strength, /will not guess/, 'unsupported athlete identity must be explained rather than inferred');
 assert.match(liveData, /const fixture = __DEV__ \? options\.fixture : undefined/, 'visual evidence injection must remain DEV-only');
 assert.match(liveData, /setStrengthStanding\(nextCurrentBests\.strengthStanding\)/, 'live data must retain the server-owned standing');
-assert.match(certification, /<AchievementsExperience devFixture=\{fixture\}/, 'DEV certification must render the real Achievements surface');
+assert.match(certification, /pathname: '\/\(tabs\)\/ledger\/achievements'/, 'DEV certification must enter the real tabbed Achievements route');
 assert.match(certification, /if \(!__DEV__\) return null/, 'certification route must fail closed outside DEV');
 assert.match(certification, /scenario === 'below' \|\| scenario === 'tier7'/, 'certification must expose below-Tier-I and Tier-VII states');
+assert.match(certificationDestination, /strengthTierCertificationFixture/, 'the tabbed Achievements route must own deterministic DEV fixture injection');
 assert.match(fixture, /below: \[140, 90, 170\]/, 'male below-Tier-I visual evidence must be deterministic');
 assert.match(fixture, /tier7: \[190, 110, 210\]/, 'female Tier-VII visual evidence must be deterministic');
 

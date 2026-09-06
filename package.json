@@ -79,6 +79,7 @@
     "test:ledger-v2-release-path": "node --import tsx scripts/test-ledger-v2-release-path.mjs",
     "test:ledger-rewards": "node --import tsx scripts/test-ledger-rewards.mjs",
     "test:data-driven-strength-tiers": "node --import tsx scripts/test-data-driven-strength-tiers.mjs",
+    "test:strength-tier-certification-shell": "node scripts/test-strength-tier-certification-app-shell.mjs",
     "test:ledger-clubs-runtime-source": "node --import tsx scripts/test-ledger-clubs-runtime-source.mjs",
     "test:legacy-strength-trophy-retirement": "node --import tsx scripts/test-legacy-strength-trophy-retirement.mjs",
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",

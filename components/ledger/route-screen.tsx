@@ -7,9 +7,10 @@ import { LedgerFiltersExperience, MovementCollectionExperience, MuscleGroupsExpe
 import { ExperienceForScreen } from './experiences';
 import { LedgerFrame } from './primitives';
 import { ledgerHrefFor, LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
+import type { LedgerLiveDataFixture } from './use-ledger-live-data';
 
-export function LedgerRouteScreen({ screen }: { screen: LedgerScreen }) {
-  if (screen === 'achievements') return <LedgerAchievementsRoom />;
+export function LedgerRouteScreen({ screen, achievementsDevFixture }: { screen: LedgerScreen; achievementsDevFixture?: LedgerLiveDataFixture }) {
+  if (screen === 'achievements') return <LedgerAchievementsRoom devFixture={achievementsDevFixture} />;
   if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><MovementCollectionExperience kind="accessories" /></LedgerSpecializedRoom>;
   if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><MovementCollectionExperience kind="variants" /></LedgerSpecializedRoom>;
   if (screen === 'muscle-groups') return <LedgerSpecializedRoom active="muscle-groups"><MuscleGroupsExperience /></LedgerSpecializedRoom>;
@@ -28,7 +29,7 @@ function LedgerSpecializedRoom({ active, children }: React.PropsWithChildren<{ a
   return <LedgerFrame active={active}>{children}</LedgerFrame>;
 }
 
-function LedgerAchievementsRoom() {
+function LedgerAchievementsRoom({ devFixture }: { devFixture?: LedgerLiveDataFixture }) {
   const router = useRouter();
-  return <AchievementsExperience onBack={() => router.replace(ledgerHrefFor('home') as any)} backAccessibilityLabel="Back to The Ledger" />;
+  return <AchievementsExperience devFixture={__DEV__ ? devFixture : undefined} onBack={() => router.replace(ledgerHrefFor('home') as any)} backAccessibilityLabel="Back to The Ledger" />;
 }

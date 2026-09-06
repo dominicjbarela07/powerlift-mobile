@@ -209,7 +209,7 @@ function RootStack() {
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
   const isIndividual = activeMobileMode === 'individual';
   const isDevSessionRecapCertification =
-    __DEV__ && (pathname === '/dev-session-recap-certification' || pathname === '/dev-strength-tier-certification');
+    __DEV__ && pathname === '/dev-session-recap-certification';
 
   const notificationModuleRef = useRef<ExpoNotificationsModule | null>(null);
 

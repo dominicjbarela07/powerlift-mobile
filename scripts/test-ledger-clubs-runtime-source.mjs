@@ -18,7 +18,7 @@ const achievements = read('components/ledger/AchievementsExperience.tsx');
 const liveData = read('components/ledger/use-ledger-live-data.ts');
 const data = read('lib/ledger-data.ts');
 
-assert.match(route, /LedgerRouteScreen screen="achievements"/, 'the shipped route must mount the traced Ledger screen');
+assert.match(route, /LedgerRouteScreen\b[^>]*screen="achievements"/, 'the shipped route must mount the traced Ledger screen');
 assert.match(routeScreen, /screen === 'achievements'.*LedgerAchievementsRoom/, 'the route screen must select the achievements room');
 assert.match(routeScreen, /<AchievementsExperience/, 'the achievements room must mount the real Clubs consumer');
 assert.match(achievements, /resolveLedgerClubsRuntimeState\(/, 'the real Clubs screen must use the governed runtime projection');
