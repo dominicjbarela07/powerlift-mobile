@@ -76,6 +76,7 @@
     "test:other-milestones": "node scripts/test-other-milestones.mjs",
     "test:streak-achievements": "node scripts/test-streak-achievements.mjs",
     "test:ledger-explorations": "node --import tsx scripts/test-ledger-explorations.mjs",
+    "test:core-variants-experience": "node --import tsx scripts/test-core-variants-experience.mjs",
     "test:accessories-convergence": "node --import tsx scripts/test-accessories-experience-convergence.mjs",
     "test:ledger-v2-storyboard": "node --import tsx scripts/test-ledger-v2-storyboard.mjs",
     "test:ledger-v2-release-path": "node --import tsx scripts/test-ledger-v2-release-path.mjs",

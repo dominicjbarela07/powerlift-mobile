@@ -58,9 +58,12 @@ assert.match(achievements, /SLCompactTabRail/, 'Achievements uses the canonical 
 assert.doesNotMatch(achievements, /<View style=\{styles\.navButton\} \/>/, 'Achievements cannot render an empty right-side circle');
 
 const exploration = read('components/ledger/exploration-experiences.tsx');
-assert.match(exploration, /return <SLContextualHeader/, 'Accessories, Variants, muscle pages, and filters share the canonical header');
-assert.match(exploration, /SLCompactTabRail/, 'movement exploration modes share the compact tab rail');
+assert.match(exploration, /return <SLContextualHeader/, 'muscle pages and filters share the canonical header');
 assert.doesNotMatch(exploration, /roomKicker|roomTitle|roomSubtitle/, 'the redundant Ledger room title stack is retired');
+
+const variants = read('components/ledger/VariantsExperience.tsx');
+assert.match(variants, /SLAtmosphericContextHeader/, 'Variants composes navigation into its atmospheric page identity');
+assert.doesNotMatch(variants, /SLCompactTabRail/, 'Variants remains a continuous chapter rather than a redundant tabbed database');
 
 const ledgerExperiences = read('components/ledger/experiences.tsx');
 const journey = read('components/ledger/JourneyExperience.tsx');

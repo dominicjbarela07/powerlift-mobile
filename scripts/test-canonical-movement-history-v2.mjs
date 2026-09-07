@@ -99,6 +99,7 @@ const coachReview = read('app/(tabs)/coach-session-review.tsx');
 const sheetRoute = read('app/movement-history-sheet.tsx');
 const rootLayout = read('app/_layout.tsx');
 const ledgerExperiences = read('components/ledger/exploration-experiences.tsx');
+const variantsExperience = read('components/ledger/VariantsExperience.tsx');
 const sheetPrimitive = read('components/sheets/StrengthLedgerBottomSheet.tsx');
 const launch = read('lib/movement-history-launch.ts');
 
@@ -183,7 +184,8 @@ assert.match(coachReview, /onOpenMovementHistory/);
 assert.match(coachReview, /movementHistorySheetRoute/);
 assert.match(programmingRoute, /movementHistorySheetRoute/);
 assert.match(ledgerExperiences, /movementHistorySheetRouteForCanonicalIdentity/);
-assert.match(ledgerExperiences, /kind === 'variants'[\s\S]*coreMovementId/);
+assert.match(variantsExperience, /movementHistorySheetRouteForCanonicalIdentity\(\{ coreMovementId: movement\.core_movement_id \}\)/,
+  'exact Core Variant detail preserves the canonical history launch');
 assert.match(ledgerRoute, /mode === 'variant'[\s\S]*coreMovementId/);
 assert.match(launch, /identityType === 'core'[\s\S]*coreMovementId/);
 

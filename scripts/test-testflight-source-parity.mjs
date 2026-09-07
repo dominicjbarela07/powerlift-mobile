@@ -26,7 +26,7 @@ for (const [room, path] of Object.entries(ledgerRoutes)) {
 
 const routeScreen = source('components/ledger/route-screen.tsx');
 assert.match(routeScreen, /ExperienceForScreen/);
-assert.match(routeScreen, /MovementCollectionExperience/);
+assert.match(routeScreen, /VariantsExperience/);
 assert.match(routeScreen, /MuscleGroupsExperience/);
 assert.doesNotMatch(routeScreen, /components\/ledger\/v2|\.\/v2\//, 'the obsolete independent TestFlight Ledger implementation must not be wired into shipping routes');
 

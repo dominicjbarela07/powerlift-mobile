@@ -25,7 +25,7 @@ for (const file of [
   'components/movement-history/CanonicalMovementHistoryScreen.tsx',
   'components/ledger/index-experience.tsx',
   'components/ledger/experiences.tsx',
-  'components/ledger/exploration-experiences.tsx',
+  'components/ledger/VariantsExperience.tsx',
   'components/ledger/AchievementsExperience.tsx',
   'components/coach-mobile/CoachAthleteHubSheet.tsx',
   'app/(tabs)/workout/session-history.tsx',

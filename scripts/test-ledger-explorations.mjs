@@ -28,6 +28,8 @@ const ledgerClient = read('lib/ledger-data.ts');
 const achievements = read('components/ledger/AchievementsExperience.tsx');
 const explorationExperiences = read('components/ledger/exploration-experiences.tsx');
 const explorationClient = read('lib/ledger-exploration.ts');
+const variantsExperience = read('components/ledger/VariantsExperience.tsx');
+const movementDetailRoute = read('app/(tabs)/ledger/movement/[movementId].tsx');
 const routeScreen = read('components/ledger/route-screen.tsx');
 const primitives = read('components/ledger/primitives.tsx');
 const tabsLayout = read('app/(tabs)/_layout.tsx');
@@ -150,9 +152,11 @@ assert.match(explorationClient, /movement-history\?movement_definition_id=/, 'mo
 for (const surface of ['accessories', 'variants', 'muscle-groups', 'filters']) {
   assert.match(routeScreen, new RegExp(`screen === '${surface}'`), `${surface} resolves through the shipping route screen`);
 }
-for (const marker of ['ledger-context-bar', 'ledger-movement-detail-experience', 'ledger-muscle-detail-experience']) {
+for (const marker of ['ledger-context-bar', 'ledger-muscle-detail-experience']) {
   assert.match(explorationExperiences, new RegExp(`testID="${marker}"`), `${marker} remains a concrete storyboard surface`);
 }
+assert.match(variantsExperience, /testID="ledger-core-variant-detail"/, 'exact Core Variant detail remains a concrete storyboard surface');
+assert.match(movementDetailRoute, /movementHistorySheetRouteForCanonicalIdentity/, 'legacy movement detail links resolve into canonical exact-identity history');
 assert.match(explorationExperiences, /CanonicalMovementArtwork[\s\S]*MuscleMap/, 'muscle and movement surfaces use governed canonical artwork');
 assert.doesNotMatch(explorationExperiences, /fake fallback|fixture|sample data/i, 'deeper Ledger surfaces cannot substitute fictional evidence');
 

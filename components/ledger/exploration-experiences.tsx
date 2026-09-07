@@ -1,39 +1,24 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { AnalyticalTimeSeriesChart, type AnalyticalSelection } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { Text } from '@/components/ui/sl-text';
-import { SLCompactTabRail, SLContextualHeader } from '@/components/ui/sl-contextual-header';
+import { SLContextualHeader } from '@/components/ui/sl-contextual-header';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
-import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
 import { kilogramsToDisplayValue } from '@/lib/display-units';
 import {
   fetchLedgerExplorationIndex,
-  fetchLedgerMovementHistory,
   type LedgerExplorationIndex,
-  type LedgerMovementHistory,
   type LedgerMovementProgress,
-  type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
 import { canonicalAccessoryMuscleRegionKey, type AccessoryMuscleRegionKey } from '@/lib/accessory-muscle-group';
 import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { ledgerHrefFor } from './routing';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
-import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
-
-type ExplorationKind = 'accessories' | 'variants';
-
-const FAMILY_TONES: Record<string, string> = {
-  squat: '#A563E8',
-  bench: '#D24F86',
-  deadlift: '#E05C69',
-  press: '#E7A34E',
-};
 
 function prettify(value?: string | null) {
   return String(value || '').replace(/^accessory_/, '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -52,52 +37,6 @@ function loadLabel(weightKg?: number | null, reps?: number | null, unit: LedgerU
 
 function volumeNumber(valueKg: number, unit: LedgerUnit) {
   return Math.round(kilogramsToDisplayValue(valueKg, unit)).toLocaleString('en-US');
-}
-
-function MovementPerformanceTrend({ sets, tone, unit, comparable }: {
-  sets: readonly LedgerMovementSet[];
-  tone: string;
-  unit: LedgerUnit;
-  comparable: boolean;
-}) {
-  const points = comparable ? [...sets].reverse().flatMap((set) => {
-    if (!set.date || set.weight_kg == null) return [];
-    return [{
-      date: set.date,
-      value: kilogramsToDisplayValue(set.weight_kg, unit),
-      meta: { reps: set.reps, rpe: set.rpe, rir: set.rir },
-    }];
-  }) : [];
-  const metric = analyticalMetricDefinition('movement_load', {
-    label: 'Exact performed load',
-    kind: 'weight',
-    unit,
-    axisUnit: unit,
-    maximumFractionDigits: unit === 'kg' ? 1 : 0,
-  });
-  const tooltipRows = (selection: AnalyticalSelection) => {
-    const meta = selection.values[0]?.meta;
-    if (!meta) return [];
-    const reps = typeof meta.reps === 'number' ? `${meta.reps} rep${meta.reps === 1 ? '' : 's'}` : null;
-    const effort = typeof meta.rpe === 'number'
-      ? `RPE ${meta.rpe}`
-      : typeof meta.rir === 'number'
-        ? `${meta.rir} RIR`
-        : null;
-    return [reps, effort].filter((value): value is string => Boolean(value));
-  };
-  return <AnalyticalTimeSeriesChart
-    series={[{ key: 'exact_load', label: 'Exact load', color: tone, points }]}
-    metric={metric}
-    height={220}
-    showLegend={false}
-    tooltipRows={tooltipRows}
-    emptyTitle={comparable ? 'More exact evidence is needed' : 'Comparable progression unavailable'}
-    emptyBody={comparable
-      ? 'A real dated exposure is required before this trend can be drawn.'
-      : 'This movement policy does not permit a comparable load trend.'}
-    testID="ledger-movement-performance-chart"
-  />;
 }
 
 function useExploration() {
@@ -129,120 +68,12 @@ function ContextBar({ data }: { data: LedgerExplorationIndex }) {
   return <View testID="ledger-context-bar" style={styles.contextBar}><View style={styles.contextPrimary}><Text style={styles.contextKicker}>{context.block?.name || 'NO CURRENT BLOCK'}</Text><Text style={styles.contextDetail}>{context.week_number ? `Week ${context.week_number}${context.total_weeks ? ` of ${context.total_weeks}` : ''}` : 'No dated week'} · {context.block_completed_sessions}/{context.block_total_sessions || '—'} sessions</Text></View><View style={styles.contextFacts}><View><Text style={styles.contextFactValue}>{context.bodyweight_kg ? `${displayWeight(context.bodyweight_kg, unit)} ${unit}` : '—'}</Text><Text style={styles.contextFactLabel}>BODYWEIGHT</Text></View><View><Text style={styles.contextFactValue}>{context.training_frequency_per_week.toFixed(1)}</Text><Text style={styles.contextFactLabel}>SESSIONS/WK</Text></View><View style={styles.contextProgress}><Text style={styles.contextFactValue}>{progress == null ? '—' : `${progress}%`}</Text><Text style={styles.contextFactLabel}>BLOCK</Text></View></View></View>;
 }
 
-function ExplorationUnitToolbar({ unit, onChange }: { unit: LedgerUnit; onChange: (unit: LedgerUnit) => void }) {
-  return <FloatingDisplayUnitRegistration unit={unit} onChange={onChange} testID="ledger-exploration-unit-toggle" />;
-}
-
-function Tabs<T extends string>({ values, value, onChange }: { values: readonly T[]; value: T; onChange: (value: T) => void }) {
-  return <SLCompactTabRail
-    items={values.map((tab) => ({ key: tab, label: tab }))}
-    onSelect={(tab) => onChange(tab as T)}
-    selectedKey={value}
-    style={styles.tabBleed}
-  />;
-}
-
 function MovementArtwork({ movement, size = 58 }: { movement: LedgerMovementProgress; size?: number }) {
   return <CanonicalMovementArtwork movement={movement} size={size} style={styles.artworkFrame} testID="ledger-canonical-movement-artwork" />;
 }
 
 function MovementRow({ movement, unit, tone, onPress }: { movement: LedgerMovementProgress; unit: LedgerUnit; tone: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.movementRow, pressed && styles.pressed]}><MovementArtwork movement={movement} /><View style={styles.movementCopy}><Text style={styles.movementName}>{movement.name}</Text><Text style={styles.movementMeta}>{prettify(movement.primary_muscle_group || movement.core_family || movement.family)} · {prettify(movement.equipment_type)}</Text><Text style={styles.movementDate}>{dateLabel(movement.last_performed_on)}</Text></View><View style={styles.movementValueWrap}><Text style={[styles.movementValue, { color: tone }]}>{loadLabel(movement.best_weight_kg || movement.latest_weight_kg, movement.best_reps || movement.latest_reps, unit)}</Text><Text style={styles.movementVolume}>{volumeNumber(movement.volume_kg, unit)} {unit} volume</Text></View><Ionicons name="chevron-forward" size={15} color="#737C88" /></Pressable>;
-}
-
-export function MovementCollectionExperience({ kind }: { kind: ExplorationKind }) {
-  const router = useRouter();
-  const params = useLocalSearchParams<{ muscle?: string; equipment?: string }>();
-  const { data, loading, error, reload } = useExploration();
-  const [tab, setTab] = useState<'Overview' | 'By Muscle' | 'History'>('Overview');
-  const movements = useMemo(() => {
-    const source = data?.movements ?? [];
-    return source.filter((movement) => {
-      const typeMatch = kind === 'variants' ? movement.core_kind === 'variant' : movement.kind !== 'core';
-      const muscleMatch = !params.muscle || canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family) === params.muscle;
-      const equipmentMatch = !params.equipment || movement.equipment_type === params.equipment;
-      return typeMatch && muscleMatch && equipmentMatch;
-    });
-  }, [data?.movements, kind, params.equipment, params.muscle]);
-
-  if (loading) return <State title={`Loading ${kind} evidence.`} />;
-  if (error || !data) return <State title={error || 'Ledger movement evidence is unavailable.'} error onRetry={reload} />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
-  const totalVolume = movements.reduce((sum, movement) => sum + movement.volume_kg, 0);
-  const maxVolume = Math.max(1, ...movements.map((movement) => movement.volume_kg));
-  const openMovement = (movement: LedgerMovementProgress) => router.push(
-    movementHistorySheetRouteForCanonicalIdentity(
-      kind === 'variants'
-        ? { coreMovementId: movement.id }
-        : { movementDefinitionId: movement.id },
-    ) as any,
-  );
-  const sorted = [...movements].sort((left, right) => tab === 'History'
-    ? String(right.last_performed_on || '').localeCompare(String(left.last_performed_on || ''))
-    : right.volume_kg - left.volume_kg);
-
-  return <View testID={`ledger-${kind}-experience`} style={styles.page}>
-    <RoomHeader title={kind === 'variants' ? 'Variants' : 'Accessories'} subtitle={kind === 'variants' ? 'Independent progress for alternate core movements.' : 'Every accessory movement, tracked with exact identity.'} />
-    <View style={styles.inset}><Tabs values={['Overview', 'By Muscle', 'History'] as const} value={tab} onChange={setTab} /><ContextBar data={data} /></View>
-    <View style={styles.inset}>
-      <View style={styles.collectionHero}><View><Text style={styles.sectionKicker}>{kind === 'variants' ? 'CORE VARIANT RECORD' : 'ACCESSORY RECORD'}</Text><Text style={styles.collectionHeroValue}>{movements.length}</Text><Text style={styles.collectionHeroLabel}>MOVEMENTS WITH EXACT EVIDENCE</Text></View><View style={styles.collectionHeroSide}><Text style={styles.collectionHeroVolume}>{volumeNumber(totalVolume, unit)}</Text><Text style={styles.collectionHeroVolumeLabel}>{unit.toUpperCase()} PERFORMED VOLUME</Text></View></View>
-      {params.muscle || params.equipment ? <View style={styles.activeFilter}><Text style={styles.activeFilterText}>FILTERED · {prettify(params.muscle || params.equipment)}</Text><Pressable onPress={() => router.setParams({ muscle: undefined, equipment: undefined })}><Ionicons name="close" size={17} color="#C8B1EC" /></Pressable></View> : null}
-    </View>
-    <View style={styles.inset}>
-      <View style={styles.sectionHeader}><Text style={styles.sectionTitle}>{tab === 'By Muscle' ? 'MUSCLE-LED MOVEMENTS' : tab === 'History' ? 'RECENTLY PERFORMED' : 'TOP MOVEMENTS'}</Text><Text style={styles.sectionMeta}>{movements.length} EXACT IDENTITIES</Text></View>
-      {sorted.length ? <View style={styles.movementList}>{sorted.map((movement) => {
-        const tone = kind === 'variants' ? FAMILY_TONES[movement.core_family || ''] || '#A873E8' : '#8C6ADB';
-        return <View key={movement.id}><MovementRow movement={movement} unit={unit} tone={tone} onPress={() => openMovement(movement)} /><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, (movement.volume_kg / maxVolume) * 100)}%`, backgroundColor: tone }]} /></View></View>;
-      })}</View> : <View style={styles.emptyCollection}><Text style={styles.emptyCollectionTitle}>No canonical {kind} evidence yet.</Text><Text style={styles.emptyCollectionBody}>This view only includes movements connected to immutable performed-set identity.</Text></View>}
-    </View>
-    <View style={styles.inset}><Pressable onPress={() => router.push(ledgerHrefFor('filters') as any)} style={({ pressed }) => [styles.footerLink, pressed && styles.pressed]}><Ionicons name="options-outline" size={18} color="#B793E8" /><Text style={styles.footerLinkText}>Filter this record</Text><Ionicons name="arrow-forward" size={16} color="#7E8793" /></Pressable></View>
-  </View>;
-}
-
-export function MovementDetailExperience({ movementId, mode }: { movementId: number; mode?: 'accessory' | 'variant' }) {
-  const router = useRouter();
-  const { data, loading, error, reload } = useExploration();
-  const [history, setHistory] = useState<LedgerMovementHistory | null>(null);
-  const [historyLoading, setHistoryLoading] = useState(true);
-  const [tab, setTab] = useState<'Overview' | 'History' | 'PRs'>('Overview');
-  const movement = data?.movements.find((item) => item.id === movementId);
-
-  useEffect(() => {
-    if (!data?.athlete.id || !movementId) return;
-    let active = true;
-    setHistoryLoading(true);
-    fetchLedgerMovementHistory(data.athlete.id, movementId).then((value) => { if (active) setHistory(value); }).catch(() => { if (active) setHistory(null); }).finally(() => { if (active) setHistoryLoading(false); });
-    return () => { active = false; };
-  }, [data?.athlete.id, movementId]);
-
-  if (loading) return <State title="Loading movement evidence." />;
-  if (error || !data) return <State title={error || 'Movement evidence is unavailable.'} error onRetry={reload} />;
-  if (!movement) return <State title="This movement has no visible evidence in the Ledger." error />;
-  const unit: LedgerUnit = data.athlete.preferred_units?.toLowerCase().startsWith('lb') ? 'lb' : 'kg';
-  const region = canonicalAccessoryMuscleRegionKey(movement.primary_muscle_group || movement.body_region || movement.family);
-  const tone = mode === 'variant' ? FAMILY_TONES[movement.core_family || ''] || '#A66AE4' : '#9A66E7';
-  const sets = history?.sets ?? [];
-  const comparable = Boolean(history?.comparison_allowed);
-  const bestSet = comparable ? [...sets].sort((left, right) => right.weight_kg - left.weight_kg || (right.reps || 0) - (left.reps || 0))[0] : sets[0];
-
-  return <View testID="ledger-movement-detail-experience" style={styles.page}>
-    <RoomHeader title={movement.name} subtitle={`${prettify(region)} · ${prettify(movement.equipment_type)}`} />
-    <View style={styles.inset}><Tabs values={['Overview', 'History', 'PRs'] as const} value={tab} onChange={setTab} /></View>
-    <View style={styles.inset}>
-      <View style={[styles.movementHero, { borderColor: `${tone}66` }]}><CanonicalMovementArtwork movement={movement} size={92} style={styles.movementHeroArt} testID="ledger-history-canonical-movement-artwork" /><View style={styles.movementHeroCopy}><Text style={[styles.sectionKicker, { color: tone }]}>{mode === 'variant' ? `${prettify(movement.core_family)} VARIANT` : `${prettify(region)} ACCESSORY`}</Text><Text style={styles.movementHeroValue}>{loadLabel(bestSet?.weight_kg || movement.latest_weight_kg, bestSet?.reps || movement.latest_reps, unit)}</Text><Text style={styles.movementHeroLabel}>{comparable ? 'BEST EXACT PERFORMANCE' : 'LATEST EXACT PERFORMANCE'}</Text><Text style={styles.movementHeroDate}>{dateLabel(bestSet?.date || movement.last_performed_on)}</Text></View></View>
-    </View>
-    {tab === 'PRs' ? <View style={styles.inset}><View style={styles.policyNotice}><Ionicons name="shield-checkmark-outline" size={20} color="#C5A4F1" /><View style={styles.policyCopy}><Text style={styles.policyTitle}>Recognition follows governed identity.</Text><Text style={styles.policyBody}>{mode === 'variant' ? 'Only canonical core accomplishment events appear as PRs. Exact set history remains available below.' : 'Accessory recognition is currently disabled by the movement identity platform, so no PR was invented for this movement.'}</Text></View></View></View> : null}
-    {tab !== 'PRs' ? <>
-      <View style={styles.inset}><View style={styles.detailMetrics}><View><Text style={styles.detailMetricValue}>{movement.set_count}</Text><Text style={styles.detailMetricLabel}>SETS</Text></View><View><Text style={styles.detailMetricValue}>{movement.session_count}</Text><Text style={styles.detailMetricLabel}>SESSIONS</Text></View><View><Text style={styles.detailMetricValue}>{volumeNumber(movement.volume_kg, unit)}</Text><Text style={styles.detailMetricLabel}>{unit.toUpperCase()} VOLUME</Text></View></View></View>
-      <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>PERFORMANCE OVER TIME</Text><Text style={styles.sectionMeta}>{comparable ? 'EXACT IDENTITY' : 'CONTEXT ONLY'}</Text></View><View style={styles.detailTrend}><MovementPerformanceTrend sets={sets} tone={tone} unit={unit} comparable={comparable} /></View></View>
-      <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>{tab === 'History' ? 'COMPLETE RECENT HISTORY' : 'RECENT EVIDENCE'}</Text><Text style={styles.sectionMeta}>{historyLoading ? 'LOADING' : `${sets.length} SETS`}</Text></View><View style={styles.setList}>{sets.slice(0, tab === 'History' ? 49 : 6).map((set) => <SetEvidenceRow key={set.id} set={set} tone={tone} unit={unit} onPress={() => router.push(`/(tabs)/ledger/archive/set/${set.id}` as any)} />)}</View></View>
-      <View style={styles.inset}><View style={styles.equipmentCard}><Text style={styles.sectionKicker}>EQUIPMENT CONTEXT</Text><Text style={styles.equipmentTitle}>{[movement.equipment_manufacturer, movement.equipment_model].filter(Boolean).join(' · ') || prettify(movement.equipment_type)}</Text><Text style={styles.equipmentBody}>{movement.comparison_scope ? `${prettify(movement.comparison_scope)} · ${prettify(movement.comparison_confidence)} confidence` : 'Comparison policy unavailable'}</Text></View></View>
-    </> : null}
-  </View>;
-}
-
-function SetEvidenceRow({ set, tone, unit, onPress }: { set: LedgerMovementSet; tone: string; unit: LedgerUnit; onPress: () => void }) {
-  return <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => [styles.setRow, pressed && styles.pressed]}><View><Text style={styles.setDate}>{dateLabel(set.date)}</Text><Text style={styles.setMeta}>{set.rpe != null ? `RPE ${set.rpe}` : set.rir != null ? `${set.rir} RIR` : 'Effort not recorded'}</Text></View><Text style={[styles.setLoad, { color: tone }]}>{loadLabel(set.weight_kg, set.reps, unit)}</Text><Ionicons name="chevron-forward" size={15} color="#707986" /></Pressable>;
 }
 
 export function MuscleGroupsExperience() {

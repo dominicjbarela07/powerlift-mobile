@@ -47,7 +47,7 @@ const CHAPTERS: readonly {
   { number: '02', room: 'strength', title: 'STRENGTH', detail: 'Core lifts, variants, rep maxes, trends.', tone: '#62C8EF' },
   { number: '03', room: 'achievements', title: 'ACHIEVEMENTS', detail: 'All PRs, milestones, and awards.', tone: '#E8B95D' },
   { number: '04', room: 'accessories', title: 'ACCESSORIES', detail: 'Exercise progress, volume, and PRs.', tone: '#68D29F' },
-  { number: '05', room: 'variants', title: 'VARIANTS', detail: 'Alternate lifts and movement patterns.', tone: '#BB7BEE' },
+  { number: '05', room: 'variants', title: 'VARIANTS', detail: 'Supplemental core work, progress, and exposure.', tone: '#BB7BEE' },
   { number: '06', room: 'archive', title: 'ARCHIVE', detail: 'Complete session and set history.', tone: '#EC7067' },
 ];
 

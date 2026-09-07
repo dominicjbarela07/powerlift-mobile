@@ -45,7 +45,7 @@ const consumers = {
   'Team outlier/deep dive': read('components/coach-mobile/CoachAnalyticsTrend.tsx'),
   'Canonical post-Session reviewer': read('components/coach-mobile/CompletedSessionRecap.tsx'),
   'Ledger strength': read('components/ledger/StrengthExperience.tsx'),
-  'Ledger movement detail': read('components/ledger/exploration-experiences.tsx'),
+  'Ledger variant detail': read('components/ledger/VariantsExperience.tsx'),
   'Session recap expanded trend': read('components/coach-mobile/CompletedSessionRecap.tsx'),
 };
 for (const [name, source] of Object.entries(consumers)) assert.match(source, /AnalyticalTimeSeriesChart/, `${name} must use the canonical analytical chart primitive`);

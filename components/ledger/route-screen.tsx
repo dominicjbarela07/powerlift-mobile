@@ -3,7 +3,8 @@ import React from 'react';
 
 import AchievementsExperience from './AchievementsExperience';
 import AccessoriesExperience from './AccessoriesExperience';
-import { LedgerFiltersExperience, MovementCollectionExperience, MuscleGroupsExperience } from './exploration-experiences';
+import VariantsExperience from './VariantsExperience';
+import { LedgerFiltersExperience, MuscleGroupsExperience } from './exploration-experiences';
 
 import { ExperienceForScreen } from './experiences';
 import { LedgerFrame } from './primitives';
@@ -13,7 +14,7 @@ import type { LedgerLiveDataFixture } from './use-ledger-live-data';
 export function LedgerRouteScreen({ screen, achievementsDevFixture }: { screen: LedgerScreen; achievementsDevFixture?: LedgerLiveDataFixture }) {
   if (screen === 'achievements') return <LedgerAchievementsRoom devFixture={achievementsDevFixture} />;
   if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><AccessoriesExperience /></LedgerSpecializedRoom>;
-  if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><MovementCollectionExperience kind="variants" /></LedgerSpecializedRoom>;
+  if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><VariantsExperience /></LedgerSpecializedRoom>;
   if (screen === 'muscle-groups') return <LedgerSpecializedRoom active="muscle-groups"><MuscleGroupsExperience /></LedgerSpecializedRoom>;
   if (screen === 'filters') return <LedgerSpecializedRoom active="filters"><LedgerFiltersExperience /></LedgerSpecializedRoom>;
 
