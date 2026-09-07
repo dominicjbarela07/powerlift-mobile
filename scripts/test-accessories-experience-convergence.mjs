@@ -49,6 +49,8 @@ assert.match(client, /evidence_policy: 'exact_movement_then_exact_equipment'/,
   'The client contract must document movement-first, equipment-scoped evidence.');
 assert.match(backend, /resolve_exact_history_identity[\s\S]*identity\.key[\s\S]*comparison_allowed/,
   'The backend projection must resolve immutable movement identity before comparison.');
+assert.match(backend, /"trained_primary_muscles": \[group\["key"\] for group in muscle_groups\]/,
+  'Aggregate anatomy must receive primary muscles in exposure order so the five-mask cap cannot drop the top group.');
 assert.match(backend, /identity_trend[\s\S]*"trend": identity_trend/,
   'Each progress card sparkline must remain scoped to the exact movement/equipment identity being compared.');
 assert.match(backend, /compare_performance[\s\S]*is_assistance_load[\s\S]*performance_rank/,
