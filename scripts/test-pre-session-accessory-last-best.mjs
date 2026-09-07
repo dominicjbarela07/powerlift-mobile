@@ -11,6 +11,7 @@ import { exactAccessoryLastExposure } from '../lib/exact-accessory-history.ts';
 const root = process.cwd();
 const routeSource = fs.readFileSync(path.join(root, 'app/(tabs)/workout/[workoutId].tsx'), 'utf8');
 const cardSource = fs.readFileSync(path.join(root, 'components/workout-logger/core-loggers.tsx'), 'utf8');
+const supersetSource = fs.readFileSync(path.join(root, 'components/workout-logger/superset-round-workspace.tsx'), 'utf8');
 const helperSource = fs.readFileSync(path.join(root, 'lib/accessory-last-best.ts'), 'utf8');
 
 const prior = {
@@ -136,7 +137,24 @@ assert.match(routeSource, /performed_canonical_movement_identity[\s\S]+performed
 assert.match(cardSource, /\{priorPerformanceCue\.eyebrow\}/);
 assert.match(cardSource, /\{priorPerformanceCue\.primary\}/);
 assert.match(cardSource, /\{priorPerformanceCue\.supporting\}/);
+assert.match(
+  cardSource,
+  /const visibleProgressContext = isPreSessionCard \|\| priorPerformanceCue\s*\? null\s*: coreLoggerVisibleExpandedContent\(expanded, visualContext\?\.progress\)/,
+  'the governed Last Best cue suppresses the redundant generic Previous exposure row',
+);
+assert.match(
+  cardSource,
+  /\{priorPerformanceCue \? \([\s\S]*\{visibleProgressContext \? \(/,
+  'Last Best remains the primary historical presentation while non-accessory progress context remains available',
+);
 assert.match(cardSource, /priorPerformancePrimary:[\s\S]*fontSize:\s*SLTypography\.body\.fontSize/);
 assert.match(cardSource, /priorPerformanceSupporting:[\s\S]*fontSize:\s*SLTypography\.caption\.fontSize/);
+assert.match(routeSource, /historyLine:\s*accessoryLookbackLine\(item\)/, 'superset movements reuse the governed Last Best resolver');
+assert.equal(
+  (supersetSource.match(/item\.historyLine/g) || []).length,
+  1,
+  'each expanded superset movement has one historical reference rather than a stacked duplicate',
+);
+assert.doesNotMatch(supersetSource, /Last time:|Previous exposure/, 'superset history never adds the redundant generic exposure row');
 
 console.log('[pre-session-accessory-last-best] exact history, load semantics, fail-closed identity, and visible card contracts passed');

@@ -322,7 +322,10 @@ export function CoreMovementLedgerRow({
     prescription: headerPrescription,
   });
   const visibleMovementNote = coreLoggerVisibleMovementNote(expanded, movementNote);
-  const visibleProgressContext = isPreSessionCard
+  // Accessory Last Best is the canonical historical reference for this card.
+  // Keep the generic progress context available to other movement cards, but do
+  // not render the same prior exposure again beneath the governed cue.
+  const visibleProgressContext = isPreSessionCard || priorPerformanceCue
     ? null
     : coreLoggerVisibleExpandedContent(expanded, visualContext?.progress);
   // P0 invariant: render every prescribed detail row from the API.
