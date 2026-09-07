@@ -21,7 +21,13 @@ import {
   type LedgerExplorationIndex,
   type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
-import { isGovernedMuscleId, MUSCLE_META, type GovernedMuscleId } from '@/lib/anatomy-system';
+import {
+  anatomyExposureColor,
+  isGovernedMuscleId,
+  MUSCLE_META,
+  normalizeAnatomyExposure,
+  type GovernedMuscleId,
+} from '@/lib/anatomy-system';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
@@ -168,7 +174,9 @@ export default function AccessoriesExperience() {
   const story = data?.accessories;
   const movementsById = useMemo(() => new Map((story?.movements || []).map((movement) => [movement.id, movement])), [story?.movements]);
   const primary = useMemo(() => (story?.trained_primary_muscles || []).filter(isGovernedMuscleId) as GovernedMuscleId[], [story?.trained_primary_muscles]);
-  const secondary = useMemo(() => (story?.trained_secondary_muscles || []).filter(isGovernedMuscleId) as GovernedMuscleId[], [story?.trained_secondary_muscles]);
+  const exposure = useMemo(() => normalizeAnatomyExposure(
+    (story?.muscle_groups || []).map((muscle) => ({ muscle_id: muscle.key, score: muscle.set_count })),
+  ), [story?.muscle_groups]);
   const resolvedAnatomyView = anatomyView
     || (primary[0] && MUSCLE_META[primary[0]].preferred === 'rear' ? 'rear' : 'front');
 
@@ -203,16 +211,16 @@ export default function AccessoriesExperience() {
 
     <View style={styles.content}>
       <View style={styles.developmentHero} testID="accessory-development-hero">
-        <SectionHeading title="ACCESSORY DEVELOPMENT" subtitle="Working-set evidence by governed primary muscle." />
+        <SectionHeading title="ACCESSORY DEVELOPMENT" subtitle="Relative exposure from performed accessory working sets." />
         <View style={styles.anatomyStage}>
-          <MuscleMap athlete={data.athlete} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.anatomy} surface="portrait" view={resolvedAnatomyView} testID={`accessories-anatomy-${resolvedAnatomyView}`} />
+          <MuscleMap athlete={data.athlete} exposure={exposure} mode="exposure" region="full" semanticLevel="week" size="hero" style={styles.anatomy} surface="portrait" view={resolvedAnatomyView} testID={`accessories-anatomy-${resolvedAnatomyView}`} />
           <View style={styles.anatomyControls}>
             {(['front', 'rear'] as const).map((view) => <Pressable key={view} accessibilityRole="tab" accessibilityState={{ selected: resolvedAnatomyView === view }} onPress={() => setAnatomyView(view)} style={[styles.anatomyControl, resolvedAnatomyView === view && styles.anatomyControlActive]} testID={`accessories-anatomy-view-${view}`}><Text style={[styles.anatomyControlText, resolvedAnatomyView === view && styles.anatomyControlTextActive]}>{titleCase(view)}</Text></Pressable>)}
           </View>
         </View>
         <View style={styles.muscleEvidence}>
-          <Text style={styles.evidenceKicker}>TOP MUSCLE GROUPS</Text>
-          {story.muscle_groups.slice(0, 5).map((muscle) => <MuscleEvidenceRow key={muscle.key} muscle={muscle} maximum={story.muscle_groups[0]?.set_count || 1} onPress={() => openMuscle(muscle.key)} />)}
+          <View style={styles.evidenceHeader}><Text style={styles.evidenceKicker}>TOP MUSCLE GROUPS</Text><Text style={styles.evidenceScale}>relative to highest exposure</Text></View>
+          {story.muscle_groups.slice(0, 5).map((muscle) => <MuscleEvidenceRow key={muscle.key} intensity={isGovernedMuscleId(muscle.key) ? Number(exposure[muscle.key] || 0) : 0} muscle={muscle} onPress={() => openMuscle(muscle.key)} />)}
         </View>
       </View>
 
@@ -273,8 +281,9 @@ export default function AccessoriesExperience() {
   </View>;
 }
 
-function MuscleEvidenceRow({ muscle, maximum, onPress }: { muscle: LedgerAccessoriesStory['muscle_groups'][number]; maximum: number; onPress: () => void }) {
-  return <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.muscleRow, pressed && styles.pressed]}><Text style={styles.muscleName}>{titleCase(muscle.key)}</Text><View style={styles.muscleTrack}><View style={[styles.muscleFill, { width: `${Math.max(5, muscle.set_count / maximum * 100)}%` }]} /></View><View style={styles.muscleCount}><Text style={styles.muscleCountValue}>{muscle.set_count}</Text><Text style={styles.muscleCountLabel}>sets</Text></View><Ionicons color="#89919E" name="chevron-forward" size={16} /></Pressable>;
+function MuscleEvidenceRow({ muscle, intensity, onPress }: { muscle: LedgerAccessoriesStory['muscle_groups'][number]; intensity: number; onPress: () => void }) {
+  const percent = Math.round(Math.max(0, Math.min(1, intensity)) * 100);
+  return <Pressable accessibilityLabel={`${titleCase(muscle.key)}, ${muscle.set_count} performed working sets, ${percent}% relative exposure`} accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.muscleRow, pressed && styles.pressed]}><Text style={styles.muscleName}>{titleCase(muscle.key)}</Text><View style={styles.muscleTrack}><View style={[styles.muscleFill, { width: `${Math.max(4, percent)}%`, backgroundColor: anatomyExposureColor(intensity) }]} /></View><View style={styles.muscleCount}><Text style={styles.muscleCountValue}>{muscle.set_count}</Text><Text style={styles.muscleCountLabel}>{percent}%</Text></View><Ionicons color="#89919E" name="chevron-forward" size={16} /></Pressable>;
 }
 
 function WorkSnapshot({ story, unit, volumeChange, setChange }: { story: LedgerAccessoriesStory; unit: 'lb' | 'kg'; volumeChange: number | null; setChange: number | null }) {
@@ -312,15 +321,17 @@ const styles = StyleSheet.create({
   sectionSubtitle: { color: '#9297A4', fontSize: 11.5, lineHeight: 16 },
   sectionAction: { color: VIOLET_SOFT, fontSize: 12, lineHeight: 17, fontWeight: '700' },
   developmentHero: { overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: '#503365', backgroundColor: '#09070D', padding: 11 },
-  anatomyStage: { minHeight: 260, alignItems: 'center', overflow: 'hidden', borderRadius: 13, backgroundColor: '#050609' },
-  anatomy: { width: '100%', height: 224 },
-  anatomyControls: { flexDirection: 'row', gap: 7, position: 'absolute', bottom: 8 },
-  anatomyControl: { minWidth: 88, minHeight: 35, alignItems: 'center', justifyContent: 'center', borderRadius: 18, borderWidth: 1, borderColor: '#3C3546', backgroundColor: 'rgba(8,9,13,0.94)' },
+  anatomyStage: { minHeight: 348, alignItems: 'center', overflow: 'hidden', borderRadius: 13, backgroundColor: '#050609' },
+  anatomy: { width: '100%', height: 318 },
+  anatomyControls: { flexDirection: 'row', gap: 5, position: 'absolute', bottom: 8, padding: 3, borderRadius: 18, backgroundColor: 'rgba(7,8,12,0.92)' },
+  anatomyControl: { minWidth: 70, minHeight: 29, alignItems: 'center', justifyContent: 'center', borderRadius: 15, borderWidth: 1, borderColor: '#3C3546', backgroundColor: 'rgba(8,9,13,0.94)' },
   anatomyControlActive: { borderColor: VIOLET, backgroundColor: '#5D22A2' },
   anatomyControlText: { color: '#ABA5B2', fontSize: 12, lineHeight: 16, fontWeight: '700' },
   anatomyControlTextActive: { color: '#FFFFFF' },
   muscleEvidence: { gap: 1, paddingTop: 11, paddingRight: 48 },
+  evidenceHeader: { minHeight: 23, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   evidenceKicker: { color: '#AF79E6', fontSize: 11, lineHeight: 15, fontWeight: '800', letterSpacing: 0.6 },
+  evidenceScale: { flex: 1, color: '#777F8C', fontSize: 10, lineHeight: 13, textAlign: 'right' },
   muscleRow: { minHeight: 42, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#262330' },
   muscleName: { width: 86, color: '#D7D3DC', fontSize: 12.5, lineHeight: 17, fontWeight: '600' },
   muscleTrack: { flex: 1, height: 9, overflow: 'hidden', borderRadius: 5, backgroundColor: '#242733' },

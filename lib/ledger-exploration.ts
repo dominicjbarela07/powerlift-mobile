@@ -98,6 +98,7 @@ export type LedgerAccessoriesStory = Readonly<{
   recent_sessions: { id: number; date: string; label: string; set_count: number; volume_kg: number; movement_count: number }[];
   history_count: number;
   evidence_policy: 'exact_movement_then_exact_equipment';
+  muscle_exposure_policy: 'performed_accessory_working_sets_by_governed_primary_muscle';
   volume_policy: 'external_load_only_assistance_and_bodyweight_only_excluded';
 }>;
 

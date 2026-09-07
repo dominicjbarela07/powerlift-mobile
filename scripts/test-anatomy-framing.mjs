@@ -56,6 +56,15 @@ const fullBody = resolveAnatomyFraming({
 assert.ok(quads.viewBox.y > 300 && quads.viewBox.height < 500, 'W4 Legs must frame hips through the upper legs');
 assert.ok(absAndArms.viewBox.y > 100 && absAndArms.viewBox.height < 520, 'W4 Abs / Misc must frame torso and arms tightly');
 assert.ok(fullBody.isFullBody && fullBody.viewBox.height === 941, 'true full-body emphasis must pull back honestly');
+const heatmapFullBody = resolveAnatomyFraming({
+  primary: ['chest', 'front_delts', 'side_delts', 'lats', 'upper_back', 'triceps', 'biceps', 'quads', 'hamstrings', 'glutes', 'calves'],
+  view: 'rear',
+  size: 'hero',
+  destinationAspectRatio: 1,
+  preserveAll: true,
+  forceFullBody: true,
+});
+assert.ok(heatmapFullBody.isFullBody && heatmapFullBody.viewBox.height === 941, 'multi-muscle exposure heatmaps must never be truncated by semantic role caps');
 
 const sparseQuads = resolveAnatomyFraming({ primary: ['quads'], view: 'front', size: 'card', destinationAspectRatio: 0.72 });
 const broadLegs = resolveAnatomyFraming({ primary: ['quads', 'adductors', 'calves'], view: 'front', size: 'card', destinationAspectRatio: 0.72 });

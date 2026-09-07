@@ -9,9 +9,12 @@ import { Text } from '@/components/ui/sl-text';
 import { SLColors } from '@/constants/theme';
 import {
   ANATOMY_QA_PRESETS,
+  ANATOMY_HEATMAP_QA_PRESETS,
   GOVERNED_MUSCLE_IDS,
+  isGovernedMuscleId,
   MUSCLE_META,
   type AnatomyPresentationPreference,
+  type AnatomyRenderMode,
   type AnatomyViewPreference,
   type GovernedMuscleId,
 } from '@/lib/anatomy-system';
@@ -40,25 +43,34 @@ function titleCase(value: string) {
 export default function AnatomySystemLab() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ presentation?: string; view?: string; preset?: string; scenario?: string }>();
+  const params = useLocalSearchParams<{ presentation?: string; view?: string; preset?: string; scenario?: string; mode?: string; heatmap?: string; muscle?: string }>();
   const requestedPresetName = PRESET_ALIASES[params.scenario || ''] || params.preset || 'Lats + Biceps';
   const initialPreset = ANATOMY_QA_PRESETS[requestedPresetName] || ANATOMY_QA_PRESETS['Lats + Biceps'];
   const [presentation, setPresentation] = useState<AnatomyPresentationPreference>(params.presentation === 'feminine' ? 'feminine' : params.presentation === 'automatic' ? 'automatic' : 'masculine');
   const [view, setView] = useState<AnatomyViewPreference>(params.view === 'front' || params.view === 'rear' ? params.view : 'dual');
   const [laterality, setLaterality] = useState<AnatomyLaterality>('bilateral');
+  const [mode, setMode] = useState<AnatomyRenderMode>(params.mode === 'exposure' ? 'exposure' : 'semantic');
   const [primary, setPrimary] = useState<GovernedMuscleId[]>([...initialPreset.primary]);
   const [secondary, setSecondary] = useState<GovernedMuscleId[]>([...initialPreset.secondary]);
+  const [exposure, setExposure] = useState<Readonly<Partial<Record<GovernedMuscleId, number>>>>(
+    ANATOMY_HEATMAP_QA_PRESETS[params.heatmap === 'dense' ? 'Dense Accessory Exposure' : 'Controlled Exposure'],
+  );
 
   useEffect(() => {
     setPresentation(params.presentation === 'feminine' ? 'feminine' : params.presentation === 'automatic' ? 'automatic' : 'masculine');
     setView(params.view === 'front' || params.view === 'rear' ? params.view : 'dual');
+    setMode(params.mode === 'exposure' ? 'exposure' : 'semantic');
+    setExposure(ANATOMY_HEATMAP_QA_PRESETS[params.heatmap === 'dense' ? 'Dense Accessory Exposure' : 'Controlled Exposure']);
     const presetName = PRESET_ALIASES[params.scenario || ''] || params.preset || '';
     const requestedPreset = ANATOMY_QA_PRESETS[presetName];
-    if (requestedPreset) {
+    if (isGovernedMuscleId(params.muscle)) {
+      setPrimary([params.muscle]);
+      setSecondary([]);
+    } else if (requestedPreset) {
       setPrimary([...requestedPreset.primary]);
       setSecondary([...requestedPreset.secondary]);
     }
-  }, [params.presentation, params.preset, params.scenario, params.view]);
+  }, [params.heatmap, params.mode, params.muscle, params.presentation, params.preset, params.scenario, params.view]);
 
   const roles = useMemo(() => {
     const roleByMuscle = new Map<GovernedMuscleId, MuscleRole>();
@@ -76,6 +88,14 @@ export default function AnatomySystemLab() {
     setSecondary([...preset.secondary]);
   };
   const cycleRole = (muscle: GovernedMuscleId) => {
+    if (mode === 'exposure') {
+      setExposure((values) => {
+        const current = Number(values[muscle] || 0);
+        const next = current >= 1 ? 0 : Math.round((current + 0.25) * 100) / 100;
+        return { ...values, [muscle]: next };
+      });
+      return;
+    }
     const role = roles.get(muscle) || 'inactive';
     setPrimary((values) => values.filter((value) => value !== muscle));
     setSecondary((values) => values.filter((value) => value !== muscle));
@@ -98,6 +118,14 @@ export default function AnatomySystemLab() {
 
       <View style={styles.controlCard}>
         <Text style={styles.sectionTitle}>Presentation + View</Text>
+        <Text style={styles.controlLabel}>Render mode</Text>
+        <View style={styles.controlRail}>
+          {(['semantic', 'exposure'] as const).map((value) => (
+            <Pressable key={value} onPress={() => setMode(value)} style={[styles.control, mode === value && styles.controlActive]} testID={`anatomy-mode-${value}`}>
+              <Text style={[styles.controlText, mode === value && styles.controlTextActive]}>{value === 'semantic' ? 'Primary / Secondary' : 'Exposure Heatmap'}</Text>
+            </Pressable>
+          ))}
+        </View>
         <View style={styles.controlRail}>
           {PRESENTATIONS.map((value) => (
             <Pressable key={value} onPress={() => setPresentation(value)} style={[styles.control, presentation === value && styles.controlActive]} testID={`anatomy-presentation-${value}`}>
@@ -123,9 +151,16 @@ export default function AnatomySystemLab() {
       </View>
 
       <View style={styles.heroCard}>
-        <MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} surface="portrait" view={view} testID="anatomy-qa-hero" />
-        <Text style={styles.legend}>Violet · {primary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
-        <Text style={styles.legend}>Magenta · {secondary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
+        <MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} surface="portrait" view={view} testID="anatomy-qa-hero" />
+        {mode === 'semantic' ? <>
+          <Text style={styles.legend}>Violet · {primary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
+          <Text style={styles.legend}>Magenta · {secondary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
+        </> : <View style={styles.exposureLegend}>{GOVERNED_MUSCLE_IDS.filter((muscle) => Number(exposure[muscle] || 0) > 0).sort((left, right) => Number(exposure[right] || 0) - Number(exposure[left] || 0)).map((muscle) => <View key={muscle} style={styles.exposureLegendRow}><Text style={styles.legend}>{MUSCLE_META[muscle].label}</Text><Text style={styles.exposureValue}>{Math.round(Number(exposure[muscle] || 0) * 100)}%</Text></View>)}</View>}
+      </View>
+
+      <Text style={styles.sectionTitle}>Exposure Heatmap Presets</Text>
+      <View style={styles.controlRail}>
+        {Object.entries(ANATOMY_HEATMAP_QA_PRESETS).map(([name, values]) => <Pressable key={name} onPress={() => { setMode('exposure'); setExposure(values); }} style={styles.preset} testID={`anatomy-heatmap-${name.toLowerCase().replaceAll(' ', '-')}`}><Text style={styles.presetText}>{name}</Text></Pressable>)}
       </View>
 
       <Text style={styles.sectionTitle}>Presets</Text>
@@ -138,14 +173,14 @@ export default function AnatomySystemLab() {
       </ScrollView>
 
       <Text style={styles.sectionTitle}>Muscle QA</Text>
-      <Text style={styles.help}>Tap a muscle to cycle inactive → primary → secondary.</Text>
+      <Text style={styles.help}>{mode === 'semantic' ? 'Tap a muscle to cycle inactive → primary → secondary.' : 'Tap a muscle to cycle 0 → 25 → 50 → 75 → 100% relative exposure.'}</Text>
       <View style={styles.muscleGrid}>
         {GOVERNED_MUSCLE_IDS.map((muscle) => {
           const role = roles.get(muscle) || 'inactive';
           return (
-            <Pressable key={muscle} onPress={() => cycleRole(muscle)} style={[styles.muscleControl, role === 'primary' && styles.primary, role === 'secondary' && styles.secondary]} testID={`anatomy-muscle-${muscle}`}>
+            <Pressable key={muscle} onPress={() => cycleRole(muscle)} style={[styles.muscleControl, mode === 'exposure' ? Number(exposure[muscle] || 0) > 0 && styles.primary : role === 'primary' ? styles.primary : role === 'secondary' ? styles.secondary : null]} testID={`anatomy-muscle-${muscle}`}>
               <Text style={styles.muscleText}>{MUSCLE_META[muscle].label}</Text>
-              <Text style={styles.roleText}>{role}</Text>
+              <Text style={styles.roleText}>{mode === 'exposure' ? `${Math.round(Number(exposure[muscle] || 0) * 100)}%` : role}</Text>
             </Pressable>
           );
         })}
@@ -153,16 +188,16 @@ export default function AnatomySystemLab() {
 
       <Text style={styles.sectionTitle}>Size Tests</Text>
       <View style={styles.sizeCard}>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
-        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} surface="wide" view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
+        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} surface="wide" view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
       </View>
 
       <Text style={styles.sectionTitle}>Platform Previews</Text>
       <View style={styles.previewGrid}>
-        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} surface="square" view={view} /></View>
-        <View style={styles.widePreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="wide" view={view} /></View>
-        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="portrait" view={view} /></View>
+        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} surface="square" view={view} /></View>
+        <View style={styles.widePreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="wide" view={view} /></View>
+        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="portrait" view={view} /></View>
       </View>
       <View style={styles.bottomSpace} />
     </ScrollView>
@@ -189,6 +224,9 @@ const styles = StyleSheet.create({
   heroCard: { alignItems: 'center', gap: 4, padding: 10, borderRadius: 17, borderWidth: 1, borderColor: '#57366F', backgroundColor: '#06070A' },
   heroMap: { width: '100%', height: 370 },
   legend: { alignSelf: 'stretch', color: '#B6BBC5', fontSize: 10.5, lineHeight: 15 },
+  exposureLegend: { alignSelf: 'stretch', flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 2 },
+  exposureLegendRow: { minWidth: '29%', flexDirection: 'row', alignItems: 'center', gap: 5 },
+  exposureValue: { color: '#D75BC3', fontSize: 10.5, lineHeight: 15, fontWeight: '800' },
   presetRail: { gap: 7, paddingRight: 14 },
   preset: { minHeight: 34, justifyContent: 'center', paddingHorizontal: 11, borderRadius: 17, borderWidth: 1, borderColor: '#54316D', backgroundColor: '#100B17' },
   presetText: { color: '#D9C2F4', fontSize: 11, lineHeight: 15, fontWeight: '700' },

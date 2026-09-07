@@ -6,10 +6,13 @@ import { PNG } from 'pngjs';
 
 import {
   ANATOMY_QA_PRESETS,
+  ANATOMY_HEATMAP_QA_PRESETS,
   GOVERNED_MUSCLE_IDS,
   aggregateProgrammingWeekFocus,
   aggregateSessionMuscleFocus,
   anatomyRenderKey,
+  anatomyExposureColor,
+  normalizeAnatomyExposure,
   normalizeMuscleRoles,
   resolveAnatomyPresentation,
   resolveAnatomyRegion,
@@ -79,10 +82,25 @@ assert.notEqual(
   'left and right segment renders must not collide in the render cache',
 );
 assert.notEqual(
-  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', intensity: { chest: 0.25 } }),
-  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', intensity: { chest: 0.9 } }),
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', mode: 'exposure', exposure: { chest: 0.25 } }),
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', mode: 'exposure', exposure: { chest: 0.9 } }),
   'normalized intensity renders must not collide in the render cache',
 );
+
+assert.deepEqual(normalizeAnatomyExposure([]), {}, 'no evidence must render no exposure');
+assert.deepEqual(normalizeAnatomyExposure([{ muscle_id: 'lats', score: 51 }]), { lats: 1 }, 'one trained muscle must anchor the heatmap');
+const normalizedExposure = normalizeAnatomyExposure([
+  { muscle_id: 'lats', score: 100 },
+  { muscle_id: 'triceps', score: 25 },
+  { muscle_id: 'chest', score: 1 },
+  { muscle_id: 'unknown', score: 999 },
+]);
+assert.equal(normalizedExposure.lats, 1);
+assert.equal(normalizedExposure.triceps, 0.5);
+assert.equal(normalizedExposure.chest, 0.1, 'square-root response must keep real low exposure visible under an outlier');
+assert.equal(anatomyExposureColor(0), '#31343A');
+assert.notEqual(anatomyExposureColor(0.2), anatomyExposureColor(0.8));
+assert.deepEqual(ANATOMY_HEATMAP_QA_PRESETS['Controlled Exposure'], { chest: 1, lats: 0.8, triceps: 0.6, quads: 0.4, calves: 0.2 });
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
@@ -138,7 +156,9 @@ assert.match(renderer, /MATERIALS\[presentation\]\[view\]\.secondary/, 'secondar
 assert.match(renderer, /MATERIALS\[presentation\]\[view\]\.primary/, 'primary segments must reveal the registered violet material master');
 assert.match(renderer, /AnatomySegmentPaths[\s\S]*laterality/, 'segment masks must preserve separately addressable left/right geometry');
 assert.doesNotMatch(renderer, /\bfill=\{ANATOMY_COLORS|\bstroke=\{ANATOMY_COLORS/, 'runtime flat fills and sticker outlines are prohibited');
-assert.match(renderer, /intensity\?: Readonly<Partial<Record<GovernedMuscleId, number>>>/, 'renderer must accept governed normalized intensity without changing architecture');
+assert.match(renderer, /mode\?: AnatomyRenderMode/, 'renderer must expose semantic and exposure modes explicitly');
+assert.match(renderer, /exposure\?: Readonly<Partial<Record<GovernedMuscleId, number>>>/, 'renderer must accept governed normalized exposure without changing geometry');
+assert.match(renderer, /mode === 'exposure'[\s\S]*heatmapMuscles/, 'exposure mode must use the canonical segment pipeline');
 if (lab) {
   for (const preset of [
     'Chest + Triceps', 'Chest + Front Delts + Triceps', 'Lats + Biceps',
@@ -150,6 +170,8 @@ if (lab) {
   assert.match(lab, /PRESENTATIONS[\s\S]*automatic[\s\S]*masculine[\s\S]*feminine/, 'lab must toggle automatic and both authored presentations');
   assert.match(lab, /VIEWS[\s\S]*front[\s\S]*rear[\s\S]*dual/, 'lab must toggle front, rear, and dual views');
   assert.match(lab, /LATERALITIES[\s\S]*bilateral[\s\S]*left[\s\S]*right/, 'lab must inspect independently addressable bilateral geometry');
+  assert.match(lab, /Exposure Heatmap[\s\S]*Object\.entries\(ANATOMY_HEATMAP_QA_PRESETS\)/, 'lab must certify every governed heatmap preset');
+  assert.match(lab, /Math\.round\(Number\(exposure\[muscle\]/, 'lab must display normalized exposure values');
   assert.match(lab, /Size Tests[\s\S]*thumbnail[\s\S]*card[\s\S]*hero/, 'lab must exercise all governed sizes');
 }
 if (library && lab) {

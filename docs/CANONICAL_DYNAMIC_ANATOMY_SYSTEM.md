@@ -78,10 +78,31 @@ Quads, Hamstrings, Adductors, Abductors, and Calves. The existing governed
 taxonomy also retains Serratus, Hip Flexors, and Neck.
 
 Primary and secondary roles remain visually distinct. The renderer normalizes
-IDs through the governed taxonomy; display names never select anatomy. It also
-accepts optional normalized intensity values as a rendering capability. Product
-evidence continues to decide whether such values exist; the renderer invents
-nothing.
+IDs through the governed taxonomy; display names never select anatomy.
+
+`MuscleMap` has two explicit modes that share the same registered masters,
+segment masks, material layers, and framing system:
+
+- `semantic` renders governed primary and secondary roles for programming,
+  Session, week, and muscle-group contexts;
+- `exposure` renders a normalized value for every governed muscle supplied by
+  an evidence owner. Exposure mode does not apply semantic role caps, and it
+  never turns prescriptions into performed evidence.
+
+The Accessories exposure owner is the archive projection. One completed
+Accessory `SetLog` in the selected period contributes one exposure unit to the
+exact movement's governed primary muscle. Secondary muscles are intentionally
+not assigned fractional work because Strength Ledger has no validated
+physiological dosage model for that inference. The metric is therefore a direct
+performed-working-set count, not tonnage, planned work, or an estimated stimulus.
+
+`normalizeAnatomyExposure` anchors the highest positive count at `1.0` and uses
+`sqrt(count / maximum)` for the remaining values. This preserves rank and equal
+values, makes a single trained muscle unambiguously `1.0`, returns no heat for
+no evidence, and keeps lower real values legible under an extreme outlier. The
+palette stays inside graphite, dark violet, violet, bright violet, and a
+controlled violet-magenta peak. The ranked Accessories rows use the same
+normalized values and ramp as the body.
 
 ## Consumer inventory
 
@@ -118,6 +139,9 @@ shipping tab bar. It provides:
 - all governed muscles;
 - thumbnail, card, and hero sizes;
 - square, wide, and portrait containers;
+- explicit Primary / Secondary and Exposure Heatmap modes;
+- a controlled Chest 100%, Lats 80%, Triceps 60%, Quads 40%, Calves 20%
+  exposure fixture, plus a dense realistic Accessory fixture;
 - Chest + Triceps; Chest + Front Delts + Triceps; Lats + Biceps; Lats + Upper
   Back + Rear Delts; Upper Back + Traps; Side Delts; Quads + Adductors;
   Hamstrings + Glutes; Glutes + Abductors; Calves; Abs + Obliques; Lower Back;
@@ -136,6 +160,12 @@ Before dynamic anatomy is handed off, capture and inspect at least:
 Identify the three weakest visual areas, correct them, and capture the final
 state. Passing a compile check without this visual pass is not completion.
 
+`npm run audit:anatomy-geometry` emits one isolated-segment sheet for each of
+the four registered masters. Every governed region is shown alone in its
+actual master coordinate space; regions that are not visible from that view
+are deliberately dim. Run this audit after any master or mask edit and inspect
+all four sheets before product screenshots.
+
 ## Permanent invariants
 
 - One 418 × 941 coordinate system per master and its registered paths.
@@ -150,6 +180,10 @@ state. Passing a compile check without this visual pass is not completion.
   geometry.
 - Missing identity fails closed under the existing exact-movement artwork law.
 - Any new consumer is added to this inventory and the executable guard.
+- Exposure heatmaps and semantic role views must use the same segment registry;
+  a screen-specific heatmap geometry map is prohibited.
+- A trained muscle's ranked evidence row and body segment must use the same
+  normalized exposure value.
 
 ## Runtime and memory policy
 

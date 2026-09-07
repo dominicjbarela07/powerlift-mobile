@@ -48,6 +48,10 @@ assert.match(experience, /SLAtmosphericContextHeader[\s\S]*ledger-chapter-access
   'Accessories must use premium atmospheric page identity.');
 assert.match(experience, /MuscleMap[\s\S]*\(\['front', 'rear'\] as const\)\.map[\s\S]*accessories-anatomy-view-\$\{view\}/,
   'Governed front and rear anatomy must remain the primary muscle navigation.');
+assert.match(experience, /normalizeAnatomyExposure[\s\S]*exposure=\{exposure\}[\s\S]*mode="exposure"/,
+  'Accessories anatomy must render an actual relative exposure heatmap from performed evidence.');
+assert.match(experience, /muscle\.set_count[\s\S]*anatomyExposureColor\(intensity\)/,
+  'Muscle rows must use the same performed-set intensity and visual ramp as the body.');
 assert.match(experience, /openMuscle[\s\S]*muscle-groups/,
   'Anatomy evidence must drill into the athlete\'s performed muscle record.');
 assert.match(exploration, /data\.accessories\.movements[\s\S]*period_set_count/,
@@ -61,10 +65,12 @@ assert.doesNotMatch(movementHistory, /name="help-outline"/,
   'Accessory drill-down may never use a visible question-mark icon for unknown historical equipment.');
 assert.match(client, /evidence_policy: 'exact_movement_then_exact_equipment'/,
   'The client contract must document movement-first, equipment-scoped evidence.');
+assert.match(client, /muscle_exposure_policy: 'performed_accessory_working_sets_by_governed_primary_muscle'/,
+  'The client contract must document the exact performed-set exposure metric.');
 assert.match(backend, /resolve_exact_history_identity[\s\S]*identity\.key[\s\S]*comparison_allowed/,
   'The backend projection must resolve immutable movement identity before comparison.');
-assert.match(backend, /"trained_primary_muscles": \[group\["key"\] for group in muscle_groups\]/,
-  'Aggregate anatomy must receive primary muscles in exposure order so the five-mask cap cannot drop the top group.');
+assert.match(backend, /"muscle_exposure_policy": "performed_accessory_working_sets_by_governed_primary_muscle"/,
+  'The backend must declare that each completed accessory working set is credited to its governed primary muscle.');
 assert.match(backend, /identity_trend[\s\S]*"trend": identity_trend/,
   'Each progress card sparkline must remain scoped to the exact movement/equipment identity being compared.');
 assert.match(backend, /compare_performance[\s\S]*is_assistance_load[\s\S]*performance_rank/,

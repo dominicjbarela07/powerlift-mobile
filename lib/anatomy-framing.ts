@@ -1,4 +1,5 @@
 import {
+  normalizeMuscleIds,
   normalizeMuscleRoles,
   type AnatomySize,
   type GovernedMuscleId,
@@ -149,20 +150,24 @@ export function resolveAnatomyFraming(input: Readonly<{
   destinationAspectRatio: number;
   size?: AnatomySize;
   surface?: AnatomyFramingSurface;
+  preserveAll?: boolean;
+  forceFullBody?: boolean;
 }>): AnatomyFraming {
-  const roles = normalizeMuscleRoles(input.primary, input.secondary);
+  const roles = input.preserveAll
+    ? { primary: normalizeMuscleIds(input.primary), secondary: normalizeMuscleIds(input.secondary) }
+    : normalizeMuscleRoles(input.primary, input.secondary);
   const allMuscles = [...roles.primary, ...roles.secondary];
   const aspect = Math.round(Math.min(3, Math.max(0.24, Number(input.destinationAspectRatio) || 1)) * 20) / 20;
   const size = input.size || 'card';
   const surface = classifySurface(aspect, size, input.surface || 'auto');
-  const cacheKey = [input.view, surface, size, aspect, [...roles.primary].sort(), [...roles.secondary].sort()].join(':');
+  const cacheKey = [input.view, surface, size, aspect, input.preserveAll ? 'all' : 'roles', input.forceFullBody ? 'full' : 'focus', [...roles.primary].sort(), [...roles.secondary].sort()].join(':');
   const cached = framingCache.get(cacheKey);
   if (cached) return cached;
 
   const registry = input.view === 'front' ? FRONT_TARGET_BOUNDS : REAR_TARGET_BOUNDS;
   const visibleMuscles = allMuscles.filter((muscle) => Boolean(registry[muscle]));
   const rawTargetBounds = unionBounds(visibleMuscles.map((muscle) => registry[muscle]!));
-  const isFullBody = trueFullBodyTarget(allMuscles) || !visibleMuscles.length;
+  const isFullBody = Boolean(input.forceFullBody) || trueFullBodyTarget(allMuscles) || !visibleMuscles.length;
   let viewBox = FULL_BODY;
 
   if (!isFullBody) {

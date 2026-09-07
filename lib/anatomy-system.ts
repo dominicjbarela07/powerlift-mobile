@@ -41,6 +41,7 @@ export type AnatomySize = 'thumbnail' | 'card' | 'hero';
 export type AnatomyRegion = 'upper' | 'lower' | 'torso' | 'arms' | 'full';
 export type AnatomyRegionPreference = AnatomyRegion | 'auto';
 export type AnatomySemanticLevel = 'week' | 'session' | 'movement';
+export type AnatomyRenderMode = 'semantic' | 'exposure';
 
 export const ANATOMY_COLORS = Object.freeze({
   primary: '#9C4DFF',
@@ -49,6 +50,61 @@ export const ANATOMY_COLORS = Object.freeze({
   secondaryEdge: '#FF9BE2',
   inactive: '#31343A',
 });
+
+export const ANATOMY_EXPOSURE_COLORS = Object.freeze({
+  none: '#31343A',
+  low: '#3A255D',
+  moderate: '#7540B5',
+  high: '#A64FFF',
+  peak: '#D447B7',
+});
+
+export type AnatomyExposureEvidence = Readonly<{
+  muscle_id: string;
+  score: number;
+}>;
+
+/**
+ * Normalizes real performed evidence without inventing physiological precision.
+ *
+ * The strongest observed muscle anchors at 1.0. A square-root response keeps
+ * smaller but real exposures legible when one muscle is an outlier, while
+ * retaining rank and equality. Missing and non-positive evidence remains off.
+ */
+export function normalizeAnatomyExposure(
+  evidence: readonly AnatomyExposureEvidence[],
+): Readonly<Partial<Record<GovernedMuscleId, number>>> {
+  const scores = new Map<GovernedMuscleId, number>();
+  for (const row of evidence) {
+    const muscle = normalizeMuscleIds([row.muscle_id])[0];
+    const score = Number(row.score);
+    if (!muscle || !Number.isFinite(score) || score <= 0) continue;
+    scores.set(muscle, (scores.get(muscle) || 0) + score);
+  }
+  const peak = Math.max(0, ...scores.values());
+  if (peak <= 0) return Object.freeze({});
+  return Object.freeze(Object.fromEntries(
+    [...scores.entries()].map(([muscle, score]) => [muscle, Math.sqrt(score / peak)]),
+  ));
+}
+
+function interpolateHex(left: string, right: string, amount: number): string {
+  const bounded = Math.max(0, Math.min(1, amount));
+  const channels = [1, 3, 5].map((offset) => Math.round(
+    Number.parseInt(left.slice(offset, offset + 2), 16)
+      + (Number.parseInt(right.slice(offset, offset + 2), 16) - Number.parseInt(left.slice(offset, offset + 2), 16)) * bounded,
+  ));
+  return `#${channels.map((value) => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+}
+
+/** Screen-level legends and evidence bars use the same restrained ramp as the figure. */
+export function anatomyExposureColor(value: number): string {
+  const bounded = Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+  if (bounded <= 0) return ANATOMY_EXPOSURE_COLORS.none;
+  if (bounded < 0.34) return interpolateHex(ANATOMY_EXPOSURE_COLORS.low, ANATOMY_EXPOSURE_COLORS.moderate, bounded / 0.34);
+  if (bounded < 0.76) return interpolateHex(ANATOMY_EXPOSURE_COLORS.moderate, ANATOMY_EXPOSURE_COLORS.high, (bounded - 0.34) / 0.42);
+  return interpolateHex(ANATOMY_EXPOSURE_COLORS.high, ANATOMY_EXPOSURE_COLORS.peak, (bounded - 0.76) / 0.24);
+}
 
 export type MuscleVisibility = Readonly<{
   front: boolean;
@@ -304,10 +360,11 @@ export function anatomyRenderKey(input: {
   secondary?: readonly unknown[] | null;
   size: AnatomySize;
   laterality?: 'bilateral' | 'left' | 'right';
-  intensity?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
+  mode?: AnatomyRenderMode;
+  exposure?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
 }): string {
   const roles = normalizeMuscleRoles(input.primary, input.secondary);
-  const normalizedIntensity = Object.entries(input.intensity || {})
+  const normalizedExposure = Object.entries(input.exposure || {})
     .filter(([muscle, value]) => isGovernedMuscleId(muscle) && Number.isFinite(value))
     .map(([muscle, value]) => `${muscle}:${Math.max(0, Math.min(1, Number(value))).toFixed(3)}`)
     .sort()
@@ -320,7 +377,8 @@ export function anatomyRenderKey(input: {
     [...roles.secondary].sort().join(','),
     input.size,
     input.laterality || 'bilateral',
-    normalizedIntensity,
+    input.mode || 'semantic',
+    normalizedExposure,
   ].join(':');
 }
 
@@ -353,4 +411,26 @@ export const ANATOMY_QA_PRESETS: Readonly<Record<string, Readonly<{ primary: rea
     primary: ['lats', 'triceps', 'hamstrings', 'side_delts', 'glutes'],
     secondary: ['upper_back', 'traps', 'biceps', 'forearms'],
   },
+};
+
+export const ANATOMY_HEATMAP_QA_PRESETS: Readonly<Record<string, Readonly<Partial<Record<GovernedMuscleId, number>>>>> = {
+  'Controlled Exposure': Object.freeze({
+    chest: 1,
+    lats: 0.8,
+    triceps: 0.6,
+    quads: 0.4,
+    calves: 0.2,
+  }),
+  'Dense Accessory Exposure': Object.freeze({
+    lats: 1,
+    triceps: 0.87,
+    hamstrings: 0.79,
+    side_delts: 0.68,
+    glutes: 0.61,
+    upper_back: 0.52,
+    biceps: 0.43,
+    calves: 0.34,
+    forearms: 0.25,
+    abs: 0.18,
+  }),
 };
