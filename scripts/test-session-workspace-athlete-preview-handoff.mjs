@@ -70,9 +70,27 @@ const selfContext = { ...teamContext, athleteId: 9, workspaceMode: 'self' };
 assert.equal(sessionWorkspacePreviewRouteParams(selfContext).coachWorkspaceMode, 'self');
 assert.ok(!('athleteId' in sessionWorkspacePreviewFallbackParams(selfContext)), 'self-coach fallback does not become a team-coach route');
 assert.equal(sessionWorkspacePreviewFallbackParams(teamContext).athleteId, '45', 'team-coach fallback retains the governed athlete identity');
+assert.deepEqual(sessionWorkspacePreviewRouteParams({
+  ...teamContext,
+  athleteId: 46,
+  programId: null,
+  blockId: null,
+  week: null,
+  day: null,
+  section: 'core',
+}), {
+  workoutId: '321',
+  athleteView: 'coach-preview',
+  returnTo: 'programming-workspace-preview',
+  returnSection: 'core',
+  coachWorkspaceMode: 'team',
+  coachAthleteId: '46',
+}, 'a second athlete handoff replaces identity and omits every stale optional route parameter');
 
 assert.match(programming, /requestWorkspaceAthletePreview[\s\S]*beginSessionWorkspacePreview[\s\S]*workspaceSheetRef\.current\?\.dismiss\(\)/, 'Programming Manager owns the dismiss-first preview request');
-assert.match(programming, /finishWorkspaceDismiss[\s\S]*completeSessionWorkspaceDismissal[\s\S]*router\.push/, 'Athlete View launches only from the sheet dismissal completion');
+assert.match(programming, /const previewHandoffRef = useRef<SessionWorkspacePreviewHandoff>/, 'Programming Manager retains the handoff independently of React render timing');
+assert.match(programming, /previewHandoffRef\.current = requestedHandoff;[\s\S]*setPreviewHandoff\(requestedHandoff\);[\s\S]*workspaceSheetRef\.current\?\.dismiss\(\)/, 'the exact athlete and Session identity are retained synchronously before dismissal starts');
+assert.match(programming, /finishWorkspaceDismiss[\s\S]*completeSessionWorkspaceDismissal\(previewHandoffRef\.current\)[\s\S]*router\.push/, 'Athlete View launches only from dismissal completion and cannot observe stale render state');
 assert.match(programming, /previewRouteHasBlurredRef[\s\S]*programmingFocused[\s\S]*beginSessionWorkspaceRestoration[\s\S]*setWorkspaceSheetVisible\(true\)/, 'return waits for a real route blur/focus cycle before restoring the sheet');
 assert.match(programming, /onPresent=\{finishWorkspacePresent\}/, 'sheet restoration completes from the canonical presentation callback');
 assert.match(programming, /visible=\{workspaceSheetVisible\}/, 'the retained Workspace is not visible beneath Athlete View');
@@ -80,9 +98,12 @@ assert.match(programming, /onOpenAthleteView=\{requestWorkspaceAthletePreview\}/
 assert.match(workspaceRoute, /if \(props\.onOpenAthleteView\)[\s\S]*props\.onOpenAthleteView\(\{ section: activeSection \}\)[\s\S]*return;/, 'embedded Workspace delegates its exact section and cannot imperatively route underneath its modal owner');
 assert.match(workspace, /const resolveDirty[\s\S]*Save or discard the current Session changes before continuing/, 'dirty state is explicitly resolved before persisted-state preview');
 assert.match(workspace, /canAthleteView \? <ToolkitAction[\s\S]*label="Athlete View"/, 'dirty Workspace still exposes Athlete View through the existing save/discard guard');
-assert.match(logger, /returnTo === 'programming-workspace-preview'[\s\S]*router\.canGoBack\(\)[\s\S]*router\.back\(\)/, 'preview close and back return to the retained Programming Manager route');
-assert.match(logger, /sessionWorkspacePreviewFallbackParams/, 'a stable-ID fallback reconstructs the exact Workspace if the retained route is unavailable');
+assert.match(logger, /returnTo === 'programming-workspace-preview'[\s\S]*router\.replace\(\{[\s\S]*pathname: '\/\(tabs\)\/workout'[\s\S]*sessionWorkspacePreviewFallbackParams/, 'preview close and back deterministically reconstruct the exact Programming Manager Workspace');
+assert.doesNotMatch(logger, /returnTo === 'programming-workspace-preview'[\s\S]{0,180}router\.canGoBack\(\)/, 'preview return never trusts unrelated tab navigator history');
 assert.match(sheet, /onPresent\?: \(\) => void/, 'the sheet exposes deterministic presentation completion without a timeout');
+assert.match(sheet, /const onDismissRef = useRef\(onDismiss\);[\s\S]*onDismissRef\.current = onDismiss;/, 'the shared sheet retains the latest dismissal completion handler during an in-flight animation');
+assert.equal((sheet.match(/onDismissRef\.current\(\)/g) || []).length, 2, 'animated and reduced-motion dismissal both invoke the latest completion handler');
+assert.doesNotMatch(sheet, /if \(finished\) onDismiss\(\)/, 'animated dismissal must never invoke a render-time stale callback');
 assert.doesNotMatch(programming, /setTimeout\([^)]*Athlete|setTimeout\([^)]*Preview/i, 'handoff never relies on an arbitrary timer');
 
 console.log('[session-workspace-athlete-preview-handoff] dismiss-preview-restore choreography verified');

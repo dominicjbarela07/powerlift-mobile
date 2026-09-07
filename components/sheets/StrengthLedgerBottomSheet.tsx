@@ -185,6 +185,8 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
   const translateY = useRef(new Animated.Value(height)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const dismissingRef = useRef(false);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
   const onPresentRef = useRef(onPresent);
   onPresentRef.current = onPresent;
   const scrollOffsetY = useRef(0);
@@ -234,7 +236,7 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
     dismissingRef.current = true;
     Keyboard.dismiss();
     if (reduceMotion) {
-      onDismiss();
+      onDismissRef.current();
       return;
     }
     Animated.parallel([
@@ -251,10 +253,10 @@ export const StrengthLedgerBottomSheet = forwardRef<StrengthLedgerBottomSheetHan
         useNativeDriver: true,
       }),
     ]).start(({ finished }) => {
-      if (finished) onDismiss();
+      if (finished) onDismissRef.current();
       else dismissingRef.current = false;
     });
-  }, [backdropOpacity, deliberateMotion, height, onDismiss, reduceMotion, translateY]);
+  }, [backdropOpacity, deliberateMotion, height, reduceMotion, translateY]);
 
   const requestClose = useCallback((reason: StrengthLedgerSheetCloseReason) => {
     Keyboard.dismiss();

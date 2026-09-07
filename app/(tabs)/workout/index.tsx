@@ -1012,6 +1012,9 @@ function IndividualProgrammingHome({
   const [previewHandoff, setPreviewHandoff] = useState<SessionWorkspacePreviewHandoff>(
     IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF,
   );
+  const previewHandoffRef = useRef<SessionWorkspacePreviewHandoff>(
+    IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF,
+  );
   const workspaceSheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const workspaceDismissRequestRef = useRef<() => void>(() => undefined);
   const previewRouteHasBlurredRef = useRef(false);
@@ -1061,14 +1064,16 @@ function IndividualProgrammingHome({
     if (!workoutId) return;
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
     previewRouteHasBlurredRef.current = false;
+    previewHandoffRef.current = IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF;
     setPreviewHandoff(IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF);
     setWorkspaceSelection({ workoutId, context });
     setWorkspaceSheetVisible(true);
   }, [dismissWorkspaceSheet]);
 
   const finishWorkspaceDismiss = useCallback(() => {
-    const completedHandoff = completeSessionWorkspaceDismissal(previewHandoff);
+    const completedHandoff = completeSessionWorkspaceDismissal(previewHandoffRef.current);
     if (completedHandoff.phase === 'previewing') {
+      previewHandoffRef.current = completedHandoff;
       setWorkspaceSheetVisible(false);
       setPreviewHandoff(completedHandoff);
       router.push({
@@ -1077,22 +1082,25 @@ function IndividualProgrammingHome({
       });
       return;
     }
+    previewHandoffRef.current = IDLE_SESSION_WORKSPACE_PREVIEW_HANDOFF;
     setWorkspaceSheetVisible(false);
     setWorkspaceSelection(null);
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
     void onRefresh();
-  }, [dismissWorkspaceSheet, onRefresh, previewHandoff, router]);
+  }, [dismissWorkspaceSheet, onRefresh, router]);
 
   const finishWorkspacePresent = useCallback(() => {
-    if (previewHandoff.phase !== 'restoring') return;
+    if (previewHandoffRef.current.phase !== 'restoring') return;
     previewRouteHasBlurredRef.current = false;
-    setPreviewHandoff((current) => completeSessionWorkspaceRestoration(current));
-  }, [previewHandoff.phase]);
+    const completedHandoff = completeSessionWorkspaceRestoration(previewHandoffRef.current);
+    previewHandoffRef.current = completedHandoff;
+    setPreviewHandoff(completedHandoff);
+  }, []);
 
   const requestWorkspaceAthletePreview = useCallback((previewContext?: { section: 'core' | 'accessories' }) => {
     if (!workspaceSelection) return;
     const athleteId = managedAthleteId || hub?.athlete?.id || null;
-    setPreviewHandoff(beginSessionWorkspacePreview({
+    const requestedHandoff = beginSessionWorkspacePreview({
       workoutId: workspaceSelection.workoutId,
       athleteId,
       programId: activeProgram?.id || null,
@@ -1101,7 +1109,12 @@ function IndividualProgrammingHome({
       day: workspaceSelection.context?.day || null,
       section: previewContext?.section || 'core',
       workspaceMode: coachMode ? 'team' : 'self',
-    }));
+    });
+    // Retain the governed identity synchronously. A reduced-motion dismissal can
+    // complete before React commits the state update, and an animated dismissal
+    // must not observe the callback closure from the prior render.
+    previewHandoffRef.current = requestedHandoff;
+    setPreviewHandoff(requestedHandoff);
     previewRouteHasBlurredRef.current = false;
     workspaceSheetRef.current?.dismiss();
   }, [activeProgram?.id, coachMode, hub?.athlete?.id, managedAthleteId, workspaceSelection]);
@@ -1113,7 +1126,9 @@ function IndividualProgrammingHome({
       return;
     }
     if (!previewRouteHasBlurredRef.current) return;
-    setPreviewHandoff((current) => beginSessionWorkspaceRestoration(current));
+    const restoringHandoff = beginSessionWorkspaceRestoration(previewHandoffRef.current);
+    previewHandoffRef.current = restoringHandoff;
+    setPreviewHandoff(restoringHandoff);
     setWorkspaceSheetVisible(true);
   }, [previewHandoff.phase, programmingFocused]);
 

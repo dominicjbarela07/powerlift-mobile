@@ -7432,11 +7432,11 @@ export default function WorkoutViewerScreen() {
   };
 
   const handleReturnToCoachEditor = () => {
-    if (returnTo === 'programming-workspace-preview' && router.canGoBack()) {
-      router.back();
-      return;
-    }
     if (returnTo === 'programming-workspace-preview') {
+      // A preview is a sibling route inside the tab navigator, so a generic
+      // history back can legally resolve to Coach Home instead of the retained
+      // Programming Manager. Reconstruct the exact governed editor context
+      // every time rather than trusting unrelated navigator history.
       router.replace({
         pathname: '/(tabs)/workout' as any,
         params: sessionWorkspacePreviewFallbackParams({
