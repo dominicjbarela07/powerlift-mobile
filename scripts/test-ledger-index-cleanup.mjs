@@ -11,6 +11,8 @@ assert.match(source, /<RecentPrCard hero/, 'the highest-priority recent performa
 assert.match(source, /No personal records yet\./, 'the Index must retain a deliberate no-PR state');
 assert.match(source, /latestJourneyEntry\?\.event_type === 'MOVEMENT_ADDED'[\s\S]*latestJourneyEntry\.detail/, 'movement introductions must show athlete-facing performance context');
 assert.doesNotMatch(source, /stable movement identity|canonical identity created|movement identity reconciled/i, 'Ledger Index must not expose internal identity terminology');
+assert.doesNotMatch(source, /QUICK FILTERS|This Block|Last 3 Months|This Year|All Time/, 'Ledger Index must not restore generic time shortcuts after the canonical entrypoints');
+assert.doesNotMatch(source, /ledger-muscle-groups-snapshot|MUSCLE GROUPS|muscleJump/, 'Ledger Index must not restore the standalone Muscle Groups promotion');
 
 const expected = [
   'Matrix · Selectorized',

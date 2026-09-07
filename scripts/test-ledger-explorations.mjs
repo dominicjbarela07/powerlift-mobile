@@ -70,8 +70,8 @@ assert.match(tabsLayout, /name="ledger"[\s\S]*href: viewMode === 'athlete' \|\| 
 for (const room of ['journey', 'strength', 'achievements', 'accessories', 'variants', 'archive']) {
   assert.match(indexExperience, new RegExp(`room: '${room}'`), `the index exposes a ${room} entry`);
 }
-assert.match(indexExperience, /testID="ledger-muscle-groups-snapshot"/, 'the index exposes muscle-group exploration');
-assert.match(indexExperience, /ledgerHrefFor\('filters'\)/, 'the index exposes contextual quick filters');
+assert.doesNotMatch(indexExperience, /ledger-muscle-groups-snapshot|openRoom\('muscle-groups'\)/, 'muscle-group exploration remains destination-owned and is not promoted on the primary Index');
+assert.doesNotMatch(indexExperience, /QUICK FILTERS|ledgerHrefFor\('filters'\)/, 'contextual filters remain destination-owned and are not promoted on the primary Index');
 for (const obsoleteRoute of ['development', 'legacy', 'film-room', 'perspective', 'memories', 'identity']) {
   assert.equal(existsSync(path.join(root, `app/(tabs)/ledger/${obsoleteRoute}.tsx`)), false, `${obsoleteRoute} compatibility route must not preserve runtime fixtures`);
 }

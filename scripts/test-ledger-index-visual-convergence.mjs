@@ -22,8 +22,6 @@ for (const marker of [
   "room: 'accessories'",
   "room: 'variants'",
   "room: 'archive'",
-  "openRoom('muscle-groups')",
-  "ledgerHrefFor('filters')",
 ]) {
   assert.match(source, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `missing Ledger convergence marker: ${marker}`);
 }
@@ -56,7 +54,6 @@ for (const [filename, [expectedWidth, expectedHeight]] of expectedAssets) {
   if (expectedWidth === 600) assert.equal(png.readUInt8(25), 6, `${filename} must preserve RGBA transparency`);
 }
 
-assert.match(resolver, /full-body\.png/, 'Muscle Groups must retain governed anatomy artwork');
 assert.match(resolver, /plate-stack-catalog\/blender-cycles-catalog-v1\/lb\/455\.png/, 'Strength chapter must use equipment-led imagery');
 assert.match(resolver, /normalized\.includes\('squat'\)[\s\S]*normalized\.includes\('bench'\)[\s\S]*normalized\.includes\('deadlift'\)/, 'Core Lift resolver must preserve distinct semantic equipment families');
 assert.match(resolver, /return null;/, 'genuinely unknown lift families retain a safe explicit fallback boundary');
@@ -68,5 +65,8 @@ assert.match(source, /hero: \{ minHeight: 160, justifyContent: 'flex-end'/, 'the
 assert.match(source, /page: \{ gap: 19, paddingBottom: 20/, 'the Ledger hero must preserve the transition into Career Snapshot');
 assert.match(source, /heroCopy: \{ gap: 4, paddingHorizontal: 18, paddingBottom: 25 \}/, 'the Ledger hero copy must preserve its readable placement over the artwork');
 assert.doesNotMatch(source, /SLContextualHeader/, 'the root Ledger atmospheric hero must not be replaced by the nested-page contextual header shell');
+assert.doesNotMatch(source, /QUICK FILTERS|This Block|Last 3 Months|This Year|All Time|ledgerHrefFor\('filters'\)/, 'the primary Ledger Index must not restore generic time-filter shortcuts');
+assert.doesNotMatch(source, /ledger-muscle-groups-snapshot|MUSCLE GROUPS|openRoom\('muscle-groups'\)|LEDGER_INDEX_ASSETS\.muscleGroups/, 'the primary Ledger Index must not restore the standalone Muscle Groups promotion');
+assert.doesNotMatch(source, /quickFilters|filterRow|filterLabel|muscleJump/, 'removed Index-only shortcut styles and handlers must stay deleted');
 
 console.log('[ledger-index-visual] atmospheric identity, compact composition, routes, governed artwork, and raster dimensions passed');

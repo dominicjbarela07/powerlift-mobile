@@ -26,7 +26,6 @@ export const LEDGER_INDEX_ASSETS = Object.freeze({
     variants: require('../assets/images/ledger-index-v2/ledger-chapter-variants-v1.png') as ImageSourcePropType,
     archive: require('../assets/images/ledger-index-v2/ledger-chapter-archive-v1.png') as ImageSourcePropType,
   } satisfies Readonly<Record<LedgerIndexChapterVisualKey, ImageSourcePropType>>),
-  muscleGroups: require('../assets/images/muscle-regions/full-body.png') as ImageSourcePropType,
   record: require('../assets/images/iOS_icon.png') as ImageSourcePropType,
   careerSets: require('../assets/images/ledger-index-v2/ledger-career-sets-counter-v1.png') as ImageSourcePropType,
   careerPr: require('../assets/images/ledger-index-v2/ledger-career-pr-medallion-v1.png') as ImageSourcePropType,

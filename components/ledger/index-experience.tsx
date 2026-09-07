@@ -33,12 +33,14 @@ import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import { canonicalTotal, projectedStrengthTierState, supportedStrengthStandard, totalStrengthTierState } from '@/lib/ledger-rewards';
 import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
 import { CORE_LIFT_PRESENTATION } from './model';
-import { ledgerHrefFor, type LedgerRoom } from './routing';
+import { ledgerHrefFor } from './routing';
 import { useLedgerLiveData } from './use-ledger-live-data';
+
+type LedgerChapterRoom = 'journey' | 'strength' | 'achievements' | 'accessories' | 'variants' | 'archive';
 
 const CHAPTERS: readonly {
   number: string;
-  room: Exclude<LedgerRoom, 'home' | 'muscle-groups' | 'filters'>;
+  room: LedgerChapterRoom;
   title: string;
   detail: string;
   tone: string;
@@ -447,7 +449,7 @@ export function LedgerIndexExperience() {
     ? `${displayWeight(reportedBodyweightComparison.start.reported_bodyweight_kg, model.unit)} → ${displayWeight(reportedBodyweightComparison.end.reported_bodyweight_kg, model.unit)} ${model.unit.toUpperCase()} · ${reportedBodyweightComparison.span_days} days`
     : null;
   const strengthTierArtifact = SL_STRENGTH_TIER_ASSETS[model.strengthTierIndex];
-  const openRoom = (room: LedgerRoom) => router.push(ledgerHrefFor(room) as any);
+  const openRoom = (room: LedgerChapterRoom) => router.push(ledgerHrefFor(room) as any);
   const latestTitle = latestJourneyEntry?.movement?.label || model.latest?.movement_label || latestJourneyEntry?.title || 'No entry recorded yet';
   const latestValue = latestJourneyEntry ? journeyPerformance(latestJourneyEntry, model.unit) : eventPerformance(model.latest, model.unit);
   const latestDate = latestJourneyEntry?.occurred_at || latestJourneyEntry?.occurred_on || model.latest?.occurred_at || model.latest?.workout_date;
@@ -527,12 +529,6 @@ export function LedgerIndexExperience() {
     <View style={styles.sectionInset}>
       <View style={styles.sectionHeading}><Text style={styles.sectionTitle}>YOUR RECORD</Text><Text style={styles.sectionMeta}>FULL LEDGER INDEX</Text></View>
       <View style={styles.chapterIndex}>{CHAPTERS.map((chapter) => <ChapterRow key={chapter.room} chapter={chapter} onPress={() => openRoom(chapter.room)} image={chapter.room === 'achievements' ? strengthTierArtifact : ledgerIndexChapterAsset(chapter.room)} />)}</View>
-    </View>
-
-    <View style={styles.sectionInset}>
-      <Text style={styles.sectionKicker}>QUICK FILTERS</Text>
-      <View style={styles.quickFilters}>{['This Block', 'Last 3 Months', 'This Year', 'All Time'].map((label) => <Pressable key={label} onPress={() => router.push({ pathname: ledgerHrefFor('filters'), params: { time: label } } as never)} style={({ pressed }) => [styles.filterRow, pressed && styles.pressed]}><Ionicons name={label === 'All Time' ? 'infinite-outline' : 'calendar-outline'} size={19} color="#B5BBC5" /><Text style={styles.filterLabel}>{label}</Text><Ionicons name="chevron-forward" size={18} color="#7B8591" /></Pressable>)}</View>
-      <Pressable testID="ledger-muscle-groups-snapshot" accessibilityRole="button" accessibilityLabel="Open Muscle Groups: performed volume and movement balance" onPress={() => openRoom('muscle-groups')} style={({ pressed }) => [styles.muscleJump, pressed && styles.pressed]}><Image accessible={false} source={LEDGER_INDEX_ASSETS.muscleGroups} resizeMode="contain" style={styles.muscleJumpImage} /><View style={styles.muscleJumpCopy}><Text style={styles.muscleJumpTitle}>MUSCLE GROUPS</Text><Text style={styles.muscleJumpDetail}>See performed volume and movement balance.</Text></View><Ionicons name="chevron-forward" size={22} color="#A7B0BC" /></Pressable>
     </View>
   </View>;
 }
@@ -651,14 +647,6 @@ const styles = StyleSheet.create({
   chapterCopy: { flex: 1, minWidth: 0, gap: 3 },
   chapterTitle: { color: '#F3F1F4', fontSize: 15, lineHeight: 19, fontWeight: '800' },
   chapterDetail: { color: '#A2A9B2', fontSize: 10.5, lineHeight: 14 },
-  quickFilters: { overflow: 'hidden', borderRadius: 14, borderWidth: 1, borderColor: '#30353D', backgroundColor: '#080B0F' },
-  filterRow: { minHeight: 51, flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#30343B' },
-  filterLabel: { flex: 1, color: '#D4D6DA', fontSize: 13, lineHeight: 17, fontWeight: '600' },
-  muscleJump: { minHeight: 126, flexDirection: 'row', alignItems: 'center', gap: 11, marginTop: 5, overflow: 'hidden', paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, borderColor: '#6E3BA0', backgroundColor: '#120B19' },
-  muscleJumpImage: { width: 118, height: 118, marginLeft: -7 },
-  muscleJumpCopy: { flex: 1, gap: 4 },
-  muscleJumpTitle: { color: '#C586FA', fontSize: 16, lineHeight: 20, fontWeight: '800' },
-  muscleJumpDetail: { color: '#B2B5BE', fontSize: 11, lineHeight: 16 },
   pressed: { opacity: 0.76, transform: [{ scale: 0.992 }] },
   state: { minHeight: 480, alignItems: 'center', justifyContent: 'center', gap: SLSpacing.md, marginHorizontal: 14 },
   stateImage: { width: 74, height: 74, opacity: 0.9 },
