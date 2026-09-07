@@ -3,15 +3,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Polygon } from 'react-native-svg';
 
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { StrengthSemanticArtwork } from '@/components/ledger/StrengthSemanticArtwork';
+import { CompetitiveStandingCard } from '@/components/ledger/CompetitiveStandingCard';
 import { SLAtmosphericContextHeader, SLCompactTabRail } from '@/components/ui/sl-contextual-header';
 import { Text } from '@/components/ui/sl-text';
 import { FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
-import { MILESTONE_RENDER_ORIENTATION_STYLE } from '@/lib/barbell/milestone-render-assets';
+import { MILESTONE_RENDER_ORIENTATION_STYLE, milestoneRenderAsset } from '@/lib/barbell/milestone-render-assets';
 import { analyticalMetricDefinition } from '@/lib/chart-fidelity';
 import { convertDisplayWeightValue, kilogramsToDisplayValue, parseDisplayWeightUnit, roundCalculatedWeightForDisplay } from '@/lib/display-units';
 import { archiveDetailHref } from '@/lib/ledger-archive';
@@ -25,7 +26,10 @@ import {
 } from '@/lib/ledger-data';
 import {
   canonicalPrHistory,
+  competitiveStandingSummary,
   resolveLedgerClubsRuntimeState,
+  strengthReferenceCohort,
+  type PlateClubState,
   type StrengthTierState,
 } from '@/lib/ledger-rewards';
 import { LEDGER_INDEX_ASSETS } from '@/lib/ledger-index-assets';
@@ -53,7 +57,8 @@ type LiftProfile = Readonly<{
   changeKg: number | null;
   points: readonly Readonly<{ date: string; valueKg: number }>[];
   estimateSourceSetLogId: number | null;
-  tierState: StrengthTierState | null;
+  plateClubState: PlateClubState | null;
+  standingState: StrengthTierState | null;
   events: readonly AccomplishmentEvent[];
 }>;
 
@@ -68,36 +73,6 @@ const LIFTS: readonly Readonly<{
   { key: 'bench', label: 'Bench Press', shortLabel: 'BENCH', tone: '#F2539A', softTone: '#351020' },
   { key: 'deadlift', label: 'Deadlift', shortLabel: 'DEADLIFT', tone: '#FF4D64', softTone: '#3B1018' },
 ];
-
-const LIFT_TIER_ART: Record<LiftKey, readonly ImageSourcePropType[]> = {
-  squat: [
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-135.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-225.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-315.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-405.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-495.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-585.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/squat-725.png'),
-  ],
-  bench: [
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-95.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-175.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-225.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-315.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-405.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-495.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/bench-585.png'),
-  ],
-  deadlift: [
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-185.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-275.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-365.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-455.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-545.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-675.png'),
-    require('@/assets/images/milestone-renders/plate-club-material-v2/deadlift-895.png'),
-  ],
-};
 
 function readableDate(value?: string | null) {
   if (!value) return 'Date unavailable';
@@ -118,16 +93,14 @@ function signedDisplayKg(valueKg: number | null | undefined, unit: LedgerUnit) {
   return `${valueKg > 0 ? '+' : valueKg < 0 ? '−' : '±'}${value}`;
 }
 
-function percentileLabel(state: StrengthTierState | null, expanded = false) {
-  if (!state) return 'No verified standing';
-  const tier = state.earnedTierIndex >= 0 ? state.tiers[state.earnedTierIndex] : state.nextTierIndex == null ? null : state.tiers[state.nextTierIndex];
-  if (!tier) return 'Highest tier reached';
-  return expanded ? `approximately the ${tier.actual_percentile.toFixed(1)}th percentile` : `~P${tier.actual_percentile.toFixed(1)}`;
+function plateClubLabel(state: PlateClubState | null) {
+  if (!state) return 'No plate club yet';
+  return state.earned ? `${state.earned.value} Club` : 'First plate club ahead';
 }
 
-function tierLabel(state: StrengthTierState | null) {
-  if (!state) return 'Standard unavailable';
-  return state.earnedTierIndex >= 0 ? state.tiers[state.earnedTierIndex].name : 'Below Tier I';
+function plateClubEvidenceLabel(state: PlateClubState | null) {
+  if (!state?.earned) return state ? 'First plate club ahead' : 'No plate club yet';
+  return `${state.earned.value} Club · ${state.current} ${state.unit.toUpperCase()} Weight PR`;
 }
 
 function eventLiftKey(event: AccomplishmentEvent): LiftKey | null {
@@ -187,47 +160,48 @@ function RangeTabs({ value, onChange }: { value: LedgerRange; onChange: (value: 
   return <View accessibilityRole="tablist" style={styles.rangeTabs}>{labels.map(([item, label]) => <Pressable key={item} testID={`strength-range-${item}`} accessibilityRole="tab" accessibilityState={{ selected: value === item }} onPress={() => onChange(item)} style={[styles.rangeTab, value === item && styles.rangeTabActive]}><Text style={[styles.rangeTabText, value === item && styles.rangeTabTextActive]}>{label}</Text></Pressable>)}</View>;
 }
 
-function LiftTierMini({ profile }: { profile: LiftProfile }) {
-  return <><Text style={[styles.liftTier, { color: profile.tone }]}>{tierLabel(profile.tierState)}</Text><Text style={styles.liftPercentile}>{percentileLabel(profile.tierState)}</Text></>;
+function LiftClubMini({ profile, sex }: { profile: LiftProfile; sex?: 'M' | 'F' | null }) {
+  return <><Text numberOfLines={2} style={[styles.liftTier, { color: profile.tone }]}>{plateClubEvidenceLabel(profile.plateClubState)}</Text><Text numberOfLines={3} style={styles.liftPercentile}>{competitiveStandingSummary(profile.standingState, sex)}</Text></>;
 }
 
-function Overview({ profiles, totalKg, momentumKg, unit, onOpenLift, onOpenProgression, onOpenRecords }: {
+function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpenProgression, onOpenRecords }: {
   profiles: readonly LiftProfile[];
   totalKg: number | null;
   momentumKg: number | null;
   unit: LedgerUnit;
+  sex?: 'M' | 'F' | null;
   onOpenLift: (key: LiftKey) => void;
   onOpenProgression: () => void;
   onOpenRecords: () => void;
 }) {
-  const closest = [...profiles].filter((profile) => profile.tierState?.remaining != null).sort((left, right) => (left.tierState?.remaining ?? Infinity) - (right.tierState?.remaining ?? Infinity))[0];
+  const closest = [...profiles].filter((profile) => profile.plateClubState?.remaining != null).sort((left, right) => (left.plateClubState?.remaining ?? Infinity) - (right.plateClubState?.remaining ?? Infinity))[0];
   return <View testID="strength-overview" style={styles.sectionStack}>
     <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.totalHero} imageStyle={styles.totalHeroImage}>
       <LinearGradient colors={['rgba(4,5,9,0.08)', 'rgba(4,5,9,0.42)', '#07070B']} style={StyleSheet.absoluteFillObject} />
       <View style={styles.totalHeroCopy}><Text style={styles.eyebrow}>TOTAL ESTIMATED STRENGTH</Text><View style={styles.valueRow}><Text style={styles.totalValue}>{displayKg(totalKg, unit)}</Text>{totalKg != null ? <Text style={styles.totalUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.totalStanding}>Current Squat + Bench + Deadlift estimates</Text>{momentumKg != null ? <View style={styles.momentumPill}><Ionicons name={momentumKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={momentumKg >= 0 ? '#53DE94' : '#FF697A'} /><Text style={[styles.momentumPillText, { color: momentumKg >= 0 ? '#53DE94' : '#FF697A' }]}>{signedDisplayKg(momentumKg, unit)} {unit.toUpperCase()} in 90 days</Text></View> : null}</View>
     </ImageBackground>
 
-    <View style={styles.liftOverviewGrid}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-overview-lift-${profile.key}`} onPress={() => onOpenLift(profile.key)} style={({ pressed }) => [styles.liftOverviewCard, { borderColor: `${profile.tone}72` }, pressed && styles.pressed]}><View style={[styles.liftOverviewArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="overview-card" testID={`strength-overview-art-${profile.key}`} /></View><View style={styles.liftOverviewCopy}><Text style={[styles.liftOverviewName, { color: profile.tone }]}>{profile.shortLabel}</Text><Text style={styles.liftOverviewValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.liftOverviewUnit}>{unit.toUpperCase()} EST. 1RM</Text><LiftTierMini profile={profile} /></View></Pressable>)}</View>
+    <View style={styles.liftOverviewGrid}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-overview-lift-${profile.key}`} onPress={() => onOpenLift(profile.key)} style={({ pressed }) => [styles.liftOverviewCard, { borderColor: `${profile.tone}72` }, pressed && styles.pressed]}><View style={[styles.liftOverviewArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="overview-card" testID={`strength-overview-art-${profile.key}`} /></View><View style={styles.liftOverviewCopy}><Text style={[styles.liftOverviewName, { color: profile.tone }]}>{profile.shortLabel}</Text><Text style={styles.liftOverviewValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.liftOverviewUnit}>{unit.toUpperCase()} EST. 1RM</Text><LiftClubMini profile={profile} sex={sex} /></View></Pressable>)}</View>
 
     <View style={styles.identityCard}><View style={styles.identityHeader}><View><Text style={styles.eyebrow}>STRENGTH MOMENTUM</Text><Text style={styles.identityTitle}>{momentumKg == null ? 'Your trend needs more history.' : `${signedDisplayKg(momentumKg, unit)} ${unit.toUpperCase()} across your current estimates`}</Text></View><View style={styles.momentumBars}>{[0.3, 0.48, 0.62, 0.82, 1].map((height, index) => <View key={index} style={[styles.momentumBar, { height: 8 + height * 32, opacity: 0.4 + index * 0.14 }]} />)}</View></View></View>
 
-    {closest?.tierState?.nextTierIndex != null ? <Pressable onPress={() => onOpenLift(closest.key)} style={({ pressed }) => [styles.closestCard, pressed && styles.pressed]}><View style={[styles.closestIcon, { borderColor: `${closest.tone}88`, backgroundColor: closest.softTone }]}><Ionicons name="trophy-outline" size={22} color={closest.tone} /></View><View style={styles.closestCopy}><Text style={styles.closestLabel}>CLOSEST TO NEXT TIER</Text><Text style={styles.closestTitle}>{closest.label}</Text><Text style={styles.closestMeta}>{closest.tierState.remaining} {unit.toUpperCase()} to {closest.tierState.tiers[closest.tierState.nextTierIndex].name}</Text></View><Ionicons name="chevron-forward" size={20} color={closest.tone} /></Pressable> : null}
+    {closest?.plateClubState?.next ? <Pressable onPress={() => onOpenLift(closest.key)} style={({ pressed }) => [styles.closestCard, pressed && styles.pressed]}><View style={[styles.closestIcon, { borderColor: `${closest.tone}88`, backgroundColor: closest.softTone }]}><Ionicons name="barbell-outline" size={22} color={closest.tone} /></View><View style={styles.closestCopy}><Text style={styles.closestLabel}>CLOSEST TO NEXT PLATE CLUB</Text><Text style={styles.closestTitle}>{closest.label}</Text><Text style={styles.closestMeta}>{closest.plateClubState.remaining} {unit.toUpperCase()} to {closest.plateClubState.next.value} Club</Text></View><Ionicons name="chevron-forward" size={20} color={closest.tone} /></Pressable> : null}
 
     <View style={styles.overviewActions}><Pressable onPress={onOpenProgression} style={({ pressed }) => [styles.overviewAction, pressed && styles.pressed]}><Ionicons name="pulse-outline" size={20} color="#B677FF" /><Text style={styles.overviewActionText}>Open progression</Text><Ionicons name="arrow-forward" size={17} color="#7E8794" /></Pressable><Pressable onPress={onOpenRecords} style={({ pressed }) => [styles.overviewAction, pressed && styles.pressed]}><Ionicons name="ribbon-outline" size={20} color="#F2B44A" /><Text style={styles.overviewActionText}>Open record book</Text><Ionicons name="arrow-forward" size={17} color="#7E8794" /></Pressable></View>
   </View>;
 }
 
-function LiftSelector({ profiles, unit, onSelect, onOpenStandards }: { profiles: readonly LiftProfile[]; unit: LedgerUnit; onSelect: (key: LiftKey) => void; onOpenStandards: () => void }) {
+function LiftSelector({ profiles, unit, sex, onSelect, onOpenStandards }: { profiles: readonly LiftProfile[]; unit: LedgerUnit; sex?: 'M' | 'F' | null; onSelect: (key: LiftKey) => void; onOpenStandards: () => void }) {
   return <View testID="strength-lift-selector" style={styles.sectionStack}>
     <View style={styles.sectionLead}><Text style={styles.eyebrow}>CHOOSE A LIFT</Text><Text style={styles.sectionTitle}>Go deeper into your strength.</Text><Text style={styles.sectionBody}>Progress, evidence, and the exact governed standard for each competition lift.</Text></View>
-    <View style={styles.selectorList}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-select-${profile.key}`} onPress={() => onSelect(profile.key)} style={({ pressed }) => [styles.selectorCard, { borderColor: `${profile.tone}75` }, pressed && styles.pressed]}><View style={[styles.selectorArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="selector-card" /></View><View style={styles.selectorCopy}><Text style={[styles.selectorName, { color: profile.tone }]}>{profile.label}</Text><View style={styles.selectorMetric}><Text style={styles.selectorValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.selectorUnit}>{unit.toUpperCase()}</Text></View><Text style={styles.selectorStanding}>{tierLabel(profile.tierState)} · {percentileLabel(profile.tierState)}</Text></View><Ionicons name="chevron-forward" size={22} color={profile.tone} style={styles.selectorChevron} /></Pressable>)}</View>
-    <Pressable testID="strength-standards-entry" onPress={onOpenStandards} style={({ pressed }) => [styles.standardsEntry, pressed && styles.pressed]}><View style={styles.standardsEntryIcon}><Ionicons name="book-outline" size={22} color="#4AA4FF" /></View><View style={styles.standardsEntryCopy}><Text style={styles.standardsEntryTitle}>Strength Standards</Text><Text style={styles.standardsEntryBody}>View the governed OpenPowerlifting standards and tier thresholds.</Text></View><Ionicons name="chevron-forward" size={18} color="#778291" /></Pressable>
+    <View style={styles.selectorList}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-select-${profile.key}`} onPress={() => onSelect(profile.key)} style={({ pressed }) => [styles.selectorCard, { borderColor: `${profile.tone}75` }, pressed && styles.pressed]}><View style={[styles.selectorArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="selector-card" /></View><View style={styles.selectorCopy}><Text style={[styles.selectorName, { color: profile.tone }]}>{profile.label}</Text><View style={styles.selectorMetric}><Text style={styles.selectorValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.selectorUnit}>{unit.toUpperCase()}</Text></View><Text style={styles.selectorStanding}>{plateClubEvidenceLabel(profile.plateClubState)}</Text><Text numberOfLines={3} style={styles.selectorStanding}>{competitiveStandingSummary(profile.standingState, sex)}</Text></View><Ionicons name="chevron-forward" size={22} color={profile.tone} style={styles.selectorChevron} /></Pressable>)}</View>
+    <Pressable testID="strength-standards-entry" onPress={onOpenStandards} style={({ pressed }) => [styles.standardsEntry, pressed && styles.pressed]}><View style={styles.standardsEntryIcon}><Ionicons name="book-outline" size={22} color="#4AA4FF" /></View><View style={styles.standardsEntryCopy}><Text style={styles.standardsEntryTitle}>Competitive Standards</Text><Text style={styles.standardsEntryBody}>View the governed OpenPowerlifting reference points and exact cohort provenance.</Text></View><Ionicons name="chevron-forward" size={18} color="#778291" /></Pressable>
   </View>;
 }
 
 function LiftPicker({ profiles, selected, unit, open, onSelect }: { profiles: readonly LiftProfile[]; selected: LiftProfile; unit: LedgerUnit; open: boolean; onSelect: (key: LiftKey) => void }) {
   if (!open) return null;
-  return <View style={styles.liftPickerMenu} testID="strength-lift-picker-menu">{profiles.map((profile) => <Pressable key={profile.key} onPress={() => onSelect(profile.key)} style={[styles.liftPickerOption, profile.key === selected.key && { backgroundColor: profile.softTone }]} testID={`strength-lift-picker-${profile.key}`}><StrengthSemanticArtwork lift={profile.key} destination="picker" /><View style={styles.liftPickerOptionCopy}><Text style={[styles.liftPickerOptionName, { color: profile.tone }]}>{profile.label}</Text><Text style={styles.liftPickerOptionMeta}>{displayKg(profile.currentEstimateKg, unit)} {unit.toUpperCase()} · {tierLabel(profile.tierState)}</Text></View></Pressable>)}</View>;
+  return <View style={styles.liftPickerMenu} testID="strength-lift-picker-menu">{profiles.map((profile) => <Pressable key={profile.key} onPress={() => onSelect(profile.key)} style={[styles.liftPickerOption, profile.key === selected.key && { backgroundColor: profile.softTone }]} testID={`strength-lift-picker-${profile.key}`}><StrengthSemanticArtwork lift={profile.key} destination="picker" /><View style={styles.liftPickerOptionCopy}><Text style={[styles.liftPickerOptionName, { color: profile.tone }]}>{profile.label}</Text><Text style={styles.liftPickerOptionMeta}>{displayKg(profile.currentEstimateKg, unit)} {unit.toUpperCase()} · {plateClubLabel(profile.plateClubState)}</Text></View></Pressable>)}</View>;
 }
 
 function LiftTabs({ value, onChange, accent }: { value: LiftPanel; onChange: (value: LiftPanel) => void; accent: string }) {
@@ -235,13 +209,12 @@ function LiftTabs({ value, onChange, accent }: { value: LiftPanel; onChange: (va
   return <SLCompactTabRail accent={accent} items={tabs.map((tab) => ({ key: tab, label: tab[0].toUpperCase() + tab.slice(1), testID: `strength-lift-tab-${tab}` }))} onSelect={(tab) => onChange(tab as LiftPanel)} selectedKey={value} />;
 }
 
-function CurrentLiftHero({ profile, unit }: { profile: LiftProfile; unit: LedgerUnit }) {
-  const state = profile.tierState;
-  return <View testID={`strength-lift-hero-${profile.key}`} style={[styles.currentHero, { borderColor: `${profile.tone}74` }]}><View style={[styles.currentHeroArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="detail-hero" testID={`strength-detail-art-${profile.key}`} /></View><View style={styles.currentHeroEvidenceRow}><View style={styles.currentHeroCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT STRENGTH</Text><View style={styles.valueRow}><Text style={styles.currentHeroValue}>{displayKg(profile.currentEstimateKg, unit)}</Text>{profile.currentEstimateKg != null ? <Text style={styles.currentHeroUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.currentHeroMetric}>Estimated 1RM</Text><Text style={[styles.currentHeroTier, { color: profile.tone }]}>{tierLabel(state)} · {percentileLabel(state)}</Text></View>{profile.changeKg != null ? <View style={[styles.currentHeroDelta, { borderColor: `${profile.tone}70` }]}><Ionicons name={profile.changeKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={profile.tone} /><Text style={[styles.currentHeroDeltaValue, { color: profile.tone }]}>{signedDisplayKg(profile.changeKg, unit)} {unit.toUpperCase()}</Text><Text style={styles.currentHeroDeltaLabel}>in this range</Text></View> : null}</View></View>;
+function CurrentLiftHero({ profile, unit, sex }: { profile: LiftProfile; unit: LedgerUnit; sex?: 'M' | 'F' | null }) {
+  return <View testID={`strength-lift-hero-${profile.key}`} style={[styles.currentHero, { borderColor: `${profile.tone}74` }]}><View style={[styles.currentHeroArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="detail-hero" testID={`strength-detail-art-${profile.key}`} /></View><View style={styles.currentHeroEvidenceRow}><View style={styles.currentHeroCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT STRENGTH</Text><View style={styles.valueRow}><Text style={styles.currentHeroValue}>{displayKg(profile.currentEstimateKg, unit)}</Text>{profile.currentEstimateKg != null ? <Text style={styles.currentHeroUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.currentHeroMetric}>Estimated 1RM</Text><Text style={[styles.currentHeroTier, { color: profile.tone }]}>{plateClubLabel(profile.plateClubState)}</Text>{profile.plateClubState ? <Text style={styles.currentHeroEvidence}>From a recorded {profile.plateClubState.current} {profile.plateClubState.unit.toUpperCase()} Weight PR</Text> : null}<Text style={styles.currentHeroStanding}>{competitiveStandingSummary(profile.standingState, sex)}</Text></View>{profile.changeKg != null ? <View style={[styles.currentHeroDelta, { borderColor: `${profile.tone}70` }]}><Ionicons name={profile.changeKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={profile.tone} /><Text style={[styles.currentHeroDeltaValue, { color: profile.tone }]}>{signedDisplayKg(profile.changeKg, unit)} {unit.toUpperCase()}</Text><Text style={styles.currentHeroDeltaLabel}>in this range</Text></View> : null}</View></View>;
 }
 
-function ProgressionPanel({ profile, unit, range, onRangeChange, onOpenTiers }: { profile: LiftProfile; unit: LedgerUnit; range: LedgerRange; onRangeChange: (range: LedgerRange) => void; onOpenTiers: () => void }) {
-  const state = profile.tierState;
+function ProgressionPanel({ profile, standard, unit, range, onRangeChange, onOpenTiers }: { profile: LiftProfile; standard: ReturnType<typeof resolveLedgerClubsRuntimeState>['standard']; unit: LedgerUnit; range: LedgerRange; onRangeChange: (range: LedgerRange) => void; onOpenTiers: () => void }) {
+  const state = profile.plateClubState;
   const latestEvent = profile.events.find((event) => event.event_type.includes('SAME_WEIGHT_REP'));
   const evidence = latestEvent?.evidence ?? {};
   const priorReps = typeof latestEvent?.prior_value === 'number' ? latestEvent.prior_value : null;
@@ -250,13 +223,13 @@ function ProgressionPanel({ profile, unit, range, onRangeChange, onOpenTiers }: 
     const value = event.evidence?.volume_kg;
     return sum + (typeof value === 'number' ? value : 0);
   }, 0);
-  const nextTier = state?.nextTierIndex == null ? null : state.tiers[state.nextTierIndex];
   return <View testID="strength-progression-panel" style={styles.sectionStack}>
-    <CurrentLiftHero profile={profile} unit={unit} />
+    <CurrentLiftHero profile={profile} unit={unit} sex={standard?.sex} />
     <RangeTabs value={range} onChange={onRangeChange} />
     <View style={styles.chartCard}><AnalyticalTimeSeriesChart series={[{ key: profile.key, label: `${profile.label} estimated strength`, color: profile.tone, points: profile.points.map((point) => ({ date: point.date, value: kilogramsToDisplayValue(point.valueKg, unit) })) }]} metric={analyticalMetricDefinition('estimated_1rm', { label: `${profile.label} estimated strength`, kind: 'weight', unit, axisUnit: unit, includeZero: false, maximumFractionDigits: 0 })} height={245} showLegend={false} readableText emptyTitle="No reliable trend yet" emptyBody="Two qualifying estimated-strength observations are required." testID="strength-profile-trend-chart" /></View>
-    <View style={styles.summaryPair}><View style={styles.summaryCard}><Text style={styles.summaryLabel}>CURRENT</Text><Text style={styles.summaryValue}>{displayKg(profile.currentEstimateKg, unit)} {profile.currentEstimateKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{tierLabel(state)}</Text></View><View style={styles.summaryCard}><Text style={styles.summaryLabel}>HISTORICAL PEAK</Text><Text style={styles.summaryValue}>{displayKg(profile.historicalPeakKg, unit)} {profile.historicalPeakKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{profile.historicalPeakDate ? readableDate(profile.historicalPeakDate) : 'No dated peak yet'}</Text></View></View>
-    <Pressable testID="strength-tier-entry" onPress={onOpenTiers} style={({ pressed }) => [styles.tierEntry, { borderColor: `${profile.tone}66` }, pressed && styles.pressed]}><View style={styles.tierEntryCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT TIER</Text><Text style={styles.tierEntryTitle}>{tierLabel(state)}</Text><Text style={styles.tierEntryMeta}>{nextTier && state ? `${state.remaining} ${unit.toUpperCase()} to ${nextTier.name}` : state ? 'Highest governed tier reached' : 'Verified standard unavailable'}</Text></View><Image source={LIFT_TIER_ART[profile.key][Math.max(0, state?.earnedTierIndex ?? 0)]} resizeMode="contain" style={[styles.tierEntryArt, MILESTONE_RENDER_ORIENTATION_STYLE]} /><Ionicons name="chevron-forward" size={19} color={profile.tone} /></Pressable>
+    <View style={styles.summaryPair}><View style={styles.summaryCard}><Text style={styles.summaryLabel}>CURRENT</Text><Text style={styles.summaryValue}>{displayKg(profile.currentEstimateKg, unit)} {profile.currentEstimateKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{plateClubLabel(state)}</Text></View><View style={styles.summaryCard}><Text style={styles.summaryLabel}>HISTORICAL PEAK</Text><Text style={styles.summaryValue}>{displayKg(profile.historicalPeakKg, unit)} {profile.historicalPeakKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{profile.historicalPeakDate ? readableDate(profile.historicalPeakDate) : 'No dated peak yet'}</Text></View></View>
+    <Pressable testID="strength-tier-entry" onPress={onOpenTiers} style={({ pressed }) => [styles.tierEntry, { borderColor: `${profile.tone}66` }, pressed && styles.pressed]}><View style={styles.tierEntryCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT PLATE CLUB</Text><Text style={styles.tierEntryTitle}>{plateClubLabel(state)}</Text><Text style={styles.tierEntryMeta}>{state?.next ? `${state.remaining} ${unit.toUpperCase()} to ${state.next.value} Club` : state ? 'Highest plate club reached' : 'Canonical PR evidence unavailable'}</Text></View>{state?.earned ? <Image source={milestoneRenderAsset(profile.key, state.earned.renderKeyLb)} resizeMode="contain" style={[styles.tierEntryArt, MILESTONE_RENDER_ORIENTATION_STYLE]} /> : <Ionicons name="barbell-outline" size={44} color={profile.tone} />}<Ionicons name="chevron-forward" size={19} color={profile.tone} /></Pressable>
+    <CompetitiveStandingCard state={profile.standingState} standard={standard} metric={profile.key} metricLabel={profile.label} currentKg={profile.plateClubState?.currentKg ?? null} unit={unit} accent={profile.tone} testID={`strength-${profile.key}-comparison`} />
     <View style={styles.signalCard}><Text style={styles.cardHeading}>KEY SIGNALS</Text>{[
       ['trending-up', 'Weight trend', profile.changeKg == null ? '—' : `${signedDisplayKg(profile.changeKg, unit)} ${unit.toUpperCase()}`, profile.changeKg == null ? 'No reliable comparison yet.' : 'Estimated change in range'],
       ['repeat-outline', 'Rep strength', priorReps != null && currentReps != null ? `${priorReps} → ${currentReps} reps` : '—', priorReps != null ? 'Same-weight progress' : 'No reliable comparison yet.'],
@@ -287,22 +260,25 @@ function EvidencePanel({ profile, currentBests, unit, onOpen }: { profile: LiftP
   </View>;
 }
 
-function StandardsPanel({ profile, unit, sex, version }: { profile: LiftProfile; unit: LedgerUnit; sex?: string | null; version?: string | null }) {
-  const state = profile.tierState;
+function StandardsPanel({ profile, unit, standard }: { profile: LiftProfile; unit: LedgerUnit; standard: ReturnType<typeof resolveLedgerClubsRuntimeState>['standard'] }) {
+  const state = profile.standingState;
+  const cohort = strengthReferenceCohort(standard);
   return <View testID="strength-standards-panel" style={styles.sectionStack}>
-    <View style={styles.sectionLead}><Text style={[styles.eyebrow, { color: profile.tone }]}>OPENPOWERLIFTING STANDARD</Text><Text style={styles.sectionTitle}>{profile.label}</Text><Text style={styles.sectionBody}>{sex === 'M' ? 'Male' : sex === 'F' ? 'Female' : 'Verified sex required'} · Raw · canonical kilograms</Text></View>
-    {state ? <View style={styles.standardTable}><View style={styles.standardHeader}><Text style={styles.standardHeaderText}>TIER</Text><Text style={styles.standardHeaderText}>STANDARD ({unit.toUpperCase()})</Text><Text style={styles.standardHeaderText}>PERCENTILE</Text></View>{[...state.tiers].reverse().map((tier) => { const index = tier.tier - 1; const threshold = state.thresholds[index]; const status = index <= state.earnedTierIndex ? 'EARNED' : index === state.nextTierIndex ? 'NEXT' : 'LOCKED'; return <View key={tier.tier} style={[styles.standardRow, status === 'NEXT' && { backgroundColor: profile.softTone }]}><Text style={[styles.standardTier, status === 'NEXT' && { color: profile.tone }]}>{tier.name}</Text><Text style={styles.standardValue}>{threshold}</Text><Text style={styles.standardPercentile}>~P{tier.actual_percentile.toFixed(1)}</Text></View>; })}</View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Verified standard unavailable.</Text><Text style={styles.emptyBody}>Strength Ledger will not guess a male or female reference standard.</Text></View>}
-    <View style={styles.standardNote}><Ionicons name="shield-checkmark-outline" size={22} color="#668FFF" /><Text style={styles.standardNoteText}>Governed reference: {version ?? 'unavailable'}. Thresholds are stored in KG and projected to LB only at display time.</Text></View>
+    <View style={styles.sectionLead}><Text style={[styles.eyebrow, { color: profile.tone }]}>OPENPOWERLIFTING REFERENCE</Text><Text style={styles.sectionTitle}>{profile.label}</Text><Text style={styles.sectionBody}>{cohort?.referenceGroupLabel ?? 'Verified sex-specific cohort required'} · canonical kilograms</Text></View>
+    {state ? <View style={styles.standardTable}><View style={styles.standardHeader}><Text style={styles.standardHeaderText}>REFERENCE</Text><Text style={styles.standardHeaderText}>LOAD ({unit.toUpperCase()})</Text><Text style={styles.standardHeaderText}>PRECISE STANDING</Text></View>{[...state.tiers].reverse().map((tier) => { const index = tier.tier - 1; const threshold = state.thresholds[index]; const status = index <= state.earnedTierIndex ? 'REACHED' : index === state.nextTierIndex ? 'NEXT' : 'AHEAD'; return <View key={tier.tier} style={[styles.standardRow, status === 'NEXT' && { backgroundColor: profile.softTone }]}><Text style={[styles.standardTier, status === 'NEXT' && { color: profile.tone }]}>{Math.round(tier.target_percentile)}% point</Text><Text style={styles.standardValue}>{threshold}</Text><Text style={styles.standardPercentile}>{tier.actual_percentile.toFixed(2)} percentile</Text></View>; })}</View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Verified standard unavailable.</Text><Text style={styles.emptyBody}>Strength Ledger will not guess a male or female reference standard.</Text></View>}
+    <CompetitiveStandingCard state={state} standard={standard} metric={profile.key} metricLabel={profile.label} currentKg={profile.plateClubState?.currentKg ?? null} unit={unit} accent={profile.tone} testID={`standards-${profile.key}-comparison`} />
+    <View style={styles.standardNote}><Ionicons name="shield-checkmark-outline" size={22} color="#668FFF" /><Text style={styles.standardNoteText}>Governed reference: {standard?.version ?? 'unavailable'}. Snapshot {cohort?.datasetDate ?? 'unavailable'} · revision {cohort?.datasetRevision ?? 'unavailable'} · {cohort?.sampleSize.toLocaleString('en-US') ?? 'unavailable'} {cohort?.sexLabel.toLowerCase() ?? ''} lifters. Thresholds are stored in KG and projected to LB only at display time.</Text></View>
   </View>;
 }
 
-function TiersScreen({ profile, unit, sex, version, onBack }: { profile: LiftProfile; unit: LedgerUnit; sex?: string | null; version?: string | null; onBack: () => void }) {
-  const state = profile.tierState;
+function PlateClubsScreen({ profile, unit, standard, onBack }: { profile: LiftProfile; unit: LedgerUnit; standard: ReturnType<typeof resolveLedgerClubsRuntimeState>['standard']; onBack: () => void }) {
+  const state = profile.plateClubState;
   return <View testID={`strength-tiers-${profile.key}`} style={styles.page}>
-    <SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to lift progression" contextLabel="STRENGTH STANDARD" onBack={onBack} style={styles.headerBleed} testID="strength-tiers-header" title={`${profile.label} Tiers`} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} />
-    <View style={styles.tiersIntro}><Text style={[styles.eyebrow, { color: profile.tone }]}>{profile.shortLabel} TIERS</Text><Text style={styles.tiersIntroMeta}>OpenPowerlifting · {sex === 'M' ? 'Male' : sex === 'F' ? 'Female' : 'Verified sex required'} · Raw</Text></View>
-    {state ? <View style={styles.tierRows}>{[...state.tiers].reverse().map((tier) => { const index = tier.tier - 1; const status = index <= state.earnedTierIndex ? 'Earned' : index === state.nextTierIndex ? 'Next' : 'Locked'; return <View key={tier.tier} style={[styles.tierRow, status === 'Next' && { borderColor: profile.tone, backgroundColor: profile.softTone }]}><Image source={LIFT_TIER_ART[profile.key][index]} resizeMode="contain" style={[styles.tierRowArt, MILESTONE_RENDER_ORIENTATION_STYLE, status === 'Locked' && styles.locked]} /><Text style={styles.tierRowName}>{tier.name}</Text><View style={styles.tierRowMetric}><Text style={styles.tierRowValue}>{state.thresholds[index]} {unit.toUpperCase()}</Text><Text style={styles.tierRowPercentile}>~P{tier.actual_percentile.toFixed(1)}</Text></View><Text style={[styles.tierRowStatus, status === 'Earned' && { color: profile.tone }, status === 'Next' && { color: '#F5F2F8' }]}>{status}</Text></View>; })}<View style={[styles.currentTierSummary, { borderColor: profile.tone }]}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT</Text><Text style={styles.currentTierSummaryTitle}>{tierLabel(state)}</Text><Text style={styles.currentTierSummaryValue}>{state.current} {unit.toUpperCase()}</Text><Text style={styles.currentTierSummaryMeta}>{state.nextTierIndex == null ? 'Tier VII reached' : `${state.remaining} ${unit.toUpperCase()} to ${state.tiers[state.nextTierIndex].name}`}</Text></View></View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Strength tiers unavailable.</Text><Text style={styles.emptyBody}>A supported sex-specific governed standard is required.</Text></View>}
-    <Text style={styles.versionText}>{version ?? 'No governed standard version returned'}</Text>
+    <SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to lift progression" contextLabel="PLATE CLUBS" onBack={onBack} style={styles.headerBleed} testID="strength-tiers-header" title={`${profile.label} Plate Clubs`} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} />
+    <View style={styles.tiersIntro}><Text style={[styles.eyebrow, { color: profile.tone }]}>{profile.shortLabel} · {unit.toUpperCase()} CLUBS</Text><Text style={styles.tiersIntroMeta}>Gym-native milestones. Competitive standing is shown separately.</Text></View>
+    {state ? <View style={styles.tierRows}>{[...state.milestones].reverse().map((milestone, reverseIndex) => { const index = state.milestones.length - 1 - reverseIndex; const status = index <= state.earnedIndex ? 'Earned' : index === state.nextIndex ? 'Next' : 'Locked'; return <View key={milestone.value} style={[styles.tierRow, status === 'Next' && { borderColor: profile.tone, backgroundColor: profile.softTone }]}><Image source={milestoneRenderAsset(profile.key, milestone.renderKeyLb)} resizeMode="contain" style={[styles.tierRowArt, MILESTONE_RENDER_ORIENTATION_STYLE, status === 'Locked' && styles.locked]} /><Text style={styles.tierRowName}>{milestone.value} Club</Text><View style={styles.tierRowMetric}><Text style={styles.tierRowValue}>{milestone.value} {unit.toUpperCase()}</Text><Text style={styles.tierRowPercentile}>Plate milestone</Text></View><Text style={[styles.tierRowStatus, status === 'Earned' && { color: profile.tone }, status === 'Next' && { color: '#F5F2F8' }]}>{status}</Text></View>; })}<View style={[styles.currentTierSummary, { borderColor: profile.tone }]}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT PLATE CLUB</Text><Text style={styles.currentTierSummaryTitle}>{plateClubLabel(state)}</Text><Text style={styles.currentTierSummaryValue}>{state.current} {unit.toUpperCase()}</Text><Text style={styles.currentTierSummaryMeta}>{state.next == null ? 'Highest plate club reached' : `${state.remaining} ${unit.toUpperCase()} to ${state.next.value} Club`}</Text></View></View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Plate club evidence unavailable.</Text><Text style={styles.emptyBody}>An exact governed competition-lift Weight PR establishes plate-club progress.</Text></View>}
+    <CompetitiveStandingCard state={profile.standingState} standard={standard} metric={profile.key} metricLabel={profile.label} currentKg={state?.currentKg ?? null} unit={unit} accent={profile.tone} testID={`plate-clubs-${profile.key}-comparison`} />
+    <Text style={styles.versionText}>Competitive reference: {standard?.version ?? 'unavailable'}</Text>
   </View>;
 }
 
@@ -388,6 +364,7 @@ export function StrengthExperience() {
     const e1rmBest = currentBests.filter((best) => (canonicalCompetitionLiftKey(best.core_movement_key) ?? canonicalLiftKey(best.core_movement_key)) === presentation.key && best.metric === 'e1rm').sort((left, right) => right.best_value - left.best_value)[0];
     const exactBest = currentBests.filter((best) => canonicalCompetitionLiftKey(best.core_movement_key) === presentation.key && best.metric === 'weight').sort((left, right) => right.best_value - left.best_value)[0];
     const events = accomplishments.filter((event) => eventLiftKey(event) === presentation.key);
+    const runtimeLift = clubs.lifts.find((lift) => lift.key === presentation.key);
     return {
       ...presentation,
       currentEstimateKg: live?.current_e1rm_kg ?? e1rmBest?.best_value ?? null,
@@ -396,7 +373,8 @@ export function StrengthExperience() {
       changeKg: live?.change_kg ?? null,
       points,
       estimateSourceSetLogId: e1rmBest?.event?.source_set_log_id ?? exactBest?.event?.source_set_log_id ?? null,
-      tierState: clubs.lifts.find((lift) => lift.key === presentation.key)?.tierState ?? null,
+      plateClubState: runtimeLift?.plateClubState ?? null,
+      standingState: runtimeLift?.standingState ?? null,
       events,
     };
   }), [accomplishments, clubs.lifts, currentBests, progression?.big_three_arc?.lifts]);
@@ -439,11 +417,11 @@ export function StrengthExperience() {
     scrollToTopAfterTransition();
   };
 
-  if (showTiers && selectedLift) return <><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><TiersScreen profile={profile} unit={unit} sex={clubs.standard?.sex} version={clubs.standard?.version} onBack={closeTiers} /></>;
+  if (showTiers && selectedLift) return <><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><PlateClubsScreen profile={profile} unit={unit} standard={clubs.standard} onBack={closeTiers} /></>;
 
-  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} sex={clubs.standard?.sex} version={clubs.standard?.version} />}</View>;
+  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} standard={clubs.standard} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} standard={clubs.standard} />}</View>;
 
-  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
+  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} sex={clubs.standard?.sex} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -462,7 +440,7 @@ const styles = StyleSheet.create({
   momentumPill: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: 'rgba(7,10,14,0.80)' },
   momentumPillText: { fontSize: 11, lineHeight: 14, fontWeight: '800' },
   liftOverviewGrid: { flexDirection: 'row', gap: 8 },
-  liftOverviewCard: { flex: 1, minWidth: 0, height: 226, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
+  liftOverviewCard: { flex: 1, minWidth: 0, height: 252, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
   liftOverviewArtStage: { height: 108, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#252B35' },
   liftOverviewCopy: { flex: 1, gap: 1, padding: 10 },
   liftOverviewName: { fontSize: 11, lineHeight: 14, fontWeight: '900' },
@@ -488,7 +466,7 @@ const styles = StyleSheet.create({
   sectionTitle: { color: '#F4F1F6', fontSize: 26, lineHeight: 31, fontWeight: '800', letterSpacing: -0.5 },
   sectionBody: { color: '#A4ADB8', fontSize: 13, lineHeight: 19 },
   selectorList: { gap: 10 },
-  selectorCard: { height: 146, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 17, borderWidth: 1, backgroundColor: '#080A0E' },
+  selectorCard: { minHeight: 166, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 17, borderWidth: 1, backgroundColor: '#080A0E' },
   selectorArtStage: { width: '46%', height: '100%', alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: '#292D36' },
   selectorCopy: { flex: 1, minWidth: 0, gap: 2, paddingLeft: 14, paddingRight: 36 },
   selectorName: { fontSize: 16, lineHeight: 20, fontWeight: '900' },
@@ -507,14 +485,16 @@ const styles = StyleSheet.create({
   liftPickerOptionCopy: { flex: 1, gap: 2 },
   liftPickerOptionName: { fontSize: 13, lineHeight: 17, fontWeight: '800' },
   liftPickerOptionMeta: { color: '#A4ADB8', fontSize: 10.5, lineHeight: 14 },
-  currentHero: { minHeight: 326, overflow: 'hidden', borderRadius: 19, borderWidth: 1, backgroundColor: '#07080C' },
+  currentHero: { minHeight: 354, overflow: 'hidden', borderRadius: 19, borderWidth: 1, backgroundColor: '#07080C' },
   currentHeroArtStage: { height: 174, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#2B3039' },
-  currentHeroEvidenceRow: { minHeight: 150, flexDirection: 'row', alignItems: 'flex-end', gap: 12, padding: 18 },
+  currentHeroEvidenceRow: { minHeight: 178, flexDirection: 'row', alignItems: 'flex-end', gap: 12, padding: 18 },
   currentHeroCopy: { flex: 1, minWidth: 0, gap: 3 },
   currentHeroValue: { color: '#F7F4F9', fontSize: 58, lineHeight: 62, fontWeight: '400', letterSpacing: -2.2 },
   currentHeroUnit: { color: '#D9D4DD', fontSize: 17, lineHeight: 21, fontWeight: '700' },
   currentHeroMetric: { color: '#A6AFBA', fontSize: 12, lineHeight: 16 },
   currentHeroTier: { marginTop: 3, fontSize: 14, lineHeight: 18, fontWeight: '800' },
+  currentHeroEvidence: { color: '#9DA6B2', fontSize: 10.5, lineHeight: 14, fontWeight: '600' },
+  currentHeroStanding: { maxWidth: 230, color: '#C8C2CC', fontSize: 11, lineHeight: 15, fontWeight: '600' },
   currentHeroDelta: { width: 112, alignItems: 'center', gap: 2, marginBottom: 3, paddingHorizontal: 8, paddingVertical: 9, borderRadius: 12, borderWidth: 1, backgroundColor: '#090C12' },
   currentHeroDeltaValue: { fontSize: 15, lineHeight: 18, fontWeight: '900' },
   currentHeroDeltaLabel: { color: '#99A2AE', fontSize: 10, lineHeight: 13 },

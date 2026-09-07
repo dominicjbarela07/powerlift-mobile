@@ -28,6 +28,86 @@ export const STRENGTH_TIER_LABELS = [
   'Tier VI',
   'Tier VII',
 ] as const;
+
+/**
+ * The governed seven thresholds remain statistical tiers in the API. The
+ * athlete-facing Total achievement identity is deliberately a named club.
+ */
+export const TOTAL_STRENGTH_CLUB_NAMES = [
+  'Steel',
+  'Bronze',
+  'Silver',
+  'Gold',
+  'Platinum',
+  'Diamond',
+  'Obsidian',
+] as const;
+
+export type StrengthLiftKey = Exclude<StrengthMetric, 'total'>;
+
+export type PlateClubMilestone = Readonly<{
+  value: number;
+  renderKeyLb: number;
+}>;
+
+export type PlateClubState = Readonly<{
+  lift: StrengthLiftKey;
+  unit: LedgerUnit;
+  currentKg: number;
+  current: number;
+  milestones: readonly PlateClubMilestone[];
+  earnedIndex: number;
+  nextIndex: number | null;
+  earned: PlateClubMilestone | null;
+  next: PlateClubMilestone | null;
+  remaining: number | null;
+  progress: number;
+}>;
+
+const LB_PLATE_CLUBS: Readonly<Record<StrengthLiftKey, readonly number[]>> = Object.freeze({
+  squat: Object.freeze([95, 135, 185, 225, 275, 315, 365, 405, 455, 495, 545, 585, 635, 675, 725]),
+  bench: Object.freeze([95, 135, 185, 225, 275, 315, 365, 405, 455, 495, 545, 585]),
+  deadlift: Object.freeze([135, 225, 315, 405, 495, 585, 675, 765, 855]),
+});
+
+const KG_PLATE_CLUBS: Readonly<Record<StrengthLiftKey, readonly PlateClubMilestone[]>> = Object.freeze({
+  squat: Object.freeze([[50, 110], [60, 135], [100, 220], [150, 330], [200, 440], [250, 550], [300, 660]].map(([value, renderKeyLb]) => Object.freeze({ value, renderKeyLb }))),
+  bench: Object.freeze([[40, 90], [60, 130], [80, 175], [100, 220], [120, 265], [140, 310], [160, 355], [180, 395], [200, 440]].map(([value, renderKeyLb]) => Object.freeze({ value, renderKeyLb }))),
+  deadlift: Object.freeze([[60, 135], [100, 220], [150, 330], [200, 440], [250, 550], [300, 660], [350, 770], [400, 880]].map(([value, renderKeyLb]) => Object.freeze({ value, renderKeyLb }))),
+});
+
+export type CompetitiveStanding = Readonly<{
+  percentile: number;
+  roundedPercentile: number;
+  sex: 'M' | 'F';
+  sexLabel: 'male' | 'female';
+  summary: string;
+}>;
+
+export type StrengthReferenceCohort = Readonly<{
+  sourceName: string;
+  datasetDate: string;
+  datasetRevision: string;
+  retrievedAtUtc: string;
+  eventLabel: string;
+  equipment: string;
+  ageFilter: string;
+  testedFilter: string;
+  federationFilter: string;
+  countryFilter: string;
+  sanctionedRule: string;
+  validityRule: string;
+  identityRule: string;
+  sourceRows: number;
+  eligibleMeetPerformances: number;
+  sexLabel: 'Male' | 'Female';
+  sampleSize: number;
+  referenceGroupLabel: string;
+  selectionRule: string;
+  eligibilityRule: string;
+  dateRange: string;
+  exclusions: string;
+}>;
 export const CAREER_PR_EVENT_TYPES = new Set([
   'CORE_WEIGHT_PR',
   'CORE_E1RM_PR',
@@ -72,11 +152,12 @@ export type StrengthTierState = Readonly<{
 }>;
 
 export type LedgerClubsLiftState = Readonly<{
-  key: Exclude<StrengthMetric, 'total'>;
+  key: StrengthLiftKey;
   canonicalWeightKg: number | null;
   currentLb: number | null;
   sourceSetLogId: number | null;
-  tierState: StrengthTierState | null;
+  plateClubState: PlateClubState | null;
+  standingState: StrengthTierState | null;
 }>;
 
 export type LedgerClubsRuntimeState = Readonly<{
@@ -136,6 +217,129 @@ function displayStrengthKg(valueKg: number, unit: LedgerUnit): number {
   return unit === 'lb'
     ? Math.round(valueKg * STRENGTH_KG_TO_LB)
     : Math.round(valueKg * 100) / 100;
+}
+
+function displayPlateClubCurrent(valueKg: number, unit: LedgerUnit): number {
+  if (unit === 'lb') return Math.round(valueKg * STRENGTH_KG_TO_LB);
+  return Math.round(valueKg * 10) / 10;
+}
+
+function plateClubMilestones(lift: StrengthLiftKey, unit: LedgerUnit): readonly PlateClubMilestone[] {
+  if (unit === 'kg') return KG_PLATE_CLUBS[lift];
+  return LB_PLATE_CLUBS[lift].map((value) => Object.freeze({ value, renderKeyLb: value }));
+}
+
+/** Gym-native milestones are a presentation/achievement layer, never a cohort calculation. */
+export function resolvePlateClubState(
+  currentKg: number,
+  lift: StrengthLiftKey,
+  unit: LedgerUnit,
+): PlateClubState | null {
+  if (!Number.isFinite(currentKg) || currentKg <= 0) return null;
+  const current = displayPlateClubCurrent(currentKg, unit);
+  const milestones = plateClubMilestones(lift, unit);
+  const earnedIndex = milestones.reduce((highest, milestone, index) => milestone.value <= current ? index : highest, -1);
+  const unresolvedNextIndex = milestones.findIndex((milestone) => milestone.value > current);
+  const nextIndex = unresolvedNextIndex < 0 ? null : unresolvedNextIndex;
+  const earned = earnedIndex < 0 ? null : milestones[earnedIndex];
+  const next = nextIndex == null ? null : milestones[nextIndex];
+  const priorValue = earned?.value ?? 0;
+  const remaining = next == null ? null : Math.max(0, Math.round((next.value - current) * 10) / 10);
+  const progress = next == null ? 1 : Math.max(0, Math.min(1, (current - priorValue) / Math.max(Number.EPSILON, next.value - priorValue)));
+  return Object.freeze({ lift, unit, currentKg, current, milestones, earnedIndex, nextIndex, earned, next, remaining, progress });
+}
+
+export function totalStrengthClubName(tierIndex: number): typeof TOTAL_STRENGTH_CLUB_NAMES[number] | null {
+  return TOTAL_STRENGTH_CLUB_NAMES[tierIndex] ?? null;
+}
+
+function standingTier(state: StrengthTierState | null | undefined): StrengthTierDefinition | null {
+  if (!state || state.earnedTierIndex < 0) return null;
+  return state.tiers[state.earnedTierIndex] ?? null;
+}
+
+export function competitiveStanding(
+  state: StrengthTierState | null | undefined,
+  sex: 'M' | 'F' | null | undefined,
+): CompetitiveStanding | null {
+  const tier = standingTier(state);
+  if (!tier || (sex !== 'M' && sex !== 'F')) return null;
+  const roundedPercentile = Math.round(tier.actual_percentile);
+  const sexLabel = sex === 'M' ? 'male' : 'female';
+  return Object.freeze({
+    percentile: tier.actual_percentile,
+    roundedPercentile,
+    sex,
+    sexLabel,
+    summary: `Stronger than about ${roundedPercentile}% of comparable ${sexLabel} competitors`,
+  });
+}
+
+export function competitiveStandingSummary(
+  state: StrengthTierState | null | undefined,
+  sex: 'M' | 'F' | null | undefined,
+): string {
+  const standing = competitiveStanding(state, sex);
+  if (standing) return standing.summary;
+  if (state && state.currentKg > 0 && (sex === 'M' || sex === 'F')) {
+    return `Below the first governed reference point for comparable ${sex === 'M' ? 'male' : 'female'} competitors`;
+  }
+  return 'A governed competitive standing is not available yet';
+}
+
+function datasetString(dataset: Readonly<Record<string, unknown>> | undefined, key: string, fallback: string): string {
+  const value = dataset?.[key];
+  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+function datasetNumber(dataset: Readonly<Record<string, unknown>> | undefined, key: string): number {
+  const value = dataset?.[key];
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+export function strengthReferenceCohort(
+  standard: StrengthStandardProjection | null | undefined,
+): StrengthReferenceCohort | null {
+  const supported = supportedStrengthStandard(standard);
+  if (!supported || (supported.sex !== 'M' && supported.sex !== 'F')) return null;
+  const dataset = supported.dataset;
+  const sexLabel = supported.sex === 'M' ? 'Male' : 'Female';
+  const sampleSize = datasetNumber(dataset, supported.sex === 'M' ? 'male_lifters' : 'female_lifters');
+  const dateMin = datasetString(dataset, 'eligible_date_min', '1965-09-04');
+  const dateMax = datasetString(dataset, 'eligible_date_max', '2026-08-30');
+  const eventLabel = datasetString(dataset, 'event_label', 'Full Power');
+  const equipment = datasetString(dataset, 'equipment', 'Raw');
+  const ageFilter = datasetString(dataset, 'age_filter', 'all_ages');
+  const testedFilter = datasetString(dataset, 'tested_filter', 'not_applied');
+  const federationFilter = datasetString(dataset, 'federation_filter', 'not_applied');
+  const countryFilter = datasetString(dataset, 'country_filter', 'not_applied');
+  const sanctionedRule = datasetString(dataset, 'sanctioned', 'exclude_explicit_no_blank_defaults_yes');
+  const validityRule = datasetString(dataset, 'validity', 'positive_total_and_all_three_best3_lifts_non_dq_dd_ns_total_matches_best3_sum');
+  const identityRule = datasetString(dataset, 'identity', 'exact_openpowerlifting_sex_and_name_suffix_preserved');
+  return Object.freeze({
+    sourceName: datasetString(dataset, 'source_name', 'OpenPowerlifting'),
+    datasetDate: datasetString(dataset, 'dataset_date', '2026-09-04'),
+    datasetRevision: datasetString(dataset, 'dataset_revision', 'b8b9bf6e'),
+    retrievedAtUtc: datasetString(dataset, 'retrieved_at_utc', '2026-09-05T20:05:07Z'),
+    eventLabel,
+    equipment,
+    ageFilter,
+    testedFilter,
+    federationFilter,
+    countryFilter,
+    sanctionedRule,
+    validityRule,
+    identityRule,
+    sourceRows: datasetNumber(dataset, 'source_rows'),
+    eligibleMeetPerformances: datasetNumber(dataset, 'eligible_meet_performances'),
+    sexLabel,
+    sampleSize,
+    referenceGroupLabel: `${sexLabel} · ${equipment} · ${eventLabel} · sanctioned competition results · ${ageFilter === 'all_ages' ? 'all ages' : ageFilter}`,
+    selectionRule: 'One best valid result per exact OpenPowerlifting lifter identity; Total, Squat, Bench Press, and Deadlift are independently maximized.',
+    eligibilityRule: 'A valid Full Power result requires a positive Total and all three positive Best3 lifts, with Total matching their sum.',
+    dateRange: `${dateMin} to ${dateMax}`,
+    exclusions: 'Disqualified, did-not-lift, no-show, explicitly unsanctioned, non-Raw, and non-Full-Power results are excluded. Tested status, bodyweight, age, country, and federation are not filters.',
+  });
 }
 
 export function supportedStrengthStandard(
@@ -296,7 +500,8 @@ export function resolveLedgerClubsRuntimeState(
       canonicalWeightKg,
       currentLb: canonicalWeightKg == null ? null : Math.round(canonicalWeightKg * STRENGTH_KG_TO_LB / 5) * 5,
       sourceSetLogId: canonicalWeightBest?.event?.source_set_log_id ?? null,
-      tierState: standard
+      plateClubState: canonicalWeightKg == null ? null : resolvePlateClubState(canonicalWeightKg, key, unit),
+      standingState: standard
         ? projectedStrengthTierState(standing?.metrics[key], key, standard, unit)
           ?? strengthTierState(canonicalWeightKg ?? 0, key, standard, unit)
         : null,

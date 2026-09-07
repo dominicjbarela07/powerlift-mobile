@@ -17,28 +17,27 @@ const activeRuntimeFiles = [
   'lib/ledger-data.ts',
   'lib/milestones-layout.ts',
   'components/ledger/AchievementsExperience.tsx',
-  'components/ledger/experiences.tsx',
+  'components/ledger/StrengthExperience.tsx',
   'components/ledger/index-experience.tsx',
   'components/ledger/routing.ts',
   'components/ledger/use-ledger-live-data.ts',
   'dev-mocks/fixtures/strength-tier.ts',
 ];
-const legacyIdentity = /Steel|Bronze|Silver|Gold|Platinum|Diamond|Obsidian|TROPHY CABINET|Trophy Cabinet|Requirements are unchanged/;
 const legacyTotalLadder = /\[\s*250\s*,\s*500\s*,\s*750\s*,\s*(?:1000|1_000)\s*,\s*(?:1500|1_500)\s*,\s*(?:2000|2_000)\s*,\s*(?:2500|2_500)\s*\]/;
-const legacyLiftLadder = /\[\s*95\s*,\s*135\s*,\s*185\s*,\s*225\s*,\s*275\s*,\s*315\s*,\s*365\s*,\s*405\s*,\s*455\s*,\s*495/;
 const legacyVisiblePoundTarget = /(?:250|500|750|1,?000|1,?500|2,?000|2,?500)\s*(?:LB|lb)\s*(?:Club|club|milestone|target)?/;
 
 for (const relativePath of activeRuntimeFiles) {
   const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
-  assert.doesNotMatch(source, legacyIdentity, `${relativePath} cannot expose a legacy metal-tier identity`);
   assert.doesNotMatch(source, legacyTotalLadder, `${relativePath} cannot own the legacy pound Total ladder`);
-  assert.doesNotMatch(source, legacyLiftLadder, `${relativePath} cannot own the legacy arbitrary core-lift ladder`);
   assert.doesNotMatch(source, legacyVisiblePoundTarget, `${relativePath} cannot expose a legacy pound-club target`);
 }
 
 const achievements = fs.readFileSync(path.join(root, 'components/ledger/AchievementsExperience.tsx'), 'utf8');
-assert.match(achievements, /STRENGTH TIER CABINET/, 'Trophies must present the Tier I–VII cabinet');
-assert.match(achievements, /STRENGTH_TIER_LABELS|tier\.name/, 'strength surfaces must render governed tier identity');
+const rewards = fs.readFileSync(path.join(root, 'lib/ledger-rewards.ts'), 'utf8');
+assert.match(achievements, /STRENGTH CLUB CABINET/, 'Trophies must present the named Total club cabinet');
+assert.match(achievements, /totalStrengthClubName/, 'Total club names must project over the governed threshold rows');
+assert.match(achievements, /plateClubState/, 'individual lift achievement surfaces must use plate clubs');
+assert.match(rewards, /'Steel'[\s\S]*'Bronze'[\s\S]*'Silver'[\s\S]*'Gold'[\s\S]*'Platinum'[\s\S]*'Diamond'[\s\S]*'Obsidian'/, 'the seven Total club identities must remain ordered');
 assert.doesNotMatch(achievements, /NEXT MILESTONE[^\n]*(?:1,?500|1500)/, 'Clubs cannot restore the legacy 1,500 lb target');
 
 const thresholds = {
@@ -73,13 +72,13 @@ const standard = (sex) => ({
   }))])),
 });
 
-const forbiddenLegacyPoundSteps = new Set([250, 365, 405, 455, 495, 500, 750, 1000, 1500, 2000, 2500]);
+const forbiddenLegacyTotalPoundSteps = new Set([250, 500, 750, 1000, 1500, 2000, 2500]);
 for (const sex of ['M', 'F']) {
   const projection = supportedStrengthStandard(standard(sex));
   assert.ok(projection, `${sex} projection must be supported`);
   for (const metric of ['total', 'squat', 'bench', 'deadlift']) {
     assert.deepEqual(projection.metrics[metric].map((tier) => tier.name), STRENGTH_TIER_LABELS);
-    assert.equal(projection.metrics[metric].some((tier) => forbiddenLegacyPoundSteps.has(tier.display_lb)), false);
+    if (metric === 'total') assert.equal(projection.metrics[metric].some((tier) => forbiddenLegacyTotalPoundSteps.has(tier.display_lb)), false);
     const evidenceKg = thresholds[sex][metric][2] - 1;
     const kg = strengthTierState(evidenceKg, metric, projection, 'kg');
     const lb = strengthTierState(evidenceKg, metric, projection, 'lb');
@@ -90,4 +89,4 @@ for (const sex of ['M', 'F']) {
 }
 
 assert.notDeepEqual(thresholds.M.total, thresholds.F.total, 'male and female Total standards must remain distinct');
-console.log('[legacy strength trophy retirement] active runtime, Tier I–VII identity, no legacy ladders, sex routing, and unit parity passed');
+console.log('[legacy strength trophy retirement] named Total clubs, no arbitrary Total ladder, native lift plate clubs, sex routing, and unit parity passed');

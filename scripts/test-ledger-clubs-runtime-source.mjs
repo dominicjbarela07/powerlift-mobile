@@ -4,10 +4,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  competitiveStanding,
   resolveLedgerClubsRuntimeState,
   STRENGTH_KG_TO_LB,
   STRENGTH_STANDARD_VERSION,
   STRENGTH_TIER_LABELS,
+  strengthReferenceCohort,
+  totalStrengthClubName,
 } from '../lib/ledger-rewards.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -51,6 +54,11 @@ const standard = (sex) => ({
   display_conversion: STRENGTH_KG_TO_LB,
   sex,
   sex_label: sex === 'M' ? 'Male' : 'Female',
+  dataset: {
+    source_name: 'OpenPowerlifting', dataset_date: '2026-09-04', dataset_revision: 'b8b9bf6e', retrieved_at_utc: '2026-09-05T20:05:07Z',
+    event: 'SBD', event_label: 'Full Power', equipment: 'Raw', eligible_date_min: '1965-09-04', eligible_date_max: '2026-08-30',
+    male_lifters: 282522, female_lifters: 131906,
+  },
   metrics: Object.fromEntries(Object.entries(thresholds[sex]).map(([metric, values]) => [metric, values.map((thresholdKg, index) => ({
     tier: index + 1,
     name: STRENGTH_TIER_LABELS[index],
@@ -100,34 +108,43 @@ const standing = (sex, currentBests) => {
   };
 };
 
-const maleItems = [best(1, 'squat', 193), best(2, 'bench', 110), best(3, 'deadlift', 189.2)];
+const maleItems = [best(1, 'squat', 424 / STRENGTH_KG_TO_LB), best(2, 'bench', 295 / STRENGTH_KG_TO_LB), best(3, 'deadlift', 365 / STRENGTH_KG_TO_LB)];
 const maleStanding = standing('M', maleItems);
 const maleKg = resolveLedgerClubsRuntimeState(maleItems, standard('M'), maleStanding, 'kg');
 const maleLb = resolveLedgerClubsRuntimeState(maleItems, standard('M'), maleStanding, 'lb');
-assert.equal(maleKg.total.kg, 492.2, 'the supplied athlete scenario must total approximately 492 canonical kg');
-assert.equal(maleKg.totalState.earnedTierIndex, 0, '492 kg male Total must be Tier I');
-assert.equal(maleKg.totalState.nextTierIndex, 1, '492 kg male Total must target Tier II');
+assert.ok(Math.abs(maleKg.total.kg - (1084 / STRENGTH_KG_TO_LB)) < 0.0001, 'the supplied athlete scenario must preserve its exact canonical kg Total');
+assert.equal(maleKg.totalState.earnedTierIndex, 0, 'the male Total must earn the first governed threshold');
+assert.equal(totalStrengthClubName(maleKg.totalState.earnedTierIndex), 'Steel', 'the first Total threshold must present as Steel Club');
+assert.equal(totalStrengthClubName(maleKg.totalState.nextTierIndex), 'Bronze', 'the second Total threshold must present as Bronze Club');
 assert.equal(maleKg.totalState.nextKg, 500);
 assert.equal(maleLb.totalState.next, 1102, '500 canonical kg must render as 1,102 lb');
-assert.equal(maleLb.totalState.remaining, 17, 'remaining display must derive from the canonical kg gap');
+assert.equal(maleLb.totalState.remaining, 18, 'remaining display must derive from the canonical kg gap');
 assert.ok(!maleLb.totalState.thresholds.includes(1500), '1,500 lb must never be an active Total threshold');
 assert.deepEqual(maleKg.totalState.thresholds, thresholds.M.total);
-assert.deepEqual(maleKg.lifts.map((lift) => lift.tierState.thresholds), [thresholds.M.squat, thresholds.M.bench, thresholds.M.deadlift]);
-assert.equal(maleKg.lifts[0].tierState.earnedTierIndex, 1, '193 kg Squat must have Tier II achieved');
-assert.equal(maleKg.lifts[0].tierState.nextKg, 195, '193 kg Squat must approach Tier III at 195 kg');
-assert.ok(!maleLb.lifts[0].tierState.thresholds.includes(405), 'the legacy 405 lb Squat step must not survive');
-assert.ok(!maleLb.lifts[0].tierState.thresholds.includes(455), 'the legacy 455 lb Squat step must not survive');
+assert.deepEqual(maleKg.lifts.map((lift) => lift.standingState.thresholds), [thresholds.M.squat, thresholds.M.bench, thresholds.M.deadlift], 'population standing must retain the governed sex-specific thresholds');
+assert.deepEqual(maleLb.lifts.map((lift) => lift.plateClubState.earned?.value), [405, 275, 315], 'S/B/D must earn gym-native plate clubs');
+assert.deepEqual(maleLb.lifts.map((lift) => lift.plateClubState.next?.value), [455, 315, 405], 'S/B/D must target meaningful next plate clubs');
+assert.deepEqual(maleLb.lifts.map((lift) => lift.plateClubState.remaining), [31, 20, 40], 'plate-club remaining load must match the lifter-facing scenario');
+assert.deepEqual(maleKg.lifts.map((lift) => lift.plateClubState.earned?.value), [150, 120, 150], 'KG mode must use its own clean native club ladder');
+assert.deepEqual(maleKg.lifts.map((lift) => lift.plateClubState.next?.value), [200, 140, 200], 'KG mode must avoid converted-pound artifacts');
+assert.equal(competitiveStanding(maleLb.lifts[0].standingState, 'M').summary, 'Stronger than about 40% of comparable male competitors');
+assert.equal(competitiveStanding(maleKg.lifts[0].standingState, 'M').percentile, competitiveStanding(maleLb.lifts[0].standingState, 'M').percentile, 'display units must not change governed competitive standing');
+const cohort = strengthReferenceCohort(maleLb.standard);
+assert.equal(cohort.referenceGroupLabel, 'Male · Raw · Full Power · sanctioned competition results · all ages');
+assert.match(cohort.exclusions, /Tested status, bodyweight, age, country, and federation are not filters/);
 
 const femaleItems = [best(11, 'squat', 105), best(12, 'bench', 57.5), best(13, 'deadlift', 127.5)];
 const femaleStanding = standing('F', femaleItems);
 const femaleKg = resolveLedgerClubsRuntimeState(femaleItems, standard('F'), femaleStanding, 'kg');
 const femaleLb = resolveLedgerClubsRuntimeState(femaleItems, standard('F'), femaleStanding, 'lb');
 assert.deepEqual(femaleKg.totalState.thresholds, thresholds.F.total, 'female Total must use the female ladder');
-assert.deepEqual(femaleKg.lifts.map((lift) => lift.tierState.thresholds), [thresholds.F.squat, thresholds.F.bench, thresholds.F.deadlift]);
+assert.deepEqual(femaleKg.lifts.map((lift) => lift.standingState.thresholds), [thresholds.F.squat, thresholds.F.bench, thresholds.F.deadlift]);
 assert.equal(femaleKg.totalState.earnedTierIndex, 1, '290 kg female Total must be Tier II');
 assert.equal(femaleKg.totalState.nextKg, 305, 'female Total must target Tier III');
 assert.equal(femaleLb.totalState.earnedTierIndex, femaleKg.totalState.earnedTierIndex, 'display units must not change female standing');
 assert.equal(femaleLb.totalState.progress, femaleKg.totalState.progress, 'display units must not change female progress');
+assert.equal(femaleLb.lifts[0].standingState.earnedTierIndex, femaleKg.lifts[0].standingState.earnedTierIndex, 'display units must not change female lift standing');
+assert.equal(competitiveStanding(femaleLb.lifts[0].standingState, 'F').sexLabel, 'female', 'female routing must remain explicit');
 
 const legacyHistory = [{ id: 9000, event_type: 'TOTAL_CLUB_1000_LB', evidence: { threshold_lb: 1000 } }];
 const reconciled = resolveLedgerClubsRuntimeState(maleItems, standard('M'), maleStanding, 'lb');
@@ -135,4 +152,4 @@ assert.equal(reconciled.totalState.next, 1102);
 assert.equal(legacyHistory[0].evidence.threshold_lb, 1000, 'legacy history may remain immutable for audit');
 assert.ok(!reconciled.totalState.thresholds.includes(legacyHistory[0].evidence.threshold_lb), 'legacy history must not influence current standing');
 
-console.log('[ledger Clubs runtime source] real route, live endpoint, male/female tiers, kg/lb parity, and legacy-history isolation passed');
+console.log('[ledger Clubs runtime source] real route, named Total clubs, native plate clubs, truthful standings, kg/lb parity, male/female routing, and legacy-history isolation passed');

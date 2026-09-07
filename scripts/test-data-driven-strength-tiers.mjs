@@ -10,7 +10,7 @@ const data = read('lib/ledger-data.ts');
 const identity = read('lib/strength-standard-identity.ts');
 const rewards = read('lib/ledger-rewards.ts');
 const achievements = read('components/ledger/AchievementsExperience.tsx');
-const strength = read('components/ledger/experiences.tsx');
+const strength = read('components/ledger/StrengthExperience.tsx');
 const index = read('components/ledger/index-experience.tsx');
 const liveData = read('components/ledger/use-ledger-live-data.ts');
 const certification = read('app/dev-strength-tier-certification.tsx');
@@ -33,19 +33,24 @@ assert.match(rewards, /tier\.threshold_kg <= currentKg/, 'all tier comparisons m
 assert.match(rewards, /projectedStrengthTierState/, 'clients must consume the server-owned tier state');
 assert.doesNotMatch(rewards, /TOTAL_CLUB_THRESHOLDS|CORE_LIFT_MILESTONE_THRESHOLDS/, 'legacy arbitrary ladders must not remain active');
 
-for (const [surface, source] of [['Strength', strength], ['Ledger index', index]]) {
-  assert.match(source, /supportedStrengthStandard/, `${surface} must reject unsupported standard projections`);
-}
+assert.match(strength, /resolveLedgerClubsRuntimeState/, 'Strength must reject unsupported standards through the shared runtime resolver');
+assert.match(index, /supportedStrengthStandard/, 'Ledger index must reject unsupported standard projections');
 assert.match(achievements, /resolveLedgerClubsRuntimeState\(/, 'Achievements must resolve the governed live Clubs projection');
 assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\[key\]/, 'per-lift achievement rows must prefer the server projection');
 assert.match(rewards, /projectedStrengthTierState\(standing\?\.metrics\.total/, 'Total trophies must prefer the server projection');
-assert.match(achievements, /\{tier\.name\}/, 'achievement cards must show the serialized Tier I–VII identity');
+assert.match(rewards, /TOTAL_STRENGTH_CLUB_NAMES/, 'Total achievement presentation must own seven named clubs');
+assert.match(rewards, /LB_PLATE_CLUBS/, 'individual lift achievements must own deliberate pound plate clubs');
+assert.match(rewards, /KG_PLATE_CLUBS/, 'individual lift achievements must own clean native kilogram plate clubs');
+assert.match(achievements, /totalStrengthClubName\(/, 'Achievements must project Total thresholds into named clubs');
+assert.match(achievements, /plateClubState/, 'Achievements must project individual lifts into plate clubs');
+assert.doesNotMatch(achievements, />\{tier\.name\}</, 'Achievements must not render serialized Tier I–VII identities');
 assert.match(achievements, /OpenPowerlifting reference cohort/, 'Clubs must explain the competitive percentile cohort');
 assert.match(achievements, /actual_percentile/, 'achievement details must explain cohort position');
 assert.match(achievements, /numberOfLines=\{1\} adjustsFontSizeToFit minimumFontScale=\{0\.6\} style=\{styles\.heroTierTitle\}/, 'long Tier VII titles must remain on one line so the current total stays visible');
 assert.match(achievements, /numberOfLines=\{nextTotalTier \? 1 : 2\}/, 'the terminal Tier VII completion label must be allowed to wrap instead of truncating');
-assert.match(achievements, /Highest tier reached/, 'terminal status copy must fit the compact next-tier column');
-assert.match(strength, /CURRENT STRENGTH TIER/);
+assert.match(achievements, /OBSIDIAN CLUB COMPLETE/, 'terminal Total club status must fit the compact next-club column');
+assert.match(strength, /CURRENT PLATE CLUB/);
+assert.match(strength, /CompetitiveStandingCard/);
 assert.match(strength, /exact governed competition-lift Weight PR/);
 assert.match(strength, /will not guess/, 'unsupported athlete identity must be explained rather than inferred');
 assert.match(liveData, /const fixture = __DEV__ \? options\.fixture : undefined/, 'visual evidence injection must remain DEV-only');

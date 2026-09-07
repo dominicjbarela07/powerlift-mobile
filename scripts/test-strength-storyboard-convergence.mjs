@@ -10,6 +10,7 @@ const router = read('components/ledger/experiences.tsx');
 const primitives = read('components/ledger/primitives.tsx');
 const visualAssets = read('lib/strength-ledger-visual-assets.ts');
 const semanticArtwork = read('components/ledger/StrengthSemanticArtwork.tsx');
+const milestoneAssets = read('lib/barbell/milestone-render-assets.ts');
 
 assert.match(router, /StrengthExperience as StrengthStoryboardExperience/, 'the primary Strength route imports the storyboard implementation');
 assert.match(router, /case 'strength': return <StrengthStoryboardExperience \/>/, 'Ledger 02 renders the storyboard implementation');
@@ -19,8 +20,8 @@ assert.match(strength, /strength-lift-picker-\$\{profile\.key\}/, 'the integrate
 for (const lift of ['squat', 'bench', 'deadlift']) {
   assert.match(strength, new RegExp(`strength-select-\\$\\{profile\\.key\\}`), `${lift} is reachable from the shared visual selector`);
   assert.match(visualAssets, new RegExp(`ledger-core-${lift === 'squat' ? 'squat-rack' : lift === 'bench' ? 'bench-station' : 'deadlift-platform'}-v1\\.png`), `${lift} resolves from its governed full-silhouette master`);
-  const tierReferences = strength.match(new RegExp(`milestone-renders/plate-club-material-v2/${lift}-`, 'g')) ?? [];
-  assert.equal(tierReferences.length, 7, `${lift} has seven distinct lift-specific tier assets`);
+  const clubReferences = milestoneAssets.match(new RegExp(`milestone-renders/plate-club-material-v2/${lift}-`, 'g')) ?? [];
+  assert.ok(clubReferences.length >= 12, `${lift} has a substantive governed plate-club artwork ladder`);
   const cutoutName = lift === 'squat' ? 'ledger-core-squat-rack-v1.png' : lift === 'bench' ? 'ledger-core-bench-station-v1.png' : 'ledger-core-deadlift-platform-v1.png';
   const cutout = path.join(root, 'assets/images/ledger-index-v2', cutoutName);
   assert.ok(fs.existsSync(cutout) && fs.statSync(cutout).size > 50_000, `${lift} semantic art is a substantive governed asset`);
@@ -44,7 +45,9 @@ assert.ok(fs.existsSync(overviewHero) && fs.statSync(overviewHero).size > 100_00
 const atmosphere = path.join(root, 'assets/images/ledger-atmosphere-v1/strength-header-v1.png');
 assert.ok(fs.existsSync(atmosphere) && fs.statSync(atmosphere).size > 100_000, 'Strength retains a substantive governed atmospheric header asset');
 assert.match(strength, /\['progression', 'evidence', 'standards'\]/, 'lift detail contains Progression, Evidence, and Standards');
-assert.match(strength, /strength-tier-entry/, 'lift detail reaches the complete seven-tier progression');
+assert.match(strength, /strength-tier-entry/, 'lift detail reaches the complete native plate-club progression');
+assert.match(strength, /CURRENT PLATE CLUB/, 'lift detail presents gym-native achievement language');
+assert.match(strength, /CompetitiveStandingCard/, 'lift detail separates population context from achievement identity');
 assert.match(strength, /strength-evidence-panel/, 'lift detail exposes exact source evidence');
 assert.match(strength, /strength-standards-panel/, 'lift detail exposes the governed standard');
 assert.match(strength, /canonicalPrHistory\(accomplishments\)/, 'Records use the canonical career PR projection');
@@ -54,10 +57,10 @@ assert.match(strength, /TOTAL ESTIMATED STRENGTH/, 'Overview identifies the S\/B
 assert.match(strength, /canonicalCompetitionLiftKey\(event\.core_movement_key\)/, 'record filtering begins with governed competition-lift identity');
 assert.doesNotMatch(strength, /canonical(?:Competition)?LiftKey\([^\n)]*movement_label/, 'identity-based Strength consumers never infer a lift from display text');
 assert.match(strength, /Thresholds are stored in KG and projected to LB only at display time/, 'the UI discloses canonical KG storage and display-only conversion');
-assert.match(strength, /clubs\.standard\?\.version/, 'the exact governed standard version reaches detail screens');
+assert.match(strength, /standard\?\.version/, 'the exact governed standard version reaches detail screens');
 assert.doesNotMatch(strength, /474\.5|1,154|492\.2/, 'storyboard example values are not embedded as athlete evidence');
 assert.match(primitives, /LedgerScrollToTopContext/, 'the shared Ledger frame exposes governed scroll reset ownership');
 assert.match(strength, /scrollToTopAfterTransition/, 'internal Strength screen transitions reset inherited scroll state');
 assert.doesNotMatch(strength, /fontSize:\s*[0-9](?:\D|$)/, 'phone typography never drops below 10 points');
 
-console.log('[strength storyboard] route, overview, lift selector, detail, tiers, evidence, standards, records, analysis, identity, and assets passed');
+console.log('[strength storyboard] route, overview, lift selector, detail, plate clubs, competitive context, evidence, standards, records, analysis, identity, and assets passed');
