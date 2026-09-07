@@ -8,11 +8,17 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 
 const canonical = read('components/ui/sl-contextual-header.tsx');
 assert.match(canonical, /export function SLContextualHeader/, 'the canonical contextual header is exported');
+assert.match(canonical, /export function SLAtmosphericContextHeader/, 'the premium atmospheric contextual header is exported');
 assert.match(canonical, /export function SLCompactTabRail/, 'the canonical compact tab rail is exported');
 assert.match(canonical, /fontSize:\s*24/, 'page identity remains a strong 24-point title');
 assert.match(canonical, /width:\s*44,\s*height:\s*44/, 'header controls retain 44-point touch targets');
+assert.match(canonical, /atmosphericBackTarget:\s*\{\s*width:\s*44,\s*height:\s*54/, 'the integrated atmospheric back affordance retains a full touch target');
+assert.match(canonical, /testID=\{testID \? `\$\{testID\}-back`/, 'the integrated atmospheric back action remains directly exercisable');
 assert.match(canonical, /minHeight:\s*44/, 'tab controls retain 44-point touch targets');
 assert.doesNotMatch(canonical, /headerSpacer|emptyAction|placeholder/, 'the canonical header cannot render decorative filler controls');
+assert.doesNotMatch(canonical, /controlVisual/, 'contextual navigation cannot restore the giant rounded-square control widget');
+assert.match(canonical, /borderBottomWidth:\s*2/, 'the compact rail marks selection as an integrated underline');
+assert.doesNotMatch(canonical, /tabTarget:\s*\{[^}]*borderRadius/, 'the compact rail cannot regress into detached SaaS pills');
 
 assert.ok(!fs.existsSync(path.join(root, 'components/ui/sl-page-header.tsx')), 'the retired page-header implementation is deleted');
 
@@ -40,12 +46,14 @@ assert.doesNotMatch(primitives, /backRow|backButton/, 'LedgerFrame no longer inj
 assert.match(primitives, /SLCompactTabRail/, 'Ledger segmented modes use the compact canonical tab rail');
 
 const strength = read('components/ledger/StrengthExperience.tsx');
-assert.match(strength, /SLContextualHeader/, 'Strength uses the canonical contextual header');
+assert.match(strength, /SLAtmosphericContextHeader/, 'Strength composes navigation into its atmospheric page identity');
+assert.match(strength, /STRENGTH_LEDGER_ATMOSPHERE_ASSETS\.strength/, 'Strength uses the governed iron atmosphere');
 assert.match(strength, /SLCompactTabRail/, 'Strength uses the canonical compact tab rail');
 assert.doesNotMatch(strength, /function StrengthHeader|detailHeaderSpacer|styles\.detailHeader/, 'Strength cannot restore the duplicate centered title shell');
 
 const achievements = read('components/ledger/AchievementsExperience.tsx');
-assert.match(achievements, /SLContextualHeader/, 'Achievements uses the canonical contextual header');
+assert.match(achievements, /SLAtmosphericContextHeader/, 'Achievements composes navigation into its atmospheric page identity');
+assert.match(achievements, /STRENGTH_LEDGER_ATMOSPHERE_ASSETS\.achievements/, 'Achievements uses the governed metallic achievement atmosphere');
 assert.match(achievements, /SLCompactTabRail/, 'Achievements uses the canonical compact tab rail');
 assert.doesNotMatch(achievements, /<View style=\{styles\.navButton\} \/>/, 'Achievements cannot render an empty right-side circle');
 

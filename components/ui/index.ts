@@ -9,6 +9,7 @@ export { SLCard } from './sl-card';
 export { SLCompactDropdown, type SLCompactDropdownOption } from './sl-compact-dropdown';
 export {
   SLCompactTabRail,
+  SLAtmosphericContextHeader,
   SLContextualHeader,
   type SLCompactTab,
   type SLContextualHeaderAction,

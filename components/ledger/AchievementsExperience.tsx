@@ -6,7 +6,8 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, V
 import Svg, { Circle } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
-import { SLCanonicalIcon, SLCompactTabRail, SLContextualHeader, SLScreen, SLTrophy } from '@/components/ui';
+import { StrengthSemanticArtwork } from '@/components/ledger/StrengthSemanticArtwork';
+import { SLAtmosphericContextHeader, SLCanonicalIcon, SLCompactTabRail, SLScreen, SLTrophy } from '@/components/ui';
 import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';
 import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/components/volume-achievements/VolumeAchievementExperience';
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
@@ -33,6 +34,7 @@ import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolv
 import { MILESTONE_RENDER_ORIENTATION_STYLE } from '@/lib/barbell/milestone-render-assets';
 import { canonicalCompetitionLiftKey } from '@/lib/strength-standard-identity';
 import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
+import { STRENGTH_LEDGER_ATMOSPHERE_ASSETS } from '@/lib/strength-ledger-visual-assets';
 import {
   canRenderGymTotal,
   displayWeightFromCanonicalLb,
@@ -90,12 +92,6 @@ const LIFT_PRESENTATIONS: LiftPresentation[] = [
 ];
 
 const PRIMARY_ACHIEVEMENT_SECTIONS = ['hub', 'milestones', 'clubs', 'trophies', 'medallions'] as const satisfies readonly AchievementSection[];
-
-const LIFT_TIER_HERO_ASSETS: Record<LiftKey, ImageSourcePropType> = {
-  squat: require('@/assets/images/achievements/lift-tier-heroes/squat.png'),
-  bench: require('@/assets/images/achievements/lift-tier-heroes/bench.png'),
-  deadlift: require('@/assets/images/achievements/lift-tier-heroes/deadlift.png'),
-};
 
 // Seven distinct, lift-specific renderer captures per lift. Threshold text remains
 // the exact governed kg value (and exact rounded-lb projection); these images are
@@ -319,6 +315,7 @@ function formatPrEvent(event: AccomplishmentEvent, unit: Unit): { title: string;
 
 function AchievementFamilyRail({ section, onSelect }: { section: AchievementSection; onSelect: (section: AchievementSection) => void }) {
   return <SLCompactTabRail
+    accent="#C89B52"
     items={PRIMARY_ACHIEVEMENT_SECTIONS.map((item) => ({ key: item, label: ACHIEVEMENT_SECTION_LABELS[item] }))}
     onSelect={(item) => onSelect(item as AchievementSection)}
     selectedKey={section}
@@ -370,12 +367,12 @@ function AchievementsHub({
       const tierState = lift.tierState;
       const currentLiftTier = tierState && tierState.earnedTierIndex >= 0 ? tierState.tiers[tierState.earnedTierIndex] : null;
       return <Pressable key={lift.key} testID={`achievement-overview-${lift.key}`} onPress={() => onOpenLift(lift.key)} style={({ pressed }) => [styles.overviewLiftCard, { borderColor: `${lift.tone}60` }, pressed && styles.pressed]}>
-        <Image source={LIFT_TIER_HERO_ASSETS[lift.key]} resizeMode="cover" style={styles.overviewLiftArt} />
-        <LinearGradient colors={['rgba(7,8,12,0.02)', 'rgba(7,8,12,0.96)']} style={StyleSheet.absoluteFillObject} />
-        <ThemedText typographyRole="shortTechnicalLabel" style={[styles.overviewLiftName, { color: lift.tone }]}>{lift.key === 'bench' ? 'BENCH' : lift.name.toUpperCase()}</ThemedText>
-        <ThemedText typographyRole="bodyStrong" style={styles.overviewLiftTier}>{currentLiftTier?.name ?? 'Below I'}</ThemedText>
-        <ThemedText typographyRole="milestoneThreshold" style={styles.overviewLiftValue}>{tierState ? number(tierState.current) : '—'} {tierState ? unit.toUpperCase() : ''}</ThemedText>
-        <ThemedText typographyRole="caption" style={styles.overviewLiftPercentile}>{currentLiftTier ? `~P${currentLiftTier.actual_percentile.toFixed(1)}` : 'No standing'}</ThemedText>
+        <View style={[styles.overviewLiftArtStage, { backgroundColor: `${lift.tone}18` }]}><StrengthSemanticArtwork lift={lift.key} destination="achievement-card" testID={`achievement-overview-art-${lift.key}`} /></View>
+        <View style={styles.overviewLiftCopy}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.overviewLiftName, { color: lift.tone }]}>{lift.key === 'bench' ? 'BENCH' : lift.name.toUpperCase()}</ThemedText>
+          <ThemedText typographyRole="bodyStrong" style={styles.overviewLiftTier}>{currentLiftTier?.name ?? 'Below I'}</ThemedText>
+          <ThemedText typographyRole="milestoneThreshold" style={styles.overviewLiftValue}>{tierState ? number(tierState.current) : '—'} {tierState ? unit.toUpperCase() : ''}</ThemedText>
+          <ThemedText typographyRole="caption" style={styles.overviewLiftPercentile}>{currentLiftTier ? `~P${currentLiftTier.actual_percentile.toFixed(1)}` : 'No standing'}</ThemedText>
+        </View>
       </Pressable>;
     })}</View>
 
@@ -521,7 +518,7 @@ function TrophyDetailView({
       <View style={styles.trophyDetailIdentity}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.trophyDetailState, { color: STRENGTH_TIER_ART_PRESENTATION[tierIndex].color }]}>{stateLabel}</ThemedText><ThemedText typographyRole="sectionTitle" style={styles.trophyDetailTier}>{tier.name}</ThemedText><View style={styles.trophyDetailMetricRow}><ThemedText typographyRole="heroNumeric" style={styles.trophyDetailMetric}>{number(threshold)}</ThemedText><ThemedText typographyRole="unit" style={styles.trophyDetailUnit}>{unit.toUpperCase()}</ThemedText></View><ThemedText typographyRole="bodyStrong" style={styles.trophyDetailPercentile}>~{tier.actual_percentile.toFixed(1)}th percentile</ThemedText></View>
     </View>
     <ThemedText typographyRole="supportingBody" style={styles.artifactNarrative}>{tier.name} is calibrated to approximately the {tier.actual_percentile.toFixed(1)}th percentile among {sexLabel?.toLowerCase() ?? 'the selected'} raw SBD lifters in the governed OpenPowerlifting reference cohort.</ThemedText>
-    <View style={styles.artifactSection}><ThemedText typographyRole="shortTechnicalLabel" style={styles.artifactSectionTitle}>RELATED STRENGTH EVIDENCE</ThemedText>{lifts.map((lift) => { const liftTier = lift.tierState && lift.tierState.earnedTierIndex >= 0 ? lift.tierState.tiers[lift.tierState.earnedTierIndex] : null; return <View key={lift.key} style={styles.evidenceRow}><Image source={LIFT_TIER_HERO_ASSETS[lift.key]} resizeMode="cover" style={styles.evidenceArt} /><View style={styles.evidenceCopy}><ThemedText typographyRole="bodyStrong" style={styles.evidenceTitle}>{lift.key === 'bench' ? 'Bench Press' : lift.name}</ThemedText><ThemedText typographyRole="caption" style={styles.evidenceMeta}>{liftTier?.name ?? 'Below Tier I'}{liftTier ? ` · ~P${liftTier.actual_percentile.toFixed(1)}` : ''}</ThemedText></View><ThemedText typographyRole="milestoneThreshold" style={styles.evidenceValue}>{lift.tierState ? number(lift.tierState.current) : '—'} {lift.tierState ? unit.toUpperCase() : ''}</ThemedText></View>; })}</View>
+    <View style={styles.artifactSection}><ThemedText typographyRole="shortTechnicalLabel" style={styles.artifactSectionTitle}>RELATED STRENGTH EVIDENCE</ThemedText>{lifts.map((lift) => { const liftTier = lift.tierState && lift.tierState.earnedTierIndex >= 0 ? lift.tierState.tiers[lift.tierState.earnedTierIndex] : null; return <View key={lift.key} style={styles.evidenceRow}><StrengthSemanticArtwork lift={lift.key} destination="tier-progression" style={styles.evidenceArt} /><View style={styles.evidenceCopy}><ThemedText typographyRole="bodyStrong" style={styles.evidenceTitle}>{lift.key === 'bench' ? 'Bench Press' : lift.name}</ThemedText><ThemedText typographyRole="caption" style={styles.evidenceMeta}>{liftTier?.name ?? 'Below Tier I'}{liftTier ? ` · ~P${liftTier.actual_percentile.toFixed(1)}` : ''}</ThemedText></View><ThemedText typographyRole="milestoneThreshold" style={styles.evidenceValue}>{lift.tierState ? number(lift.tierState.current) : '—'} {lift.tierState ? unit.toUpperCase() : ''}</ThemedText></View>; })}</View>
     <View style={styles.standardContext}><Ionicons name="shield-checkmark-outline" size={21} color="#B987F8" /><View style={styles.standardContextCopy}><ThemedText typographyRole="bodyStrong" style={styles.standardContextTitle}>Governed strength standard</ThemedText><ThemedText typographyRole="caption" style={styles.standardContextBody}>Canonical threshold: {number(tier.threshold_kg)} KG · display conversion: {number(tier.display_lb)} LB · standard {club.standardVersion}</ThemedText></View></View>
     <Pressable testID="trophy-detail-view-standards" onPress={onOpenStandards} style={({ pressed }) => [styles.artifactPrimaryAction, pressed && styles.pressed]}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>View Standards</ThemedText><Ionicons name="arrow-forward" size={17} color="#FFFFFF" /></Pressable>
   </View>;
@@ -550,8 +547,7 @@ function LiftTierDetailView({
   const nextTier = state.nextTierIndex == null ? null : state.tiers[state.nextTierIndex];
   return <View testID={`achievement-lift-tier-detail-${lift.key}`} style={styles.artifactDetail}>
     <View style={[styles.liftDetailHero, { borderColor: `${lift.tone}72` }]}>
-      <Image source={LIFT_TIER_HERO_ASSETS[lift.key]} resizeMode="contain" style={styles.liftDetailHeroArt} />
-      <LinearGradient colors={['rgba(3,4,7,0.08)', 'rgba(3,4,7,0.64)', '#05070B']} locations={[0, 0.48, 1]} style={StyleSheet.absoluteFillObject} />
+      <View style={[styles.liftDetailHeroArtStage, { backgroundColor: `${lift.tone}18` }]}><StrengthSemanticArtwork lift={lift.key} destination="detail-hero" testID={`achievement-detail-art-${lift.key}`} /></View>
       <View style={styles.liftDetailHeroCopy}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.liftDetailKicker, { color: lift.tone }]}>{lift.key === 'bench' ? 'BENCH PRESS' : lift.name.toUpperCase()}</ThemedText><ThemedText typographyRole="bodyStrong" style={styles.liftDetailTier}>{currentTier?.name ?? 'Below Tier I'}</ThemedText><View style={styles.liftDetailMetricRow}><ThemedText typographyRole="heroNumeric" style={styles.liftDetailMetric}>{number(state.current)}</ThemedText><ThemedText typographyRole="unit" style={styles.liftDetailUnit}>{unit.toUpperCase()}</ThemedText></View><ThemedText typographyRole="bodyStrong" style={styles.liftDetailPercentile}>{currentTier ? `~${currentTier.actual_percentile.toFixed(1)}th percentile` : `Tier I begins at ${number(state.thresholds[0])} ${unit.toUpperCase()}`}</ThemedText>{nextTier ? <ThemedText typographyRole="supportingBody" style={styles.liftDetailNext}>{number(state.remaining ?? 0)} {unit.toUpperCase()} to {nextTier.name}</ThemedText> : <ThemedText typographyRole="supportingBody" style={styles.liftDetailNext}>Highest governed tier reached</ThemedText>}</View>
     </View>
     <View style={styles.progressRow}><View style={styles.progressTrack}><View style={[styles.progressBar, { width: `${state.progress * 100}%`, backgroundColor: lift.tone }]} /></View><ThemedText typographyRole="milestoneThreshold" style={styles.progressPercent}>{Math.round(state.progress * 100)}%</ThemedText></View>
@@ -699,6 +695,15 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
       ? `${activeArtifactLift.key === 'bench' ? 'Bench Press' : activeArtifactLift.name} Tiers`
       : null;
   const headerTitle = artifactTitle ?? 'Achievements';
+  const headerAccent = activeArtifactLift?.tone ?? '#C89B52';
+  const headerAtmosphere = activeArtifactLift
+    ? STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength
+    : STRENGTH_LEDGER_ATMOSPHERE_ASSETS.achievements;
+  const headerContext = activeArtifactLift
+    ? 'ACHIEVEMENT STANDARD'
+    : artifactDetail?.kind === 'trophy'
+      ? 'STRENGTH TIER CABINET'
+      : 'YOUR PROGRESS, EARNED';
   const goBack = artifactDetail
     ? () => setArtifactDetail(null)
     : section === 'hub'
@@ -710,14 +715,19 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="ledger-achievements-unit-toggle" />
     <View style={styles.canvas}>
       <ScrollView ref={scrollRef} contentContainerStyle={styles.content} contentOffset={{ x: 0, y: 0 }} showsVerticalScrollIndicator={false}>
-        <SLContextualHeader
+        <SLAtmosphericContextHeader
+          accent={headerAccent}
+          atmosphereSource={headerAtmosphere}
+          artwork={activeArtifactLift ? <StrengthSemanticArtwork lift={activeArtifactLift.key} destination="context-header" /> : undefined}
           backAccessibilityLabel={artifactDetail ? 'Back to Achievements' : section === 'hub' ? backAccessibilityLabel : 'Back to Achievements overview'}
-          breadcrumb={artifactDetail ? 'Achievements' : section === 'hub' ? 'The Ledger' : ACHIEVEMENT_SECTION_LABELS[section]}
+          contextLabel={headerContext}
           onBack={goBack}
+          subtitle={artifactDetail ? undefined : 'Milestones, strength tiers, and recorded proof.'}
           testID="achievements-contextual-header"
           title={headerTitle}
-        />
-        {!artifactDetail ? <AchievementFamilyRail section={section} onSelect={openSection} /> : null}
+        >
+          {!artifactDetail ? <AchievementFamilyRail section={section} onSelect={openSection} /> : null}
+        </SLAtmosphericContextHeader>
         {loading ? <AchievementRequestState kind="loading" message="Loading achievements" />
           : error ? <AchievementRequestState kind={errorKind ?? 'error'} message={error} onRetry={() => void reload()} />
             : !strengthStandard && (artifactDetail != null || section === 'hub' || section === 'milestones' || section === 'clubs' || section === 'trophies') ? <AchievementRequestState kind="unavailable" message="A verified male or female strength standard is required before strength tiers can be shown" />
@@ -870,8 +880,9 @@ const styles = StyleSheet.create({
   overviewSectionTitle: { color: '#C7CCD5', fontSize: 10, lineHeight: 13, letterSpacing: 0.9 },
   overviewSectionAction: { color: '#B987F8', fontSize: 9, lineHeight: 12, letterSpacing: 0.6 },
   overviewLiftGrid: { flexDirection: 'row', gap: 8 },
-  overviewLiftCard: { flex: 1, minWidth: 0, height: 176, overflow: 'hidden', justifyContent: 'flex-end', padding: 10, borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
-  overviewLiftArt: { position: 'absolute', left: 0, right: 0, top: 0, width: '100%', height: 113 },
+  overviewLiftCard: { flex: 1, minWidth: 0, height: 190, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
+  overviewLiftArtStage: { height: 96, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#272C34' },
+  overviewLiftCopy: { flex: 1, padding: 10 },
   overviewLiftName: { fontSize: 8, lineHeight: 10, letterSpacing: 0.7 },
   overviewLiftTier: { color: '#F0EDF4', fontSize: 12, lineHeight: 15, marginTop: 2 },
   overviewLiftValue: { color: '#D9DDE5', fontSize: 11, lineHeight: 14, marginTop: 2 },
@@ -978,9 +989,9 @@ const styles = StyleSheet.create({
   standardContextTitle: { color: '#E8E2EE', fontSize: 12, lineHeight: 15 },
   standardContextBody: { color: '#A49AAC', fontSize: 9.5, lineHeight: 14 },
   artifactPrimaryAction: { minHeight: 49, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, borderRadius: 13, backgroundColor: '#7032AF' },
-  liftDetailHero: { height: 370, overflow: 'hidden', justifyContent: 'flex-end', borderRadius: 20, borderWidth: 1, backgroundColor: '#06080C' },
-  liftDetailHeroArt: { position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' },
-  liftDetailHeroCopy: { gap: 3, paddingHorizontal: 21, paddingBottom: 22 },
+  liftDetailHero: { minHeight: 356, overflow: 'hidden', borderRadius: 20, borderWidth: 1, backgroundColor: '#06080C' },
+  liftDetailHeroArtStage: { height: 174, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#292E36' },
+  liftDetailHeroCopy: { minHeight: 180, justifyContent: 'center', gap: 3, paddingHorizontal: 21, paddingVertical: 18 },
   liftDetailKicker: { fontSize: 9.5, lineHeight: 12, letterSpacing: 1 },
   liftDetailTier: { color: '#F1EEF4', fontSize: 15, lineHeight: 19 },
   liftDetailMetricRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },

@@ -8,22 +8,41 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 const strength = read('components/ledger/StrengthExperience.tsx');
 const router = read('components/ledger/experiences.tsx');
 const primitives = read('components/ledger/primitives.tsx');
+const visualAssets = read('lib/strength-ledger-visual-assets.ts');
+const semanticArtwork = read('components/ledger/StrengthSemanticArtwork.tsx');
 
 assert.match(router, /StrengthExperience as StrengthStoryboardExperience/, 'the primary Strength route imports the storyboard implementation');
 assert.match(router, /case 'strength': return <StrengthStoryboardExperience \/>/, 'Ledger 02 renders the storyboard implementation');
 assert.match(strength, /\['overview', 'progression', 'records', 'analysis'\]/, 'the four governed Strength sections remain first-class tabs');
 assert.match(strength, /strength-lift-selector/, 'Progression opens the visual three-lift selector');
+assert.match(strength, /strength-lift-picker-\$\{profile\.key\}/, 'the integrated lift identity picker remains directly exercisable');
 for (const lift of ['squat', 'bench', 'deadlift']) {
   assert.match(strength, new RegExp(`strength-select-\\$\\{profile\\.key\\}`), `${lift} is reachable from the shared visual selector`);
-  assert.match(strength, new RegExp(`lift-tier-heroes/${lift}\\.png`), `${lift} uses its premium lift-specific hero`);
+  assert.match(visualAssets, new RegExp(`ledger-core-${lift === 'squat' ? 'squat-rack' : lift === 'bench' ? 'bench-station' : 'deadlift-platform'}-v1\\.png`), `${lift} resolves from its governed full-silhouette master`);
   const tierReferences = strength.match(new RegExp(`milestone-renders/plate-club-material-v2/${lift}-`, 'g')) ?? [];
   assert.equal(tierReferences.length, 7, `${lift} has seven distinct lift-specific tier assets`);
-  const hero = path.join(root, 'assets/images/achievements/lift-tier-heroes', `${lift}.png`);
-  assert.ok(fs.existsSync(hero) && fs.statSync(hero).size > 100_000, `${lift} hero art is a substantive premium asset`);
+  const cutoutName = lift === 'squat' ? 'ledger-core-squat-rack-v1.png' : lift === 'bench' ? 'ledger-core-bench-station-v1.png' : 'ledger-core-deadlift-platform-v1.png';
+  const cutout = path.join(root, 'assets/images/ledger-index-v2', cutoutName);
+  assert.ok(fs.existsSync(cutout) && fs.statSync(cutout).size > 50_000, `${lift} semantic art is a substantive governed asset`);
 }
+
+for (const destination of ['context-header', 'overview-card', 'selector-card', 'achievement-card', 'detail-hero', 'tier-progression', 'picker']) {
+  assert.match(visualAssets, new RegExp(`'${destination}'`), `${destination} is a governed semantic-art destination`);
+}
+assert.match(visualAssets, /fit:\s*'contain'/, 'semantic artwork explicitly fails closed to contain framing');
+assert.match(semanticArtwork, /resizeMode=\{asset\.fit\}/, 'the shared semantic renderer consumes the governed fit policy');
+assert.doesNotMatch(semanticArtwork, /resizeMode=["']cover["']/, 'the shared semantic renderer can never cover-crop a lift');
+assert.match(strength, /destination="overview-card"/, 'Strength Overview has an explicit card composition');
+assert.match(strength, /destination="selector-card"/, 'the lift selector has an explicit card composition');
+assert.match(strength, /destination="detail-hero"/, 'lift detail has an explicit hero composition');
+assert.match(strength, /destination="context-header"/, 'lift navigation has an explicit atmospheric identity composition');
+assert.doesNotMatch(strength, /profile\.hero|lift-tier-heroes/, 'Strength cannot fall back to one cover-oriented hero across destinations');
+assert.match(strength, /SLAtmosphericContextHeader/, 'Strength navigation is composed into the atmospheric page identity');
 
 const overviewHero = path.join(root, 'assets/images/ledger-index-v2/ledger-hero-plate-v1.png');
 assert.ok(fs.existsSync(overviewHero) && fs.statSync(overviewHero).size > 100_000, 'the Overview retains a premium total-strength hero');
+const atmosphere = path.join(root, 'assets/images/ledger-atmosphere-v1/strength-header-v1.png');
+assert.ok(fs.existsSync(atmosphere) && fs.statSync(atmosphere).size > 100_000, 'Strength retains a substantive governed atmospheric header asset');
 assert.match(strength, /\['progression', 'evidence', 'standards'\]/, 'lift detail contains Progression, Evidence, and Standards');
 assert.match(strength, /strength-tier-entry/, 'lift detail reaches the complete seven-tier progression');
 assert.match(strength, /strength-evidence-panel/, 'lift detail exposes exact source evidence');

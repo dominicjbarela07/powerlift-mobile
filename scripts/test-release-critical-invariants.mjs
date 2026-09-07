@@ -40,7 +40,7 @@ const areas = [
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
   ['data-driven sex-specific strength tiers', ['scripts/test-ledger-rewards.mjs', 'scripts/test-data-driven-strength-tiers.mjs', 'scripts/test-ledger-clubs-runtime-source.mjs', 'scripts/test-legacy-strength-trophy-retirement.mjs']],
   ['Achievements storyboard hierarchy, evidence details, and asset families', ['scripts/test-ledger-achievements-restoration.mjs', 'scripts/test-achievements-storyboard-convergence.mjs']],
-  ['Strength storyboard hierarchy, lift detail, standards, evidence, and assets', ['scripts/test-strength-storyboard-convergence.mjs']],
+  ['Strength storyboard hierarchy, lift detail, standards, evidence, and destination-composed semantic assets', ['scripts/test-strength-storyboard-convergence.mjs', 'scripts/test-strength-semantic-artwork-framing.mjs']],
   ['strength-tier certification app-shell integrity', ['scripts/test-strength-tier-certification-app-shell.mjs']],
   ['canonical DEV Metro source lineage', ['scripts/test-canonical-dev-metro-lineage-policy.mjs']],
   ['background unread-summary network resilience', ['scripts/test-unread-summary-resilience.mjs']],
