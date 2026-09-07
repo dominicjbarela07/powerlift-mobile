@@ -144,8 +144,8 @@ assert.doesNotMatch(workspace, /label="Editor"/, 'the empty Editor mode control 
 assert.match(workspace, /label="Athlete View" color=\{SLColors\.accentViolet\} onPress=\{onAthleteView\}[\s\S]*label="Reorder Movements" color=\{SLColors\.accentViolet\} onPress=\{onReorder\}/, 'Athlete View and Reorder are explicit grouped toolkit actions');
 assert.match(workspace, /status=\{status\}[\s\S]*duration=\{durationLabel\}/, 'authoritative Session status and duration reach the identity card');
 assert.match(workspace, /styles\.identitySessionStatus[\s\S]*styles\.identityDuration/, 'the identity card renders status and duration in the approved context column');
-assert.match(loggerPrimitives, /export function SessionUnitFloatingControl/, 'the canonical floating Logger unit control is a shared primitive');
-assert.match(logger, /<SessionUnitFloatingControl[\s\S]*onChange=\{switchDisplayUnit\}/, 'the Session Logger uses the shared floating unit control');
+assert.match(loggerPrimitives, /export function LogSheetUnitToggle/, 'Logger sheets keep one shared presentation-unit primitive');
+assert.match(logger, /<FloatingControlStack context="tab-screen">[\s\S]*<FloatingUtilityButton[\s\S]*onPress=\{\(\) => switchDisplayUnit\(unit === 'kg' \? 'lb' : 'kg'\)\}[\s\S]*testID="session-logger-unit-toggle"/, 'the Session Logger uses the app-shell floating unit control');
 assert.doesNotMatch(workspace, /SessionUnitFloatingControl|function UnitToggle|styles\.unitToggle/, 'the Adaptive Session Workspace has no separate unit control outside the toolkit');
 assert.match(workspace, /\{duration \? <View style=\{\[styles\.identityDuration, accessibilityReflow && styles\.identityDurationReflow\]\}/, 'missing estimated duration does not fabricate an overview value');
 assert.doesNotMatch(workspace, />Session Overview</, 'overview card does not render a redundant heading');
@@ -238,10 +238,10 @@ assert.match(workspace, /expandedMovementName: \{[^\n]*fontSize: 20[^\n]*lineHei
 assert.match(logger, /coachPreviewRequested[\s\S]*query\.set\('view', 'coach-preview'\)/, 'logger requests the authorized preview payload');
 assert.match(logger, /const canLogFromServer = !isCoachAthletePreview/, 'Athlete View disables logging');
 assert.match(logger, /const canEdit =\s*!isCoachAthletePreview/, 'Athlete View disables editing');
-assert.match(logger, /const handleReturnToCoachEditor = \(\) => \{[\s\S]*returnTo === 'programming-workspace-preview'[\s\S]*router\.back\(\)[\s\S]*pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'Coach Editor return restores the retained Programming Workspace or its exact standalone fallback');
+assert.match(logger, /const handleReturnToCoachEditor = \(\) => \{[\s\S]*returnTo === 'programming-workspace-preview'[\s\S]*pathname: '\/\(tabs\)\/workout'[\s\S]*sessionWorkspacePreviewFallbackParams[\s\S]*pathname: '\/workout\/session-workspace\/\[workoutId\]'/, 'Coach Editor return reconstructs the exact Programming Workspace or its exact standalone fallback');
 assert.match(logger, /section: returnSection === 'accessories' \? 'accessories' : 'core'/, 'Coach Editor return restores the active Session section');
 assert.match(logger, /onPress=\{handleReturnToCoachEditor\}/, 'Athlete View return control uses deterministic Session workspace navigation');
-assert.match(logger, /returnTo === 'programming-workspace-preview' && router\.canGoBack\(\)/, 'router back is restricted to the explicit retained Workspace handoff contract');
+assert.doesNotMatch(logger, /returnTo === 'programming-workspace-preview' && router\.canGoBack\(\)/, 'Programming Workspace return never trusts unrelated tab navigator history');
 
 assert.match(bootstrap, /status: 'draft'[\s\S]*core_items: \[\][\s\S]*acc_items: \[\]/, 'mobile creation establishes a server-backed draft before programming');
 assert.match(bootstrap, /editSessionId[\s\S]*router\.replace\([\s\S]*session-workspace/, 'legacy edit links safely redirect to the Adaptive Session Workspace');
