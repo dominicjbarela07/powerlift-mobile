@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PNG } from 'pngjs';
 
 import {
   ANATOMY_QA_PRESETS,
@@ -72,6 +73,16 @@ assert.notEqual(
   anatomyRenderKey({ presentation: 'feminine', view: 'front', region: 'full', primary: ['chest'], size: 'card' }),
   'region-aware frames must not collide in the render cache',
 );
+assert.notEqual(
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', laterality: 'left' }),
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', laterality: 'right' }),
+  'left and right segment renders must not collide in the render cache',
+);
+assert.notEqual(
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', intensity: { chest: 0.25 } }),
+  anatomyRenderKey({ presentation: 'feminine', view: 'front', primary: ['chest'], size: 'card', intensity: { chest: 0.9 } }),
+  'normalized intensity renders must not collide in the render cache',
+);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
@@ -82,11 +93,16 @@ const libraryPath = path.join(root, 'dev-mocks', 'library.ts');
 const lab = fs.existsSync(labPath) ? fs.readFileSync(labPath, 'utf8') : null;
 const library = fs.existsSync(libraryPath) ? fs.readFileSync(libraryPath, 'utf8') : null;
 for (const muscle of GOVERNED_MUSCLE_IDS) {
+  const registeredArrays = [...masks.matchAll(new RegExp(`\\b${muscle}: \\[([\\s\\S]*?)\\]`, 'g'))];
   assert.equal(
-    [...masks.matchAll(new RegExp(`\\b${muscle}: \\[`, 'g'))].length,
+    registeredArrays.length,
     4,
     `${muscle} must be explicitly registered for all four presentation/view masters`,
   );
+  for (const [, registeredPaths] of registeredArrays) {
+    const pathCount = (registeredPaths.match(/'M[^']*'/g) || []).length;
+    assert.equal(pathCount % 2, 0, `${muscle} visible segment paths must retain left/right pairs`);
+  }
   if (lab) assert.match(lab, new RegExp(`MUSCLE_META\\[muscle\\]`), 'the QA lab must enumerate governed muscle metadata');
 }
 for (const asset of [
@@ -100,23 +116,40 @@ for (const asset of [
   const png = fs.readFileSync(absolute);
   assert.equal(png.readUInt32BE(16), 418, `${asset} width drifted from the registered coordinate system`);
   assert.equal(png.readUInt32BE(20), 941, `${asset} height drifted from the registered coordinate system`);
+  const basePixels = PNG.sync.read(png);
+  for (const role of ['primary', 'secondary']) {
+    const materialName = asset.replace('-v1.png', `-${role}-material-v2.png`);
+    const materialPath = path.join(root, 'assets', 'images', 'anatomy-v2', 'materials', materialName);
+    assert.ok(fs.existsSync(materialPath), `missing master-derived ${role} material ${materialName}`);
+    const materialPixels = PNG.sync.read(fs.readFileSync(materialPath));
+    assert.equal(materialPixels.width, 418, `${materialName} width drifted`);
+    assert.equal(materialPixels.height, 941, `${materialName} height drifted`);
+    for (let index = 3; index < basePixels.data.length; index += 4) {
+      assert.equal(materialPixels.data[index], basePixels.data[index], `${materialName} alpha must remain pixel-registered to its master`);
+    }
+  }
 }
 assert.match(masks, /ANATOMY_MASTER_CANVAS = Object\.freeze\(\{ width: 418, height: 941 \}\)/, 'mask canvas must match every master');
 assert.match(masks, /REGISTERED_ANATOMY_MASKS[\s\S]*masculine:[\s\S]*feminine:/, 'masculine and feminine geometry must be registered independently');
 assert.doesNotMatch(masks, /\btransform\s*=|translate\(|scale\(/, 'registered geometry may not be transferred with corrective transforms');
 assert.doesNotMatch(masks, /<(?:Circle|Ellipse|Rect)\b/, 'muscle overlays must use anatomically registered paths, not generic geometric blobs');
-assert.match(renderer, /<Mask[\s\S]*maskType="alpha"[\s\S]*BASES\[presentation\]\[view\]/, 'overlays must be silhouette-clipped by the same registered master');
-assert.match(renderer, /<G mask=\{`url\(#\$\{bodyMaskId\}\)`\}>/, 'all muscle overlays must be inside the silhouette mask');
-assert.ok((renderer.match(/BASES\[presentation\]\[view\]/g) || []).length >= 3, 'base, silhouette, and texture-recovery layers must share one exact master');
+assert.match(renderer, /<Mask[\s\S]*maskType="alpha"[\s\S]*BASES\[presentation\]\[view\]/, 'material segments must be silhouette-clipped by the same registered master');
+assert.match(renderer, /MATERIALS\[presentation\]\[view\]\.secondary/, 'secondary segments must reveal the registered magenta material master');
+assert.match(renderer, /MATERIALS\[presentation\]\[view\]\.primary/, 'primary segments must reveal the registered violet material master');
+assert.match(renderer, /AnatomySegmentPaths[\s\S]*laterality/, 'segment masks must preserve separately addressable left/right geometry');
+assert.doesNotMatch(renderer, /\bfill=\{ANATOMY_COLORS|\bstroke=\{ANATOMY_COLORS/, 'runtime flat fills and sticker outlines are prohibited');
+assert.match(renderer, /intensity\?: Readonly<Partial<Record<GovernedMuscleId, number>>>/, 'renderer must accept governed normalized intensity without changing architecture');
 if (lab) {
   for (const preset of [
-    'Chest + Triceps', 'Lats + Biceps', 'Front + Side Delts',
-    'Rear Delts + Upper Back + Traps', 'Quads + Adductors',
-    'Hamstrings + Glutes', 'Abductors', 'Calves', 'Abs + Obliques',
-    'Lower Back', 'Full Upper Body', 'Full Lower Body', 'Dense Session',
+    'Chest + Triceps', 'Chest + Front Delts + Triceps', 'Lats + Biceps',
+    'Lats + Upper Back + Rear Delts', 'Upper Back + Traps', 'Side Delts',
+    'Quads + Adductors', 'Hamstrings + Glutes', 'Glutes + Abductors',
+    'Calves', 'Abs + Obliques', 'Lower Back', 'Dense Push Session',
+    'Dense Pull Session', 'Dense Lower Session', 'Full Multi-Muscle Accessory Block',
   ]) assert.ok(ANATOMY_QA_PRESETS[preset], `missing required QA preset ${preset}`);
-  assert.match(lab, /PRESENTATIONS[\s\S]*masculine[\s\S]*feminine/, 'lab must toggle both presentations');
+  assert.match(lab, /PRESENTATIONS[\s\S]*automatic[\s\S]*masculine[\s\S]*feminine/, 'lab must toggle automatic and both authored presentations');
   assert.match(lab, /VIEWS[\s\S]*front[\s\S]*rear[\s\S]*dual/, 'lab must toggle front, rear, and dual views');
+  assert.match(lab, /LATERALITIES[\s\S]*bilateral[\s\S]*left[\s\S]*right/, 'lab must inspect independently addressable bilateral geometry');
   assert.match(lab, /Size Tests[\s\S]*thumbnail[\s\S]*card[\s\S]*hero/, 'lab must exercise all governed sizes');
 }
 if (library && lab) {

@@ -105,7 +105,7 @@ assert.match(surface, /canonicalContent: \{ gap: 14 \}/, 'the post-Session canva
 assert.match(surface, /toolsSheet: \{ width: '100%'/, 'the post-Session toolkit must be full width');
 assert.match(surface, /movementStack: \{ gap: 10 \}/, 'movement cards must not add nested horizontal gutters');
 assert.match(surface, /sessionRecapHighlightAsset/, 'premium PR, streak, and prescription assets must remain canonical');
-assert.match(surface, /ProgrammingMuscleRegionArt level="session"/, 'aggregate anatomy must remain restricted to Session-level evidence');
+assert.match(surface, /ProgrammingMuscleRegionArt[^>]*athlete=\{recap\.athlete\}[^>]*level="session"/, 'aggregate anatomy must remain Session-level evidence and honor the reviewed athlete preference');
 assert.match(surface, /CanonicalMovementArtwork movement=\{movement\}/, 'individual movement rows must use canonical movement artwork');
 
 assert.match(certification, /reviewer_v3:/, 'the DEV proof fixture must exercise mature analytics');

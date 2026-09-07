@@ -507,7 +507,8 @@ const visualRecap: CompletedSessionRecapPayload = {
 };
 
 export default function SessionRecapCertificationScreen() {
-  const params = useLocalSearchParams<{ mode?: string; units?: string; offset?: string; expand?: string; tab?: string; tools?: string; scenario?: string }>();
+  const params = useLocalSearchParams<{ mode?: string; viewer?: string; units?: string; offset?: string; expand?: string; tab?: string; tools?: string; scenario?: string }>();
+  const isCoachViewer = params.mode === 'coach' || params.viewer === 'coach';
   const initialScrollOffsetY = Math.max(0, Number(params.offset) || 0);
   const activeRecap = params.scenario === 'visual'
     ? visualRecap
@@ -522,12 +523,12 @@ export default function SessionRecapCertificationScreen() {
       recap={activeRecap}
       preferredUnits={params.units === 'kg' ? 'kg' : 'lbs'}
       sessionTimeZone="America/Los_Angeles"
-      viewerMode={params.mode === 'coach' ? 'coach' : 'athlete'}
+      viewerMode={isCoachViewer ? 'coach' : 'athlete'}
       initialTab={params.tab === 'coach' ? 'coach' : params.tab === 'plan' ? 'plan' : params.tab === 'personal_bests' ? 'personal_bests' : params.tab === 'performed' ? 'performed' : 'overview'}
       initialToolsOpen={params.tools === '1'}
       initialScrollOffsetY={initialScrollOffsetY}
       initialExpandedItemId={Number(params.expand) || undefined}
-      coachReview={params.mode === 'coach' ? {
+      coachReview={isCoachViewer ? {
         draft: {
           coach_feedback: recap.coach_feedback.feedback || '',
           coach_note: 'Posterior-chain loading progressed as intended.',

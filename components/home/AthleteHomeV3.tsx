@@ -162,7 +162,7 @@ function TrainingHero({ home, onAction, today }: { home: AthleteHomeV3Projection
       </View>
       {focus.primary.length ? (
         <View pointerEvents="none" style={styles.heroAnatomy}>
-          <ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} />
+          <ProgrammingMuscleRegionArt athlete={today.athlete} level="session" primary={focus.primary} secondary={focus.secondary} />
         </View>
       ) : null}
       <HeroButton label={actionLabel} onPress={() => onAction(session?.action || { route: 'workout', workout_id: session?.id })} />
@@ -311,7 +311,7 @@ function SessionCard({ eyebrow, onAction, session, today, unit }: { eyebrow: str
         <Text style={styles.sessionEvidence}>{sessionEvidenceLine(session, completed, unit)}</Text>
       </View>
       {focus.primary.length ? (
-        <View style={styles.sessionAnatomy}><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} /></View>
+        <View style={styles.sessionAnatomy}><ProgrammingMuscleRegionArt athlete={today.athlete} level="session" primary={focus.primary} secondary={focus.secondary} /></View>
       ) : (
         <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={52} />
       )}

@@ -23,6 +23,7 @@ assert.deepEqual(
 const artwork = source('components/anatomy/ProgrammingMuscleRegionArt.tsx');
 assert.match(artwork, /Session muscle focus unavailable/);
 assert.match(artwork, /MuscleMap/);
+assert.match(artwork, /athlete=\{athlete\}/, 'aggregate anatomy must preserve the existing athlete presentation preference');
 assert.doesNotMatch(artwork, /accessoryRegionalArtworkAsset/);
 
 const coachHome = source('components/coach-mobile/CoachActivityHome.tsx');
@@ -51,6 +52,16 @@ assert.match(
   source('app/(tabs)/workout/session-workspace/[workoutId].tsx'),
   /GovernedMuscleThumbnail/,
   'Session Workspace muscle drill-down must use the governed aggregate thumbnail wrapper',
+);
+assert.match(
+  source('components/home/AthleteHomeV3.tsx'),
+  /<ProgrammingMuscleRegionArt athlete=\{today\.athlete\}/,
+  'Athlete Home aggregate anatomy must use the athlete preference returned by its payload',
+);
+assert.match(
+  source('components/coach-mobile/CompletedSessionRecap.tsx'),
+  /<ProgrammingMuscleRegionArt athlete=\{recap\.athlete\}/,
+  'post-Session aggregate anatomy must use the reviewed athlete preference',
 );
 
 console.log('[session-muscle-focus-artwork] canonical projection and cross-surface aggregate anatomy contracts passed');

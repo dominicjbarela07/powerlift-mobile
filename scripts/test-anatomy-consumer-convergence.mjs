@@ -38,7 +38,31 @@ const masterAssetConsumers = productFiles.filter((relative) => /anatomy-v2\/mast
 assert.deepEqual(masterAssetConsumers, ['components/anatomy/MuscleMap.tsx'], 'only MuscleMap may load registered full-figure masters');
 
 const maskRegistryConsumers = productFiles.filter((relative) => /anatomy-mask-registry/.test(source(relative)));
-assert.deepEqual(maskRegistryConsumers, ['components/anatomy/MuscleMap.tsx'], 'screen code may not import registered overlay geometry');
+assert.deepEqual(maskRegistryConsumers.sort(), [
+  'app/(tabs)/dev-mocks/anatomy-system.tsx',
+  'components/anatomy/MuscleMap.tsx',
+].sort(), 'only the canonical renderer and DEV lab may import registered segment geometry');
+
+const aggregateWrapper = source('components/anatomy/ProgrammingMuscleRegionArt.tsx');
+assert.match(aggregateWrapper, /athlete\?: ProgrammingAthleteAnatomy \| null/, 'aggregate wrapper must accept governed athlete anatomy preference');
+assert.match(aggregateWrapper, /<MuscleMap[\s\S]*athlete=\{athlete\}/, 'aggregate wrapper must forward governed athlete anatomy preference');
+
+const athleteHome = source('components/home/AthleteHomeV3.tsx');
+assert.match(athleteHome, /<ProgrammingMuscleRegionArt athlete=\{today\.athlete\}/, 'Athlete Home must honor the athlete anatomy preference');
+
+const trainingHub = source('components/training-hub/AthleteTrainingHubExperience.tsx');
+assert.match(trainingHub, /<ProgrammingMuscleRegionArt athlete=\{athlete\}/, 'Training Hub session evidence must honor the athlete anatomy preference');
+
+const completedRecap = source('components/coach-mobile/CompletedSessionRecap.tsx');
+assert.match(completedRecap, /<ProgrammingMuscleRegionArt athlete=\{recap\.athlete\}/, 'post-Session evidence must honor the reviewed athlete anatomy preference');
+
+for (const relative of productFiles) {
+  const contents = source(relative);
+  if (relative !== 'components/anatomy/MuscleMap.tsx') {
+    assert.doesNotMatch(contents, /anatomy-v2\/materials/, `${relative} bypassed the canonical material renderer`);
+  }
+  assert.doesNotMatch(contents, /muscle(?:Overlay|Position|Offset|Transform)\s*[:=]/i, `${relative} introduced prohibited runtime-positioned anatomy`);
+}
 
 for (const relative of [
   'components/home/AthleteHomeV3.tsx',

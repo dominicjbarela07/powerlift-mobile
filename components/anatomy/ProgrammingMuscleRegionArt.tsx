@@ -4,17 +4,26 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { SLColors } from '@/constants/theme';
 
-import { normalizeMuscleRoles } from '@/lib/anatomy-system';
+import {
+  normalizeMuscleRoles,
+  type AnatomyPresentationPreference,
+} from '@/lib/anatomy-system';
 import { MuscleMap } from './MuscleMap';
 
+export type ProgrammingAthleteAnatomy = Readonly<{
+  anatomy_display_preference?: AnatomyPresentationPreference | string | null;
+  sex?: string | null;
+}>;
+
 type Props = Readonly<{
+  athlete?: ProgrammingAthleteAnatomy | null;
   primary?: readonly string[] | null;
   secondary?: readonly string[] | null;
   level: 'week' | 'session';
   style?: StyleProp<ViewStyle>;
 }>;
 
-function ProgrammingMuscleRegionArtComponent({ primary, secondary, level, style }: Props) {
+function ProgrammingMuscleRegionArtComponent({ athlete, primary, secondary, level, style }: Props) {
   const roles = useMemo(() => normalizeMuscleRoles(primary, secondary), [primary, secondary]);
   if (!roles.primary.length && !roles.secondary.length) {
     return (
@@ -33,6 +42,7 @@ function ProgrammingMuscleRegionArtComponent({ primary, secondary, level, style 
       style={[styles.root, style]}
     >
       <MuscleMap
+        athlete={athlete}
         primary={roles.primary}
         secondary={roles.secondary}
         semanticLevel={level}

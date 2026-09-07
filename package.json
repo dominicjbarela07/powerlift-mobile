@@ -96,6 +96,7 @@
     "test:premium-header-system": "node scripts/test-premium-contextual-header-system.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
+    "build:anatomy-materials": "node scripts/build-anatomy-material-masters.mjs",
     "test:anatomy-system": "node --import tsx scripts/test-anatomy-system.mjs",
     "test:anatomy-framing": "node --import tsx scripts/test-anatomy-framing.mjs",
     "test:anatomy-consumer-convergence": "node --import tsx scripts/test-anatomy-consumer-convergence.mjs",

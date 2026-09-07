@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useId, useMemo, useState } from 'react';
 import {
   LayoutChangeEvent,
   StyleProp,
@@ -9,7 +9,6 @@ import {
 import Svg, { Defs, G, Image as SvgImage, Mask } from 'react-native-svg';
 
 import {
-  ANATOMY_COLORS,
   MUSCLE_META,
   anatomyRenderKey,
   normalizeMuscleRoles,
@@ -26,7 +25,11 @@ import {
   type AnatomyViewPreference,
   type GovernedMuscleId,
 } from '@/lib/anatomy-system';
-import { AnatomyMaskPaths, mountedMasksForView } from './anatomy-mask-registry';
+import {
+  AnatomySegmentPaths,
+  mountedMasksForView,
+  type AnatomyLaterality,
+} from './anatomy-mask-registry';
 import {
   resolveAnatomyFraming,
   type AnatomyFramingSurface,
@@ -41,6 +44,29 @@ const BASES = {
   feminine: {
     front: require('@/assets/images/anatomy-v2/masters/feminine-front-v1.png'),
     rear: require('@/assets/images/anatomy-v2/masters/feminine-rear-v1.png'),
+  },
+} as const;
+
+const MATERIALS = {
+  masculine: {
+    front: {
+      primary: require('@/assets/images/anatomy-v2/materials/masculine-front-primary-material-v2.png'),
+      secondary: require('@/assets/images/anatomy-v2/materials/masculine-front-secondary-material-v2.png'),
+    },
+    rear: {
+      primary: require('@/assets/images/anatomy-v2/materials/masculine-rear-primary-material-v2.png'),
+      secondary: require('@/assets/images/anatomy-v2/materials/masculine-rear-secondary-material-v2.png'),
+    },
+  },
+  feminine: {
+    front: {
+      primary: require('@/assets/images/anatomy-v2/materials/feminine-front-primary-material-v2.png'),
+      secondary: require('@/assets/images/anatomy-v2/materials/feminine-front-secondary-material-v2.png'),
+    },
+    rear: {
+      primary: require('@/assets/images/anatomy-v2/materials/feminine-rear-primary-material-v2.png'),
+      secondary: require('@/assets/images/anatomy-v2/materials/feminine-rear-secondary-material-v2.png'),
+    },
   },
 } as const;
 
@@ -82,9 +108,11 @@ export type MuscleMapProps = Readonly<{
   surface?: AnatomyFramingSurface;
   showFrame?: boolean;
   testID?: string;
+  laterality?: AnatomyLaterality;
+  intensity?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
 }>;
 
-export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy' | 'athlete' | 'primary' | 'secondary' | 'view' | 'region' | 'semanticLevel' | 'size'>): MuscleMapRenderState {
+export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy' | 'athlete' | 'primary' | 'secondary' | 'view' | 'region' | 'semanticLevel' | 'size' | 'laterality' | 'intensity'>): MuscleMapRenderState {
   const size = props.size || 'card';
   const roles = normalizeMuscleRoles(props.primary, props.secondary);
   const presentation = resolveAnatomyPresentation({
@@ -102,7 +130,7 @@ export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy
     region,
     ...roles,
     mountedMasks,
-    cacheKey: anatomyRenderKey({ presentation, view, region, ...roles, size }),
+    cacheKey: anatomyRenderKey({ presentation, view, region, ...roles, size, laterality: props.laterality, intensity: props.intensity }),
   };
 }
 
@@ -115,6 +143,8 @@ function Figure({
   width,
   height,
   surface,
+  laterality,
+  intensity,
 }: {
   presentation: AnatomyPresentation;
   view: Exclude<AnatomyResolvedView, 'dual'>;
@@ -124,7 +154,10 @@ function Figure({
   width: number;
   height: number;
   surface: AnatomyFramingSurface;
+  laterality: AnatomyLaterality;
+  intensity?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
 }) {
+  const scopeId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const framing = resolveAnatomyFraming({
     primary,
     secondary,
@@ -136,9 +169,14 @@ function Figure({
   const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = framing.viewBox;
   const primarySet = new Set(primary);
   const visibleSecondary = secondary.filter((muscle) => !primarySet.has(muscle));
-  const primaryOpacity = size === 'thumbnail' ? 0.86 : 0.72;
-  const secondaryOpacity = size === 'thumbnail' ? 0.72 : 0.58;
-  const bodyMaskId = `registered-body-${presentation}-${view}`;
+  const bodyMaskId = `${scopeId}-registered-body-${presentation}-${view}`;
+  const segmentOpacity = (muscle: GovernedMuscleId, role: 'primary' | 'secondary') => {
+    const normalized = intensity?.[muscle];
+    const roleOpacity = role === 'primary' ? 0.98 : 0.92;
+    if (normalized == null || !Number.isFinite(normalized)) return roleOpacity;
+    return Math.max(0, Math.min(1, normalized)) * roleOpacity;
+  };
+  const segmentId = (muscle: GovernedMuscleId) => `${scopeId}-${presentation}-${view}-${muscle}-${laterality}`;
   return (
     <View style={styles.figure}>
       <Svg
@@ -168,6 +206,26 @@ function Figure({
               y={0}
             />
           </Mask>
+          {[...visibleSecondary, ...primary].map((muscle) => (
+            <Mask
+              height={941}
+              id={segmentId(muscle)}
+              key={`segment-${muscle}`}
+              maskContentUnits="userSpaceOnUse"
+              maskType="alpha"
+              maskUnits="userSpaceOnUse"
+              width={418}
+              x={0}
+              y={0}
+            >
+              <AnatomySegmentPaths
+                laterality={laterality}
+                muscle={muscle}
+                presentation={presentation}
+                view={view}
+              />
+            </Mask>
+          ))}
         </Defs>
         <SvgImage
           height={941}
@@ -179,32 +237,36 @@ function Figure({
         />
         <G mask={`url(#${bodyMaskId})`}>
           {visibleSecondary.map((muscle) => (
-            <AnatomyMaskPaths
-              key={`secondary-${muscle}`}
-              muscle={muscle}
-              presentation={presentation}
-              view={view}
-              fill={ANATOMY_COLORS.secondary}
-              stroke={ANATOMY_COLORS.secondaryEdge}
-              opacity={secondaryOpacity}
-            />
+            <G key={`secondary-${muscle}`} mask={`url(#${segmentId(muscle)})`}>
+              <SvgImage
+                height={941}
+                href={MATERIALS[presentation][view].secondary}
+                opacity={segmentOpacity(muscle, 'secondary')}
+                preserveAspectRatio="xMidYMid meet"
+                width={418}
+                x={0}
+                y={0}
+              />
+            </G>
           ))}
           {primary.map((muscle) => (
-            <AnatomyMaskPaths
-              key={`primary-${muscle}`}
-              muscle={muscle}
-              presentation={presentation}
-              view={view}
-              fill={ANATOMY_COLORS.primary}
-              stroke={ANATOMY_COLORS.primaryEdge}
-              opacity={primaryOpacity}
-            />
+            <G key={`primary-${muscle}`} mask={`url(#${segmentId(muscle)})`}>
+              <SvgImage
+                height={941}
+                href={MATERIALS[presentation][view].primary}
+                opacity={segmentOpacity(muscle, 'primary')}
+                preserveAspectRatio="xMidYMid meet"
+                width={418}
+                x={0}
+                y={0}
+              />
+            </G>
           ))}
         </G>
         <SvgImage
           height={941}
           href={BASES[presentation][view]}
-          opacity={size === 'thumbnail' ? 0.20 : 0.27}
+          opacity={size === 'thumbnail' ? 0.08 : 0.12}
           preserveAspectRatio="xMidYMid meet"
           width={418}
           x={0}
@@ -228,11 +290,13 @@ function MuscleMapComponent({
   surface = 'auto',
   showFrame = false,
   testID,
+  laterality = 'bilateral',
+  intensity,
 }: MuscleMapProps) {
   const [layout, setLayout] = useState(() => ({ width: SIZE_WIDTH[size], height: SIZE_HEIGHT[size] }));
   const state = useMemo(
-    () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, region, semanticLevel, size }),
-    [anatomy, athlete, primary, secondary, view, region, semanticLevel, size],
+    () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, region, semanticLevel, size, laterality, intensity }),
+    [anatomy, athlete, primary, secondary, view, region, semanticLevel, size, laterality, intensity],
   );
   const primaryLabels = state.primary.map((muscle) => MUSCLE_META[muscle].label);
   const secondaryLabels = state.secondary.map((muscle) => MUSCLE_META[muscle].label);
@@ -264,10 +328,10 @@ function MuscleMapComponent({
       ]}
     >
       {state.view === 'front' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} />
+        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} laterality={laterality} intensity={intensity} />
       ) : null}
       {state.view === 'rear' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} />
+        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} laterality={laterality} intensity={intensity} />
       ) : null}
     </View>
   );

@@ -280,6 +280,7 @@ export function AthleteTrainingHubExperience({
         <View style={styles.weekStack}>
           {selectedBlock.weeks.map((week) => (
             <WeekSection
+              athlete={{ sex: data.athleteSex, anatomy_display_preference: data.anatomyDisplayPreference }}
               expanded={expandedWeekKey === week.key}
               key={week.key}
               onOpenSession={setSelectedSessionId}
@@ -410,7 +411,7 @@ function EvidenceMetric({ label, value }: { label: string; value: string }) {
   return <View style={styles.evidenceMetric}><Text style={styles.evidenceValue}>{value}</Text><Text style={styles.evidenceLabel}>{label}</Text></View>;
 }
 
-function WeekSection({ week, expanded, onToggle, onOpenSession, unit }: { week: AthleteTrainingWeek; expanded: boolean; onToggle: () => void; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
+function WeekSection({ athlete, week, expanded, onToggle, onOpenSession, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; week: AthleteTrainingWeek; expanded: boolean; onToggle: () => void; onOpenSession: (id: number) => void; unit: 'kg' | 'lb' }) {
   const sessions = week.days.flatMap((day) => day.sessions);
   const completed = sessions.filter((session) => session.status === 'completed').length;
   const state = week.current ? 'in_progress' : sessions.length > 0 && completed === sessions.length ? 'complete' : 'not_started';
@@ -434,7 +435,7 @@ function WeekSection({ week, expanded, onToggle, onOpenSession, unit }: { week: 
             {week.days.slice(0, 7).map((day) => <DayChip day={day} key={day.key} />)}
           </View>
           <View style={styles.sessionStack}>
-            {sessions.map((session) => <SessionCard key={session.id} onPress={() => onOpenSession(session.id)} session={session} unit={unit} />)}
+            {sessions.map((session) => <SessionCard athlete={athlete} key={session.id} onPress={() => onOpenSession(session.id)} session={session} unit={unit} />)}
             {!sessions.length ? <Text style={styles.emptyWeekText}>Recovery and mobility. No training Session is planned.</Text> : null}
           </View>
         </View>
@@ -456,7 +457,7 @@ function DayChip({ day }: { day: AthleteTrainingDay }) {
   );
 }
 
-function SessionCard({ session, onPress, unit }: { session: AthleteTrainingSession; onPress: () => void; unit: 'kg' | 'lb' }) {
+function SessionCard({ athlete, session, onPress, unit }: { athlete: { sex?: string | null; anatomy_display_preference?: string | null }; session: AthleteTrainingSession; onPress: () => void; unit: 'kg' | 'lb' }) {
   const completed = session.status === 'completed';
   const active = session.status === 'in_progress' || session.status === 'today';
   const accent = completed ? SLColors.success : active ? SLColors.warning : SLColors.accentViolet;
@@ -466,7 +467,7 @@ function SessionCard({ session, onPress, unit }: { session: AthleteTrainingSessi
     : session.contentSummary;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionCard, { borderLeftColor: accent }, pressed && styles.pressed]}>
-      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
+      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
       <View style={styles.sessionCopy}>
         <View style={styles.sessionTitleRow}>
           <Text numberOfLines={1} style={styles.sessionTitle}>{session.title}</Text>
@@ -504,7 +505,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="close" size={23} /></Pressable>
           </View>
           <View style={styles.previewHero}>
-            <ProgrammingMuscleRegionArt level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
+            <ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
             <LinearGradient colors={['rgba(2,2,4,0.02)', 'rgba(3,3,5,0.35)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
             <View style={styles.previewStatus}><Text style={[styles.previewStatusText, { color: accent }]}>{session.stateLabel || (completed ? 'COMPLETED' : 'UPCOMING')}</Text></View>
           </View>
@@ -518,7 +519,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <View style={styles.focusSection}>
               <Text style={styles.sectionKicker}>FOCUS MUSCLES</Text>
               <View style={styles.focusSummaryCard}>
-                <ProgrammingMuscleRegionArt level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
+                <ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
                 <View style={styles.focusSummaryCopy}><Text style={styles.focusPrimaryLabel}>PRIMARY</Text><Text style={styles.focusSummaryText}>{primaryMuscles.map(humanizeMuscle).join(' · ')}</Text>{secondaryMuscles.length ? <><Text style={styles.focusSecondaryLabel}>SECONDARY</Text><Text style={styles.focusSummaryText}>{secondaryMuscles.map(humanizeMuscle).join(' · ')}</Text></> : null}<Text style={styles.focusEvidence}>{session.muscleFocus?.source === 'performed' ? 'Performed set evidence' : 'Programmed set exposure'}</Text></View>
               </View>
             </View>

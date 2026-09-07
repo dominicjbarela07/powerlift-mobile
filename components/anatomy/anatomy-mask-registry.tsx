@@ -1,5 +1,5 @@
-import React from 'react';
-import { G, Path } from 'react-native-svg';
+import React, { Fragment } from 'react';
+import { Path } from 'react-native-svg';
 
 import type { AnatomyPresentation, AnatomyResolvedView, GovernedMuscleId } from '@/lib/anatomy-system';
 
@@ -108,8 +108,8 @@ export const REGISTERED_ANATOMY_MASKS: RegisteredMaskRegistry = {
         'M328 187 C348 190 361 204 363 224 C362 242 352 255 335 263 C321 265 308 256 300 240 L293 212 C303 197 314 190 328 187 Z',
       ],
       lats: [
-        'M164 257 C148 269 139 294 139 324 C141 366 153 402 177 427 C194 426 210 414 226 393 L227 300 C209 276 186 261 164 257 Z',
-        'M300 257 C316 269 325 294 325 324 C323 366 311 402 287 427 C270 426 254 414 238 393 L237 300 C255 276 278 261 300 257 Z',
+        'M164 257 C148 269 139 294 139 324 C141 364 153 391 177 410 C194 410 210 402 226 385 L227 300 C209 276 186 261 164 257 Z',
+        'M300 257 C316 269 325 294 325 324 C323 364 311 391 287 410 C270 410 254 402 238 385 L237 300 C255 276 278 261 300 257 Z',
       ],
       upper_back: [
         'M169 205 C187 195 211 202 227 220 L227 299 C204 289 181 272 158 248 L169 205 Z',
@@ -254,8 +254,8 @@ export const REGISTERED_ANATOMY_MASKS: RegisteredMaskRegistry = {
         'M300 197 C318 201 329 215 330 234 C329 250 320 263 305 270 C292 272 280 263 272 248 L266 218 C275 205 287 198 300 197 Z',
       ],
       lats: [
-        'M138 267 C123 279 115 302 115 331 C117 372 128 407 150 431 C166 431 181 418 202 397 L202 309 C186 283 160 268 138 267 Z',
-        'M276 267 C291 279 299 302 299 331 C297 372 286 407 264 431 C248 431 233 418 212 397 L212 309 C228 283 254 268 276 267 Z',
+        'M138 267 C123 279 115 302 115 331 C117 370 128 395 150 411 C166 411 181 403 202 389 L202 309 C186 283 160 268 138 267 Z',
+        'M276 267 C291 279 299 302 299 331 C297 370 286 395 264 411 C248 411 233 403 212 389 L212 309 C228 283 254 268 276 267 Z',
       ],
       upper_back: [
         'M143 215 C161 204 184 210 202 229 L202 309 C181 298 157 281 136 257 L143 215 Z',
@@ -320,32 +320,38 @@ export function registeredMaskPaths(
   return REGISTERED_ANATOMY_MASKS[presentation][view][muscle];
 }
 
-export function AnatomyMaskPaths({ muscle, presentation, view, fill, stroke, opacity }: {
+export type AnatomyLaterality = 'bilateral' | 'left' | 'right';
+
+/**
+ * Exact master-coordinate segment geometry. Bilateral paths are authored as
+ * left compartments followed by right compartments, so each side remains
+ * independently addressable without any runtime transform or position table.
+ */
+export function AnatomySegmentPaths({ muscle, presentation, view, laterality = 'bilateral' }: {
   muscle: GovernedMuscleId;
   presentation: AnatomyPresentation;
   view: AnatomyResolvedView;
-  fill: string;
-  stroke: string;
-  opacity: number;
+  laterality?: AnatomyLaterality;
 }) {
   if (view === 'dual') return null;
-  const paths = registeredMaskPaths(muscle, presentation, view);
+  const allPaths = registeredMaskPaths(muscle, presentation, view);
+  const split = Math.ceil(allPaths.length / 2);
+  const paths = laterality === 'left'
+    ? allPaths.slice(0, split)
+    : laterality === 'right'
+      ? allPaths.slice(split)
+      : allPaths;
   if (!paths.length) return null;
   return (
-    <G>
+    <Fragment>
       {paths.map((path, index) => (
         <Path
-          key={`${presentation}-${view}-${muscle}-${index}`}
+          key={`${presentation}-${view}-${muscle}-${laterality}-${index}`}
           d={path}
-          fill={fill}
-          fillOpacity={opacity}
-          stroke={stroke}
-          strokeOpacity={Math.min(1, opacity + 0.12)}
-          strokeWidth={1.35}
-          strokeLinejoin="round"
+          fill="#FFFFFF"
         />
       ))}
-    </G>
+    </Fragment>
   );
 }
 

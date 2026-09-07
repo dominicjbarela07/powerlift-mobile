@@ -303,8 +303,15 @@ export function anatomyRenderKey(input: {
   primary?: readonly unknown[] | null;
   secondary?: readonly unknown[] | null;
   size: AnatomySize;
+  laterality?: 'bilateral' | 'left' | 'right';
+  intensity?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
 }): string {
   const roles = normalizeMuscleRoles(input.primary, input.secondary);
+  const normalizedIntensity = Object.entries(input.intensity || {})
+    .filter(([muscle, value]) => isGovernedMuscleId(muscle) && Number.isFinite(value))
+    .map(([muscle, value]) => `${muscle}:${Math.max(0, Math.min(1, Number(value))).toFixed(3)}`)
+    .sort()
+    .join(',');
   return [
     input.presentation,
     input.view,
@@ -312,29 +319,37 @@ export function anatomyRenderKey(input: {
     [...roles.primary].sort().join(','),
     [...roles.secondary].sort().join(','),
     input.size,
+    input.laterality || 'bilateral',
+    normalizedIntensity,
   ].join(':');
 }
 
 export const ANATOMY_QA_PRESETS: Readonly<Record<string, Readonly<{ primary: readonly GovernedMuscleId[]; secondary: readonly GovernedMuscleId[] }>>> = {
   'Chest + Triceps': { primary: ['chest'], secondary: ['triceps'] },
+  'Chest + Front Delts + Triceps': { primary: ['chest', 'front_delts'], secondary: ['triceps'] },
   'Lats + Biceps': { primary: ['lats'], secondary: ['biceps'] },
-  'Front + Side Delts': { primary: ['front_delts', 'side_delts'], secondary: [] },
-  'Rear Delts + Upper Back + Traps': { primary: ['rear_delts', 'upper_back', 'traps'], secondary: [] },
+  'Lats + Upper Back + Rear Delts': { primary: ['lats', 'upper_back'], secondary: ['rear_delts'] },
+  'Upper Back + Traps': { primary: ['upper_back', 'traps'], secondary: [] },
+  'Side Delts': { primary: ['side_delts'], secondary: [] },
   'Quads + Adductors': { primary: ['quads'], secondary: ['adductors'] },
   'Hamstrings + Glutes': { primary: ['hamstrings'], secondary: ['glutes'] },
-  Abductors: { primary: ['abductors'], secondary: [] },
+  'Glutes + Abductors': { primary: ['glutes'], secondary: ['abductors'] },
   Calves: { primary: ['calves'], secondary: [] },
   'Abs + Obliques': { primary: ['abs'], secondary: ['obliques'] },
   'Lower Back': { primary: ['lower_back'], secondary: [] },
-  'Full Upper Body': {
-    primary: ['chest', 'lats', 'upper_back', 'front_delts', 'side_delts'],
-    secondary: ['rear_delts', 'biceps', 'triceps', 'forearms'],
+  'Dense Push Session': {
+    primary: ['chest', 'front_delts', 'triceps'],
+    secondary: ['side_delts', 'serratus'],
   },
-  'Full Lower Body': {
+  'Dense Pull Session': {
+    primary: ['lats', 'upper_back', 'biceps'],
+    secondary: ['rear_delts', 'traps', 'forearms'],
+  },
+  'Dense Lower Session': {
     primary: ['quads', 'hamstrings', 'glutes', 'calves'],
     secondary: ['adductors', 'abductors', 'hip_flexors'],
   },
-  'Dense Session': {
+  'Full Multi-Muscle Accessory Block': {
     primary: ['lats', 'triceps', 'hamstrings', 'side_delts', 'glutes'],
     secondary: ['upper_back', 'traps', 'biceps', 'forearms'],
   },

@@ -11,21 +11,26 @@ import {
   ANATOMY_QA_PRESETS,
   GOVERNED_MUSCLE_IDS,
   MUSCLE_META,
-  type AnatomyPresentation,
+  type AnatomyPresentationPreference,
   type AnatomyViewPreference,
   type GovernedMuscleId,
 } from '@/lib/anatomy-system';
+import type { AnatomyLaterality } from '@/components/anatomy/anatomy-mask-registry';
 
 type MuscleRole = 'inactive' | 'primary' | 'secondary';
 
-const PRESENTATIONS: readonly AnatomyPresentation[] = ['masculine', 'feminine'];
+const PRESENTATIONS: readonly AnatomyPresentationPreference[] = ['automatic', 'masculine', 'feminine'];
 const VIEWS: readonly AnatomyViewPreference[] = ['front', 'rear', 'dual'];
+const LATERALITIES: readonly AnatomyLaterality[] = ['bilateral', 'left', 'right'];
 const PRESET_ALIASES: Readonly<Record<string, keyof typeof ANATOMY_QA_PRESETS>> = {
   upper: 'Lats + Biceps',
-  lower: 'Full Lower Body',
+  lower: 'Dense Lower Session',
   front_core: 'Abs + Obliques',
-  rear_upper: 'Rear Delts + Upper Back + Traps',
-  dense: 'Dense Session',
+  rear_upper: 'Lats + Upper Back + Rear Delts',
+  dense: 'Full Multi-Muscle Accessory Block',
+  push: 'Chest + Front Delts + Triceps',
+  pull: 'Dense Pull Session',
+  accessory: 'Full Multi-Muscle Accessory Block',
 };
 
 function titleCase(value: string) {
@@ -38,13 +43,14 @@ export default function AnatomySystemLab() {
   const params = useLocalSearchParams<{ presentation?: string; view?: string; preset?: string; scenario?: string }>();
   const requestedPresetName = PRESET_ALIASES[params.scenario || ''] || params.preset || 'Lats + Biceps';
   const initialPreset = ANATOMY_QA_PRESETS[requestedPresetName] || ANATOMY_QA_PRESETS['Lats + Biceps'];
-  const [presentation, setPresentation] = useState<AnatomyPresentation>(params.presentation === 'feminine' ? 'feminine' : 'masculine');
+  const [presentation, setPresentation] = useState<AnatomyPresentationPreference>(params.presentation === 'feminine' ? 'feminine' : params.presentation === 'automatic' ? 'automatic' : 'masculine');
   const [view, setView] = useState<AnatomyViewPreference>(params.view === 'front' || params.view === 'rear' ? params.view : 'dual');
+  const [laterality, setLaterality] = useState<AnatomyLaterality>('bilateral');
   const [primary, setPrimary] = useState<GovernedMuscleId[]>([...initialPreset.primary]);
   const [secondary, setSecondary] = useState<GovernedMuscleId[]>([...initialPreset.secondary]);
 
   useEffect(() => {
-    setPresentation(params.presentation === 'feminine' ? 'feminine' : 'masculine');
+    setPresentation(params.presentation === 'feminine' ? 'feminine' : params.presentation === 'automatic' ? 'automatic' : 'masculine');
     setView(params.view === 'front' || params.view === 'rear' ? params.view : 'dual');
     const presetName = PRESET_ALIASES[params.scenario || ''] || params.preset || '';
     const requestedPreset = ANATOMY_QA_PRESETS[presetName];
@@ -106,10 +112,18 @@ export default function AnatomySystemLab() {
             </Pressable>
           ))}
         </View>
+        <Text style={styles.controlLabel}>Segment addressability</Text>
+        <View style={styles.controlRail}>
+          {LATERALITIES.map((value) => (
+            <Pressable key={value} onPress={() => setLaterality(value)} style={[styles.control, laterality === value && styles.controlActive]} testID={`anatomy-laterality-${value}`}>
+              <Text style={[styles.controlText, laterality === value && styles.controlTextActive]}>{titleCase(value)}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       <View style={styles.heroCard}>
-        <MuscleMap anatomy={presentation} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} surface="portrait" view={view} testID="anatomy-qa-hero" />
+        <MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} surface="portrait" view={view} testID="anatomy-qa-hero" />
         <Text style={styles.legend}>Violet · {primary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
         <Text style={styles.legend}>Magenta · {secondary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
       </View>
@@ -139,16 +153,16 @@ export default function AnatomySystemLab() {
 
       <Text style={styles.sectionTitle}>Size Tests</Text>
       <View style={styles.sizeCard}>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
-        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} surface="wide" view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
+        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} surface="wide" view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
       </View>
 
       <Text style={styles.sectionTitle}>Platform Previews</Text>
       <View style={styles.previewGrid}>
-        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} surface="square" view={view} /></View>
-        <View style={styles.widePreview}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="wide" view={view} /></View>
-        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="portrait" view={view} /></View>
+        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} surface="square" view={view} /></View>
+        <View style={styles.widePreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="wide" view={view} /></View>
+        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} laterality={laterality} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="portrait" view={view} /></View>
       </View>
       <View style={styles.bottomSpace} />
     </ScrollView>
@@ -171,6 +185,7 @@ const styles = StyleSheet.create({
   controlActive: { borderColor: '#A35BFF', backgroundColor: '#492079' },
   controlText: { color: '#A8AFBB', fontSize: 11.5, fontWeight: '700' },
   controlTextActive: { color: '#FFFFFF' },
+  controlLabel: { color: '#858C99', fontSize: 10.5, lineHeight: 14, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.45 },
   heroCard: { alignItems: 'center', gap: 4, padding: 10, borderRadius: 17, borderWidth: 1, borderColor: '#57366F', backgroundColor: '#06070A' },
   heroMap: { width: '100%', height: 370 },
   legend: { alignSelf: 'stretch', color: '#B6BBC5', fontSize: 10.5, lineHeight: 15 },
