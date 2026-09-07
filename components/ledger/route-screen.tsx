@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 
 import AchievementsExperience from './AchievementsExperience';
+import AccessoriesExperience from './AccessoriesExperience';
 import { LedgerFiltersExperience, MovementCollectionExperience, MuscleGroupsExperience } from './exploration-experiences';
 
 import { ExperienceForScreen } from './experiences';
@@ -11,7 +12,7 @@ import type { LedgerLiveDataFixture } from './use-ledger-live-data';
 
 export function LedgerRouteScreen({ screen, achievementsDevFixture }: { screen: LedgerScreen; achievementsDevFixture?: LedgerLiveDataFixture }) {
   if (screen === 'achievements') return <LedgerAchievementsRoom devFixture={achievementsDevFixture} />;
-  if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><MovementCollectionExperience kind="accessories" /></LedgerSpecializedRoom>;
+  if (screen === 'accessories') return <LedgerSpecializedRoom active="accessories"><AccessoriesExperience /></LedgerSpecializedRoom>;
   if (screen === 'variants') return <LedgerSpecializedRoom active="variants"><MovementCollectionExperience kind="variants" /></LedgerSpecializedRoom>;
   if (screen === 'muscle-groups') return <LedgerSpecializedRoom active="muscle-groups"><MuscleGroupsExperience /></LedgerSpecializedRoom>;
   if (screen === 'filters') return <LedgerSpecializedRoom active="filters"><LedgerFiltersExperience /></LedgerSpecializedRoom>;

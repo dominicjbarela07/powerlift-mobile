@@ -30,6 +30,77 @@ export type LedgerMovementProgress = Readonly<{
   latest_rir?: number | null;
 }>;
 
+export type LedgerAccessoryMovement = LedgerMovementProgress & Readonly<{
+  period_set_count: number;
+  period_session_count: number;
+  period_volume_kg: number;
+  trend: { date: string; weight_kg: number; reps?: number | null }[];
+}>;
+
+export type LedgerAccessorySet = LedgerMovementSet & Readonly<{
+  workout_id: number;
+  load_convention?: string | null;
+  measurement_type?: string | null;
+  equipment_identity_id?: number | null;
+  equipment_type?: string | null;
+  equipment_manufacturer?: string | null;
+  equipment_model?: string | null;
+}>;
+
+export type LedgerAccessoryProgress = Readonly<{
+  movement_id: number;
+  identity_key: string;
+  current: LedgerAccessorySet;
+  prior: LedgerAccessorySet;
+  comparison: {
+    state: 'improved';
+    reason?: string;
+    load_delta_kg?: number;
+    reps_delta?: number;
+    effort_reserve_delta?: number | null;
+    load_direction?: 'higher_is_better' | 'lower_is_better';
+  };
+  assisted: boolean;
+  occurred_on: string;
+  trend: { date: string; weight_kg: number; reps?: number | null }[];
+}>;
+
+export type LedgerAccessoryBest = Readonly<{
+  movement_id: number;
+  identity_key: string;
+  performance: LedgerAccessorySet;
+  prior: LedgerAccessorySet;
+  best_type: string;
+  occurred_on: string;
+  assisted: boolean;
+}>;
+
+export type LedgerAccessoriesStory = Readonly<{
+  period: {
+    key: 'block' | '90d';
+    label: string;
+    start_date: string;
+    end_date: string;
+    comparison_start_date: string;
+    comparison_end_date: string;
+    comparison_label: string;
+    span_days: number;
+  };
+  summary: { volume_kg: number; set_count: number; session_count: number; movement_count: number; muscle_group_count: number };
+  comparison: { volume_kg: number; set_count: number; session_count: number; movement_count: number; muscle_group_count: number };
+  weekly_trend: { date: string; volume_kg: number; set_count: number; session_count: number }[];
+  muscle_groups: LedgerMuscleProgress[];
+  trained_primary_muscles: string[];
+  trained_secondary_muscles: string[];
+  movements: LedgerAccessoryMovement[];
+  progress: LedgerAccessoryProgress[];
+  recent_bests: LedgerAccessoryBest[];
+  recent_sessions: { id: number; date: string; label: string; set_count: number; volume_kg: number; movement_count: number }[];
+  history_count: number;
+  evidence_policy: 'exact_movement_then_exact_equipment';
+  volume_policy: 'external_load_only_assistance_and_bodyweight_only_excluded';
+}>;
+
 export type LedgerMuscleProgress = Readonly<{
   key: string;
   volume_kg: number;
@@ -70,6 +141,7 @@ export type LedgerExplorationIndex = Readonly<{
   athlete: { id: number; name: string; preferred_units?: string | null; sex?: string | null; anatomy_display_preference?: string | null };
   context: LedgerExplorationContext;
   movements: LedgerMovementProgress[];
+  accessories: LedgerAccessoriesStory;
   muscle_groups: LedgerMuscleProgress[];
   filters: {
     programs: { id: number; name: string; status: string }[];

@@ -188,7 +188,7 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 }
 
 export function ArchiveFoundationExperience() {
-  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; displayUnit?: string }>();
+  const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; classification?: string; displayUnit?: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
@@ -199,9 +199,10 @@ export function ArchiveFoundationExperience() {
   const [scope, setScope] = useState<ArchiveScope>(initialScope);
   const [queryInput, setQueryInput] = useState(initialQuery);
   const [committedQuery, setCommittedQuery] = useState(initialQuery.trim());
-  const [filtersOpen, setFiltersOpen] = useState(Boolean(first(params.date_from) || first(params.date_to)));
-  const [toolsOpen, setToolsOpen] = useState(Boolean(initialQuery || initialScope !== 'overview' || first(params.date_from) || first(params.date_to)));
-  const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS, dateFrom: first(params.date_from) || '', dateTo: first(params.date_to) || '' });
+  const initialClassification = first(params.classification) === 'accessory' || first(params.classification) === 'core' ? first(params.classification) as Filters['classification'] : '';
+  const [filtersOpen, setFiltersOpen] = useState(Boolean(first(params.date_from) || first(params.date_to) || initialClassification));
+  const [toolsOpen, setToolsOpen] = useState(Boolean(initialQuery || initialScope !== 'overview' || first(params.date_from) || first(params.date_to) || initialClassification));
+  const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS, dateFrom: first(params.date_from) || '', dateTo: first(params.date_to) || '', classification: initialClassification });
   const [movementFilter, setMovementFilter] = useState<{ id: number; name: string } | null>(null);
   const [naturalAlbumFilter, setNaturalAlbumFilter] = useState<NaturalAlbum | null>(null);
   const [thumbnailUrls, setThumbnailUrls] = useState<Record<number, string>>({});
