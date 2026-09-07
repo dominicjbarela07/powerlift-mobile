@@ -13,6 +13,7 @@ const client = read('lib/ledger-exploration.ts');
 const archive = read('components/ledger/archive-foundation.tsx');
 const movementHistory = read('components/movement-history/CanonicalMovementHistoryScreen.tsx');
 const backend = read('../app/services/ledger_archive.py');
+const engineeringDirective = read('../AGENTS.md');
 
 assert.match(route, /screen === 'accessories'[\s\S]*<AccessoriesExperience/,
   'The shipping Accessories route must use the dedicated continuous experience.');
@@ -29,6 +30,19 @@ for (const marker of [
   'accessory-history-preview',
   'view-full-accessory-history',
 ]) assert.match(experience, new RegExp(`testID="${marker}"`), `${marker} must remain part of the continuous story.`);
+
+assert.match(experience, /function WorkSnapshot[\s\S]*styles\.evidenceBand[\s\S]*testID="accessory-work-snapshot"/,
+  'The work snapshot must remain one intentionally composed evidence band.');
+assert.doesNotMatch(experience, /snapshotMetric|flexWrap:\s*'wrap'/,
+  'The rejected generic 2x2 metric-card grid must not return.');
+assert.equal((experience.match(/<AnalyticalTimeSeriesChart/g) || []).length, 1,
+  'Working sets must remain a compact companion signal instead of a second full analytics card.');
+assert.match(experience, /story\.muscle_groups\.slice\(0, 5\)/,
+  'The phone hero must preserve a disciplined five-row top-muscle hierarchy.');
+assert.match(experience, /progressCard:\s*\{\s*width:\s*232,\s*minHeight:\s*286/,
+  'Movement progress cards must retain the corrected phone-scale composition.');
+assert.match(engineeringDirective, /## Visual Convergence Handoff Gate[\s\S]*identify the three weakest visual areas[\s\S]*second screenshot pass/,
+  'The standing engineering directive must require a two-pass visual-quality handoff gate.');
 
 assert.match(experience, /SLAtmosphericContextHeader[\s\S]*ledger-chapter-accessories-v1/,
   'Accessories must use premium atmospheric page identity.');
