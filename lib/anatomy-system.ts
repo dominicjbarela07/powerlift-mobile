@@ -316,11 +316,26 @@ export function anatomyRenderKey(input: {
 }
 
 export const ANATOMY_QA_PRESETS: Readonly<Record<string, Readonly<{ primary: readonly GovernedMuscleId[]; secondary: readonly GovernedMuscleId[] }>>> = {
-  Push: { primary: ['chest', 'front_delts'], secondary: ['triceps'] },
-  Pull: { primary: ['lats', 'upper_back'], secondary: ['biceps', 'rear_delts'] },
-  Legs: { primary: ['quads', 'glutes', 'hamstrings'], secondary: ['calves', 'adductors'] },
-  Shoulders: { primary: ['front_delts', 'side_delts', 'rear_delts'], secondary: ['triceps'] },
-  Back: { primary: ['lats', 'upper_back', 'traps'], secondary: ['rear_delts', 'biceps'] },
-  Arms: { primary: ['biceps', 'triceps'], secondary: ['forearms'] },
-  'Full Body': { primary: ['chest', 'lats', 'quads', 'glutes', 'abs'], secondary: ['triceps', 'biceps', 'hamstrings', 'calves'] },
+  'Chest + Triceps': { primary: ['chest'], secondary: ['triceps'] },
+  'Lats + Biceps': { primary: ['lats'], secondary: ['biceps'] },
+  'Front + Side Delts': { primary: ['front_delts', 'side_delts'], secondary: [] },
+  'Rear Delts + Upper Back + Traps': { primary: ['rear_delts', 'upper_back', 'traps'], secondary: [] },
+  'Quads + Adductors': { primary: ['quads'], secondary: ['adductors'] },
+  'Hamstrings + Glutes': { primary: ['hamstrings'], secondary: ['glutes'] },
+  Abductors: { primary: ['abductors'], secondary: [] },
+  Calves: { primary: ['calves'], secondary: [] },
+  'Abs + Obliques': { primary: ['abs'], secondary: ['obliques'] },
+  'Lower Back': { primary: ['lower_back'], secondary: [] },
+  'Full Upper Body': {
+    primary: ['chest', 'lats', 'upper_back', 'front_delts', 'side_delts'],
+    secondary: ['rear_delts', 'biceps', 'triceps', 'forearms'],
+  },
+  'Full Lower Body': {
+    primary: ['quads', 'hamstrings', 'glutes', 'calves'],
+    secondary: ['adductors', 'abductors', 'hip_flexors'],
+  },
+  'Dense Session': {
+    primary: ['lats', 'triceps', 'hamstrings', 'side_delts', 'glutes'],
+    secondary: ['upper_back', 'traps', 'biceps', 'forearms'],
+  },
 };

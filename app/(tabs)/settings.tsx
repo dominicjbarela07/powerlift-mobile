@@ -1795,6 +1795,18 @@ export default function SettingsScreen() {
           </>
         , 'Support')}
 
+        {typeof __DEV__ !== 'undefined' && __DEV__
+          ? settingsGroup(
+              settingsRow({
+                icon: 'body-outline',
+                title: 'Dynamic Anatomy QA',
+                description: 'Inspect registered muscle geometry, roles, views, and presentation variants',
+                onPress: () => router.push('/(tabs)/dev-mocks/anatomy-system' as any),
+              }),
+              'Developer'
+            )
+          : null}
+
         {canAccessAccessoryCatalogReview(auth.user)
           ? settingsGroup(
               settingsRow({

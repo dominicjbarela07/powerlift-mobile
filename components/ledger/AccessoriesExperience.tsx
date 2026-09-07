@@ -21,7 +21,7 @@ import {
   type LedgerExplorationIndex,
   type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
-import { isGovernedMuscleId, type GovernedMuscleId } from '@/lib/anatomy-system';
+import { isGovernedMuscleId, MUSCLE_META, type GovernedMuscleId } from '@/lib/anatomy-system';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
@@ -152,7 +152,7 @@ export default function AccessoriesExperience() {
   const [data, setData] = useState<LedgerExplorationIndex | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [anatomyView, setAnatomyView] = useState<'front' | 'rear'>('front');
+  const [anatomyView, setAnatomyView] = useState<'front' | 'rear' | null>(null);
   const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
 
   const load = () => {
@@ -169,6 +169,8 @@ export default function AccessoriesExperience() {
   const movementsById = useMemo(() => new Map((story?.movements || []).map((movement) => [movement.id, movement])), [story?.movements]);
   const primary = useMemo(() => (story?.trained_primary_muscles || []).filter(isGovernedMuscleId) as GovernedMuscleId[], [story?.trained_primary_muscles]);
   const secondary = useMemo(() => (story?.trained_secondary_muscles || []).filter(isGovernedMuscleId) as GovernedMuscleId[], [story?.trained_secondary_muscles]);
+  const resolvedAnatomyView = anatomyView
+    || (primary[0] && MUSCLE_META[primary[0]].preferred === 'rear' ? 'rear' : 'front');
 
   if (loading) return <State title="Loading your accessory record." />;
   if (error || !data || !story) return <State title={error || 'Accessory evidence is unavailable.'} retry={load} />;
@@ -203,9 +205,9 @@ export default function AccessoriesExperience() {
       <View style={styles.developmentHero} testID="accessory-development-hero">
         <SectionHeading title="ACCESSORY DEVELOPMENT" subtitle="Working-set evidence by governed primary muscle." />
         <View style={styles.anatomyStage}>
-          <MuscleMap athlete={data.athlete} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.anatomy} surface="portrait" view={anatomyView} testID={`accessories-anatomy-${anatomyView}`} />
+          <MuscleMap athlete={data.athlete} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.anatomy} surface="portrait" view={resolvedAnatomyView} testID={`accessories-anatomy-${resolvedAnatomyView}`} />
           <View style={styles.anatomyControls}>
-            {(['front', 'rear'] as const).map((view) => <Pressable key={view} accessibilityRole="tab" accessibilityState={{ selected: anatomyView === view }} onPress={() => setAnatomyView(view)} style={[styles.anatomyControl, anatomyView === view && styles.anatomyControlActive]} testID={`accessories-anatomy-view-${view}`}><Text style={[styles.anatomyControlText, anatomyView === view && styles.anatomyControlTextActive]}>{titleCase(view)}</Text></Pressable>)}
+            {(['front', 'rear'] as const).map((view) => <Pressable key={view} accessibilityRole="tab" accessibilityState={{ selected: resolvedAnatomyView === view }} onPress={() => setAnatomyView(view)} style={[styles.anatomyControl, resolvedAnatomyView === view && styles.anatomyControlActive]} testID={`accessories-anatomy-view-${view}`}><Text style={[styles.anatomyControlText, resolvedAnatomyView === view && styles.anatomyControlTextActive]}>{titleCase(view)}</Text></Pressable>)}
           </View>
         </View>
         <View style={styles.muscleEvidence}>
@@ -372,7 +374,7 @@ const styles = StyleSheet.create({
   bestPillText: { color: '#E4C3FF', fontSize: 10, lineHeight: 13, fontWeight: '700' },
   libraryRow: { minHeight: 67, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#292F38' },
   libraryIcon: { width: 51, height: 51, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: 10, backgroundColor: '#130D1A' },
-  libraryAnatomy: { width: 51, height: 55, transform: [{ scale: 0.82 }] },
+  libraryAnatomy: { width: 42, height: 45 },
   libraryCopy: { flex: 1, minWidth: 0, gap: 2 },
   libraryName: { color: '#E4E0E7', fontSize: 14, lineHeight: 18, fontWeight: '700' },
   libraryMeta: { color: '#858C98', fontSize: 11, lineHeight: 15 },

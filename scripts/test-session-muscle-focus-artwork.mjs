@@ -44,9 +44,13 @@ for (const relative of [
   'components/coach-mobile/CoachAthleteHubSheet.tsx',
   'components/coach-mobile/CompletedSessionRecap.tsx',
   'app/(tabs)/coach-calendar.tsx',
-  'app/(tabs)/workout/session-workspace/[workoutId].tsx',
 ]) {
   assert.match(source(relative), /ProgrammingMuscleRegionArt/, `${relative} must use canonical Session region artwork`);
 }
+assert.match(
+  source('app/(tabs)/workout/session-workspace/[workoutId].tsx'),
+  /GovernedMuscleThumbnail/,
+  'Session Workspace muscle drill-down must use the governed aggregate thumbnail wrapper',
+);
 
 console.log('[session-muscle-focus-artwork] canonical projection and cross-surface aggregate anatomy contracts passed');

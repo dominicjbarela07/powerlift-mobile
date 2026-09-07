@@ -32,40 +32,42 @@ const FULL_BODY: AnatomyBounds = Object.freeze({ x: 0, y: 0, width: MASTER_WIDTH
 
 type ViewBounds = Readonly<Partial<Record<GovernedMuscleId, AnatomyBounds>>>;
 
-// Bounds use the canonical 418 x 941 anatomy master coordinate system and
-// describe the actual highlighted mask extents, not display-name inference.
+// Bounds use the canonical 418 x 941 anatomy master coordinate system and are
+// the union of the independently registered masculine and feminine masks. A
+// crop therefore cannot be correct for one presentation while clipping the
+// other. They describe highlighted geometry, never display-name inference.
 const FRONT_TARGET_BOUNDS: ViewBounds = Object.freeze({
-  chest: { x: 137, y: 185, width: 186, height: 104 },
-  front_delts: { x: 100, y: 181, width: 263, height: 93 },
-  side_delts: { x: 98, y: 182, width: 269, height: 86 },
-  traps: { x: 164, y: 169, width: 125, height: 30 },
-  biceps: { x: 100, y: 249, width: 261, height: 109 },
-  forearms: { x: 78, y: 337, width: 307, height: 152 },
-  quads: { x: 145, y: 477, width: 169, height: 213 },
-  adductors: { x: 204, y: 493, width: 52, height: 165 },
-  abductors: { x: 141, y: 465, width: 177, height: 88 },
-  calves: { x: 140, y: 666, width: 179, height: 172 },
-  abs: { x: 191, y: 274, width: 78, height: 157 },
-  obliques: { x: 143, y: 281, width: 174, height: 176 },
-  serratus: { x: 143, y: 264, width: 173, height: 85 },
-  hip_flexors: { x: 166, y: 417, width: 128, height: 98 },
-  neck: { x: 190, y: 146, width: 79, height: 41 },
+  chest: { x: 117, y: 181, width: 224, height: 121 },
+  front_delts: { x: 96, y: 180, width: 266, height: 99 },
+  side_delts: { x: 88, y: 188, width: 282, height: 91 },
+  traps: { x: 154, y: 148, width: 150, height: 63 },
+  biceps: { x: 99, y: 249, width: 260, height: 111 },
+  forearms: { x: 58, y: 334, width: 342, height: 150 },
+  quads: { x: 136, y: 473, width: 188, height: 201 },
+  adductors: { x: 197, y: 466, width: 70, height: 183 },
+  abductors: { x: 138, y: 430, width: 182, height: 101 },
+  calves: { x: 127, y: 666, width: 204, height: 175 },
+  abs: { x: 190, y: 273, width: 82, height: 161 },
+  obliques: { x: 143, y: 274, width: 172, height: 187 },
+  serratus: { x: 142, y: 264, width: 175, height: 96 },
+  hip_flexors: { x: 166, y: 415, width: 128, height: 101 },
+  neck: { x: 188, y: 133, width: 82, height: 72 },
 });
 
 const REAR_TARGET_BOUNDS: ViewBounds = Object.freeze({
-  side_delts: { x: 99, y: 181, width: 262, height: 87 },
-  rear_delts: { x: 108, y: 187, width: 244, height: 83 },
-  lats: { x: 139, y: 252, width: 181, height: 177 },
-  upper_back: { x: 163, y: 195, width: 133, height: 106 },
-  traps: { x: 164, y: 158, width: 132, height: 133 },
-  triceps: { x: 101, y: 245, width: 257, height: 122 },
-  forearms: { x: 77, y: 341, width: 305, height: 148 },
-  hamstrings: { x: 145, y: 502, width: 169, height: 189 },
-  glutes: { x: 143, y: 405, width: 173, height: 130 },
-  abductors: { x: 144, y: 411, width: 171, height: 82 },
-  calves: { x: 136, y: 656, width: 187, height: 182 },
-  lower_back: { x: 174, y: 348, width: 111, height: 95 },
-  neck: { x: 188, y: 108, width: 83, height: 76 },
+  side_delts: { x: 76, y: 187, width: 299, height: 91 },
+  rear_delts: { x: 84, y: 187, width: 279, height: 85 },
+  lats: { x: 115, y: 257, width: 210, height: 174 },
+  upper_back: { x: 136, y: 195, width: 170, height: 114 },
+  traps: { x: 141, y: 145, width: 163, height: 185 },
+  triceps: { x: 83, y: 247, width: 278, height: 118 },
+  forearms: { x: 43, y: 342, width: 363, height: 145 },
+  hamstrings: { x: 121, y: 517, width: 200, height: 177 },
+  glutes: { x: 121, y: 411, width: 199, height: 131 },
+  abductors: { x: 120, y: 417, width: 202, height: 96 },
+  calves: { x: 105, y: 671, width: 233, height: 171 },
+  lower_back: { x: 152, y: 330, width: 138, height: 117 },
+  neck: { x: 169, y: 105, width: 105, height: 88 },
 });
 
 const UPPER_TORSO_CONTEXT: AnatomyBounds = Object.freeze({ x: 68, y: 112, width: 322, height: 370 });

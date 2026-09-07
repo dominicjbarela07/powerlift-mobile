@@ -97,6 +97,7 @@
     "test:ledger-index-maturity": "node --import tsx scripts/test-ledger-index-maturity.mjs",
     "test:anatomy-system": "node --import tsx scripts/test-anatomy-system.mjs",
     "test:anatomy-framing": "node --import tsx scripts/test-anatomy-framing.mjs",
+    "test:anatomy-consumer-convergence": "node --import tsx scripts/test-anatomy-consumer-convergence.mjs",
     "test:swap-muscle-thumbnail-framing": "node --import tsx scripts/test-swap-muscle-thumbnail-framing.mjs",
     "test:swap-equipment-type-filter": "node --import tsx scripts/test-swap-equipment-type-filter.mjs",
     "test:ui-mock-library": "node --import tsx scripts/test-ui-mock-library-registry.mjs",

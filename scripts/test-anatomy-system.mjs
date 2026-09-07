@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  ANATOMY_QA_PRESETS,
   GOVERNED_MUSCLE_IDS,
   aggregateProgrammingWeekFocus,
   aggregateSessionMuscleFocus,
@@ -75,12 +76,17 @@ assert.notEqual(
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 const masks = read('components', 'anatomy', 'anatomy-mask-registry.tsx');
+const renderer = read('components', 'anatomy', 'MuscleMap.tsx');
 const labPath = path.join(root, 'app', '(tabs)', 'dev-mocks', 'anatomy-system.tsx');
 const libraryPath = path.join(root, 'dev-mocks', 'library.ts');
 const lab = fs.existsSync(labPath) ? fs.readFileSync(labPath, 'utf8') : null;
 const library = fs.existsSync(libraryPath) ? fs.readFileSync(libraryPath, 'utf8') : null;
 for (const muscle of GOVERNED_MUSCLE_IDS) {
-  assert.match(masks, new RegExp(`\\b${muscle}: \\[`), `${muscle} is missing from the mask registry`);
+  assert.equal(
+    [...masks.matchAll(new RegExp(`\\b${muscle}: \\[`, 'g'))].length,
+    4,
+    `${muscle} must be explicitly registered for all four presentation/view masters`,
+  );
   if (lab) assert.match(lab, new RegExp(`MUSCLE_META\\[muscle\\]`), 'the QA lab must enumerate governed muscle metadata');
 }
 for (const asset of [
@@ -89,7 +95,29 @@ for (const asset of [
   'feminine-front-v1.png',
   'feminine-rear-v1.png',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, 'assets', 'images', 'anatomy-v2', 'masters', asset)), `missing anatomy master ${asset}`);
+  const absolute = path.join(root, 'assets', 'images', 'anatomy-v2', 'masters', asset);
+  assert.ok(fs.existsSync(absolute), `missing anatomy master ${asset}`);
+  const png = fs.readFileSync(absolute);
+  assert.equal(png.readUInt32BE(16), 418, `${asset} width drifted from the registered coordinate system`);
+  assert.equal(png.readUInt32BE(20), 941, `${asset} height drifted from the registered coordinate system`);
+}
+assert.match(masks, /ANATOMY_MASTER_CANVAS = Object\.freeze\(\{ width: 418, height: 941 \}\)/, 'mask canvas must match every master');
+assert.match(masks, /REGISTERED_ANATOMY_MASKS[\s\S]*masculine:[\s\S]*feminine:/, 'masculine and feminine geometry must be registered independently');
+assert.doesNotMatch(masks, /\btransform\s*=|translate\(|scale\(/, 'registered geometry may not be transferred with corrective transforms');
+assert.doesNotMatch(masks, /<(?:Circle|Ellipse|Rect)\b/, 'muscle overlays must use anatomically registered paths, not generic geometric blobs');
+assert.match(renderer, /<Mask[\s\S]*maskType="alpha"[\s\S]*BASES\[presentation\]\[view\]/, 'overlays must be silhouette-clipped by the same registered master');
+assert.match(renderer, /<G mask=\{`url\(#\$\{bodyMaskId\}\)`\}>/, 'all muscle overlays must be inside the silhouette mask');
+assert.ok((renderer.match(/BASES\[presentation\]\[view\]/g) || []).length >= 3, 'base, silhouette, and texture-recovery layers must share one exact master');
+if (lab) {
+  for (const preset of [
+    'Chest + Triceps', 'Lats + Biceps', 'Front + Side Delts',
+    'Rear Delts + Upper Back + Traps', 'Quads + Adductors',
+    'Hamstrings + Glutes', 'Abductors', 'Calves', 'Abs + Obliques',
+    'Lower Back', 'Full Upper Body', 'Full Lower Body', 'Dense Session',
+  ]) assert.ok(ANATOMY_QA_PRESETS[preset], `missing required QA preset ${preset}`);
+  assert.match(lab, /PRESENTATIONS[\s\S]*masculine[\s\S]*feminine/, 'lab must toggle both presentations');
+  assert.match(lab, /VIEWS[\s\S]*front[\s\S]*rear[\s\S]*dual/, 'lab must toggle front, rear, and dual views');
+  assert.match(lab, /Size Tests[\s\S]*thumbnail[\s\S]*card[\s\S]*hero/, 'lab must exercise all governed sizes');
 }
 if (library && lab) {
   assert.match(library, /id: 'anatomy-visualization-system'[\s\S]*route: '\/(?:\(tabs\)\/)?dev-mocks\/anatomy-system'/, 'the interactive anatomy lab must be registered in the UI Mock Library');

@@ -773,7 +773,7 @@ const styles = StyleSheet.create({
   dismissText: { color: '#FFF', fontSize: 10, fontWeight: '800' },
   activityCard: { minHeight: 112, borderRadius: 12, borderWidth: 1, borderColor: '#2B2F3A', backgroundColor: '#090B11', flexDirection: 'row', alignItems: 'center', gap: 10, padding: 8, paddingRight: 10 },
   artwork: { width: 92, height: 94, borderRadius: 10, overflow: 'hidden', borderWidth: 1, borderColor: '#282C35', backgroundColor: '#080A0F', alignItems: 'center', justifyContent: 'center' },
-  anatomy: { transform: [{ scale: 1.2 }] },
+  anatomy: { width: '100%', height: '100%' },
   videoThumbnail: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   videoFallback: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: '#10131A' },
   videoScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,.16)' },

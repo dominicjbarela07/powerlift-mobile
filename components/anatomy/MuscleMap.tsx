@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import Svg, { Image as SvgImage } from 'react-native-svg';
+import Svg, { Defs, G, Image as SvgImage, Mask } from 'react-native-svg';
 
 import {
   ANATOMY_COLORS,
@@ -95,7 +95,7 @@ export function resolveMuscleMapRenderState(props: Pick<MuscleMapProps, 'anatomy
   });
   const view = resolveAnatomyView(roles.primary, roles.secondary, props.view || 'auto', size);
   const region = resolveAnatomyRegion(roles.primary, roles.secondary, props.semanticLevel || 'movement', props.region || 'auto');
-  const mountedMasks = mountedMasksForView([...roles.secondary, ...roles.primary], view);
+  const mountedMasks = mountedMasksForView([...roles.secondary, ...roles.primary], view, presentation);
   return {
     presentation,
     view,
@@ -136,8 +136,9 @@ function Figure({
   const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = framing.viewBox;
   const primarySet = new Set(primary);
   const visibleSecondary = secondary.filter((muscle) => !primarySet.has(muscle));
-  const primaryOpacity = size === 'thumbnail' ? 0.93 : 0.82;
-  const secondaryOpacity = size === 'thumbnail' ? 0.78 : 0.68;
+  const primaryOpacity = size === 'thumbnail' ? 0.86 : 0.72;
+  const secondaryOpacity = size === 'thumbnail' ? 0.72 : 0.58;
+  const bodyMaskId = `registered-body-${presentation}-${view}`;
   return (
     <View style={styles.figure}>
       <Svg
@@ -147,6 +148,27 @@ function Figure({
         style={StyleSheet.absoluteFill}
         viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`}
       >
+        <Defs>
+          <Mask
+            id={bodyMaskId}
+            height={941}
+            maskContentUnits="userSpaceOnUse"
+            maskType="alpha"
+            maskUnits="userSpaceOnUse"
+            width={418}
+            x={0}
+            y={0}
+          >
+            <SvgImage
+              height={941}
+              href={BASES[presentation][view]}
+              preserveAspectRatio="xMidYMid meet"
+              width={418}
+              x={0}
+              y={0}
+            />
+          </Mask>
+        </Defs>
         <SvgImage
           height={941}
           href={BASES[presentation][view]}
@@ -155,28 +177,39 @@ function Figure({
           x={0}
           y={0}
         />
-        {visibleSecondary.map((muscle) => (
-          <AnatomyMaskPaths
-            key={`secondary-${muscle}`}
-            muscle={muscle}
-            presentation={presentation}
-            view={view}
-            fill={ANATOMY_COLORS.secondary}
-            stroke={ANATOMY_COLORS.secondaryEdge}
-            opacity={secondaryOpacity}
-          />
-        ))}
-        {primary.map((muscle) => (
-          <AnatomyMaskPaths
-            key={`primary-${muscle}`}
-            muscle={muscle}
-            presentation={presentation}
-            view={view}
-            fill={ANATOMY_COLORS.primary}
-            stroke={ANATOMY_COLORS.primaryEdge}
-            opacity={primaryOpacity}
-          />
-        ))}
+        <G mask={`url(#${bodyMaskId})`}>
+          {visibleSecondary.map((muscle) => (
+            <AnatomyMaskPaths
+              key={`secondary-${muscle}`}
+              muscle={muscle}
+              presentation={presentation}
+              view={view}
+              fill={ANATOMY_COLORS.secondary}
+              stroke={ANATOMY_COLORS.secondaryEdge}
+              opacity={secondaryOpacity}
+            />
+          ))}
+          {primary.map((muscle) => (
+            <AnatomyMaskPaths
+              key={`primary-${muscle}`}
+              muscle={muscle}
+              presentation={presentation}
+              view={view}
+              fill={ANATOMY_COLORS.primary}
+              stroke={ANATOMY_COLORS.primaryEdge}
+              opacity={primaryOpacity}
+            />
+          ))}
+        </G>
+        <SvgImage
+          height={941}
+          href={BASES[presentation][view]}
+          opacity={size === 'thumbnail' ? 0.20 : 0.27}
+          preserveAspectRatio="xMidYMid meet"
+          width={418}
+          x={0}
+          y={0}
+        />
       </Svg>
     </View>
   );
