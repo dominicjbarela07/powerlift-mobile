@@ -41,7 +41,7 @@ const areas = [
   ['Journey continuous storyboard, chapter evidence, bodyweight context, and timeline drill-downs', ['scripts/test-journey-storyboard-convergence.mjs']],
   ['data-driven sex-specific strength standards and lifter-facing achievement language', ['scripts/test-ledger-rewards.mjs', 'scripts/test-data-driven-strength-tiers.mjs', 'scripts/test-ledger-clubs-runtime-source.mjs', 'scripts/test-legacy-strength-trophy-retirement.mjs', 'scripts/test-strength-achievement-language-convergence.mjs']],
   ['Achievements storyboard hierarchy, evidence details, and asset families', ['scripts/test-ledger-achievements-restoration.mjs', 'scripts/test-achievements-storyboard-convergence.mjs']],
-  ['Strength storyboard hierarchy, lift detail, standards, evidence, and destination-composed semantic assets', ['scripts/test-strength-storyboard-convergence.mjs', 'scripts/test-strength-semantic-artwork-framing.mjs']],
+  ['Strength storyboard hierarchy, multi-lens progression, standards, evidence, and destination-composed semantic assets', ['scripts/test-strength-storyboard-convergence.mjs', 'scripts/test-strength-progression-experience-convergence.mjs', 'scripts/test-strength-semantic-artwork-framing.mjs']],
   ['strength-tier certification app-shell integrity', ['scripts/test-strength-tier-certification-app-shell.mjs']],
   ['canonical DEV Metro source lineage', ['scripts/test-canonical-dev-metro-lineage-policy.mjs']],
   ['background unread-summary network resilience', ['scripts/test-unread-summary-resilience.mjs']],

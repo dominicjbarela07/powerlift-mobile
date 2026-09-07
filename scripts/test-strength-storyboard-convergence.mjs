@@ -35,6 +35,7 @@ assert.match(semanticArtwork, /resizeMode=\{asset\.fit\}/, 'the shared semantic 
 assert.doesNotMatch(semanticArtwork, /resizeMode=["']cover["']/, 'the shared semantic renderer can never cover-crop a lift');
 assert.match(strength, /destination="overview-card"/, 'Strength Overview has an explicit card composition');
 assert.match(strength, /destination="selector-card"/, 'the lift selector has an explicit card composition');
+assert.match(strength, /selectorCard: \{ height: 166/, 'the visual lift selector cannot regress into an unbounded blank card');
 assert.match(strength, /destination="detail-hero"/, 'lift detail has an explicit hero composition');
 assert.match(strength, /destination="context-header"/, 'lift navigation has an explicit atmospheric identity composition');
 assert.doesNotMatch(strength, /profile\.hero|lift-tier-heroes/, 'Strength cannot fall back to one cover-oriented hero across destinations');

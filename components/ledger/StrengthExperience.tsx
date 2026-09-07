@@ -7,6 +7,7 @@ import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 
 import Svg, { Circle, Line, Polygon } from 'react-native-svg';
 
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
+import { StrengthProgressionStory } from '@/components/ledger/StrengthProgressionStory';
 import { StrengthSemanticArtwork } from '@/components/ledger/StrengthSemanticArtwork';
 import { CompetitiveStandingCard } from '@/components/ledger/CompetitiveStandingCard';
 import { SLAtmosphericContextHeader, SLCompactTabRail } from '@/components/ui/sl-contextual-header';
@@ -22,6 +23,7 @@ import {
   type AccomplishmentEvent,
   type CurrentBest,
   type LedgerRange,
+  type StrengthProgressionLenses,
   type LedgerUnit,
 } from '@/lib/ledger-data';
 import {
@@ -52,13 +54,12 @@ type LiftProfile = Readonly<{
   tone: string;
   softTone: string;
   currentEstimateKg: number | null;
-  historicalPeakKg: number | null;
-  historicalPeakDate: string | null;
   changeKg: number | null;
   points: readonly Readonly<{ date: string; valueKg: number }>[];
   estimateSourceSetLogId: number | null;
   plateClubState: PlateClubState | null;
   standingState: StrengthTierState | null;
+  lenses: StrengthProgressionLenses | null;
   events: readonly AccomplishmentEvent[];
 }>;
 
@@ -164,6 +165,22 @@ function LiftClubMini({ profile, sex }: { profile: LiftProfile; sex?: 'M' | 'F' 
   return <><Text numberOfLines={2} style={[styles.liftTier, { color: profile.tone }]}>{plateClubEvidenceLabel(profile.plateClubState)}</Text><Text numberOfLines={3} style={styles.liftPercentile}>{competitiveStandingSummary(profile.standingState, sex)}</Text></>;
 }
 
+function PerformedEvidenceOverview({ profiles, unit, onOpenLift }: { profiles: readonly LiftProfile[]; unit: LedgerUnit; onOpenLift: (key: LiftKey) => void }) {
+  const weightSignal = profiles.flatMap((profile) => {
+    const changeKg = profile.lenses?.weight_on_bar.change_kg;
+    return changeKg != null && changeKg > 0 ? [{ profile, changeKg }] : [];
+  }).sort((left, right) => right.changeKg - left.changeKg)[0];
+  const repSignal = profiles.flatMap((profile) => (profile.lenses?.rep_strength.series ?? []).flatMap((series) => series.change_kg != null && series.change_kg > 0 ? [{ profile, series }] : [])).sort((left, right) => (right.series.change_kg ?? 0) - (left.series.change_kg ?? 0))[0];
+  const heavySets = profiles.reduce((total, profile) => total + (profile.lenses?.heavy_exposure.qualifying_sets ?? 0), 0);
+  if (!weightSignal && !repSignal && heavySets === 0) return null;
+  return <View testID="strength-overview-performed-evidence" style={styles.performedOverview}>
+    <View style={styles.performedOverviewLead}><View style={styles.performedOverviewIcon}><Ionicons name="barbell-outline" size={20} color="#62D9F8" /></View><View><Text style={styles.performedOverviewEyebrow}>PERFORMED EVIDENCE · CURRENT RANGE</Text><Text style={styles.performedOverviewTitle}>Strength beyond the estimate</Text></View></View>
+    {weightSignal ? <Pressable onPress={() => onOpenLift(weightSignal.profile.key)} style={({ pressed }) => [styles.performedSignal, pressed && styles.pressed]}><View><Text style={[styles.performedSignalLabel, { color: weightSignal.profile.tone }]}>WEIGHT ON THE BAR · {weightSignal.profile.shortLabel}</Text><Text style={styles.performedSignalValue}>{signedDisplayKg(weightSignal.changeKg, unit)} {unit.toUpperCase()}</Text></View><Text style={styles.performedSignalMeta}>top-load change</Text><Ionicons name="chevron-forward" size={17} color={weightSignal.profile.tone} /></Pressable> : null}
+    {repSignal ? <Pressable onPress={() => onOpenLift(repSignal.profile.key)} style={({ pressed }) => [styles.performedSignal, pressed && styles.pressed]}><View><Text style={[styles.performedSignalLabel, { color: repSignal.profile.tone }]}>REP STRENGTH · {repSignal.profile.shortLabel} {repSignal.series.label}</Text><Text style={styles.performedSignalValue}>{signedDisplayKg(repSignal.series.change_kg, unit)} {unit.toUpperCase()}</Text></View><Text style={styles.performedSignalMeta}>literal rep-max change</Text><Ionicons name="chevron-forward" size={17} color={repSignal.profile.tone} /></Pressable> : null}
+    <View style={styles.performedSignal}><View><Text style={styles.performedSignalLabel}>HEAVY EXPOSURE · S/B/D</Text><Text style={styles.performedSignalValue}>{heavySets} qualifying set{heavySets === 1 ? '' : 's'}</Text></View><Text style={styles.performedSignalMeta}>governed 80% threshold</Text></View>
+  </View>;
+}
+
 function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpenProgression, onOpenRecords }: {
   profiles: readonly LiftProfile[];
   totalKg: number | null;
@@ -178,10 +195,12 @@ function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpen
   return <View testID="strength-overview" style={styles.sectionStack}>
     <ImageBackground source={LEDGER_INDEX_ASSETS.hero} resizeMode="cover" style={styles.totalHero} imageStyle={styles.totalHeroImage}>
       <LinearGradient colors={['rgba(4,5,9,0.08)', 'rgba(4,5,9,0.42)', '#07070B']} style={StyleSheet.absoluteFillObject} />
-      <View style={styles.totalHeroCopy}><Text style={styles.eyebrow}>TOTAL ESTIMATED STRENGTH</Text><View style={styles.valueRow}><Text style={styles.totalValue}>{displayKg(totalKg, unit)}</Text>{totalKg != null ? <Text style={styles.totalUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.totalStanding}>Current Squat + Bench + Deadlift estimates</Text>{momentumKg != null ? <View style={styles.momentumPill}><Ionicons name={momentumKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={momentumKg >= 0 ? '#53DE94' : '#FF697A'} /><Text style={[styles.momentumPillText, { color: momentumKg >= 0 ? '#53DE94' : '#FF697A' }]}>{signedDisplayKg(momentumKg, unit)} {unit.toUpperCase()} in 90 days</Text></View> : null}</View>
+      <View style={styles.totalHeroCopy}><Text style={styles.eyebrow}>TOTAL ESTIMATED STRENGTH</Text><View style={styles.valueRow}><Text style={styles.totalValue}>{displayKg(totalKg, unit)}</Text>{totalKg != null ? <Text style={styles.totalUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.totalStanding}>Current Squat + Bench + Deadlift estimates</Text>{momentumKg != null ? <View style={styles.momentumPill}><Ionicons name={momentumKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={momentumKg >= 0 ? '#53DE94' : '#FF697A'} /><Text style={[styles.momentumPillText, { color: momentumKg >= 0 ? '#53DE94' : '#FF697A' }]}>{signedDisplayKg(momentumKg, unit)} {unit.toUpperCase()} in this range</Text></View> : null}</View>
     </ImageBackground>
 
     <View style={styles.liftOverviewGrid}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-overview-lift-${profile.key}`} onPress={() => onOpenLift(profile.key)} style={({ pressed }) => [styles.liftOverviewCard, { borderColor: `${profile.tone}72` }, pressed && styles.pressed]}><View style={[styles.liftOverviewArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="overview-card" testID={`strength-overview-art-${profile.key}`} /></View><View style={styles.liftOverviewCopy}><Text style={[styles.liftOverviewName, { color: profile.tone }]}>{profile.shortLabel}</Text><Text style={styles.liftOverviewValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.liftOverviewUnit}>{unit.toUpperCase()} EST. 1RM</Text><LiftClubMini profile={profile} sex={sex} /></View></Pressable>)}</View>
+
+    <PerformedEvidenceOverview profiles={profiles} unit={unit} onOpenLift={onOpenLift} />
 
     <View style={styles.identityCard}><View style={styles.identityHeader}><View><Text style={styles.eyebrow}>STRENGTH MOMENTUM</Text><Text style={styles.identityTitle}>{momentumKg == null ? 'Your trend needs more history.' : `${signedDisplayKg(momentumKg, unit)} ${unit.toUpperCase()} across your current estimates`}</Text></View><View style={styles.momentumBars}>{[0.3, 0.48, 0.62, 0.82, 1].map((height, index) => <View key={index} style={[styles.momentumBar, { height: 8 + height * 32, opacity: 0.4 + index * 0.14 }]} />)}</View></View></View>
 
@@ -213,29 +232,14 @@ function CurrentLiftHero({ profile, unit, sex }: { profile: LiftProfile; unit: L
   return <View testID={`strength-lift-hero-${profile.key}`} style={[styles.currentHero, { borderColor: `${profile.tone}74` }]}><View style={[styles.currentHeroArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="detail-hero" testID={`strength-detail-art-${profile.key}`} /></View><View style={styles.currentHeroEvidenceRow}><View style={styles.currentHeroCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT STRENGTH</Text><View style={styles.valueRow}><Text style={styles.currentHeroValue}>{displayKg(profile.currentEstimateKg, unit)}</Text>{profile.currentEstimateKg != null ? <Text style={styles.currentHeroUnit}>{unit.toUpperCase()}</Text> : null}</View><Text style={styles.currentHeroMetric}>Estimated 1RM</Text><Text style={[styles.currentHeroTier, { color: profile.tone }]}>{plateClubLabel(profile.plateClubState)}</Text>{profile.plateClubState ? <Text style={styles.currentHeroEvidence}>From a recorded {profile.plateClubState.current} {profile.plateClubState.unit.toUpperCase()} Weight PR</Text> : null}<Text style={styles.currentHeroStanding}>{competitiveStandingSummary(profile.standingState, sex)}</Text></View>{profile.changeKg != null ? <View style={[styles.currentHeroDelta, { borderColor: `${profile.tone}70` }]}><Ionicons name={profile.changeKg >= 0 ? 'trending-up' : 'trending-down'} size={15} color={profile.tone} /><Text style={[styles.currentHeroDeltaValue, { color: profile.tone }]}>{signedDisplayKg(profile.changeKg, unit)} {unit.toUpperCase()}</Text><Text style={styles.currentHeroDeltaLabel}>in this range</Text></View> : null}</View></View>;
 }
 
-function ProgressionPanel({ profile, standard, unit, range, onRangeChange, onOpenTiers }: { profile: LiftProfile; standard: ReturnType<typeof resolveLedgerClubsRuntimeState>['standard']; unit: LedgerUnit; range: LedgerRange; onRangeChange: (range: LedgerRange) => void; onOpenTiers: () => void }) {
+function ProgressionPanel({ profile, standard, unit, range, onRangeChange, onOpenTiers, onOpenEvidence }: { profile: LiftProfile; standard: ReturnType<typeof resolveLedgerClubsRuntimeState>['standard']; unit: LedgerUnit; range: LedgerRange; onRangeChange: (range: LedgerRange) => void; onOpenTiers: () => void; onOpenEvidence: () => void }) {
   const state = profile.plateClubState;
-  const latestEvent = profile.events.find((event) => event.event_type.includes('SAME_WEIGHT_REP'));
-  const evidence = latestEvent?.evidence ?? {};
-  const priorReps = typeof latestEvent?.prior_value === 'number' ? latestEvent.prior_value : null;
-  const currentReps = typeof latestEvent?.current_value === 'number' ? latestEvent.current_value : null;
-  const volume = profile.events.reduce((sum, event) => {
-    const value = event.evidence?.volume_kg;
-    return sum + (typeof value === 'number' ? value : 0);
-  }, 0);
   return <View testID="strength-progression-panel" style={styles.sectionStack}>
     <CurrentLiftHero profile={profile} unit={unit} sex={standard?.sex} />
     <RangeTabs value={range} onChange={onRangeChange} />
-    <View style={styles.chartCard}><AnalyticalTimeSeriesChart series={[{ key: profile.key, label: `${profile.label} estimated strength`, color: profile.tone, points: profile.points.map((point) => ({ date: point.date, value: kilogramsToDisplayValue(point.valueKg, unit) })) }]} metric={analyticalMetricDefinition('estimated_1rm', { label: `${profile.label} estimated strength`, kind: 'weight', unit, axisUnit: unit, includeZero: false, maximumFractionDigits: 0 })} height={245} showLegend={false} readableText emptyTitle="No reliable trend yet" emptyBody="Two qualifying estimated-strength observations are required." testID="strength-profile-trend-chart" /></View>
-    <View style={styles.summaryPair}><View style={styles.summaryCard}><Text style={styles.summaryLabel}>CURRENT</Text><Text style={styles.summaryValue}>{displayKg(profile.currentEstimateKg, unit)} {profile.currentEstimateKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{plateClubLabel(state)}</Text></View><View style={styles.summaryCard}><Text style={styles.summaryLabel}>HISTORICAL PEAK</Text><Text style={styles.summaryValue}>{displayKg(profile.historicalPeakKg, unit)} {profile.historicalPeakKg != null ? unit.toUpperCase() : ''}</Text><Text style={styles.summaryMeta}>{profile.historicalPeakDate ? readableDate(profile.historicalPeakDate) : 'No dated peak yet'}</Text></View></View>
     <Pressable testID="strength-tier-entry" onPress={onOpenTiers} style={({ pressed }) => [styles.tierEntry, { borderColor: `${profile.tone}66` }, pressed && styles.pressed]}><View style={styles.tierEntryCopy}><Text style={[styles.eyebrow, { color: profile.tone }]}>CURRENT PLATE CLUB</Text><Text style={styles.tierEntryTitle}>{plateClubLabel(state)}</Text><Text style={styles.tierEntryMeta}>{state?.next ? `${state.remaining} ${unit.toUpperCase()} to ${state.next.value} Club` : state ? 'Highest plate club reached' : 'Canonical PR evidence unavailable'}</Text></View>{state?.earned ? <Image source={milestoneRenderAsset(profile.key, state.earned.renderKeyLb)} resizeMode="contain" style={[styles.tierEntryArt, MILESTONE_RENDER_ORIENTATION_STYLE]} /> : <Ionicons name="barbell-outline" size={44} color={profile.tone} />}<Ionicons name="chevron-forward" size={19} color={profile.tone} /></Pressable>
     <CompetitiveStandingCard state={profile.standingState} standard={standard} metric={profile.key} metricLabel={profile.label} currentKg={profile.plateClubState?.currentKg ?? null} unit={unit} accent={profile.tone} testID={`strength-${profile.key}-comparison`} />
-    <View style={styles.signalCard}><Text style={styles.cardHeading}>KEY SIGNALS</Text>{[
-      ['trending-up', 'Weight trend', profile.changeKg == null ? '—' : `${signedDisplayKg(profile.changeKg, unit)} ${unit.toUpperCase()}`, profile.changeKg == null ? 'No reliable comparison yet.' : 'Estimated change in range'],
-      ['repeat-outline', 'Rep strength', priorReps != null && currentReps != null ? `${priorReps} → ${currentReps} reps` : '—', priorReps != null ? 'Same-weight progress' : 'No reliable comparison yet.'],
-      ['pulse-outline', 'Heavy exposure', `${profile.points.length} data point${profile.points.length === 1 ? '' : 's'}`, profile.points.length >= 2 ? 'In range' : 'More evidence needed'],
-      ['bar-chart-outline', 'Volume trend', volume > 0 ? `${displayKg(volume, unit)} ${unit.toUpperCase()}` : '—', typeof evidence.actual_weight_kg === 'number' ? 'Qualified performed work' : 'No qualified volume signal'],
-    ].map(([icon, label, value, detail]) => <View key={label} style={styles.signalRow}><View style={[styles.signalIcon, { borderColor: `${profile.tone}72` }]}><Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={19} color={profile.tone} /></View><View style={styles.signalCopy}><Text style={styles.signalLabel}>{label}</Text><Text style={styles.signalValue}>{value}</Text><Text style={styles.signalDetail}>{detail}</Text></View></View>)}</View>
+    <StrengthProgressionStory liftKey={profile.key} liftLabel={profile.label} tone={profile.tone} unit={unit} currentEstimateKg={profile.currentEstimateKg} estimatedChangeKg={profile.changeKg} estimatedPoints={profile.points} lenses={profile.lenses} onOpenEvidence={onOpenEvidence} />
   </View>;
 }
 
@@ -246,8 +250,14 @@ function sourceEventKey(event: AccomplishmentEvent) {
 function EvidencePanel({ profile, currentBests, unit, onOpen }: { profile: LiftProfile; currentBests: readonly CurrentBest[]; unit: LedgerUnit; onOpen: (sourceSetLogId: number) => void }) {
   const currentBestEvents = currentBests.filter((best) => (canonicalCompetitionLiftKey(best.core_movement_key) ?? canonicalLiftKey(best.core_movement_key)) === profile.key).map((best) => best.event);
   const events = [...new Map([...currentBestEvents, ...profile.events].filter((event) => event.source_set_log_id).map((event) => [sourceEventKey(event), event])).values()].slice(0, 8);
+  const lensSources = profile.lenses?.source_evidence.recent_sources ?? [];
   return <View testID="strength-evidence-panel" style={styles.sectionStack}>
-    <View style={styles.sectionLead}><Text style={[styles.eyebrow, { color: profile.tone }]}>SOURCE SETS</Text><Text style={styles.sectionTitle}>The work behind this estimate.</Text><Text style={styles.sectionBody}>Only movement-matched canonical evidence is shown.</Text></View>
+    <View style={styles.sectionLead}><Text style={[styles.eyebrow, { color: profile.tone }]}>SOURCE EVIDENCE</Text><Text style={styles.sectionTitle}>The work behind every strength lens.</Text><Text style={styles.sectionBody}>Only exact governed competition-lift evidence is shown. Estimated and performed sources remain visibly distinct.</Text></View>
+    {lensSources.length ? <View testID="strength-progression-source-list" style={styles.sourceList}>{lensSources.map((source, index) => {
+      const canOpen = typeof source.source_set_log_id === 'number' && source.source_set_log_id > 0;
+      return <Pressable key={`${source.source_type ?? 'source'}:${source.source_id ?? index}`} disabled={!canOpen} onPress={() => canOpen && onOpen(source.source_set_log_id!)} style={({ pressed }) => [styles.sourceRow, pressed && styles.pressed]}><View style={[styles.sourceIcon, { borderColor: `${profile.tone}72` }]}><Ionicons name="barbell-outline" size={19} color={profile.tone} /></View><View style={styles.sourceCopy}><Text style={styles.sourceLoad}>{displayKg(source.weight_kg, unit)} {source.weight_kg != null ? unit.toUpperCase() : ''}{source.reps ? ` × ${source.reps}` : ''}</Text><Text style={styles.sourceMeta}>{[source.effort_label, readableDate(source.date)].filter(Boolean).join(' · ')}</Text></View><View style={styles.usedBadge}><Text style={styles.usedBadgeText}>{source.source_type === 'historical_import' ? 'HISTORY' : 'SET'}</Text></View>{canOpen ? <Ionicons name="chevron-forward" size={16} color="#75808D" /> : null}</Pressable>;
+    })}</View> : <View style={styles.emptyCard}><Text style={styles.emptyTitle}>No progression source evidence yet.</Text><Text style={styles.emptyBody}>Recorded exact-lift performances will appear here when available.</Text></View>}
+    <Text style={[styles.eyebrow, { color: profile.tone }]}>RECOGNIZED BESTS</Text>
     <View style={styles.sourceList}>{events.map((event) => { const summary = sourceSetSummary(event, unit); const used = event.source_set_log_id === profile.estimateSourceSetLogId; return <Pressable key={sourceEventKey(event)} onPress={() => event.source_set_log_id && onOpen(event.source_set_log_id)} style={({ pressed }) => [styles.sourceRow, pressed && styles.pressed]}><View style={[styles.sourceIcon, { borderColor: `${profile.tone}72` }]}><Ionicons name="barbell-outline" size={19} color={profile.tone} /></View><View style={styles.sourceCopy}><Text style={styles.sourceLoad}>{summary.load}{summary.reps ? ` × ${summary.reps.replace(' reps', '').replace(' rep', '')}` : ''}</Text><Text style={styles.sourceMeta}>{[summary.effort, readableDate(event.occurred_at || event.workout_date)].filter(Boolean).join(' · ')}</Text></View><View style={[styles.usedBadge, used && { backgroundColor: `${profile.tone}25`, borderColor: `${profile.tone}7A` }]}><Text style={[styles.usedBadgeText, used && { color: profile.tone }]}>{used ? 'USED' : 'SOURCE'}</Text></View><Ionicons name="chevron-forward" size={16} color="#75808D" /></Pressable>; })}{!events.length ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>No source sets are available yet.</Text><Text style={styles.emptyBody}>A qualifying movement-matched set will appear here when the canonical estimate can cite it.</Text></View> : null}</View>
     <View style={styles.estimateCard}><Text style={styles.cardHeading}>ESTIMATE DETAILS</Text>{[
       ['Method', profile.currentEstimateKg == null ? 'Unavailable' : 'RPE-adjusted estimated 1RM'],
@@ -360,7 +370,6 @@ export function StrengthExperience() {
   const profiles = useMemo(() => LIFTS.map((presentation): LiftProfile => {
     const live = progression?.big_three_arc?.lifts?.find((lift) => canonicalLiftKey(lift.key) === presentation.key);
     const points = (live?.points ?? []).flatMap((point) => typeof point.value_kg === 'number' && point.date ? [{ date: point.date, valueKg: point.value_kg }] : []);
-    const peakPoint = [...points].sort((left, right) => right.valueKg - left.valueKg)[0];
     const e1rmBest = currentBests.filter((best) => (canonicalCompetitionLiftKey(best.core_movement_key) ?? canonicalLiftKey(best.core_movement_key)) === presentation.key && best.metric === 'e1rm').sort((left, right) => right.best_value - left.best_value)[0];
     const exactBest = currentBests.filter((best) => canonicalCompetitionLiftKey(best.core_movement_key) === presentation.key && best.metric === 'weight').sort((left, right) => right.best_value - left.best_value)[0];
     const events = accomplishments.filter((event) => eventLiftKey(event) === presentation.key);
@@ -368,13 +377,12 @@ export function StrengthExperience() {
     return {
       ...presentation,
       currentEstimateKg: live?.current_e1rm_kg ?? e1rmBest?.best_value ?? null,
-      historicalPeakKg: live?.best_e1rm_kg ?? e1rmBest?.best_value ?? null,
-      historicalPeakDate: peakPoint?.date ?? e1rmBest?.event?.occurred_at ?? e1rmBest?.event?.workout_date ?? null,
       changeKg: live?.change_kg ?? null,
       points,
       estimateSourceSetLogId: e1rmBest?.event?.source_set_log_id ?? exactBest?.event?.source_set_log_id ?? null,
       plateClubState: runtimeLift?.plateClubState ?? null,
       standingState: runtimeLift?.standingState ?? null,
+      lenses: live?.strength_lenses ?? null,
       events,
     };
   }), [accomplishments, clubs.lifts, currentBests, progression?.big_three_arc?.lifts]);
@@ -419,7 +427,7 @@ export function StrengthExperience() {
 
   if (showTiers && selectedLift) return <><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><PlateClubsScreen profile={profile} unit={unit} standard={clubs.standard} onBack={closeTiers} /></>;
 
-  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} standard={clubs.standard} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} standard={clubs.standard} />}</View>;
+  if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} standard={clubs.standard} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} onOpenEvidence={() => changeLiftPanel('evidence')} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} standard={clubs.standard} />}</View>;
 
   return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} sex={clubs.standard?.sex} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
 }
@@ -448,6 +456,15 @@ const styles = StyleSheet.create({
   liftOverviewUnit: { color: '#929AA6', fontSize: 10, lineHeight: 13, fontWeight: '700' },
   liftTier: { marginTop: 5, fontSize: 12, lineHeight: 15, fontWeight: '800' },
   liftPercentile: { color: '#C4C0C9', fontSize: 10, lineHeight: 13 },
+  performedOverview: { gap: 0, overflow: 'hidden', borderRadius: 17, borderWidth: 1, borderColor: '#2C4651', backgroundColor: '#071015' },
+  performedOverviewLead: { minHeight: 70, flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 13 },
+  performedOverviewIcon: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: '#0C2530' },
+  performedOverviewEyebrow: { color: '#62D9F8', fontSize: 10, lineHeight: 13, fontWeight: '900', letterSpacing: 0.55 },
+  performedOverviewTitle: { marginTop: 2, color: '#F0EDF4', fontSize: 16, lineHeight: 20, fontWeight: '800' },
+  performedSignal: { minHeight: 63, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 13, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#2C4651' },
+  performedSignalLabel: { color: '#9CA7B3', fontSize: 10, lineHeight: 13, fontWeight: '900', letterSpacing: 0.45 },
+  performedSignalValue: { marginTop: 2, color: '#F2EFF5', fontSize: 16, lineHeight: 20, fontWeight: '800' },
+  performedSignalMeta: { flex: 1, color: '#83909D', fontSize: 10, lineHeight: 13, textAlign: 'right' },
   identityCard: { padding: 15, borderRadius: 15, borderWidth: 1, borderColor: '#303946', backgroundColor: '#090D13' },
   identityHeader: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 },
   identityTitle: { maxWidth: 250, marginTop: 5, color: '#F0EDF4', fontSize: 17, lineHeight: 22, fontWeight: '700' },
@@ -466,8 +483,8 @@ const styles = StyleSheet.create({
   sectionTitle: { color: '#F4F1F6', fontSize: 26, lineHeight: 31, fontWeight: '800', letterSpacing: -0.5 },
   sectionBody: { color: '#A4ADB8', fontSize: 13, lineHeight: 19 },
   selectorList: { gap: 10 },
-  selectorCard: { minHeight: 166, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 17, borderWidth: 1, backgroundColor: '#080A0E' },
-  selectorArtStage: { width: '46%', height: '100%', alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: '#292D36' },
+  selectorCard: { height: 166, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 17, borderWidth: 1, backgroundColor: '#080A0E' },
+  selectorArtStage: { width: '46%', height: 166, alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: '#292D36' },
   selectorCopy: { flex: 1, minWidth: 0, gap: 2, paddingLeft: 14, paddingRight: 36 },
   selectorName: { fontSize: 16, lineHeight: 20, fontWeight: '900' },
   selectorMetric: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },

@@ -36,7 +36,7 @@ export function StrengthSemanticArtwork({
 const destinationStyles: Record<StrengthLiftVisualDestination, ViewStyle> = {
   'context-header': { position: 'absolute', right: 0, top: 0, bottom: 0, width: '46%' },
   'overview-card': { width: '100%', height: 106 },
-  'selector-card': { width: '46%', height: '100%' },
+  'selector-card': { width: '100%', height: '100%' },
   'achievement-card': { width: '100%', height: 94 },
   'detail-hero': { width: '100%', height: 168 },
   'tier-progression': { width: 104, height: 76 },

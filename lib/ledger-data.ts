@@ -49,6 +49,110 @@ export type StrengthStandingProjection = Readonly<{
 }>;
 
 export type LedgerArcPoint = { date?: string | null; value_kg?: number | null };
+export type StrengthProgressionPoint = Readonly<{
+  date: string;
+  value_kg: number;
+  source_type?: string | null;
+  source_id?: number | null;
+  source_set_log_id?: number | null;
+  workout_id?: number | null;
+  workout_item_id?: number | null;
+  set_index?: number | null;
+}>;
+export type StrengthSourcePerformance = Readonly<{
+  date: string;
+  weight_kg?: number | null;
+  reps?: number | null;
+  rpe?: number | null;
+  rir?: number | null;
+  effort_label?: string | null;
+  source_type?: string | null;
+  source_id?: number | null;
+  source_set_log_id?: number | null;
+  workout_id?: number | null;
+  workout_item_id?: number | null;
+  set_index?: number | null;
+}>;
+export type StrengthRepSeries = Readonly<{
+  reps: number;
+  label: string;
+  points: readonly StrengthProgressionPoint[];
+  best_in_range_kg?: number | null;
+  best_in_range_date?: string | null;
+  change_kg?: number | null;
+  career_best_kg?: number | null;
+  career_best_date?: string | null;
+}>;
+export type StrengthProgressionLenses = Readonly<{
+  version: string;
+  canonical_unit: 'kg';
+  aggregation: 'session' | 'week';
+  weight_on_bar: Readonly<{
+    points: readonly StrengthProgressionPoint[];
+    heaviest_kg?: number | null;
+    heaviest_date?: string | null;
+    change_kg?: number | null;
+    aggregation: 'session' | 'week';
+    source: string;
+  }>;
+  rep_strength: Readonly<{
+    series: readonly StrengthRepSeries[];
+    supported_rep_counts: readonly number[];
+    aggregation: 'session' | 'week';
+    source: string;
+  }>;
+  training_volume: Readonly<{
+    points: readonly Readonly<{ date: string; value_kg: number }>[];
+    recent_average_kg?: number | null;
+    earlier_average_kg?: number | null;
+    change_pct?: number | null;
+    aggregation: 'session' | 'week';
+    source: string;
+  }>;
+  comparable_performance: Readonly<{
+    status: 'supported' | 'insufficient_evidence';
+    kind?: 'more_reps_same_weight' | 'more_weight_same_reps' | 'lower_effort_same_task' | null;
+    from?: StrengthSourcePerformance | null;
+    to?: StrengthSourcePerformance | null;
+    source: string;
+  }>;
+  heavy_exposure: Readonly<{
+    points: readonly Readonly<{ date: string; qualifying_sets: number; qualifying_sessions: number }>[];
+    qualifying_sets: number;
+    qualifying_sessions: number;
+    average_sets_per_bucket?: number | null;
+    aggregation: 'session' | 'week';
+    threshold_fraction: number;
+    definition: string;
+  }>;
+  historical_context: Readonly<{
+    current_e1rm_kg?: number | null;
+    current_e1rm_date?: string | null;
+    career_e1rm_peak_kg?: number | null;
+    career_e1rm_peak_date?: string | null;
+    e1rm_delta_to_peak_kg?: number | null;
+    range_top_weight_kg?: number | null;
+    range_top_weight_date?: string | null;
+    career_top_weight_kg?: number | null;
+    career_top_weight_date?: string | null;
+    top_weight_delta_to_peak_kg?: number | null;
+    rep_maxes: readonly Readonly<{
+      reps: number;
+      label: string;
+      range_best_kg?: number | null;
+      range_best_date?: string | null;
+      career_best_kg?: number | null;
+      career_best_date?: string | null;
+    }>[];
+  }>;
+  source_evidence: Readonly<{
+    performance_count: number;
+    native_set_log_count: number;
+    historical_import_count: number;
+    recent_sources: readonly StrengthSourcePerformance[];
+    identity_policy: string;
+  }>;
+}>;
 export type LedgerLift = {
   key?: string | null;
   label?: string | null;
@@ -58,6 +162,7 @@ export type LedgerLift = {
   change_pct?: number | null;
   trend?: string | null;
   points?: LedgerArcPoint[];
+  strength_lenses?: StrengthProgressionLenses | null;
 };
 
 export type LedgerStoryItem = {
