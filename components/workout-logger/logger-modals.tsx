@@ -6,6 +6,7 @@ import {
   Modal,
   Platform,
   ScrollView,
+  StyleSheet,
   View,
 } from 'react-native';
 import { SLTactileOpacity as TouchableOpacity } from '@/components/ui/sl-motion';
@@ -160,93 +161,87 @@ export function RestTimerPickerModal({
   }, []);
 
   const pickerSurface = (
-        <View style={[styles.coreWheelSheet, styles.restTimerPickerSheet, { flex: 1, maxWidth: undefined, borderWidth: 0, borderRadius: 0 }]}>
-          <View style={styles.coreWheelHeaderRow}>
-            <View style={styles.coreWheelHeaderCopy}>
-              <Text style={styles.coreWheelTitle}>Rest Timer</Text>
-              <Text style={styles.coreWheelSubtitle}>
-                {saveConfirmationVisible ? 'Set logged · Choose your next rest window.' : 'Choose your next rest window.'}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.timerWheelWrap}>
-            <View pointerEvents="none" style={styles.timerWheelCenterIndicator} />
-            <ScrollView
-              ref={timerWheelRef}
-              style={styles.timerWheel}
-              contentOffset={{
-                x: 0,
-                y: nearestRestTimerIndex(timerPickerValue) * REST_TIMER_ROW_HEIGHT,
-              }}
-              contentContainerStyle={[
-                styles.timerWheelContent,
-                { paddingVertical: centerPadding },
-              ]}
-              showsVerticalScrollIndicator={false}
-              snapToInterval={REST_TIMER_ROW_HEIGHT}
-              decelerationRate="normal"
-              snapToAlignment="start"
-              scrollEventThrottle={16}
-              onScrollBeginDrag={() => {
-                isInteracting.current = true;
-                if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-              }}
-              onMomentumScrollBegin={() => {
-                isInteracting.current = true;
-                if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
-              }}
-              onScrollEndDrag={(e) => {
-                settleAfterQuietDrag(e.nativeEvent.contentOffset.y);
-              }}
-              onMomentumScrollEnd={(e) => {
-                isInteracting.current = false;
-                settleToIndex(e.nativeEvent.contentOffset.y, true);
-              }}
-            >
-              {REST_TIMER_OPTIONS.map((value) => {
-                const label = formatRestTimerOption(value);
-                const selected = timerPickerValue === value;
-
-                return (
-                  <View
-                    key={value}
-                    style={[styles.timerWheelOption, selected && styles.timerWheelOptionActive]}
-                  >
-                    <Text style={[styles.timerWheelText, selected && styles.timerWheelTextActive]}>
-                      {label}
-                    </Text>
-                  </View>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          <View style={styles.coreWheelActions}>
-            <TouchableOpacity
-              style={[styles.actionButton, styles.actionSecondary, { flex: 1 }]}
-              onPress={() => onClose('dismissed')}
-            >
-              <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, styles.actionPrimary, { flex: 1 }]}
-              onPress={() => {
-                startRestTimer(REST_TIMER_OPTIONS[nearestRestTimerIndex(timerPickerValue)]);
-                onClose('selected');
-              }}
-            >
-              <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
-                Start Timer
-              </Text>
-            </TouchableOpacity>
-          </View>
+    <View style={restTimerPickerStyles.surface} testID="rest-timer-picker-material">
+      <View style={restTimerPickerStyles.header}>
+        <View>
+          <Text style={restTimerPickerStyles.title}>Rest Timer</Text>
+          <Text style={restTimerPickerStyles.subtitle}>
+            {saveConfirmationVisible ? 'Set logged · Choose your next rest window.' : 'Choose your next rest window.'}
+          </Text>
         </View>
+      </View>
+      <View style={restTimerPickerStyles.wheelWrap}>
+        <View pointerEvents="none" style={restTimerPickerStyles.centerIndicator} />
+        <ScrollView
+          ref={timerWheelRef}
+          style={restTimerPickerStyles.wheel}
+          contentOffset={{
+            x: 0,
+            y: nearestRestTimerIndex(timerPickerValue) * REST_TIMER_ROW_HEIGHT,
+          }}
+          contentContainerStyle={{ paddingVertical: centerPadding }}
+          showsVerticalScrollIndicator={false}
+          snapToInterval={REST_TIMER_ROW_HEIGHT}
+          decelerationRate="normal"
+          snapToAlignment="start"
+          scrollEventThrottle={16}
+          onScrollBeginDrag={() => {
+            isInteracting.current = true;
+            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
+          }}
+          onMomentumScrollBegin={() => {
+            isInteracting.current = true;
+            if (dragSettleTimer.current) clearTimeout(dragSettleTimer.current);
+          }}
+          onScrollEndDrag={(e) => {
+            settleAfterQuietDrag(e.nativeEvent.contentOffset.y);
+          }}
+          onMomentumScrollEnd={(e) => {
+            isInteracting.current = false;
+            settleToIndex(e.nativeEvent.contentOffset.y, true);
+          }}
+        >
+          {REST_TIMER_OPTIONS.map((value) => {
+            const label = formatRestTimerOption(value);
+            const selected = timerPickerValue === value;
+
+            return (
+              <View key={value} style={restTimerPickerStyles.wheelOption}>
+                <Text style={[restTimerPickerStyles.wheelText, selected && restTimerPickerStyles.wheelTextSelected]}>
+                  {label}
+                </Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      <View style={restTimerPickerStyles.actions}>
+        <TouchableOpacity
+          style={[styles.actionButton, restTimerPickerStyles.cancelButton]}
+          onPress={() => onClose('dismissed')}
+        >
+          <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, styles.actionPrimary, restTimerPickerStyles.startButton]}
+          onPress={() => {
+            startRestTimer(REST_TIMER_OPTIONS[nearestRestTimerIndex(timerPickerValue)]);
+            onClose('selected');
+          }}
+        >
+          <Text style={[styles.actionButtonText, styles.actionPrimaryText]}>
+            Start Timer
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
   return <StrengthLedgerBottomSheet
     accessibilityLabel="Rest Timer"
     contentSwipeEnabled={false}
-    heightFraction={embedded ? 0.62 : 0.56}
+    heightFraction={embedded ? 0.54 : 0.5}
     onDismiss={() => onClose('dismissed')}
     onRequestClose={() => onClose('dismissed')}
     visible={visible}
@@ -254,3 +249,88 @@ export function RestTimerPickerModal({
     {pickerSurface}
   </StrengthLedgerBottomSheet>;
 }
+
+const restTimerPickerStyles = StyleSheet.create({
+  surface: {
+    flex: 1,
+    paddingBottom: 8,
+    paddingHorizontal: 20,
+    paddingTop: 2,
+  },
+  header: {
+    flexShrink: 0,
+  },
+  title: {
+    color: SLColors.textPrimary,
+    fontSize: 17,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    lineHeight: 22,
+    textTransform: 'uppercase',
+  },
+  subtitle: {
+    color: SLColors.textSecondary,
+    fontSize: 15,
+    fontWeight: '600',
+    lineHeight: 20,
+    marginTop: 4,
+  },
+  wheelWrap: {
+    height: REST_TIMER_ROW_HEIGHT * REST_TIMER_VISIBLE_ROWS,
+    marginTop: 10,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  wheel: {
+    height: REST_TIMER_ROW_HEIGHT * REST_TIMER_VISIBLE_ROWS,
+    zIndex: 1,
+  },
+  wheelOption: {
+    alignItems: 'center',
+    height: REST_TIMER_ROW_HEIGHT,
+    justifyContent: 'center',
+  },
+  wheelText: {
+    color: SLColors.textMuted,
+    fontSize: 17,
+    fontWeight: '700',
+    opacity: 0.48,
+  },
+  wheelTextSelected: {
+    color: SLColors.textPrimary,
+    fontSize: 23,
+    fontWeight: '900',
+    opacity: 1,
+  },
+  centerIndicator: {
+    backgroundColor: 'rgba(170, 98, 255, 0.10)',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(185, 104, 255, 0.46)',
+    borderRadius: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    height: REST_TIMER_ROW_HEIGHT,
+    left: 8,
+    position: 'absolute',
+    right: 8,
+    top: REST_TIMER_ROW_HEIGHT * Math.floor(REST_TIMER_VISIBLE_ROWS / 2),
+    zIndex: 0,
+  },
+  actions: {
+    borderColor: SLColors.borderSubtle,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+    paddingTop: 12,
+  },
+  cancelButton: {
+    backgroundColor: SLColors.surfaceInset,
+    borderColor: SLColors.borderStandard,
+    flex: 1,
+    minHeight: 50,
+  },
+  startButton: {
+    flex: 1.12,
+    minHeight: 50,
+  },
+});

@@ -11686,33 +11686,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignSelf: 'flex-start',
   },
-  timerWheelWrap: {
-    marginTop: 18,
-    marginBottom: 0,
-    borderRadius: SLRadius.lg,
-    backgroundColor: 'rgba(24,16,15,0.36)',
-    overflow: 'hidden',
-    height: 220,
-    position: 'relative',
-  },
-  timerWheel: {
-    height: 220,
-    zIndex: 1,
-  },
-  timerWheelContent: {
-    paddingVertical: 88,
-  },
-  timerWheelOption: {
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.62,
-  },
-  timerWheelOptionActive: {
-    opacity: 1,
-    backgroundColor: 'transparent',
-  },
-
   swapModalWide: {
     width: '92%',
     maxWidth: 520,
@@ -13170,29 +13143,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: SLColors.text,
   },
-  timerWheelText: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.sectionTitle.fontSize,
-    fontWeight: '700',
-  },
-  timerWheelTextActive: {
-    color: SLColors.textStrong,
-    fontSize: 23,
-    fontWeight: '900',
-  },
-  timerWheelCenterIndicator: {
-    position: 'absolute',
-    top: 88,
-    left: 6,
-    right: 6,
-    height: 44,
-    borderRadius: SLRadius.md,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: SLColors.borderSelected,
-    backgroundColor: SLColors.surfaceSelected,
-    zIndex: 0,
-  },
   errorBanner: {
     marginTop: 12,
     paddingVertical: 10,
@@ -13262,14 +13212,6 @@ const styles = StyleSheet.create({
   coreWheelBackdropHit: {
     flex: 1,
   },
-  restTimerPickerBackdrop: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: SLSpacing.lg,
-  },
-  restTimerPickerBackdropHit: {
-    ...StyleSheet.absoluteFillObject,
-  },
   coreWheelSheet: {
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
@@ -13280,12 +13222,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 24,
-  },
-  restTimerPickerSheet: {
-    alignSelf: 'stretch',
-    maxWidth: 520,
-    borderRadius: SLRadius.radiusSheet,
-    borderBottomWidth: 1,
   },
   editSetKeyboardAvoider: {
     flex: 1,

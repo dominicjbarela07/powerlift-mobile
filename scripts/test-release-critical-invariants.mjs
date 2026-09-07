@@ -18,7 +18,10 @@ const areas = [
   ['canonical compact Set Timeline', ['scripts/test-set-timeline-storyboard.mjs']],
   ['movement-scoped SetLog edit/delete order', ['scripts/test-setlog-delete-order.mjs']],
   ['movement-scoped Logger physical loading', ['scripts/test-logger-movement-physical-loading.mjs']],
-  ['canonical rest-timer lifecycle', ['scripts/test-rest-timer-zero-deadlock.mjs']],
+  ['canonical rest-timer lifecycle', [
+    'scripts/test-rest-timer-zero-deadlock.mjs',
+    'scripts/test-rest-timer-picker-material.mjs',
+  ]],
   ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-canonical-equipment-picker.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs', 'scripts/test-superset-equipment-control.mjs', 'scripts/test-machine-brand-keyboard-selection.mjs']],
