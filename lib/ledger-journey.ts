@@ -67,6 +67,7 @@ export type JourneyEntry = Readonly<{
 export type JourneyOverview = Readonly<{
   ok: true;
   projection_version: string;
+  as_of_date: string;
   athlete: { id: number; name: string; preferred_units: 'kg' | 'lbs' | 'lb' | string; timezone?: string | null };
   earliest_record?: { date: string; event_type: JourneyEventType; source: JourneyEntry['source'] } | null;
   lifetime: {
@@ -104,6 +105,30 @@ export type JourneyBlock = Readonly<{
     change_kg?: number | null;
     boundary_window_days: number;
     interpolated: false;
+  } | null;
+  strength_comparison?: JourneyChapterStrengthComparison | null;
+}>;
+
+export type JourneyChapterLiftComparison = Readonly<{
+  start_e1rm_kg: number;
+  end_e1rm_kg: number;
+  change_kg?: number | null;
+  start_date: string;
+  end_date: string;
+  point_count: number;
+  start_source_set_log_id: number;
+  end_source_set_log_id: number;
+}>;
+
+export type JourneyChapterStrengthComparison = Readonly<{
+  status: 'supported' | 'insufficient_evidence';
+  method: 'weekly_best_canonical_e1rm';
+  version: string;
+  lifts: Partial<Record<'squat' | 'bench' | 'deadlift', JourneyChapterLiftComparison>>;
+  total?: {
+    start_e1rm_kg: number;
+    end_e1rm_kg: number;
+    change_kg: number;
   } | null;
 }>;
 

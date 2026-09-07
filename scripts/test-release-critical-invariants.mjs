@@ -38,6 +38,7 @@ const areas = [
   ['platform-wide analytical chart fidelity', ['scripts/test-chart-fidelity-standard.mjs', 'scripts/test-accessory-trend-axis-mode.mjs']],
   ['global display-unit propagation', ['scripts/test-global-weight-unit-toggle.mjs', 'scripts/test-journey-unit-propagation.mjs']],
   ['historical Ledger preservation', ['scripts/test-journey-historical-reconstruction.mjs', 'scripts/test-testflight-source-parity.mjs']],
+  ['Journey continuous storyboard, chapter evidence, bodyweight context, and timeline drill-downs', ['scripts/test-journey-storyboard-convergence.mjs']],
   ['data-driven sex-specific strength tiers', ['scripts/test-ledger-rewards.mjs', 'scripts/test-data-driven-strength-tiers.mjs', 'scripts/test-ledger-clubs-runtime-source.mjs', 'scripts/test-legacy-strength-trophy-retirement.mjs']],
   ['Achievements storyboard hierarchy, evidence details, and asset families', ['scripts/test-ledger-achievements-restoration.mjs', 'scripts/test-achievements-storyboard-convergence.mjs']],
   ['Strength storyboard hierarchy, lift detail, standards, evidence, and destination-composed semantic assets', ['scripts/test-strength-storyboard-convergence.mjs', 'scripts/test-strength-semantic-artwork-framing.mjs']],

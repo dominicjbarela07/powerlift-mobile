@@ -63,8 +63,15 @@ assert.match(exploration, /SLCompactTabRail/, 'movement exploration modes share 
 assert.doesNotMatch(exploration, /roomKicker|roomTitle|roomSubtitle/, 'the redundant Ledger room title stack is retired');
 
 const ledgerExperiences = read('components/ledger/experiences.tsx');
-assert.match(ledgerExperiences, /<SLContextualHeader[\s\S]*title="Journey"/, 'Journey uses the canonical contextual header');
-assert.doesNotMatch(ledgerExperiences, /journeyIntroTitle|journeyIntroBody/, 'Journey does not retain its duplicate intro shell');
+const journey = read('components/ledger/JourneyExperience.tsx');
+assert.match(ledgerExperiences, /case 'journey': return <JourneyStoryboardExperience/,
+  'the shipping Journey route resolves to the storyboard experience');
+assert.match(journey, /<SLAtmosphericContextHeader[\s\S]*contextLabel="THE LEDGER"[\s\S]*title="Journey"/,
+  'Journey composes compact navigation into its atmospheric identity');
+assert.match(journey, /ledger-chapter-journey-v1\.png/,
+  'Journey preserves the approved atmospheric mountain-path identity');
+assert.doesNotMatch(journey, /<SLContextualHeader|<Segmented|Overview', 'Blocks', 'Timeline'/,
+  'Journey cannot regress to the retired generic subheader or primary tabbed IA');
 
 const ledgerIndex = read('components/ledger/index-experience.tsx');
 assert.match(ledgerIndex, /<ImageBackground source=\{LEDGER_INDEX_ASSETS\.hero\}/, 'The Ledger root preserves its governed atmospheric identity art');

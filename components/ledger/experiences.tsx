@@ -31,6 +31,7 @@ import { Segmented, ledgerStyles } from './primitives';
 import { CORE_LIFT_PRESENTATION, type JourneyEvent, type JourneyEvidenceReference, type JourneyMomentType } from './model';
 import { LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
 import { StrengthExperience as StrengthStoryboardExperience } from './StrengthExperience';
+import { JourneyExperience as JourneyStoryboardExperience } from './JourneyExperience';
 import { ArchiveFoundationExperience } from './archive-foundation';
 import { useLedgerLiveData } from './use-ledger-live-data';
 import { fetchJourneyArchiveEvents } from './journey-live-events';
@@ -793,7 +794,7 @@ export function ArchiveExperience() {
 export function ExperienceForScreen({ screen }: { screen: LedgerScreen }) {
   switch (screen) {
     case 'home': return <HomeExperience />;
-    case 'journey': return <JourneyExperience />;
+    case 'journey': return <JourneyStoryboardExperience />;
     case 'strength': return <StrengthStoryboardExperience />;
     case 'achievements': return null;
     case 'accessories': return null;

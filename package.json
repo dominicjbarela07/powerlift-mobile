@@ -86,6 +86,7 @@
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",
     "test:achievements-storyboard": "node scripts/test-achievements-storyboard-convergence.mjs",
     "test:strength-storyboard": "node scripts/test-strength-storyboard-convergence.mjs",
+    "test:journey-storyboard": "node scripts/test-journey-storyboard-convergence.mjs",
     "test:strength-semantic-artwork-framing": "node scripts/test-strength-semantic-artwork-framing.mjs",
     "test:premium-header-system": "node scripts/test-premium-contextual-header-system.mjs",
     "test:journey-moments": "node --import tsx scripts/test-journey-moments.mjs",

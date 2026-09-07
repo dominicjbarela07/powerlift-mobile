@@ -6,7 +6,7 @@ import { journeyPerformanceDetail } from '../lib/journey-weight-presentation.ts'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
-const experience = read('components/ledger/experiences.tsx');
+const experience = read('components/ledger/JourneyExperience.tsx');
 const archive = read('components/ledger/archive-foundation.tsx');
 const archiveDetail = read('components/ledger/archive-detail.tsx');
 
@@ -18,11 +18,11 @@ assert.equal(journeyPerformanceDetail('PERFORMANCE', bench, 'kg', '315 lb'), '14
 assert.equal(journeyPerformanceDetail('PERFORMANCE', squat, 'kg', '400 lb'), '181.4 kg × 2 · 1 RIR');
 assert.equal(journeyPerformanceDetail('E1RM_PR', { e1rm_kg: 136.0777 }, 'lb', '136.0777 kg'), '300 lb estimated 1RM');
 
-assert.match(experience, /useSurfaceWeightUnit\(overview\?\.athlete\.preferred_units\)/);
-assert.match(experience, /journeyEntries\.map\(\(entry\) => journeyMomentFromEntry\(entry, unit\)\)[\s\S]*\[journeyEntries, unit\]/);
-assert.match(experience, /JourneyOverviewView overview=\{overview\} unit=\{unit\}/);
-assert.match(experience, /JourneyBlocksView blocks=\{blocks\} unit=\{unit\}/);
-assert.match(experience, /journeyPerformanceDetail\(entry\.event_type, performance, unit, entry\.detail\)/);
+assert.match(experience, /useSurfaceWeightUnit\(bootstrap\?\.athlete\.preferred_units\)/);
+assert.match(experience, /ThenNowSection progression=\{allTime\} bootstrap=\{bootstrap\} unit=\{unit\}/);
+assert.match(experience, /TrainingChaptersSection blocks=\{bootstrap\.blocks\.items\} unit=\{unit\}/);
+assert.match(experience, /BodyweightContextSection bootstrap=\{bootstrap\} unit=\{unit\}/);
+assert.match(experience, /journeyPerformanceDetail\(entry\.event_type, entry\.performance, unit, entry\.detail\)/);
 assert.match(experience, /params: \{ displayUnit: unit \}/);
 assert.match(archive, /useSurfaceWeightUnit\(preferredDisplayUnit, first\(params\.displayUnit\)\)/);
 assert.match(archive, /ledger-archive-unit-toggle/);
