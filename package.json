@@ -87,6 +87,7 @@
     "test:ledger-achievements": "node scripts/test-ledger-achievements-restoration.mjs",
     "test:achievements-storyboard": "node scripts/test-achievements-storyboard-convergence.mjs",
     "test:strength-storyboard": "node scripts/test-strength-storyboard-convergence.mjs",
+    "test:strength-overview-navigation": "node scripts/test-strength-overview-navigation-contract.mjs",
     "test:strength-progression-experience": "node scripts/test-strength-progression-experience-convergence.mjs",
     "test:journey-storyboard": "node scripts/test-journey-storyboard-convergence.mjs",
     "test:strength-semantic-artwork-framing": "node scripts/test-strength-semantic-artwork-framing.mjs",

@@ -42,7 +42,6 @@ const canonicalRootContracts = new Map(Object.entries({
   'app/(tabs)/_layout.tsx': ['tabScene'],
   'app/(tabs)/athlete-dashboard.tsx': ['safeArea', 'scrollContent'],
   'app/(tabs)/athlete-meet-plan.tsx': ['safeArea', 'screen', 'scroll'],
-  'app/(tabs)/athlete-progression.tsx': ['screen', 'scroll'],
   'app/(tabs)/check-in/[submissionId].tsx': ['screen', 'scroll'],
   'app/(tabs)/check-ins.tsx': ['screen', 'scroll'],
   'app/(tabs)/coach-kpi/[kind].tsx': ['screen', 'scrollContent'],

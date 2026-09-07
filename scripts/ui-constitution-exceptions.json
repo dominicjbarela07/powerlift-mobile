@@ -18,7 +18,6 @@
   "components/calendar/CalendarEventSheet.tsx": { "colors": 0, "radius": 1, "fontSize": 1, "shadow": 0, "reason": "Native calendar editor handle geometry and input font sizing preserve platform-sheet affordance and field readability." },
   "app/(tabs)/link-coach.tsx": { "colors": 0, "radius": 5, "fontSize": 0, "shadow": 0, "reason": "Circular icon/avatar geometry in the relationship-entry workspace." },
   "app/(tabs)/reflection.tsx": { "colors": 0, "radius": 2, "fontSize": 2, "shadow": 0, "reason": "Media hero/focus geometry, reflection KPI hierarchy, and compact metadata." },
-  "app/(tabs)/athlete-progression.tsx": { "colors": 0, "radius": 0, "fontSize": 2, "shadow": 0, "reason": "KPI hierarchy and compact axis labels." },
   "app/(tabs)/coach-calendar.tsx": { "colors": 0, "radius": 0, "fontSize": 5, "shadow": 0, "reason": "Calendar heading and dense date-cell metadata." },
   "app/(tabs)/messages/[threadId].tsx": { "colors": 0, "radius": 0, "fontSize": 5, "shadow": 0, "reason": "Dense thread timestamp, attachment, and delivery metadata." },
   "app/(tabs)/messages/index.tsx": { "colors": 0, "radius": 2, "fontSize": 3, "shadow": 0, "reason": "Message ownership bubble-tail anatomy and dense timestamp/attachment metadata." },

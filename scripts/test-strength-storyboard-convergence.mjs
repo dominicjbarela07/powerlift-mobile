@@ -14,11 +14,11 @@ const milestoneAssets = read('lib/barbell/milestone-render-assets.ts');
 
 assert.match(router, /StrengthExperience as StrengthStoryboardExperience/, 'the primary Strength route imports the storyboard implementation');
 assert.match(router, /case 'strength': return <StrengthStoryboardExperience \/>/, 'Ledger 02 renders the storyboard implementation');
-assert.match(strength, /\['overview', 'progression', 'records', 'analysis'\]/, 'the four governed Strength sections remain first-class tabs');
-assert.match(strength, /strength-lift-selector/, 'Progression opens the visual three-lift selector');
+assert.match(strength, /\['overview', 'records', 'analysis'\]/, 'Strength exposes only the three governed top-level sections');
+assert.doesNotMatch(strength, /strength-lift-selector|CHOOSE A LIFT|strength-select-/, 'the redundant top-level lift selector is fully retired');
 assert.match(strength, /strength-lift-picker-\$\{profile\.key\}/, 'the integrated lift identity picker remains directly exercisable');
 for (const lift of ['squat', 'bench', 'deadlift']) {
-  assert.match(strength, new RegExp(`strength-select-\\$\\{profile\\.key\\}`), `${lift} is reachable from the shared visual selector`);
+  assert.match(strength, /strength-overview-lift-\$\{profile\.key\}/, `${lift} is reachable directly from Strength Overview`);
   assert.match(visualAssets, new RegExp(`ledger-core-${lift === 'squat' ? 'squat-rack' : lift === 'bench' ? 'bench-station' : 'deadlift-platform'}-v1\\.png`), `${lift} resolves from its governed full-silhouette master`);
   const clubReferences = milestoneAssets.match(new RegExp(`milestone-renders/plate-club-material-v2/${lift}-`, 'g')) ?? [];
   assert.ok(clubReferences.length >= 12, `${lift} has a substantive governed plate-club artwork ladder`);
@@ -27,15 +27,14 @@ for (const lift of ['squat', 'bench', 'deadlift']) {
   assert.ok(fs.existsSync(cutout) && fs.statSync(cutout).size > 50_000, `${lift} semantic art is a substantive governed asset`);
 }
 
-for (const destination of ['context-header', 'overview-card', 'selector-card', 'achievement-card', 'detail-hero', 'tier-progression', 'picker']) {
+for (const destination of ['context-header', 'overview-card', 'achievement-card', 'detail-hero', 'tier-progression', 'picker']) {
   assert.match(visualAssets, new RegExp(`'${destination}'`), `${destination} is a governed semantic-art destination`);
 }
 assert.match(visualAssets, /fit:\s*'contain'/, 'semantic artwork explicitly fails closed to contain framing');
 assert.match(semanticArtwork, /resizeMode=\{asset\.fit\}/, 'the shared semantic renderer consumes the governed fit policy');
 assert.doesNotMatch(semanticArtwork, /resizeMode=["']cover["']/, 'the shared semantic renderer can never cover-crop a lift');
 assert.match(strength, /destination="overview-card"/, 'Strength Overview has an explicit card composition');
-assert.match(strength, /destination="selector-card"/, 'the lift selector has an explicit card composition');
-assert.match(strength, /selectorCard: \{ height: 166/, 'the visual lift selector cannot regress into an unbounded blank card');
+assert.doesNotMatch(visualAssets, /selector-card/, 'dead selector-specific artwork configuration is removed');
 assert.match(strength, /destination="detail-hero"/, 'lift detail has an explicit hero composition');
 assert.match(strength, /destination="context-header"/, 'lift navigation has an explicit atmospheric identity composition');
 assert.doesNotMatch(strength, /profile\.hero|lift-tier-heroes/, 'Strength cannot fall back to one cover-oriented hero across destinations');
@@ -53,7 +52,7 @@ assert.match(strength, /strength-evidence-panel/, 'lift detail exposes exact sou
 assert.match(strength, /strength-standards-panel/, 'lift detail exposes the governed standard');
 assert.match(strength, /canonicalPrHistory\(accomplishments\)/, 'Records use the canonical career PR projection');
 assert.match(strength, /resolveLedgerClubsRuntimeState/, 'standing and thresholds come from the canonical Clubs runtime projection');
-assert.match(strength, /useLedgerLiveData\(range\)/, 'all Strength sections share the real Ledger data boundary');
+assert.match(strength, /useLedgerLiveData\(range, \{ athleteId \}\)/, 'all Strength sections share the real relationship-scoped Ledger data boundary');
 assert.match(strength, /TOTAL ESTIMATED STRENGTH/, 'Overview identifies the S\/B\/D estimate sum accurately');
 assert.match(strength, /canonicalCompetitionLiftKey\(event\.core_movement_key\)/, 'record filtering begins with governed competition-lift identity');
 assert.doesNotMatch(strength, /canonical(?:Competition)?LiftKey\([^\n)]*movement_label/, 'identity-based Strength consumers never infer a lift from display text');
@@ -64,4 +63,4 @@ assert.match(primitives, /LedgerScrollToTopContext/, 'the shared Ledger frame ex
 assert.match(strength, /scrollToTopAfterTransition/, 'internal Strength screen transitions reset inherited scroll state');
 assert.doesNotMatch(strength, /fontSize:\s*[0-9](?:\D|$)/, 'phone typography never drops below 10 points');
 
-console.log('[strength storyboard] route, overview, lift selector, detail, plate clubs, competitive context, evidence, standards, records, analysis, identity, and assets passed');
+console.log('[strength storyboard] route, overview launch points, detail, plate clubs, competitive context, evidence, standards, records, analysis, identity, and assets passed');

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Polygon } from 'react-native-svg';
@@ -43,7 +43,7 @@ import { useLedgerLiveData } from './use-ledger-live-data';
 const STRENGTH_UNIT_KEY = 'strength-ledger.progression.unit';
 
 type LiftKey = 'squat' | 'bench' | 'deadlift';
-type StrengthSection = 'overview' | 'progression' | 'records' | 'analysis';
+type StrengthSection = 'overview' | 'records' | 'analysis';
 type LiftPanel = 'progression' | 'evidence' | 'standards';
 type PrFilter = 'all' | LiftKey;
 
@@ -147,7 +147,7 @@ function sourceSetSummary(event: AccomplishmentEvent, unit: LedgerUnit) {
 }
 
 function PrimaryTabs({ value, onChange }: { value: StrengthSection; onChange: (value: StrengthSection) => void }) {
-  const items: readonly StrengthSection[] = ['overview', 'progression', 'records', 'analysis'];
+  const items: readonly StrengthSection[] = ['overview', 'records', 'analysis'];
   return <SLCompactTabRail
     items={items.map((item) => ({ key: item, label: item[0].toUpperCase() + item.slice(1), testID: `strength-tab-${item}` }))}
     onSelect={(item) => onChange(item as StrengthSection)}
@@ -181,14 +181,13 @@ function PerformedEvidenceOverview({ profiles, unit, onOpenLift }: { profiles: r
   </View>;
 }
 
-function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpenProgression, onOpenRecords }: {
+function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpenRecords }: {
   profiles: readonly LiftProfile[];
   totalKg: number | null;
   momentumKg: number | null;
   unit: LedgerUnit;
   sex?: 'M' | 'F' | null;
   onOpenLift: (key: LiftKey) => void;
-  onOpenProgression: () => void;
   onOpenRecords: () => void;
 }) {
   const closest = [...profiles].filter((profile) => profile.plateClubState?.remaining != null).sort((left, right) => (left.plateClubState?.remaining ?? Infinity) - (right.plateClubState?.remaining ?? Infinity))[0];
@@ -206,15 +205,7 @@ function Overview({ profiles, totalKg, momentumKg, unit, sex, onOpenLift, onOpen
 
     {closest?.plateClubState?.next ? <Pressable onPress={() => onOpenLift(closest.key)} style={({ pressed }) => [styles.closestCard, pressed && styles.pressed]}><View style={[styles.closestIcon, { borderColor: `${closest.tone}88`, backgroundColor: closest.softTone }]}><Ionicons name="barbell-outline" size={22} color={closest.tone} /></View><View style={styles.closestCopy}><Text style={styles.closestLabel}>CLOSEST TO NEXT PLATE CLUB</Text><Text style={styles.closestTitle}>{closest.label}</Text><Text style={styles.closestMeta}>{closest.plateClubState.remaining} {unit.toUpperCase()} to {closest.plateClubState.next.value} Club</Text></View><Ionicons name="chevron-forward" size={20} color={closest.tone} /></Pressable> : null}
 
-    <View style={styles.overviewActions}><Pressable onPress={onOpenProgression} style={({ pressed }) => [styles.overviewAction, pressed && styles.pressed]}><Ionicons name="pulse-outline" size={20} color="#B677FF" /><Text style={styles.overviewActionText}>Open progression</Text><Ionicons name="arrow-forward" size={17} color="#7E8794" /></Pressable><Pressable onPress={onOpenRecords} style={({ pressed }) => [styles.overviewAction, pressed && styles.pressed]}><Ionicons name="ribbon-outline" size={20} color="#F2B44A" /><Text style={styles.overviewActionText}>Open record book</Text><Ionicons name="arrow-forward" size={17} color="#7E8794" /></Pressable></View>
-  </View>;
-}
-
-function LiftSelector({ profiles, unit, sex, onSelect, onOpenStandards }: { profiles: readonly LiftProfile[]; unit: LedgerUnit; sex?: 'M' | 'F' | null; onSelect: (key: LiftKey) => void; onOpenStandards: () => void }) {
-  return <View testID="strength-lift-selector" style={styles.sectionStack}>
-    <View style={styles.sectionLead}><Text style={styles.eyebrow}>CHOOSE A LIFT</Text><Text style={styles.sectionTitle}>Go deeper into your strength.</Text><Text style={styles.sectionBody}>Progress, evidence, and the exact governed standard for each competition lift.</Text></View>
-    <View style={styles.selectorList}>{profiles.map((profile) => <Pressable key={profile.key} testID={`strength-select-${profile.key}`} onPress={() => onSelect(profile.key)} style={({ pressed }) => [styles.selectorCard, { borderColor: `${profile.tone}75` }, pressed && styles.pressed]}><View style={[styles.selectorArtStage, { backgroundColor: profile.softTone }]}><StrengthSemanticArtwork lift={profile.key} destination="selector-card" /></View><View style={styles.selectorCopy}><Text style={[styles.selectorName, { color: profile.tone }]}>{profile.label}</Text><View style={styles.selectorMetric}><Text style={styles.selectorValue}>{displayKg(profile.currentEstimateKg, unit)}</Text><Text style={styles.selectorUnit}>{unit.toUpperCase()}</Text></View><Text style={styles.selectorStanding}>{plateClubEvidenceLabel(profile.plateClubState)}</Text><Text numberOfLines={3} style={styles.selectorStanding}>{competitiveStandingSummary(profile.standingState, sex)}</Text></View><Ionicons name="chevron-forward" size={22} color={profile.tone} style={styles.selectorChevron} /></Pressable>)}</View>
-    <Pressable testID="strength-standards-entry" onPress={onOpenStandards} style={({ pressed }) => [styles.standardsEntry, pressed && styles.pressed]}><View style={styles.standardsEntryIcon}><Ionicons name="book-outline" size={22} color="#4AA4FF" /></View><View style={styles.standardsEntryCopy}><Text style={styles.standardsEntryTitle}>Competitive Standards</Text><Text style={styles.standardsEntryBody}>View the governed OpenPowerlifting reference points and exact cohort provenance.</Text></View><Ionicons name="chevron-forward" size={18} color="#778291" /></Pressable>
+    <View style={styles.overviewActions}><Pressable onPress={onOpenRecords} style={({ pressed }) => [styles.overviewAction, pressed && styles.pressed]}><Ionicons name="ribbon-outline" size={20} color="#F2B44A" /><Text style={styles.overviewActionText}>Open record book</Text><Ionicons name="arrow-forward" size={17} color="#7E8794" /></Pressable></View>
   </View>;
 }
 
@@ -339,16 +330,22 @@ function Analysis({ profiles, unit }: { profiles: readonly LiftProfile[]; unit: 
 
 export function StrengthExperience() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ athleteId?: string | string[]; lift?: string | string[] }>();
+  const routeLiftValue = Array.isArray(params.lift) ? params.lift[0] : params.lift;
+  const routeLift = LIFTS.some((lift) => lift.key === routeLiftValue) ? routeLiftValue as LiftKey : null;
+  const routeAthleteIdValue = Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId;
+  const parsedAthleteId = Number(routeAthleteIdValue);
+  const athleteId = Number.isInteger(parsedAthleteId) && parsedAthleteId > 0 ? parsedAthleteId : undefined;
   const scrollToTop = useLedgerScrollToTop();
   const [section, setSection] = useState<StrengthSection>('overview');
-  const [selectedLift, setSelectedLift] = useState<LiftKey | null>(null);
+  const [selectedLift, setSelectedLift] = useState<LiftKey | null>(routeLift);
   const [liftPanel, setLiftPanel] = useState<LiftPanel>('progression');
   const [showLiftPicker, setShowLiftPicker] = useState(false);
   const [showTiers, setShowTiers] = useState(false);
   const [range, setRange] = useState<LedgerRange>('90d');
   const [unit, setUnit] = useState<LedgerUnit>('lb');
   const [prFilter, setPrFilter] = useState<PrFilter>('all');
-  const { progression, currentBests, accomplishments, strengthStandard: standardCandidate, strengthStanding, loading, error, errorKind, reload } = useLedgerLiveData(range);
+  const { progression, currentBests, accomplishments, strengthStandard: standardCandidate, strengthStanding, loading, error, errorKind, reload } = useLedgerLiveData(range, { athleteId });
 
   React.useEffect(() => {
     let active = true;
@@ -398,6 +395,14 @@ export function StrengthExperience() {
     setShowTiers(false);
     scrollToTopAfterTransition();
   };
+  React.useEffect(() => {
+    setSection('overview');
+    setSelectedLift(routeLift);
+    setLiftPanel('progression');
+    setShowLiftPicker(false);
+    setShowTiers(false);
+    scrollToTopAfterTransition();
+  }, [routeLift, scrollToTopAfterTransition]);
   const openSourceSet = (sourceSetLogId: number) => router.push(archiveDetailHref('set', sourceSetLogId) as any);
   const changeSection = (next: StrengthSection) => {
     setSection(next);
@@ -422,6 +427,7 @@ export function StrengthExperience() {
   const closeLift = () => {
     setSelectedLift(null);
     setShowLiftPicker(false);
+    if (routeLiftValue) router.setParams({ lift: undefined });
     scrollToTopAfterTransition();
   };
 
@@ -429,7 +435,7 @@ export function StrengthExperience() {
 
   if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} standard={clubs.standard} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} onOpenEvidence={() => changeLiftPanel('evidence')} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} standard={clubs.standard} />}</View>;
 
-  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenProgression={() => changeSection('progression')} onOpenRecords={() => changeSection('records')} /> : section === 'progression' ? <LiftSelector profiles={profiles} unit={unit} sex={clubs.standard?.sex} onSelect={openLift} onOpenStandards={() => openLift('deadlift', 'standards')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
+  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenRecords={() => changeSection('records')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -482,21 +488,6 @@ const styles = StyleSheet.create({
   sectionLead: { gap: 5, paddingHorizontal: 3 },
   sectionTitle: { color: '#F4F1F6', fontSize: 26, lineHeight: 31, fontWeight: '800', letterSpacing: -0.5 },
   sectionBody: { color: '#A4ADB8', fontSize: 13, lineHeight: 19 },
-  selectorList: { gap: 10 },
-  selectorCard: { height: 166, flexDirection: 'row', alignItems: 'center', overflow: 'hidden', borderRadius: 17, borderWidth: 1, backgroundColor: '#080A0E' },
-  selectorArtStage: { width: '46%', height: 166, alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: '#292D36' },
-  selectorCopy: { flex: 1, minWidth: 0, gap: 2, paddingLeft: 14, paddingRight: 36 },
-  selectorName: { fontSize: 16, lineHeight: 20, fontWeight: '900' },
-  selectorMetric: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
-  selectorValue: { color: '#F5F2F8', fontSize: 34, lineHeight: 38, fontWeight: '500' },
-  selectorUnit: { color: '#D1CCD5', fontSize: 12, lineHeight: 16, fontWeight: '700' },
-  selectorStanding: { color: '#D0CBD4', fontSize: 12, lineHeight: 16, fontWeight: '600' },
-  selectorChevron: { position: 'absolute', right: 13, top: 62 },
-  standardsEntry: { minHeight: 78, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 13, borderRadius: 16, borderWidth: 1, borderColor: '#31404E', backgroundColor: '#091019' },
-  standardsEntryIcon: { width: 45, height: 45, alignItems: 'center', justifyContent: 'center', borderRadius: 14, backgroundColor: '#0D2138' },
-  standardsEntryCopy: { flex: 1, minWidth: 0, gap: 3 },
-  standardsEntryTitle: { color: '#F0EDF4', fontSize: 15, lineHeight: 19, fontWeight: '800' },
-  standardsEntryBody: { color: '#9CA6B2', fontSize: 11, lineHeight: 16 },
   liftPickerMenu: { zIndex: 2, gap: 4, marginTop: -4, padding: 6, borderBottomLeftRadius: 15, borderBottomRightRadius: 15, borderWidth: 1, borderTopWidth: 0, borderColor: '#333B47', backgroundColor: '#090D13' },
   liftPickerOption: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 8, borderRadius: 10 },
   liftPickerOptionCopy: { flex: 1, gap: 2 },

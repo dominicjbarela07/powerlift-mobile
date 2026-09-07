@@ -4,7 +4,6 @@ export type StrengthLiftVisualKey = 'squat' | 'bench' | 'deadlift';
 export type StrengthLiftVisualDestination =
   | 'context-header'
   | 'overview-card'
-  | 'selector-card'
   | 'achievement-card'
   | 'detail-hero'
   | 'tier-progression'
@@ -31,7 +30,6 @@ const CUTOUTS: Readonly<Record<StrengthLiftVisualKey, ImageSourcePropType>> = Ob
 const DESTINATIONS: readonly StrengthLiftVisualDestination[] = [
   'context-header',
   'overview-card',
-  'selector-card',
   'achievement-card',
   'detail-hero',
   'tier-progression',

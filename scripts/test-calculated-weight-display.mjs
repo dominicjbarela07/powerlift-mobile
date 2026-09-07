@@ -39,7 +39,7 @@ const chart = read('components/movement-history/AnalyticalHistoryChart.tsx');
 const recap = read('components/coach-mobile/CompletedSessionRecap.tsx');
 const manager = read('app/(tabs)/workout/index.tsx');
 const home = read('components/home/AthleteHomeV3.tsx');
-const progression = read('app/(tabs)/athlete-progression.tsx');
+const strength = read('components/ledger/StrengthExperience.tsx');
 const ledger = read('components/ledger/experiences.tsx');
 const trainingHub = read('components/training-hub/AthleteTrainingHubExperience.tsx');
 
@@ -51,7 +51,7 @@ assert.match(chart, /metric === 'e10rm'[\s\S]*formatCalculatedWeightValue/);
 assert.match(recap, /PERFORMANCE PROJECTIONS[\s\S]*formatCalculatedWeightFromKg/);
 assert.match(manager, /formatCalculatedWeightFromKg\(item\.suggested_tm, displayUnit\)/);
 assert.match(home, /formatCalculatedWeightFromKg\(strength\.current_e1rm_kg, unit\)/);
-assert.match(progression, /formatCalculatedWeightFromKg\(lift\.current_e1rm_kg, unit\)/);
+assert.match(strength, /kilogramsToDisplayValue\(valueKg, unit\)[\s\S]*roundCalculatedWeightForDisplay\(value, unit\)/);
 assert.match(ledger, /HISTORICAL CONTEXT[\s\S]*formatCalculatedWeightValue\(Math\.min/);
 assert.match(trainingHub, /isEstimated \? formatCalculatedWeightValue/);
 

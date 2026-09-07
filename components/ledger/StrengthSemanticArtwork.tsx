@@ -36,7 +36,6 @@ export function StrengthSemanticArtwork({
 const destinationStyles: Record<StrengthLiftVisualDestination, ViewStyle> = {
   'context-header': { position: 'absolute', right: 0, top: 0, bottom: 0, width: '46%' },
   'overview-card': { width: '100%', height: 106 },
-  'selector-card': { width: '100%', height: '100%' },
   'achievement-card': { width: '100%', height: 94 },
   'detail-hero': { width: '100%', height: 168 },
   'tier-progression': { width: 104, height: 76 },
@@ -46,7 +45,6 @@ const destinationStyles: Record<StrengthLiftVisualDestination, ViewStyle> = {
 const imageStyles: Record<StrengthLiftVisualDestination, ImageStyle> = {
   'context-header': { width: '100%', height: '118%', opacity: 0.48, transform: [{ translateX: 8 }] },
   'overview-card': { width: '96%', height: '96%' },
-  'selector-card': { width: '94%', height: '94%' },
   'achievement-card': { width: '96%', height: '96%' },
   'detail-hero': { width: '96%', height: '96%' },
   'tier-progression': { width: '96%', height: '96%' },

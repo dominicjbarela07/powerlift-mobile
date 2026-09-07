@@ -10,7 +10,7 @@ const renderer = read('components/ledger/StrengthSemanticArtwork.tsx');
 const strength = read('components/ledger/StrengthExperience.tsx');
 const achievements = read('components/ledger/AchievementsExperience.tsx');
 
-const destinations = ['context-header', 'overview-card', 'selector-card', 'achievement-card', 'detail-hero', 'tier-progression', 'picker'];
+const destinations = ['context-header', 'overview-card', 'achievement-card', 'detail-hero', 'tier-progression', 'picker'];
 const subjects = {
   squat: ['ledger-core-squat-rack-v1.png', 'rack-loaded-bar'],
   bench: ['ledger-core-bench-station-v1.png', 'bench-rack-loaded-bar'],
@@ -28,6 +28,7 @@ for (const destination of destinations) {
   assert.match(assets, new RegExp(`'${destination}'`), `${destination} is part of the destination matrix`);
   assert.match(renderer, new RegExp(destination === 'picker' ? '\\bpicker:' : `'${destination}'`), `${destination} owns a renderer safe zone`);
 }
+assert.doesNotMatch(assets, /selector-card/, 'the retired intermediary owns no dormant artwork destination');
 
 assert.match(assets, /destinationRule:\s*'Semantic strength artwork is composed for its destination and is never cover-cropped\.'/i, 'the permanent destination-framing rule is governed centrally');
 assert.match(renderer, /resizeMode=\{asset\.fit\}/, 'the renderer obeys the governed fit');

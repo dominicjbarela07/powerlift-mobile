@@ -36,8 +36,8 @@ for (const range of ['30d', '90d', '180d', '1y', 'all']) {
 assert.match(experience, /<RangeTabs value=\{range\} onChange=\{onRangeChange\}/, 'one shared range state drives the entire lift progression');
 assert.match(experience, /strength-overview-performed-evidence/, 'Strength Overview includes concise performed-evidence signals');
 assert.match(experience, /governed 80% threshold/, 'Overview identifies the heavy-exposure policy');
-assert.match(experience, /selectorCard: \{ height: 166/, 'lift-selector cards have a definite compact height');
-assert.match(experience, /selectorArtStage: \{ width: '46%', height: 166/, 'lift-selector art cannot resolve against an unbounded percentage height');
+assert.match(experience, /strength-overview-lift-\$\{profile\.key\}[\s\S]*onPress=\{\(\) => onOpenLift\(profile\.key\)\}/, 'Overview lift cards launch rich per-lift progression directly');
+assert.doesNotMatch(experience, /strength-lift-selector|selectorCard|selectorArtStage/, 'the redundant selector implementation is absent');
 
 assert.match(story, /evidence: 'ESTIMATED' \| 'PERFORMED'/, 'estimated and performed evidence are visibly distinct');
 assert.match(story, /Literal .*heaviest load\. No formula\./, 'weight-on-bar is explicitly literal and formula-free');

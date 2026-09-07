@@ -16,6 +16,8 @@ import {
 
 type LedgerLiveDataOptions = Readonly<{
   allowPartial?: boolean;
+  /** Relationship-authorized athlete subject for coach-owned Ledger routes. */
+  athleteId?: number;
   /** Deterministic development-only evidence for visual certification routes. */
   fixture?: LedgerLiveDataFixture;
 }>;
@@ -30,6 +32,7 @@ export type LedgerLiveDataFixture = Readonly<{
 
 export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiveDataOptions = {}) {
   const allowPartial = Boolean(options.allowPartial);
+  const athleteId = options.athleteId;
   const fixture = __DEV__ ? options.fixture : undefined;
   const [progression, setProgression] = useState<LedgerProgression | null>(fixture?.progression ?? null);
   const [currentBests, setCurrentBests] = useState<CurrentBest[]>(fixture ? [...fixture.currentBests] : []);
@@ -57,9 +60,9 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
     setErrorKind(null);
     try {
       const requests = [
-        fetchLedgerProgression(range),
-        fetchLedgerCurrentBests(),
-        fetchLedgerAccomplishments(32),
+        fetchLedgerProgression(range, athleteId),
+        fetchLedgerCurrentBests(athleteId),
+        fetchLedgerAccomplishments(32, athleteId),
       ] as const;
       if (allowPartial) {
         const [progressionResult, currentBestsResult, accomplishmentsResult] = await Promise.allSettled(requests);
@@ -105,7 +108,7 @@ export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiv
     } finally {
       setLoading(false);
     }
-  }, [allowPartial, fixture, range]);
+  }, [allowPartial, athleteId, fixture, range]);
 
   useEffect(() => {
     void reload();
