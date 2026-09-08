@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SLColors, SLLayout, SLMotion, SLSpacing } from '@/constants/theme';
 import type { DisplayWeightUnit } from '@/lib/display-units';
 
-export type FloatingControlContext = 'tab-screen' | 'screen' | 'sheet';
+export type FloatingControlContext = 'tab-screen' | 'meet-screen' | 'screen' | 'sheet';
 export type FloatingTrailingSlot = 0 | 1 | 2;
 
 type UnitRegistration = Readonly<{
@@ -49,6 +49,23 @@ export const SL_FLOATING_CONTROL = {
   sheetBottomInset: SLSpacing.lg + SLSpacing.xxs,
 } as const;
 
+/**
+ * Immersive Meet Mode owns a bottom navigation shell that replaces the global
+ * tab row. Keep its geometry here so the Meet navigation, action dock, and
+ * floating-toolkit rail all resolve from one shared contract.
+ */
+export const SL_MEET_MODE_NAVIGATION = {
+  height: 64,
+  bottomInset: SLSpacing.sm,
+  contentGap: SLSpacing.sm,
+} as const;
+
+export function meetModeNavigationClearance(safeAreaBottom: number) {
+  return Math.max(0, safeAreaBottom)
+    + SL_MEET_MODE_NAVIGATION.bottomInset
+    + SL_MEET_MODE_NAVIGATION.height;
+}
+
 export function floatingControlStackBottom({
   context,
   safeAreaBottom,
@@ -64,6 +81,9 @@ export function floatingControlStackBottom({
       + SL_FLOATING_CONTROL.tabBarBottomInset
       + SL_TAB_ROW_CONTROL.shellHeight
       + SL_FLOATING_CONTROL.gap
+    : context === 'meet-screen'
+      ? meetModeNavigationClearance(safeBottom)
+        + SL_MEET_MODE_NAVIGATION.contentGap
     : context === 'sheet'
       ? safeBottom + SL_FLOATING_CONTROL.sheetBottomInset
       : safeBottom + SL_FLOATING_CONTROL.screenBottomInset;

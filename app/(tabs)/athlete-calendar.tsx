@@ -528,7 +528,13 @@ export default function AthleteCalendarScreen() {
       setScheduleEditor(action.session);
       return;
     }
-    if (action.type === 'meet' || (action.type === 'important-date' && action.item.kind === 'meet')) { router.push('/(tabs)/athlete-meet-plan' as any); return; }
+    if (action.type === 'meet' || (action.type === 'important-date' && action.item.kind === 'meet')) {
+      router.push({
+        pathname: '/(tabs)/athlete-meet-plan',
+        params: { returnTo: '/athlete-calendar' },
+      } as any);
+      return;
+    }
     if (action.type === 'check-in') { router.push({ pathname: '/(tabs)/check-in/[submissionId]', params: { submissionId: String(action.id), returnTo: 'calendar' } } as any); return; }
     if (action.type === 'daily-readiness') {
       if (action.date === (currentToday || data.today)) openDailyReadiness();

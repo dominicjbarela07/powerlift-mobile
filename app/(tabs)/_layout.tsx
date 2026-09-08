@@ -207,6 +207,8 @@ function FilteredTabBar({
   }, [collapseTabRowRef]);
 
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+  const isImmersiveMeetMode = normalizedPathname === '/athlete-meet-plan'
+    || normalizedPathname.startsWith('/athlete-meet-plan/');
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
   const isBottomTabGlassPreviewPath = __DEV__ && normalizedPathname === '/dev-mocks/navigation-bottom-tab-glass';
   const usesCalendarPreviewSelection = isCalendarPreviewPath || isBottomTabGlassPreviewPath;
@@ -258,6 +260,7 @@ function FilteredTabBar({
   const hidesNavigationForCompletedRecap = normalizedPathname.startsWith('/workout/')
     && sessionEditorOverlayOpen;
 
+  if (isImmersiveMeetMode) return null;
   if (hidesNavigationForSessionEditor) return null;
   if (hidesNavigationForCompletedRecap) return null;
 
@@ -334,6 +337,7 @@ function FilteredTabBar({
         const isMessagesRoute = route.name === 'messages' || route.name === 'messages/index';
         const isTrainingRoute = route.name === 'workout' || route.name === 'workout/index';
         const isLedgerHomeRoute = route.name === 'ledger';
+        const isMeetModeRoute = route.name === 'athlete-meet-plan';
         const iconName = isFocused
           ? (cfg.icon.endsWith('-outline')
               ? (cfg.icon.replace('-outline', '') as keyof typeof Ionicons.glyphMap)
@@ -367,7 +371,13 @@ function FilteredTabBar({
             canPreventDefault: true,
           });
 
-          if (isLedgerHomeRoute && !event.defaultPrevented) {
+          if (isMeetModeRoute && !event.defaultPrevented) {
+            router.push({
+              pathname: '/(tabs)/athlete-meet-plan',
+              params: { returnTo: normalizedPathname },
+            } as any);
+            setIsExpanded(false);
+          } else if (isLedgerHomeRoute && !event.defaultPrevented) {
             router.navigate('/(tabs)/ledger/home' as any);
             setIsExpanded(false);
           } else if (!isStateFocused && !event.defaultPrevented) {
@@ -1072,6 +1082,7 @@ export default function TabsLayout() {
           options={{
             title: 'Meet',
             href: hasMeetPlan ? '/(tabs)/athlete-meet-plan' : null,
+            headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <SLTrophy size={22} tier="bronze" muted={!focused} />
             ),

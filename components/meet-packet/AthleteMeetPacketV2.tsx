@@ -2,11 +2,20 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { MeetModeHeader } from '@/components/navigation/MeetModeHeader';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
+import {
+  FloatingControlStack,
+  FloatingUtilityButton,
+  meetModeNavigationClearance,
+  SL_FLOATING_CONTROL,
+  SL_MEET_MODE_NAVIGATION,
+} from '@/components/ui/floating-control-coordinator';
 import { SLMotionPressable } from '@/components/ui/sl-motion';
 import { Text, TextInput } from '@/components/ui/sl-text';
-import { SLColors, SLRadius, SLShadows } from '@/constants/theme';
+import { SLColors, SLLayout, SLRadius, SLShadows } from '@/constants/theme';
 import { resolvePlateStackRender } from '@/lib/barbell/plate-stack-render-resolver';
 import { convertDisplayWeightValue, formatWeightFromKg, type DisplayWeightUnit } from '@/lib/display-units';
 
@@ -91,6 +100,8 @@ type DetailDraft = {
 type Props = Readonly<{
   payload: MeetPacketPayload;
   unit: DisplayWeightUnit;
+  focusedTaskActive?: boolean;
+  onReturn: () => void;
   onUnitChange: (unit: DisplayWeightUnit) => void;
   onStartMeet: () => Promise<void> | void;
   onFinishMeet: () => Promise<void> | void;
@@ -180,7 +191,8 @@ function ActionButton({ disabled, label, loading, onPress, tone = 'gold' }: { di
   );
 }
 
-export function AthleteMeetPacketV2({ payload, unit, onUnitChange, onStartMeet, onFinishMeet, onOpenAttempt, onSaveDetails, onSaveMeetBag, onToggleWarmup }: Props) {
+export function AthleteMeetPacketV2({ payload, unit, focusedTaskActive = false, onReturn, onUnitChange, onStartMeet, onFinishMeet, onOpenAttempt, onSaveDetails, onSaveMeetBag, onToggleWarmup }: Props) {
+  const insets = useSafeAreaInsets();
   const { meet } = payload;
   const liftOrder = useMemo(
     () => payload.lift_order?.length ? payload.lift_order : (['SQ', 'BN', 'DL'] as MeetLift[]),
@@ -205,6 +217,8 @@ export function AthleteMeetPacketV2({ payload, unit, onUnitChange, onStartMeet, 
     weigh_in_bodyweight: displayNumber(meet.weigh_in_bodyweight_kg, unit) || '', squat_rack_height: meet.rack_heights.squat || '',
     bench_rack_height: meet.rack_heights.bench || '', bench_safety_height: meet.rack_heights.bench_safety || '',
   });
+  const focusedSurfaceOwnsViewport = focusedTaskActive || sheet !== null;
+  const navigationClearance = meetModeNavigationClearance(insets.bottom);
 
   useEffect(() => {
     const nextWarmups: Record<number, boolean> = {};
@@ -280,7 +294,11 @@ export function AthleteMeetPacketV2({ payload, unit, onUnitChange, onStartMeet, 
 
   return (
     <View style={styles.screen} testID="athlete-meet-packet-v2">
-      <ScrollView contentContainerStyle={styles.scrollBody} showsVerticalScrollIndicator={false}>
+      <MeetModeHeader onReturn={onReturn} />
+      <ScrollView
+        contentContainerStyle={[styles.scrollBody, { paddingBottom: navigationClearance + SL_FLOATING_CONTROL.size + SL_MEET_MODE_NAVIGATION.contentGap }]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={styles.headerEyebrow}>{lifecycle === 'live' ? 'MEET DAY · LIVE' : lifecycle === 'complete' ? 'COMPETITION RECORD' : 'MEET PACKET'}</Text>
@@ -296,27 +314,33 @@ export function AthleteMeetPacketV2({ payload, unit, onUnitChange, onStartMeet, 
         {lifecycle === 'live' && meet.can_finish_meet && tab === 'overview' ? <ActionButton label="Finish Meet" onPress={() => void onFinishMeet()} tone="quiet" /> : null}
       </ScrollView>
 
-      <View style={styles.unitControlWrap}>
-        <SLMotionPressable accessibilityLabel={`Display unit ${unit}. Switch units`} onPress={() => { feedback(); onUnitChange(unit === 'lb' ? 'kg' : 'lb'); }} style={styles.unitControl}>
-          <Text style={styles.unitControlText}>{unit}</Text>
-        </SLMotionPressable>
-      </View>
+      {!focusedSurfaceOwnsViewport ? (
+        <FloatingControlStack context="meet-screen">
+          <FloatingUtilityButton
+            accessibilityHint="Changes only the weights shown in this Meet Packet."
+            accessibilityLabel={`Display unit ${unit}. Switch units`}
+            label={unit}
+            onPress={() => { feedback(); onUnitChange(unit === 'lb' ? 'kg' : 'lb'); }}
+            testID="meet-mode-unit-toggle"
+          />
+        </FloatingControlStack>
+      ) : null}
 
-      <View style={styles.navigation}>
+      {!focusedSurfaceOwnsViewport ? <View style={[styles.navigation, { bottom: insets.bottom + SL_MEET_MODE_NAVIGATION.bottomInset }]} testID="meet-mode-navigation">
         {([
           ['overview', 'home-outline', 'Overview'], ['warmups', 'flame-outline', 'Warmups'], ['attempts', 'podium-outline', 'Attempts'], ['bag', 'bag-handle-outline', 'Bag'], ['more', 'grid-outline', 'More'],
         ] as const).map(([key, icon, label]) => {
           const active = tab === key;
           return <Pressable key={key} onPress={() => switchTab(key)} style={({ pressed }) => [styles.navItem, active && styles.navItemActive, pressed && styles.pressed]}><Ionicons color={active ? SLColors.warning : SLColors.textMuted} name={icon} size={19} /><Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text></Pressable>;
         })}
-      </View>
+      </View> : null}
 
       <MeetToolkitSheet onClose={() => setSheet(null)} onOpen={setSheet} visible={sheet === 'menu'} />
       <DetailsSheet busy={busy === 'details'} draft={draft} onChange={(key, value) => setDraft((current) => ({ ...current, [key]: value }))} onClose={() => setSheet(null)} onSave={saveDetails} unit={unit} visible={sheet === 'details'} />
       <PlatformSheet busy={busy === 'details'} draft={draft} onChange={(key, value) => setDraft((current) => ({ ...current, [key]: value }))} onClose={() => setSheet(null)} onSave={saveDetails} visible={sheet === 'platform'} />
       <ReferenceSheet activeLift={activeLift} kind={sheet === 'attempts' || sheet === 'warmups' || sheet === 'focus' ? sheet : null} labels={labels} onClose={() => setSheet(null)} onLift={setActiveLift} onOpenAttempt={(attempt) => { setSheet(null); onOpenAttempt(attempt); }} payload={payload} unit={unit} />
 
-      {lifecycle === 'pre' ? <View style={styles.primaryDock}><ActionButton label={readyCount === 5 ? 'Start Meet Day' : `Complete ${5 - readyCount} Item${5 - readyCount === 1 ? '' : 's'}`} loading={busy === 'start'} onPress={async () => { const missing = readiness.find((item) => !item.ready); if (missing) { if (missing.target === 'bag') setTab('bag'); else setSheet(missing.target); return; } if (!meet.can_start_meet) { setSheet('details'); return; } setBusy('start'); try { await onStartMeet(); } finally { setBusy(null); } }} /></View> : null}
+      {lifecycle === 'pre' && !focusedSurfaceOwnsViewport ? <View style={[styles.primaryDock, { bottom: navigationClearance + SL_MEET_MODE_NAVIGATION.contentGap }]}><ActionButton label={readyCount === 5 ? 'Start Meet Day' : `Complete ${5 - readyCount} Item${5 - readyCount === 1 ? '' : 's'}`} loading={busy === 'start'} onPress={async () => { const missing = readiness.find((item) => !item.ready); if (missing) { if (missing.target === 'bag') setTab('bag'); else setSheet(missing.target); return; } if (!meet.can_start_meet) { setSheet('details'); return; } setBusy('start'); try { await onStartMeet(); } finally { setBusy(null); } }} /></View> : null}
     </View>
   );
 }
@@ -384,7 +408,7 @@ function ReferenceSheet({ activeLift, kind, labels, onClose, onLift, onOpenAttem
 function Field({ keyboard, label, onChange, value }: { keyboard?: 'decimal-pad'; label: string; onChange: (value: string) => void; value: string }) { return <View style={styles.field}><Text style={styles.fieldLabel}>{label}</Text><TextInput keyboardType={keyboard} onChangeText={onChange} placeholder="TBD" placeholderTextColor={SLColors.textSubtle} style={styles.input} value={value} /></View>; }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: SLColors.canvas }, scrollBody: { gap: 14, paddingBottom: 154 }, stack: { gap: 12 }, flex: { flex: 1 }, pressed: { opacity: 0.7 }, disabled: { opacity: 0.45 },
+  screen: { flex: 1, backgroundColor: SLColors.canvas }, scrollBody: { gap: 14 }, stack: { gap: 12 }, flex: { flex: 1 }, pressed: { opacity: 0.7 }, disabled: { opacity: 0.45 },
   header: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', paddingTop: 10, paddingBottom: 2 }, headerCopy: { flex: 1 }, headerEyebrow: { color: SLColors.warning, fontSize: 11, lineHeight: 15, fontWeight: '800', letterSpacing: 1.2 }, headerTitle: { color: SLColors.textStrong, fontSize: 31, lineHeight: 36, fontWeight: '800', marginTop: 3 }, headerMeta: { color: SLColors.textMuted, fontSize: 13, lineHeight: 18, marginTop: 2 },
   lifecycleBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: SLColors.warning, borderRadius: 99, paddingHorizontal: 10, paddingVertical: 7, marginTop: 2 }, lifecycleLive: { borderColor: SLColors.danger }, lifecycleComplete: { borderColor: SLColors.success }, lifecycleDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: SLColors.warning }, lifecycleDotLive: { backgroundColor: SLColors.danger }, lifecycleDotComplete: { backgroundColor: SLColors.success }, lifecycleText: { color: SLColors.textPrimary, fontSize: 10, lineHeight: 13, fontWeight: '900', letterSpacing: 0.7 },
   card: { backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.borderStandard, borderRadius: SLRadius.lg, padding: 14, gap: 10 }, cardEyebrow: { color: SLColors.warning, fontSize: 11, lineHeight: 15, fontWeight: '900', letterSpacing: 0.7 }, cardBody: { color: SLColors.textSecondary, fontSize: 14, lineHeight: 20 }, sectionTitle: { color: SLColors.textStrong, fontSize: 18, lineHeight: 23, fontWeight: '800' }, sectionMeta: { color: SLColors.textMuted, fontSize: 12, lineHeight: 17 }, sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -400,6 +424,6 @@ const styles = StyleSheet.create({
   attemptRow: { minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: 11, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.divider }, attemptGood: { backgroundColor: 'rgba(85, 170, 100, 0.04)' }, attemptMiss: { backgroundColor: 'rgba(210, 80, 90, 0.04)' }, attemptOrdinal: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: SLColors.borderStrong, alignItems: 'center', justifyContent: 'center' }, ordinalGood: { borderColor: SLColors.success }, attemptOrdinalText: { color: SLColors.textPrimary, fontSize: 14, lineHeight: 18, fontWeight: '800' }, attemptLoad: { color: SLColors.textStrong, fontSize: 18, lineHeight: 23, fontWeight: '800' }, attemptMeta: { color: SLColors.textMuted, fontSize: 12, lineHeight: 16 },
   bagHero: { minHeight: 150, backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.warning, borderRadius: SLRadius.xl, paddingLeft: 18, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }, bagCount: { color: SLColors.success, fontSize: 34, lineHeight: 39, fontWeight: '900' }, bagImage: { flex: 1, height: 150 }, bagRow: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10 }, bagLabel: { color: SLColors.textPrimary, fontSize: 14, lineHeight: 19, fontWeight: '700' }, bagLabelDone: { color: SLColors.textMuted }, customBagRow: { flexDirection: 'row', alignItems: 'center', gap: 10 }, addRow: { flexDirection: 'row', gap: 8, marginTop: 4 }, addButton: { width: 48, minHeight: 48, borderWidth: 1, borderColor: SLColors.warning, borderRadius: SLRadius.md, justifyContent: 'center', alignItems: 'center' },
   completeHero: { backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.success, borderRadius: SLRadius.xl, padding: 22, alignItems: 'center', gap: 7 }, completeTitle: { color: SLColors.success, fontSize: 21, lineHeight: 26, fontWeight: '900' }, completeTotal: { color: SLColors.textStrong, fontSize: 33, lineHeight: 39, fontWeight: '800' }, threeColumn: { flexDirection: 'row', backgroundColor: SLColors.surfaceInset, borderWidth: 1, borderColor: SLColors.borderStandard, borderRadius: SLRadius.lg }, metricCell: { flex: 1, paddingVertical: 15, alignItems: 'center' }, metricLabel: { color: SLColors.textMuted, fontSize: 10, lineHeight: 14, fontWeight: '800' }, metricValue: { color: SLColors.textStrong, fontSize: 16, lineHeight: 21, fontWeight: '800', marginTop: 3 },
-  navigation: { position: 'absolute', left: 10, right: 10, bottom: 10, minHeight: 64, borderRadius: SLRadius.pill, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: 'rgba(19, 16, 24, 0.97)', flexDirection: 'row', padding: 4, zIndex: 30, ...(SLShadows.level3 as ViewStyle) }, navItem: { flex: 1, minHeight: 54, borderRadius: SLRadius.pill, alignItems: 'center', justifyContent: 'center', gap: 2 }, navItemActive: { backgroundColor: SLColors.surfaceSelected }, navLabel: { color: SLColors.textMuted, fontSize: 9, lineHeight: 12, fontWeight: '700' }, navLabelActive: { color: SLColors.warning }, unitControlWrap: { position: 'absolute', right: 14, bottom: 83, zIndex: 35 }, unitControl: { minWidth: 48, height: 48, borderRadius: 24, borderWidth: 1, borderColor: SLColors.borderSelected, backgroundColor: 'rgba(28, 14, 37, 0.97)', alignItems: 'center', justifyContent: 'center', ...(SLShadows.level2 as ViewStyle) }, unitControlText: { color: SLColors.textStrong, fontSize: 14, lineHeight: 18, fontWeight: '900', textTransform: 'lowercase' }, primaryDock: { position: 'absolute', left: 14, right: 76, bottom: 84, zIndex: 34 },
+  navigation: { position: 'absolute', left: SLLayout.screenGutter, right: SLLayout.screenGutter, minHeight: SL_MEET_MODE_NAVIGATION.height, borderRadius: SLRadius.pill, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: 'rgba(19, 16, 24, 0.97)', flexDirection: 'row', padding: 4, zIndex: 30, ...(SLShadows.level3 as ViewStyle) }, navItem: { flex: 1, minHeight: 54, borderRadius: SLRadius.pill, alignItems: 'center', justifyContent: 'center', gap: 2 }, navItemActive: { backgroundColor: SLColors.surfaceSelected }, navLabel: { color: SLColors.textMuted, fontSize: 9, lineHeight: 12, fontWeight: '700' }, navLabelActive: { color: SLColors.warning }, primaryDock: { position: 'absolute', left: SLLayout.screenGutter, right: SL_FLOATING_CONTROL.rightInset + SL_FLOATING_CONTROL.size + SL_FLOATING_CONTROL.gap, zIndex: 34 },
   sheetBody: { paddingHorizontal: 16, paddingBottom: 28, gap: 12 }, sheetEyebrow: { color: SLColors.accentViolet, fontSize: 11, lineHeight: 15, fontWeight: '900', letterSpacing: 0.8 }, sheetTitle: { color: SLColors.textStrong, fontSize: 27, lineHeight: 32, fontWeight: '800', marginBottom: 3 }, toolRow: { minHeight: 66, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: SLColors.borderStandard, borderRadius: SLRadius.md, paddingHorizontal: 12, backgroundColor: SLColors.surfaceInset }, toolIcon: { width: 40, height: 40, borderRadius: 10, backgroundColor: SLColors.surfaceCommand, alignItems: 'center', justifyContent: 'center' }, toolLabel: { color: SLColors.textStrong, fontSize: 15, lineHeight: 20, fontWeight: '800' }, toolMeta: { color: SLColors.textMuted, fontSize: 11, lineHeight: 15, marginTop: 2 }, field: { gap: 6 }, fieldLabel: { color: SLColors.textMuted, fontSize: 11, lineHeight: 15, fontWeight: '800', textTransform: 'uppercase' }, input: { minHeight: 48, flex: 1, borderWidth: 1, borderColor: SLColors.borderStandard, borderRadius: SLRadius.md, paddingHorizontal: 13, color: SLColors.textStrong, backgroundColor: SLColors.surfaceInset, fontSize: 14 }, fieldGrid: { flexDirection: 'row', gap: 10 }, rackImage: { width: '100%', height: 170 },
 });

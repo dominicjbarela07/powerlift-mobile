@@ -16,13 +16,14 @@ import { Text, TextInput } from '@/components/ui/sl-text';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import {
   AthleteMeetPacketV2,
   type MeetPacketPayload,
   type MeetPacketWarmup,
 } from '@/components/meet-packet/AthleteMeetPacketV2';
+import { MeetModeHeader } from '@/components/navigation/MeetModeHeader';
 
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -36,6 +37,10 @@ import {
   normalizeDisplayWeightUnit,
   type DisplayWeightUnit,
 } from '@/lib/display-units';
+import {
+  DEFAULT_MEET_MODE_RETURN_PATH,
+  resolveMeetModeReturnPath,
+} from '@/lib/meet-mode-navigation';
 
 type LiftKey = 'SQ' | 'BN' | 'DL';
 type MainTab = 'overview' | 'attempts' | 'warmups' | 'notes' | 'summary';
@@ -435,6 +440,7 @@ function weightClassOptionsForFederation(federation?: string | null, sex?: strin
 
 export default function AthleteMeetPlanScreen() {
   const router = useRouter();
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string | string[] }>();
   const { token, user } = useAuth();
   const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const [displayUnit, setDisplayUnit] = useState<DisplayWeightUnit>(preferredDisplayUnit);
@@ -469,6 +475,18 @@ export default function AthleteMeetPlanScreen() {
   useEffect(() => {
     setDisplayUnit(preferredDisplayUnit);
   }, [preferredDisplayUnit]);
+  const returnToStrengthLedger = useCallback(() => {
+    const restoredPath = resolveMeetModeReturnPath(returnTo);
+    if (restoredPath) {
+      router.replace(restoredPath as any);
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace(DEFAULT_MEET_MODE_RETURN_PATH as any);
+  }, [returnTo, router]);
   const openAttemptDraft = useCallback((attempt: MeetAttempt) => {
     const existing = attempt.result;
     const existingNotes = existing?.notes || '';
@@ -2461,7 +2479,8 @@ export default function AthleteMeetPlanScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <MeetModeHeader onReturn={returnToStrengthLedger} />
         <ThemedView style={styles.screenCentered}>
           <ActivityIndicator size="small" color={SLColors.accentViolet} />
           <ThemedText variant="bodyMuted" style={styles.loadingText}>Loading meet plan…</ThemedText>
@@ -2472,7 +2491,8 @@ export default function AthleteMeetPlanScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <MeetModeHeader onReturn={returnToStrengthLedger} />
         <ThemedView style={styles.screenCentered}>
           <ThemedText variant="error" style={styles.errorText}>{error}</ThemedText>
         </ThemedView>
@@ -2482,8 +2502,10 @@ export default function AthleteMeetPlanScreen() {
 
   if (hasMeetPlan && payload?.meet) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <AthleteMeetPacketV2
+          focusedTaskActive={attemptDraft != null}
+          onReturn={returnToStrengthLedger}
           payload={payload as MeetPacketPayload}
           unit={displayUnit}
           onUnitChange={setDisplayUnit}
@@ -2532,7 +2554,8 @@ export default function AthleteMeetPlanScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <MeetModeHeader onReturn={returnToStrengthLedger} />
       <ThemedView style={styles.screen}>
         <ScrollView
           contentContainerStyle={styles.scroll}

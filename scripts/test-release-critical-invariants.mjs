@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 
 const areas = [
   ['platform-wide mobile full-width and text layout', ['scripts/test-mobile-full-width-enforcement.mjs', 'scripts/test-mobile-text-layout-contract.mjs']],
-  ['Athlete Meet Packet V2 lifecycle and operational toolkit', ['scripts/test-athlete-meet-packet-v2.mjs']],
+  ['Athlete Meet Packet V2 lifecycle and immersive shell', ['scripts/test-athlete-meet-packet-v2.mjs', 'scripts/test-immersive-meet-mode-shell.mjs']],
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],
   ['canonical shared athlete and coach post-Session surface', ['scripts/test-canonical-post-session-surface.mjs', 'scripts/test-post-session-shell-restoration.mjs', 'scripts/test-post-session-overview-visual-convergence.mjs', 'scripts/test-post-session-times.mjs', 'scripts/test-post-session-related-history.mjs']],
   ['Coach Check-Ins V2 command center and evidence lifecycle', ['scripts/test-coach-check-ins-v2.mjs']],

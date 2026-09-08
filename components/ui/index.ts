@@ -25,8 +25,14 @@ export { SLScreen, SLScrollScreen } from './sl-screen';
 export { SLSectionHeader } from './sl-section-header';
 export {
   FloatingControlCoordinator,
+  FloatingControlStack,
   FloatingDisplayUnitRegistration,
+  FloatingUtilityButton,
   floatingControlBottom,
+  floatingControlStackBottom,
+  meetModeNavigationClearance,
+  SL_FLOATING_CONTROL,
+  SL_MEET_MODE_NAVIGATION,
   type FloatingControlContext,
   type FloatingTrailingSlot,
 } from './floating-control-coordinator';

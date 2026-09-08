@@ -626,7 +626,10 @@ export default function AthleteDashboard() {
         return;
       }
       if (action.route === 'meet') {
-        router.push('/(tabs)/athlete-meet-plan' as any);
+        router.push({
+          pathname: '/(tabs)/athlete-meet-plan',
+          params: { returnTo: '/athlete-dashboard' },
+        } as any);
         return;
       }
       if (action.route === 'session_surveys') {
