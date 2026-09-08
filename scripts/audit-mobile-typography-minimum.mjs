@@ -53,7 +53,8 @@ assert.doesNotMatch(button, /\bheight: sizing\./, 'shared buttons must grow vert
 assert.match(workspace, /<Text style=\{styles\.identityTitle\}>\{title\}<\/Text>/, 'long Session titles must remain fully visible');
 assert.doesNotMatch(workspace, /<Text numberOfLines=\{\d+\} style=\{styles\.identityTitle\}>/, 'Session titles must not have a fixed line limit');
 assert.match(workspace, /typographyRole="movementTitle" numberOfLines=\{2\}/, 'long movement names must use the two-line movement role');
-assert.match(workspace, /<Text numberOfLines=\{1\} style=\{\[styles\.sessionNotesText/, 'collapsed Session notes must use intentional low-priority truncation');
+assert.match(workspace, /<Text style=\{\[styles\.sessionNotesText/, 'collapsed Session notes must remain readable');
+assert.doesNotMatch(workspace, /<Text numberOfLines=\{\d+\} style=\{\[styles\.sessionNotesText/, 'collapsed Session notes must grow instead of clipping inside their preview');
 assert.match(workspace, /sessionToolkitActionText[\s\S]*\{label\}/, 'Session toolkit actions must render their visible labels');
 assert.match(read('app/(tabs)/workout/session-workspace/[workoutId].tsx'), /styles\.sessionActionText[\s\S]*\{action\.label\}/, 'Session management actions must render their visible labels');
 

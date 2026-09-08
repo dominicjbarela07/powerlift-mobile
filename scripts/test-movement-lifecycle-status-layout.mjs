@@ -42,12 +42,15 @@ assert.doesNotMatch(statusPrimitive, /minimumFontScale|adjustsFontSizeToFit/, 't
 
 assert.match(core, /<MovementLifecycleStatusLabel[\s\S]*?label=\{stateLabel\}/, 'core and standalone accessory cards must consume the shared status primitive');
 assert.match(core, /activeMovementActions:\s*\{[\s\S]*?width:\s*MOVEMENT_STATUS_COLUMN_WIDTH[\s\S]*?flexShrink:\s*0/, 'canonical card actions must own fixed lifecycle width');
-assert.match(core, /ellipsizeMode="tail"[\s\S]*?numberOfLines=\{2\}[\s\S]*?style=\{styles\.activeMovementTitle\}/, 'long movement titles must truncate before pressuring status');
+assert.match(core, /numberOfLines=\{canonicalMovementCard \? 0 : 2\}[\s\S]*?style=\{styles\.activeMovementTitle\}/, 'canonical Logger movement titles must grow while legacy cards retain a bounded fallback');
+assert.doesNotMatch(core, /ellipsizeMode="tail"[\s\S]{0,160}?style=\{styles\.activeMovementTitle\}/, 'canonical Logger movement titles must not be deliberately ellipsized');
 assert.match(core, /ledgerHeaderActions:\s*\{[\s\S]*?minWidth:\s*MOVEMENT_STATUS_COLUMN_WIDTH[\s\S]*?flexShrink:\s*0/, 'legacy collapsed/expanded cards must retain the same fixed status width');
 
 assert.match(superset, /<MovementLifecycleStatusLabel[\s\S]*?label=\{statusLabel\(model\.status\)\}/, 'superset headers must consume the same no-wrap primitive');
 assert.match(superset, /status === 'complete'\) return 'COMPLETED'/, 'superset completion must use the canonical lifecycle label');
 assert.match(superset, /eyebrow:\s*\{[\s\S]*?flex:\s*1[\s\S]*?minWidth:\s*0/, 'superset identity copy must yield space to lifecycle status');
+assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.movementName\}>\{item\.title\}<\/Text>/, 'superset card movement names must remain complete');
+assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.workTitle\}>/, 'expanded superset movement names must remain complete');
 
 assert.match(route, /const accessoryKind = machineAccessory[\s\S]*?<CoreMovementLedgerRow/, 'machine, free-weight, and bodyweight accessories must share the canonical movement card');
 assert.match(route, /<CoreMovementLedgerRow[\s\S]*?title=\{liftDisplayName\(core\)\}/, 'Core, TOP, and backdown work must share the canonical movement card');

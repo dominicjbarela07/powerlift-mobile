@@ -28,7 +28,7 @@ export function SLListRow({ title, subtitle, meta, leading, trailing, disclosure
     >
       {leading}
       <View style={styles.copy}>
-        <Text numberOfLines={1} typographyRole="bodyStrong" style={styles.title}>{title}</Text>
+        <Text numberOfLines={2} typographyRole="bodyStrong" style={styles.title}>{title}</Text>
         {subtitle ? <Text numberOfLines={2} typographyRole="supportingBody" style={styles.subtitle}>{subtitle}</Text> : null}
         {meta ? <Text numberOfLines={1} typographyRole="caption" style={styles.meta}>{meta}</Text> : null}
       </View>

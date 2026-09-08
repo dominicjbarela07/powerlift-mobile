@@ -45,6 +45,34 @@ export function LogSheetUnitToggle({
   return <SurfaceWeightUnitToggle unit={unit} onChange={onChange} />;
 }
 
+export function LoggerSheetHeader({
+  title,
+  supporting,
+  unit,
+  onUnitChange,
+}: {
+  title: string;
+  supporting: string;
+  unit: 'kg' | 'lb';
+  onUnitChange: (unit: 'kg' | 'lb') => void;
+}) {
+  return (
+    <View style={styles.loggerSheetHeader} testID="logger-sheet-header">
+      <Text numberOfLines={0} style={styles.loggerSheetTitle} typographyRole="pageTitle">
+        {title}
+      </Text>
+      <View style={styles.loggerSheetSupportRow}>
+        <Text style={styles.loggerSheetSupporting} typographyRole="supportingBody">
+          {supporting}
+        </Text>
+        <View style={styles.loggerSheetUnitControl}>
+          <LogSheetUnitToggle unit={unit} onChange={onUnitChange} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export function SessionUnitFloatingControl({
   unit,
   bottom,
@@ -124,6 +152,28 @@ export function LoggedSetRow({
 }
 
 const styles = StyleSheet.create({
+  loggerSheetHeader: {
+    gap: 8,
+  },
+  loggerSheetTitle: {
+    color: SLColors.textStrong,
+    textAlign: 'left',
+  },
+  loggerSheetSupportRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
+    minWidth: 0,
+  },
+  loggerSheetSupporting: {
+    color: SLColors.accentViolet,
+    flex: 1,
+    fontWeight: '700',
+    minWidth: 0,
+  },
+  loggerSheetUnitControl: {
+    flexShrink: 0,
+  },
   completedMovementSummary: {
     marginTop: 10,
     paddingVertical: 10,

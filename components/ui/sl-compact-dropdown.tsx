@@ -158,7 +158,7 @@ export function SLCompactDropdown<TValue extends string | number>({
                         name="checkmark"
                         size={17}
                       />
-                      <Text numberOfLines={1} style={[styles.optionLabel, selected && styles.optionLabelSelected]}>
+                      <Text numberOfLines={2} style={[styles.optionLabel, selected && styles.optionLabelSelected]}>
                         {option.label}
                       </Text>
                     </SLMotionPressable>
@@ -208,8 +208,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
-    height: ROW_HEIGHT,
+    minHeight: ROW_HEIGHT,
     paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   optionSelected: { backgroundColor: SLColors.accentSoft },
   optionLabel: { color: SLColors.text, flex: 1, fontSize: 14, fontWeight: '700', minWidth: 0 },

@@ -24,7 +24,7 @@ export function CoachMetricStrip({ metrics, style }: CoachMetricStripProps) {
         const tone = metric.tone ? SLStatusTones[metric.tone] : null;
         return (
           <View key={metric.label} style={styles.metric}>
-            <Text style={[styles.value, tone ? { color: tone.icon } : null]}>{metric.value}</Text>
+            <Text adjustsFontSizeToFit minimumFontScale={0.78} numberOfLines={1} style={[styles.value, tone ? { color: tone.icon } : null]}>{metric.value}</Text>
             <Text numberOfLines={2} style={styles.label}>
               {metric.label}
             </Text>

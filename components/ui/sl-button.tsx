@@ -151,6 +151,7 @@ export function SLButton({
             typographyRole={resolvedLabelRole}
             style={[
               styles.label,
+              iconRight && iconRightPosition === 'edge' ? styles.labelWithEdgeIcon : null,
               {
                 color: palette.text,
                 fontSize: sizing.fontSize,
@@ -190,9 +191,15 @@ const styles = StyleSheet.create({
     right: SLSpacing.xl,
   },
   label: {
+    flexShrink: 1,
     fontFamily: SLTypography.buttonLabel.fontFamily,
     fontWeight: SLTypography.buttonLabel.fontWeight,
     letterSpacing: SLTypography.buttonLabel.letterSpacing,
     lineHeight: SLTypography.buttonLabel.lineHeight,
+    minWidth: 0,
+    textAlign: 'center',
+  },
+  labelWithEdgeIcon: {
+    paddingHorizontal: 24,
   },
 });

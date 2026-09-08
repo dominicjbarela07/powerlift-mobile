@@ -145,7 +145,7 @@ export function SupersetRoundWorkspace({
           <View style={styles.movementNames}>
             {model.items.map((item, index) => (
               <React.Fragment key={item.id}>
-                <Text numberOfLines={2} style={styles.movementName}>{item.title}</Text>
+                <Text numberOfLines={0} style={styles.movementName}>{item.title}</Text>
                 {index < model.items.length - 1 ? (
                   <Ionicons
                     color={SLColors.accentViolet}
@@ -209,7 +209,7 @@ export function SupersetRoundWorkspace({
                       </View>
                       <View style={styles.workCopy}>
                         <View style={styles.workTitleRow}>
-                          <Text numberOfLines={2} style={styles.workTitle}>
+                          <Text numberOfLines={0} style={styles.workTitle}>
                             {positionLabel} · {movement.item.title}
                           </Text>
                           {isSuggested && !movement.complete ? (

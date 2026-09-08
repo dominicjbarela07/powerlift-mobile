@@ -76,6 +76,7 @@ import {
 } from '@/components/workout-logger/logger-modals';
 import {
   LogSheetUnitToggle,
+  LoggerSheetHeader,
 } from '@/components/workout-logger/logger-primitives';
 import {
   FloatingControlStack,
@@ -179,6 +180,7 @@ import {
   roundLoggerDisplayWeight,
   roundToNearestGymIncrementLb,
 } from '@/lib/logger-weight-format';
+import { convertLoggerPrescriptionUnit } from '@/lib/logger-prescription-unit';
 import { formatPerformedLoad, isAssistanceLoad, type PerformedLoadSemantics } from '@/lib/performed-load-semantics';
 import { movementLoadPolicy } from '@/lib/movement-performance-semantics';
 import {
@@ -4754,6 +4756,8 @@ export default function WorkoutViewerScreen() {
       const weightOptions = buildCoreWeightOptions(nextUnit, nextWeightRaw);
       return {
         ...prev,
+        targetLine: convertLoggerPrescriptionUnit(prev.targetLine, nextUnit),
+        prescriptionLine: convertLoggerPrescriptionUnit(prev.prescriptionLine, nextUnit),
         subtitle: nextUnit.toUpperCase(),
         weightOptions,
         weight: nearestWheelValue(weightOptions, nextWeightRaw, weightOptions[0] || (nextUnit === 'kg' ? '100' : '225')),
@@ -9150,19 +9154,14 @@ export default function WorkoutViewerScreen() {
           {coreWheel ? (
             <View style={styles.coreWheelSheet}>
               <View style={styles.coreWheelHandle} />
-              <View style={styles.coreWheelHeaderRow}>
-                <View style={styles.coreWheelHeaderCopy}>
-                  <Text style={styles.coreWheelTitle}>
-                    {coreWheel.title}
-                  </Text>
-                  <Text style={styles.coreWheelSubtitle}>
-                    {coreWheel.prescriptionLine
-                      ? `Prescribed: ${coreWheel.prescriptionLine}`
-                      : 'Select actuals'}
-                  </Text>
-                </View>
-                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
-              </View>
+              <LoggerSheetHeader
+                onUnitChange={switchDisplayUnit}
+                supporting={coreWheel.prescriptionLine
+                  ? `Prescribed: ${coreWheel.prescriptionLine}`
+                  : 'Select actuals'}
+                title={coreWheel.title}
+                unit={unit}
+              />
 
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: coreWheel.weight, options: coreWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev) },
@@ -9253,15 +9252,12 @@ export default function WorkoutViewerScreen() {
           {accessoryWheel ? (
             <View style={styles.coreWheelSheet}>
               <View style={styles.coreWheelHandle} />
-              <View style={styles.coreWheelHeaderRow}>
-                <View style={styles.coreWheelHeaderCopy}>
-                  <Text style={styles.coreWheelTitle}>{accessoryWheel.title}</Text>
-                  <Text style={styles.coreWheelSubtitle}>
-                    {accessoryWheel.targetLine ? accessoryWheel.targetLine : 'Select actuals'}
-                  </Text>
-                </View>
-                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
-              </View>
+              <LoggerSheetHeader
+                onUnitChange={switchDisplayUnit}
+                supporting={accessoryWheel.targetLine ? accessoryWheel.targetLine : 'Select actuals'}
+                title={accessoryWheel.title}
+                unit={unit}
+              />
 
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: accessoryWheel.weight, options: accessoryWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setAccessoryWheel((prev) => prev ? { ...prev, weight: value } : prev) },
@@ -10289,18 +10285,14 @@ export default function WorkoutViewerScreen() {
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator
               >
-              <View style={styles.coreWheelHeaderRow}>
-                <View style={styles.coreWheelHeaderCopy}>
-                  <Text style={styles.coreWheelTitle}>{editSetCtx.movementName} · Set {editSetCtx.setIndex}</Text>
-                  <Text style={styles.coreWheelSubtitle}>
-                    Currently logged: {editSetCtx.loggedWeightKg != null ? formatWeight(editSetCtx.loggedWeightKg, unit) : '—'} {unit} × {editSetCtx.loggedReps ?? '—'}
-                    {editSetCtx.mode === 'rpe'
-                      ? ` @${editSetCtx.loggedRpe != null ? formatWheelNumber(editSetCtx.loggedRpe) : '—'}`
-                      : ` @${editSetCtx.loggedRir != null ? formatWheelNumber(editSetCtx.loggedRir) : '—'} RIR`}
-                  </Text>
-                </View>
-                <LogSheetUnitToggle unit={unit} onChange={switchDisplayUnit} />
-              </View>
+              <LoggerSheetHeader
+                onUnitChange={switchDisplayUnit}
+                supporting={`Currently logged: ${editSetCtx.loggedWeightKg != null ? formatWeight(editSetCtx.loggedWeightKg, unit) : '—'} ${unit} × ${editSetCtx.loggedReps ?? '—'}${editSetCtx.mode === 'rpe'
+                  ? ` @${editSetCtx.loggedRpe != null ? formatWheelNumber(editSetCtx.loggedRpe) : '—'}`
+                  : ` @${editSetCtx.loggedRir != null ? formatWheelNumber(editSetCtx.loggedRir) : '—'} RIR`}`}
+                title={`${editSetCtx.movementName} · Set ${editSetCtx.setIndex}`}
+                unit={unit}
+              />
 
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: editSetForm.weight, options: buildEditWeightOptions(editSetCtx.mode, unit, editSetForm.weight), suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (weight) => setEditSetForm((prev) => ({ ...prev, weight })) },
@@ -13460,8 +13452,9 @@ const styles = StyleSheet.create({
   coreWheelTitle: {
     color: SLColors.textStrong,
     fontSize: SLTypography.title.fontSize,
-    lineHeight: 28,
+    lineHeight: SLTypography.title.lineHeight,
     fontWeight: '900',
+    flexShrink: 1,
     textAlign: 'left',
   },
   coreWheelSubtitle: {

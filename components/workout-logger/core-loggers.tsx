@@ -427,9 +427,8 @@ export function CoreMovementLedgerRow({
           </View>
           <View style={styles.activeMovementHeadingCopy}>
             <Text
-              ellipsizeMode="tail"
               maxFontSizeMultiplier={1.35}
-              numberOfLines={2}
+              numberOfLines={canonicalMovementCard ? 0 : 2}
               typographyRole="movementName"
               style={styles.activeMovementTitle}
             >

@@ -85,7 +85,7 @@ export function SLQueueRow({
       {leadingNode}
       <View style={styles.main}>
         <View style={styles.titleLine}>
-          <Text numberOfLines={1} typographyRole="bodyStrong" style={styles.title}>
+          <Text numberOfLines={2} typographyRole="bodyStrong" style={styles.title}>
             {title}
           </Text>
           {rightLabel ? <Text typographyRole="label" style={styles.rightLabel}>{rightLabel}</Text> : null}
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   titleLine: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
     gap: SLSpacing.sm,
   },
@@ -164,10 +164,13 @@ const styles = StyleSheet.create({
   },
   rightLabel: {
     color: SLColors.textSubtle,
+    flexShrink: 0,
     fontFamily: SLTypography.rowMeta.fontFamily,
     fontSize: SLTypography.rowMeta.fontSize,
     fontWeight: SLTypography.rowMeta.fontWeight,
     lineHeight: SLTypography.rowMeta.lineHeight,
+    maxWidth: '42%',
+    textAlign: 'right',
   },
   subtitle: {
     color: SLColors.textMuted,

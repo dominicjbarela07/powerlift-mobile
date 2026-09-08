@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   momentumPill: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: 'rgba(7,10,14,0.80)' },
   momentumPillText: { fontSize: 11, lineHeight: 14, fontWeight: '800' },
   liftOverviewGrid: { flexDirection: 'row', gap: 8 },
-  liftOverviewCard: { flex: 1, minWidth: 0, height: 252, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
+  liftOverviewCard: { flex: 1, minWidth: 0, minHeight: 252, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
   liftOverviewArtStage: { height: 108, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#252B35' },
   liftOverviewCopy: { flex: 1, gap: 1, padding: 10 },
   liftOverviewName: { fontSize: 11, lineHeight: 14, fontWeight: '900' },

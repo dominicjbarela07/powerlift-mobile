@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   copy: {
     flex: 1,
     gap: 2,
+    minWidth: 0,
   },
   title: {
     color: SLColors.textStrong,
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
   },
   count: {
     color: SLColors.textStrong,
+    flexShrink: 0,
     fontFamily: SLTypography.kpiNumber.fontFamily,
     fontSize: SLTypography.kpiNumber.fontSize,
     fontWeight: SLTypography.kpiNumber.fontWeight,

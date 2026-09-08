@@ -347,7 +347,7 @@ function AchievementsHub({
         <View style={styles.overviewLiftCopy}><ThemedText typographyRole="shortTechnicalLabel" style={[styles.overviewLiftName, { color: lift.tone }]}>{lift.key === 'bench' ? 'BENCH' : lift.name.toUpperCase()}</ThemedText>
           <ThemedText typographyRole="milestoneThreshold" style={styles.overviewLiftValue}>{plate ? number(plate.current) : '—'} {plate ? unit.toUpperCase() : ''}</ThemedText>
           <ThemedText typographyRole="bodyStrong" style={styles.overviewLiftTier}>{plate?.earned ? `${number(plate.earned.value)} Club ✓` : 'First club ahead'}</ThemedText>
-          <ThemedText typographyRole="caption" numberOfLines={3} style={styles.overviewLiftPercentile}>{competitiveStandingSummary(lift.standingState, standard.sex)}</ThemedText>
+          <ThemedText typographyRole="caption" numberOfLines={0} style={styles.overviewLiftPercentile}>{competitiveStandingSummary(lift.standingState, standard.sex)}</ThemedText>
         </View>
       </Pressable>;
     })}</View>
@@ -858,7 +858,7 @@ const styles = StyleSheet.create({
   overviewSectionTitle: { color: '#C7CCD5', fontSize: 10, lineHeight: 13, letterSpacing: 0.9 },
   overviewSectionAction: { color: '#B987F8', fontSize: 10, lineHeight: 13, letterSpacing: 0.6 },
   overviewLiftGrid: { flexDirection: 'row', gap: 8 },
-  overviewLiftCard: { flex: 1, minWidth: 0, height: 214, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
+  overviewLiftCard: { flex: 1, minWidth: 0, minHeight: 214, overflow: 'hidden', borderRadius: 15, borderWidth: 1, backgroundColor: '#080A0E' },
   overviewLiftArtStage: { height: 96, alignItems: 'center', justifyContent: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#272C34' },
   overviewLiftCopy: { flex: 1, padding: 10 },
   overviewLiftName: { fontSize: 10, lineHeight: 13, letterSpacing: 0.7 },

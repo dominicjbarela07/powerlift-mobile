@@ -81,7 +81,7 @@ export function SLContextualHeader({
         ) : null}
         <View style={styles.copy}>
           {breadcrumb ? <Text style={styles.breadcrumb}>{breadcrumb}</Text> : null}
-          <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.title}>{title}</Text>
+          <Text numberOfLines={0} style={styles.title}>{title}</Text>
         </View>
         {action ? (
           <Pressable
@@ -122,7 +122,7 @@ export function SLAtmosphericContextHeader({
   const identity = <>
     <Text style={[styles.atmosphericContext, { color: accent }]}>{contextLabel}</Text>
     <View style={styles.atmosphericTitleRow}>
-      <Text adjustsFontSizeToFit minimumFontScale={0.76} numberOfLines={1} style={styles.atmosphericTitle}>{title}</Text>
+      <Text numberOfLines={0} style={styles.atmosphericTitle}>{title}</Text>
       {onTitlePress ? <Ionicons color={accent} name={titleExpanded ? 'chevron-up' : 'chevron-down'} size={17} /> : null}
     </View>
     {subtitle ? <Text numberOfLines={2} style={styles.atmosphericSubtitle}>{subtitle}</Text> : null}
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
   atmosphericBackRail: { width: 2, height: 25, marginRight: 5, borderRadius: 1 },
   atmosphericCopy: { maxWidth: '76%', minWidth: 0, flex: 1, justifyContent: 'flex-end', paddingLeft: 5 },
   atmosphericContext: { fontFamily: SLFontFamilies.bodySemiBold, fontSize: 10, lineHeight: 13, letterSpacing: 1.15, textTransform: 'uppercase' },
-  atmosphericTitleRow: { minHeight: 34, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  atmosphericTitle: { color: '#F6F3F8', fontFamily: SLFontFamilies.bodyBold, fontSize: 30, lineHeight: 34, letterSpacing: -0.7 },
+  atmosphericTitleRow: { minHeight: 34, flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
+  atmosphericTitle: { color: '#F6F3F8', flex: 1, minWidth: 0, fontFamily: SLFontFamilies.bodyBold, fontSize: 30, lineHeight: 34, letterSpacing: -0.7 },
   atmosphericSubtitle: { maxWidth: 285, color: '#BDC2CA', fontSize: 11, lineHeight: 15, fontWeight: '600' },
   atmosphericFooter: { paddingTop: 1, paddingBottom: 2 },
   tabRail: { minWidth: '100%', paddingHorizontal: SLLayout.screenGutter, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#222733' },

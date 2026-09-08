@@ -4629,8 +4629,8 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     textTransform: 'uppercase',
     fontFamily: SLFontFamilies.technical,
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 12,
+    lineHeight: 16,
     letterSpacing: 0.5,
   },
   sessionActionDivider: {

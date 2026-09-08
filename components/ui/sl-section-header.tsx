@@ -35,7 +35,7 @@ export function SLSectionHeader({
     <View style={[styles.wrap, compact && styles.wrapCompact, style]}>
       <View style={styles.copy}>
         {eyebrow ? <Text typographyRole="shortTechnicalLabel" style={styles.eyebrow}>{eyebrow}</Text> : null}
-        <Text typographyRole={compact ? 'shortTechnicalLabel' : 'sectionTitle'} style={[styles.title, compact && styles.titleCompact]}>{title}</Text>
+        <Text numberOfLines={0} typographyRole={compact ? 'shortTechnicalLabel' : 'sectionTitle'} style={[styles.title, compact && styles.titleCompact]}>{title}</Text>
         {subtitle ? <Text typographyRole={compact ? 'caption' : 'supportingBody'} style={[styles.subtitle, compact && styles.subtitleCompact]}>{subtitle}</Text> : null}
       </View>
       {actionLabel && onActionPress ? (
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   wrap: {
     alignItems: 'flex-end',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: SLSpacing.sm,
     justifyContent: 'space-between',
   },
@@ -65,7 +66,9 @@ const styles = StyleSheet.create({
   },
   copy: {
     flex: 1,
+    flexBasis: '56%',
     gap: 2,
+    minWidth: 0,
   },
   eyebrow: {
     color: SLColors.textSubtle,
@@ -106,8 +109,10 @@ const styles = StyleSheet.create({
   action: {
     alignItems: 'center',
     flexDirection: 'row',
+    flexShrink: 0,
     gap: SLSpacing.xs,
     minHeight: 28,
+    maxWidth: '42%',
   },
   actionText: {
     color: SLColors.accent,

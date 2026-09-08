@@ -1102,6 +1102,10 @@ export default function TabsLayout() {
           options={{ href: null, headerShown: false, title: 'Dynamic Anatomy QA' }}
         />
         <Tabs.Screen
+          name="dev-mocks/text-layout"
+          options={{ href: null, headerShown: false, title: 'Text Layout QA' }}
+        />
+        <Tabs.Screen
           name="ledger"
           options={{
             title: 'The Ledger',

@@ -73,6 +73,7 @@
     "test:manufacturer-branding": "node --import tsx scripts/test-manufacturer-branding.mjs",
     "test:typography-system": "node scripts/test-typography-system.mjs",
     "audit:mobile-typography": "node scripts/audit-mobile-typography-minimum.mjs",
+    "test:mobile-text-layout": "node --import tsx scripts/test-mobile-text-layout-contract.mjs",
     "test:milestones-layout": "node --import tsx scripts/test-milestones-layout.mjs",
     "test:other-milestones": "node scripts/test-other-milestones.mjs",
     "test:streak-achievements": "node scripts/test-streak-achievements.mjs",
