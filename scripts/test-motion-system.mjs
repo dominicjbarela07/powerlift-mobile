@@ -12,6 +12,7 @@ const button = read('components/ui/sl-button.tsx');
 const listRow = read('components/ui/sl-list-row.tsx');
 const coreLoggers = read('components/workout-logger/core-loggers.tsx');
 const tabs = read('app/(tabs)/_layout.tsx');
+const sessionWorkspace = read('components/coach-mobile/SessionEditingWorkspace.tsx');
 const floatingNavigationMotion = read('components/navigation/floating-navigation-motion.ts');
 const feedback = read('components/workout-logger/logger-feedback.tsx');
 const completion = read('components/workout-logger/stage5-impact-summary.tsx');
@@ -41,9 +42,10 @@ assert.match(
   'movement rows must remain a fully legible static card when no gesture wrapper applies',
 );
 
-assert.match(tabs, /SLMotionPressable/, 'floating navigation must use shared press feedback');
+assert.match(tabs, /SLMotionPressable/, 'global navigation must use shared press feedback');
 assert.match(tabs, /Haptics\.selectionAsync/, 'navigation selection should receive restrained tactile feedback');
-assert.match(tabs, /useFloatingNavigationMotion/, 'floating navigation must use the shared expansion choreography');
+assert.doesNotMatch(tabs, /useFloatingNavigationMotion|setIsExpanded/, 'persistent global navigation must not collapse into a disclosure control');
+assert.match(sessionWorkspace, /useFloatingNavigationMotion/, 'contextual floating toolkits must retain shared expansion choreography');
 assert.match(floatingNavigationMotion, /expansion\.stopAnimation\(\)/, 'navigation expansion must be interruption safe');
 assert.match(floatingNavigationMotion, /return \(\) => animation\.stop\(\)/, 'navigation expansion must clean up pending work');
 

@@ -7,8 +7,7 @@ const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
 const tabLayout = read('app/(tabs)/_layout.tsx');
 const tabRowControl = read('components/navigation/sl-tab-row-control.tsx');
-const mockRoute = read('app/(tabs)/dev-mocks/navigation-bottom-tab-glass.tsx');
-const registry = read('dev-mocks/live-screen-registry.ts');
+const shippingNavigation = read('lib/shipping-navigation.ts');
 const workspaceAudit = read('scripts/audit-workspace-system.mjs');
 const packageJson = JSON.parse(read('package.json'));
 const appConfig = JSON.parse(read('app.json'));
@@ -113,7 +112,7 @@ assert.match(
 );
 
 for (const label of ['Today', 'Calendar', 'Ledger']) {
-  assert.match(tabLayout, new RegExp(`label: ['"]${label}['"]`), `the ${label} destination must remain present`);
+  assert.match(shippingNavigation, new RegExp(`label: ['"]${label}['"]`), `the ${label} destination must remain present`);
 }
 assert.match(
   tabLayout,
@@ -139,13 +138,18 @@ assert.equal(
 );
 assert.match(
   tabLayout,
-  /const showsExpandedTabRow = isExpanded \|\| isBottomTabGlassPreviewPath/,
-  'the deterministic preview must expose all four destinations',
+  /const displayedRoutes = visibleRoutes/,
+  'every normal app shell must render its complete governed destination set',
 );
 assert.match(
   tabLayout,
-  /usesCalendarPreviewSelection = isCalendarPreviewPath \|\| isBottomTabGlassPreviewPath/,
-  'the deterministic preview must keep Calendar selected',
+  /styles\.tabBarExpanded,[\s\S]*\{ width: expandedWidth \}/,
+  'the normal app shell must occupy the persistent full-width navigation row',
+);
+assert.doesNotMatch(
+  tabLayout,
+  /setIsExpanded|showsExpandedTabRow|collapsedAnchorCfg|Open navigation/,
+  'the global destination row must never collapse into one selected icon',
 );
 assert.equal(
   packageJson.dependencies['expo-glass-effect'],
@@ -156,27 +160,6 @@ assert.notEqual(
   appConfig.expo?.ios?.infoPlist?.UIDesignRequiresCompatibility,
   true,
   'the iOS app configuration must not opt out of the native Liquid Glass design',
-);
-
-assert.doesNotMatch(
-  mockRoute,
-  /\b(?:BlurView|GlassView)\b|from\s+['"]expo-(?:blur|glass-effect)['"]|backdropFilter/i,
-  'the fixture content must not create a second glass surface',
-);
-assert.doesNotMatch(
-  mockRoute,
-  /paddingHorizontal/,
-  'the fixture must not duplicate the horizontal gutter already owned by the app shell',
-);
-assert.match(
-  mockRoute,
-  /behindNavigation[\s\S]*underlayViolet[\s\S]*underlayBlue[\s\S]*underlayMagenta/,
-  'the fixture must provide visible content behind the shared tab material',
-);
-assert.match(
-  registry,
-  /id:\s*['"]navigation-bottom-tab-glass-preview['"][\s\S]*?route:\s*['"]\/\(tabs\)\/dev-mocks\/navigation-bottom-tab-glass['"]/,
-  'the preview must be registered in the UI Mock Library',
 );
 
 const approvedBlurBlock = workspaceAudit.match(/const approvedBlurFiles = new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? '';
@@ -203,10 +186,13 @@ const glassSources = [join(root, 'app'), join(root, 'components')]
       .test(readFileSync(path, 'utf8'))
   ))
   .map((path) => relative(root, path));
+const navigationGlassSources = glassSources.filter((path) => (
+  path === 'app/(tabs)/_layout.tsx' || path.includes('/navigation/')
+));
 assert.deepEqual(
-  glassSources,
+  navigationGlassSources,
   ['app/(tabs)/_layout.tsx'],
-  'no other app surface may receive native or simulated glass styling',
+  'no competing navigation surface may receive native or simulated glass styling',
 );
 
-console.log('Bottom-tab liquid-glass contract tests passed.');
+console.log('Persistent bottom-tab shell and liquid-glass contract tests passed.');

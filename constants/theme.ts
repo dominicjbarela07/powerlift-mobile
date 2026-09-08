@@ -288,7 +288,6 @@ export const SLLayout = {
   bottomActionClearance: 112,
   feedbackOverlayTop: 112,
   contentMaxWidth: 720,
-  collapsedTabWidth: 48,
   objectGap: 12,
   contentGap: 8,
   textGap: 4,

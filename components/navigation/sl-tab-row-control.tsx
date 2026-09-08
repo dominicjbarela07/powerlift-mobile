@@ -20,7 +20,7 @@ export const SL_TAB_ROW_SELECTED_LENS = [
   'rgba(48, 40, 61, 0.10)',
 ] as const;
 
-/** Canonical geometry and material shared with the floating collapsed tab row. */
+/** Canonical geometry and material shared by the persistent global tab row. */
 export const SL_TAB_ROW_CONTROL = {
   shellHeight: 48,
   shellPadding: 4,
@@ -37,7 +37,6 @@ export const SL_TAB_ROW_CONTROL = {
   indicatorBorderWidth: 1,
   indicatorBorderColor: 'rgba(218, 204, 238, 0.28)',
   iconSize: 24,
-  collapsedAnchorIconSize: 20,
   hitSlop: 4,
   expandedPaddingHorizontal: SLSpacing.sm,
   labelPaddingHorizontal: SLSpacing.sm,

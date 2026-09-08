@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
-  Animated,
   AppState,
   Platform,
   View,
@@ -27,7 +26,6 @@ import {
   CoachMoreNavigationProvider,
   useCoachMoreNavigation,
 } from '@/components/navigation/CoachMoreNavigationSheet';
-import { useFloatingNavigationMotion } from '@/components/navigation/floating-navigation-motion';
 import {
   SL_TAB_ROW_CONTROL,
   SL_TAB_ROW_FALLBACK_SHEEN,
@@ -38,7 +36,6 @@ import { useAuth, type AuthUser } from '@/context/AuthContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
 import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
-import { useSLReducedMotion } from '@/lib/motion';
 import type { MobileViewMode } from '@/lib/mobileViewMode';
 import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
 import { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
@@ -92,8 +89,6 @@ function FilteredTabBar({
   hasMeetPlan,
   hasMessageNotifications,
   onMessagesTabPress,
-  collapseTabRowRef,
-  onTabBarInteractionStart,
   bottomInset,
 }: BottomTabBarProps & {
   isCoach: boolean;
@@ -103,22 +98,16 @@ function FilteredTabBar({
   hasMeetPlan: boolean;
   hasMessageNotifications: boolean;
   onMessagesTabPress: () => void;
-  collapseTabRowRef: React.MutableRefObject<(() => void) | null>;
-  onTabBarInteractionStart: () => void;
   bottomInset: number;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
   const { width: viewportWidth } = useWindowDimensions();
-  const [isExpanded, setIsExpanded] = useState(false);
   const [reduceTransparency, setReduceTransparency] = useState(false);
   const nativeLiquidGlassAvailable = supportsNativeLiquidGlass();
   const usesNativeLiquidGlass = nativeLiquidGlassAvailable && !reduceTransparency;
-  const reduceMotion = useSLReducedMotion();
   const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
-  const previousTabIndexRef = useRef(state.index);
-  const openedOnPressInRef = useRef(false);
   const allowedNames = shippingTabRouteNames({
     isCoach,
     isIndividual,
@@ -184,34 +173,11 @@ function FilteredTabBar({
     };
   }, []);
 
-  useEffect(() => {
-    if (previousTabIndexRef.current !== state.index) {
-      previousTabIndexRef.current = state.index;
-      setIsExpanded(false);
-    }
-  }, [state.index]);
-
-  useEffect(() => {
-    setIsExpanded(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const collapseTabRow = () => setIsExpanded(false);
-    collapseTabRowRef.current = collapseTabRow;
-
-    return () => {
-      if (collapseTabRowRef.current === collapseTabRow) {
-        collapseTabRowRef.current = null;
-      }
-    };
-  }, [collapseTabRowRef]);
-
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
   const isImmersiveMeetMode = normalizedPathname === '/athlete-meet-plan'
     || normalizedPathname.startsWith('/athlete-meet-plan/');
   const isCalendarPreviewPath = __DEV__ && normalizedPathname.startsWith('/dev-mocks/calendar-');
-  const isBottomTabGlassPreviewPath = __DEV__ && normalizedPathname === '/dev-mocks/navigation-bottom-tab-glass';
-  const usesCalendarPreviewSelection = isCalendarPreviewPath || isBottomTabGlassPreviewPath;
+  const usesCalendarPreviewSelection = isCalendarPreviewPath;
   const usesCoachHomeSelection = normalizedPathname.startsWith('/coach-roster')
     || normalizedPathname.startsWith('/coach-athlete/')
     || normalizedPathname.startsWith('/coach-attention/');
@@ -223,37 +189,13 @@ function FilteredTabBar({
     const routeIndex = state.routes.findIndex((candidate) => candidate.key === route.key);
     return routeIndex === state.index;
   }) ?? visibleRoutes[0];
-  const activeTopLevelPath = activeRoute
-    ? `/${activeRoute.name.replace(/\/index$/, '')}`
-    : null;
-  const isLedgerDestinationPath = activeRoute?.name === 'ledger'
-    && normalizedPathname.startsWith('/ledger/');
-  const isActiveTopLevelTab = activeTopLevelPath === normalizedPathname
-    || isLedgerDestinationPath
-    || usesCalendarPreviewSelection
-    || usesCoachHomeSelection;
-  const forceExpandedCoachNavigation = isCoach && !isIndividual && viewMode === 'coach';
-  const showsExpandedTabRow = forceExpandedCoachNavigation || isExpanded || isBottomTabGlassPreviewPath;
-  const displayedRoutes = showsExpandedTabRow ? visibleRoutes : activeRoute ? [activeRoute] : [];
+  // The global shell is navigation, not a disclosure control. Every normal app
+  // destination stays visible; only explicit focused experiences may suppress it.
+  const displayedRoutes = visibleRoutes;
   const expandedWidth = Math.max(
-    SLLayout.collapsedTabWidth,
+    SL_TAB_ROW_CONTROL.shellHeight,
     viewportWidth - (SLLayout.screenGutter * 2),
   );
-  const { animatedWidth, expandedItemsOpacity, collapsedAnchorOpacity } = useFloatingNavigationMotion({
-    expanded: showsExpandedTabRow,
-    collapsedWidth: SLLayout.collapsedTabWidth,
-    expandedWidth,
-    reduceMotion,
-  });
-  const activeRouteCfg = activeRoute
-    ? tabConfig[activeRoute.name] ?? { label: activeRoute.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap }
-    : null;
-  const collapsedAnchorCfg = !isActiveTopLevelTab
-    ? { label: 'Open navigation', icon: 'ellipsis-horizontal' as keyof typeof Ionicons.glyphMap }
-    : activeRouteCfg;
-  const collapsedAnchorIcon = collapsedAnchorCfg?.icon.endsWith('-outline')
-    ? collapsedAnchorCfg.icon.replace('-outline', '') as keyof typeof Ionicons.glyphMap
-    : collapsedAnchorCfg?.icon;
   const usesFlowingNavigationDock = __DEV__ && normalizedPathname === '/dev-mocks/milestones';
   const hidesNavigationForSessionEditor = normalizedPathname.startsWith('/workout/session-workspace/')
     && sessionEditorOverlayOpen;
@@ -267,19 +209,18 @@ function FilteredTabBar({
   return (
     <View
       pointerEvents="box-none"
-      onTouchStart={onTabBarInteractionStart}
       style={[
         styles.tabBarDock,
         usesFlowingNavigationDock && styles.tabBarDockFlow,
         { height: 58 + bottomInset, paddingBottom: bottomInset + SLSpacing.xs },
       ]}
     >
-      <Animated.View
+      <View
         style={[
           styles.tabBar,
           usesNativeLiquidGlass && styles.tabBarNativeMaterial,
-          showsExpandedTabRow && styles.tabBarExpanded,
-          { width: animatedWidth },
+          styles.tabBarExpanded,
+          { width: expandedWidth },
         ]}
       >
         <View pointerEvents="none" style={styles.tabBarMaterialClip}>
@@ -319,21 +260,13 @@ function FilteredTabBar({
             </>
           ) : null}
         </View>
-        {showsExpandedTabRow && collapsedAnchorIcon ? (
-          <Animated.View pointerEvents="none" style={[styles.expandingAnchor, { opacity: collapsedAnchorOpacity }]}>
-            <SLCanonicalIcon name={collapsedAnchorIcon} size={SL_TAB_ROW_CONTROL.collapsedAnchorIconSize} color={SLColors.textStrong} trophyTier="bronze" />
-          </Animated.View>
-        ) : null}
         {displayedRoutes.map((route) => {
         const isMoreRoute = route.name === 'coach-more';
         const isFocused = isMoreRoute ? isMoreOpen : route.key === activeRoute?.key;
         const isStateFocused = route.key === state.routes[state.index]?.key;
         const color = isFocused ? SLColors.review : SLColors.textMuted;
         const routeCfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
-        const isNestedMenuTrigger = !showsExpandedTabRow && !isActiveTopLevelTab;
-        const cfg = isNestedMenuTrigger
-          ? { label: 'Open navigation', icon: 'ellipsis-horizontal' as keyof typeof Ionicons.glyphMap }
-          : routeCfg;
+        const cfg = routeCfg;
         const isMessagesRoute = route.name === 'messages' || route.name === 'messages/index';
         const isTrainingRoute = route.name === 'workout' || route.name === 'workout/index';
         const isLedgerHomeRoute = route.name === 'ledger';
@@ -344,20 +277,7 @@ function FilteredTabBar({
               : cfg.icon)
           : cfg.icon;
 
-        const onPressIn = () => {
-          openedOnPressInRef.current = !showsExpandedTabRow;
-          if (!showsExpandedTabRow) {
-            void Haptics.selectionAsync().catch(() => undefined);
-            setIsExpanded(true);
-          }
-        };
-
         const onPress = () => {
-          if (openedOnPressInRef.current) {
-            openedOnPressInRef.current = false;
-            return;
-          }
-
           void Haptics.selectionAsync().catch(() => undefined);
 
           if (isMoreRoute) {
@@ -376,18 +296,14 @@ function FilteredTabBar({
               pathname: '/(tabs)/athlete-meet-plan',
               params: { returnTo: normalizedPathname },
             } as any);
-            setIsExpanded(false);
           } else if (isLedgerHomeRoute && !event.defaultPrevented) {
             router.navigate('/(tabs)/ledger/home' as any);
-            setIsExpanded(false);
           } else if (!isStateFocused && !event.defaultPrevented) {
             if (isTrainingRoute) {
               router.navigate('/(tabs)/workout');
             } else {
               navigation.navigate(route.name as never);
             }
-          } else if (isStateFocused && !event.defaultPrevented) {
-            setIsExpanded(false);
           }
 
           if (isMessagesRoute) {
@@ -403,9 +319,9 @@ function FilteredTabBar({
         };
 
         return (
-          <Animated.View
+          <View
             key={route.key}
-            style={[styles.tabBarSlot, showsExpandedTabRow && { opacity: expandedItemsOpacity }]}
+            style={styles.tabBarSlot}
           >
             {isFocused ? (
               // Keep one native glass plane. Apple advises that selected
@@ -425,7 +341,6 @@ function FilteredTabBar({
               accessibilityState={isFocused ? { selected: true } : {}}
               hitSlop={SL_TAB_ROW_CONTROL.hitSlop}
               onPress={onPress}
-              onPressIn={onPressIn}
               onLongPress={onLongPress}
               style={[styles.tabBarItem, isFocused && styles.tabBarItemActive]}
               pressScale={SLMotion.prominentPressScale}
@@ -437,10 +352,10 @@ function FilteredTabBar({
                 )}
               </View>
             </SLMotionPressable>
-          </Animated.View>
+          </View>
         );
         })}
-      </Animated.View>
+      </View>
     </View>
   );
 }
@@ -470,25 +385,6 @@ export default function TabsLayout() {
   const [hasMeetPlan, setHasMeetPlan] = useState(false);
   const unreadPollingRef = useRef(false);
   const meetPlanPollingRef = useRef(false);
-  const collapseTabRowRef = useRef<(() => void) | null>(null);
-  const pendingTabRowCollapseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const cancelPendingTabRowCollapse = useCallback(() => {
-    if (pendingTabRowCollapseRef.current) {
-      clearTimeout(pendingTabRowCollapseRef.current);
-      pendingTabRowCollapseRef.current = null;
-    }
-  }, []);
-
-  const requestTabRowCollapse = useCallback(() => {
-    cancelPendingTabRowCollapse();
-    pendingTabRowCollapseRef.current = setTimeout(() => {
-      pendingTabRowCollapseRef.current = null;
-      collapseTabRowRef.current?.();
-    }, 0);
-  }, [cancelPendingTabRowCollapse]);
-
-  useEffect(() => cancelPendingTabRowCollapse, [cancelPendingTabRowCollapse]);
 
   const isCoach = !!user?.is_coach;
   const accountState = user?.account_state;
@@ -667,13 +563,7 @@ export default function TabsLayout() {
 
   return (
     <CoachMoreNavigationProvider enabled={isCoach && !isIndividual && viewMode === 'coach'}>
-      <View
-        style={styles.safeArea}
-        onStartShouldSetResponderCapture={() => {
-          requestTabRowCollapse();
-          return false;
-        }}
-      >
+      <View style={styles.safeArea}>
         <Tabs
         key={workspaceKey}
         screenOptions={{
@@ -734,8 +624,6 @@ export default function TabsLayout() {
             hasMeetPlan={hasMeetPlan}
             hasMessageNotifications={hasMessageNotifications}
             onMessagesTabPress={refreshMessageNotifications}
-            collapseTabRowRef={collapseTabRowRef}
-            onTabBarInteractionStart={cancelPendingTabRowCollapse}
             bottomInset={insets.bottom}
           />
         )}
@@ -1217,17 +1105,6 @@ const styles = StyleSheet.create({
     borderColor: SL_TAB_ROW_CONTROL.indicatorBorderColor,
     borderWidth: SL_TAB_ROW_CONTROL.indicatorBorderWidth,
     ...SLShadows.level1,
-  },
-  expandingAnchor: {
-    position: 'absolute',
-    right: 4,
-    top: 4,
-    width: SL_TAB_ROW_CONTROL.itemSize,
-    height: SL_TAB_ROW_CONTROL.itemSize,
-    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 3,
   },
   tabBarIconRow: {
     width: '100%',
