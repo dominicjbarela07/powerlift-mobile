@@ -6,7 +6,7 @@ import {
 } from './anatomy-system';
 
 export type AnatomyFigureView = 'front' | 'rear';
-export type AnatomyFramingSurface = 'auto' | 'wide' | 'square' | 'preview' | 'portrait';
+export type AnatomyFramingPreset = 'thumbnail' | 'card' | 'hero' | 'dual';
 
 export type AnatomyBounds = Readonly<{
   x: number;
@@ -17,7 +17,7 @@ export type AnatomyBounds = Readonly<{
 
 export type AnatomyFraming = Readonly<{
   view: AnatomyFigureView;
-  surface: Exclude<AnatomyFramingSurface, 'auto'>;
+  preset: AnatomyFramingPreset;
   targetBounds: AnatomyBounds;
   viewBox: AnatomyBounds;
   destinationAspectRatio: number;
@@ -30,6 +30,21 @@ export type AnatomyFraming = Readonly<{
 const MASTER_WIDTH = 418;
 const MASTER_HEIGHT = 941;
 const FULL_BODY: AnatomyBounds = Object.freeze({ x: 0, y: 0, width: MASTER_WIDTH, height: MASTER_HEIGHT });
+
+/**
+ * Canonical full-figure presentation presets. The padding lives in master-image
+ * coordinates, outside the authored silhouette, so even a rounded or clipped
+ * consumer frame cannot shave off a head, limb, or antialiased edge.
+ */
+export const ANATOMY_FRAMING_PRESETS: Readonly<Record<AnatomyFramingPreset, Readonly<{
+  horizontalSafePadding: number;
+  verticalSafePadding: number;
+}>>> = Object.freeze({
+  thumbnail: Object.freeze({ horizontalSafePadding: 20, verticalSafePadding: 24 }),
+  card: Object.freeze({ horizontalSafePadding: 16, verticalSafePadding: 20 }),
+  hero: Object.freeze({ horizontalSafePadding: 10, verticalSafePadding: 14 }),
+  dual: Object.freeze({ horizontalSafePadding: 18, verticalSafePadding: 22 }),
+});
 
 type ViewBounds = Readonly<Partial<Record<GovernedMuscleId, AnatomyBounds>>>;
 
@@ -71,21 +86,6 @@ const REAR_TARGET_BOUNDS: ViewBounds = Object.freeze({
   neck: { x: 169, y: 105, width: 105, height: 88 },
 });
 
-const UPPER_TORSO_CONTEXT: AnatomyBounds = Object.freeze({ x: 68, y: 112, width: 322, height: 370 });
-const ARM_CONTEXT: AnatomyBounds = Object.freeze({ x: 65, y: 155, width: 330, height: 350 });
-const CORE_CONTEXT: AnatomyBounds = Object.freeze({ x: 108, y: 175, width: 244, height: 340 });
-const THIGH_CONTEXT: AnatomyBounds = Object.freeze({ x: 88, y: 378, width: 282, height: 370 });
-const CALF_CONTEXT: AnatomyBounds = Object.freeze({ x: 92, y: 590, width: 276, height: 330 });
-const NECK_CONTEXT: AnatomyBounds = Object.freeze({ x: 120, y: 66, width: 220, height: 225 });
-
-function contextForMuscle(muscle: GovernedMuscleId): AnatomyBounds {
-  if (muscle === 'biceps' || muscle === 'triceps' || muscle === 'forearms') return ARM_CONTEXT;
-  if (muscle === 'abs' || muscle === 'obliques' || muscle === 'serratus' || muscle === 'lower_back') return CORE_CONTEXT;
-  if (muscle === 'quads' || muscle === 'hamstrings' || muscle === 'glutes' || muscle === 'adductors' || muscle === 'abductors' || muscle === 'hip_flexors') return THIGH_CONTEXT;
-  if (muscle === 'calves') return CALF_CONTEXT;
-  if (muscle === 'neck') return NECK_CONTEXT;
-  return UPPER_TORSO_CONTEXT;
-}
 function unionBounds(bounds: readonly AnatomyBounds[]): AnatomyBounds {
   if (!bounds.length) return FULL_BODY;
   const left = Math.min(...bounds.map((bound) => bound.x));
@@ -93,52 +93,6 @@ function unionBounds(bounds: readonly AnatomyBounds[]): AnatomyBounds {
   const right = Math.max(...bounds.map((bound) => bound.x + bound.width));
   const bottom = Math.max(...bounds.map((bound) => bound.y + bound.height));
   return { x: left, y: top, width: right - left, height: bottom - top };
-}
-
-function classifySurface(
-  destinationAspectRatio: number,
-  size: AnatomySize,
-  requested: AnatomyFramingSurface,
-): Exclude<AnatomyFramingSurface, 'auto'> {
-  if (requested !== 'auto') return requested;
-  if (size === 'thumbnail') return 'preview';
-  if (destinationAspectRatio >= 1.18) return 'wide';
-  if (destinationAspectRatio >= 0.78) return 'square';
-  return 'portrait';
-}
-
-function interpolateContext(target: AnatomyBounds, context: AnatomyBounds, weight: number): AnatomyBounds {
-  const left = target.x + (Math.min(target.x, context.x) - target.x) * weight;
-  const top = target.y + (Math.min(target.y, context.y) - target.y) * weight;
-  const right = target.x + target.width
-    + (Math.max(target.x + target.width, context.x + context.width) - (target.x + target.width)) * weight;
-  const bottom = target.y + target.height
-    + (Math.max(target.y + target.height, context.y + context.height) - (target.y + target.height)) * weight;
-  return { x: left, y: top, width: right - left, height: bottom - top };
-}
-
-function clampAxis(start: number, length: number, maximum: number): readonly [number, number] {
-  const boundedLength = Math.max(1, length);
-  if (boundedLength >= maximum) return [(maximum - boundedLength) / 2, boundedLength];
-  const boundedStart = Math.min(maximum - boundedLength, Math.max(0, start));
-  return [boundedStart, boundedLength];
-}
-
-function fitAspect(bounds: AnatomyBounds, destinationAspectRatio: number): AnatomyBounds {
-  const aspect = Math.min(3, Math.max(0.24, destinationAspectRatio));
-  let width = bounds.width;
-  let height = bounds.height;
-  if (width / height < aspect) width = height * aspect;
-  else height = width / aspect;
-  const [x, clampedWidth] = clampAxis(bounds.x + bounds.width / 2 - width / 2, width, MASTER_WIDTH);
-  const [y, clampedHeight] = clampAxis(bounds.y + bounds.height / 2 - height / 2, height, MASTER_HEIGHT);
-  return { x, y, width: clampedWidth, height: clampedHeight };
-}
-
-function trueFullBodyTarget(muscles: readonly GovernedMuscleId[]): boolean {
-  const upper = muscles.some((muscle) => ['chest', 'front_delts', 'side_delts', 'rear_delts', 'lats', 'upper_back', 'traps', 'biceps', 'triceps'].includes(muscle));
-  const lower = muscles.some((muscle) => ['quads', 'hamstrings', 'glutes', 'adductors', 'abductors', 'calves'].includes(muscle));
-  return muscles.length >= 7 || (muscles.length >= 6 && upper && lower);
 }
 
 const framingCache = new Map<string, AnatomyFraming>();
@@ -149,9 +103,8 @@ export function resolveAnatomyFraming(input: Readonly<{
   view: AnatomyFigureView;
   destinationAspectRatio: number;
   size?: AnatomySize;
-  surface?: AnatomyFramingSurface;
+  preset: AnatomyFramingPreset;
   preserveAll?: boolean;
-  forceFullBody?: boolean;
 }>): AnatomyFraming {
   const roles = input.preserveAll
     ? { primary: normalizeMuscleIds(input.primary), secondary: normalizeMuscleIds(input.secondary) }
@@ -159,35 +112,32 @@ export function resolveAnatomyFraming(input: Readonly<{
   const allMuscles = [...roles.primary, ...roles.secondary];
   const aspect = Math.round(Math.min(3, Math.max(0.24, Number(input.destinationAspectRatio) || 1)) * 20) / 20;
   const size = input.size || 'card';
-  const surface = classifySurface(aspect, size, input.surface || 'auto');
-  const cacheKey = [input.view, surface, size, aspect, input.preserveAll ? 'all' : 'roles', input.forceFullBody ? 'full' : 'focus', [...roles.primary].sort(), [...roles.secondary].sort()].join(':');
+  const preset = input.preset;
+  const cacheKey = [input.view, preset, size, aspect, input.preserveAll ? 'all' : 'roles', [...roles.primary].sort(), [...roles.secondary].sort()].join(':');
   const cached = framingCache.get(cacheKey);
   if (cached) return cached;
 
   const registry = input.view === 'front' ? FRONT_TARGET_BOUNDS : REAR_TARGET_BOUNDS;
   const visibleMuscles = allMuscles.filter((muscle) => Boolean(registry[muscle]));
   const rawTargetBounds = unionBounds(visibleMuscles.map((muscle) => registry[muscle]!));
-  const isFullBody = Boolean(input.forceFullBody) || trueFullBodyTarget(allMuscles) || !visibleMuscles.length;
-  let viewBox = FULL_BODY;
-
-  if (!isFullBody) {
-    const contextBounds = unionBounds(visibleMuscles.map(contextForMuscle));
-    const baseWeight = surface === 'preview' ? 0.54 : surface === 'wide' ? 0.62 : surface === 'square' ? 0.74 : 0.68;
-    const breadthAdjustment = Math.min(0.16, Math.max(0, visibleMuscles.length - 1) * 0.035);
-    const contextual = interpolateContext(rawTargetBounds, contextBounds, baseWeight + breadthAdjustment);
-    viewBox = fitAspect(contextual, aspect);
-  }
+  const safePadding = ANATOMY_FRAMING_PRESETS[preset];
+  const viewBox: AnatomyBounds = Object.freeze({
+    x: -safePadding.horizontalSafePadding,
+    y: -safePadding.verticalSafePadding,
+    width: MASTER_WIDTH + safePadding.horizontalSafePadding * 2,
+    height: MASTER_HEIGHT + safePadding.verticalSafePadding * 2,
+  });
 
   const framing: AnatomyFraming = Object.freeze({
     view: input.view,
-    surface,
+    preset,
     targetBounds: rawTargetBounds,
     viewBox,
     destinationAspectRatio: aspect,
     scale: MASTER_HEIGHT / viewBox.height,
     translateX: -viewBox.x * (MASTER_HEIGHT / viewBox.height),
     translateY: -viewBox.y * (MASTER_HEIGHT / viewBox.height),
-    isFullBody,
+    isFullBody: true,
   });
   if (framingCache.size >= 240) framingCache.clear();
   framingCache.set(cacheKey, framing);

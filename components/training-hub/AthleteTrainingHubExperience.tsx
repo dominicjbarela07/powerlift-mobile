@@ -467,7 +467,7 @@ function SessionCard({ athlete, session, onPress, unit }: { athlete: { sex?: str
     : session.contentSummary;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.sessionCard, { borderLeftColor: accent }, pressed && styles.pressed]}>
-      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
+      <View style={styles.sessionArtwork}><ProgrammingMuscleRegionArt athlete={athlete} framingPreset="thumbnail" level="session" primary={session.muscleFocus?.primary || session.focusMuscles || []} secondary={session.muscleFocus?.secondary || []} /></View>
       <View style={styles.sessionCopy}>
         <View style={styles.sessionTitleRow}>
           <Text numberOfLines={1} style={styles.sessionTitle}>{session.title}</Text>
@@ -505,7 +505,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.modalClose}><Ionicons color={SLColors.text} name="close" size={23} /></Pressable>
           </View>
           <View style={styles.previewHero}>
-            <ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
+            <ProgrammingMuscleRegionArt athlete={athlete} framingPreset="hero" level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
             <LinearGradient colors={['rgba(2,2,4,0.02)', 'rgba(3,3,5,0.35)']} pointerEvents="none" style={StyleSheet.absoluteFillObject} />
             <View style={styles.previewStatus}><Text style={[styles.previewStatusText, { color: accent }]}>{session.stateLabel || (completed ? 'COMPLETED' : 'UPCOMING')}</Text></View>
           </View>
@@ -519,7 +519,7 @@ function SessionPreviewSheet({ session, program, athlete, onClose, onOpen, unit 
             <View style={styles.focusSection}>
               <Text style={styles.sectionKicker}>FOCUS MUSCLES</Text>
               <View style={styles.focusSummaryCard}>
-                <ProgrammingMuscleRegionArt athlete={athlete} level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
+                <ProgrammingMuscleRegionArt athlete={athlete} framingPreset="card" level="session" primary={primaryMuscles} secondary={secondaryMuscles} />
                 <View style={styles.focusSummaryCopy}><Text style={styles.focusPrimaryLabel}>PRIMARY</Text><Text style={styles.focusSummaryText}>{primaryMuscles.map(humanizeMuscle).join(' · ')}</Text>{secondaryMuscles.length ? <><Text style={styles.focusSecondaryLabel}>SECONDARY</Text><Text style={styles.focusSummaryText}>{secondaryMuscles.map(humanizeMuscle).join(' · ')}</Text></> : null}<Text style={styles.focusEvidence}>{session.muscleFocus?.source === 'performed' ? 'Performed set evidence' : 'Programmed set exposure'}</Text></View>
               </View>
             </View>
@@ -707,7 +707,7 @@ const styles = StyleSheet.create({
   dayChipDotMissed: { backgroundColor: SLColors.danger },
   sessionStack: { gap: 7 },
   sessionCard: { minHeight: 82, borderRadius: 10, borderWidth: 1, borderLeftWidth: 3, borderColor: SLColors.borderSubtle, backgroundColor: '#090A0D', padding: 7, flexDirection: 'row', alignItems: 'center', gap: 9 },
-  sessionArtwork: { width: 66, height: 66, borderRadius: 8, resizeMode: 'cover', backgroundColor: '#0A0A0D' },
+  sessionArtwork: { width: 66, height: 66, borderRadius: 8, backgroundColor: '#0A0A0D' },
   sessionCopy: { flex: 1, minWidth: 0, gap: 2 },
   sessionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   sessionTitle: { ...SLTypography.bodyStrong, color: '#FFFFFF', flex: 1 },

@@ -162,7 +162,7 @@ function TrainingHero({ home, onAction, today }: { home: AthleteHomeV3Projection
       </View>
       {focus.primary.length ? (
         <View pointerEvents="none" style={styles.heroAnatomy}>
-          <ProgrammingMuscleRegionArt athlete={today.athlete} level="session" primary={focus.primary} secondary={focus.secondary} />
+          <ProgrammingMuscleRegionArt athlete={today.athlete} framingPreset="card" level="session" primary={focus.primary} secondary={focus.secondary} />
         </View>
       ) : null}
       <HeroButton label={actionLabel} onPress={() => onAction(session?.action || { route: 'workout', workout_id: session?.id })} />
@@ -311,7 +311,7 @@ function SessionCard({ eyebrow, onAction, session, today, unit }: { eyebrow: str
         <Text style={styles.sessionEvidence}>{sessionEvidenceLine(session, completed, unit)}</Text>
       </View>
       {focus.primary.length ? (
-        <View style={styles.sessionAnatomy}><ProgrammingMuscleRegionArt athlete={today.athlete} level="session" primary={focus.primary} secondary={focus.secondary} /></View>
+        <View style={styles.sessionAnatomy}><ProgrammingMuscleRegionArt athlete={today.athlete} framingPreset="thumbnail" level="session" primary={focus.primary} secondary={focus.secondary} /></View>
       ) : (
         <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={52} />
       )}
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
   heroEvidence: { gap: 5, marginTop: 6 },
   evidenceRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   evidenceText: { color: '#C8C3CE', fontSize: 11, lineHeight: 15 },
-  heroAnatomy: { position: 'absolute', zIndex: 1, right: 4, top: 24, width: 142, height: 186, overflow: 'hidden', opacity: 0.96 },
+  heroAnatomy: { position: 'absolute', zIndex: 1, right: 4, top: 24, width: 150, height: 186, opacity: 0.96 },
   heroButton: { zIndex: 4, minHeight: 45, marginHorizontal: 12, marginBottom: 12, borderRadius: 8, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   heroButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   pressed: { opacity: 0.72 },
@@ -596,7 +596,7 @@ const styles = StyleSheet.create({
   cardTitle: { color: '#F3F0F6', fontSize: 20, lineHeight: 24, fontWeight: '700' },
   cardBody: { color: '#A7A2AC', fontSize: 11, lineHeight: 15 },
   sessionEvidence: { color: '#7C7883', fontSize: 10, lineHeight: 14 },
-  sessionAnatomy: { width: 55, height: 88, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  sessionAnatomy: { width: 66, height: 90, alignItems: 'center', justifyContent: 'center' },
   lastMetrics: { marginTop: -1, flexDirection: 'row', paddingVertical: 10, borderBottomLeftRadius: 14, borderBottomRightRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderTopWidth: 0, borderColor: '#30273A', backgroundColor: '#07080C' },
   sectionGap: { gap: 7 },
   trendRow: { flexDirection: 'row', gap: 6 },

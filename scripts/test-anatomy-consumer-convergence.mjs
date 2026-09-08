@@ -46,6 +46,8 @@ assert.deepEqual(maskRegistryConsumers.sort(), [
 const aggregateWrapper = source('components/anatomy/ProgrammingMuscleRegionArt.tsx');
 assert.match(aggregateWrapper, /athlete\?: ProgrammingAthleteAnatomy \| null/, 'aggregate wrapper must accept governed athlete anatomy preference');
 assert.match(aggregateWrapper, /<MuscleMap[\s\S]*athlete=\{athlete\}/, 'aggregate wrapper must forward governed athlete anatomy preference');
+assert.match(aggregateWrapper, /framingPreset = 'card'/, 'aggregate wrapper must default to a full-figure card preset');
+assert.match(aggregateWrapper, /framingPreset=\{framingPreset\}/, 'aggregate wrapper must forward its presentation preset');
 
 const athleteHome = source('components/home/AthleteHomeV3.tsx');
 assert.match(athleteHome, /<ProgrammingMuscleRegionArt athlete=\{today\.athlete\}/, 'Athlete Home must honor the athlete anatomy preference');
@@ -62,7 +64,13 @@ for (const relative of productFiles) {
     assert.doesNotMatch(contents, /anatomy-v2\/materials/, `${relative} bypassed the canonical material renderer`);
   }
   assert.doesNotMatch(contents, /muscle(?:Overlay|Position|Offset|Transform)\s*[:=]/i, `${relative} introduced prohibited runtime-positioned anatomy`);
+  assert.doesNotMatch(contents, /<MuscleMap\b[^>]*\bsurface=/s, `${relative} reintroduced a destructive anatomy crop surface`);
 }
+
+const renderer = source('components/anatomy/MuscleMap.tsx');
+assert.match(renderer, /preserveAspectRatio="xMidYMid meet"/, 'canonical anatomy must preserve the authored aspect ratio');
+assert.match(renderer, /effectiveFramingPreset[\s\S]*size === 'thumbnail'[\s\S]*size === 'hero'/, 'unannotated consumers must fail safe by governed size');
+assert.doesNotMatch(source('lib/anatomy-framing.ts'), /fitAspect|classifySurface|forceFullBody/, 'target-driven crop machinery must not return');
 
 for (const relative of [
   'components/home/AthleteHomeV3.tsx',
@@ -83,6 +91,8 @@ assert.match(source('app/(tabs)/workout/session-workspace/[workoutId].tsx'), /Go
 assert.doesNotMatch(source('components/ledger/AccessoriesExperience.tsx'), /libraryAnatomy:\s*\{[^}]*transform/s, 'Accessories thumbnails may not apply a private geometry transform');
 assert.doesNotMatch(source('components/ledger/exploration-experiences.tsx'), /muscleRowAnatomy:\s*\{[^}]*transform/s, 'Ledger muscle rows may not apply a private geometry transform');
 assert.doesNotMatch(source('components/coach-mobile/CoachActivityHome.tsx'), /anatomy:\s*\{[^}]*transform/s, 'Coach activity may not apply a private geometry transform');
+assert.doesNotMatch(source('app/(tabs)/coach-calendar.tsx'), /sessionAnatomy:\s*\{[^}]*bottom:\s*-/s, 'Calendar session anatomy may not be pushed out of its frame');
+assert.doesNotMatch(source('components/training-hub/AthleteTrainingHubExperience.tsx'), /sessionArtwork:\s*\{[^}]*resizeMode/s, 'Training Hub anatomy may not use photographic resize rules');
 
 // Exact movement surfaces intentionally retain focused movement artwork. Full
 // figures are aggregate evidence and would violate the Individual Movement

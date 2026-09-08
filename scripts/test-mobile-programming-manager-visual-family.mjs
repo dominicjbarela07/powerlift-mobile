@@ -60,14 +60,14 @@ assert.match(manager, /weekPillCount[\s\S]*storyboardStateColor\(state\)/, 'Week
 assert.doesNotMatch(manager, /weekPillEvidence|statusDot/, 'Week counts must not be subordinated to dots');
 assert.match(manager, /\{day\.sessions\.length\}<\/Text>[\s\S]*dayStatusRail/, 'day cells must expose their Session counts');
 assert.doesNotMatch(manager, /<ProgrammingMuscleRegionArt level="week"/, 'Week headers must remain anatomy-free');
-assert.match(manager, /<ProgrammingMuscleRegionArt level="session" primary=\{focus\.primary\}/, 'Session rows must use canonical region artwork');
+assert.match(manager, /<ProgrammingMuscleRegionArt[^>]*framingPreset="thumbnail"[^>]*level="session"[^>]*primary=\{focus\.primary\}/, 'Session rows must use canonical non-destructive thumbnail framing');
 assert.match(manager, /storyboardSessionEvidence\(session, displayUnit\)/, 'Session rows must use real compact evidence');
 
 assert.match(manager, /SLMotionPressable/, 'tactile controls must use the reduced-motion-aware primitive');
 assert.match(manager, /Haptics\.selectionAsync\(\)/, 'Block, Week, day, and Session selection must retain restrained feedback');
 assert.match(manager, /<StrengthLedgerBottomSheet[\s\S]*?<MobileSessionWorkspaceContent/, 'Session Workspace must open over the mounted Programming Manager');
 assert.match(manager, /<MobileSessionWorkspaceContent[\s\S]*?embedded[\s\S]*?athleteId=\{managedAthleteId \|\| hub\?\.athlete\?\.id \|\| null\}/, 'the in-place workspace must preserve the managed athlete');
-assert.match(workspace, /<ProgrammingMuscleRegionArt level="session" primary=\{workspaceFocus\.primary\}/, 'Session Workspace must preserve Session-level region artwork');
+assert.match(workspace, /<GovernedMuscleThumbnail/, 'Session Workspace muscle discovery must preserve governed full-figure thumbnails');
 
 for (const asset of [
   'assets/images/gym_vibe.jpg',

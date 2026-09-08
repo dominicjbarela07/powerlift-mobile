@@ -151,7 +151,7 @@ export default function AnatomySystemLab() {
       </View>
 
       <View style={styles.heroCard}>
-        <MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} surface="portrait" view={view} testID="anatomy-qa-hero" />
+        <MuscleMap anatomy={presentation} exposure={exposure} framingPreset="hero" laterality={laterality} mode={mode} primary={primary} secondary={secondary} semanticLevel="session" size="hero" style={styles.heroMap} view={view} testID="anatomy-qa-hero" />
         {mode === 'semantic' ? <>
           <Text style={styles.legend}>Violet · {primary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
           <Text style={styles.legend}>Magenta · {secondary.map((muscle) => MUSCLE_META[muscle].label).join(', ') || 'none'}</Text>
@@ -188,16 +188,16 @@ export default function AnatomySystemLab() {
 
       <Text style={styles.sectionTitle}>Size Tests</Text>
       <View style={styles.sizeCard}>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
-        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
-        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} surface="wide" view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="thumbnail" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" view={view} /><Text style={styles.sizeLabel}>76 thumbnail</Text></View>
+        <View style={styles.sizeCell}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="card" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" view={view} /><Text style={styles.sizeLabel}>156 × 184 card</Text></View>
+        <View style={styles.sizeCellWide}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="hero" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="hero" style={styles.compactHero} view={view} /><Text style={styles.sizeLabel}>responsive hero</Text></View>
       </View>
 
       <Text style={styles.sectionTitle}>Platform Previews</Text>
       <View style={styles.previewGrid}>
-        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} surface="square" view={view} /></View>
-        <View style={styles.widePreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="wide" view={view} /></View>
-        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} exposure={exposure} laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} surface="portrait" view={view} /></View>
+        <View style={styles.squarePreview}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="thumbnail" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="thumbnail" style={styles.fill} view={view} /></View>
+        <View style={styles.widePreview}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="card" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} view={view} /></View>
+        <View style={styles.portraitPreview}><MuscleMap anatomy={presentation} exposure={exposure} framingPreset="card" laterality={laterality} mode={mode} primary={primary} secondary={secondary} size="card" style={styles.fill} view={view} /></View>
       </View>
       <View style={styles.bottomSpace} />
     </ScrollView>

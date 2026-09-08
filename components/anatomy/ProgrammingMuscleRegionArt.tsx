@@ -8,6 +8,7 @@ import {
   normalizeMuscleRoles,
   type AnatomyPresentationPreference,
 } from '@/lib/anatomy-system';
+import type { AnatomyFramingPreset } from '@/lib/anatomy-framing';
 import { MuscleMap } from './MuscleMap';
 
 export type ProgrammingAthleteAnatomy = Readonly<{
@@ -20,10 +21,11 @@ type Props = Readonly<{
   primary?: readonly string[] | null;
   secondary?: readonly string[] | null;
   level: 'week' | 'session';
+  framingPreset?: AnatomyFramingPreset;
   style?: StyleProp<ViewStyle>;
 }>;
 
-function ProgrammingMuscleRegionArtComponent({ athlete, primary, secondary, level, style }: Props) {
+function ProgrammingMuscleRegionArtComponent({ athlete, primary, secondary, level, framingPreset = 'card', style }: Props) {
   const roles = useMemo(() => normalizeMuscleRoles(primary, secondary), [primary, secondary]);
   if (!roles.primary.length && !roles.secondary.length) {
     return (
@@ -43,10 +45,11 @@ function ProgrammingMuscleRegionArtComponent({ athlete, primary, secondary, leve
     >
       <MuscleMap
         athlete={athlete}
+        framingPreset={framingPreset}
         primary={roles.primary}
         secondary={roles.secondary}
         semanticLevel={level}
-        size={level === 'week' ? 'thumbnail' : 'card'}
+        size={framingPreset === 'thumbnail' ? 'thumbnail' : framingPreset === 'hero' ? 'hero' : level === 'week' ? 'thumbnail' : 'card'}
         style={styles.map}
       />
     </View>

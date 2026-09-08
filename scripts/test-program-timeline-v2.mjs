@@ -99,7 +99,7 @@ assert.match(component, /WeekNode/, 'Weeks must render as landmark nodes');
 assert.match(component, /DensityMarks/, 'Week nodes must expose real Session lifecycle density');
 assert.match(component, /WeekExpansion/, 'the selected Week must expand contextually inside the map');
 assert.match(component, /programmingState === 'unbuilt'/, 'programmed future and unbuilt future must not look identical');
-assert.match(component, /ProgrammingMuscleRegionArt level="session"/, 'Sessions must use focused muscle-region assets');
+assert.match(component, /ProgrammingMuscleRegionArt[^>]*framingPreset="thumbnail"[^>]*level="session"/, 'Sessions must use non-destructive focused muscle-region framing');
 assert.doesNotMatch(component, /MuscleMap|level="week"/, 'Program, Block, and Week headers must not render full anatomy');
 assert.match(component, /Gesture\.Pan\(\)/, 'Week map must support tactile scrubbing and traversal gestures');
 assert.match(component, /Haptics\.selectionAsync/, 'landmark transitions must use restrained selection haptics');

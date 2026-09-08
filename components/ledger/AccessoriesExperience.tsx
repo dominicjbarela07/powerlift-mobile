@@ -213,7 +213,7 @@ export default function AccessoriesExperience() {
       <View style={styles.developmentHero} testID="accessory-development-hero">
         <SectionHeading title="ACCESSORY DEVELOPMENT" subtitle="Relative exposure from performed accessory working sets." />
         <View style={styles.anatomyStage}>
-          <MuscleMap athlete={data.athlete} exposure={exposure} mode="exposure" region="full" semanticLevel="week" size="hero" style={styles.anatomy} surface="portrait" view={resolvedAnatomyView} testID={`accessories-anatomy-${resolvedAnatomyView}`} />
+          <MuscleMap athlete={data.athlete} exposure={exposure} framingPreset="hero" mode="exposure" region="full" semanticLevel="week" size="hero" style={styles.anatomy} view={resolvedAnatomyView} testID={`accessories-anatomy-${resolvedAnatomyView}`} />
           <View style={styles.anatomyControls}>
             {(['front', 'rear'] as const).map((view) => <Pressable key={view} accessibilityRole="tab" accessibilityState={{ selected: resolvedAnatomyView === view }} onPress={() => setAnatomyView(view)} style={[styles.anatomyControl, resolvedAnatomyView === view && styles.anatomyControlActive]} testID={`accessories-anatomy-view-${view}`}><Text style={[styles.anatomyControlText, resolvedAnatomyView === view && styles.anatomyControlTextActive]}>{titleCase(view)}</Text></Pressable>)}
           </View>
@@ -268,7 +268,7 @@ export default function AccessoriesExperience() {
 
       <View testID="accessories-your-movements">
         <SectionHeading title="YOUR MOVEMENTS" subtitle={`${story.summary.movement_count} performed movements · grouped by primary muscle`} />
-        <View style={styles.listCard}>{story.muscle_groups.map((muscle) => <Pressable key={muscle.key} accessibilityRole="button" onPress={() => openMuscle(muscle.key)} style={({ pressed }) => [styles.libraryRow, pressed && styles.pressed]}><View style={styles.libraryIcon}>{isGovernedMuscleId(muscle.key) ? <MuscleMap athlete={data.athlete} primary={[muscle.key]} semanticLevel="session" size="thumbnail" style={styles.libraryAnatomy} view="auto" /> : <Ionicons color={VIOLET_SOFT} name="body-outline" size={22} />}</View><View style={styles.libraryCopy}><Text style={styles.libraryName}>{titleCase(muscle.key)}</Text><Text style={styles.libraryMeta}>{muscle.movement_count} movement{muscle.movement_count === 1 ? '' : 's'} · {muscle.set_count} working sets</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
+        <View style={styles.listCard}>{story.muscle_groups.map((muscle) => <Pressable key={muscle.key} accessibilityRole="button" onPress={() => openMuscle(muscle.key)} style={({ pressed }) => [styles.libraryRow, pressed && styles.pressed]}><View style={styles.libraryIcon}>{isGovernedMuscleId(muscle.key) ? <MuscleMap athlete={data.athlete} framingPreset="thumbnail" primary={[muscle.key]} semanticLevel="session" size="thumbnail" style={styles.libraryAnatomy} view="auto" /> : <Ionicons color={VIOLET_SOFT} name="body-outline" size={22} />}</View><View style={styles.libraryCopy}><Text style={styles.libraryName}>{titleCase(muscle.key)}</Text><Text style={styles.libraryMeta}>{muscle.movement_count} movement{muscle.movement_count === 1 ? '' : 's'} · {muscle.set_count} working sets</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
       </View>
 
       <View testID="accessory-history-preview">

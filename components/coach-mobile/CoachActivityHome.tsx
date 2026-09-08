@@ -609,7 +609,7 @@ function ActivityArtwork({ activity }: { activity: CoachHomeActivity }) {
   const kind = activity.artwork?.kind;
   if (kind === 'performed_anatomy') {
     const focus = focusMuscles(activity.artwork?.muscle_focus || activity.evidence.muscle_focus);
-    return <View style={styles.artwork}><LinearGradient colors={['#17101F', '#07090D']} style={StyleSheet.absoluteFillObject} /><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} style={styles.anatomy} /></View>;
+    return <View style={styles.artwork}><LinearGradient colors={['#17101F', '#07090D']} style={StyleSheet.absoluteFillObject} /><ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={focus.primary} secondary={focus.secondary} style={styles.anatomy} /></View>;
   }
   if (kind === 'video_thumbnail') {
     return <ActivityVideoArtwork thumbnailUrl={activity.artwork?.thumbnail_url} />;
@@ -684,7 +684,7 @@ function UpcomingCard({ session, onOpen }: { session: CoachHomeUpcomingSession; 
     <Text numberOfLines={1} style={styles.upcomingDate}>{shortDay(session.date)}</Text>
     <Text numberOfLines={1} style={styles.upcomingAthlete}>{session.athlete.name}</Text>
     <Text numberOfLines={1} style={styles.upcomingTitle}>{session.title}</Text>
-    <View style={styles.upcomingAnatomy}><ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} /></View>
+    <View style={styles.upcomingAnatomy}><ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={focus.primary} secondary={focus.secondary} /></View>
     <Text numberOfLines={1} style={styles.upcomingMeta}>{session.movement_count ? `${session.movement_count} movements` : session.subtitle}</Text>
   </Pressable>;
 }

@@ -2981,7 +2981,7 @@ function ProgrammingIntelligenceStrip({
 
 function StoryboardSessionArtwork({ session, style }: { session: HubSession; style?: any }) {
   const focus = storyboardSessionMuscleFocus(session);
-  return <ProgrammingMuscleRegionArt level="session" primary={focus.primary} secondary={focus.secondary} style={style} />;
+  return <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={focus.primary} secondary={focus.secondary} style={style} />;
 }
 
 function StoryboardSessionDragGesture({

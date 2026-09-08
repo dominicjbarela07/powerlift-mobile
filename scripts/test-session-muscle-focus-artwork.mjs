@@ -33,7 +33,7 @@ assert.doesNotMatch(coachHome, /function anatomyKeys/);
 assert.doesNotMatch(coachHome, /<MuscleMap/, 'aggregate consumers must route through the shared framing wrapper');
 
 const manager = source('app/(tabs)/workout/index.tsx');
-assert.match(manager, /ProgrammingMuscleRegionArt level="session" primary=\{focus\.primary\} secondary=\{focus\.secondary\}/);
+assert.match(manager, /ProgrammingMuscleRegionArt[^>]*framingPreset="thumbnail"[^>]*level="session"[^>]*primary=\{focus\.primary\}[^>]*secondary=\{focus\.secondary\}/);
 assert.doesNotMatch(manager, /storyboardSessionLiftArtwork/);
 
 for (const relative of [

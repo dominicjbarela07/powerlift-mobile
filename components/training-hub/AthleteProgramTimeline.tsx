@@ -223,7 +223,7 @@ const SessionNode = memo(function SessionNode({
         <View style={styles.sessionNodeBody}>
           <View style={styles.sessionArt}>
             {session.primaryMuscles.length ? (
-              <ProgrammingMuscleRegionArt level="session" primary={session.primaryMuscles} secondary={session.secondaryMuscles} />
+              <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={session.primaryMuscles} secondary={session.secondaryMuscles} />
             ) : (
               <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={25} />
             )}

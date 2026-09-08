@@ -35,12 +35,12 @@ function GovernedMuscleThumbnailComponent({
       {primaryId ? (
         <MuscleMap
           athlete={athlete}
+          framingPreset="thumbnail"
           primary={[primaryId]}
           secondary={secondaryIds}
           semanticLevel="session"
           size="thumbnail"
           style={styles.map}
-          surface="square"
           view="auto"
         />
       ) : null}

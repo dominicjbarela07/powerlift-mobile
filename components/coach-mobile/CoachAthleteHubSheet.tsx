@@ -555,7 +555,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <CoachSparkline color={COACH_V2.cyan} values={bodyweightObservations.map((point) => point.reported_bodyweight_kg)} />
               </StatusCard>
               <View style={styles.focusCard}>
-                <ProgrammingMuscleRegionArt level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.focusImage} />
+                <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.focusImage} />
                 <Text style={styles.statusLabel}>Training Focus</Text>
                 <Text numberOfLines={2} style={styles.focusLabel}>{focus.length ? focus.slice(0, 2).map(humanize).join(', ') : evidencePending ? 'Loading focus…' : 'No target evidence'}</Text>
               </View>
@@ -565,7 +565,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
             {lastSession ? (
               <Pressable accessibilityLabel={`Open ${lastSession.label}`} accessibilityRole="button" onPress={openLastSession} style={({ pressed }) => [styles.lastSessionCard, pressed && styles.pressed]}>
                 <View style={styles.lastSessionTop}>
-                  <View style={styles.lastSessionArtwork}><ProgrammingMuscleRegionArt level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.lastSessionImage} /></View>
+                  <View style={styles.lastSessionArtwork}><ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={renderedFocusPrimary} secondary={focusSecondary} style={styles.lastSessionImage} /></View>
                   <View style={styles.lastSessionCopy}>
                     <Text style={styles.lastSessionTitle}>{lastSession.label}</Text>
                     <Text style={styles.lastSessionMeta}>{formatCoachRelativeDate(lastSession.date)} · Completed</Text>

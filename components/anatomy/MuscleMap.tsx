@@ -34,7 +34,7 @@ import {
 } from './anatomy-mask-registry';
 import {
   resolveAnatomyFraming,
-  type AnatomyFramingSurface,
+  type AnatomyFramingPreset,
   type AnatomyFigureView,
 } from '@/lib/anatomy-framing';
 
@@ -107,8 +107,8 @@ export type MuscleMapProps = Readonly<{
   region?: AnatomyRegionPreference;
   semanticLevel?: AnatomySemanticLevel;
   size?: AnatomySize;
+  framingPreset?: AnatomyFramingPreset;
   style?: StyleProp<ViewStyle>;
-  surface?: AnatomyFramingSurface;
   showFrame?: boolean;
   testID?: string;
   laterality?: AnatomyLaterality;
@@ -156,7 +156,7 @@ function Figure({
   size,
   width,
   height,
-  surface,
+  framingPreset,
   laterality,
   mode,
   exposure,
@@ -168,7 +168,7 @@ function Figure({
   size: AnatomySize;
   width: number;
   height: number;
-  surface: AnatomyFramingSurface;
+  framingPreset: AnatomyFramingPreset;
   laterality: AnatomyLaterality;
   mode: AnatomyRenderMode;
   exposure?: Readonly<Partial<Record<GovernedMuscleId, number>>>;
@@ -180,9 +180,8 @@ function Figure({
     view: view as AnatomyFigureView,
     destinationAspectRatio: width / Math.max(1, height),
     size,
-    surface,
+    preset: framingPreset,
     preserveAll: mode === 'exposure',
-    forceFullBody: mode === 'exposure',
   });
   const { x: viewX, y: viewY, width: viewWidth, height: viewHeight } = framing.viewBox;
   const primarySet = new Set(primary);
@@ -297,14 +296,15 @@ function MuscleMapComponent({
   region = 'auto',
   semanticLevel = 'movement',
   size = 'card',
+  framingPreset,
   style,
-  surface = 'auto',
   showFrame = false,
   testID,
   laterality = 'bilateral',
   mode = 'semantic',
   exposure,
 }: MuscleMapProps) {
+  const effectiveFramingPreset: AnatomyFramingPreset = framingPreset || (size === 'thumbnail' ? 'thumbnail' : size === 'hero' ? 'hero' : 'card');
   const [layout, setLayout] = useState(() => ({ width: SIZE_WIDTH[size], height: SIZE_HEIGHT[size] }));
   const state = useMemo(
     () => resolveMuscleMapRenderState({ anatomy, athlete, primary, secondary, view, region, semanticLevel, size, laterality, mode, exposure }),
@@ -343,10 +343,10 @@ function MuscleMapComponent({
       ]}
     >
       {state.view === 'front' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} laterality={laterality} mode={state.mode} exposure={exposure} />
+        <Figure presentation={state.presentation} view="front" primary={state.primary} secondary={state.secondary} size={size} framingPreset={state.view === 'dual' ? 'dual' : effectiveFramingPreset} width={figureWidth} height={layout.height} laterality={laterality} mode={state.mode} exposure={exposure} />
       ) : null}
       {state.view === 'rear' || state.view === 'dual' ? (
-        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} surface={surface} width={figureWidth} height={layout.height} laterality={laterality} mode={state.mode} exposure={exposure} />
+        <Figure presentation={state.presentation} view="rear" primary={state.primary} secondary={state.secondary} size={size} framingPreset={state.view === 'dual' ? 'dual' : effectiveFramingPreset} width={figureWidth} height={layout.height} laterality={laterality} mode={state.mode} exposure={exposure} />
       ) : null}
     </View>
   );
@@ -359,7 +359,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   dual: {
     flexDirection: 'row',

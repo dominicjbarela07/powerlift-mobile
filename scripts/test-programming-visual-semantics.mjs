@@ -31,8 +31,8 @@ assert.match(manager, /const PROGRAMMING_PROGRAM_ARTWORK = \{[\s\S]*bodybuilding
 assert.match(manager, /resizeMode="cover" source=\{programArtwork\}/, 'Program artwork must occupy the atmospheric image frame');
 assert.doesNotMatch(manager, /programFocusArt/, 'Training Program must not use anatomy artwork');
 assert.doesNotMatch(manager, /<ProgrammingMuscleRegionArt level="week"/, 'Week headers must remain anatomy-free');
-assert.match(manager, /<ProgrammingMuscleRegionArt level="session" primary=\{focus\.primary\}/, 'Session artwork must use the existing region asset system');
-assert.match(workspace, /<ProgrammingMuscleRegionArt level="session" primary=\{workspaceFocus\.primary\}/, 'Session Workspace must use the existing region asset system');
+assert.match(manager, /<ProgrammingMuscleRegionArt[^>]*framingPreset="thumbnail"[^>]*level="session"[^>]*primary=\{focus\.primary\}/, 'Session artwork must use the canonical non-destructive thumbnail framing');
+assert.match(workspace, /<GovernedMuscleThumbnail/, 'Session Workspace muscle discovery must use governed full-figure thumbnails');
 assert.match(workspace, /CanonicalMovementArtwork/, 'Movement selection must preserve canonical individual-movement artwork semantics');
 assert.match(editingWorkspace, /CanonicalMovementArtwork/, 'Movement rows must preserve canonical individual-movement artwork semantics');
 assert.match(programmingRegionArt, /<MuscleMap/);

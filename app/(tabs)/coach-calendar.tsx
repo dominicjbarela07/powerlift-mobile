@@ -1788,7 +1788,7 @@ function CalendarSessionCard({ athlete, compact = false, session, onPress, onOve
         <View style={[styles.sessionStatusRail, { backgroundColor: color }]} />
         {primary.length || secondary.length ? (
           <View pointerEvents="none" style={[styles.sessionAnatomy, compact && styles.sessionAnatomyCompact]}>
-            <ProgrammingMuscleRegionArt level="session" primary={primary} secondary={secondary} />
+            <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={primary} secondary={secondary} />
           </View>
         ) : null}
       </Pressable>
@@ -1998,7 +1998,7 @@ const styles = StyleSheet.create({
   sessionEvidenceRow: { alignItems: 'center', flexDirection: 'row', gap: 5, marginTop: 7 },
   sessionEvidence: { color: SLColors.text, flexShrink: 1, fontSize: 10, fontWeight: '700' },
   sessionStatusRail: { bottom: 0, position: 'absolute', right: 0, top: 0, width: 3 },
-  sessionAnatomy: { bottom: -8, opacity: 0.92, position: 'absolute', right: 7, width: 58 },
+  sessionAnatomy: { bottom: 8, opacity: 0.92, position: 'absolute', right: 7, top: 8, width: 58 },
   sessionAnatomyCompact: { right: 11 },
   sessionLifecyclePill: { borderRadius: 8, borderWidth: 1, paddingHorizontal: 6, paddingVertical: 3, position: 'absolute', right: 38, top: 7 },
   sessionLifecycleText: { fontSize: 7, fontWeight: '900', letterSpacing: 0.45, textTransform: 'uppercase' },

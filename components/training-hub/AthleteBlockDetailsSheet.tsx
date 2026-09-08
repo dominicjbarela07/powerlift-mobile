@@ -362,7 +362,7 @@ function SessionAgendaRow({ onPress, session }: { onPress: () => void; session: 
       </View>
       {muscleIds.length ? (
         <View style={styles.sessionArtFrame}>
-          <ProgrammingMuscleRegionArt level="session" primary={muscleIds} secondary={secondaryMuscleIds} />
+          <ProgrammingMuscleRegionArt framingPreset="thumbnail" level="session" primary={muscleIds} secondary={secondaryMuscleIds} />
         </View>
       ) : null}
       <View style={styles.sessionCopy}>
