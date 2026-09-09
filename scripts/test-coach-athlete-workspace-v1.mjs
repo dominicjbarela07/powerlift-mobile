@@ -98,6 +98,16 @@ for (const section of [
 ]) assert.match(source.brief, new RegExp(section.replace(/[&/]/g, '\\$&')));
 assert.doesNotMatch(source.brief, /Since Last Visit/);
 assert.doesNotMatch(source.brief, /COACH BRIEF|Decision-ready evidence/);
+assert.match(
+  source.reviews,
+  /const nextScrollY = event\.nativeEvent\.contentOffset\.y;[\s\S]*setReviewState\(\(current\) => \(\{ \.\.\.current, scrollY: nextScrollY \}\)\)/,
+  'Reviews must snapshot scroll position before the pooled native event is released',
+);
+assert.doesNotMatch(
+  source.reviews,
+  /setReviewState\([\s\S]{0,120}event\.nativeEvent/,
+  'pooled native events must never be captured inside deferred workspace state updaters',
+);
 
 assert.match(source.trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
 assert.match(source.trainingRoute, /return <TrainingIndexScreen \/>/);

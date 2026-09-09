@@ -133,7 +133,10 @@ export function CoachAthleteReviews() {
       <ScrollView
         contentContainerStyle={styles.list}
         contentOffset={{ x: 0, y: reviewState.scrollY }}
-        onScroll={(event) => setReviewState((current) => ({ ...current, scrollY: event.nativeEvent.contentOffset.y }))}
+        onScroll={(event) => {
+          const nextScrollY = event.nativeEvent.contentOffset.y;
+          setReviewState((current) => ({ ...current, scrollY: nextScrollY }));
+        }}
         scrollEventThrottle={180}
         showsVerticalScrollIndicator={false}
       >
