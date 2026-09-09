@@ -119,9 +119,7 @@ export function CoachAthleteBrief() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.intro}>
-        <Text style={styles.kicker}>COACH BRIEF</Text>
         <Text style={styles.title}>What matters now</Text>
-        <Text style={styles.subtitle}>Decision-ready evidence for {bootstrap.athlete.name}, scoped to this coaching relationship.</Text>
       </View>
 
       <Section title="Needs Your Action" meta={actions.length ? `${actions.length} open` : 'Clear'}>
@@ -241,10 +239,8 @@ function Conversation({ label, message, when }: { label: string; message?: strin
 
 const styles = StyleSheet.create({
   content: { gap: SLSpacing.lg, padding: SLLayout.screenGutter, paddingBottom: 96 },
-  intro: { paddingHorizontal: 2, paddingTop: 4 },
-  kicker: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
-  title: { color: COACH_V2.text, fontSize: 30, fontWeight: '800', marginTop: 4 },
-  subtitle: { color: COACH_V2.muted, fontSize: 14, lineHeight: 20, marginTop: 5 },
+  intro: { paddingHorizontal: 2, paddingTop: 2 },
+  title: { color: COACH_V2.text, fontSize: 30, fontWeight: '800' },
   section: { backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: SLRadius.lg, borderWidth: 1, overflow: 'hidden', padding: 14 },
   sectionHeader: { alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'space-between', marginBottom: 10 },
   sectionTitle: { color: COACH_V2.text, flex: 1, fontSize: 18, fontWeight: '800' },

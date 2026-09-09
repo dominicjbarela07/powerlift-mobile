@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
 import React, { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
+import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
@@ -15,12 +17,15 @@ const DESTINATIONS: Array<{
   key: WorkspaceDestination;
   label: string;
   suffix: string;
+  icon: keyof typeof Ionicons.glyphMap;
 }> = [
-  { key: 'brief', label: 'Brief', suffix: '' },
-  { key: 'training', label: 'Training', suffix: '/training' },
-  { key: 'reviews', label: 'Reviews', suffix: '/reviews' },
-  { key: 'messages', label: 'Messages', suffix: '/messages' },
+  { key: 'brief', label: 'Brief', suffix: '', icon: 'pulse-outline' },
+  { key: 'training', label: 'Training', suffix: '/training', icon: 'barbell-outline' },
+  { key: 'reviews', label: 'Reviews', suffix: '/reviews', icon: 'checkmark-done-outline' },
+  { key: 'messages', label: 'Messages', suffix: '/messages', icon: 'chatbubbles-outline' },
 ];
+
+const WORKSPACE_DOCK_HEIGHT = 58;
 
 function workspaceDestination(pathname: string): WorkspaceDestination | null {
   if (pathname.includes('/training')) return 'training';
@@ -32,6 +37,7 @@ function workspaceDestination(pathname: string): WorkspaceDestination | null {
 
 export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const workspace = useCoachAthleteWorkspace();
   const [overflowOpen, setOverflowOpen] = useState(false);
@@ -52,14 +58,13 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
   const navigate = (destination: WorkspaceDestination) => {
     const suffix = DESTINATIONS.find((item) => item.key === destination)?.suffix || '';
-    router.replace(`${basePath}${suffix}` as any);
+    router.navigate({
+      pathname: `${basePath}${suffix}` as any,
+      params: { workspaceSubjectKey: workspace.subjectKey },
+    });
   };
   const exitWorkspace = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace('/(tabs)/coach-dashboard' as any);
+    router.navigate('/(tabs)/coach-dashboard' as any);
   }, [router]);
 
   if (workspace.loading && !workspace.bootstrap) {
@@ -141,42 +146,40 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
         </Pressable>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.navContent}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.nav}
+      <View key={workspace.subjectKey} style={styles.content}>{children}</View>
+
+      <Pressable
+        accessibilityLabel="Open athlete actions"
+        accessibilityRole="button"
+        onPress={() => setToolkitOpen(true)}
+        style={({ pressed }) => [styles.floatingToolkit, { bottom: WORKSPACE_DOCK_HEIGHT + Math.max(insets.bottom, 6) + 12 }, pressed && styles.floatingToolkitPressed]}
       >
+        <Ionicons color={COACH_V2.text} name="add" size={26} />
+      </Pressable>
+
+      <View style={[styles.workspaceDock, { paddingBottom: Math.max(insets.bottom, 6) }]}>
         {DESTINATIONS.map((destination) => {
           const active = selected === destination.key;
           const badge = destinationBadges[destination.key];
           return (
             <Pressable
+              accessibilityLabel={destination.label}
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               key={destination.key}
               onPress={() => navigate(destination.key)}
-              style={({ pressed }) => [styles.navItem, active && styles.navItemActive, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.navItem, pressed && styles.pressed]}
             >
+              {active ? <View style={styles.activeIndicator} /> : null}
+              <View style={styles.navIcon}>
+                <Ionicons color={active ? SL_TAB_ROW_CONTROL.selectedColor : SL_TAB_ROW_CONTROL.inactiveColor} name={destination.icon} size={20} />
+                {badge > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text></View> : null}
+              </View>
               <Text style={[styles.navLabel, active && styles.navLabelActive]}>{destination.label}</Text>
-              {badge > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text></View> : null}
             </Pressable>
           );
         })}
-      </ScrollView>
-
-      <View key={workspace.subjectKey} style={styles.content}>{children}</View>
-
-      {selected !== 'messages' ? (
-        <Pressable
-          accessibilityLabel="Open athlete actions"
-          accessibilityRole="button"
-          onPress={() => setToolkitOpen(true)}
-          style={({ pressed }) => [styles.floatingToolkit, pressed && styles.floatingToolkitPressed]}
-        >
-          <Ionicons color={COACH_V2.text} name="add" size={26} />
-        </Pressable>
-      ) : null}
+      </View>
 
       <StrengthLedgerBottomSheet
         accessibilityLabel="Athlete workspace options"
@@ -293,22 +296,21 @@ const styles = StyleSheet.create({
   identity: { flex: 1, minWidth: 0 },
   eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
   athleteName: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 2 },
-  nav: { borderBottomColor: COACH_V2.border, borderBottomWidth: StyleSheet.hairlineWidth, flexGrow: 0 },
-  navContent: { gap: 8, paddingHorizontal: SLLayout.screenGutter, paddingVertical: 9 },
-  navItem: { alignItems: 'center', borderColor: COACH_V2.border, borderRadius: 999, borderWidth: 1, flexDirection: 'row', gap: 7, minHeight: 35, paddingHorizontal: 15 },
-  navItemActive: { backgroundColor: 'rgba(157,92,255,0.20)', borderColor: COACH_V2.violet },
-  navLabel: { color: COACH_V2.muted, fontSize: 13, fontWeight: '700' },
-  navLabelActive: { color: COACH_V2.text },
-  badge: { alignItems: 'center', backgroundColor: COACH_V2.magenta, borderRadius: 999, justifyContent: 'center', minHeight: 18, minWidth: 18, paddingHorizontal: 4 },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   content: { flex: 1 },
+  workspaceDock: { alignItems: 'flex-start', backgroundColor: SL_TAB_ROW_CONTROL.translucentFallback, borderTopColor: SL_TAB_ROW_CONTROL.shellBorderColor, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', minHeight: WORKSPACE_DOCK_HEIGHT, paddingHorizontal: SLSpacing.sm, paddingTop: 4 },
+  navItem: { alignItems: 'center', flex: 1, gap: 2, justifyContent: 'center', minHeight: 50, position: 'relative' },
+  activeIndicator: { backgroundColor: SL_TAB_ROW_CONTROL.selectedColor, height: 2, left: '31%', position: 'absolute', right: '31%', top: -4 },
+  navIcon: { alignItems: 'center', height: 23, justifyContent: 'center', position: 'relative', width: 30 },
+  navLabel: { color: SL_TAB_ROW_CONTROL.inactiveColor, fontSize: 9, fontWeight: '700', lineHeight: 12 },
+  navLabelActive: { color: SL_TAB_ROW_CONTROL.selectedColor },
+  badge: { alignItems: 'center', backgroundColor: COACH_V2.magenta, borderColor: '#000', borderRadius: 8, borderWidth: 1, justifyContent: 'center', minHeight: 15, minWidth: 15, paddingHorizontal: 3, position: 'absolute', right: -3, top: -3 },
+  badgeText: { color: '#fff', fontSize: 8, fontWeight: '900' },
   floatingToolkit: {
     alignItems: 'center',
     backgroundColor: COACH_V2.violet,
     borderColor: 'rgba(255,255,255,0.18)',
     borderRadius: 25,
     borderWidth: 1,
-    bottom: 22,
     height: 50,
     justifyContent: 'center',
     position: 'absolute',

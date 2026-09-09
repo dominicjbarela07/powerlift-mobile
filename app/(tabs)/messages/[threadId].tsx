@@ -718,7 +718,11 @@ export function ThreadScreen({
                 <Ionicons name="chatbubble-ellipses-outline" size={32} color={SLColors.textMuted} />
               </View>
               <Text typographyRole="emptyStateTitle" style={styles.emptyTitle}>No messages yet</Text>
-              <Text typographyRole="emptyStateBody" style={styles.emptyBody}>Start the conversation with your coach.</Text>
+              <Text typographyRole="emptyStateBody" style={styles.emptyBody}>
+                {embedded && workspaceAthleteId && user?.is_coach
+                  ? `Start the conversation with ${title}.`
+                  : 'Start the conversation with your coach.'}
+              </Text>
             </View>
           }
           renderItem={({ item, index }) => {

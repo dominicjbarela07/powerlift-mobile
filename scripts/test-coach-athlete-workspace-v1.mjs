@@ -6,7 +6,7 @@ const paths = {
   provider: 'components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext.tsx',
   shell: 'components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx',
   brief: 'components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx',
-  training: 'components/coach-mobile/athlete-workspace/CoachAthleteTraining.tsx',
+  trainingRoute: 'app/(tabs)/coach-athlete/[athleteId]/training/index.tsx',
   reviews: 'components/coach-mobile/athlete-workspace/CoachAthleteReviews.tsx',
   messages: 'components/coach-mobile/athlete-workspace/CoachAthleteMessages.tsx',
   evidence: 'components/coach-mobile/athlete-workspace/CoachAthleteEvidence.tsx',
@@ -60,7 +60,16 @@ for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'm
   assert.match(source.shell, new RegExp(tab));
 }
 assert.match(source.shell, /Back to previous Coach context/);
-assert.match(source.shell, /router\.canGoBack\(\)[\s\S]*router\.back\(\)/);
+assert.match(source.shell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
+assert.match(source.shell, /workspaceDock/);
+assert.match(source.shell, /accessibilityRole="tab"/);
+assert.match(source.shell, /SL_TAB_ROW_CONTROL/);
+assert.match(source.shell, /pulse-outline/);
+assert.match(source.shell, /barbell-outline/);
+assert.match(source.shell, /checkmark-done-outline/);
+assert.match(source.shell, /chatbubbles-outline/);
+assert.doesNotMatch(source.shell, /navItemActive|borderRadius:\s*999/);
+assert.match(source.shell, /router\.navigate\([\s\S]*workspaceSubjectKey: workspace\.subjectKey/);
 assert.match(source.shell, /\$\{basePath\}\/evidence/);
 assert.match(source.shell, /\$\{basePath\}\/notes/);
 assert.match(source.shell, /\$\{basePath\}\/context/);
@@ -74,16 +83,17 @@ for (const section of [
   'Upcoming Decisions',
 ]) assert.match(source.brief, new RegExp(section.replace(/[&/]/g, '\\$&')));
 assert.doesNotMatch(source.brief, /Since Last Visit/);
+assert.doesNotMatch(source.brief, /COACH BRIEF|Decision-ready evidence/);
 
-assert.match(source.training, /athlete_id: String\(athlete\.id\)/);
-assert.doesNotMatch(source.training, /athlete_id:\s*'ALL'/);
-assert.match(source.training, /Number\(session\.athlete_id\) !== athlete\.id/);
-assert.match(source.training, /Number\(response\.json\.athlete_id\) !== athlete\.id/);
-assert.match(source.training, /workspaceReturn: 'training'/);
-assert.match(source.training, /programmingBlockId: trainingState\.blockId/);
-assert.match(source.training, /programmingWeek: trainingState\.week/);
-assert.match(source.training, /programmingDay: trainingState\.selectedDate/);
-assert.match(source.training, /scrollY: event\.nativeEvent\.contentOffset\.y/);
+assert.match(source.trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
+assert.match(source.trainingRoute, /return <TrainingIndexScreen \/>/);
+assert.doesNotMatch(source.trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
+assert.match(source.programming, /const rosterAthleteId = params\.athleteId/);
+assert.match(source.programming, /`\/workouts\/my_list\/mobile\/\$\{rosterAthleteId\}`/);
+assert.match(source.programming, /isProgrammingManager = isIndividual \|\| !!rosterAthleteId/);
+assert.match(source.programming, /<IndividualProgrammingHome/);
+assert.match(source.programming, /managedAthleteId=\{rosterAthleteId \? Number\(rosterAthleteId\)/);
+assert.match(source.programming, /scopeProgrammingPayload/);
 assert.match(source.programming, /workspaceReturn === 'training'/);
 
 assert.match(source.reviews, /getCoachReviewQueue/);
@@ -104,6 +114,7 @@ assert.match(source.messages, /onDraftChange=\{workspace\.setMessageDraft\}/);
 assert.match(source.thread, /workspaceAthleteId/);
 assert.match(source.thread, /returnToWorkspace/);
 assert.match(source.thread, /workspaceReturn/);
+assert.match(source.thread, /Start the conversation with \$\{title\}/);
 
 for (const room of ['Journey', 'Strength', 'Achievements', 'Accessories', 'Variants', 'Archive']) {
   assert.match(source.evidence, new RegExp(`label: '${room}'`));

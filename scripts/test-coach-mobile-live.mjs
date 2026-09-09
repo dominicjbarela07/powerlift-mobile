@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
-const [route, home, hubSheet, workspaceLayout, workspaceShell, tabs] = await Promise.all([
+const [route, home, hubSheet, workspaceLayout, workspaceShell, trainingRoute, tabs] = await Promise.all([
   read('app/(tabs)/coach-dashboard.tsx'),
   read('components/coach-mobile/CoachActivityHome.tsx'),
   read('components/coach-mobile/CoachAthleteHubSheet.tsx'),
   read('app/(tabs)/coach-athlete/[athleteId]/_layout.tsx'),
   read('components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx'),
+  read('app/(tabs)/coach-athlete/[athleteId]/training/index.tsx'),
   read('app/(tabs)/_layout.tsx'),
 ]);
 
@@ -33,8 +34,14 @@ for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'm
   assert.match(workspaceShell, new RegExp(tab));
 }
 assert.match(workspaceShell, /Back to previous Coach context/);
-assert.match(workspaceShell, /router\.canGoBack\(\)[\s\S]*router\.back\(\)/);
+assert.match(workspaceShell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
 assert.match(workspaceShell, /workspace\.subjectKey/);
+assert.match(workspaceShell, /workspaceDock/);
+assert.match(workspaceShell, /accessibilityRole="tab"/);
+assert.doesNotMatch(workspaceShell, /navItemActive|borderRadius:\s*999/);
+assert.match(trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
+assert.match(trainingRoute, /return <TrainingIndexScreen \/>/);
+assert.doesNotMatch(trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
 assert.match(tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)[\s\S]*return null/);
 
 console.log('coach mobile live routes and athlete workspace contract: PASS');

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { CoachAthleteTraining } from '@/components/coach-mobile/athlete-workspace/CoachAthleteTraining';
+import TrainingIndexScreen from '@/app/(tabs)/workout';
 
-export default function CoachAthleteTrainingRoute() {
-  return <CoachAthleteTraining />;
+export default function AthleteWorkspaceTrainingRoute() {
+  return <TrainingIndexScreen />;
 }

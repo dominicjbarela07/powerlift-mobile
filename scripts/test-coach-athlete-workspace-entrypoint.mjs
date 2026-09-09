@@ -33,10 +33,9 @@ assert.match(preview, /testID="coach-athlete-preview-open-workspace"/);
 assert.match(preview, /Open Athlete Workspace/);
 assert.match(preview, /pathname: '\/\(tabs\)\/coach-athlete\/\[athleteId\]'/);
 
-assert.match(shell, /if \(router\.canGoBack\(\)\)[\s\S]*router\.back\(\)/);
+assert.match(shell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
 assert.match(shell, /Back to previous Coach context/);
 assert.match(shell, /<Text style=\{styles\.headerBackLabel\}>Coach<\/Text>/);
-assert.match(shell, /router\.replace\('\/\(tabs\)\/coach-dashboard'/, 'deep links still have a safe Coach Home fallback.');
 
 for (const [name, source] of [
   ['Check-Ins', checkIns],
