@@ -371,8 +371,14 @@ export function CoachActivityHome({
 
   const openAthlete = useCallback((athleteId: number) => {
     const athlete = athleteById.get(athleteId);
-    if (athlete) setSelectedAthlete(athlete);
-  }, [athleteById]);
+    router.push({
+      pathname: '/(tabs)/coach-athlete/[athleteId]',
+      params: {
+        athleteId: String(athleteId),
+        ...(athlete?.name ? { athleteName: athlete.name } : {}),
+      },
+    } as any);
+  }, [athleteById, router]);
 
   const openDestination = useCallback((destination: CoachDestination, athleteId?: number) => {
     if (destination.route === 'athlete_hub') {
@@ -511,7 +517,7 @@ export function CoachActivityHome({
             </View>
             {athletes.length ? (
               <ScrollView contentContainerStyle={styles.athleteRail} horizontal showsHorizontalScrollIndicator={false}>
-                {athletes.map((athlete) => <CompactAthleteCard athlete={athlete} key={athlete.id} onPress={() => setSelectedAthlete(athlete)} />)}
+                {athletes.map((athlete) => <CompactAthleteCard athlete={athlete} key={athlete.id} onPress={() => openAthlete(athlete.id)} />)}
               </ScrollView>
             ) : <EmptyCard icon="people-outline" text="No active athlete relationships are available." />}
           </View>
@@ -521,7 +527,7 @@ export function CoachActivityHome({
 
       <QueueFilterSheet current={filter} onApply={setFilter} onClose={() => setFilterOpen(false)} visible={filterOpen} />
       <ClearedActivitySheet activities={data?.cleared_activity || []} onClose={() => setClearedOpen(false)} onOpen={(activity) => openDestination(activity.destination, activity.athlete.id)} visible={clearedOpen} />
-      <RosterSheet athletes={athletes} initialFilter={rosterInitialFilter} onClose={() => setRosterOpen(false)} onOpen={(athlete) => { setRosterOpen(false); setTimeout(() => setSelectedAthlete(athlete), 0); }} visible={rosterOpen} />
+      <RosterSheet athletes={athletes} initialFilter={rosterInitialFilter} onClose={() => setRosterOpen(false)} onOpen={(athlete) => { setRosterOpen(false); setTimeout(() => openAthlete(athlete.id), 0); }} visible={rosterOpen} />
       <CoachAthleteHubSheet
         athlete={selectedAthlete}
         onClose={() => setSelectedAthlete(null)}
@@ -562,7 +568,7 @@ function SwipeActivityCard({ activity, displayUnit, isOpen, onDismiss, onGesture
         <Pressable accessibilityActions={[{ name: 'dismiss', label: `Dismiss ${activity.title}` }]} accessibilityHint="Swipe left to dismiss" accessibilityLabel={`${activity.athlete.name}, ${activity.title}`} accessibilityRole="button" onAccessibilityAction={(event) => { if (event.nativeEvent.actionName === 'dismiss') onDismiss(); }} onPress={openCard} style={({ pressed }) => [styles.activityCard, pressed && styles.pressed]}>
           <ActivityArtwork activity={activity} />
           <View style={styles.activityBody}>
-            <Pressable accessibilityLabel={`Open ${activity.athlete.name} Athlete Hub`} onPress={(event) => { event.stopPropagation(); openAthlete(); }} style={styles.activityAthleteRow}>
+            <Pressable accessibilityLabel={`Open ${activity.athlete.name} Athlete Workspace`} accessibilityRole="button" onPress={(event) => { event.stopPropagation(); openAthlete(); }} style={({ pressed }) => [styles.activityAthleteRow, pressed && styles.pressed]}>
               <SLAthleteAvatar imageUrl={activity.athlete.avatar_url} name={activity.athlete.name} size={26} />
               <View style={styles.activityIdentity}><Text numberOfLines={1} style={styles.activityAthlete}>{activity.athlete.name}</Text><Text style={styles.activityTime}>{relativeTime(activity.occurred_at)}</Text></View>
             </Pressable>
@@ -690,7 +696,7 @@ function UpcomingCard({ session, onOpen }: { session: CoachHomeUpcomingSession; 
 }
 
 function MeetDayCard({ item, onOpen }: { item: Extract<CoachScheduleItem, { kind: 'meet' }>; onOpen: () => void }) {
-  return <Pressable accessibilityLabel={`Open ${item.athlete.name} Meet Day`} accessibilityRole="button" onPress={onOpen} style={({ pressed }) => [styles.upcomingCard, styles.meetDayCard, pressed && styles.pressed]}>
+  return <Pressable accessibilityLabel={`Open ${item.athlete.name} Athlete Workspace`} accessibilityHint="Includes the athlete's current meet and training context" accessibilityRole="button" onPress={onOpen} style={({ pressed }) => [styles.upcomingCard, styles.meetDayCard, pressed && styles.pressed]}>
     <LinearGradient colors={['#211A08', '#070602']} style={StyleSheet.absoluteFillObject} />
     <Text numberOfLines={1} style={[styles.upcomingDate, styles.meetDayDate]}>{formatCoachMeetDate(item.meet.meet_date).toUpperCase()}</Text>
     <Text numberOfLines={1} style={styles.upcomingAthlete}>{item.athlete.name}</Text>
@@ -704,7 +710,7 @@ function CompactAthleteCard({ athlete, onPress }: { athlete: CoachRosterAthlete;
   const readiness = athlete.readiness.score;
   const color = readiness != null && readiness < 3 ? COACH_V2.magenta : COACH_V2.green;
   const meet = normalizeCoachMeetContext(athlete.meet_context);
-  return <Pressable accessibilityLabel={`Open ${athlete.name} Athlete Hub`} accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.athleteCard, athlete.status.classification === 'needs_attention' && styles.athleteCardAttention, pressed && styles.pressed]}>
+  return <Pressable accessibilityLabel={`Open ${athlete.name} Athlete Workspace`} accessibilityHint="Opens Brief, Training, Reviews, and Messages for this athlete" accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.athleteCard, athlete.status.classification === 'needs_attention' && styles.athleteCardAttention, pressed && styles.pressed]}>
     <View style={styles.athleteTop}><SLAthleteAvatar imageUrl={athlete.profilePhotoUrl} imageVersion={athlete.profilePhotoVersion} name={athlete.name} size={39} statusColor={color} /><Text numberOfLines={2} style={styles.athleteName}>{athlete.name}</Text></View>
     <Text numberOfLines={1} style={styles.athleteTraining}>{athleteTrainingLabel(athlete)}</Text>
     <View style={styles.athleteReadiness}><Text style={[styles.athleteScore, { color }]}>{readiness == null ? '—' : readiness.toFixed(1)}</Text>{athlete.readiness.delta != null ? <Text style={[styles.athleteDelta, { color }]}>{athlete.readiness.delta >= 0 ? '↑' : '↓'} {Math.abs(athlete.readiness.delta).toFixed(1)}</Text> : null}</View>
@@ -740,7 +746,7 @@ function RosterSheet({ athletes, initialFilter, onClose, onOpen, visible }: { at
   const [query, setQuery] = useState('');
   const filtered = useMemo(() => filterCoachRosterV2(athletes, filter, query), [athletes, filter, query]);
   useEffect(() => { if (visible) { setFilter(initialFilter); setQuery(''); } }, [initialFilter, visible]);
-  return <Modal animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}><View style={styles.sheetBackdrop}><Pressable accessibilityLabel="Close athlete finder" onPress={onClose} style={StyleSheet.absoluteFillObject} /><View style={[styles.tallSheet, { paddingBottom: Math.max(insets.bottom, 14) }]}><View style={styles.sheetHandle} /><View style={styles.sheetHeader}><View><Text style={styles.sheetEyebrow}>Coach Home</Text><Text style={styles.sheetTitle}>Find an Athlete</Text></View><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={COACH_V2.text} name="close" size={22} /></Pressable></View><View style={styles.search}><Ionicons color={COACH_V2.subtle} name="search" size={18} /><TextInput onChangeText={setQuery} placeholder="Search your athletes" placeholderTextColor={COACH_V2.subtle} style={styles.searchInput} value={query} /></View><ScrollView contentContainerStyle={styles.rosterFilters} horizontal showsHorizontalScrollIndicator={false}>{ROSTER_FILTERS.map((item) => <Pressable key={item.id} onPress={() => setFilter(item.id)} style={[styles.rosterFilter, filter === item.id && styles.rosterFilterActive]}><Text style={[styles.rosterFilterText, filter === item.id && styles.rosterFilterTextActive]}>{item.label}</Text></Pressable>)}</ScrollView><ScrollView contentContainerStyle={styles.rosterList}>{filtered.map((athlete) => { const meet = normalizeCoachMeetContext(athlete.meet_context); return <Pressable key={athlete.id} onPress={() => onOpen(athlete)} style={styles.rosterRow}><SLAthleteAvatar imageUrl={athlete.profilePhotoUrl} imageVersion={athlete.profilePhotoVersion} name={athlete.name} size={44} /><View style={styles.rosterCopy}><Text style={styles.rosterName}>{athlete.name}</Text><Text numberOfLines={1} style={styles.rosterMeta}>{meet ? `Meet Day · ${formatCoachMeetDate(meet.meet_date)}` : athleteTrainingLabel(athlete)}</Text></View><CoachStatusBadge label={athlete.status.label} tone={athlete.status.tone === 'danger' ? 'danger' : athlete.status.tone === 'warning' ? 'warning' : 'success'} /><CoachCardChevron /></Pressable>; })}</ScrollView></View></View></Modal>;
+  return <Modal animationType="slide" onRequestClose={onClose} presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}><View style={styles.sheetBackdrop}><Pressable accessibilityLabel="Close athlete finder" onPress={onClose} style={StyleSheet.absoluteFillObject} /><View style={[styles.tallSheet, { paddingBottom: Math.max(insets.bottom, 14) }]}><View style={styles.sheetHandle} /><View style={styles.sheetHeader}><View><Text style={styles.sheetEyebrow}>Coach Home</Text><Text style={styles.sheetTitle}>Find an Athlete</Text></View><Pressable onPress={onClose} style={styles.closeButton}><Ionicons color={COACH_V2.text} name="close" size={22} /></Pressable></View><View style={styles.search}><Ionicons color={COACH_V2.subtle} name="search" size={18} /><TextInput onChangeText={setQuery} placeholder="Search your athletes" placeholderTextColor={COACH_V2.subtle} style={styles.searchInput} value={query} /></View><ScrollView contentContainerStyle={styles.rosterFilters} horizontal showsHorizontalScrollIndicator={false}>{ROSTER_FILTERS.map((item) => <Pressable key={item.id} onPress={() => setFilter(item.id)} style={[styles.rosterFilter, filter === item.id && styles.rosterFilterActive]}><Text style={[styles.rosterFilterText, filter === item.id && styles.rosterFilterTextActive]}>{item.label}</Text></Pressable>)}</ScrollView><ScrollView contentContainerStyle={styles.rosterList}>{filtered.map((athlete) => { const meet = normalizeCoachMeetContext(athlete.meet_context); return <Pressable accessibilityLabel={`Open ${athlete.name} Athlete Workspace`} accessibilityRole="button" key={athlete.id} onPress={() => onOpen(athlete)} style={({ pressed }) => [styles.rosterRow, pressed && styles.pressed]}><SLAthleteAvatar imageUrl={athlete.profilePhotoUrl} imageVersion={athlete.profilePhotoVersion} name={athlete.name} size={44} /><View style={styles.rosterCopy}><Text style={styles.rosterName}>{athlete.name}</Text><Text numberOfLines={1} style={styles.rosterMeta}>{meet ? `Meet Day · ${formatCoachMeetDate(meet.meet_date)}` : athleteTrainingLabel(athlete)}</Text></View><CoachStatusBadge label={athlete.status.label} tone={athlete.status.tone === 'danger' ? 'danger' : athlete.status.tone === 'warning' ? 'warning' : 'success'} /><CoachCardChevron /></Pressable>; })}</ScrollView></View></View></Modal>;
 }
 
 function toneForActivity(type: CoachHomeActivityType) {

@@ -32,7 +32,8 @@ assert.match(workspaceLayout, /<CoachAthleteWorkspaceShell>/);
 for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'messages'"]) {
   assert.match(workspaceShell, new RegExp(tab));
 }
-assert.match(workspaceShell, /Coach Home \/ Roster/);
+assert.match(workspaceShell, /Back to previous Coach context/);
+assert.match(workspaceShell, /router\.canGoBack\(\)[\s\S]*router\.back\(\)/);
 assert.match(workspaceShell, /workspace\.subjectKey/);
 assert.match(tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)[\s\S]*return null/);
 

@@ -162,6 +162,7 @@
     "test:coach-roster-first": "node --import tsx scripts/test-coach-roster-first.mjs",
     "test:coach-mobile-live": "node --import tsx scripts/test-coach-mobile-live.mjs",
     "test:coach-athlete-workspace-v1": "node scripts/test-coach-athlete-workspace-v1.mjs",
+    "test:coach-athlete-workspace-entrypoint": "node scripts/test-coach-athlete-workspace-entrypoint.mjs",
     "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",
     "test:coach-mobile-presentation-parity": "node --import tsx scripts/test-coach-mobile-presentation-parity.mjs",
     "test:coach-home-return-state": "node --import tsx scripts/test-coach-home-return-state.mjs",

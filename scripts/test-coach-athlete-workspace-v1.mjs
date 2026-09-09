@@ -59,7 +59,8 @@ assert.match(source.provider, /AppState\.addEventListener\('change'/);
 for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'messages'"]) {
   assert.match(source.shell, new RegExp(tab));
 }
-assert.match(source.shell, /Coach Home \/ Roster/);
+assert.match(source.shell, /Back to previous Coach context/);
+assert.match(source.shell, /router\.canGoBack\(\)[\s\S]*router\.back\(\)/);
 assert.match(source.shell, /\$\{basePath\}\/evidence/);
 assert.match(source.shell, /\$\{basePath\}\/notes/);
 assert.match(source.shell, /\$\{basePath\}\/context/);

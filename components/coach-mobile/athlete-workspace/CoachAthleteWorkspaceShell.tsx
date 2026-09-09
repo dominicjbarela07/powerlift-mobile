@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
-import React, { type ReactNode, useMemo, useState } from 'react';
+import React, { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
@@ -54,6 +54,13 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
     const suffix = DESTINATIONS.find((item) => item.key === destination)?.suffix || '';
     router.replace(`${basePath}${suffix}` as any);
   };
+  const exitWorkspace = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/coach-dashboard' as any);
+  }, [router]);
 
   if (workspace.loading && !workspace.bootstrap) {
     return (
@@ -79,7 +86,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           />
           <Pressable
             accessibilityRole="button"
-            onPress={() => router.replace({ pathname: '/(tabs)/coach-dashboard', params: { roster: '1' } } as any)}
+            onPress={exitWorkspace}
             style={styles.exitLink}
           >
             <Text style={styles.exitLinkText}>Return to Coach Home</Text>
@@ -105,12 +112,13 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
     <SLScreen edges="top" padded={false} style={styles.screen}>
       <View style={styles.header}>
         <Pressable
-          accessibilityLabel="Return to Coach Home"
+          accessibilityLabel="Back to previous Coach context"
           accessibilityRole="button"
-          onPress={() => router.replace({ pathname: '/(tabs)/coach-dashboard', params: { roster: '1' } } as any)}
-          style={({ pressed }) => [styles.headerControl, pressed && styles.pressed]}
+          onPress={exitWorkspace}
+          style={({ pressed }) => [styles.headerBack, pressed && styles.pressed]}
         >
-          <Ionicons color={COACH_V2.text} name="chevron-back" size={23} />
+          <Ionicons color={COACH_V2.text} name="chevron-back" size={20} />
+          <Text style={styles.headerBackLabel}>Coach</Text>
         </Pressable>
         <SLAthleteAvatar
           imageUrl={athlete.profilePhotoUrl}
@@ -182,7 +190,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           <SheetAction icon="person-circle-outline" label="Context & relationship" onPress={() => { setOverflowOpen(false); router.push(`${basePath}/context` as any); }} />
           <SheetAction icon="create-outline" label="Coach notes & scratchpad" onPress={() => { setOverflowOpen(false); router.push(`${basePath}/notes` as any); }} />
           <SheetAction icon="book-outline" label="Evidence & Ledger" onPress={() => { setOverflowOpen(false); router.push(`${basePath}/evidence` as any); }} />
-          <SheetAction icon="home-outline" label="Coach Home / Roster" onPress={() => { setOverflowOpen(false); router.replace({ pathname: '/(tabs)/coach-dashboard', params: { roster: '1' } } as any); }} />
+          <SheetAction icon="arrow-back-outline" label="Back to Coach context" onPress={() => { setOverflowOpen(false); exitWorkspace(); }} />
         </View>
       </StrengthLedgerBottomSheet>
 
@@ -268,6 +276,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 42,
   },
+  headerBack: {
+    alignItems: 'center',
+    backgroundColor: COACH_V2.surface,
+    borderColor: COACH_V2.border,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 1,
+    height: 42,
+    justifyContent: 'center',
+    paddingHorizontal: 9,
+  },
+  headerBackLabel: { color: COACH_V2.text, fontSize: 11, fontWeight: '800' },
   pressed: { opacity: 0.7 },
   identity: { flex: 1, minWidth: 0 },
   eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },

@@ -318,7 +318,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
     setLoading(false);
     setError(null);
     if (athlete) {
-      AccessibilityInfo.announceForAccessibility(`${athlete.name} Athlete Hub opened.`);
+      AccessibilityInfo.announceForAccessibility(`${athlete.name} quick preview opened.`);
       void load();
     }
     return () => requestControllerRef.current?.abort();
@@ -421,6 +421,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
   };
   const program = () => navigate({ pathname: '/(tabs)/workout', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
   const schedule = () => navigate({ pathname: '/(tabs)/coach-calendar', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
+  const openWorkspace = () => navigate({ pathname: '/(tabs)/coach-athlete/[athleteId]', params: { athleteId: String(athlete.id), athleteName: athlete.name } } as any);
   const more = () => {
     onClose();
     setTimeout(() => openMoreNavigation({ athleteId: String(athlete.id), athleteName: athlete.name }), 0);
@@ -458,7 +459,7 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
 
   return (
     <>
-    <StrengthLedgerBottomSheet accessibilityLabel="Athlete Hub" onDismiss={closeSheet} visible>
+    <StrengthLedgerBottomSheet accessibilityLabel="Athlete Quick Preview" onDismiss={closeSheet} visible>
           <FloatingControlCoordinator context="sheet">
           <FloatingDisplayUnitRegistration unit={displayUnit} onChange={setDisplayUnit} slot={1} testID="coach-athlete-hub-unit-toggle" />
           <ScrollView ref={scrollRef} bounces contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -494,6 +495,21 @@ export function CoachAthleteHubSheet({ athlete, onClose, previewRecap, previewSu
                 <QuickAction icon="document-text-outline" label="Notes" onPress={scrollToNotes} />
                 <QuickAction icon="ellipsis-horizontal" label="More" onPress={more} />
               </View>
+              <Pressable
+                accessibilityLabel={`Open ${athlete.name} Athlete Workspace`}
+                accessibilityHint="Opens Brief, Training, Reviews, and Messages"
+                accessibilityRole="button"
+                onPress={openWorkspace}
+                style={({ pressed }) => [styles.workspaceCta, pressed && styles.pressed]}
+                testID="coach-athlete-preview-open-workspace"
+              >
+                <LinearGradient colors={['#5E24A8', '#8D43E8']} style={StyleSheet.absoluteFillObject} />
+                <View style={styles.workspaceCtaCopy}>
+                  <Text style={styles.workspaceCtaEyebrow}>FULL ATHLETE WORKSPACE</Text>
+                  <Text style={styles.workspaceCtaText}>Open Athlete Workspace</Text>
+                </View>
+                <Ionicons color={COACH_V2.text} name="arrow-forward-circle" size={25} />
+              </Pressable>
             </View>
             {meet ? (
               <Pressable accessibilityLabel={`Open ${athlete.name} Meet Day in Calendar`} accessibilityRole="button" onPress={schedule} style={({ pressed }) => [styles.meetDayCard, pressed && styles.pressed]}>
@@ -804,6 +820,10 @@ const styles = StyleSheet.create({
   athleteName: { color: COACH_V2.text, fontSize: 24, lineHeight: 29, fontWeight: '700' },
   programLine: { color: COACH_V2.muted, fontSize: 12, lineHeight: 17 },
   quickActions: { marginTop: 4, flexDirection: 'row', justifyContent: 'space-between', gap: 5 },
+  workspaceCta: { alignItems: 'center', borderColor: 'rgba(255,255,255,0.18)', borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 14, minHeight: 58, overflow: 'hidden', paddingHorizontal: 16, paddingVertical: 10 },
+  workspaceCtaCopy: { flex: 1, minWidth: 0 },
+  workspaceCtaEyebrow: { color: '#E4CCFF', fontSize: 9, fontWeight: '900', letterSpacing: 1.1 },
+  workspaceCtaText: { color: COACH_V2.text, fontSize: 15, fontWeight: '900', marginTop: 3 },
   quickAction: { minWidth: 50, flex: 1, alignItems: 'center', gap: 4, paddingVertical: 6 },
   quickActionLabel: { color: COACH_V2.text, fontSize: 9, fontWeight: '700' },
   pressed: { opacity: 0.72, transform: [{ scale: 0.99 }] },

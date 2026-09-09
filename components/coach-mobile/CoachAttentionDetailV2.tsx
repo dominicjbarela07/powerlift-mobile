@@ -189,7 +189,7 @@ export function CoachAttentionDetailV2({ previewReasonType, previewSummary }: { 
               <Ionicons color={COACH_V2.text} name="arrow-forward" size={17} />
             </Pressable>
             <Pressable accessibilityRole="button" onPress={() => router.replace({ pathname: '/(tabs)/coach-athlete/[athleteId]', params: { athleteId: String(summary.athlete.id), athleteName: summary.athlete.name } } as any)} style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
-              <Text style={styles.secondaryButtonText}>View Athlete Hub</Text>
+              <Text style={styles.secondaryButtonText}>View Athlete Workspace</Text>
             </Pressable>
           </>
         ) : summary ? (

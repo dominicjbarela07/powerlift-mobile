@@ -334,7 +334,7 @@ export default function SessionSurveysScreen() {
               <SLButton
                 fullWidth
                 iconLeft="person-outline"
-                label="Open Athlete"
+                label="Open Athlete Workspace"
                 onPress={() => openAthlete(row)}
                 size="sm"
                 variant="secondary"
