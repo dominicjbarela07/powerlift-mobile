@@ -164,7 +164,6 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
       <SLFloatingNavigationDock
         bottomInset={insets.bottom}
-        flow
         items={DESTINATIONS.map((destination) => ({
           accessibilityLabel: destination.label,
           badge: destinationBadges[destination.key] || undefined,

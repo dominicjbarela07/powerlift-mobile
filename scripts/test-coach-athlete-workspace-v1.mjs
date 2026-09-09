@@ -64,6 +64,11 @@ assert.match(source.shell, /Back to previous Coach context/);
 assert.match(source.shell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
 assert.match(source.shell, /<SLFloatingNavigationDock/);
 assert.match(source.tabs, /<SLFloatingNavigationDock/);
+assert.doesNotMatch(
+  source.shell,
+  /<SLFloatingNavigationDock[\s\S]{0,160}\bflow\b/,
+  'Athlete Workspace must use the canonical absolute floating wrapper, never the in-flow DEV showcase variant',
+);
 assert.match(source.shell, /SL_TAB_ROW_CONTROL/);
 assert.match(source.shell, /pulse-outline/);
 assert.match(source.shell, /barbell-outline/);
@@ -71,6 +76,11 @@ assert.match(source.shell, /checkmark-done-outline/);
 assert.match(source.shell, /chatbubbles-outline/);
 assert.doesNotMatch(source.shell, /workspaceDock|navItemActive|activeIndicator|navIcon|navLabel/);
 assert.match(source.tabControl, /export function SLFloatingNavigationDock/);
+assert.match(
+  source.tabControl,
+  /navigationDock:\s*\{[\s\S]*?bottom:\s*0[\s\S]*?paddingHorizontal:\s*SLLayout\.screenGutter[\s\S]*?position:\s*'absolute'/,
+  'the canonical dock must own absolute positioning, exterior gutter, and bottom anchoring',
+);
 assert.match(source.tabControl, /SL_TAB_ROW_SELECTED_LENS/);
 assert.match(source.tabControl, /styles\.navigationSelectedLens/);
 assert.match(source.shell, /router\.navigate\([\s\S]*workspaceSubjectKey: workspace\.subjectKey/);

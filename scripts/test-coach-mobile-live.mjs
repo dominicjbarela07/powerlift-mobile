@@ -38,6 +38,7 @@ assert.match(workspaceShell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboar
 assert.match(workspaceShell, /workspace\.subjectKey/);
 assert.match(workspaceShell, /<SLFloatingNavigationDock/);
 assert.match(tabs, /<SLFloatingNavigationDock/);
+assert.doesNotMatch(workspaceShell, /<SLFloatingNavigationDock[\s\S]{0,160}\bflow\b/);
 assert.doesNotMatch(workspaceShell, /workspaceDock|navItemActive|activeIndicator|navIcon|navLabel/);
 assert.match(trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
 assert.match(trainingRoute, /return <TrainingIndexScreen \/>/);
