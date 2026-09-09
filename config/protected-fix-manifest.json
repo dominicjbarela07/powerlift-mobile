@@ -1,7 +1,12 @@
 {
   "schemaVersion": 1,
   "canonicalDevBranch": "dev/canonical-mobile",
-  "releaseProjectionPaths": ["app.json", "eas.json"],
+  "releaseProjectionPaths": [
+    "app.json",
+    "eas.json",
+    "app/(tabs)/dev-mocks/anatomy-system.tsx",
+    "app/(tabs)/dev-mocks/text-layout.tsx"
+  ],
   "protectedFixes": [
     {
       "id": "self-coached-governed-swap",

@@ -55,6 +55,18 @@ for (const room of ['home', 'journey', 'strength', 'achievements', 'accessories'
 const releaseConfig = source('app.json');
 assert.match(releaseConfig, /"runtimeVersion"\s*:\s*\{\s*"policy"\s*:\s*"appVersion"/s);
 
+const protectedFixManifest = JSON.parse(source('config/protected-fix-manifest.json'));
+const releaseProjectionPaths = new Set(protectedFixManifest.releaseProjectionPaths || []);
+for (const path of [
+  'app/(tabs)/dev-mocks/anatomy-system.tsx',
+  'app/(tabs)/dev-mocks/text-layout.tsx',
+]) {
+  assert.ok(
+    releaseProjectionPaths.has(path),
+    `DEV-only route must be an explicit release-projection exclusion: ${path}`,
+  );
+}
+
 const explicitExclusions = [
   'app/(tabs)/dev-mocks',
   'components/barbell/LoadedSleeve3D.tsx',
