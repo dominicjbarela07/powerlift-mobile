@@ -22,6 +22,7 @@ const paths = {
   sessionReview: 'app/(tabs)/coach-session-review.tsx',
   videoReview: 'app/(tabs)/coach-video-review.tsx',
   tabs: 'app/(tabs)/_layout.tsx',
+  tabControl: 'components/navigation/sl-tab-row-control.tsx',
 };
 const source = Object.fromEntries(await Promise.all(Object.entries(paths).map(async ([key, path]) => [key, await read(path)])));
 
@@ -61,14 +62,17 @@ for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'm
 }
 assert.match(source.shell, /Back to previous Coach context/);
 assert.match(source.shell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
-assert.match(source.shell, /workspaceDock/);
-assert.match(source.shell, /accessibilityRole="tab"/);
+assert.match(source.shell, /<SLFloatingNavigationDock/);
+assert.match(source.tabs, /<SLFloatingNavigationDock/);
 assert.match(source.shell, /SL_TAB_ROW_CONTROL/);
 assert.match(source.shell, /pulse-outline/);
 assert.match(source.shell, /barbell-outline/);
 assert.match(source.shell, /checkmark-done-outline/);
 assert.match(source.shell, /chatbubbles-outline/);
-assert.doesNotMatch(source.shell, /navItemActive|borderRadius:\s*999/);
+assert.doesNotMatch(source.shell, /workspaceDock|navItemActive|activeIndicator|navIcon|navLabel/);
+assert.match(source.tabControl, /export function SLFloatingNavigationDock/);
+assert.match(source.tabControl, /SL_TAB_ROW_SELECTED_LENS/);
+assert.match(source.tabControl, /styles\.navigationSelectedLens/);
 assert.match(source.shell, /router\.navigate\([\s\S]*workspaceSubjectKey: workspace\.subjectKey/);
 assert.match(source.shell, /\$\{basePath\}\/evidence/);
 assert.match(source.shell, /\$\{basePath\}\/notes/);

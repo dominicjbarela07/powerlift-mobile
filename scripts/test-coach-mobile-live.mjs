@@ -36,9 +36,9 @@ for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'm
 assert.match(workspaceShell, /Back to previous Coach context/);
 assert.match(workspaceShell, /router\.navigate\('\/(?:\(tabs\)\/)?coach-dashboard'/);
 assert.match(workspaceShell, /workspace\.subjectKey/);
-assert.match(workspaceShell, /workspaceDock/);
-assert.match(workspaceShell, /accessibilityRole="tab"/);
-assert.doesNotMatch(workspaceShell, /navItemActive|borderRadius:\s*999/);
+assert.match(workspaceShell, /<SLFloatingNavigationDock/);
+assert.match(tabs, /<SLFloatingNavigationDock/);
+assert.doesNotMatch(workspaceShell, /workspaceDock|navItemActive|activeIndicator|navIcon|navLabel/);
 assert.match(trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
 assert.match(trainingRoute, /return <TrainingIndexScreen \/>/);
 assert.doesNotMatch(trainingRoute, /athlete-workspace\/CoachAthleteTraining/);

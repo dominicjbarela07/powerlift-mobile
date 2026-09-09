@@ -1,24 +1,13 @@
 // app/(tabs)/_layout.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  AccessibilityInfo,
   AppState,
-  Platform,
   View,
   StyleSheet,
-  useWindowDimensions,
 } from 'react-native';
 import { Tabs, usePathname, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import {
-  GlassView,
-  isGlassEffectAPIAvailable,
-  isLiquidGlassAvailable,
-} from 'expo-glass-effect';
-import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 import { StrengthLedgerAppHeader } from '@/components/navigation/StrengthLedgerAppHeader';
@@ -27,15 +16,13 @@ import {
   useCoachMoreNavigation,
 } from '@/components/navigation/CoachMoreNavigationSheet';
 import {
-  SL_TAB_ROW_CONTROL,
-  SL_TAB_ROW_FALLBACK_SHEEN,
-  SL_TAB_ROW_SELECTED_LENS,
+  SLFloatingNavigationDock,
 } from '@/components/navigation/sl-tab-row-control';
-import { SLCanonicalIcon, SLMotionPressable, SLTrophy } from '@/components/ui';
+import { SLTrophy } from '@/components/ui';
 import { useAuth, type AuthUser } from '@/context/AuthContext';
 import { useDevLiveScreenSession } from '@/lib/release-preview-stubs';
 import { fetchJson, getUnreadSummary } from '@/lib/api';
-import { SLColors, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
+import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
 import type { MobileViewMode } from '@/lib/mobileViewMode';
 import { useSessionEditorOverlayOpen } from '@/lib/session-editor-overlay-state';
 import { canAccessAccessoryCatalogReview } from '@/lib/accessory-catalog-review';
@@ -43,15 +30,6 @@ import {
   SHIPPING_TAB_PRESENTATION,
   shippingTabRouteNames,
 } from '@/lib/shipping-navigation';
-
-function supportsNativeLiquidGlass() {
-  if (Platform.OS !== 'ios') return false;
-  try {
-    return isGlassEffectAPIAvailable() && isLiquidGlassAvailable();
-  } catch {
-    return false;
-  }
-}
 
 const DEV_STRENGTH_TIER_CERTIFICATION_USER: AuthUser = {
   id: 99001,
@@ -103,10 +81,6 @@ function FilteredTabBar({
   const router = useRouter();
   const pathname = usePathname();
   const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
-  const { width: viewportWidth } = useWindowDimensions();
-  const [reduceTransparency, setReduceTransparency] = useState(false);
-  const nativeLiquidGlassAvailable = supportsNativeLiquidGlass();
-  const usesNativeLiquidGlass = nativeLiquidGlassAvailable && !reduceTransparency;
   const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
   const allowedNames = shippingTabRouteNames({
     isCoach,
@@ -155,24 +129,6 @@ function FilteredTabBar({
     'link-coach': { label: 'Invite', icon: 'mail-outline' },
   };
 
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return undefined;
-    let mounted = true;
-    AccessibilityInfo.isReduceTransparencyEnabled()
-      .then((enabled) => {
-        if (mounted) setReduceTransparency(enabled);
-      })
-      .catch(() => undefined);
-    const subscription = AccessibilityInfo.addEventListener(
-      'reduceTransparencyChanged',
-      setReduceTransparency,
-    );
-    return () => {
-      mounted = false;
-      subscription.remove();
-    };
-  }, []);
-
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
   const isImmersiveMeetMode = normalizedPathname === '/athlete-meet-plan'
     || normalizedPathname.startsWith('/athlete-meet-plan/');
@@ -192,10 +148,6 @@ function FilteredTabBar({
   // The global shell is navigation, not a disclosure control. Every normal app
   // destination stays visible; only explicit focused experiences may suppress it.
   const displayedRoutes = visibleRoutes;
-  const expandedWidth = Math.max(
-    SL_TAB_ROW_CONTROL.shellHeight,
-    viewportWidth - (SLLayout.screenGutter * 2),
-  );
   const usesFlowingNavigationDock = __DEV__ && normalizedPathname === '/dev-mocks/milestones';
   const hidesNavigationForSessionEditor = normalizedPathname.startsWith('/workout/session-workspace/')
     && sessionEditorOverlayOpen;
@@ -208,156 +160,61 @@ function FilteredTabBar({
   if (hidesNavigationForCompletedRecap) return null;
 
   return (
-    <View
-      pointerEvents="box-none"
-      style={[
-        styles.tabBarDock,
-        usesFlowingNavigationDock && styles.tabBarDockFlow,
-        { height: 58 + bottomInset, paddingBottom: bottomInset + SLSpacing.xs },
-      ]}
-    >
-      <View
-        style={[
-          styles.tabBar,
-          usesNativeLiquidGlass && styles.tabBarNativeMaterial,
-          styles.tabBarExpanded,
-          { width: expandedWidth },
-        ]}
-      >
-        <View pointerEvents="none" style={styles.tabBarMaterialClip}>
-          {usesNativeLiquidGlass ? (
-            <GlassView
-              colorScheme="dark"
-              glassEffectStyle="regular"
-              style={[StyleSheet.absoluteFillObject, styles.tabBarNativeGlass]}
-              tintColor="rgba(103, 82, 132, 0.045)"
-            />
-          ) : Platform.OS === 'ios' && !reduceTransparency ? (
-            <BlurView
-              intensity={72}
-              style={StyleSheet.absoluteFillObject}
-              tint="systemThinMaterialDark"
-            />
-          ) : (
-            <View
-              style={[
-                StyleSheet.absoluteFillObject,
-                reduceTransparency
-                  ? styles.tabBarReducedTransparency
-                  : styles.tabBarTranslucentFallback,
-              ]}
-            />
-          )}
-          {!usesNativeLiquidGlass ? (
-            <>
-              <View style={styles.tabBarFallbackTint} />
-              <LinearGradient
-                colors={SL_TAB_ROW_FALLBACK_SHEEN}
-                end={{ x: 0.72, y: 1 }}
-                locations={[0, 0.48, 1]}
-                start={{ x: 0.12, y: 0 }}
-                style={StyleSheet.absoluteFillObject}
-              />
-            </>
-          ) : null}
-        </View>
-        {displayedRoutes.map((route) => {
+    <SLFloatingNavigationDock
+      bottomInset={bottomInset}
+      flow={usesFlowingNavigationDock}
+      items={displayedRoutes.map((route) => {
         const isMoreRoute = route.name === 'coach-more';
         const isFocused = isMoreRoute ? isMoreOpen : route.key === activeRoute?.key;
         const isStateFocused = route.key === state.routes[state.index]?.key;
-        const color = isFocused ? SLColors.review : SLColors.textMuted;
-        const routeCfg = tabConfig[route.name] ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
-        const cfg = routeCfg;
+        const cfg = tabConfig[route.name]
+          ?? { label: route.name, icon: 'ellipse-outline' as keyof typeof Ionicons.glyphMap };
         const isMessagesRoute = route.name === 'messages' || route.name === 'messages/index';
         const isTrainingRoute = route.name === 'workout' || route.name === 'workout/index';
         const isLedgerHomeRoute = route.name === 'ledger';
         const isMeetModeRoute = route.name === 'athlete-meet-plan';
-        const iconName = isFocused
-          ? (cfg.icon.endsWith('-outline')
-              ? (cfg.icon.replace('-outline', '') as keyof typeof Ionicons.glyphMap)
-              : cfg.icon)
-          : cfg.icon;
 
-        const onPress = () => {
-          void Haptics.selectionAsync().catch(() => undefined);
-
-          if (isMoreRoute) {
-            openMore();
-            return;
-          }
-
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
-
-          if (isMeetModeRoute && !event.defaultPrevented) {
-            router.push({
-              pathname: '/(tabs)/athlete-meet-plan',
-              params: { returnTo: normalizedPathname },
-            } as any);
-          } else if (isLedgerHomeRoute && !event.defaultPrevented) {
-            router.navigate('/(tabs)/ledger/home' as any);
-          } else if (!isStateFocused && !event.defaultPrevented) {
-            if (isTrainingRoute) {
-              router.navigate('/(tabs)/workout');
-            } else {
-              navigation.navigate(route.name as never);
+        return {
+          accessibilityLabel: cfg.label,
+          badge: isMessagesRoute && hasMessageNotifications ? 'dot' as const : undefined,
+          icon: cfg.icon,
+          key: route.key,
+          selected: isFocused,
+          onPress: () => {
+            if (isMoreRoute) {
+              openMore();
+              return;
             }
-          }
 
-          if (isMessagesRoute) {
-            onMessagesTabPress();
-          }
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (isMeetModeRoute && !event.defaultPrevented) {
+              router.push({
+                pathname: '/(tabs)/athlete-meet-plan',
+                params: { returnTo: normalizedPathname },
+              } as any);
+            } else if (isLedgerHomeRoute && !event.defaultPrevented) {
+              router.navigate('/(tabs)/ledger/home' as any);
+            } else if (!isStateFocused && !event.defaultPrevented) {
+              if (isTrainingRoute) router.navigate('/(tabs)/workout');
+              else navigation.navigate(route.name as never);
+            }
+
+            if (isMessagesRoute) onMessagesTabPress();
+          },
+          onLongPress: () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          },
         };
-
-        const onLongPress = () => {
-          navigation.emit({
-            type: 'tabLongPress',
-            target: route.key,
-          });
-        };
-
-        return (
-          <View
-            key={route.key}
-            style={styles.tabBarSlot}
-          >
-            {isFocused ? (
-              // Keep one native glass plane. Apple advises that selected
-              // content above Liquid Glass use tint/transparency, not a
-              // second stacked glass effect.
-              <LinearGradient
-                colors={SL_TAB_ROW_SELECTED_LENS}
-                end={{ x: 1, y: 1 }}
-                pointerEvents="none"
-                start={{ x: 0, y: 0 }}
-                style={styles.activeTabMarker}
-              />
-            ) : null}
-            <SLMotionPressable
-              accessibilityLabel={cfg.label}
-              accessibilityRole="button"
-              accessibilityState={isFocused ? { selected: true } : {}}
-              hitSlop={SL_TAB_ROW_CONTROL.hitSlop}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              style={[styles.tabBarItem, isFocused && styles.tabBarItemActive]}
-              pressScale={SLMotion.prominentPressScale}
-            >
-              <View style={styles.tabBarIconRow}>
-              <SLCanonicalIcon name={iconName} size={SL_TAB_ROW_CONTROL.iconSize} color={color} trophyTier="bronze" />
-                {isMessagesRoute && hasMessageNotifications && (
-                  <View style={styles.messageNotificationDot} />
-                )}
-              </View>
-            </SLMotionPressable>
-          </View>
-        );
-        })}
-      </View>
-    </View>
+      })}
+    />
   );
 }
 
@@ -1027,103 +884,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     // Mobile routes always receive a full-width canvas. Child surfaces own any intentional inset.
     paddingTop: 0,
-  },
-  tabBarDock: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    paddingHorizontal: SLLayout.screenGutter,
-    backgroundColor: 'transparent',
-    zIndex: 20,
-  },
-  tabBarDockFlow: {
-    position: 'relative',
-    flexShrink: 0,
-  },
-  tabBar: {
-    height: SL_TAB_ROW_CONTROL.shellHeight,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'transparent',
-    borderWidth: SL_TAB_ROW_CONTROL.shellBorderWidth,
-    borderColor: SL_TAB_ROW_CONTROL.shellBorderColor,
-    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
-    padding: SL_TAB_ROW_CONTROL.shellPadding,
-    position: 'relative',
-    ...SLShadows.level2,
-  },
-  tabBarMaterialClip: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
-    overflow: 'hidden',
-  },
-  tabBarNativeMaterial: {
-    borderColor: 'transparent',
-  },
-  tabBarNativeGlass: {
-    borderRadius: SL_TAB_ROW_CONTROL.shellRadius,
-  },
-  tabBarFallbackTint: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: SL_TAB_ROW_CONTROL.materialTint,
-  },
-  tabBarTranslucentFallback: {
-    backgroundColor: SL_TAB_ROW_CONTROL.translucentFallback,
-  },
-  tabBarReducedTransparency: {
-    backgroundColor: SL_TAB_ROW_CONTROL.reducedTransparencyFallback,
-  },
-  tabBarExpanded: {
-    paddingHorizontal: SL_TAB_ROW_CONTROL.expandedPaddingHorizontal,
-  },
-  tabBarItem: {
-    width: SL_TAB_ROW_CONTROL.itemSize,
-    height: SL_TAB_ROW_CONTROL.itemSize,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: SL_TAB_ROW_CONTROL.itemRadius,
-    overflow: 'hidden',
-    zIndex: 1,
-  },
-  tabBarSlot: {
-    flex: 1,
-    minWidth: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabBarItemActive: {
-    backgroundColor: 'transparent',
-  },
-  activeTabMarker: {
-    position: 'absolute',
-    width: SL_TAB_ROW_CONTROL.indicatorSize,
-    height: SL_TAB_ROW_CONTROL.indicatorSize,
-    borderRadius: SL_TAB_ROW_CONTROL.indicatorRadius,
-    borderColor: SL_TAB_ROW_CONTROL.indicatorBorderColor,
-    borderWidth: SL_TAB_ROW_CONTROL.indicatorBorderWidth,
-    ...SLShadows.level1,
-  },
-  tabBarIconRow: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  messageNotificationDot: {
-    position: 'absolute',
-    top: 0,
-    right: -2,
-    width: 8,
-    height: 8,
-    borderRadius: SLRadius.pill,
-    backgroundColor: SLColors.danger,
-    borderWidth: 1,
-    borderColor: SLColors.shellCanvas,
   },
   menuCard: {
     backgroundColor: SLColors.background,

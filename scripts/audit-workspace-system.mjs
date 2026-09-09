@@ -16,14 +16,14 @@ const collectSourceFiles = (directory) => readdirSync(directory, { withFileTypes
 const sourceFiles = sourceRoots.flatMap(collectSourceFiles);
 const productionFiles = sourceFiles.filter((file) => !relative(root, file).includes('/dev-mocks/'));
 const approvedGradientFiles = new Set([
-  'app/(tabs)/_layout.tsx',
+  'components/navigation/sl-tab-row-control.tsx',
   'components/ui/sl-button.tsx',
   'components/ui/sl-workspace.tsx',
 ]);
 const approvedBlurFiles = new Set([
-  // Explicit product exception: the global bottom tab row alone uses native
-  // backdrop material. No other workspace surface may adopt glass styling.
-  'app/(tabs)/_layout.tsx',
+  // Explicit product exception: the one shared floating navigation dock uses
+  // native backdrop material. Global and focused shells configure this primitive.
+  'components/navigation/sl-tab-row-control.tsx',
 ]);
 const read = (file) => readFileSync(file, 'utf8');
 

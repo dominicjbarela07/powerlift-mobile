@@ -5,7 +5,10 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
-import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
+import {
+  SLFloatingNavigationDock,
+  SL_TAB_ROW_CONTROL,
+} from '@/components/navigation/sl-tab-row-control';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
@@ -24,8 +27,6 @@ const DESTINATIONS: Array<{
   { key: 'reviews', label: 'Reviews', suffix: '/reviews', icon: 'checkmark-done-outline' },
   { key: 'messages', label: 'Messages', suffix: '/messages', icon: 'chatbubbles-outline' },
 ];
-
-const WORKSPACE_DOCK_HEIGHT = 58;
 
 function workspaceDestination(pathname: string): WorkspaceDestination | null {
   if (pathname.includes('/training')) return 'training';
@@ -152,34 +153,27 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
         accessibilityLabel="Open athlete actions"
         accessibilityRole="button"
         onPress={() => setToolkitOpen(true)}
-        style={({ pressed }) => [styles.floatingToolkit, { bottom: WORKSPACE_DOCK_HEIGHT + Math.max(insets.bottom, 6) + 12 }, pressed && styles.floatingToolkitPressed]}
+        style={({ pressed }) => [
+          styles.floatingToolkit,
+          { bottom: SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md },
+          pressed && styles.floatingToolkitPressed,
+        ]}
       >
         <Ionicons color={COACH_V2.text} name="add" size={26} />
       </Pressable>
 
-      <View style={[styles.workspaceDock, { paddingBottom: Math.max(insets.bottom, 6) }]}>
-        {DESTINATIONS.map((destination) => {
-          const active = selected === destination.key;
-          const badge = destinationBadges[destination.key];
-          return (
-            <Pressable
-              accessibilityLabel={destination.label}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              key={destination.key}
-              onPress={() => navigate(destination.key)}
-              style={({ pressed }) => [styles.navItem, pressed && styles.pressed]}
-            >
-              {active ? <View style={styles.activeIndicator} /> : null}
-              <View style={styles.navIcon}>
-                <Ionicons color={active ? SL_TAB_ROW_CONTROL.selectedColor : SL_TAB_ROW_CONTROL.inactiveColor} name={destination.icon} size={20} />
-                {badge > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text></View> : null}
-              </View>
-              <Text style={[styles.navLabel, active && styles.navLabelActive]}>{destination.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+      <SLFloatingNavigationDock
+        bottomInset={insets.bottom}
+        flow
+        items={DESTINATIONS.map((destination) => ({
+          accessibilityLabel: destination.label,
+          badge: destinationBadges[destination.key] || undefined,
+          icon: destination.icon,
+          key: destination.key,
+          onPress: () => navigate(destination.key),
+          selected: selected === destination.key,
+        }))}
+      />
 
       <StrengthLedgerBottomSheet
         accessibilityLabel="Athlete workspace options"
@@ -297,14 +291,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
   athleteName: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 2 },
   content: { flex: 1 },
-  workspaceDock: { alignItems: 'flex-start', backgroundColor: SL_TAB_ROW_CONTROL.translucentFallback, borderTopColor: SL_TAB_ROW_CONTROL.shellBorderColor, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', minHeight: WORKSPACE_DOCK_HEIGHT, paddingHorizontal: SLSpacing.sm, paddingTop: 4 },
-  navItem: { alignItems: 'center', flex: 1, gap: 2, justifyContent: 'center', minHeight: 50, position: 'relative' },
-  activeIndicator: { backgroundColor: SL_TAB_ROW_CONTROL.selectedColor, height: 2, left: '31%', position: 'absolute', right: '31%', top: -4 },
-  navIcon: { alignItems: 'center', height: 23, justifyContent: 'center', position: 'relative', width: 30 },
-  navLabel: { color: SL_TAB_ROW_CONTROL.inactiveColor, fontSize: 9, fontWeight: '700', lineHeight: 12 },
-  navLabelActive: { color: SL_TAB_ROW_CONTROL.selectedColor },
-  badge: { alignItems: 'center', backgroundColor: COACH_V2.magenta, borderColor: '#000', borderRadius: 8, borderWidth: 1, justifyContent: 'center', minHeight: 15, minWidth: 15, paddingHorizontal: 3, position: 'absolute', right: -3, top: -3 },
-  badgeText: { color: '#fff', fontSize: 8, fontWeight: '900' },
   floatingToolkit: {
     alignItems: 'center',
     backgroundColor: COACH_V2.violet,
