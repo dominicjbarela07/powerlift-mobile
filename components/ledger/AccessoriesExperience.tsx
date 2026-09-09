@@ -31,6 +31,7 @@ import {
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import { ledgerHrefFor } from './routing';
 
 const ACCESSORIES_ATMOSPHERE = require('@/assets/images/ledger-index-v2/ledger-chapter-accessories-v1.png');
@@ -155,6 +156,7 @@ function State({ title, retry }: { title: string; retry?: () => void }) {
 
 export default function AccessoriesExperience() {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const [data, setData] = useState<LedgerExplorationIndex | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -164,12 +166,12 @@ export default function AccessoriesExperience() {
   const load = () => {
     setLoading(true);
     setError(null);
-    fetchLedgerExplorationIndex()
+    fetchLedgerExplorationIndex(ledgerSubject.athleteId)
       .then(setData)
       .catch((caught) => setError(caught instanceof Error ? caught.message : 'Accessory evidence could not be loaded.'))
       .finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  useEffect(load, [ledgerSubject.athleteId]);
 
   const story = data?.accessories;
   const movementsById = useMemo(() => new Map((story?.movements || []).map((movement) => [movement.id, movement])), [story?.movements]);
@@ -190,7 +192,7 @@ export default function AccessoriesExperience() {
       equipmentContextDefinitionId,
     }) as never,
   );
-  const openMuscle = (key: string) => router.push(`/(tabs)/ledger/muscle-groups/${key}` as never);
+  const openMuscle = (key: string) => router.push({ pathname: `/(tabs)/ledger/muscle-groups/${key}` as any, params: ledgerSubject.routeParams } as never);
   const volumeChange = percentageChange(story.summary.volume_kg, story.comparison.volume_kg);
   const setChange = percentageChange(story.summary.set_count, story.comparison.set_count);
 
@@ -201,7 +203,7 @@ export default function AccessoriesExperience() {
       atmosphereSource={ACCESSORIES_ATMOSPHERE}
       backAccessibilityLabel="Back to The Ledger"
       contextLabel="The Ledger · Accessory Record"
-      onBack={() => router.replace(ledgerHrefFor('home') as never)}
+      onBack={() => ledgerSubject.returnPath ? router.replace(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
       subtitle="Where your work has gone, and what has changed."
       testID="accessories-atmospheric-header"
       title="Accessories"
@@ -273,10 +275,10 @@ export default function AccessoriesExperience() {
 
       <View testID="accessory-history-preview">
         <SectionHeading title="RECENT ACCESSORY SESSIONS" subtitle="Chronological evidence from this block." />
-        <View style={styles.listCard}>{story.recent_sessions.slice(0, 5).map((session) => <Pressable key={session.id} accessibilityRole="button" onPress={() => router.push(`/(tabs)/ledger/archive/session/${session.id}` as never)} style={({ pressed }) => [styles.sessionRow, pressed && styles.pressed]}><View><Text style={styles.sessionDate}>{readableDate(session.date)}</Text><Text style={styles.sessionTitle}>{session.label}</Text></View><View style={styles.sessionMetrics}><Text style={styles.sessionValue}>{session.set_count} sets</Text><Text style={styles.sessionMeta}>{session.movement_count} movements · {volumeLabel(session.volume_kg, unit)} {unit.toUpperCase()}</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
+        <View style={styles.listCard}>{story.recent_sessions.slice(0, 5).map((session) => <Pressable key={session.id} accessibilityRole="button" onPress={() => router.push({ pathname: `/(tabs)/ledger/archive/session/${session.id}` as any, params: ledgerSubject.routeParams } as never)} style={({ pressed }) => [styles.sessionRow, pressed && styles.pressed]}><View><Text style={styles.sessionDate}>{readableDate(session.date)}</Text><Text style={styles.sessionTitle}>{session.label}</Text></View><View style={styles.sessionMetrics}><Text style={styles.sessionValue}>{session.set_count} sets</Text><Text style={styles.sessionMeta}>{session.movement_count} movements · {volumeLabel(session.volume_kg, unit)} {unit.toUpperCase()}</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
       </View>
 
-      <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: ledgerHrefFor('archive'), params: { collection: 'training', classification: 'accessory' } } as never)} style={({ pressed }) => [styles.fullHistory, pressed && styles.pressed]} testID="view-full-accessory-history"><View style={styles.fullHistoryIcon}><Ionicons color={VIOLET_SOFT} name="book" size={24} /></View><View style={styles.fullHistoryCopy}><Text style={styles.fullHistoryTitle}>View Full Accessory History</Text><Text style={styles.fullHistoryBody}>Every Session and performed set, preserved with exact identity.</Text></View><Ionicons color={VIOLET_SOFT} name="chevron-forward" size={20} /></Pressable>
+      <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: ledgerHrefFor('archive'), params: { collection: 'training', classification: 'accessory', ...ledgerSubject.routeParams } } as never)} style={({ pressed }) => [styles.fullHistory, pressed && styles.pressed]} testID="view-full-accessory-history"><View style={styles.fullHistoryIcon}><Ionicons color={VIOLET_SOFT} name="book" size={24} /></View><View style={styles.fullHistoryCopy}><Text style={styles.fullHistoryTitle}>View Full Accessory History</Text><Text style={styles.fullHistoryBody}>Every Session and performed set, preserved with exact identity.</Text></View><Ionicons color={VIOLET_SOFT} name="chevron-forward" size={20} /></Pressable>
     </View>
   </View>;
 }

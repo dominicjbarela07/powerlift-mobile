@@ -17,7 +17,7 @@ assert.match(client, /include_sessions/);
 assert.match(client, /JourneyBootstrap/);
 
 assert.match(registry, /case 'journey': return <JourneyStoryboardExperience/);
-assert.match(experience, /fetchJourneyBootstrap\(\{ limit: 24, includeSessions: false \}\)/);
+assert.match(experience, /fetchJourneyBootstrap\(\{ limit: 24, includeSessions: false, athleteId: ledgerSubject\.athleteId \}\)/);
 assert.doesNotMatch(experience, /\['Overview', 'Blocks', 'Timeline'\]/);
 assert.match(experience, /journey-then-now/);
 assert.match(experience, /journey-training-chapters/);

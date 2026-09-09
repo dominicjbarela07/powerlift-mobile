@@ -95,8 +95,14 @@ function compactActual(video: SetVideoSummary, preferredUnits?: string | null) {
 export default function CoachVideoReviewScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const params = useLocalSearchParams<{ videoId?: string }>();
+  const params = useLocalSearchParams<{
+    videoId?: string;
+    athleteId?: string;
+    returnToWorkspace?: string;
+    workspaceReturn?: string;
+  }>();
   const requestedVideoId = Number(params.videoId);
+  const returnAthleteId = params.returnToWorkspace === '1' ? Number(params.athleteId || 0) : 0;
   const [videos, setVideos] = useState<SetVideoSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -171,6 +177,16 @@ export default function CoachVideoReviewScreen() {
     () => videos.filter((video) => video.review_status === 'pending').length,
     [videos],
   );
+
+  const closeDirectReview = useCallback(() => {
+    setSelectedVideo(null);
+    if (returnAthleteId > 0) {
+      const destination = params.workspaceReturn === 'messages' ? 'messages' : 'reviews';
+      router.replace(`/(tabs)/coach-athlete/${returnAthleteId}/${destination}` as any);
+      return;
+    }
+    loadInbox({ silent: true });
+  }, [loadInbox, params.workspaceReturn, returnAthleteId, router]);
 
   const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) => (
@@ -471,10 +487,7 @@ export default function CoachVideoReviewScreen() {
         showPlaybackSpeedControls
         reviewPanel={reviewPanel}
         hasUnsavedChanges={hasUnsavedChanges}
-        onClose={() => {
-          setSelectedVideo(null);
-          loadInbox({ silent: true });
-        }}
+        onClose={closeDirectReview}
       />
 
       <Modal

@@ -33,7 +33,7 @@ assert.match(achievements, /verified male or female strength standard/);
 assert.match(achievements, /SL_STRENGTH_TIER_ASSETS/);
 assert.match(achievements, /majorVolumeMedallionAsset/);
 
-assert.match(data, /fetchLedgerAccomplishmentHistory[\s\S]*fetchLedgerAccomplishmentPage\(50, cursor\)/);
+assert.match(data, /fetchLedgerAccomplishmentHistory[\s\S]*fetchLedgerAccomplishmentPage\(50, cursor, athleteId\)/);
 assert.match(rewards, /event\.evidence\?\.\[key\]/, 'medallions use stored accomplishment evidence');
 assert.match(rewards, /isMajorVolumeMedallionThresholdLb/, 'unknown medallion thresholds are rejected');
 assert.match(rewards, /lifts\.length === 3/, 'Total strength-tier state requires all canonical lift PRs');

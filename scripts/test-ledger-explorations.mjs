@@ -127,7 +127,7 @@ for (const state of ['loading', 'empty', 'unauthorized', 'unavailable', 'error']
   assert.match(experiences, new RegExp(`ledger-\\$\\{kind\\}-state|kind=.${state}`), `Ledger rooms must preserve a ${state} state`);
 }
 
-assert.match(achievements, /useLedgerLiveData\('all', \{ fixture: devFixture \}\)/, 'Achievements uses canonical live data with an explicit DEV-only certification seam');
+assert.match(achievements, /useLedgerLiveData\('all', \{ athleteId: ledgerSubject\.athleteId, fixture: devFixture \}\)/, 'Achievements uses athlete-scoped canonical live data with an explicit DEV-only certification seam');
 assert.match(achievements, /LIFT_PRESENTATIONS\.map/, 'the milestone ladder keeps all canonical lifts visible while leaving absent evidence empty');
 assert.doesNotMatch(achievements, /const sourceKg = canonicalWeight \?\? estimate/, 'e1RM must not masquerade as a weight PR');
 assert.match(achievements, /hasVolumeData = totalVolumeKg > 0 \|\| competitionTotalVolumeKg > 0/, 'volume achievements require real positive canonical totals');

@@ -32,9 +32,9 @@ for (const file of ['chapter-current.png', 'chapter-foundation.png', 'chapter-tr
   assert.ok(fs.statSync(path.join(root, 'assets/images/journey-storyboard-v1', file)).size > 100_000, `${file} must be production-grade raster artwork`);
 }
 assert.doesNotMatch(journey, /<Segmented|Overview', 'Blocks', 'Timeline'/, 'Journey has no primary tabs');
-assert.match(journey, /fetchLedgerProgression\('all'\)/, 'Then/Now uses canonical all-time SBD evidence');
-assert.match(journey, /fetchJourneyTimelinePage\(\{ blockId: block\.id, includeSessions: true, limit: 50 \}\)/, 'chapter detail uses bounded block evidence');
-assert.match(journey, /fetchReportedBodyweightHistory\(\{ limit: 50 \}\)/, 'bodyweight detail uses reported evidence pagination');
+assert.match(journey, /fetchLedgerProgression\('all', ledgerSubject\.athleteId\)/, 'Then/Now uses canonical all-time SBD evidence for the governed athlete subject');
+assert.match(journey, /fetchJourneyTimelinePage\(\{ blockId: block\.id, includeSessions: true, limit: 50, athleteId \}\)/, 'chapter detail uses bounded athlete-scoped block evidence');
+assert.match(journey, /fetchReportedBodyweightHistory\(\{ limit: 50, athleteId \}\)/, 'bodyweight detail uses athlete-scoped reported evidence pagination');
 assert.match(journey, /presentationStyle="fullScreen"/, 'drill-downs preserve the underlying Journey scroll context');
 assert.match(journey, /visible=\{Boolean\(detail\)\}/, 'the native modal dismisses through an explicit visibility transition');
 assert.match(journey, /<SafeAreaView edges=\{\['bottom'\]\} style=\{\[styles\.modalScreen, \{ paddingTop: Math\.max\(insets\.top, 52\) \}\]\}/, 'full-screen details own a dark safe-area canvas below the device status region');

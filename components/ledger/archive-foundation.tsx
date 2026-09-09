@@ -23,6 +23,7 @@ import {
 import { SectionLabel } from './primitives';
 import { useAuth } from '@/context/AuthContext';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import {
   convertDisplayWeightValue,
   formatCompactVolumeValueFromKg,
@@ -190,12 +191,13 @@ function activeFilterCount(filters: Filters, movement: { id: number; name: strin
 export function ArchiveFoundationExperience() {
   const params = useLocalSearchParams<{ collection?: string; q?: string; athlete_id?: string; date_from?: string; date_to?: string; classification?: string; displayUnit?: string }>();
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
   const preferredDisplayUnit = normalizeDisplayWeightUnit(user?.preferred_units);
   const requestedCollection = first(params.collection) as ArchiveCollection | undefined;
   const initialScope: ArchiveScope = COLLECTIONS.includes(requestedCollection as ArchiveCollection) ? requestedCollection! : 'overview';
   const initialQuery = first(params.q) || '';
-  const athleteId = Number(first(params.athlete_id)) || undefined;
+  const athleteId = ledgerSubject.athleteId ?? (Number(first(params.athlete_id)) || undefined);
   const [scope, setScope] = useState<ArchiveScope>(initialScope);
   const [queryInput, setQueryInput] = useState(initialQuery);
   const [committedQuery, setCommittedQuery] = useState(initialQuery.trim());
@@ -257,7 +259,7 @@ export function ArchiveFoundationExperience() {
           fetchArchiveCollection('media', { athlete_id: athleteId, limit: 12 }),
           fetchArchiveCollection('competition', { athlete_id: athleteId, limit: 8 }),
         ]),
-        getAthleteVideoArchive().catch(() => null),
+        athleteId ? Promise.resolve(null) : getAthleteVideoArchive().catch(() => null),
       ]);
       setLanding(nextLanding);
       setPreviews({ training, media, competition });
@@ -375,8 +377,11 @@ export function ArchiveFoundationExperience() {
       dateFrom: filters.dateFrom || undefined,
       dateTo: filters.dateTo || undefined,
       displayUnit,
+      workspaceAthleteId: ledgerSubject.routeParams.workspaceAthleteId,
+      returnToWorkspace: ledgerSubject.routeParams.returnToWorkspace,
+      workspaceReturn: ledgerSubject.routeParams.workspaceReturn,
     }) as never);
-  }, [athleteId, committedQuery, displayUnit, filters.dateFrom, filters.dateTo, router, scope]);
+  }, [athleteId, committedQuery, displayUnit, filters.dateFrom, filters.dateTo, ledgerSubject.routeParams, router, scope]);
 
   const chooseMovement = useCallback((movement: { id: number; name: string }) => {
     setScope('training');
@@ -398,7 +403,7 @@ export function ArchiveFoundationExperience() {
       action={{ accessibilityLabel: 'Search and filter Archive', icon: 'search', onPress: () => setToolsOpen((open) => !open) }}
       backAccessibilityLabel="Back to The Ledger"
       breadcrumb="The Ledger"
-      onBack={() => router.replace('/(tabs)/ledger/home' as any)}
+      onBack={() => router.replace((ledgerSubject.returnPath || '/(tabs)/ledger/home') as any)}
       subtitle="Your training history, kept in context."
       title="Archive"
     />

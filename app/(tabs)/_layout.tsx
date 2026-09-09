@@ -203,6 +203,7 @@ function FilteredTabBar({
     && sessionEditorOverlayOpen;
 
   if (isImmersiveMeetMode) return null;
+  if (normalizedPathname.startsWith('/coach-athlete/')) return null;
   if (hidesNavigationForSessionEditor) return null;
   if (hidesNavigationForCompletedRecap) return null;
 

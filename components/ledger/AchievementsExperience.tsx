@@ -40,6 +40,7 @@ import { MILESTONE_RENDER_ORIENTATION_STYLE, milestoneRenderAsset } from '@/lib/
 import { canonicalCompetitionLiftKey } from '@/lib/strength-standard-identity';
 import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
 import { STRENGTH_LEDGER_ATMOSPHERE_ASSETS } from '@/lib/strength-ledger-visual-assets';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import {
   canRenderGymTotal,
   displayWeightFromCanonicalLb,
@@ -538,6 +539,7 @@ function LiftPlateClubDetailView({
 
 export default function AchievementsExperience({ onBack, backAccessibilityLabel = 'Back to The Ledger', devFixture }: { onBack?: () => void; backAccessibilityLabel?: string; devFixture?: LedgerLiveDataFixture } = {}) {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const { user } = useAuth();
   const { unit: requestedUnit, tab: requestedTab, section: requestedSection } = useLocalSearchParams<{ unit?: string; tab?: string; section?: string }>();
   const scrollRef = useRef<ScrollView>(null);
@@ -548,7 +550,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const [detail, setDetail] = useState<Detail>(null);
   const [artifactDetail, setArtifactDetail] = useState<ArtifactDetail>(null);
   const [historyEvents, setHistoryEvents] = useState<AccomplishmentEvent[]>([]);
-  const liveData = useLedgerLiveData('all', { fixture: devFixture });
+  const liveData = useLedgerLiveData('all', { athleteId: ledgerSubject.athleteId, fixture: devFixture });
   const progression = liveData.progression;
   const currentBests = liveData.currentBests;
   const loading = liveData.loading;
@@ -627,6 +629,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const currentTotalClub = club ? totalStrengthClubName(club.earnedTierIndex) : null;
   const nextTotalClub = club?.nextTierIndex == null ? null : totalStrengthClubName(club.nextTierIndex);
   const openDetail = (label: string, value: string, state: MilestoneState, remainingText?: string, sourceHref?: string, note?: string, actionLabel?: string) => setDetail({ label, value, state, remaining: remainingText, sourceHref, note, actionLabel });
+  const openScopedPath = (pathname: string) => router.push({ pathname: pathname as any, params: ledgerSubject.routeParams } as never);
   const openLiftDetail = (liftKey: LiftKey, tierIndex?: number) => {
     setArtifactDetail({ kind: 'lift', liftKey, tierIndex });
     scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false });
@@ -659,11 +662,11 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
       return undefined;
     }
     let active = true;
-    fetchLedgerAccomplishmentHistory()
+    fetchLedgerAccomplishmentHistory(20, ledgerSubject.athleteId)
       .then((items) => { if (active) setHistoryEvents(items); })
       .catch((caught) => { if (__DEV__) console.warn('[LedgerAchievements] Full accomplishment history unavailable; using the recent canonical page.', caught); });
     return () => { active = false; };
-  }, [devFixture]);
+  }, [devFixture, ledgerSubject.athleteId]);
 
   const activeArtifactLift = artifactDetail?.kind === 'lift'
     ? liveLifts.find((lift) => lift.key === artifactDetail.liftKey) ?? null
@@ -710,15 +713,15 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
         {loading ? <AchievementRequestState kind="loading" message="Loading achievements" />
           : error ? <AchievementRequestState kind={errorKind ?? 'error'} message={error} onRetry={() => void reload()} />
             : !strengthStandard && (artifactDetail != null || section === 'hub' || section === 'milestones' || section === 'clubs' || section === 'trophies') ? <AchievementRequestState kind="unavailable" message="A verified male or female strength standard is required before strength clubs can be shown" />
-              : artifactDetail?.kind === 'trophy' && club && strengthStandard ? <TrophyDetailView club={club} lifts={liveLifts} standard={strengthStandard} tierIndex={artifactDetail.tierIndex} unit={unit} onOpenStandards={() => router.push('/(tabs)/ledger/strength' as any)} />
-                : artifactDetail?.kind === 'lift' && activeArtifactLift && strengthStandard ? <LiftPlateClubDetailView lift={activeArtifactLift} unit={unit} requestedTierIndex={artifactDetail.tierIndex} standard={strengthStandard} onOpenEvidence={() => { if (activeArtifactLift.sourceSetLogId) router.push(archiveDetailHref('set', activeArtifactLift.sourceSetLogId) as any); }} />
+              : artifactDetail?.kind === 'trophy' && club && strengthStandard ? <TrophyDetailView club={club} lifts={liveLifts} standard={strengthStandard} tierIndex={artifactDetail.tierIndex} unit={unit} onOpenStandards={() => openScopedPath('/(tabs)/ledger/strength')} />
+                : artifactDetail?.kind === 'lift' && activeArtifactLift && strengthStandard ? <LiftPlateClubDetailView lift={activeArtifactLift} unit={unit} requestedTierIndex={artifactDetail.tierIndex} standard={strengthStandard} onOpenEvidence={() => { if (activeArtifactLift.sourceSetLogId) openScopedPath(archiveDetailHref('set', activeArtifactLift.sourceSetLogId)); }} />
                   : section === 'hub' && club && strengthStandard ? <AchievementsHub club={club} lifts={liveLifts} standard={strengthStandard} unit={unit} totalComplete={hasCompleteStrengthTotal} prHistory={prHistory} onOpen={openSection} onOpenLift={openLiftDetail} />
                     : section === 'milestones' && club ? <MilestonesIndex club={club} sessionCount={progression?.consistency?.sessions_completed ?? 0} trainingAge={progression?.consistency?.training_age_years ?? 0} volumeCount={volumeMedallions.length} streakCount={liveStreaks.length} onOpen={openSection} />
                       : section === 'streaks' ? (liveStreaks.length ? <StreakContent items={liveStreaks} /> : <AchievementRequestState kind="empty" message="No streak evidence yet" />)
                         : section === 'trophies' && club ? <StrengthClubCabinet club={club} unit={unit} complete={hasCompleteStrengthTotal} onOpen={(tierIndex) => { setArtifactDetail({ kind: 'trophy', tierIndex }); scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false }); }} />
                           : section === 'medallions' ? <MedallionGallery items={volumeMedallions} onOpen={openDetail} unit={unit} />
                             : section === 'volume' ? (hasVolumeData ? <VolumeAchievementExperience data={volumeDataset} unit={unit} /> : <AchievementRequestState kind="empty" message="No canonical volume evidence yet" />)
-                              : section === 'prs' ? <PrHistory events={prHistory} onOpen={(event) => { if (event.source_set_log_id) router.push(archiveDetailHref('set', event.source_set_log_id) as any); }} unit={unit} />
+                              : section === 'prs' ? <PrHistory events={prHistory} onOpen={(event) => { if (event.source_set_log_id) openScopedPath(archiveDetailHref('set', event.source_set_log_id)); }} unit={unit} />
                                 : section === 'clubs' && club ? <>
           {hasCompleteStrengthTotal ? <View testID="ledger-total-clubs" style={[styles.hero, { minHeight: 420 }]}>
             <View style={styles.heroTop}><View style={styles.trophyScene}><View style={styles.trophyPedestal}><Image source={SL_STRENGTH_TIER_ASSETS[highestCompletedTier]} style={[styles.heroTrophyImage, currentTotalTier == null && styles.totalTierTrophyLocked]} resizeMode="contain" /></View></View><View style={styles.heroCopy}><ThemedText typographyRole="shortTechnicalLabel" style={styles.eyebrow}>STRENGTH CLUB</ThemedText><ThemedText typographyRole="sectionTitle" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.heroTierTitle}>{currentTotalClub ? `${currentTotalClub} Club` : 'First club ahead'}</ThemedText><ThemedText typographyRole="heroNumeric" adjustsFontSizeToFit minimumFontScale={0.55} numberOfLines={1} style={styles.heroValue}>{number(total.current)} <ThemedText typographyRole="unit" style={styles.heroUnit}>{unit.toUpperCase()} TOTAL</ThemedText></ThemedText><ThemedText typographyRole="shortTechnicalLabel" style={styles.hubStandingLabel}>COMPETITIVE STANDING</ThemedText><ThemedText typographyRole="bodyStrong" style={styles.heroPercentileReadable}>{competitiveStanding(club, strengthStandard?.sex)?.summary ?? `First club begins at ${number(club.thresholds[0])} ${unit.toUpperCase()}`}</ThemedText><ThemedText typographyRole="shortTechnicalLabel" numberOfLines={nextTotalTier ? 1 : 2} style={styles.clubNextReadable}>{nextTotalTier && nextTotalClub ? `NEXT · ${nextTotalClub.toUpperCase()} · ${number(total.next)} ${unit.toUpperCase()} · ${number(remaining)} TO GO` : 'OBSIDIAN CLUB COMPLETE'}</ThemedText></View></View>
@@ -731,7 +734,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
         </> : null}
       </ScrollView>
     </View>
-    <Modal transparent visible={!!detail} animationType="fade" onRequestClose={() => setDetail(null)}><Pressable style={styles.modalScrim} onPress={() => setDetail(null)}><Pressable testID="achievement-detail" style={styles.detailSheet} onPress={(event) => event.stopPropagation()}><View style={[styles.detailIcon, detail?.state === 'completed' ? styles.totalEarned : detail?.state === 'progress' ? styles.totalProgress : styles.totalLocked]}>{detail?.state === 'completed' ? <SLTrophy size={21} /> : <Ionicons name={detail?.state === 'progress' ? 'radio-button-on' : 'lock-closed'} size={21} color={detail?.state === 'progress' ? '#B165FF' : '#AEB7C6'} />}</View><ThemedText typographyRole="heroNumeric" style={styles.detailTitle}>{detail?.value}</ThemedText><ThemedText typographyRole="modalTitle" style={styles.detailLabel}>{detail?.label}</ThemedText><ThemedText typographyRole="modalBody" style={styles.detailState}>{detail?.state === 'completed' ? 'Earned' : detail?.state === 'progress' ? detail.remaining ?? 'In progress' : 'Locked · Keep building'}</ThemedText>{detail?.note ? <ThemedText typographyRole="supportingBody" style={styles.detailNote}>{detail.note}</ThemedText> : null}<Pressable onPress={() => { const href = detail?.sourceHref; setDetail(null); if (href) router.push(href as any); }} style={styles.detailClose}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>{detail?.sourceHref ? detail.actionLabel ?? 'Open source evidence' : 'Done'}</ThemedText></Pressable></Pressable></Pressable></Modal>
+    <Modal transparent visible={!!detail} animationType="fade" onRequestClose={() => setDetail(null)}><Pressable style={styles.modalScrim} onPress={() => setDetail(null)}><Pressable testID="achievement-detail" style={styles.detailSheet} onPress={(event) => event.stopPropagation()}><View style={[styles.detailIcon, detail?.state === 'completed' ? styles.totalEarned : detail?.state === 'progress' ? styles.totalProgress : styles.totalLocked]}>{detail?.state === 'completed' ? <SLTrophy size={21} /> : <Ionicons name={detail?.state === 'progress' ? 'radio-button-on' : 'lock-closed'} size={21} color={detail?.state === 'progress' ? '#B165FF' : '#AEB7C6'} />}</View><ThemedText typographyRole="heroNumeric" style={styles.detailTitle}>{detail?.value}</ThemedText><ThemedText typographyRole="modalTitle" style={styles.detailLabel}>{detail?.label}</ThemedText><ThemedText typographyRole="modalBody" style={styles.detailState}>{detail?.state === 'completed' ? 'Earned' : detail?.state === 'progress' ? detail.remaining ?? 'In progress' : 'Locked · Keep building'}</ThemedText>{detail?.note ? <ThemedText typographyRole="supportingBody" style={styles.detailNote}>{detail.note}</ThemedText> : null}<Pressable onPress={() => { const href = detail?.sourceHref; setDetail(null); if (href) openScopedPath(href); }} style={styles.detailClose}><ThemedText typographyRole="shortButtonLabel" style={styles.detailCloseText}>{detail?.sourceHref ? detail.actionLabel ?? 'Open source evidence' : 'Done'}</ThemedText></Pressable></Pressable></Pressable></Modal>
     </FloatingControlCoordinator>
   </SLScreen>;
 }

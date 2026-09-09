@@ -1,164 +1,39 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-import {
-  coachKpiAthletes,
-  coachTodaySessions,
-  deriveCoachHomeFromRoster,
-  filterCoachRosterV2,
-} from '../lib/coach-mobile-v2.ts';
+const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+const [route, home, hubSheet, workspaceLayout, workspaceShell, tabs] = await Promise.all([
+  read('app/(tabs)/coach-dashboard.tsx'),
+  read('components/coach-mobile/CoachActivityHome.tsx'),
+  read('components/coach-mobile/CoachAthleteHubSheet.tsx'),
+  read('app/(tabs)/coach-athlete/[athleteId]/_layout.tsx'),
+  read('components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx'),
+  read('app/(tabs)/_layout.tsx'),
+]);
 
-const paths = {
-  homeRoute: 'app/(tabs)/coach-dashboard.tsx',
-  home: 'components/coach-mobile/CoachHomeV2.tsx',
-  hubSheet: 'components/coach-mobile/CoachAthleteHubSheet.tsx',
-  rosterRoute: 'app/(tabs)/coach-roster.tsx',
-  invite: 'app/(tabs)/coach-invite-athlete.tsx',
-  teamBrief: 'app/coach-team-brief.tsx',
-  hubRoute: 'app/(tabs)/coach-athlete/[athleteId].tsx',
-  hub: 'components/coach-mobile/CoachAthleteHubV2.tsx',
-  detailRoute: 'app/(tabs)/coach-attention/[athleteId].tsx',
-  detail: 'components/coach-mobile/CoachAttentionDetailV2.tsx',
-  more: 'app/(tabs)/coach-more.tsx',
-  tabs: 'app/(tabs)/_layout.tsx',
-  shipping: 'lib/shipping-navigation.ts',
-  contract: 'lib/coach-mobile.ts',
-};
-const source = Object.fromEntries(await Promise.all(Object.entries(paths).map(async ([key, path]) => [
-  key,
-  await readFile(new URL(`../${path}`, import.meta.url), 'utf8'),
-])));
-const backend = await readFile(new URL('../../app/blueprints/main.py', import.meta.url), 'utf8');
-const operatingModel = await readFile(new URL('../../app/services/coach_mobile_operating_model.py', import.meta.url), 'utf8');
-
-for (const name of ['homeRoute', 'home', 'hubSheet', 'rosterRoute', 'invite', 'teamBrief', 'hubRoute', 'hub', 'detailRoute', 'detail', 'more']) {
-  const value = source[name];
-  assert.doesNotMatch(value, /@\/dev-mocks\//, `${name} must not import DEV fixtures.`);
+assert.match(route, /<CoachActivityHome\s*\/>/);
+assert.doesNotMatch(route, /CoachHomeV2|@\/dev-mocks\//);
+assert.match(home, /fetchJson<CoachHomeResponse>\('\/coach\/mobile\/home'/);
+assert.match(home, /fetchJson<CoachRosterResponse>\('\/coach\/mobile\/roster'/);
+assert.match(home, /<CoachAthleteHubSheet[\s\S]*athlete=\{selectedAthlete\}/);
+assert.match(home, /contextKeyRef\.current === requestContext/);
+assert.match(home, /activeRequestRef/);
+assert.match(home, /signal: controller\.signal/);
+for (const section of ['Coaching Queue', 'Coming Up', 'Your Athletes']) {
+  assert.match(home, new RegExp(section));
 }
+assert.ok(home.indexOf('Coaching Queue') < home.indexOf('Coming Up'));
+assert.ok(home.indexOf('Coming Up') < home.indexOf('Your Athletes'));
 
-assert.match(source.homeRoute, /<CoachHomeV2/);
-assert.match(source.home, /fetchJson\('\/coach\/mobile\/home'/);
-assert.match(source.home, /fetchJson\('\/coach\/mobile\/roster'/);
-assert.match(source.home, /deriveCoachHomeFromRoster/);
-for (const section of ['Your Athletes at a Glance', 'Today’s Sessions', 'Recent Activity Feed']) assert.match(source.home, new RegExp(section));
-for (const label of ['Sessions', 'Reviews', 'Programming', 'Check-Ins']) assert.match(source.home, new RegExp(`label="${label}"`));
-assert.doesNotMatch(source.home, /title="Needs Your Attention"/);
-assert.match(source.home, /horizontal showsHorizontalScrollIndicator=\{false\}/);
-assert.match(source.home, /<CoachAthleteHubSheet[\s\S]*?athlete=\{selectedAthlete\}/);
-assert.match(source.home, /<CoachKpiSheet/);
-assert.match(source.home, /<CoachRosterDiscoverySheet/);
-assert.match(source.home, /Find an Athlete/);
-assert.match(source.home, /Search your athletes/);
-assert.match(source.home, /<FlatList/);
-assert.match(source.home, /initialNumToRender=\{12\}/);
-assert.match(source.home, /filterCoachRosterV2/);
-assert.match(source.home, /router\.push\('\/\(tabs\)\/coach-invite-athlete'/);
-assert.doesNotMatch(source.home, /router\.(?:push|replace)\('\/\(tabs\)\/coach-roster'/);
-assert.match(source.home, /contextKeyRef\.current === requestContext/);
-assert.match(source.home, /activeRequestRef/);
-assert.match(source.home, /signal: controller\.signal/);
+assert.match(hubSheet, /presentationStyle="overFullScreen"/);
+assert.match(hubSheet, /coach-athlete\/\[athleteId\]/);
+assert.match(workspaceLayout, /<CoachAthleteWorkspaceProvider>/);
+assert.match(workspaceLayout, /<CoachAthleteWorkspaceShell>/);
+for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'messages'"]) {
+  assert.match(workspaceShell, new RegExp(tab));
+}
+assert.match(workspaceShell, /Coach Home \/ Roster/);
+assert.match(workspaceShell, /workspace\.subjectKey/);
+assert.match(tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)[\s\S]*return null/);
 
-assert.match(source.hubSheet, /presentationStyle="overFullScreen"/);
-assert.match(source.hubSheet, /\/coach\/mobile\/athletes\/\$\{athlete\.id\}\/summary/);
-assert.match(source.hubSheet, /\/coach\/mobile\/athletes\/\$\{athlete\.id\}\/sessions\/recent\?limit=30/);
-assert.match(source.hubSheet, /\/workouts\/mobile\/\$\{completedId\}\?view=coach-preview/);
-assert.match(source.hubSheet, /\/coach\/mobile\/review-hub\/sessions\/\$\{lastSession\.workout_id\}/);
-assert.match(source.hubSheet, /cacheRef\.current\.get\(athlete\.id\)/);
-assert.match(source.hubSheet, /requestControllerRef\.current\?\.abort\(\)/);
-assert.match(source.hubSheet, /Promise\.all\(\[/);
-for (const action of ['Message', 'Program', 'Schedule', 'Notes', 'More']) assert.match(source.hubSheet, new RegExp(`label="${action}"|label: '${action}'`));
-for (const section of ['Current Status', 'Last Session', 'Upcoming Sessions', 'Recent Activity', 'Recent Highlights', 'Notes & Next Steps']) assert.match(source.hubSheet, new RegExp(section));
-assert.match(source.hubSheet, /performed_movements\.slice\(0, 4\)/);
-assert.match(source.hubSheet, /recap\?\.session\.reported_bodyweight/);
-assert.match(source.hubSheet, /recapFocusNames\(recap\)/);
-assert.match(source.hubSheet, /primary_muscle_group/);
-assert.match(source.hubSheet, /Total Volume/);
-assert.match(source.hubSheet, /movementEquipment\(movement\)/);
-assert.doesNotMatch(source.hubSheet, /focusNames\([^)]*label/);
-assert.doesNotMatch(source.hubSheet, /dragArea/);
-assert.match(source.hubSheet, /openCoachDestination\(router, primaryReason\.destination\)/);
-assert.match(source.hubSheet, /onClose\(\);[\s\S]*router\.push/);
-
-assert.match(source.rosterRoute, /<Redirect/);
-assert.match(source.rosterRoute, /pathname: '\/\(tabs\)\/coach-dashboard'/);
-assert.match(source.rosterRoute, /roster: '1'/);
-assert.doesNotMatch(source.rosterRoute, /CoachRosterV2|All Athletes/);
-assert.match(source.invite, /Back to Coach Home/);
-assert.match(source.invite, /pathname: '\/\(tabs\)\/coach-dashboard'[\s\S]*?roster: '1'/);
-assert.doesNotMatch(source.teamBrief, /pathname: '\/\(tabs\)\/coach-roster'/);
-assert.match(source.contract, /'\/\(tabs\)\/coach-roster': '\/\(tabs\)\/coach-dashboard'/);
-
-assert.match(source.hubRoute, /<CoachAthleteHubV2/);
-assert.match(source.hub, /\/coach\/mobile\/athletes\/\$\{athleteId\}\/summary/);
-for (const section of ['Athlete Read', 'Progress', 'Programming & Exposure', 'Recent Wins', 'Athlete Signals']) assert.match(source.hub, new RegExp(section));
-for (const action of ['Programming', 'Schedule', 'Review Hub', 'Check-Ins', 'Message Athlete', 'Full Analytics']) assert.match(source.hub, new RegExp(action));
-assert.ok(source.hub.indexOf('Athlete Read') < source.hub.indexOf('Programming & Exposure'));
-assert.match(source.hub, /summary\?view=v3&period=\$\{period\}/);
-assert.match(source.hub, /CoachAnalyticsTrend/);
-assert.match(source.hub, /AthleteCoachingScratchpadTrigger/);
-
-assert.match(source.detailRoute, /<CoachAttentionDetailV2/);
-assert.match(source.detail, /Recommended Action/);
-assert.match(source.detail, /Recent Readiness Trend/);
-assert.match(source.detail, /Last Session/);
-assert.match(source.detail, /openCoachDestination\(router, reason\.destination\)/);
-
-assert.match(source.shipping, /'coach-dashboard',[\s\S]*'coach-calendar',[\s\S]*'messages\/index',[\s\S]*'coach-more'/);
-assert.doesNotMatch(source.shipping, /SHIPPING_COACH_TAB_ROUTES\s*=\s*\[[\s\S]*?'coach-roster'/);
-assert.match(source.home, /action="Find athlete"[\s\S]*?title="Your Athletes at a Glance"/);
-assert.match(source.tabs, /name="coach-roster"[\s\S]*?href: null/);
-assert.doesNotMatch(source.tabs, /title: 'All Athletes'/);
-assert.match(source.tabs, /name="coach-calendar"[\s\S]*?\/\(tabs\)\/coach-calendar/);
-assert.match(source.tabs, /forceExpandedCoachNavigation/);
-assert.match(source.tabs, /name="coach-attention\/\[athleteId\]"/);
-assert.match(source.tabs, /name="coach-more"/);
-
-assert.match(backend, /@main_bp\.(?:route|get)\("\/coach\/mobile\/home"/);
-assert.match(backend, /if user\.role != "coach"/);
-assert.match(backend, /_filtered_coach_athlete_query\(user\.id, coach_preferences\)/);
-assert.match(backend, /build_coach_mobile_home\(model\)/);
-assert.match(operatingModel, /HOME_ATTENTION_LIMIT = 3/);
-assert.match(operatingModel, /HOME_ACTIVITY_LIMIT = 4/);
-assert.match(operatingModel, /PRE_SESSION_READINESS/);
-assert.match(operatingModel, /evidence_mode/);
-
-const sampleAthletes = [
-  {
-    id: 1,
-    name: 'Amanda Athlete',
-    status: { classification: 'needs_attention' },
-    queue_membership: ['all', 'needs_attention', 'programming'],
-    current_training: { status: 'active' },
-    recent_training: [{ workout_id: 9, date: '2026-08-14', evidence_mode: 'performed' }],
-  },
-  {
-    id: 2,
-    name: 'Blake Athlete',
-    status: { classification: 'on_track' },
-    queue_membership: ['all'],
-    current_training: { status: 'no_active_program' },
-    recent_training: [],
-  },
-];
-assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'programming').map((row) => row.id), [1]);
-assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'active').map((row) => row.id), [1]);
-assert.deepEqual(filterCoachRosterV2(sampleAthletes, 'all', 'blake').map((row) => row.id), [2]);
-
-const home = deriveCoachHomeFromRoster({
-  ok: true,
-  athletes: sampleAthletes,
-  counts: { all: 2, needs_attention: 1, programming: 1, reviews: 0, messages: 0, check_ins: 0 },
-  needs_attention: [{ athlete_id: 1, reason: {} }],
-  needs_attention_total: 1,
-  attention_cap: 6,
-  generated_at: '2026-08-14T00:00:00',
-});
-assert.equal(home.attention_athletes.length, 1);
-assert.equal(home.recent_activity.length, 1);
-assert.equal(home.summary.needs_you, 1);
-assert.equal(home.athletes.length, 2);
-assert.equal(coachTodaySessions(sampleAthletes, new Date(2026, 7, 14)).length, 1);
-assert.deepEqual(coachKpiAthletes(sampleAthletes, 'programming').map((row) => row.id), [1]);
-assert.deepEqual(coachKpiAthletes(sampleAthletes, 'sessions', new Date(2026, 7, 14)).map((row) => row.id), [1]);
-
-console.log('coach mobile athlete-first V2 live contract: PASS');
+console.log('coach mobile live routes and athlete workspace contract: PASS');

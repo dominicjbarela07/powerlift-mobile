@@ -39,6 +39,7 @@ import { STRENGTH_LEDGER_ATMOSPHERE_ASSETS } from '@/lib/strength-ledger-visual-
 
 import { useLedgerScrollToTop } from './primitives';
 import { useLedgerLiveData } from './use-ledger-live-data';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 
 const STRENGTH_UNIT_KEY = 'strength-ledger.progression.unit';
 
@@ -330,12 +331,13 @@ function Analysis({ profiles, unit }: { profiles: readonly LiftProfile[]; unit: 
 
 export function StrengthExperience() {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const params = useLocalSearchParams<{ athleteId?: string | string[]; lift?: string | string[] }>();
   const routeLiftValue = Array.isArray(params.lift) ? params.lift[0] : params.lift;
   const routeLift = LIFTS.some((lift) => lift.key === routeLiftValue) ? routeLiftValue as LiftKey : null;
   const routeAthleteIdValue = Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId;
   const parsedAthleteId = Number(routeAthleteIdValue);
-  const athleteId = Number.isInteger(parsedAthleteId) && parsedAthleteId > 0 ? parsedAthleteId : undefined;
+  const athleteId = Number.isInteger(parsedAthleteId) && parsedAthleteId > 0 ? parsedAthleteId : ledgerSubject.athleteId;
   const scrollToTop = useLedgerScrollToTop();
   const [section, setSection] = useState<StrengthSection>('overview');
   const [selectedLift, setSelectedLift] = useState<LiftKey | null>(routeLift);
@@ -403,7 +405,7 @@ export function StrengthExperience() {
     setShowTiers(false);
     scrollToTopAfterTransition();
   }, [routeLift, scrollToTopAfterTransition]);
-  const openSourceSet = (sourceSetLogId: number) => router.push(archiveDetailHref('set', sourceSetLogId) as any);
+  const openSourceSet = (sourceSetLogId: number) => router.push({ pathname: archiveDetailHref('set', sourceSetLogId) as any, params: ledgerSubject.routeParams } as never);
   const changeSection = (next: StrengthSection) => {
     setSection(next);
     setSelectedLift(null);
@@ -435,7 +437,7 @@ export function StrengthExperience() {
 
   if (selectedLift) return <View style={styles.page} testID="ledger-strength-lift-detail"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent={profile.tone} atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} artwork={<StrengthSemanticArtwork lift={profile.key} destination="context-header" />} backAccessibilityLabel="Back to Strength" contextLabel="STRENGTH PROFILE" onBack={closeLift} onTitlePress={() => setShowLiftPicker((value) => !value)} style={styles.headerBleed} testID="strength-detail-header" title={profile.label} titleExpanded={showLiftPicker}><LiftTabs value={liftPanel} onChange={changeLiftPanel} accent={profile.tone} /></SLAtmosphericContextHeader><LiftPicker profiles={profiles} selected={profile} unit={unit} open={showLiftPicker} onSelect={(key) => openLift(key, liftPanel)} />{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading strength evidence…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : liftPanel === 'progression' ? <ProgressionPanel profile={profile} standard={clubs.standard} unit={unit} range={range} onRangeChange={setRange} onOpenTiers={openTiers} onOpenEvidence={() => changeLiftPanel('evidence')} /> : liftPanel === 'evidence' ? <EvidencePanel profile={profile} currentBests={currentBests} unit={unit} onOpen={openSourceSet} /> : <StandardsPanel profile={profile} unit={unit} standard={clubs.standard} />}</View>;
 
-  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace('/(tabs)/ledger/home' as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenRecords={() => changeSection('records')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
+  return <View style={styles.page} testID="ledger-strength-experience"><FloatingDisplayUnitRegistration unit={unit} onChange={changeUnit} testID="ledger-strength-unit-toggle" /><SLAtmosphericContextHeader accent="#A65CFF" atmosphereSource={STRENGTH_LEDGER_ATMOSPHERE_ASSETS.strength} backAccessibilityLabel="Back to The Ledger" contextLabel="YOUR STRENGTH PROFILE" onBack={() => router.replace((ledgerSubject.returnPath || '/(tabs)/ledger/home') as any)} style={styles.headerBleed} subtitle="Current strength, progression, and proof." testID="strength-contextual-header" title="Strength"><PrimaryTabs value={section} onChange={changeSection} /></SLAtmosphericContextHeader>{loading ? <View style={styles.emptyCard}><Text style={styles.emptyTitle}>Loading your strength profile…</Text></View> : error ? <Pressable onPress={() => void reload()} style={styles.emptyCard}><Text style={styles.emptyTitle}>{errorKind === 'unauthorized' ? 'This strength profile is not available to this account.' : error}</Text><Text style={styles.emptyBody}>Tap to try again.</Text></Pressable> : section === 'overview' ? <Overview profiles={profiles} totalKg={totalKg} momentumKg={momentumKg} unit={unit} sex={clubs.standard?.sex} onOpenLift={openLift} onOpenRecords={() => changeSection('records')} /> : section === 'records' ? <RecordBook events={records} unit={unit} filter={prFilter} onFilter={setPrFilter} onOpen={openSourceSet} /> : <Analysis profiles={profiles} unit={unit} />}</View>;
 }
 
 const styles = StyleSheet.create({

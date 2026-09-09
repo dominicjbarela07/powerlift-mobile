@@ -89,7 +89,8 @@ assert.match(fullHub, /normalizeCoachMeetContext\(summary\?\.meet_context\)/);
 assert.match(coachCalendar, /meets: \(day\.meets \|\| \[\]\)\.filter\(\(meet\) => athleteVisible\(meet\.athlete_id\)\)/);
 assert.match(coachCalendar, /onMeet=\{openMeetDay\}/);
 assert.doesNotMatch(coachCalendar, /group\.meets\.map\(\(meet\)[\s\S]{0,240}onPress=\{\(\) => \{\}\}/);
-assert.match(coachCalendar, /router\.setParams\(\{ athleteId: undefined \}\)/, 'a Meet Day deep-open must select its authorized athlete without becoming sticky');
+assert.match(coachCalendar, /const lockedAthleteId = Number\.isInteger\(routeAthleteId\)/, 'an athlete-scoped Calendar must retain its authoritative athlete route identity');
+assert.doesNotMatch(coachCalendar, /router\.setParams\(\{ athleteId: undefined \}\)/, 'the athlete scope must not be silently cleared into a team-wide Calendar');
 
 // The established athlete path remains the semantic authority and must not be
 // replaced by the coach projection.

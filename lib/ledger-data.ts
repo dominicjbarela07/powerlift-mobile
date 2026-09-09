@@ -339,12 +339,12 @@ export async function fetchLedgerAccomplishments(limit = 24, athleteId?: number)
  * projection. Ledger history surfaces use this when a single recent page would
  * hide older PRs or earned volume medallions.
  */
-export async function fetchLedgerAccomplishmentHistory(maxPages = 20): Promise<AccomplishmentEvent[]> {
+export async function fetchLedgerAccomplishmentHistory(maxPages = 20, athleteId?: number): Promise<AccomplishmentEvent[]> {
   const items: AccomplishmentEvent[] = [];
   let cursor: string | null = null;
 
   for (let pageIndex = 0; pageIndex < Math.max(1, maxPages); pageIndex += 1) {
-    const page = await fetchLedgerAccomplishmentPage(50, cursor);
+    const page = await fetchLedgerAccomplishmentPage(50, cursor, athleteId);
     items.push(...page.items);
     if (!page.hasMore || !page.nextCursor) break;
     cursor = page.nextCursor;

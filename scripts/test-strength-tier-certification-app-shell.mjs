@@ -17,7 +17,7 @@ assert.match(achievementsRoute, /if \(!__DEV__\) return null/, 'the tab-owned ce
 assert.match(achievementsRoute, /strengthTierCertificationFixture\(sex === 'F' \? 'F' : 'M', resolvedScenario\)/, 'the real Ledger route must retain deterministic sex/scenario evidence');
 assert.match(achievementsRoute, /<LedgerRouteScreen achievementsDevFixture=\{devFixture\} screen="achievements" \/>/, 'the fixture must flow through the shipping Ledger route boundary');
 assert.match(routeScreen, /<AchievementsExperience devFixture=\{__DEV__ \? devFixture : undefined\}/, 'the shipping Achievements room must receive the DEV-only fixture');
-assert.match(routeScreen, /onBack=\{\(\) => router\.replace\(ledgerHrefFor\('home'\)/, 'the visible back control must return to the real Ledger home');
+assert.match(routeScreen, /onBack=\{\(\) => router\.replace\(\(ledgerSubject\.returnPath \|\| ledgerHrefFor\('home'\)\)/, 'the visible back control must return to the relationship workspace when scoped, or the real Ledger home otherwise');
 
 assert.match(tabsLayout, /<StrengthLedgerAppHeader/, 'the tab shell must retain the canonical app header');
 assert.match(tabsLayout, /tabBar=\{\(props\) => \([\s\S]*<FilteredTabBar/, 'the tab shell must retain the canonical floating tab row');

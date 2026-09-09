@@ -20,6 +20,8 @@ import { isGovernedMuscleId } from '@/lib/anatomy-system';
 import { ledgerHrefFor } from './routing';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
+
 function prettify(value?: string | null) {
   return String(value || '').replace(/^accessory_/, '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
@@ -40,15 +42,16 @@ function volumeNumber(valueKg: number, unit: LedgerUnit) {
 }
 
 function useExploration() {
+  const ledgerSubject = useAthleteLedgerSubject();
   const [data, setData] = useState<LedgerExplorationIndex | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const reload = () => {
     setLoading(true);
     setError(null);
-    fetchLedgerExplorationIndex().then(setData).catch((caught) => setError(caught instanceof Error ? caught.message : 'Ledger movement evidence could not be loaded.')).finally(() => setLoading(false));
+    fetchLedgerExplorationIndex(ledgerSubject.athleteId).then(setData).catch((caught) => setError(caught instanceof Error ? caught.message : 'Ledger movement evidence could not be loaded.')).finally(() => setLoading(false));
   };
-  useEffect(reload, []);
+  useEffect(reload, [ledgerSubject.athleteId]);
   return { data, loading, error, reload };
 }
 
@@ -58,7 +61,9 @@ function State({ title, error, onRetry }: { title: string; error?: boolean; onRe
 
 function RoomHeader({ title, subtitle, backHref = ledgerHrefFor('home') }: { title: string; subtitle: string; backHref?: string }) {
   const router = useRouter();
-  return <SLContextualHeader backAccessibilityLabel={`Back from ${title}`} breadcrumb="The Ledger" onBack={() => router.replace(backHref as any)} subtitle={subtitle} title={title} />;
+  const ledgerSubject = useAthleteLedgerSubject();
+  const destination = backHref === ledgerHrefFor('home') && ledgerSubject.returnPath ? ledgerSubject.returnPath : backHref;
+  return <SLContextualHeader backAccessibilityLabel={`Back from ${title}`} breadcrumb="The Ledger" onBack={() => router.replace({ pathname: destination as any, params: destination === ledgerSubject.returnPath ? {} : ledgerSubject.routeParams } as never)} subtitle={subtitle} title={title} />;
 }
 
 function ContextBar({ data }: { data: LedgerExplorationIndex }) {
@@ -78,6 +83,7 @@ function MovementRow({ movement, unit, tone, onPress }: { movement: LedgerMoveme
 
 export function MuscleGroupsExperience() {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const { data, loading, error, reload } = useExploration();
   const [selected, setSelected] = useState<AccessoryMuscleRegionKey>('chest');
   if (loading) return <State title="Loading muscle-group evidence." />;
@@ -90,7 +96,7 @@ export function MuscleGroupsExperience() {
   return <View testID="ledger-muscle-groups-experience" style={styles.page}>
     <RoomHeader title="Muscle Groups" subtitle="Performed training volume and movement balance." />
     <View style={styles.inset}><ContextBar data={data} /></View>
-    <View style={styles.inset}><View style={styles.muscleHero}><MuscleMap athlete={data.athlete} framingPreset="card" primary={isGovernedMuscleId(activeRegion) ? [activeRegion] : []} size="card" view="auto" /><View style={styles.muscleHeroCopy}><Text style={styles.sectionKicker}>MUSCLE BALANCE</Text><Text style={styles.muscleHeroTitle}>{prettify(activeRegion)}</Text><Text style={styles.muscleHeroValue}>{selectedGroup ? volumeNumber(selectedGroup.volume_kg, unit) : '—'} <Text style={styles.muscleHeroUnit}>{unit.toUpperCase()} VOLUME</Text></Text><Text style={styles.muscleHeroBody}>{selectedGroup ? `${selectedGroup.movement_count} movements · ${selectedGroup.set_count} sets` : 'No performed evidence'}</Text><Pressable disabled={!selectedGroup} onPress={() => selectedGroup && router.push(`/(tabs)/ledger/muscle-groups/${selectedGroup.region}` as any)} style={styles.detailButton}><Text style={styles.detailButtonText}>View detailed breakdown</Text><Ionicons name="arrow-forward" size={14} color="#CCB1F1" /></Pressable></View></View></View>
+    <View style={styles.inset}><View style={styles.muscleHero}><MuscleMap athlete={data.athlete} framingPreset="card" primary={isGovernedMuscleId(activeRegion) ? [activeRegion] : []} size="card" view="auto" /><View style={styles.muscleHeroCopy}><Text style={styles.sectionKicker}>MUSCLE BALANCE</Text><Text style={styles.muscleHeroTitle}>{prettify(activeRegion)}</Text><Text style={styles.muscleHeroValue}>{selectedGroup ? volumeNumber(selectedGroup.volume_kg, unit) : '—'} <Text style={styles.muscleHeroUnit}>{unit.toUpperCase()} VOLUME</Text></Text><Text style={styles.muscleHeroBody}>{selectedGroup ? `${selectedGroup.movement_count} movements · ${selectedGroup.set_count} sets` : 'No performed evidence'}</Text><Pressable disabled={!selectedGroup} onPress={() => selectedGroup && router.push({ pathname: `/(tabs)/ledger/muscle-groups/${selectedGroup.region}` as any, params: ledgerSubject.routeParams } as never)} style={styles.detailButton}><Text style={styles.detailButtonText}>View detailed breakdown</Text><Ionicons name="arrow-forward" size={14} color="#CCB1F1" /></Pressable></View></View></View>
     <View style={styles.inset}><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>VOLUME BY MUSCLE GROUP</Text><Text style={styles.sectionMeta}>PERFORMED SETS</Text></View><View style={styles.muscleList}>{groups.map((group) => <Pressable key={group.key} onPress={() => setSelected(group.region)} style={[styles.muscleRow, group.region === activeRegion && styles.muscleRowActive]}><View style={styles.muscleRowArt}>{isGovernedMuscleId(group.region) ? <MuscleMap athlete={data.athlete} framingPreset="thumbnail" primary={[group.region]} size="thumbnail" style={styles.muscleRowAnatomy} view="auto" /> : null}</View><View style={styles.muscleRowCopy}><View style={styles.muscleRowTop}><Text style={styles.muscleRowName}>{prettify(group.region)}</Text><Text style={styles.muscleRowValue}>{volumeNumber(group.volume_kg, unit)} {unit}</Text></View><View style={styles.volumeTrack}><View style={[styles.volumeFill, { width: `${Math.max(2, group.volume_kg / maxVolume * 100)}%`, backgroundColor: group.region === activeRegion ? '#A46DE4' : '#60498A' }]} /></View></View></Pressable>)}</View></View>
   </View>;
 }
@@ -114,6 +120,7 @@ export function MuscleDetailExperience({ region }: { region: AccessoryMuscleRegi
 
 export function LedgerFiltersExperience() {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const params = useLocalSearchParams<{ time?: string }>();
   const { data, loading, error, reload } = useExploration();
   const [time, setTime] = useState(params.time || 'All Time');
@@ -125,12 +132,12 @@ export function LedgerFiltersExperience() {
   if (error || !data) return <State title={error || 'Ledger filters are unavailable.'} error onRetry={reload} />;
   const apply = () => {
     if (muscle !== 'All' || equipment !== 'All' || exerciseType === 'accessory' || exerciseType === 'variant') {
-      router.replace({ pathname: exerciseType === 'variant' ? ledgerHrefFor('variants') : ledgerHrefFor('accessories'), params: { muscle: muscle === 'All' ? undefined : muscle, equipment: equipment === 'All' ? undefined : equipment } } as never);
+      router.replace({ pathname: exerciseType === 'variant' ? ledgerHrefFor('variants') : ledgerHrefFor('accessories'), params: { ...ledgerSubject.routeParams, muscle: muscle === 'All' ? undefined : muscle, equipment: equipment === 'All' ? undefined : equipment } } as never);
       return;
     }
     const now = new Date();
     const dateFrom = time === 'Last 3 Months' ? new Date(now.getFullYear(), now.getMonth() - 3, now.getDate()).toISOString().slice(0, 10) : time === 'This Year' ? `${now.getFullYear()}-01-01` : undefined;
-    router.replace({ pathname: ledgerHrefFor('archive'), params: { date_from: dateFrom, q: program === 'All' ? undefined : program } } as never);
+    router.replace({ pathname: ledgerHrefFor('archive'), params: { ...ledgerSubject.routeParams, date_from: dateFrom, q: program === 'All' ? undefined : program } } as never);
   };
   return <View testID="ledger-filters-experience" style={styles.page}>
     <RoomHeader title="Filter the Ledger" subtitle="Every view is contextual. Focus on what matters." />

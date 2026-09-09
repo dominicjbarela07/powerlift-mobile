@@ -189,8 +189,9 @@ async function requirePayload<T extends { ok: boolean; error?: string }>(path: s
   return response.json;
 }
 
-export async function fetchLedgerExplorationIndex(): Promise<LedgerExplorationIndex> {
-  const payload = await requirePayload<{ ok: boolean; error?: string } & LedgerExplorationIndex>('/mobile/ledger/archive/movement-progress');
+export async function fetchLedgerExplorationIndex(athleteId?: number | null): Promise<LedgerExplorationIndex> {
+  const suffix = athleteId ? `?athlete_id=${encodeURIComponent(athleteId)}` : '';
+  const payload = await requirePayload<{ ok: boolean; error?: string } & LedgerExplorationIndex>(`/mobile/ledger/archive/movement-progress${suffix}`);
   return payload;
 }
 

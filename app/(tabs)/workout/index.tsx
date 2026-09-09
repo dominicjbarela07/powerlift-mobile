@@ -629,11 +629,14 @@ export default function TrainingIndexScreen() {
     programmingBlockId?: string;
     programmingWeek?: string;
     programmingDay?: string;
+    workspaceReturn?: string;
+    workspaceSubjectKey?: string;
   }>();
   const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
   const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
   const directProgramId = params.programId ? Number(params.programId) : null;
-  const trainingScopeKey = `${workspaceKey}:${rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self'}`;
+  const workspaceSubjectKey = params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null;
+  const trainingScopeKey = `${workspaceKey}:${rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self'}:${workspaceSubjectKey || 'standalone'}`;
   const programCreatedNonce = params.programCreated ? String(params.programCreated) : null;
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
   const returnWeek = params.programmingWeek ? Number(params.programmingWeek) : null;
@@ -903,6 +906,7 @@ export default function TrainingIndexScreen() {
         coachMode={Boolean(rosterAthleteId)}
         directWorkoutId={Number.isInteger(directWorkoutId) ? directWorkoutId : null}
         directProgramId={Number.isInteger(directProgramId) ? directProgramId : null}
+        workspaceReturn={params.workspaceReturn}
         onConsumeDirectOpen={() => router.setParams({ workoutId: undefined, programId: undefined } as any)}
       />
     );
@@ -979,6 +983,7 @@ function IndividualProgrammingHome({
   coachMode,
   directWorkoutId,
   directProgramId,
+  workspaceReturn,
   onConsumeDirectOpen,
 }: {
   hub: TrainingHubPayload | null;
@@ -1000,6 +1005,7 @@ function IndividualProgrammingHome({
   coachMode: boolean;
   directWorkoutId?: number | null;
   directProgramId?: number | null;
+  workspaceReturn?: string;
   onConsumeDirectOpen: () => void;
 }) {
   const router = useRouter();
@@ -1039,8 +1045,15 @@ function IndividualProgrammingHome({
 
   const handleExitToAthleteWorkspace = () => {
     if (!coachMode || !managedAthleteId) return;
+    const returnPath = workspaceReturn === 'training'
+      ? '/(tabs)/coach-athlete/[athleteId]/training'
+      : workspaceReturn === 'reviews'
+        ? '/(tabs)/coach-athlete/[athleteId]/reviews'
+        : workspaceReturn === 'messages'
+          ? '/(tabs)/coach-athlete/[athleteId]/messages'
+          : '/(tabs)/coach-athlete/[athleteId]';
     router.replace({
-      pathname: '/(tabs)/coach-athlete/[athleteId]',
+      pathname: returnPath,
       params: {
         athleteId: String(managedAthleteId),
         ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),

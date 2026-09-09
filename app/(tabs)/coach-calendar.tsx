@@ -253,6 +253,8 @@ function withCalendarSessionDate(
 export default function CoachCalendarScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ athleteId?: string }>();
+  const routeAthleteId = Number(Array.isArray(params.athleteId) ? params.athleteId[0] : params.athleteId);
+  const lockedAthleteId = Number.isInteger(routeAthleteId) && routeAthleteId > 0 ? routeAthleteId : null;
   const insets = useSafeAreaInsets();
   const [view, setView] = useState<CoachCalendarView>('month');
   const [anchor, setAnchor] = useState(() => new Date());
@@ -336,7 +338,7 @@ export default function CoachCalendarScreen() {
       const query = new URLSearchParams({
         start: toLocalYMD(requestRange.start),
         end: toLocalYMD(requestRange.end),
-        athlete_id: 'ALL',
+        athlete_id: lockedAthleteId ? String(lockedAthleteId) : 'ALL',
         include_completed: '1',
       });
       const response = await fetchJson<CalendarResponse>(`/coach/mobile/calendar?${query}`, { method: 'GET' });
@@ -358,7 +360,7 @@ export default function CoachCalendarScreen() {
         setRefreshing(false);
       }
     }
-  }, [anchor, replaceMonthPageCache, requestRange.end, requestRange.start, view]);
+  }, [anchor, lockedAthleteId, replaceMonthPageCache, requestRange.end, requestRange.start, view]);
 
   useFocusEffect(useCallback(() => { void loadCalendar(false); }, [loadCalendar]));
 
@@ -375,7 +377,7 @@ export default function CoachCalendarScreen() {
         const query = new URLSearchParams({
           start: toLocalYMD(monthRange.start),
           end: toLocalYMD(monthRange.end),
-          athlete_id: 'ALL',
+          athlete_id: lockedAthleteId ? String(lockedAthleteId) : 'ALL',
           include_completed: '1',
         });
         const response = await fetchJson<CalendarResponse>(`/coach/mobile/calendar?${query}`, {
@@ -398,7 +400,7 @@ export default function CoachCalendarScreen() {
 
     void prefetch().catch(() => undefined);
     return () => controller.abort();
-  }, [anchor, data, replaceMonthPageCache, view]);
+  }, [anchor, data, lockedAthleteId, replaceMonthPageCache, view]);
 
   const athletes = data?.athletes || [];
   useEffect(() => {
@@ -408,8 +410,7 @@ export default function CoachCalendarScreen() {
     if (!Number.isInteger(athleteId) || !athletes.some((athlete) => athlete.id === athleteId)) return;
     appliedAthleteParamRef.current = raw;
     setSelectedAthleteIds([athleteId]);
-    router.setParams({ athleteId: undefined });
-  }, [athletes, params.athleteId, router]);
+  }, [athletes, params.athleteId]);
   useEffect(() => {
     if (!athletes.length || !selectedAthleteIds.length) return;
     const rosterIds = new Set(athletes.map((athlete) => athlete.id));

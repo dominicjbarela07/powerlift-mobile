@@ -82,7 +82,13 @@ function draftFromReview(payload: ReviewPayload): CoachReviewDraft {
 }
 
 export default function CoachSessionReviewScreen() {
-  const params = useLocalSearchParams<{ workoutId?: string }>();
+  const params = useLocalSearchParams<{
+    workoutId?: string;
+    athleteId?: string;
+    returnToWorkspace?: string;
+    workspaceReturn?: string;
+    workspaceSubjectKey?: string;
+  }>();
   const reviewIdentity = canonicalCoachSessionReviewIdentity(params.workoutId);
   const [visitRevision, setVisitRevision] = useState(0);
 
@@ -90,10 +96,25 @@ export default function CoachSessionReviewScreen() {
     key={coachSessionReviewPresentationKey(reviewIdentity, visitRevision)}
     workoutId={reviewIdentity ? Number(reviewIdentity) : Number.NaN}
     onEndVisit={() => setVisitRevision(advanceCoachSessionReviewVisit)}
+    returnAthleteId={params.returnToWorkspace === '1' ? Number(params.athleteId || 0) : null}
+    workspaceReturn={params.workspaceReturn}
+    workspaceSubjectKey={params.workspaceSubjectKey}
   />;
 }
 
-function CoachSessionReviewContent({ workoutId, onEndVisit }: { workoutId: number; onEndVisit: () => void }) {
+function CoachSessionReviewContent({
+  workoutId,
+  onEndVisit,
+  returnAthleteId,
+  workspaceReturn,
+  workspaceSubjectKey,
+}: {
+  workoutId: number;
+  onEndVisit: () => void;
+  returnAthleteId?: number | null;
+  workspaceReturn?: string;
+  workspaceSubjectKey?: string;
+}) {
   const router = useRouter();
   const [detail, setDetail] = useState<DetailPayload | null>(null);
   const [review, setReview] = useState<ReviewPayload | null>(null);
@@ -142,8 +163,13 @@ function CoachSessionReviewContent({ workoutId, onEndVisit }: { workoutId: numbe
 
   const closeReview = useCallback(() => {
     onEndVisit();
+    if (returnAthleteId) {
+      const destination = workspaceReturn === 'messages' ? 'messages' : workspaceReturn === 'training' ? 'training' : 'reviews';
+      router.replace(`/(tabs)/coach-athlete/${returnAthleteId}/${destination}` as any);
+      return;
+    }
     router.back();
-  }, [onEndVisit, router]);
+  }, [onEndVisit, returnAthleteId, router, workspaceReturn]);
 
   const save = useCallback(async (nextDraft: CoachReviewDraft, action: 'save' | 'complete') => {
     if (saving) return;
@@ -188,7 +214,16 @@ function CoachSessionReviewContent({ workoutId, onEndVisit }: { workoutId: numbe
       onRefresh={() => { void load(true); }}
       onClose={closeReview}
       onDone={closeReview}
-      onOpenProgramming={() => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(detail?.athlete?.id || '') } } as never)}
+      onOpenProgramming={() => router.push({
+        pathname: '/(tabs)/workout',
+        params: {
+          athleteId: String(detail?.athlete?.id || ''),
+          ...(returnAthleteId ? {
+            workspaceReturn: workspaceReturn || 'reviews',
+            workspaceSubjectKey,
+          } : {}),
+        },
+      } as never)}
       onOpenMovementHistory={(movement) => {
         const resolution = resolveMovementHistoryLaunchFromMeasurement({
           athleteId: detail?.athlete?.id,

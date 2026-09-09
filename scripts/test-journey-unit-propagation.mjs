@@ -23,7 +23,7 @@ assert.match(experience, /ThenNowSection progression=\{allTime\} bootstrap=\{boo
 assert.match(experience, /TrainingChaptersSection blocks=\{bootstrap\.blocks\.items\} unit=\{unit\}/);
 assert.match(experience, /BodyweightContextSection bootstrap=\{bootstrap\} unit=\{unit\}/);
 assert.match(experience, /journeyPerformanceDetail\(entry\.event_type, entry\.performance, unit, entry\.detail\)/);
-assert.match(experience, /params: \{ displayUnit: unit \}/);
+assert.match(experience, /params: \{ \.\.\.ledgerSubject\.routeParams, displayUnit: unit \}/);
 assert.match(archive, /useSurfaceWeightUnit\(preferredDisplayUnit, first\(params\.displayUnit\)\)/);
 assert.match(archive, /ledger-archive-unit-toggle/);
 assert.match(archiveDetail, /useSurfaceWeightUnit\(preferredDisplayUnit, first\(params\.displayUnit\)\)/);

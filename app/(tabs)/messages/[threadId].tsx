@@ -319,7 +319,23 @@ function CoachConversationPlaceholderScreen() {
   );
 }
 
-function ThreadScreen() {
+export function ThreadScreen({
+  embedded = false,
+  forcedThreadId,
+  initialDraft = '',
+  onBackOverride,
+  onDraftChange,
+  workspaceAthleteId,
+  workspaceSubjectKey,
+}: {
+  embedded?: boolean;
+  forcedThreadId?: number;
+  initialDraft?: string;
+  onBackOverride?: () => void;
+  onDraftChange?: (value: string) => void;
+  workspaceAthleteId?: number;
+  workspaceSubjectKey?: string;
+} = {}) {
   const { user } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams<{
@@ -331,7 +347,7 @@ function ThreadScreen() {
     athleteEmbedded?: string;
     returnTo?: string;
   }>();
-  const threadId = Number(params.threadId || 0);
+  const threadId = Number(forcedThreadId || params.threadId || 0);
   const listRef = useRef<FlatList<MessengerMessage>>(null);
   const pollingRef = useRef(false);
   const nearBottomRef = useRef(true);
@@ -340,9 +356,14 @@ function ThreadScreen() {
   const [sending, setSending] = useState(false);
   const [thread, setThread] = useState<MessengerThread | null>(null);
   const [messages, setMessages] = useState<MessengerMessage[]>([]);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraftState] = useState(initialDraft);
   const [selectedAttachment, setSelectedAttachment] = useState<SelectedMessagingAttachment | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const setDraft = useCallback((value: string) => {
+    setDraftState(value);
+    onDraftChange?.(value);
+  }, [onDraftChange]);
 
   const title = useMemo(() => {
     const paramName = Array.isArray(params.displayName)
@@ -373,6 +394,10 @@ function ThreadScreen() {
   }, [params.avatarVersion, thread?.profilePhotoVersion]);
 
   const handleBack = useCallback(() => {
+    if (onBackOverride) {
+      onBackOverride();
+      return;
+    }
     const athleteEmbedded = Array.isArray(params.athleteEmbedded)
       ? params.athleteEmbedded[0]
       : params.athleteEmbedded;
@@ -386,7 +411,7 @@ function ThreadScreen() {
     }
 
     router.replace('/(tabs)/messages' as any);
-  }, [params.athleteEmbedded, params.returnTo, router]);
+  }, [onBackOverride, params.athleteEmbedded, params.returnTo, router]);
 
 
   const load = useCallback(async (opts?: {
@@ -595,10 +620,19 @@ function ThreadScreen() {
       return;
     }
     router.push({
-      pathname: '/(tabs)/coach-reviews',
-      params: { videoId: String(videoId), from: 'messages' },
+      pathname: workspaceAthleteId ? '/(tabs)/coach-video-review' : '/(tabs)/coach-reviews',
+      params: {
+        videoId: String(videoId),
+        from: 'messages',
+        ...(workspaceAthleteId ? {
+          athleteId: String(workspaceAthleteId),
+          returnToWorkspace: '1',
+          workspaceReturn: 'messages',
+          workspaceSubjectKey,
+        } : {}),
+      },
     } as any);
-  }, [router]);
+  }, [router, workspaceAthleteId, workspaceSubjectKey]);
 
   const openReviewedSession = useCallback((message: MessengerMessage) => {
     const workoutId = workoutIdForSessionReviewMessage(message);
@@ -607,10 +641,19 @@ function ThreadScreen() {
       return;
     }
     router.push({
-      pathname: '/workout/[workoutId]',
-      params: { workoutId: String(workoutId), from: 'messages' },
+      pathname: workspaceAthleteId ? '/(tabs)/coach-session-review' : '/workout/[workoutId]',
+      params: {
+        workoutId: String(workoutId),
+        from: 'messages',
+        ...(workspaceAthleteId ? {
+          athleteId: String(workspaceAthleteId),
+          returnToWorkspace: '1',
+          workspaceReturn: 'messages',
+          workspaceSubjectKey,
+        } : {}),
+      },
     } as any);
-  }, [router]);
+  }, [router, workspaceAthleteId, workspaceSubjectKey]);
 
   if (loading) {
     return (
@@ -628,7 +671,7 @@ function ThreadScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 115 : 0}
       >
-        <View style={styles.header}>
+        {!embedded ? <View style={styles.header}>
           <Pressable
             onPress={handleBack}
             style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
@@ -643,7 +686,7 @@ function ThreadScreen() {
             <Text style={styles.headerSub}>Direct message</Text>
           </View>
 
-        </View>
+        </View> : null}
 
         {!!error && (
           <View style={styles.errorCard}>

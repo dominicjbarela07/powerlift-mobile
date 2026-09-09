@@ -184,25 +184,32 @@ async function requirePayload<T extends { ok: boolean; error?: string }>(path: s
   return response.json;
 }
 
-export function fetchJourneyOverview(): Promise<JourneyOverview> {
-  return requirePayload<JourneyOverview>('/mobile/ledger/journey');
+function withAthlete(params: URLSearchParams, athleteId?: number | null) {
+  if (athleteId && Number.isInteger(athleteId)) params.set('athlete_id', String(athleteId));
+  return params;
 }
 
-export function fetchJourneyBootstrap(options: { limit?: number; includeSessions?: boolean } = {}): Promise<JourneyBootstrap> {
-  const params = new URLSearchParams({
+export function fetchJourneyOverview(athleteId?: number | null): Promise<JourneyOverview> {
+  const query = withAthlete(new URLSearchParams(), athleteId).toString();
+  return requirePayload<JourneyOverview>(`/mobile/ledger/journey${query ? `?${query}` : ''}`);
+}
+
+export function fetchJourneyBootstrap(options: { limit?: number; includeSessions?: boolean; athleteId?: number | null } = {}): Promise<JourneyBootstrap> {
+  const params = withAthlete(new URLSearchParams({
     limit: String(Math.max(1, Math.min(options.limit ?? 24, 50))),
     include_sessions: options.includeSessions ? 'true' : 'false',
-  });
+  }), options.athleteId);
   return requirePayload<JourneyBootstrap>(`/mobile/ledger/journey?${params.toString()}`);
 }
 
-export async function fetchJourneyBlocks(): Promise<JourneyBlock[]> {
-  const payload = await requirePayload<{ ok: true; items: JourneyBlock[] }>('/mobile/ledger/journey/blocks');
+export async function fetchJourneyBlocks(athleteId?: number | null): Promise<JourneyBlock[]> {
+  const query = withAthlete(new URLSearchParams(), athleteId).toString();
+  const payload = await requirePayload<{ ok: true; items: JourneyBlock[] }>(`/mobile/ledger/journey/blocks${query ? `?${query}` : ''}`);
   return payload.items;
 }
 
-export function fetchReportedBodyweightHistory(options: { cursor?: string | null; limit?: number } = {}): Promise<ReportedBodyweightPage> {
-  const params = new URLSearchParams({ limit: String(Math.max(1, Math.min(options.limit ?? 24, 50))) });
+export function fetchReportedBodyweightHistory(options: { cursor?: string | null; limit?: number; athleteId?: number | null } = {}): Promise<ReportedBodyweightPage> {
+  const params = withAthlete(new URLSearchParams({ limit: String(Math.max(1, Math.min(options.limit ?? 24, 50))) }), options.athleteId);
   if (options.cursor) params.set('cursor', options.cursor);
   return requirePayload<ReportedBodyweightPage>(`/mobile/ledger/journey/reported-bodyweight?${params.toString()}`);
 }
@@ -215,11 +222,12 @@ export function fetchJourneyTimelinePage(options: {
   startDate?: string;
   endDate?: string;
   blockId?: number;
+  athleteId?: number | null;
 } = {}): Promise<JourneyTimelinePage> {
-  const params = new URLSearchParams({
+  const params = withAthlete(new URLSearchParams({
     limit: String(Math.max(1, Math.min(options.limit ?? 24, 50))),
     include_sessions: options.includeSessions ? 'true' : 'false',
-  });
+  }), options.athleteId);
   if (options.cursor) params.set('cursor', options.cursor);
   if (options.eventTypes?.length) params.set('event_types', options.eventTypes.join(','));
   if (options.startDate) params.set('start_date', options.startDate);

@@ -112,7 +112,17 @@ export function fetchArchiveDetail(itemType: ArchiveItemType, sourceId: number, 
 export function archiveDetailHref(
   itemType: ArchiveItemType,
   sourceId: number,
-  returnState: { collection?: ArchiveCollection; q?: string; athleteId?: number; dateFrom?: string; dateTo?: string; displayUnit?: DisplayWeightUnit } = {},
+  returnState: {
+    collection?: ArchiveCollection;
+    q?: string;
+    athleteId?: number;
+    dateFrom?: string;
+    dateTo?: string;
+    displayUnit?: DisplayWeightUnit;
+    workspaceAthleteId?: string;
+    returnToWorkspace?: string;
+    workspaceReturn?: string;
+  } = {},
 ): string {
   return `/(tabs)/ledger/archive/${itemType}/${sourceId}${queryString({
     collection: returnState.collection,
@@ -121,5 +131,8 @@ export function archiveDetailHref(
     date_from: returnState.dateFrom,
     date_to: returnState.dateTo,
     displayUnit: returnState.displayUnit,
+    workspaceAthleteId: returnState.workspaceAthleteId,
+    returnToWorkspace: returnState.returnToWorkspace,
+    workspaceReturn: returnState.workspaceReturn,
   })}`;
 }

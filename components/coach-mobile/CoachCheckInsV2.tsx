@@ -67,11 +67,21 @@ const relative = (value?: string | null) => {
   return `${Math.round(delta / 86400000)}d ago`;
 };
 
-export function CoachCheckInsV2({ initialAthleteId }: { initialAthleteId?: number }) {
+export function CoachCheckInsV2({
+  initialAthleteId,
+  initialSubmissionId,
+  onWorkspaceReturn,
+}: {
+  initialAthleteId?: number;
+  initialSubmissionId?: number;
+  onWorkspaceReturn?: () => void;
+}) {
   const router = useRouter();
   const [data, setData] = useState<CoachCheckInsCommandCenter | null>(null);
   const [tab, setTab] = useState<Tab>('forms');
-  const [view, setView] = useState<ViewState>({ kind: 'home' });
+  const [view, setView] = useState<ViewState>(() => initialSubmissionId
+    ? { kind: 'review', submissionId: initialSubmissionId }
+    : { kind: 'home' });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +110,13 @@ export function CoachCheckInsV2({ initialAthleteId }: { initialAthleteId?: numbe
 
   const openForm = (formId: number) => setView({ kind: 'form', formId });
   const openReview = (submissionId: number) => setView({ kind: 'review', submissionId });
-  const home = () => setView({ kind: 'home' });
+  const home = () => {
+    if (initialSubmissionId && onWorkspaceReturn) {
+      onWorkspaceReturn();
+      return;
+    }
+    setView({ kind: 'home' });
+  };
   const refresh = async () => { setRefreshing(true); await load(true); };
 
   if (loading && !data) return <LoadingState />;

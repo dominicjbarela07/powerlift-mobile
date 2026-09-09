@@ -13,6 +13,7 @@ import {
   type StrengthStandardProjection,
   type StrengthStandingProjection,
 } from '@/lib/ledger-data';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 
 type LedgerLiveDataOptions = Readonly<{
   allowPartial?: boolean;
@@ -31,8 +32,9 @@ export type LedgerLiveDataFixture = Readonly<{
 }>;
 
 export function useLedgerLiveData(range: LedgerRange = '90d', options: LedgerLiveDataOptions = {}) {
+  const ledgerSubject = useAthleteLedgerSubject();
   const allowPartial = Boolean(options.allowPartial);
-  const athleteId = options.athleteId;
+  const athleteId = options.athleteId ?? ledgerSubject.athleteId;
   const fixture = __DEV__ ? options.fixture : undefined;
   const [progression, setProgression] = useState<LedgerProgression | null>(fixture?.progression ?? null);
   const [currentBests, setCurrentBests] = useState<CurrentBest[]>(fixture ? [...fixture.currentBests] : []);

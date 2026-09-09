@@ -9,7 +9,8 @@ const surface = read('components/coach-mobile/CoachCheckInsV2.tsx');
 const api = read('lib/api.ts');
 
 assert.match(route, /activeMobileMode === 'coach' \|\| activeMobileMode === 'individual'/, 'coach and self-coach must share the command center');
-assert.match(route, /<CoachCheckInsV2 initialAthleteId=/, 'coach route must render Check-Ins V2 with relationship-scoped context');
+assert.match(route, /<CoachCheckInsV2[\s\S]*initialAthleteId=\{initialAthleteId\}/, 'coach route must render Check-Ins V2 with relationship-scoped context');
+assert.match(route, /onWorkspaceReturn=\{returnToWorkspace[\s\S]*coach-athlete\/\$\{initialAthleteId\}\/reviews/, 'workspace Check-In review must return to the same athlete Reviews queue');
 assert.doesNotMatch(route, /router\.replace\('\/(?:\(tabs\)\/)?athlete-dashboard/, 'self-coach must not be redirected away');
 
 for (const contract of [

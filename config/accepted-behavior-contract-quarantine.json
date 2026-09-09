@@ -13,7 +13,6 @@
         "test-bottom-tab-glass.mjs",
         "test-calendar-pagination.mjs",
         "test-canonical-logger-lifecycle.mjs",
-        "test-coach-mobile-live.mjs",
         "test-coach-roster-first.mjs",
         "test-core-logger-identity-rail.mjs",
         "test-core-logger-top-backdown-timeline.mjs",

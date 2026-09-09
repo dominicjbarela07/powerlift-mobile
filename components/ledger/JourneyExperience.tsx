@@ -42,6 +42,8 @@ import {
 import { journeyPerformanceDetail } from '@/lib/journey-weight-presentation';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
+
 const JOURNEY_HERO = require('@/assets/images/ledger-index-v2/ledger-chapter-journey-v1.png');
 const CHAPTER_ART = {
   current: require('@/assets/images/journey-storyboard-v1/chapter-current.png'),
@@ -108,6 +110,7 @@ export function composeJourneyTotalStrengthPoints(lifts: readonly LedgerLift[]):
 
 export function JourneyExperience() {
   const router = useRouter();
+  const ledgerSubject = useAthleteLedgerSubject();
   const [bootstrap, setBootstrap] = useState<JourneyBootstrap | null>(null);
   const [progressions, setProgressions] = useState<Partial<Record<JourneyRange, LedgerProgression>>>({});
   const [range, setRange] = useState<JourneyRange>('all');
@@ -122,8 +125,8 @@ export function JourneyExperience() {
     setLoading(true);
     try {
       const [nextBootstrap, allTime] = await Promise.all([
-        fetchJourneyBootstrap({ limit: 24, includeSessions: false }),
-        fetchLedgerProgression('all'),
+        fetchJourneyBootstrap({ limit: 24, includeSessions: false, athleteId: ledgerSubject.athleteId }),
+        fetchLedgerProgression('all', ledgerSubject.athleteId),
       ]);
       setBootstrap(nextBootstrap);
       setProgressions((current) => ({ ...current, all: allTime }));
@@ -142,17 +145,17 @@ export function JourneyExperience() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ledgerSubject.athleteId]);
 
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     if (progressions[range]) return;
     let active = true;
-    fetchLedgerProgression(range).then((value) => {
+    fetchLedgerProgression(range, ledgerSubject.athleteId).then((value) => {
       if (active) setProgressions((current) => ({ ...current, [range]: value }));
     }).catch(() => undefined);
     return () => { active = false; };
-  }, [progressions, range]);
+  }, [ledgerSubject.athleteId, progressions, range]);
 
   if (loading) return <JourneyState kind="loading" message="Reconstructing your training record." />;
   if (error || !bootstrap) return <JourneyState kind={errorKind} message={error || 'Journey history is unavailable.'} onRetry={load} />;
@@ -173,7 +176,7 @@ export function JourneyExperience() {
         atmosphereSource={JOURNEY_HERO}
         backAccessibilityLabel="Back to The Ledger"
         contextLabel="THE LEDGER"
-        onBack={() => router.replace('/(tabs)/ledger/home' as any)}
+        onBack={() => router.replace((ledgerSubject.returnPath || '/(tabs)/ledger/home') as any)}
         style={styles.hero}
         subtitle={`${compactDate(earliestDate)} → today · ${recordDays.toLocaleString()} days recorded`}
         testID="journey-atmospheric-header"
@@ -193,7 +196,7 @@ export function JourneyExperience() {
         <ProgressSection progression={activeProgression} range={range} metric={metric} unit={unit} onRange={setRange} onMetric={setMetric} />
         <TrainingChaptersSection blocks={bootstrap.blocks.items} unit={unit} onOpen={(block) => setDetail({ kind: 'chapter', block })} onOpenAll={() => setDetail({ kind: 'chapters' })} />
         <BodyweightContextSection bootstrap={bootstrap} unit={unit} onOpen={() => setDetail({ kind: 'bodyweight' })} />
-        <CareerHighlightsSection entries={highlights} unit={unit} onOpenEvidence={(entry) => entry.source.href && router.push({ pathname: entry.source.href as any, params: { displayUnit: unit } } as any)} />
+        <CareerHighlightsSection entries={highlights} unit={unit} onOpenEvidence={(entry) => entry.source.href && router.push({ pathname: entry.source.href as any, params: { ...ledgerSubject.routeParams, displayUnit: unit } } as any)} />
         <Pressable accessibilityRole="button" onPress={() => setDetail({ kind: 'timeline' })} style={({ pressed }) => [styles.timelinePortal, pressed && styles.pressed]} testID="journey-view-full-timeline">
           <View style={styles.timelinePortalIcon}><Ionicons name="time-outline" size={24} color="#C899FF" /></View>
           <View style={styles.flex}><Text style={styles.portalEyebrow}>FULL TIMELINE</Text><Text style={styles.portalTitle}>Every preserved moment, in order.</Text><Text style={styles.portalBody}>Sessions, PRs, chapters, meets, milestones, and source evidence.</Text></View>
@@ -201,7 +204,7 @@ export function JourneyExperience() {
         </Pressable>
       </View>
 
-      <JourneyDetailModal detail={detail} bootstrap={bootstrap} unit={unit} onClose={() => setDetail(null)} onDetail={setDetail} />
+      <JourneyDetailModal athleteId={ledgerSubject.athleteId} routeParams={ledgerSubject.routeParams} detail={detail} bootstrap={bootstrap} unit={unit} onClose={() => setDetail(null)} onDetail={setDetail} />
     </View>
   );
 }
@@ -339,27 +342,27 @@ function CareerHighlightsSection({ entries, unit, onOpenEvidence }: { entries: J
   </View>;
 }
 
-function JourneyDetailModal({ detail, bootstrap, unit, onClose, onDetail }: { detail: JourneyDetail; bootstrap: JourneyBootstrap; unit: LedgerUnit; onClose: () => void; onDetail: (detail: JourneyDetail) => void }) {
+function JourneyDetailModal({ athleteId, routeParams, detail, bootstrap, unit, onClose, onDetail }: { athleteId?: number; routeParams: Record<string, string | undefined>; detail: JourneyDetail; bootstrap: JourneyBootstrap; unit: LedgerUnit; onClose: () => void; onDetail: (detail: JourneyDetail) => void }) {
   const insets = useSafeAreaInsets();
   const title = !detail ? 'Journey' : detail.kind === 'chapter' ? detail.block.name : detail.kind === 'chapters' ? 'Training Chapters' : detail.kind === 'bodyweight' ? 'Bodyweight Detail' : 'Full Timeline';
   return <Modal animationType="slide" onRequestClose={onClose} presentationStyle="fullScreen" visible={Boolean(detail)}>
     <SafeAreaView edges={['bottom']} style={[styles.modalScreen, { paddingTop: Math.max(insets.top, 52) }]}>
       <View style={styles.modalHeader}><Pressable accessibilityLabel="Back to Journey" accessibilityRole="button" onPress={onClose} style={styles.modalBack} testID="journey-detail-back"><Ionicons name="chevron-back" size={25} color="#F4F0F7" /></Pressable><View style={styles.flex}><Text style={styles.modalContext}>JOURNEY</Text><Text numberOfLines={1} style={styles.modalTitle}>{title}</Text></View></View>
-      {detail?.kind === 'chapter' ? <ChapterDetail asOfDate={bootstrap.as_of_date} block={detail.block} blocks={bootstrap.blocks.items} timeline={bootstrap.timeline.items} unit={unit} onDetail={onDetail} /> : null}
+      {detail?.kind === 'chapter' ? <ChapterDetail athleteId={athleteId} asOfDate={bootstrap.as_of_date} block={detail.block} blocks={bootstrap.blocks.items} timeline={bootstrap.timeline.items} unit={unit} onDetail={onDetail} /> : null}
       {detail?.kind === 'chapters' ? <AllChapters blocks={bootstrap.blocks.items} unit={unit} onOpen={(block) => onDetail({ kind: 'chapter', block })} /> : null}
-      {detail?.kind === 'bodyweight' ? <BodyweightDetail initial={bootstrap.bodyweight_context.recent_observations} blocks={bootstrap.blocks.items} unit={unit} /> : null}
-      {detail?.kind === 'timeline' ? <FullTimeline initial={bootstrap.timeline.items} unit={unit} /> : null}
+      {detail?.kind === 'bodyweight' ? <BodyweightDetail athleteId={athleteId} initial={bootstrap.bodyweight_context.recent_observations} blocks={bootstrap.blocks.items} unit={unit} /> : null}
+      {detail?.kind === 'timeline' ? <FullTimeline athleteId={athleteId} routeParams={routeParams} initial={bootstrap.timeline.items} unit={unit} /> : null}
     </SafeAreaView>
   </Modal>;
 }
 
-function ChapterDetail({ asOfDate, block, blocks, timeline, unit, onDetail }: { asOfDate: string; block: JourneyBlock; blocks: JourneyBlock[]; timeline: JourneyEntry[]; unit: LedgerUnit; onDetail: (detail: JourneyDetail) => void }) {
+function ChapterDetail({ athleteId, asOfDate, block, blocks, timeline, unit, onDetail }: { athleteId?: number; asOfDate: string; block: JourneyBlock; blocks: JourneyBlock[]; timeline: JourneyEntry[]; unit: LedgerUnit; onDetail: (detail: JourneyDetail) => void }) {
   const [entries, setEntries] = useState(timeline.filter((entry) => entry.training_block_id === block.id));
   useEffect(() => {
     let active = true;
-    fetchJourneyTimelinePage({ blockId: block.id, includeSessions: true, limit: 50 }).then((page) => { if (active) setEntries(page.items); }).catch(() => undefined);
+    fetchJourneyTimelinePage({ blockId: block.id, includeSessions: true, limit: 50, athleteId }).then((page) => { if (active) setEntries(page.items); }).catch(() => undefined);
     return () => { active = false; };
-  }, [block.id]);
+  }, [athleteId, block.id]);
   const index = blocks.findIndex((item) => item.id === block.id);
   const art = block.state === 'current' ? CHAPTER_ART.current : index % 2 === 0 ? CHAPTER_ART.foundation : CHAPTER_ART.transition;
   const comparison = block.strength_comparison;
@@ -390,7 +393,7 @@ function AllChapters({ blocks, unit, onOpen }: { blocks: JourneyBlock[]; unit: L
   return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalContent} testID="journey-all-chapters"><Text style={styles.modalIntro}>Every governed training block, newest to earliest.</Text>{blocks.map((block, index) => <ChapterCard key={block.id} block={block} index={index} unit={unit} onOpen={onOpen} />)}</ScrollView>;
 }
 
-function BodyweightDetail({ initial, blocks, unit }: { initial: ReportedBodyweightObservation[]; blocks: JourneyBlock[]; unit: LedgerUnit }) {
+function BodyweightDetail({ athleteId, initial, blocks, unit }: { athleteId?: number; initial: ReportedBodyweightObservation[]; blocks: JourneyBlock[]; unit: LedgerUnit }) {
   const [items, setItems] = useState<ReportedBodyweightObservation[]>(initial);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -399,10 +402,10 @@ function BodyweightDetail({ initial, blocks, unit }: { initial: ReportedBodyweig
   const loadFirst = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
-    try { const page = await fetchReportedBodyweightHistory({ limit: 50 }); setItems(page.items); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('The complete bodyweight record could not be loaded.'); } finally { setLoading(false); }
-  }, []);
+    try { const page = await fetchReportedBodyweightHistory({ limit: 50, athleteId }); setItems(page.items); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('The complete bodyweight record could not be loaded.'); } finally { setLoading(false); }
+  }, [athleteId]);
   useEffect(() => { void loadFirst(); }, [loadFirst]);
-  const loadMore = async () => { if (!cursor || loading) return; setLoading(true); setLoadError(null); try { const page = await fetchReportedBodyweightHistory({ limit: 50, cursor }); setItems((current) => [...current, ...page.items]); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('Earlier bodyweight reports could not be loaded.'); } finally { setLoading(false); } };
+  const loadMore = async () => { if (!cursor || loading) return; setLoading(true); setLoadError(null); try { const page = await fetchReportedBodyweightHistory({ limit: 50, cursor, athleteId }); setItems((current) => [...current, ...page.items]); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('Earlier bodyweight reports could not be loaded.'); } finally { setLoading(false); } };
   const ordered = [...items].filter((item) => item.training_date).sort((left, right) => String(left.training_date).localeCompare(String(right.training_date)));
   const first = ordered[0]; const last = ordered.at(-1);
   return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalContent} testID="journey-bodyweight-detail">
@@ -416,18 +419,18 @@ function BodyweightDetail({ initial, blocks, unit }: { initial: ReportedBodyweig
   </ScrollView>;
 }
 
-function FullTimeline({ initial, unit }: { initial: JourneyEntry[]; unit: LedgerUnit }) {
+function FullTimeline({ athleteId, routeParams, initial, unit }: { athleteId?: number; routeParams: Record<string, string | undefined>; initial: JourneyEntry[]; unit: LedgerUnit }) {
   const router = useRouter();
   const [items, setItems] = useState<JourneyEntry[]>(initial);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const loadFirst = useCallback(async () => { setLoading(true); setLoadError(null); try { const page = await fetchJourneyTimelinePage({ limit: 50, includeSessions: true }); setItems(page.items); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('The complete timeline could not be loaded.'); } finally { setLoading(false); } }, []);
+  const loadFirst = useCallback(async () => { setLoading(true); setLoadError(null); try { const page = await fetchJourneyTimelinePage({ limit: 50, includeSessions: true, athleteId }); setItems(page.items); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('The complete timeline could not be loaded.'); } finally { setLoading(false); } }, [athleteId]);
   useEffect(() => { void loadFirst(); }, [loadFirst]);
-  const loadMore = async () => { if (!cursor || loading) return; setLoading(true); setLoadError(null); try { const page = await fetchJourneyTimelinePage({ limit: 50, cursor, includeSessions: true }); setItems((current) => [...current, ...page.items]); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('Earlier timeline history could not be loaded.'); } finally { setLoading(false); } };
+  const loadMore = async () => { if (!cursor || loading) return; setLoading(true); setLoadError(null); try { const page = await fetchJourneyTimelinePage({ limit: 50, cursor, includeSessions: true, athleteId }); setItems((current) => [...current, ...page.items]); setCursor(page.next_cursor ?? null); setHasMore(page.has_more); } catch { setLoadError('Earlier timeline history could not be loaded.'); } finally { setLoading(false); } };
   let lastYear = '';
-  return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalContent} testID="journey-full-timeline"><Text style={styles.modalIntro}>Complete chronological evidence, newest first. Open any linked moment to inspect its preserved source.</Text>{items.map((entry) => { const year = entry.occurred_on.slice(0, 4); const heading = year !== lastYear; lastYear = year; return <React.Fragment key={entry.id}>{heading ? <Text style={styles.timelineYear}>{year}</Text> : null}<Pressable disabled={!entry.source.href} onPress={() => entry.source.href && router.push({ pathname: entry.source.href as any, params: { displayUnit: unit } } as any)} style={({ pressed }) => [styles.timelineRow, pressed && styles.pressed]}><View style={styles.timelineDate}><Text style={styles.timelineDay}>{monthDay(entry.occurred_on)}</Text></View><View style={styles.timelineAxis}><View style={styles.timelineDot} /><View style={styles.timelineLine} /></View><View style={styles.flex}><Text style={styles.timelineType}>{highlightLabel(entry.event_type)}</Text><Text style={styles.timelineTitle}>{entryDisplayTitle(entry)}</Text><Text style={styles.timelineDetail}>{journeyPerformanceDetail(entry.event_type, entry.performance, unit, entry.detail)}</Text></View>{entry.source.href ? <Ionicons name="arrow-forward" size={15} color="#82748D" /> : null}</Pressable></React.Fragment>; })}{loadError ? <Text accessibilityRole="alert" style={styles.loadError}>{loadError}</Text> : null}{hasMore ? <Pressable disabled={loading} onPress={() => void loadMore()} style={styles.secondaryAction}><Text style={styles.secondaryActionText}>{loading ? 'Loading…' : 'Load Earlier History'}</Text></Pressable> : <Text style={styles.completeLabel}>BEGINNING OF THE PRESERVED RECORD</Text>}</ScrollView>;
+  return <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalContent} testID="journey-full-timeline"><Text style={styles.modalIntro}>Complete chronological evidence, newest first. Open any linked moment to inspect its preserved source.</Text>{items.map((entry) => { const year = entry.occurred_on.slice(0, 4); const heading = year !== lastYear; lastYear = year; return <React.Fragment key={entry.id}>{heading ? <Text style={styles.timelineYear}>{year}</Text> : null}<Pressable disabled={!entry.source.href} onPress={() => entry.source.href && router.push({ pathname: entry.source.href as any, params: { ...routeParams, displayUnit: unit } } as any)} style={({ pressed }) => [styles.timelineRow, pressed && styles.pressed]}><View style={styles.timelineDate}><Text style={styles.timelineDay}>{monthDay(entry.occurred_on)}</Text></View><View style={styles.timelineAxis}><View style={styles.timelineDot} /><View style={styles.timelineLine} /></View><View style={styles.flex}><Text style={styles.timelineType}>{highlightLabel(entry.event_type)}</Text><Text style={styles.timelineTitle}>{entryDisplayTitle(entry)}</Text><Text style={styles.timelineDetail}>{journeyPerformanceDetail(entry.event_type, entry.performance, unit, entry.detail)}</Text></View>{entry.source.href ? <Ionicons name="arrow-forward" size={15} color="#82748D" /> : null}</Pressable></React.Fragment>; })}{loadError ? <Text accessibilityRole="alert" style={styles.loadError}>{loadError}</Text> : null}{hasMore ? <Pressable disabled={loading} onPress={() => void loadMore()} style={styles.secondaryAction}><Text style={styles.secondaryActionText}>{loading ? 'Loading…' : 'Load Earlier History'}</Text></Pressable> : <Text style={styles.completeLabel}>BEGINNING OF THE PRESERVED RECORD</Text>}</ScrollView>;
 }
 
 function curatedHighlights(bootstrap: JourneyBootstrap): JourneyEntry[] {

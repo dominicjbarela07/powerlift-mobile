@@ -10,6 +10,7 @@ import { ExperienceForScreen } from './experiences';
 import { LedgerFrame } from './primitives';
 import { ledgerHrefFor, LEDGER_DESTINATION_BY_KEY, type LedgerRoom, type LedgerScreen } from './routing';
 import type { LedgerLiveDataFixture } from './use-ledger-live-data';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 
 export function LedgerRouteScreen({ screen, achievementsDevFixture }: { screen: LedgerScreen; achievementsDevFixture?: LedgerLiveDataFixture }) {
   if (screen === 'achievements') return <LedgerAchievementsRoom devFixture={achievementsDevFixture} />;
@@ -33,5 +34,6 @@ function LedgerSpecializedRoom({ active, children }: React.PropsWithChildren<{ a
 
 function LedgerAchievementsRoom({ devFixture }: { devFixture?: LedgerLiveDataFixture }) {
   const router = useRouter();
-  return <AchievementsExperience devFixture={__DEV__ ? devFixture : undefined} onBack={() => router.replace(ledgerHrefFor('home') as any)} backAccessibilityLabel="Back to The Ledger" />;
+  const ledgerSubject = useAthleteLedgerSubject();
+  return <AchievementsExperience devFixture={__DEV__ ? devFixture : undefined} onBack={() => router.replace((ledgerSubject.returnPath || ledgerHrefFor('home')) as any)} backAccessibilityLabel="Back to The Ledger" />;
 }

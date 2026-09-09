@@ -22,6 +22,7 @@ import {
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
 
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import { ledgerHrefFor } from './routing';
 
 const VARIANTS_ATMOSPHERE = require('@/assets/images/ledger-index-v2/ledger-chapter-variants-v1.png');
@@ -86,19 +87,19 @@ function State({ title, retry }: { title: string; retry?: () => void }) {
   return <View style={styles.state}><Ionicons color={VIOLET_SOFT} name={retry ? 'alert-circle-outline' : 'hourglass-outline'} size={30} /><Text style={styles.stateText}>{title}</Text>{retry ? <Pressable onPress={retry} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable> : null}</View>;
 }
 
-function useVariantStory() {
+function useVariantStory(athleteId?: number) {
   const [story, setStory] = useState<LedgerCoreVariantsStory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const load = () => {
     setLoading(true);
     setError(null);
-    fetchLedgerCoreVariants()
+    fetchLedgerCoreVariants(athleteId)
       .then(setStory)
       .catch((caught) => setError(caught instanceof Error ? caught.message : 'Core Variant evidence could not be loaded.'))
       .finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  useEffect(load, [athleteId]);
   return { story, loading, error, load };
 }
 
@@ -116,7 +117,8 @@ function variantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' |
 
 export default function VariantsExperience() {
   const router = useRouter();
-  const { story, loading, error, load } = useVariantStory();
+  const ledgerSubject = useAthleteLedgerSubject();
+  const { story, loading, error, load } = useVariantStory(ledgerSubject.athleteId);
   const { unit, setUnit } = useSurfaceWeightUnit(story?.athlete.preferred_units);
   const [timelineMovementId, setTimelineMovementId] = useState<number | null>(null);
   const movementById = useMemo(() => new Map((story?.movements || []).map((movement) => [movement.core_movement_id, movement])), [story?.movements]);
@@ -130,8 +132,8 @@ export default function VariantsExperience() {
 
   if (loading) return <State title="Loading your Core Variant record." />;
   if (error || !story) return <State title={error || 'Core Variant evidence is unavailable.'} retry={load} />;
-  const openVariant = (coreMovementId: number) => router.push(`/(tabs)/ledger/variant/${coreMovementId}` as never);
-  const openFamily = (family: CoreVariantFamily) => router.push(`/(tabs)/ledger/variant-family/${family}` as never);
+  const openVariant = (coreMovementId: number) => router.push({ pathname: `/(tabs)/ledger/variant/${coreMovementId}` as any, params: ledgerSubject.routeParams } as never);
+  const openFamily = (family: CoreVariantFamily) => router.push({ pathname: `/(tabs)/ledger/variant-family/${family}` as any, params: ledgerSubject.routeParams } as never);
 
   return <View style={styles.page} testID="ledger-core-variants-continuous-experience">
     <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="variants-unit-toggle" />
@@ -140,7 +142,7 @@ export default function VariantsExperience() {
       atmosphereSource={VARIANTS_ATMOSPHERE}
       backAccessibilityLabel="Back to The Ledger"
       contextLabel="The Ledger · Supplemental Core Work"
-      onBack={() => router.replace(ledgerHrefFor('home') as never)}
+      onBack={() => ledgerSubject.returnPath ? router.replace(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
       subtitle="Exact variant progress, exposure, and training context."
       testID="variants-atmospheric-header"
       title="Variants"
@@ -192,7 +194,8 @@ export default function VariantsExperience() {
 
 export function VariantFamilyExperience({ family }: { family: CoreVariantFamily }) {
   const router = useRouter();
-  const { story, loading, error, load } = useVariantStory();
+  const ledgerSubject = useAthleteLedgerSubject();
+  const { story, loading, error, load } = useVariantStory(ledgerSubject.athleteId);
   const { unit, setUnit } = useSurfaceWeightUnit(story?.athlete.preferred_units);
   if (loading) return <State title="Loading Core lift variant family." />;
   if (error || !story) return <State title={error || 'Core Variant family is unavailable.'} retry={load} />;
@@ -202,7 +205,7 @@ export function VariantFamilyExperience({ family }: { family: CoreVariantFamily 
   const tone = FAMILY_TONES[family];
   const active = movements.filter((row) => row.currently_programmed);
   const progressing = movements.filter((row) => row.latest_progression);
-  const openVariant = (coreMovementId: number) => router.push(`/(tabs)/ledger/variant/${coreMovementId}` as never);
+  const openVariant = (coreMovementId: number) => router.push({ pathname: `/(tabs)/ledger/variant/${coreMovementId}` as any, params: ledgerSubject.routeParams } as never);
 
   return <View style={styles.page} testID="ledger-core-variant-family">
     <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} testID="variant-family-unit-toggle" />
@@ -211,7 +214,7 @@ export function VariantFamilyExperience({ family }: { family: CoreVariantFamily 
       atmosphereSource={VARIANTS_ATMOSPHERE}
       backAccessibilityLabel="Back to Variants"
       contextLabel="Core Variant Family"
-      onBack={() => router.back()}
+      onBack={() => router.replace({ pathname: '/(tabs)/ledger/variants', params: ledgerSubject.routeParams } as never)}
       subtitle={`Every governed supplemental movement supporting ${summary.label}.`}
       title={`${summary.label} Variants`}
     />
@@ -227,7 +230,8 @@ export function VariantFamilyExperience({ family }: { family: CoreVariantFamily 
 
 export function VariantDetailExperience({ coreMovementId }: { coreMovementId: number }) {
   const router = useRouter();
-  const { story, loading, error, load } = useVariantStory();
+  const ledgerSubject = useAthleteLedgerSubject();
+  const { story, loading, error, load } = useVariantStory(ledgerSubject.athleteId);
   const { unit, setUnit } = useSurfaceWeightUnit(story?.athlete.preferred_units);
   const movement = story?.movements.find((row) => row.core_movement_id === coreMovementId);
   if (loading) return <State title="Loading exact variant evidence." />;
@@ -243,7 +247,7 @@ export function VariantDetailExperience({ coreMovementId }: { coreMovementId: nu
       atmosphereSource={VARIANTS_ATMOSPHERE}
       backAccessibilityLabel="Back to Variants"
       contextLabel={`${movement.parent_lift_label} Variant · Exact Record`}
-      onBack={() => router.back()}
+      onBack={() => router.replace({ pathname: '/(tabs)/ledger/variants', params: ledgerSubject.routeParams } as never)}
       subtitle="Supplemental performance and exposure, independent from the Competition lift."
       testID="variant-detail-atmospheric-header"
       title={movement.name}
@@ -265,9 +269,9 @@ export function VariantDetailExperience({ coreMovementId }: { coreMovementId: nu
 
       <View style={styles.detailSection} testID="variant-block-history"><SectionHeading title="BLOCK HISTORY" subtitle="Exact variant exposure and programming status across blocks." /><BlockTimeline movement={movement} unit={unit} /></View>
 
-      <View style={styles.detailSection} testID="variant-session-history"><SectionHeading title="SESSION HISTORY" subtitle={`${movement.source_set_log_ids.length} exact source sets preserved.`} /><View style={styles.sessionList}>{movement.recent_exposures.map((exposure) => <Pressable key={exposure.workout_id} accessibilityRole="button" onPress={() => router.push(`/(tabs)/ledger/archive/session/${exposure.workout_id}` as never)} style={({ pressed }) => [styles.detailSessionRow, pressed && styles.pressed]}><View style={styles.detailSessionCopy}><Text style={[styles.detailSessionDate, { color: tone }]}>{readableDate(exposure.date)}</Text><Text numberOfLines={1} style={styles.detailSessionName}>{exposure.session_title}</Text><Text style={styles.detailSessionBlock}>{exposure.training_block_name || 'Unassigned block'}</Text></View><View style={styles.detailSessionValues}><Text style={styles.detailSessionBest}>{performanceLabel(exposure.best_set, unit)}</Text><Text style={styles.detailSessionMeta}>{exposure.set_count} sets · {volumeLabel(exposure.volume_kg, unit)} {unit.toUpperCase()}</Text></View><Ionicons color="#858D9A" name="chevron-forward" size={17} /></Pressable>)}</View></View>
+      <View style={styles.detailSection} testID="variant-session-history"><SectionHeading title="SESSION HISTORY" subtitle={`${movement.source_set_log_ids.length} exact source sets preserved.`} /><View style={styles.sessionList}>{movement.recent_exposures.map((exposure) => <Pressable key={exposure.workout_id} accessibilityRole="button" onPress={() => router.push({ pathname: `/(tabs)/ledger/archive/session/${exposure.workout_id}` as any, params: ledgerSubject.routeParams } as never)} style={({ pressed }) => [styles.detailSessionRow, pressed && styles.pressed]}><View style={styles.detailSessionCopy}><Text style={[styles.detailSessionDate, { color: tone }]}>{readableDate(exposure.date)}</Text><Text numberOfLines={1} style={styles.detailSessionName}>{exposure.session_title}</Text><Text style={styles.detailSessionBlock}>{exposure.training_block_name || 'Unassigned block'}</Text></View><View style={styles.detailSessionValues}><Text style={styles.detailSessionBest}>{performanceLabel(exposure.best_set, unit)}</Text><Text style={styles.detailSessionMeta}>{exposure.set_count} sets · {volumeLabel(exposure.volume_kg, unit)} {unit.toUpperCase()}</Text></View><Ionicons color="#858D9A" name="chevron-forward" size={17} /></Pressable>)}</View></View>
 
-      <Pressable accessibilityRole="button" accessibilityLabel={`Open exact history for ${movement.name}`} onPress={() => router.push(movementHistorySheetRouteForCanonicalIdentity({ coreMovementId: movement.core_movement_id }) as never)} style={({ pressed }) => [styles.sourceDetail, pressed && styles.pressed]}><Ionicons color={tone} name="finger-print-outline" size={21} /><View style={styles.sourceDetailCopy}><Text style={styles.sourceDetailTitle}>SOURCE EVIDENCE</Text><Text style={styles.sourceDetailBody}>Exact governed ID {movement.core_movement_id} · {movement.source_set_log_ids.length} immutable performed sets · no Competition {movement.parent_lift_label} evidence merged.</Text></View><Ionicons color="#858D9A" name="chevron-forward" size={17} /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={`Open exact history for ${movement.name}`} onPress={() => router.push(movementHistorySheetRouteForCanonicalIdentity({ coreMovementId: movement.core_movement_id, athleteId: ledgerSubject.athleteId }) as never)} style={({ pressed }) => [styles.sourceDetail, pressed && styles.pressed]}><Ionicons color={tone} name="finger-print-outline" size={21} /><View style={styles.sourceDetailCopy}><Text style={styles.sourceDetailTitle}>SOURCE EVIDENCE</Text><Text style={styles.sourceDetailBody}>Exact governed ID {movement.core_movement_id} · {movement.source_set_log_ids.length} immutable performed sets · no Competition {movement.parent_lift_label} evidence merged.</Text></View><Ionicons color="#858D9A" name="chevron-forward" size={17} /></Pressable>
     </View>
   </View>;
 }

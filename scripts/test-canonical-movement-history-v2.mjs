@@ -184,8 +184,8 @@ assert.match(coachReview, /onOpenMovementHistory/);
 assert.match(coachReview, /movementHistorySheetRoute/);
 assert.match(programmingRoute, /movementHistorySheetRoute/);
 assert.match(ledgerExperiences, /movementHistorySheetRouteForCanonicalIdentity/);
-assert.match(variantsExperience, /movementHistorySheetRouteForCanonicalIdentity\(\{ coreMovementId: movement\.core_movement_id \}\)/,
-  'exact Core Variant detail preserves the canonical history launch');
+assert.match(variantsExperience, /movementHistorySheetRouteForCanonicalIdentity\(\{ coreMovementId: movement\.core_movement_id, athleteId: ledgerSubject\.athleteId \}\)/,
+  'exact Core Variant detail preserves the canonical history launch and relationship-scoped athlete identity');
 assert.match(ledgerRoute, /mode === 'variant'[\s\S]*coreMovementId/);
 assert.match(launch, /identityType === 'core'[\s\S]*coreMovementId/);
 

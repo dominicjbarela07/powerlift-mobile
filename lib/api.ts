@@ -1817,6 +1817,27 @@ export async function getMessengerThreads(): Promise<{
   }
 }
 
+export async function ensureCoachAthleteThread(athleteId: number): Promise<{
+  ok: boolean;
+  error?: string;
+  thread_id?: number;
+}> {
+  try {
+    const response = await fetchJson<any>('/messenger/mobile/threads/ensure-athlete', {
+      method: 'POST',
+      auth: true,
+      body: { athlete_id: athleteId } as any,
+    });
+    const payload = response.json || {};
+    if (!response.ok || !payload.ok) {
+      return { ok: false, error: payload.error || `HTTP ${response.status}` };
+    }
+    return { ok: true, thread_id: Number(payload.thread_id) };
+  } catch {
+    return { ok: false, error: 'Network error' };
+  }
+}
+
 export async function getThreadMessages(
   threadId: number,
   opts: { limit?: number; beforeId?: number } = {}
