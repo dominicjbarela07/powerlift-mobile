@@ -69,14 +69,24 @@ const sharedText = read('components/ui/sl-text.tsx');
 assert.match(sharedText, /guardedMobileLineHeight\(flattenedStyle\?\.fontSize, flattenedStyle\?\.lineHeight\)/);
 assert.doesNotMatch(sharedText, /allowFontScaling=\{false\}/);
 
-const stressLab = read('app/(tabs)/dev-mocks/text-layout.tsx');
-assert.match(stressLab, /MOBILE_TEXT_STRESS_FIXTURES/);
-assert.match(stressLab, /<LoggerSheetHeader/);
-assert.match(stressLab, /unit === 'kg'/);
-assert.match(stressLab, /<SLContextualHeader/);
-assert.match(stressLab, /<SLListRow/);
-assert.match(stressLab, /<SLQueueRow/);
-assert.match(stressLab, /iconRightPosition="edge"/);
+const stressLabPath = 'app/(tabs)/dev-mocks/text-layout.tsx';
+if (fs.existsSync(path.join(root, stressLabPath))) {
+  const stressLab = read(stressLabPath);
+  assert.match(stressLab, /MOBILE_TEXT_STRESS_FIXTURES/);
+  assert.match(stressLab, /<LoggerSheetHeader/);
+  assert.match(stressLab, /unit === 'kg'/);
+  assert.match(stressLab, /<SLContextualHeader/);
+  assert.match(stressLab, /<SLListRow/);
+  assert.match(stressLab, /<SLQueueRow/);
+  assert.match(stressLab, /iconRightPosition="edge"/);
+} else {
+  const appConfig = JSON.parse(read('app.json'));
+  assert.equal(
+    appConfig.expo?.extra?.releaseTrack,
+    'testflight',
+    'the text stress lab may only be absent from the governed TestFlight release projection',
+  );
+}
 
 const loggerPrimitives = read('components/workout-logger/logger-primitives.tsx');
 assert.match(loggerPrimitives, /export function LoggerSheetHeader/);

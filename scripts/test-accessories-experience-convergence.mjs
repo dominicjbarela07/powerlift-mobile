@@ -4,7 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT
+  ? path.resolve(process.env.STRENGTH_LEDGER_BACKEND_ROOT)
+  : path.resolve(root, '..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+const readBackend = (relative) => fs.readFileSync(path.join(backendRoot, relative), 'utf8');
 
 const experience = read('components/ledger/AccessoriesExperience.tsx');
 const route = read('components/ledger/route-screen.tsx');
@@ -12,8 +16,8 @@ const exploration = read('components/ledger/exploration-experiences.tsx');
 const client = read('lib/ledger-exploration.ts');
 const archive = read('components/ledger/archive-foundation.tsx');
 const movementHistory = read('components/movement-history/CanonicalMovementHistoryScreen.tsx');
-const backend = read('../app/services/ledger_archive.py');
-const engineeringDirective = read('../AGENTS.md');
+const backend = readBackend('app/services/ledger_archive.py');
+const engineeringDirective = readBackend('AGENTS.md');
 
 assert.match(route, /screen === 'accessories'[\s\S]*<AccessoriesExperience/,
   'The shipping Accessories route must use the dedicated continuous experience.');

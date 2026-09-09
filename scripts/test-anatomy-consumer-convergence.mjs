@@ -20,6 +20,7 @@ function filesBelow(relative) {
 }
 
 const productFiles = ['app', 'components', 'lib'].flatMap(filesBelow);
+const hasDevAnatomyLab = fs.existsSync(path.join(root, 'app/(tabs)/dev-mocks/anatomy-system.tsx'));
 
 const directMuscleMapConsumers = productFiles.filter((relative) => {
   const contents = source(relative);
@@ -27,7 +28,7 @@ const directMuscleMapConsumers = productFiles.filter((relative) => {
     && relative !== 'components/anatomy/MuscleMap.tsx';
 });
 assert.deepEqual(directMuscleMapConsumers.sort(), [
-  'app/(tabs)/dev-mocks/anatomy-system.tsx',
+  ...(hasDevAnatomyLab ? ['app/(tabs)/dev-mocks/anatomy-system.tsx'] : []),
   'components/anatomy/GovernedMuscleThumbnail.tsx',
   'components/anatomy/ProgrammingMuscleRegionArt.tsx',
   'components/ledger/AccessoriesExperience.tsx',
@@ -39,7 +40,7 @@ assert.deepEqual(masterAssetConsumers, ['components/anatomy/MuscleMap.tsx'], 'on
 
 const maskRegistryConsumers = productFiles.filter((relative) => /anatomy-mask-registry/.test(source(relative)));
 assert.deepEqual(maskRegistryConsumers.sort(), [
-  'app/(tabs)/dev-mocks/anatomy-system.tsx',
+  ...(hasDevAnatomyLab ? ['app/(tabs)/dev-mocks/anatomy-system.tsx'] : []),
   'components/anatomy/MuscleMap.tsx',
 ].sort(), 'only the canonical renderer and DEV lab may import registered segment geometry');
 

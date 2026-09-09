@@ -3,7 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const backendRoot = resolve(root, '..');
+const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT
+  ? resolve(process.env.STRENGTH_LEDGER_BACKEND_ROOT)
+  : resolve(root, '..');
 const source = (base, path) => readFileSync(resolve(base, path), 'utf8');
 const experience = source(root, 'components/ledger/VariantsExperience.tsx');
 const routeScreen = source(root, 'components/ledger/route-screen.tsx');
