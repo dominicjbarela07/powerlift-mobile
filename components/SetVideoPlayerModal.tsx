@@ -448,6 +448,11 @@ export default function SetVideoPlayerModal({
   }, [initialCoachFeedbackOpen, initialUrl, initialVideo, refreshVideoUrl, requestKey, reviewPanel, visible]);
 
   useEffect(() => {
+    if (!visible || !initialVideo || Number(initialVideo.id) !== Number(videoId)) return;
+    setVideo(initialVideo);
+  }, [initialVideo, videoId, visible]);
+
+  useEffect(() => {
     if (!visible || playerStatus?.status !== 'readyToPlay') return;
     try {
       player.play();

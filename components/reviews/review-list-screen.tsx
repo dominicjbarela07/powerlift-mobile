@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import RefreshScreen from '@/components/refresh-screen';
 import { ReviewFilterRow } from '@/components/reviews/review-filter-row';
@@ -17,6 +17,10 @@ import {
   type CoachReviewType,
 } from '@/lib/api';
 import { createLatestRequestManager } from '@/lib/latest-request';
+import {
+  buildCoachVideoReviewReturnParams,
+  type CoachVideoReviewReturnContext,
+} from '@/lib/coach-video-review-return';
 
 type Payload = {
   ok: boolean;
@@ -25,9 +29,19 @@ type Payload = {
   pagination: CoachReviewPagination;
 };
 
-function openReview(router: ReturnType<typeof useRouter>, item: CoachReviewItem) {
+function openReview(
+  router: ReturnType<typeof useRouter>,
+  item: CoachReviewItem,
+  returnContext: Extract<CoachVideoReviewReturnContext, { kind: 'queue' | 'history' }>,
+) {
   if (item.review_type === 'video') {
-    router.push({ pathname: '/(tabs)/coach-video-review', params: { videoId: String(item.source_id) } } as any);
+    router.push({
+      pathname: '/(tabs)/coach-video-review',
+      params: {
+        videoId: String(item.source_id),
+        ...buildCoachVideoReviewReturnParams(returnContext),
+      },
+    } as any);
     return;
   }
   router.push({ pathname: '/(tabs)/coach-session-review', params: { workoutId: String(item.source_id) } } as any);
@@ -35,15 +49,24 @@ function openReview(router: ReturnType<typeof useRouter>, item: CoachReviewItem)
 
 export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
   const router = useRouter();
-  const params = useLocalSearchParams<{ athleteId?: string }>();
+  const params = useLocalSearchParams<{
+    athleteId?: string;
+    reviewType?: string;
+    reviewScrollY?: string;
+  }>();
   const [athleteId, setAthleteId] = useState(params.athleteId || '');
-  const [reviewType, setReviewType] = useState<CoachReviewType>('all');
+  const initialReviewType = params.reviewType === 'session' || params.reviewType === 'video'
+    ? params.reviewType
+    : 'all';
+  const [reviewType, setReviewType] = useState<CoachReviewType>(initialReviewType);
   const [payload, setPayload] = useState<Payload | null>(null);
   const [items, setItems] = useState<CoachReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const initialScrollY = Number(params.reviewScrollY);
+  const scrollYRef = useRef(Number.isFinite(initialScrollY) && initialScrollY >= 0 ? initialScrollY : 0);
   const requests = useRef(createLatestRequestManager<Awaited<ReturnType<typeof getCoachReviewQueue>>>()).current;
 
   useEffect(() => {
@@ -83,7 +106,7 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
     setLoadingMore(false);
   }, [athleteId, mode, requests, reviewType, router]);
 
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { void load(); }, [load]));
 
   const athleteOptions = useMemo(() => [
     { value: '', label: 'Team' },
@@ -95,6 +118,9 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
       refreshing={refreshing}
       onRefresh={() => load(1, false, true)}
       contentContainerStyle={styles.screen}
+      contentOffset={{ x: 0, y: scrollYRef.current }}
+      onScroll={(event) => { scrollYRef.current = event.nativeEvent.contentOffset.y; }}
+      scrollEventThrottle={120}
     >
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton} accessibilityLabel="Back to Review Hub">
@@ -150,8 +176,18 @@ export function ReviewListScreen({ mode }: { mode: 'queue' | 'history' }) {
       ) : null}
 
       <View style={styles.list}>
-        {items.map((item) => (
-          <ReviewItemCard key={item.key} item={item} onPress={() => openReview(router, item)} />
+        {items.map((item, index) => (
+          <ReviewItemCard
+            key={item.key}
+            item={item}
+            onPress={() => openReview(router, item, {
+              kind: mode,
+              athleteId: athleteId ? Number(athleteId) : undefined,
+              reviewType,
+              scrollY: scrollYRef.current,
+              queuePosition: index,
+            })}
+          />
         ))}
       </View>
 

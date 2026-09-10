@@ -22,6 +22,10 @@ import { simplifyMobileMovementName } from '@/lib/mobileMovementNames';
 import { SLColors, SLRadius, SLShadows, SLTypography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { formatWeightFromKg, normalizeDisplayWeightUnit } from '@/lib/display-units';
+import {
+  coachVideoReviewReturnTarget,
+  resolveCoachVideoReviewReturnContext,
+} from '@/lib/coach-video-review-return';
 
 const REVIEW_TAG_OPTIONS = [
   ['great_set', 'Great Set'],
@@ -100,9 +104,39 @@ export default function CoachVideoReviewScreen() {
     athleteId?: string;
     returnToWorkspace?: string;
     workspaceReturn?: string;
+    workspaceSubjectKey?: string;
+    reviewReturnTo?: string;
+    reviewSection?: string;
+    reviewSegment?: string;
+    reviewType?: string;
+    reviewScrollY?: string;
+    queuePosition?: string;
   }>();
   const requestedVideoId = Number(params.videoId);
-  const returnAthleteId = params.returnToWorkspace === '1' ? Number(params.athleteId || 0) : 0;
+  const returnContext = useMemo(() => resolveCoachVideoReviewReturnContext({
+    athleteId: params.athleteId,
+    queuePosition: params.queuePosition,
+    returnToWorkspace: params.returnToWorkspace,
+    reviewReturnTo: params.reviewReturnTo,
+    reviewScrollY: params.reviewScrollY,
+    reviewSection: params.reviewSection,
+    reviewSegment: params.reviewSegment,
+    reviewType: params.reviewType,
+    workspaceReturn: params.workspaceReturn,
+    workspaceSubjectKey: params.workspaceSubjectKey,
+  }), [
+    params.athleteId,
+    params.queuePosition,
+    params.returnToWorkspace,
+    params.reviewReturnTo,
+    params.reviewScrollY,
+    params.reviewSection,
+    params.reviewSegment,
+    params.reviewType,
+    params.workspaceReturn,
+    params.workspaceSubjectKey,
+  ]);
+  const returnTarget = useMemo(() => coachVideoReviewReturnTarget(returnContext), [returnContext]);
   const [videos, setVideos] = useState<SetVideoSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,6 +148,7 @@ export default function CoachVideoReviewScreen() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [videoAngle, setVideoAngle] = useState('unknown');
   const [savingAction, setSavingAction] = useState<string | null>(null);
+  const [reviewError, setReviewError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -124,6 +159,7 @@ export default function CoachVideoReviewScreen() {
     setSelectedTags(normalizeReviewTagSlugs(selectedVideo.review_tags));
     setVideoAngle(selectedVideo.video_angle || 'unknown');
     setSavingAction(null);
+    setReviewError(null);
   }, [selectedVideo?.id]);
 
   const loadInbox = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
@@ -178,15 +214,14 @@ export default function CoachVideoReviewScreen() {
     [videos],
   );
 
-  const closeDirectReview = useCallback(() => {
+  const returnFromReview = useCallback(() => {
     setSelectedVideo(null);
-    if (returnAthleteId > 0) {
-      const destination = params.workspaceReturn === 'messages' ? 'messages' : 'reviews';
-      router.replace(`/(tabs)/coach-athlete/${returnAthleteId}/${destination}` as any);
+    if (returnTarget) {
+      router.dismissTo(returnTarget as any);
       return;
     }
     loadInbox({ silent: true });
-  }, [loadInbox, params.workspaceReturn, returnAthleteId, router]);
+  }, [loadInbox, returnTarget, router]);
 
   const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) => (
@@ -198,6 +233,7 @@ export default function CoachVideoReviewScreen() {
     if (!selectedVideo) return;
     try {
       setSavingAction(action);
+      setReviewError(null);
       const res = await fetchJson(`/video-review/mobile/coach/attachments/${selectedVideo.id}/feedback`, {
         method: 'POST',
         auth: true,
@@ -213,9 +249,14 @@ export default function CoachVideoReviewScreen() {
       if (!res.ok || !payload.ok) {
         throw new Error(payload.error || `Could not save review (${res.status})`);
       }
-      Keyboard.dismiss();
       const updated = payload.video as SetVideoSummary;
-      setSelectedVideo(updated);
+      if (!updated || Number(updated.id) !== Number(selectedVideo.id)) {
+        throw new Error('Strength Ledger did not return the saved review. Please try again.');
+      }
+      if (action === 'mark_reviewed' && updated.review_status !== 'reviewed') {
+        throw new Error('The review was not confirmed as Reviewed. Please try again.');
+      }
+      Keyboard.dismiss();
       setFeedback(updated.coach_feedback || '');
       setPrivateNotes(updated.coach_private_notes || '');
       setSelectedTags(normalizeReviewTagSlugs(updated.review_tags));
@@ -226,12 +267,17 @@ export default function CoachVideoReviewScreen() {
         }
         return prev.map((item) => (item.id === updated.id ? updated : item));
       });
+      if (action === 'mark_reviewed') {
+        returnFromReview();
+        return;
+      }
+      setSelectedVideo(updated);
     } catch (err: any) {
-      setError(err?.message || 'Could not save review.');
+      setReviewError(err?.message || 'Could not save review. Please try again.');
     } finally {
       setSavingAction(null);
     }
-  }, [feedback, privateNotes, selectedTags, selectedVideo, videoAngle]);
+  }, [feedback, privateNotes, returnFromReview, selectedTags, selectedVideo, videoAngle]);
 
   const hasUnsavedChanges = useMemo(() => {
     if (!selectedVideo) return false;
@@ -326,6 +372,13 @@ export default function CoachVideoReviewScreen() {
           })}
         </View>
       </View>
+
+      {reviewError ? (
+        <View style={styles.reviewError} accessibilityLiveRegion="polite">
+          <Ionicons name="alert-circle-outline" size={18} color={SLColors.danger} />
+          <ThemedText style={styles.reviewErrorText}>{reviewError}</ThemedText>
+        </View>
+      ) : null}
 
       <View style={styles.reviewActions}>
         <TouchableOpacity
@@ -487,7 +540,7 @@ export default function CoachVideoReviewScreen() {
         showPlaybackSpeedControls
         reviewPanel={reviewPanel}
         hasUnsavedChanges={hasUnsavedChanges}
-        onClose={closeDirectReview}
+        onClose={returnFromReview}
       />
 
       <Modal
@@ -882,6 +935,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  reviewError: {
+    alignItems: 'center',
+    backgroundColor: SLColors.dangerSoft,
+    borderColor: SLColors.danger,
+    borderRadius: SLRadius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+  },
+  reviewErrorText: {
+    color: SLColors.danger,
+    flex: 1,
+    fontSize: SLTypography.caption.fontSize,
+    fontWeight: '800',
+    lineHeight: 17,
   },
   reviewButton: {
     minHeight: 36,
