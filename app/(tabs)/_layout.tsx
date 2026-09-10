@@ -158,6 +158,8 @@ function FilteredTabBar({
   if (isImmersiveMeetMode) return null;
   if (normalizedPathname.startsWith('/coach-athlete/')) return null;
   if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;
+  if (focusedParams.returnToWorkspace === '1'
+    && ['/coach-session-review', '/coach-video-review', '/check-ins'].includes(normalizedPathname)) return null;
   if (hidesNavigationForSessionEditor) return null;
   if (hidesNavigationForCompletedRecap) return null;
 
