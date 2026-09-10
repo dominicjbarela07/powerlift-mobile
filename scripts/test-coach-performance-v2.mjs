@@ -29,6 +29,6 @@ assert.match(performance, /if \(!deep\) return/);
 assert.doesNotMatch(performance, /fetchLedgerAccomplishmentHistory/);
 assert.match(performance, /<CanonicalMovementArtwork/);
 assert.match(training, /focusedWorkspace \? '\/\(tabs\)\/coach-athlete\/\[athleteId\]\/training'/);
-assert.match(training, /saveTraining\?\.\(\(current\) => \(\{ \.\.\.current, scrollY \}\)\)/);
+assert.match(training, /focusedWorkspace\?\.setTrainingState\(\(current\) => \(\{ \.\.\.current, scrollY \}\)\)/);
 assert.match(ledger, /\['evidence', 'performance', 'brief'\]/);
 console.log('Coach Performance V2 subject, trajectory, bounded loading, canonical artwork and navigation: PASS');

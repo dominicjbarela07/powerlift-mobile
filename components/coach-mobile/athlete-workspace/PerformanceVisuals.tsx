@@ -63,7 +63,7 @@ export function StrengthHero({ data, unit, compact = false, onPress, onLiftPress
       <View style={[v.liftStrip, compact && v.compactStrip]}>{lifts.map((lift) => <Pressable key={lift.key} accessibilityRole="button" accessibilityLabel={`Open ${lift.label} strength evidence`} onPress={() => onLiftPress?.(lift.key!)} style={({ pressed }) => [v.lift, pressed && v.pressed]}>
         <View style={v.liftLabelRow}><View style={[v.signalDot, { backgroundColor: LIFT_COLORS[lift.key!] }]} /><Text style={v.liftLabel}>{lift.label}</Text></View>
         <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={v.liftValue}>{displayCalculatedWeight(lift.current_e1rm_kg, unit)}</Text>
-        {!compact ? <Text style={[v.liftDelta, { color: lift.change_kg != null && lift.change_kg < 0 ? INK.magenta : INK.green }]}>{(lift.points?.length || 0) >= 2 ? deltaLabel(lift.change_kg, unit) : 'First evidence'}</Text> : null}
+        {!compact ? <Text style={[v.liftDelta, { color: lift.current_e1rm_kg == null ? INK.muted : lift.change_kg != null && lift.change_kg < 0 ? INK.magenta : INK.green }]}>{(lift.points?.length || 0) >= 2 ? deltaLabel(lift.change_kg, unit) : lift.current_e1rm_kg == null ? 'No evidence yet' : 'First evidence'}</Text> : null}
       </Pressable>)}</View>
       {compact && onPress ? <Pressable accessibilityRole="button" onPress={onPress} style={v.heroFooter}><Text style={v.link}>Open Performance</Text><Ionicons color={INK.violet} name="arrow-forward" size={20} /></Pressable> : null}
     </View>

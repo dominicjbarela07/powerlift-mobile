@@ -1029,6 +1029,10 @@ function IndividualProgrammingHome({
   const previewRouteHasBlurredRef = useRef(false);
   const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
+  const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const initialWorkspaceScroll = useRef(focusedWorkspace?.trainingState.scrollY || 0);
+  const workspaceScrollReady = useRef(false);
+  const workspaceScrollRestoring = useRef(false);
   const followProgrammingOffset = useCallback((offsetY: number) => {
     programmingScrollRef.current?.scrollTo({
       y: Math.max(0, offsetY - 12),
@@ -1205,6 +1209,20 @@ function IndividualProgrammingHome({
         ref={programmingScrollRef}
         style={styles.scrollView}
         contentContainerStyle={styles.programmingScroll}
+        onContentSizeChange={() => {
+          if (!focusedWorkspace || loading || error || workspaceScrollReady.current || workspaceScrollRestoring.current) return;
+          workspaceScrollRestoring.current = true;
+          requestAnimationFrame(() => {
+            programmingScrollRef.current?.scrollTo({ y: initialWorkspaceScroll.current, animated: false });
+            workspaceScrollReady.current = true;
+          });
+        }}
+        onScroll={(event) => {
+          if (!workspaceScrollReady.current) return;
+          const scrollY = event.nativeEvent.contentOffset.y;
+          focusedWorkspace?.setTrainingState((current) => ({ ...current, scrollY }));
+        }}
+        scrollEventThrottle={160}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.muted} />}
       >
         {loading ? (
@@ -2630,12 +2648,6 @@ export function ProgrammingStoryboard({
 
       <ScrollView
         contentContainerStyle={storyStyles.scroll}
-        contentOffset={{ x: 0, y: focusedWorkspace?.trainingState.scrollY || 0 }}
-        onScroll={(event) => {
-          const scrollY = event.nativeEvent.contentOffset.y;
-          saveTraining?.((current) => ({ ...current, scrollY }));
-        }}
-        scrollEventThrottle={160}
         onScrollBeginDrag={() => setOpenSwipeSessionId(null)}
         scrollEnabled={!draggingSessionId && !dragMoveBusy}
         showsVerticalScrollIndicator={false}
