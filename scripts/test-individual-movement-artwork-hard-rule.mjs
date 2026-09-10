@@ -52,7 +52,8 @@ const resolver = read('lib', 'canonical-movement-artwork.ts');
 
 assert.match(logger, /<CanonicalMovementArtwork/);
 assert.doesNotMatch(logger, /AccessoryMuscleRegionMedallion/);
-assert.match(workout, /movementArtworkInput:\s*\{/);
+assert.match(workout, /movementArtworkInput:\s*canonicalArtworkInputForLoggerItem\(item\)/);
+assert.doesNotMatch(workout, /movementArtworkInput:\s*\{\s*\.\.\.item/);
 assert.doesNotMatch(workout, /accessoryMuscleRegion:\s*isAccessory/);
 assert.doesNotMatch(renderer, /MuscleMap|full-body|full_body/);
 assert.doesNotMatch(resolver, /movement_name|movementName|display_name|displayName|equipment_definition|manufacturer/);
