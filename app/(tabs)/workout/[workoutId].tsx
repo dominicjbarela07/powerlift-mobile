@@ -318,7 +318,10 @@ import {
   resolveMovementHistoryLaunchForItem,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '@/lib/movement-history-launch';
-import { resolveLoggerMovementIdentity } from '@/lib/logger-movement-identity';
+import {
+  canonicalArtworkInputForLoggerItem,
+  resolveLoggerMovementIdentity,
+} from '@/lib/logger-movement-identity';
 import {
   equipmentPresentationLabel,
   equipmentPresentationParts,
@@ -7401,14 +7404,7 @@ export default function WorkoutViewerScreen() {
       : baseProgress;
     const coach = data.coach;
     return {
-      movementArtworkInput: {
-        ...item,
-        kind: isAccessory
-          ? 'accessory'
-          : String(item.variant || '').trim().toUpperCase() === 'VR'
-            ? 'variant'
-            : 'core',
-      },
+      movementArtworkInput: canonicalArtworkInputForLoggerItem(item),
       liftLabel: identity.label,
       liftAccentColor: identity.accentColor,
       plateStack,

@@ -30,6 +30,11 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 import {
+  CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
+  canonicalMovementSearchEmptyCopy,
+  rankCanonicalMovementChoices,
+} from '@/lib/canonical-movement-search';
+import {
   ACCESSORY_EXECUTION_FAMILIES,
   ACCESSORY_MUSCLE_GROUPS,
   ACCESSORY_PICKER_REGIONS,
@@ -62,6 +67,7 @@ import {
   resolveMovementHistoryLaunchForItem,
   resolveMovementHistoryLaunchFromMeasurement,
 } from '@/lib/movement-history-launch';
+import { moveSessionItemIds } from '@/lib/session-reorder';
 
 type PlannedSet = {
   set_index?: number | null;
@@ -400,8 +406,8 @@ const CUSTOM_EXECUTION_PRESENTATION = {
 
 const KG_PER_LB = 0.45359237;
 const WHEEL_ITEM_WIDTH = 64;
-const REORDER_ROW_HEIGHT = 78;
-const REORDER_ROW_GAP = 10;
+const REORDER_ROW_HEIGHT = 96;
+const REORDER_ROW_GAP = 8;
 const REORDER_ROW_STEP = REORDER_ROW_HEIGHT + REORDER_ROW_GAP;
 
 const colors = {
@@ -1494,10 +1500,13 @@ function TrainingLiftEditorModal({
     && !!setup.targetHigh.trim();
   useEffect(() => setMovementQuery(''), [state?.item?.id, state?.mode]);
   const visibleMovementChoices = useMemo(() => {
-    const query = movementQuery.trim().toLowerCase();
+    const query = movementQuery.trim();
     const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
-    return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
-      .filter(({ movement }) => !query || movementPresetSearchText(movement).includes(query))
+    return rankCanonicalMovementChoices(
+      sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement }))),
+      query,
+      ({ group, movement }) => `${movementPresetSearchText(movement)} ${group.name}`,
+    )
       .slice(0, query ? 48 : (isCompetition ? 3 : 14));
   }, [activeGroup, groups, isCompetition, movementQuery]);
 
@@ -1925,7 +1934,7 @@ function AccessoryEditorModal({
         .finally(() => {
           if (requestId === searchRequestRef.current) setSearchLoading(false);
         });
-    }, movementQuery.trim() ? 220 : 0);
+    }, movementQuery.trim() ? CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS : 0);
     return () => clearTimeout(timer);
   }, [
     athleteId,
@@ -2391,7 +2400,7 @@ function AccessoryEditorModal({
       )) : null}
       {!searchLoading && !searchError && !searchResults.length ? (
         <View style={styles.accessoryEditorStatusBlock}>
-          <Text style={styles.trainingLiftMuted}>No matching accessory movements.</Text>
+          <Text style={styles.trainingLiftMuted}>{canonicalMovementSearchEmptyCopy(movementQuery, 'No matching accessory movements.')}</Text>
           <Text style={styles.trainingLiftMuted}>Change the scope or create a coach-owned movement.</Text>
         </View>
       ) : null}
@@ -2954,41 +2963,53 @@ function ReorderEditorModal({
   const coreById = useMemo(() => mapItemsById(state?.coreItems || []), [state?.coreItems]);
   const accessoryById = useMemo(() => mapItemsById(state?.accessoryItems || []), [state?.accessoryItems]);
   const [dragging, setDragging] = useState(false);
+  const [footerHeight, setFooterHeight] = useState(0);
+  const insets = useSafeAreaInsets();
+  const itemCount = (state?.coreIds.length || 0) + (state?.accessoryIds.length || 0);
 
   const moveItem = (kind: 'core' | 'accessory', id: number, targetIndex: number) => {
     if (!state) return;
     const key = kind === 'core' ? 'coreIds' : 'accessoryIds';
-    const ids = [...state[key]];
-    const index = ids.indexOf(id);
-    const nextIndex = Math.max(0, Math.min(ids.length - 1, targetIndex));
-    if (index < 0 || nextIndex === index) return;
-    const [removed] = ids.splice(index, 1);
-    ids.splice(nextIndex, 0, removed);
-    onChange({ ...state, [key]: ids });
+    const nextIds = moveSessionItemIds(state[key], id, targetIndex);
+    if (nextIds.every((itemId, index) => itemId === state[key][index])) return;
+    onChange({ ...state, [key]: nextIds });
   };
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onCancel}>
-      <View style={styles.trainingLiftEditorScreen}>
-        <View style={styles.trainingLiftEditorHeader}>
-          <View>
-            <Text style={styles.trainingLiftEditorEyebrow}>Workspace edit</Text>
-            <Text style={styles.trainingLiftEditorTitle}>Reorder Session Items</Text>
+      <View style={styles.reorderEditorScreen} testID="reorder-session-modal">
+        <View style={[styles.reorderEditorHeader, { paddingTop: insets.top + 8 }]}>
+          <View style={styles.reorderEditorTitleBlock}>
+            <Text style={styles.reorderEditorTitle}>Reorder Session</Text>
+            <Text style={styles.reorderEditorSubtitle}>Hold the grip or use the arrows.</Text>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Cancel reorder"
-            onPress={onCancel}
-            style={({ pressed }) => [styles.trainingLiftCancelButton, pressed && styles.pressed]}
-          >
-            <Text style={styles.trainingLiftCancelText}>Cancel</Text>
-          </Pressable>
+          <View style={styles.reorderEditorHeaderActions}>
+            <Text style={styles.reorderEditorCount}>{itemCount} items</Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Cancel reorder"
+              onPress={onCancel}
+              style={({ pressed }) => [styles.reorderEditorClose, pressed && styles.pressed]}
+            >
+              <Ionicons name="close" size={22} color={colors.textStrong} />
+            </Pressable>
+          </View>
         </View>
 
         <ScrollView
-          style={styles.trainingLiftEditorScroll}
-          contentContainerStyle={styles.trainingLiftEditorContent}
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={[
+            styles.reorderEditorContent,
+            { paddingBottom: footerHeight + SLSpacing.md },
+          ]}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+          nestedScrollEnabled
+          scrollIndicatorInsets={{ bottom: footerHeight }}
           scrollEnabled={!dragging}
+          showsVerticalScrollIndicator
+          style={styles.reorderEditorScroll}
+          testID="reorder-session-scroll"
         >
           <ReorderSection
             title="Core Lifts"
@@ -3011,26 +3032,30 @@ function ReorderEditorModal({
         </ScrollView>
 
         {state ? (
-          <View style={styles.trainingLiftEditorActions}>
+          <View
+            onLayout={(event) => setFooterHeight(Math.ceil(event.nativeEvent.layout.height))}
+            style={[styles.reorderEditorFooter, { paddingBottom: Math.max(insets.bottom, 12) }]}
+            testID="reorder-session-footer"
+          >
             <Pressable
               accessibilityRole="button"
               disabled={saving}
               onPress={onCancel}
-              style={({ pressed }) => [styles.trainingLiftActionSecondary, pressed && styles.pressed]}
+              style={({ pressed }) => [styles.reorderCancelAction, pressed && styles.pressed]}
             >
-              <Text style={styles.trainingLiftActionSecondaryText}>Cancel</Text>
+              <Text style={styles.reorderCancelActionText}>Cancel</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               disabled={saving}
               onPress={() => onApply(state)}
               style={({ pressed }) => [
-                styles.trainingLiftActionPrimary,
+                styles.reorderApplyAction,
                 saving && styles.editorDisabled,
                 pressed && styles.pressed,
               ]}
             >
-              <Text style={styles.trainingLiftActionPrimaryText}>{saving ? 'Applying...' : 'Apply Order'}</Text>
+              <Text style={styles.reorderApplyActionText}>{saving ? 'Applying...' : 'Apply Order'}</Text>
             </Pressable>
           </View>
         ) : null}
@@ -3057,7 +3082,11 @@ function ReorderSection({
   reduceMotion: boolean;
 }) {
   return (
-    <TrainingLiftSection title={title}>
+    <View style={styles.reorderSection} testID={`reorder-section-${kind}`}>
+      <View style={styles.reorderSectionHeader}>
+        <Text style={styles.reorderSectionTitle}>{title}</Text>
+        <Text style={styles.reorderSectionCount}>{ids.length}</Text>
+      </View>
       <View style={styles.reorderList}>
         {ids.length ? ids.map((id, index) => {
           const item = itemsById.get(id);
@@ -3081,12 +3110,13 @@ function ReorderSection({
             />
           );
         }) : (
-          <View style={styles.emptySection}>
-            <Text style={styles.emptySectionText}>No {title.toLowerCase()} in this session.</Text>
+          <View style={styles.reorderEmptySection}>
+            <Ionicons name="remove" size={16} color={colors.subtle} />
+            <Text style={styles.reorderEmptySectionText}>No {title.toLowerCase()} in this session</Text>
           </View>
         )}
       </View>
-    </TrainingLiftSection>
+    </View>
   );
 }
 
@@ -3144,39 +3174,46 @@ function DraggableReorderRow({
   }));
 
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.reorderRow, animatedStyle]}>
-        <View style={styles.reorderHandle}>
+    <Animated.View style={[styles.reorderRow, animatedStyle]} testID={`reorder-${kind}-${id}`}>
+      <GestureDetector gesture={gesture}>
+        <Animated.View
+          accessibilityHint="Long press, then drag up or down"
+          accessibilityLabel={`Drag ${name} to reorder`}
+          accessibilityRole="adjustable"
+          style={styles.reorderHandle}
+        >
           <Ionicons name="reorder-three-outline" size={22} color={colors.violet} />
-        </View>
-        <View style={styles.reorderRowTextWrap}>
-          <Text style={styles.reorderRowTitle}>{name}</Text>
-          <Text style={styles.reorderRowMeta}>{meta}</Text>
-        </View>
-        <View style={styles.reorderButtonGroup}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Move ${name} up`}
-            accessibilityState={{ disabled: index === 0 }}
-            disabled={index === 0}
-            onPress={() => onMove(kind, id, index - 1)}
-            style={({ pressed }) => [styles.reorderStepButton, index === 0 && styles.editorDisabled, pressed && styles.pressed]}
-          >
-            <Ionicons name="chevron-up" size={16} color={colors.muted} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Move ${name} down`}
-            accessibilityState={{ disabled: index === itemCount - 1 }}
-            disabled={index === itemCount - 1}
-            onPress={() => onMove(kind, id, index + 1)}
-            style={({ pressed }) => [styles.reorderStepButton, index === itemCount - 1 && styles.editorDisabled, pressed && styles.pressed]}
-          >
-            <Ionicons name="chevron-down" size={16} color={colors.muted} />
-          </Pressable>
-        </View>
-      </Animated.View>
-    </GestureDetector>
+        </Animated.View>
+      </GestureDetector>
+      <View style={styles.reorderRowTextWrap}>
+        <Text style={styles.reorderRowTitle}>{name}</Text>
+        <Text style={styles.reorderRowMeta}>{meta}</Text>
+      </View>
+      <View style={styles.reorderButtonGroup}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Move ${name} up`}
+          accessibilityState={{ disabled: index === 0 }}
+          disabled={index === 0}
+          hitSlop={4}
+          onPress={() => onMove(kind, id, index - 1)}
+          style={({ pressed }) => [styles.reorderStepButton, index === 0 && styles.editorDisabled, pressed && styles.pressed]}
+        >
+          <Ionicons name="chevron-up" size={16} color={colors.muted} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Move ${name} down`}
+          accessibilityState={{ disabled: index === itemCount - 1 }}
+          disabled={index === itemCount - 1}
+          hitSlop={4}
+          onPress={() => onMove(kind, id, index + 1)}
+          style={({ pressed }) => [styles.reorderStepButton, index === itemCount - 1 && styles.editorDisabled, pressed && styles.pressed]}
+        >
+          <Ionicons name="chevron-down" size={16} color={colors.muted} />
+        </Pressable>
+      </View>
+    </Animated.View>
   );
 }
 
@@ -4523,28 +4560,53 @@ const styles = StyleSheet.create({
     fontFamily: SLFontFamilies.sansBold,
   },
   reorderList: {
-    gap: 10,
+    gap: REORDER_ROW_GAP,
   },
-  reorderRow: {
-    height: REORDER_ROW_HEIGHT,
+  reorderSection: {
+    gap: 8,
+  },
+  reorderSectionHeader: {
+    minHeight: 26,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+  },
+  reorderSectionTitle: {
+    color: colors.violet,
+    fontSize: SLTypography.caption.fontSize,
+    lineHeight: 18,
+    letterSpacing: 0.7,
+    textTransform: 'uppercase',
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  reorderSectionCount: {
+    minWidth: 28,
+    color: colors.subtle,
+    textAlign: 'right',
+    fontSize: SLTypography.caption.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  reorderRow: {
+    minHeight: REORDER_ROW_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.14)',
-    backgroundColor: 'rgba(24, 20, 30, 0.58)',
-    borderRadius: SLRadius.lg,
-    padding: 12,
-    ...SLShadows.card,
+    borderColor: SLColors.borderStandard,
+    backgroundColor: SLColors.canvasRaised,
+    borderRadius: SLRadius.md,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
   },
   reorderHandle: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(167, 139, 250, 0.22)',
-    backgroundColor: 'rgba(167, 139, 250, 0.10)',
+    borderColor: SLColors.borderFocus,
+    backgroundColor: SLColors.accentSoft,
     borderRadius: SLRadius.md,
   },
   reorderRowTextWrap: {
@@ -4554,27 +4616,41 @@ const styles = StyleSheet.create({
   },
   reorderRowTitle: {
     color: colors.textStrong,
-    fontSize: SLTypography.cardTitle.fontSize,
+    fontSize: SLTypography.rowTitle.fontSize,
+    lineHeight: 20,
     fontFamily: SLFontFamilies.sansBold,
   },
   reorderRowMeta: {
     color: colors.muted,
     fontSize: SLTypography.label.fontSize,
+    lineHeight: 17,
     fontFamily: SLFontFamilies.sansMedium,
   },
   reorderButtonGroup: {
-    flexDirection: 'row',
-    gap: 6,
+    gap: 4,
   },
   reorderStepButton: {
-    width: 34,
-    height: 34,
+    width: 42,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: SLRadius.md,
-    backgroundColor: SLColors.canvasRaised,
+    borderRadius: SLRadius.sm,
+    backgroundColor: SLColors.surfaceEmbedded,
+  },
+  reorderEmptySection: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  reorderEmptySectionText: {
+    flex: 1,
+    color: colors.subtle,
+    fontSize: SLTypography.label.fontSize,
+    fontFamily: SLFontFamilies.sansMedium,
   },
   emptySection: {
     borderWidth: 1,
@@ -4670,6 +4746,112 @@ const styles = StyleSheet.create({
   trainingLiftEditorScreen: {
     flex: 1,
     backgroundColor: SLColors.surfaceInset,
+  },
+  reorderEditorScreen: {
+    flex: 1,
+    backgroundColor: SLColors.canvas,
+  },
+  reorderEditorHeader: {
+    minHeight: 92,
+    paddingHorizontal: 18,
+    paddingBottom: 13,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: SLColors.borderHairline,
+    backgroundColor: SLColors.canvas,
+  },
+  reorderEditorTitleBlock: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2,
+  },
+  reorderEditorTitle: {
+    color: colors.textStrong,
+    fontSize: SLTypography.sectionTitle.fontSize,
+    lineHeight: 27,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  reorderEditorSubtitle: {
+    color: colors.muted,
+    fontSize: SLTypography.label.fontSize,
+    lineHeight: 18,
+    fontFamily: SLFontFamilies.sansMedium,
+  },
+  reorderEditorHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+  },
+  reorderEditorCount: {
+    color: colors.subtle,
+    fontSize: SLTypography.caption.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  reorderEditorClose: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: SLColors.borderDefault,
+    borderRadius: SLRadius.pill,
+    backgroundColor: SLColors.canvasRaised,
+  },
+  reorderEditorScroll: {
+    flex: 1,
+    minHeight: 0,
+  },
+  reorderEditorContent: {
+    flexGrow: 1,
+    paddingTop: 16,
+    paddingHorizontal: 14,
+    gap: 18,
+  },
+  reorderEditorFooter: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: SLColors.borderDefault,
+    backgroundColor: 'rgba(2, 2, 5, 0.98)',
+  },
+  reorderCancelAction: {
+    flex: 1,
+    minHeight: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: SLColors.borderStandard,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.canvasRaised,
+  },
+  reorderCancelActionText: {
+    color: colors.muted,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
+  },
+  reorderApplyAction: {
+    flex: 1.35,
+    minHeight: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: SLColors.borderFocus,
+    borderRadius: SLRadius.md,
+    backgroundColor: SLColors.accent,
+  },
+  reorderApplyActionText: {
+    color: SLColors.textPrimary,
+    fontSize: SLTypography.body.fontSize,
+    fontFamily: SLFontFamilies.sansBold,
   },
   accessoryEditorKeyboardWrap: {
     flex: 1,

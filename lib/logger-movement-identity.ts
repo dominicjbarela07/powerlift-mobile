@@ -3,15 +3,24 @@ import {
   type EquipmentAwareWorkoutItem,
   type EquipmentIdentityLike,
 } from '@/lib/equipment-selection';
+import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 
 export type LoggerIdentityReference = EquipmentIdentityLike & {
   kind?: string | null;
   family?: string | null;
   primary_muscle_group?: string | null;
   secondary_muscle_groups?: string[] | null;
+  material_parameters?: (NonNullable<EquipmentIdentityLike['material_parameters']> & {
+    accessory_taxonomy?: {
+      primary_muscle_group?: string | null;
+      secondary_muscle_groups?: string[] | null;
+    } | null;
+  }) | null;
 };
 
 export type LoggerMovementIdentityItem = EquipmentAwareWorkoutItem & {
+  lift?: string | null;
+  variant?: string | null;
   is_substituted?: boolean | null;
   original_movement?: string | null;
   selected_sub_movement?: string | null;
@@ -99,5 +108,32 @@ export function resolveLoggerMovementIdentity(
       || item.original_movement
       || 'Accessory',
     canonicalIdentityComplete: Boolean(effective),
+  };
+}
+
+/**
+ * Canonical artwork consumes a normalized movement subject, never a WorkoutItem.
+ * Row identity, display copy, equipment, and unrelated Logger state are excluded.
+ */
+export function canonicalArtworkInputForLoggerItem(
+  item: LoggerMovementIdentityItem,
+): CanonicalMovementArtworkInput {
+  const normalized = resolveLoggerMovementIdentity(item);
+  if (normalized.kind === 'core') {
+    return {
+      kind: String(item.variant || '').trim().toUpperCase() === 'VR'
+        ? 'variant'
+        : 'core',
+      lift: item.lift || null,
+      variant: item.variant || null,
+      core_movement: withId(item.core_movement),
+      performed_core_movement: withId(item.performed_core_movement),
+    };
+  }
+
+  return {
+    kind: 'accessory',
+    is_substituted: Boolean(item.is_substituted),
+    effective_movement_identity: normalized.effective,
   };
 }
