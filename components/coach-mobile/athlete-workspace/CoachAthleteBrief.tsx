@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
@@ -34,6 +34,7 @@ export function CoachAthleteBrief() {
   const router = useRouter();
   const { user } = useAuth();
   const workspace = useCoachAthleteWorkspace();
+  const [allActions, setAllActions] = useState(false);
   const { bootstrap, summary } = workspace;
   if (!bootstrap || !summary) return null;
   const basePath = `/(tabs)/coach-athlete/${workspace.athleteId}`;
@@ -130,12 +131,12 @@ export function CoachAthleteBrief() {
       {workspace.performance ? <View style={styles.pulseRow}><View style={styles.pulseItem}><Text style={styles.pulseValue}>{workspace.performance.consistency?.completion_rate_pct == null ? '—' : `${Math.round(workspace.performance.consistency.completion_rate_pct)}%`}</Text><Text style={styles.body}>execution</Text></View><View style={styles.pulseDivider} /><View style={styles.pulseItem}><Text style={[styles.pulseValue, { color: INK.cyan }]}>{workspace.performance.coaching_context.readiness.at(-1)?.value ?? '—'}<Text style={styles.pulseSuffix}> / 5</Text></Text><Text style={styles.body}>latest readiness</Text></View></View> : null}
 
       <Section title="Needs Your Action" meta={actions.length ? `${actions.length} open` : 'Clear'}>
-        {actions.length ? actions.slice(0, 3).map(({ key, ...row }) => <Action key={key} {...row} />) : (
+        {actions.length ? (allActions ? actions : actions.slice(0, 3)).map(({ key, ...row }) => <Action key={key} {...row} />) : (
           <Empty icon="checkmark-circle-outline" text="You’re up to date. The athlete record is ready when you are." tone={COACH_V2.green} />
         )}
       </Section>
 
-      {actions.length > 3 ? <Pressable onPress={() => router.push(`${basePath}/reviews` as any)} style={styles.moreActions}><Text style={styles.sectionAction}>Open all athlete reviews →</Text></Pressable> : null}
+      {actions.length > 3 ? <Pressable accessibilityRole="button" onPress={() => setAllActions((value) => !value)} style={styles.moreActions}><Text style={styles.sectionAction}>{allActions ? 'Show fewer actions' : `Show all ${actions.length} actions`} →</Text></Pressable> : null}
 
       <Section title="On the program" action="Open Training" onAction={() => router.push(`${basePath}/training` as any)}>
         <View style={styles.programHero}>

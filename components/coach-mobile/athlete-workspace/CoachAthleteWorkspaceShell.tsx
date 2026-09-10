@@ -164,7 +164,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
         onPress={() => setToolkitOpen(true)}
         style={({ pressed }) => [
           styles.floatingToolkit,
-          { bottom: SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md },
+          { bottom: SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md + (selected === 'messages' ? 76 : 0) },
           pressed && styles.floatingToolkitPressed,
         ]}
       >

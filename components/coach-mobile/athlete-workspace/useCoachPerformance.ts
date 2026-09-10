@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import { fetchJson } from '@/lib/api';
 import { acceptsCoachingPerformance, type CoachingPerformance, type CoachingPeriod } from '@/lib/coach-performance';
 
@@ -9,6 +10,12 @@ export function useCoachPerformance(subject: string | undefined, athleteId: numb
   const sequence = useRef(0);
   const key = `${subject || 'unverified'}:${athleteId}:${period}:${revision}`;
   const reloadPerformance = useCallback(() => setRevision((value) => value + 1), []);
+  useEffect(() => {
+    const listener = AppState.addEventListener('change', (state) => {
+      if (state === 'active') reloadPerformance();
+    });
+    return () => listener.remove();
+  }, [reloadPerformance]);
   useEffect(() => {
     setPeriod('90d');
     setResult(null);

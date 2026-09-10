@@ -51,7 +51,7 @@ export function StrengthHero({ data, unit, compact = false, onPress, onLiftPress
     <LinearGradient colors={['rgba(5,3,9,0.20)', '#08060E']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
     <View style={[v.heroContent, compact && v.compactContent]}>
       <Text style={v.eyebrow}>{title}</Text>
-      <View style={v.totalLine}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.82} style={[v.total, compact && v.compactTotal]}>{headline == null ? "First chapter" : displayCalculatedWeight(headline, unit)}</Text>{headline != null ? <Text style={v.totalUnit}>{unit}</Text> : null}</View>
+      <View style={v.totalLine}><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.82} style={[v.total, compact && v.compactTotal, headline == null && v.emptyTotal]}>{headline == null ? "First chapter" : displayCalculatedWeight(headline, unit)}</Text>{headline != null ? <Text style={v.totalUnit}>{unit}</Text> : null}</View>
       <View style={v.deltaLine}><View style={[v.signalDot, { backgroundColor: delta == null ? INK.quiet : delta < 0 ? INK.magenta : INK.green }]} /><Text style={[v.delta, { color: delta == null ? INK.muted : delta < 0 ? INK.magenta : INK.green }]}>{partial ? `${available.length} of 3 lifts established` : deltaLabel(delta, unit)}</Text>{!partial && delta != null ? <Text style={v.meta}>in this period</Text> : null}</View>
       {!compact ? <Text style={v.heroContext}>{arc?.estimated_total_kg == null ? 'A Total appears when all three competition lifts have evidence.' : 'Latest weekly bests · competition S / B / D'}</Text> : null}
       {!compact && lifts.some((lift) => lift.points?.length) ? <View style={v.heroChart}>
@@ -97,6 +97,7 @@ export const v = StyleSheet.create({
   totalLine: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 3 },
   total: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 45, letterSpacing: -1.5, flexShrink: 1 },
   compactTotal: { fontSize: 34 },
+  emptyTotal: { fontFamily: SLFontFamilies.display, fontSize: 32, letterSpacing: 0 },
   totalUnit: { color: '#C8BDD6', fontSize: 20 },
   deltaLine: { flexDirection: 'row', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginTop: 1 },
   signalDot: { width: 5, height: 5, borderRadius: 3 },
