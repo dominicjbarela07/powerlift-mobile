@@ -7,6 +7,7 @@ readonly EXPECTED_CHANNEL="testflight"
 readonly EXPECTED_API_BASE="https://app.strengthledger.fit"
 readonly EXPECTED_PROJECT_ID="7afb1a4b-46b6-4295-b33f-816b05589e81"
 readonly EXPECTED_BUNDLE_ID="com.dominicbarela.strengthcoachui"
+readonly EXPECTED_BACKEND_ROOT="/Users/dominic/powerlifting_app_dev"
 
 release_message="${1:-}"
 actual_root="$(pwd -P)"
@@ -34,6 +35,7 @@ if [[ -z "${release_message}" ]]; then
 fi
 
 export EXPO_PUBLIC_API_BASE="${EXPECTED_API_BASE}"
+export STRENGTH_LEDGER_BACKEND_ROOT="${EXPECTED_BACKEND_ROOT}"
 
 git fetch origin dev/canonical-mobile --quiet
 node scripts/test-release-source-lineage.mjs
