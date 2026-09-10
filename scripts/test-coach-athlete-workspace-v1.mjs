@@ -122,10 +122,11 @@ assert.match(source.programming, /workspaceReturn === 'training'/);
 
 assert.match(source.reviews, /getCoachReviewQueue/);
 assert.match(source.reviews, /athlete_id: bootstrap\.athlete\.id/);
-assert.match(source.reviews, /returnToWorkspace: '1'/);
-assert.match(source.reviews, /workspaceReturn: 'reviews'/);
+assert.match(source.reviews, /buildCoachVideoReviewReturnParams/);
+assert.match(source.reviews, /kind: 'workspace'/);
+assert.match(source.reviews, /destination: 'reviews'/);
 assert.match(source.reviews, /itemKeys: rows\.map/);
-assert.match(source.reviews, /queuePosition: String\(index\)/);
+assert.match(source.reviews, /queuePosition: index/);
 assert.match(source.reviews, /return \(\) => controller\.abort\(\)/);
 assert.match(source.checkIns, /onWorkspaceReturn/);
 assert.match(source.sessionReview, /returnToWorkspace/);
@@ -136,8 +137,8 @@ assert.match(source.messages, /forcedThreadId=\{workspace\.messageThreadId\}/);
 assert.match(source.messages, /initialDraft=\{workspace\.messageDraft\}/);
 assert.match(source.messages, /onDraftChange=\{workspace\.setMessageDraft\}/);
 assert.match(source.thread, /workspaceAthleteId/);
-assert.match(source.thread, /returnToWorkspace/);
-assert.match(source.thread, /workspaceReturn/);
+assert.match(source.thread, /buildCoachVideoReviewReturnParams/);
+assert.match(source.thread, /destination: 'messages'/);
 assert.match(source.thread, /Start the conversation with \$\{title\}/);
 
 for (const room of ['Journey', 'Strength', 'Achievements', 'Accessories', 'Variants', 'Archive']) {

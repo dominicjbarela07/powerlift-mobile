@@ -15,6 +15,10 @@ import {
   type CoachReviewItem,
 } from '@/lib/api';
 import { createLatestRequestManager } from '@/lib/latest-request';
+import {
+  buildCoachVideoReviewReturnParams,
+  type CoachVideoReviewReturnContext,
+} from '@/lib/coach-video-review-return';
 
 type ReviewHubPayload = {
   ok: boolean;
@@ -33,9 +37,19 @@ type ReviewHubPayload = {
   recent_history: CoachReviewItem[];
 };
 
-function openReview(router: ReturnType<typeof useRouter>, item: CoachReviewItem) {
+function openReview(
+  router: ReturnType<typeof useRouter>,
+  item: CoachReviewItem,
+  returnContext: Extract<CoachVideoReviewReturnContext, { kind: 'hub' }>,
+) {
   if (item.review_type === 'video') {
-    router.push({ pathname: '/(tabs)/coach-video-review', params: { videoId: String(item.source_id) } } as any);
+    router.push({
+      pathname: '/(tabs)/coach-video-review',
+      params: {
+        videoId: String(item.source_id),
+        ...buildCoachVideoReviewReturnParams(returnContext),
+      },
+    } as any);
   } else {
     router.push({ pathname: '/(tabs)/coach-session-review', params: { workoutId: String(item.source_id) } } as any);
   }
@@ -70,12 +84,14 @@ function SummaryCard({
 
 export default function CoachReviewHubScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ athleteId?: string }>();
+  const params = useLocalSearchParams<{ athleteId?: string; reviewScrollY?: string }>();
   const [selectedAthlete, setSelectedAthlete] = useState(params.athleteId || '');
   const [payload, setPayload] = useState<ReviewHubPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const initialScrollY = Number(params.reviewScrollY);
+  const scrollYRef = useRef(Number.isFinite(initialScrollY) && initialScrollY >= 0 ? initialScrollY : 0);
   const requests = useRef(createLatestRequestManager<Awaited<ReturnType<typeof getCoachReviewHub>>>()).current;
 
   useEffect(() => {
@@ -85,7 +101,8 @@ export default function CoachReviewHubScreen() {
   useEffect(() => () => requests.cancel(), [requests]);
 
   const load = useCallback(async (refresh = false) => {
-    refresh ? setRefreshing(true) : setLoading(true);
+    if (refresh) setRefreshing(true);
+    else setLoading(true);
     setError(null);
     const result = await requests.run((signal) => getCoachReviewHub(
       { athlete_id: selectedAthlete || undefined },
@@ -126,6 +143,9 @@ export default function CoachReviewHubScreen() {
       refreshing={refreshing}
       onRefresh={() => load(true)}
       contentContainerStyle={styles.screen}
+      contentOffset={{ x: 0, y: scrollYRef.current }}
+      onScroll={(event) => { scrollYRef.current = event.nativeEvent.contentOffset.y; }}
+      scrollEventThrottle={120}
     >
       <View style={styles.headerRow}>
         <View>
@@ -228,8 +248,19 @@ export default function CoachReviewHubScreen() {
             </Pressable>
           </View>
           <View style={styles.list}>
-            {(payload?.latest_queue || []).map((item) => (
-              <ReviewItemCard key={item.key} item={item} compact onPress={() => openReview(router, item)} />
+            {(payload?.latest_queue || []).map((item, index) => (
+              <ReviewItemCard
+                key={item.key}
+                item={item}
+                compact
+                onPress={() => openReview(router, item, {
+                  kind: 'hub',
+                  athleteId: selectedAthlete ? Number(selectedAthlete) : undefined,
+                  section: 'queue',
+                  scrollY: scrollYRef.current,
+                  queuePosition: index,
+                })}
+              />
             ))}
             {!payload?.latest_queue?.length ? (
               <View style={styles.emptyState}>
@@ -247,8 +278,19 @@ export default function CoachReviewHubScreen() {
             </Pressable>
           </View>
           <View style={styles.list}>
-            {(payload?.recent_history || []).map((item) => (
-              <ReviewItemCard key={item.key} item={item} compact onPress={() => openReview(router, item)} />
+            {(payload?.recent_history || []).map((item, index) => (
+              <ReviewItemCard
+                key={item.key}
+                item={item}
+                compact
+                onPress={() => openReview(router, item, {
+                  kind: 'hub',
+                  athleteId: selectedAthlete ? Number(selectedAthlete) : undefined,
+                  section: 'history',
+                  scrollY: scrollYRef.current,
+                  queuePosition: index,
+                })}
+              />
             ))}
             {!payload?.recent_history?.length ? (
               <Text style={styles.emptyText}>Completed reviews will appear here.</Text>

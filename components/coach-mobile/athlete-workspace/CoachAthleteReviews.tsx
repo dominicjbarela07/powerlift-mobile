@@ -12,6 +12,7 @@ import {
   type CoachReviewItem,
 } from '@/lib/api';
 import { formatCoachRelativeDate } from '@/lib/coach-mobile-v2';
+import { buildCoachVideoReviewReturnParams } from '@/lib/coach-video-review-return';
 
 import { useCoachAthleteWorkspace } from './CoachAthleteWorkspaceContext';
 
@@ -102,12 +103,14 @@ export function CoachAthleteReviews() {
   const openRow = (row: ReviewRow, index: number) => {
     setReviewState((current) => ({ ...current, itemKeys: rows.map((item) => item.key), position: index }));
     const returnParams = {
-      athleteId: String(bootstrap.athlete.id),
-      returnToWorkspace: '1',
-      workspaceReturn: 'reviews',
-      workspaceSubjectKey: workspace.subjectKey,
-      reviewSegment: reviewState.segment,
-      queuePosition: String(index),
+      ...buildCoachVideoReviewReturnParams({
+        kind: 'workspace',
+        athleteId: bootstrap.athlete.id,
+        destination: 'reviews',
+        subjectKey: workspace.subjectKey,
+        segment: reviewState.segment,
+        queuePosition: index,
+      }),
     };
     if (row.review_type === 'session') {
       router.push({ pathname: '/(tabs)/coach-session-review', params: { ...returnParams, workoutId: String(row.source_id) } } as any);

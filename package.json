@@ -14,6 +14,7 @@
     "lint": "expo lint",
     "test:video-upload-policy": "node scripts/assert-video-upload-policy.js",
     "test:review-hub-canonical": "node scripts/test-review-hub-canonical-parity.mjs",
+    "test:video-review-completion": "node --import tsx scripts/test-video-review-completion-contract.mjs",
     "test:coach-session-reviewer-v3": "node scripts/test-review-hub-canonical-parity.mjs && node scripts/test-coach-session-reviewer-viewport-utilization.mjs",
     "test:canonical-post-session": "node --import tsx scripts/test-canonical-post-session-surface.mjs",
     "test:post-session-overview-visual": "node --import tsx scripts/test-post-session-overview-visual-convergence.mjs",

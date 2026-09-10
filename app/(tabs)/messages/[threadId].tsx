@@ -38,6 +38,7 @@ import {
   uploadMessagingAttachment,
 } from '@/lib/messagingAttachments';
 import { SLColors, SLRadius, SLTypography } from '@/constants/theme';
+import { buildCoachVideoReviewReturnParams } from '@/lib/coach-video-review-return';
 
 function parseServerTimestamp(value?: string | null) {
   if (!value) return null;
@@ -625,10 +626,12 @@ export function ThreadScreen({
         videoId: String(videoId),
         from: 'messages',
         ...(workspaceAthleteId ? {
-          athleteId: String(workspaceAthleteId),
-          returnToWorkspace: '1',
-          workspaceReturn: 'messages',
-          workspaceSubjectKey,
+          ...buildCoachVideoReviewReturnParams({
+            kind: 'workspace',
+            athleteId: workspaceAthleteId,
+            destination: 'messages',
+            subjectKey: workspaceSubjectKey,
+          }),
         } : {}),
       },
     } as any);
