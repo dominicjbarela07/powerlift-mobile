@@ -13,11 +13,14 @@ import {
 } from '../lib/canonical-movement-search.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const backendRoot = process.env.STRENGTH_LEDGER_BACKEND_ROOT
+  ? path.resolve(process.env.STRENGTH_LEDGER_BACKEND_ROOT)
+  : path.resolve(root, '..');
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 const governedPicker = read('components', 'movement', 'GovernedAccessoryPickerModal.tsx');
 const sessionWorkspace = read('app', '(tabs)', 'workout', 'session-workspace', '[workoutId].tsx');
 const webProgrammingManager = fs.readFileSync(
-  path.resolve(root, '..', 'app', 'templates', 'programming_manager_dev.html'),
+  path.resolve(backendRoot, 'app', 'templates', 'programming_manager_dev.html'),
   'utf8',
 );
 
