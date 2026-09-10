@@ -36,7 +36,7 @@ for (const action of [
   'Open Athlete Workspace',
 ]) assert.ok(manager.includes(action), `missing reachable Programming Manager action: ${action}`);
 
-assert.match(manager, /const isProgrammingManager = isIndividual \|\| !!rosterAthleteId/, 'coach and self-coached modes must share the manager');
+assert.match(manager, /const isProgrammingManager = programmingSubject\.workspaceOwned \|\| isIndividual \|\| !!rosterAthleteId/, 'workspace, global coach and self-coached modes must share the manager');
 assert.match(manager, /coachMode=\{Boolean\(rosterAthleteId\)\}/, 'coach mode must remain capability-driven');
 assert.match(manager, /managedAthleteAvatarUrl/, 'coach mode must preserve athlete identity');
 assert.match(manager, /router\.replace\(\{ pathname: '\/\(tabs\)\/workout', params: \{ athleteId: String\(id\) \} \}/, 'athlete switching must stay inside Programming Manager');

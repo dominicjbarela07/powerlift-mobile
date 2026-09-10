@@ -4,8 +4,12 @@ import { Text, TextInput } from '@/components/ui/sl-text';
 import { SLCanonicalIcon } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SL_TAB_ROW_CONTROL } from '@/components/navigation/sl-tab-row-control';
 
 import { useAuth } from '@/context/AuthContext';
+import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
+import { programmingSubjectRoute, resolveProgrammingSubject } from '@/lib/programming-subject';
 import {
   createIndividualProgram,
   createProgrammingProgram,
@@ -14,7 +18,7 @@ import {
   updateIndividualProgram,
   updateProgrammingProgram,
 } from '@/lib/api';
-import { SLColors, SLFontFamilies, SLRadius, SLTypography } from '@/constants/theme';
+import { SLColors, SLFontFamilies, SLRadius, SLSpacing, SLTypography } from '@/constants/theme';
 
 type ProgramTypeKey = 'offseason' | 'meet_prep' | 'general_strength' | 'custom';
 type TimelineKey = '4' | '8' | '12' | '16' | 'custom';
@@ -127,10 +131,15 @@ export default function CreateProgramScreen() {
     athleteName?: string;
   }>();
   const { activeMobileMode } = useAuth();
+  const athleteWorkspace = useOptionalCoachAthleteWorkspace();
+  const insets = useSafeAreaInsets();
+  // Leave both the persistent workspace dock and its toolkit button reachable.
+  const workspaceFooterBottom = SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md + 56;
+  const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);
   const isIndividual = activeMobileMode === 'individual';
-  const managedAthleteId = params.athleteId ? Number(params.athleteId) : null;
-  const isCoachManaged = !isIndividual && Number.isFinite(managedAthleteId || NaN);
-  const canUseProgramBuilder = isIndividual || isCoachManaged;
+  const managedAthleteId = programmingSubject.athleteId;
+  const isCoachManaged = (programmingSubject.workspaceOwned || !isIndividual) && Number.isFinite(managedAthleteId || NaN);
+  const canUseProgramBuilder = programmingSubject.ready && (isIndividual || isCoachManaged);
   const editProgramId = params.programId ? Number(params.programId) : null;
   const isEditMode = params.mode === 'edit' && Number.isFinite(editProgramId || NaN);
   const [stepIndex, setStepIndex] = useState(0);
@@ -155,7 +164,7 @@ export default function CreateProgramScreen() {
   const programLengthWeeks = Math.max(1, Math.abs(Math.trunc(rawProgramLengthWeeks || 1)));
   const isLastStep = stepIndex === steps.length - 1;
   const canAdvance =
-    !submitting &&
+    canUseProgramBuilder && !loadingProgram && !submitting &&
     (stepIndex !== 0 || (!!programType && programName.trim().length > 0)) &&
     (stepIndex !== 1 || timeline !== 'custom' || customLength.trim().length > 0);
 
@@ -165,7 +174,7 @@ export default function CreateProgramScreen() {
   }, [isEditMode, preserveLoadedBlocks, programType, programLengthWeeks]);
 
   useEffect(() => {
-    if (!isEditMode || !editProgramId) return;
+    if (!canUseProgramBuilder || !isEditMode || !editProgramId) return;
 
     let active = true;
     setLoadingProgram(true);
@@ -204,13 +213,10 @@ export default function CreateProgramScreen() {
     return () => {
       active = false;
     };
-  }, [editProgramId, isCoachManaged, isEditMode, managedAthleteId]);
+  }, [canUseProgramBuilder, editProgramId, isCoachManaged, isEditMode, managedAthleteId]);
 
   const returnHome = () => {
-    router.replace({
-      pathname: '/(tabs)/workout',
-      params: managedAthleteId ? { athleteId: String(managedAthleteId) } : {},
-    } as any);
+    router.replace(programmingSubjectRoute(programmingSubject, 'home') as any);
   };
 
   const handleNext = async () => {
@@ -267,13 +273,9 @@ export default function CreateProgramScreen() {
       return;
     }
 
-    router.replace({
-      pathname: '/(tabs)/workout',
-      params: {
-        programCreated: String(result.program?.id || Date.now()),
-        ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-      },
-    } as any);
+    router.replace(programmingSubjectRoute(programmingSubject, 'home', {
+      programCreated: String(result.program?.id || Date.now()),
+    }) as any);
   };
 
   if (!canUseProgramBuilder) {
@@ -304,7 +306,10 @@ export default function CreateProgramScreen() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scroll}>
+      <ScrollView
+        style={[styles.scrollView, athleteWorkspace && { marginBottom: workspaceFooterBottom + 72 }]}
+        contentContainerStyle={[styles.scroll, athleteWorkspace && { paddingHorizontal: 10, paddingBottom: 24 }]}
+      >
         <View style={styles.contentHeader}>
           <View style={styles.headerCopy}>
             <Text style={styles.flowTitle}>{isEditMode ? 'Edit Training Program' : 'Create Training Program'}</Text>
@@ -377,7 +382,7 @@ export default function CreateProgramScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, athleteWorkspace && { bottom: workspaceFooterBottom, paddingHorizontal: 10 }]}>
         <Pressable
           accessibilityRole="button"
           disabled={stepIndex === 0}

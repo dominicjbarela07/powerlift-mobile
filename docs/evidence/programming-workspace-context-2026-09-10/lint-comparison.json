@@ -1,0 +1,23 @@
+[
+  {
+    "file": "app/(tabs)/workout/index.tsx",
+    "baseline_errors": 0,
+    "baseline_warnings": 42,
+    "current_errors": 0,
+    "current_warnings": 42
+  },
+  {
+    "file": "app/(tabs)/workout/create-program.tsx",
+    "baseline_errors": 0,
+    "baseline_warnings": 4,
+    "current_errors": 0,
+    "current_warnings": 4
+  },
+  {
+    "file": "app/(tabs)/workout/session-workspace/[workoutId].tsx",
+    "baseline_errors": 0,
+    "baseline_warnings": 3,
+    "current_errors": 0,
+    "current_warnings": 3
+  }
+]

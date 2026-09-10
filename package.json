@@ -165,6 +165,7 @@
     "test:assisted-movement-semantics": "node --import tsx scripts/test-assisted-movement-semantics.mjs",
     "test:coach-roster-first": "node --import tsx scripts/test-coach-roster-first.mjs",
     "test:coach-mobile-live": "node --import tsx scripts/test-coach-mobile-live.mjs",
+    "test:programming-workspace-subject": "node --import tsx scripts/test-programming-workspace-subject.mjs",
     "test:coach-athlete-workspace-v1": "node scripts/test-coach-athlete-workspace-v1.mjs",
     "test:coach-athlete-workspace-entrypoint": "node scripts/test-coach-athlete-workspace-entrypoint.mjs",
     "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",

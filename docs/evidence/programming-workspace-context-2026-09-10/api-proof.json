@@ -1,0 +1,30 @@
+[
+  {
+    "path": "/workouts/mobile/1727",
+    "status": 200,
+    "athlete_id": 12,
+    "workout_id": 1727,
+    "program_id": null
+  },
+  {
+    "path": "/workouts/my_list/mobile/12",
+    "status": 200,
+    "athlete_id": 12,
+    "workout_id": null,
+    "program_id": 21
+  },
+  {
+    "path": "/workouts/my_list/mobile/4",
+    "status": 200,
+    "athlete_id": 4,
+    "workout_id": null,
+    "program_id": 18
+  },
+  {
+    "path": "/workouts/mobile/programming/programs/18?athlete_id=12",
+    "status": 404,
+    "athlete_id": null,
+    "workout_id": null,
+    "program_id": null
+  }
+]

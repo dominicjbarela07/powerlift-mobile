@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
+import { assertProgrammingMutationSubject, assertProgrammingResponseSubject, resolveProgrammingSubject } from '@/lib/programming-subject';
 import {
   AccessibilityInfo,
   ActivityIndicator,
@@ -444,6 +446,9 @@ export default function MobileSessionWorkspaceScreen() {
 
 export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceContentProps = {}) {
   const router = useRouter();
+  const athleteWorkspace = useOptionalCoachAthleteWorkspace();
+  const programmingSubject = resolveProgrammingSubject(athleteWorkspace);
+  const { athleteId: lockedAthleteId, workspaceOwned, ready: subjectReady } = programmingSubject;
   const { user, authReady } = useAuth();
   const params = useLocalSearchParams<{
     workoutId?: string | string[];
@@ -526,11 +531,14 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         throw new Error(json.error || `HTTP ${resp.status}`);
       }
       if (requestRevision !== loadRequestRevisionRef.current) return;
+      if (workspaceOwned) {
+        assertProgrammingResponseSubject({ athleteId: lockedAthleteId, ready: subjectReady }, json.athlete?.id);
+      }
       setPayload(mapCoachSessionEditorPayload(json));
       hasLoadedSessionRef.current = true;
     } catch (err: any) {
       if (requestRevision !== loadRequestRevisionRef.current) return;
-      if (!shouldRefreshSilently) {
+      if (!shouldRefreshSilently || workspaceOwned) {
         setPayload(null);
         setError(err?.message || 'Session workspace could not load.');
       }
@@ -539,7 +547,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       if (shouldRefreshSilently) setRefreshing(false);
       else setLoading(false);
     }
-  }, [workoutId]);
+  }, [lockedAthleteId, subjectReady, workoutId, workspaceOwned]);
 
   useFocusEffect(
     useCallback(() => {
@@ -564,7 +572,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   }, [user?.preferred_units]);
 
   useEffect(() => {
-    if (!authReady || user?.role !== 'coach') return;
+    if (!authReady || user?.role !== 'coach' || workspaceOwned) return;
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' })
       .then((response) => {
@@ -576,7 +584,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         if (active) setRoster([]);
       });
     return () => { active = false; };
-  }, [authReady, user?.role]);
+  }, [authReady, user?.role, workspaceOwned]);
 
   useEffect(() => {
     let active = true;
@@ -1191,6 +1199,10 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   const saveSessionDraft = async (plan: SessionWorkspaceSavePlan) => {
     if (!workout?.id) return false;
     try {
+      assertProgrammingMutationSubject(programmingSubject, payload?.athlete?.id || null, plan.athleteId);
+      if (plan.metadataPatch.athleteId !== undefined) {
+        assertProgrammingMutationSubject(programmingSubject, plan.athleteId, plan.metadataPatch.athleteId);
+      }
       const requireOk = async (request: Promise<{ ok: boolean; status: number; json: any }>) => {
         const response = await request;
         const json = response.json || {};
@@ -1376,7 +1388,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         reduceMotion={reduceMotion}
         displayUnit={workspaceDisplayUnit}
         onDisplayUnitChange={setWorkspaceDisplayUnit}
-        athleteOptions={roster.map((athlete) => ({
+        athleteOptions={workspaceOwned ? [] : roster.map((athlete) => ({
           id: athlete.id,
           name: String(athlete.name || 'Athlete'),
           avatarUrl: athlete.avatar_url || null,

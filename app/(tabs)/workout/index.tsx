@@ -1,4 +1,5 @@
 import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
+import { assertProgrammingResponseSubject, programmingSubjectRoute, resolveProgrammingSubject } from '@/lib/programming-subject';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -635,7 +636,9 @@ export default function TrainingIndexScreen() {
     workspaceReturn?: string;
     workspaceSubjectKey?: string;
   }>();
-  const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
+  const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);
+  const { athleteId: programmingAthleteId, ready: programmingSubjectReady } = programmingSubject;
+  const rosterAthleteId = programmingSubject.athleteId ? String(programmingSubject.athleteId) : null;
   const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
   const directProgramId = params.programId ? Number(params.programId) : null;
   const workspaceSubjectKey = athleteWorkspace?.subjectKey || (params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null);
@@ -645,7 +648,7 @@ export default function TrainingIndexScreen() {
   const returnWeek = params.programmingWeek ? Number(params.programmingWeek) : null;
   const returnDay = params.programmingDay ? String(params.programmingDay) : null;
   const isIndividual = activeMobileMode === 'individual';
-  const isProgrammingManager = isIndividual || !!rosterAthleteId;
+  const isProgrammingManager = programmingSubject.workspaceOwned || isIndividual || !!rosterAthleteId;
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -665,6 +668,8 @@ export default function TrainingIndexScreen() {
   );
   const hasLoadedTrainingRef = useRef(false);
   const trainingRequestSequenceRef = useRef(0);
+  const trainingScopeRef = useRef(trainingScopeKey);
+  trainingScopeRef.current = trainingScopeKey;
   const programTimelineOpeningRef = useRef(false);
 
   const loadTraining = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
@@ -681,6 +686,9 @@ export default function TrainingIndexScreen() {
       : '/workouts/my_list/mobile';
 
     try {
+      if (!programmingSubjectReady) {
+        throw new Error('Programming subject is unavailable. Please reopen the athlete workspace.');
+      }
       const [resp, settingsResp] = await Promise.all([
         fetchJson(endpoint, { method: 'GET' }),
         isProgrammingManager
@@ -690,7 +698,7 @@ export default function TrainingIndexScreen() {
       const res: any = resp.json;
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       if (!resp.ok || !res?.ok) {
         setError(res?.error || res?.message || `HTTP ${resp.status}`);
@@ -702,6 +710,7 @@ export default function TrainingIndexScreen() {
         return;
       }
       const responseHub: TrainingHubPayload | null = res.training_hub || null;
+      assertProgrammingResponseSubject({ athleteId: programmingAthleteId, ready: programmingSubjectReady }, responseHub?.athlete?.id);
       const authoritativeDisplayUnit = preferredUnitFromSettingsPayload(settingsResp?.ok ? settingsResp.json : null)
         || parseDisplayWeightUnit(user?.preferred_units)
         || parseDisplayWeightUnit(responseHub?.athlete?.preferred_units);
@@ -721,7 +730,7 @@ export default function TrainingIndexScreen() {
     } catch (err: any) {
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       setError(err?.message || 'Training Hub could not load.');
       setHub(null);
@@ -732,12 +741,12 @@ export default function TrainingIndexScreen() {
     } finally {
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       if (silent && opts?.showRefreshIndicator !== false) setRefreshing(false);
       else setLoading(false);
     }
-  }, [isProgrammingManager, programCreatedNonce, rosterAthleteId, trainingScopeKey, user?.preferred_units]);
+  }, [isProgrammingManager, programCreatedNonce, programmingAthleteId, programmingSubjectReady, rosterAthleteId, trainingScopeKey, user?.preferred_units]);
 
   useEffect(() => {
     trainingRequestSequenceRef.current += 1;
@@ -747,6 +756,7 @@ export default function TrainingIndexScreen() {
     setRefreshing(false);
     setLoading(true);
     setBlockDetailsVisible(false);
+    return () => { trainingRequestSequenceRef.current += 1; };
   }, [trainingScopeKey]);
 
   useFocusEffect(
@@ -1030,6 +1040,7 @@ function IndividualProgrammingHome({
   const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
   const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const programmingSubject = resolveProgrammingSubject(focusedWorkspace, managedAthleteId ? String(managedAthleteId) : undefined);
   const initialWorkspaceScroll = useRef(focusedWorkspace?.trainingState.scrollY || 0);
   const workspaceScrollReady = useRef(false);
   const insideAthleteWorkspace = Boolean(focusedWorkspace);
@@ -1052,13 +1063,7 @@ function IndividualProgrammingHome({
   }, []);
 
   const handleProgramPress = () => {
-    router.push({
-      pathname: '/(tabs)/workout/create-program',
-      params: {
-        ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-        ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-      },
-    } as any);
+    router.push(programmingSubjectRoute(programmingSubject, 'create-program') as any);
   };
 
   const handleExitToAthleteWorkspace = () => {
@@ -1246,15 +1251,10 @@ function IndividualProgrammingHome({
             completedMap={completedMap}
             onOpenSession={openSessionWorkspace}
             onAddSession={onAddSession}
-            onManageProgram={(programId) => router.push({
-              pathname: '/(tabs)/workout/create-program',
-              params: {
-                mode: 'edit',
-                programId: String(programId),
-                ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-                ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-              },
-            } as any)}
+            onManageProgram={(programId) => router.push(programmingSubjectRoute(programmingSubject, 'create-program', {
+              mode: 'edit',
+              programId: String(programId),
+            }) as any)}
             onCreateProgram={handleProgramPress}
             onRefresh={onRefresh}
             onFollowOffset={followProgrammingOffset}
@@ -1289,15 +1289,10 @@ function IndividualProgrammingHome({
         }}
         onEdit={(programId) => {
           setProgramLibraryOpen(false);
-          router.push({
-            pathname: '/(tabs)/workout/create-program',
-            params: {
-              mode: 'edit',
-              programId: String(programId),
-              ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-              ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-            },
-          } as any);
+          router.push(programmingSubjectRoute(programmingSubject, 'create-program', {
+            mode: 'edit',
+            programId: String(programId),
+          }) as any);
         }}
         onRefresh={onRefresh}
       />
@@ -2495,6 +2490,7 @@ export function ProgrammingStoryboard({
 }) {
   const router = useRouter();
   const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const canSelectAthlete = coachMode && !focusedWorkspace;
   const savedTraining = useRef(focusedWorkspace?.trainingState);
   const saveTraining = focusedWorkspace?.setTrainingState;
   const initialSheet = (['blocks', 'weeks', 'intelligence', 'athletes'] as const).includes(previewState as any) ? previewState as StoryboardSheetKind : null;
@@ -2605,14 +2601,14 @@ export function ProgrammingStoryboard({
   }, [selectedBlock?.id, selectedWeekIndex]);
 
   useEffect(() => {
-    if (sheet !== 'athletes' || !coachMode || previewRoster?.length) return;
+    if (sheet !== 'athletes' || !canSelectAthlete || previewRoster?.length) return;
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
       if (!active || !response.ok) return;
       setRoster(Array.isArray(response.json?.athletes) ? response.json.athletes : []);
     });
     return () => { active = false; };
-  }, [coachMode, previewRoster, sheet]);
+  }, [canSelectAthlete, previewRoster, sheet]);
 
   const selectWeekInPlace = (week: RoadmapWeek) => {
     storyboardSelectionFeedback();
@@ -2622,9 +2618,10 @@ export function ProgrammingStoryboard({
   };
 
   const selectAthlete = (id: number) => {
+    if (!canSelectAthlete) return;
     storyboardSelectionFeedback();
     setSheet(null);
-    router.replace({ pathname: focusedWorkspace ? '/(tabs)/coach-athlete/[athleteId]/training' : '/(tabs)/workout', params: { athleteId: String(id) } } as any);
+    router.replace({ pathname: '/(tabs)/workout', params: { athleteId: String(id) } } as any);
   };
 
   useEffect(() => {
@@ -2634,15 +2631,15 @@ export function ProgrammingStoryboard({
 
   return (
     <View style={storyStyles.root} testID="mobile-programming-manager-storyboard">
-      <View style={storyStyles.topbar}>
+      <View style={[storyStyles.topbar, focusedWorkspace && storyStyles.workspaceTopbar]}>
         <View style={storyStyles.topbarCopy}>
-          <Text style={storyStyles.topbarTitle}>{'PROGRAMMING\nMANAGER'}</Text>
+          <Text style={[storyStyles.topbarTitle, focusedWorkspace && storyStyles.workspaceTitle]}>{focusedWorkspace ? 'PROGRAMMING MANAGER' : 'PROGRAMMING\nMANAGER'}</Text>
         </View>
         <SLMotionPressable
           accessibilityRole="button"
           accessibilityLabel="Training Program actions"
           onPress={onProgramActions}
-          style={storyStyles.topbarAction}
+          style={[storyStyles.topbarAction, focusedWorkspace && storyStyles.workspaceAction]}
         >
           <Ionicons name="options-outline" size={16} color={colors.violet} />
           <Text style={storyStyles.topbarActionText}>Actions</Text>
@@ -2650,15 +2647,15 @@ export function ProgrammingStoryboard({
       </View>
 
       <ScrollView
-        contentContainerStyle={storyStyles.scroll}
+        contentContainerStyle={[storyStyles.scroll, focusedWorkspace && storyStyles.workspaceScroll]}
         onScrollBeginDrag={() => setOpenSwipeSessionId(null)}
         scrollEnabled={!draggingSessionId && !dragMoveBusy}
         showsVerticalScrollIndicator={false}
       >
-          <Pressable
-            accessibilityRole={coachMode ? 'button' : undefined}
-            accessibilityLabel={coachMode ? 'Switch athlete' : undefined}
-            disabled={!coachMode}
+          {!focusedWorkspace ? <Pressable
+            accessibilityRole={canSelectAthlete ? 'button' : undefined}
+            accessibilityLabel={canSelectAthlete ? 'Switch athlete' : undefined}
+            disabled={!canSelectAthlete}
             onPress={() => setSheet('athletes')}
             style={storyStyles.athleteRow}
           >
@@ -2668,7 +2665,7 @@ export function ProgrammingStoryboard({
             </View>
             <SLProfileAvatar name={athleteName} profilePhotoUrl={athleteAvatarUrl} size={46} statusColor={colors.violet} />
             {coachMode ? <Ionicons name="chevron-down" size={15} color={colors.subtle} /> : null}
-          </Pressable>
+          </Pressable> : null}
 
           {athleteId ? (
             <AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="compact" />
@@ -2925,7 +2922,7 @@ export function ProgrammingStoryboard({
         </View>
       </StoryboardSheet>
 
-      <StoryboardSheet visible={sheet === 'athletes'} title="Switch Athlete" onClose={() => setSheet(null)}>
+      {canSelectAthlete ? <StoryboardSheet visible={sheet === 'athletes'} title="Switch Athlete" onClose={() => setSheet(null)}>
         {onExitAthleteWorkspace ? <Pressable onPress={() => { setSheet(null); onExitAthleteWorkspace(); }} style={storyStyles.sheetRow}><Ionicons name="person-outline" size={20} color={colors.violet} /><View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>Open Athlete Workspace</Text><Text style={storyStyles.sheetRowMeta}>{athleteName}</Text></View><Ionicons name="chevron-forward" size={18} color={colors.subtle} /></Pressable> : null}
         <TextInput value={athleteSearch} onChangeText={setAthleteSearch} placeholder="Search athletes" placeholderTextColor={colors.subtle} style={storyStyles.searchInput} />
         {roster.filter((athlete) => String(athlete.name || '').toLowerCase().includes(athleteSearch.trim().toLowerCase())).map((athlete) => (
@@ -2936,7 +2933,7 @@ export function ProgrammingStoryboard({
           </Pressable>
         ))}
         <Pressable onPress={() => { setSheet(null); router.push('/(tabs)/coach-invite-athlete' as any); }} style={storyStyles.addAthleteRow}><Ionicons name="add" size={18} color={colors.violet} /><Text style={storyStyles.addAthleteText}>Add Athlete</Text></Pressable>
-      </StoryboardSheet>
+      </StoryboardSheet> : null}
     </View>
   );
 }
@@ -5925,6 +5922,10 @@ const storyStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: SLColors.canvas },
   topbar: { minHeight: 96, paddingHorizontal: PROGRAMMING_OUTER_GUTTER, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, flexDirection: 'row', alignItems: 'center', gap: 10 },
   topbarCopy: { flex: 1, alignItems: 'flex-start', justifyContent: 'center' },
+  workspaceTopbar: { minHeight: 64, paddingVertical: 10 },
+  workspaceTitle: { fontSize: 20, lineHeight: 26 },
+  workspaceAction: { height: 40 },
+  workspaceScroll: { paddingHorizontal: PROGRAMMING_OUTER_GUTTER },
   topbarTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.display, fontSize: 25, lineHeight: 30, textTransform: 'uppercase', letterSpacing: 0.4 },
   topbarWeekTitle: { fontFamily: SLFontFamilies.sansBold, fontSize: 23, lineHeight: 28, textTransform: 'none' },
   topbarSub: { ...SLTypography.caption, color: colors.violet, marginTop: 2 },

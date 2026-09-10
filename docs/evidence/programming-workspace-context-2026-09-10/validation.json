@@ -1,0 +1,30 @@
+{
+  "mobile_subject_tests": {
+    "passed": 8,
+    "failed": 0
+  },
+  "accepted_contracts": {
+    "passed": 189,
+    "failed": 0
+  },
+  "release_critical_invariants": {
+    "passed": 55,
+    "failed": 0
+  },
+  "backend_programming_tests": {
+    "passed": 18,
+    "failed": 0
+  },
+  "typescript": "PASS",
+  "text_layout_contract": "PASS (28 surfaces, 3 phone classes)",
+  "lint_errors": 0,
+  "existing_lint_warnings": 49,
+  "native_flows": {
+    "scoped": "PASS",
+    "builder_next_back_exit_and_workspace_return": "PASS",
+    "global_picker_and_athlete_switch": "PASS",
+    "session_close_and_refresh": "PASS"
+  },
+  "dev_training_mutations_during_native_checks": 0,
+  "release_actions": 0
+}

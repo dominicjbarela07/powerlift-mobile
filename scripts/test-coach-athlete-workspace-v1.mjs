@@ -110,11 +110,11 @@ assert.doesNotMatch(
 );
 
 assert.match(source.trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
-assert.match(source.trainingRoute, /return <TrainingIndexScreen \/>/);
+assert.match(source.trainingRoute, /return <TrainingIndexScreen key=\{workspace\.subjectKey\} \/>/);
 assert.doesNotMatch(source.trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
-assert.match(source.programming, /const rosterAthleteId = params\.athleteId/);
+assert.match(source.programming, /resolveProgrammingSubject\(athleteWorkspace, params\.athleteId\)/);
 assert.match(source.programming, /`\/workouts\/my_list\/mobile\/\$\{rosterAthleteId\}`/);
-assert.match(source.programming, /isProgrammingManager = isIndividual \|\| !!rosterAthleteId/);
+assert.match(source.programming, /isProgrammingManager = programmingSubject\.workspaceOwned \|\| isIndividual \|\| !!rosterAthleteId/);
 assert.match(source.programming, /<IndividualProgrammingHome/);
 assert.match(source.programming, /managedAthleteId=\{rosterAthleteId \? Number\(rosterAthleteId\)/);
 assert.match(source.programming, /scopeProgrammingPayload/);

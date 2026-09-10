@@ -1,0 +1,19 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Switch athlete
+    timeout: 45000
+- assertNotVisible: ATHLETE WORKSPACE
+- takeScreenshot: global-manager
+- tapOn: Switch athlete
+- extendedWaitUntil:
+    visible: Search athletes
+    timeout: 15000
+- takeScreenshot: global-picker
+- tapOn: ".*Dev Athlete 4.*"
+- extendedWaitUntil:
+    visible: Bodybuilding Offseason
+    timeout: 30000
+- assertVisible: Switch athlete
+- assertNotVisible: Muscle Mommy P1
+- takeScreenshot: global-switched-athlete4
