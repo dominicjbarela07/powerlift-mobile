@@ -1,0 +1,67 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow workspace-floating-final
+Run flow when "Display unit kg. Switch to lb" is visible...
+  Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Run flow when "Display unit kg. Switch to lb" is visible... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is visible... COMPLETED
+Scrolling UP until "THE LONG GAME" is visible with speed 70, visibility percentage 100%, timeout 45000 ms, with centering disabled... COMPLETED
+Take screenshot top-lb... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Take screenshot top-kg... COMPLETED
+Tap on "Brief"... COMPLETED
+Assert that "Your coaching brief" is visible... COMPLETED
+Assert that "kg" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Scrolling DOWN until "Inspect Squat recorded strength" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot strength-kg... COMPLETED
+Tap on "Inspect Squat recorded strength"... COMPLETED
+Take screenshot strength-detail-kg... COMPLETED
+Scrolling DOWN until "Performed volume" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot volume-kg... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Take screenshot volume-lb... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Scrolling DOWN until ".*Leg Extension.*" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot accessories-kg... COMPLETED
+Scrolling DOWN until ".*3ct Pause Squat.*" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot variants-kg... COMPLETED
+Scrolling DOWN until "Earned, not given" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Swipe from (50%, 70%) to (50%, 40%) in 400 ms... COMPLETED
+Take screenshot prs-kg... COMPLETED
+Scrolling DOWN until "Reported bodyweight" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot bodyweight-kg... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Assert that "200 lb" is visible... COMPLETED
+Take screenshot bodyweight-lb... COMPLETED
+Scrolling DOWN until ".*Explore the Archive.*" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot bottom-lb... COMPLETED
+Tap on id: coach-athlete-actions-control... COMPLETED
+Assert that "Act for Dev Athlete 4" is visible... COMPLETED
+Assert that ".*New Session.*" is visible... COMPLETED
+Assert that ".*Message Athlete.*" is visible... COMPLETED
+Assert that ".*Add Coach Note.*" is visible... COMPLETED
+Assert that ".*Adjust Program.*" is visible... COMPLETED
+Take screenshot actions-athlete4... COMPLETED
+Tap on ".*Message Athlete.*"... COMPLETED
+Assert that "ATHLETE WORKSPACE" is visible... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is not visible... COMPLETED
+Take screenshot message-action... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Scrolling DOWN until ".*Open Journey.*" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Tap on ".*Open Journey.*"... COMPLETED
+Assert that id: ledger-journey-unit-toggle is visible... COMPLETED
+Tap on id: ledger-journey-unit-toggle... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Take screenshot ledger-consumer-kg... COMPLETED
+Tap on id: ledger-journey-unit-toggle... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "ATHLETE WORKSPACE" is visible... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is visible... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Take screenshot performance-return... COMPLETED

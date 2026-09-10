@@ -3,11 +3,12 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies, SLLayout } from '@/constants/theme';
-import { useAuth } from '@/context/AuthContext';
+import { FloatingDisplayUnitRegistration, floatingControlBottom, SL_FLOATING_CONTROL } from '@/components/ui/floating-control-coordinator';
 import { canonicalMovementArtworkSource } from '@/lib/canonical-movement-artwork-assets';
 import { workspaceLedgerParams } from '@/lib/coach-performance';
 import { canonicalCompetitionLiftKey, fetchLedgerAccomplishments, fetchLedgerCurrentBests, kgToDisplay, type AccomplishmentEvent, type CurrentBestSnapshot, type LedgerUnit } from '@/lib/ledger-data';
@@ -21,8 +22,10 @@ import { Chapter, deltaLabel, EvidenceLink, INK, LIFT_COLORS, loadLabel, Perform
 export function CoachAthletePerformance() {
   const router = useRouter();
   const workspace = useCoachAthleteWorkspace();
-  const { user } = useAuth();
-  const unit: LedgerUnit = user?.preferred_units === 'kg' ? 'kg' : 'lb';
+  const { unit, setUnit } = workspace;
+  const insets = useSafeAreaInsets();
+  const floatingClearance = floatingControlBottom({ context: 'tab-screen', safeAreaBottom: insets.bottom, slot: 1 })
+    + SL_FLOATING_CONTROL.size + SL_FLOATING_CONTROL.gap;
   const { performance: data, period, setPeriod, subjectKey, athleteId, reload } = workspace;
   const savedScroll = useRef(workspace.performanceScrollY);
   const [deep, setDeep] = useState(workspace.performanceScrollY > 380);
@@ -71,7 +74,9 @@ export function CoachAthletePerformance() {
   const bodyweight = [...new Map((context?.bodyweight || []).map((point) => [point.training_date, point])).values()];
   const latestWeight = bodyweight.at(-1)?.reported_bodyweight_kg;
   const recovery = context?.latest_readiness;
-  return <ScrollView testID="coach-athlete-performance" contentContainerStyle={s.content} showsVerticalScrollIndicator={false} contentOffset={{ x: 0, y: savedScroll.current }}
+  return <>
+    <FloatingDisplayUnitRegistration unit={unit} onChange={setUnit} slot={1} testID="coach-athlete-performance-unit-toggle" />
+    <ScrollView testID="coach-athlete-performance" contentContainerStyle={[s.content, { paddingBottom: floatingClearance }]} showsVerticalScrollIndicator={false} contentOffset={{ x: 0, y: savedScroll.current }}
     onScroll={(event) => { const scrollY = event.nativeEvent.contentOffset.y; workspace.setPerformanceScrollY(scrollY); if (scrollY > 380) setDeep(true); }} scrollEventThrottle={120}
     refreshControl={<RefreshControl refreshing={workspace.refreshing} tintColor={INK.violet} onRefresh={refresh} />}>
     <View style={s.intro}><Text style={v.eyebrow}>THE LONG GAME</Text><Text style={s.title}>Performance</Text>
@@ -156,7 +161,8 @@ export function CoachAthletePerformance() {
       </Chapter>
       <View style={s.recordFooter}><Image source={LEDGER_INDEX_ASSETS.record} style={s.recordIcon} /><Text style={v.eyebrow}>THE RECORD CONTINUES</Text><Text style={s.footerTitle}>{workspace.bootstrap?.athlete.name}’s Ledger</Text><EvidenceLink title="Open Journey" detail="Training chapters, moments & context" onPress={() => open('journey')} /><EvidenceLink title="Explore the Archive" detail="Sessions, performed sets, media & competition" onPress={() => open('archive')} /></View>
     </>}
-  </ScrollView>;
+  </ScrollView>
+  </>;
 }
 
 function WeeklyWork({ points, unit }: { points: { date: string; volume_kg: number; set_count: number; session_count: number }[]; unit: LedgerUnit }) {
@@ -167,7 +173,7 @@ function WeeklyWork({ points, unit }: { points: { date: string; volume_kg: numbe
 }
 
 const s = StyleSheet.create({
-  content: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 18, paddingBottom: 168, gap: 13 },
+  content: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 18, gap: 13 },
   intro: { gap: 4 }, title: { fontFamily: SLFontFamilies.display, color: INK.text, fontSize: 32 },
   periodRow: { flexDirection: 'row', alignItems: 'center', borderBottomColor: INK.line, borderBottomWidth: 1, marginBottom: 4 },
   period: { minHeight: 46, paddingHorizontal: 15, justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },

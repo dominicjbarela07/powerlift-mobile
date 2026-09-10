@@ -6,7 +6,6 @@ import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from '
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
-import { useAuth } from '@/context/AuthContext';
 import { LEDGER_INDEX_ASSETS } from '@/lib/ledger-index-assets';
 import { workspaceLedgerParams } from '@/lib/coach-performance';
 import { INK, PerformanceLoading, StrengthHero } from './PerformanceVisuals';
@@ -32,7 +31,6 @@ function dateLabel(value?: string | null) {
 
 export function CoachAthleteBrief() {
   const router = useRouter();
-  const { user } = useAuth();
   const workspace = useCoachAthleteWorkspace();
   const [allActions, setAllActions] = useState(false);
   const { bootstrap, summary } = workspace;
@@ -124,7 +122,7 @@ export function CoachAthleteBrief() {
         <Text style={styles.body}>{training.program_name || "The next decision starts here."}{training.block_name ? ` · ${training.block_name}` : ""}</Text>
       </View>
 
-      {workspace.performance ? <StrengthHero data={workspace.performance} unit={user?.preferred_units === 'kg' ? 'kg' : 'lb'} compact
+      {workspace.performance ? <StrengthHero data={workspace.performance} unit={workspace.unit} compact
         onPress={() => router.push(`${basePath}/performance` as any)}
         onLiftPress={(lift) => router.push({ pathname: '/(tabs)/ledger/strength', params: { ...workspaceLedgerParams(workspace.athleteId, 'brief'), lift } } as any)} />
         : <PerformanceLoading error={workspace.performanceError} onRetry={workspace.reloadPerformance} />}

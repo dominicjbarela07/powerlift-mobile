@@ -5,13 +5,11 @@ import { ActivityIndicator, Keyboard, Pressable, StyleSheet, View } from 'react-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
-import {
-  SLFloatingNavigationDock,
-  SL_TAB_ROW_CONTROL,
-} from '@/components/navigation/sl-tab-row-control';
+import { SLFloatingNavigationDock } from '@/components/navigation/sl-tab-row-control';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
+import { FloatingControlCoordinator, FloatingControlStack, FloatingUtilityButton } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
 
 import { useCoachAthleteWorkspace, type WorkspaceDestination } from './CoachAthleteWorkspaceContext';
@@ -125,6 +123,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
   return (
     <SLScreen edges="top" padded={false} style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Back to previous Coach context"
@@ -158,18 +157,15 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
       <View key={workspace.subjectKey} style={styles.content}>{children}</View>
 
-      {!keyboardVisible ? <Pressable
-        accessibilityLabel="Open athlete actions"
-        accessibilityRole="button"
-        onPress={() => setToolkitOpen(true)}
-        style={({ pressed }) => [
-          styles.floatingToolkit,
-          { bottom: SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md + (selected === 'messages' ? 76 : 0) },
-          pressed && styles.floatingToolkitPressed,
-        ]}
-      >
-        <Ionicons color={COACH_V2.text} name="add" size={26} />
-      </Pressable> : null}
+      {!keyboardVisible ? <FloatingControlStack context="tab-screen" slot={0} bottomOffset={selected === 'messages' ? 76 : 0}>
+        <FloatingUtilityButton
+          accessibilityLabel="Open athlete actions"
+          icon="add"
+          onPress={() => setToolkitOpen(true)}
+          selected
+          testID="coach-athlete-actions-control"
+        />
+      </FloatingControlStack> : null}
 
       {!keyboardVisible ? <SLFloatingNavigationDock
         bottomInset={insets.bottom}
@@ -236,6 +232,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           </View>
         </View>
       </StrengthLedgerBottomSheet>
+      </FloatingControlCoordinator>
     </SLScreen>
   );
 }
@@ -305,22 +302,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
   athleteName: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 2 },
   content: { flex: 1 },
-  floatingToolkit: {
-    alignItems: 'center',
-    backgroundColor: COACH_V2.violet,
-    borderColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 25,
-    borderWidth: 1,
-    height: 50,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: SLLayout.screenGutter,
-    shadowColor: COACH_V2.violet,
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
-    width: 50,
-  },
-  floatingToolkitPressed: { opacity: 0.8, transform: [{ scale: 0.96 }] },
   sheet: { paddingBottom: SLSpacing.xl, paddingHorizontal: SLLayout.screenGutter, paddingTop: 4 },
   sheetEyebrow: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.6 },
   sheetTitle: { color: COACH_V2.text, fontSize: 25, fontWeight: '800', marginBottom: 16, marginTop: 5 },

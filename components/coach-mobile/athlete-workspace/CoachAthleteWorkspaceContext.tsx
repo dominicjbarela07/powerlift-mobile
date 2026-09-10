@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ensureCoachAthleteThread, fetchJson } from '@/lib/api';
 import type { CoachAthleteSummaryResponse } from '@/lib/coach-mobile';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { useCoachPerformance } from './useCoachPerformance';
 
 export type WorkspaceDestination = 'brief' | 'training' | 'performance' | 'reviews' | 'messages';
@@ -93,7 +94,7 @@ type ReviewState = {
   scrollY: number;
 };
 
-type WorkspaceValue = ReturnType<typeof useCoachPerformance> & {
+type WorkspaceValue = ReturnType<typeof useCoachPerformance> & ReturnType<typeof useSurfaceWeightUnit> & {
   athleteId: number;
   bootstrap: CoachAthleteWorkspaceBootstrap | null;
   summary: CoachAthleteSummaryResponse | null;
@@ -138,6 +139,9 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const params = useLocalSearchParams<{ athleteId?: string | string[] }>();
   const router = useRouter();
   const { user, workspaceKey } = useAuth();
+  // The workspace owns the display lens across its destinations; the saved
+  // account preference remains unchanged, as on Home and Ledger.
+  const { unit, setUnit, toggleUnit } = useSurfaceWeightUnit(user?.preferred_units);
   const athleteId = Number(first(params.athleteId) || 0);
   const accountId = Number(user?.id ?? user?.user_id ?? 0);
   const requestNamespace = `${workspaceKey}:${accountId}:${athleteId}`;
@@ -328,6 +332,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const subjectKey = `${requestNamespace}:${verifiedBootstrap?.subject.subject_key || 'resolving'}`;
   const value = useMemo<WorkspaceValue>(() => ({
     ...performanceState,
+    unit, setUnit, toggleUnit,
     performanceScrollY: verifiedBootstrap ? performanceScrollY : 0,
     setPerformanceScrollY,
     athleteId,
@@ -348,6 +353,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     reload,
   }), [
     performanceState,
+    unit, setUnit, toggleUnit,
     performanceScrollY,
     athleteId,
     ensureMessageThread,

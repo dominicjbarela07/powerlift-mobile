@@ -1,0 +1,11 @@
+/Users/dominic/powerlifting_app_dev/powerlift_mobile/components/coach-mobile/athlete-workspace/CoachAthleteBrief.tsx
+  90:17  warning  Array type using 'Array<T>' is forbidden. Use 'T[]' instead  @typescript-eslint/array-type
+
+/Users/dominic/powerlifting_app_dev/powerlift_mobile/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext.tsx
+  67:12  warning  Array type using 'Array<T>' is forbidden. Use 'T[]' instead  @typescript-eslint/array-type
+
+/Users/dominic/powerlifting_app_dev/powerlift_mobile/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx
+  19:21  warning  Array type using 'Array<T>' is forbidden. Use 'T[]' instead  @typescript-eslint/array-type
+
+✖ 3 problems (0 errors, 3 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.

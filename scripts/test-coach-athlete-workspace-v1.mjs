@@ -69,7 +69,7 @@ assert.doesNotMatch(
   /<SLFloatingNavigationDock[\s\S]{0,160}\bflow\b/,
   'Athlete Workspace must use the canonical absolute floating wrapper, never the in-flow DEV showcase variant',
 );
-assert.match(source.shell, /SL_TAB_ROW_CONTROL/);
+assert.match(source.shell, /FloatingControlStack/);
 assert.match(source.shell, /pulse-outline/);
 assert.match(source.shell, /barbell-outline/);
 assert.match(source.shell, /checkmark-done-outline/);

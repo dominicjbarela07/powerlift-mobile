@@ -1,0 +1,60 @@
+{
+  "typecheck": {
+    "command": "npx tsc --noEmit",
+    "exit": 0
+  },
+  "lint": {
+    "errors": 0,
+    "existingArrayTypeWarnings": 3
+  },
+  "focusedContracts": {
+    "passed": 5,
+    "failed": 0
+  },
+  "additionalHistoricalHarnesses": {
+    "status": "existing quarantine; obsolete source-shape assertions",
+    "tests": [
+      "test-preferred-unit-display.mjs",
+      "test-calculated-weight-display.mjs"
+    ],
+    "quarantineGroup": "superseded-source-shape-snapshot",
+    "testAndTargetFilesUnchangedFromHead": true
+  },
+  "device": {
+    "name": "iPhone 17",
+    "os": "iOS 26.2",
+    "viewportPoints": [
+      402,
+      874
+    ],
+    "safeAreaBottom": 34
+  },
+  "floatingGeometry": {
+    "unitTouchBounds": [
+      349,
+      680,
+      389,
+      720
+    ],
+    "actionTouchBounds": [
+      349,
+      736,
+      389,
+      776
+    ],
+    "dockTouchY": [
+      791,
+      831
+    ],
+    "utilityShellSize": 48,
+    "gapBetweenUtilityShells": 8,
+    "source": "Native accessibility hierarchy plus shared SL_FLOATING_CONTROL geometry; same bottom origin as dock"
+  },
+  "toolkitBodyUnchangedFromHead": true,
+  "nativeFlow": {
+    "exit": 0,
+    "file": "performance-flow.yaml",
+    "log": "performance-flow.txt",
+    "result": "PASS: unit round trips, Brief return, strength expansion, volume, accessories, variants, bodyweight, footer clearance, same-athlete actions/Message, existing Ledger Journey unit switch and workspace return"
+  }
+}
