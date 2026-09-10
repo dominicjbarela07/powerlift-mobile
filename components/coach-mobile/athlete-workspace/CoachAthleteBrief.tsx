@@ -1,11 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { Text } from '@/components/ui/sl-text';
-import { SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
+import { SLFontFamilies, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
+import { LEDGER_INDEX_ASSETS } from '@/lib/ledger-index-assets';
+import { workspaceLedgerParams } from '@/lib/coach-performance';
+import { INK, PerformanceLoading, StrengthHero } from './PerformanceVisuals';
 import { formatCoachRelativeDate } from '@/lib/coach-mobile-v2';
 
 import { useCoachAthleteWorkspace } from './CoachAthleteWorkspaceContext';
@@ -19,11 +23,6 @@ type ActionRow = {
   onPress: () => void;
 };
 
-function signed(value?: number | null, suffix = '%') {
-  if (value == null || !Number.isFinite(value)) return 'Not established';
-  return `${value > 0 ? '+' : ''}${value.toFixed(1)}${suffix}`;
-}
-
 function dateLabel(value?: string | null) {
   if (!value) return 'Not established';
   const parsed = new Date(value);
@@ -33,12 +32,12 @@ function dateLabel(value?: string | null) {
 
 export function CoachAthleteBrief() {
   const router = useRouter();
+  const { user } = useAuth();
   const workspace = useCoachAthleteWorkspace();
   const { bootstrap, summary } = workspace;
   if (!bootstrap || !summary) return null;
   const basePath = `/(tabs)/coach-athlete/${workspace.athleteId}`;
   const training = summary.current_training || bootstrap.current_training || {};
-  const metrics = summary.workspace_v3?.athlete.metrics;
   const reviews = Number(summary.pending_session_reviews.count || 0) + Number(summary.pending_video_reviews.count || 0);
 
   const actions: ActionRow[] = (() => {
@@ -54,7 +53,7 @@ export function CoachAthleteBrief() {
       rows.push({
         key: `${kind}:${raw.workout_id || raw.title || raw.label || rows.length}`,
         title: raw.title || raw.label || 'Review athlete evidence',
-        detail: raw.supporting_text || raw.detail || 'Open the governed source.',
+        detail: raw.supporting_text || raw.detail || 'Open the athlete record.',
         icon: reviewsReason ? 'checkmark-done-outline' : messageReason ? 'chatbubble-ellipses-outline' : programmingReason ? 'calendar-outline' : 'alert-circle-outline',
         tone: String(raw.severity || raw.priority || '').includes('high') ? COACH_V2.magenta : COACH_V2.gold,
         onPress: () => {
@@ -69,7 +68,7 @@ export function CoachAthleteBrief() {
       rows.push({
         key: 'unread-messages',
         title: `${unreadMessages} unread athlete message${unreadMessages === 1 ? '' : 's'}`,
-        detail: 'Open the relationship-specific conversation.',
+        detail: 'See what the athlete sent you.',
         icon: 'chatbubble-ellipses-outline',
         tone: COACH_V2.cyan,
         onPress: () => router.push(`${basePath}/messages` as any),
@@ -115,22 +114,32 @@ export function CoachAthleteBrief() {
   return (
     <ScrollView
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={workspace.refreshing} tintColor={COACH_V2.violetBright} onRefresh={() => workspace.reload(true)} />}
+      refreshControl={<RefreshControl refreshing={workspace.refreshing} tintColor={COACH_V2.violetBright} onRefresh={() => { workspace.reloadPerformance(); void workspace.reload(true); }} />}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.intro}>
-        <Text style={styles.title}>What matters now</Text>
+        <Text style={styles.kicker}>IN THEIR CORNER</Text>
+        <Text style={styles.title}>Your coaching brief</Text>
+        <Text style={styles.body}>{training.program_name || "The next decision starts here."}{training.block_name ? ` · ${training.block_name}` : ""}</Text>
       </View>
 
+      {workspace.performance ? <StrengthHero data={workspace.performance} unit={user?.preferred_units === 'kg' ? 'kg' : 'lb'} compact
+        onPress={() => router.push(`${basePath}/performance` as any)}
+        onLiftPress={(lift) => router.push({ pathname: '/(tabs)/ledger/strength', params: { ...workspaceLedgerParams(workspace.athleteId, 'brief'), lift } } as any)} />
+        : <PerformanceLoading error={workspace.performanceError} onRetry={workspace.reloadPerformance} />}
+      {workspace.performance ? <View style={styles.pulseRow}><View style={styles.pulseItem}><Text style={styles.pulseValue}>{workspace.performance.consistency?.completion_rate_pct == null ? '—' : `${Math.round(workspace.performance.consistency.completion_rate_pct)}%`}</Text><Text style={styles.body}>execution</Text></View><View style={styles.pulseDivider} /><View style={styles.pulseItem}><Text style={[styles.pulseValue, { color: INK.cyan }]}>{workspace.performance.coaching_context.readiness.at(-1)?.value ?? '—'}<Text style={styles.pulseSuffix}> / 5</Text></Text><Text style={styles.body}>latest readiness</Text></View></View> : null}
+
       <Section title="Needs Your Action" meta={actions.length ? `${actions.length} open` : 'Clear'}>
-        {actions.length ? actions.map(({ key, ...row }) => <Action key={key} {...row} />) : (
-          <Empty icon="checkmark-circle-outline" text="No deterministic action is waiting in the current evidence." tone={COACH_V2.green} />
+        {actions.length ? actions.slice(0, 3).map(({ key, ...row }) => <Action key={key} {...row} />) : (
+          <Empty icon="checkmark-circle-outline" text="You’re up to date. The athlete record is ready when you are." tone={COACH_V2.green} />
         )}
       </Section>
 
-      <Section title="Current Training Context" action="Open Training" onAction={() => router.push(`${basePath}/training` as any)}>
+      {actions.length > 3 ? <Pressable onPress={() => router.push(`${basePath}/reviews` as any)} style={styles.moreActions}><Text style={styles.sectionAction}>Open all athlete reviews →</Text></Pressable> : null}
+
+      <Section title="On the program" action="Open Training" onAction={() => router.push(`${basePath}/training` as any)}>
         <View style={styles.programHero}>
-          <View style={styles.programIcon}><Ionicons color={COACH_V2.violetBright} name="barbell-outline" size={24} /></View>
+          <Image source={LEDGER_INDEX_ASSETS.chapter.journey} style={styles.programArt} />
           <View style={styles.flex}>
             <Text style={styles.programName}>{training.program_name || 'No active program'}</Text>
             <Text style={styles.body}>{[
@@ -146,17 +155,7 @@ export function CoachAthleteBrief() {
         </View>
       </Section>
 
-      <Section title="Performance & Recovery Read">
-        <View style={styles.metricGrid}>
-          <Metric color={metrics?.max_progression.value != null && metrics.max_progression.value < 0 ? COACH_V2.magenta : COACH_V2.green} label="Core direction" value={signed(metrics?.max_progression.value)} />
-          <Metric color={COACH_V2.cyan} label="Execution" value={metrics?.adherence.value == null ? 'Not established' : `${metrics.adherence.value.toFixed(0)}%`} />
-          <Metric color={metrics?.readiness_trend.value != null && metrics.readiness_trend.value < 0 ? COACH_V2.gold : COACH_V2.green} label="Readiness trend" value={signed(metrics?.readiness_trend.value, '')} />
-          <Metric color={COACH_V2.violetBright} label="Bodyweight change" value={summary.reported_bodyweight?.delta_kg == null ? 'Not established' : signed(summary.reported_bodyweight.delta_kg, ' kg')} />
-        </View>
-        <Text style={styles.disclaimer}>Directional signals only. No causal claim is inferred from recovery or performance movement.</Text>
-      </Section>
-
-      <Section title="Recent Conversation / Coach Memory" action="Open Messages" onAction={() => router.push(`${basePath}/messages` as any)}>
+      <Section title="Between you two" action="Open Messages" onAction={() => router.push(`${basePath}/messages` as any)}>
         <Conversation label="ATHLETE" message={bootstrap.conversation.latest_athlete_message?.body_preview} when={bootstrap.conversation.latest_athlete_message?.created_at} />
         <Conversation label="COACH" message={bootstrap.conversation.latest_coach_reply?.body_preview} when={bootstrap.conversation.latest_coach_reply?.created_at} />
         {summary.coach_context.pinned_note ? (
@@ -187,7 +186,7 @@ export function CoachAthleteBrief() {
             </View>
             <Ionicons color={COACH_V2.muted} name="chevron-forward" size={17} />
           </Pressable>
-        )) : <Empty icon="time-outline" text="No governed upcoming decision point is currently established." tone={COACH_V2.cyan} />}
+        )) : <Empty icon="time-outline" text="No upcoming decision is waiting. Keep the next training chapter in view." tone={COACH_V2.cyan} />}
       </Section>
       <View style={styles.bottomSpace} />
     </ScrollView>
@@ -224,10 +223,6 @@ function Fact({ label, value }: { label: string; value: string }) {
   return <View style={styles.fact}><Text numberOfLines={2} style={styles.factValue}>{value}</Text><Text style={styles.factLabel}>{label}</Text></View>;
 }
 
-function Metric({ color, label, value }: { color: string; label: string; value: string }) {
-  return <View style={styles.metric}><Text numberOfLines={1} style={[styles.metricValue, { color }]}>{value}</Text><Text style={styles.metricLabel}>{label}</Text></View>;
-}
-
 function Conversation({ label, message, when }: { label: string; message?: string | null; when?: string | null }) {
   return (
     <View style={styles.conversation}>
@@ -238,12 +233,20 @@ function Conversation({ label, message, when }: { label: string; message?: strin
 }
 
 const styles = StyleSheet.create({
-  content: { gap: SLSpacing.lg, padding: SLLayout.screenGutter, paddingBottom: 96 },
+  content: { gap: 18, paddingHorizontal: SLLayout.screenGutter, paddingTop: 18, paddingBottom: 155 },
   intro: { paddingHorizontal: 2, paddingTop: 2 },
-  title: { color: COACH_V2.text, fontSize: 30, fontWeight: '800' },
-  section: { backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: SLRadius.lg, borderWidth: 1, overflow: 'hidden', padding: 14 },
+  title: { color: INK.text, fontFamily: SLFontFamilies.display, fontSize: 33, marginTop: 5 },
+  kicker: { color: INK.violet, fontSize: 11, letterSpacing: 1.5 },
+  pulseRow: { flexDirection: 'row', gap: 24, paddingVertical: 6, paddingHorizontal: 8 },
+  pulseItem: { flex: 1 },
+  pulseDivider: { width: 1, backgroundColor: INK.line },
+  pulseValue: { color: INK.green, fontFamily: SLFontFamilies.numeric, fontSize: 26 },
+  pulseSuffix: { color: INK.muted, fontSize: 15 },
+  moreActions: { minHeight: 44, justifyContent: 'center' },
+  programArt: { width: 75, height: 80, resizeMode: 'contain' },
+  section: { borderTopColor: INK.line, borderTopWidth: 1, paddingTop: 23, marginTop: 8 },
   sectionHeader: { alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'space-between', marginBottom: 10 },
-  sectionTitle: { color: COACH_V2.text, flex: 1, fontSize: 18, fontWeight: '800' },
+  sectionTitle: { color: INK.text, flex: 1, fontFamily: SLFontFamilies.display, fontSize: 23 },
   sectionAction: { color: COACH_V2.violetBright, fontSize: 12, fontWeight: '800' },
   sectionMeta: { color: COACH_V2.muted, fontSize: 12, fontWeight: '700' },
   actionRow: { alignItems: 'center', borderTopColor: COACH_V2.border, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', gap: 11, minHeight: 62, paddingVertical: 10 },
@@ -253,18 +256,12 @@ const styles = StyleSheet.create({
   body: { color: COACH_V2.muted, fontSize: 13, lineHeight: 18, marginTop: 3 },
   pressed: { opacity: 0.72 },
   empty: { alignItems: 'center', backgroundColor: COACH_V2.surfaceRaised, borderRadius: SLRadius.md, flexDirection: 'row', gap: 10, padding: 13 },
-  programHero: { alignItems: 'center', backgroundColor: 'rgba(157,92,255,0.08)', borderRadius: SLRadius.md, flexDirection: 'row', gap: 12, padding: 13 },
-  programIcon: { alignItems: 'center', backgroundColor: 'rgba(157,92,255,0.15)', borderRadius: 14, height: 46, justifyContent: 'center', width: 46 },
+  programHero: { alignItems: 'center', backgroundColor: '#0E0A15', borderRadius: 20, flexDirection: 'row', gap: 10, padding: 12 },
   programName: { color: COACH_V2.text, fontSize: 17, fontWeight: '800' },
   factRow: { borderTopColor: COACH_V2.border, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'row', marginTop: 12, paddingTop: 12 },
   fact: { borderRightColor: COACH_V2.border, borderRightWidth: StyleSheet.hairlineWidth, flex: 1, paddingHorizontal: 7 },
   factValue: { color: COACH_V2.text, fontSize: 13, fontWeight: '800' },
-  factLabel: { color: COACH_V2.subtle, fontSize: 10, fontWeight: '700', marginTop: 5 },
-  metricGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
-  metric: { backgroundColor: COACH_V2.surfaceRaised, borderRadius: SLRadius.md, minHeight: 72, padding: 11, width: '48.5%' },
-  metricValue: { fontSize: 18, fontWeight: '900' },
-  metricLabel: { color: COACH_V2.muted, fontSize: 11, fontWeight: '700', marginTop: 5 },
-  disclaimer: { color: COACH_V2.subtle, fontSize: 11, lineHeight: 16, marginTop: 10 },
+  factLabel: { color: COACH_V2.subtle, fontSize: 12, fontWeight: '500', marginTop: 5 },
   conversation: { borderTopColor: COACH_V2.border, borderTopWidth: StyleSheet.hairlineWidth, paddingVertical: 10 },
   conversationTop: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   conversationLabel: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '900', letterSpacing: 1.2 },

@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { Text } from '@/components/ui/sl-text';
-import { SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
+import { SLFontFamilies, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
 import {
   getCoachReviewHistory,
   getCoachReviewQueue,
@@ -125,8 +125,8 @@ export function CoachAthleteReviews() {
     <View style={styles.screen}>
       <View style={styles.intro}>
         <Text style={styles.kicker}>ATHLETE REVIEWS</Text>
-        <Text style={styles.title}>One athlete. One queue.</Text>
-        <Text style={styles.subtitle}>Session, video, and Check-In decisions without returning to the team hub.</Text>
+        <Text style={styles.title}>Eyes on the evidence</Text>
+        <Text style={styles.subtitle}>{bootstrap.athlete.name}’s Sessions, videos & Check-Ins.</Text>
       </View>
       <View style={styles.segmented}>
         <Segment label={`To Review ${queue.length + checkIns.length}`} selected={reviewState.segment === 'queue'} onPress={() => setReviewState((current) => ({ ...current, segment: 'queue', position: 0 }))} />
@@ -143,7 +143,7 @@ export function CoachAthleteReviews() {
         scrollEventThrottle={180}
         showsVerticalScrollIndicator={false}
       >
-        {loading ? <View style={styles.state}><ActivityIndicator color={COACH_V2.violetBright} /><Text style={styles.stateText}>Loading athlete review queue…</Text></View> : error ? <Pressable onPress={() => void load()} style={styles.state}><Ionicons color={COACH_V2.magenta} name="warning-outline" size={21} /><View style={styles.flex}><Text style={styles.stateTitle}>{error}</Text><Text style={styles.stateText}>Tap to try again.</Text></View></Pressable> : !rows.length ? <View style={styles.state}><Ionicons color={COACH_V2.green} name="checkmark-done-circle-outline" size={24} /><View style={styles.flex}><Text style={styles.stateTitle}>{reviewState.segment === 'history' ? 'No review history yet' : 'Queue clear'}</Text><Text style={styles.stateText}>No governed item is present in this athlete scope.</Text></View></View> : rows.map((row, index) => <ReviewItem key={row.key} row={row} onPress={() => openRow(row, index)} />)}
+        {loading ? <View style={styles.state}><ActivityIndicator color={COACH_V2.violetBright} /><Text style={styles.stateText}>Loading athlete review queue…</Text></View> : error ? <Pressable onPress={() => void load()} style={styles.state}><Ionicons color={COACH_V2.magenta} name="warning-outline" size={21} /><View style={styles.flex}><Text style={styles.stateTitle}>{error}</Text><Text style={styles.stateText}>Tap to try again.</Text></View></Pressable> : !rows.length ? <View style={styles.state}><Ionicons color={COACH_V2.green} name="checkmark-done-circle-outline" size={24} /><View style={styles.flex}><Text style={styles.stateTitle}>{reviewState.segment === 'history' ? 'No review history yet' : 'Queue clear'}</Text><Text style={styles.stateText}>Everything here has been reviewed. New evidence will appear when it arrives.</Text></View></View> : rows.map((row, index) => <ReviewItem key={row.key} row={row} onPress={() => openRow(row, index)} />)}
         <Pressable onPress={() => router.push(`${basePath}/brief` as any)} style={styles.backToBrief}><Text style={styles.backToBriefText}>Return to athlete Brief</Text></Pressable>
         <View style={styles.bottomSpace} />
       </ScrollView>
@@ -176,23 +176,23 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   intro: { paddingHorizontal: SLLayout.screenGutter, paddingTop: SLSpacing.md },
   kicker: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
-  title: { color: COACH_V2.text, fontSize: 27, fontWeight: '800', marginTop: 4 },
+  title: { color: COACH_V2.text, fontFamily: SLFontFamilies.display, fontSize: 31, marginTop: 6 },
   subtitle: { color: COACH_V2.muted, fontSize: 14, lineHeight: 20, marginTop: 5 },
-  segmented: { backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: 13, borderWidth: 1, flexDirection: 'row', gap: 4, marginHorizontal: SLLayout.screenGutter, marginTop: 15, padding: 4 },
-  segment: { alignItems: 'center', borderRadius: 10, flex: 1, justifyContent: 'center', minHeight: 37, paddingHorizontal: 6 },
-  segmentActive: { backgroundColor: 'rgba(157,92,255,0.24)' },
-  segmentText: { color: COACH_V2.muted, fontSize: 11, fontWeight: '800' },
+  segmented: { borderBottomColor: COACH_V2.border, borderBottomWidth: 1, flexDirection: 'row', gap: 9, marginHorizontal: SLLayout.screenGutter, marginTop: 20 },
+  segment: { alignItems: 'center', flex: 1, justifyContent: 'center', minHeight: 48, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  segmentActive: { borderBottomColor: COACH_V2.violetBright },
+  segmentText: { color: COACH_V2.muted, fontSize: 13, fontWeight: '600' },
   segmentTextActive: { color: COACH_V2.text },
-  list: { gap: 9, padding: SLLayout.screenGutter, paddingBottom: 96 },
-  item: { alignItems: 'center', backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: SLRadius.md, borderWidth: 1, flexDirection: 'row', gap: 11, minHeight: 94, padding: 13 },
+  list: { gap: 0, paddingHorizontal: SLLayout.screenGutter, paddingTop: 12, paddingBottom: 150 },
+  item: { alignItems: 'center', borderBottomColor: COACH_V2.border, borderBottomWidth: 1, flexDirection: 'row', gap: 13, minHeight: 112, paddingVertical: 18 },
   itemIcon: { alignItems: 'center', borderRadius: 14, height: 44, justifyContent: 'center', width: 44 },
   flex: { flex: 1, minWidth: 0 },
   itemTop: { alignItems: 'center', flexDirection: 'row', gap: 8 },
-  itemKind: { fontSize: 9, fontWeight: '900', letterSpacing: 1.1 },
+  itemKind: { fontSize: 11, fontWeight: '900', letterSpacing: 1.1 },
   followup: { backgroundColor: 'rgba(243,184,62,0.12)', borderRadius: 999, color: COACH_V2.gold, fontSize: 8, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 6, paddingVertical: 3 },
   itemTitle: { color: COACH_V2.text, fontSize: 15, fontWeight: '800', marginTop: 4 },
   itemSummary: { color: COACH_V2.muted, fontSize: 12, lineHeight: 17, marginTop: 3 },
-  itemDate: { color: COACH_V2.subtle, fontSize: 10, marginTop: 5 },
+  itemDate: { color: COACH_V2.subtle, fontSize: 12, marginTop: 5 },
   state: { alignItems: 'center', backgroundColor: COACH_V2.surface, borderColor: COACH_V2.border, borderRadius: SLRadius.md, borderWidth: 1, flexDirection: 'row', gap: 11, minHeight: 86, padding: 15 },
   stateTitle: { color: COACH_V2.text, fontSize: 14, fontWeight: '800' },
   stateText: { color: COACH_V2.muted, fontSize: 12, marginTop: 3 },

@@ -24,11 +24,13 @@ const DESTINATIONS: Array<{
 }> = [
   { key: 'brief', label: 'Brief', suffix: '', icon: 'pulse-outline' },
   { key: 'training', label: 'Training', suffix: '/training', icon: 'barbell-outline' },
+  { key: 'performance', label: 'Performance', suffix: '/performance', icon: 'analytics-outline' },
   { key: 'reviews', label: 'Reviews', suffix: '/reviews', icon: 'checkmark-done-outline' },
   { key: 'messages', label: 'Messages', suffix: '/messages', icon: 'chatbubbles-outline' },
 ];
 
 function workspaceDestination(pathname: string): WorkspaceDestination | null {
+  if (pathname.includes('/performance')) return 'performance';
   if (pathname.includes('/training')) return 'training';
   if (pathname.includes('/reviews')) return 'reviews';
   if (pathname.includes('/messages')) return 'messages';
@@ -53,6 +55,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
     brief: (workspace.summary?.operational_status.reasons.length || 0)
       + Number(workspace.bootstrap?.check_ins.submitted_unreviewed_count || 0),
     training: 0,
+    performance: 0,
     reviews: pendingReviewCount,
     messages: Number(workspace.summary?.unread_messages?.count || 0),
   }), [pendingReviewCount, workspace.bootstrap?.check_ins.submitted_unreviewed_count, workspace.summary]);
@@ -104,8 +107,8 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
   if (!athlete) return null;
 
-  const openProgramming = () => router.push({
-    pathname: '/(tabs)/workout',
+  const openProgramming = () => router.navigate({
+    pathname: `${basePath}/training`,
     params: {
       athleteId: String(athlete.id),
       athleteName: athlete.name,
@@ -200,7 +203,13 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           <Text style={styles.sheetEyebrow}>COACH TOOLKIT</Text>
           <Text style={styles.sheetTitle}>Act for {athlete.name}</Text>
           <View style={styles.actionGrid}>
-            <ToolkitAction icon="add-circle-outline" label="New Session" onPress={() => { setToolkitOpen(false); openProgramming(); }} />
+            <ToolkitAction icon="add-circle-outline" label="New Session" onPress={() => {
+              setToolkitOpen(false);
+              router.push({ pathname: '/(tabs)/create-workout', params: {
+                athleteId: String(athlete.id), athleteName: athlete.name,
+                ...(workspace.trainingState.selectedDate ? { date: workspace.trainingState.selectedDate } : {}),
+              } } as any);
+            }} />
             <ToolkitAction icon="chatbubble-ellipses-outline" label="Message Athlete" onPress={() => { setToolkitOpen(false); navigate('messages'); }} />
             <ToolkitAction icon="create-outline" label="Add Coach Note" onPress={() => { setToolkitOpen(false); router.push(`${basePath}/notes` as any); }} />
             <ToolkitAction icon="calendar-outline" label="Adjust Program" onPress={() => { setToolkitOpen(false); openProgramming(); }} />

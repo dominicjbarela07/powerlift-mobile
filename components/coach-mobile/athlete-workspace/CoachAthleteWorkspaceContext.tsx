@@ -15,8 +15,9 @@ import { useAuth } from '@/context/AuthContext';
 import { ensureCoachAthleteThread, fetchJson } from '@/lib/api';
 import type { CoachAthleteSummaryResponse } from '@/lib/coach-mobile';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { useCoachPerformance } from './useCoachPerformance';
 
-export type WorkspaceDestination = 'brief' | 'training' | 'reviews' | 'messages';
+export type WorkspaceDestination = 'brief' | 'training' | 'performance' | 'reviews' | 'messages';
 
 export type CoachAthleteWorkspaceBootstrap = {
   ok: boolean;
@@ -92,7 +93,7 @@ type ReviewState = {
   scrollY: number;
 };
 
-type WorkspaceValue = {
+type WorkspaceValue = ReturnType<typeof useCoachPerformance> & {
   athleteId: number;
   bootstrap: CoachAthleteWorkspaceBootstrap | null;
   summary: CoachAthleteSummaryResponse | null;
@@ -225,6 +226,15 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
         return;
       }
 
+      // Open the verified shell immediately. Summary and bounded Performance
+      // may load independently after relationship authorization is resolved.
+      setBootstrap({
+        ...nextBootstrap,
+        athlete: { ...nextBootstrap.athlete, ...normalizeProfilePhotoPayload(nextBootstrap.athlete) },
+      });
+      subjectKeyRef.current = nextBootstrap.subject.subject_key;
+      setMessageThreadId(Number(nextBootstrap.conversation.thread_id || 0) || null);
+
       const summaryResponse = await fetchJson<CoachAthleteSummaryResponse>(
         `/coach/mobile/athletes/${athleteId}/summary?view=v3&period=4W`,
         { method: 'GET', auth: true, signal: controller.signal },
@@ -275,6 +285,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
 
   const identityMatches = Boolean(
     bootstrap
+    && namespaceRef.current === requestNamespace
     && Number(bootstrap.subject.coach_user_id) === accountId
     && Number(bootstrap.subject.athlete_id) === athleteId,
   );
@@ -284,6 +295,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     ? summary
     : null;
   const verifiedMessageThreadId = verifiedBootstrap ? messageThreadId : null;
+  const performanceState = useCoachPerformance(verifiedBootstrap?.subject.subject_key, athleteId, leaveRevokedWorkspace);
 
   const ensureMessageThread = useCallback(async () => {
     if (verifiedMessageThreadId) return verifiedMessageThreadId;
@@ -305,6 +317,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
 
   const subjectKey = `${requestNamespace}:${verifiedBootstrap?.subject.subject_key || 'resolving'}`;
   const value = useMemo<WorkspaceValue>(() => ({
+    ...performanceState,
     athleteId,
     bootstrap: verifiedBootstrap,
     summary: verifiedSummary,
@@ -322,6 +335,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     ensureMessageThread,
     reload,
   }), [
+    performanceState,
     athleteId,
     ensureMessageThread,
     error,
@@ -344,4 +358,8 @@ export function useCoachAthleteWorkspace() {
   const value = useContext(WorkspaceContext);
   if (!value) throw new Error('useCoachAthleteWorkspace must be used inside CoachAthleteWorkspaceProvider.');
   return value;
+}
+
+export function useOptionalCoachAthleteWorkspace() {
+  return useContext(WorkspaceContext);
 }

@@ -1,3 +1,4 @@
+import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -621,6 +622,8 @@ const blockActionGroups: Array<{ title: string; keys: BlockActionKey[] }> = [
 export default function TrainingIndexScreen() {
   const router = useRouter();
   const { user, activeMobileMode, workspaceKey } = useAuth();
+  const athleteWorkspace = useOptionalCoachAthleteWorkspace();
+  const workspaceTrainingAtEntry = useRef(athleteWorkspace?.trainingState);
   const params = useLocalSearchParams<{
     athleteId?: string;
     workoutId?: string;
@@ -635,7 +638,7 @@ export default function TrainingIndexScreen() {
   const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
   const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
   const directProgramId = params.programId ? Number(params.programId) : null;
-  const workspaceSubjectKey = params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null;
+  const workspaceSubjectKey = athleteWorkspace?.subjectKey || (params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null);
   const trainingScopeKey = `${workspaceKey}:${rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self'}:${workspaceSubjectKey || 'standalone'}`;
   const programCreatedNonce = params.programCreated ? String(params.programCreated) : null;
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
@@ -896,9 +899,9 @@ export default function TrainingIndexScreen() {
         pendingMap={visiblePendingMap}
         completedMap={visibleCompletedMap}
         onAddSession={addSessionForDate}
-        initialBlockId={Number.isFinite(returnBlockId || NaN) ? returnBlockId : null}
-        initialWeek={Number.isFinite(returnWeek || NaN) ? returnWeek : null}
-        initialDay={returnDay}
+        initialBlockId={Number.isFinite(returnBlockId || NaN) ? returnBlockId : workspaceTrainingAtEntry.current?.blockId || null}
+        initialWeek={Number.isFinite(returnWeek || NaN) ? returnWeek : workspaceTrainingAtEntry.current?.week || null}
+        initialDay={returnDay || workspaceTrainingAtEntry.current?.selectedDate}
         managedAthleteId={rosterAthleteId ? Number(rosterAthleteId) : visibleHub?.athlete?.id || null}
         managedAthleteName={visibleHub?.athlete?.name || null}
         managedAthleteAvatarUrl={visibleHub?.athlete?.avatar_url || null}
@@ -2470,6 +2473,9 @@ export function ProgrammingStoryboard({
   previewRoster?: Array<{ id: number; name?: string; avatar_url?: string | null; bodyweight?: number | null; preferred_units?: string | null }>;
 }) {
   const router = useRouter();
+  const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const savedTraining = useRef(focusedWorkspace?.trainingState);
+  const saveTraining = focusedWorkspace?.setTrainingState;
   const initialSheet = (['blocks', 'weeks', 'intelligence', 'athletes'] as const).includes(previewState as any) ? previewState as StoryboardSheetKind : null;
   const previewDayOffset = previewState === 'completed'
     ? 0
@@ -2567,8 +2573,10 @@ export function ProgrammingStoryboard({
 
   useEffect(() => {
     if (previewState) return;
-    setSelectedWeekIndex(Math.max(1, Number(selectedBlock?.current_week || currentWeek || 1)));
-    setSelectedDayKey(initialDay || null);
+    const saved = savedTraining.current;
+    setSelectedWeekIndex(saved?.blockId === selectedBlock?.id && saved?.week ? saved.week : Math.max(1, Number(initialWeek || selectedBlock?.current_week || currentWeek || 1)));
+    setSelectedDayKey(saved && saved.blockId === selectedBlock?.id ? saved.selectedDate : initialDay || null);
+    savedTraining.current = undefined;
   }, [currentWeek, initialDay, previewState, selectedBlock?.id, selectedBlock?.current_week]);
 
   useEffect(() => {
@@ -2595,8 +2603,13 @@ export function ProgrammingStoryboard({
   const selectAthlete = (id: number) => {
     storyboardSelectionFeedback();
     setSheet(null);
-    router.replace({ pathname: '/(tabs)/workout', params: { athleteId: String(id) } } as any);
+    router.replace({ pathname: focusedWorkspace ? '/(tabs)/coach-athlete/[athleteId]/training' : '/(tabs)/workout', params: { athleteId: String(id) } } as any);
   };
+
+  useEffect(() => {
+    if (!saveTraining || !selectedBlock?.id || !selectedWeek?.index) return;
+    saveTraining((current) => ({ ...current, blockId: selectedBlock.id, week: selectedWeek.index, selectedDate: selectedDay?.key || null }));
+  }, [saveTraining, selectedBlock?.id, selectedDay?.key, selectedWeek?.index]);
 
   return (
     <View style={storyStyles.root} testID="mobile-programming-manager-storyboard">
@@ -2617,6 +2630,12 @@ export function ProgrammingStoryboard({
 
       <ScrollView
         contentContainerStyle={storyStyles.scroll}
+        contentOffset={{ x: 0, y: focusedWorkspace?.trainingState.scrollY || 0 }}
+        onScroll={(event) => {
+          const scrollY = event.nativeEvent.contentOffset.y;
+          saveTraining?.((current) => ({ ...current, scrollY }));
+        }}
+        scrollEventThrottle={160}
         onScrollBeginDrag={() => setOpenSwipeSessionId(null)}
         scrollEnabled={!draggingSessionId && !dragMoveBusy}
         showsVerticalScrollIndicator={false}

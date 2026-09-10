@@ -57,7 +57,7 @@ assert.match(source.provider, /bootstrapResponse\.status === 403 \|\| bootstrapR
 assert.match(source.provider, /ensureCoachAthleteThread/);
 assert.match(source.provider, /AppState\.addEventListener\('change'/);
 
-for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'messages'"]) {
+for (const tab of ["key: 'brief'", "key: 'training'", "key: 'performance'", "key: 'reviews'", "key: 'messages'"]) {
   assert.match(source.shell, new RegExp(tab));
 }
 assert.match(source.shell, /Back to previous Coach context/);
@@ -91,9 +91,9 @@ assert.match(source.tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)
 
 for (const section of [
   'Needs Your Action',
-  'Current Training Context',
-  'Performance & Recovery Read',
-  'Recent Conversation / Coach Memory',
+  'On the program',
+  'StrengthHero',
+  'Between you two',
   'Upcoming Decisions',
 ]) assert.match(source.brief, new RegExp(section.replace(/[&/]/g, '\\$&')));
 assert.doesNotMatch(source.brief, /Since Last Visit/);
