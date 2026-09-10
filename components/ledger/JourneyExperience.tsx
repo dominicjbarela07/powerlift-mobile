@@ -1,6 +1,7 @@
+import { useLedgerResource } from './use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ImageBackground,
   Modal,
@@ -111,51 +112,32 @@ export function composeJourneyTotalStrengthPoints(lifts: readonly LedgerLift[]):
 export function JourneyExperience() {
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
-  const [bootstrap, setBootstrap] = useState<JourneyBootstrap | null>(null);
-  const [progressions, setProgressions] = useState<Partial<Record<JourneyRange, LedgerProgression>>>({});
+  const { data: initial, loading, error: requestError, load } = useLedgerResource(`journey:${ledgerSubject.athleteId ?? 'self'}`, async () => {
+    const [bootstrap, allTime] = await Promise.all([
+      fetchJourneyBootstrap({ limit: 24, includeSessions: false, athleteId: ledgerSubject.athleteId }),
+      fetchLedgerProgression('all', ledgerSubject.athleteId),
+    ]);
+    return { bootstrap, allTime };
+  });
+  const bootstrap = initial?.bootstrap ?? null;
+  const [rangeResults, setRangeResults] = useState<{ subject: number | undefined; values: Partial<Record<JourneyRange, LedgerProgression>> }>({ subject: ledgerSubject.athleteId, values: {} });
+  const progressions = useMemo<Partial<Record<JourneyRange, LedgerProgression>>>(() => ({ ...(rangeResults.subject === ledgerSubject.athleteId ? rangeResults.values : {}), all: initial?.allTime }), [initial?.allTime, ledgerSubject.athleteId, rangeResults]);
   const [range, setRange] = useState<JourneyRange>('all');
   const [metric, setMetric] = useState<StrengthMetric>('total');
   const [detail, setDetail] = useState<JourneyDetail>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [errorKind, setErrorKind] = useState<LedgerRequestFailureKind>('error');
+  const status = requestError instanceof JourneyRequestError || requestError instanceof LedgerRequestError ? requestError.status : 0;
+  const errorKind: LedgerRequestFailureKind = status === 401 || status === 403 ? 'unauthorized' : status === 404 || status === 410 ? 'unavailable' : 'error';
+  const error = requestError ? errorKind === 'unauthorized' ? 'Journey is not available to this account.' : 'Journey history could not be loaded.' : null;
   const { unit, setUnit } = useSurfaceWeightUnit(bootstrap?.athlete.preferred_units);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [nextBootstrap, allTime] = await Promise.all([
-        fetchJourneyBootstrap({ limit: 24, includeSessions: false, athleteId: ledgerSubject.athleteId }),
-        fetchLedgerProgression('all', ledgerSubject.athleteId),
-      ]);
-      setBootstrap(nextBootstrap);
-      setProgressions((current) => ({ ...current, all: allTime }));
-      setError(null);
-    } catch (caught) {
-      const status = caught instanceof JourneyRequestError || caught instanceof LedgerRequestError ? caught.status : 0;
-      const kind: LedgerRequestFailureKind = caught instanceof LedgerRequestError
-        ? caught.kind
-        : status === 401 || status === 403
-          ? 'unauthorized'
-          : status === 404 || status === 410
-            ? 'unavailable'
-            : 'error';
-      setErrorKind(kind);
-      setError(kind === 'unauthorized' ? 'Journey is not available to this account.' : kind === 'unavailable' ? 'Journey history is unavailable.' : 'Journey history could not be loaded.');
-    } finally {
-      setLoading(false);
-    }
-  }, [ledgerSubject.athleteId]);
-
-  useEffect(() => { void load(); }, [load]);
   useEffect(() => {
-    if (progressions[range]) return;
+    if (!initial || range === 'all' || progressions[range]) return;
     let active = true;
     fetchLedgerProgression(range, ledgerSubject.athleteId).then((value) => {
-      if (active) setProgressions((current) => ({ ...current, [range]: value }));
+      if (active) setRangeResults((current) => ({ subject: ledgerSubject.athleteId, values: { ...(current.subject === ledgerSubject.athleteId ? current.values : {}), [range]: value } }));
     }).catch(() => undefined);
     return () => { active = false; };
-  }, [ledgerSubject.athleteId, progressions, range]);
+  }, [initial, ledgerSubject.athleteId, progressions, range]);
 
   if (loading) return <JourneyState kind="loading" message="Reconstructing your training record." />;
   if (error || !bootstrap) return <JourneyState kind={errorKind} message={error || 'Journey history is unavailable.'} onRetry={load} />;

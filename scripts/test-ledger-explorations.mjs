@@ -86,7 +86,7 @@ for (const forbiddenRuntimeCopy of ['Jordan Reyes', 'Coach A', 'V2 DEMO', 'one y
 }
 
 assert.match(liveData, /const requests = \[[\s\S]*fetchLedgerProgression[\s\S]*fetchLedgerCurrentBests[\s\S]*fetchLedgerAccomplishments/, 'shared live state must use canonical services');
-assert.match(indexExperience, /useLedgerLiveData\('1y', \{ allowPartial: true \}\)/, 'the Index must remain bounded and not collapse when one optional canonical source fails');
+assert.match(indexExperience, /useLedgerLiveData\('90d', \{ allowPartial: true, projection: 'ledger-index' \}\)/, 'the Index must remain bounded and not collapse when one optional canonical source fails');
 assert.match(liveData, /Promise\.allSettled\(requests\)[\s\S]*failures\.length === requests\.length/, 'partial mode fails only when every canonical Index source fails');
 assert.match(liveData, /Ledger Index loaded with partial canonical data/, 'partial release failures retain bounded diagnostic context');
 assert.match(ledgerClient, /class LedgerRequestError extends Error/, 'Ledger requests preserve failure class');
@@ -99,10 +99,10 @@ assert.match(journeyClient, /\/mobile\/ledger\/journey/, 'Journey reads the auth
 assert.match(journeyAdapter, /buildJourneyMoments/, 'Journey uses a deterministic moment aggregation boundary');
 assert.match(journeyMoments, /CAREER_PR_TYPES/, 'Journey explicitly allows high-value career PR evidence');
 assert.doesNotMatch(journeyMoments, /CORE_MOVEMENT_SESSION_COMPLETED|CORE_PRESCRIPTION_COMPLETED/, 'routine evaluator rows are excluded from Journey');
-assert.match(indexExperience, /fetchLedgerExplorationIndex/, 'Index context uses the canonical exploration projection');
+assert.match(indexExperience, /fetchLedgerRecordSummary/, 'Index context uses the bounded canonical record summary');
 assert.match(indexExperience, /reported_bodyweight\?\.recent_observations/, 'bodyweight charts use reported readiness observations');
 assert.doesNotMatch(indexExperience, /reported_bodyweight\?\.latest\?\.reported_bodyweight_kg\s*\?\?\s*context\?\.bodyweight_kg/, 'Ledger must never substitute profile bodyweight');
-assert.match(indexExperience, /fetchJourneyBootstrap\(\{ limit: 24, includeSessions: true \}\)/, 'Latest Entry must use a bounded contextual Journey projection');
+assert.match(indexExperience, /fetchLedgerRecordSummary/, 'Latest Entry must use a bounded contextual Journey projection');
 assert.match(indexExperience, /journeyBootstrap\?\.lifetime\.sessions_completed[\s\S]*journeyBootstrap\?\.lifetime\.total_sets[\s\S]*journeyBootstrap\?\.lifetime\.pr_count/, 'Career Snapshot uses bounded canonical lifetime totals');
 assert.match(indexExperience, /eventReps\(event[\s\S]*actual_reps[\s\S]*rep_count/, 'Rep Max achievements use structured performed reps');
 assert.match(indexExperience, /source_set_log_id \? `set:\$\{event\.source_set_log_id\}`/, 'accomplishments from one SetLog consolidate into one performance');

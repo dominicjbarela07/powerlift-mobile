@@ -79,6 +79,7 @@
     "test:milestones-layout": "node --import tsx scripts/test-milestones-layout.mjs",
     "test:other-milestones": "node scripts/test-other-milestones.mjs",
     "test:streak-achievements": "node scripts/test-streak-achievements.mjs",
+    "test:evidence-read-cache": "node scripts/test-evidence-read-cache.mjs && node scripts/test-evidence-api-integration.mjs",
     "test:ledger-explorations": "node --import tsx scripts/test-ledger-explorations.mjs",
     "test:core-variants-experience": "node --import tsx scripts/test-core-variants-experience.mjs",
     "test:accessories-convergence": "node --import tsx scripts/test-accessories-experience-convergence.mjs",

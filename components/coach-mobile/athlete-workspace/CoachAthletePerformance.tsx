@@ -1,3 +1,4 @@
+import { useEvidenceRevision } from '@/components/ledger/use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -11,17 +12,18 @@ import { FloatingDisplayUnitRegistration, floatingControlBottom, SL_FLOATING_CON
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies, SLLayout } from '@/constants/theme';
 import { workspaceLedgerParams } from '@/lib/coach-performance';
-import { buildPerformanceSummary, performanceRecordDetail, performanceTaskChange, type PerformanceObservation } from '@/lib/coach-performance-summary';
+import { buildPerformanceSummary, performanceRecordDetail, performanceTaskChange, type PerformanceVariants, type PerformanceExploration, type PerformanceObservation } from '@/lib/coach-performance-summary';
 import { fetchLedgerAccomplishments, fetchLedgerCurrentBests, kgToDisplay, type AccomplishmentEvent, type CurrentBestSnapshot, type LedgerUnit } from '@/lib/ledger-data';
-import { fetchLedgerExplorationIndex, type LedgerExplorationIndex } from '@/lib/ledger-exploration';
+import { fetchJson } from '@/lib/api';
+import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { LEDGER_INDEX_ASSETS } from '@/lib/ledger-index-assets';
 import { canonicalPrHistory, competitiveStanding, resolveLedgerClubsRuntimeState } from '@/lib/ledger-rewards';
-import { fetchLedgerCoreVariants, type LedgerCoreVariantsStory } from '@/lib/ledger-variants';
 import { useCoachAthleteWorkspace } from './CoachAthleteWorkspaceContext';
 import { Chapter, deltaLabel, EvidenceLink, INK, LIFT_COLORS, loadLabel, PerformanceLoading, periodDate, StrengthHero, v } from './PerformanceVisuals';
 
 export function CoachAthletePerformance() {
   const router = useRouter();
+  const evidenceRevision = useEvidenceRevision();
   const workspace = useCoachAthleteWorkspace();
   const { unit, setUnit } = workspace;
   const { performance: data, period, setPeriod, subjectKey, athleteId, reload } = workspace;
@@ -29,45 +31,58 @@ export function CoachAthletePerformance() {
   const floatingClearance = floatingControlBottom({ context: 'tab-screen', safeAreaBottom: insets.bottom, slot: 1 })
     + SL_FLOATING_CONTROL.size + SL_FLOATING_CONTROL.gap;
   const savedScroll = useRef(workspace.performanceScrollY);
+  const [retry, setRetry] = useState(0);
+  const currentRecordKey = `${subjectKey}:${athleteId}:${retry}:${evidenceRevision}`;
+  const currentSupplementKey = `${currentRecordKey}:${period}`;
+  const [recordKey, setRecordKey] = useState<string>();
+  const [supplementKey, setSupplementKey] = useState<string>();
   const [events, setEvents] = useState<AccomplishmentEvent[]>([]);
   const [bests, setBests] = useState<CurrentBestSnapshot | null>(null);
-  const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
-  const [variants, setVariants] = useState<LedgerCoreVariantsStory | null>(null);
+  const [exploration, setExploration] = useState<PerformanceExploration | null>(null);
+  const [variants, setVariants] = useState<PerformanceVariants | null>(null);
   const [supplementError, setSupplementError] = useState(false);
   const [supplementLoading, setSupplementLoading] = useState(true);
   const [observationsOpen, setObservationsOpen] = useState(false);
-  const [retry, setRetry] = useState(0);
   const open = (room: string, extra: Record<string, string> = {}) => {
     setObservationsOpen(false);
     router.push({ pathname: `/(tabs)/ledger/${room}` as any, params: { ...workspaceLedgerParams(athleteId), ...extra } });
   };
   useEffect(() => {
+    if (!subjectKey) return;
     let active = true;
     setEvents([]); setBests(null);
     // Bounded canonical projections; never paginate an entire Ledger on entry.
-    void Promise.all([fetchLedgerAccomplishments(24, athleteId), fetchLedgerCurrentBests(athleteId)])
-      .then(([recent, current]) => { if (active) { setEvents(recent); setBests(current); } })
+    void Promise.all([fetchLedgerAccomplishments(24, athleteId, subjectKey), fetchLedgerCurrentBests(athleteId, subjectKey)])
+      .then(([recent, current]) => { if (active) { setEvents(recent); setBests(current); setRecordKey(currentRecordKey); } })
       .catch((error) => { if (active && [401, 403, 404].includes(error?.status)) void reload(true); });
     return () => { active = false; };
-  }, [athleteId, subjectKey, retry, reload]);
+  }, [athleteId, subjectKey, currentRecordKey, reload]);
   useEffect(() => {
-    if (!data) return;
+    if (!subjectKey) return;
     let active = true;
     setSupplementError(false); setSupplementLoading(true);
-    // Load after the primary projection, including short/sparse pages that cannot scroll.
-    void Promise.all([fetchLedgerExplorationIndex(athleteId), fetchLedgerCoreVariants(athleteId)])
-      .then(([accessories, core]) => {
+    // Independent bounded previews start alongside the hero projection.
+    void fetchJson<{ ok: boolean; athlete: { id: number }; accessories: PerformanceExploration['accessories']; variants: PerformanceVariants }>(
+      `/mobile/ledger/archive/supplemental-summary?athlete_id=${athleteId}&range=${period}`, { auth: true, evidenceSubject: subjectKey },
+    ).then((response) => {
         if (!active) return;
-        if (accessories.athlete.id !== athleteId || core.athlete.id !== athleteId) { void reload(true); return; }
-        setExploration(accessories); setVariants(core);
+        if ([401, 403, 404].includes(response.status)) { void reload(true); return; }
+        if (!response.ok || !response.json?.ok) throw new Error('Supplemental evidence unavailable');
+        const { athlete, accessories, variants: core } = response.json;
+        if (athlete.id !== athleteId || core.athlete.id !== athleteId) { void reload(true); return; }
+        setExploration({ athlete, accessories }); setVariants(core); setSupplementKey(currentSupplementKey);
       }).catch(() => { if (active) setSupplementError(true); })
       .finally(() => { if (active) setSupplementLoading(false); });
     return () => { active = false; };
-  }, [athleteId, data, subjectKey, retry, reload]);
-  const refresh = () => { workspace.reloadPerformance(); void reload(true); setRetry((value) => value + 1); };
+  }, [athleteId, period, subjectKey, currentSupplementKey, reload]);
+  const refresh = () => { invalidateEvidenceReads(); workspace.reloadPerformance(); void reload(true); setRetry((value) => value + 1); };
   const context = data?.coaching_context;
-  const model = buildPerformanceSummary({ data, exploration, variants, prs: canonicalPrHistory(events), unit });
-  const runtime = bests ? resolveLedgerClubsRuntimeState(bests.items, bests.strengthStandard, bests.strengthStanding, unit) : null;
+  const currentBests = recordKey === currentRecordKey ? bests : null;
+  const model = buildPerformanceSummary({ data,
+    exploration: supplementKey === currentSupplementKey ? exploration : null,
+    variants: supplementKey === currentSupplementKey ? variants : null,
+    prs: canonicalPrHistory(recordKey === currentRecordKey ? events : []), unit });
+  const runtime = currentBests ? resolveLedgerClubsRuntimeState(currentBests.items, currentBests.strengthStandard, currentBests.strengthStanding, unit) : null;
   const standing = runtime ? competitiveStanding(runtime.totalState, runtime.standard?.sex) : null;
   const lifts = data?.big_three_arc?.lifts || [];
   const hasStrength = lifts.some((lift) => lift.current_e1rm_kg != null || lift.strength_lenses?.weight_on_bar.heaviest_kg != null);

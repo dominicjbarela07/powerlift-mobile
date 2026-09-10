@@ -1,7 +1,9 @@
+import { useLedgerResource } from './use-ledger-resource';
+import { useAthleteLedgerSubject } from './athlete-ledger-subject';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   Image,
   ImageBackground,
@@ -26,9 +28,9 @@ import {
   type CurrentBest,
   type LedgerUnit,
 } from '@/lib/ledger-data';
-import { fetchLedgerExplorationIndex, type LedgerExplorationIndex, type LedgerMovementProgress } from '@/lib/ledger-exploration';
+import { type LedgerMovementProgress } from '@/lib/ledger-exploration';
 import { LEDGER_INDEX_ASSETS, ledgerCoreLiftAsset, ledgerIndexChapterAsset } from '@/lib/ledger-index-assets';
-import { fetchJourneyBootstrap, type JourneyBootstrap, type JourneyEntry } from '@/lib/ledger-journey';
+import { fetchLedgerRecordSummary, type JourneyEntry } from '@/lib/ledger-journey';
 import { formatPerformedLoad } from '@/lib/performed-load-semantics';
 import { canonicalTotal, projectedStrengthTierState, supportedStrengthStandard, totalStrengthTierState } from '@/lib/ledger-rewards';
 import { SL_STRENGTH_TIER_ASSETS } from '@/lib/trophy-assets';
@@ -376,23 +378,12 @@ function LatestEntryArtwork({ movement, entry, fallbackEvent }: { movement?: Led
 
 export function LedgerIndexExperience() {
   const router = useRouter();
-  const { progression, currentBests, accomplishments, strengthStandard: projectedStandard, strengthStanding, loading, error, errorKind, reload } = useLedgerLiveData('1y', { allowPartial: true });
-  const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
-  const [journeyBootstrap, setJourneyBootstrap] = useState<JourneyBootstrap | null>(null);
-  const [supportLoading, setSupportLoading] = useState(true);
+  const { progression, currentBests, accomplishments, strengthStandard: projectedStandard, strengthStanding, loading, error, errorKind, reload } = useLedgerLiveData('90d', { allowPartial: true, projection: 'ledger-index' });
+  const ledgerSubject = useAthleteLedgerSubject();
+  const { data: journeyBootstrap, loading: supportLoading, error: supportError } = useLedgerResource(
+    `record-summary:${ledgerSubject.athleteId ?? 'self'}`, () => fetchLedgerRecordSummary(ledgerSubject.athleteId));
+  const exploration = journeyBootstrap?.exploration;
   const { unit, setUnit } = useSurfaceWeightUnit(progression?.athlete?.preferred_units);
-
-  useEffect(() => {
-    let active = true;
-    Promise.allSettled([fetchLedgerExplorationIndex(), fetchJourneyBootstrap({ limit: 24, includeSessions: true })])
-      .then(([explorationResult, journeyResult]) => {
-        if (!active) return;
-        if (explorationResult.status === 'fulfilled') setExploration(explorationResult.value);
-        if (journeyResult.status === 'fulfilled') setJourneyBootstrap(journeyResult.value);
-      })
-      .finally(() => { if (active) setSupportLoading(false); });
-    return () => { active = false; };
-  }, []);
 
   const model = useMemo(() => {
     const prs = recentPrPerformances(accomplishments);
@@ -411,13 +402,13 @@ export function LedgerIndexExperience() {
   }, [accomplishments, currentBests, progression?.strength_standard, projectedStandard, strengthStanding, unit]);
 
   if (loading || supportLoading) return <View testID="ledger-home-experience" style={styles.state}><Image accessible={false} source={LEDGER_INDEX_ASSETS.record} style={styles.stateImage} /><Text style={styles.stateTitle}>Opening your complete record.</Text></View>;
+  if (supportError instanceof Error && 'status' in supportError && [401, 403].includes(Number(supportError.status))) return <View style={styles.state}><Text style={styles.stateTitle}>This Ledger is not available to this account.</Text></View>;
   if (error) return <View testID="ledger-home-experience" style={styles.state}><Ionicons name={errorKind === 'unauthorized' ? 'lock-closed-outline' : 'alert-circle-outline'} size={32} color="#B994F3" /><Text style={styles.stateTitle}>{error}</Text><Pressable onPress={() => void reload()} style={styles.retry}><Text style={styles.retryText}>Try again</Text></Pressable></View>;
 
   const today = new Date().toISOString().slice(0, 10);
   const latestJourneyEntry = journeyBootstrap?.timeline.items.find((entry) => entry.occurred_on <= today && !RAW_COMPLETION_EVENT_TYPES.has(entry.event_type)) || null;
   const latestMovement = exploration?.movements.find((movement) => (
     Boolean(latestJourneyEntry?.movement?.key && movement.key === latestJourneyEntry.movement.key)
-    || Boolean(latestJourneyEntry?.movement?.label && movement.name === latestJourneyEntry.movement.label)
   )) || null;
   const sessions = Math.max(0, journeyBootstrap?.lifetime.sessions_completed ?? progression?.consistency?.sessions_completed ?? 0);
   const lifetimeSets = journeyBootstrap?.lifetime.total_sets ?? exploration?.context.lifetime_set_count;

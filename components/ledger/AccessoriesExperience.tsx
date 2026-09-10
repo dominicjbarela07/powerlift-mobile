@@ -1,6 +1,7 @@
+import { useLedgerResource } from './use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Polyline } from 'react-native-svg';
 
@@ -18,7 +19,6 @@ import {
   type LedgerAccessoryMovement,
   type LedgerAccessoryProgress,
   type LedgerAccessoriesStory,
-  type LedgerExplorationIndex,
   type LedgerMovementSet,
 } from '@/lib/ledger-exploration';
 import {
@@ -157,25 +157,17 @@ function State({ title, retry }: { title: string; retry?: () => void }) {
 export default function AccessoriesExperience() {
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
-  const [data, setData] = useState<LedgerExplorationIndex | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, loading, error, load } = useLedgerResource(`accessories:${ledgerSubject.athleteId ?? 'self'}`,
+    () => fetchLedgerExplorationIndex(ledgerSubject.athleteId));
   const [anatomyView, setAnatomyView] = useState<'front' | 'rear' | null>(null);
   const { unit, setUnit } = useSurfaceWeightUnit(data?.athlete.preferred_units);
 
-  const load = () => {
-    setLoading(true);
-    setError(null);
-    fetchLedgerExplorationIndex(ledgerSubject.athleteId)
-      .then(setData)
-      .catch((caught) => setError(caught instanceof Error ? caught.message : 'Accessory evidence could not be loaded.'))
-      .finally(() => setLoading(false));
-  };
-  useEffect(load, [ledgerSubject.athleteId]);
 
   const story = data?.accessories;
   const movementsById = useMemo(() => new Map((story?.movements || []).map((movement) => [movement.id, movement])), [story?.movements]);
   const primary = useMemo(() => (story?.trained_primary_muscles || []).filter(isGovernedMuscleId) as GovernedMuscleId[], [story?.trained_primary_muscles]);
+  const muscleHighlights = useMemo(() => new Map((story?.muscle_groups || [])
+    .map((muscle) => [muscle.key, [muscle.key]] as const)), [story?.muscle_groups]);
   const exposure = useMemo(() => normalizeAnatomyExposure(
     (story?.muscle_groups || []).map((muscle) => ({ muscle_id: muscle.key, score: muscle.set_count })),
   ), [story?.muscle_groups]);
@@ -183,7 +175,7 @@ export default function AccessoriesExperience() {
     || (primary[0] && MUSCLE_META[primary[0]].preferred === 'rear' ? 'rear' : 'front');
 
   if (loading) return <State title="Loading your accessory record." />;
-  if (error || !data || !story) return <State title={error || 'Accessory evidence is unavailable.'} retry={load} />;
+  if (error || !data || !story) return <State title={error instanceof Error ? error.message : 'Accessory evidence is unavailable.'} retry={load} />;
 
   const openMovement = (movementId: number, equipmentContextDefinitionId?: number | null) => router.push(
     movementHistorySheetRouteForCanonicalIdentity({
@@ -270,7 +262,7 @@ export default function AccessoriesExperience() {
 
       <View testID="accessories-your-movements">
         <SectionHeading title="YOUR MOVEMENTS" subtitle={`${story.summary.movement_count} performed movements · grouped by primary muscle`} />
-        <View style={styles.listCard}>{story.muscle_groups.map((muscle) => <Pressable key={muscle.key} accessibilityRole="button" onPress={() => openMuscle(muscle.key)} style={({ pressed }) => [styles.libraryRow, pressed && styles.pressed]}><View style={styles.libraryIcon}>{isGovernedMuscleId(muscle.key) ? <MuscleMap athlete={data.athlete} framingPreset="thumbnail" primary={[muscle.key]} semanticLevel="session" size="thumbnail" style={styles.libraryAnatomy} view="auto" /> : <Ionicons color={VIOLET_SOFT} name="body-outline" size={22} />}</View><View style={styles.libraryCopy}><Text style={styles.libraryName}>{titleCase(muscle.key)}</Text><Text style={styles.libraryMeta}>{muscle.movement_count} movement{muscle.movement_count === 1 ? '' : 's'} · {muscle.set_count} working sets</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
+        <View style={styles.listCard}>{story.muscle_groups.map((muscle) => <Pressable key={muscle.key} accessibilityRole="button" onPress={() => openMuscle(muscle.key)} style={({ pressed }) => [styles.libraryRow, pressed && styles.pressed]}><View style={styles.libraryIcon}>{isGovernedMuscleId(muscle.key) ? <MuscleMap athlete={data.athlete} framingPreset="thumbnail" primary={muscleHighlights.get(muscle.key)} semanticLevel="session" size="thumbnail" style={styles.libraryAnatomy} view="auto" /> : <Ionicons color={VIOLET_SOFT} name="body-outline" size={22} />}</View><View style={styles.libraryCopy}><Text style={styles.libraryName}>{titleCase(muscle.key)}</Text><Text style={styles.libraryMeta}>{muscle.movement_count} movement{muscle.movement_count === 1 ? '' : 's'} · {muscle.set_count} working sets</Text></View><Ionicons color="#89919E" name="chevron-forward" size={18} /></Pressable>)}</View>
       </View>
 
       <View testID="accessory-history-preview">

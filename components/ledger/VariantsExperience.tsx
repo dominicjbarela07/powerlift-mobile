@@ -1,6 +1,7 @@
+import { useLedgerResource } from './use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
@@ -17,7 +18,6 @@ import {
   type CoreVariantMovement,
   type CoreVariantProgression,
   type CoreVariantSetEvidence,
-  type LedgerCoreVariantsStory,
 } from '@/lib/ledger-variants';
 import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
 import { movementHistorySheetRouteForCanonicalIdentity } from '@/lib/movement-history-launch';
@@ -88,19 +88,9 @@ function State({ title, retry }: { title: string; retry?: () => void }) {
 }
 
 function useVariantStory(athleteId?: number) {
-  const [story, setStory] = useState<LedgerCoreVariantsStory | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const load = () => {
-    setLoading(true);
-    setError(null);
-    fetchLedgerCoreVariants(athleteId)
-      .then(setStory)
-      .catch((caught) => setError(caught instanceof Error ? caught.message : 'Core Variant evidence could not be loaded.'))
-      .finally(() => setLoading(false));
-  };
-  useEffect(load, [athleteId]);
-  return { story, loading, error, load };
+  const { data: story, loading, error, load } = useLedgerResource(`variants:${athleteId ?? 'self'}`,
+    () => fetchLedgerCoreVariants(athleteId));
+  return { story, loading, error: error instanceof Error ? error.message : error ? 'Core Variant evidence could not be loaded.' : null, load };
 }
 
 function variantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' | 'family'>) {

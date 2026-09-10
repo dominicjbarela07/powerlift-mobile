@@ -77,7 +77,7 @@ export type LedgerAccessoryBest = Readonly<{
 
 export type LedgerAccessoriesStory = Readonly<{
   period: {
-    key: 'block' | '90d';
+    key: 'block' | '30d' | '90d' | '180d';
     label: string;
     start_date: string;
     end_date: string;
@@ -189,8 +189,11 @@ async function requirePayload<T extends { ok: boolean; error?: string }>(path: s
   return response.json;
 }
 
-export async function fetchLedgerExplorationIndex(athleteId?: number | null): Promise<LedgerExplorationIndex> {
-  const suffix = athleteId ? `?athlete_id=${encodeURIComponent(athleteId)}` : '';
+export async function fetchLedgerExplorationIndex(athleteId?: number | null, view?: 'index'): Promise<LedgerExplorationIndex> {
+  const params = new URLSearchParams();
+  if (athleteId) params.set('athlete_id', String(athleteId));
+  if (view) params.set('view', view);
+  const suffix = params.size ? `?${params}` : '';
   const payload = await requirePayload<{ ok: boolean; error?: string } & LedgerExplorationIndex>(`/mobile/ledger/archive/movement-progress${suffix}`);
   return payload;
 }

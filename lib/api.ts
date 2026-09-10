@@ -1,3 +1,4 @@
+import { evidenceReadCache, invalidateEvidenceReads, isEvidenceRead } from './evidence-read-cache';
 // app/lib/api.ts
 
 import * as SecureStore from 'expo-secure-store';
@@ -5,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import { API_BASE, PRODUCTION_API_BASE, WEB_BASE } from '@/lib/api-base';
+import { API_BASE } from '@/lib/api-base';
 import { resolveProductionIdealRequest } from '@/lib/release-preview-stubs';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
 import {
@@ -63,6 +64,7 @@ export type FetchJsonResult<T> = {
 
 type ApiFetchInit = RequestInit & {
   auth?: boolean;
+  evidenceSubject?: string;
   timeoutMs?: number;
   requestImportance?: ApiRequestImportance;
 };
@@ -180,6 +182,7 @@ export async function fetchJson<T = any>(
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
   const {
     auth: authMode,
+    evidenceSubject,
     timeoutMs = FETCH_TIMEOUT_MS,
     requestImportance = method === 'GET' ? 'foreground-read' : 'critical-mutation',
     ...fetchInit
@@ -299,145 +302,166 @@ export async function fetchJson<T = any>(
     );
   }
 
-  const controller = new AbortController();
-  const callerSignal = fetchInit.signal;
-  let didTimeout = false;
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  let removeCallerAbortListener: (() => void) | null = null;
+  const evidenceRead = method === 'GET' && wantsAuth && Boolean(token) && isEvidenceRead(path);
+  const performRequest = async (): Promise<FetchJsonResult<T>> => {
+    const controller = new AbortController();
+    const callerSignal = evidenceRead ? undefined : fetchInit.signal;
+    let didTimeout = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let removeCallerAbortListener: (() => void) | null = null;
 
-  if (callerSignal) {
-    if (callerSignal.aborted) {
-      controller.abort();
-    } else {
-      const abortFromCaller = () => controller.abort();
-      callerSignal.addEventListener('abort', abortFromCaller);
-      removeCallerAbortListener = () => callerSignal.removeEventListener('abort', abortFromCaller);
+    if (callerSignal) {
+      if (callerSignal.aborted) {
+        controller.abort();
+      } else {
+        const abortFromCaller = () => controller.abort();
+        callerSignal.addEventListener('abort', abortFromCaller);
+        removeCallerAbortListener = () => callerSignal.removeEventListener('abort', abortFromCaller);
+      }
     }
-  }
 
-  if (timeoutMs > 0) {
-    timeoutId = setTimeout(() => {
-      didTimeout = true;
-      controller.abort();
-    }, timeoutMs);
-  }
+    if (timeoutMs > 0) {
+      timeoutId = setTimeout(() => {
+        didTimeout = true;
+        controller.abort();
+      }, timeoutMs);
+    }
 
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      ...fetchInit,
-      method,
-      headers: mergedHeaders,
-      body: normalizedBody as any,
-      credentials: (init.credentials as any) ?? 'include',
-      signal: controller.signal,
-    });
-  } catch (err: any) {
-    const elapsedMs = Date.now() - requestStartedAt;
-    if (didTimeout) {
-      const timeoutError = new ApiRequestError({
-        kind: 'timeout',
-        message: `Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`,
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        ...fetchInit,
+        method,
+        headers: mergedHeaders,
+        body: normalizedBody as any,
+        credentials: (init.credentials as any) ?? 'include',
+        signal: controller.signal,
+      });
+    } catch (err: any) {
+      const elapsedMs = Date.now() - requestStartedAt;
+      if (didTimeout) {
+        const timeoutError = new ApiRequestError({
+          kind: 'timeout',
+          message: `Request timed out after ${Math.round(timeoutMs / 1000)} seconds. Please try again.`,
+          method,
+          path: requestPath,
+          timeoutMs,
+          importance: requestImportance,
+          requestId,
+          elapsedMs,
+        });
+        console.warn('[ApiRequest]', {
+          kind: timeoutError.kind,
+          method,
+          path: requestPath,
+          importance: requestImportance,
+          elapsed_ms: elapsedMs,
+          request_id: requestId,
+        });
+        throw timeoutError;
+      }
+      const cancelled = Boolean(callerSignal?.aborted || controller.signal.aborted || err?.name === 'AbortError');
+      const requestError = new ApiRequestError({
+        kind: cancelled ? 'cancelled' : 'network',
+        message: cancelled ? 'Request cancelled.' : 'The request could not reach Strength Ledger.',
         method,
         path: requestPath,
-        timeoutMs,
         importance: requestImportance,
         requestId,
         elapsedMs,
       });
-      console.warn('[ApiRequest]', {
-        kind: timeoutError.kind,
-        method,
-        path: requestPath,
-        importance: requestImportance,
-        elapsed_ms: elapsedMs,
-        request_id: requestId,
-      });
-      throw timeoutError;
-    }
-    const cancelled = Boolean(callerSignal?.aborted || controller.signal.aborted || err?.name === 'AbortError');
-    const requestError = new ApiRequestError({
-      kind: cancelled ? 'cancelled' : 'network',
-      message: cancelled ? 'Request cancelled.' : 'The request could not reach Strength Ledger.',
-      method,
-      path: requestPath,
-      importance: requestImportance,
-      requestId,
-      elapsedMs,
-    });
-    if (!cancelled) {
-      console.warn('[ApiRequest]', {
-        kind: requestError.kind,
-        method,
-        path: requestPath,
-        importance: requestImportance,
-        elapsed_ms: elapsedMs,
-        request_id: requestId,
-      });
-    }
-    throw requestError;
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-    if (removeCallerAbortListener) removeCallerAbortListener();
-  }
-
-  let raw = '';
-  try {
-    raw = await res.text();
-  } catch {
-    raw = '';
-  }
-
-  const trimmed = raw.trim();
-  let json: T | null = null;
-  if (trimmed.length > 0) {
-    try {
-      json = JSON.parse(trimmed) as T;
-    } catch {
-      console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
-      json = null;
-    }
-  }
-
-  if (!res.ok && isAccountStateBlockedPayload(json)) {
-    notifyAccountStateBlock(json, { path, status: res.status });
-  }
-
-  if (__DEV__ && !res.ok) {
-    const endpoint = (() => {
-      try {
-        const parsed = new URL(url);
-        return `${parsed.pathname}${parsed.search}`;
-      } catch {
-        return path;
-      }
-    })();
-    console.warn('fetchJson response error', method, endpoint, 'status', res.status);
-  }
-
-  return {
-    ok: res.ok,
-    status: res.status,
-    json,
-    raw,
-    failure: !res.ok
-      ? {
-          kind: 'http',
+      if (!cancelled) {
+        console.warn('[ApiRequest]', {
+          kind: requestError.kind,
           method,
           path: requestPath,
-          requestId,
-          elapsedMs: Date.now() - requestStartedAt,
+          importance: requestImportance,
+          elapsed_ms: elapsedMs,
+          request_id: requestId,
+        });
+      }
+      throw requestError;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (removeCallerAbortListener) removeCallerAbortListener();
+    }
+
+    let raw = '';
+    try {
+      raw = await res.text();
+    } catch {
+      raw = '';
+    }
+
+    const trimmed = raw.trim();
+    let json: T | null = null;
+    if (trimmed.length > 0) {
+      try {
+        json = JSON.parse(trimmed) as T;
+      } catch {
+        console.log('fetchJson parse failed:', res.status, url, trimmed.slice(0, 300));
+        json = null;
+      }
+    }
+
+    if (!res.ok && isAccountStateBlockedPayload(json)) {
+      notifyAccountStateBlock(json, { path, status: res.status });
+    }
+
+    if (__DEV__ && !res.ok) {
+      const endpoint = (() => {
+        try {
+          const parsed = new URL(url);
+          return `${parsed.pathname}${parsed.search}`;
+        } catch {
+          return path;
         }
-      : trimmed.length > 0 && json == null
+      })();
+      console.warn('fetchJson response error', method, endpoint, 'status', res.status);
+    }
+
+    return {
+      ok: res.ok,
+      status: res.status,
+      json,
+      raw,
+      failure: !res.ok
         ? {
-            kind: 'malformed-response',
+            kind: 'http',
             method,
             path: requestPath,
             requestId,
             elapsedMs: Date.now() - requestStartedAt,
           }
-        : null,
+        : trimmed.length > 0 && json == null
+          ? {
+              kind: 'malformed-response',
+              method,
+              path: requestPath,
+              requestId,
+              elapsedMs: Date.now() - requestStartedAt,
+            }
+          : null,
+    };
   };
+  if (method !== 'GET' && method !== 'HEAD') {
+    evidenceReadCache.invalidate(false);
+    try { return await performRequest(); } finally { invalidateEvidenceReads(); }
+  }
+  const header = (...names: string[]) => String(Object.entries(mergedHeaders).find(([key]) => names.includes(key.toLowerCase()))?.[1] || '');
+  const response = evidenceRead
+    ? await evidenceReadCache.read(
+      header('authorization') || token!,
+      `${url}|${evidenceSubject || ''}|${header('x-strength-ledger-mobile-mode')}|${header('x-timezone', 'x-time-zone')}`,
+      performRequest,
+    ) : await performRequest();
+  if ([401, 403, 404].includes(response.status)) evidenceReadCache.invalidate(false);
+  if (fetchInit.signal?.aborted) throw new ApiRequestError({
+    kind: 'cancelled', message: 'Request cancelled.', method, path: requestPath,
+    importance: requestImportance, requestId, elapsedMs: Date.now() - requestStartedAt,
+  });
+  return response;
+
 }
 
 export async function removeVideoAttachment(attachmentId: number): Promise<FetchJsonResult<any>> {
@@ -730,7 +754,7 @@ export type ApiLoginResponse = {
   role?: string;
   is_coach?: boolean;
   workspace_mode?: 'team' | 'individual';
-  available_mobile_modes?: Array<'athlete' | 'coach' | 'individual' | string>;
+  available_mobile_modes?: ('athlete' | 'coach' | 'individual' | string)[];
   mobile_mode?: 'athlete' | 'coach' | 'individual' | string | null;
   can_access_internal_self_coach_mobile_mode?: boolean;
   is_individual_workspace?: boolean;
@@ -1059,14 +1083,14 @@ export type ProgrammingProgramSummary = {
   meet_date?: string | null;
   meet_id?: number | null;
   updated_at?: string | null;
-  blocks?: Array<{
+  blocks?: {
     id: number;
     name?: string | null;
     start_date?: string | null;
     end_date?: string | null;
     order_idx?: number | null;
     updated_at?: string | null;
-  }>;
+  }[];
 };
 
 export async function listProgrammingPrograms(

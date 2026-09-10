@@ -1,8 +1,13 @@
 import type { CoachingPerformance } from './coach-performance';
 import type { AccomplishmentEvent } from './ledger-data';
-import type { LedgerAccessoryProgress, LedgerExplorationIndex } from './ledger-exploration';
-import type { CoreVariantMovement, LedgerCoreVariantsStory } from './ledger-variants';
+import type { LedgerAccessoryProgress, LedgerAccessoriesStory } from './ledger-exploration';
+import type { CoreVariantMovement, CoreVariantFamilySummary, LedgerCoreVariantsStory } from './ledger-variants';
 import { convertDisplayWeightValue, formatCalculatedWeightFromKg, parseDisplayWeightUnit, type DisplayWeightUnit } from './display-units';
+
+export type PerformanceExploration = { athlete: { id: number }; accessories: Pick<LedgerAccessoriesStory, 'period' | 'summary' | 'movements' | 'progress'> };
+
+export type PerformanceVariant = Pick<CoreVariantMovement, 'core_movement_id' | 'key' | 'name' | 'family' | 'parent_lift_label' | 'latest_progression'>;
+export type PerformanceVariants = Pick<LedgerCoreVariantsStory, 'athlete'> & { families: Pick<CoreVariantFamilySummary, 'family' | 'label' | 'active_count'>[]; movements: PerformanceVariant[] };
 
 export const PERFORMANCE_PREVIEW_LIMITS = { observations: 3, accessories: 2, variants: 1, checkIn: 2 } as const;
 const day = (value?: string | null) => String(value || '').slice(0, 10);
@@ -68,7 +73,7 @@ function accessoryMerit(row: LedgerAccessoryProgress) {
   if ((c.effort_reserve_delta || 0) > 0) return 70 + Math.min(10, c.effort_reserve_delta! * 2);
   return 0;
 }
-function variantMerit(row: CoreVariantMovement) {
+function variantMerit(row: PerformanceVariant) {
   const p = row.latest_progression;
   if (!p) return 0;
   if (p.kind === 'more_weight_same_reps' && p.load_delta_kg > 0.05) return 80 + Math.min(10, p.load_delta_kg / Math.max(1, p.prior.weight_kg) * 100);
@@ -87,8 +92,8 @@ export type PerformanceObservation = {
 
 /** Bounded previews, with exact movement/equipment identity retained. No inferred carryover. */
 export function buildPerformanceSummary({ data, exploration, variants, prs = [], unit }: {
-  data: CoachingPerformance | null; exploration: LedgerExplorationIndex | null;
-  variants: LedgerCoreVariantsStory | null; prs?: readonly AccomplishmentEvent[]; unit: DisplayWeightUnit;
+  data: CoachingPerformance | null; exploration: PerformanceExploration | null;
+  variants: PerformanceVariants | null; prs?: readonly AccomplishmentEvent[]; unit: DisplayWeightUnit;
 }) {
   const athleteId = data?.athlete?.id;
   // Even a late successful response for a previous athlete cannot enter this summary.

@@ -25,7 +25,8 @@ assert.match(route, /LedgerRouteScreen\b[^>]*screen="achievements"/, 'the shippe
 assert.match(routeScreen, /screen === 'achievements'.*LedgerAchievementsRoom/, 'the route screen must select the achievements room');
 assert.match(routeScreen, /<AchievementsExperience/, 'the achievements room must mount the real Clubs consumer');
 assert.match(achievements, /resolveLedgerClubsRuntimeState\(/, 'the real Clubs screen must use the governed runtime projection');
-assert.match(achievements, /useFocusEffect\(useCallback\(\(\) => \{\s*void reload\(\)/, 'returning from a sex change must refresh the server-owned standard');
+assert.match(liveData, /useEvidenceRevision\(\)/, 'profile mutations must invalidate the server-owned standard through the evidence revision');
+assert.match(liveData, /focused && \(loadedKey !== key/, 'return navigation revalidates changed evidence while reusing fresh reads');
 assert.match(liveData, /fetchLedgerCurrentBests\(athleteId\)/, 'Clubs live data must request relationship-scoped current-best evidence');
 assert.match(data, /LEDGER_CLUBS_CURRENT_BESTS_PATH/, 'the Clubs API boundary must be explicit and testable');
 assert.match(data, /\/workouts\/mobile\/accomplishments\/current-bests\?scope=career&limit=24/, 'Clubs must consume the canonical current-bests endpoint');

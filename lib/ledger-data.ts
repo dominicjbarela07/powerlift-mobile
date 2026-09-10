@@ -296,16 +296,17 @@ export class LedgerRequestError extends Error {
   }
 }
 
-async function requireJson<T extends { ok: boolean; error?: string }>(path: string): Promise<T> {
-  const response = await fetchJson<T>(path, { method: 'GET', auth: true });
+async function requireJson<T extends { ok: boolean; error?: string }>(path: string, evidenceSubject?: string): Promise<T> {
+  const response = await fetchJson<T>(path, { method: 'GET', auth: true, evidenceSubject });
   if (!response.ok || !response.json?.ok) {
     throw new LedgerRequestError(response.status, response.json?.error);
   }
   return response.json;
 }
 
-export async function fetchLedgerProgression(range: LedgerRange = '90d', athleteId?: number): Promise<LedgerProgression> {
+export async function fetchLedgerProgression(range: LedgerRange = '90d', athleteId?: number, view?: 'ledger-index'): Promise<LedgerProgression> {
   const params = new URLSearchParams({ range });
+  if (view) params.set('view', view);
   if (athleteId) params.set('athlete_id', String(athleteId));
   const payload = await requireJson<ProgressionResponse>(`/athletes/mobile/progression?${params.toString()}`);
   return payload.progression ?? {};
@@ -317,11 +318,12 @@ export type AccomplishmentPage = Readonly<{
   hasMore: boolean;
 }>;
 
-export async function fetchLedgerAccomplishmentPage(limit = 24, cursor?: string | null, athleteId?: number): Promise<AccomplishmentPage> {
+export async function fetchLedgerAccomplishmentPage(limit = 24, cursor?: string | null, athleteId?: number, evidenceSubject?: string, eventTypes?: readonly string[]): Promise<AccomplishmentPage> {
   const params = new URLSearchParams({ limit: String(Math.max(1, Math.min(limit, 50))) });
   if (cursor) params.set('cursor', cursor);
   if (athleteId) params.set('athlete_id', String(athleteId));
-  const payload = await requireJson<TimelineResponse>(`/workouts/mobile/accomplishments?${params.toString()}`);
+  if (eventTypes?.length) params.set('event_types', eventTypes.join(','));
+  const payload = await requireJson<TimelineResponse>(`/workouts/mobile/accomplishments?${params.toString()}`, evidenceSubject);
   const page = payload.accomplishment_timeline;
   return {
     items: page?.items ?? [],
@@ -330,8 +332,8 @@ export async function fetchLedgerAccomplishmentPage(limit = 24, cursor?: string 
   };
 }
 
-export async function fetchLedgerAccomplishments(limit = 24, athleteId?: number): Promise<AccomplishmentEvent[]> {
-  return (await fetchLedgerAccomplishmentPage(limit, null, athleteId)).items;
+export async function fetchLedgerAccomplishments(limit = 24, athleteId?: number, evidenceSubject?: string): Promise<AccomplishmentEvent[]> {
+  return (await fetchLedgerAccomplishmentPage(limit, null, athleteId, evidenceSubject)).items;
 }
 
 /**
@@ -353,9 +355,9 @@ export async function fetchLedgerAccomplishmentHistory(maxPages = 20, athleteId?
   return [...new Map(items.map((item) => [item.id, item])).values()];
 }
 
-export async function fetchLedgerCurrentBests(athleteId?: number): Promise<CurrentBestSnapshot> {
+export async function fetchLedgerCurrentBests(athleteId?: number, evidenceSubject?: string): Promise<CurrentBestSnapshot> {
   const path = athleteId ? `${LEDGER_CLUBS_CURRENT_BESTS_PATH}&athlete_id=${encodeURIComponent(athleteId)}` : LEDGER_CLUBS_CURRENT_BESTS_PATH;
-  const payload = await requireJson<CurrentBestResponse>(path);
+  const payload = await requireJson<CurrentBestResponse>(path, evidenceSubject);
   return {
     items: payload.current_bests?.items ?? [],
     strengthStandard: payload.current_bests?.strength_standard ?? null,
