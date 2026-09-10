@@ -30,6 +30,11 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchJson } from '@/lib/api';
 import { normalizeDisplayWeightUnit } from '@/lib/display-units';
 import {
+  CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS,
+  canonicalMovementSearchEmptyCopy,
+  rankCanonicalMovementChoices,
+} from '@/lib/canonical-movement-search';
+import {
   ACCESSORY_EXECUTION_FAMILIES,
   ACCESSORY_MUSCLE_GROUPS,
   ACCESSORY_PICKER_REGIONS,
@@ -1494,10 +1499,13 @@ function TrainingLiftEditorModal({
     && !!setup.targetHigh.trim();
   useEffect(() => setMovementQuery(''), [state?.item?.id, state?.mode]);
   const visibleMovementChoices = useMemo(() => {
-    const query = movementQuery.trim().toLowerCase();
+    const query = movementQuery.trim();
     const sourceGroups = query ? groups : activeGroup ? [activeGroup] : [];
-    return sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement })))
-      .filter(({ movement }) => !query || movementPresetSearchText(movement).includes(query))
+    return rankCanonicalMovementChoices(
+      sourceGroups.flatMap((group) => (group.movements || []).map((movement) => ({ group, movement }))),
+      query,
+      ({ group, movement }) => `${movementPresetSearchText(movement)} ${group.name}`,
+    )
       .slice(0, query ? 48 : (isCompetition ? 3 : 14));
   }, [activeGroup, groups, isCompetition, movementQuery]);
 
@@ -1925,7 +1933,7 @@ function AccessoryEditorModal({
         .finally(() => {
           if (requestId === searchRequestRef.current) setSearchLoading(false);
         });
-    }, movementQuery.trim() ? 220 : 0);
+    }, movementQuery.trim() ? CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS : 0);
     return () => clearTimeout(timer);
   }, [
     athleteId,
@@ -2391,7 +2399,7 @@ function AccessoryEditorModal({
       )) : null}
       {!searchLoading && !searchError && !searchResults.length ? (
         <View style={styles.accessoryEditorStatusBlock}>
-          <Text style={styles.trainingLiftMuted}>No matching accessory movements.</Text>
+          <Text style={styles.trainingLiftMuted}>{canonicalMovementSearchEmptyCopy(movementQuery, 'No matching accessory movements.')}</Text>
           <Text style={styles.trainingLiftMuted}>Change the scope or create a coach-owned movement.</Text>
         </View>
       ) : null}

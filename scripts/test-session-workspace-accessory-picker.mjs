@@ -70,10 +70,10 @@ assert.match(route, /resultGroup\?: 'primary' \| 'secondary'[\s\S]*params\.set\(
 assert.match(route, /accessoryPickerMovementSecondaryMeta[\s\S]*\+ \{selectedMuscleLabel\}/, 'secondary matches must label the selected muscle without replacing primary-muscle artwork');
 assert.match(route, /execution_family[\s\S]*favorites_only[\s\S]*recent_only[\s\S]*custom_only/, 'picker filters must use the shared backend contract');
 assert.match(route, /next_cursor[\s\S]*Load More/, 'bounded search must expose backend pagination when more canonical movements are available');
-assert.match(route, /movementQuery\.trim\(\) \? 220 : 0/, 'typed searches must be debounced');
+assert.match(route, /movementQuery\.trim\(\) \? CANONICAL_MOVEMENT_SEARCH_DEBOUNCE_MS : 0/, 'typed searches must use the canonical shared debounce');
 assert.match(route, /requestId !== searchRequestRef\.current/, 'stale search responses must be ignored');
 assert.match(route, /Loading relevant movements/, 'loading state must be explicit');
-assert.match(route, /No matching accessory movements/, 'no-results state must be explicit');
+assert.match(route, /canonicalMovementSearchEmptyCopy/, 'no-results state must use the canonical helpful empty state');
 assert.match(route, />Retry</, 'search failure must be recoverable');
 assert.match(
   route,
