@@ -153,6 +153,7 @@
     "test:session-workspace-accessory-artwork": "node --import tsx scripts/test-session-workspace-accessory-artwork.mjs",
     "test:session-workspace-accessory-picker": "node scripts/test-session-workspace-accessory-picker.mjs",
     "test:canonical-movement-search": "node --import tsx scripts/test-canonical-movement-search-contract.mjs",
+    "test:session-reorder-long-list": "node --import tsx scripts/test-session-reorder-long-list.mjs",
     "test:session-logger-resume": "node --import tsx scripts/test-session-logger-resume-contract.mjs",
     "test:session-muscle-focus-artwork": "node --import tsx scripts/test-session-muscle-focus-artwork.mjs",
     "test:governed-accessory-picker-layout": "node scripts/test-governed-accessory-picker-layout.mjs",

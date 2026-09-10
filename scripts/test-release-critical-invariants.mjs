@@ -52,7 +52,7 @@ const areas = [
   ['background unread-summary network resilience', ['scripts/test-unread-summary-resilience.mjs']],
   ['consolidated Week Programming Manager', ['scripts/test-mobile-programming-manager-consolidation.mjs', 'scripts/test-programming-week-copy-indexing.mjs', 'scripts/test-copy-week-ux-convergence.mjs', 'scripts/test-programming-session-swipe-hotfix.mjs', 'scripts/test-programming-manager-overlay-system.mjs']],
   ['Session Workspace composition and presentation-only units', ['scripts/test-session-workspace-layout.mjs', 'scripts/test-programming-session-workspace-sheet.mjs', 'scripts/test-session-workspace-unit-presentation.mjs']],
-  ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs']],
+  ['Session Workspace dirty-state reorder transaction', ['scripts/test-session-workspace-dirty-reorder.mjs', 'scripts/test-session-reorder-long-list.mjs']],
   ['Session Workspace canonical accessory drilldown', ['scripts/test-session-workspace-accessory-picker.mjs']],
   ['Session Workspace Athlete View handoff', ['scripts/test-session-workspace-athlete-preview-handoff.mjs']],
   ['Athlete Training Hub Program Timeline navigation', ['scripts/test-program-timeline-v2.mjs']],
