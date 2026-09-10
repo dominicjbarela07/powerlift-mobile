@@ -1032,7 +1032,18 @@ function IndividualProgrammingHome({
   const focusedWorkspace = useOptionalCoachAthleteWorkspace();
   const initialWorkspaceScroll = useRef(focusedWorkspace?.trainingState.scrollY || 0);
   const workspaceScrollReady = useRef(false);
-  const workspaceScrollRestoring = useRef(false);
+  const insideAthleteWorkspace = Boolean(focusedWorkspace);
+  useEffect(() => {
+    if (!insideAthleteWorkspace || loading || error || workspaceScrollReady.current) return;
+    let restoreFrame = 0;
+    const layoutFrame = requestAnimationFrame(() => {
+      restoreFrame = requestAnimationFrame(() => {
+        programmingScrollRef.current?.scrollTo({ y: initialWorkspaceScroll.current, animated: false });
+        workspaceScrollReady.current = true;
+      });
+    });
+    return () => { cancelAnimationFrame(layoutFrame); cancelAnimationFrame(restoreFrame); };
+  }, [error, insideAthleteWorkspace, loading]);
   const followProgrammingOffset = useCallback((offsetY: number) => {
     programmingScrollRef.current?.scrollTo({
       y: Math.max(0, offsetY - 12),
@@ -1209,14 +1220,6 @@ function IndividualProgrammingHome({
         ref={programmingScrollRef}
         style={styles.scrollView}
         contentContainerStyle={styles.programmingScroll}
-        onContentSizeChange={() => {
-          if (!focusedWorkspace || loading || error || workspaceScrollReady.current || workspaceScrollRestoring.current) return;
-          workspaceScrollRestoring.current = true;
-          requestAnimationFrame(() => {
-            programmingScrollRef.current?.scrollTo({ y: initialWorkspaceScroll.current, animated: false });
-            workspaceScrollReady.current = true;
-          });
-        }}
         onScroll={(event) => {
           if (!workspaceScrollReady.current) return;
           const scrollY = event.nativeEvent.contentOffset.y;
