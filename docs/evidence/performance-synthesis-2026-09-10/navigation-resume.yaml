@@ -1,0 +1,105 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Back to Strength
+    timeout: 20000
+- takeScreenshot: strength-destination
+- tapOn: Back to Strength
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- assertVisible: Open Squat recorded strength
+- scrollUntilVisible:
+    element:
+      text: .*View more observations.*
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- tapOn: .*View more observations.*
+- assertVisible: Close Performance observations
+- takeScreenshot: observations-disclosure
+- tapOn: Close Performance observations
+- assertVisible: Dev Athlete 4
+- scrollUntilVisible:
+    element:
+      text: .*Open Accessories.*
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- takeScreenshot: supplemental-kg
+- tapOn: .*Open Accessories.*
+- extendedWaitUntil:
+    visible:
+      id: accessories-unit-toggle
+    timeout: 20000
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- assertVisible: .*Open Accessories.*
+- scrollUntilVisible:
+    element:
+      text: .*Open Core Variants.*
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- tapOn: .*Open Core Variants.*
+- extendedWaitUntil:
+    visible: Back to The Ledger
+    timeout: 20000
+- takeScreenshot: variants-destination
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- scrollUntilVisible:
+    element:
+      text: Open Achievements
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- takeScreenshot: body-record-kg
+- tapOn: Open Achievements
+- extendedWaitUntil:
+    visible: Back to The Ledger
+    timeout: 20000
+- takeScreenshot: achievements-destination
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- scrollUntilVisible:
+    element:
+      text: Open Journey
+    direction: DOWN
+    centerElement: true
+    timeout: 20000
+- tapOn: Open Journey
+- extendedWaitUntil:
+    visible:
+      id: ledger-journey-unit-toggle
+    timeout: 20000
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- tapOn: Open Archive
+- extendedWaitUntil:
+    visible: Back to The Ledger
+    timeout: 20000
+- takeScreenshot: archive-destination
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- takeScreenshot: performance-return-kg
+- tapOn:
+    id: coach-athlete-actions-control
+- assertVisible: Act for Dev Athlete 4
+- assertVisible: .*New Session.*
+- assertVisible: .*Adjust Program.*
+- takeScreenshot: workspace-actions
+- tapOn: .*Message Athlete.*
+- assertVisible: Dev Athlete 4
+- assertNotVisible:
+    id: coach-athlete-performance-unit-toggle
+- tapOn: Performance
+- assertVisible: Display unit kg. Switch to lb
+- tapOn:
+    id: coach-athlete-performance-unit-toggle
+- assertVisible: Display unit lb. Switch to kg

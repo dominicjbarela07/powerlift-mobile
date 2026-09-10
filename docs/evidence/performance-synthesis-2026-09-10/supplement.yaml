@@ -1,0 +1,26 @@
+appId: host.exp.Exponent
+---
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- takeScreenshot: supplemental-kg
+- tapOn: .*Open Accessories.*
+- extendedWaitUntil:
+    visible:
+      id: accessories-unit-toggle
+    timeout: 15000
+- takeScreenshot: accessories-destination
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb
+- swipe:
+    start: 45%, 65%
+    end: 45%, 48%
+    duration: 500
+- tapOn: .*Open Core Variants.*
+- extendedWaitUntil:
+    visible: Back to The Ledger
+    timeout: 15000
+- takeScreenshot: variants-destination
+- tapOn: Back to The Ledger
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit kg. Switch to lb

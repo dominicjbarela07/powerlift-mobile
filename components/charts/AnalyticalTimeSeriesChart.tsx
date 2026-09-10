@@ -133,6 +133,7 @@ export function AnalyticalTimeSeriesChart({
       plotLeft: left,
       plotRight: right,
       width,
+      fontSize: axisFontSize,
     });
     const xByKey = new Map(xLayout.observations.map((row) => [row.key, row.x]));
     const y = (value: number) => top + ((scale.maximum - value) / Math.max(1e-9, scale.maximum - scale.minimum)) * chartHeight;

@@ -50,15 +50,12 @@ assert.equal(normalizeDisplayWeightUnit('kg'), 'kg');
 
 // Every weight-bearing chapter consumes the same display lens and governed helpers.
 for (const expression of [
-  'loadLabel(lenses?.weight_on_bar.heaviest_kg, unit)',
-  'loadLabel(careerEstimate.best_value, unit)',
+  'loadLabel(weight?.heaviest_kg, unit)',
   'kgToDisplay(context?.volume_kg || 0, unit)',
-  'loadLabel(progress.prior.weight_kg, unit)',
-  'loadLabel(progress.current.weight_kg, unit)',
-  'loadLabel(movement.latest_progression.prior.weight_kg, unit)',
-  'loadLabel(movement.latest_progression.current.weight_kg, unit)',
-  'loadLabel(event.current_value, unit)',
-  'loadLabel(latestWeight, unit)',
+  'performanceTaskChange(progress.prior, progress.current, unit)',
+  'performanceTaskChange(p.prior, p.current, unit)',
+  'performanceRecordDetail(latestPr, unit)',
+  'loadLabel(recovery.latestWeight, unit)',
   'kgToDisplay(point.reported_bodyweight_kg, unit)',
 ]) assert.ok(performance.includes(expression), `Unit coverage missing: ${expression}`);
 assert.match(performance, /<StrengthHero data=\{data\} unit=\{unit\}/);

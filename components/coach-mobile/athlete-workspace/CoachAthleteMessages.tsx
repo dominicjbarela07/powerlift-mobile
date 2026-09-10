@@ -45,7 +45,7 @@ export function CoachAthleteMessages() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.intro}><Text style={styles.kicker}>BETWEEN YOU TWO</Text><Text style={styles.title}>Messages</Text></View>
+      <View style={styles.intro}><Text style={styles.kicker}>ATHLETE CONVERSATION</Text><Text style={styles.title}>Messages</Text></View>
       <ThreadScreen
         embedded
         forcedThreadId={workspace.messageThreadId}

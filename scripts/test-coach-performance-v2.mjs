@@ -25,7 +25,7 @@ assert.match(shell, /<SLFloatingNavigationDock/);
 assert.match(request, /return \(\) => controller.abort\(\)/);
 assert.match(request, /result\?\.key === key/);
 assert.match(request, /acceptsCoachingPerformance/);
-assert.match(performance, /if \(!deep\) return/);
+assert.match(performance, /if \(!data\) return/);
 assert.doesNotMatch(performance, /fetchLedgerAccomplishmentHistory/);
 assert.match(performance, /<CanonicalMovementArtwork/);
 assert.match(training, /const canSelectAthlete = coachMode && !focusedWorkspace/);

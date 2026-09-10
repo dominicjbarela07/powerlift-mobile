@@ -1,0 +1,18 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-supplement
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Take screenshot supplemental-kg... COMPLETED
+Tap on ".*Open Accessories.*"... COMPLETED
+Assert that id: accessories-unit-toggle is visible... COMPLETED
+Take screenshot accessories-destination... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Swipe from (45%, 65%) to (45%, 48%) in 500 ms... COMPLETED
+Tap on ".*Open Core Variants.*"... COMPLETED
+Assert that "Back to The Ledger" is visible... COMPLETED
+Take screenshot variants-destination... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED

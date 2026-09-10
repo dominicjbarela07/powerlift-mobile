@@ -93,7 +93,7 @@ for (const section of [
   'Needs Your Action',
   'On the program',
   'StrengthHero',
-  'Between you two',
+  'Conversation',
   'Upcoming Decisions',
 ]) assert.match(source.brief, new RegExp(section.replace(/[&/]/g, '\\$&')));
 assert.doesNotMatch(source.brief, /Since Last Visit/);

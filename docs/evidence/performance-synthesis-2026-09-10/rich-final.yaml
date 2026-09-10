@@ -1,0 +1,22 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Dev Athlete 4
+    timeout: 20000
+- tapOn: Performance
+- extendedWaitUntil:
+    visible:
+      id: coach-athlete-performance-unit-toggle
+    timeout: 20000
+- tapOn: 90 days
+- runFlow:
+    when:
+      visible: Display unit kg. Switch to lb
+    commands:
+      - tapOn:
+          id: coach-athlete-performance-unit-toggle
+- assertVisible: ESTIMATED TOTAL
+- assertVisible: Display unit lb. Switch to kg
+- assertNotVisible: Meet Packet QA
+- assertNotVisible: Dev Athlete 12
+- takeScreenshot: rich-top-final

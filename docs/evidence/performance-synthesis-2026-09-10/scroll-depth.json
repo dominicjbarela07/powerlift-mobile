@@ -1,0 +1,43 @@
+{
+  "device": "iPhone 17 / iOS 26.2",
+  "runtime": "canonical npm start / port 8081 / Expo Go / Hermes",
+  "units": "React Native layout points",
+  "state": "athlete 4 / 90 days / lb / fully loaded / disclosure closed",
+  "before": {
+    "athleteId": 4,
+    "content": {
+      "height": 5488.66650390625,
+      "pageX": 0,
+      "pageY": -3451,
+      "width": 402
+    },
+    "period": "90d",
+    "verticalTravel": 4742.66650390625,
+    "viewport": {
+      "height": 746,
+      "pageX": 0,
+      "pageY": 128,
+      "width": 402
+    }
+  },
+  "after": {
+    "athleteId": 4,
+    "content": {
+      "height": 2842,
+      "pageX": 0,
+      "pageY": 128,
+      "width": 402
+    },
+    "period": "90d",
+    "verticalTravel": 2096,
+    "viewport": {
+      "height": 746,
+      "pageX": 0,
+      "pageY": 128,
+      "width": 402
+    }
+  },
+  "contentReductionPercent": 48.22,
+  "scrollTravelReductionPercent": 55.81,
+  "method": "React Native ScrollView getInnerViewRef().measure() and getNativeScrollRef().measure(), via the existing Hermes DevTools connection. Travel = content height minus viewport height. No instrumentation shipped."
+}

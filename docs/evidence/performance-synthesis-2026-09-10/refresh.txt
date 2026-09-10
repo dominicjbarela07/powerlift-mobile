@@ -1,0 +1,13 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-refresh
+Tap on "30 days"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Swipe from (50%, 32%) to (50%, 70%) in 700 ms... COMPLETED
+Assert that id: coach-performance-strength-chart is visible... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Tap on "Brief"... COMPLETED
+Assert that "Coaching brief" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Take screenshot refresh-30-days... COMPLETED

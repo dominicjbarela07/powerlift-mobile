@@ -117,9 +117,8 @@ export function CoachAthleteBrief() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.intro}>
-        <Text style={styles.kicker}>IN THEIR CORNER</Text>
-        <Text style={styles.title}>Your coaching brief</Text>
-        <Text style={styles.body}>{training.program_name || "The next decision starts here."}{training.block_name ? ` · ${training.block_name}` : ""}</Text>
+        <Text style={styles.title}>Coaching brief</Text>
+        <Text style={styles.body}>{training.program_name || "No active training program"}{training.block_name ? ` · ${training.block_name}` : ""}</Text>
       </View>
 
       {workspace.performance ? <StrengthHero data={workspace.performance} unit={workspace.unit} compact
@@ -130,7 +129,7 @@ export function CoachAthleteBrief() {
 
       <Section title="Needs Your Action" meta={actions.length ? `${actions.length} open` : 'Clear'}>
         {actions.length ? (allActions ? actions : actions.slice(0, 3)).map(({ key, ...row }) => <Action key={key} {...row} />) : (
-          <Empty icon="checkmark-circle-outline" text="You’re up to date. The athlete record is ready when you are." tone={COACH_V2.green} />
+          <Empty icon="checkmark-circle-outline" text="No actions need attention." tone={COACH_V2.green} />
         )}
       </Section>
 
@@ -154,7 +153,7 @@ export function CoachAthleteBrief() {
         </View>
       </Section>
 
-      <Section title="Between you two" action="Open Messages" onAction={() => router.push(`${basePath}/messages` as any)}>
+      <Section title="Conversation" action="Open Messages" onAction={() => router.push(`${basePath}/messages` as any)}>
         <Conversation label="ATHLETE" message={bootstrap.conversation.latest_athlete_message?.body_preview} when={bootstrap.conversation.latest_athlete_message?.created_at} />
         <Conversation label="COACH" message={bootstrap.conversation.latest_coach_reply?.body_preview} when={bootstrap.conversation.latest_coach_reply?.created_at} />
         {summary.coach_context.pinned_note ? (
@@ -185,7 +184,7 @@ export function CoachAthleteBrief() {
             </View>
             <Ionicons color={COACH_V2.muted} name="chevron-forward" size={17} />
           </Pressable>
-        )) : <Empty icon="time-outline" text="No upcoming decision is waiting. Keep the next training chapter in view." tone={COACH_V2.cyan} />}
+        )) : <Empty icon="time-outline" text="No upcoming decisions." tone={COACH_V2.cyan} />}
       </Section>
       <View style={styles.bottomSpace} />
     </ScrollView>

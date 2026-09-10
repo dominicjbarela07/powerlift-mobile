@@ -1,0 +1,43 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-record
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Take screenshot body-record-kg... COMPLETED
+Tap on "Open Achievements"... COMPLETED
+Assert that "Back to The Ledger" is visible... COMPLETED
+Take screenshot achievements-destination... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Tap on "Open Journey"... COMPLETED
+Assert that id: ledger-journey-unit-toggle is visible... COMPLETED
+Take screenshot journey-destination... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Tap on "Open Archive"... COMPLETED
+Assert that "Back to The Ledger" is visible... COMPLETED
+Take screenshot archive-destination... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Take screenshot performance-return-kg... COMPLETED
+Tap on id: coach-athlete-actions-control... COMPLETED
+Assert that "Act for Dev Athlete 4" is visible... COMPLETED
+Assert that ".*New Session.*" is visible... COMPLETED
+Assert that ".*Adjust Program.*" is visible... COMPLETED
+Take screenshot workspace-actions... COMPLETED
+Tap on ".*Message Athlete.*"... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is not visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Take screenshot body-record-lb... COMPLETED
+Tap on "Brief"... COMPLETED
+Assert that "Coaching brief" is visible... COMPLETED
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Assert that "Open Archive" is visible... COMPLETED
