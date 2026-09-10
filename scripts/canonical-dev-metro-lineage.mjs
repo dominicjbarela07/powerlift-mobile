@@ -18,13 +18,13 @@ function canonicalPath(candidate) {
   return realpathSync(candidate);
 }
 
-export function inspectCanonicalSource() {
+export function inspectCanonicalSource(runCommand = command) {
   const projectRoot = canonicalPath(process.cwd());
-  const gitRoot = canonicalPath(command('git', ['rev-parse', '--show-toplevel'], projectRoot));
-  const branch = command('git', ['branch', '--show-current'], projectRoot);
-  const sha = command('git', ['rev-parse', 'HEAD'], projectRoot);
-  const remoteSha = command('git', ['rev-parse', CANONICAL_DEV_MOBILE_REMOTE_REF], projectRoot);
-  const status = command('git', ['status', '--porcelain=v1'], projectRoot);
+  const gitRoot = canonicalPath(runCommand('git', ['rev-parse', '--show-toplevel'], projectRoot));
+  const branch = runCommand('git', ['branch', '--show-current'], projectRoot);
+  const sha = runCommand('git', ['rev-parse', 'HEAD'], projectRoot);
+  const remoteSha = runCommand('git', ['rev-parse', CANONICAL_DEV_MOBILE_REMOTE_REF], projectRoot);
+  const status = runCommand('git', ['status', '--porcelain=v1'], projectRoot);
   return {
     projectRoot,
     gitRoot,
@@ -45,7 +45,9 @@ export function assertCanonicalSource(snapshot) {
   if (snapshot.scriptRoot !== expectedRoot) failures.push(`tooling root is ${snapshot.scriptRoot}`);
   if (snapshot.branch !== CANONICAL_DEV_MOBILE_BRANCH) failures.push(`branch is ${snapshot.branch || '(detached)'}`);
   if (snapshot.sha !== snapshot.remoteSha) failures.push(`HEAD ${snapshot.sha} does not equal ${snapshot.remoteRef} ${snapshot.remoteSha}`);
-  if (!snapshot.clean) failures.push('working tree is dirty');
+  // Local edits are development state, not a source-lineage violation.
+  // Keep `clean` in the snapshot: Metro serves the current filesystem, and
+  // a dirty runtime certificate must not imply an exact committed bundle.
   if (failures.length) {
     throw new Error(`CANONICAL DEV SOURCE CHECK FAILED — ${failures.join('; ')}`);
   }

@@ -16,6 +16,9 @@ if (existing.processes.length) {
 }
 
 console.log('[canonical-dev-metro] SOURCE PREFLIGHT PASS');
+if (!source.clean) {
+  console.log('[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.');
+}
 console.log(JSON.stringify({ port: CANONICAL_DEV_METRO_PORT, ...source }, null, 2));
 
 const expo = path.join(CANONICAL_DEV_MOBILE_ROOT, 'node_modules', '.bin', 'expo');
