@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
@@ -8,8 +8,9 @@ import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovemen
 import { Text } from '@/components/ui/sl-text';
 import { SLFontFamilies, SLLayout } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
+import { canonicalMovementArtworkSource } from '@/lib/canonical-movement-artwork-assets';
 import { workspaceLedgerParams } from '@/lib/coach-performance';
-import { fetchLedgerAccomplishments, fetchLedgerCurrentBests, kgToDisplay, type AccomplishmentEvent, type CurrentBestSnapshot, type LedgerUnit } from '@/lib/ledger-data';
+import { canonicalCompetitionLiftKey, fetchLedgerAccomplishments, fetchLedgerCurrentBests, kgToDisplay, type AccomplishmentEvent, type CurrentBestSnapshot, type LedgerUnit } from '@/lib/ledger-data';
 import { fetchLedgerExplorationIndex, type LedgerExplorationIndex } from '@/lib/ledger-exploration';
 import { LEDGER_INDEX_ASSETS } from '@/lib/ledger-index-assets';
 import { canonicalPrHistory, competitiveStanding, resolveLedgerClubsRuntimeState } from '@/lib/ledger-rewards';
@@ -23,7 +24,8 @@ export function CoachAthletePerformance() {
   const { user } = useAuth();
   const unit: LedgerUnit = user?.preferred_units === 'kg' ? 'kg' : 'lb';
   const { performance: data, period, setPeriod, subjectKey, athleteId, reload } = workspace;
-  const [deep, setDeep] = useState(false);
+  const savedScroll = useRef(workspace.performanceScrollY);
+  const [deep, setDeep] = useState(workspace.performanceScrollY > 380);
   const [events, setEvents] = useState<AccomplishmentEvent[]>([]);
   const [bests, setBests] = useState<CurrentBestSnapshot | null>(null);
   const [exploration, setExploration] = useState<LedgerExplorationIndex | null>(null);
@@ -59,18 +61,18 @@ export function CoachAthletePerformance() {
   const refresh = () => { workspace.reloadPerformance(); void reload(true); setRetry((value) => value + 1); };
   const context = data?.coaching_context;
   const prs = canonicalPrHistory(events);
-  const rangePrs = prs.filter((event) => (event.workout_date || event.occurred_at || '').slice(0, 10) >= (data?.range?.start_date || '9999'));
+  const rangePrs = prs.filter((event) => (event.workout_date || event.occurred_at || '').slice(0, 10) >= (data?.range?.start_date || '9999') && (event.workout_date || event.occurred_at || '').slice(0, 10) <= (data?.range?.end_date || ''));
   const runtime = bests ? resolveLedgerClubsRuntimeState(bests.items, bests.strengthStandard, bests.strengthStanding, unit) : null;
   const standing = runtime ? competitiveStanding(runtime.totalState, runtime.standard?.sex) : null;
   const lifts = data?.big_three_arc?.lifts || [];
   const completed = data?.consistency?.sessions_completed || 0;
   const assigned = data?.consistency?.sessions_assigned || 0;
   const completion = data?.consistency?.completion_rate_pct;
-  const bodyweight = context?.bodyweight || [];
+  const bodyweight = [...new Map((context?.bodyweight || []).map((point) => [point.training_date, point])).values()];
   const latestWeight = bodyweight.at(-1)?.reported_bodyweight_kg;
   const recovery = context?.latest_readiness;
-  return <ScrollView testID="coach-athlete-performance" contentContainerStyle={s.content} showsVerticalScrollIndicator={false}
-    onScroll={(event) => { if (event.nativeEvent.contentOffset.y > 380) setDeep(true); }} scrollEventThrottle={120}
+  return <ScrollView testID="coach-athlete-performance" contentContainerStyle={s.content} showsVerticalScrollIndicator={false} contentOffset={{ x: 0, y: savedScroll.current }}
+    onScroll={(event) => { const scrollY = event.nativeEvent.contentOffset.y; workspace.setPerformanceScrollY(scrollY); if (scrollY > 380) setDeep(true); }} scrollEventThrottle={120}
     refreshControl={<RefreshControl refreshing={workspace.refreshing} tintColor={INK.violet} onRefresh={refresh} />}>
     <View style={s.intro}><Text style={v.eyebrow}>THE LONG GAME</Text><Text style={s.title}>Performance</Text>
       <Text style={v.body}>{workspace.bootstrap?.current_training?.program_name || 'The work. The progress. The person.'}</Text></View>
@@ -85,14 +87,19 @@ export function CoachAthletePerformance() {
           const rep = [...(lenses?.rep_strength.series || [])].sort((a, b) => (b.change_kg || 0) - (a.change_kg || 0))[0];
           const comparison = lenses?.comparable_performance;
           const expanded = expandedLift === lift.key;
+          const career = runtime?.lifts.find((row) => row.key === lift.key);
+          const careerEstimate = bests?.items.find((row) => row.metric === 'e1rm' && canonicalCompetitionLiftKey(row.core_movement_key) === lift.key);
           return <View key={lift.key} style={s.strengthRow}>
             <Pressable accessibilityRole="button" accessibilityLabel={`Inspect ${lift.label} recorded strength`} onPress={() => setExpandedLift(expanded ? null : lift.key!)} style={s.strengthSummary}>
               <Image accessible={false} source={LEDGER_INDEX_ASSETS.coreLift[lift.key as 'squat' | 'bench' | 'deadlift']} style={s.liftArt} />
               <View style={v.flex}><Text style={v.rowTitle}>{lift.label}</Text><Text style={v.meta}>Heaviest in period</Text></View><Text style={s.recordValue}>{loadLabel(lenses?.weight_on_bar.heaviest_kg, unit)}</Text><Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={17} color={LIFT_COLORS[lift.key!]} />
             </Pressable>
             {expanded ? <View style={s.lensDetail}>
+              {career?.canonicalWeightKg != null ? <View style={s.factLine}><Text style={v.body}>Career heaviest</Text><Text style={v.rowTitle}>{loadLabel(career.canonicalWeightKg, unit)}</Text></View> : null}
+              {careerEstimate ? <View style={s.factLine}><Text style={v.body}>Career e1RM peak</Text><Text style={v.rowTitle}>{loadLabel(careerEstimate.best_value, unit)}</Text></View> : null}
+              {career?.plateClubState?.earned ? <View style={s.factLine}><Text style={v.body}>Plate club earned</Text><Text style={s.goldTitle}>{career.plateClubState.earned.value} {unit}</Text></View> : null}
               {rep ? <View style={s.factLine}><Text style={v.body}>{rep.label} · period best</Text><Text style={v.rowTitle}>{loadLabel(rep.best_in_range_kg, unit)}</Text></View> : <Text style={v.body}>Rep strength needs recorded load and reps.</Text>}
-              {comparison?.status === 'supported' ? <View style={s.comparison}><Text style={s.observationTitle}>{comparison.kind === 'more_reps_same_weight' ? 'More reps at the same load' : comparison.kind === 'lower_effort_same_task' ? 'Same task, lower effort' : 'More load at the same reps'}</Text><Text style={v.body}>{loadLabel(comparison.from?.weight_kg, unit)} × {comparison.from?.reps} → {loadLabel(comparison.to?.weight_kg, unit)} × {comparison.to?.reps}</Text></View> : null}
+              {comparison?.status === 'supported' ? <View style={s.comparison}><Text style={s.observationTitle}>{comparison.kind === 'more_reps_same_weight' ? 'More reps at the same load' : comparison.kind === 'lower_effort_same_task' ? 'Same task, lower effort' : 'More load at the same reps'}</Text><Text style={v.body}>{loadLabel(comparison.from?.weight_kg, unit)} × {comparison.from?.reps} → {loadLabel(comparison.to?.weight_kg, unit)} × {comparison.to?.reps}{comparison.kind === 'lower_effort_same_task' ? ` · RPE ${comparison.from?.rpe ?? "—"} → ${comparison.to?.rpe ?? "—"}` : ""}</Text></View> : null}
               <EvidenceLink title="Inspect the strength record" detail="Rep progression, heavy exposure, career peaks & plate clubs" onPress={() => open('strength', { lift: lift.key! })} />
             </View> : null}
           </View>;
@@ -104,7 +111,7 @@ export function CoachAthletePerformance() {
           <View style={s.ringValue}><Text style={s.ringNumber}>{completion == null ? '—' : `${Math.round(completion)}%`}</Text></View></View>
           <View style={v.flex}><Text style={s.outputNumber}>{completed}<Text style={s.outputDenominator}> / {assigned}</Text></Text><Text style={v.rowTitle}>Sessions completed</Text><Text style={v.body}>{data.consistency?.missed_or_incomplete || 0} missed or incomplete</Text></View></View>
         <View style={s.outputStrip}><View style={v.flex}><Text style={s.outputStat}>{context?.working_sets ?? 0}</Text><Text style={v.body}>working sets</Text></View><View style={s.statDivider} /><View style={v.flex}><Text style={s.outputStat}>{context?.frequency_per_week ?? 0}</Text><Text style={v.body}>Sessions / week</Text></View></View>
-        <View style={s.volumeHeading}><View style={v.flex}><Text style={v.rowTitle}>Performed volume</Text><Text style={s.volumeNumber}>{Math.round(kgToDisplay(context?.volume_kg || 0, unit)).toLocaleString()}<Text style={s.volumeUnit}> {unit}</Text></Text></View><View style={s.volumeChange}><Text style={[s.changeNumber, { color: (context?.volume_change_pct || 0) < 0 ? INK.magenta : INK.green }]}>{context?.volume_change_pct == null ? '—' : `${context.volume_change_pct > 0 ? '+' : ''}${context.volume_change_pct}%`}</Text><Text style={v.meta}>vs. previous {context?.period_days} days</Text></View></View>
+        <View style={s.volumeHeading}><View style={v.flex}><Text style={v.rowTitle}>Performed volume</Text><Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={s.volumeNumber}>{Math.round(kgToDisplay(context?.volume_kg || 0, unit)).toLocaleString()}<Text style={s.volumeUnit}> {unit}</Text></Text></View><View style={s.volumeChange}><Text style={[s.changeNumber, { color: (context?.volume_change_pct || 0) < 0 ? INK.magenta : INK.green }]}>{context?.volume_change_pct == null ? '—' : `${context.volume_change_pct > 0 ? '+' : ''}${context.volume_change_pct}%`}</Text><Text style={v.meta}>vs. previous {context?.period_days} days</Text></View></View>
         <WeeklyWork points={context?.weekly || []} unit={unit} />
         <Text style={v.meta}>External load × recorded reps. Assistance is excluded.</Text>
       </Chapter>
@@ -117,7 +124,7 @@ export function CoachAthletePerformance() {
       <Chapter number="04" title="Supplemental development" detail="Exact movements. Independent progress.">
         {!deep || (!exploration && !supplementError) ? <PerformanceLoading onRetry={() => setDeep(true)} /> : supplementError ? <EvidenceLink title="Reload movement evidence" onPress={() => setRetry((value) => value + 1)} /> : <>
           <Text style={s.subhead}>ACCESSORIES <Text style={s.subheadContext}> / {exploration?.accessories.period.label}</Text></Text>
-          {(exploration?.accessories.progress || []).slice(0, 4).map((progress) => {
+          {(exploration?.accessories.progress || []).filter((progress) => canonicalMovementArtworkSource(exploration?.accessories.movements.find((item) => item.id === progress.movement_id))).slice(0, 4).map((progress) => {
             const movement = exploration?.accessories.movements.find((item) => item.id === progress.movement_id);
             if (!movement) return null;
             return <Pressable key={progress.identity_key} onPress={() => open(`movement/${movement.id}`)} style={s.movementRow}><CanonicalMovementArtwork movement={movement} size={65} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{loadLabel(progress.prior.weight_kg, unit)} × {progress.prior.reps} → {loadLabel(progress.current.weight_kg, unit)} × {progress.current.reps}</Text><Text style={v.meta}>{progress.assisted ? 'Assistance load · ' : ''}{progress.current.equipment_model || progress.current.equipment_type || 'Same equipment'} · {periodDate(progress.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={17} color={INK.muted} /></Pressable>;
@@ -137,13 +144,13 @@ export function CoachAthletePerformance() {
       </Chapter>
       <Chapter number="05" title="Earned, not given" action="Achievements" onPress={() => open('achievements')}>
         <Pressable onPress={() => open('achievements')} style={s.achievement}><Image source={LEDGER_INDEX_ASSETS.chapter.achievements} style={s.trophy} /><View style={v.flex}><Text style={s.achievementKicker}>THE STRENGTH RECORD</Text><Text style={s.achievementTitle}>{standing ? standing.summary : 'Every milestone has a story.'}</Text><Text style={v.body}>{standing ? 'Sex-matched OpenPowerlifting reference. Open Strength for the full cohort and rules.' : 'PRs, plate clubs, standards & career milestones.'}</Text></View></Pressable>
-        {prs.slice(0, 4).map((event) => <Pressable key={event.id} onPress={() => open('achievements')} style={s.prRow}><View style={v.flex}><Text style={v.rowTitle}>{event.movement_label || 'Strength record'}</Text><Text style={v.meta}>{periodDate(event.workout_date || event.occurred_at)} · {event.event_type.replaceAll('_', ' ')}</Text></View><Text style={s.prValue}>{event.current_value != null ? event.unit === 'kg' ? loadLabel(event.current_value, unit) : `${event.current_value} ${event.unit || ''}` : 'PR'}</Text></Pressable>)}
+        {prs.slice(0, 4).map((event) => <Pressable key={event.id} onPress={() => open('achievements')} style={s.prRow}><View style={v.flex}><Text style={v.rowTitle}>{event.movement_label || 'Strength record'}</Text><Text style={v.meta}>{periodDate(event.workout_date || event.occurred_at)} · {event.event_type === 'CORE_REP_MAX_PR' ? `New ${event.evidence?.rep_count || event.evidence?.actual_reps || ''}RM` : event.event_type === 'CORE_WEIGHT_PR' ? 'Heaviest recorded load' : 'Estimated strength PR'}</Text></View><Text numberOfLines={1} style={s.prValue}>{event.current_value != null ? event.unit === 'kg' ? loadLabel(event.current_value, unit) : `${event.current_value} ${event.unit || ''}` : 'PR'}</Text></Pressable>)}
         {!prs.length ? <Text style={v.body}>New personal records will appear here as they are earned.</Text> : null}
       </Chapter>
       <Chapter number="06" title="The person behind the work" detail="Reported bodyweight and recovery, alongside the training period." action="Journey" onPress={() => open('journey')}>
-        <View style={s.contextTop}><View style={v.flex}><Text style={v.rowTitle}>Reported bodyweight</Text><Text style={s.volumeNumber}>{loadLabel(latestWeight, unit)}</Text></View><Text style={v.meta}>{bodyweight.length} observations</Text></View>
+        <View style={s.contextTop}><View style={v.flex}><Text style={v.rowTitle}>Reported bodyweight</Text><Text style={s.volumeNumber}>{loadLabel(latestWeight, unit)}</Text></View><Text style={v.meta}>{bodyweight.length} reported days</Text></View>
         {bodyweight.length ? <AnalyticalTimeSeriesChart height={190} readableText selectedInitially="none" showLegend={false} metric={{ key: 'bodyweight', label: 'Bodyweight', kind: 'weight', unit, maximumFractionDigits: 1 }} series={[{ key: 'bodyweight', label: 'Reported', color: INK.magenta, points: bodyweight.map((point) => ({ date: point.training_date, value: kgToDisplay(point.reported_bodyweight_kg, unit) })) }]} /> : <Text style={v.body}>No bodyweight reported in this period.</Text>}
-        <Text style={v.rowTitle}>Readiness <Text style={v.meta}> / 5</Text></Text>
+        <Text style={v.rowTitle}>Readiness <Text style={v.meta}> / 5 · daily average</Text></Text>
         {context?.readiness.length ? <AnalyticalTimeSeriesChart height={190} readableText selectedInitially="none" showLegend={false} metric={{ key: 'readiness', label: 'Readiness', kind: 'score', unit: '/5', minimum: 0, maximum: 5, maximumFractionDigits: 1 }} series={[{ key: 'readiness', label: 'Reported', color: INK.cyan, points: context.readiness }]} /> : <Text style={v.body}>No readiness reported in this period.</Text>}
         {recovery ? <View style={s.recovery}><Text style={s.subhead}>LATEST CHECK-IN <Text style={s.subheadContext}> / {periodDate(recovery.date)}</Text></Text>{[['Sleep', recovery.sleep_hours == null ? 'Not reported' : `${recovery.sleep_hours} hours`], ['Sleep quality', recovery.sleep_quality == null ? 'Not reported' : `${recovery.sleep_quality} / 5`], ['Soreness', recovery.soreness == null ? 'Not reported' : `${recovery.soreness} / 5`], ['Stress', recovery.stress == null ? 'Not reported' : `${recovery.stress} / 5`], ['Energy', recovery.energy == null ? 'Not reported' : `${recovery.energy} / 5`]].map(([label, value]) => <View key={label} style={s.factLine}><Text style={v.body}>{label}</Text><Text style={v.rowTitle}>{value}</Text></View>)}</View> : null}
       </Chapter>
@@ -161,7 +168,7 @@ function WeeklyWork({ points, unit }: { points: { date: string; volume_kg: numbe
 
 const s = StyleSheet.create({
   content: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 18, paddingBottom: 168, gap: 13 },
-  intro: { gap: 4 }, title: { fontFamily: SLFontFamilies.display, color: INK.text, fontSize: 36 },
+  intro: { gap: 4 }, title: { fontFamily: SLFontFamilies.display, color: INK.text, fontSize: 32 },
   periodRow: { flexDirection: 'row', alignItems: 'center', borderBottomColor: INK.line, borderBottomWidth: 1, marginBottom: 4 },
   period: { minHeight: 46, paddingHorizontal: 15, justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
   periodActive: { borderBottomColor: INK.violet }, periodText: { color: INK.muted, fontSize: 14 }, periodUnit: { color: INK.quiet, fontSize: 12, paddingRight: 4 },
@@ -169,9 +176,9 @@ const s = StyleSheet.create({
   prSignal: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 7 }, medallion: { width: 53, height: 53 }, goldTitle: { color: INK.gold, fontSize: 16, fontWeight: '600' },
   strengthRow: { borderBottomColor: INK.line, borderBottomWidth: 1 }, strengthSummary: { flexDirection: 'row', gap: 10, alignItems: 'center', minHeight: 83 }, liftArt: { width: 62, height: 65, resizeMode: 'contain' }, recordValue: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 20 },
   lensDetail: { paddingVertical: 12, gap: 12 }, factLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 14, minHeight: 35 }, comparison: { borderLeftWidth: 2, borderLeftColor: INK.green, paddingLeft: 14, gap: 5 },
-  outputHero: { flexDirection: 'row', alignItems: 'center', gap: 22, paddingVertical: 10 }, ring: { width: 110, height: 110 }, ringValue: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, justifyContent: 'center', alignItems: 'center' }, ringNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 28 }, outputNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 38 }, outputDenominator: { color: INK.muted, fontSize: 24 },
+  outputHero: { flexDirection: 'row', alignItems: 'center', gap: 22, paddingVertical: 10 }, ring: { width: 110, height: 110 }, ringValue: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, justifyContent: 'center', alignItems: 'center' }, ringNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 22 }, outputNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 38 }, outputDenominator: { color: INK.muted, fontSize: 24 },
   outputStrip: { flexDirection: 'row', paddingVertical: 16, borderTopWidth: 1, borderBottomWidth: 1, borderColor: INK.line, gap: 26 }, outputStat: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 32 }, statDivider: { width: 1, backgroundColor: INK.line },
-  volumeHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }, volumeNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 30, marginTop: 4 }, volumeUnit: { color: INK.muted, fontSize: 16 }, volumeChange: { alignItems: 'flex-end', gap: 4 }, changeNumber: { fontFamily: SLFontFamilies.numeric, fontSize: 23 },
+  volumeHeading: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }, volumeNumber: { color: INK.text, fontFamily: SLFontFamilies.numeric, fontSize: 23, marginTop: 4 }, volumeUnit: { color: INK.muted, fontSize: 16 }, volumeChange: { alignItems: 'flex-end', gap: 4 }, changeNumber: { fontFamily: SLFontFamilies.numeric, fontSize: 20 },
   bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 96, borderBottomWidth: 1, borderBottomColor: INK.line }, barTarget: { flex: 1, height: 96, justifyContent: 'flex-end', paddingHorizontal: 1 }, bar: { width: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }, barAxis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }, barDetail: { color: INK.cyan, fontSize: 13, marginTop: 8 },
   observation: { flexDirection: 'row', alignItems: 'center', gap: 13, paddingVertical: 14, borderBottomColor: INK.line, borderBottomWidth: 1 }, observationMark: { width: 3, height: 36, borderRadius: 2 }, observationTitle: { color: INK.text, fontSize: 16, fontWeight: '600', marginBottom: 4 },
   subhead: { color: INK.violet, fontSize: 12, letterSpacing: 1, marginTop: 12 }, subheadContext: { color: INK.muted, fontSize: 12, letterSpacing: 0 }, movementRow: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: INK.line }, progressText: { color: INK.green, fontSize: 14, marginVertical: 5 }, familyLabel: { fontSize: 12, letterSpacing: 1, marginTop: 15 },

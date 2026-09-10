@@ -203,7 +203,7 @@ export default function AccessoriesExperience() {
       atmosphereSource={ACCESSORIES_ATMOSPHERE}
       backAccessibilityLabel="Back to The Ledger"
       contextLabel="The Ledger · Accessory Record"
-      onBack={() => ledgerSubject.returnPath ? router.replace(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
+      onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
       subtitle="Where your work has gone, and what has changed."
       testID="accessories-atmospheric-header"
       title="Accessories"

@@ -142,7 +142,7 @@ export default function VariantsExperience() {
       atmosphereSource={VARIANTS_ATMOSPHERE}
       backAccessibilityLabel="Back to The Ledger"
       contextLabel="The Ledger · Supplemental Core Work"
-      onBack={() => ledgerSubject.returnPath ? router.replace(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
+      onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as never) : router.replace(ledgerHrefFor('home') as never)}
       subtitle="Exact variant progress, exposure, and training context."
       testID="variants-atmospheric-header"
       title="Variants"

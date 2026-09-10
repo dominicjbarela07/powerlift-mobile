@@ -176,7 +176,7 @@ export function JourneyExperience() {
         atmosphereSource={JOURNEY_HERO}
         backAccessibilityLabel="Back to The Ledger"
         contextLabel="THE LEDGER"
-        onBack={() => router.replace((ledgerSubject.returnPath || '/(tabs)/ledger/home') as any)}
+        onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as any) : router.replace('/(tabs)/ledger/home' as any)}
         style={styles.hero}
         subtitle={`${compactDate(earliestDate)} → today · ${recordDays.toLocaleString()} days recorded`}
         testID="journey-atmospheric-header"

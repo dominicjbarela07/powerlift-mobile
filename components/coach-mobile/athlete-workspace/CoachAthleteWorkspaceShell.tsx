@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
-import React, { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import React, { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
@@ -43,6 +43,12 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const workspace = useCoachAthleteWorkspace();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardWillShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardWillHide', () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [toolkitOpen, setToolkitOpen] = useState(false);
   const selected = workspaceDestination(pathname);
@@ -152,7 +158,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
       <View key={workspace.subjectKey} style={styles.content}>{children}</View>
 
-      <Pressable
+      {!keyboardVisible ? <Pressable
         accessibilityLabel="Open athlete actions"
         accessibilityRole="button"
         onPress={() => setToolkitOpen(true)}
@@ -163,9 +169,9 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
         ]}
       >
         <Ionicons color={COACH_V2.text} name="add" size={26} />
-      </Pressable>
+      </Pressable> : null}
 
-      <SLFloatingNavigationDock
+      {!keyboardVisible ? <SLFloatingNavigationDock
         bottomInset={insets.bottom}
         items={DESTINATIONS.map((destination) => ({
           accessibilityLabel: destination.label,
@@ -175,7 +181,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           onPress: () => navigate(destination.key),
           selected: selected === destination.key,
         }))}
-      />
+      /> : null}
 
       <StrengthLedgerBottomSheet
         accessibilityLabel="Athlete workspace options"

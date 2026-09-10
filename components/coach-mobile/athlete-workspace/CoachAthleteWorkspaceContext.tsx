@@ -101,6 +101,8 @@ type WorkspaceValue = ReturnType<typeof useCoachPerformance> & {
   refreshing: boolean;
   error: string | null;
   subjectKey: string;
+  performanceScrollY: number;
+  setPerformanceScrollY: (value: number) => void;
   trainingState: TrainingState;
   setTrainingState: React.Dispatch<React.SetStateAction<TrainingState>>;
   reviewState: ReviewState;
@@ -152,6 +154,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const [reviewState, setReviewState] = useState<ReviewState>(EMPTY_REVIEW_STATE);
   const [messageThreadId, setMessageThreadId] = useState<number | null>(null);
   const [messageDraft, setMessageDraft] = useState('');
+  const [performanceScrollY, setPerformanceScrollY] = useState(0);
 
   useEffect(() => {
     namespaceRef.current = requestNamespace;
@@ -160,6 +163,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     setBootstrap(null);
     subjectKeyRef.current = null;
     setSummary(null);
+    setPerformanceScrollY(0);
     setTrainingState(EMPTY_TRAINING_STATE);
     setReviewState(EMPTY_REVIEW_STATE);
     setMessageThreadId(null);
@@ -226,6 +230,12 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
         return;
       }
 
+      if (subjectKeyRef.current && subjectKeyRef.current !== nextBootstrap.subject.subject_key) {
+        setTrainingState(EMPTY_TRAINING_STATE);
+        setReviewState(EMPTY_REVIEW_STATE);
+        setMessageDraft('');
+        setPerformanceScrollY(0);
+      }
       // Open the verified shell immediately. Summary and bounded Performance
       // may load independently after relationship authorization is resolved.
       setBootstrap({
@@ -318,6 +328,8 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const subjectKey = `${requestNamespace}:${verifiedBootstrap?.subject.subject_key || 'resolving'}`;
   const value = useMemo<WorkspaceValue>(() => ({
     ...performanceState,
+    performanceScrollY: verifiedBootstrap ? performanceScrollY : 0,
+    setPerformanceScrollY,
     athleteId,
     bootstrap: verifiedBootstrap,
     summary: verifiedSummary,
@@ -336,6 +348,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     reload,
   }), [
     performanceState,
+    performanceScrollY,
     athleteId,
     ensureMessageThread,
     error,

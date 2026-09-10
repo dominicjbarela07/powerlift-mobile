@@ -35,5 +35,5 @@ function LedgerSpecializedRoom({ active, children }: React.PropsWithChildren<{ a
 function LedgerAchievementsRoom({ devFixture }: { devFixture?: LedgerLiveDataFixture }) {
   const router = useRouter();
   const ledgerSubject = useAthleteLedgerSubject();
-  return <AchievementsExperience devFixture={__DEV__ ? devFixture : undefined} onBack={() => router.replace((ledgerSubject.returnPath || ledgerHrefFor('home')) as any)} backAccessibilityLabel="Back to The Ledger" />;
+  return <AchievementsExperience devFixture={__DEV__ ? devFixture : undefined} onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as any) : router.replace(ledgerHrefFor('home') as any)} backAccessibilityLabel="Back to The Ledger" />;
 }

@@ -5,7 +5,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
-import { Tabs, usePathname, useRouter } from 'expo-router';
+import { Tabs, useGlobalSearchParams, usePathname, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -80,6 +80,7 @@ function FilteredTabBar({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const focusedParams = useGlobalSearchParams<{ returnToWorkspace?: string }>();
   const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
   const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
   const allowedNames = shippingTabRouteNames({
@@ -156,6 +157,7 @@ function FilteredTabBar({
 
   if (isImmersiveMeetMode) return null;
   if (normalizedPathname.startsWith('/coach-athlete/')) return null;
+  if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;
   if (hidesNavigationForSessionEditor) return null;
   if (hidesNavigationForCompletedRecap) return null;
 
