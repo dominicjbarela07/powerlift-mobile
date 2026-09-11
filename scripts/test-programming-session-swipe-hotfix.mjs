@@ -18,13 +18,13 @@ assert.match(manager, /onScrollBeginDrag=\{\(\) => setOpenSwipeSessionId\(null\)
 assert.match(manager, /useEffect\(\(\) => \{\s*setOpenSwipeSessionId\(null\);\s*\}, \[selectedBlock\?\.id, selectedWeekIndex\]\)/, 'Week and Block changes must reset swipe state');
 
 assert.match(manager, /foregroundStyle=\{storyStyles\.sessionSwipeForeground\}/, 'Programming Sessions must paint an opaque foreground above the tray');
-assert.match(manager, /style=\{storyStyles\.sessionSwipeFrame\}/, 'each Session must own an independently clipped swipe frame');
-assert.match(manager, /sessionSwipeFrame:\s*\{[^\n]*overflow: 'hidden'[^\n]*borderRadius:/, 'revealed actions must be clipped to one rounded Session row');
+assert.match(manager, /style=\{compositionStyles\.swipeFrame\}/, 'each Session must own an independently clipped swipe frame');
+assert.match(manager, /swipeFrame:\s*\{[^\n]*overflow: 'hidden'[^\n]*width: '100%'/, 'revealed actions must be clipped to the full-width Session row');
 assert.match(manager, /sessionSwipeForeground:\s*\{[^\n]*width: '100%'[^\n]*backgroundColor: '#0B0D13'/, 'closed rows must reserve no action gutter and fully cover the action tray');
-assert.match(manager, /compactWeekSessions:\s*\{[^\n]*gap: 6/, 'independent rows must retain visible separation');
+assert.match(manager, /session:\s*\{[^\n]*borderBottomWidth: StyleSheet.hairlineWidth/, 'continuous Session rows must retain visible separation');
 
-assert.match(manager, />SESSIONS THIS WEEK</, 'the all-Week list must use an honest Week-level heading');
-assert.match(manager, /Add target \{formatLongDate\(selectedDay\.date\)\}/, 'the selected day must be described only as the Add Session target');
+assert.match(manager, /style=\{compositionStyles\.weekTitle\}>Week \{selectedWeek\?\.index/, 'the all-Week list must use an honest Week-level heading');
+assert.match(manager, /accessibilityLabel=\{`Add Session on \$\{formatLongDate\(selectedDay\.date\)\}`\}/, 'the selected day must be described as the Add Session target');
 assert.doesNotMatch(manager, /<Text style=\{storyStyles\.selectedDayLabel\}>\{formatLongDate\(selectedDay\.date\)\}<\/Text>/, 'the Week list must not masquerade as a selected-day-only list');
 
 console.log('Programming Manager swipe interaction hotfix contracts passed.');

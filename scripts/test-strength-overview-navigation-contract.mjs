@@ -26,7 +26,7 @@ for (const lift of ['squat', 'bench', 'deadlift']) {
 assert.match(strength, /useLocalSearchParams<\{ athleteId\?: string \| string\[\]; lift\?: string \| string\[\] \}>/, 'Strength consumes existing athlete/lift deep-link intent');
 assert.match(strength, /LIFTS\.some\(\(lift\) => lift\.key === routeLiftValue\)/, 'only a governed S\/B\/D route key can open a detail');
 assert.match(strength, /useLedgerLiveData\(range, \{ athleteId \}\)/, 'deep-linked coach views preserve the authorized athlete subject');
-assert.match(liveData, /fetchLedgerProgression\(range, athleteId\)/, 'the live Strength projection carries the authorized subject');
+assert.match(liveData, /fetchLedgerProgression\(range, athleteId, projection\)/, 'the live Strength projection carries the authorized subject');
 assert.match(ledgerData, /params\.set\('athlete_id', String\(athleteId\)\)/, 'athlete-scoped Ledger requests explicitly identify their subject');
 assert.match(legacyProgressionRoute, /<Redirect href="\/\(tabs\)\/ledger\/strength"/, 'generic legacy progression intent reconciles to Strength Overview');
 assert.doesNotMatch(legacyProgressionRoute, /AthleteProgressionScreen|fetchJson|AnalyticalTimeSeriesChart/, 'the legacy route contains no dormant progression implementation');

@@ -114,7 +114,7 @@ assert.match(source.trainingRoute, /return <TrainingIndexScreen key=\{workspace\
 assert.doesNotMatch(source.trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
 assert.match(source.programming, /resolveProgrammingSubject\(athleteWorkspace, params\.athleteId\)/);
 assert.match(source.programming, /`\/workouts\/my_list\/mobile\/\$\{rosterAthleteId\}`/);
-assert.match(source.programming, /isProgrammingManager = programmingSubject\.workspaceOwned \|\| isIndividual \|\| !!rosterAthleteId/);
+assert.match(source.programming, /isProgrammingManager = programmingSubject\.workspaceOwned \|\| isIndividual \|\| activeMobileMode === 'coach' \|\| !!rosterAthleteId/);
 assert.match(source.programming, /<IndividualProgrammingHome/);
 assert.match(source.programming, /managedAthleteId=\{rosterAthleteId \? Number\(rosterAthleteId\)/);
 assert.match(source.programming, /scopeProgrammingPayload/);
