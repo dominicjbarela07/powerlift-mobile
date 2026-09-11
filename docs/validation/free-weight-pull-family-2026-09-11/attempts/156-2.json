@@ -1,0 +1,12 @@
+{
+  "id": 156,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. INPUT 1 is the immutable original and ONLY photographic style reference. INPUT 2 is the edit target. Preserve its graphite clothing, natural athlete/skin, silver weights, near-black textured studio and restrained violet rear rim. Correct the supported head: relaxed back of skull lying directly ON flat bench pad, face vertical to ceiling, not chin lifted toward camera. Lengthen pad beneath head as needed. Keep the long-arm overhead barbell pullover, straight shaft, matched plates and athlete. Frame whole scene 15% smaller, center between margins so full shoes and bar ends are well inside edges. One square photograph. No text or labels.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-75e8ba68-a19d-4010-86eb-5a95ab4dd4f5.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-886f51c8-646c-4326-aa52-3fcf6b47840e.png",
+  "review": "REJECT",
+  "review_reason": "Framing improves but arm occlusion still makes head support ambiguous. Request an explicitly visible black headrest under occiput before final acceptance."
+}

@@ -32,7 +32,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
   const progress = prior || visual?.progress;
   return <View style={s.workspace}>
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
-      <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={48} />
+      <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={72} />
       <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : focus?.currentSetPositionLabel || prescription}</Text></View>
     </Pressable>
     {!complete && focus ? <>

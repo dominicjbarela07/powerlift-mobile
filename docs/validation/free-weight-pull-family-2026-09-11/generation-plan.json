@@ -1,0 +1,241 @@
+{
+  "original_reference": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+  "common_prompt": "Use case: photorealistic-natural. Create ONE square canonical Strength Ledger movement photograph for mobile cards and exact movement history. INPUT 1 is the approved ORIGINAL Incline Dumbbell Bench Press and the immutable, sole visual style control. Preserve its premium near-black studio, dark subtly textured floor, natural muscular adult athlete in graphite sleeveless shirt, black shorts and plain black shoes, believable skin/fabric, neutral brushed-silver equipment, broad neutral key and restrained violet rear-right rim. Same commercial fitness photography and normal-to-short-telephoto lens feel. Movement mechanics dictate a new camera/pose; do not copy the incline press pose. No new blue palette, fog, neon, shirtless posing, branding, text, numbers, watermarks, anatomy highlights or gym clutter. One athlete only, natural proportions, neutral focused expression, two anatomically plausible hands with wrapped grips, physically coherent implements and support/contact shadows. Fit the WHOLE athlete, both complete shoes, all weights/bar ends and bench/support feet within the square with about 8% breathing room; action occupies roughly 80\u201385% of longest image axis, not a tiny figure. Never cut off or merge equipment. Preserve full photographic detail and strong implement/torso/arm silhouette for downscaling.",
+  "movements": [
+    {
+      "id": 191,
+      "implement": "straight barbell",
+      "cue": "BENT-OVER BARBELL ROW, continuous loaded phase. Standing bilateral unsupported hip hinge, neutral spine, torso about 35 degrees above horizontal, knees softly bent, feet shoulder width. Hands pronated just outside shoulder width on one straight barbell with modest symmetric silver plates and collars. Bar pulled toward lower ribs/upper abdomen, elbows bent and traveling back about 35 degrees from torso. Bar remains well ABOVE the floor, no bench or support, visibly continuous-load row rather than floor-start Pendlay. Three-quarter side/front camera exposes hinge, straight shaft, separated grips, elbow travel and entire shoes. No straps."
+    },
+    {
+      "id": 154,
+      "implement": "single dumbbell",
+      "cue": "ONE-ARM DUMBBELL ROW, classic supported top phase. One knee AND same-side flat palm firmly supported on a horizontal black bench; other foot planted on floor beside bench; torso near horizontal neutral spine. Opposite working hand grips ONE silver dumbbell, neutral grip, pulled near the hip with elbow tucked and raised just behind back; visible gap between implement and body, natural two matched heads connected by handle. Three-quarter side view from working-arm side shows all three support contacts and obvious unilateral arm action. No second weight, no standing bilateral row."
+    },
+    {
+      "id": 194,
+      "implement": "paired dumbbells",
+      "cue": "CHEST-SUPPORTED DUMBBELL ROW. Prone chest firmly against a black 40\u201345 degree incline bench, feet planted behind, head beyond top of pad in neutral alignment. Both hands neutral-grip two independent brushed-silver dumbbells, elbows flexed around 90 degrees and traveling backward about 40 degrees out from torso, weights close to lower chest/ribs. Three-quarter front-side camera reveals full chest-to-pad support, both rowing elbows, separated dumbbell handles, bench frame and both shoes. Movement is a bent-elbow ROW not a straight-arm reverse fly."
+    },
+    {
+      "id": 126,
+      "implement": "paired dumbbells",
+      "cue": "BENT-OVER DUMBBELL REVERSE FLY. Standing unsupported deep hip hinge with torso nearly horizontal (about 20 degrees above floor), neutral spine and soft knees. At top of bilateral REAR-DELT horizontal abduction, arms sweep widely out to sides in a T relative to torso, elbows only softly bent about 15 degrees, NOT flexed like a row. Hold two small matched silver dumbbells, palms toward floor/back in natural neutral-to-pronated fly orientation. Rear three-quarter slightly elevated camera makes posterior shoulder plane and bent-over torso obvious, distinct from an upright lateral raise. Entire figure and widely spread weights visible, no bench."
+    },
+    {
+      "id": 235,
+      "implement": "paired dumbbells",
+      "cue": "DUMBBELL SHRUG at clear TOP contraction. Standing tall feet hip width, two heavy but realistic silver dumbbells hanging beside outer thighs, both elbows STRAIGHT and hands neutral grip. Shoulder girdle visibly elevated toward ears, neck appears shortened between raised shoulders while head remains neutral, traps gathered naturally under graphite sleeveless shirt. No elbow curling, no upright-row hands, no torso hinge. Front three-quarter camera at chest height makes raised shoulder contour and two separate dumbbells unmistakable. Full athlete and weights, restrained exertion rather than a pose."
+    },
+    {
+      "id": 155,
+      "implement": "single dumbbell, two hands",
+      "cue": "DUMBBELL PULLOVER, long-arm stretched phase. Athlete lies lengthwise on a horizontal flat black bench, upper back and head supported, both feet on floor, ribs controlled. Both hands cup the underside of ONE dumbbell upper head; one continuous vertical handle and two matched silver heads. Arms reach in a long arc BEHIND crown, upper arms near ears, elbows only softly bent 15\u201320 degrees (almost straight), clearly a shoulder pullover rather than deep-elbow skull crusher or PJR extension. Side three-quarter camera clearly shows flat bench, long overhead arm reach, single weight just beyond head with space from floor and bench, and both full shoes."
+    },
+    {
+      "id": 127,
+      "implement": "paired dumbbells",
+      "cue": "CHEST-SUPPORTED DUMBBELL REVERSE FLY. Prone chest fully supported against incline bench at 40 degrees, two feet planted behind. Posterior three-quarter camera at shoulder height. Arms extend wide sideways in rear-delt horizontal abduction with only 15 degrees elbow bend; two small silver dumbbells level with shoulders, not curled beside ribs. Upper chest touching pad, head neutral beyond top, complete functional incline bench and footwear. Show both wrists, handles and outward arm paths."
+    },
+    {
+      "id": 128,
+      "implement": "paired dumbbells",
+      "cue": "INCLINE BENCH REAR DELT FLY. Prone torso lengthwise on a shallow 25-degree incline bench, upper chest supported, feet planted behind. Rear-side slightly elevated camera. At midpoint of rear-delt fly, two softly bent long arms sweep outward about 60 degrees from hanging, holding two small silver dumbbells. No rowing elbow flexion, no upright standing lateral raise. Show low incline, whole figure and bench feet, neutral head looking diagonally down. Distinct shallow support/phase while preserving real fly mechanics."
+    },
+    {
+      "id": 129,
+      "implement": "paired dumbbells",
+      "cue": "REAR DELT DUMBBELL ROW. Standing unsupported deep hip hinge, torso nearly horizontal with neutral spine and soft knees. BOTH elbows bend roughly 90 degrees and flare wide in line with shoulders, pulling two silver dumbbells toward upper ribs. Rear three-quarter elevated view exposes posterior shoulder plane, forearms descending from wide bent elbows, two separate weights under elbows, complete feet. Clearly a wide-elbow rear-delt ROW, not straight-arm fly, not tucked elbow lat row. No bench."
+    },
+    {
+      "id": 130,
+      "implement": "paired dumbbells",
+      "cue": "WIDE ELBOW DUMBBELL ROW. Unsupported bilateral standing hinge with torso about 30 degrees above horizontal, knees softly bent. Front-side three-quarter view clearly exposes two bent elbows flared 75\u201385 degrees from torso, overhand semi-pronated grips on two independent silver dumbbells pulled toward upper abdomen/chest, forearms mostly vertical. Neutral spine and neck, full shoes. Wider elbow path than lat row. No bench, no upright row, no straight-arm fly. Pick honest representative wide-row execution."
+    },
+    {
+      "id": 131,
+      "implement": "straight barbell",
+      "cue": "REAR DELT BARBELL ROW. Deep unsupported standing hip hinge, nearly horizontal torso and soft knees, neutral spine. One straight silver barbell, symmetric modest plates, wide pronated hand spacing. Pull bar to UPPER CHEST, elbows spread wide around 80 degrees from torso and bent roughly 90 degrees. Rear three-quarter elevated side view clearly separates both arms and continuous bar/plates. Shoulders horizontally abduct, not tucked lat row. Entire athlete, both bar ends and shoes within square."
+    },
+    {
+      "id": 132,
+      "implement": "straight barbell",
+      "cue": "WIDE GRIP CHEST SUPPORTED REAR DELT ROW. Prone chest on low 30-degree incline bench with enough underside clearance for bar, feet planted behind, no other support obscuring bar. Wide overhand grips on a single straight barbell with modest symmetric silver plates. Elbows flexed and strongly flared laterally, bar pulled toward upper chest below pad. Front-side three-quarter camera clearly shows wide grip, bench supporting torso, bent elbows, continuous bar shaft clear of bench frame, full feet/equipment. A ROW, not fly or shrug."
+    },
+    {
+      "id": 133,
+      "implement": "paired dumbbells",
+      "cue": "PRONE REAR DELT SWING, abbreviated low partial rear-delt fly. Prone chest on shallow incline bench, both feet grounded behind, neutral head. Two fairly substantial silver dumbbells held in long softly bent arms BELOW shoulders, slightly swung outward only about 25 degrees from gravity-down. Not a high full-range T reverse fly and not bent-elbow row. Rear three-quarter low-side camera exposes the low outward arc, bench support, two separate weights near knees but not touching floor. Complete athlete and bench."
+    },
+    {
+      "id": 150,
+      "implement": "single dumbbell",
+      "cue": "DUMBBELL ARCHER ROW, rotating high-plank row. Athlete in strong long-body plank, toes of both spread feet and nonworking flat palm on floor supporting body. Working hand holds ONE silver dumbbell pulled beside upper ribs, working elbow bends and travels up as upper torso rotates about 45 degrees open. Hips remain close to plank line, not kneeling or standing. Side three-quarter camera from working arm shows clear three-point floor contact, extended supporting arm, drawn-back elbow and dumbbell. Natural shoulder/wrist mechanics; full body/shoes."
+    },
+    {
+      "id": 153,
+      "implement": "landmine barbell",
+      "cue": "MEADOWS ROW. One end of a straight Olympic barbell secured in a small visible low floor landmine pivot; one modest silver plate and collar near raised free end. Athlete stands PERPENDICULAR to loaded bar end, staggered wide stance, deep neutral hinge; nonworking forearm braced on own forward thigh, working hand PRONATED over thick sleeve just beyond plate. Working elbow pulls wide and back toward side of ribs; not both hands V-handle and not parallel-to-bar landmine row. Camera three-quarter across loaded end shows perpendicular foot/body relationship and entire shaft to anchored pivot, natural wrist and grip."
+    },
+    {
+      "id": 156,
+      "implement": "straight barbell",
+      "cue": "BARBELL PULLOVER. Athlete supine lengthwise on horizontal flat bench, back of head and upper back on pad, both feet planted. Both hands shoulder-width OVERHAND grip ONE straight barbell with small symmetrical plates/collars. Nearly straight arms with 15-degree soft elbow bend reach in long arc behind crown, bar beyond head and safely above floor. Side three-quarter view clearly shows long shoulder-overhead path and complete straight shaft, not deep elbow skull crusher. Whole bench and all shoes with generous margins."
+    },
+    {
+      "id": 157,
+      "implement": "single heavy dumbbell",
+      "cue": "KROC ROW. Standing staggered stance, BOTH feet on floor, nonworking palm braces on top edge of sturdy incline bench, neither knee on pad. Torso angled about 30 degrees above horizontal, controlled slight upper-torso rotation at strong top pull. One substantial realistic silver dumbbell rows to hip with working elbow close behind torso. Full range one-arm heavy row character without extreme spinal twisting or cartoon weight. Three-quarter working-side camera shows single dumbbell, distinct standing support and entire bench/shoes."
+    },
+    {
+      "id": 158,
+      "implement": "single dumbbell",
+      "cue": "THREE POINT DUMBBELL ROW. Two planted floor feet in modest split stance plus one straight-arm flat palm on a horizontal bench: exactly three support points, NO knee on bench. Neutral torso near horizontal. Working hand pulls ONE silver dumbbell toward lower ribs, elbow tucked 20 degrees from torso, at clean controlled top. Side three-quarter camera exposes both full planted shoes, supporting palm, complete bench, dumbbell and backward working elbow. No torso rotation; distinguish kneeling one-arm row support."
+    },
+    {
+      "id": 159,
+      "implement": "landmine barbell with close neutral row handle",
+      "cue": "LANDMINE ROW. Standing athlete straddles the shaft of one free Olympic barbell, rear end anchored in a visible small floor pivot BEHIND athlete. Torso hinged about 30 degrees above horizontal, neutral spine. Both hands close neutral grip on ONE connected V-row handle under loaded sleeve, pulling modest silver plates toward lower abdomen, elbows tucked beside ribs. Front three-quarter side view shows straddled straight shaft continuing behind, anchored end, raised loaded end, complete athlete/feet. No chest pad, no weight-stack or dedicated machine."
+    },
+    {
+      "id": 160,
+      "implement": "single-arm landmine barbell",
+      "cue": "ONE ARM LANDMINE ROW. Athlete stands PARALLEL alongside one landmine bar, facing toward anchored end with feet in staggered stance; bar runs front-to-back next to working leg, not across athlete. Hinge neutral torso. One working hand grips the shaft just behind loaded sleeve, neutral grip, loaded end rows beside working HIP with tucked bent elbow. Nonworking palm braces on own thigh. Three-quarter side view includes complete straight bar to small floor pivot, realistic plate/collar, both shoes. Clearly unilateral parallel landmine row rather than perpendicular overhand Meadows."
+    },
+    {
+      "id": 161,
+      "implement": "paired dumbbells",
+      "cue": "LAT BIASED DUMBBELL ROW. Standing bilateral neutral hip hinge, torso about 20 degrees above horizontal and knees soft, no bench. Two silver dumbbells pulled toward HIP POCKETS with elbows tightly TUCKED nearly brushing sides, upper arms close to torso rather than flared. Neutral grips, weights behind lower ribs, wrists stacked. Side three-quarter camera exposes backward elbow path toward hips, both independent weights and long neutral spine with head looking down. All shoes and equipment fully in frame."
+    },
+    {
+      "id": 162,
+      "implement": "paired dumbbells",
+      "cue": "LAT BIASED CHEST SUPPORTED DUMBBELL ROW. Chest against 40-degree incline bench, both feet on floor behind, neutral straight torso. Both elbows tightly TUCKED by ribs, rowing two silver dumbbells back toward hips/lower waist with neutral grips. Side three-quarter view shows chest-to-pad contact and elbow-to-hip trajectory, distinct from flared rear-delt row. Both weights, full bench and shoes with safe margins, no weights intersecting pad or thighs."
+    },
+    {
+      "id": 192,
+      "implement": "straight barbell",
+      "cue": "PENDLAY ROW at dead-stop START. Athlete stands over straight barbell, BOTH modest full-diameter silver plates visibly resting on FLOOR. Hips back, knees bent only enough for torso to be almost perfectly horizontal, neutral flat spine and neck. Wide overhand grip just outside knees; arms fully extended down to bar directly under shoulders, ready for floor-origin row. True side three-quarter camera makes horizontal back and both floor contacts obvious; distinct from upright deadlift stance and continuous-load row. Entire straight bar/feet visible."
+    },
+    {
+      "id": 193,
+      "implement": "straight barbell and elevated flat seal bench",
+      "cue": "SEAL ROW at top. Athlete fully prone horizontal on a dedicated HIGH FLAT seal-row bench, chest/abdomen/hips supported, both legs extended straight along pad with shoes extending beyond end. Bench roughly 85 cm tall with stable connected frame, enough clearance for straight bar beneath. Both hands overhand on one straight barbell pulling toward underside of chest, elbows flexed 90 degrees. Side three-quarter view shows horizontal supported body floating well above floor, symmetric plates, straight shaft clear of legs/frame, full long bench and shoes."
+    },
+    {
+      "id": 195,
+      "implement": "straight barbell",
+      "cue": "CHEST SUPPORTED BARBELL ROW. Prone chest against moderate 40-degree incline bench, both feet planted behind, head neutrally aligned. Shoulder-width overhand grips on one straight silver barbell, symmetric small plates and collars. Mid-contraction rowing phase: elbows bent around 70 degrees, moderate 30-degree flare, bar below lower chest and clearly forward of bench support frame. Side three-quarter camera shows chest support, bent elbows, complete bar/bench/feet and physical clearance. Not rear-delt wide grip or straight-arm shrug."
+    },
+    {
+      "id": 196,
+      "implement": "paired dumbbells",
+      "cue": "INCLINE BENCH DUMBBELL ROW. Prone chest supported by 30-degree incline bench, both feet planted behind, neutral neck. At mid-row, two neutral-gripped silver dumbbells near lower ribs, elbows flexed around 70 degrees and about 35 degrees from torso. Side three-quarter slightly elevated camera clearly shows shallow incline pad support, separate weights on either side and entire athlete/bench. Generic supported mechanics honestly overlap with ID194; use this honest shallow incline/phase, not an invented variant."
+    },
+    {
+      "id": 197,
+      "implement": "free landmine barbell with close T-bar handle",
+      "cue": "T BAR ROW with FREE landmine barbell. Athlete stands straddling one straight shaft, unsupported deep hip hinge, both hands hold a SHORT rigid transverse T-handle attached just behind loaded sleeve. Close neutral grips, elbows tucked moderately, loaded plate stack pulled to lower ribs. Far shaft end anchored in simple visible floor pivot behind athlete. Three-quarter side camera shows continuous free bar from pivot to two modest silver plates, connected T handle, both hands, all shoes. No weight-stack, no dedicated plate-loaded machine, no torso pad."
+    },
+    {
+      "id": 198,
+      "implement": "free landmine barbell with wide transverse T handle",
+      "cue": "WIDE GRIP T BAR ROW. Athlete straddles a single free landmine bar, deep hip hinge with torso 25 degrees above horizontal. Both hands WIDE overhand grips on one rigid transverse silver T-row crossbar attached just behind modest loaded plates; hands well outside shoulder width and elbows flared. Bar continues between legs to small floor pivot behind. Front three-quarter view reveals T junction, two grips, straight shaft, elevated plates and hinged torso. No chest support or dedicated machine. Full athlete, all bar ends and pivot inside frame."
+    },
+    {
+      "id": 199,
+      "implement": "free landmine barbell and independent chest support bench",
+      "cue": "CHEST SUPPORTED T BAR ROW, free landmine setup. Prone torso supported on elevated shallow-incline black bench, both feet planted behind. Both hands neutral close grip on connected V-row attachment around free bar just behind small silver plate load, bent elbows pulling toward lower ribs. Far bar end runs beneath bench to visible floor landmine pivot behind athlete. Independent bench support legs splay to sides leaving an OPEN clear channel for the bar and row handle; no intersection, no machine linkage or weight stack. Side three-quarter full equipment view shows actual chest support and free pivoting bar."
+    },
+    {
+      "id": 200,
+      "implement": "paired dumbbells and upright incline bench",
+      "cue": "HELMS ROW. Athlete STANDS in wide stable floor stance and hinges torso nearly horizontal, with upper chest/sternum braced against only the TOP EDGE of a steep roughly 75-degree incline bench in front. The rest of abdomen/hips remain unsupported behind this edge, no prone full-body lying along pad. Two neutral-grip silver dumbbells row up beside ribs with moderately flared bent elbows. Side three-quarter camera exposes distinctive TOP-EDGE chest contact, high vertical pad extending down away from torso, two planted shoes and full bench. Neutral spine, complete weights."
+    },
+    {
+      "id": 201,
+      "implement": "paired dumbbells",
+      "cue": "BATWING ROW at sustained top contraction. Athlete prone fully horizontal along a black FLAT bench, chest and abdomen supported, two feet planted far behind bench. Both elbows pulled high behind back, hands holding two modest silver dumbbells drawn close into armpits with thumbs toward ribs and shoulder blades strongly retracted. Arms deeply flexed, not straight-arm Kelso shrug, and no incline pad. Slightly elevated side three-quarter view shows flat support, symmetric deeply bent elbows and both implements, natural neutral neck. Whole athlete/bench visible."
+    },
+    {
+      "id": 202,
+      "implement": "paired kettlebells",
+      "cue": "GORILLA ROW. Athlete in wide stable stance over TWO matched brushed-silver kettlebells, feet outside bells. Deep neutral hip hinge, torso nearly horizontal, knees softly bent. One hand grips a kettlebell still firmly resting on floor between feet; the other rows its matching bell up to hip, bent tucked elbow. Both kettlebells have single smooth closed-loop handles and grounded realistic shape, no extra handles. Slight torso rotation toward working side, head down. Front-side camera clearly shows alternating one-up/one-down row, full feet and both bells."
+    },
+    {
+      "id": 203,
+      "implement": "straight barbell",
+      "cue": "SNATCH GRIP BARBELL ROW. Unsupported bilateral standing hinge with nearly horizontal neutral torso. Both hands EXTRA WIDE pronated grip near outer ends of shaft, well beyond shoulder width like a snatch grip. One straight barbell with matching modest silver plates/collars lifted above floor toward upper abdomen; elbows bent and flared. Front three-quarter elevated camera shows true very wide grip and complete continuous shaft, two hand contacts, entire feet. No bench, no upright shrug, no overhead position."
+    },
+    {
+      "id": 204,
+      "implement": "straight barbell",
+      "cue": "WIDE ELBOW BARBELL ROW. Standing unsupported neutral hip hinge torso about 25 degrees above horizontal. Moderately wide overhand grip on straight bar, elbows bent 90 degrees and flared almost directly to sides; bar pulled toward upper ribs. Front three-quarter view clearly shows elbow width, separate wrists and matched silver plates, full shoes. Hands wider than shoulder width but not extreme snatch spacing. Not tucked lat row or upright row. Entire neutral metal equipment with crop margins."
+    },
+    {
+      "id": 545,
+      "implement": "barbell and horizontal posterior-chain bench",
+      "cue": "BARBELL BACK EXTENSION. Athlete prone on horizontal Roman-chair/GHD posterior-chain bench, PELVIS/upper thighs supported by rounded black pad, straight legs extend backward, BOTH ankles firmly secured between paired padded rollers against rear footplate. Unsupported torso extends forward to approximately horizontal at top of back extension, neutral controlled spine and head looking down. A LIGHT short straight barbell with small symmetrical silver plates rests ACROSS upper back/shoulder girdle behind neck, held securely by two wide hands. Side three-quarter view shows actual hip-pad and ankle contacts, externally loaded torso, entire stable bench/bar/athlete. Not a floor deadlift or standing good morning."
+    },
+    {
+      "id": 547,
+      "implement": "light straight training bar",
+      "cue": "JEFFERSON CURL, controlled spinal-articulation bottom phase. Athlete stands with BOTH complete feet on a sturdy low black rectangular 25cm platform, knees nearly straight, spine smoothly rounded segmentally forward, chin tucked rather than neutral-back hip hinge. Both hands shoulder-width pronated on ONE LIGHT thin straight training bar with tiny silver end weights; arms hang long and bar reaches just BELOW top level of platform/toes, clear of shins and floor. True side three-quarter view exposes rounded upper-to-lower back, straight legs, elevated feet and lowered implement. Natural comfortable mobility range, not extreme contortion or heavy deadlift. Whole athlete/platform/bar inside square."
+    },
+    {
+      "id": 549,
+      "implement": "single plate and horizontal posterior-chain bench",
+      "cue": "WEIGHTED SORENSON HOLD, supported HORIZONTAL isometric posture. Athlete prone with pelvis/upper thighs supported by a rounded black GHD/Roman-chair pad, both legs extend horizontally BACK to secured ankle rollers and footplate. Torso extends horizontally FORWARD unsupported in same straight line as legs, neutral spine and head looking down. Holds ONE modest silver weight plate snugly against chest with both forearms crossed around it, plate safely supported by visible hands. Side three-quarter view reveals full straight head-to-heels silhouette, pelvis support, both secured ankles, stable entire GHD frame. No torso bending/arching and no barbell. Whole equipment/athlete visible."
+    },
+    {
+      "id": 205,
+      "implement": "straight barbell and incline bench",
+      "cue": "CHEST SUPPORTED KELSO ROW, SCAPULAR row. Athlete prone chest on 35-degree incline bench, two feet planted behind. Both hands overhand shoulder-width grip a straight barbell with small silver plates, arms hang LONG with elbows nearly LOCKED, bar below chest. Shoulder blades drawn BACK together in short scapular retraction, shoulders move toward spine, no bent-elbow conventional row. Side-rear three-quarter view exposes retracted shoulder contour and long arms, full bar clear of bench frame and all feet. Same realistic studio. Kelso is a short scapular action."
+    },
+    {
+      "id": 206,
+      "implement": "paired dumbbells",
+      "cue": "DUMBBELL HIGH ROW. Unsupported deep hip hinge, torso nearly horizontal and neutral back. Bilateral overhand/semi-pronated dumbbell row toward UPPER CHEST, elbows flared wide and bent 90 degrees, forearms under elbows. Two independent silver dumbbells high beside upper ribs, not curled to shoulders and not straight-arm fly. Slight elevated front-side view exposes high elbow path and horizontal torso. Full shoes and matched weights inside square; no bench. Governed upper-back high row rather than upright delt row."
+    },
+    {
+      "id": 234,
+      "implement": "straight barbell",
+      "cue": "BARBELL SHRUG at visible top contraction. Athlete stands tall with ONE straight barbell held in front of thighs, shoulder-width overhand grips and LONG STRAIGHT elbows. Both shoulders clearly elevated toward ears, neutral head, loaded upper-trap contour. Symmetric modest silver plates and collars, continuous shaft. Front three-quarter view with complete head, shoes and bar ends safely inside frame. Not a row, curl, deadlift hinge or relaxed holding pose."
+    },
+    {
+      "id": 236,
+      "implement": "hexagonal trap bar",
+      "cue": "TRAP BAR SHRUG at top. Upright athlete stands INSIDE one physically coherent closed HEXAGONAL trap bar, both hands neutral grip the two short SIDE handles, long straight elbows. Shoulder girdle clearly raised toward ears, head neutral. Trap bar held at thigh level around body with a continuous six-sided steel frame, two opposite external straight sleeves carrying matching modest silver plates/collars. Three-quarter front elevated view makes hexagon around legs and actual handles visible. Full frame, bar ends, both complete shoes, no shaft crossing through thighs."
+    },
+    {
+      "id": 237,
+      "implement": "straight barbell",
+      "cue": "BEHIND THE BACK BARBELL SHRUG, top contraction. Athlete stands fully upright, one straight barbell hanging BEHIND upper thighs/buttocks, two hands overhand grip just outside hips, elbows STRAIGHT. Shoulders raised toward ears with head facing naturally forward away from camera. Rear three-quarter view clearly shows bar BEHIND body, long arms, gathered trap contour through graphite sleeveless shirt, matching silver plates/collars. Complete full shoes and both bar ends with safe margins. No hinge, no rowing elbow bend."
+    },
+    {
+      "id": 238,
+      "implement": "straight barbell",
+      "cue": "SNATCH GRIP SHRUG. Standing tall with one straight barbell held at hip-crease height in EXTRA WIDE pronated snatch grip, hands close to outer shaft ends. Both elbows remain STRAIGHT and arms angle outward to wide hands. Shoulders visibly elevated toward ears, head neutral; no elbow row or knee dip. Symmetric small silver plates and collars, clear continuous shaft. Front three-quarter view shows full athlete, both bar ends with generous breathing room and distinct wide-grip shrug silhouette."
+    },
+    {
+      "id": 239,
+      "implement": "straight barbell",
+      "cue": "OVERHEAD BARBELL SHRUG, top scapular elevation. Upright athlete with feet hip width, one light straight silver barbell locked out OVERHEAD in moderately wide overhand grip. Both elbows fully straight, arms reach upward with shoulder girdle actively elevated toward ears, upper traps raised. Wrists stacked under bar and bar centered over balance, modest symmetric plates/collars. Front three-quarter camera shows exact locked-elbow overhead shrug, not bent-elbow press. Include entire overhead bar, head and both complete shoes with space at all edges."
+    },
+    {
+      "id": 240,
+      "implement": "paired heavy dumbbells",
+      "cue": "FARMER CARRY in deliberate mid-STRIDE WALK. Athletic adult upright and braced, two substantial silver dumbbells hang beside hips from straight arms with neutral grips. One foot clearly steps forward planted heel-first, opposite heel raised in trailing step, legs separated in a natural short walking gait. Shoulders stable and loaded, neutral head, no shrug exaggeration and no static symmetrical standing pose. Three-quarter front-side camera exposes forward travel, both hanging weights, all shoes and body. Dark empty studio without lane markings, logos or added equipment."
+    },
+    {
+      "id": 241,
+      "implement": "paired dumbbells and incline bench",
+      "cue": "CHEST SUPPORTED KELSO SHRUG. Prone chest supported on 35-degree incline bench, both floor feet planted behind. Hold two silver dumbbells hanging below shoulders in LONG nearly LOCKED straight arms, neutral grips. At short scapular retraction contraction, shoulder blades drawn together/back, torso stays still on pad; no elbow flexion and no wide fly. Rear three-quarter camera reveals shoulder contour, arms hanging toward floor and small scapular action. Entire bench, separate weights and full shoes. Physically supported, same studio texture, no anatomy highlights."
+    },
+    {
+      "id": 242,
+      "implement": "straight barbell",
+      "cue": "KELSO SHRUG, representative BENT OVER BARBELL scapular version. Athlete unsupported in deep hip hinge with flat torso nearly horizontal and soft knees, feet shoulder width. One straight silver barbell held off floor below shoulders, shoulder-width pronated hands, both elbows remain STRAIGHT. Shoulder blades retracted together lifting shoulder girdle a short distance toward spine; arms do not bend into row. Rear-side slightly elevated camera exposes horizontal back, long elbows and whole shaft with modest matched plates/collars. All feet and weights visible. No upright shrug, no bench, no deep-elbow row."
+    }
+  ]
+}

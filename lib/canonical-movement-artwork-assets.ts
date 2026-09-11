@@ -276,6 +276,241 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/pjr-pullover-v1-thumb.png'),
     label: 'Athlete performing pjr pullover',
   },
+  accessory_bent_over_dumbbell_reverse_flye: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/bent-over-dumbbell-reverse-flye-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/bent-over-dumbbell-reverse-flye-v1-thumb.png'),
+    label: 'Athlete performing bent-over dumbbell reverse fly',
+  },
+  accessory_chest_supported_dumbbell_reverse_flye: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-reverse-flye-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-reverse-flye-v1-thumb.png'),
+    label: 'Athlete performing chest-supported dumbbell reverse fly',
+  },
+  accessory_incline_bench_rear_delt_flye: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1-thumb.png'),
+    label: 'Athlete performing incline-bench rear-delt fly',
+  },
+  accessory_rear_delt_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/rear-delt-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/rear-delt-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing rear-delt dumbbell row',
+  },
+  accessory_wide_elbow_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing wide-elbow dumbbell row',
+  },
+  accessory_rear_delt_barbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1-thumb.png'),
+    label: 'Athlete performing rear-delt barbell row',
+  },
+  accessory_one_arm_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/one-arm-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/one-arm-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing one-arm dumbbell row',
+  },
+  accessory_bent_over_barbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/bent-over-barbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/bent-over-barbell-row-v1-thumb.png'),
+    label: 'Athlete performing bent-over barbell row',
+  },
+  accessory_chest_supported_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing chest-supported dumbbell row',
+  },
+  accessory_dumbbell_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-shrug-v1-thumb.png'),
+    label: 'Athlete performing dumbbell shrug',
+  },
+  accessory_wide_grip_chest_supported_rear_delt_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/wide-grip-chest-supported-rear-delt-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/wide-grip-chest-supported-rear-delt-row-v1-thumb.png'),
+    label: 'Athlete performing wide-grip chest-supported rear-delt row',
+  },
+  accessory_prone_rear_delt_swing: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/prone-rear-delt-swing-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/prone-rear-delt-swing-v1-thumb.png'),
+    label: 'Athlete performing prone rear-delt swing',
+  },
+  accessory_dumbbell_archer_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1-thumb.png'),
+    label: 'Athlete performing dumbbell archer row',
+  },
+  accessory_meadows_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/meadows-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/meadows-row-v1-thumb.png'),
+    label: 'Athlete performing meadows row',
+  },
+  accessory_dumbbell_pullover: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-v1-thumb.png'),
+    label: 'Athlete performing dumbbell pullover',
+  },
+  accessory_kroc_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/kroc-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/kroc-row-v1-thumb.png'),
+    label: 'Athlete performing kroc row',
+  },
+  accessory_three_point_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing three-point dumbbell row',
+  },
+  accessory_lat_biased_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/lat-biased-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/lat-biased-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing lat-biased dumbbell row',
+  },
+  accessory_lat_biased_chest_supported_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/lat-biased-chest-supported-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/lat-biased-chest-supported-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing lat-biased chest-supported dumbbell row',
+  },
+  accessory_pendlay_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/pendlay-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/pendlay-row-v1-thumb.png'),
+    label: 'Athlete performing pendlay row',
+  },
+  accessory_seal_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/seal-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/seal-row-v1-thumb.png'),
+    label: 'Athlete performing seal row',
+  },
+  accessory_chest_supported_barbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-barbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-barbell-row-v1-thumb.png'),
+    label: 'Athlete performing chest-supported barbell row',
+  },
+  accessory_incline_bench_dumbbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1-thumb.png'),
+    label: 'Athlete performing incline-bench dumbbell row',
+  },
+  accessory_t_bar_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/t-bar-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/t-bar-row-v1-thumb.png'),
+    label: 'Athlete performing t-bar row',
+  },
+  accessory_barbell_pullover: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/barbell-pullover-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/barbell-pullover-v1-thumb.png'),
+    label: 'Athlete performing barbell pullover',
+  },
+  accessory_landmine_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/landmine-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/landmine-row-v1-thumb.png'),
+    label: 'Athlete performing landmine row',
+  },
+  accessory_one_arm_landmine_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/one-arm-landmine-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/one-arm-landmine-row-v1-thumb.png'),
+    label: 'Athlete performing one-arm landmine row',
+  },
+  accessory_wide_grip_t_bar_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/wide-grip-t-bar-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/wide-grip-t-bar-row-v1-thumb.png'),
+    label: 'Athlete performing wide-grip t-bar row',
+  },
+  accessory_chest_supported_t_bar_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-t-bar-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-t-bar-row-v1-thumb.png'),
+    label: 'Athlete performing chest-supported t-bar row',
+  },
+  accessory_helms_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/helms-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/helms-row-v1-thumb.png'),
+    label: 'Athlete performing helms row',
+  },
+  accessory_batwing_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/batwing-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/batwing-row-v1-thumb.png'),
+    label: 'Athlete performing batwing row',
+  },
+  accessory_gorilla_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/gorilla-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/gorilla-row-v1-thumb.png'),
+    label: 'Athlete performing gorilla row',
+  },
+  accessory_snatch_grip_barbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/snatch-grip-barbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/snatch-grip-barbell-row-v1-thumb.png'),
+    label: 'Athlete performing snatch-grip barbell row',
+  },
+  accessory_wide_elbow_barbell_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1-thumb.png'),
+    label: 'Athlete performing wide-elbow barbell row',
+  },
+  accessory_chest_supported_kelso_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1-thumb.png'),
+    label: 'Athlete performing chest-supported kelso row',
+  },
+  accessory_dumbbell_high_row: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-high-row-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-high-row-v1-thumb.png'),
+    label: 'Athlete performing dumbbell high row',
+  },
+  accessory_barbell_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/barbell-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/barbell-shrug-v1-thumb.png'),
+    label: 'Athlete performing barbell shrug',
+  },
+  accessory_trap_bar_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/trap-bar-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/trap-bar-shrug-v1-thumb.png'),
+    label: 'Athlete performing trap-bar shrug',
+  },
+  accessory_behind_the_back_barbell_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1-thumb.png'),
+    label: 'Athlete performing behind-the-back barbell shrug',
+  },
+  accessory_snatch_grip_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/snatch-grip-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/snatch-grip-shrug-v1-thumb.png'),
+    label: 'Athlete performing snatch-grip shrug',
+  },
+  accessory_overhead_barbell_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/overhead-barbell-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/overhead-barbell-shrug-v1-thumb.png'),
+    label: 'Athlete performing overhead barbell shrug',
+  },
+  accessory_farmer_carry: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/farmer-carry-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/farmer-carry-v1-thumb.png'),
+    label: 'Athlete performing farmer carry',
+  },
+  accessory_chest_supported_kelso_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1-thumb.png'),
+    label: 'Athlete performing chest-supported kelso shrug',
+  },
+  accessory_kelso_shrug: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1-thumb.png'),
+    label: 'Athlete performing kelso shrug',
+  },
+  accessory_barbell_back_extension: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1-thumb.png'),
+    label: 'Athlete performing barbell back extension',
+  },
+  accessory_jefferson_curl: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/jefferson-curl-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/jefferson-curl-v1-thumb.png'),
+    label: 'Athlete performing jefferson curl',
+  },
+  accessory_weighted_sorenson_hold: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/weighted-sorenson-hold-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/weighted-sorenson-hold-v1-thumb.png'),
+    label: 'Athlete performing weighted sorenson hold',
+  },
 };
 
 export function canonicalMovementArtworkSource(

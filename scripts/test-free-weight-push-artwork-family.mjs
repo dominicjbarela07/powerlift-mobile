@@ -17,7 +17,10 @@ const resolve = (identity) => resolveCanonicalMovementArtwork({ kind: 'accessory
 
 assert.equal(audit.count, 51);
 assert.deepEqual(audit.counts_by_primary, { chest: 17, front_delts: 12, side_delts: 10, triceps: 12 });
-assert.deepEqual(Object.keys(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).map(Number).sort((a,b)=>a-b), audit.qualifying.map(r=>r.id).sort((a,b)=>a-b));
+const pushPrimaries = new Set(Object.keys(audit.counts_by_primary));
+assert.deepEqual(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES)
+  .filter(([, identity]) => pushPrimaries.has(identity.primary))
+  .map(([id]) => Number(id)).sort((a,b)=>a-b), audit.qualifying.map(r=>r.id).sort((a,b)=>a-b));
 assert.equal(manifest.movements.filter(r=>r.final_status==='PENDING').length, 0);
 assert.equal(manifest.movements.filter(r=>r.final_status==='KEEP').length, 1);
 const uniqueAppFiles = new Set();
@@ -84,7 +87,9 @@ for (const item of serializedItems) {
   assert.equal(selected.artworkKey, item.effective_movement_identity.key, 'real DEV serialized subject resolves without label inference');
 }
 assert.equal(manifest.movements.find(r=>r.id===33).files.master.sha256, 'e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe');
-for (const row of audit.excluded) assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], undefined);
+for (const row of audit.excluded.filter(row => pushPrimaries.has(row.primary_muscle_group))) {
+  assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], undefined);
+}
 assert.equal(resolve({ id: 321, key: 'accessory_weighted_dip', primary_muscle_group: 'triceps' }).artworkKey, undefined);
 assert.equal(resolve({ id: 314, key: 'accessory_machine_dip', primary_muscle_group: 'triceps' }).kind, 'accessory');
 assert.equal(resolveCanonicalMovementArtwork({ kind:'core', core_movement_id:33, core_family:'bench' }).kind, 'core');

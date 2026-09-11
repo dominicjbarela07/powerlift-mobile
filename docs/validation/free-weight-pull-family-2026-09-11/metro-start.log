@@ -1,0 +1,33 @@
+
+> powerlift_mobile@1.0.0 start
+> node scripts/start-canonical-dev-metro.mjs
+
+[canonical-dev-metro] SOURCE PREFLIGHT PASS
+[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.
+{
+  "port": 8081,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "sha": "744d815d1355c991e26fddf4b8bf5a259ca7f36c",
+  "remoteRef": "origin/dev/canonical-mobile",
+  "remoteSha": "744d815d1355c991e26fddf4b8bf5a259ca7f36c",
+  "clean": false
+}
+Starting project at /Users/dominic/powerlifting_app_dev/powerlift_mobile
+React Compiler enabled
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@54.0.36 - expected version: ~54.0.37
+  expo-constants@18.0.13 - expected version: ~18.0.14
+  expo-file-system@19.0.23 - expected version: ~19.0.24
+  expo-updates@29.0.19 - expected version: ~29.0.20
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+
+Verified GET http://127.0.0.1:8081/status: packager-status:running
+iOS Bundled 861ms node_modules/expo-router/entry.js (3034 modules)
+iOS Bundled 149ms node_modules/expo-notifications/build/index.js (713 modules)
+iOS Bundled 102ms node_modules/expo-constants/build/Constants.js (1 module)

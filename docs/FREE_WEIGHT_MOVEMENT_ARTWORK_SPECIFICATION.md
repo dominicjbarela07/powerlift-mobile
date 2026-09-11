@@ -1,6 +1,6 @@
 # Canonical free-weight movement artwork specification
 
-September 11, 2026 · DEV only · Free-weight push family
+September 11, 2026 · DEV only · One canonical free-weight family: push and pull/posterior branches
 
 ## Fixed master reference specimen
 
@@ -59,3 +59,34 @@ Squeeze Press and Hex Press are separate catalog IDs with substantially overlapp
 The catalog builder defaults `sidedness` to bilateral unless a name explicitly says single-arm or alternating. Consequently Lean-Away and Lying Dumbbell Lateral Raise retain that stored value even though a supported repetition is naturally shown one arm at a time. The audit retains the discrepancy verbatim; this artwork task does not change loading, sidedness, taxonomy or historical evidence. An image of one side is representative execution, not an identity migration.
 
 The [manufacturer's cambered bench-bar demonstration](https://elitefts.com/products/elitefts-black-4-cambered-bar) confirms the raised middle section creates chest clearance between the lower outer hand grips. The initial generated camber orientation was rejected after this check; future prompts must preserve the functional relationship, not merely an unusual bend. Product photography may be supplied as geometry-only reference, with the original incline photograph remaining the sole style control. No manufacturer logos, apparel or gym environment are copied into family artwork.
+
+## Pull/posterior branch — same original control
+
+The [fresh DEV pull audit](validation/free-weight-pull-family-2026-09-11/taxonomy-audit.json) reviews 633 definitions, finds 49 canonical FREE_WEIGHT candidates and qualifies 47 after semantic review: lats 10, upper_back 16, rear_delts 9, traps 9, lower_back 3. There is no distinct mid_back primary category. Good Morning 546 and Zercher Good Morning 548 are deferred with lower-body hinges. Barbell Back Extension 545, spinal-articulation Jefferson Curl 547 and Weighted Sorenson Hold 549 remain direct posterior-trunk work; Farmer Carry 240 remains governed traps-primary loading despite not being a literal pull. Biceps/forearm isolation, serratus reach, neck work and hamstring/glute hinges are separately documented future-family boundaries.
+
+- Rows: expose torso angle, support/contact, elbow travel and implement. Pendlay uses a horizontal torso and floor origin; continuous barbell rows show loaded clearance. One-arm knee/palm support, three-point standing support, prone bench support and landmine end orientation must be visually distinct.
+- Rear delts: hinge/prone torso and horizontal shoulder abduction distinguish reverse flys from upright lateral raises. Row variants retain bent elbows; flys retain softly bent, lengthened arms. Show posterior shoulder geometry without colored overlays.
+- Pullovers: show a long shoulder arc, bench/torso relationship and soft elbow angle. Do not reproduce triceps-extension elbow mechanics under a lat-pullover ID.
+- Shrugs: show scapular elevation/retraction under load with long elbows; ordinary relaxed weight holding is insufficient. Carry art shows gait and loaded posture. Kelso variants require their scapular rather than elbow-driven action.
+- Posterior trunk: show supported hip/pelvis contacts and free external implement; spinal articulation and rigid-spine hip hinge are not interchangeable. Weighted Sorenson is a supported horizontal hold, not a hyperextension repetition.
+- Family checkpoints: original incline master PLUS representative accepted push images PLUS every newly accepted group of roughly 5–8 pull images. Push examples are comparison context only, never substitute style inputs.
+
+Generic catalog implement/sidedness defaults remain metadata, not permission to falsify the movement. Any representative unilateral mechanics despite a stored bilateral default, or overlap between separately governed names, must be disclosed in the pull audit notes. No historical identity, taxonomy, load convention or evidence is rewritten by artwork selection.
+
+### Pull mechanics references and representative choices
+
+- [Jeff Nippard's Pendlay / Helms demonstration](https://www.youtube.com/watch?v=axoeDmW0oAY): floor-origin rowing and the braced standing alternative require different support and torso silhouettes. Helms art must preserve the hinged, top-edge chest brace; an upright lean against the entire pad was rejected.
+- [John Meadows / elitefts back demonstrations](https://elitefts.com/blogs/training/your-guide-to-a-mountain-dog-back): the Meadows loaded-end row remains distinct from a parallel one-arm landmine row and a two-hand attached row handle.
+- [Janae Kroc's first-person interview, published under the name used at the time](https://criticalbench.com/interview_powerlifter_Matt_Kroczaleski.htm): Kroc rows are heavy one-arm dumbbell rows with a high-repetition identity. Artwork shows the standing braced top pull; a photograph cannot prove repetition count.
+- [Dan John, published by On Target](https://www.otpbooks.com/dan-john-training-longevity/): batwings emphasize the contracted position with hands near the armpits. Do not depict them as straight-arm scapular shrugs.
+- [Gareth Sapstead's rear-delt demonstration](https://t-nation.com/t/capped-delts-healthy-joints-a-complete-workout/281928): the prone swing represents an abbreviated outward arc, distinct from a full reverse fly.
+- [Jon Hodgkinson's dumbbell exercise demonstrations](https://www.jonhodgkinson.com/golf-exercises-with-dumbbells/): archer rowing adds torso rotation at the top; the photograph retains the floor-supported plank and drawn-back working elbow.
+- [Daniel Aipa demonstrating the Gorilla Row](https://archive.t-nation.com/training/tip-do-the-gorilla-row/): one kettlebell rows while the other remains grounded. The generic governed free-weight implement is represented by two kettlebells, without changing loading metadata.
+- [Janus Performance's Kelso demonstration](https://www.janusperformanceconsulting.com/blog/kelso-shrugs-the-best-trap-and-upper-back-exercise-youre-not-doing) and [elitefts' bent-over scapular-row discussion](https://elitefts.com/blogs/training/beyond-the-barbell-row-5-game-changing-lessons-from-the-pendlay-row): Kelso action is short scapular retraction with long elbows. ID205 depicts supported barbell execution, ID241 supported dumbbells, and generic ID242 a bent-over barbell version. These are representative free-weight setups, not invented changes in identity.
+- [Greg Everett's back-extension demonstration](https://www.catalystathletics.com/exercise/425/Back-Extension-Hyperextension/) and [his direct explanation of spinal versus hip extension](https://www.catalystathletics.com/article/1767/The-Back-Extension-Strengthening-the-Back-for-Weightlifting/): direct posterior-trunk extension can use a light bar across the upper back, with pelvis/thigh and ankle support. This supports including ID545 while deferring the standing Good Morning hinges.
+- [GymnasticBodies / Christopher Sommer's Jefferson Curl description](https://www.gymnasticbodies.com/coach-christopher-sommer-new-tim-ferriss-book-tools-titans/): light external loading accompanies segmental spinal articulation on an elevated platform. The rounded spinal posture is intentional for this exact identity; it must not be redrawn as a rigid-spine deadlift or a maximal-load lift.
+- [Town Athletics' weighted Sorensen hold](https://www.townathletics.com/blog/2020/3/16/pullup): horizontal supported posture with external weight at the chest. The catalog spells ID549 “Sorenson”; retain its stable key/name. The still identifies the setup, not elapsed hold time.
+
+The catalog's paired names overlap in several places: Chest-Supported Dumbbell Reverse Fly / Incline-Bench Rear-Delt Fly (127/128), generic supported / incline dumbbell row (194/196), rear-delt / wide-elbow rows (129/130 and 131/204), and the Kelso entries. Each retains a distinct canonical asset and history. Camera, phase, support angle and permitted implement can vary honestly; do not assert an unsupported technique difference or infer performance transfer.
+
+Archer, Meadows, Kroc and Three-Point rows carry the catalog builder's bilateral default even though the representative repetition is unilateral. Preserve this finding in the audit. Sidedness, per-hand conventions and historical performed snapshots require their own governed change; artwork does not silently correct them.

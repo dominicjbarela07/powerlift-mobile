@@ -124,3 +124,7 @@ Every rejected attempt and its specific correction remains inspectable below. Th
 | 298 | 1 | Weights above face instead of inward onto upper chest, bench still inclined, and each dumbbell has mismatched head sizes. Regenerate flat-bench bottom Tate position. |
 | 300 | 1 | Correct two-hand single dumbbell and bent-elbow overhead pullover position, but far shoe clipped at right. Framing-only correction required. |
 | 290 | 5 | Style, full framing and barbell improved, but forearms remain too upright and bar stays over the face. It reads as a skull crusher rather than the inventor's low chin/throat JM transition. |
+
+## Pull-family follow-up — interactive search checkpoint
+
+During the pull-family first native pass, the existing programming Change/Swap picker was opened, searched for `Dumbbell`, visually inspected and dismissed without selecting or mutating a movement. [Native screenshot](../free-weight-pull-family-2026-09-11/native-pass-1/search-rows.png) shows push Dumbbell Fly and pull Dumbbell Shrug together. This supplies the initial interactive search evidence missing from this push report. A later desktop `cgWindowNotFound` recurrence blocked the pull run’s final complete-family picker revisit; that remaining gate is documented in the [pull report](../free-weight-pull-family-2026-09-11/README.md).

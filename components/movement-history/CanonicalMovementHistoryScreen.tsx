@@ -379,7 +379,7 @@ export function CanonicalMovementHistoryScreen({
               </View>
               {!readOnly && history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
                 <Ionicons name={history.movement.is_favorite ? 'star' : 'star-outline'} size={23} color="#E9B83F" />
-              </Pressable> : <View style={styles.favoriteButton} />}
+              </Pressable> : null}
             </View>
 
             <View style={styles.summaryStrip}>

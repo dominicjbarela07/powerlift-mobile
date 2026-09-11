@@ -4,7 +4,7 @@ import {
 } from '@/lib/accessory-muscle-group';
 
 export type CanonicalCoreArtworkFamily = 'squat' | 'bench' | 'deadlift' | 'press';
-// Canonical DEV database audit: docs/validation/free-weight-push-family-2026-09-11.
+// Canonical DEV database audits: docs/validation/free-weight-{push,pull}-family-2026-09-11.
 // Numeric MovementDefinition IDs are the lookup boundary. Stable keys and primary
 // taxonomy must agree, excluding row-ID collisions and contradictory subjects.
 export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
@@ -59,6 +59,53 @@ export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
   298: { key: 'accessory_tate_press', primary: 'triceps' },
   299: { key: 'accessory_rolling_dumbbell_triceps_extension', primary: 'triceps' },
   300: { key: 'accessory_pjr_pullover', primary: 'triceps' },
+  126: { key: 'accessory_bent_over_dumbbell_reverse_flye', primary: 'rear_delts' },
+  127: { key: 'accessory_chest_supported_dumbbell_reverse_flye', primary: 'rear_delts' },
+  128: { key: 'accessory_incline_bench_rear_delt_flye', primary: 'rear_delts' },
+  129: { key: 'accessory_rear_delt_dumbbell_row', primary: 'rear_delts' },
+  130: { key: 'accessory_wide_elbow_dumbbell_row', primary: 'rear_delts' },
+  131: { key: 'accessory_rear_delt_barbell_row', primary: 'rear_delts' },
+  154: { key: 'accessory_one_arm_dumbbell_row', primary: 'lats' },
+  191: { key: 'accessory_bent_over_barbell_row', primary: 'upper_back' },
+  194: { key: 'accessory_chest_supported_dumbbell_row', primary: 'upper_back' },
+  235: { key: 'accessory_dumbbell_shrug', primary: 'traps' },
+  132: { key: 'accessory_wide_grip_chest_supported_rear_delt_row', primary: 'rear_delts' },
+  133: { key: 'accessory_prone_rear_delt_swing', primary: 'rear_delts' },
+  150: { key: 'accessory_dumbbell_archer_row', primary: 'rear_delts' },
+  153: { key: 'accessory_meadows_row', primary: 'lats' },
+  155: { key: 'accessory_dumbbell_pullover', primary: 'lats' },
+  157: { key: 'accessory_kroc_row', primary: 'lats' },
+  158: { key: 'accessory_three_point_dumbbell_row', primary: 'lats' },
+  161: { key: 'accessory_lat_biased_dumbbell_row', primary: 'lats' },
+  162: { key: 'accessory_lat_biased_chest_supported_dumbbell_row', primary: 'lats' },
+  192: { key: 'accessory_pendlay_row', primary: 'upper_back' },
+  193: { key: 'accessory_seal_row', primary: 'upper_back' },
+  195: { key: 'accessory_chest_supported_barbell_row', primary: 'upper_back' },
+  196: { key: 'accessory_incline_bench_dumbbell_row', primary: 'upper_back' },
+  197: { key: 'accessory_t_bar_row', primary: 'upper_back' },
+  156: { key: 'accessory_barbell_pullover', primary: 'lats' },
+  159: { key: 'accessory_landmine_row', primary: 'lats' },
+  160: { key: 'accessory_one_arm_landmine_row', primary: 'lats' },
+  198: { key: 'accessory_wide_grip_t_bar_row', primary: 'upper_back' },
+  199: { key: 'accessory_chest_supported_t_bar_row', primary: 'upper_back' },
+  200: { key: 'accessory_helms_row', primary: 'upper_back' },
+  201: { key: 'accessory_batwing_row', primary: 'upper_back' },
+  202: { key: 'accessory_gorilla_row', primary: 'upper_back' },
+  203: { key: 'accessory_snatch_grip_barbell_row', primary: 'upper_back' },
+  204: { key: 'accessory_wide_elbow_barbell_row', primary: 'upper_back' },
+  205: { key: 'accessory_chest_supported_kelso_row', primary: 'upper_back' },
+  206: { key: 'accessory_dumbbell_high_row', primary: 'upper_back' },
+  234: { key: 'accessory_barbell_shrug', primary: 'traps' },
+  236: { key: 'accessory_trap_bar_shrug', primary: 'traps' },
+  237: { key: 'accessory_behind_the_back_barbell_shrug', primary: 'traps' },
+  238: { key: 'accessory_snatch_grip_shrug', primary: 'traps' },
+  239: { key: 'accessory_overhead_barbell_shrug', primary: 'traps' },
+  240: { key: 'accessory_farmer_carry', primary: 'traps' },
+  241: { key: 'accessory_chest_supported_kelso_shrug', primary: 'traps' },
+  242: { key: 'accessory_kelso_shrug', primary: 'traps' },
+  545: { key: 'accessory_barbell_back_extension', primary: 'lower_back' },
+  547: { key: 'accessory_jefferson_curl', primary: 'lower_back' },
+  549: { key: 'accessory_weighted_sorenson_hold', primary: 'lower_back' },
 } as const;
 export type CanonicalAccessoryArtworkKey =
   typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]['key'];

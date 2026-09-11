@@ -2523,7 +2523,7 @@ const styles = StyleSheet.create({
   movementLoadManual: { color: SLColors.warning },
   expandedMovementCard: { position: 'relative', overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: '#101016' },
   expandedMovementHeader: { minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
-  expandedMovementArtwork: { width: 52, height: 52, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  expandedMovementArtwork: { width: 64, height: 64, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   expandedMovementCopy: { flex: 1, minWidth: 0, gap: 4 },
   expandedPrescription: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },
   expandedLoad: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },

@@ -1,0 +1,552 @@
+[
+  {
+    "primary": "lats",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "lats",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "items": [
+      {
+        "display_name": "Barbell Pullover",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 156,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_pullover",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Dumbbell Pullover",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 155,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_pullover",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Kroc Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 157,
+        "identity_status": "canonical",
+        "key": "accessory_kroc_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Landmine Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 159,
+        "identity_status": "canonical",
+        "key": "accessory_landmine_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Lat-Biased Chest-Supported Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 162,
+        "identity_status": "canonical",
+        "key": "accessory_lat_biased_chest_supported_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Lat-Biased Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 161,
+        "identity_status": "canonical",
+        "key": "accessory_lat_biased_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Meadows Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 153,
+        "identity_status": "canonical",
+        "key": "accessory_meadows_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "One-Arm Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 154,
+        "identity_status": "canonical",
+        "key": "accessory_one_arm_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "One-Arm Landmine Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 160,
+        "identity_status": "canonical",
+        "key": "accessory_one_arm_landmine_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Three-Point Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 158,
+        "identity_status": "canonical",
+        "key": "accessory_three_point_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      }
+    ]
+  },
+  {
+    "primary": "upper_back",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "upper_back",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "items": [
+      {
+        "display_name": "Chest-Supported Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 194,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Batwing Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 201,
+        "identity_status": "canonical",
+        "key": "accessory_batwing_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Bent-Over Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 191,
+        "identity_status": "canonical",
+        "key": "accessory_bent_over_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 195,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported Kelso Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 205,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_kelso_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 199,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Dumbbell High Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 206,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_high_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Gorilla Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 202,
+        "identity_status": "canonical",
+        "key": "accessory_gorilla_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Helms Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 200,
+        "identity_status": "canonical",
+        "key": "accessory_helms_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Incline-Bench Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 196,
+        "identity_status": "canonical",
+        "key": "accessory_incline_bench_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Pendlay Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 192,
+        "identity_status": "canonical",
+        "key": "accessory_pendlay_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Seal Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 193,
+        "identity_status": "canonical",
+        "key": "accessory_seal_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Snatch-Grip Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 203,
+        "identity_status": "canonical",
+        "key": "accessory_snatch_grip_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 197,
+        "identity_status": "canonical",
+        "key": "accessory_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Wide-Elbow Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 204,
+        "identity_status": "canonical",
+        "key": "accessory_wide_elbow_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Wide-Grip T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 198,
+        "identity_status": "canonical",
+        "key": "accessory_wide_grip_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      }
+    ]
+  },
+  {
+    "primary": "rear_delts",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "rear_delts",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "items": [
+      {
+        "display_name": "Bent-Over Dumbbell Reverse Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 126,
+        "identity_status": "canonical",
+        "key": "accessory_bent_over_dumbbell_reverse_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Chest-Supported Dumbbell Reverse Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 127,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_dumbbell_reverse_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Dumbbell Archer Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 150,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_archer_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Incline-Bench Rear-Delt Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 128,
+        "identity_status": "canonical",
+        "key": "accessory_incline_bench_rear_delt_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Prone Rear-Delt Swing",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 133,
+        "identity_status": "canonical",
+        "key": "accessory_prone_rear_delt_swing",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Rear-Delt Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 131,
+        "identity_status": "canonical",
+        "key": "accessory_rear_delt_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Rear-Delt Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 129,
+        "identity_status": "canonical",
+        "key": "accessory_rear_delt_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Wide-Elbow Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 130,
+        "identity_status": "canonical",
+        "key": "accessory_wide_elbow_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Wide-Grip Chest-Supported Rear-Delt Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 132,
+        "identity_status": "canonical",
+        "key": "accessory_wide_grip_chest_supported_rear_delt_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      }
+    ]
+  },
+  {
+    "primary": "traps",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "traps",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "items": [
+      {
+        "display_name": "Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 234,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Behind-the-Back Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 237,
+        "identity_status": "canonical",
+        "key": "accessory_behind_the_back_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Chest-Supported Kelso Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 241,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_kelso_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Dumbbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 235,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Farmer Carry",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 240,
+        "identity_status": "canonical",
+        "key": "accessory_farmer_carry",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Kelso Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 242,
+        "identity_status": "canonical",
+        "key": "accessory_kelso_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Overhead Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 239,
+        "identity_status": "canonical",
+        "key": "accessory_overhead_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Snatch-Grip Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 238,
+        "identity_status": "canonical",
+        "key": "accessory_snatch_grip_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Trap-Bar Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 236,
+        "identity_status": "canonical",
+        "key": "accessory_trap_bar_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      }
+    ]
+  },
+  {
+    "primary": "lower_back",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "lower_back",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "items": [
+      {
+        "display_name": "Barbell Back Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 545,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_back_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 546,
+        "identity_status": "canonical",
+        "key": "accessory_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Jefferson Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 547,
+        "identity_status": "canonical",
+        "key": "accessory_jefferson_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Weighted Sorenson Hold",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 549,
+        "identity_status": "canonical",
+        "key": "accessory_weighted_sorenson_hold",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Zercher Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 548,
+        "identity_status": "canonical",
+        "key": "accessory_zercher_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      }
+    ]
+  }
+]

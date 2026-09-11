@@ -1,0 +1,12 @@
+{
+  "id": 160,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. INPUT 1 is original immutable photographic style control. INPUT 2 is edit target. Preserve graphite apparel, natural athlete, silver metal, textured black studio and subtle violet rim. Correct ONLY the working hand and handle contact: lower the right working fist so its fingers and thumb visibly wrap tightly AROUND the actual silver SHAFT just behind the plate sleeve. Shaft must visibly enter and exit that fist as a single continuous bar. No hand hovering above shaft or hiding behind plate. Keep bent elbow, one-arm row pose, floor anchor, all equipment, studio/framing unchanged. Square photograph, no text.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-9955401f-7520-43f8-a0d3-936288d47741.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2c53dca4-a69c-4286-8b0b-98075d29df0c.png",
+  "review": "ACCEPT",
+  "review_reason": "Corrected fist now wraps continuous shaft behind plate rather than floating above it. Parallel single-arm setup, tucked row, thigh brace and visible floor pivot remain clear, with natural equipment/contact and intact full silhouette."
+}
