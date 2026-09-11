@@ -1,0 +1,14 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-rich-final
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is visible... COMPLETED
+Tap on "90 days"... COMPLETED
+Run flow when "Display unit kg. Switch to lb" is visible...
+  Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Run flow when "Display unit kg. Switch to lb" is visible... COMPLETED
+Assert that "ESTIMATED TOTAL" is visible... COMPLETED
+Assert that "Display unit lb. Switch to kg" is visible... COMPLETED
+Assert that "Meet Packet QA" is not visible... COMPLETED
+Assert that "Dev Athlete 12" is not visible... COMPLETED
+Take screenshot rich-top-final... COMPLETED

@@ -1,0 +1,120 @@
+[
+  {
+    "athleteId": 4,
+    "payloadAthleteIds": [
+      4,
+      4,
+      4
+    ],
+    "period": {
+      "end_date": "2026-09-10",
+      "label": "Last 90 days",
+      "start_date": "2026-06-13"
+    },
+    "workingSets": 1207,
+    "accessoryPreviews": [
+      365,
+      301
+    ],
+    "variantPreviews": [
+      54
+    ],
+    "observationPreviews": [
+      {
+        "id": "strength:squat",
+        "kind": "strength",
+        "title": "Squat: more load at the same reps"
+      },
+      {
+        "id": "variant:48",
+        "kind": "variant",
+        "title": "Close Grip Bench · Bench Press variant"
+      },
+      {
+        "id": "accessory:movement:216:equipment:25",
+        "kind": "accessory",
+        "title": "Chest-Supported Machine Row"
+      }
+    ],
+    "hasOutput": true,
+    "hasSupplemental": true,
+    "hasRecovery": true,
+    "bodyweightReports": 8,
+    "readinessAverage": 4.45,
+    "reportedDays": 5,
+    "latestCheckInFields": [
+      "Sleep",
+      "Energy"
+    ]
+  },
+  {
+    "athleteId": 12,
+    "payloadAthleteIds": [
+      12,
+      12,
+      12
+    ],
+    "period": {
+      "end_date": "2026-09-10",
+      "label": "Last 90 days",
+      "start_date": "2026-06-13"
+    },
+    "workingSets": 808,
+    "accessoryPreviews": [
+      367,
+      52
+    ],
+    "variantPreviews": [],
+    "observationPreviews": [
+      {
+        "id": "readiness:change",
+        "kind": "readiness",
+        "title": "Recent readiness is lower"
+      },
+      {
+        "id": "strength:squat",
+        "kind": "strength",
+        "title": "Squat: more reps at the same load"
+      },
+      {
+        "id": "accessory:movement:358",
+        "kind": "accessory",
+        "title": "Walking Lunge"
+      }
+    ],
+    "hasOutput": true,
+    "hasSupplemental": true,
+    "hasRecovery": true,
+    "bodyweightReports": 0,
+    "readinessAverage": 2.375,
+    "reportedDays": 4,
+    "latestCheckInFields": [
+      "Energy",
+      "Stress"
+    ]
+  },
+  {
+    "athleteId": 58,
+    "payloadAthleteIds": [
+      58,
+      58,
+      58
+    ],
+    "period": {
+      "end_date": "2026-09-10",
+      "label": "Last 90 days",
+      "start_date": "2026-06-13"
+    },
+    "workingSets": 0,
+    "accessoryPreviews": [],
+    "variantPreviews": [],
+    "observationPreviews": [],
+    "hasOutput": false,
+    "hasSupplemental": false,
+    "hasRecovery": false,
+    "bodyweightReports": 0,
+    "readinessAverage": null,
+    "reportedDays": 0,
+    "latestCheckInFields": []
+  }
+]

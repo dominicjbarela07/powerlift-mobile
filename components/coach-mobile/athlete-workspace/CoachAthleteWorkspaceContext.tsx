@@ -15,8 +15,10 @@ import { useAuth } from '@/context/AuthContext';
 import { ensureCoachAthleteThread, fetchJson } from '@/lib/api';
 import type { CoachAthleteSummaryResponse } from '@/lib/coach-mobile';
 import { normalizeProfilePhotoPayload } from '@/lib/profile-photo';
+import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';
+import { useCoachPerformance } from './useCoachPerformance';
 
-export type WorkspaceDestination = 'brief' | 'training' | 'reviews' | 'messages';
+export type WorkspaceDestination = 'brief' | 'training' | 'performance' | 'reviews' | 'messages';
 
 export type CoachAthleteWorkspaceBootstrap = {
   ok: boolean;
@@ -92,7 +94,7 @@ type ReviewState = {
   scrollY: number;
 };
 
-type WorkspaceValue = {
+type WorkspaceValue = ReturnType<typeof useCoachPerformance> & ReturnType<typeof useSurfaceWeightUnit> & {
   athleteId: number;
   bootstrap: CoachAthleteWorkspaceBootstrap | null;
   summary: CoachAthleteSummaryResponse | null;
@@ -100,6 +102,8 @@ type WorkspaceValue = {
   refreshing: boolean;
   error: string | null;
   subjectKey: string;
+  performanceScrollY: number;
+  setPerformanceScrollY: (value: number) => void;
   trainingState: TrainingState;
   setTrainingState: React.Dispatch<React.SetStateAction<TrainingState>>;
   reviewState: ReviewState;
@@ -135,6 +139,9 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const params = useLocalSearchParams<{ athleteId?: string | string[] }>();
   const router = useRouter();
   const { user, workspaceKey } = useAuth();
+  // The workspace owns the display lens across its destinations; the saved
+  // account preference remains unchanged, as on Home and Ledger.
+  const { unit, setUnit, toggleUnit } = useSurfaceWeightUnit(user?.preferred_units);
   const athleteId = Number(first(params.athleteId) || 0);
   const accountId = Number(user?.id ?? user?.user_id ?? 0);
   const requestNamespace = `${workspaceKey}:${accountId}:${athleteId}`;
@@ -151,6 +158,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
   const [reviewState, setReviewState] = useState<ReviewState>(EMPTY_REVIEW_STATE);
   const [messageThreadId, setMessageThreadId] = useState<number | null>(null);
   const [messageDraft, setMessageDraft] = useState('');
+  const [performanceScrollY, setPerformanceScrollY] = useState(0);
 
   useEffect(() => {
     namespaceRef.current = requestNamespace;
@@ -159,6 +167,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     setBootstrap(null);
     subjectKeyRef.current = null;
     setSummary(null);
+    setPerformanceScrollY(0);
     setTrainingState(EMPTY_TRAINING_STATE);
     setReviewState(EMPTY_REVIEW_STATE);
     setMessageThreadId(null);
@@ -225,6 +234,21 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
         return;
       }
 
+      if (subjectKeyRef.current && subjectKeyRef.current !== nextBootstrap.subject.subject_key) {
+        setTrainingState(EMPTY_TRAINING_STATE);
+        setReviewState(EMPTY_REVIEW_STATE);
+        setMessageDraft('');
+        setPerformanceScrollY(0);
+      }
+      // Open the verified shell immediately. Summary and bounded Performance
+      // may load independently after relationship authorization is resolved.
+      setBootstrap({
+        ...nextBootstrap,
+        athlete: { ...nextBootstrap.athlete, ...normalizeProfilePhotoPayload(nextBootstrap.athlete) },
+      });
+      subjectKeyRef.current = nextBootstrap.subject.subject_key;
+      setMessageThreadId(Number(nextBootstrap.conversation.thread_id || 0) || null);
+
       const summaryResponse = await fetchJson<CoachAthleteSummaryResponse>(
         `/coach/mobile/athletes/${athleteId}/summary?view=v3&period=4W`,
         { method: 'GET', auth: true, signal: controller.signal },
@@ -275,6 +299,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
 
   const identityMatches = Boolean(
     bootstrap
+    && namespaceRef.current === requestNamespace
     && Number(bootstrap.subject.coach_user_id) === accountId
     && Number(bootstrap.subject.athlete_id) === athleteId,
   );
@@ -284,6 +309,7 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     ? summary
     : null;
   const verifiedMessageThreadId = verifiedBootstrap ? messageThreadId : null;
+  const performanceState = useCoachPerformance(verifiedBootstrap?.subject.subject_key, athleteId, leaveRevokedWorkspace);
 
   const ensureMessageThread = useCallback(async () => {
     if (verifiedMessageThreadId) return verifiedMessageThreadId;
@@ -305,6 +331,10 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
 
   const subjectKey = `${requestNamespace}:${verifiedBootstrap?.subject.subject_key || 'resolving'}`;
   const value = useMemo<WorkspaceValue>(() => ({
+    ...performanceState,
+    unit, setUnit, toggleUnit,
+    performanceScrollY: verifiedBootstrap ? performanceScrollY : 0,
+    setPerformanceScrollY,
     athleteId,
     bootstrap: verifiedBootstrap,
     summary: verifiedSummary,
@@ -322,6 +352,9 @@ export function CoachAthleteWorkspaceProvider({ children }: { children: ReactNod
     ensureMessageThread,
     reload,
   }), [
+    performanceState,
+    unit, setUnit, toggleUnit,
+    performanceScrollY,
     athleteId,
     ensureMessageThread,
     error,
@@ -344,4 +377,8 @@ export function useCoachAthleteWorkspace() {
   const value = useContext(WorkspaceContext);
   if (!value) throw new Error('useCoachAthleteWorkspace must be used inside CoachAthleteWorkspaceProvider.');
   return value;
+}
+
+export function useOptionalCoachAthleteWorkspace() {
+  return useContext(WorkspaceContext);
 }

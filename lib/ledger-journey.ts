@@ -1,3 +1,4 @@
+import type { LedgerExplorationIndex } from './ledger-exploration';
 import { fetchJson } from '@/lib/api';
 
 export type JourneyEventType =
@@ -234,4 +235,13 @@ export function fetchJourneyTimelinePage(options: {
   if (options.endDate) params.set('end_date', options.endDate);
   if (options.blockId) params.set('block_id', String(options.blockId));
   return requirePayload<JourneyTimelinePage>(`/mobile/ledger/journey/timeline?${params.toString()}`);
+}
+
+export type LedgerRecordSummary = Pick<JourneyBootstrap, 'lifetime'> & { athlete: { id: number }; timeline: { items: JourneyEntry[] }; exploration: Pick<LedgerExplorationIndex, 'context' | 'movements'> };
+export async function fetchLedgerRecordSummary(athleteId?: number): Promise<LedgerRecordSummary> {
+  const response = await fetchJson<LedgerRecordSummary & { ok: boolean }>(
+    `/mobile/ledger/journey/record-summary${athleteId ? `?athlete_id=${athleteId}` : ''}`, { auth: true },
+  );
+  if (!response.ok || !response.json?.ok) throw new JourneyRequestError(response.status, 'Ledger summary could not be loaded.');
+  return response.json;
 }

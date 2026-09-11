@@ -1,0 +1,22 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-navigation
+Assert that "Dev Athlete 4" is visible... COMPLETED
+Tap on id: coach-athlete-performance-unit-toggle... COMPLETED
+Assert that "Display unit kg. Switch to lb" is visible... COMPLETED
+Scrolling UP until "Open Squat recorded strength" is visible with speed 40, visibility percentage 100%, timeout 20000 ms, with centering enabled... COMPLETED
+Take screenshot strength-kg... COMPLETED
+Tap on "Open Squat recorded strength"... COMPLETED
+Assert that "Back to The Ledger" is visible... FAILED
+
+Assertion is false: "Back to The Ledger" is visible
+
+Assertion '"Back to The Ledger" is visible' failed. Check the UI hierarchy in debug artifacts to verify the element state and properties.
+
+Possible causes:
+- Element selector may be incorrect - check if there are similar elements with slightly different names/properties.
+- Element may be temporarily unavailable due to loading state
+- This could be a real regression that needs to be addressed
+
+==== Debug output (logs & screenshots) ====
+
+/Users/dominic/.maestro/tests/2026-09-10_131538

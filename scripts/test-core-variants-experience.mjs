@@ -44,7 +44,7 @@ assert.doesNotMatch(experience, /MuscleMap|By Muscle|metricGrid|grid2x2/);
 
 assert.match(client, /schema_version: 'core-variants-ledger-v1'/);
 assert.match(client, /core_movement_id/);
-assert.match(service, /exact_core_history_rows/);
+assert.match(service, /exact_core_history_by_movement/);
 assert.match(service, /literal_heaviest_recorded_load_per_session/);
 assert.match(service, /same_reps_more_weight.*same_weight_more_reps.*same_task_lower_effort/s);
 assert.match(service, /competition_carryover_claimed["']:\s*False/);

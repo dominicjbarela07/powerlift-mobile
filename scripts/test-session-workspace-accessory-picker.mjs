@@ -80,14 +80,14 @@ assert.match(
   /movementResultContext\(movement\)[\s\S]*primary_muscle_group[\s\S]*secondary_muscle_groups[\s\S]*execution_family/,
   'result rows must expose governed muscle and execution context',
 );
-assert.match(route, /What are you trying to train\?[\s\S]*By Muscle[\s\S]*By Movement/, 'discovery must start with muscle-first and direct-search modes');
-assert.match(route, /useState<'muscle' \| 'movement'>\('muscle'\)/, 'muscle-guided discovery must be the default instead of a flat All index');
+assert.match(route, /Browse by muscle[\s\S]*Search accessory movements/, 'search has an optional governed muscle-browse path');
+assert.match(route, /useState<'muscle' \| 'movement'>\('movement'\)/, 'known movements start in direct search');
 assert.match(route, /selectLibraryMode\('favorites'\)[\s\S]*selectLibraryMode\('recent'\)[\s\S]*selectLibraryMode\('custom'\)/, 'Favorites, Recent, and My Movements must remain deliberate shortcuts');
 assert.match(route, /ACCESSORY_PICKER_REGIONS[\s\S]*selectedRegion\.muscles/, 'regional navigation must drill into governed primary-muscle targets');
 assert.match(route, /function AnatomyTargetArt[\s\S]*<GovernedMuscleThumbnail[\s\S]*primary=\{primary\}[\s\S]*secondary=\{_secondary\}/, 'muscle discovery must use the shared governed Dynamic Anatomy thumbnail');
 assert.doesNotMatch(route, /<MuscleMap/, 'individual movement picker surfaces must never render full-figure anatomy');
 assert.match(route, /<CanonicalMovementArtwork[\s\S]*kind: 'accessory'/, 'individual picker results must use the canonical identity artwork component');
-assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'exact movement selection must pass through review, apply, and success states');
+assert.match(route, /const confirmMovement[\s\S]*setPickerStep\('review'\)[\s\S]*const confirmAndApplyMovement[\s\S]*await onApply\(selectedSetup\)[\s\S]*setPickerStep\('success'\)/, 'custom and ambiguous selections retain their review and confirmation path');
 assert.match(route, /Confirm & Add to Session[\s\S]*Continue Editing Session/, 'the live picker must provide deliberate confirmation and return-to-Session actions');
 assert.match(route, /addAccessoryCompletionRef\.current\([\s\S]*movement_identity:[\s\S]*id: movementDefinitionId/, 'selection must return to the same dirty Session draft with stable governed identity');
 assert.match(route, /Can(?:'|&apos;)t find it\? Create custom movement/, 'the coach-owned custom movement entrypoint must be visible');

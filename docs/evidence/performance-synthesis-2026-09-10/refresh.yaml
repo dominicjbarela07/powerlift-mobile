@@ -1,0 +1,17 @@
+appId: host.exp.Exponent
+---
+- tapOn: 30 days
+- assertVisible: Dev Athlete 4
+- swipe:
+    start: 50%, 32%
+    end: 50%, 70%
+    duration: 700
+- assertVisible:
+    id: coach-performance-strength-chart
+- assertVisible: Display unit lb. Switch to kg
+- tapOn: Brief
+- assertVisible: Coaching brief
+- tapOn: Performance
+- assertVisible: Dev Athlete 4
+- assertVisible: Display unit lb. Switch to kg
+- takeScreenshot: refresh-30-days

@@ -1,4 +1,8 @@
+import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
+import { sessionAuthoringCommand } from '@/lib/session-authoring-command';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
+import { assertProgrammingMutationSubject, assertProgrammingResponseSubject, resolveProgrammingSubject } from '@/lib/programming-subject';
 import {
   AccessibilityInfo,
   ActivityIndicator,
@@ -159,6 +163,8 @@ type AccessoryGroup = {
 };
 
 type WorkoutPayload = {
+  authoring_version?: string | null;
+  authoring_subject_key?: string | null;
   ok?: boolean;
   error?: string | null;
   workout?: {
@@ -169,6 +175,9 @@ type WorkoutPayload = {
     raw_status?: string | null;
     training_block_id?: number | null;
     program_id?: number | null;
+    program_name?: string | null;
+    block_name?: string | null;
+    block_week?: number | null;
     programming_notes?: string | null;
     scheduled_timezone?: string | null;
     estimated_duration_minutes?: number | null;
@@ -434,6 +443,7 @@ export type MobileSessionWorkspaceContentProps = Readonly<{
   section?: string | null;
   embedded?: boolean;
   onClose?: () => void;
+  onProgrammingChanged?: () => void;
   onOpenAthleteView?: (context: { section: WorkspaceSection }) => void;
   registerDismissRequest?: (handler: (() => void) | null) => void;
 }>;
@@ -443,8 +453,12 @@ export default function MobileSessionWorkspaceScreen() {
 }
 
 export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceContentProps = {}) {
+  const [reuseEmptySession, setReuseEmptySession] = useState(false);
   const router = useRouter();
-  const { user, authReady } = useAuth();
+  const athleteWorkspace = useOptionalCoachAthleteWorkspace();
+  const programmingSubject = resolveProgrammingSubject(athleteWorkspace);
+  const { athleteId: lockedAthleteId, workspaceOwned, ready: subjectReady } = programmingSubject;
+  const { user, authReady, activeMobileMode } = useAuth();
   const params = useLocalSearchParams<{
     workoutId?: string | string[];
     athleteId?: string | string[];
@@ -520,17 +534,19 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     setError(null);
 
     try {
-      const resp = await fetchJson<WorkoutPayload>(`/workouts/mobile/${workoutId}`, { method: 'GET' });
+      const resp = await fetchJson<WorkoutPayload>(`/workouts/mobile/${workoutId}?history=summary`, { method: 'GET' });
       const json = resp.json || {};
       if (!resp.ok || !json.ok || !json.workout) {
         throw new Error(json.error || `HTTP ${resp.status}`);
       }
       if (requestRevision !== loadRequestRevisionRef.current) return;
+      assertProgrammingResponseSubject({ athleteId: workspaceOwned ? lockedAthleteId : programmingAthleteId ? Number(programmingAthleteId) : null, ready: subjectReady }, json.athlete?.id);
       setPayload(mapCoachSessionEditorPayload(json));
       hasLoadedSessionRef.current = true;
+      return true;
     } catch (err: any) {
       if (requestRevision !== loadRequestRevisionRef.current) return;
-      if (!shouldRefreshSilently) {
+      if (!shouldRefreshSilently || workspaceOwned) {
         setPayload(null);
         setError(err?.message || 'Session workspace could not load.');
       }
@@ -539,7 +555,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       if (shouldRefreshSilently) setRefreshing(false);
       else setLoading(false);
     }
-  }, [workoutId]);
+  }, [lockedAthleteId, programmingAthleteId, subjectReady, workoutId, workspaceOwned]);
 
   useFocusEffect(
     useCallback(() => {
@@ -564,7 +580,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   }, [user?.preferred_units]);
 
   useEffect(() => {
-    if (!authReady || user?.role !== 'coach') return;
+    if (!authReady || user?.role !== 'coach' || workspaceOwned) return;
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' })
       .then((response) => {
@@ -576,7 +592,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         if (active) setRoster([]);
       });
     return () => { active = false; };
-  }, [authReady, user?.role]);
+  }, [authReady, user?.role, workspaceOwned]);
 
   useEffect(() => {
     let active = true;
@@ -656,6 +672,8 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       },
     });
   };
+
+  const addMovementCompletionRef = useRef<((item: SessionMovementItem, kind: 'core' | 'accessory') => void) | null>(null);
 
   const openAddCoreLiftEditor = (draftDisplayUnit: 'lb' | 'kg', onAdd: (item: SessionMovementItem) => void) => {
     setWorkspaceDisplayUnit(draftDisplayUnit);
@@ -1074,6 +1092,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
     try {
       setPendingAction(action);
       const result = await request();
+      props.onProgrammingChanged?.();
       if (result.message) Alert.alert('Session updated', result.message);
       await loadSession(true);
     } catch (err: any) {
@@ -1175,6 +1194,7 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
                 addAccessoryCompletionRef.current = null;
                 changeAccessoryCompletionRef.current = null;
                 reorderCompletionRef.current = null;
+                props.onProgrammingChanged?.();
                 closeToProgrammingHome();
               } catch (err: any) {
                 Alert.alert('Delete failed', err?.message || 'Please try again.');
@@ -1189,76 +1209,27 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
   };
 
   const saveSessionDraft = async (plan: SessionWorkspaceSavePlan) => {
-    if (!workout?.id) return false;
+    if (!workout?.id || !payload?.athlete?.id) return false;
     try {
-      const requireOk = async (request: Promise<{ ok: boolean; status: number; json: any }>) => {
-        const response = await request;
-        const json = response.json || {};
-        if (!response.ok || !json.ok) throw new Error(json.error || `HTTP ${response.status}`);
-        return json;
+      assertProgrammingMutationSubject(programmingSubject, payload.athlete.id, plan.athleteId);
+      if (plan.athleteId !== payload.athlete.id) throw new Error('This Session belongs to a different athlete.');
+      const compactPlan = {
+        athleteId: plan.athleteId, metadataPatch: plan.metadataPatch,
+        deletedMovementIds: plan.deletedMovementIds, coreOrder: plan.coreOrder, accessoryOrder: plan.accessoryOrder,
+        movementUpdates: plan.movementUpdates.map(({ kind, item, patch }) => ({ kind, item: { id: item.id }, patch })),
+        movementCreates: plan.movementCreates.map(({ kind, item, patch }) => ({ kind, item: { id: item.id }, patch })),
       };
-
-      if (plan.metadataPatch.title !== undefined) {
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/rename`, {
-          method: 'PATCH',
-          body: { label: plan.metadataPatch.title } as any,
-        }));
+      const command = sessionAuthoringCommand(workout.id, plan.baseVersion || '', compactPlan);
+      const response = await fetchJson<any>(`/workouts/mobile/${workout.id}/authoring`, { method: 'POST', body: command as any });
+      if (!response.ok || !response.json?.ok) {
+        if (response.json?.code === 'authoring_conflict') await loadSession(true);
+        throw new Error(response.json?.error || 'Your Session edits are still available.');
       }
-      const setupPatch = {
-        ...(plan.metadataPatch.athleteId !== undefined ? { athlete_id: plan.metadataPatch.athleteId } : {}),
-        ...(plan.metadataPatch.scheduledDate !== undefined ? { date: plan.metadataPatch.scheduledDate } : {}),
-      };
-      if (Object.keys(setupPatch).length) {
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/setup`, {
-          method: 'PATCH',
-          body: setupPatch as any,
-        }));
-      }
-      if (plan.metadataPatch.notes !== undefined) {
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/programming-notes`, {
-          method: 'PATCH',
-          body: { programming_notes: plan.metadataPatch.notes } as any,
-        }));
-      }
-
-      for (const itemId of plan.deletedMovementIds) {
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/${itemId}/programming`, { method: 'DELETE' }));
-      }
-      for (const movement of plan.movementUpdates) {
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/${movement.item.id}/programming`, {
-          method: 'PATCH',
-          body: movement.patch as any,
-        }));
-      }
-
-      const createdIds = new Map<number, number>();
-      for (const movement of plan.movementCreates) {
-        const endpoint = movement.kind === 'accessory'
-          ? `/workouts/mobile/${workout.id}/accessories`
-          : `/workouts/mobile/${workout.id}/core-lifts`;
-        const json = await requireOk(fetchJson(endpoint, {
-          method: 'POST',
-          body: movement.patch as any,
-        }));
-        if (!json.item_id) throw new Error('The server did not return the created movement.');
-        createdIds.set(movement.item.id, Number(json.item_id));
-      }
-
-      if (plan.orderChanged || plan.movementCreates.length || plan.deletedMovementIds.length) {
-        const resolveId = (id: number) => createdIds.get(id) ?? id;
-        await requireOk(fetchJson(`/workouts/mobile/${workout.id}/items/reorder`, {
-          method: 'PATCH',
-          body: {
-            core_item_ids: plan.coreOrder.map(resolveId),
-            accessory_item_ids: plan.accessoryOrder.map(resolveId),
-          } as any,
-        }));
-      }
-
-      await loadSession(true);
+      props.onProgrammingChanged?.();
+      if (!await loadSession(true)) throw new Error('The save was received, but the updated Session could not be loaded. Retry to safely reconnect to that saved version.');
       return true;
-    } catch (err: any) {
-      Alert.alert('Could not save Session', err?.message || 'Your Session edits are still available.');
+    } catch (error: any) {
+      Alert.alert('Could not save Session', error?.message || 'Your Session edits are still available.');
       return false;
     }
   };
@@ -1352,7 +1323,14 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       <View style={[styles.screen, styles.programmingWorkspaceStage]}>
         <SessionEditingWorkspace
         title={title}
+        onReuseSession={workspaceCapabilities.can_add_movement ? () => setReuseEmptySession(true) : undefined}
         context={context}
+        entryMode={workspaceOwned ? 'workspace' : activeMobileMode === 'individual' ? 'self' : 'team'}
+        programContext={[workout.program_name, workout.block_name, workout.block_week ? `W${workout.block_week}` : null].filter(Boolean).join(' / ')}
+        returnWeek={Number(programmingWeek || workout.block_week || 1)}
+        authoringVersion={payload?.authoring_version || null}
+        journalIdentity={user?.id && payload?.athlete?.id ? `${user.id}:${payload.athlete.id}:${workout.id}` : undefined}
+        journalScope={payload?.authoring_subject_key || undefined}
         status={status}
         athleteId={payload?.athlete?.id || null}
         athleteName={payload?.athlete?.name || null}
@@ -1376,19 +1354,19 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         reduceMotion={reduceMotion}
         displayUnit={workspaceDisplayUnit}
         onDisplayUnitChange={setWorkspaceDisplayUnit}
-        athleteOptions={roster.map((athlete) => ({
-          id: athlete.id,
-          name: String(athlete.name || 'Athlete'),
-          avatarUrl: athlete.avatar_url || null,
-          avatarVersion: athlete.avatar_uploaded_at || null,
-        }))}
+        athleteOptions={[]}
         assignmentBlockedReason={workspaceCapabilities.assign_blocked_reason || null}
-        sheetPresentation={props.embedded}
+        sheetPresentation={false}
         registerDismissRequest={props.registerDismissRequest}
         onRefresh={() => { void loadSession(true); }}
         onCloseWorkspace={closeToProgrammingHome}
         onOpenAthleteView={openAthleteView}
         onOpenReorder={openReorderEditor}
+        onAddMovement={(unit, onAdd) => {
+          setWorkspaceDisplayUnit(unit);
+          addMovementCompletionRef.current = onAdd;
+          openAddAccessoryEditor((item) => onAdd(item, 'accessory'));
+        }}
         onAddCore={openAddCoreLiftEditor}
         onAddAccessory={openAddAccessoryEditor}
         onChangeAccessory={openChangeAccessoryEditor}
@@ -1404,6 +1382,8 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
           }
           router.push(movementHistorySheetRoute(resolution.target) as never);
         }}
+        onReady={workspaceCapabilities.can_assign && status.toLowerCase() === 'draft' && !pendingAction ? assignSession : undefined}
+        readyLabel={activeMobileMode === 'individual' ? 'Ready to train' : 'Assign Session'}
         onSaveSession={saveSessionDraft}
         onCalculateLoad={calculateMovementLoad}
         renderLifecycleActions={(guard, restricted) => (
@@ -1423,6 +1403,11 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
         />
       </View>
 
+      {reuseEmptySession && payload?.athlete?.id && workout.date && payload.authoring_version ? <ProgrammingReuseLibrary
+        reuseIntoSession={{ id: workout.id, baseVersion: payload.authoring_version }} athleteId={payload.athlete.id} programId={Number(workout.program_id || 0)} programName={workout.program_name || 'Training Program'}
+        weeks={[]} initialWeek={{ blockId: Number(workout.training_block_id), blockName: workout.block_name || 'Training Block', index: Number(workout.block_week || 1), startDate: workout.date, rangeLabel: workout.date }} initialDate={workout.date}
+        onClose={() => setReuseEmptySession(false)} onCopied={async () => { props.onProgrammingChanged?.(); await loadSession(true); setReuseEmptySession(false); }}
+      /> : null}
       <SessionCalendarModal
         visible={!!calendarAction}
         title={calendarAction === 'copy' ? 'Copy Session To' : 'Move Session'}
@@ -1445,6 +1430,20 @@ export function MobileSessionWorkspaceContent(props: MobileSessionWorkspaceConte
       <AccessoryEditorModal
         state={accessoryEditor}
         groups={accessoryGroups}
+        coreGroups={accessoryEditor?.mode === 'add' && addMovementCompletionRef.current ? movementGroups : []}
+        onSelectCore={(movement, group) => {
+          const preset = movementPresetFromValue(movement, group);
+          if (preset.lift === 'VR' && !preset.coreMovementId) return;
+          addMovementCompletionRef.current?.({
+            id: nextDraftMovementIdRef.current--, movement: preset.name,
+            core_movement: preset.coreMovementId ? { id: preset.coreMovementId, display_name: preset.name, kind: preset.lift === 'VR' ? 'variant' : 'competition' } : null,
+            lift: preset.lift, designation: 'PRIMARY', variant: 'STRAIGHT', mode: 'RPE', sets: 3, reps: 5,
+            rpe_target: preset.lift === 'VR' ? null : 7, planned_sets: [],
+          }, 'core');
+          addMovementCompletionRef.current = null;
+          addAccessoryCompletionRef.current = null;
+          setAccessoryEditor(null);
+        }}
         athleteId={payload?.athlete?.id || null}
         athleteAnatomy={{ sex: payload?.athlete?.sex, anatomy_display_preference: payload?.athlete?.anatomy_display_preference }}
         canCreateCustom={workspaceEditable && workspaceCapabilities.can_add_movement !== false}
@@ -1778,6 +1777,8 @@ function AnatomyTargetArt({
 function AccessoryEditorModal({
   state,
   groups,
+  coreGroups = [],
+  onSelectCore,
   athleteId,
   athleteAnatomy,
   canCreateCustom,
@@ -1790,6 +1791,8 @@ function AccessoryEditorModal({
 }: {
   state: AccessoryEditorState | null;
   groups: MovementPresetGroup[];
+  coreGroups?: MovementPresetGroup[];
+  onSelectCore?: (movement: MovementPreset | string, group: MovementPresetGroup) => void;
   athleteId: number | null;
   athleteAnatomy: { sex?: string | null; anatomy_display_preference?: string | null };
   canCreateCustom: boolean;
@@ -1804,7 +1807,7 @@ function AccessoryEditorModal({
   const [pickerStep, setPickerStep] = useState<AccessoryPickerStep>('discovery');
   const [detailReturnStep, setDetailReturnStep] = useState<AccessoryPickerStep>('results');
   const [customReturnStep, setCustomReturnStep] = useState<AccessoryPickerStep>('results');
-  const [discoveryMode, setDiscoveryMode] = useState<'muscle' | 'movement'>('muscle');
+  const [discoveryMode, setDiscoveryMode] = useState<'muscle' | 'movement'>('movement');
   const [selectedRegionKey, setSelectedRegionKey] = useState('');
   const [selectedMovement, setSelectedMovement] = useState<MovementPreset | null>(null);
   const [movementQuery, setMovementQuery] = useState('');
@@ -1834,7 +1837,7 @@ function AccessoryEditorModal({
   const searchRequestRef = useRef(0);
   const customSimilarityRequestRef = useRef(0);
   const setup = state?.setup || null;
-  const title = state?.mode === 'add' ? 'Add Accessory' : 'Change Accessory';
+  const title = state?.mode === 'add' ? 'Add Movement' : 'Change Accessory';
   const pickerRegions = authoringOptions?.regional_groups?.length
     ? authoringOptions.regional_groups
     : ACCESSORY_PICKER_REGIONS;
@@ -1854,7 +1857,7 @@ function AccessoryEditorModal({
     setPickerStep('discovery');
     setDetailReturnStep('results');
     setCustomReturnStep('results');
-    setDiscoveryMode('muscle');
+    setDiscoveryMode('movement');
     setSelectedRegionKey('');
     setSelectedMovement(null);
     setMovementQuery('');
@@ -2272,6 +2275,16 @@ function AccessoryEditorModal({
     setPickerStep('results');
   };
 
+  const choosingRef = useRef(false);
+  const chooseKnownMovement = async (movement: MovementPreset) => {
+    const selectedSetup = movementSetupFor(movement);
+    if (!selectedSetup) { openMovementDetail(movement); return; }
+    if (choosingRef.current || saving) return;
+    choosingRef.current = true;
+    try { if (await onApply(selectedSetup)) onDone(); }
+    finally { choosingRef.current = false; }
+  };
+
   const movementCard = (movement: MovementPreset, relationship: 'default' | 'primary' | 'secondary' = 'default') => {
     const primaryLabel = accessoryTaxonomyLabel(movement.primary_muscle_group) || 'Primary muscle not specified';
     const executionLabel = accessoryTaxonomyLabel(movement.execution_family) || 'Execution not specified';
@@ -2280,8 +2293,9 @@ function AccessoryEditorModal({
     <View key={movement.id || movementPresetName(movement)} style={styles.accessoryPickerMovementCard}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Review ${movementPresetName(movement)}`}
-        onPress={() => openMovementDetail(movement)}
+        accessibilityLabel={`Select ${movementPresetName(movement)}`}
+        disabled={saving}
+        onPress={() => void chooseKnownMovement(movement)}
         style={({ pressed }) => [styles.accessoryPickerMovementMain, pressed && styles.pressed]}
       >
         <CanonicalMovementArtwork movement={{ ...movement, kind: 'accessory' }} size={56} style={styles.accessoryPickerMovementArt} testID="workspace-picker-canonical-movement-artwork" />
@@ -2487,41 +2501,7 @@ function AccessoryEditorModal({
             >
               {pickerStep === 'discovery' ? (
                 <>
-                  <View style={styles.accessoryPickerIntro}>
-                    <Text style={styles.accessoryPickerKicker}>Choose target first</Text>
-                    <Text style={styles.accessoryPickerIntroTitle}>What are you trying to train?</Text>
-                    <Text style={styles.trainingLiftMuted}>Start with the muscle, or search directly when you already know the movement.</Text>
-                  </View>
-                  <View style={styles.accessoryPickerModeRow}>
-                    {([
-                      ['muscle', 'By Muscle', 'Drill into a target'],
-                      ['movement', 'By Movement', 'Search directly'],
-                    ] as const).map(([mode, label, detail]) => (
-                      <Pressable
-                        key={mode}
-                        accessibilityRole="tab"
-                        accessibilityState={{ selected: discoveryMode === mode }}
-                        onPress={() => {
-                          setDiscoveryMode(mode);
-                          setSelectedRegionKey('');
-                          setPrimaryMuscleFilter('');
-                          setRegionalMuscleFilters([]);
-                          setMovementQuery('');
-                          setResultMode('all');
-                        }}
-                        style={[styles.accessoryPickerMode, discoveryMode === mode && styles.accessoryPickerModeActive]}
-                      >
-                        <View style={[styles.accessoryPickerModeIcon, discoveryMode === mode && styles.accessoryPickerModeIconActive]}>
-                          <Ionicons name={mode === 'muscle' ? 'body-outline' : 'search-outline'} size={24} color={discoveryMode === mode ? colors.violet : colors.muted} />
-                        </View>
-                        <View style={styles.accessoryPickerModeCopy}>
-                          <Text style={styles.accessoryPickerModeTitle}>{label}</Text>
-                          <Text style={styles.accessoryPickerModeDetail}>{detail}</Text>
-                        </View>
-                        {discoveryMode === mode ? <Ionicons name="checkmark-circle" size={22} color={colors.violet} /> : null}
-                      </Pressable>
-                    ))}
-                  </View>
+                  <Pressable accessibilityRole="button" onPress={() => setDiscoveryMode((mode) => mode === 'movement' ? 'muscle' : 'movement')} style={{ minHeight: 44, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={discoveryMode === 'movement' ? 'body-outline' : 'search-outline'} size={18} color={colors.violet} /><Text style={{ color: colors.violet }}>{discoveryMode === 'movement' ? 'Browse by muscle' : 'Search movements'}</Text></Pressable>
                   {discoveryMode === 'muscle' ? (
                     <View style={styles.accessoryPickerRegionGrid}>
                       {pickerRegions.map((region) => (
@@ -2550,6 +2530,10 @@ function AccessoryEditorModal({
                         <Ionicons name="search-outline" size={20} color={colors.muted} />
                         <TextInput accessibilityLabel="Search accessory movements" value={movementQuery} onChangeText={setMovementQuery} autoFocus placeholder="Search all movements..." placeholderTextColor={colors.subtle} returnKeyType="search" style={styles.accessoryPickerSearchInput} />
                       </View>
+                      {coreGroups.length ? <View style={{ gap: 0 }}><Text style={{ color: colors.muted, fontSize: 12, paddingVertical: 12 }}>CORE LIFTS & VARIANTS</Text>{coreGroups.flatMap((group) => (group.movements || []).filter((movement) => movementPresetFromValue(movement, group).name.toLowerCase().includes(movementQuery.toLowerCase())).map((movement) => {
+                        const preset = movementPresetFromValue(movement, group);
+                        return <Pressable key={`${group.key}-${preset.coreMovementId || preset.name}`} accessibilityRole="button" accessibilityLabel={`Select ${preset.name}`} onPress={() => onSelectCore?.(movement, group)} style={{ minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line }}><CanonicalMovementArtwork movement={{ core_movement: { id: preset.coreMovementId }, lift: preset.lift, kind: 'core' }} size={44} /><View style={{ flex: 1 }}><Text style={{ color: colors.textStrong, fontSize: 16 }}>{preset.name}</Text><Text style={{ color: colors.muted, fontSize: 12 }}>{preset.lift === 'VR' ? 'Variant · manual load' : 'Competition lift'}</Text></View><Ionicons name="add" size={21} color={colors.violet} /></Pressable>;
+                      })).slice(0, movementQuery ? 24 : 3)}</View> : null}
                       {resultList}
                     </View>
                   )}

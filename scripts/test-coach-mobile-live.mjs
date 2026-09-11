@@ -41,7 +41,7 @@ assert.match(tabs, /<SLFloatingNavigationDock/);
 assert.doesNotMatch(workspaceShell, /<SLFloatingNavigationDock[\s\S]{0,160}\bflow\b/);
 assert.doesNotMatch(workspaceShell, /workspaceDock|navItemActive|activeIndicator|navIcon|navLabel/);
 assert.match(trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
-assert.match(trainingRoute, /return <TrainingIndexScreen \/>/);
+assert.match(trainingRoute, /return <TrainingIndexScreen key=\{workspace\.subjectKey\} \/>/);
 assert.doesNotMatch(trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
 assert.match(tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)[\s\S]*return null/);
 

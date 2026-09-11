@@ -1,0 +1,27 @@
+[
+  {
+    "test": "workspace-floating-controls",
+    "exit": 0,
+    "output": "Workspace floating controls: shared ownership, material, slots, clearance, weight coverage and scoped toolkit PASS."
+  },
+  {
+    "test": "floating-display-unit-control",
+    "exit": 0,
+    "output": "Floating display-unit control contracts passed."
+  },
+  {
+    "test": "coach-performance-v2",
+    "exit": 0,
+    "output": "Coach Performance V2 subject, trajectory, bounded loading, canonical artwork and navigation: PASS"
+  },
+  {
+    "test": "coach-athlete-workspace-v1",
+    "exit": 0,
+    "output": "coach athlete workspace V1 relationship, navigation, and isolation contract: PASS"
+  },
+  {
+    "test": "global-weight-unit-toggle",
+    "exit": 0,
+    "output": "Global weight unit release invariants passed."
+  }
+]

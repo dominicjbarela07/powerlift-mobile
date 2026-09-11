@@ -1,3 +1,4 @@
+import { useLedgerResource } from './use-ledger-resource';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,7 +15,7 @@ import { VolumeAchievementExperience, type VolumeAchievementDataset } from '@/co
 import { SLFontFamilies, SLLayout, SLMetricTones, SLRadius, SLTypography } from '@/constants/theme';
 import { useLedgerLiveData, type LedgerLiveDataFixture } from './use-ledger-live-data';
 import { archiveDetailHref } from '@/lib/ledger-archive';
-import { fetchLedgerAccomplishmentHistory, type AccomplishmentEvent, type StrengthMetric } from '@/lib/ledger-data';
+import { fetchLedgerAccomplishmentPage, fetchLedgerAccomplishmentHistory, type AccomplishmentEvent, type StrengthMetric } from '@/lib/ledger-data';
 import {
   canonicalMajorVolumeMedallions,
   canonicalPrHistory,
@@ -549,7 +550,14 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const [section, setSection] = useState<AchievementSection>(() => requestedAchievementSection(requestedSection, requestedTab));
   const [detail, setDetail] = useState<Detail>(null);
   const [artifactDetail, setArtifactDetail] = useState<ArtifactDetail>(null);
-  const [historyEvents, setHistoryEvents] = useState<AccomplishmentEvent[]>([]);
+  const needsHistory = ['prs', 'medallions', 'milestones'].includes(section);
+  const history = useLedgerResource(`achievement-history:${ledgerSubject.athleteId}:${ledgerSubject.valid}:${needsHistory}`, async () => {
+    if (__DEV__ && devFixture) return [...(devFixture.accomplishments ?? [])];
+    if (!ledgerSubject.valid) return [];
+    if (needsHistory) return fetchLedgerAccomplishmentHistory(20, ledgerSubject.athleteId);
+    return (await fetchLedgerAccomplishmentPage(50, null, ledgerSubject.athleteId, undefined,
+      ['CORE_WEIGHT_PR', 'CORE_REP_MAX_PR', 'CORE_E1RM_PR'])).items;
+  });
   const liveData = useLedgerLiveData('all', { athleteId: ledgerSubject.athleteId, fixture: devFixture });
   const progression = liveData.progression;
   const currentBests = liveData.currentBests;
@@ -557,7 +565,7 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   const error = liveData.error;
   const errorKind = liveData.errorKind;
   const reload = liveData.reload;
-  const timelineEvents = historyEvents.length ? historyEvents : liveData.accomplishments;
+  const timelineEvents = history.data?.length ? history.data : liveData.accomplishments;
   const volumeMedallions = canonicalMajorVolumeMedallions(timelineEvents);
   const prHistory = canonicalPrHistory(timelineEvents);
   const clubsRuntime = resolveLedgerClubsRuntimeState(
@@ -642,10 +650,9 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
   };
 
   useFocusEffect(useCallback(() => {
-    void reload();
     const frame = requestAnimationFrame(() => scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false }));
     return () => cancelAnimationFrame(frame);
-  }, [reload]));
+  }, []));
 
   useEffect(() => {
     if (requestedUnit === 'lb' || requestedUnit === 'kg') setUnit(requestedUnit);
@@ -656,17 +663,6 @@ export default function AchievementsExperience({ onBack, backAccessibilityLabel 
     setSection(requestedAchievementSection(requestedSection, requestedTab));
   }, [requestedSection, requestedTab]);
 
-  useEffect(() => {
-    if (__DEV__ && devFixture) {
-      setHistoryEvents([...(devFixture.accomplishments ?? [])]);
-      return undefined;
-    }
-    let active = true;
-    fetchLedgerAccomplishmentHistory(20, ledgerSubject.athleteId)
-      .then((items) => { if (active) setHistoryEvents(items); })
-      .catch((caught) => { if (__DEV__) console.warn('[LedgerAchievements] Full accomplishment history unavailable; using the recent canonical page.', caught); });
-    return () => { active = false; };
-  }, [devFixture, ledgerSubject.athleteId]);
 
   const activeArtifactLift = artifactDetail?.kind === 'lift'
     ? liveLifts.find((lift) => lift.key === artifactDetail.liftKey) ?? null

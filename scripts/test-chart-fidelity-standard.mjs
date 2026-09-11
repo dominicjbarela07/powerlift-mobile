@@ -8,6 +8,7 @@ import {
   buildTimeTicks,
   buildYAxisGutter,
   formatAnalyticalValue,
+  estimateAxisLabelWidth,
   nearestTimeIndex,
 } from '../lib/chart-fidelity.ts';
 
@@ -38,6 +39,19 @@ assert.ok(instanceLayout.ticks.every((tick) => tick.label.startsWith('#')), 'ins
 assert.ok(buildYAxisGutter(['5 lb', '1,250 lb']) > buildYAxisGutter(['5 lb', '50 lb']), 'Y-axis gutter expands for formatted values instead of colliding with the plot');
 
 const shared = read('components/charts/AnalyticalTimeSeriesChart.tsx');
+assert.match(shared, /fontSize: axisFontSize/, 'The tick layout must measure the font actually rendered.');
+const sparseDates = Array.from({ length: 13 }, (_, index) => new Date(Date.UTC(2026, 5, 15 + 7 * index)).toISOString().slice(0, 10));
+for (const fontSize of [9, 11, 16]) {
+  for (const width of [280, 320, 370, 402]) {
+    const layout = buildAnalyticalXLayout({ observations: sparseDates.map((date) => ({ key: date, date })), mode: 'chronological', plotLeft: 48, plotRight: 12, width, fontSize });
+    const bounds = layout.ticks.map((tick) => {
+      const size = estimateAxisLabelWidth(tick.label, fontSize);
+      return { left: tick.x - (tick.textAnchor === 'start' ? 0 : tick.textAnchor === 'end' ? size : size / 2), right: tick.x + (tick.textAnchor === 'end' ? 0 : tick.textAnchor === 'start' ? size : size / 2) };
+    });
+    for (let i = 1; i < bounds.length; i++) assert.ok(bounds[i].left - bounds[i - 1].right >= 10, `Dates must clear anchored neighbors at ${width}pt / ${fontSize}pt.`);
+    assert.equal(layout.observations.length, sparseDates.length, 'Fewer labels must never remove data points.');
+  }
+}
 for (const contract of ['buildNumericScale', 'buildAnalyticalXLayout', 'buildYAxisGutter', 'xDomainMode', 'onResponderMove', 'tooltip', 'selectedDate', 'accessibilityLabel']) assert.match(shared, new RegExp(contract));
 
 const consumers = {

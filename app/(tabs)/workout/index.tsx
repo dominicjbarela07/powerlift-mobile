@@ -1,3 +1,8 @@
+import { evidenceReadCache } from '@/lib/evidence-read-cache';
+import { ProgrammingReuseLibrary } from '@/components/coach-mobile/ProgrammingReuseLibrary';
+import { FocusedSessionAuthoring } from '@/components/coach-mobile/FocusedSessionAuthoring';
+import { useOptionalCoachAthleteWorkspace } from '@/components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceContext';
+import { assertProgrammingResponseSubject, programmingSubjectRoute, resolveProgrammingSubject } from '@/lib/programming-subject';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,7 +16,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -126,6 +130,7 @@ type SessionFocus = {
 type SessionRecap = {
   top_work?: string | null;
   movement_count?: number | null;
+  set_count?: number | null;
   logged_set_count?: number | null;
   planned_set_count?: number | null;
   completion_percent?: number | null;
@@ -149,6 +154,7 @@ type SessionRecap = {
 };
 
 type SessionPreviewPayload = {
+  set_count?: number | null;
   core?: Array<{
     movement?: string | null;
     prescription?: string | null;
@@ -621,6 +627,8 @@ const blockActionGroups: Array<{ title: string; keys: BlockActionKey[] }> = [
 export default function TrainingIndexScreen() {
   const router = useRouter();
   const { user, activeMobileMode, workspaceKey } = useAuth();
+  const athleteWorkspace = useOptionalCoachAthleteWorkspace();
+  const workspaceTrainingAtEntry = useRef(athleteWorkspace?.trainingState);
   const params = useLocalSearchParams<{
     athleteId?: string;
     workoutId?: string;
@@ -632,17 +640,20 @@ export default function TrainingIndexScreen() {
     workspaceReturn?: string;
     workspaceSubjectKey?: string;
   }>();
-  const rosterAthleteId = params.athleteId ? String(params.athleteId) : null;
+  const programmingSubject = resolveProgrammingSubject(athleteWorkspace, params.athleteId);
+  const { athleteId: programmingAthleteId, ready: programmingSubjectReady } = programmingSubject;
+  const rosterAthleteId = programmingSubject.athleteId ? String(programmingSubject.athleteId) : null;
   const directWorkoutId = params.workoutId ? Number(params.workoutId) : null;
   const directProgramId = params.programId ? Number(params.programId) : null;
-  const workspaceSubjectKey = params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null;
+  const workspaceSubjectKey = athleteWorkspace?.subjectKey || (params.workspaceSubjectKey ? String(params.workspaceSubjectKey) : null);
   const trainingScopeKey = `${workspaceKey}:${rosterAthleteId ? `athlete:${rosterAthleteId}` : 'self'}:${workspaceSubjectKey || 'standalone'}`;
   const programCreatedNonce = params.programCreated ? String(params.programCreated) : null;
   const returnBlockId = params.programmingBlockId ? Number(params.programmingBlockId) : null;
   const returnWeek = params.programmingWeek ? Number(params.programmingWeek) : null;
   const returnDay = params.programmingDay ? String(params.programmingDay) : null;
   const isIndividual = activeMobileMode === 'individual';
-  const isProgrammingManager = isIndividual || !!rosterAthleteId;
+  const needsAthleteSelection = activeMobileMode === 'coach' && !programmingSubject.workspaceOwned && !rosterAthleteId;
+  const isProgrammingManager = programmingSubject.workspaceOwned || isIndividual || activeMobileMode === 'coach' || !!rosterAthleteId;
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -662,9 +673,13 @@ export default function TrainingIndexScreen() {
   );
   const hasLoadedTrainingRef = useRef(false);
   const trainingRequestSequenceRef = useRef(0);
+  const trainingScopeRef = useRef(trainingScopeKey);
+  trainingScopeRef.current = trainingScopeKey;
   const programTimelineOpeningRef = useRef(false);
 
+  const compositionLocationRef = useRef<{ scope: string; blockId: number | null; week: number | null }>({ scope: trainingScopeKey, blockId: returnBlockId || workspaceTrainingAtEntry.current?.blockId || null, week: returnWeek || workspaceTrainingAtEntry.current?.week || null });
   const loadTraining = useCallback(async (opts?: { silent?: boolean; showRefreshIndicator?: boolean }) => {
+    if (isProgrammingManager && opts?.silent && opts.showRefreshIndicator !== false) evidenceReadCache.invalidate(false);
     const requestSequence = ++trainingRequestSequenceRef.current;
     const requestScopeKey = trainingScopeKey;
     const silent = !!opts?.silent;
@@ -673,11 +688,27 @@ export default function TrainingIndexScreen() {
     } else setLoading(true);
     setError(null);
 
-    const endpoint = rosterAthleteId
-      ? `/workouts/my_list/mobile/${rosterAthleteId}`
-      : '/workouts/my_list/mobile';
+    if (needsAthleteSelection) {
+      setLoading(false);
+      setRefreshing(false);
+      setHub(null);
+      setProgramBlocks([]);
+      setPendingMap({});
+      setCompletedMap({});
+      return;
+    }
+
+    const location = compositionLocationRef.current.scope === requestScopeKey ? compositionLocationRef.current : { blockId: null, week: null };
+    const compositionQuery = new URLSearchParams();
+    if (rosterAthleteId) compositionQuery.set('athlete_id', rosterAthleteId);
+    if (location.blockId) compositionQuery.set('block_id', String(location.blockId));
+    if (location.week) compositionQuery.set('week', String(location.week));
+    const endpoint = isProgrammingManager ? `/workouts/mobile/programming/composition?${compositionQuery}` : rosterAthleteId ? `/workouts/my_list/mobile/${rosterAthleteId}` : '/workouts/my_list/mobile';
 
     try {
+      if (!programmingSubjectReady) {
+        throw new Error('Programming subject is unavailable. Please reopen the athlete workspace.');
+      }
       const [resp, settingsResp] = await Promise.all([
         fetchJson(endpoint, { method: 'GET' }),
         isProgrammingManager
@@ -687,7 +718,7 @@ export default function TrainingIndexScreen() {
       const res: any = resp.json;
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       if (!resp.ok || !res?.ok) {
         setError(res?.error || res?.message || `HTTP ${resp.status}`);
@@ -698,7 +729,9 @@ export default function TrainingIndexScreen() {
         setLoadedTrainingScopeKey(requestScopeKey);
         return;
       }
+      if (res.composition) compositionLocationRef.current = { scope: requestScopeKey, blockId: res.composition.block_id, week: res.composition.week };
       const responseHub: TrainingHubPayload | null = res.training_hub || null;
+      assertProgrammingResponseSubject({ athleteId: programmingAthleteId, ready: programmingSubjectReady }, responseHub?.athlete?.id);
       const authoritativeDisplayUnit = preferredUnitFromSettingsPayload(settingsResp?.ok ? settingsResp.json : null)
         || parseDisplayWeightUnit(user?.preferred_units)
         || parseDisplayWeightUnit(responseHub?.athlete?.preferred_units);
@@ -718,7 +751,7 @@ export default function TrainingIndexScreen() {
     } catch (err: any) {
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       setError(err?.message || 'Training Hub could not load.');
       setHub(null);
@@ -729,12 +762,12 @@ export default function TrainingIndexScreen() {
     } finally {
       if (
         requestSequence !== trainingRequestSequenceRef.current
-        || requestScopeKey !== trainingScopeKey
+        || requestScopeKey !== trainingScopeRef.current
       ) return;
       if (silent && opts?.showRefreshIndicator !== false) setRefreshing(false);
       else setLoading(false);
     }
-  }, [isProgrammingManager, programCreatedNonce, rosterAthleteId, trainingScopeKey, user?.preferred_units]);
+  }, [isProgrammingManager, needsAthleteSelection, programCreatedNonce, programmingAthleteId, programmingSubjectReady, rosterAthleteId, trainingScopeKey, user?.preferred_units]);
 
   useEffect(() => {
     trainingRequestSequenceRef.current += 1;
@@ -744,7 +777,8 @@ export default function TrainingIndexScreen() {
     setRefreshing(false);
     setLoading(true);
     setBlockDetailsVisible(false);
-  }, [trainingScopeKey]);
+    return () => { trainingRequestSequenceRef.current += 1; };
+  }, [needsAthleteSelection, trainingScopeKey]);
 
   useFocusEffect(
     useCallback(() => {
@@ -883,10 +917,18 @@ export default function TrainingIndexScreen() {
     }
   };
 
+  if (needsAthleteSelection) return <ProgrammingAthleteChooser />;
+
   if (isProgrammingManager) {
     return (
       <IndividualProgrammingHome
         key={trainingScopeKey}
+        onWeekSelected={(blockId, week) => {
+          const location = compositionLocationRef.current;
+          if (location.scope === trainingScopeKey && location.blockId === blockId && location.week === week) return;
+          compositionLocationRef.current = { scope: trainingScopeKey, blockId, week };
+          void loadTraining({ silent: true, showRefreshIndicator: false });
+        }}
         hub={visibleHub}
         loading={loading || !trainingScopeReady}
         error={error}
@@ -896,9 +938,9 @@ export default function TrainingIndexScreen() {
         pendingMap={visiblePendingMap}
         completedMap={visibleCompletedMap}
         onAddSession={addSessionForDate}
-        initialBlockId={Number.isFinite(returnBlockId || NaN) ? returnBlockId : null}
-        initialWeek={Number.isFinite(returnWeek || NaN) ? returnWeek : null}
-        initialDay={returnDay}
+        initialBlockId={Number.isFinite(returnBlockId || NaN) ? returnBlockId : workspaceTrainingAtEntry.current?.blockId || null}
+        initialWeek={Number.isFinite(returnWeek || NaN) ? returnWeek : workspaceTrainingAtEntry.current?.week || null}
+        initialDay={returnDay || workspaceTrainingAtEntry.current?.selectedDate}
         managedAthleteId={rosterAthleteId ? Number(rosterAthleteId) : visibleHub?.athlete?.id || null}
         managedAthleteName={visibleHub?.athlete?.name || null}
         managedAthleteAvatarUrl={visibleHub?.athlete?.avatar_url || null}
@@ -963,6 +1005,32 @@ export default function TrainingIndexScreen() {
   );
 }
 
+function ProgrammingAthleteChooser() {
+  const router = useRouter();
+  const [athletes, setAthletes] = useState<Array<{ id: number; name: string; avatar_url?: string }>>([]);
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let active = true;
+    void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
+      if (!active) return;
+      if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Athletes could not be loaded.');
+      setAthletes(response.json.athletes || []);
+    }).catch((error) => { if (active) setError(error.message); }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+  return <View style={compositionStyles.root}>
+    <View style={compositionStyles.header}><Text style={compositionStyles.headerTitle}>Programming</Text></View>
+    <ScrollView contentContainerStyle={{ paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <View style={{ padding: 16, gap: 12 }}><Text style={compositionStyles.programTitle}>Choose an athlete</Text><TextInput accessibilityLabel="Search athletes" placeholder="Search your team" placeholderTextColor={colors.subtle} value={query} onChangeText={setQuery} style={storyStyles.searchInput} /></View>
+      {loading ? <ActivityIndicator color={colors.violet} /> : error ? <Text style={storyStyles.dragError}>{error}</Text> : athletes.filter((athlete) => athlete.name.toLowerCase().includes(query.toLowerCase().trim())).map((athlete) => <Pressable key={athlete.id} accessibilityRole="button" onPress={() => router.setParams({ athleteId: String(athlete.id) })} style={compositionStyles.addRow}>
+        <SLProfileAvatar name={athlete.name} profilePhotoUrl={athlete.avatar_url} size={40} /><Text style={[compositionStyles.athleteName, storyStyles.grow]}>{athlete.name}</Text><Ionicons name="chevron-forward" size={18} color={colors.subtle} />
+      </Pressable>)}
+    </ScrollView>
+  </View>;
+}
+
 function IndividualProgrammingHome({
   hub,
   loading,
@@ -985,6 +1053,7 @@ function IndividualProgrammingHome({
   directProgramId,
   workspaceReturn,
   onConsumeDirectOpen,
+  onWeekSelected,
 }: {
   hub: TrainingHubPayload | null;
   loading: boolean;
@@ -1007,6 +1076,7 @@ function IndividualProgrammingHome({
   directProgramId?: number | null;
   workspaceReturn?: string;
   onConsumeDirectOpen: () => void;
+  onWeekSelected: (blockId: number, week: number) => void;
 }) {
   const router = useRouter();
   const programmingFocused = useIsFocused();
@@ -1026,6 +1096,22 @@ function IndividualProgrammingHome({
   const previewRouteHasBlurredRef = useRef(false);
   const consumedDirectOpenRef = useRef<string | null>(null);
   const programmingScrollRef = useRef<ScrollView>(null);
+  const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const programmingSubject = resolveProgrammingSubject(focusedWorkspace, managedAthleteId ? String(managedAthleteId) : undefined);
+  const initialWorkspaceScroll = useRef(focusedWorkspace?.trainingState.scrollY || 0);
+  const workspaceScrollReady = useRef(false);
+  const insideAthleteWorkspace = Boolean(focusedWorkspace);
+  useEffect(() => {
+    if (!insideAthleteWorkspace || loading || error || workspaceScrollReady.current) return;
+    let restoreFrame = 0;
+    const layoutFrame = requestAnimationFrame(() => {
+      restoreFrame = requestAnimationFrame(() => {
+        programmingScrollRef.current?.scrollTo({ y: initialWorkspaceScroll.current, animated: false });
+        workspaceScrollReady.current = true;
+      });
+    });
+    return () => { cancelAnimationFrame(layoutFrame); cancelAnimationFrame(restoreFrame); };
+  }, [error, insideAthleteWorkspace, loading]);
   const followProgrammingOffset = useCallback((offsetY: number) => {
     programmingScrollRef.current?.scrollTo({
       y: Math.max(0, offsetY - 12),
@@ -1034,13 +1120,7 @@ function IndividualProgrammingHome({
   }, []);
 
   const handleProgramPress = () => {
-    router.push({
-      pathname: '/(tabs)/workout/create-program',
-      params: {
-        ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-        ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-      },
-    } as any);
+    router.push(programmingSubjectRoute(programmingSubject, 'create-program') as any);
   };
 
   const handleExitToAthleteWorkspace = () => {
@@ -1099,8 +1179,13 @@ function IndividualProgrammingHome({
     setWorkspaceSheetVisible(false);
     setWorkspaceSelection(null);
     workspaceDismissRequestRef.current = dismissWorkspaceSheet;
-    void onRefresh();
+    if (workspaceChangedRef.current) {
+      workspaceChangedRef.current = false;
+      void onRefresh();
+    }
   }, [dismissWorkspaceSheet, onRefresh, router]);
+
+  const workspaceChangedRef = useRef(false);
 
   const finishWorkspacePresent = useCallback(() => {
     if (previewHandoffRef.current.phase !== 'restoring') return;
@@ -1198,12 +1283,7 @@ function IndividualProgrammingHome({
 
   return (
     <View style={styles.screen}>
-      <ScrollView
-        ref={programmingScrollRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.programmingScroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.muted} />}
-      >
+      <View style={{ flex: 1 }}>
         {loading ? (
           <StateLine icon="barbell-outline" title="Loading Programming" body="Checking your current training structure." />
         ) : error ? (
@@ -1215,6 +1295,7 @@ function IndividualProgrammingHome({
             style={styles.programmingStoryboardHost}
           >
           <ActiveProgrammingRoadmap
+            onWeekSelected={onWeekSelected}
             activeProgram={activeProgram}
             currentBlock={currentBlock}
             blocks={blocks}
@@ -1222,18 +1303,15 @@ function IndividualProgrammingHome({
             completedMap={completedMap}
             onOpenSession={openSessionWorkspace}
             onAddSession={onAddSession}
-            onManageProgram={(programId) => router.push({
-              pathname: '/(tabs)/workout/create-program',
-              params: {
-                mode: 'edit',
-                programId: String(programId),
-                ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-                ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-              },
-            } as any)}
+            onManageProgram={(programId) => router.push(programmingSubjectRoute(programmingSubject, 'create-program', {
+              mode: 'edit',
+              programId: String(programId),
+            }) as any)}
             onCreateProgram={handleProgramPress}
             onRefresh={onRefresh}
             onFollowOffset={followProgrammingOffset}
+            scrollRef={programmingScrollRef}
+            refreshing={refreshing}
             athleteId={managedAthleteId || hub?.athlete?.id || null}
             initialBlockId={initialBlockId}
             initialWeek={initialWeek}
@@ -1253,7 +1331,7 @@ function IndividualProgrammingHome({
             onOpenPrograms={() => setProgramLibraryOpen(true)}
           />
         )}
-      </ScrollView>
+      </View>
       <ProgramActionsModal
         visible={programLibraryOpen}
         athleteId={managedAthleteId || hub?.athlete?.id || null}
@@ -1265,27 +1343,19 @@ function IndividualProgrammingHome({
         }}
         onEdit={(programId) => {
           setProgramLibraryOpen(false);
-          router.push({
-            pathname: '/(tabs)/workout/create-program',
-            params: {
-              mode: 'edit',
-              programId: String(programId),
-              ...(managedAthleteId ? { athleteId: String(managedAthleteId) } : {}),
-              ...(managedAthleteName ? { athleteName: managedAthleteName } : {}),
-            },
-          } as any);
+          router.push(programmingSubjectRoute(programmingSubject, 'create-program', {
+            mode: 'edit',
+            programId: String(programId),
+          }) as any);
         }}
         onRefresh={onRefresh}
       />
       {workspaceSelection ? (
-        <StrengthLedgerBottomSheet
+        <FocusedSessionAuthoring
           ref={workspaceSheetRef}
-          accessibilityLabel="Session Workspace"
           onDismiss={finishWorkspaceDismiss}
           onPresent={finishWorkspacePresent}
           onRequestClose={requestWorkspaceDismiss}
-          presentationBoundary="app-shell"
-          testID="programming-session-workspace-sheet"
           visible={workspaceSheetVisible}
         >
           <MobileSessionWorkspaceContent
@@ -1296,11 +1366,12 @@ function IndividualProgrammingHome({
             programmingBlockId={workspaceSelection.context?.blockId || null}
             programmingWeek={workspaceSelection.context?.week || null}
             programmingDay={workspaceSelection.context?.day || null}
+            onProgrammingChanged={() => { workspaceChangedRef.current = true; }}
             onClose={dismissWorkspaceSheet}
             onOpenAthleteView={requestWorkspaceAthletePreview}
             registerDismissRequest={registerWorkspaceDismissRequest}
           />
-        </StrengthLedgerBottomSheet>
+        </FocusedSessionAuthoring>
       ) : null}
     </View>
   );
@@ -1308,6 +1379,7 @@ function IndividualProgrammingHome({
 
 function ActiveProgrammingRoadmap({
   activeProgram,
+  onWeekSelected,
   currentBlock,
   blocks,
   pendingMap,
@@ -1318,6 +1390,8 @@ function ActiveProgrammingRoadmap({
   onCreateProgram,
   onRefresh,
   onFollowOffset,
+  scrollRef,
+  refreshing,
   athleteId,
   initialBlockId,
   initialWeek,
@@ -1331,6 +1405,7 @@ function ActiveProgrammingRoadmap({
   onExitAthleteWorkspace,
 }: {
   activeProgram: NonNullable<TrainingHubPayload['active_program']>;
+  onWeekSelected: (blockId: number, week: number) => void;
   currentBlock: TrainingHubPayload['current_block'] | null;
   blocks: ProgramBlockPayload[];
   pendingMap: SessionMap;
@@ -1341,6 +1416,8 @@ function ActiveProgrammingRoadmap({
   onCreateProgram: () => void;
   onRefresh: () => void | Promise<void>;
   onFollowOffset: (offsetY: number) => void;
+  scrollRef?: React.RefObject<ScrollView | null>;
+  refreshing?: boolean;
   athleteId?: number | null;
   initialBlockId?: number | null;
   initialWeek?: number | null;
@@ -1361,7 +1438,8 @@ function ActiveProgrammingRoadmap({
   }, [activeProgram.id, blocks]);
   const currentBlockId = currentBlock?.id || orderedBlocks[0]?.id || null;
   const [selectedBlockId, setSelectedBlockId] = useState<number | null>(initialBlockId || currentBlockId);
-  const [expandedWeek, setExpandedWeek] = useState(Math.max(1, Number(initialWeek || 1)));
+  const [expandedWeek, setExpandedWeek] = useState(Math.max(1, Number(initialWeek || orderedBlocks.find((block) => block.id === (initialBlockId || currentBlockId))?.current_week || 1)));
+  const requestedMapWeek = useRef<number | null>(null);
   const [selectedDayKeys, setSelectedDayKeys] = useState<Record<string, string>>({});
   const [weekMenu, setWeekMenu] = useState<WeekActionMenuContext | null>(null);
   const [weekAction, setWeekAction] = useState<WeekActionState | null>(null);
@@ -1374,6 +1452,7 @@ function ActiveProgrammingRoadmap({
   const [blockActionWarning, setBlockActionWarning] = useState('');
   const [blockActionConfirmed, setBlockActionConfirmed] = useState(false);
   const [programActionsOpen, setProgramActionsOpen] = useState(false);
+  const [reuseContext, setReuseContext] = useState<{ week: RoadmapWeek; day: string } | null>(null);
   const [sessionAdd, setSessionAdd] = useState<SessionAddState>(null);
   const [sessionActions, setSessionActions] = useState<SessionActionSheetState>(null);
   const [sessionActionBusy, setSessionActionBusy] = useState(false);
@@ -1408,6 +1487,7 @@ function ActiveProgrammingRoadmap({
     : null;
 
   useEffect(() => {
+    if (requestedMapWeek.current != null) { setExpandedWeek(requestedMapWeek.current); requestedMapWeek.current = null; return; }
     const restoredWeek = selectedBlock?.id === initialBlockId && initialWeek
       ? Math.max(1, Number(initialWeek))
       : null;
@@ -1424,6 +1504,10 @@ function ActiveProgrammingRoadmap({
     [completedMap, orderedBlocks, pendingMap]
   );
   const visibleWeeks = weeks;
+  const locationCallback = useRef(onWeekSelected);
+  locationCallback.current = onWeekSelected;
+  useEffect(() => { if (selectedBlock?.id && expandedWeek) locationCallback.current(selectedBlock.id, expandedWeek); }, [selectedBlock?.id, expandedWeek]);
+
 
   useEffect(() => {
     if (
@@ -1463,6 +1547,32 @@ function ActiveProgrammingRoadmap({
     parseDate(activeProgram.end_date)
   );
   const programStatus = programmingStatusLabel(activeProgram.status);
+
+  const creatingSessionRef = useRef(false);
+  const [creatingSessionDate, setCreatingSessionDate] = useState<string | null>(null);
+  const createBlankSession = async (targetDate: string) => {
+    if (creatingSessionRef.current || !athleteId || !selectedBlock?.id) return;
+    creatingSessionRef.current = true;
+    setCreatingSessionDate(targetDate);
+    try {
+      const response = await fetchJson<any>('/workouts/mobile/new', { method: 'POST', body: {
+        athlete_id: athleteId, date: targetDate, status: 'draft', label: 'New Session',
+        training_block_id: selectedBlock.id, core_items: [], acc_items: [],
+      } as any });
+      const result = response.json || {};
+      if (!response.ok || !result.ok) throw new Error(result.error || 'The Session could not be created.');
+      const id = Number(result.workout_id || result.workout?.id || result.id);
+      if (!id) throw new Error('The Session did not return a valid identity.');
+      const week = weeks.find((entry) => entry.days.some((day) => day.date === targetDate));
+      onOpenSession(id, { blockId: selectedBlock.id, week: week?.index || expandedWeek, day: targetDate });
+      void onRefresh();
+    } catch (error: any) {
+      Alert.alert('Could not create Session', error?.message || 'Please try again.');
+    } finally {
+      creatingSessionRef.current = false;
+      setCreatingSessionDate(null);
+    }
+  };
 
   const openWeekAction = (action: WeekActionKey, week: RoadmapWeek) => {
     setWeekMenu(null);
@@ -1758,9 +1868,15 @@ function ActiveProgrammingRoadmap({
         athleteName={managedAthleteName || 'Athlete'}
         athleteAvatarUrl={managedAthleteAvatarUrl || null}
         displayUnit={displayUnit}
-        onSelectBlock={setSelectedBlockId}
+        onSelectBlock={(id, week) => { requestedMapWeek.current = week || null; setSelectedBlockId(id); if (week) setExpandedWeek(week); }}
+        onSelectWeek={setExpandedWeek}
+        allWeeks={programActionWeeks}
+        scrollRef={scrollRef}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        onReuse={(week, day) => setReuseContext({ week, day })}
         onOpenSession={onOpenSession}
-        onAddSession={(date) => setSessionAdd({ date, mode: 'choose' })}
+        onAddSession={(date) => { void createBlankSession(date); }}
         onMoveSession={executeStoryboardSessionMove}
         onQuickMoveSession={(session) => openQuickMoveSession(session, 'move')}
         onSessionActions={openSessionActions}
@@ -1769,6 +1885,19 @@ function ActiveProgrammingRoadmap({
         onProgramActions={() => setProgramActionsOpen(true)}
         onExitAthleteWorkspace={onExitAthleteWorkspace}
       />
+      {creatingSessionDate ? <View pointerEvents="auto" style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,.55)' }]}><ActivityIndicator color={colors.violet} /><Text style={compositionStyles.metadata}>Opening Session…</Text></View> : null}
+      {reuseContext?.week.startDate && athleteId && activeProgram.id ? <ProgrammingReuseLibrary
+        athleteId={athleteId} programId={Number(activeProgram.id)} programName={activeProgram.name || 'Training Program'}
+        weeks={programActionWeeks.filter((week) => !!week.startDate).map((week) => ({ ...week, startDate: week.startDate!, sessions: week.days.flatMap((day) => day.sessions) }))}
+        initialWeek={{ ...reuseContext.week, startDate: reuseContext.week.startDate, sessions: reuseContext.week.days.flatMap((day) => day.sessions) }} initialDate={reuseContext.day}
+        onClose={() => setReuseContext(null)}
+        onCopied={async ({ sessionId, week, date }) => {
+          setReuseContext(null); setSelectedBlockId(week.blockId); setExpandedWeek(week.index);
+          setQuickMoveFollowTarget({ blockId: week.blockId, week: week.index, date, sessionId: sessionId || 0 });
+          await onRefresh();
+          if (sessionId) onOpenSession(sessionId, { blockId: week.blockId, week: week.index, day: date });
+        }}
+      /> : null}
       <WeekActionPopout context={weekMenu} onClose={() => setWeekMenu(null)} onSelect={openWeekAction} />
       <BlockActionPopout context={blockMenu} onClose={() => setBlockMenu(null)} onSelect={openBlockAction} />
       <WeekActionModal
@@ -2440,6 +2569,12 @@ export function ProgrammingStoryboard({
   onExitAthleteWorkspace,
   previewState,
   previewRoster,
+  allWeeks = weeks,
+  onSelectWeek,
+  onReuse,
+  scrollRef,
+  onRefresh,
+  refreshing = false,
 }: {
   activeProgram: NonNullable<TrainingHubPayload['active_program']>;
   blocks: ProgramBlockPayload[];
@@ -2456,7 +2591,7 @@ export function ProgrammingStoryboard({
   athleteName: string;
   athleteAvatarUrl: string | null;
   displayUnit?: DisplayWeightUnit;
-  onSelectBlock: (id: number) => void;
+  onSelectBlock: (id: number, week?: number) => void;
   onOpenSession: (id?: number | null, context?: ProgrammingReturnContext) => void;
   onAddSession: (date: string) => void;
   onMoveSession: (session: HubSession, targetDate: string) => Promise<void>;
@@ -2466,10 +2601,20 @@ export function ProgrammingStoryboard({
   onBlockActions: (block: ProgramBlockPayload) => void;
   onProgramActions: () => void;
   onExitAthleteWorkspace?: () => void;
+  allWeeks?: RoadmapWeek[];
+  onSelectWeek?: (week: number) => void;
+  onReuse?: (week: RoadmapWeek, day: string) => void;
+  scrollRef?: React.RefObject<ScrollView | null>;
+  onRefresh?: () => void | Promise<void>;
+  refreshing?: boolean;
   previewState?: string;
   previewRoster?: Array<{ id: number; name?: string; avatar_url?: string | null; bodyweight?: number | null; preferred_units?: string | null }>;
 }) {
   const router = useRouter();
+  const focusedWorkspace = useOptionalCoachAthleteWorkspace();
+  const canSelectAthlete = coachMode && !focusedWorkspace;
+  const savedTraining = useRef(focusedWorkspace?.trainingState);
+  const saveTraining = focusedWorkspace?.setTrainingState;
   const initialSheet = (['blocks', 'weeks', 'intelligence', 'athletes'] as const).includes(previewState as any) ? previewState as StoryboardSheetKind : null;
   const previewDayOffset = previewState === 'completed'
     ? 0
@@ -2482,7 +2627,7 @@ export function ProgrammingStoryboard({
           : null;
   const previewWeek = weeks.find((week) => week.index === Math.max(1, initialWeek || currentWeek));
   const [sheet, setSheet] = useState<StoryboardSheetKind>(initialSheet);
-  const [selectedWeekIndex, setSelectedWeekIndex] = useState(Math.max(1, initialWeek || currentWeek));
+  const selectedWeekIndex = Math.max(1, initialWeek || currentWeek);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(
     previewDayOffset == null
       ? initialDay || null
@@ -2506,8 +2651,10 @@ export function ProgrammingStoryboard({
   const coverage = Math.max(0, Math.min(100, Number(intelligence?.coverage?.percent || 0)));
   const readiness = intelligence?.readiness?.current_score;
   const tmCount = intelligence?.tm_suggestions?.length || 0;
-  const programArtwork = storyboardProgramArtwork(activeProgram);
-
+  const programArtwork = PROGRAMMING_PROGRAM_ARTWORK.general;
+  const allSessions = allWeeks.flatMap((week) => week.days.flatMap((day) => day.sessions));
+  const lastPlannedDate = allSessions.map((session) => session.date || '').filter(Boolean).sort().at(-1);
+  const draftCount = allSessions.filter((session) => String(session.status).toLowerCase() === 'draft').length;
   const measureDayDropZone = useCallback(() => {
     dayStripRef.current?.measureInWindow((x, y, width, height) => {
       dayDropZoneRef.current = { x, y, width, height };
@@ -2567,8 +2714,9 @@ export function ProgrammingStoryboard({
 
   useEffect(() => {
     if (previewState) return;
-    setSelectedWeekIndex(Math.max(1, Number(selectedBlock?.current_week || currentWeek || 1)));
-    setSelectedDayKey(initialDay || null);
+    const saved = savedTraining.current;
+    setSelectedDayKey(saved && saved.blockId === selectedBlock?.id ? saved.selectedDate : initialDay || null);
+    savedTraining.current = undefined;
   }, [currentWeek, initialDay, previewState, selectedBlock?.id, selectedBlock?.current_week]);
 
   useEffect(() => {
@@ -2576,333 +2724,134 @@ export function ProgrammingStoryboard({
   }, [selectedBlock?.id, selectedWeekIndex]);
 
   useEffect(() => {
-    if (sheet !== 'athletes' || !coachMode || previewRoster?.length) return;
+    if (sheet !== 'athletes' || !canSelectAthlete || previewRoster?.length) return;
     let active = true;
     void fetchJson<any>('/coach/mobile/roster', { method: 'GET' }).then((response) => {
       if (!active || !response.ok) return;
       setRoster(Array.isArray(response.json?.athletes) ? response.json.athletes : []);
     });
     return () => { active = false; };
-  }, [coachMode, previewRoster, sheet]);
+  }, [canSelectAthlete, previewRoster, sheet]);
 
   const selectWeekInPlace = (week: RoadmapWeek) => {
     storyboardSelectionFeedback();
-    setSelectedWeekIndex(week.index);
+    onSelectWeek?.(week.index);
     setSelectedDayKey(week.days.find((day) => day.date === today)?.key || week.days[0]?.key || null);
     setOpenSwipeSessionId(null);
   };
 
   const selectAthlete = (id: number) => {
+    if (!canSelectAthlete) return;
     storyboardSelectionFeedback();
     setSheet(null);
     router.replace({ pathname: '/(tabs)/workout', params: { athleteId: String(id) } } as any);
   };
 
+  useEffect(() => {
+    if (!saveTraining || !selectedBlock?.id || !selectedWeek?.index) return;
+    saveTraining((current) => ({ ...current, blockId: selectedBlock.id, week: selectedWeek.index, selectedDate: selectedDay?.key || null }));
+  }, [saveTraining, selectedBlock?.id, selectedDay?.key, selectedWeek?.index]);
+
   return (
-    <View style={storyStyles.root} testID="mobile-programming-manager-storyboard">
-      <View style={storyStyles.topbar}>
-        <View style={storyStyles.topbarCopy}>
-          <Text style={storyStyles.topbarTitle}>{'PROGRAMMING\nMANAGER'}</Text>
-        </View>
-        <SLMotionPressable
-          accessibilityRole="button"
-          accessibilityLabel="Training Program actions"
-          onPress={onProgramActions}
-          style={storyStyles.topbarAction}
-        >
-          <Ionicons name="options-outline" size={16} color={colors.violet} />
-          <Text style={storyStyles.topbarActionText}>Actions</Text>
-        </SLMotionPressable>
+    <View style={compositionStyles.root} testID="mobile-programming-manager-storyboard">
+      <View style={compositionStyles.header}>
+        <Text style={compositionStyles.headerTitle}>{focusedWorkspace ? 'Programming Manager' : 'Programming'}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Training Program actions" onPress={onProgramActions} style={compositionStyles.iconAction}>
+          <Text style={compositionStyles.actionText}>Actions</Text><Ionicons name="ellipsis-horizontal" size={19} color={colors.violet} />
+        </Pressable>
       </View>
-
-      <ScrollView
-        contentContainerStyle={storyStyles.scroll}
-        onScrollBeginDrag={() => setOpenSwipeSessionId(null)}
-        scrollEnabled={!draggingSessionId && !dragMoveBusy}
-        showsVerticalScrollIndicator={false}
-      >
-          <Pressable
-            accessibilityRole={coachMode ? 'button' : undefined}
-            accessibilityLabel={coachMode ? 'Switch athlete' : undefined}
-            disabled={!coachMode}
-            onPress={() => setSheet('athletes')}
-            style={storyStyles.athleteRow}
-          >
-            <View style={storyStyles.athleteCopy}>
-              <Text style={storyStyles.athleteName}>{athleteName}</Text>
-              <Text style={storyStyles.athleteMeta}>{coachMode ? 'Coached Athlete' : 'Self-Coached'} · {selectedBlock?.name || activeProgram.program_type?.replaceAll('_', ' ') || 'Powerlifting'}</Text>
+      <ScrollView ref={scrollRef} stickyHeaderIndices={[1]} style={compositionStyles.root} contentContainerStyle={compositionStyles.content}
+        refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.violet} /> : undefined}
+        scrollEnabled={!draggingSessionId && !dragMoveBusy} showsVerticalScrollIndicator={false}
+        scrollEventThrottle={120} onScroll={(event) => { const scrollY = event.nativeEvent.contentOffset.y; saveTraining?.((current) => ({ ...current, scrollY })); }}
+        onScrollBeginDrag={() => setOpenSwipeSessionId(null)}>
+        <View>
+          {canSelectAthlete ? <Pressable accessibilityRole="button" accessibilityLabel="Switch athlete" onPress={() => setSheet('athletes')} style={compositionStyles.athlete}>
+            <SLProfileAvatar name={athleteName} profilePhotoUrl={athleteAvatarUrl} size={32} />
+            <Text style={compositionStyles.athleteName}>{athleteName}</Text><Ionicons name="chevron-down" size={16} color={colors.muted} />
+          </Pressable> : null}
+          <Pressable accessibilityRole="button" accessibilityLabel="Open Program map" onPress={() => setSheet('blocks')} style={compositionStyles.programBand}>
+            <Image source={programArtwork} resizeMode="cover" style={{ position: 'absolute', right: -12, top: -35, width: 210, height: 175, opacity: 0.95 }} />
+            <LinearGradient colors={['#050507', 'rgba(5,5,7,0.86)', 'rgba(5,5,7,0.05)']} locations={[0, 0.55, 1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFillObject} />
+            <View style={compositionStyles.programCopy}>
+              <Text style={compositionStyles.eyebrow}>TRAINING PROGRAM</Text>
+              <Text numberOfLines={2} style={compositionStyles.programTitle}>{activeProgram.name || 'Training Program'}</Text>
+              <Text style={compositionStyles.metadata}>{selectedBlock?.name || 'Training Block'} · Week {selectedWeek?.index || 1} of {weeks.length}</Text>
             </View>
-            <SLProfileAvatar name={athleteName} profilePhotoUrl={athleteAvatarUrl} size={46} statusColor={colors.violet} />
-            {coachMode ? <Ionicons name="chevron-down" size={15} color={colors.subtle} /> : null}
+            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
           </Pressable>
-
-          {athleteId ? (
-            <AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="compact" />
-          ) : null}
-
-          <View style={storyStyles.programCard}>
-            <LinearGradient
-              colors={['rgba(96,57,12,0.30)', 'rgba(40,21,62,0.20)', 'rgba(8,10,15,0.98)']}
-              end={{ x: 1, y: 1 }}
-              style={StyleSheet.absoluteFillObject}
-            />
-            <View pointerEvents="none" style={storyStyles.programArtworkFrame}>
-              <Image accessibilityIgnoresInvertColors resizeMode="cover" source={programArtwork} style={storyStyles.programArtworkImage} />
-              <LinearGradient colors={['#0B0D12', 'rgba(11,13,18,0.28)', 'rgba(11,13,18,0.04)']} end={{ x: 1, y: 0 }} locations={[0, 0.46, 1]} style={StyleSheet.absoluteFillObject} />
-              <LinearGradient colors={['rgba(11,13,18,0.02)', 'rgba(11,13,18,0.82)']} style={StyleSheet.absoluteFillObject} />
-            </View>
-            <View style={storyStyles.sectionHeadingRow}>
-              <Text style={[storyStyles.eyebrow, storyStyles.programEyebrow]}>TRAINING PROGRAM</Text>
-              <SLMotionPressable accessibilityRole="button" onPress={onProgramActions} style={storyStyles.compactAction}>
-                <Text style={storyStyles.compactActionText}>Actions</Text>
-                <Ionicons name="chevron-forward" size={13} color={colors.subtle} />
-              </SLMotionPressable>
-            </View>
-            <View style={storyStyles.programIdentityRow}>
-              <View style={storyStyles.programIdentityCopy}>
-                <Text style={storyStyles.programName}>{activeProgram.name || 'Training Program'}</Text>
-                <Text style={storyStyles.programMeta}>{programmingStatusLabel(activeProgram.status)} · {activeProgram.total_weeks || weeks.length} weeks</Text>
-              </View>
-            </View>
-            <ProgramProgressRail blocks={blocks} currentBlockId={currentBlockId} />
+          <View style={compositionStyles.coverage}>
+            <View style={[compositionStyles.coverageMark, { backgroundColor: lastPlannedDate ? colors.violet : colors.subtle }]} />
+            <Text style={compositionStyles.metadata}>{lastPlannedDate ? `Programmed through ${storyboardFormatShortDate(lastPlannedDate)}` : 'No Sessions programmed'}{draftCount ? ` · ${draftCount} draft${draftCount === 1 ? '' : 's'}` : ''}</Text>
           </View>
-
-          <View style={storyStyles.blockRail}>
-            {blocks.slice(0, 3).map((block, index) => {
-              const active = block.id === selectedBlock?.id;
-              const state = storyboardBlockState(block, blocks, currentBlockId);
-              const stateColor = storyboardBlockColor(state);
-              return (
-                <React.Fragment key={block.id}>
-                  {index ? <View style={storyStyles.blockDivider} /> : null}
-                  <SLMotionPressable
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: active }}
-                    accessibilityHint="Tap to select. Press and hold for Block actions."
-                    onPress={() => { storyboardSelectionFeedback(); onSelectBlock(block.id); }}
-                    onLongPress={() => { storyboardSelectionFeedback(); onBlockActions(block); }}
-                    pressScale={0.965}
-                    style={storyStyles.blockNavItem}
-                  >
-                    <Text numberOfLines={1} style={[storyStyles.blockNavName, { color: stateColor }, active && storyStyles.blockNavNameActive]}>{block.name || 'Block'}</Text>
-                    <View style={[storyStyles.blockNavStateIcon, { borderColor: stateColor }, active && storyStyles.blockNavStateIconActive]}>
-                      {state !== 'future' ? <Ionicons name={state === 'past' ? 'checkmark' : 'timer-outline'} size={16} color={stateColor} /> : null}
-                    </View>
-                    <Text style={[storyStyles.blockNavMeta, { color: stateColor }]}>{state === 'past' ? 'COMPLETED' : state === 'current' ? 'CURRENT' : 'UPCOMING'}</Text>
-                  </SLMotionPressable>
-                </React.Fragment>
-              );
-            })}
-          </View>
-
-          <ProgrammingIntelligenceStrip
-            coverage={coverage}
-            displayUnit={displayUnit}
-            intelligence={intelligence || null}
-            onPress={() => { storyboardSelectionFeedback(); setSheet('intelligence'); }}
-            readiness={readiness}
-            tmCount={tmCount}
-          />
-
-          <View style={storyStyles.weekSection}>
-            <View style={storyStyles.sectionHeadingRow}>
-              <Text style={storyStyles.sectionTitle}>WEEKS ({weeks.length})</Text>
-              <Pressable accessibilityRole="button" onPress={() => setSheet('weeks')}><Text style={storyStyles.expandText}>Expand⌄</Text></Pressable>
-            </View>
-            <View style={storyStyles.weekRail}>
-              {weeks.map((week) => {
-                const state = storyboardWeekState(week, currentWeek);
-                const active = week.index === selectedWeek?.index;
-                return (
-                  <SLMotionPressable key={week.index} accessibilityRole="button" onPress={() => selectWeekInPlace(week)} style={[storyStyles.weekPill, storyboardWeekMaterialStyle(state), active && storyStyles.weekPillActive]} pressScale={0.94}>
-                    <Text style={[storyStyles.weekPillLabel, active && storyStyles.weekPillLabelActive]}>W{week.index}</Text>
-                    <Text style={[storyStyles.weekPillCount, { color: storyboardStateColor(state) }]}>{storyboardWeekSessionCount(week)}</Text>
-                    <View style={storyStyles.weekPillProgressTrack}>
-                      <View style={[storyStyles.weekPillProgressFill, { width: `${storyboardWeekCompletion(week)}%`, backgroundColor: storyboardStateColor(state) }]} />
-                    </View>
-                  </SLMotionPressable>
-                );
-              })}
-            </View>
-          </View>
-
-          {selectedWeek ? (
-            <SLMotionEntrance motionKey={`overview-week-${selectedWeek.index}`} distance={5}>
-            <View style={storyStyles.thisWeekCard}>
-              <LinearGradient colors={['rgba(74,36,105,0.28)', 'rgba(12,14,20,0.97)', '#080A0F']} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
-              <View style={storyStyles.thisWeekHeader}>
-                <View style={storyStyles.thisWeekHeaderMain}>
-                  <View style={storyStyles.grow}>
-                    <Text style={storyStyles.eyebrow}>{selectedWeek.index === currentWeek ? 'THIS WEEK' : 'SELECTED WEEK'}</Text>
-                    <Text style={storyStyles.weekTitle}>Week {selectedWeek.index}</Text>
-                    <Text style={storyStyles.weekRange}>{selectedWeek.rangeLabel}</Text>
-                    <Text style={storyStyles.weekSummary}>{storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned</Text>
-                  </View>
-                </View>
-                <View style={storyStyles.thisWeekHeaderActions}>
-                  <SLMotionPressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Week ${selectedWeek.index} actions`}
-                    onPress={() => onWeekActions(selectedWeek)}
-                    style={storyStyles.weekCardAction}
-                  >
-                    <Ionicons name="options-outline" size={16} color={colors.violet} />
-                    <Text style={storyStyles.weekCardActionText}>Actions</Text>
-                  </SLMotionPressable>
-                </View>
-              </View>
-              <DayStrip
-                containerRef={dayStripRef}
-                dragTargetDate={dragTargetDate}
-                dragging={!!draggingSessionId}
-                week={selectedWeek}
-                selectedKey={selectedDay?.key || null}
-                today={today}
-                onSelect={(day) => { setSelectedDayKey(day.key); setOpenSwipeSessionId(null); }}
-              />
-              {selectedDay?.date ? (
-                <View style={storyStyles.selectedDayActionRow}>
-                  <View style={storyStyles.grow}>
-                    <Text style={storyStyles.selectedDayLabel}>SESSIONS THIS WEEK</Text>
-                    <Text style={storyStyles.selectedDayMeta}>
-                      {storyboardWeekSessionCount(selectedWeek)} Session{storyboardWeekSessionCount(selectedWeek) === 1 ? '' : 's'} planned · Add target {formatLongDate(selectedDay.date)}
-                    </Text>
-                  </View>
-                  <SLMotionPressable accessibilityRole="button" accessibilityLabel={`Add Session on ${formatLongDate(selectedDay.date)}`} onPress={() => onAddSession(selectedDay.date!)} style={storyStyles.addSessionButton}>
-                    <Ionicons name="add" size={17} color={colors.violet} />
-                    <Text style={storyStyles.addSessionButtonText}>Add Session</Text>
-                  </SLMotionPressable>
-                </View>
-              ) : null}
-              {draggingSessionId ? <Text style={storyStyles.dragInstruction}>Drop on a day to move this Session</Text> : null}
-              {dragMoveBusy ? <View style={storyStyles.dragStatus}><ActivityIndicator size="small" color={colors.violet} /><Text style={storyStyles.dragStatusText}>Moving Session…</Text></View> : null}
-              {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
-              <View style={storyStyles.compactWeekSessions}>
-                {selectedWeek.days.flatMap((day) => day.sessions.map((session) => {
-                  const movable = canDragProgrammingSession(session.status || session.kind);
-                  const swipeLabel = movable ? 'Move' : 'Actions';
-                  const runSwipeAction = () => {
-                    setOpenSwipeSessionId(null);
-                    if (movable) {
-                      onQuickMoveSession(session);
-                    } else {
-                      onSessionActions(session, {
-                        blockId: selectedBlock?.id,
-                        week: selectedWeek.index,
-                        day: day.key,
-                      });
-                    }
-                  };
-                  return (
-                  <StoryboardSessionDragGesture
-                    key={session.id}
-                    enabled={!dragMoveBusy && movable}
-                    session={session}
-                    onDragStart={beginSessionDrag}
-                    onDragMove={updateSessionDrag}
-                    onDragEnd={finishSessionDrag}
-                    onDragCancel={cancelSessionDrag}
-                  >
-                    <SwipeActionRow
-                      action={(
-                        <Pressable accessibilityRole="button" accessibilityLabel={`${swipeLabel} ${sessionTitle(session)}`} onPress={runSwipeAction} style={storyStyles.sessionSwipeAction}>
-                          <Ionicons name={movable ? 'move-outline' : 'ellipsis-horizontal'} size={19} color={colors.textStrong} />
-                          <Text style={storyStyles.sessionSwipeActionText}>{swipeLabel}</Text>
-                        </Pressable>
-                      )}
-                      isOpen={openSwipeSessionId === session.id}
-                      foregroundStyle={storyStyles.sessionSwipeForeground}
-                      onAction={runSwipeAction}
-                      onGestureStart={() => setOpenSwipeSessionId((current) => current === session.id ? current : null)}
-                      onRequestClose={() => setOpenSwipeSessionId((current) => current === session.id ? null : current)}
-                      onRequestOpen={() => setOpenSwipeSessionId(session.id)}
-                      style={storyStyles.sessionSwipeFrame}
-                    >
-                      <StoryboardSessionRow
-                        dayDate={day.date}
-                        dayLabel={day.label}
-                        displayUnit={displayUnit}
-                        draggable={movable}
-                        dragging={draggingSessionId === session.id}
-                        focused={selectedDay?.key === day.key}
-                        session={session}
-                        onActions={() => onSessionActions(session, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
-                        onPress={() => onOpenSession(session.id, { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key })}
-                      />
-                    </SwipeActionRow>
-                  </StoryboardSessionDragGesture>
-                  );
-                }))}
-                {!storyboardWeekSessionCount(selectedWeek) ? (
-                  <View style={storyStyles.emptyWeekRow}>
-                    <Ionicons name="calendar-clear-outline" size={21} color={colors.violet} />
-                    <View style={storyStyles.grow}>
-                      <Text style={storyStyles.emptyWeekTitle}>No Sessions planned</Text>
-                      <Text style={storyStyles.emptyWeekMeta}>Choose any day above, then add the first Session.</Text>
-                    </View>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-            </SLMotionEntrance>
-          ) : null}
-      </ScrollView>
-
-      <StoryboardSheet visible={sheet === 'blocks'} title="Change Block" onClose={() => setSheet(null)}>
-        {blocks.map((block) => (
-          <Pressable key={block.id} onPress={() => { onSelectBlock(block.id); setSheet(null); }} style={storyStyles.sheetRow}>
-            <View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>{block.name || 'Training Block'}</Text><Text style={storyStyles.sheetRowMeta}>{block.date_range_label || formatRangeLabel(parseDate(block.start_date), parseDate(block.end_date))} · {block.total_weeks || 0} weeks</Text></View>
-            {block.id === selectedBlock?.id ? <Ionicons name="checkmark" size={20} color={colors.green} /> : null}
-          </Pressable>
-        ))}
-      </StoryboardSheet>
-
-      <StoryboardSheet visible={sheet === 'weeks'} title={`Weeks (${weeks.length})`} onClose={() => setSheet(null)}>
-        {weeks.map((week) => {
-          const state = storyboardWeekState(week, currentWeek);
-          const count = week.days.reduce((sum, day) => sum + day.sessions.length, 0);
-          return (
-            <Pressable key={week.index} onPress={() => { setSheet(null); selectWeekInPlace(week); }} style={storyStyles.sheetRow}>
-              <View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>Week {week.index}</Text><Text style={storyStyles.sheetRowMeta}>{week.rangeLabel}{count ? ` · ${count} Sessions` : ' · No Sessions'}</Text></View>
-              <View style={[storyStyles.statusRing, { borderColor: storyboardStateColor(state) }]} />
+          {athleteId ? <View style={compositionStyles.notes}><AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="inline" /></View> : null}
+        </View>
+        <View style={compositionStyles.weekNavigation}>
+          <View style={compositionStyles.weekTitleRow}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Previous week" disabled={!selectedWeek || selectedWeek.index <= 1} onPress={() => { const week = weeks.find((entry) => entry.index === selectedWeek!.index - 1); if (week) selectWeekInPlace(week); }} style={compositionStyles.weekArrow}>
+              <Ionicons name="chevron-back" size={21} color={selectedWeek && selectedWeek.index > 1 ? colors.textStrong : colors.subtle} />
             </Pressable>
-          );
-        })}
-      </StoryboardSheet>
-
-      <StoryboardSheet visible={sheet === 'intelligence'} title="Programming Intelligence" onClose={() => setSheet(null)}>
-        <View style={storyStyles.intelligenceSection}>
-          <View style={storyStyles.intelligenceSectionHeader}><Text style={storyStyles.sheetSectionLabel}>COVERAGE</Text><Text style={[storyStyles.intelligenceValue, { color: colors.green }]}>{coverage}%</Text></View>
-          <View style={storyStyles.progressTrack}><View style={[storyStyles.progressFill, { width: `${coverage}%` }]} /></View>
-          <Text style={storyStyles.intelligenceMeta}>{intelligence?.coverage?.through_date ? `Training built through ${storyboardFormatShortDate(intelligence.coverage.through_date)}` : 'Current block coverage'}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel="Choose week in Program map" onPress={() => setSheet('blocks')} style={compositionStyles.weekTitleButton}>
+              <Text style={compositionStyles.weekTitle}>Week {selectedWeek?.index || 1} <Text style={compositionStyles.weekDate}>· {selectedWeek?.rangeLabel}</Text></Text>
+              <Ionicons name="chevron-down" size={13} color={colors.subtle} />
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Next week" disabled={!selectedWeek || selectedWeek.index >= weeks.length} onPress={() => { const week = weeks.find((entry) => entry.index === selectedWeek!.index + 1); if (week) selectWeekInPlace(week); }} style={compositionStyles.weekArrow}>
+              <Ionicons name="chevron-forward" size={21} color={selectedWeek && selectedWeek.index < weeks.length ? colors.textStrong : colors.subtle} />
+            </Pressable>
+          </View>
+          <View ref={dayStripRef} style={compositionStyles.dates}>
+            {selectedWeek?.days.map((day) => <Pressable key={day.key} accessibilityRole="button" accessibilityLabel={`${formatLongDate(day.date)}, ${day.sessions.length} Sessions`} accessibilityState={{ selected: selectedDay?.key === day.key }} onPress={() => { storyboardSelectionFeedback(); setSelectedDayKey(day.key); }} style={[compositionStyles.date, (selectedDay?.key === day.key || dragTargetDate === day.date) && compositionStyles.dateSelected]}>
+              <Text style={compositionStyles.dayLabel}>{day.label.slice(0, 1)}</Text><Text style={[compositionStyles.dayNumber, day.date === today && { color: colors.violet }]}>{parseDate(day.date)?.getDate()}</Text>
+              <View style={[compositionStyles.dateDot, { backgroundColor: day.sessions.length ? storyboardSessionColor(day.sessions[0]) : 'transparent' }]} />
+            </Pressable>)}
+          </View>
         </View>
-        <View style={storyStyles.intelligenceSection}>
-          <View style={storyStyles.intelligenceSectionHeader}><Text style={storyStyles.sheetSectionLabel}>READINESS</Text><Text style={[storyStyles.intelligenceValue, { color: colors.green }]}>{readiness == null ? '—' : Number(readiness).toFixed(2)}</Text></View>
-          <Text style={storyStyles.intelligenceMeta}>{intelligence?.readiness?.trend_label || 'Not enough data'}</Text>
-          <MiniReadinessChart points={intelligence?.readiness?.points || []} />
+        <View>
+          {draggingSessionId ? <Text style={compositionStyles.hint}>Drop on a day to move this Session</Text> : null}
+          {dragMoveBusy ? <ActivityIndicator color={colors.violet} /> : null}
+          {dragMoveError ? <Text accessibilityRole="alert" style={storyStyles.dragError}>{dragMoveError}</Text> : null}
+          {selectedWeek?.days.flatMap((day) => day.sessions.map((session) => {
+            const movable = canDragProgrammingSession(session.status || session.kind);
+            const context = { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key };
+            const move = () => { setOpenSwipeSessionId(null); movable ? onQuickMoveSession(session) : onSessionActions(session, context); };
+            return <StoryboardSessionDragGesture key={session.id} enabled={!dragMoveBusy && movable} session={session} onDragStart={beginSessionDrag} onDragMove={updateSessionDrag} onDragEnd={finishSessionDrag} onDragCancel={cancelSessionDrag}>
+              <SwipeActionRow action={<Pressable onPress={move} style={storyStyles.sessionSwipeAction}><Ionicons name={movable ? 'move-outline' : 'ellipsis-horizontal'} size={20} color={colors.violet} /><Text style={compositionStyles.actionText}>{movable ? 'Move' : 'Actions'}</Text></Pressable>} isOpen={openSwipeSessionId === session.id} onAction={move} onRequestOpen={() => setOpenSwipeSessionId(session.id)} onRequestClose={() => setOpenSwipeSessionId(null)}>
+                <StoryboardSessionRow dayDate={day.date} dayLabel={day.label} displayUnit={displayUnit} draggable={movable} dragging={draggingSessionId === session.id} focused={selectedDay?.key === day.key} session={session} onActions={() => onSessionActions(session, context)} onPress={() => onOpenSession(session.id, context)} />
+              </SwipeActionRow>
+            </StoryboardSessionDragGesture>;
+          }))}
+          {selectedWeek && !storyboardWeekSessionCount(selectedWeek) ? <View style={compositionStyles.emptyWeek}><Text style={compositionStyles.sessionTitle}>An open week</Text><Text style={compositionStyles.metadata}>Add a Session or reuse a week of training.</Text></View> : null}
+          {selectedDay?.date ? <Pressable accessibilityRole="button" accessibilityLabel={`Add Session on ${formatLongDate(selectedDay.date)}`} onPress={() => onAddSession(selectedDay.date!)} style={compositionStyles.addRow}>
+            <View style={compositionStyles.dateAnchor}><Text style={compositionStyles.dayLabel}>{selectedDay.label}</Text><Text style={compositionStyles.dayNumber}>{parseDate(selectedDay.date)?.getDate()}</Text></View>
+            <Ionicons name="add-circle-outline" size={23} color={colors.violet} /><Text style={compositionStyles.actionText}>Add Session</Text><View style={storyStyles.grow} /><Ionicons name="chevron-forward" size={18} color={colors.subtle} />
+          </Pressable> : null}
+          {selectedWeek ? <View style={compositionStyles.weekTools}>
+            <Pressable accessibilityRole="button" onPress={() => onReuse?.(selectedWeek, selectedDay?.date || selectedWeek.startDate || '')} style={compositionStyles.iconAction}><Ionicons name="copy-outline" size={17} color={colors.violet} /><Text style={compositionStyles.actionText}>Reuse training</Text></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Week ${selectedWeek.index} actions`} onPress={() => onWeekActions(selectedWeek)} style={compositionStyles.iconAction}><Text style={compositionStyles.metadata}>Week actions</Text><Ionicons name="ellipsis-horizontal" size={19} color={colors.muted} /></Pressable>
+          </View> : null}
         </View>
-        <View style={storyStyles.intelligenceSection}>
-          <Text style={storyStyles.sheetSectionLabel}>TM SUGGESTIONS</Text>
-          {(intelligence?.tm_suggestions || []).length ? intelligence?.tm_suggestions?.map((item, index) => <View key={`${item.lift}-${index}`} style={storyStyles.intelligenceSuggestion}><Image source={storyboardLiftArtwork(item.lift_label || item.lift)} style={storyStyles.intelligenceSuggestionArt} resizeMode="contain" /><View style={storyStyles.grow}><Text style={storyStyles.intelligenceSuggestionLift}>{item.lift_label || item.lift}</Text><Text style={storyStyles.intelligenceSuggestionValue}>{formatCalculatedWeightFromKg(item.current_tm, displayUnit) || '—'} → {formatCalculatedWeightFromKg(item.suggested_tm, displayUnit) || '—'}</Text></View><Ionicons name="arrow-forward" size={17} color={colors.amber} /></View>) : <Text style={storyStyles.intelligenceMeta}>No active suggestions</Text>}
-        </View>
-        <View style={storyStyles.intelligenceSection}>
-          <Text style={storyStyles.sheetSectionLabel}>ATTENTION NEEDED</Text>
-          {(intelligence?.attention_needed || []).length ? intelligence?.attention_needed?.map((item, index) => <View key={`${item.label}-${index}`} style={storyStyles.attentionRow}><View style={storyStyles.attentionMark} /><Text style={storyStyles.attentionText}>{item.label}</Text></View>) : <Text style={storyStyles.intelligenceMeta}>Nothing needs attention</Text>}
-        </View>
-      </StoryboardSheet>
-
-      <StoryboardSheet visible={sheet === 'athletes'} title="Switch Athlete" onClose={() => setSheet(null)}>
-        {onExitAthleteWorkspace ? <Pressable onPress={() => { setSheet(null); onExitAthleteWorkspace(); }} style={storyStyles.sheetRow}><Ionicons name="person-outline" size={20} color={colors.violet} /><View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>Open Athlete Workspace</Text><Text style={storyStyles.sheetRowMeta}>{athleteName}</Text></View><Ionicons name="chevron-forward" size={18} color={colors.subtle} /></Pressable> : null}
-        <TextInput value={athleteSearch} onChangeText={setAthleteSearch} placeholder="Search athletes" placeholderTextColor={colors.subtle} style={storyStyles.searchInput} />
-        {roster.filter((athlete) => String(athlete.name || '').toLowerCase().includes(athleteSearch.trim().toLowerCase())).map((athlete) => (
-          <Pressable key={athlete.id} onPress={() => selectAthlete(athlete.id)} style={storyStyles.sheetRow}>
-            <SLProfileAvatar name={athlete.name} profilePhotoUrl={athlete.avatar_url} size={40} statusColor={athlete.id === athleteId ? colors.green : colors.violet} />
-            <View style={storyStyles.grow}><Text style={storyStyles.sheetRowTitle}>{athlete.name || 'Athlete'}</Text><Text style={storyStyles.sheetRowMeta}>{athlete.bodyweight ? `${athlete.bodyweight} ${athlete.preferred_units || 'kg'}` : 'Powerlifting'}</Text></View>
-            {athlete.id === athleteId ? <Ionicons name="checkmark" size={20} color={colors.green} /> : null}
+      </ScrollView>
+      <StoryboardSheet visible={sheet === 'blocks' || sheet === 'weeks'} title="Program map" onClose={() => setSheet(null)}>
+        <Text style={compositionStyles.mapProgram}>{activeProgram.name}</Text>
+        <Text style={compositionStyles.metadata}>{activeProgram.total_weeks || allWeeks.length} weeks · {blocks.length} Blocks</Text>
+        {blocks.map((block, index) => <View key={block.id} style={compositionStyles.mapBlock}>
+          <Pressable onPress={() => onSelectBlock(block.id)} onLongPress={() => { setSheet(null); onBlockActions(block); }} style={compositionStyles.mapBlockHeader}>
+            <Text style={[compositionStyles.mapIndex, { color: block.id === currentBlockId ? colors.violet : colors.subtle }]}>{String(index + 1).padStart(2, '0')}</Text>
+            <View style={storyStyles.grow}><Text style={compositionStyles.sessionTitle}>{block.name || 'Training Block'}</Text><Text style={compositionStyles.metadata}>{formatRangeLabel(parseDate(block.start_date), parseDate(block.end_date))} · {block.total_weeks} weeks</Text></View>
+            <Pressable accessibilityLabel={`${block.name} actions`} onPress={() => { setSheet(null); onBlockActions(block); }} style={compositionStyles.weekArrow}><Ionicons name="ellipsis-horizontal" size={19} color={colors.muted} /></Pressable>
           </Pressable>
-        ))}
-        <Pressable onPress={() => { setSheet(null); router.push('/(tabs)/coach-invite-athlete' as any); }} style={storyStyles.addAthleteRow}><Ionicons name="add" size={18} color={colors.violet} /><Text style={storyStyles.addAthleteText}>Add Athlete</Text></Pressable>
+          {allWeeks.filter((week) => week.blockId === block.id).map((week) => <Pressable key={week.index} accessibilityRole="button" accessibilityState={{ selected: block.id === selectedBlock?.id && week.index === selectedWeek?.index }} onPress={() => { if (block.id !== selectedBlock?.id) { onSelectBlock(block.id, week.index); } else selectWeekInPlace(week); setSheet(null); }} style={[compositionStyles.mapWeek, block.id === selectedBlock?.id && week.index === selectedWeek?.index && compositionStyles.mapWeekSelected]}>
+            <View style={storyStyles.grow}><Text style={compositionStyles.mapWeekTitle}>Week {week.index} · {week.rangeLabel}</Text><Text style={compositionStyles.metadata}>{storyboardWeekSessionCount(week)} Sessions</Text></View><Ionicons name="chevron-forward" size={16} color={colors.subtle} />
+          </Pressable>)}
+        </View>)}
+        <Pressable onPress={() => { setSheet(null); onProgramActions(); }} style={compositionStyles.addRow}><Ionicons name="settings-outline" size={20} color={colors.violet} /><Text style={compositionStyles.actionText}>Manage Program structure</Text></Pressable>
       </StoryboardSheet>
+      {canSelectAthlete ? <StoryboardSheet visible={sheet === 'athletes'} title="Switch Athlete" onClose={() => setSheet(null)}>
+        <TextInput value={athleteSearch} onChangeText={setAthleteSearch} placeholder="Search athletes" placeholderTextColor={colors.subtle} style={storyStyles.searchInput} />
+        {roster.filter((athlete) => String(athlete.name || '').toLowerCase().includes(athleteSearch.trim().toLowerCase())).map((athlete) => <Pressable key={athlete.id} onPress={() => selectAthlete(athlete.id)} style={storyStyles.sheetRow}>
+          <SLProfileAvatar name={athlete.name} profilePhotoUrl={athlete.avatar_url} size={36} /><Text style={[compositionStyles.athleteName, storyStyles.grow]}>{athlete.name || 'Athlete'}</Text>{athlete.id === athleteId ? <Ionicons name="checkmark" size={18} color={colors.violet} /> : null}
+        </Pressable>)}
+      </StoryboardSheet> : null}
     </View>
   );
 }
@@ -3063,39 +3012,17 @@ function StoryboardSessionDragGesture({
 }
 
 function StoryboardSessionRow({ dayDate, dayLabel, displayUnit, draggable, dragging, focused, onActions, onPress, session }: { dayDate: string | null; dayLabel: string; displayUnit: DisplayWeightUnit; draggable: boolean; dragging: boolean; focused: boolean; onActions: () => void; onPress: () => void; session: HubSession }) {
-  const completed = storyboardSessionState(session) === 'completed';
-  return (
-    <SLMotionPressable
-      accessibilityRole="button"
-      accessibilityHint={draggable ? 'Tap to open. Press and hold, then drag to a day above to move.' : 'Tap to open.'}
-      onPress={() => { storyboardSelectionFeedback(); onPress(); }}
-      pressScale={0.985}
-      style={({ pressed }) => [storyStyles.compactSessionRow, focused && storyStyles.compactSessionRowFocused, dragging && storyStyles.compactSessionRowDragging, pressed && storyStyles.tactilePressed]}
-    >
-      <View style={storyStyles.compactSessionDayBadge}>
-        <Text style={storyStyles.compactSessionDay}>{dayLabel}</Text>
-        <Text style={storyStyles.compactSessionDate}>{dayDate ? parseDate(dayDate)?.getDate() : '—'}</Text>
-      </View>
-      <View style={storyStyles.compactSessionArtwork}>
-        <LinearGradient colors={completed ? ['rgba(32,105,74,0.24)', '#080B0E'] : ['rgba(107,69,16,0.24)', '#090A0E']} style={StyleSheet.absoluteFillObject} />
-        <StoryboardSessionArtwork session={session} />
-      </View>
-      <View style={storyStyles.grow}>
-        <Text numberOfLines={1} style={storyStyles.compactSessionTitle}>{sessionTitle(session)}</Text>
-        <Text numberOfLines={1} style={storyStyles.compactSessionMeta}>{storyboardSessionEvidence(session, displayUnit)}</Text>
-      </View>
-      <View style={[storyStyles.sessionStatusDot, { backgroundColor: storyboardSessionColor(session) }]} />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${sessionTitle(session)} actions`}
-        hitSlop={8}
-        onPress={(event) => { event.stopPropagation(); onActions(); }}
-        style={storyStyles.sessionOverflowButton}
-      >
-        <Ionicons name="ellipsis-vertical" size={18} color={dragging ? colors.violet : colors.subtle} />
-      </Pressable>
-    </SLMotionPressable>
-  );
+  const movementNames = (session.preview?.movements || []).map((movement) => simplifyMobileMovementName(movement.movement || '')).filter(Boolean);
+  const summary = movementNames.length ? `${movementNames.slice(0, 2).join(' · ')}${Number(session.preview?.movement_count || movementNames.length) > 2 ? ` +${Number(session.preview?.movement_count || movementNames.length) - 2}` : ''}` : session.preview ? 'No movements' : 'Loading movements…';
+  const sets = session.preview?.set_count;
+  return <SLMotionPressable accessibilityRole="button" accessibilityHint={draggable ? 'Tap to open. Press and hold, then drag to a date to move.' : 'Tap to open.'} onPress={() => { storyboardSelectionFeedback(); onPress(); }} pressScale={0.99} style={[compositionStyles.session, focused && compositionStyles.sessionFocused, dragging && { opacity: 0.7 }]}>
+    <View style={compositionStyles.dateAnchor}><Text style={compositionStyles.dayLabel}>{dayLabel}</Text><Text style={[compositionStyles.dayNumber, focused && { color: colors.violet }]}>{dayDate ? parseDate(dayDate)?.getDate() : '—'}</Text></View>
+    <View style={compositionStyles.sessionCopy}><Text numberOfLines={2} style={compositionStyles.sessionTitle}>{sessionTitle(session)}</Text><Text numberOfLines={1} style={compositionStyles.sessionMeta}>{summary}</Text>{sets ? <Text style={compositionStyles.sessionMeta}>{sets} sets</Text> : null}</View>
+    <View style={compositionStyles.sessionTrailing}>
+      <Pressable accessibilityRole="button" accessibilityLabel={`${sessionTitle(session)} actions`} onPress={(event) => { event.stopPropagation(); onActions(); }} hitSlop={8} style={{ minWidth: 44, minHeight: 30, alignItems: 'flex-end', justifyContent: 'center' }}><Ionicons name="ellipsis-horizontal" size={19} color={colors.subtle} /></Pressable>
+      <Text style={[compositionStyles.sessionState, { color: storyboardSessionColor(session) }]}>{sessionStatusText(session)}</Text>
+    </View>
+  </SLMotionPressable>;
 }
 
 function MetricCell({ label, value, detail, tone = colors.textStrong }: { label: string; value: string; detail: string; tone?: string }) {
@@ -3317,7 +3244,7 @@ function storyboardWeekState(week: RoadmapWeek, currentWeek: number): 'completed
 }
 function storyboardStateColor(state: ReturnType<typeof storyboardWeekState>) { return state === 'completed' ? colors.green : state === 'current' ? colors.amber : state === 'gap' ? '#E0448D' : colors.subtle; }
 function storyboardSessionState(session: HubSession) { return ['completed', 'logged'].includes(String(session.status || session.kind || '').toLowerCase()) || session.kind === 'completed' ? 'completed' : 'scheduled'; }
-function storyboardSessionColor(session: HubSession) { return storyboardSessionState(session) === 'completed' ? colors.green : colors.amber; }
+function storyboardSessionColor(session: HubSession) { const status = String(session.status || '').toLowerCase(); return ['completed', 'logged', 'done'].includes(status) ? '#63D99D' : status === 'draft' ? '#D5AA65' : ['missed','incomplete'].includes(status) ? '#D57C94' : '#B2A0D7'; }
 function sessionStatusText(session: HubSession) { const state = String(session.status || session.kind || 'Assigned').replaceAll('_', ' '); return state.charAt(0).toUpperCase() + state.slice(1); }
 function storyboardFormatShortDate(value?: string | null) { const parsed = parseDate(value); return parsed ? parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''; }
 
@@ -5887,10 +5814,65 @@ function parseDate(value?: string | null) {
   return new Date(year, month - 1, day);
 }
 
+const compositionStyles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: SLColors.canvas },
+  content: { paddingBottom: 116 },
+  header: { minHeight: 52, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  headerTitle: { flex: 1, color: colors.textStrong, fontFamily: SLFontFamilies.sansBold, fontSize: 21, lineHeight: 27 },
+  iconAction: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7 },
+  actionText: { color: colors.violet, fontFamily: SLFontFamilies.sansMedium, fontSize: 14, lineHeight: 20 },
+  athlete: { minHeight: 52, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  athleteName: { color: colors.textStrong, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16, lineHeight: 22 },
+  programBand: { minHeight: 110, paddingHorizontal: 16, paddingVertical: 16, overflow: 'hidden', flexDirection: 'row', alignItems: 'center', gap: 8 },
+  programCopy: { flex: 1, gap: 5 },
+  eyebrow: { color: colors.muted, fontFamily: SLFontFamilies.sansBold, fontSize: 10, lineHeight: 14, letterSpacing: 1.3 },
+  programTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.sansBold, fontSize: 25, lineHeight: 30, maxWidth: '92%' },
+  metadata: { color: colors.muted, fontFamily: SLFontFamilies.sans, fontSize: 13, lineHeight: 18 },
+  coverage: { minHeight: 32, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#0A0B0F' },
+  coverageMark: { width: 4, height: 14, borderRadius: 2 },
+  notes: { paddingHorizontal: 16 },
+  weekNavigation: { backgroundColor: '#07080B', borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.line, paddingBottom: 5 },
+  weekTitleRow: { minHeight: 46, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6 },
+  weekTitleButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, minHeight: 44 },
+  weekTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 21 },
+  weekDate: { color: colors.muted, fontFamily: SLFontFamilies.sans, fontSize: 13 },
+  weekArrow: { width: 40, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  dates: { flexDirection: 'row', paddingHorizontal: 8 },
+  date: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 48, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  dateSelected: { borderBottomColor: colors.violet, backgroundColor: 'rgba(160,87,239,0.07)' },
+  dayLabel: { color: colors.muted, fontFamily: SLFontFamilies.sansMedium, fontSize: 10, lineHeight: 14, textTransform: 'uppercase' },
+  dayNumber: { color: colors.textStrong, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 17, lineHeight: 22 },
+  dateDot: { width: 3, height: 3, borderRadius: 2 },
+  dateAnchor: { width: 37, alignItems: 'flex-start', gap: 2 },
+  session: { backgroundColor: '#090A0E', minHeight: 96, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', gap: 11, alignItems: 'center', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, borderLeftWidth: 3, borderLeftColor: 'transparent' },
+  sessionFocused: { borderLeftColor: colors.violet, backgroundColor: '#161020' },
+  sessionTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.sansBold, fontSize: 18, lineHeight: 24 },
+  sessionCopy: { flex: 1, gap: 3 },
+  sessionMeta: { color: colors.muted, fontFamily: SLFontFamilies.sans, fontSize: 12, lineHeight: 17 },
+  sessionState: { fontFamily: SLFontFamilies.sansMedium, fontSize: 11, lineHeight: 15 },
+  sessionArt: { width: 44, height: 58, overflow: 'hidden' },
+  sessionTrailing: { alignItems: 'flex-end', gap: 5 },
+  addRow: { minHeight: 62, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  weekTools: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  hint: { color: colors.muted, padding: 16, fontSize: 13 },
+  emptyWeek: { paddingHorizontal: 20, paddingVertical: 28, gap: 8 },
+  mapProgram: { color: colors.textStrong, fontFamily: SLFontFamilies.sansBold, fontSize: 25, lineHeight: 31, marginBottom: 6 },
+  mapBlock: { marginTop: 22 },
+  mapBlockHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 62 },
+  mapIndex: { fontSize: 17, fontFamily: SLFontFamilies.monoSemiBold },
+  mapWeek: { minHeight: 64, paddingVertical: 10, paddingLeft: 14, paddingRight: 4, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 2, borderLeftColor: colors.line, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, marginLeft: 7 },
+  mapWeekSelected: { backgroundColor: 'rgba(145,79,216,0.16)', borderLeftColor: colors.violet },
+  mapWeekTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.sansMedium, fontSize: 14, lineHeight: 20 },
+});
+
 const storyStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: SLColors.canvas },
   topbar: { minHeight: 96, paddingHorizontal: PROGRAMMING_OUTER_GUTTER, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, flexDirection: 'row', alignItems: 'center', gap: 10 },
   topbarCopy: { flex: 1, alignItems: 'flex-start', justifyContent: 'center' },
+  workspaceTopbar: { minHeight: 64, paddingVertical: 10 },
+  workspaceTitle: { fontSize: 20, lineHeight: 26 },
+  workspaceAction: { height: 40 },
+  workspaceScroll: { paddingHorizontal: PROGRAMMING_OUTER_GUTTER },
   topbarTitle: { color: colors.textStrong, fontFamily: SLFontFamilies.display, fontSize: 25, lineHeight: 30, textTransform: 'uppercase', letterSpacing: 0.4 },
   topbarWeekTitle: { fontFamily: SLFontFamilies.sansBold, fontSize: 23, lineHeight: 28, textTransform: 'none' },
   topbarSub: { ...SLTypography.caption, color: colors.violet, marginTop: 2 },
@@ -6102,6 +6084,7 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   programmingStoryboardHost: {
+    flex: 1,
     width: '100%',
     alignSelf: 'stretch',
   },

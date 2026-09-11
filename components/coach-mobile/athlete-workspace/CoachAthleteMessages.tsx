@@ -6,7 +6,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { ThreadScreen } from '@/app/(tabs)/messages/[threadId]';
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
 import { Text } from '@/components/ui/sl-text';
-import { SLLayout, SLRadius } from '@/constants/theme';
+import { SLFontFamilies, SLLayout, SLRadius } from '@/constants/theme';
 
 import { useCoachAthleteWorkspace } from './CoachAthleteWorkspaceContext';
 
@@ -45,6 +45,7 @@ export function CoachAthleteMessages() {
 
   return (
     <View style={styles.screen}>
+      <View style={styles.intro}><Text style={styles.kicker}>ATHLETE CONVERSATION</Text><Text style={styles.title}>Messages</Text></View>
       <ThreadScreen
         embedded
         forcedThreadId={workspace.messageThreadId}
@@ -59,7 +60,10 @@ export function CoachAthleteMessages() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
+  screen: { flex: 1, paddingBottom: 88 },
+  intro: { paddingHorizontal: SLLayout.screenGutter, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: COACH_V2.border },
+  kicker: { color: COACH_V2.violetBright, fontSize: 11, letterSpacing: 1.5 },
+  title: { color: COACH_V2.text, fontFamily: SLFontFamilies.display, fontSize: 32, marginTop: 5 },
   state: { alignItems: 'center', flex: 1, justifyContent: 'center', padding: SLLayout.screenGutter },
   stateTitle: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 15, textAlign: 'center' },
   stateBody: { color: COACH_V2.muted, fontSize: 14, lineHeight: 20, marginTop: 6, maxWidth: 320, textAlign: 'center' },

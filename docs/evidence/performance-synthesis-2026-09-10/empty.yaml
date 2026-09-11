@@ -1,0 +1,31 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Meet Packet QA
+    timeout: 20000
+- tapOn: Performance
+- extendedWaitUntil:
+    visible: No recorded strength yet
+    timeout: 20000
+- assertVisible: Meet Packet QA
+- assertNotVisible: Dev Athlete 12
+- assertNotVisible: Dev Athlete 4
+- assertNotVisible: SQUAT ESTIMATE
+- assertNotVisible: Training output
+- assertNotVisible: Worth noticing
+- assertNotVisible: Body & Readiness
+- assertVisible: Open Achievements
+- assertVisible: Open Journey
+- assertVisible: Open Archive
+- assertVisible: Open Accessories
+- assertVisible: Open Core Variants
+- takeScreenshot: empty-performance
+- tapOn: .*Open Strength.*
+- extendedWaitUntil:
+    visible: Back to The Ledger
+    timeout: 15000
+- tapOn: Back to The Ledger
+- assertVisible: Meet Packet QA
+- assertVisible: No recorded strength yet
+- assertVisible:
+    id: coach-athlete-performance-unit-toggle

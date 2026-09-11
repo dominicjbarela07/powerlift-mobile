@@ -17,9 +17,11 @@ const gesture = read('lib', 'bottom-sheet-gesture.ts');
 
 assert.match(manager, /useState<ProgrammingWorkspaceSelection \| null>\(null\)/, 'Programming Manager must own the open workspace state.');
 assert.match(manager, /setWorkspaceSelection\(\{ workoutId, context \}\)/, 'opening a Session must preserve its block, Week, and day context in-place.');
-assert.match(manager, /<ScrollView[\s\S]*?<StrengthLedgerBottomSheet[\s\S]*?<MobileSessionWorkspaceContent/, 'the mounted Programming Map must remain behind the workspace sheet.');
+assert.match(manager, /<FocusedSessionAuthoring[\s\S]*?<MobileSessionWorkspaceContent/, 'the mounted Programming Map must remain behind the workspace sheet.');
 assert.match(manager, /<MobileSessionWorkspaceContent[\s\S]*?embedded[\s\S]*?programmingBlockId=[\s\S]*?programmingWeek=[\s\S]*?programmingDay=/, 'the sheet must render the canonical workspace with its Programming context.');
-assert.match(manager, /presentationBoundary="app-shell"/, 'the workspace sheet must begin below the authoritative app header.');
+const focused = read('components', 'coach-mobile', 'FocusedSessionAuthoring.tsx');
+assert.match(focused, /presentationStyle="fullScreen"[\s\S]*SafeAreaProvider[\s\S]*SafeAreaView/, 'focused authoring owns a safe full-height surface');
+assert.match(manager, /<FocusedSessionAuthoring[\s\S]*onDismiss=\{finishWorkspaceDismiss\}[\s\S]*<MobileSessionWorkspaceContent/, 'dismiss completion preserves mounted week ownership');
 assert.doesNotMatch(manager, /function SessionAddModal[\s\S]*?router\.push\([\s\S]*?session-workspace/, 'template/adopt flows inside Programming Manager must not escape to a workspace route.');
 assert.match(manager, /function SessionAddModal[\s\S]*?onOpenSession\(Number\(createdSessionId\)\)[\s\S]*?onOpenSession\(Number\(adoptedSessionId\)\)/, 'newly materialized Sessions must open in the same sheet.');
 
@@ -27,14 +29,14 @@ assert.match(route, /export function MobileSessionWorkspaceContent/, 'the canoni
 assert.match(route, /!props\.embedded && authReady/, 'embedded self-coached workspaces must remain in the Programming sheet.');
 assert.match(route, /props\.onClose[\s\S]*?props\.onClose\(\)/, 'embedded close must dismiss rather than navigate.');
 assert.match(route, /!props\.embedded \? <Tabs\.Screen/, 'only the standalone deep-link route may alter tab presentation.');
-assert.match(route, /sheetPresentation=\{props\.embedded\}/, 'the canonical editor must receive sheet-safe positioning.');
+assert.match(route, /sheetPresentation=\{false\}/, 'the canonical editor must receive sheet-safe positioning.');
 assert.match(route, /registerDismissRequest=\{props\.registerDismissRequest\}/, 'sheet dismissal must pass through the editor dirty-state guard.');
 assert.doesNotMatch(route, /programmingWeekContext|programmingWorkspaceSheet|programmingWorkspaceHandle/, 'the reusable workspace must not stack a second Week header or sheet inside the outer sheet.');
 
 assert.match(editor, /registerDismissRequest\?\.\(\(\) => resolveDirty\(onCloseWorkspace\)\)/, 'backdrop, close, and drag dismissal must protect unsaved changes.');
 assert.match(editor, /automaticallyAdjustKeyboardInsets/, 'workspace scrolling must continue to own keyboard adjustment.');
 assert.match(editor, /keyboardShouldPersistTaps="handled"/, 'keyboard interaction must not steal workspace controls.');
-assert.match(editor, /props\.sheetPresentation[\s\S]*?SLSpacing\.md/, 'the embedded floating toolkit must not reserve tab-bar space inside the sheet.');
+assert.match(editor, /authorStyles\.toolbar[\s\S]*insets\.bottom/, 'the authoring bar respects the home indicator');
 assert.match(editor, /setSessionEditorOverlayOpen\(true\)/, 'the workspace must suppress competing navigation for its entire mounted lifecycle.');
 
 for (const source of [manager, athleteHub]) {

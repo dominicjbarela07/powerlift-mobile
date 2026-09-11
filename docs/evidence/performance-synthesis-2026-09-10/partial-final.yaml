@@ -1,0 +1,13 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Dev Athlete 12
+    timeout: 20000
+- tapOn: Performance
+- extendedWaitUntil:
+    visible: SQUAT ESTIMATE
+    timeout: 20000
+- assertNotVisible: ESTIMATED TOTAL
+- assertNotVisible: Dev Athlete 4
+- assertVisible: 1 of 3 lifts established
+- takeScreenshot: partial-top-final

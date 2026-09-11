@@ -1,3 +1,4 @@
+import { purgeAuthoringJournals } from '@/lib/session-authoring-journal';
 // context/AuthContext.tsx
 import React, {
   createContext,
@@ -468,6 +469,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function logout() {
     stopVideoUploadQueue();
+    await purgeAuthoringJournals().catch(() => undefined);
     await persistUser(null);
     setToken(null);
     tokenRef.current = null;

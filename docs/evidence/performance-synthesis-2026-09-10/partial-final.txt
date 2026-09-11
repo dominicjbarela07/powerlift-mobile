@@ -1,0 +1,9 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-partial-final
+Assert that "Dev Athlete 12" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "SQUAT ESTIMATE" is visible... COMPLETED
+Assert that "ESTIMATED TOTAL" is not visible... COMPLETED
+Assert that "Dev Athlete 4" is not visible... COMPLETED
+Assert that "1 of 3 lifts established" is visible... COMPLETED
+Take screenshot partial-top-final... COMPLETED

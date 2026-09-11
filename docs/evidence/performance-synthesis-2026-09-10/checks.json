@@ -1,0 +1,24 @@
+{
+  "typescript": "PASS",
+  "scopedEslint": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "acceptedContracts": {
+    "passed": 191,
+    "failed": 0,
+    "existingQuarantineChanged": false
+  },
+  "focused": [
+    "Performance synthesis",
+    "Performance v2",
+    "Workspace relationships/isolation",
+    "Workspace entry/return",
+    "Floating controls",
+    "Programming subject (8/8)",
+    "Shared chart fidelity",
+    "Accessory time/instance axes"
+  ],
+  "nativeDevice": "iPhone 17 / iOS 26.2",
+  "nativeRuntime": "Canonical npm start / Metro 8081 / Expo Go 2.1.0"
+}

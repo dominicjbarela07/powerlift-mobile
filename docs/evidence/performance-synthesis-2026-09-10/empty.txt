@@ -1,0 +1,24 @@
+Running on iPhone 17 - iOS 26.2 - 658A4750-30D8-4C66-BB90-27A35EA6B759
+ > Flow performance-v2-empty
+Assert that "Meet Packet QA" is visible... COMPLETED
+Tap on "Performance"... COMPLETED
+Assert that "No recorded strength yet" is visible... COMPLETED
+Assert that "Meet Packet QA" is visible... COMPLETED
+Assert that "Dev Athlete 12" is not visible... COMPLETED
+Assert that "Dev Athlete 4" is not visible... COMPLETED
+Assert that "SQUAT ESTIMATE" is not visible... COMPLETED
+Assert that "Training output" is not visible... COMPLETED
+Assert that "Worth noticing" is not visible... COMPLETED
+Assert that "Body & Readiness" is not visible... COMPLETED
+Assert that "Open Achievements" is visible... COMPLETED
+Assert that "Open Journey" is visible... COMPLETED
+Assert that "Open Archive" is visible... COMPLETED
+Assert that "Open Accessories" is visible... COMPLETED
+Assert that "Open Core Variants" is visible... COMPLETED
+Take screenshot empty-performance... COMPLETED
+Tap on ".*Open Strength.*"... COMPLETED
+Assert that "Back to The Ledger" is visible... COMPLETED
+Tap on "Back to The Ledger"... COMPLETED
+Assert that "Meet Packet QA" is visible... COMPLETED
+Assert that "No recorded strength yet" is visible... COMPLETED
+Assert that id: coach-athlete-performance-unit-toggle is visible... COMPLETED

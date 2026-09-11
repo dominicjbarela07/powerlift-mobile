@@ -57,7 +57,7 @@ assert.match(source.provider, /bootstrapResponse\.status === 403 \|\| bootstrapR
 assert.match(source.provider, /ensureCoachAthleteThread/);
 assert.match(source.provider, /AppState\.addEventListener\('change'/);
 
-for (const tab of ["key: 'brief'", "key: 'training'", "key: 'reviews'", "key: 'messages'"]) {
+for (const tab of ["key: 'brief'", "key: 'training'", "key: 'performance'", "key: 'reviews'", "key: 'messages'"]) {
   assert.match(source.shell, new RegExp(tab));
 }
 assert.match(source.shell, /Back to previous Coach context/);
@@ -69,7 +69,7 @@ assert.doesNotMatch(
   /<SLFloatingNavigationDock[\s\S]{0,160}\bflow\b/,
   'Athlete Workspace must use the canonical absolute floating wrapper, never the in-flow DEV showcase variant',
 );
-assert.match(source.shell, /SL_TAB_ROW_CONTROL/);
+assert.match(source.shell, /FloatingControlStack/);
 assert.match(source.shell, /pulse-outline/);
 assert.match(source.shell, /barbell-outline/);
 assert.match(source.shell, /checkmark-done-outline/);
@@ -91,9 +91,9 @@ assert.match(source.tabs, /normalizedPathname\.startsWith\('\/coach-athlete\/'\)
 
 for (const section of [
   'Needs Your Action',
-  'Current Training Context',
-  'Performance & Recovery Read',
-  'Recent Conversation / Coach Memory',
+  'On the program',
+  'StrengthHero',
+  'Conversation',
   'Upcoming Decisions',
 ]) assert.match(source.brief, new RegExp(section.replace(/[&/]/g, '\\$&')));
 assert.doesNotMatch(source.brief, /Since Last Visit/);
@@ -110,11 +110,11 @@ assert.doesNotMatch(
 );
 
 assert.match(source.trainingRoute, /import TrainingIndexScreen from '@\/app\/\(tabs\)\/workout'/);
-assert.match(source.trainingRoute, /return <TrainingIndexScreen \/>/);
+assert.match(source.trainingRoute, /return <TrainingIndexScreen key=\{workspace\.subjectKey\} \/>/);
 assert.doesNotMatch(source.trainingRoute, /athlete-workspace\/CoachAthleteTraining/);
-assert.match(source.programming, /const rosterAthleteId = params\.athleteId/);
+assert.match(source.programming, /resolveProgrammingSubject\(athleteWorkspace, params\.athleteId\)/);
 assert.match(source.programming, /`\/workouts\/my_list\/mobile\/\$\{rosterAthleteId\}`/);
-assert.match(source.programming, /isProgrammingManager = isIndividual \|\| !!rosterAthleteId/);
+assert.match(source.programming, /isProgrammingManager = programmingSubject\.workspaceOwned \|\| isIndividual \|\| !!rosterAthleteId/);
 assert.match(source.programming, /<IndividualProgrammingHome/);
 assert.match(source.programming, /managedAthleteId=\{rosterAthleteId \? Number\(rosterAthleteId\)/);
 assert.match(source.programming, /scopeProgrammingPayload/);

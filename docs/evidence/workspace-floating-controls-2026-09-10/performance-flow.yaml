@@ -1,0 +1,131 @@
+appId: host.exp.Exponent
+---
+- runFlow:
+    when:
+      visible: Display unit kg. Switch to lb
+    commands:
+      - tapOn:
+          id: coach-athlete-performance-unit-toggle
+- assertVisible:
+    id: coach-athlete-performance-unit-toggle
+- scrollUntilVisible:
+    element:
+      text: THE LONG GAME
+    direction: UP
+    speed: 70
+    timeout: 45000
+- takeScreenshot: top-lb
+- tapOn:
+    id: coach-athlete-performance-unit-toggle
+- assertVisible: Display unit kg. Switch to lb
+- takeScreenshot: top-kg
+- tapOn:
+    text: Brief
+- assertVisible: Your coaching brief
+- assertVisible: kg
+- tapOn:
+    text: Performance
+- assertVisible: Display unit kg. Switch to lb
+- scrollUntilVisible:
+    element:
+      text: Inspect Squat recorded strength
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: strength-kg
+- tapOn: Inspect Squat recorded strength
+- takeScreenshot: strength-detail-kg
+- scrollUntilVisible:
+    element:
+      text: Performed volume
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: volume-kg
+- tapOn:
+    id: coach-athlete-performance-unit-toggle
+- takeScreenshot: volume-lb
+- tapOn:
+    id: coach-athlete-performance-unit-toggle
+- scrollUntilVisible:
+    element:
+      text: .*Leg Extension.*
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: accessories-kg
+- scrollUntilVisible:
+    element:
+      text: .*3ct Pause Squat.*
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: variants-kg
+- scrollUntilVisible:
+    element:
+      text: Earned, not given
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- swipe:
+    start: 50%, 70%
+    end: 50%, 40%
+- takeScreenshot: prs-kg
+- scrollUntilVisible:
+    element:
+      text: Reported bodyweight
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: bodyweight-kg
+- tapOn:
+    id: coach-athlete-performance-unit-toggle
+- assertVisible: 200 lb
+- takeScreenshot: bodyweight-lb
+- scrollUntilVisible:
+    element:
+      text: .*Explore the Archive.*
+    direction: DOWN
+    speed: 40
+    centerElement: true
+- takeScreenshot: bottom-lb
+- tapOn:
+    id: coach-athlete-actions-control
+- assertVisible: Act for Dev Athlete 4
+- assertVisible: .*New Session.*
+- assertVisible: .*Message Athlete.*
+- assertVisible: .*Add Coach Note.*
+- assertVisible: .*Adjust Program.*
+- takeScreenshot: actions-athlete4
+- tapOn: .*Message Athlete.*
+- assertVisible: ATHLETE WORKSPACE
+- assertVisible: Dev Athlete 4
+- assertNotVisible:
+    id: coach-athlete-performance-unit-toggle
+- takeScreenshot: message-action
+- tapOn: Performance
+- assertVisible: Display unit lb. Switch to kg
+- scrollUntilVisible:
+    element:
+      text: .*Open Journey.*
+    direction: DOWN
+    centerElement: true
+- tapOn: .*Open Journey.*
+- extendedWaitUntil:
+    visible:
+      id: ledger-journey-unit-toggle
+    timeout: 20000
+- tapOn:
+    id: ledger-journey-unit-toggle
+- assertVisible: Display unit kg. Switch to lb
+- takeScreenshot: ledger-consumer-kg
+- tapOn:
+    id: ledger-journey-unit-toggle
+- assertVisible: Display unit lb. Switch to kg
+- tapOn: Back to The Ledger
+- assertVisible: ATHLETE WORKSPACE
+- assertVisible: Dev Athlete 4
+- assertVisible:
+    id: coach-athlete-performance-unit-toggle
+- assertVisible: Display unit lb. Switch to kg
+- takeScreenshot: performance-return

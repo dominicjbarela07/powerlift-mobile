@@ -1,0 +1,37 @@
+appId: host.exp.Exponent
+---
+- extendedWaitUntil:
+    visible: Muscle Mommy P1
+    timeout: 45000
+- tapOn: Training Program actions
+- extendedWaitUntil:
+    visible: Edit Muscle Mommy P1
+    timeout: 15000
+- tapOn: Edit Muscle Mommy P1
+- extendedWaitUntil:
+    visible: Edit Training Program
+    timeout: 30000
+- assertVisible: ATHLETE WORKSPACE
+- assertVisible: Dev Athlete 12
+- assertVisible: Training
+- takeScreenshot: scoped-edit-program
+- tapOn: "Next,.*"
+- takeScreenshot: scoped-edit-timeline
+- tapOn: ".*, Back"
+- tapOn: Exit edit program
+- extendedWaitUntil:
+    visible: PROGRAMMING MANAGER
+    timeout: 30000
+- assertVisible: Dev Athlete 12
+- assertNotVisible: Switch athlete
+- tapOn: Brief
+- extendedWaitUntil:
+    visible: Needs Your Action
+    timeout: 30000
+- assertVisible: Dev Athlete 12
+- tapOn: Training
+- extendedWaitUntil:
+    visible: PROGRAMMING MANAGER
+    timeout: 30000
+- assertVisible: Muscle Mommy P1
+- takeScreenshot: scoped-return

@@ -31,11 +31,10 @@ assert.match(index, /source_set_log_id \? router\.push\(`\/\(tabs\)\/ledger\/arc
 assert.match(index, /typeof event\.prior_value === 'number'[\s\S]*priorValue != null && delta != null/, 'comparisons require canonical prior evidence and numeric deltas');
 assert.match(index, /NEW PERSONAL RECORD|BLOCK BEST/, 'missing comparisons use truthful non-comparative language');
 
-assert.match(index, /LatestEntryArtwork[\s\S]*accessoryMuscleRegionAsset/, 'Latest Entry uses governed movement-region anatomy');
-assert.match(index, /entry\?\.movement\?\.family[\s\S]*accessoryMuscleRegion/, 'Latest Entry retains Journey-family semantics when exploration matching is unavailable');
-assert.match(index, /coreLift === 'squat' \? 'quads'[\s\S]*coreLift === 'bench' \? 'chest'[\s\S]*coreLift === 'deadlift' \? 'hamstrings'/, 'core Latest Entries resolve to their semantic muscle-region family before generic fallbacks');
-assert.match(index, /fallbackEvent\?\.movement_label[\s\S]*fallbackEvent\?\.core_movement_key/, 'Latest Entry retains accomplishment identity when the Journey projection is unavailable');
-assert.match(index, /loadConvention === 'assistance_load'/, 'assisted loads are labeled from canonical semantics');
+assert.match(index, /LatestEntryArtwork[\s\S]*CanonicalMovementArtwork/, 'Latest Entry uses the shared exact movement renderer');
+assert.doesNotMatch(index, /coreLift === 'squat' \? 'quads'/, 'exact movement artwork must not be inferred from anatomy regions');
+assert.match(index, /movement\?\.name \|\| entry\?\.movement\?\.label \|\| fallbackEvent\?\.movement_label/, 'Latest Entry retains the source label while artwork requires a resolved movement');
+assert.match(index, /formatPerformedLoad\(performance.weight_kg, unit,[\s\S]*loadConvention: journeyLoadConvention\(entry\)/, 'assisted loads are labeled from canonical semantics');
 for (const forbidden of ['stable movement identity', 'canonical identity', 'reconciliation', 'movement session completed', 'prescription completed', 'identity snapshot', 'source definition']) {
   assert.doesNotMatch(index, new RegExp(forbidden, 'i'), `athlete-facing Index leaked internal term: ${forbidden}`);
 }
@@ -53,7 +52,7 @@ for (const marker of [
 assert.match(index, /point\.date < currentMonday/, 'partial current calendar week is excluded from volume comparisons');
 assert.match(index, /=== 7 \* 86_400_000/, 'volume deltas require adjacent seven-day buckets');
 assert.doesNotMatch(index, /context\?\.bodyweight_kg/, 'profile bodyweight cannot substitute for reported observations');
-assert.match(index, /useLedgerLiveData\('1y'/, 'Index accomplishment/progression projection remains bounded');
+assert.match(index, /useLedgerLiveData\('90d'/, 'Index accomplishment/progression projection remains bounded');
 assert.doesNotMatch(index, /fetchLedgerAccomplishmentHistory/, 'Index cannot download the lifetime accomplishment archive');
 assert.match(index, /chart\.some\(\(value\) => value > 0\)/, 'zero-history athletes receive an intentional chart state instead of decorative bars');
 

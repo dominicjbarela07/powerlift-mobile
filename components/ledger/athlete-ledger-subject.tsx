@@ -33,8 +33,10 @@ export function AthleteLedgerSubjectProvider({ children }: { children: ReactNode
   const isWorkspaceScoped = first(params.returnToWorkspace) === '1';
   const valid = !isWorkspaceScoped || (ids.length === 1 && values.every((value) => Number(value) === ids[0]));
   const athleteId = valid ? ids[0] : undefined;
+  const destination = ['evidence', 'performance', 'brief'].includes(first(params.workspaceReturn) || '')
+    ? first(params.workspaceReturn) : 'brief';
   const returnPath = isWorkspaceScoped && athleteId
-    ? `/(tabs)/coach-athlete/${athleteId}/${first(params.workspaceReturn) === 'evidence' ? 'evidence' : 'brief'}`
+    ? `/(tabs)/coach-athlete/${athleteId}/${destination}`
     : undefined;
   const value = useMemo<AthleteLedgerSubject>(() => ({
     athleteId,
@@ -46,9 +48,9 @@ export function AthleteLedgerSubjectProvider({ children }: { children: ReactNode
       athlete_id: String(athleteId),
       workspaceAthleteId: isWorkspaceScoped ? String(athleteId) : undefined,
       returnToWorkspace: isWorkspaceScoped ? '1' : undefined,
-      workspaceReturn: isWorkspaceScoped ? 'evidence' : undefined,
+      workspaceReturn: isWorkspaceScoped ? destination : undefined,
     } : {},
-  }), [athleteId, isWorkspaceScoped, returnPath, valid]);
+  }), [athleteId, destination, isWorkspaceScoped, returnPath, valid]);
   return <SubjectContext.Provider value={value}>{children}</SubjectContext.Provider>;
 }
 

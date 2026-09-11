@@ -1,17 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
-import React, { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import React, { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Keyboard, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COACH_V2 } from '@/components/coach-mobile/coach-mobile-v2-ui';
-import {
-  SLFloatingNavigationDock,
-  SL_TAB_ROW_CONTROL,
-} from '@/components/navigation/sl-tab-row-control';
+import { SLFloatingNavigationDock } from '@/components/navigation/sl-tab-row-control';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { SLAthleteAvatar, SLErrorState, SLScreen } from '@/components/ui';
 import { Text } from '@/components/ui/sl-text';
+import { FloatingControlCoordinator, FloatingControlStack, FloatingUtilityButton } from '@/components/ui/floating-control-coordinator';
 import { SLColors, SLLayout, SLRadius, SLSpacing } from '@/constants/theme';
 
 import { useCoachAthleteWorkspace, type WorkspaceDestination } from './CoachAthleteWorkspaceContext';
@@ -24,11 +22,13 @@ const DESTINATIONS: Array<{
 }> = [
   { key: 'brief', label: 'Brief', suffix: '', icon: 'pulse-outline' },
   { key: 'training', label: 'Training', suffix: '/training', icon: 'barbell-outline' },
+  { key: 'performance', label: 'Performance', suffix: '/performance', icon: 'analytics-outline' },
   { key: 'reviews', label: 'Reviews', suffix: '/reviews', icon: 'checkmark-done-outline' },
   { key: 'messages', label: 'Messages', suffix: '/messages', icon: 'chatbubbles-outline' },
 ];
 
 function workspaceDestination(pathname: string): WorkspaceDestination | null {
+  if (pathname.includes('/performance')) return 'performance';
   if (pathname.includes('/training')) return 'training';
   if (pathname.includes('/reviews')) return 'reviews';
   if (pathname.includes('/messages')) return 'messages';
@@ -41,6 +41,12 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const workspace = useCoachAthleteWorkspace();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardWillShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardWillHide', () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [toolkitOpen, setToolkitOpen] = useState(false);
   const selected = workspaceDestination(pathname);
@@ -53,6 +59,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
     brief: (workspace.summary?.operational_status.reasons.length || 0)
       + Number(workspace.bootstrap?.check_ins.submitted_unreviewed_count || 0),
     training: 0,
+    performance: 0,
     reviews: pendingReviewCount,
     messages: Number(workspace.summary?.unread_messages?.count || 0),
   }), [pendingReviewCount, workspace.bootstrap?.check_ins.submitted_unreviewed_count, workspace.summary]);
@@ -104,8 +111,8 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
   if (!athlete) return null;
 
-  const openProgramming = () => router.push({
-    pathname: '/(tabs)/workout',
+  const openProgramming = () => router.navigate({
+    pathname: `${basePath}/training`,
     params: {
       athleteId: String(athlete.id),
       athleteName: athlete.name,
@@ -116,6 +123,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
   return (
     <SLScreen edges="top" padded={false} style={styles.screen}>
+      <FloatingControlCoordinator context="tab-screen">
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Back to previous Coach context"
@@ -149,20 +157,17 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
 
       <View key={workspace.subjectKey} style={styles.content}>{children}</View>
 
-      <Pressable
-        accessibilityLabel="Open athlete actions"
-        accessibilityRole="button"
-        onPress={() => setToolkitOpen(true)}
-        style={({ pressed }) => [
-          styles.floatingToolkit,
-          { bottom: SL_TAB_ROW_CONTROL.dockFrameHeight + insets.bottom + SLSpacing.md },
-          pressed && styles.floatingToolkitPressed,
-        ]}
-      >
-        <Ionicons color={COACH_V2.text} name="add" size={26} />
-      </Pressable>
+      {!keyboardVisible ? <FloatingControlStack context="tab-screen" slot={0} bottomOffset={selected === 'messages' ? 76 : 0}>
+        <FloatingUtilityButton
+          accessibilityLabel="Open athlete actions"
+          icon="add"
+          onPress={() => setToolkitOpen(true)}
+          selected
+          testID="coach-athlete-actions-control"
+        />
+      </FloatingControlStack> : null}
 
-      <SLFloatingNavigationDock
+      {!keyboardVisible ? <SLFloatingNavigationDock
         bottomInset={insets.bottom}
         items={DESTINATIONS.map((destination) => ({
           accessibilityLabel: destination.label,
@@ -172,7 +177,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           onPress: () => navigate(destination.key),
           selected: selected === destination.key,
         }))}
-      />
+      /> : null}
 
       <StrengthLedgerBottomSheet
         accessibilityLabel="Athlete workspace options"
@@ -200,7 +205,13 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           <Text style={styles.sheetEyebrow}>COACH TOOLKIT</Text>
           <Text style={styles.sheetTitle}>Act for {athlete.name}</Text>
           <View style={styles.actionGrid}>
-            <ToolkitAction icon="add-circle-outline" label="New Session" onPress={() => { setToolkitOpen(false); openProgramming(); }} />
+            <ToolkitAction icon="add-circle-outline" label="New Session" onPress={() => {
+              setToolkitOpen(false);
+              router.push({ pathname: '/(tabs)/create-workout', params: {
+                athleteId: String(athlete.id), athleteName: athlete.name,
+                ...(workspace.trainingState.selectedDate ? { date: workspace.trainingState.selectedDate } : {}),
+              } } as any);
+            }} />
             <ToolkitAction icon="chatbubble-ellipses-outline" label="Message Athlete" onPress={() => { setToolkitOpen(false); navigate('messages'); }} />
             <ToolkitAction icon="create-outline" label="Add Coach Note" onPress={() => { setToolkitOpen(false); router.push(`${basePath}/notes` as any); }} />
             <ToolkitAction icon="calendar-outline" label="Adjust Program" onPress={() => { setToolkitOpen(false); openProgramming(); }} />
@@ -221,6 +232,7 @@ export function CoachAthleteWorkspaceShell({ children }: { children: ReactNode }
           </View>
         </View>
       </StrengthLedgerBottomSheet>
+      </FloatingControlCoordinator>
     </SLScreen>
   );
 }
@@ -290,22 +302,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: COACH_V2.violetBright, fontSize: 10, fontWeight: '800', letterSpacing: 1.4 },
   athleteName: { color: COACH_V2.text, fontSize: 20, fontWeight: '800', marginTop: 2 },
   content: { flex: 1 },
-  floatingToolkit: {
-    alignItems: 'center',
-    backgroundColor: COACH_V2.violet,
-    borderColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 25,
-    borderWidth: 1,
-    height: 50,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: SLLayout.screenGutter,
-    shadowColor: COACH_V2.violet,
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
-    width: 50,
-  },
-  floatingToolkitPressed: { opacity: 0.8, transform: [{ scale: 0.96 }] },
   sheet: { paddingBottom: SLSpacing.xl, paddingHorizontal: SLLayout.screenGutter, paddingTop: 4 },
   sheetEyebrow: { color: COACH_V2.violetBright, fontSize: 11, fontWeight: '900', letterSpacing: 1.6 },
   sheetTitle: { color: COACH_V2.text, fontSize: 25, fontWeight: '800', marginBottom: 16, marginTop: 5 },

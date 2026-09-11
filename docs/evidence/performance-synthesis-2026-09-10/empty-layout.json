@@ -1,0 +1,18 @@
+{
+  "athleteId": 58,
+  "content": {
+    "height": 653.3333129882812,
+    "pageX": 0,
+    "pageY": 128,
+    "width": 402
+  },
+  "period": "90d",
+  "verticalTravel": 0,
+  "viewport": {
+    "height": 746,
+    "pageX": 0,
+    "pageY": 128,
+    "width": 402
+  },
+  "contentMinusViewport": -92.66668701171875
+}

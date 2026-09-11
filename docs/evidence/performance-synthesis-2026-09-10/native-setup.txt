@@ -1,0 +1,4 @@
+Canonical npm start; Expo Go on iPhone 17 / iOS 26.2.
+Measure using existing Hermes DevTools and the public ScrollView measurement methods in native-measurement.js. Read globalThis.__performanceLayout after the native callback completes.
+Focused flows start in their named athlete workspace. Performance ScrollView positions used to keep native tap targets above floating controls: strength 490 pt; supplements 1400 pt; record end of content; refresh/top 0 pt. Scroll setup invokes the existing public scrollTo({y, animated:false}) method, without changing app data or app source.
+Run Maestro with JAVA_HOME pointing to the installed OpenJDK 17. Screenshot outputs must be relative filenames.

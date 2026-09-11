@@ -311,19 +311,26 @@ export function buildAnalyticalXLayout({
   }));
 
   const accepted: typeof candidates = [];
+  // Endpoint labels are start/end anchored, so their full width faces the plot.
+  // Measuring every label as centered permits collisions beside the endpoints.
+  const labelLeft = (candidate: typeof candidates[number]) => candidate.row.x
+    - (candidate.index === 0 ? 0 : candidate.index === positioned.length - 1 ? candidate.width : candidate.width / 2);
+  const labelRight = (candidate: typeof candidates[number]) => candidate.row.x
+    + (candidate.index === 0 ? candidate.width : candidate.index === positioned.length - 1 ? 0 : candidate.width / 2);
+  const clears = (previous: typeof candidates[number], candidate: typeof candidates[number]) => labelLeft(candidate) - labelRight(previous) >= 10;
   candidates.forEach((candidate) => {
-    const previous = accepted.at(-1);
     const isLast = candidate.index === positioned.length - 1;
+    if (isLast) {
+      while (accepted.length > 1 && !clears(accepted.at(-1)!, candidate)) accepted.pop();
+    }
+    const previous = accepted.at(-1);
     if (!previous) {
       accepted.push(candidate);
       return;
     }
-    const clearance = previous.width / 2 + candidate.width / 2 + 10;
-    if (candidate.row.x - previous.row.x >= clearance) {
+    if (clears(previous, candidate)) {
       accepted.push(candidate);
-      return;
     }
-    if (isLast && previous.index !== 0) accepted.splice(accepted.length - 1, 1, candidate);
   });
 
   return {

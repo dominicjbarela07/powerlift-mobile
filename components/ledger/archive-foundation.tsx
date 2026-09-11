@@ -403,7 +403,7 @@ export function ArchiveFoundationExperience() {
       action={{ accessibilityLabel: 'Search and filter Archive', icon: 'search', onPress: () => setToolsOpen((open) => !open) }}
       backAccessibilityLabel="Back to The Ledger"
       breadcrumb="The Ledger"
-      onBack={() => router.replace((ledgerSubject.returnPath || '/(tabs)/ledger/home') as any)}
+      onBack={() => ledgerSubject.returnPath ? router.navigate(ledgerSubject.returnPath as any) : router.replace('/(tabs)/ledger/home' as any)}
       subtitle="Your training history, kept in context."
       title="Archive"
     />

@@ -20,6 +20,7 @@ assert.doesNotMatch(coordinator, /AsyncStorage|fetchJson|preferred_units\s*:/);
 
 for (const file of [
   'components/home/AthleteHomeV3.tsx',
+  'components/coach-mobile/athlete-workspace/CoachAthletePerformance.tsx',
   'components/training-hub/AthleteTrainingHubExperience.tsx',
   'components/coach-mobile/CompletedSessionRecap.tsx',
   'components/movement-history/CanonicalMovementHistoryScreen.tsx',
@@ -40,6 +41,7 @@ for (const file of [
   'app/(tabs)/athlete-dashboard.tsx',
   'app/(tabs)/workout/index.tsx',
   'components/ledger/primitives.tsx',
+  'components/coach-mobile/athlete-workspace/CoachAthleteWorkspaceShell.tsx',
   'components/coach-mobile/CompletedSessionRecap.tsx',
   'components/movement-history/CanonicalMovementHistoryScreen.tsx',
   'components/ledger/AchievementsExperience.tsx',

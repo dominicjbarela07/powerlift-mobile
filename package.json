@@ -79,6 +79,7 @@
     "test:milestones-layout": "node --import tsx scripts/test-milestones-layout.mjs",
     "test:other-milestones": "node scripts/test-other-milestones.mjs",
     "test:streak-achievements": "node scripts/test-streak-achievements.mjs",
+    "test:evidence-read-cache": "node scripts/test-evidence-read-cache.mjs && node scripts/test-evidence-api-integration.mjs",
     "test:ledger-explorations": "node --import tsx scripts/test-ledger-explorations.mjs",
     "test:core-variants-experience": "node --import tsx scripts/test-core-variants-experience.mjs",
     "test:accessories-convergence": "node --import tsx scripts/test-accessories-experience-convergence.mjs",
@@ -165,6 +166,7 @@
     "test:assisted-movement-semantics": "node --import tsx scripts/test-assisted-movement-semantics.mjs",
     "test:coach-roster-first": "node --import tsx scripts/test-coach-roster-first.mjs",
     "test:coach-mobile-live": "node --import tsx scripts/test-coach-mobile-live.mjs",
+    "test:programming-workspace-subject": "node --import tsx scripts/test-programming-workspace-subject.mjs",
     "test:coach-athlete-workspace-v1": "node scripts/test-coach-athlete-workspace-v1.mjs",
     "test:coach-athlete-workspace-entrypoint": "node scripts/test-coach-athlete-workspace-entrypoint.mjs",
     "test:coach-queue-contract": "node --import tsx scripts/test-coach-queue-contract.mjs",
@@ -199,7 +201,9 @@
     "test:release-source-lineage": "node scripts/test-release-source-lineage.mjs",
     "test:accessory-strength-metric": "node --import tsx scripts/test-accessory-strength-metric-policy.mjs",
     "release:ios-ota": "node scripts/publish-validated-ios-ota.mjs",
-    "release:production:ota": "bash scripts/eas-update-production.sh"
+    "release:production:ota": "bash scripts/eas-update-production.sh",
+    "test:coach-performance-v2": "node --import tsx scripts/test-coach-performance-v2.mjs",
+    "test:session-authoring": "node scripts/test-session-workspace-draft-state.mjs && node scripts/test-session-workspace-dirty-reorder.mjs && node scripts/test-session-authoring-recovery.mjs && node scripts/test-evidence-read-cache.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

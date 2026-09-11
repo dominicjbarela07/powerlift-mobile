@@ -115,7 +115,7 @@ normalized values and ramp as the body.
 | Coach Activity, Athlete Hub, and Athlete Hub sheet | Session/athlete aggregate | `ProgrammingMuscleRegionArt` |
 | Post-Session hero and performed-muscle evidence | performed Session aggregate | `ProgrammingMuscleRegionArt` |
 | Accessories development hero | period aggregate | `MuscleMap` |
-| Accessories muscle library and Ledger muscle drill-down | muscle aggregate | `MuscleMap` |
+| Accessories muscle library and Ledger muscle drill-down | muscle aggregate | `MuscleMap`; library highlight arrays remain stable across display-unit changes |
 | Session Workspace muscle discovery | muscle aggregate | `GovernedMuscleThumbnail` |
 | Session Logger, including standalone and Superset movements | exact movement | `CanonicalMovementArtwork` |
 | Swap Accessory confirmation and results | exact movement plus muscle aggregate browse | `CanonicalMovementArtwork` / `GovernedMuscleThumbnail` |
