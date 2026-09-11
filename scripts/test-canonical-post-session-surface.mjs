@@ -90,8 +90,8 @@ for (const tool of ['Resume Session', 'Edit Set Evidence', 'Session Notes', 'Ful
   assert.ok(surface.includes(tool), `post-Session toolkit is missing ${tool}`);
 }
 assert.match(athleteRoute, /onResumeSession=.*beginWorkout/, 'Resume must use the existing governed lifecycle transition');
-assert.match(athleteRoute, /onEditSetEvidence=.*beginWorkout/, 'Set evidence editing must reopen the same Session logger');
-assert.match(athleteRoute, /onEditSessionNotes=.*beginWorkout/, 'Session note editing must preserve the same-Session lifecycle');
+assert.match(athleteRoute, /onEditSetEvidence=.*setRecapCorrection\('sets'\)/, 'Set correction preserves completed lifecycle');
+assert.match(athleteRoute, /onEditSessionNotes=.*setRecapCorrection\('note'\)/, 'Session note correction preserves reflection and completed lifecycle');
 assert.match(athleteRoute, /correctCompletedSessionEquipment/, 'equipment correction must use the governed identity picker path');
 assert.match(athleteRoute, /openIdentityPicker\(accessoryItem, \{ kind: 'evidence_correction' \}\)/, 'equipment correction must be explicit and must not resume the Session');
 assert.doesNotMatch(athleteRoute, /resumeCompletedSessionForEquipmentCorrection|Resume Session to correct equipment\?|Resume & Correct/, 'equipment correction must never expose a Session resume flow');

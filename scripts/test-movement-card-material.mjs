@@ -55,7 +55,7 @@ assert.match(
 );
 assert.match(
   movementCard,
-  /<MovementCardMaterial[\s\S]*state=\{cardMaterialState\}/,
+  /<SessionV3Movement[\s\S]*complete=\{isComplete\}/,
 );
 assert.doesNotMatch(
   movementCard,
@@ -63,8 +63,8 @@ assert.doesNotMatch(
   'movement identity must not control the canonical card material color',
 );
 assert.match(
-  movementCard,
-  /cardStateAccent = movementCardStateAccent\(cardMaterialState\)[\s\S]*color: cardStateAccent/,
+  read('components/workout-logger/session-v3-movement.tsx'),
+  /complete && s\.success/,
   'status text and disclosure controls must use the same state color as the card',
 );
 assert.doesNotMatch(

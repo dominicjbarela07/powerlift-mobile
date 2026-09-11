@@ -42,7 +42,7 @@ assert.doesNotMatch(statusPrimitive, /minimumFontScale|adjustsFontSizeToFit/, 't
 
 assert.match(core, /<MovementLifecycleStatusLabel[\s\S]*?label=\{stateLabel\}/, 'core and standalone accessory cards must consume the shared status primitive');
 assert.match(core, /activeMovementActions:\s*\{[\s\S]*?width:\s*MOVEMENT_STATUS_COLUMN_WIDTH[\s\S]*?flexShrink:\s*0/, 'canonical card actions must own fixed lifecycle width');
-assert.match(core, /numberOfLines=\{canonicalMovementCard \? 0 : 2\}[\s\S]*?style=\{styles\.activeMovementTitle\}/, 'canonical Logger movement titles must grow while legacy cards retain a bounded fallback');
+assert.match(fs.readFileSync(path.join(root, 'components/workout-logger/session-v3-movement.tsx'), 'utf8'), /numberOfLines=\{0\} style=\{s\.title\}/, 'canonical Logger movement titles must grow while legacy cards retain a bounded fallback');
 assert.doesNotMatch(core, /ellipsizeMode="tail"[\s\S]{0,160}?style=\{styles\.activeMovementTitle\}/, 'canonical Logger movement titles must not be deliberately ellipsized');
 assert.match(core, /ledgerHeaderActions:\s*\{[\s\S]*?minWidth:\s*MOVEMENT_STATUS_COLUMN_WIDTH[\s\S]*?flexShrink:\s*0/, 'legacy collapsed/expanded cards must retain the same fixed status width');
 
@@ -53,7 +53,7 @@ assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.movementName\}
 assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.workTitle\}>/, 'expanded superset movement names must remain complete');
 
 assert.match(route, /const accessoryKind = machineAccessory[\s\S]*?<CoreMovementLedgerRow/, 'machine, free-weight, and bodyweight accessories must share the canonical movement card');
-assert.match(route, /<CoreMovementLedgerRow[\s\S]*?title=\{liftDisplayName\(core\)\}/, 'Core, TOP, and backdown work must share the canonical movement card');
+assert.match(route, /<CoreMovementLedgerRow[\s\S]*?title=\{resolveLoggerMovementIdentity\(core\)\.displayName\}/, 'Core, TOP, and backdown work must share the canonical movement card');
 assert.match(route, /<SupersetRoundWorkspace/, 'superset status remains covered through its shared workspace');
 
 console.log('Movement lifecycle status no-wrap, narrow-width, long-name, card-variant, and lifecycle contracts PASS');

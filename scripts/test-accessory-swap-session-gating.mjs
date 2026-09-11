@@ -6,6 +6,7 @@ import {
   itemHasPersistedSetLogs,
   persistedSetLogItemIds,
   resolveSubstitutionAuthority,
+  approvedSubstitutionIdentities,
 } from '../lib/accessory-swap-eligibility.ts';
 
 const resolve = (overrides = {}) => accessorySwapActionForItem({
@@ -44,7 +45,7 @@ assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouched) 
 assert.equal(resolve({ targetItemHasSetLogs: itemHasPersistedSetLogs(untouchedFour) }), 'Swap', 'accessory C at 0/4 remains swappable');
 
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted' }), null, 'externally coached athlete without approved choices does not gain Swap');
-assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), null, 'coached athlete never receives in-Logger Swap even with approved choices');
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), 'Approved substitutions', 'coached athlete never receives in-Logger Swap even with approved choices');
 assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), null, 'target evidence removes approved substitution');
 assert.equal(resolve({ substitutionAuthority: 'none', hasApprovedSubstitutions: true }), null, 'read-only viewer receives no substitution action');
 assert.equal(resolve({ sessionLifecycle: 'pre_session' }), 'Swap', 'pre-Session untouched target shows Swap');
@@ -105,14 +106,17 @@ assert.doesNotMatch(
 );
 assert.match(
   loggerSource,
-  /<GovernedAccessorySubstitutionPickerModal[\s\S]*context="in-session-substitution"[\s\S]*visible=\{swapPickerVisible\}[\s\S]*onSelect=\{\(identity\) =>/,
+  /<GovernedAccessorySubstitutionPickerModal[\s\S]*context="in-session-substitution"[\s\S]*visible=\{swapPickerVisible && substitutionAuthority === 'self_governed'\}[\s\S]*onSelect=\{\(identity\) =>/,
   'accessory substitution must remain wired through the governed movement picker',
 );
 assert.match(loggerSource, /editablePrescription=\{substitutionAuthority === 'self_governed'\}/, 'editable Swap configuration must follow relationship authority rather than UI mode');
-assert.doesNotMatch(loggerSource, /approvedOnly=/, 'the self-coached Swap picker must not retain a coached-athlete substitution lane');
+assert.match(loggerSource, /<ApprovedSubstitutionPicker[\s\S]*substitutionAuthority === 'coach_restricted'/, 'coached substitutions use a separate issued-ID-only picker');
 assert.doesNotMatch(loggerSource, /title=\{data\?\.permissions\?\.can_browse_hot_swap_catalog/, 'ambiguous catalog-boolean copy gate must not choose the approved-substitution experience');
 
 const authSource = readFileSync(new URL('../context/AuthContext.tsx', import.meta.url), 'utf8');
 assert.match(authSource, /payloadAthlete\.is_self_coached === true/, 'mobile auth must retain server relationship truth when presentation mode changes');
 
 console.log('accessory swap per-movement gating regression: PASS');
+
+assert.deepEqual(approvedSubstitutionIdentities([{ movement: 'Unresolved' }, { movement_identity: { id: 3, display_name: 'Row' } }, { movement_identity: { id: 3, display_name: 'Row' } }]), [{ id: 3, display_name: 'Row' }]);
+assert.equal(resolve({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true, targetItemHasSetLogs: true }), null);

@@ -1,3 +1,4 @@
+import { useFocusedSession } from '@/lib/session-logger-focus';
 // app/(tabs)/_layout.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -83,6 +84,7 @@ function FilteredTabBar({
   const focusedParams = useGlobalSearchParams<{ returnToWorkspace?: string }>();
   const { isOpen: isMoreOpen, open: openMore } = useCoachMoreNavigation();
   const sessionEditorOverlayOpen = useSessionEditorOverlayOpen();
+  const focusedSession = useFocusedSession();
   const allowedNames = shippingTabRouteNames({
     isCoach,
     isIndividual,
@@ -155,6 +157,7 @@ function FilteredTabBar({
   const hidesNavigationForCompletedRecap = normalizedPathname.startsWith('/workout/')
     && sessionEditorOverlayOpen;
 
+  if (focusedSession) return null;
   if (isImmersiveMeetMode) return null;
   if (normalizedPathname.startsWith('/coach-athlete/')) return null;
   if (normalizedPathname.startsWith('/ledger') && focusedParams.returnToWorkspace === '1') return null;

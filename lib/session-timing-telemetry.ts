@@ -1,3 +1,4 @@
+import { currentExecutionActor, executionActorOwns, subscribeExecutionActor } from '@/lib/execution-actor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, type AppStateStatus } from 'react-native';
 
@@ -10,7 +11,7 @@ import {
 
 
 export const SESSION_TIMING_VERSION = 'telemetry-v2' as const;
-const STORAGE_KEY = 'strength-ledger:session-timing:v2';
+const STORAGE_KEY = 'strength-ledger:session-timing:v3';
 
 export type SessionTimingEventType =
   | 'session_started'
@@ -74,6 +75,7 @@ const initialState = (): PersistedTimingState => ({
 
 let state = initialState();
 let initialized = false;
+let ownershipGeneration = 0;
 let initializePromise: Promise<void> | null = null;
 let appStateSubscription: { remove(): void } | null = null;
 let runtimeAnchorMs = monotonicNow();
@@ -115,10 +117,12 @@ function elapsedMs(): number {
 }
 
 async function persistState() {
+  const owner = currentExecutionActor();
+  if (!owner) return;
   state.baseElapsedMs = elapsedMs();
   state.lastPersistedWallMs = Date.now();
   runtimeAnchorMs = monotonicNow();
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  await AsyncStorage.setItem(`${STORAGE_KEY}:${owner}`, JSON.stringify(state));
 }
 
 function timingContext() {
@@ -152,15 +156,18 @@ function buildEvent(eventType: SessionTimingEventType, options: {
 
 async function flushPendingEvents() {
   if (flushPromise) return flushPromise;
-  flushPromise = (async () => {
-    while (state.pendingEvents.length) {
+  const owner = currentExecutionActor();
+  if (!owner) return;
+  const generation = ownershipGeneration;
+  const task = (async () => {
+    while (generation === ownershipGeneration && executionActorOwns(owner) && state.pendingEvents.length) {
       const first = state.pendingEvents[0];
       try {
         const result = await fetchJson(
           `${API_BASE}/workouts/mobile/${first.workoutId}/timing-events`,
           { method: 'POST', auth: true, body: JSON.stringify({ event: first.event }) },
         );
-        if (!result.ok || !result.json?.ok) return;
+        if (generation !== ownershipGeneration || !executionActorOwns(owner) || !result.ok || !result.json?.ok) return;
         state.pendingEvents.shift();
         await persistState();
       } catch {
@@ -168,9 +175,10 @@ async function flushPendingEvents() {
       }
     }
   })().finally(() => {
-    flushPromise = null;
+    if (generation === ownershipGeneration) flushPromise = null;
   });
-  return flushPromise;
+  flushPromise = task;
+  return task;
 }
 
 async function queueEvent(event: ClientTimingEvent) {
@@ -199,10 +207,14 @@ async function handleAppState(nextState: AppStateStatus) {
 }
 
 export function initializeSessionTimingTelemetry(): Promise<void> {
+  const owner = currentExecutionActor();
+  if (!owner) return Promise.resolve();
   if (initializePromise) return initializePromise;
+  const generation = ownershipGeneration;
   initializePromise = (async () => {
     try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY);
+      const raw = await AsyncStorage.getItem(`${STORAGE_KEY}:${owner}`);
+      if (generation !== ownershipGeneration || !executionActorOwns(owner)) return;
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<PersistedTimingState>;
         const now = Date.now();
@@ -221,9 +233,11 @@ export function initializeSessionTimingTelemetry(): Promise<void> {
         };
       }
     } catch (error) {
+      if (generation !== ownershipGeneration || !executionActorOwns(owner)) return;
       console.warn('Session timing telemetry hydration failed', error);
       state = initialState();
     }
+    if (generation !== ownershipGeneration || !executionActorOwns(owner)) return;
     runtimeAnchorMs = monotonicNow();
     foregroundActive = AppState.currentState === 'active';
     if (!appStateSubscription) {
@@ -238,11 +252,17 @@ export function initializeSessionTimingTelemetry(): Promise<void> {
 }
 
 async function ensureInitialized() {
+  const owner = currentExecutionActor();
+  const generation = ownershipGeneration;
+  if (!owner) throw new Error('Session timing requires an authenticated account.');
   if (!initialized) await initializeSessionTimingTelemetry();
+  if (generation !== ownershipGeneration || !executionActorOwns(owner)) throw new Error('Session ownership changed.');
 }
 
 export async function prepareSessionStartTiming(workoutId: string | number): Promise<ClientTimingEvent> {
+  const generation = ownershipGeneration;
   await ensureInitialized();
+  if (generation !== ownershipGeneration) throw new Error('Session ownership changed.');
   const normalizedWorkoutId = String(workoutId);
   if (state.activeWorkoutId === normalizedWorkoutId && state.sessionStartedEvent) {
     return state.sessionStartedEvent;
@@ -260,10 +280,12 @@ export async function prepareSessionStartTiming(workoutId: string | number): Pro
   };
   runtimeAnchorMs = monotonicNow();
   await persistState();
+  if (generation !== ownershipGeneration) throw new Error('Session ownership changed.');
   const event = buildEvent('session_started');
   if (!event) throw new Error('Session timing state did not initialize.');
   state.sessionStartedEvent = event;
   await persistState();
+  if (generation !== ownershipGeneration) throw new Error('Session ownership changed.');
   return event;
 }
 
@@ -271,7 +293,9 @@ export async function resumeSessionTiming(
   workoutId: string | number,
   startedAt?: string | null,
 ): Promise<void> {
+  const generation = ownershipGeneration;
   await ensureInitialized();
+  if (generation !== ownershipGeneration) throw new Error('Session ownership changed.');
   const normalizedWorkoutId = String(workoutId);
   if (state.activeWorkoutId === normalizedWorkoutId && state.clientSessionId) return;
   const parsedStart = startedAt ? Date.parse(startedAt) : NaN;
@@ -335,3 +359,15 @@ export function createPerformedSetTiming(
   setEvidenceByEventId.set(clientEventId, evidence);
   return evidence;
 }
+
+// Auth changes sever timer ownership before a new actor can flush any events.
+subscribeExecutionActor(() => {
+  ownershipGeneration += 1;
+  state = initialState();
+  initialized = false;
+  initializePromise = null;
+  flushPromise = null;
+  setEvidenceByEventId.clear();
+  runtimeAnchorMs = monotonicNow();
+  if (currentExecutionActor()) void initializeSessionTimingTelemetry();
+});

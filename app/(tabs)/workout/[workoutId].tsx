@@ -1,6 +1,17 @@
 // app/(tabs)/workout/[workoutId].tsx
 // @ts-nocheck
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLoggerJournal } from '@/lib/session-logger-journal';
+import { CompletedSessionCorrection } from '@/components/workout-logger/completed-session-correction';
+import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
+import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
+import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
+import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
+import { registerFocusedSession } from '@/lib/session-logger-focus';
+import { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';
+
+
 import React, { useCallback, useEffect, useMemo, useReducer, useState, useRef } from 'react';
 import {
   View,
@@ -108,6 +119,7 @@ import { useAuth } from '@/context/AuthContext';
 import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
 import {
   accessorySwapActionForItem,
+  approvedSubstitutionIdentities,
   itemHasPersistedSetLogs,
   persistedSetLogItemIds,
   resolveSubstitutionAuthority,
@@ -251,6 +263,7 @@ import {
 import {
   resolveLoggerLiftIdentity,
   resolveLoggerPlateStack,
+  loggerPhysicalSetupLabel,
   resolveLoggerProgressContext,
   type LoggerProgressEvidence,
 } from '@/lib/logger-visual-context';
@@ -502,7 +515,7 @@ type WorkoutItem = {
   is_substituted?: boolean;
   selected_sub_movement?: string | null;
   approved_subs?: string[];
-  approved_sub_identities?: GeneralMovementIdentity[];
+  approved_sub_identities?: { movement_identity?: GeneralMovementIdentity | null }[];
   sets: number | null;
   reps: number | null;
   reps_text: string | null;
@@ -1670,6 +1683,7 @@ function completedSetSummary(logs: SetLog[], totalSets: number, unit: 'kg' | 'lb
 }
 
 export default function WorkoutViewerScreen() {
+  const { user } = useAuth(); // we only need session + role to decide logging availability
   const {
     workoutId,
     loggerScenario,
@@ -1698,6 +1712,29 @@ export default function WorkoutViewerScreen() {
     coachWorkspaceMode?: string;
   }>();
   const coachPreviewRequested = athleteView === 'coach-preview';
+  const [focusedMovementKey, setFocusedMovementKey] = useState<string | null>(null);
+  const [navigatorVisible, setNavigatorVisible] = useState(false);
+  const executionOwner = String(user?.id ?? user?.user_id ?? '');
+  const executionScope = `${executionOwner}:${workoutId}:${coachPreviewRequested ? 'preview' : 'execute'}`;
+  const executionScopeRef = useRef(executionScope);
+  executionScopeRef.current = executionScope;
+  const journal = useMemo(() => executionOwner && workoutId && !coachPreviewRequested
+    ? createLoggerJournal(AsyncStorage, executionOwner, Number(workoutId)) : null,
+    [executionOwner, workoutId, coachPreviewRequested]);
+  const [journalHydrated, setJournalHydrated] = useState(false);
+  useEffect(() => {
+    let current = true;
+    setJournalHydrated(false);
+    void (journal?.ready || Promise.resolve()).then(() => {
+      if (!current) return;
+      const key = journal?.snapshot().focusedKey;
+      if (key) setFocusedMovementKey(key);
+      setJournalHydrated(true);
+    }).catch(() => { if (current) setError('Unable to restore this Session draft. Reopen the Session to retry.'); });
+    return () => { current = false; };
+  }, [journal]);
+
+  useFocusEffect(useCallback(() => registerFocusedSession(`logger:${workoutId}`), [workoutId]));
   const router = useRouter();
   const devPreviewSession = useDevLiveScreenSession();
   const canonicalLoggerEntryLifecycle = workoutDetailLifecycleForEntryId(
@@ -1711,7 +1748,6 @@ export default function WorkoutViewerScreen() {
     canonicalLoggerEntryLifecycle
     || normalizeWorkoutDetailLifecycle(loggerLifecycle)
     || 'active_session';
-  const { user } = useAuth(); // we only need session + role to decide logging availability
   const insets = useSafeAreaInsets();
   const isIndividualUser =
     user?.workspace_mode === 'individual' ||
@@ -1736,17 +1772,17 @@ export default function WorkoutViewerScreen() {
     ReadonlySet<number>
   >(() => new Set());
   useEffect(() => {
-    if (unitPreferenceHydratedRef.current || !user) return;
+    if (coachPreviewRequested || unitPreferenceHydratedRef.current || !user) return;
     if (unitLocalOverrideRef.current == null) {
       setUnit(normalizeReadinessUnit(user.preferred_units));
     }
     unitPreferenceHydratedRef.current = true;
-  }, [user]);
+  }, [user, coachPreviewRequested]);
   useEffect(() => {
     const isLogging = String(data?.workout?.status || '').toLowerCase() === 'in_progress';
-    setUpdateBlocker('workout', isLogging);
+    setUpdateBlocker('workout', isLogging && !coachPreviewRequested);
     return () => setUpdateBlocker('workout', false);
-  }, [data?.workout?.status]);
+  }, [data?.workout?.status, coachPreviewRequested]);
   const isRewardLoopDemoV2 = __DEV__ && String(data?.workout?.label || '').startsWith('V2 DEMO');
   const rewardLoopDemoV2StorageScope = data?.workout
     ? `${isRewardLoopDemoV2 ? 'mobile-reward-loop-v2:' : ''}${workoutId || data.workout.id}`
@@ -1975,7 +2011,7 @@ export default function WorkoutViewerScreen() {
     }
 
     for (const group of workout.accessory_groups || []) {
-      if (isIdealWorkoutDetailPreview && group.group) {
+      if (group.group) {
         const roundModel = buildSupersetRoundModel(group.items || []);
         const firstItemId = Number(group.items?.[0]?.id || 0);
         rows.push({
@@ -2032,8 +2068,7 @@ export default function WorkoutViewerScreen() {
 
     for (const group of workout.accessory_groups || []) {
       if (
-        isIdealWorkoutDetailPreview
-        && group.group
+        group.group
         && group.items.some((item) => item.id === itemId)
       ) {
         return `ss:${group.group}`;
@@ -2048,6 +2083,9 @@ export default function WorkoutViewerScreen() {
 
   const openMovementCard = useCallback((key: string | null | undefined) => {
     if (!key) return;
+    setFocusedMovementKey(key);
+    setExpandedCoreDetails({});
+    setExpandedCompletedMovements({});
     if (key.startsWith('core:')) {
       const id = key.slice('core:'.length);
       setExpandedCoreDetails((prev) => ({ ...prev, [coreDetailExpansionKey(id)]: true }));
@@ -2079,13 +2117,36 @@ export default function WorkoutViewerScreen() {
 
   const toggleMovementCard = useCallback((key: string) => {
     manualMovementSelectionRef.current = true;
-    if (key.startsWith('core:')) {
-      const detailKey = coreDetailExpansionKey(key.slice('core:'.length));
-      setExpandedCoreDetails((prev) => ({ ...prev, [detailKey]: !prev[detailKey] }));
-      return;
-    }
-    setExpandedCompletedMovements((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
+    if (focusedMovementKey === key) {
+      setFocusedMovementKey(null);
+      setExpandedCoreDetails({});
+      setExpandedCompletedMovements({});
+    } else openMovementCard(key);
+    scrollRef.current?.scrollTo?.({ y: 0, animated: false });
+  }, [focusedMovementKey, openMovementCard]);
+
+  const journalIdentityForItem = (item: WorkoutItem) => {
+    const identity = resolveLoggerMovementIdentity(item);
+    return `${identity.kind}:${identity.effective?.id || 'unresolved'}:equipment:${identity.equipment?.id || 0}`;
+  };
+  useEffect(() => {
+    if (!journal || !journalHydrated || !data?.workout) return;
+    void journal.focus(focusedMovementKey).catch(() => undefined);
+  }, [journal, journalHydrated, focusedMovementKey, data?.workout?.id]);
+  useEffect(() => {
+    const wheel = coreWheel || accessoryWheel;
+    if (!journal || !journalHydrated || !wheel || !data?.workout) return;
+    const item = [...data.workout.core_items, ...data.workout.accessory_groups.flatMap(group => group.items)].find(item => item.id === wheel.itemId);
+    if (!item) return;
+    const draft = {
+      itemId: item.id, identity: journalIdentityForItem(item), revision: Number(item.evidence_revision || 1),
+      setIndex: coreWheel?.setIndex || nextSetIndexFromEvidence(item.set_logs || []),
+      kind: coreWheel ? 'core' as const : 'accessory' as const,
+      weightKg: weightDisplayToKg(wheel.weight, unit), reps: wheel.reps,
+      effort: coreWheel?.rpe ?? accessoryWheel?.rir ?? '',
+    };
+    void journal.saveDraft(draft).catch(() => setError('Draft could not be saved on this device. Keep this Session open and retry.'));
+  }, [journal, journalHydrated, coreWheel, accessoryWheel, unit, data?.workout]);
 
   const markAutoAdvanceAfterLog = useCallback((itemId: number) => {
     pendingAutoAdvanceRef.current = {
@@ -2276,20 +2337,36 @@ export default function WorkoutViewerScreen() {
     feedbackDispatch({ type: 'SUBMIT_STARTED', itemId });
   }, []);
 
-  const submissionForAttempt = useCallback((key: string, payload: object) => {
-    const signature = JSON.stringify(payload);
-    const existing = setSubmissionAttemptsRef.current[key];
-    if (existing?.signature === signature) return existing.id;
-    const id = createSetSubmissionId();
-    setSubmissionAttemptsRef.current[key] = { id, signature };
-    return id;
-  }, []);
+  useEffect(() => {
+    if (!journal || !journalHydrated || !supersetRoundLogger || !data?.workout) return;
+    for (const entry of supersetRoundLogger.entries) {
+      if (entry.alreadyLogged) continue;
+      const item = data.workout.accessory_groups.flatMap(group => group.items).find(item => item.id === entry.itemId);
+      if (!item) continue;
+      void journal.saveDraft({ itemId: item.id, identity: journalIdentityForItem(item), revision: Number(item.evidence_revision || 1), setIndex: supersetRoundLogger.roundIndex,
+        kind: 'accessory', weightKg: unit === 'lb' ? Number(entry.weight) * KG_PER_LB : Number(entry.weight), reps: entry.reps, effort: entry.rir,
+      }).catch(() => setError('Draft could not be saved on this device. Keep this Session open and retry.'));
+    }
+  }, [journal, journalHydrated, supersetRoundLogger, unit, data?.workout]);
+
+  const submissionForAttempt = useCallback(async (key: string, payload: object) => {
+    if (!journal || executionScopeRef.current !== executionScope) throw new Error('Session ownership changed. Reopen the Session.');
+    try {
+      const id = await journal.attempt(key, JSON.stringify(payload), createSetSubmissionId);
+      if (executionScopeRef.current !== executionScope) throw new Error('Session ownership changed.');
+      return id;
+    } catch (error) {
+      setError('Unable to preserve this save for safe retry. Retry when device storage is available.');
+      throw error;
+    }
+  }, [journal, executionScope]);
 
   const consumeSetResultOnce = useCallback((key: string, clientSubmissionId: string, json: any) => {
     if (!processedSetResultsRef.current.consume(String(workoutId || ''), clientSubmissionId, json)) return false;
     delete setSubmissionAttemptsRef.current[key];
+    void journal?.accepted(key, Number(json?.set?.item_id || json?.item_id || 0)).catch(() => undefined);
     return true;
-  }, [workoutId]);
+  }, [workoutId, journal]);
 
   const handleCanonicalSetFeedback = useCallback((json: any, submittedItemId?: number) => {
     const setLogId = Number(json?.set?.id || 0);
@@ -2416,14 +2493,16 @@ export default function WorkoutViewerScreen() {
     request: () => Promise<any>;
     fallbackError: string;
   }) => {
+    const ownerAtDispatch = executionScope;
     const outcome = await canonicalSetSubmissionControllerRef.current.run({
       onStarted: () => {
         beginFeedbackSubmission(itemId);
         setSavingItemId(itemId);
         setError(null);
       },
-      request,
+      request: () => { if (executionScopeRef.current !== ownerAtDispatch) throw new Error('Session ownership changed.'); return request(); },
       onAccepted: (json) => {
+        if (executionScopeRef.current !== ownerAtDispatch) return null;
         if (!consumeSetResultOnce(attemptKey, clientSubmissionId, json)) {
           feedbackAnalytics('recognition_replay_suppressed', {
             set_log_id: Number(json?.set?.id || 0),
@@ -2437,19 +2516,20 @@ export default function WorkoutViewerScreen() {
         return json;
       },
       onFailure: (error: any) => {
+        if (executionScopeRef.current !== ownerAtDispatch) return;
         handleCanonicalSetFailure(error);
         setError(criticalMutationFailureMessage(error, fallbackError));
       },
-      onSettled: () => setSavingItemId(null),
+      onSettled: () => { if (executionScopeRef.current === ownerAtDispatch) setSavingItemId(null); },
     });
 
     if (outcome.status === 'failed') {
       console.log('canonical set submission error', outcome.error);
       return null;
     }
-    if (outcome.status !== 'accepted') return null;
+    if (outcome.status !== 'accepted' || executionScopeRef.current !== ownerAtDispatch) return null;
     return outcome.value;
-  }, [beginFeedbackSubmission, consumeSetResultOnce, handleCanonicalSetFailure, handleCanonicalSetFeedback]);
+  }, [beginFeedbackSubmission, consumeSetResultOnce, handleCanonicalSetFailure, handleCanonicalSetFeedback, executionScope]);
 
   const rememberAcceptedLoad = useCallback((
     itemId: number,
@@ -2818,6 +2898,7 @@ export default function WorkoutViewerScreen() {
     transientRecognitionTrace(20, 'recognition dismissed');
   }, [feedbackState.recognition.currentEvent, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
 
+  const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | 'reflection' | null>(null);
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
@@ -2894,11 +2975,11 @@ export default function WorkoutViewerScreen() {
 
   const [readinessForm, setReadinessForm] = useState<ReadinessModalValues>({
     bodyweight: '',
-    bodyweightSkipped: false,
-    sleepPosition: 0.5,
-    energyPosition: 0.5,
-    sorenessPosition: 0.5,
-    stressPosition: 0.5,
+    bodyweightSkipped: true,
+    sleepPosition: NaN,
+    energyPosition: NaN,
+    sorenessPosition: NaN,
+    stressPosition: NaN,
   });
 
   // If backend provides readiness data, this prevents re-prompting.
@@ -2912,11 +2993,11 @@ export default function WorkoutViewerScreen() {
     setReadinessError(null);
     setReadinessForm({
       bodyweight: '',
-      bodyweightSkipped: false,
-      sleepPosition: 0.5,
-      energyPosition: 0.5,
-      sorenessPosition: 0.5,
-      stressPosition: 0.5,
+      bodyweightSkipped: true,
+      sleepPosition: NaN,
+      energyPosition: NaN,
+      sorenessPosition: NaN,
+      stressPosition: NaN,
     });
     setReadinessVisible(true);
   };
@@ -3016,7 +3097,7 @@ export default function WorkoutViewerScreen() {
       Alert.alert('History unavailable', resolution.message);
       return;
     }
-    router.push(movementHistorySheetRoute(resolution.target) as never);
+    router.push(movementHistorySheetRoute(resolution.target, { kind: 'session_logger', workoutId: Number(workoutId), athleteId: resolution.target.athleteId, mode: coachPreviewRequested ? 'preview' : 'execute', displayUnit: unit }) as never);
   };
 
   const openSwapAcc = (it: WorkoutItem) => {
@@ -3030,7 +3111,7 @@ export default function WorkoutViewerScreen() {
     });
     const swapAction = accessorySwapActionForItem({
       substitutionAuthority: authority,
-      hasApprovedSubstitutions: Array.isArray(it.approved_subs) && it.approved_subs.length > 0,
+      hasApprovedSubstitutions: approvedSubstitutionIdentities(it.approved_sub_identities).length > 0,
       isCoachPreview:
         coachPreviewRequested
         && data?.view_mode === 'coach_preview'
@@ -3117,6 +3198,7 @@ export default function WorkoutViewerScreen() {
       rir = n;
     }
 
+    const swapOwner = executionScope;
     try {
       setSavingItemId(swapAccItem.id);
       setError(null);
@@ -3128,9 +3210,10 @@ export default function WorkoutViewerScreen() {
           body: {
             movement: swapAccIdentity.display_name,
             performed_canonical_movement_definition_id: swapAccIdentity.id,
-            sets: sets ?? undefined,
-            reps_text: repsText,
-            rir: rir ?? undefined,
+            expected_movement_definition_id: resolveLoggerMovementIdentity(swapAccItem).effective?.id,
+            ...(substitutionAuthority === 'self_governed' ? {
+              sets: sets ?? undefined, reps_text: repsText, rir: rir ?? undefined,
+            } : {}),
           },
           auth: true,
         }
@@ -3140,6 +3223,7 @@ export default function WorkoutViewerScreen() {
         throw new Error(json?.error || `Failed to swap accessory (HTTP ${status})`);
       }
 
+      if (executionScopeRef.current !== swapOwner) return;
       const savedItem = json.item as WorkoutItem | undefined;
       if (savedItem) {
         const projectSavedItem = (payload: WorkoutPayload | null) => payload ? {
@@ -3616,11 +3700,11 @@ export default function WorkoutViewerScreen() {
   }, [deliverRestTimerCue, restActive, workoutId]);
 
   useEffect(() => {
-    if (!workoutId || String(data?.workout?.status || '').toLowerCase() !== 'in_progress') return;
+    if (coachPreviewRequested || !workoutId || String(data?.workout?.status || '').toLowerCase() !== 'in_progress') return;
     void resumeSessionTiming(workoutId, data?.workout?.started_at).catch((error) => {
       console.warn('Session timing resume failed', error);
     });
-  }, [data?.workout?.started_at, data?.workout?.status, workoutId]);
+  }, [data?.workout?.started_at, data?.workout?.status, workoutId, coachPreviewRequested]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
@@ -3633,7 +3717,7 @@ export default function WorkoutViewerScreen() {
       if (state === 'active' && previousState !== 'active') {
         resumeRefreshRef.current();
       }
-      if (state === 'active') {
+      if (state === 'active' && !coachPreviewRequested) {
         const activeTimer = getRestTimerCompletionState().active;
         const remaining = activeTimer?.workoutId === String(workoutId)
           ? deriveRestTimerRemainingSeconds(activeTimer, Date.now())
@@ -3665,12 +3749,12 @@ export default function WorkoutViewerScreen() {
     });
 
     return () => sub.remove();
-  }, [deliverRestTimerCue, workoutId]);
+  }, [deliverRestTimerCue, workoutId, coachPreviewRequested]);
 
   useEffect(() => {
     let cancelled = false;
     const status = String(data?.workout?.status || '').toLowerCase();
-    if (!workoutId || status !== 'in_progress') return undefined;
+    if (coachPreviewRequested || !workoutId || status !== 'in_progress') return undefined;
     void hydrateRestTimerCompletion().then(() => reconcileGlobalRestTimerCompletion()).then((snapshot) => {
       if (cancelled) return;
       const activeTimer = snapshot.active?.workoutId === String(workoutId)
@@ -3697,10 +3781,10 @@ export default function WorkoutViewerScreen() {
     return () => {
       cancelled = true;
     };
-  }, [data?.workout?.status, workoutId]);
+  }, [data?.workout?.status, workoutId, coachPreviewRequested]);
 
   useEffect(() => {
-    if (!data?.workout) return;
+    if (coachPreviewRequested || !data?.workout) return;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (status === 'in_progress') return;
 
@@ -3732,7 +3816,7 @@ export default function WorkoutViewerScreen() {
       else setTimerPickerVisible(false);
     }
     cancelRestEndNotification();
-  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId]);
+  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId, coachPreviewRequested]);
 
   useEffect(() => () => {
     restCountdownAudioRef.current?.dispose();
@@ -3919,8 +4003,9 @@ export default function WorkoutViewerScreen() {
     continuation: EquipmentSelectionContinuation,
     nextPayload?: WorkoutPayload | null,
   ) => {
+    const continuationOwner = executionScope;
     if (continuation.kind === 'accessory_set') {
-      requestAnimationFrame(() => openAccessoryWheel(nextItem, true));
+      requestAnimationFrame(() => { if (executionScopeRef.current === continuationOwner) openAccessoryWheel(nextItem, true); });
       return;
     }
     if (continuation.kind === 'group_round') {
@@ -3932,7 +4017,7 @@ export default function WorkoutViewerScreen() {
         requestAnimationFrame(() => {
           // Re-run the gate so tri-sets/giant sets can resolve the next
           // machine without discarding the round context.
-          openSupersetRoundLogger(group, continuation.roundIndex);
+          if (executionScopeRef.current === continuationOwner) openSupersetRoundLogger(group, continuation.roundIndex);
         });
       }
     }
@@ -3943,6 +4028,7 @@ export default function WorkoutViewerScreen() {
     equipmentVariant?: MachineEquipmentType,
   ) => {
     if (!identityPickerItem || !workoutId) return;
+    const equipmentOwner = executionScope;
     const pickerItem = identityPickerItem;
     const continuation = identityPickerContinuation;
     const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
@@ -3996,6 +4082,7 @@ export default function WorkoutViewerScreen() {
             movement_definition_id: identity.id,
           },
     });
+    if (executionScopeRef.current !== equipmentOwner) return;
     if (!response.ok || !response.json?.ok) {
       setIdentityPickerError(response.json?.error || 'Could not save equipment choice.');
       setIdentityPickerLoading(false);
@@ -4023,6 +4110,7 @@ export default function WorkoutViewerScreen() {
     if (nextPayload) setData(nextPayload);
     closeIdentityPicker();
     await fetchWorkout({ silent: true });
+    if (executionScopeRef.current !== equipmentOwner) return;
     setIdentityPickerLoading(false);
     if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
       showSetMutationNotice('Equipment updated');
@@ -4130,13 +4218,14 @@ export default function WorkoutViewerScreen() {
       ...(item.set_logs || []),
       ...(acceptedSet ? [acceptedSet] : []),
     ]);
-    const rawWeight = idealSuggestedWeight
+    const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
+    const rawWeight = (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || idealSuggestedWeight
       || defaultAccessoryWeight({ item: executionItem, unit, currentSetIndex, acceptedSet });
     const weightOptions = buildAccessoryWeightOptions(unit, rawWeight);
     const repsOptions = ['0', ...Array.from({ length: 30 }, (_, idx) => String(idx + 1))];
     const rirOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(idx * 0.5));
-    const repsDefault = accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
-    const rirDefault = accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
+    const repsDefault = restoredDraft?.reps || accInputs[item.id]?.reps || accessoryRepsDefault(executionItem);
+    const rirDefault = restoredDraft?.effort || accInputs[item.id]?.rir || defaultAccessoryRir(executionItem);
 
     setAccessoryWheel({
       visible: true,
@@ -4199,6 +4288,7 @@ export default function WorkoutViewerScreen() {
     }
 
     const entries = round.entries.map(({ item, log }) => {
+        const restoredRoundDraft = !log ? journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), roundIndex) : null;
         const executionItem = accessoryExecutionItem(item);
         const idealRecommendationWeightKg = Number(
           (item as any).dev_accessory_intelligence?.recommendation_weight_kg,
@@ -4241,9 +4331,9 @@ export default function WorkoutViewerScreen() {
           itemId: item.id,
           title: simplifyMobileMovementName(accessoryExecutionName(item)),
           prescription: accessoryTargetLine(executionItem),
-          weight: nearestWheelValue(weightOptions, weight || '0', '0'),
-          reps: nearestWheelValue(repsOptions, reps, '10'),
-          rir: nearestWheelValue(rirOptions, rir, '2'),
+          weight: restoredRoundDraft ? formatWeight(restoredRoundDraft.weightKg, unit) : nearestWheelValue(weightOptions, weight || '0', '0'),
+          reps: restoredRoundDraft?.reps ?? nearestWheelValue(repsOptions, reps, '10'),
+          rir: restoredRoundDraft?.effort ?? nearestWheelValue(rirOptions, rir, '2'),
           requiresRir: executionItem.rir_target != null,
           alreadyLogged: Boolean(log),
           loggedResult: log ? loggedSetText(log as SetLog, unit, item) : null,
@@ -4607,7 +4697,7 @@ export default function WorkoutViewerScreen() {
             actual_rir: entry.rir,
           })),
         };
-        const roundSubmissionId = submissionForAttempt(
+        const roundSubmissionId = await submissionForAttempt(
           attemptKey,
           canonicalPayload,
         );
@@ -4835,7 +4925,8 @@ export default function WorkoutViewerScreen() {
     const currentSetIndex = requestedSetIndex > 0 && !requestedSetAlreadyLogged
       ? requestedSetIndex
       : nextSetIndexFromEvidence(sessionEvidence);
-    const rawWeight = defaultCoreWeight({
+    const restoredDraft = journal?.draft(item.id, journalIdentityForItem(item), Number(item.evidence_revision || 1), currentSetIndex);
+    const rawWeight = (restoredDraft ? displayWeightFromKg(restoredDraft.weightKg, unit) : '') || defaultCoreWeight({
       item,
       unit,
       currentSetIndex,
@@ -4846,8 +4937,8 @@ export default function WorkoutViewerScreen() {
     const weight = nearestWheelValue(weightOptions, rawWeight, weightOptions[0] || (unit === 'kg' ? '100' : '225'));
     const repsOptions = ['0', ...Array.from({ length: 20 }, (_, idx) => String(idx + 1))];
     const rpeOptions = Array.from({ length: 11 }, (_, idx) => formatWheelNumber(5 + idx * 0.5));
-    const defaultReps = defaultCoreReps(item, planned || null);
-    const defaultRpe = defaultCoreRpe(item, planned || null);
+    const defaultReps = restoredDraft?.reps || defaultCoreReps(item, planned || null);
+    const defaultRpe = restoredDraft?.effort || defaultCoreRpe(item, planned || null);
     const reps = nearestWheelValue(repsOptions, defaultReps, defaultReps);
     const rpe = nearestWheelValue(rpeOptions, defaultRpe, '8');
 
@@ -4855,7 +4946,7 @@ export default function WorkoutViewerScreen() {
       visible: true,
       kind,
       itemId: item.id,
-      setIndex,
+      setIndex: currentSetIndex,
       title: `${liftDisplayName(item)}${setIndex ? ` · Set ${setIndex}` : ''}`,
       subtitle: unit.toUpperCase(),
       targetLine,
@@ -5173,7 +5264,7 @@ export default function WorkoutViewerScreen() {
       setError(null);
       return;
     }
-    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const clientSubmissionId = await submissionForAttempt(attemptKey, canonicalPayload);
     const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
@@ -5271,7 +5362,7 @@ export default function WorkoutViewerScreen() {
       actual_reps: reps,
       actual_rpe: rpe,
     };
-    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const clientSubmissionId = await submissionForAttempt(attemptKey, canonicalPayload);
     const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
@@ -5361,7 +5452,7 @@ export default function WorkoutViewerScreen() {
       actual_reps: reps,
       actual_rpe: rpe,
     };
-    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const clientSubmissionId = await submissionForAttempt(attemptKey, canonicalPayload);
     const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
@@ -5441,7 +5532,7 @@ export default function WorkoutViewerScreen() {
       actual_reps: reps,
       actual_rpe: rpe,
     };
-    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const clientSubmissionId = await submissionForAttempt(attemptKey, canonicalPayload);
     const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
@@ -5528,6 +5619,19 @@ export default function WorkoutViewerScreen() {
   }, [pendingAccessoryLogItemId, accInputs]);
 
   useEffect(() => {
+    setCoreWheel(null);
+    setAccessoryWheel(null);
+    setPendingCoreWheelLog(null);
+    setPendingAccessoryLogItemId(null);
+    setSupersetRoundLogger(null);
+    setNavigatorVisible(false);
+    setFocusedMovementKey(null);
+    setStraightInputs({}); setTopInputs({}); setBkInputs({}); setFcInputs({}); setAccInputs({});
+    setIdentityPickerItem(null);
+    setIdentityPickerContinuation({ kind: 'none' });
+    dataRef.current = null;
+    setData(null);
+    unitPreferenceHydratedRef.current = false;
     const canonicalSetSubmissionController = canonicalSetSubmissionControllerRef.current;
     const acceptedSheetHandoffController = acceptedSheetHandoffControllerRef.current;
     const timerHandoffReleaseController = timerHandoffReleaseControllerRef.current;
@@ -5543,7 +5647,7 @@ export default function WorkoutViewerScreen() {
       acceptedSheetHandoffController.reset();
       timerHandoffReleaseController.reset();
     };
-  }, [workoutId]);
+  }, [executionScope]);
 
   useEffect(() => {
     const acceptedItemId = feedbackState.submission.activeItemId;
@@ -5596,19 +5700,13 @@ export default function WorkoutViewerScreen() {
             return;
           }
 
-          const handoffIdentity = `${feedbackState.submission.lastSetLogId}:${acceptedItemId}`;
-          activeTimerHandoffIdentityRef.current = handoffIdentity;
-          feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });
-          transientRecognitionTrace(12, 'timer handoff created', { handoff_identity: handoffIdentity });
-          timerHandoffReleaseControllerRef.current.begin(handoffIdentity, () => {
-            if (activeTimerHandoffIdentityRef.current !== handoffIdentity) return;
-            activeTimerHandoffIdentityRef.current = null;
-            setTimerPickerVisible(false);
-            feedbackDispatch({ type: 'TIMER_IDLE' });
-            transientRecognitionTrace(13, 'timer UI unavailable');
-            transientRecognitionTrace(14, 'timer handoff resolved', { outcome: 'unavailable' });
+          feedbackDispatch({ type: 'TIMER_IDLE' });
+          const restOwner = executionScope;
+          void loadScopedLastUsedRestTimer().then(saved => {
+            if (executionScopeRef.current !== restOwner || coachPreviewRequested) return;
+            const seconds = prescribedRestSecondsForItem(acceptedItemId) ?? sessionRestTimerSeconds ?? saved ?? 120;
+            if (seconds > 0) startRestTimer(seconds);
           });
-          openTimerPicker();
           if (feedbackState.submission.status === 'persisted_new_set') {
             setCompletedSetSwipeTooltipCandidateSetLogId(feedbackState.submission.lastSetLogId);
           }
@@ -5799,7 +5897,7 @@ export default function WorkoutViewerScreen() {
       setError(null);
       return;
     }
-    const clientSubmissionId = submissionForAttempt(attemptKey, canonicalPayload);
+    const clientSubmissionId = await submissionForAttempt(attemptKey, canonicalPayload);
     const timing = createPerformedSetTiming(Number(workoutId), clientSubmissionId, prescribedRestSecondsForItem(itemId));
 
     const json = await submitCanonicalSet({
@@ -6497,6 +6595,7 @@ export default function WorkoutViewerScreen() {
     else setRefreshing(true);
 
     if (!silent) setError(null);
+    const requestOwner = executionScope;
     const requestedWorkoutId = String(workoutId);
     const requestResult = await workoutRequestManagerRef.current.run(async (signal) => {
       if (isIdealWorkoutDetailPreview) {
@@ -6555,6 +6654,7 @@ export default function WorkoutViewerScreen() {
       return payload;
     });
 
+    if (executionScopeRef.current !== requestOwner) return false;
     if (requestResult.kind === 'cancelled' || requestResult.kind === 'obsolete') {
       if (
         screenMountedRef.current
@@ -6616,6 +6716,7 @@ export default function WorkoutViewerScreen() {
     isIdealWorkoutDetailPreview,
     loggerScenario,
     coachPreviewRequested,
+    executionScope,
     workoutId,
   ]);
 
@@ -7130,7 +7231,7 @@ export default function WorkoutViewerScreen() {
 
   useEffect(() => {
     const workout = data?.workout;
-    if (!workout) return;
+    if (!workout || !journalHydrated) return;
 
     const orderedMovements = getOrderedWorkoutMovements(workout);
     if (!orderedMovements.length) return;
@@ -7142,6 +7243,11 @@ export default function WorkoutViewerScreen() {
     }
 
     if (workout.status !== 'in_progress') return;
+    const restored = orderedMovements.find(row => row.key === focusedMovementKey);
+    if (restored && !Object.values(expandedCoreDetails).some(Boolean) && !Object.values(expandedCompletedMovements).some(Boolean)) {
+      openMovementCard(restored.key);
+      return;
+    }
 
     const firstIncomplete = orderedMovements.find((row) => row.total > 0 && !row.complete);
     const pendingAdvance = pendingAutoAdvanceRef.current;
@@ -7184,6 +7290,7 @@ export default function WorkoutViewerScreen() {
   }, [
     data?.workout,
     getOrderedWorkoutMovements,
+    focusedMovementKey, journalHydrated,
     collapseMovementCard,
     configureNextMovementLayoutTransition,
     openMovementCard,
@@ -7202,6 +7309,8 @@ export default function WorkoutViewerScreen() {
     setLoading(true);
     setRefreshing(false);
     setAcceptedSetEvidenceItemIds(new Set());
+    setFocusedMovementKey(null);
+    setNavigatorVisible(false);
     setCoreWheel(null);
     setAccessoryWheel(null);
     setSupersetRoundLogger(null);
@@ -7211,7 +7320,7 @@ export default function WorkoutViewerScreen() {
     scrollViewportHeightRef.current = 0;
     scrollContentHeightRef.current = 0;
     setBodyRecoveryFailed(false);
-  }, [workoutId]);
+  }, [executionScope]);
 
   useEffect(() => {
     const requestManager = workoutRequestManagerRef.current;
@@ -7287,7 +7396,8 @@ export default function WorkoutViewerScreen() {
   const isCoachAthletePreview = coachPreviewRequested
     && data.view_mode === 'coach_preview'
     && data.permissions?.view_only === true;
-  const canLogFromServer = !isCoachAthletePreview && !!data.permissions?.can_log;
+  const executionCapabilities = sessionExecutionCapabilities({ status: workout.status, canLog: data.permissions?.can_log, previewRequested: coachPreviewRequested, viewOnly: data.permissions?.view_only });
+  const canLogFromServer = executionCapabilities.canExecute;
   const canHotSwap = !isCoachAthletePreview && !!data.permissions?.can_hot_swap;
   const substitutionAuthority = resolveSubstitutionAuthority({
     serverAuthority: data.permissions?.substitution_authority,
@@ -7304,7 +7414,7 @@ export default function WorkoutViewerScreen() {
     ['assigned', 'draft', 'tardy'].includes(String(workout.status || '').toLowerCase());
   const canLog = canLogFromServer && workout.status === 'in_progress';
   const canManageSetVideo = canLogFromServer && !isCoachView;
-  const canBegin = canLogFromServer && ['assigned', 'tardy'].includes(String(workout.status || '').toLowerCase());
+  const canBegin = executionCapabilities.canBegin;
   const canCompleteOrCancel =
     canLogFromServer &&
     (workout.status === 'in_progress' || workout.status === 'completed');
@@ -7408,6 +7518,7 @@ export default function WorkoutViewerScreen() {
       liftLabel: identity.label,
       liftAccentColor: identity.accentColor,
       plateStack,
+      physicalSetup: loggerPhysicalSetupLabel(plateStack),
       progress,
       coach: coach
         ? {
@@ -8133,7 +8244,7 @@ export default function WorkoutViewerScreen() {
 
   const swapActionForAccessory = (item: WorkoutItem) => accessorySwapActionForItem({
     substitutionAuthority,
-    hasApprovedSubstitutions: Array.isArray(item.approved_subs) && item.approved_subs.length > 0,
+    hasApprovedSubstitutions: approvedSubstitutionIdentities(item.approved_sub_identities).length > 0,
     isCoachPreview: isCoachAthletePreview,
     sessionLifecycle: screenMode,
     targetItemHasSetLogs: itemHasPersistedSetLogs(item),
@@ -8217,7 +8328,15 @@ export default function WorkoutViewerScreen() {
     return { loggerFocus, detailRows };
   };
 
+  const historyPeekFor = (item: WorkoutItem) => {
+    const resolution = resolveMovementHistoryLaunchForItem({ athleteId: athlete.id, item });
+    return resolution.ok ? <SessionHistoryPeek target={resolution.target} workoutId={workout.id} unit={unit} onOpen={() => openCanonicalMovementHistory(item)} /> : null;
+  };
+  let focusedSetAction: (() => void) | undefined;
+  let focusedSetLabel = 'Choose movement';
+
   const renderAccessoryMovement = (it: WorkoutItem) => {
+    if ((isActiveSession || focusedMovementKey) && focusedMovementKey !== `acc:${it.id}`) return null;
     const executionItem = accessoryExecutionItem(it);
     const logs = it.set_logs || [];
     const latestLoggedIdx =
@@ -8247,6 +8366,10 @@ export default function WorkoutViewerScreen() {
       expanded: accessoryIsExpanded,
       isComplete: accessoryIsComplete,
     });
+    if (accessoryIsExpanded) {
+      focusedSetAction = movementPresentation.loggerFocus?.onLogSet;
+      focusedSetLabel = accessoryIsComplete ? 'Choose next movement' : `Log set ${nextIndex}`;
+    }
     const swapLabel = swapActionForAccessory(it);
     const machineAccessory = isMachineAccessoryItem(it);
     const fixtureAccessoryKind = String(
@@ -8350,6 +8473,7 @@ export default function WorkoutViewerScreen() {
           top={accessoryIsComplete ? accessorySummary.top : lookbackLine}
           movementNote={it.notes}
           priorPerformanceCue={accessoryIsComplete ? null : lastBestCue}
+          historyPeek={accessoryIsExpanded ? historyPeekFor(it) : null}
           visualContext={movementVisualContextFor(it)}
           submissionStatus={feedbackState.submission.status}
           submissionItemId={feedbackState.submission.activeItemId}
@@ -8500,6 +8624,8 @@ export default function WorkoutViewerScreen() {
           </View>
         ) : (
           <CompletedSessionRecap
+            entryPresentation="logger"
+            onEditReflection={!executionCapabilities.canCorrect ? undefined : () => setRecapCorrection('reflection')}
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
             preferredUnits={athlete.preferred_units}
@@ -8516,11 +8642,11 @@ export default function WorkoutViewerScreen() {
             onOpenProgramming={coachPreviewRequested
               ? () => router.push({ pathname: '/(tabs)/workout', params: { athleteId: String(athlete.id) } } as any)
               : undefined}
-            onResumeSession={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
-            onEditSetEvidence={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
-            onEditSessionNotes={coachPreviewRequested ? undefined : () => { void beginWorkout(); }}
+            onResumeSession={!executionCapabilities.canCorrect ? undefined : () => { void beginWorkout(); }}
+            onEditSetEvidence={!executionCapabilities.canCorrect ? undefined : () => setRecapCorrection('sets')}
+            onEditSessionNotes={!executionCapabilities.canCorrect ? undefined : () => setRecapCorrection('note')}
             onViewSessionHistory={coachPreviewRequested ? undefined : () => router.push('/(tabs)/workout/session-history' as any)}
-            onCorrectEquipment={coachPreviewRequested ? undefined : correctCompletedSessionEquipment}
+            onCorrectEquipment={!executionCapabilities.canCorrect ? undefined : correctCompletedSessionEquipment}
             onOpenMovementHistory={(movement) => {
               const resolution = resolveMovementHistoryLaunchFromMeasurement({
                 athleteId: athlete.id,
@@ -8532,10 +8658,15 @@ export default function WorkoutViewerScreen() {
                 Alert.alert('History unavailable', resolution.message);
                 return;
               }
-              router.push(movementHistorySheetRoute(resolution.target) as never);
+              router.push(movementHistorySheetRoute(resolution.target, { kind: 'session_logger', workoutId: Number(workoutId), athleteId: resolution.target.athleteId, mode: coachPreviewRequested ? 'preview' : 'execute', displayUnit: unit }) as never);
             }}
           />
         )}
+        <CompletedSessionCorrection key={executionScope} mode={executionCapabilities.canCorrect ? recapCorrection : null}
+          workoutId={workout.id} items={[...workout.core_items, ...accessoryMovementOrder]}
+          reflection={workout.completed_recap.reflection}
+          note={workout.post_session_note || ''} unit={unit} onClose={() => setRecapCorrection(null)}
+          onSaved={() => { void fetchWorkout({ silent: true, reason: 'manual' }); }} />
       </>
     );
   }
@@ -8543,39 +8674,15 @@ export default function WorkoutViewerScreen() {
   return (
     <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
-      <SessionCommandStrip
-        restActive={restActive}
-        restSeconds={restSeconds}
-        restPromoted={restTimerFocusVisible}
-        canLog={canLog}
-        openTimerPicker={openTimerPicker}
-        stopRestTimer={stopRestTimer}
-        formatRestTime={formatRestTime}
-        loggedSets={loggedSets}
-        plannedSets={plannedSets}
-        progressPct={progressPct}
-        sessionElapsedLabel={sessionElapsedLabel}
-        onRestTimerLayout={handleRestTimerLayout}
-      />
-      <RestTimerFocus
-        visible={restTimerFocusVisible}
-        ready={false}
-        seconds={restSeconds}
-        reduceMotion={reduceMotion}
-        headerOrigin={restTimerHeaderOrigin}
-        onStop={stopRestTimer}
-      />
-
-      <FloatingControlStack context="tab-screen">
-        <FloatingUtilityButton
-          accessibilityHint="Changes only the weights shown in this Session."
-          accessibilityLabel={`Display unit ${unit}. Switch to ${unit === 'kg' ? 'lb' : 'kg'}`}
-          label={unit}
-          onPress={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
-          testID="session-logger-unit-toggle"
-        />
-      </FloatingControlStack>
-
+      <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
+        logged={loggedSets} total={plannedSets} elapsed={sessionElapsedLabel}
+        onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
+        onActions={() => Alert.alert('Session actions', undefined, [
+          ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
+            ...(canEdit ? [{ text: 'Edit Session', onPress: handleEditWorkout }] : []),
+            ...(canLog ? [{ text: 'Rest timer', onPress: openTimerPicker }, { text: 'Finish Session', onPress: requestCompleteWorkout }, { text: 'Cancel Session', style: 'destructive', onPress: () => setCancelConfirmVisible(true) }] : []),
+          ]), { text: 'Close', style: 'cancel' },
+        ])} />
       <LoggerFeedbackSurface
         saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
         statusMessage={setMutationNotice}
@@ -8595,7 +8702,8 @@ export default function WorkoutViewerScreen() {
         refreshing={refreshing}
         onRefresh={onRefresh}
         contentContainerStyle={{
-          paddingBottom: SLLayout.tabBarClearance,
+          paddingBottom: 24,
+          paddingHorizontal: 20,
           flexGrow: 1,
         }}
         onScroll={(e) => {
@@ -8612,49 +8720,12 @@ export default function WorkoutViewerScreen() {
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
       >
-        {isCoachAthletePreview ? (
-          <View accessibilityRole="summary" style={styles.coachAthletePreviewBanner}>
-            <View style={styles.coachAthletePreviewCopy}>
-              <View style={styles.coachAthletePreviewTitleRow}>
-                <Ionicons name="eye-outline" size={18} color={SLColors.success} />
-                <Text style={styles.coachAthletePreviewTitle}>Athlete View</Text>
-              </View>
-              <Text style={styles.coachAthletePreviewBody}>
-                Previewing {athlete.name}&apos;s Session. Logging and lifecycle actions are disabled.
-              </Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Back to coach Session editor"
-              onPress={handleReturnToCoachEditor}
-              style={({ pressed }) => [
-                styles.coachAthletePreviewBack,
-                pressed && styles.coachAthletePreviewBackPressed,
-              ]}
-            >
-              <Ionicons name="chevron-back" size={16} color={SLColors.textStrong} />
-              <Text style={styles.coachAthletePreviewBackText}>Coach Editor</Text>
-            </Pressable>
-          </View>
-        ) : null}
-        {(!isFinishedSession || !workout.impact_summary?.canonically_completed) ? (
-          <SessionIntentPanel
-            workout={workout}
-            screenMode={screenMode}
-            statusLabel={prettyStatus(workout.status)}
-            focusLine={focusLine}
-            loggedSets={loggedSets}
-            plannedSets={plannedSets}
-            exerciseCount={
-              workout.core_items.filter((item) => !(isBackdownWorkoutItem(item) && item.parent_item_id != null)).length +
-              workout.accessory_groups.reduce((total, group) => total + group.items.length, 0)
-            }
-            durationEstimate={durationEstimate}
-            canEdit={canEdit}
-            onBackToTrainingHub={handleBackToTrainingHub}
-            onEditWorkout={handleEditWorkout}
-          />
-        ) : null}
+        {isPreSession && !focusedMovementKey ? <SessionV3PlanHero
+          title={workout.label || 'Training Session'} focus={focusLine} planned={plannedSets}
+          movements={coreMovementCount + accessoryMovementOrder.length}
+          artwork={canonicalArtworkInputForLoggerItem(workout.core_items.find(item => !item.parent_item_id) || accessoryMovementOrder[0])}
+          note={workout.programming_notes}
+        /> : null}
         {isFinishedSession && workout.impact_summary?.canonically_completed ? (
           <SessionImpactPanel
             summary={workout.impact_summary}
@@ -8664,7 +8735,7 @@ export default function WorkoutViewerScreen() {
             animateEntry={animatedCompletionSummaryId === workout.impact_summary.summary_id}
           />
         ) : null}
-        {isActiveSession && workoutId ? (
+        {isFinishedSession && workoutId ? (
           <SessionHighlightsPanel
             events={workout.accomplishment_history?.items || []}
             workoutId={Number(workoutId)}
@@ -8672,7 +8743,7 @@ export default function WorkoutViewerScreen() {
             onOpen={(count) => feedbackAnalytics('session_highlights_opened', { count })}
           />
         ) : null}
-        {!!(workout.programming_notes || '').trim() && (
+        {isFinishedSession && !!(workout.programming_notes || '').trim() && (
           <View style={[
             styles.coachFeedbackCard,
             (isPreSession || isActiveSession) && styles.preSessionNotesCard,
@@ -8692,14 +8763,7 @@ export default function WorkoutViewerScreen() {
             </View>
           </View>
         )}
-        {isPreSession && canBegin ? (
-          <View style={styles.preSessionPrimaryBeginAction}>
-            <SessionBeginAction
-              actionLoading={actionLoading}
-              onBeginWorkout={handleBeginWorkoutPress}
-            />
-          </View>
-        ) : null}
+
         {!!(workout.post_session_coach_feedback || '').trim() && (
           <PostSessionCoachFeedback
             authorKind={sessionNoteAuthor.kind}
@@ -8732,15 +8796,14 @@ export default function WorkoutViewerScreen() {
           styles={styles}
         />
 
-        <Text style={styles.preSessionPlanTitle}>
-          {isFinishedSession ? 'Completed Work' : 'Session Plan'}
-        </Text>
+        {!focusedMovementKey ? <Text style={[styles.preSessionPlanTitle, { marginTop: 12, marginBottom: 4 }]}>{isFinishedSession ? 'Completed Work' : 'Session Plan'}</Text> : null}
         {/* Core lifts as peer movement ledger rows. */}
         <View style={[
           styles.sectionBlock,
           styles.canonicalMovementList,
         ]}>
           {workout.core_items.map((core, coreIndex) => {
+            if ((isActiveSession || focusedMovementKey) && focusedMovementKey !== `core:${core.id}`) return null;
             // ... keep the entire core_items.map block exactly as-is ...
             const isStraightLike = isStraightWorkoutItem(core);
 
@@ -8873,6 +8936,10 @@ export default function WorkoutViewerScreen() {
             // P0 prescription integrity invariant:
             // Expanded athlete UI must render every prescribed API detail row,
             // even for completed sessions. Do not filter to logged/completed rows only.
+            if (detailsExpanded) {
+              focusedSetAction = movementPresentation.loggerFocus?.onLogSet;
+              focusedSetLabel = coreIsComplete ? 'Choose next movement' : `Log ${movementPresentation.loggerFocus?.currentSetLabel || 'set'}`;
+            }
             return (
               <View
                 key={core.id}
@@ -8881,7 +8948,7 @@ export default function WorkoutViewerScreen() {
               >
                 <CoreMovementLedgerRow
                   state={presentationState}
-                  title={liftDisplayName(core)}
+                  title={resolveLoggerMovementIdentity(core).displayName}
                   designation={formatDesignation((core as any).designation) || null}
                   variantLabel={variantLabel}
                   scheme={schemeNode}
@@ -8924,6 +8991,7 @@ export default function WorkoutViewerScreen() {
                   meta={coreIsComplete ? coreSummary.meta : `${coreCompletionLoggedCount}/${coreCompletionTotal || totalSets || 0} sets logged`}
                   top={coreIsComplete ? coreSummary.top : formatLookbackLine(getLookbackBest(core), unit, core)}
                   movementNote={core.notes}
+                  historyPeek={detailsExpanded ? historyPeekFor(core) : null}
                   visualContext={movementVisualContextFor(
                     core,
                     movementPresentation.renderWeight,
@@ -8959,8 +9027,13 @@ export default function WorkoutViewerScreen() {
 
             if (isSuperset && grp.group) {
               const detailKey = `ss:${grp.group}`;
+              if ((isActiveSession || focusedMovementKey) && focusedMovementKey !== detailKey) return null;
               const workspaceItems = supersetWorkspaceItems(grp.items);
               const roundModel = buildSupersetRoundModel(workspaceItems);
+              if (focusedMovementKey === detailKey) {
+                focusedSetAction = canLog ? () => openSupersetRoundLogger(grp, roundModel.currentRoundIndex || 1) : undefined;
+                focusedSetLabel = 'Log superset round';
+              }
               return (
                 <View
                   collapsable={false}
@@ -9042,16 +9115,9 @@ export default function WorkoutViewerScreen() {
             return grp.items.map((it) => renderAccessoryMovement(it));
           })}
         </View>
-        {isPreSession && canBegin ? (
-          <View style={styles.preSessionBottomBeginAction}>
-            <SessionBeginAction
-              actionLoading={actionLoading}
-              onBeginWorkout={handleBeginWorkoutPress}
-            />
-          </View>
-        ) : null}
+
         {/* Bottom-of-page actions: Complete / Cancel */}
-        {canCompleteOrCancel && (
+        {isFinishedSession && canCompleteOrCancel && (
             <View style={[styles.actionBar, { marginTop: 16, marginBottom: 24 }]}>
               {workout.status === 'in_progress' && (
                 <TouchableOpacity
@@ -9108,6 +9174,22 @@ export default function WorkoutViewerScreen() {
           )}
       </RefreshScreen>
 
+      <SessionV3Footer bottom={insets.bottom} unit={unit} onUnit={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
+        label={isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : focusedSetLabel}
+        disabled={isCoachAthletePreview || !!actionLoading || (isPreSession && !canBegin) || feedbackState.submission.status === 'submitting'}
+        onPress={isPreSession ? () => { void beginWorkout(); } : focusedSetAction || (() => setNavigatorVisible(true))}
+        secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : 'Check-in · optional') : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
+        onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true); else openReadinessThenBegin(workout.id); } else setNavigatorVisible(true); }}
+        rest={restActive && !isCoachAthletePreview ? formatRestTime(restSeconds) : null} onRest={openTimerPicker} onSkip={stopRestTimer} onAddRest={() => startRestTimer(restSeconds + 30)}
+      />
+      <SessionMovementNavigator visible={navigatorVisible} bottom={insets.bottom} onClose={() => setNavigatorVisible(false)}
+        rows={getOrderedWorkoutMovements(workout).map(row => {
+          const item = workout.core_items.find(item => item.id === row.id) || accessoryMovementOrder.find(item => item.id === row.id);
+          return { key: row.key, title: row.key.startsWith('ss:') ? `Superset ${row.key.slice(3)}` : item ? (row.kind === 'core' ? liftDisplayName(item) : accessoryExecutionName(item)) : 'Movement', summary: `${row.logged} / ${row.total} ${row.key.startsWith('ss:') ? 'rounds' : 'sets'} saved`, complete: row.complete, selected: row.key === focusedMovementKey, artwork: item ? canonicalArtworkInputForLoggerItem(item) : null };
+        })}
+        onSelect={(key) => { manualMovementSelectionRef.current = true; openMovementCard(key); setNavigatorVisible(false); scrollRef.current?.scrollTo?.({ y: 0, animated: false }); }}
+      />
+
       {bodyRecoveryFailed ? (
         <View style={styles.bodyRecoveryOverlay} accessibilityRole="alert">
           <Ionicons name="refresh-circle-outline" size={32} color={SLColors.accentViolet} />
@@ -9159,6 +9241,11 @@ export default function WorkoutViewerScreen() {
                 unit={unit}
               />
 
+              {coreWheelItem ? <SessionSetEntryContext
+                title={resolveLoggerMovementIdentity(coreWheelItem).displayName}
+                visual={movementVisualContextFor(coreWheelItem)}
+                target={coreWheel.prescriptionLine}
+              /> : null}
               <LoggerWheelPicker columns={[
                 { key: 'weight', label: 'Weight', value: coreWheel.weight, options: coreWheel.weightOptions, suffix: unit, accessibilityValue: (value) => `${value} ${unit === 'kg' ? 'kilograms' : 'pounds'}`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, weight: value } : prev) },
                 { key: 'reps', label: 'Reps', value: coreWheel.reps, options: coreWheel.repsOptions, accessibilityValue: (value) => `${value} reps`, onChange: (value) => setCoreWheel((prev) => prev ? { ...prev, reps: value } : prev) },
@@ -9227,7 +9314,7 @@ export default function WorkoutViewerScreen() {
                 >
                   {['saving', 'refreshing'].includes(coreWheelSubmitAction.tone) ? <ActivityIndicator size="small" color={SLColors.textStrong} /> : null}
                   {coreWheelSubmitAction.tone === 'accepted' ? <Ionicons name="checkmark" size={20} color={SLColors.textStrong} /> : null}
-                  <Text numberOfLines={1} style={[styles.actionButtonText, styles.actionPrimaryText]}>{coreWheelSubmitLabel}</Text>
+                  <Text numberOfLines={1} style={[styles.actionButtonText, styles.actionPrimaryText]}>{coreWheelSubmitLabel === 'Log Set' || coreWheelSubmitLabel === 'Log set' ? 'Save set' : coreWheelSubmitLabel}</Text>
                 </Pressable>
               </View>
             </View>
@@ -10777,10 +10864,22 @@ export default function WorkoutViewerScreen() {
         onCancel={cancelReadiness}
       />
 
+      <ApprovedSubstitutionPicker
+        visible={swapPickerVisible && substitutionAuthority === 'coach_restricted'}
+        choices={approvedSubstitutionIdentities(swapAccItem?.approved_sub_identities) as GovernedAccessoryIdentity[]}
+        currentName={swapAccItem ? accessoryExecutionName(swapAccItem) : ''}
+        prescription={swapPreviousPrescription}
+        onCancel={() => { setSwapPickerVisible(false); setSwapAccItem(null); }}
+        onSelect={(identity) => {
+          setSwapAccIdentity(identity as GeneralMovementIdentity);
+          setSwapPickerVisible(false);
+          setSwapAccVisible(true);
+        }}
+      />
       {/* Accessory substitution modal */}
       <GovernedAccessorySubstitutionPickerModal
         context="in-session-substitution"
-        visible={swapPickerVisible}
+        visible={swapPickerVisible && substitutionAuthority === 'self_governed'}
         athleteId={data?.athlete?.id || null}
         athleteAnatomy={{
           anatomy_display_preference: data?.athlete?.anatomy_display_preference,
@@ -10791,7 +10890,7 @@ export default function WorkoutViewerScreen() {
         currentPrescription={swapPreviousPrescription}
         canCreateCustom={
           substitutionAuthority === 'self_governed'
-          && (data?.permissions?.can_create_custom_movement !== false || user?.is_self_coached === true)
+          && data?.permissions?.can_create_custom_movement === true
         }
         onCancel={() => {
           setSwapPickerVisible(false);

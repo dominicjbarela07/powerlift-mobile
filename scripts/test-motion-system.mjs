@@ -38,8 +38,8 @@ assert.match(button, /const variantStyles:[\s\S]*primary:[\s\S]*secondary:[\s\S]
 assert.doesNotMatch(button, /variantSurface|innerSurface/, 'shared buttons must not reintroduce a duplicate nested surface');
 assert.match(listRow, /disabled=\{disabled\}/, 'static informational rows must not inherit disabled opacity');
 assert.match(
-  coreLoggers,
-  /const sessionMovementCard = \([\s\S]*?<View[\s\S]*?return collapseCompletedGesture \? \([\s\S]*?<GestureDetector[\s\S]*?: sessionMovementCard/,
+  read('components/workout-logger/session-v3-movement.tsx'),
+  /return <View style=\{s\.workspace\}>/,
   'movement rows must remain a fully legible static card when no gesture wrapper applies',
 );
 

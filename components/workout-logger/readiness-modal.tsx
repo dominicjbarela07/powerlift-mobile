@@ -103,19 +103,21 @@ export function ReadinessScale({
     [setHeld, updateFromRailX],
   );
   const accessibilityPosition = (delta: number) => {
-    const next = clampReadinessPosition(position + delta);
+    const next = clampReadinessPosition((Number.isFinite(position) ? position : 0.5) + delta);
     if (hapticsEnabled && hapticBoundaries && crossedReadinessBoundary(position, next)) {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined);
     }
     onChange(next);
   };
-  const canonicalValue = normalizedReadinessToCanonical(position);
+  const hasSelection = Number.isFinite(position);
+  const visualPosition = hasSelection ? position : 0.5;
+  const canonicalValue = normalizedReadinessToCanonical(visualPosition);
 
   return (
     <View style={styles.scaleGroup}>
       <View style={styles.scaleHeaderRow}>
         <Text typographyRole="shortTechnicalLabel" style={styles.sectionLabel}>{label}</Text>
-        <Text typographyRole={valueText ? 'numeric' : 'bodyStrong'} style={styles.liveValue}>{valueText || descriptor}</Text>
+        <Text typographyRole={valueText ? 'numeric' : 'bodyStrong'} style={styles.liveValue}>{hasSelection ? valueText || descriptor : 'Tap to choose'}</Text>
       </View>
       {prompt ? <Text typographyRole="bodyStrong" style={styles.prompt}>{prompt}</Text> : null}
       <View style={styles.endpointRow}>
@@ -127,7 +129,7 @@ export function ReadinessScale({
           accessible
           accessibilityRole="adjustable"
           accessibilityLabel={`${label}. ${low} to ${high}`}
-          accessibilityValue={valueText
+          accessibilityValue={!hasSelection ? { text: 'Not selected' } : valueText
             ? { text: valueText }
             : { min: 1, max: 5, now: canonicalValue, text: descriptor }}
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
@@ -142,14 +144,14 @@ export function ReadinessScale({
             pointerEvents="none"
             style={[
               styles.railFill,
-              { width: railWidth ? position * railWidth : 0 },
+              { width: railWidth && hasSelection ? visualPosition * railWidth : 0 },
             ]}
           />
           <Animated.View
             pointerEvents="none"
             style={[
               styles.thumb,
-              { left: railWidth ? position * (railWidth - 22) : 0, transform: [{ scale: heldScale }] },
+              { opacity: hasSelection ? 1 : 0.35, left: railWidth ? visualPosition * (railWidth - 22) : 0, transform: [{ scale: heldScale }] },
             ]}
           />
         </View>

@@ -1,4 +1,18 @@
-export type AccessorySwapAction = 'Swap' | null;
+export type AccessorySwapAction = 'Swap' | 'Approved substitutions' | null;
+
+/** Legacy display names are never selectable movement authority. */
+export function approvedSubstitutionIdentities<T extends { id: number; display_name: string }>(
+  rows?: readonly { movement_identity?: T | null }[] | null,
+): T[] {
+  const unique = new Map<number, T>();
+  for (const row of rows || []) {
+    const identity = row.movement_identity;
+    if (identity && Number.isSafeInteger(identity.id) && identity.id > 0 && identity.display_name) {
+      unique.set(identity.id, identity);
+    }
+  }
+  return [...unique.values()];
+}
 
 export type SubstitutionAuthority =
   | 'self_governed'
@@ -109,5 +123,6 @@ export function accessorySwapActionForItem({
   if (targetItemHasSetLogs || acceptedPersistedSetLogForItem) return null;
   if (!targetItemHasRemainingSets) return null;
   if (substitutionAuthority === 'self_governed') return 'Swap';
+  if (substitutionAuthority === 'coach_restricted' && hasApprovedSubstitutions) return 'Approved substitutions';
   return null;
 }

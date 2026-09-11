@@ -12,5 +12,6 @@ export function sessionLoggerSharedHeaderShown({
   mode: SessionLoggerShellMode;
   hasCompletedRecap: boolean;
 }): boolean {
-  return !(mode === 'finished_session' && hasCompletedRecap);
+  // The Session owns its local header throughout its lifecycle.
+  return mode === 'loading' || mode === 'error';
 }

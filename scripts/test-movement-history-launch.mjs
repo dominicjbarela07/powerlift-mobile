@@ -185,3 +185,8 @@ assert.deepEqual(coreRecap.ok ? coreRecap.target : null, {
 });
 
 console.log('[movement-history-launch] canonical identity, legacy resolution, equipment context, controlled failure, and state preservation passed');
+
+const { parseSessionHistoryOrigin } = await import('../lib/movement-history-launch.ts');
+const origin = { kind: 'session_logger', workoutId: 17, athleteId: 9, mode: 'preview', displayUnit: 'kg' };
+assert.deepEqual(parseSessionHistoryOrigin(JSON.stringify(origin)), origin);
+for (const invalid of [null, '{', JSON.stringify({ ...origin, workoutId: 0 }), JSON.stringify({ ...origin, mode: 'admin' })]) assert.equal(parseSessionHistoryOrigin(invalid), null);

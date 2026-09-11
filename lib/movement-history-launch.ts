@@ -142,11 +142,26 @@ export function resolveMovementHistoryLaunchFromMeasurement({
   };
 }
 
-export function movementHistorySheetRoute(target: MovementHistoryLaunchTarget) {
+export type SessionHistoryOrigin = Readonly<{
+  kind: 'session_logger'; workoutId: number; athleteId: number;
+  mode: 'execute' | 'preview'; displayUnit: 'kg' | 'lb';
+}>;
+
+export function parseSessionHistoryOrigin(value: unknown): SessionHistoryOrigin | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const origin = JSON.parse(value);
+    return origin.kind === 'session_logger' && positiveId(origin.workoutId) && positiveId(origin.athleteId)
+      && ['execute', 'preview'].includes(origin.mode) && ['kg', 'lb'].includes(origin.displayUnit) ? origin : null;
+  } catch { return null; }
+}
+
+export function movementHistorySheetRoute(target: MovementHistoryLaunchTarget, origin?: SessionHistoryOrigin) {
   return {
     pathname: '/movement-history-sheet' as const,
     params: {
       athleteId: String(target.athleteId),
+      ...(origin && origin.athleteId === target.athleteId ? { sessionOrigin: JSON.stringify(origin) } : {}),
       ...(target.movementDefinitionId
         ? { movementDefinitionId: String(target.movementDefinitionId) }
         : {}),

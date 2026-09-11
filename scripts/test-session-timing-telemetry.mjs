@@ -43,7 +43,7 @@ assert.equal(appendPendingEventIdempotently(pending, pending[0]).length, 1);
 
 assert.match(layout, /initializeSessionTimingTelemetry\(\)/, 'root shell must own telemetry initialization');
 assert.match(telemetry, /AppState\.addEventListener\('change'/, 'AppState telemetry must be centralized');
-assert.match(telemetry, /AsyncStorage\.setItem\(STORAGE_KEY/, 'active timing state must survive restart');
+assert.ok(telemetry.includes('AsyncStorage.setItem(`${STORAGE_KEY}:${owner}`'), 'active timing state must survive restart');
 assert.match(telemetry, /pendingEvents/, 'offline lifecycle evidence must retain stable retry events');
 assert.match(telemetry, /state\.activeWorkoutId === normalizedWorkoutId && state\.sessionStartedEvent/,
   'ambiguous Begin retries must reuse the same Session-start event');

@@ -8,6 +8,8 @@ export type SetLoggerLoadEvidence = Readonly<{
 }>;
 
 export type SetLoggerComparableHistory = Readonly<{
+  comparison_allowed?: boolean;
+  comparison_identity_key?: string | null;
   identity_scope?: string | null;
   movement_definition_id?: number | null;
   most_recent_logged_set?: SetLoggerLoadEvidence | null;
@@ -73,7 +75,9 @@ function comparableHistoricalLoad({
 }): { evidence: SetLoggerLoadEvidence; source: SetLoggerLoadDefaultSource } | null {
   // Only the stable-identity series is load-comparable. Legacy/unresolved and
   // related-family history are intentionally excluded from initialization.
-  if (history?.identity_scope !== 'exact_identity') return null;
+  if (history?.identity_scope !== 'exact_identity'
+    || history.comparison_allowed !== true
+    || !history.comparison_identity_key) return null;
 
   const anchor = history.previous_exposure?.representative_set
     || history.most_recent_logged_set

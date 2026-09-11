@@ -85,7 +85,7 @@ assert.match(route, /Which version did you use\?/);
 assert.match(route, /Which manufacturer’s machine did you use\?/);
 assert.match(
   route,
-  /onCorrectEquipment=\{coachPreviewRequested \? undefined : correctCompletedSessionEquipment\}/,
+  /onCorrectEquipment=\{!executionCapabilities.canCorrect \? undefined : correctCompletedSessionEquipment\}/,
 );
 assert.doesNotMatch(route, /resumeCompletedSessionForEquipmentCorrection/);
 assert.doesNotMatch(route, /Resume Session to correct equipment\?|Resume & Correct/);
