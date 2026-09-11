@@ -4,6 +4,7 @@ import {
 } from '@/lib/accessory-muscle-group';
 
 export type CanonicalCoreArtworkFamily = 'squat' | 'bench' | 'deadlift' | 'press';
+export type CanonicalAccessoryArtworkKey = 'accessory_incline_dumbbell_bench_press';
 
 type GovernedAccessoryIdentity = Readonly<{
   id?: number | null;
@@ -62,6 +63,7 @@ export type CanonicalMovementArtworkResolution =
       regionKey: FocusedAccessoryMuscleRegionKey;
       primaryMuscleGroup: string;
       secondaryMuscleGroups: readonly string[];
+      artworkKey?: CanonicalAccessoryArtworkKey;
     }>
   | Readonly<{
       kind: 'core' | 'core_variant';
@@ -138,6 +140,7 @@ function explicitAccessoryIdentity(
   id: number;
   primaryMuscleGroup: string;
   secondaryMuscleGroups: readonly string[];
+  artworkKey?: CanonicalAccessoryArtworkKey;
 } | null {
   const governedTaxonomy = (
     identity?: GovernedAccessoryIdentity | null,
@@ -165,18 +168,31 @@ function explicitAccessoryIdentity(
     allowParentFallback = false,
   ) => {
     const id = positiveId(idOverride) || positiveId(identity?.id);
+    if (positiveId(idOverride) && positiveId(identity?.id) !== positiveId(idOverride)) return null;
     const taxonomy = governedTaxonomy(identity, allowParentFallback);
-    return id && taxonomy ? { id, ...taxonomy } : null;
+    if (!id || !taxonomy) return null;
+    // This is the catalog's stable governed key, never a title or alias.
+    const artworkKey: CanonicalAccessoryArtworkKey | undefined =
+      identity?.key === 'accessory_incline_dumbbell_bench_press'
+        ? identity.key
+        : undefined;
+    return { id, ...taxonomy, ...(artworkKey ? { artworkKey } : {}) };
   };
 
   // A performed equipment implementation is not a movement identity. Prefer
   // the server-normalized effective subject and explicit performed canonical
   // movement. A performed identity is only eligible when it carries governed
   // movement taxonomy of its own.
-  const effective = candidate(movement.effective_movement_identity);
-  if (effective) return effective;
-  const performedCanonical = candidate(movement.performed_canonical_movement_identity);
-  if (performedCanonical) return performedCanonical;
+  // An explicit authoritative subject cannot fall through to the prescription
+  // when incomplete. Conflicting canonical subjects also fail closed.
+  const effective = movement.effective_movement_identity;
+  const performedCanonical = movement.performed_canonical_movement_identity;
+  if (effective && performedCanonical && (
+    positiveId(effective.id) !== positiveId(performedCanonical.id)
+    || (effective.key && performedCanonical.key && effective.key !== performedCanonical.key)
+  )) return null;
+  if (effective) return candidate(effective);
+  if (performedCanonical) return candidate(performedCanonical);
   const performed = candidate(movement.performed_movement_identity);
   if (performed) return performed;
 
@@ -184,15 +200,15 @@ function explicitAccessoryIdentity(
   // the original prescription as if it were the movement currently performed.
   if (movement.is_substituted) return null;
   const legacyState = normalizedToken(movement.legacy?.state);
-  const resolvedLegacy = ['canonical', 'legacy_resolved', 'resolved'].includes(legacyState)
+  const hasResolvedLegacy = ['canonical', 'legacy_resolved', 'resolved'].includes(legacyState)
     && positiveId(movement.legacy?.effective_movement_definition_id)
-    && movement.legacy?.effective_movement_identity
-    ? candidate(
-        movement.legacy.effective_movement_identity,
-        movement.legacy.effective_movement_definition_id,
-      )
-    : null;
-  if (resolvedLegacy) return resolvedLegacy;
+    && movement.legacy?.effective_movement_identity;
+  if (hasResolvedLegacy) {
+    return candidate(
+      movement.legacy.effective_movement_identity,
+      movement.legacy.effective_movement_definition_id,
+    );
+  }
 
   const programmed = candidate(movement.movement_identity, undefined, true);
   if (programmed) return programmed;
@@ -256,5 +272,6 @@ export function resolveCanonicalMovementArtwork(
     regionKey: accessory.primaryMuscleGroup as FocusedAccessoryMuscleRegionKey,
     primaryMuscleGroup: accessory.primaryMuscleGroup,
     secondaryMuscleGroups: accessory.secondaryMuscleGroups,
+    ...(accessory.artworkKey ? { artworkKey: accessory.artworkKey } : {}),
   };
 }
