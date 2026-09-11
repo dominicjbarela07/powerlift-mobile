@@ -2898,7 +2898,7 @@ export default function WorkoutViewerScreen() {
     transientRecognitionTrace(20, 'recognition dismissed');
   }, [feedbackState.recognition.currentEvent, rewardLoopDemoV2StorageScope, transientRecognitionTrace]);
 
-  const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | null>(null);
+  const [recapCorrection, setRecapCorrection] = useState<'sets' | 'note' | 'reflection' | null>(null);
   const [postSessionVisible, setPostSessionVisible] = useState(false);
   const [postSessionSubmitting, setPostSessionSubmitting] = useState(false);
   const [missingCompletionSets, setMissingCompletionSets] = useState<string[] | null>(null);
@@ -8624,6 +8624,8 @@ export default function WorkoutViewerScreen() {
           </View>
         ) : (
           <CompletedSessionRecap
+            entryPresentation="logger"
+            onEditReflection={!executionCapabilities.canCorrect ? undefined : () => setRecapCorrection('reflection')}
             recap={workout.completed_recap}
             impactSummary={workout.impact_summary}
             preferredUnits={athlete.preferred_units}
@@ -8662,6 +8664,7 @@ export default function WorkoutViewerScreen() {
         )}
         <CompletedSessionCorrection key={executionScope} mode={executionCapabilities.canCorrect ? recapCorrection : null}
           workoutId={workout.id} items={[...workout.core_items, ...accessoryMovementOrder]}
+          reflection={workout.completed_recap.reflection}
           note={workout.post_session_note || ''} unit={unit} onClose={() => setRecapCorrection(null)}
           onSaved={() => { void fetchWorkout({ silent: true, reason: 'manual' }); }} />
       </>
