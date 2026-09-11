@@ -61,8 +61,15 @@ for (const [label, status, clean] of [
     }
   });
   assert.equal(inspected.clean, clean, `${label}: preserve honest development state`);
-  assert.equal(assertCanonicalSource(inspected), inspected, `${label}: startup passes`);
-  const runtime = { ...snapshot, source: inspected };
+  // Inspection reports this test's real runtime roots, including a release
+  // projection. Test DEV cleanliness with canonical fixture roots; separately
+  // prove a noncanonical inspection still fails even when its Git reader lies.
+  const canonicalInspection = { ...inspected, projectRoot: source.projectRoot, scriptRoot: source.scriptRoot };
+  assert.equal(assertCanonicalSource(canonicalInspection), canonicalInspection, `${label}: startup passes`);
+  if (inspected.projectRoot !== source.projectRoot || inspected.scriptRoot !== source.scriptRoot) {
+    assert.throws(() => assertCanonicalSource(inspected), /CANONICAL DEV SOURCE CHECK FAILED/);
+  }
+  const runtime = { ...snapshot, source: canonicalInspection };
   assert.equal(assertCanonicalMetroSnapshot(runtime), runtime, `${label}: DEV certification passes`);
 }
 

@@ -1,4 +1,5 @@
 import { InlineSessionReorder } from './InlineSessionReorder';
+import { AthleteCoachingScratchpadTrigger } from './AthleteCoachingScratchpad';
 import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } from '@/lib/session-authoring-journal';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -6,7 +7,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   AppState,
   Animated,
   BackHandler,
@@ -760,6 +760,7 @@ export function SessionEditingWorkspace(props: Props) {
           <View style={authorStyles.identityLine}><Pressable accessibilityRole="button" accessibilityLabel="Change Session date" disabled={!editable} onPress={() => setEditingDate(true)}><Text style={authorStyles.date}>{formatWorkspaceDate(sessionDraft.scheduledDate)}</Text></Pressable><Text style={authorStyles.lifecycle}>{status.replaceAll('_', ' ')}</Text></View>
           {props.programContext ? <Text style={authorStyles.breadcrumb}>{props.programContext}</Text> : null}
         </View>
+        {athleteId && athleteName ? <View style={authorStyles.note}><AthleteCoachingScratchpadTrigger athleteId={athleteId} athleteName={athleteName} variant="inline" /></View> : null}
         {lockedReason ? <Text style={styles.lockedReason}>{lockedReason}</Text> : null}
         {journalMessage ? <Text style={authorStyles.recovery}>{journalMessage}</Text> : null}
         {sessionDirty && props.authoringVersion && baseVersionRef.current !== props.authoringVersion ? <View style={{ paddingHorizontal: 16, paddingBottom: 12, gap: 5 }}><Text style={authorStyles.recovery}>The saved Session changed. Your local edits are preserved.</Text><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => { Keyboard.dismiss(); void (async () => { if (recoveryRef.current && props.journalIdentity && props.journalScope) await writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current); props.onOpenAthleteView(); })(); }}><Text style={authorStyles.link}>Review saved Session</Text></Pressable><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => setWorkspacePrompt({ kind: 'dirty', continueAction: () => undefined })}><Text style={authorStyles.link}>Use saved version…</Text></Pressable></View> : null}
@@ -852,11 +853,19 @@ export function SessionEditingWorkspace(props: Props) {
       </StrengthLedgerBottomSheet>
       <StrengthLedgerBottomSheet visible={groupingIds !== null} accessibilityLabel="Group movements" heightFraction={0.7} onRequestClose={() => setGroupingIds(null)} onDismiss={() => setGroupingIds(null)}>
         <View style={{ flex: 1, paddingHorizontal: 16, gap: 12 }}><Text style={authorStyles.title}>Group movements</Text><Text style={authorStyles.breadcrumb}>Choose the movements performed together.</Text><ScrollView>{sessionDraft.accessoryOrder.map((id) => <Pressable key={id} accessibilityRole="checkbox" accessibilityState={{ checked: groupingIds?.includes(id), disabled: id === selectedId }} disabled={id === selectedId} onPress={() => setGroupingIds((ids) => ids?.includes(id) ? ids.filter((value) => value !== id) : [...(ids || []), id])} style={authorStyles.noteTrigger}><Ionicons name={groupingIds?.includes(id) ? 'checkbox' : 'square-outline'} size={24} color={palette.violet} /><Text style={authorStyles.noteText}>{movementName(sessionDraft.items[id])}</Text></Pressable>)}</ScrollView><SLButton label="Apply Group" onPress={() => {
+          if (selectedId != null && groupingIds && groupingIds.length > 1) {
+            const previous = sessionDraft.movements[selectedId]?.supersetGroup;
+            const occupied = new Set(Object.values(sessionDraft.movements).map((movement) => movement.supersetGroup));
+            if (!previous && Array.from({ length: 26 }, (_, index) => String.fromCharCode(65 + index)).every((label) => occupied.has(label))) {
+              setGroupingIds(null);
+              setWorkspacePrompt({ kind: 'message', title: 'Group unavailable', message: 'All group labels are in use. Remove a group before creating another.' });
+              return;
+            }
+          }
           if (selectedId != null && groupingIds) setSessionDraft((current) => {
             const previous = current.movements[selectedId]?.supersetGroup || '';
             const occupied = new Set(Object.values(current.movements).map((movement) => movement.supersetGroup));
             const group = previous || Array.from({ length: 26 }, (_, index) => String.fromCharCode(65 + index)).find((value) => !occupied.has(value)) || '';
-            if (!group && (groupingIds?.length || 0) > 1) { Alert.alert('Group unavailable', 'All group labels are in use. Remove a group before creating another.'); return current; }
             const members = current.accessoryOrder.filter((id) => groupingIds.includes(id));
             const movements = { ...current.movements };
             for (const id of current.accessoryOrder) {

@@ -2815,7 +2815,7 @@ export function ProgrammingStoryboard({
             const context = { blockId: selectedBlock?.id, week: selectedWeek.index, day: day.key };
             const move = () => { setOpenSwipeSessionId(null); movable ? onQuickMoveSession(session) : onSessionActions(session, context); };
             return <StoryboardSessionDragGesture key={session.id} enabled={!dragMoveBusy && movable} session={session} onDragStart={beginSessionDrag} onDragMove={updateSessionDrag} onDragEnd={finishSessionDrag} onDragCancel={cancelSessionDrag}>
-              <SwipeActionRow action={<Pressable onPress={move} style={storyStyles.sessionSwipeAction}><Ionicons name={movable ? 'move-outline' : 'ellipsis-horizontal'} size={20} color={colors.violet} /><Text style={compositionStyles.actionText}>{movable ? 'Move' : 'Actions'}</Text></Pressable>} isOpen={openSwipeSessionId === session.id} onAction={move} onRequestOpen={() => setOpenSwipeSessionId(session.id)} onRequestClose={() => setOpenSwipeSessionId(null)}>
+              <SwipeActionRow foregroundStyle={storyStyles.sessionSwipeForeground} style={compositionStyles.swipeFrame} action={<Pressable onPress={move} style={storyStyles.sessionSwipeAction}><Ionicons name={movable ? 'move-outline' : 'ellipsis-horizontal'} size={20} color={colors.violet} /><Text style={compositionStyles.actionText}>{movable ? 'Move' : 'Actions'}</Text></Pressable>} isOpen={openSwipeSessionId === session.id} onAction={move} onRequestOpen={() => setOpenSwipeSessionId(session.id)} onRequestClose={() => setOpenSwipeSessionId(null)}>
                 <StoryboardSessionRow dayDate={day.date} dayLabel={day.label} displayUnit={displayUnit} draggable={movable} dragging={draggingSessionId === session.id} focused={selectedDay?.key === day.key} session={session} onActions={() => onSessionActions(session, context)} onPress={() => onOpenSession(session.id, context)} />
               </SwipeActionRow>
             </StoryboardSessionDragGesture>;
@@ -5815,6 +5815,7 @@ function parseDate(value?: string | null) {
 }
 
 const compositionStyles = StyleSheet.create({
+  swipeFrame: { overflow: 'hidden', width: '100%' },
   root: { flex: 1, backgroundColor: SLColors.canvas },
   content: { paddingBottom: 116 },
   header: { minHeight: 52, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },

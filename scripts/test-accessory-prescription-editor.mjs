@@ -103,18 +103,21 @@ assert.doesNotMatch(workspace, /Reps Lower|Reps Upper/, 'backend field names are
 assert.match(workspace, /import \{ LoggerWheelPicker \} from '@\/components\/workout-logger\/logger-wheel-picker'/, 'the editor reuses the canonical Logger wheel');
 assert.match(wheel, /accessibilityRole="adjustable"[\s\S]*Haptics\.selectionAsync/, 'canonical wheel accessibility and haptics remain active');
 assert.doesNotMatch(workspace, /NumericStepper|Reps Lower|Reps Upper|Accessory.*(?:Percentage|RPE|CalculatedTargetPanel|ManualOverrideBlock)/, 'no rejected Accessory fields or steppers were added');
-assert.match(workspace, /function collapsedLoadPresentation\([\s\S]*if \(kind === 'accessory'\) return null/, 'Accessories never render calculated or manual load suggestion badges');
+assert.match(workspace, /function collapsedLoadPresentation\([\s\S]*label: 'Manual'[\s\S]*if \(kind !== 'accessory' &&/, 'explicit coach loads may render; accessories never receive calculated Core strength targets');
 assert.match(workspace, /function movementMeta[\s\S]*primary_muscle_group[\s\S]*secondary_muscle_groups[\s\S]*accessoryMuscleRegion\(item\)\.label/, 'collapsed and expanded movement identity uses governed muscle context');
 assert.match(workspace, /function RecentHistorySection[\s\S]*exactAccessoryHistoryRows\(item\.movement_history\)[\s\S]*LAST EXPOSURE[\s\S]*History/, 'Last Exposure remains exact-identity-backed with intentional history access');
 assert.match(workspace, /function CoachNotesSection/, 'Coach Notes remain directly in the inline workspace');
 assert.doesNotMatch(workspace, /legacyBadge|item\.legacy\?\.indicator/, 'legacy migration provenance is absent from normal movement cards');
-assert.match(workspace, /const groups = \['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'\][\s\S]*Grouped with:/, 'inline grouping preserves A–G assignment and truthful group context');
+assert.match(workspace, /accessibilityLabel="Group movements"[\s\S]*sessionDraft\.accessoryOrder\.map[\s\S]*accessibilityRole="checkbox"/, 'grouping selects actual movements in this Session');
+assert.match(workspace, /current\.accessoryOrder\.filter\(\(id\) => groupingIds\.includes\(id\)\)/, 'membership and group order derive from the current Session');
+assert.match(workspace, /groupedWith\.length \? groupedWith\.join\(' · '\) : 'Separate movement'/, 'expanded movements preserve truthful group context');
 assert.doesNotMatch(workspace, /accessibilityLabel="Approved Substitutions"[\s\S]*multiline/, 'approved substitutions are not anonymous free text');
 assert.match(workspace, /chooseApprovedSubstitution[\s\S]*props\.onChangeAccessory[\s\S]*movementDefinitionId[\s\S]*approvedSubstitutions/, 'approved substitutions retain governed movement IDs from the picker');
 assert.match(workspace, /patch\.approved_subs = movement\.approvedSubstitutions\.map[\s\S]*movement_definition_id: row\.movementDefinitionId/, 'approved substitutions serialize stable governed identities');
 assert.match(editor, /approved_sub_identities[\s\S]*movement_identity[\s\S]*movementDefinitionId/, 'persisted approved substitutions rehydrate from canonical identity payloads');
 assert.match(workspace, /automaticallyAdjustKeyboardInsets[\s\S]*keyboardShouldPersistTaps="handled"/, 'the inline workspace remains keyboard safe');
-assert.match(workspace, /if \(!success\) \{[\s\S]*return false[\s\S]*setPersistedSession/, 'only successful whole-Session saves clear dirty state');
+assert.match(workspace, /if \(!success\) \{[\s\S]*acceptIncomingSessionRef\.current = false;[\s\S]*return false/, 'failed saves keep the local draft authoritative');
+assert.match(workspace, /if \(!journalReady \|\| savingSession \|\| \(sessionDirty && !acceptIncomingSessionRef\.current\)\) return;[\s\S]*setPersistedSession\(next\)/, 'only accepted server state can replace the dirty draft');
 assert.match(route, /Your Session edits are still available\./, 'failed saves preserve the local Accessory draft');
 
 console.log('[accessory-prescription-editor] ok');
