@@ -1,0 +1,13 @@
+{
+  "id": 292,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. FIRST INPUT is immutable original STYLE CONTROL ONLY, never clone its pose. SECOND INPUT is the edit target. Deepen both elbow bends: upper arms stay vertical, forearms hinge backward nearly horizontal, EZ bar hovers 8cm above FOREHEAD. Keep head clear. Back camera out slightly to show complete far shoe with 5% right margin. Preserve distinctive symmetric EZ bends, body and flat bench. Square realistic commercial fitness photo. Same natural skin, charcoal apparel, black studio, restrained violet. No text/logos/overlays.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-e166aca8-c412-44c2-9d9a-df337b822269.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-16374ad1-dded-4f53-80ca-b963d08d7c93.png",
+  "review": "ACCEPT",
+  "review_reason": "Characteristic bent-elbow EZ extension over forehead, symmetric bent grip shaft and complete athlete/shoe framing; distinct implement from straight-bar version.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

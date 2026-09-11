@@ -1,0 +1,2096 @@
+{
+  "baseline_sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe",
+  "movements": [
+    {
+      "id": 32,
+      "key": "accessory_flat_dumbbell_bench_press",
+      "display_name": "Flat Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Horizontal bench, separate pronated dumbbells, realistic full figure; framing corrected.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/flat-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1801335,
+          "sha256": "de6e0e89daf10bd7a9fe7558c7580e9e6026003ca37ccd3635eca5fc37858daa"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 301399,
+          "sha256": "3f7e496c017a6eeb18c9caa0f37591b92c3dc098826e1bdaf1000493e4a4d539"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43307,
+          "sha256": "cd886ef94d4355ecac464031c55f419751e1920343e6a90d05e9dec1add5c008"
+        }
+      }
+    },
+    {
+      "id": 33,
+      "key": "accessory_incline_dumbbell_bench_press",
+      "display_name": "Incline Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "KEEP",
+      "sidedness": "bilateral",
+      "final_status": "KEEP",
+      "attempt": 0,
+      "review": "Approved original immutable control specimen",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1871026,
+          "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-incline-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317984,
+          "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-incline-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46716,
+          "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+        }
+      }
+    },
+    {
+      "id": 34,
+      "key": "accessory_decline_dumbbell_bench_press",
+      "display_name": "Decline Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Head below hips, ankle rollers grounded and decline geometry explicit.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/decline-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1952846,
+          "sha256": "1e11861a5ce254a51f79929755d3ede66ef4db7bd8b06dc73605bce3c2ac90dc"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 334872,
+          "sha256": "28016e5b79feecc16492efbc2e3b0b3d4070fc90ad261fbc334885fc3736c20b"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-dumbbell-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 50560,
+          "sha256": "7be5682a8588a25e628108cf52d063729f1b704c601f9fee0bf8ed4daa6d4c1f"
+        }
+      }
+    },
+    {
+      "id": 35,
+      "key": "accessory_neutral_grip_dumbbell_bench_press",
+      "display_name": "Neutral-Grip Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 3,
+      "review": "Foot-end view clearly exposes neutral palms-in grips and head-to-foot dumbbell axes; elbows tucked.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/neutral-grip-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2200326,
+          "sha256": "296d401df6eeb5b2f349103875918b60ee905b6befeb461061764c87679793f7"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/neutral-grip-dumbbell-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 359231,
+          "sha256": "ffef3444731556a1da8265d1648f7c27cb10edf05ffbaaa9dc31652b50b3751c"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/neutral-grip-dumbbell-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48816,
+          "sha256": "43ebc67b85489c1b24d3f2501079876d36a055b7ef37931560b2fe8bd04408be"
+        }
+      }
+    },
+    {
+      "id": 36,
+      "key": "accessory_dumbbell_floor_press",
+      "display_name": "Dumbbell Floor Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Upper arms/head/back grounded, knees bent, no bench; complete shoes now visible.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-floor-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1823484,
+          "sha256": "19a436752cc6b9820c3522e5fadd6f6439b22a0acfbefd0a7e0245f7befaf047"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-floor-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302765,
+          "sha256": "967265ad60fc13d34cc2ab00ab12340383748a11edd88221d8e20a342a5814b4"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-floor-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43559,
+          "sha256": "3f1483e0544cbea2c9bb3f5e0947a5273e91c1db682ab8863354d53d30a3cdf6"
+        }
+      }
+    },
+    {
+      "id": 37,
+      "key": "accessory_dumbbell_squeeze_press",
+      "display_name": "Dumbbell Squeeze Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Round dumbbells visibly compressed together with controlled press; distinct contact cue. Squeeze/Hex are overlapping catalog identities, not invented different mechanics.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-squeeze-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2039337,
+          "sha256": "3278dd768a19b3cb169b92467380d56f5e249b066cffe8b144bfd12834427555"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-squeeze-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 347682,
+          "sha256": "be8a9b9d3fd7d14214714129ae7be0950d9113b275a666327edbb208e586d194"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-squeeze-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48942,
+          "sha256": "642450019539a20fd616da88c86d9382ba45d90d69e43ec35384093c9206eea5"
+        }
+      }
+    },
+    {
+      "id": 38,
+      "key": "accessory_dumbbell_hex_press",
+      "display_name": "Dumbbell Hex Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Four separate hex heads and two handles with visible central contact seam; corrected fused equipment. Graphite hex heads remain realistic and neutral.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-hex-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2151909,
+          "sha256": "144a91e5b83548f4ce8ce36b13287b7eca79f1890e49d45709ce99b831708519"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-hex-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 350401,
+          "sha256": "7bc52adf79517a1873f9e6989456138cbdceed4dd427b1da432e2185800d794d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-hex-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48100,
+          "sha256": "45c3c3e38c6100919b9b9667d2931e0fa5ab8dc7c530470080de5cd79b0a6fa2"
+        }
+      }
+    },
+    {
+      "id": 39,
+      "key": "accessory_dumbbell_flye",
+      "display_name": "Dumbbell Fly",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Open fly arc with light weights and softly bent elbows differs visibly from press; horizontal support and complete limbs.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2003766,
+          "sha256": "ef1d5802af62b2a9d26d1426a751fd5667db65f24e6263fb69e409e6373f6f2e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 327811,
+          "sha256": "04d2794b8fcad6e99f778123ebdfe5fac2d328b48dd7f28fe979707d84c28cd7"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47041,
+          "sha256": "d02cbef9bb08e4457e8faaf598d42891d4857f9856eced58dcf07ad7d3ac13e4"
+        }
+      }
+    },
+    {
+      "id": 40,
+      "key": "accessory_incline_dumbbell_flye",
+      "display_name": "Incline Dumbbell Fly",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Inclined backrest and open softly bent fly arc clear; both weights and feet in frame; matches original material/light.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/incline-dumbbell-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1789015,
+          "sha256": "cec8ce9dc3b4c69ff2321082d5a8478f62a7c9622fbf7a337cf57e121c383cd5"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304018,
+          "sha256": "743a5bed1853fdd1456e27ed709040ce5128bebe9cbcb9dd5b2c86ceb2278d7a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45150,
+          "sha256": "4e9e78cdfc45aa5bc3562f407bb0006821852c172a0231e2812c54e88691954d"
+        }
+      }
+    },
+    {
+      "id": 41,
+      "key": "accessory_decline_dumbbell_flye",
+      "display_name": "Decline Dumbbell Flys",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Head-low decline and ankle rollers explicit; wide fly arc with restrained elbow bend; complete dumbbells.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/decline-dumbbell-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1836472,
+          "sha256": "d90080f45a432ca5506897e3b3e7926f87d46fe36ad66efc5543bf1f4635e160"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-dumbbell-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310231,
+          "sha256": "585a37f452e5a5e47380b1ae24d822d4c8d2afca1febb26d1d3a087e6fe5796c"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-dumbbell-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46012,
+          "sha256": "2385fba07f30d14e3c0ae1b61bf5b7ed7a01e22872346d8b4a2cc082ad3e0f35"
+        }
+      }
+    },
+    {
+      "id": 42,
+      "key": "accessory_barbell_floor_press",
+      "display_name": "Barbell Floor Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Complete bar sleeves and shoes now visible; floor support and symmetric load preserved.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-floor-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1891224,
+          "sha256": "f47cfb4d625d443f80a52dd3589401188c9c4549ba8319308539173a5ac8ad46"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-floor-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308427,
+          "sha256": "cba017645d6bf17306c978e77ad6243af716e8712d9bee0a8b5933e760c576c7"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-floor-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43804,
+          "sha256": "ee0f060da9e0da2a62653e8b63d1f6854e38498b47469a8652be0f579c99a467"
+        }
+      }
+    },
+    {
+      "id": 43,
+      "key": "accessory_spoto_press",
+      "display_name": "Spoto Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 3,
+      "review": "Characteristic near-chest suspended bar and flat bench preserved; full shoes and sleeve now inside frame. A still cannot prove pause duration.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/spoto-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1863910,
+          "sha256": "8003415d5f8e595821ef1fe10517906f375f99fccac177584d2fd933769a6ad2"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/spoto-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 311413,
+          "sha256": "03963dfeeea67f6091637c1b041b51a779a5e7377a1984ad69ef129e11710465"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/spoto-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44377,
+          "sha256": "e4a49ab99a5db5bb870a06d72dbf1087ab1ba4d3fe4cfa76b5aab57385b6111b"
+        }
+      }
+    },
+    {
+      "id": 44,
+      "key": "accessory_larsen_press",
+      "display_name": "Larsen Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Both legs extended and floating without leg drive, horizontal bench and symmetric straight loaded bar; complete silhouette visible.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/larsen-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1801453,
+          "sha256": "5b0974501093fb9d48fe757eb7e786272bd2e6def14a5c594c185ef88cfb660c"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/larsen-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303917,
+          "sha256": "1117a1055ecef832420cbc61d7c9c7cec3e39df4a51e8bf53dbf09468102b3a1"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/larsen-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44324,
+          "sha256": "545be239db4cccacc08ae368b21afb0473a054aa419a68398c50567438556688"
+        }
+      }
+    },
+    {
+      "id": 45,
+      "key": "accessory_guillotine_press",
+      "display_name": "Guillotine Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 4,
+      "review": "Flat bench, wide pronated grip and flared bent elbows place bar over upper chest/neck line; framing correction retains lowered phase and both shoes. Skin, floor and restrained rim match original.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/guillotine-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854569,
+          "sha256": "23cc93213d5f814d1bcee901a038f4d9245f60e715d086e89d47e8a0ae437849"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/guillotine-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308892,
+          "sha256": "576b2298b67d3ac331caeeb41b68b8818240144b1b3f00b66f912670a52f3f77"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/guillotine-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43393,
+          "sha256": "29a32918e934b5e12954aed9df25c71a826be8c4cc1cadd195a8ad44a67ee2b0"
+        }
+      }
+    },
+    {
+      "id": 46,
+      "key": "accessory_reverse_grip_bench_press",
+      "display_name": "Reverse-Grip Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Visible underhand grip and tucked elbows, flat bench and balanced bar; full figure/implement. Far shoe clearance is tight but intact.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/reverse-grip-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1860988,
+          "sha256": "37179bbf0d8a699ffbeda7f154108273ffd560fe4c53eda45ae1afd5cbf608c3"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/reverse-grip-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317958,
+          "sha256": "b8923d41d715429a876cbde33a25091f62d99885ea6ee71335ee9cb29eb15a0b"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/reverse-grip-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46859,
+          "sha256": "c284d66ace90517a190b10fecb8603029c4252a373e83909a80d26e329af58a2"
+        }
+      }
+    },
+    {
+      "id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "display_name": "Cambered-Bar Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 3,
+      "review": "Correct raised central camber with lower outer handgrips and symmetric plate loads; unwanted rack removed without changing bar geometry. Full bench athlete and sleeve ends retained.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/cambered-bar-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1737237,
+          "sha256": "3e9f06cd22770459084f1fd40bd60774e09c1ab495f79ccccdfd4d4eb24da6f7"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/cambered-bar-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300241,
+          "sha256": "e9a96ba86a0ab67a604180664e80b870123e8ee0c2a4066002ca33b8ea31a9f8"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/cambered-bar-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45351,
+          "sha256": "c558fd774bed947a6ef2530cb138f2365bd5b1e17699cb654d9792fcee037d0e"
+        }
+      }
+    },
+    {
+      "id": 73,
+      "key": "accessory_weighted_push_up",
+      "display_name": "Weighted Push-Up",
+      "primary_muscle_group": "chest",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Plate visibly grounded on upper back; straight plank, bent elbows and planted hands/toes; full figure and clear free-weight identity.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/weighted-push-up-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1750768,
+          "sha256": "6a0ac3e90eb5f2527d2efbf592c20e972d4cf57aa6b8ed51883e2cc4790e3fb5"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/weighted-push-up-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 295496,
+          "sha256": "c935ea019b742a10f88e2e9c1baa54fa2dd6e437216e0e49d115a2e986d477c3"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/weighted-push-up-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42505,
+          "sha256": "00f7dd5916a60d671878567e1d849137c46537dc68cba5c69b731d032ed78af8"
+        }
+      }
+    },
+    {
+      "id": 79,
+      "key": "accessory_seated_dumbbell_shoulder_press",
+      "display_name": "Seated Dumbbell Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Near-upright supported seated overhead press, two intact dumbbells and planted feet; chest mark removed. Top margin remains modest but all equipment is inside square.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/seated-dumbbell-shoulder-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1791951,
+          "sha256": "f62f8e0da0df228f938e886d837de7b2e3d69353bf4ddbc0506c4ca5f33631ba"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-shoulder-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306297,
+          "sha256": "9c665a17fecf08fe197556c08cd1fdd342304a47d28c79f75bd846527c46dd69"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-shoulder-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45853,
+          "sha256": "3ad8358f91130db67bda40446e3c41cd788350ead0b936e29aebe74d6d37a581"
+        }
+      }
+    },
+    {
+      "id": 80,
+      "key": "accessory_standing_dumbbell_shoulder_press",
+      "display_name": "Standing Dumbbell Shoulder Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Standing overhead press with stable torso/legs and no bench; coherent athlete/style and full weights/shoes.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/standing-dumbbell-shoulder-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1747332,
+          "sha256": "9613b342f11454d7d45d3f235b4bcd0382632e11042bf74db4f1cdd70075d07c"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-shoulder-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294325,
+          "sha256": "aa2e404013582e7d10a022694ff26f87ac030f33d1795d79eb9ab76f67700767"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/standing-dumbbell-shoulder-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41845,
+          "sha256": "a6317686e61d1e028b427e5ef7baf37d6d477739a35430b8e91f1ceadec22261"
+        }
+      }
+    },
+    {
+      "id": 81,
+      "key": "accessory_arnold_press",
+      "display_name": "Arnold Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Supinated palms-in start, forward elbows and upright seated posture clearly distinguish Arnold rotation start; credible overlapping separate dumbbells.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/arnold-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1798842,
+          "sha256": "1cba1751a88ea848f73f6ec1096623c04a8a345b1c6cf9c1756ddc8ff40f8631"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/arnold-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307109,
+          "sha256": "b51e925e89790f079ec0a6c10a9e15ebd6d4bf08bc7deb323079b0288a6e25d6"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/arnold-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44841,
+          "sha256": "b014fe0b38fd56c6ae39b8c301ae075c16a800907e5eb475d3c4a5314241c5bd"
+        }
+      }
+    },
+    {
+      "id": 82,
+      "key": "accessory_dumbbell_front_raise",
+      "display_name": "Dumbbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Both arms raised forward to shoulder height with pronated grips and soft elbows; full standing figure, four distinct dumbbell heads, no incline-pose contamination.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-front-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1735484,
+          "sha256": "7f7b13ac31931dcd9fe806814c0d05961b2c70dc5b0a849bb2c69b7386a2b726"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-front-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 290859,
+          "sha256": "637d50d4e57fb3d1bbfa635bc885b8333bcc3067dc077c75fbba05898ea6fa6d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-front-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41470,
+          "sha256": "77c0316b8a2a05d4ba5f00561f3676d1a475e4e757accc16287bfba6303b824a"
+        }
+      }
+    },
+    {
+      "id": 83,
+      "key": "accessory_alternating_dumbbell_front_raise",
+      "display_name": "Alternating Dumbbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "alternating",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "One arm at shoulder height forward while opposite dumbbell rests by thigh, communicating alternating phase distinctly from bilateral front raise; full figure and equipment.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/alternating-dumbbell-front-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1741242,
+          "sha256": "760e34df4ffe95e1289fec81f8a54a9873591f60d6d94e22c57502a77b60a98e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/alternating-dumbbell-front-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 291309,
+          "sha256": "1ca379b181f228828ae67747e4a88319ef1218de8820bad7fdd447d413a881f2"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/alternating-dumbbell-front-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41382,
+          "sha256": "64bdc769f9bfb90c287f341d442d61deb0e78f6f214d164e2cb7bd9672050d8e"
+        }
+      }
+    },
+    {
+      "id": 84,
+      "key": "accessory_plate_front_raise",
+      "display_name": "Plate Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "One plate gripped at opposite edges, forward shoulder-height arms and intact standing silhouette. Plate hole and two hands visible.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/plate-front-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1747541,
+          "sha256": "e7b92bff736c8bd91f723be26409093ba6a06576a145ba69fddac3f8d9c95f2b"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/plate-front-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 291891,
+          "sha256": "6fc3798c70873c935c1dde0c4a04f841df93d30f17ea36e8ae38c89d1e60bf05"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/plate-front-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41203,
+          "sha256": "066cc7eb8f6d5e3de86baad032eb6508668a568af21525ffa5dd92c840a9e66e"
+        }
+      }
+    },
+    {
+      "id": 85,
+      "key": "accessory_barbell_front_raise",
+      "display_name": "Barbell Front Raise",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Short straight loaded bar with pronated grip, arms projecting forward rather than elbows leading upright row. Complete bar and athlete.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-front-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1691367,
+          "sha256": "2f67c009450ffffd8bfcc475fe6c1ecbe14685925d6f406ace5fed3b49db3ef8"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-front-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 284575,
+          "sha256": "adff2ae24fc634d86cad897bbab4cdbd9976103fc1dc7686e0b1441ab5152e1a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-front-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40766,
+          "sha256": "80a16ac265049e376f6c4a8a366090a8e85401f62e67ec816e763c5578a962f9"
+        }
+      }
+    },
+    {
+      "id": 86,
+      "key": "accessory_landmine_press",
+      "display_name": "Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Framing edit keeps bilateral press mechanics and continuous bar while restoring full grounded pivot base with visible left margin.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/landmine-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1743381,
+          "sha256": "ab584ad6b258c56cef1d86c778dfcd8c0cdd2e82abe4c1f6ccb3923e045a7db7"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/landmine-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 290995,
+          "sha256": "09aea674dd272e36062b2e3853f656a9d895e19c584b7534b2561db5f518d9dc"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/landmine-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41299,
+          "sha256": "cf880e99541db5bb5edb172ceb8758a021c9df3552caf6a5f6f1ec5fa8ecbb14"
+        }
+      }
+    },
+    {
+      "id": 87,
+      "key": "accessory_half_kneeling_landmine_press",
+      "display_name": "Half-Kneeling Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Clear half-kneeling stance with grounded knee and opposite foot, both hands at sleeve end, continuous anchored bar and secured plate; whole support visible.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/half-kneeling-landmine-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1797399,
+          "sha256": "8fb25a239dc3d10eacacd0a02d16b960b01436dd60804901d4fe051aacb1740e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/half-kneeling-landmine-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302325,
+          "sha256": "f7b31da2f4181ce88a4cce11f622312f75a901dff3e849ce626580a682b55006"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/half-kneeling-landmine-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44013,
+          "sha256": "d865173d716b70c11d9d241aaa5407a1ea4f9191986a4438df0cf4530c318227"
+        }
+      }
+    },
+    {
+      "id": 88,
+      "key": "accessory_single_arm_landmine_press",
+      "display_name": "Single-Arm Landmine Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "unilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Single arm pressing sleeve with other hand empty at hip, staggered standing base and continuous bar to floor pivot; tight but intact anchor and hand margins.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/single-arm-landmine-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1826049,
+          "sha256": "f6daa07539d1c2367d185bd51919f7eb971ff21710e2a0697153bab8e5e10c76"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/single-arm-landmine-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 301221,
+          "sha256": "aaaee56daf5cf5b89d898fd2ddc2ee945224b9f286b36cace6f63f4723578ed4"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/single-arm-landmine-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43500,
+          "sha256": "8bcc64292f0d5528db762ef46fdadbcbbdc9e6ed1a9249ca93523ba031cbdc6e"
+        }
+      }
+    },
+    {
+      "id": 89,
+      "key": "accessory_z_press",
+      "display_name": "Z Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Unsupported upright floor-seated torso, extended legs/heels and overhead bar clearly identify Z Press; symmetric realistic bar and full shoes.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/z-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1831746,
+          "sha256": "f7eac0edf2f92e44188cee9514be17a7723545f48c8b5a14208fab890424b33b"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/z-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307890,
+          "sha256": "a3aa513ada13e20968e28452a5beae5aca0d663b14557f467200ae8aa437b3ba"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/z-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45404,
+          "sha256": "c7a238c7fccc59ad82a5856ba1c99e5326284a6303a7aa42324b6bd3499ba3cb"
+        }
+      }
+    },
+    {
+      "id": 90,
+      "key": "accessory_bradford_press",
+      "display_name": "Bradford Press",
+      "primary_muscle_group": "front_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Rear three-quarter shows bar just above/behind crown with elbows bent, not overhead lockout; representative Bradford transfer phase. Entire equipment and figure fit.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/bradford-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1738116,
+          "sha256": "061be91e96377ec4f2b1912e809be58906ce67f19ae79a0270b7e71836e9de1d"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bradford-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 293889,
+          "sha256": "d4bf5707833b4fc7526ba8e48e544895e94bfbd40d0b1396bfa135dc9a7bb3e3"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bradford-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42333,
+          "sha256": "24fb95a520595af6eef0dff20fdce1778180f08335795519f2925b961a3620a4"
+        }
+      }
+    },
+    {
+      "id": 103,
+      "key": "accessory_dumbbell_lateral_raise",
+      "display_name": "Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Full standing T silhouette, soft elbows, pronated/neutral wrist rotation and two intact light dumbbells; lateral rather than forward arm plane.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1726634,
+          "sha256": "84311199e49b4f48a3ce9b9d6dc3f413d535c1f191559da3f9d1c83e4b6ef796"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 288277,
+          "sha256": "90f88f974f103b3e78c0d7c8096c66234abdaf0476c3532fbabd4ea8a8e5b7cf"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41118,
+          "sha256": "46f07718b07b8c665db3d502c01c8995d5979b4110c1d0301cd5490b541fa326"
+        }
+      }
+    },
+    {
+      "id": 104,
+      "key": "accessory_seated_dumbbell_lateral_raise",
+      "display_name": "Seated Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Upright seat contact, planted feet and wide lateral arms distinguish from standing and pressing; complete flat bench and both weights.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/seated-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1793119,
+          "sha256": "70c1933877e4948dc319c503bb5c7ced1da97cbf5e6b1b1d643a21495e1fdf8e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304424,
+          "sha256": "4407aee41bbf94e573bb8687bf2844690aeffe9e20df6e5eca34fc71b25750ae"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45052,
+          "sha256": "8540893ec99dd9549193d1b75e2e2c68481654455a6d0c8859fd2f2cca3c71bc"
+        }
+      }
+    },
+    {
+      "id": 105,
+      "key": "accessory_incline_dumbbell_lateral_raise",
+      "display_name": "Incline Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Inclined back support with pronated hands and sideways abduction corrected the fly-like first attempt; soft elbows, complete bench and planted feet.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/incline-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 2015787,
+          "sha256": "9d1df043b1316c97efadeb4c1bc40e1056f5ccb060f1d9a15bafd8bae814debd"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 338001,
+          "sha256": "a6e7eb0bb5957682a5e990f2b8e92676d0ae850e30c687712136fc1e2dbe8c6d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48766,
+          "sha256": "55f08a8a8337ae54ac59bd1057dd5373f4e3e697413991d95a57f92040e906f6"
+        }
+      }
+    },
+    {
+      "id": 106,
+      "key": "accessory_lean_away_dumbbell_lateral_raise",
+      "display_name": "Lean-Away Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Feet now beside support, rigid body inclines away, supporting arm extended toward post, one free dumbbell lateral. Full capped post and base retained.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/lean-away-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1784958,
+          "sha256": "73cd9fbb19863c6980a612befa1ee05737c22643d63bfef95bd0425928000c6d"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lean-away-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 298553,
+          "sha256": "00e938c0f3467354b329558101076e75b0c357c3bf7a5abaec89b3cfa88ed08b"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lean-away-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42788,
+          "sha256": "78368b6dc879412ae4f7e10242e53b571a289f1a46826b1abffd50fdb847f6d9"
+        }
+      }
+    },
+    {
+      "id": 107,
+      "key": "accessory_lying_dumbbell_lateral_raise",
+      "display_name": "Lying Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Side-lying on horizontal bench, stacked legs and supported lower elbow, one raised upper arm in lateral plane. Four limbs, grounded support and full shoe edges.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/lying-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1775048,
+          "sha256": "3042599f0fbbca22620ab478f5680e0f86d998a9ba8501729f4654ddf4df4634"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lying-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300064,
+          "sha256": "df6547c4aea7a03f1d8d88cf27105dc0988116be702eefd11519db583b62c9e9"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lying-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43348,
+          "sha256": "e0dbb661615dc564ad10fc7f0d7a010b7578c58bdde021251a3585457961a497"
+        }
+      }
+    },
+    {
+      "id": 108,
+      "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "display_name": "Chest-Supported Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Prone chest contact and wide arm abduction distinguish from supine supported raise. Actual incline is steeper than prompt but remains valid chest-supported setup; intact bilateral dumbbells and grounded feet.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1816327,
+          "sha256": "528e76617dc20ad6413c042fb32826360c15ae16932d8a00a7f694e91566f0ec"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 312524,
+          "sha256": "5d58db3abe7b0ceffdddcf43f50cccbb81eb689dd39cd7ce18daf1b62d32df11"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46761,
+          "sha256": "8276e3a3819ab86333f7ab373820ec805a2b3cb0d85fcc65d1f89d9c0593acbd"
+        }
+      }
+    },
+    {
+      "id": 109,
+      "key": "accessory_partial_dumbbell_lateral_raise",
+      "display_name": "Partial Dumbbell Lateral Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Controlled low partial abduction with hands below ribs, not shoulder-height full raise; intact bilateral dumbbells, relaxed shoulder position, complete standing figure.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/partial-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1789422,
+          "sha256": "63a4a8d9df2aa035786e14a7ff01614a1a4fe48c0f96d7a6a4152621abd6b002"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/partial-dumbbell-lateral-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 299611,
+          "sha256": "b008b6d7ff97accafa172b9d21fea07ab1003022bddd02ba98635ddd86709377"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/partial-dumbbell-lateral-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42915,
+          "sha256": "e58c5007032ba5be079496c6ba9b8b4d332ae795b76784add9b5284c5de2fff9"
+        }
+      }
+    },
+    {
+      "id": 110,
+      "key": "accessory_lu_raise",
+      "display_name": "Lu Raise",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Both plate surfaces now have no letters or numbers; wide overhead lateral arc, full feet/hands, consistent original studio treatment.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/lu-raise-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1641424,
+          "sha256": "32f10d8f6c78de826a4c7676aca11c605168e50bebaf01f0380e40d6b60e1974"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lu-raise-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 283315,
+          "sha256": "b0a59f9960fb40e98e68a417e5e15f64098e91430b8f8f7e768bcc77554defce"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lu-raise-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41353,
+          "sha256": "8a45e8b475e77e9152dae0c00a89501c38aa5f39299b384a02df593302dd8143"
+        }
+      }
+    },
+    {
+      "id": 111,
+      "key": "accessory_dumbbell_upright_row",
+      "display_name": "Dumbbell Upright Row",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Two distinct dumbbells close to lower chest, wrists below bent outward/upward elbows; clear upright-row mechanics and full body.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-upright-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1735154,
+          "sha256": "75fd2e0429c0653742c85d33ea3c01cc16511bc102af2f330e681de888b45965"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-upright-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 287857,
+          "sha256": "da40fbc4e02c7ca1b295042a7b9fa8bb253d974e65686e043f23892b7bb7fd57"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-upright-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40680,
+          "sha256": "6653cceb4755ce6bca331c226bb41a3b986ac2156b145b2a2679e3b9684269e9"
+        }
+      }
+    },
+    {
+      "id": 112,
+      "key": "accessory_wide_grip_barbell_upright_row",
+      "display_name": "Wide-Grip Barbell Upright Row",
+      "primary_muscle_group": "side_delts",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide pronated grip outside shoulder line, bar close to torso and elbows above wrists; symmetric light loading and complete bar/feet.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/wide-grip-barbell-upright-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1754083,
+          "sha256": "49149fd56e16b7a4de7ed98b1365b1d0ec4cf1b12ec81f1bd2eac7b841b54e6e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-barbell-upright-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294054,
+          "sha256": "75d97966a1b5e5028dd2752fc13c63630a2aa1209691295071e4e5fa26c7c5f6"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-barbell-upright-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42724,
+          "sha256": "1e071b8b527d5d70709d7f2826a960e94e55058d97adf81d87b8f717c673c1c7"
+        }
+      }
+    },
+    {
+      "id": 289,
+      "key": "accessory_close_grip_bench_press",
+      "display_name": "Close-Grip Bench Press",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Narrow pronated bar grip with tucked elbows on flat bench, grounded feet and full compact rack; distinct from wide chest pressing. Complete equipment despite tighter sleeve/shoe margins.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/close-grip-bench-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1925554,
+          "sha256": "34cbcfe4a3443bebf3ba12f67c40aa1c657780a6a4cb0e3a2e5a8544de057927"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/close-grip-bench-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 323222,
+          "sha256": "dcce40fa5224bc16b6e0f9048c26206a1b1f3ee5fd72ae9e761f844111fe07df"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/close-grip-bench-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47082,
+          "sha256": "c881799104bb112901e6633eca8260fa10aa5235b8290c6c9cfbff81ba28ed20"
+        }
+      }
+    },
+    {
+      "id": 290,
+      "key": "accessory_jm_press",
+      "display_name": "JM Press",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 6,
+      "review": "Side view now shows upper arms angled toward feet, raised elbows and forearms folding back/down toward chin; bar at chin transition rather than forehead extension. Pronated separated grips, natural occlusion of far arm, whole athlete/bench/bar. Distinct JM transition with safe facial clearance.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/jm-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1715937,
+          "sha256": "b4b1c9575b12937a1f84546702ecb5b1e3368af3aed0fe658028e059c405cf29"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/jm-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 287265,
+          "sha256": "df7566f8c7b3c6c6f61de88ef5e692de245364876cba5ab94319e5e05b725dfa"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/jm-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42025,
+          "sha256": "278803bc3ee219b6113482808923bfc4864a129304b3c069856ccd3fe4189359"
+        }
+      }
+    },
+    {
+      "id": 291,
+      "key": "accessory_barbell_skull_crusher",
+      "display_name": "Barbell Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Elbows now flexed with straight bar above forehead and no head contact; full shoes restored. Recognizable lying elbow-extension phase rather than press lockout.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-skull-crusher-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1780049,
+          "sha256": "67c3512c435eedb683a41f8ffb26db8c3c219cbf9d3775cb621d9e84e8468874"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-skull-crusher-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302978,
+          "sha256": "5c810423f11db85931bc13735ae1b2615d096d670e07efae0168d6efe6fff344"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-skull-crusher-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44422,
+          "sha256": "27f8c54aae48be51f5c1200a566335fd3d1b91a3402d892381c3210c734cf1e0"
+        }
+      }
+    },
+    {
+      "id": 292,
+      "key": "accessory_ez_bar_skull_crusher",
+      "display_name": "EZ-Bar Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Characteristic bent-elbow EZ extension over forehead, symmetric bent grip shaft and complete athlete/shoe framing; distinct implement from straight-bar version.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/ez-bar-skull-crusher-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1842011,
+          "sha256": "27e53f7d191837b8025af30617869d223435bf18f498382cdb3c7315b5c41ab0"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/ez-bar-skull-crusher-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307954,
+          "sha256": "d91f72044b5ccf2f5e6bf9c3195ce0f1476f84dbc3a54624af04c2812ffff977"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/ez-bar-skull-crusher-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45457,
+          "sha256": "0a7bdcbc1ce2e2056c7d93306e9cb32f83d6f408e49df68d74392183d70c0aaa"
+        }
+      }
+    },
+    {
+      "id": 293,
+      "key": "accessory_dumbbell_skull_crusher",
+      "display_name": "Dumbbell Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Framing restores far shoe while keeping deep elbow hinge, neutral grips and two separate dumbbells beside head. Natural overlap, no bar/face intersection.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-skull-crusher-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1845769,
+          "sha256": "b384e12f0446c45409fd506ceb465a71973631ff0eef12ca7125fe4bb23fbd28"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-skull-crusher-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 311546,
+          "sha256": "31efbbc5cd95fc1d4a841ac684698e615addeab6be1e47e6657bbaccf236e21d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-skull-crusher-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45094,
+          "sha256": "2c3e692d463ab4485a0165421aa3299bd38f406259762c1edec9bdd974ef7ad4"
+        }
+      }
+    },
+    {
+      "id": 294,
+      "key": "accessory_incline_skull_crusher",
+      "display_name": "Incline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Inclined backrest with elbows flexed and EZ bar behind crown, distinguishable from flat versions. Real bench support and complete shoes, same original studio.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/incline-skull-crusher-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1815567,
+          "sha256": "b6f395239458370bab3eb4acc3e2d379558e30fbb6b9d8571119bf9481647224"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-skull-crusher-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310406,
+          "sha256": "dfaa79be70a0abfc5a5041a190d13bfb945d8b517073846c2a3ee68aadc32c48"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-skull-crusher-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46435,
+          "sha256": "ed5ee77d49af068c3430a7431990256c1bb818ccb2ea82114332c05cf421defc"
+        }
+      }
+    },
+    {
+      "id": 295,
+      "key": "accessory_decline_skull_crusher",
+      "display_name": "Decline Skull Crusher",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "True head-low decline with secured feet, EZ bar behind forehead and deep elbow hinge. Whole bench, bar and shoes remain visible; original studio/skin/metal treatment retained.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/decline-skull-crusher-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1807903,
+          "sha256": "5fb1e86d6f3d0958c162745ef2584713826d79c476afc0be00914fd5fda50051"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-skull-crusher-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 300699,
+          "sha256": "a7b6e95068de21cd712b907ebb25880da54979ca8a300d0704f67a35b307d332"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/decline-skull-crusher-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43488,
+          "sha256": "fe008e8162a06093729bac0b6ad3e81eff8dbe129eb987160c2342ff2f232d80"
+        }
+      }
+    },
+    {
+      "id": 296,
+      "key": "accessory_dumbbell_overhead_triceps_extension",
+      "display_name": "Dumbbell Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Seated upright two-hand cupped upper dumbbell head, both elbows overhead and single vertical weight behind crown. Full seat, athlete, weight and shoes.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-overhead-triceps-extension-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1708036,
+          "sha256": "ac4504728298cf7683f70ec4a52ab7ca7dac56b36736de670be9225aa5d8ae69"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-overhead-triceps-extension-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 292356,
+          "sha256": "71d2006d0fd116794f5ae93a36ad70bb5be3d4d916a4d2140564b531ab89f465"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-overhead-triceps-extension-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42274,
+          "sha256": "00106cb14d550ff16ec5af5f1a57968f941e56531384d79b3129dbef2aafcb38"
+        }
+      }
+    },
+    {
+      "id": 297,
+      "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+      "display_name": "Single-Arm Dumbbell Overhead Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "unilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Standing unilateral extension with one hand at handle behind head, other arm empty, elbow overhead; complete figure and weight, distinct rear camera.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/single-arm-dumbbell-overhead-triceps-extension-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1713496,
+          "sha256": "a23250358b5879403e0998259c4c549fbc4f4d3831b43e7554d2c57d9568f082"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-overhead-triceps-extension-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 285101,
+          "sha256": "950c392d568b16deb62c84f1750ff1d4e2b34a10419d9d047a7975f50f4451df"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-overhead-triceps-extension-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 40119,
+          "sha256": "ec5bf7c96e1cbd1523833b8570da5a218ef50f7469f4dda16574a6d3af4c889c"
+        }
+      }
+    },
+    {
+      "id": 298,
+      "key": "accessory_tate_press",
+      "display_name": "Tate Press",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Dumbbell lower heads at upper chest, elbows flared and above wrists, forearms folding inward; distinct Tate bottom position. Matched dumbbell heads, complete shoes and flat bench in perspective.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/tate-press-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1953736,
+          "sha256": "20fcd703aa7ed7f048b7970656aedfdb90ce342bc41f078a1da1fd69af0068b3"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/tate-press-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329742,
+          "sha256": "fa4d5cfc618839075dad05fb6b4c5baea804f364e106467b8428c37a55436255"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/tate-press-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47786,
+          "sha256": "6a6a93b93c99ef731039fd066c9f468916fa1ea11ef5d692a5714d2156ba86ae"
+        }
+      }
+    },
+    {
+      "id": 299,
+      "key": "accessory_rolling_dumbbell_triceps_extension",
+      "display_name": "Rolling Dumbbell Triceps Extension",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Neutral dumbbells rolled behind crown with upper arms angled back and deep elbow flexion. Both shoes complete; characteristic behind-head transition, temporal roll cannot be proved by still.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/rolling-dumbbell-triceps-extension-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1893008,
+          "sha256": "f466e2f1dec9d33ef9477416c23820edb67cbc6d6aa1fc5144e6e35054812372"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rolling-dumbbell-triceps-extension-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317755,
+          "sha256": "798f8f78428f3ec69dedc8c0beb5e733269ac5d14a3c0c25b0f14833be373efd"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rolling-dumbbell-triceps-extension-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45527,
+          "sha256": "f4c52fe2178eb652f4bf7f99f4572959cc881913547821f03e960e4c8a374d30"
+        }
+      }
+    },
+    {
+      "id": 300,
+      "key": "accessory_pjr_pullover",
+      "display_name": "PJR Pullover",
+      "primary_muscle_group": "triceps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Far shoe fully restored; one dumbbell cupped by two hands behind crown with bent elbows and upper arms traveling back. Complete bench/athlete and original style retained.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/pjr-pullover-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1812652,
+          "sha256": "bb7c24eaf7a79e479d9322d775ce2c2ee77a2c038fccb718b283825de4d8b7ee"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/pjr-pullover-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307996,
+          "sha256": "8c94d61e657dd3dbebbd0b9f7d63e32ae63a2d5a70a0a6ae294b1a83ca5461f3"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/pjr-pullover-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43533,
+          "sha256": "442c72fb7a03b589b6c90e1b79a78e60b25152da936bf99fb5cee810c1b18fab"
+        }
+      }
+    }
+  ]
+}

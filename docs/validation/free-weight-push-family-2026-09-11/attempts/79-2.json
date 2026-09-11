@@ -1,0 +1,13 @@
+{
+  "id": 79,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. EDIT THE SECOND INPUT IMAGE, retaining its precise movement pose. The FIRST input is the immutable approved STYLE CONTROL ONLY; never copy its pose or incline angle. REMOVE the tiny bright logo-like marking on the shirt's upper chest; make it unbranded continuous graphite fabric with natural folds. Give top dumbbells5% more headroom without clipping shoes. Keep the upright seated shoulder press, backrest, hands and dumbbells the same. Preserve natural skin/fabric, neutral metal, original dark studio and restrained violet rim lighting. Square photograph. No logos, letters, text, overlays or extra people. This is a narrow correction, not a new pose.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2374c806-302f-4419-9aef-52a2fcaafeae.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-f4b48f76-4f79-407a-af4d-5f7e4d269c3c.png",
+  "review": "ACCEPT",
+  "review_reason": "Near-upright supported seated overhead press, two intact dumbbells and planted feet; chest mark removed. Top margin remains modest but all equipment is inside square.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

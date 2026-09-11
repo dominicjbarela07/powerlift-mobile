@@ -4,7 +4,67 @@ import {
 } from '@/lib/accessory-muscle-group';
 
 export type CanonicalCoreArtworkFamily = 'squat' | 'bench' | 'deadlift' | 'press';
-export type CanonicalAccessoryArtworkKey = 'accessory_incline_dumbbell_bench_press';
+// Canonical DEV database audit: docs/validation/free-weight-push-family-2026-09-11.
+// Numeric MovementDefinition IDs are the lookup boundary. Stable keys and primary
+// taxonomy must agree, excluding row-ID collisions and contradictory subjects.
+export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
+  32: { key: 'accessory_flat_dumbbell_bench_press', primary: 'chest' },
+  33: { key: 'accessory_incline_dumbbell_bench_press', primary: 'chest' },
+  34: { key: 'accessory_decline_dumbbell_bench_press', primary: 'chest' },
+  35: { key: 'accessory_neutral_grip_dumbbell_bench_press', primary: 'chest' },
+  36: { key: 'accessory_dumbbell_floor_press', primary: 'chest' },
+  37: { key: 'accessory_dumbbell_squeeze_press', primary: 'chest' },
+  38: { key: 'accessory_dumbbell_hex_press', primary: 'chest' },
+  39: { key: 'accessory_dumbbell_flye', primary: 'chest' },
+  40: { key: 'accessory_incline_dumbbell_flye', primary: 'chest' },
+  41: { key: 'accessory_decline_dumbbell_flye', primary: 'chest' },
+  42: { key: 'accessory_barbell_floor_press', primary: 'chest' },
+  43: { key: 'accessory_spoto_press', primary: 'chest' },
+  44: { key: 'accessory_larsen_press', primary: 'chest' },
+  45: { key: 'accessory_guillotine_press', primary: 'chest' },
+  46: { key: 'accessory_reverse_grip_bench_press', primary: 'chest' },
+  47: { key: 'accessory_cambered_bar_bench_press', primary: 'chest' },
+  73: { key: 'accessory_weighted_push_up', primary: 'chest' },
+  79: { key: 'accessory_seated_dumbbell_shoulder_press', primary: 'front_delts' },
+  80: { key: 'accessory_standing_dumbbell_shoulder_press', primary: 'front_delts' },
+  81: { key: 'accessory_arnold_press', primary: 'front_delts' },
+  82: { key: 'accessory_dumbbell_front_raise', primary: 'front_delts' },
+  83: { key: 'accessory_alternating_dumbbell_front_raise', primary: 'front_delts' },
+  84: { key: 'accessory_plate_front_raise', primary: 'front_delts' },
+  85: { key: 'accessory_barbell_front_raise', primary: 'front_delts' },
+  86: { key: 'accessory_landmine_press', primary: 'front_delts' },
+  87: { key: 'accessory_half_kneeling_landmine_press', primary: 'front_delts' },
+  88: { key: 'accessory_single_arm_landmine_press', primary: 'front_delts' },
+  89: { key: 'accessory_z_press', primary: 'front_delts' },
+  90: { key: 'accessory_bradford_press', primary: 'front_delts' },
+  103: { key: 'accessory_dumbbell_lateral_raise', primary: 'side_delts' },
+  104: { key: 'accessory_seated_dumbbell_lateral_raise', primary: 'side_delts' },
+  105: { key: 'accessory_incline_dumbbell_lateral_raise', primary: 'side_delts' },
+  106: { key: 'accessory_lean_away_dumbbell_lateral_raise', primary: 'side_delts' },
+  107: { key: 'accessory_lying_dumbbell_lateral_raise', primary: 'side_delts' },
+  108: { key: 'accessory_chest_supported_dumbbell_lateral_raise', primary: 'side_delts' },
+  109: { key: 'accessory_partial_dumbbell_lateral_raise', primary: 'side_delts' },
+  110: { key: 'accessory_lu_raise', primary: 'side_delts' },
+  111: { key: 'accessory_dumbbell_upright_row', primary: 'side_delts' },
+  112: { key: 'accessory_wide_grip_barbell_upright_row', primary: 'side_delts' },
+  289: { key: 'accessory_close_grip_bench_press', primary: 'triceps' },
+  290: { key: 'accessory_jm_press', primary: 'triceps' },
+  291: { key: 'accessory_barbell_skull_crusher', primary: 'triceps' },
+  292: { key: 'accessory_ez_bar_skull_crusher', primary: 'triceps' },
+  293: { key: 'accessory_dumbbell_skull_crusher', primary: 'triceps' },
+  294: { key: 'accessory_incline_skull_crusher', primary: 'triceps' },
+  295: { key: 'accessory_decline_skull_crusher', primary: 'triceps' },
+  296: { key: 'accessory_dumbbell_overhead_triceps_extension', primary: 'triceps' },
+  297: { key: 'accessory_single_arm_dumbbell_overhead_triceps_extension', primary: 'triceps' },
+  298: { key: 'accessory_tate_press', primary: 'triceps' },
+  299: { key: 'accessory_rolling_dumbbell_triceps_extension', primary: 'triceps' },
+  300: { key: 'accessory_pjr_pullover', primary: 'triceps' },
+} as const;
+export type CanonicalAccessoryArtworkKey =
+  typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]['key'];
+const REGISTERED_ACCESSORY_ARTWORK_KEYS = new Set<string>(
+  Object.values(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).map((entry) => entry.key),
+);
 
 type GovernedAccessoryIdentity = Readonly<{
   id?: number | null;
@@ -171,11 +231,15 @@ function explicitAccessoryIdentity(
     if (positiveId(idOverride) && positiveId(identity?.id) !== positiveId(idOverride)) return null;
     const taxonomy = governedTaxonomy(identity, allowParentFallback);
     if (!id || !taxonomy) return null;
-    // This is the catalog's stable governed key, never a title or alias.
-    const artworkKey: CanonicalAccessoryArtworkKey | undefined =
-      identity?.key === 'accessory_incline_dumbbell_bench_press'
-        ? identity.key
-        : undefined;
+    const registered = CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[
+      id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES
+    ];
+    if (registered && (
+      identity?.key !== registered.key
+      || taxonomy.primaryMuscleGroup !== registered.primary
+    )) return null;
+    if (!registered && REGISTERED_ACCESSORY_ARTWORK_KEYS.has(identity?.key || '')) return null;
+    const artworkKey: CanonicalAccessoryArtworkKey | undefined = registered?.key;
     return { id, ...taxonomy, ...(artworkKey ? { artworkKey } : {}) };
   };
 
@@ -193,8 +257,8 @@ function explicitAccessoryIdentity(
   )) return null;
   if (effective) return candidate(effective);
   if (performedCanonical) return candidate(performedCanonical);
-  const performed = candidate(movement.performed_movement_identity);
-  if (performed) return performed;
+  const performed = movement.performed_movement_identity;
+  if (performed && governedTaxonomy(performed)) return candidate(performed);
 
   // A substitution without a stable performed ID is incomplete. Do not paint
   // the original prescription as if it were the movement currently performed.
@@ -210,8 +274,7 @@ function explicitAccessoryIdentity(
     );
   }
 
-  const programmed = candidate(movement.movement_identity, undefined, true);
-  if (programmed) return programmed;
+  if (movement.movement_identity) return candidate(movement.movement_identity, undefined, true);
 
   const directAccessory = ['accessory', 'custom'].includes(normalizedToken(movement.kind))
     || normalizedToken(movement.identity_type) === 'accessory';

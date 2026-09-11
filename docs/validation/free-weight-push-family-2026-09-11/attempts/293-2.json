@@ -1,0 +1,13 @@
+{
+  "id": 293,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. FIRST INPUT is immutable original STYLE CONTROL ONLY, never clone its pose. SECOND INPUT is the edit target. FRAMING ONLY: back camera out slightly so far/right shoe fits with 5% clear right margin. Preserve EXACT bent-elbow pose, neutral dumbbell grips, both intact separate dumbbells beside head, bench and athlete. Do not straighten arms or raise dumbbells. Square realistic commercial fitness photo. Same natural skin, charcoal apparel, black studio, restrained violet. No text/logos/overlays.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-ba999aa2-f170-4c61-aef4-2312d4097fe1.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-03acc587-fe04-4690-b58e-e91e8ff20768.png",
+  "review": "ACCEPT",
+  "review_reason": "Framing restores far shoe while keeping deep elbow hinge, neutral grips and two separate dumbbells beside head. Natural overlap, no bar/face intersection.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

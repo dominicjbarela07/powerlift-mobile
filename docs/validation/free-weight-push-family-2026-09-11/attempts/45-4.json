@@ -1,0 +1,13 @@
+{
+  "id": 45,
+  "attempt": 4,
+  "prompt": "Use case: precise-object-edit. EDIT THE SECOND INPUT IMAGE, retaining its precise movement pose. The FIRST input is the immutable approved STYLE CONTROL ONLY; never copy its pose or incline angle. Expand the visible scene by pulling camera back12% and center it so the far right shoe and left bar sleeve are fully inside the image with margin. ABSOLUTELY preserve the SECOND image's deeply bent elbows and low bar above UPPER CHEST. Do NOT raise bar toward lockout, do not straighten elbows, do not change grip or bench angle. Preserve natural skin/fabric, neutral metal, original dark studio and restrained violet rim lighting. Square photograph. No logos, letters, text, overlays or extra people. This is a narrow correction, not a new pose.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-b8965b75-3f50-450a-8a83-2d2ed2f9e8c9.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-2cfb8f6a-6c38-4e3d-83cf-de8003ffbdb3.png",
+  "review": "ACCEPT",
+  "review_reason": "Flat bench, wide pronated grip and flared bent elbows place bar over upper chest/neck line; framing correction retains lowered phase and both shoes. Skin, floor and restrained rim match original.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

@@ -23,7 +23,7 @@ const substituted = canonicalArtworkInputForLoggerItem({
   performed_canonical_movement_identity: target, is_substituted: true,
 });
 assert.equal(resolve(substituted).artworkKey, key, 'Logger uses performed subject after an approved swap');
-assert.equal(resolve({ movement_identity: target, effective_movement_identity: other, is_substituted: true }).artworkKey, undefined, 'swapping away cannot retain this image');
+assert.equal(resolve({ movement_identity: target, effective_movement_identity: other, is_substituted: true }).artworkKey, other.key, 'swapping away selects the exact replacement image');
 assert.equal(resolve({ movement_identity: target, is_substituted: true }).kind, 'neutral', 'unresolved substitution cannot reuse programmed artwork');
 assert.equal(resolve({ movement_identity: target, effective_movement_identity: { id: 99 } }).kind, 'neutral', 'incomplete effective identity cannot fall back to the prescription');
 assert.equal(resolve({ movement_identity: target, effective_movement_identity: {} }).kind, 'neutral');
@@ -34,7 +34,7 @@ assert.equal(resolve({ movement_identity: target, legacy: { state: 'resolved', e
 assert.equal(resolve({ key, primary_muscle_group: 'chest' }).kind, 'neutral', 'key without authoritative numeric ID is insufficient');
 assert.equal(resolve({ id: 33, primary_muscle_group: 'chest', display_name: 'Dumbbell Incline Bench Press' }).artworkKey, undefined, 'numeric row ID and display name cannot invent governed artwork membership');
 assert.equal(resolve({ id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, undefined, 'separate legacy movement is not mass-mapped');
-for (const unrelated of [other, { id: 34, key: 'accessory_decline_dumbbell_bench_press', primary_muscle_group: 'chest' }, { id: 135, key: 'accessory_machine_reverse_fly', primary_muscle_group: 'rear_delts' }]) {
+for (const unrelated of [{ id: 135, key: 'accessory_machine_reverse_fly', primary_muscle_group: 'rear_delts' }, { id: 222, key: 'accessory_chest_supported_row', primary_muscle_group: 'upper_back' }]) {
   const result = resolve({ ...unrelated, display_name: 'Dumbbell Incline Bench Press' });
   assert.equal(result.artworkKey, undefined);
   assert.equal(result.kind, 'accessory', 'existing governed fallback stays available');

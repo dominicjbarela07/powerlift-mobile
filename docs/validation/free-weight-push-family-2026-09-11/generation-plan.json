@@ -1,0 +1,259 @@
+{
+  "original_reference": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+  "common_prompt": "Use case: photorealistic-natural. Create ONE square canonical movement identity photograph for a premium strength-training app, with one adult male athlete actually performing the specified exercise. Input image 1 is the ORIGINAL APPROVED MASTER STYLE SPECIMEN; every output must match it directly in natural muscular physique, adult age, graphite sleeveless shirt, black shorts, dark shoes, realistic skin and fabric, brushed silver metal, premium dark studio, charcoal textured floor, restrained violet rim light from rear right, neutral soft key from upper left/front. Preserve this visual grammar without copying its incline-press pose. Dark floor, no bright white soles, no bright colored lighting. Choose the specified camera for movement mechanics; comparable 60\u201370 mm photographic perspective. Square framing, full athlete and all required equipment in frame, about 8% dark crop-safe perimeter, occupy most of frame. Hands must anatomically grip the real handles; two arms, two hands, two legs; credible joints, contact, supports and equipment. Only required equipment. No text, logos, anatomy overlays, collages, diagrams, extra people or mirrors. Deliver one finished photograph.",
+  "movements": [
+    {
+      "id": 32,
+      "cue": "Flat Dumbbell Bench Press. A completely HORIZONTAL flat bench, back and head horizontal, feet grounded. Two separate brushed metal dumbbells held with pronated pressing grip, elbows bent about 80\u201390 degrees at the bottom-to-middle pressing phase, forearms vertical over elbows. Both dumbbells above outer chest, never touching. Camera at bench height from side/front three-quarter so the perfectly flat bench is unequivocal."
+    },
+    {
+      "id": 34,
+      "cue": "Decline Dumbbell Bench Press. A believable decline bench tilted about 18 degrees DOWN toward the athlete's head; hips and securely anchored feet higher than head. Both ankles safely tucked under the padded rollers at raised foot end, not resting on floor. Press two matched silver dumbbells vertically above the lower chest at mid-press, pronated grip. Camera side/front at low chest height so head-lower-than-hips geometry and complete ankle supports are unmistakable. No incline posture."
+    },
+    {
+      "id": 35,
+      "cue": "Neutral-Grip Dumbbell Bench Press on a completely flat horizontal bench. Two separate dumbbells held with PALMS FACING EACH OTHER; their handles run head-to-foot, parallel with torso. Elbows tucked near ribs rather than flared. Mid-press with forearms vertical, weights visibly separated by shoulder-width gap. Three-quarter camera from foot end high enough to clearly see the neutral wrist/grip orientation and flat bench."
+    },
+    {
+      "id": 36,
+      "cue": "Dumbbell Floor Press. Athlete lies directly on a thin dark mat on the floor, NO BENCH. Head, back and hips on floor, knees bent, feet planted. Bottom pressing position with upper arms resting on floor, elbows near 90 degrees and forearms vertical holding two separate pronated-grip silver dumbbells above chest. Elevated side three-quarter camera shows actual upper arm-to-floor contact and no bench."
+    },
+    {
+      "id": 37,
+      "cue": "Dumbbell Squeeze Press. Athlete supine on completely flat horizontal bench, feet planted. Two matching ROUND silver dumbbells pressed firmly TOGETHER directly above center of sternum with neutral grips, elbows tucked. Show halfway pressed position, clear continuous inward contact between the two dumbbell inner head surfaces, both handles individually gripped. Elevated front three-quarter camera makes dumbbell-to-dumbbell contact and squeezed centerline unmistakable."
+    },
+    {
+      "id": 38,
+      "cue": "Dumbbell Hex Press. Athlete supine on horizontal flat bench with feet planted. Two matched brushed-metal HEXAGONAL dumbbells with flat inner faces contacting each other tightly throughout the press. Neutral palms-in grip, elbows tucked, lower-middle pressing phase at sternum. Clearly show polygonal solid steel hex heads, each dumbbell has two heads joined by a gripped short handle; no fused weights. Front three-quarter view."
+    },
+    {
+      "id": 39,
+      "cue": "Dumbbell Fly on completely flat horizontal bench. Athlete lying supine, feet planted. Two modest silver dumbbells out WIDE at either side, arms spread as a wide embracing arc, elbows only gently bent about 20\u201325 degrees, palms toward ceiling/each other along closing arc. Show lowered fly position with wrists well outside elbows, not a press with 90-degree elbows. Slightly elevated foot-side three-quarter camera reveals both wide arms, full bench horizontal and full feet."
+    },
+    {
+      "id": 40,
+      "cue": "Incline Dumbbell Fly. Backrest visibly inclined 35 degrees, supported head/back/glutes and feet planted. Arms spread WIDE in chest fly arc at near-bottom stretch with only soft 20\u201325-degree elbow bend; modest matching silver dumbbells well OUTSIDE elbows, NOT a bent-elbow press. Three-quarter foot-side elevated camera to show incline and both outstretched arms fully."
+    },
+    {
+      "id": 41,
+      "cue": "Decline Dumbbell Flys. Decline bench about18 degrees head DOWN, ankles secured under padded raised foot rollers. Two modest silver dumbbells out wide at sides with only soft elbow bend, open-chest lowered fly phase, not pressing. Low side/foot three-quarter view exposing head below hips, decline support mechanism and full wide arm span."
+    },
+    {
+      "id": 42,
+      "cue": "Barbell Floor Press. Athlete supine on dark floor mat, no bench. Head/back/hips on floor, knees bent feet planted. Standard STRAIGHT silver barbell, symmetric two modest plates per end and real collars. Hands slightly wider than shoulders with pronated wrapped thumbs, forearms vertical, upper arms resting on floor at bottom, bar a few inches above chest. Three-quarter side camera shows both elbows contacting floor and whole bar/end plates. No rack required, focus on held bar."
+    },
+    {
+      "id": 43,
+      "cue": "Spoto Press. Athlete supine on a horizontal flat bench with feet planted. Straight silver barbell, identical moderate plates and collars on each end. Pronated standard-width bench grip. Show distinctive paused bottom position: bar suspended with a plainly visible 3cm AIR GAP above sternum, not touching chest, forearms vertical with elbows below bench-pad top. True slightly oblique side view makes gap obvious while both hands and complete symmetric bar remain visible. No fake motion lines."
+    },
+    {
+      "id": 44,
+      "cue": "Larsen Press. Athlete on horizontal flat bench pressing a straight loaded silver barbell. Defining feature: BOTH LEGS extended together straight out in front, feet floating clear of floor without foot support, no leg drive. Back/head/glutes supported on bench. Moderate standard-width grip with elbows partially bent in press. Side three-quarter view showing suspended straight legs, complete bar, symmetric plates and collars. No bench incline."
+    },
+    {
+      "id": 45,
+      "cue": "Guillotine Press. Athlete lying supine on horizontal flat bench, feet planted. Very modest symmetrically loaded straight barbell held WIDE pronated grip, elbows flared outward. Bottom representative position: bar hovering just above upper chest at clavicle/base-of-neck level, never touching or compressing throat. Forearms vertical, head neutral on pad. Camera from elevated foot-side three-quarter clearly shows wide grip and unusually high upper-chest bar position. Preserve physical separation and calm controlled effort."
+    },
+    {
+      "id": 46,
+      "cue": "Reverse-Grip Bench Press. Supine athlete on horizontal flat bench with feet grounded. Straight silver barbell moderate symmetric plates and collars. BOTH hands clearly SUPINATED underhand, palms oriented toward athlete's face/ceiling, thumbs wrapped; elbows tucked close to sides. Bar in low-middle press above lower chest. Close enough three-quarter side-foot viewpoint to make underhand wrists and tucked elbows obvious while keeping full body and complete bar."
+    },
+    {
+      "id": 47,
+      "cue": "Cambered-Bar Bench Press. Athlete supine on horizontal flat bench, feet grounded, pressing a real CAMBERED straight-grip bench bar: the central gripping shaft is dropped in a shallow rectangular U relative to the two higher horizontal sleeve axes, with equal vertical bends outside both hands before sleeves. No multi-grip handles. Identical modest plates and collars on two collinear higher sleeves. Low pressing phase central shaft at chest while elevated sleeves/plates stay higher, showing extra range camber. Front oblique camera shows entire symmetrical purpose-built bar and both grip points; nothing intersects athlete."
+    },
+    {
+      "id": 73,
+      "cue": "Weighted Push-Up with a single small-to-moderate round metal weight plate lying flat and securely centered across athlete's upper back between shoulders, not low back. Athlete in controlled near-bottom push-up on dark studio floor: palms planted slightly outside shoulders, elbows bent, head/torso/hips/heels in straight plank, toes supporting feet. No bench, vest, straps or extra person. Low side-front three-quarter view clearly shows plate contacting back and both planted hands; entire athlete fits square."
+    },
+    {
+      "id": 79,
+      "cue": "Seated Dumbbell Shoulder Press. Athlete sitting upright on bench with near-vertical 80\u201385 degree backrest, feet planted. Two separate silver dumbbells shoulder-height-to-overhead mid-press, elbows bent and out to sides, forearms upright, palms forward. Torso essentially vertical, not incline chest press. Slight three-quarter frontal camera includes full bench supports and feet with weights and hands clearly separated."
+    },
+    {
+      "id": 80,
+      "cue": "Standing Dumbbell Shoulder Press. Athlete standing upright with feet shoulder-width, NO BENCH. Two silver dumbbells in mid-overhead press, both arms above shoulder height, forearms upright, pronated palms forward. Knees straight but unlocked, no dip/leg drive, ribs stacked over pelvis. Three-quarter frontal full-body shot, weights above head, little overhead empty space, include both shoes."
+    },
+    {
+      "id": 81,
+      "cue": "Arnold Press. Athlete seated upright on near-vertical bench, feet planted. Characteristic START/early rotation phase with TWO silver dumbbells in FRONT of face/upper chest at chin level, forearms vertical, elbows FORWARD and close together, PALMS FACING TOWARD athlete's face. No conventional outward-elbow top shoulder press pose. Front three-quarter camera exposes supinated palms and forward elbows, whole body/equipment present."
+    },
+    {
+      "id": 82,
+      "cue": "Dumbbell Front Raise, BILATERAL. Standing athlete, knees softly unlocked, torso upright, BOTH nearly straight arms lifted directly FORWARD to shoulder height, two light silver dumbbells with pronated palms-down grip, parallel forearms. Not out to sides. Side-front three-quarter angle strongly reveals forward arm projection, feet and both dumbbells visible."
+    },
+    {
+      "id": 83,
+      "cue": "Alternating Dumbbell Front Raise. Standing athlete, one nearly straight arm raised FORWARD to shoulder height holding a modest silver dumbbell pronated; other arm hangs straight down alongside thigh holding the second matching dumbbell. Torso upright without twist, both feet grounded. Side-front three-quarter shows one front-raised and one lowered arm clearly. No lateral raise."
+    },
+    {
+      "id": 84,
+      "cue": "Plate Front Raise. Standing upright athlete holds ONE round brushed metal weight plate with BOTH hands at its 3 and 9 o'clock edges, arms extended forward to shoulder height with slight elbow softness. Plate vertical, visible central hole and realistic modest thickness, no markings. Side-front three-quarter so single plate, two hands and forward raise are unmistakable. Full body, no other equipment."
+    },
+    {
+      "id": 85,
+      "cue": "Barbell Front Raise. Standing athlete with BOTH almost-straight arms lifted FORWARD to shoulder height, pronated shoulder-width grip on one short straight silver barbell, symmetrically light round plates and collars. Elbows not pulled high as upright row; arms extended forward. Side three-quarter view clearly exposes arm length projecting in front of torso. Bar horizontal, whole bar and feet fully in frame."
+    },
+    {
+      "id": 86,
+      "cue": "Landmine Press, bilateral two-hand version. Standing athlete facing a floor-anchored landmine barbell whose far end is secured in a real compact pivot at lower-left floor. Both hands cup the close end sleeve just behind/at one modest loaded plate, pressing the end diagonally upward at about45 degrees; elbows partly extended, upright torso, feet grounded. Show one uninterrupted straight bar running from visible floor pivot to held loaded end, correct perspective, no floating loose end. Side three-quarter composition."
+    },
+    {
+      "id": 87,
+      "cue": "Half-Kneeling Landmine Press, governed bilateral two-hand representation. Athlete half-kneeling with one knee on dark mat and opposite foot planted forward, torso tall. BOTH hands cup end sleeve of a single landmine barbell pressing diagonally upward. One real floor pivot anchors opposite end, one modest weight plate at held end secured with collar, continuous straight shaft. Side three-quarter shows knee/foot contacts and anchored bar geometry. No standing stance."
+    },
+    {
+      "id": 88,
+      "cue": "Single-Arm Landmine Press. Athlete standing staggered stance, upright torso; ONE hand presses loaded end of landmine bar diagonally upward, other hand empty resting near waist. Opposite end secured to visible compact floor pivot, continuous straight shaft and one modest plate with collar at held end. Show unilateral arm pressing, all body and anchor in frame. Three-quarter side-front camera."
+    },
+    {
+      "id": 89,
+      "cue": "Z Press with barbell. Athlete sits directly on dark floor, torso perfectly upright with NO BENCH, both legs extended straight forward spread slightly, heels grounded. Both hands pronated just outside shoulder width pressing a straight barbell with symmetric modest plates and collars overhead, elbows in middle press. Full body side-front three-quarter view exposes unsupported vertical torso and straight floor-seated legs. Entire bar fits."
+    },
+    {
+      "id": 90,
+      "cue": "Standing Bradford Press. Upright standing athlete holds a lightly symmetrically loaded straight barbell in pronated slightly-wide grip, bar JUST BEHIND and ABOVE crown of head during characteristic front-to-back transfer, elbows still deeply bent, not locked out overhead and not resting on neck. Three-quarter side-rear camera reveals the small clearance over head, bent elbows and rear transfer position. Neutral neck, legs steady, full figure and bar."
+    },
+    {
+      "id": 103,
+      "cue": "Dumbbell Lateral Raise. Standing athlete with two light matching silver dumbbells, both nearly-straight arms extended OUT TO THE SIDES at shoulder height, soft elbow bend about15 degrees, neutral wrists with little-finger side only subtly upward. Frontal slight three-quarter full-body view makes wide T-like lateral arm path unmistakable. No front raise, no shrug, no extra equipment."
+    },
+    {
+      "id": 104,
+      "cue": "Seated Dumbbell Lateral Raise. Athlete sitting upright at front of simple flat bench, knees about90 degrees feet planted. BOTH arms extend OUT TO SIDES near shoulder height with soft elbows, holding two light silver dumbbells. No overhead press. Slight three-quarter frontal view includes seat, support legs and feet; wide arms fit square."
+    },
+    {
+      "id": 105,
+      "cue": "Incline Dumbbell Lateral Raise, bilateral supported reclining version. Athlete reclines face-up against 60-degree inclined backrest, glutes on seat, feet grounded. Two light silver dumbbells raised OUT LATERALLY in the shoulder plane with soft near-straight elbows, not forward pressing and not chest fly. Three-quarter front shows back against angled pad and arms abducting sideways; full bench, weights, feet."
+    },
+    {
+      "id": 106,
+      "cue": "Lean-Away Dumbbell Lateral Raise. Athlete stands beside a single minimal vertical support post, inside hand grips post at chest height, feet together near post base; body leans OUTWARD about20degrees as one rigid line. Free outside arm raises ONE light silver dumbbell laterally to shoulder level with soft elbow. Other hand is supporting, not holding weight. Full body and grounded post base visible, front three-quarter. This is a unilateral displayed repetition of the catalog exercise, no fake two-arm lean."
+    },
+    {
+      "id": 107,
+      "cue": "Lying Dumbbell Lateral Raise. Athlete SIDE-LYING lengthwise on a completely horizontal flat bench, lower side/hip and torso supported, lower forearm bracing comfortably on pad, legs aligned. Upper arm raises ONE light silver dumbbell away from the upper hip in the lateral abduction plane, arm softly bent pointing diagonally upward. Side/front viewpoint clearly shows side-lying body and only one working arm; not supine chest fly or incline-supported raise. Full bench and figure."
+    },
+    {
+      "id": 108,
+      "cue": "Chest-Supported Dumbbell Lateral Raise. Athlete lies FACE DOWN chest resting against a30degree inclined bench pad, legs straddling bench with feet firmly grounded. Neck neutral looking toward floor. BOTH arms raise two light silver dumbbells laterally wide into a T, near-straight elbows. Camera slightly elevated FRONT SIDE showing chest contact with inclined pad and both lateral arm paths, distinct from supine incline raise. Full equipment and limbs."
+    },
+    {
+      "id": 109,
+      "cue": "Partial Dumbbell Lateral Raise. Standing athlete with two slightly heavier matching silver dumbbells, both arms lifted ONLY about30degrees away from sides, elbows softly bent, hands clearly below waist-to-lower-rib level, distinctly below full shoulder height. Controlled short-range bottom-half abduction, no shrug. Frontal three-quarter full body, no motion arrows or duplicated positions."
+    },
+    {
+      "id": 110,
+      "cue": "Lu Raise with two small silver weight plates. Standing athlete, BOTH straight-ish arms lifted very HIGH out through lateral arc into wide overhead V at about145degrees from sides, holding one small thin round metal plate in each hand by its edge/handle opening. Neutral stable torso and feet, no dumbbells, no barbell. Frontal three-quarter view reveals overhead lateral raise position, full hands plates and feet inside frame."
+    },
+    {
+      "id": 111,
+      "cue": "Dumbbell Upright Row. Standing athlete pulls TWO separate modest silver dumbbells up close in FRONT of lower chest, pronated hands, elbows lead WIDE and HIGH above wrists at around shoulder height. Elbows deeply bent, weights low relative to elbows. Not straight-arm lateral or front raise. Slight three-quarter frontal full-body view with gap between weights and continuous clear hands."
+    },
+    {
+      "id": 112,
+      "cue": "Wide-Grip Barbell Upright Row. Standing athlete pulling a straight silver bar with light symmetric plates and collars to lower chest, hands WIDE beyond shoulder-width, pronated grip. Elbows point out and upward, higher than wrists, bent roughly90degrees. Bar close to torso, not an extended-arm front raise. Frontal slightly oblique full-body view fits entire bar."
+    },
+    {
+      "id": 289,
+      "cue": "Close-Grip Bench Press. Athlete supine on flat horizontal bench, feet planted. Straight silver barbell with identical moderate plates and collars, hands shoulder-width and clearly NARROWER than normal wide bench grip, elbows tucked close alongside ribs. Mid-lower press just over lower sternum, forearms vertical. Elevated foot-side three-quarter view emphasizes hand spacing and tucked elbows, full body and bar."
+    },
+    {
+      "id": 290,
+      "cue": "JM Press. Athlete supine on flat bench, feet grounded. Light symmetrically loaded straight silver bar, narrow shoulder-width pronated grip. Characteristic bottom hybrid extension position: elbows stay pointed forward/up, upper arms angled about45degrees from torso, forearms folded toward upper arms with wrists above upper chest/throat area, bar hovering several inches above upper chest rather than at forehead or touching torso. Forearms approach biceps. Side three-quarter makes elbow position and hybrid short lowering path legible. Full figure and bar."
+    },
+    {
+      "id": 291,
+      "cue": "Barbell Skull Crusher. Supine on horizontal flat bench, feet grounded. One STRAIGHT short silver barbell with identical light plates and real collars. Upper arms nearly vertical, elbows fixed pointing ceiling, both forearms hinge backward at about90degrees so bar is held just above forehead without contact. Shoulder-width pronated grip, clear bar-to-head separation. Side three-quarter exposes elbow hinge and full straight shaft, athlete and bench fully visible."
+    },
+    {
+      "id": 292,
+      "cue": "EZ-Bar Skull Crusher. Supine athlete on horizontal bench, feet planted. Upper arms vertical and stationary, elbows pointing up, forearms folded backward to bring light EZ curl bar just behind/above forehead. Bar has clear symmetric zigzag central EZ bends held at angled narrow grips and equal small plates/collars on straight sleeves. Side-front three-quarter reveals EZ shape, both hands and safe head clearance, whole figure and bench."
+    },
+    {
+      "id": 293,
+      "cue": "Dumbbell Skull Crusher. Athlete supine on horizontal flat bench, feet planted. Two modest separate silver dumbbells, neutral palms facing each other. Upper arms vertical, elbows pointing up and stationary; forearms bent back about90degrees with each dumbbell beside its own temple, clear gap from head. Elbows not flared wide. Elevated side three-quarter shows separate weights beside head and elbow-extension mechanics, complete body and bench."
+    },
+    {
+      "id": 294,
+      "cue": "Incline Skull Crusher using a light EZ bar. Athlete supine on bench backrest inclined35degrees, feet planted. Upper arms angled upward slightly behind vertical, elbows stationary above shoulder line; forearms folded back holding clearly zigzag EZ bar just BEHIND head in stretched extension position. Symmetric small plates and collars, no head contact. Side three-quarter makes inclined bench and triceps hinge position unmistakable, full supports and athlete."
+    },
+    {
+      "id": 295,
+      "cue": "Decline Skull Crusher using a light EZ bar. Athlete lying head LOWER than hips on18degree decline bench, ankles secure under padded raised foot rollers. Upper arms point upward; elbows flexed so clearly zigzag EZ bar rests in hands just beyond head with visible clearance. Symmetric small plates and collars. Side three-quarter shows decline, ankle support and elbow-extension pattern, full figure and bar."
+    },
+    {
+      "id": 296,
+      "cue": "Dumbbell Overhead Triceps Extension, two-hand single-dumbbell version. Athlete seated upright on flat bench, feet planted, torso vertical. BOTH hands cup underneath the upper inside head of ONE vertical silver dumbbell behind crown, upper arms next to ears, elbows point UP and are flexed deeply so the lower head hangs behind upper back. Entire dumbbell with two heads and short shaft mechanically clear, supported by real cupped hands. Side-rear three-quarter exposes weight behind head and upward elbows, no second dumbbell."
+    },
+    {
+      "id": 297,
+      "cue": "Single-Arm Dumbbell Overhead Triceps Extension. Standing upright athlete holds ONE modest silver dumbbell in ONE hand behind head, same upper arm near ear and elbow pointing up; working elbow bent about90degrees. Other empty hand lightly supports upper arm or rests on waist. Side-rear three-quarter clearly shows unilateral extension, hand gripping handle and both heads of small dumbbell; full body and dark shoes."
+    },
+    {
+      "id": 298,
+      "cue": "Tate Press. Supine athlete on horizontal flat bench, feet planted. Two modest silver dumbbells lower to upper chest in distinctive elbows-OUT triceps extension: upper arms spread wide, elbows bent outward, forearms slope IN toward sternum, dumbbells oriented vertically and their INNER HEAD ENDS approach each other over chest, palms facing forward/down toward feet. Elbows higher/wider than wrists. Camera elevated from foot-side clearly shows inward folding hands and widely flared elbows, not neutral close-grip squeeze press."
+    },
+    {
+      "id": 299,
+      "cue": "Rolling Dumbbell Triceps Extension. Athlete supine lengthwise on flat bench, feet grounded. Two modest silver dumbbells in neutral grips beside/just BEHIND head, elbows flexed deeply and upper arms angled BACK past vertical so dumbbells roll behind crown in stretched transition. Both weights separate with safe head clearance; not centered above chest. Side three-quarter shows backwards shoulder roll and folded elbow path, complete bench and figure."
+    },
+    {
+      "id": 300,
+      "cue": "PJR Pullover, triceps-focused bent-arm dumbbell pullover. Athlete lies lengthwise on horizontal bench with head near end, feet planted. BOTH hands cup underside of upper head of ONE vertical silver dumbbell extending BEHIND head past end of bench. Upper arms angled well back, elbows deliberately BENT about80\u2013100degrees (not straight-arm lat pullover), weight lower head hangs into free space behind bench without touching floor. Side three-quarter makes one-dumbbell two-hand support, bent elbows and deep overhead stretch clear, full figure and equipment."
+    }
+  ],
+  "final_prompt_authority": "Initial cues below are retained as provenance. The ACCEPT attempt linked here is authoritative after corrections; always attach original_reference as first style control.",
+  "accepted_attempts": {
+    "32": "attempts/32-2.json",
+    "34": "attempts/34-1.json",
+    "36": "attempts/36-2.json",
+    "37": "attempts/37-1.json",
+    "35": "attempts/35-3.json",
+    "39": "attempts/39-1.json",
+    "40": "attempts/40-1.json",
+    "38": "attempts/38-2.json",
+    "41": "attempts/41-1.json",
+    "44": "attempts/44-1.json",
+    "42": "attempts/42-2.json",
+    "43": "attempts/43-3.json",
+    "46": "attempts/46-1.json",
+    "73": "attempts/73-1.json",
+    "80": "attempts/80-1.json",
+    "81": "attempts/81-1.json",
+    "45": "attempts/45-4.json",
+    "47": "attempts/47-3.json",
+    "79": "attempts/79-2.json",
+    "82": "attempts/82-1.json",
+    "83": "attempts/83-1.json",
+    "84": "attempts/84-1.json",
+    "85": "attempts/85-1.json",
+    "87": "attempts/87-1.json",
+    "88": "attempts/88-1.json",
+    "89": "attempts/89-1.json",
+    "90": "attempts/90-1.json",
+    "86": "attempts/86-2.json",
+    "103": "attempts/103-1.json",
+    "104": "attempts/104-1.json",
+    "105": "attempts/105-2.json",
+    "106": "attempts/106-2.json",
+    "107": "attempts/107-1.json",
+    "108": "attempts/108-1.json",
+    "109": "attempts/109-1.json",
+    "111": "attempts/111-1.json",
+    "112": "attempts/112-1.json",
+    "289": "attempts/289-1.json",
+    "110": "attempts/110-2.json",
+    "291": "attempts/291-2.json",
+    "292": "attempts/292-2.json",
+    "293": "attempts/293-2.json",
+    "294": "attempts/294-1.json",
+    "296": "attempts/296-1.json",
+    "297": "attempts/297-1.json",
+    "299": "attempts/299-1.json",
+    "295": "attempts/295-2.json",
+    "298": "attempts/298-2.json",
+    "300": "attempts/300-2.json",
+    "290": "attempts/290-6.json"
+  }
+}

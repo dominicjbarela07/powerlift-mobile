@@ -1,0 +1,13 @@
+{
+  "id": 290,
+  "attempt": 3,
+  "prompt": "Use case: precise-object-edit. FIRST INPUT is immutable original STYLE CONTROL ONLY, never clone its pose. SECOND INPUT is the edit target. Change ONLY arm pose and bar placement to a proper bottom JM Press. Rotate BOTH upper arms DOWN toward torso/feet so elbows hover about 15cm above lower chest. Fold forearms tightly back toward upper chest. Bar is directly over COLLARBONES, only 8cm above chest, well to the RIGHT of the chin in this side view. Elbows remain forward of bar and higher than wrists. Bar nowhere over face. Preserve side camera, flat bench, athlete body, feet, materials, symmetric short bar. Square realistic commercial fitness photo. Same natural skin, charcoal apparel, black studio, restrained violet. No text/logos/overlays.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-abee3ad6-36aa-40f7-8ae1-b6fdf6838c73.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-1e992bb6-235b-4f00-8972-e1c08d542ee1.png",
+  "review": "REJECT",
+  "review_reason": "Low upper-chest hybrid arm position improved, but bar became too short/dumbbell-like and hands nearly merged; needs unmistakable separated barbell grips.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

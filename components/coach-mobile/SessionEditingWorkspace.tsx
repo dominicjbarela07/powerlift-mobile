@@ -1372,7 +1372,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       onPress={() => onOpen(item)}
       style={({ pressed }) => [styles.movementRow, item.superset_group && { borderLeftWidth: 2, borderLeftColor: palette.violet }, pressed && styles.movementRowPressed]}
     >
-      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={48} /></View>
+      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
       <View style={styles.movementCopy}>
         <Text typographyRole="movementTitle" numberOfLines={2} style={styles.movementName}>{movementName(item)}</Text>
         <Text typographyRole="bodyStrong" numberOfLines={2} style={styles.movementPrescription}>{prescriptionSummary(item, kind)}</Text>
@@ -2507,7 +2507,7 @@ const styles = StyleSheet.create({
   movementList: { gap: 7 },
   movementRow: { position: 'relative', minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', paddingVertical: 12, paddingHorizontal: 12, borderRadius: SLRadius.md, backgroundColor: '#101016', borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
   movementRowPressed: { backgroundColor: palette.objectRaised },
-  movementArtwork: { width: 48, height: 48, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  movementArtwork: { width: 64, height: 64, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   movementTrailing: { width: 24, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   artworkFallback: { alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: palette.violetSoft, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(167,139,250,0.25)' },
