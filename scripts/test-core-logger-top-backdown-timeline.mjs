@@ -2,11 +2,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createWorkoutDetailFixture } from '../dev-mocks/fixtures/workout-detail.ts';
+
 import { coreSetTimelineLabel } from '../lib/core-logger-timeline.ts';
 
-const fixture = createWorkoutDetailFixture();
-const coreItems = fixture.workout.core_items;
+// Domain fixtures deliberately avoid runtime laboratory assets.
+const logs = count => Array.from({length:count}, (_, i) => ({id:i+1,set_index:i+1}));
+const coreItems = [
+  {id:1,variant:'TOP',sets:1,set_logs:logs(1)}, {id:2,variant:'BK',parent_item_id:1,sets:2,set_logs:[]},
+  {id:3,variant:'TOP',sets:2,set_logs:[]}, {id:4,variant:'BK',parent_item_id:3,sets:3,set_logs:[]},
+  {id:5,variant:'TOP',sets:3,set_logs:logs(3)}, {id:6,variant:'BK',parent_item_id:5,sets:1,set_logs:logs(1)},
+];
 const topItems = coreItems.filter((item) => item.variant === 'TOP');
 const backdownFor = (topItem) => coreItems.find(
   (item) => item.variant === 'BK' && Number(item.parent_item_id) === Number(topItem.id),
@@ -53,26 +58,11 @@ const routeSource = fs.readFileSync(
   'utf8',
 );
 
-assert.match(
-  componentSource,
-  /<View style=\{styles\.activeNextSetCopy\}>[\s\S]*?style=\{styles\.activeNextSetKicker\}[\s\S]*?\{loggerFocus\.currentSetPositionLabel\}[\s\S]*?currentSetLoadLabel/,
-  'The set-position label and hero load must share one intrinsic copy stack.',
-);
-assert.match(
-  componentSource,
-  /activeNextSetCopy:\s*\{[\s\S]*?top:\s*0[\s\S]*?gap:\s*6/,
-  'The hero copy must not use the former negative offset that caused label/load overlap.',
-);
-assert.match(
-  componentSource,
-  /const semanticNodeLabel = String\(row\.timelineLabel \|\| ''\)\.trim\(\)[\s\S]*?hasSemanticNodeLabel/,
-  'The shared timeline must preserve explicit set identity.',
-);
-assert.match(
-  componentSource,
-  /setTimelineNodeSemantic:\s*\{[\s\S]*?width:\s*58[\s\S]*?height:\s*34[\s\S]*?setTimelineNodeTextSemantic/,
-  'Semantic TOP/BD nodes must receive a readable pill treatment without changing straight-set nodes.',
-);
+const instrument = fs.readFileSync(path.join(process.cwd(),'components/workout-logger/session-v3-movement.tsx'),'utf8');
+assert.match(instrument, /focus\?\.currentSetPositionLabel/);
+assert.match(instrument, /focus\?\.currentSetLoadLabel/);
+assert.match(instrument, /LoggerPlateStackVisual/);
+assert.match(componentSource, /row\.timelineLabel \|\| row\.label/,'TOP and each globally numbered backdown retain separate row identity');
 assert.match(
   routeSource,
   /timelineLabel:\s*coreSetTimelineLabel\('top',\s*setIdx,\s*totalSets\)/,

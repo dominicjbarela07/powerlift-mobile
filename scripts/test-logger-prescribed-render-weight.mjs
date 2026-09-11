@@ -180,7 +180,7 @@ assert.equal(
 
 const routeSource = read('app/(tabs)/workout/[workoutId].tsx');
 const visualContextSource = read('lib/logger-visual-context.ts');
-const coreLoggerSource = read('components/workout-logger/core-loggers.tsx');
+const coreLoggerSource = read('components/workout-logger/session-v3-movement.tsx');
 assert.match(
   routeSource,
   /heroLoadLabel:\s*prescribedWeight\?\.displayLabel/,
@@ -196,8 +196,8 @@ assert.match(
   /prescribedWeight\.endpoints\.map[\s\S]*resolveLoggerPlateStackEndpoint/,
   'plate lookup must resolve every structured prescription endpoint',
 );
-assert.match(coreLoggerSource, /visualContext\.plateStack\.mode === 'range'/);
-assert.match(coreLoggerSource, /visualContext\.plateStack\.endpoints\.map/);
+assert.match(coreLoggerSource, /stacks.length > 1/);
+assert.match(coreLoggerSource, /stacks.map/);
 assert.match(coreLoggerSource, /endpoint\.displayLabel/);
 assert.match(coreLoggerSource, /endpoint\.plateStack \?/);
 assert.doesNotMatch(coreLoggerSource, />\s*(MIN|MAX|LOW|HIGH)\s*</i);

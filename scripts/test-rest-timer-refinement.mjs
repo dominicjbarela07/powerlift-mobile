@@ -63,12 +63,12 @@ assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Light/);
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Medium/);
 assert.match(workoutRoute, /Haptics\.NotificationFeedbackType\.Success/);
 assert.match(workoutRoute, /restTimerPromoted && restActive && restSeconds > 0/);
-assert.match(workoutRoute, /<RestTimerFocus[\s\S]*visible=\{restTimerFocusVisible\}[\s\S]*ready=\{false\}/);
+assert.match(workoutRoute, /<SessionV3Footer[\s\S]*rest=\{/);
 assert.doesNotMatch(workoutRoute, /restTimerZeroVisible|restTimerReadyVisible/);
 assert.doesNotMatch(workoutRoute, /presentRestTimerReady\(/);
 assert.match(workoutRoute, /remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
 assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)[\s\S]*remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
-assert.match(workoutRoute, /onRestTimerLayout=\{handleRestTimerLayout\}/);
+assert.match(workoutRoute, /onAddRest=\{[\s\S]*restSeconds \+ 30/);
 assert.match(restTimerPresenter, /isRestTimerNotification\(notification\.request\.content\.data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
 assert.match(workoutRoute, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*endAtMs: endAt/);
 assert.doesNotMatch(restTimerRuntime, /persistRestTimerExpiry/);
@@ -193,7 +193,7 @@ assert.match(
 );
 assert.match(
   workoutRoute,
-  /<SessionCommandStrip[\s\S]*progressPct=\{progressPct\}/,
+  /<SessionV3Header[\s\S]*logged=\{loggedSets\} total=\{plannedSets\}/,
   'the existing route-level progress calculation must feed the relocated ring',
 );
 assert.match(workoutRoute, /const loggedSets = loggedSetCountForWorkout\(workout\)/);

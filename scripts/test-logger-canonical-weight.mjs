@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { resolveLoggerPrescribedWeight } from '../lib/logger-prescribed-weight.ts';
 import { coreLoggerHeroLoadLayout } from '../lib/core-logger-hero.ts';
 import {
   KG_PER_LB,
@@ -10,7 +11,7 @@ import {
   loggerWeightIncrement,
   roundLoggerDisplayWeight,
 } from '../lib/logger-weight-format.js';
-import { createWorkoutDetailFixture } from '../dev-mocks/fixtures/workout-detail.ts';
+
 
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
@@ -28,10 +29,9 @@ assert.equal(roundLoggerDisplayWeight(183.70487985, 'kg'), 182.5);
 assert.equal(roundLoggerDisplayWeight(147.6, 'lb'), 147.5);
 assert.equal(roundLoggerDisplayWeight(402.6, 'lb'), 405);
 
-const fixture = createWorkoutDetailFixture('primary-squat');
-const squat = fixture.workout.core_items[0];
-const prescribedKg = squat.target_low_kg;
-const previousKg = squat.progress_context.previousWeightKg;
+// Explicit canonical evidence fixture: independent of DEV-only preview routes.
+const prescribedKg = 405 * KG_PER_LB;
+const previousKg = 395 * KG_PER_LB;
 const heroKg = formatLoggerWeightRangeKg(prescribedKg, prescribedKg, 'kg');
 const heroLb = formatLoggerWeightRangeKg(prescribedKg, prescribedKg, 'lb');
 const prKg = `${formatLoggerWeightKg(prescribedKg, 'kg')} kg`;
@@ -83,13 +83,13 @@ assert.ok(narrowLongHero.fontScale <= longHero.fontScale);
 assert.equal(legacyQuarterHero.effectiveCopyTop, 0);
 assert.ok(legacyQuarterHero.fontScale <= narrowLongHero.fontScale);
 
-assert.match(workoutRoute, /return formatLoggerWeightRangeKg\(lowKg, highKg, unit\)/);
+assert.equal(resolveLoggerPrescribedWeight({item:{target_low_kg:prescribedKg,target_high_kg:prescribedKg},unit:'lb'}).endpoints[0].displayLabel, heroLb);
 assert.match(workoutRoute, /return formatLoggerWeightKg\(Number\(kg\), unit\)/);
 assert.doesNotMatch(workoutRoute, /Math\.round\(Number\(v\) \* 4\) \/ 4/);
 assert.match(visualContext, /formatLoggerWeightKg\(weightKg, unit\)/);
-assert.match(movementComponent, /coreLoggerHeroLoadLayout\(/);
-assert.match(movementComponent, /\{ marginTop: loadLayout\.topInset \}/);
-assert.match(movementComponent, /responsiveLoadStyle/);
-assert.match(movementComponent, /activeNextSetPlateStage/);
+assert.match(movementComponent, /<SessionV3Movement/);
+assert.match(read('components/workout-logger/session-v3-movement.tsx'), /loadParts[\s\S]*s\.loadUnit/, 'unit typography remains subordinate to the numeric load');
+assert.match(read('components/workout-logger/session-v3-movement.tsx'), /<LoggerPlateStackVisual/, 'active composition uses the physical stack');
+assert.match(visualContext, /setupLabel/);
 
 console.log('Canonical logger weight formatting, cross-surface agreement, toggle stability, and content-aware hero spacing passed.');

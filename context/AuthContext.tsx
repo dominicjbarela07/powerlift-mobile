@@ -1,3 +1,4 @@
+import { setExecutionActor } from '@/lib/execution-actor';
 import { purgeAuthoringJournals } from '@/lib/session-authoring-journal';
 // context/AuthContext.tsx
 import React, {
@@ -122,6 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const reconciledUser = nextUser && pendingMode
       ? { ...nextUser, mobile_mode: pendingMode }
       : nextUser;
+    setExecutionActor(reconciledUser?.id ?? null);
     setUser(reconciledUser);
     userRef.current = reconciledUser;
     if (reconciledUser) {
@@ -493,12 +495,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setToken(storedToken);
           tokenRef.current = storedToken;
         }
-        if (storedToken) startVideoUploadQueue();
+
         let restoredUser: AuthUser | null = null;
         if (storedUser) {
           restoredUser = JSON.parse(storedUser);
           setUser(restoredUser);
           userRef.current = restoredUser;
+          setExecutionActor(storedToken ? restoredUser?.id : null);
+          if (storedToken && restoredUser) startVideoUploadQueue();
         }
 
         if (storedToken) {

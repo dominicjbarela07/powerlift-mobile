@@ -45,6 +45,7 @@ import {
 import { MOVEMENT_STATUS_COLUMN_WIDTH } from '@/lib/movement-lifecycle-status-layout';
 import { coreLoggerHeroLoadLayout } from '@/lib/core-logger-hero';
 import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';
+import { SessionV3Movement } from './session-v3-movement';
 
 export type SetRailStep = {
   key: string;
@@ -79,6 +80,7 @@ export type MovementLoggerFocusModel = {
 };
 
 export type ActiveMovementVisualContext = {
+  physicalSetup?: string | null;
   movementArtworkInput?: CanonicalMovementArtworkInput | null;
   liftLabel: string;
   liftAccentColor: string;
@@ -266,6 +268,7 @@ export function CoreMovementLedgerRow({
   top,
   movementNote,
   priorPerformanceCue,
+  historyPeek,
   loggerFocus,
   expanded,
   detailRows,
@@ -293,6 +296,7 @@ export function CoreMovementLedgerRow({
   top?: string | null;
   movementNote?: string | null;
   priorPerformanceCue?: AccessoryLastBestCue | null;
+  historyPeek?: React.ReactNode;
   loggerFocus?: MovementLoggerFocusModel | null;
   expanded?: boolean;
   detailRows?: ActiveMovementDetailRow[];
@@ -395,442 +399,33 @@ export function CoreMovementLedgerRow({
     : null;
 
   if (sessionIndex != null) {
-    const sessionRail = loggerFocus?.rail || reviewRail;
-    const sessionMovementCard = (
-      <View style={[
-        styles.activeMovementCard,
-        expanded && styles.activeMovementCardExpanded,
-        canonicalMovementCard && styles.activeMovementCardCanonical,
-      ]}>
-        {canonicalMovementCard ? (
-          <MovementCardMaterial
-            expanded={Boolean(expanded)}
-            state={cardMaterialState}
-          />
-        ) : null}
-        <View style={[
-          styles.activeMovementHeader,
-          compactMovementLayout && styles.activeMovementHeaderCompact,
-          canonicalExpandedWorkspace && styles.activeMovementHeaderExpanded,
-        ]}>
-          <View style={[
-            styles.activeMovementLiftArtwork,
-            individualArtworkIsAccessory && styles.activeMovementAccessoryArtwork,
-            compactMovementLayout && styles.activeMovementLiftArtworkCompact,
-            compactMovementLayout && individualArtworkIsAccessory && styles.activeMovementAccessoryArtworkCompact,
-          ]}>
-            <CanonicalMovementArtwork
-              movement={visualContext?.movementArtworkInput || null}
-              size={compactMovementLayout ? 60 : 72}
-              testID="logger-canonical-movement-artwork"
-            />
-          </View>
-          <View style={styles.activeMovementHeadingCopy}>
-            <Text
-              maxFontSizeMultiplier={1.35}
-              numberOfLines={canonicalMovementCard ? 0 : 2}
-              typographyRole="movementName"
-              style={styles.activeMovementTitle}
-            >
-              {title}
-            </Text>
-            {movementHeaderMetadata.schemeLine ? (
-              <Text
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1.25}
-                minimumFontScale={0.55}
-                numberOfLines={1}
-                style={[
-                  styles.activeMovementSchemeType,
-                  canonicalMovementCard && styles.activeMovementMetadataAnodized,
-                ]}
-              >
-                {movementHeaderMetadata.schemeLine}
-              </Text>
-            ) : null}
-            {movementHeaderMetadata.prescriptionLine ? (
-              <Text
-                adjustsFontSizeToFit
-                maxFontSizeMultiplier={1.25}
-                minimumFontScale={0.55}
-                numberOfLines={1}
-                style={[
-                  styles.activeMovementPrescription,
-                  canonicalMovementCard && styles.activeMovementPrescriptionAnodized,
-                ]}
-              >
-                {movementHeaderMetadata.prescriptionLine}
-              </Text>
-            ) : null}
-          </View>
-          <View style={styles.activeMovementActions}>
-            <MovementLifecycleStatusLabel
-              label={stateLabel}
-              style={[
-                styles.activeMovementState,
-                state === 'complete' && styles.ledgerStateCompleted,
-                state === 'logged' && styles.ledgerStateActive,
-                canonicalMovementCard && { color: cardStateAccent },
-              ]}
-            />
-            <SLMotionPressable
-              accessibilityLabel={`${expanded ? 'Collapse' : 'Expand'} ${title}`}
-              accessibilityRole="button"
-              accessibilityState={{ expanded: Boolean(expanded) }}
-              style={styles.activeMovementDisclosure}
-              onPress={onOpen}
-            >
-              <Ionicons
-                name={expanded ? 'chevron-up' : 'chevron-down'}
-                size={22}
-                color={canonicalMovementCard ? cardStateAccent : SLColors.accentViolet}
-              />
+    const focusedRowIndex = Math.max(0, allDetailRows.findIndex(row => row.state === 'active'));
+    const focusedRow = allDetailRows[focusedRowIndex];
+    const positionLabel = focusedRow && allDetailRows.length
+      ? `${focusedRow.timelineLabel || focusedRow.label} · SET ${focusedRowIndex + 1} OF ${allDetailRows.length}`
+      : loggerFocus?.currentSetPositionLabel;
+    return <SessionV3Movement
+      title={title} index={sessionIndex} expanded={Boolean(expanded)} complete={isComplete}
+      prescription={headerPrescription} focus={loggerFocus ? { ...loggerFocus, currentSetPositionLabel: positionLabel } : null} visual={visualContext}
+      note={expanded ? movementNote : null} prior={priorPerformanceCue}
+      equipment={expandedIdentityContext} actions={auxAction} warmup={warmupAction}
+      history={historyPeek} onOpen={onOpen}
+      timeline={expanded ? <View style={v3Sets.list}>
+        <Text style={v3Sets.heading}>{isPreSessionCard ? 'PRESCRIBED SETS' : 'TODAY’S SETS'}</Text>
+        {visibleDetailRows.map(row => <CompletedSetSwipeRow key={row.key} onEdit={row.onEdit} onDelete={row.onDelete} reduceMotion={reduceMotion}
+          shouldShowCompletedSetSwipeTooltip={row.setLogId === completedSetSwipeTooltipSetLogId}
+          onCompletedSetSwipeTooltipStarted={onCompletedSetSwipeTooltipStarted}>
+          <View style={[v3Sets.row, row.state === 'active' && v3Sets.current]}>
+            <Text style={[v3Sets.dot, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? '✓' : row.state === 'active' ? '◉' : '○'}</Text>
+            <Text style={v3Sets.stage}>{row.timelineLabel || row.label}</Text>
+            <SLMotionPressable accessibilityRole="button" disabled={!row.onEdit && !row.onLogSet} onPress={row.onEdit || row.onLogSet} style={v3Sets.copy}>
+              <Text style={v3Sets.result}>{row.resultText || setTimelinePrescription({ ...row, prescription: row.prescription?.replace(/^\d+\s*[x×]\s*/i, '') })}</Text>
             </SLMotionPressable>
+            {row.onVideo ? <SLMotionPressable accessibilityLabel={row.videoLabel || 'Set video'} onPress={row.onVideo} style={v3Sets.video}><Ionicons name="videocam-outline" size={18} color="#aa9bbd" /></SLMotionPressable> : <Text style={[v3Sets.state, row.state === 'completed' && v3Sets.saved]}>{row.state === 'completed' ? 'Saved' : row.state === 'active' ? 'Current' : 'Target'}</Text>}
           </View>
-        </View>
-
-        {priorPerformanceCue ? (
-          <View
-            accessible
-            accessibilityLabel={priorPerformanceCue.accessibilityLabel}
-            style={[
-              styles.priorPerformanceCue,
-              expanded && styles.priorPerformanceCueExpanded,
-            ]}
-          >
-            <View style={styles.priorPerformanceIcon}>
-              <Ionicons
-                color={priorPerformanceCue.kind === 'last_best' ? SLColors.success : SLColors.textMuted}
-                name={priorPerformanceCue.kind === 'last_best' ? 'time-outline' : 'sparkles-outline'}
-                size={18}
-              />
-            </View>
-            <View style={styles.priorPerformanceCopy}>
-              <Text typographyRole="shortTechnicalLabel" style={styles.priorPerformanceEyebrow}>
-                {priorPerformanceCue.eyebrow}
-              </Text>
-              <Text numberOfLines={2} typographyRole="bodyStrong" style={styles.priorPerformancePrimary}>
-                {priorPerformanceCue.primary}
-              </Text>
-            </View>
-            {priorPerformanceCue.supporting ? (
-              <Text numberOfLines={2} typographyRole="supportingBody" style={styles.priorPerformanceSupporting}>
-                {priorPerformanceCue.supporting}
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
-
-        {visibleProgressContext ? (
-          <View
-            accessible
-            accessibilityLabel={visibleProgressContext.accessibilityLabel}
-            style={[
-              styles.movementProgressContext,
-              canonicalExpandedWorkspace && styles.movementProgressContextExpanded,
-            ]}
-          >
-            <View style={styles.movementProgressIcon}>
-              <Ionicons
-                name={visibleProgressContext.kind === 'prior_session' ? 'time-outline' : 'trending-up-outline'}
-                size={21}
-                color={visualContext.liftAccentColor}
-              />
-            </View>
-            <View style={styles.movementProgressCopy}>
-              <Text typographyRole="bodyStrong" style={styles.movementProgressPrimary}>
-                {visibleProgressContext.primary}
-              </Text>
-              <Text typographyRole="supportingBody" style={styles.movementProgressSupporting}>
-                {visibleProgressContext.eyebrow}
-                {visibleProgressContext.supporting ? ` · ${visibleProgressContext.supporting}` : ''}
-              </Text>
-            </View>
-          </View>
-        ) : null}
-
-        {visibleMovementNote ? (
-          <View style={[
-            styles.movementCoachNote,
-            canonicalExpandedWorkspace && styles.movementCoachNoteExpanded,
-          ]}>
-            <SLProfileAvatar
-              accessibilityLabel={`${visualContext?.coach?.name || 'Coach'} profile photo`}
-              name={visualContext?.coach?.name || 'Coach'}
-              previewSource={visualContext?.coach?.previewSource || undefined}
-              profilePhotoUrl={visualContext?.coach?.profilePhotoUrl}
-              profilePhotoVersion={visualContext?.coach?.profilePhotoVersion}
-              size={40}
-            />
-            <View style={styles.movementCoachNoteCopy}>
-              <Text typographyRole="modalBody" style={styles.movementNoteText}>{visibleMovementNote}</Text>
-              <Text typographyRole="supportingBody" style={styles.movementNoteAttribution}>
-                — {visualContext?.coach?.name || 'Coach'}
-              </Text>
-            </View>
-          </View>
-        ) : null}
-
-        {expanded && expandedIdentityContext ? expandedIdentityContext : null}
-
-        {expanded ? (
-          <View style={[
-            styles.activeMovementWorkspace,
-            canonicalExpandedWorkspace && styles.activeMovementWorkspaceExpanded,
-          ]}>
-            {warmupAction ? (
-              <View style={[
-                styles.coreWarmupAction,
-                canonicalExpandedWorkspace && styles.coreWarmupActionExpanded,
-              ]}>
-                {warmupAction}
-              </View>
-            ) : null}
-            {!loggerFocus && sessionRail.length ? <SetRail steps={sessionRail} /> : null}
-            {loggerFocus?.accessoryPresentation ? (
-              loggerFocus.canLog && loggerFocus.onLogSet ? (
-                <View style={styles.accessoryPrimaryAction}>
-                  <LogSetAction
-                    action={logAction}
-                    prominent={canonicalMovementCard}
-                    reduceMotion={reduceMotion}
-                    onPress={loggerFocus.onLogSet}
-                  />
-                </View>
-              ) : null
-            ) : loggerFocus ? (
-              <View style={[
-                styles.activeNextSetRow,
-                visualContext?.plateStack && styles.activeNextSetRowWithPlate,
-                compactMovementLayout && styles.activeNextSetRowCompact,
-                canonicalExpandedWorkspace && styles.activeNextSetRowExpanded,
-              ]}>
-                <View style={[
-                  styles.activeNextSetHero,
-                  canonicalExpandedWorkspace && styles.activeNextSetHeroExpanded,
-                ]}>
-                  <View style={styles.activeNextSetCopy}>
-                    <Text
-                      maxFontSizeMultiplier={1.2}
-                      numberOfLines={1}
-                      style={styles.activeNextSetKicker}
-                    >
-                      {loggerFocus.currentSetPositionLabel}
-                    </Text>
-                    {loggerFocus.currentSetHistoryPlaceholder ? (
-                      <View style={styles.activeNextSetHistoryPlaceholder}>
-                        <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetHistoryKicker}>Movement history</Text>
-                        <Text typographyRole="supportingBody" style={styles.activeNextSetHistoryCopy}>History coming soon</Text>
-                      </View>
-                    ) : loggerFocus.currentSetLoadLabel && visualContext?.plateStack?.mode !== 'range' ? (() => {
-                      const load = splitLoadLabel(loggerFocus.currentSetLoadLabel);
-                      const loadLayout = coreLoggerHeroLoadLayout(
-                        load.value,
-                        viewportWidth,
-                        Boolean(load.unit),
-                      );
-                      const responsiveLoadStyle = {
-                        fontSize: SLTypography.hero.fontSize * 1.72 * loadLayout.fontScale,
-                        lineHeight: SLTypography.hero.lineHeight * 1.65 * loadLayout.fontScale,
-                        letterSpacing: -2.8 * loadLayout.fontScale,
-                      };
-                      const responsiveUnitStyle = {
-                        fontSize: SLTypography.title.fontSize * 1.15 * loadLayout.unitScale,
-                      };
-                      return (
-                        <View style={[
-                          styles.activeNextSetLoadRow,
-                          { marginTop: loadLayout.topInset },
-                        ]}>
-                          <MaskedView
-                            accessible={false}
-                            pointerEvents="none"
-                            style={styles.activeNextSetLoadMask}
-                            maskElement={(
-                              <View style={styles.activeNextSetLoadMaskRow}>
-                                <Text style={[styles.activeNextSetLoad, responsiveLoadStyle]}>{load.value}</Text>
-                                {load.unit ? (
-                                  <Text
-                                    typographyRole="unit"
-                                    style={[
-                                      styles.activeNextSetLoadUnit,
-                                      responsiveUnitStyle,
-                                      styles.activeNextSetLoadMaskUnit,
-                                    ]}
-                                  >
-                                    {load.unit}
-                                  </Text>
-                                ) : null}
-                              </View>
-                            )}
-                          >
-                            <BlurView
-                              experimentalBlurMethod="dimezisBlurView"
-                              intensity={18}
-                              tint="dark"
-                              style={StyleSheet.absoluteFill}
-                            />
-                            <View style={styles.activeNextSetLoadFrost} />
-                          </MaskedView>
-                          <Text
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.72}
-                            numberOfLines={1}
-                            style={[
-                              styles.activeNextSetLoad,
-                              responsiveLoadStyle,
-                              styles.activeNextSetLoadSizer,
-                            ]}
-                          >
-                            {load.value}
-                          </Text>
-                          {load.unit ? (
-                            <Text
-                              typographyRole="unit"
-                              style={[styles.activeNextSetLoadUnit, responsiveUnitStyle]}
-                            >
-                              {load.unit}
-                            </Text>
-                          ) : null}
-                        </View>
-                      );
-                    })() : null}
-                  </View>
-                  {visualContext?.plateStack ? (
-                    visualContext.plateStack.mode === 'range' ? (
-                      <View style={[
-                        styles.activeNextSetPlateStage,
-                        styles.activeNextSetPlateRangeStage,
-                        canonicalExpandedWorkspace && styles.activeNextSetPlateRangeStageExpanded,
-                      ]}>
-                        <View style={styles.activeNextSetPlateRangeRow}>
-                          {visualContext.plateStack.endpoints.map((endpoint, endpointIndex) => (
-                            <React.Fragment key={`${endpoint.displayLabel}-${endpointIndex}`}>
-                              {endpointIndex > 0 ? (
-                                <Text
-                                  accessibilityElementsHidden
-                                  importantForAccessibility="no-hide-descendants"
-                                  style={styles.activeNextSetPlateRangeSeparator}
-                                >
-                                  –
-                                </Text>
-                              ) : null}
-                              <View
-                                style={styles.activeNextSetPlateEndpoint}
-                              >
-                                <Text
-                                  adjustsFontSizeToFit
-                                  maxFontSizeMultiplier={1.15}
-                                  minimumFontScale={0.78}
-                                  numberOfLines={1}
-                                  style={styles.activeNextSetPlateEndpointLabel}
-                                >
-                                  {endpoint.displayLabel}
-                                </Text>
-                                {endpoint.plateStack ? (
-                                  <LoggerPlateStackVisual
-                                    plateStack={endpoint.plateStack}
-                                    style={[
-                                      styles.activeNextSetPlateRange,
-                                      canonicalExpandedWorkspace && styles.activeNextSetPlateRangeExpanded,
-                                      endpoint.plateStack.presentationStyle,
-                                    ]}
-                                  />
-                                ) : (
-                                  <View
-                                    accessibilityLabel={`${endpoint.displayLabel} plate stack unavailable`}
-                                    style={styles.activeNextSetPlateUnavailable}
-                                  >
-                                    <Ionicons name="barbell-outline" size={32} color={SLColors.textSubtle} />
-                                    <Text style={styles.activeNextSetPlateUnavailableText}>Stack unavailable</Text>
-                                  </View>
-                                )}
-                              </View>
-                            </React.Fragment>
-                          ))}
-                        </View>
-                      </View>
-                    ) : visualContext.plateStack.endpoints[0]?.plateStack ? (
-                      <View style={[
-                        styles.activeNextSetPlateStage,
-                        canonicalExpandedWorkspace && styles.activeNextSetPlateStageExpanded,
-                      ]}>
-                        <LoggerPlateStackVisual
-                          plateStack={visualContext.plateStack.endpoints[0].plateStack}
-                          style={[
-                            styles.activeNextSetPlate,
-                            canonicalExpandedWorkspace && styles.activeNextSetPlateExpanded,
-                            visualContext.plateStack.endpoints[0].plateStack.presentationStyle,
-                          ]}
-                        />
-                      </View>
-                    ) : null
-                  ) : null}
-                </View>
-                <View style={[
-                  styles.activeNextSetMetricRow,
-                  canonicalExpandedWorkspace && styles.activeNextSetMetricRowExpanded,
-                ]}>
-                  <View style={styles.activeNextSetMetricBlock}>
-                    <Text typographyRole="numeric" style={styles.activeNextSetMetricValue}>{currentRepMetric.value}</Text>
-                    <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetMetricLabel}>{currentRepMetric.unitLabel}</Text>
-                  </View>
-                  <View style={styles.activeNextSetMetricCenterDivider} />
-                  <View style={styles.activeNextSetMetricBlock}>
-                    <Text
-                      typographyRole="numeric"
-                      style={styles.activeNextSetMetricValue}
-                    >
-                      {metricValue(loggerFocus.currentSetEffortLabel, loggerFocus.currentSetEffortLabel?.toLowerCase().includes('rir') ? 'rir' : 'rpe')}
-                    </Text>
-                    <Text typographyRole="shortTechnicalLabel" style={styles.activeNextSetMetricLabel}>
-                      {loggerFocus.currentSetEffortLabel?.toLowerCase().includes('rir') ? 'RIR' : 'RPE'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ) : null}
-            {visibleDetailRows.length > 0 ? (
-              <SetTimeline
-                rows={visibleDetailRows}
-                totalCount={allDetailRows.length}
-                compact={canonicalMovementCard}
-                openSurface={canonicalExpandedWorkspace}
-                reduceMotion={reduceMotion}
-                completedSetSwipeTooltipSetLogId={completedSetSwipeTooltipSetLogId}
-                onCompletedSetSwipeTooltipStarted={onCompletedSetSwipeTooltipStarted}
-              />
-            ) : null}
-            <View style={styles.activeMovementButtonRow}>
-              {loggerFocus?.canLog && loggerFocus.onLogSet && !loggerFocus.accessoryPresentation ? (
-                <LogSetAction
-                  action={logAction}
-                  prominent={canonicalMovementCard}
-                  reduceMotion={reduceMotion}
-                  onPress={loggerFocus.onLogSet}
-                />
-              ) : null}
-              {(canonicalMovementCard && auxAction) || loggerFocus?.onViewHistory ? (
-                <View style={styles.activeSecondaryActionRow}>
-                  {canonicalMovementCard ? auxAction : null}
-                  {loggerFocus?.onViewHistory ? (
-                    <SLMotionPressable style={styles.activeHistoryButton} onPress={loggerFocus.onViewHistory}>
-                      <Ionicons name="time-outline" size={18} color={SLColors.textMuted} />
-                      <Text style={styles.activeHistoryButtonText}>History</Text>
-                    </SLMotionPressable>
-                  ) : null}
-                </View>
-              ) : null}
-            </View>
-          </View>
-        ) : null}
-      </View>
-    );
-    return collapseCompletedGesture ? (
-      <GestureDetector gesture={collapseCompletedGesture}>
-        {sessionMovementCard}
-      </GestureDetector>
-    ) : sessionMovementCard;
+        </CompletedSetSwipeRow>)}
+      </View> : null}
+    />;
   }
 
   return (
@@ -931,6 +526,13 @@ export function CoreMovementLedgerRow({
     </View>
   );
 }
+
+const v3Sets = StyleSheet.create({
+  list: { marginVertical: 13 }, heading: { color: '#f3edf9', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 11, marginBottom: 9 },
+  row: { flexDirection: 'row', gap: 7, alignItems: 'center', minHeight: 42, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#39303e' },
+  current: { backgroundColor: '#1c1229' }, dot: { color: '#b490ed', width: 17, fontSize: 16 }, stage: { color: '#d8cfdf', fontSize: 11, width: 48 },
+  copy: { flex: 1, justifyContent: 'center', minHeight: 42 }, result: { color: '#e8e0f2', fontSize: 13, lineHeight: 18 }, state: { color: '#b391df', fontSize: 10 }, saved: { color: '#a0e0c1' }, video: { width: 32, minHeight: 40, justifyContent: 'center', alignItems: 'center' },
+});
 
 function setTimelinePrescription(row: ActiveMovementDetailRow, compact = false) {
   if (row.state === 'completed' && row.resultText) return row.resultText;

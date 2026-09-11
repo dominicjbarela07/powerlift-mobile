@@ -6,7 +6,7 @@ import { resolveSetLoggerLoadDefault } from '../lib/set-logger-load-default.ts';
 import { formatLoggerWeightKg } from '../lib/logger-weight-format.js';
 
 const historicalExposure = {
-  identity_scope: 'exact_identity',
+  identity_scope: 'exact_identity', comparison_allowed: true, comparison_identity_key: 'movement:10',
   movement_definition_id: 42,
   most_recent_logged_set: { workout_id: 901, set_index: 3, weight_kg: 140, date: '2026-08-09' },
   previous_exposure: {
@@ -150,3 +150,5 @@ assert.match(route, /setLog\.actual_weight_kg != null[\s\S]*buildEditWeightOptio
 assert.doesNotMatch(route, /defaultAccessoryWeight\(item, unit, accInputs/);
 
 console.log('Set Logger load-wheel defaulting regression checks passed.');
+
+assert.equal(resolveSetLoggerLoadDefault({ comparableHistory: { identity_scope: 'exact_identity', comparison_allowed: false, comparison_identity_key: 'movement:10', most_recent_logged_set: { weight_kg: 999 } }, fallbackWeightKg: 30 }).weightKg, 30, 'unconfigured machine history cannot seed actual load');

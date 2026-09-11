@@ -190,6 +190,7 @@ export function CanonicalMovementHistoryScreen({
   initialEquipmentContextDefinitionId,
   initialDisplayUnit,
   presentation = 'screen',
+  readOnly = false,
   onRequestClose,
 }: {
   movementDefinitionId?: number | null;
@@ -198,6 +199,7 @@ export function CanonicalMovementHistoryScreen({
   initialEquipmentContextDefinitionId?: number | null;
   initialDisplayUnit?: MovementHistoryUnit | null;
   presentation?: 'screen' | 'sheet';
+  readOnly?: boolean;
   onRequestClose?: () => void;
 }) {
   const router = useRouter();
@@ -323,7 +325,7 @@ export function CanonicalMovementHistoryScreen({
   };
 
   const toggleFavorite = async () => {
-    if (!history || favoriteSaving || history.movement.favorite_supported === false) return;
+    if (readOnly || !history || favoriteSaving || history.movement.favorite_supported === false) return;
     const next = !history.movement.is_favorite;
     setFavoriteSaving(true);
     setHistory({ ...history, movement: { ...history.movement, is_favorite: next } });
@@ -375,7 +377,7 @@ export function CanonicalMovementHistoryScreen({
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
                 <Text style={styles.movementMuscles}>{muscleLine || 'Governed movement identity'}</Text>
               </View>
-              {history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
+              {!readOnly && history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
                 <Ionicons name={history.movement.is_favorite ? 'star' : 'star-outline'} size={23} color="#E9B83F" />
               </Pressable> : <View style={styles.favoriteButton} />}
             </View>

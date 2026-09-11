@@ -45,7 +45,7 @@ assert.match(route, /formatWarmupPhysicalConfiguration\(core\.smart_warmup\.sess
 assert.match(route, /const cancelWorkout = async \(\) =>[\s\S]*setWarmupItemId\(null\);[\s\S]*await finishSessionTiming\(wkId\);[\s\S]*await fetchWorkout\(\);/);
 assert.match(route, /if \(status === 'in_progress'\) return;[\s\S]*clearRestTimerExpiry\(workoutId\)/);
 assert.match(route, /onOpenRestTimerPicker=\{openTimerPicker\}/);
-assert.match(row, /warmupAction \? \([\s\S]*?<View style=\{\[[\s\S]*?styles\.coreWarmupAction/);
+assert.match(row, /warmup=\{warmupAction\}/);
 assert.match(sheet, /SessionUnitFloatingControl/);
 assert.match(sheet, /style=\{styles\.activeFooter\}[\s\S]*<SessionUnitFloatingControl bottom=\{2\}/);
 assert.doesNotMatch(sheet, /unitControlDock/);

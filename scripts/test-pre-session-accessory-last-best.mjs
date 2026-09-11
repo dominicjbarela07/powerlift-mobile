@@ -134,21 +134,11 @@ assert.match(helperSource, /exactAccessoryLastExposure\(history\)/);
 assert.match(routeSource, /priorPerformanceCue=\{accessoryIsComplete \? null : lastBestCue\}/);
 assert.match(routeSource, /historyLine:\s*accessoryLookbackLine\(item\)/);
 assert.match(routeSource, /performed_canonical_movement_identity[\s\S]+performed_movement_identity[\s\S]+effective_movement_identity/);
-assert.match(cardSource, /\{priorPerformanceCue\.eyebrow\}/);
-assert.match(cardSource, /\{priorPerformanceCue\.primary\}/);
-assert.match(cardSource, /\{priorPerformanceCue\.supporting\}/);
-assert.match(
-  cardSource,
-  /const visibleProgressContext = isPreSessionCard \|\| priorPerformanceCue\s*\? null\s*: coreLoggerVisibleExpandedContent\(expanded, visualContext\?\.progress\)/,
-  'the governed Last Best cue suppresses the redundant generic Previous exposure row',
-);
-assert.match(
-  cardSource,
-  /\{priorPerformanceCue \? \([\s\S]*\{visibleProgressContext \? \(/,
-  'Last Best remains the primary historical presentation while non-accessory progress context remains available',
-);
-assert.match(cardSource, /priorPerformancePrimary:[\s\S]*fontSize:\s*SLTypography\.body\.fontSize/);
-assert.match(cardSource, /priorPerformanceSupporting:[\s\S]*fontSize:\s*SLTypography\.caption\.fontSize/);
+const v3Source = fs.readFileSync(path.join(root, 'components/workout-logger/session-v3-movement.tsx'), 'utf8');
+assert.match(cardSource, /prior=\{priorPerformanceCue\}/);
+assert.match(v3Source, /const progress = prior \|\| visual\?\.progress/);
+assert.match(v3Source, /history \|\| \(progress \?/ , 'the full history peek suppresses duplicate fallback evidence');
+for (const field of ['eyebrow', 'primary', 'supporting']) assert.ok(v3Source.includes(`progress.${field}`));
 assert.match(routeSource, /historyLine:\s*accessoryLookbackLine\(item\)/, 'superset movements reuse the governed Last Best resolver');
 assert.equal(
   (supersetSource.match(/item\.historyLine/g) || []).length,

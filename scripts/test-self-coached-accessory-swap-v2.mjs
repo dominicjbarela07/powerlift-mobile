@@ -37,7 +37,7 @@ const eligible = (overrides = {}) => accessorySwapActionForItem({
 assert.equal(eligible(), 'Swap', 'self-coached + not started is eligible');
 assert.equal(eligible({ targetItemHasSetLogs: true }), null, 'in-progress accessory is locked');
 assert.equal(eligible({ sessionLifecycle: 'completed' }), null, 'completed Session is locked');
-assert.equal(eligible({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), null, 'coached athlete is ineligible');
+assert.equal(eligible({ substitutionAuthority: 'coach_restricted', hasApprovedSubstitutions: true }), 'Approved substitutions', 'coached athlete receives only issued substitutions');
 assert.equal(eligible({ substitutionAuthority: 'none', isCoachPreview: true }), null, 'coach managing another athlete is ineligible');
 
 const picker = readFileSync(new URL('../components/movement/GovernedAccessoryPickerModal.tsx', import.meta.url), 'utf8');

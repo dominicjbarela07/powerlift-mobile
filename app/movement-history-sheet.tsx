@@ -1,3 +1,4 @@
+import { parseSessionHistoryOrigin } from '@/lib/movement-history-launch';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useRef } from 'react';
 
@@ -15,12 +16,14 @@ function numericParam(value?: string | string[]) {
 export default function MovementHistorySheetRoute() {
   const router = useRouter();
   const params = useLocalSearchParams<{
+    sessionOrigin?: string;
     athleteId?: string | string[];
     equipmentContextDefinitionId?: string | string[];
     equipmentDefinitionId?: string | string[];
     movementDefinitionId?: string | string[];
     coreMovementId?: string | string[];
   }>();
+  const origin = parseSessionHistoryOrigin(params.sessionOrigin);
   const sheetRef = useRef<StrengthLedgerBottomSheetHandle>(null);
   const movementDefinitionId = numericParam(params.movementDefinitionId);
   const coreMovementId = numericParam(params.coreMovementId);
@@ -43,6 +46,8 @@ export default function MovementHistorySheetRoute() {
       {movementDefinitionId || coreMovementId ? (
         <CanonicalMovementHistoryScreen
           athleteId={athleteId}
+          readOnly={origin?.mode === 'preview'}
+          initialDisplayUnit={origin?.displayUnit}
           initialEquipmentContextDefinitionId={equipmentContextDefinitionId}
           movementDefinitionId={movementDefinitionId}
           coreMovementId={coreMovementId}

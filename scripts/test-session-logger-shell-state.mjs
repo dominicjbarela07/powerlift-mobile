@@ -10,10 +10,10 @@ const tabs = readFileSync(resolve(root, 'app/(tabs)/_layout.tsx'), 'utf8');
 
 const lifecycle = [
   { mode: 'loading', hasCompletedRecap: false, shown: true },
-  { mode: 'active_session', hasCompletedRecap: false, shown: true },
+  { mode: 'active_session', hasCompletedRecap: false, shown: false },
   { mode: 'finished_session', hasCompletedRecap: true, shown: false },
   { mode: 'loading', hasCompletedRecap: false, shown: true },
-  { mode: 'pre_session', hasCompletedRecap: false, shown: true },
+  { mode: 'pre_session', hasCompletedRecap: false, shown: false },
   { mode: 'error', hasCompletedRecap: false, shown: true },
 ];
 

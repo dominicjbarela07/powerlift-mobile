@@ -78,6 +78,7 @@ export type LoggerPlateStack = {
 };
 
 export type LoggerPlateStackEndpoint = Readonly<{
+  setupLabel: string | null;
   requestedWeight: number;
   requestedUnit: 'kg' | 'lb';
   displayLabel: string;
@@ -230,6 +231,22 @@ export function resolveLoggerProgressContext(
   };
 }
 
+function compactPlates(plates: readonly number[]) {
+  const counts = new Map<number, number>();
+  for (const weight of plates) counts.set(weight, (counts.get(weight) || 0) + 1);
+  return [...counts].map(([weight, count]) => count > 1 ? `${count} × ${weight}` : String(weight)).join(' + ') || 'empty';
+}
+
+export function loggerPhysicalSetupLabel(stack?: LoggerPlateStackPresentation | null) {
+  const endpoints = stack?.endpoints || [];
+  if (endpoints.length <= 1) return endpoints[0]?.setupLabel || null;
+  const setups = endpoints.map(endpoint => endpoint.setupLabel?.split('\n') || []);
+  if (setups.some(lines => !lines.length)) return null;
+  const sameBar = setups.every(lines => lines[1] === setups[0][1]);
+  return endpoints.map((endpoint, index) => `${endpoint.displayLabel} · ${setups[index][0].replace('Each side: ', '')} per side${sameBar ? '' : ` · ${setups[index][1]}`}`).join('\n')
+    + (sameBar && setups[0][1] ? `\n${setups[0][1]}` : '');
+}
+
 function resolveLoggerPlateStackEndpoint(
   identity: LoggerLiftIdentity,
   endpoint: ResolvedLoggerPrescribedWeightEndpoint,
@@ -249,6 +266,11 @@ function resolveLoggerPlateStackEndpoint(
     requestedWeight: endpoint.requestedWeight,
     requestedUnit: endpoint.requestedUnit,
     displayLabel: endpoint.displayLabel,
+    setupLabel: physicalLoading
+      ? `Each side: ${physicalLoading.plates_per_side.map(plate => `${plate.count} × ${plate.denomination}`).join(' + ') || 'empty'} ${physicalLoading.unit}\n${formatLoggerWeightKg(physicalLoading.bar_weight_kg, physicalLoading.unit)} ${physicalLoading.unit} bar · ${physicalLoading.collar_weight_kg ? `${formatLoggerWeightKg(physicalLoading.collar_weight_kg, physicalLoading.unit)} ${physicalLoading.unit} collars` : 'no collars'}`
+      : render && physicalLoading === undefined && 'platesPerSide' in render && Array.isArray(render.platesPerSide)
+        ? `Each side: ${compactPlates(render.platesPerSide)} ${endpoint.requestedUnit}\n${endpoint.requestedUnit === 'lb' ? '45 lb' : '20 kg'} bar · no collars`
+        : null,
     plateStack: render
       ? {
           imageSource: render.imageSource,

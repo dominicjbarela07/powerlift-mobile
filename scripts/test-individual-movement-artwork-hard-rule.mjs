@@ -50,7 +50,8 @@ const workout = read('app', '(tabs)', 'workout', '[workoutId].tsx');
 const renderer = read('components', 'movement', 'CanonicalMovementArtwork.tsx');
 const resolver = read('lib', 'canonical-movement-artwork.ts');
 
-assert.match(logger, /<CanonicalMovementArtwork/);
+assert.match(logger, /<SessionV3Movement/);
+assert.match(read('components/workout-logger/session-v3-movement.tsx'), /<CanonicalMovementArtwork/);
 assert.doesNotMatch(logger, /AccessoryMuscleRegionMedallion/);
 assert.match(workout, /movementArtworkInput:\s*canonicalArtworkInputForLoggerItem\(item\)/);
 assert.doesNotMatch(workout, /movementArtworkInput:\s*\{\s*\.\.\.item/);

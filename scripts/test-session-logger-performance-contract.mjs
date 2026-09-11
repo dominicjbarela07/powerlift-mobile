@@ -27,7 +27,7 @@ assert.match(
 );
 assert.match(
   logger,
-  /workoutRequestManagerRef\.current\.cancel\(\);[\s\S]*?dataRef\.current = null;[\s\S]*?setData\(null\);[\s\S]*?\}, \[workoutId\]\);/,
+  /workoutRequestManagerRef\.current\.cancel\(\);[\s\S]*?dataRef\.current = null;[\s\S]*?setData\(null\);[\s\S]*?\}, \[executionScope\]\);/,
   'Changing Session ID must invalidate the old request and clear its workspace.',
 );
 

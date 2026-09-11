@@ -1,3 +1,4 @@
+import { currentExecutionActor, executionActorOwns, subscribeExecutionActor } from '@/lib/execution-actor';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import { AppState, Platform } from 'react-native';
@@ -14,6 +15,7 @@ export type QueuedVideoUploadStatus =
   | 'cancelled';
 
 export type QueuedVideoUploadJob = {
+  ownerUserId?: string;
   id: string;
   status: QueuedVideoUploadStatus;
   localFileUri: string;
@@ -149,16 +151,18 @@ async function saveJobs(jobs: QueuedVideoUploadJob[]) {
 
 function notify(jobs?: QueuedVideoUploadJob[]) {
   if (jobs) {
-    listeners.forEach((listener) => listener(jobs));
+    listeners.forEach((listener) => listener(jobs.filter(job => executionActorOwns(job.ownerUserId))));
     return;
   }
   void loadJobs().then((loaded) => {
-    listeners.forEach((listener) => listener(loaded));
+    listeners.forEach((listener) => listener(loaded.filter(job => executionActorOwns(job.ownerUserId))));
   });
 }
 
-async function updateJob(id: string, updater: (job: QueuedVideoUploadJob) => QueuedVideoUploadJob) {
+async function updateJob(id: string, updater: (job: QueuedVideoUploadJob) => QueuedVideoUploadJob, requiredOwner?: string | null) {
   const jobs = await loadJobs();
+  const target = jobs.find(job => job.id === id);
+  if (requiredOwner !== undefined && (!executionActorOwns(requiredOwner) || target?.ownerUserId !== requiredOwner)) return null;
   const next = jobs.map((job) => (job.id === id ? updater(job) : job));
   await saveJobs(next);
   return next.find((job) => job.id === id) || null;
@@ -174,7 +178,12 @@ function statusFromFailure(status: number, message: string): QueuedVideoUploadSt
   return 'failed_retryable';
 }
 
-async function uploadChunkWithRetry(setLogId: number, payload: any) {
+async function ownedVideoFetch(ownerUserId: string | undefined, path: string, options: Parameters<typeof fetchJson>[1]) {
+  if (!executionActorOwns(ownerUserId)) throw new Error('This upload belongs to another account.');
+  return fetchJson(path, options);
+}
+
+async function uploadChunkWithRetry(setLogId: number, payload: any, ownerUserId?: string) {
   const uploadId = String(payload?.upload_id || '').trim();
   if (!uploadId) {
     throw new Error('Chunked upload session was not initialized.');
@@ -185,7 +194,7 @@ async function uploadChunkWithRetry(setLogId: number, payload: any) {
   });
   let lastError: any = null;
   for (let attempt = 1; attempt <= CHUNK_UPLOAD_RETRIES; attempt += 1) {
-    const { ok, status, json, raw } = await fetchJson(
+    const { ok, status, json, raw } = await ownedVideoFetch(ownerUserId,
       `${API_BASE}/video-review/mobile/set-logs/${setLogId}/video/chunked/chunk`,
       {
         method: 'POST',
@@ -203,7 +212,7 @@ async function uploadChunkWithRetry(setLogId: number, payload: any) {
 }
 
 async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
-  const init = await fetchJson(
+  const init = await ownedVideoFetch(job.ownerUserId,
     `${API_BASE}/video-review/mobile/set-logs/${job.setLogId}/video/chunked/init`,
     {
       method: 'POST',
@@ -246,7 +255,7 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
       upload_id: uploadId,
       index,
       data_base64: dataBase64,
-    });
+    }, job.ownerUserId);
   }
 
   let thumbnailBase64 = '';
@@ -259,7 +268,7 @@ async function uploadJobChunked(job: QueuedVideoUploadJob, actualSize: number) {
     }
   }
 
-  const complete = await fetchJson(
+  const complete = await ownedVideoFetch(job.ownerUserId,
     `${API_BASE}/video-review/mobile/set-logs/${job.setLogId}/video/chunked/complete`,
     {
       method: 'POST',
@@ -308,7 +317,7 @@ async function uploadJobLegacyDirectMultipartForWebOnly(job: QueuedVideoUploadJo
     }
   }
 
-  const { ok, status, json, raw } = await fetchJson(
+  const { ok, status, json, raw } = await ownedVideoFetch(job.ownerUserId,
     `${API_BASE}/video-review/mobile/set-logs/${job.setLogId}/video`,
     {
       method: 'POST',
@@ -356,11 +365,15 @@ async function cleanupJobFiles(job: QueuedVideoUploadJob) {
 }
 
 export async function enqueueVideoUpload(input: EnqueueVideoUploadInput): Promise<QueuedVideoUploadJob> {
+  const ownerUserId = currentExecutionActor();
+  if (!ownerUserId) throw new Error('Sign in before attaching Session video.');
   const createdAt = nowIso();
   const id = `mvu_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   const copiedFile = await copyIntoQueue(input.localFileUri, input.filename, input.mimeType);
   const copiedThumbnail = await copyThumbnailIntoQueue(input.thumbnailUri);
+  if (!executionActorOwns(ownerUserId)) throw new Error('Account changed while preparing video.');
   const job: QueuedVideoUploadJob = {
+    ownerUserId,
     id,
     status: 'pending',
     localFileUri: copiedFile,
@@ -386,13 +399,13 @@ export async function enqueueVideoUpload(input: EnqueueVideoUploadInput): Promis
 }
 
 export async function processVideoUploadQueue() {
-  if (processing) return;
+  if (processing || !currentExecutionActor()) return;
   processing = true;
   setUpdateBlocker('video_upload', true);
   try {
     const jobs = await loadJobs();
     const job = jobs
-      .filter((candidate) => !isTerminal(candidate.status))
+      .filter((candidate) => executionActorOwns(candidate.ownerUserId) && !isTerminal(candidate.status))
       .find((candidate) => candidate.status === 'pending' || (candidate.status === 'failed_retryable' && isDue(candidate)) || (candidate.status === 'uploading' && isDue(candidate)));
     if (!job) return;
 
@@ -436,7 +449,7 @@ export async function processVideoUploadQueue() {
   } finally {
     processing = false;
     setUpdateBlocker('video_upload', false);
-    const remaining = (await loadJobs()).some((job) => !isTerminal(job.status) && isDue(job));
+    const remaining = (await loadJobs()).some((job) => executionActorOwns(job.ownerUserId) && !isTerminal(job.status) && isDue(job));
     if (remaining) {
       setTimeout(() => void processVideoUploadQueue(), 1000);
     }
@@ -454,6 +467,8 @@ export function startVideoUploadQueue() {
 }
 
 export async function retryVideoUploadJob(jobId: string) {
+  const owner = currentExecutionActor();
+  if (!owner) return;
   await updateJob(jobId, (job) => ({
     ...job,
     status: 'pending',
@@ -461,27 +476,29 @@ export async function retryVideoUploadJob(jobId: string) {
     lastError: null,
     updatedAt: nowIso(),
     nextAttemptAt: nowIso(),
-  }));
+  }), owner);
   void processVideoUploadQueue();
 }
 
 export async function cancelVideoUploadJob(jobId: string) {
+  const owner = currentExecutionActor();
+  if (!owner) return;
   const job = await updateJob(jobId, (current) => ({
     ...current,
     status: 'cancelled',
     updatedAt: nowIso(),
     nextAttemptAt: null,
-  }));
+  }), owner);
   if (job) await cleanupJobFiles(job);
 }
 
 export async function getVideoUploadJobs() {
-  return loadJobs();
+  return (await loadJobs()).filter(job => executionActorOwns(job.ownerUserId));
 }
 
 export function subscribeVideoUploadQueue(listener: (jobs: QueuedVideoUploadJob[]) => void) {
   listeners.add(listener);
-  void loadJobs().then(listener);
+  void getVideoUploadJobs().then(listener);
   return () => {
     listeners.delete(listener);
   };
@@ -496,3 +513,5 @@ export function stopVideoUploadQueue() {
 }
 
 export const stopVideoUploadQueueForTests = stopVideoUploadQueue;
+
+subscribeExecutionActor(() => { notify(); if (started) void processVideoUploadQueue(); });
