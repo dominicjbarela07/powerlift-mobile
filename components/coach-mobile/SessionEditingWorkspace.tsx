@@ -1,9 +1,13 @@
+import { InlineSessionReorder } from './InlineSessionReorder';
+import { clearAuthoringJournal, readAuthoringJournal, writeAuthoringJournal } from '@/lib/session-authoring-journal';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  AppState,
   Animated,
   BackHandler,
   Keyboard,
@@ -22,7 +26,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SLButton } from '@/components/ui/sl-button';
 import { StrengthLedgerBottomSheet, type StrengthLedgerBottomSheetHandle } from '@/components/sheets/StrengthLedgerBottomSheet';
-import { AthleteCoachingScratchpadTrigger } from '@/components/coach-mobile/AthleteCoachingScratchpad';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import { SLProfileAvatar } from '@/components/ui/sl-profile-avatar';
 import { Text, TextInput } from '@/components/ui/sl-text';
@@ -214,6 +217,7 @@ export type SessionWorkspaceMovementSave = {
 };
 
 export type SessionWorkspaceSavePlan = {
+  baseVersion?: string;
   title: string;
   athleteId: number | null;
   scheduledDate: string;
@@ -245,6 +249,15 @@ type SessionWorkspaceDraft = {
 };
 
 type Props = {
+  entryMode?: 'self' | 'team' | 'workspace';
+  programContext?: string;
+  returnWeek?: number;
+  authoringVersion?: string | null;
+  journalIdentity?: string;
+  journalScope?: string;
+  onReady?: () => void;
+  readyLabel?: string;
+  onReuseSession?: () => void;
   title: string;
   context: string;
   status: string;
@@ -282,6 +295,7 @@ type Props = {
     coreItems: SessionMovementItem[];
     accessoryItems: SessionMovementItem[];
   }, onApply: (order: { coreIds: number[]; accessoryIds: number[] }) => void) => void;
+  onAddMovement?: (displayUnit: CoachDisplayUnit, onAdd: (item: SessionMovementItem, kind: MovementKind) => void) => void;
   onAddCore: (displayUnit: CoachDisplayUnit, onAdd: (item: SessionMovementItem) => void) => void;
   onAddAccessory: (onAdd: (item: SessionMovementItem) => void) => void;
   onChangeAccessory: (item: SessionMovementItem, onChange: (item: SessionMovementItem) => void) => void;
@@ -360,12 +374,36 @@ export function SessionEditingWorkspace(props: Props) {
   const [editingNotes, setEditingNotes] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState(false);
   const [editingDate, setEditingDate] = useState(false);
+  const [groupingIds, setGroupingIds] = useState<number[] | null>(null);
+  const [reordering, setReordering] = useState(false);
+  const [draggingOrder, setDraggingOrder] = useState(false);
   const [toolkitExpanded, setToolkitExpanded] = useState(false);
   const [workspacePrompt, setWorkspacePrompt] = useState<SessionWorkspacePrompt>(null);
   const [calculatedRows, setCalculatedRows] = useState<Record<number, CalculatedLoadResult>>({});
   const listScrollRef = useRef<ScrollView>(null);
   const calculationRevisionRef = useRef(0);
   const acceptIncomingSessionRef = useRef(false);
+  const baseVersionRef = useRef(props.authoringVersion || '');
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [journalReady, setJournalReady] = useState(false);
+  const [journalMessage, setJournalMessage] = useState('');
+  const scrollYRef = useRef(0);
+  type Recovery = { draft: SessionWorkspaceDraft; base: SessionWorkspaceDraft; baseVersion: string; selectedId: number | null; scrollY: number; storageUnit: CoachDisplayUnit };
+  useEffect(() => {
+    let active = true;
+    if (!props.journalIdentity || !props.journalScope || !editable) { setJournalReady(true); return; }
+    void readAuthoringJournal<Recovery>(props.journalIdentity, props.journalScope).then((recovery) => {
+      if (!active || !recovery || recovery.draft.athleteId !== athleteId || recovery.storageUnit !== draftStorageUnit) return;
+      setPersistedSession(recovery.base);
+      setSessionDraft(recovery.draft);
+      baseVersionRef.current = recovery.baseVersion;
+      setSelectedId(recovery.selectedId);
+      setJournalMessage(recovery.baseVersion === props.authoringVersion ? 'Restored your local changes.' : 'Restored local changes. The saved Session has changed; review before saving.');
+      requestAnimationFrame(() => listScrollRef.current?.scrollTo({ y: recovery.scrollY, animated: false }));
+    }).catch(() => { if (active) setJournalMessage('Local recovery is unavailable. Save to keep your changes.'); }).finally(() => { if (active) setJournalReady(true); });
+    return () => { active = false; };
+  }, [props.journalIdentity, props.journalScope]);
+
 
   const sessionDirty = sessionWorkspaceDraftIsDirty(sessionDraft, persistedSession);
   const currentCoreItems = useMemo(
@@ -402,12 +440,36 @@ export function SessionEditingWorkspace(props: Props) {
     && athleteOptions.length > 0;
 
   useEffect(() => {
-    if (sessionDirty && !acceptIncomingSessionRef.current) return;
+    if (!journalReady || savingSession || (sessionDirty && !acceptIncomingSessionRef.current)) return;
     const next = cloneSessionWorkspaceDraft(incomingSession);
     setPersistedSession(next);
     setSessionDraft(cloneSessionWorkspaceDraft(next));
+    baseVersionRef.current = props.authoringVersion || '';
     acceptIncomingSessionRef.current = false;
-  }, [incomingSession, incomingSessionSignature, sessionDirty]);
+  }, [incomingSession, incomingSessionSignature, sessionDirty, journalReady, props.authoringVersion, savingSession]);
+  const recoveryRef = useRef<Recovery | null>(null);
+  recoveryRef.current = sessionDirty && journalReady ? { draft: sessionDraft, base: persistedSession, baseVersion: baseVersionRef.current, selectedId, scrollY: scrollYRef.current, storageUnit: draftStorageUnit } : null;
+  useEffect(() => {
+    if (!journalReady || !props.journalIdentity || !props.journalScope) return;
+    const timer = setTimeout(() => {
+      const recovery = recoveryRef.current;
+      if (recovery) void writeAuthoringJournal(props.journalIdentity!, props.journalScope!, recovery).catch(() => setJournalMessage('Local recovery is unavailable. Save to keep your changes.'));
+    }, 650);
+    return () => clearTimeout(timer);
+  }, [sessionDraft, selectedId, journalReady, props.journalIdentity, props.journalScope]);
+  useEffect(() => () => {
+    if (recoveryRef.current && props.journalIdentity && props.journalScope) void writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current).catch(() => undefined);
+  }, [props.journalIdentity, props.journalScope]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active' && recoveryRef.current && props.journalIdentity && props.journalScope) {
+        void writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current).catch(() => undefined);
+      }
+    });
+    return () => subscription.remove();
+  }, [props.journalIdentity, props.journalScope]);
+
   useLayoutEffect(() => {
     setSessionEditorOverlayOpen(true);
     return () => setSessionEditorOverlayOpen(false);
@@ -494,12 +556,18 @@ export function SessionEditingWorkspace(props: Props) {
   }, [displayUnit, props, savingSession]);
 
   const discardWorkspaceChanges = useCallback(() => {
-    setSessionDraft(cloneSessionWorkspaceDraft(persistedSession));
+    setSessionDraft(cloneSessionWorkspaceDraft(incomingSession));
+    setPersistedSession(cloneSessionWorkspaceDraft(incomingSession));
+    baseVersionRef.current = props.authoringVersion || '';
+    recoveryRef.current = null;
+    setSaveFailed(false);
+    setJournalMessage('');
+    if (props.journalIdentity) void clearAuthoringJournal(props.journalIdentity);
     setRenaming(false);
     setEditingNotes(false);
     setEditingAthlete(false);
     setEditingDate(false);
-  }, [persistedSession]);
+  }, [incomingSession, props.authoringVersion, props.journalIdentity]);
 
   const saveWorkspaceChanges = useCallback(async () => {
     if (!sessionDirty || savingSession) return !sessionDirty;
@@ -508,16 +576,26 @@ export function SessionEditingWorkspace(props: Props) {
       return false;
     }
     setSavingSession(true);
+    setSaveFailed(false);
     acceptIncomingSessionRef.current = true;
     try {
-      const success = await props.onSaveSession(buildSessionWorkspaceSavePlan(sessionDraft, persistedSession, draftStorageUnit));
+      if (props.journalIdentity && props.journalScope && recoveryRef.current) {
+        await writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current).catch(() => undefined);
+      }
+      const success = await props.onSaveSession({ ...buildSessionWorkspaceSavePlan(sessionDraft, persistedSession, draftStorageUnit), baseVersion: baseVersionRef.current });
       if (!success) {
+        setSaveFailed(true);
         acceptIncomingSessionRef.current = false;
         return false;
       }
-      setPersistedSession(cloneSessionWorkspaceDraft(sessionDraft));
+      recoveryRef.current = null;
+      setJournalMessage('');
+      if (props.journalIdentity) await clearAuthoringJournal(props.journalIdentity).catch(() => undefined);
+      // The refreshed server payload owns IDs and the next version.
+      acceptIncomingSessionRef.current = true;
       return true;
     } catch {
+      setSaveFailed(true);
       acceptIncomingSessionRef.current = false;
       setWorkspacePrompt({ kind: 'message', title: 'Could not save Session', message: 'Your Session edits are still available.' });
       return false;
@@ -527,12 +605,14 @@ export function SessionEditingWorkspace(props: Props) {
   }, [draftStorageUnit, persistedSession, props, savingSession, sessionDirty, sessionDraft]);
 
   const resolveDirty = useCallback((action: () => void) => {
+    if (Keyboard.isVisible()) { Keyboard.dismiss(); return; }
+    if (reordering) { setReordering(false); return; }
     if (!sessionDirty) {
       action();
       return;
     }
     setWorkspacePrompt({ kind: 'dirty', continueAction: action });
-  }, [sessionDirty]);
+  }, [sessionDirty, reordering]);
 
   const openMovement = useCallback((item: SessionMovementItem) => {
     const nextId = selectedId === item.id ? null : item.id;
@@ -550,8 +630,10 @@ export function SessionEditingWorkspace(props: Props) {
   }, []);
 
   const addMovement = useCallback(() => {
-    setWorkspacePrompt({ kind: 'add-movement' });
-  }, []);
+    Keyboard.dismiss();
+    if (props.onAddMovement) props.onAddMovement(displayUnit, (item, kind) => addSessionDraftMovement(item, kind, draftStorageUnit, setSessionDraft, setSelectedId));
+    else setWorkspacePrompt({ kind: 'add-movement' });
+  }, [props.onAddMovement, displayUnit, draftStorageUnit]);
 
   const selectAthlete = useCallback((nextAthleteId: number) => {
     setSessionDraft((current) => ({ ...current, athleteId: nextAthleteId }));
@@ -641,17 +723,7 @@ export function SessionEditingWorkspace(props: Props) {
     });
   }, [props, selectedId, selectedItem, selectedKind]);
 
-  const openReorder = useCallback(() => {
-    props.onOpenReorder(
-      {
-        coreIds: sessionDraft.coreOrder,
-        accessoryIds: sessionDraft.accessoryOrder,
-        coreItems: currentCoreItems.map((item) => movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)),
-        accessoryItems: currentAccessoryItems.map((item) => movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)),
-      },
-      (order) => setSessionDraft((current) => ({ ...current, coreOrder: order.coreIds, accessoryOrder: order.accessoryIds })),
-    );
-  }, [currentAccessoryItems, currentCoreItems, draftStorageUnit, props, sessionDraft.accessoryOrder, sessionDraft.coreOrder, sessionDraft.movements]);
+  const openReorder = useCallback(() => { Keyboard.dismiss(); setSelectedId(null); setReordering(true); }, []);
 
   const guardLifecycle = useCallback<GuardAction>((action) => resolveDirty(action), [resolveDirty]);
   const registerDismissRequest = props.registerDismissRequest;
@@ -676,83 +748,35 @@ export function SessionEditingWorkspace(props: Props) {
 
   return (
     <View style={styles.root}>
-      <View style={styles.workspaceTopBar}>
-        {!props.sheetPresentation ? (
-          <Pressable
-            accessibilityLabel="Return to Week Lens"
-            accessibilityRole="button"
-            onPress={() => resolveDirty(props.onCloseWorkspace)}
-            style={styles.workspaceTopBarAction}
-          >
-            <Ionicons color={palette.text} name="chevron-back" size={22} />
-          </Pressable>
-        ) : <View style={styles.workspaceTopBarAction} />}
-        <Text numberOfLines={1} style={styles.workspaceTopBarTitle}>Session Workspace</Text>
-        <View style={styles.workspaceTopBarAction} />
+      <View style={authorStyles.topbar}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Return to selected week" onPress={() => resolveDirty(props.onCloseWorkspace)} style={authorStyles.headerAction}><Ionicons name="chevron-back" size={20} color={palette.violet} /><Text style={authorStyles.link}>Week {props.returnWeek || 1}</Text></Pressable>
+        <Text accessibilityLiveRegion="polite" style={[authorStyles.saveState, { color: saveFailed ? palette.red : sessionDirty ? SLColors.accentMagenta : SLColors.success }]}>{savingSession ? 'Saving…' : saveFailed ? 'Couldn’t save' : sessionDirty ? 'Changed locally' : 'Saved'}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Session actions" onPress={() => setToolkitExpanded(true)} style={authorStyles.overflow}><Ionicons name="ellipsis-horizontal" size={23} color={palette.text} /></Pressable>
       </View>
-      <ScrollView
-        automaticallyAdjustKeyboardInsets
-        ref={listScrollRef}
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, selectedItem && styles.contentEditing, useAccessibilityReflow && styles.contentAccessibility]}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={props.onRefresh} tintColor={palette.muted} />}
-        keyboardShouldPersistTaps="handled"
-      >
-        <SessionCompactIdentity
-          title={sessionDraft.title}
-          status={status}
-          athleteId={sessionDraft.athleteId}
-          athleteName={draftAthlete?.name || athleteName || context.split(' • ')[0] || null}
-          athleteAvatarUrl={draftAthlete?.avatarUrl || athleteAvatarUrl}
-          athleteAvatarVersion={draftAthlete?.avatarVersion || athleteAvatarVersion}
-          scheduledDate={sessionDraft.scheduledDate}
-          duration={durationLabel}
-          athleteOptions={athleteOptions}
-          canChangeAthlete={canChangeAthlete}
-          editingAthlete={editingAthlete}
-          editingDate={editingDate}
-          savingSetup={savingSession}
-          onBeginAthleteEdit={() => setEditingAthlete((current) => !current)}
-          onDismissDate={() => setEditingDate(false)}
-          onSelectAthlete={selectAthlete}
-          onSelectDate={selectDate}
-          accessibilityReflow={useAccessibilityReflow}
-        />
-
-        {lockedReason ? <Text style={styles.lockedReason}>{lockedReason}</Text> : null}
-
-        <View style={styles.setupRegion}>
-          {sessionDraft.athleteId && (draftAthlete?.name || athleteName) ? (
-            <AthleteCoachingScratchpadTrigger
-              athleteId={sessionDraft.athleteId}
-              athleteName={draftAthlete?.name || athleteName || 'Athlete'}
-              variant="compact"
-            />
-          ) : null}
-          <SessionNotesPreview
-            value={sessionDraft.notes}
-            draft={sessionDraft.notes}
-            editing={editingNotes}
-            saving={savingSession}
-            editable={!!capabilities.can_edit_session_notes}
-            onEdit={() => setEditingNotes(true)}
-            onChange={(nextNotes) => setSessionDraft((current) => ({ ...current, notes: nextNotes }))}
-            onSave={() => setEditingNotes(false)}
-          />
-
+      <ScrollView scrollEnabled={!draggingOrder} automaticallyAdjustKeyboardInsets ref={listScrollRef} style={styles.scroll} contentContainerStyle={[styles.content, useAccessibilityReflow && styles.contentAccessibility]} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={props.onRefresh} tintColor={palette.muted} />} keyboardShouldPersistTaps="handled" scrollEventThrottle={100} onScroll={(event) => { scrollYRef.current = event.nativeEvent.contentOffset.y; }}>
+        <View style={authorStyles.identity}>
+          {props.entryMode !== 'self' && athleteName ? <Text style={authorStyles.subject}>{props.entryMode === 'workspace' ? 'ATHLETE WORKSPACE · ' : ''}{athleteName}</Text> : null}
+          <Pressable accessibilityRole="button" accessibilityLabel="Rename Session" disabled={!capabilities.can_rename} onPress={() => { setRenameDraft(sessionDraft.title); setRenaming(true); }}><Text style={authorStyles.title}>{sessionDraft.title}</Text></Pressable>
+          <View style={authorStyles.identityLine}><Pressable accessibilityRole="button" accessibilityLabel="Change Session date" disabled={!editable} onPress={() => setEditingDate(true)}><Text style={authorStyles.date}>{formatWorkspaceDate(sessionDraft.scheduledDate)}</Text></Pressable><Text style={authorStyles.lifecycle}>{status.replaceAll('_', ' ')}</Text></View>
+          {props.programContext ? <Text style={authorStyles.breadcrumb}>{props.programContext}</Text> : null}
         </View>
-
+        {lockedReason ? <Text style={styles.lockedReason}>{lockedReason}</Text> : null}
+        {journalMessage ? <Text style={authorStyles.recovery}>{journalMessage}</Text> : null}
+        {sessionDirty && props.authoringVersion && baseVersionRef.current !== props.authoringVersion ? <View style={{ paddingHorizontal: 16, paddingBottom: 12, gap: 5 }}><Text style={authorStyles.recovery}>The saved Session changed. Your local edits are preserved.</Text><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => { Keyboard.dismiss(); void (async () => { if (recoveryRef.current && props.journalIdentity && props.journalScope) await writeAuthoringJournal(props.journalIdentity, props.journalScope, recoveryRef.current); props.onOpenAthleteView(); })(); }}><Text style={authorStyles.link}>Review saved Session</Text></Pressable><Pressable accessibilityRole="button" style={authorStyles.headerAction} onPress={() => setWorkspacePrompt({ kind: 'dirty', continueAction: () => undefined })}><Text style={authorStyles.link}>Use saved version…</Text></Pressable></View> : null}
+        <View style={authorStyles.note}>
+          {editingNotes ? <><TextInput accessibilityLabel="Session notes" multiline value={sessionDraft.notes} onChangeText={(notes) => setSessionDraft((current) => ({ ...current, notes }))} placeholder="Add Session notes" placeholderTextColor={palette.muted} style={styles.sessionNotesInput} /><SmallButton label="Done" onPress={() => setEditingNotes(false)} primary /></> : <Pressable accessibilityRole="button" disabled={!capabilities.can_edit_session_notes} onPress={() => setEditingNotes(true)} style={authorStyles.noteTrigger}><Ionicons name="document-text-outline" size={19} color={palette.violet} /><Text numberOfLines={2} style={authorStyles.noteText}>{sessionDraft.notes || '+ Session note'}</Text><Ionicons name="chevron-forward" size={16} color={palette.muted} /></Pressable>}
+        </View>
+        {reordering ? <InlineSessionReorder order={{ coreIds: sessionDraft.coreOrder, accessoryIds: sessionDraft.accessoryOrder }} items={Object.fromEntries(allItems.map((item) => [item.id, movementItemWithDraft(item, sessionDraft.movements[item.id], draftStorageUnit)]))} reduceMotion={reduceMotion} onDragging={setDraggingOrder} onCancel={() => setReordering(false)} onApply={(order) => { setSessionDraft((current) => ({ ...current, coreOrder: order.coreIds, accessoryOrder: order.accessoryIds })); setReordering(false); }} /> : <>
+        <View style={authorStyles.movementHeading}><Text style={authorStyles.breadcrumb}>{allItems.length} movements · {totalProgrammedSets} sets</Text>{capabilities.can_reorder && allItems.length > 1 ? <Pressable onPress={openReorder} style={authorStyles.headerAction}><Ionicons name="swap-vertical" size={16} color={palette.violet} /><Text style={authorStyles.link}>Reorder</Text></Pressable> : null}</View>
         <View style={styles.programmingRegion}>
           <View style={styles.movementOverview}>
             {(['core', 'accessory'] as const).map((kind) => {
               const items = kind === 'core' ? currentCoreItems : currentAccessoryItems;
               if (!items.length) return null;
-              const isFirstGroup = kind === (currentCoreItems.length ? 'core' : 'accessory');
               return (
                 <View key={kind} style={styles.movementGroup}>
                   <View style={styles.movementGroupHeader}>
                     <Text style={styles.movementGroupLabel}>{kind === 'core' ? 'Core' : 'Accessories'}</Text>
-                    {isFirstGroup ? <SessionWorkloadMetric totalSets={totalProgrammedSets} /> : null}
                   </View>
                   <View style={styles.movementList}>
                     {items.map((item) => item.id === selectedId && draft ? (
@@ -778,6 +802,7 @@ export function SessionEditingWorkspace(props: Props) {
                         onOpenHistory={kind === 'accessory' && props.onOpenMovementHistory
                           ? () => props.onOpenMovementHistory?.(item)
                           : undefined}
+                        onGroupMovements={kind === 'accessory' ? () => setGroupingIds(sessionDraft.accessoryOrder.filter((id) => id === item.id || (!!draft.supersetGroup && sessionDraft.movements[id]?.supersetGroup === draft.supersetGroup))) : undefined}
                         groupedWith={groupedMovementNames(sessionDraft, item.id, draft.supersetGroup)}
                         canDelete={!!capabilities.can_remove_movement}
                         onDelete={deleteSelectedMovement}
@@ -799,54 +824,61 @@ export function SessionEditingWorkspace(props: Props) {
                 </View>
               );
             })}
-            {!allItems.length ? <View style={styles.emptyList}><Text style={styles.emptyText}>No movements in this Session.</Text></View> : null}
+            {!allItems.length ? <View style={authorStyles.empty}><Ionicons name="barbell-outline" size={42} color={palette.muted} /><Text style={authorStyles.emptyTitle}>Add your first movement</Text><SLButton label="Add Movement" onPress={addMovement} />{props.onReuseSession ? <Pressable onPress={() => resolveDirty(() => props.onReuseSession?.())} style={authorStyles.headerAction}><Text style={authorStyles.link}>Reuse a Session</Text><Ionicons name="chevron-forward" size={16} color={palette.violet} /></Pressable> : null}</View> : null}
           </View>
 
         </View>
 
-        {assignmentBlockedReason ? <Text accessibilityRole="alert" style={styles.lockedReason}>{assignmentBlockedReason}</Text> : null}
+        {allItems.length > 0 && capabilities.can_add_movement ? <Pressable accessibilityRole="button" onPress={addMovement} style={authorStyles.addMovement}><Ionicons name="add-circle-outline" size={23} color={palette.violet} /><Text style={authorStyles.link}>Add another movement</Text></Pressable> : null}
+        </>}
+        {assignmentBlockedReason && allItems.length > 0 ? <Text accessibilityRole="alert" style={styles.lockedReason}>{assignmentBlockedReason}</Text> : null}
       </ScrollView>
 
-      <SessionFloatingToolkit
-        bottom={props.sheetPresentation
-          ? SLSpacing.md
-          : insets.bottom + SLSpacing.md}
-        expanded={toolkitExpanded}
-        reduceMotion={reduceMotion}
-        restricted={sessionDirty}
-        unit={displayUnit}
-        canAddMovement={!!capabilities.can_add_movement}
-        canAthleteView={capabilities.can_open_athlete_view !== false}
-        canChangeDate={editable}
-        canRename={!!capabilities.can_rename}
-        canReorder={!!capabilities.can_reorder}
-        unitDisabled={savingSession || !editable}
-        lifecycleActions={props.renderLifecycleActions(guardLifecycle, sessionDirty)}
-        onAddMovement={() => {
-          setToolkitExpanded(false);
-          addMovement();
-        }}
-        onAthleteView={() => {
-          setToolkitExpanded(false);
-          resolveDirty(props.onOpenAthleteView);
-        }}
-        onChangeDate={() => {
-          setToolkitExpanded(false);
-          setEditingDate(true);
-        }}
-        onChangeUnit={changeEditorDisplayUnit}
-        onReorder={() => {
-          setToolkitExpanded(false);
-          openReorder();
-        }}
-        onRenameSession={() => {
-          setToolkitExpanded(false);
-          setRenameDraft(sessionDraft.title);
-          setRenaming(true);
-        }}
-        onExpandedChange={setToolkitExpanded}
-      />
-
+      <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={authorStyles.toolbarLayer}>
+        <View style={[authorStyles.toolbar, { marginBottom: Math.max(insets.bottom, 10) }]}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add Movement" disabled={!capabilities.can_add_movement || savingSession || reordering} onPress={addMovement} style={authorStyles.toolbarAction}><Ionicons name="add-circle-outline" size={23} color={palette.violet} /><Text style={authorStyles.toolbarLabel}>Add</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Preview saved Session" disabled={capabilities.can_open_athlete_view === false || savingSession} onPress={() => resolveDirty(props.onOpenAthleteView)} style={authorStyles.toolbarAction}><Ionicons name="eye-outline" size={23} color={palette.muted} /><Text style={authorStyles.toolbarLabel}>Preview</Text></Pressable>
+          <Pressable accessibilityRole="button" disabled={savingSession || reordering || (!sessionDirty && !props.onReady)} onPress={() => { if (sessionDirty) void saveWorkspaceChanges(); else props.onReady?.(); }} style={[authorStyles.toolbarAction, authorStyles.primaryAction, !sessionDirty && !props.onReady && { opacity: 0.45 }]}>{savingSession ? <ActivityIndicator color={palette.text} /> : <Ionicons name={sessionDirty ? 'save-outline' : props.onReady ? 'play' : 'checkmark'} size={21} color={palette.text} />}<Text style={authorStyles.primaryLabel}>{savingSession ? 'Saving…' : sessionDirty ? saveLabel : props.onReady ? props.readyLabel || 'Assign Session' : 'Saved'}</Text></Pressable>
+        </View>
+      </KeyboardAvoidingView>
+      <StrengthLedgerBottomSheet accessibilityLabel="Session actions" visible={toolkitExpanded} onDismiss={() => setToolkitExpanded(false)} onRequestClose={() => setToolkitExpanded(false)}>
+        <View style={{ padding: 16, gap: 12 }}><Text style={authorStyles.title}>Session actions</Text>
+          {capabilities.can_rename ? <SmallButton label="Rename Session" onPress={() => { setToolkitExpanded(false); setRenameDraft(sessionDraft.title); setRenaming(true); }} /> : null}
+          {editable ? <SmallButton label="Change date" onPress={() => { setToolkitExpanded(false); setEditingDate(true); }} /> : null}
+          <SmallButton label={`Display in ${displayUnit === 'kg' ? 'lb' : 'kg'}`} onPress={() => changeEditorDisplayUnit(displayUnit === 'kg' ? 'lb' : 'kg')} />
+          {sessionDirty ? <SmallButton label="Discard local changes" onPress={() => { setToolkitExpanded(false); resolveDirty(() => undefined); }} /> : null}
+          {props.renderLifecycleActions((action) => { setToolkitExpanded(false); guardLifecycle(action); }, sessionDirty)}
+        </View>
+      </StrengthLedgerBottomSheet>
+      <StrengthLedgerBottomSheet visible={groupingIds !== null} accessibilityLabel="Group movements" heightFraction={0.7} onRequestClose={() => setGroupingIds(null)} onDismiss={() => setGroupingIds(null)}>
+        <View style={{ flex: 1, paddingHorizontal: 16, gap: 12 }}><Text style={authorStyles.title}>Group movements</Text><Text style={authorStyles.breadcrumb}>Choose the movements performed together.</Text><ScrollView>{sessionDraft.accessoryOrder.map((id) => <Pressable key={id} accessibilityRole="checkbox" accessibilityState={{ checked: groupingIds?.includes(id), disabled: id === selectedId }} disabled={id === selectedId} onPress={() => setGroupingIds((ids) => ids?.includes(id) ? ids.filter((value) => value !== id) : [...(ids || []), id])} style={authorStyles.noteTrigger}><Ionicons name={groupingIds?.includes(id) ? 'checkbox' : 'square-outline'} size={24} color={palette.violet} /><Text style={authorStyles.noteText}>{movementName(sessionDraft.items[id])}</Text></Pressable>)}</ScrollView><SLButton label="Apply Group" onPress={() => {
+          if (selectedId != null && groupingIds) setSessionDraft((current) => {
+            const previous = current.movements[selectedId]?.supersetGroup || '';
+            const occupied = new Set(Object.values(current.movements).map((movement) => movement.supersetGroup));
+            const group = previous || Array.from({ length: 26 }, (_, index) => String.fromCharCode(65 + index)).find((value) => !occupied.has(value)) || '';
+            if (!group && (groupingIds?.length || 0) > 1) { Alert.alert('Group unavailable', 'All group labels are in use. Remove a group before creating another.'); return current; }
+            const members = current.accessoryOrder.filter((id) => groupingIds.includes(id));
+            const movements = { ...current.movements };
+            for (const id of current.accessoryOrder) {
+              const member = members.indexOf(id);
+              if (member >= 0) movements[id] = { ...movements[id], supersetGroup: members.length > 1 ? group : '', supersetPosition: members.length > 1 ? String(member + 1) : '' };
+              else if (previous && movements[id].supersetGroup === previous) movements[id] = { ...movements[id], supersetGroup: '', supersetPosition: '' };
+            }
+            const positions: Record<string, number> = {};
+            for (const id of current.accessoryOrder) {
+              const label = movements[id].supersetGroup;
+              if (label) {
+                const count = current.accessoryOrder.filter((other) => movements[other].supersetGroup === label).length;
+                positions[label] = (positions[label] || 0) + 1;
+                movements[id] = { ...movements[id], supersetGroup: count > 1 ? label : '', supersetPosition: count > 1 ? String(positions[label]) : '' };
+              }
+            }
+            return { ...current, movements };
+          });
+          setGroupingIds(null);
+        }} /><SmallButton label="Cancel" onPress={() => setGroupingIds(null)} /></View>
+      </StrengthLedgerBottomSheet>
+      <SessionDatePickerModal scheduledDate={sessionDraft.scheduledDate} visible={editingDate} onDismiss={() => setEditingDate(false)} onSelect={selectDate} />
       <SessionRenameModal
         draft={renameDraft}
         visible={renaming}
@@ -892,18 +924,7 @@ export function SessionEditingWorkspace(props: Props) {
         }}
       />
 
-      {sessionDirty ? (
-        <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.inlineActionBarLayer}>
-          <MovementActionBar
-            safeAreaBottom={props.sheetPresentation ? 0 : insets.bottom}
-            dirty
-            saving={savingSession}
-            onSave={() => { void saveWorkspaceChanges(); }}
-            onDiscard={discardWorkspaceChanges}
-            onDone={() => undefined}
-          />
-        </KeyboardAvoidingView>
-      ) : null}
+
     </View>
   );
 }
@@ -1340,28 +1361,26 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       accessibilityRole="button"
       accessibilityLabel={[`Edit ${movementName(item)}`, prescriptionSummary(item, kind), load?.label, load?.value].filter(Boolean).join(', ')}
       onPress={() => onOpen(item)}
-      style={({ pressed }) => [styles.movementRow, pressed && styles.movementRowPressed]}
+      style={({ pressed }) => [styles.movementRow, item.superset_group && { borderLeftWidth: 2, borderLeftColor: palette.violet }, pressed && styles.movementRowPressed]}
     >
-      <MovementCardMaterial accentColor={movementAccent(item)} borderRadius={SLRadius.lg} state="not_started" />
-      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={72} /></View>
+      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={48} /></View>
       <View style={styles.movementCopy}>
         <Text typographyRole="movementTitle" numberOfLines={2} style={styles.movementName}>{movementName(item)}</Text>
         <Text typographyRole="bodyStrong" numberOfLines={2} style={styles.movementPrescription}>{prescriptionSummary(item, kind)}</Text>
         {load ? <View style={styles.movementLoadRow}>{load.label ? <Text typographyRole="micro" style={[styles.movementLoadLabel, load.manual && styles.movementLoadLabelManual]}>{load.label}</Text> : null}<Text typographyRole="bodyStrong" numberOfLines={2} style={[styles.movementLoad, load.manual && styles.movementLoadManual]}>{load.value}</Text></View> : null}
-        <Text typographyRole="metadata" numberOfLines={2} style={styles.movementMeta}>{movementMeta(item, kind)}</Text>
+        <Text typographyRole="metadata" numberOfLines={1} style={styles.movementMeta}>{item.superset_group ? `Group ${item.superset_group} · ` : ''}{item.movement_identity?.equipment_type?.replaceAll('_', ' ') || movementMeta(item, kind)}</Text>
       </View>
       <View style={styles.movementTrailing}>{pending ? <ActivityIndicator size="small" color={palette.violet} /> : <Ionicons name="chevron-forward" size={18} color={palette.muted} />}</View>
     </Pressable>
   );
 }
 
-function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; accessibilityReflow: boolean }) {
+function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUnit, displayUnit, calculatedTarget, backdownCalculatedTarget, calculatingTarget, manualOverrideEnabled, backdownManualOverrideEnabled, canDelete, groupedWith, onChange, onManualOverrideEnabledChange, onBackdownManualOverrideEnabledChange, onChangeMovement, onChooseSubstitution, onOpenHistory, onDelete, onCollapse, onGroupMovements, accessibilityReflow }: { item: SessionMovementItem; kind: MovementKind; draft: CoachMovementDraft; dirty: boolean; editable: boolean; storageUnit: CoachDisplayUnit; displayUnit: CoachDisplayUnit; calculatedTarget: CalculatedLoadResult | null; backdownCalculatedTarget: CalculatedLoadResult | null; calculatingTarget: boolean; manualOverrideEnabled: boolean; backdownManualOverrideEnabled: boolean; canDelete: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onManualOverrideEnabledChange: (enabled: boolean) => void; onBackdownManualOverrideEnabledChange: (enabled: boolean) => void; onChangeMovement?: () => void; onChooseSubstitution?: () => void; onOpenHistory?: () => void; onDelete: () => void; onCollapse: () => void; onGroupMovements?: () => void; accessibilityReflow: boolean }) {
   const load = kind === 'core'
     ? expandedLoadPresentation(draft, calculatedTarget, storageUnit, displayUnit, manualOverrideEnabled)
     : null;
   return (
     <View accessibilityLabel={`${movementName(item)} expanded movement workspace`} style={styles.expandedMovementCard}>
-      <MovementCardMaterial accentColor={movementAccent(item)} borderRadius={SLRadius.lg} state="not_started" />
       <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${movementName(item)} editor`} onPress={onCollapse} style={({ pressed }) => [styles.expandedMovementHeader, pressed && styles.pressed]}>
         <View style={styles.expandedMovementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
         <View style={styles.expandedMovementCopy}>
@@ -1391,7 +1410,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
           onManualOverrideEnabledChange={onManualOverrideEnabledChange}
           onBackdownManualOverrideEnabledChange={onBackdownManualOverrideEnabledChange}
         />
-        {kind === 'accessory' ? <AccessorySessionProgrammingContext draft={draft} editable={editable} groupedWith={groupedWith} onChange={onChange} onChooseSubstitution={onChooseSubstitution} /> : null}
+        {kind === 'accessory' ? <AccessorySessionProgrammingContext onGroupMovements={onGroupMovements} draft={draft} editable={editable} groupedWith={groupedWith} onChange={onChange} onChooseSubstitution={onChooseSubstitution} /> : null}
         <RecentHistorySection item={item} displayUnit={displayUnit} onOpenHistory={onOpenHistory} />
         <CoachNotesSection value={draft.notes} editable={editable} onChange={(value) => onChange({ notes: value })} />
         <MovementDeleteAction disabled={!canDelete} onDelete={onDelete} />
@@ -1405,6 +1424,8 @@ function MovementArtwork({ item, kind, size }: { item: SessionMovementItem | nul
     id: item.id,
     kind,
     lift: item.lift,
+    core_movement: item.core_movement,
+    performed_core_movement: item.performed_core_movement,
     variant: item.variant,
     movement_definition_id: item.movement_identity?.id,
     movement_identity: item.movement_identity,
@@ -1653,7 +1674,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
         )}
       </View> : null}
 
-      {kind === 'core' ? <View style={styles.quickSection}>
+      {<View style={styles.quickSection}>
         {isCoreVariant ? (
           <ManualOverrideBlock required draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} manualEnabled editable={editable} onManualEnabledChange={() => {}} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
         ) : draft.scheme === 'TOP_BACKDOWN' && draft.sourceVariant !== 'BK' ? (
@@ -1666,7 +1687,7 @@ function MovementQuickPrescriptionEditor({ draft, kind, editable, accessibilityR
         ) : (
           <ManualOverrideBlock draftLow={draft.targetLowLb} draftHigh={draft.targetHighLb} storageUnit={storageUnit} displayUnit={displayUnit} initialTarget={calculatedManualTargetValue(calculatedTarget, displayUnit)} manualEnabled={manualOverrideEnabled} editable={editable} onManualEnabledChange={(enabled) => { onManualOverrideEnabledChange(enabled); if (!enabled) onChange({ targetLowLb: '', targetHighLb: '' }); }} onRangeChange={(targetLowLb, targetHighLb) => onChange({ targetLowLb, targetHighLb })} />
         )}
-      </View> : null}
+      </View>}
 
     </View>
   );
@@ -1848,8 +1869,8 @@ function CoachNotesSection({ value, editable, onChange }: { value: string; edita
   );
 }
 
-function AccessorySessionProgrammingContext({ draft, editable, groupedWith, onChange, onChooseSubstitution }: { draft: CoachMovementDraft; editable: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onChooseSubstitution?: () => void }) {
-  const groups = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+function AccessorySessionProgrammingContext({ draft, editable, groupedWith, onChange, onChooseSubstitution, onGroupMovements }: { draft: CoachMovementDraft; editable: boolean; groupedWith: string[]; onChange: (patch: Partial<CoachMovementDraft>) => void; onChooseSubstitution?: () => void; onGroupMovements?: () => void }) {
+
   const approvedNames = draft.approvedSubsText.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
   const removeSubstitution = (name: string) => {
     const approvedSubstitutions = draft.approvedSubstitutions.filter((row) => row.movement !== name);
@@ -1860,14 +1881,7 @@ function AccessorySessionProgrammingContext({ draft, editable, groupedWith, onCh
   };
   return (
     <View style={styles.quickSection}>
-      <Text style={styles.fieldLabel}>GROUPED SET</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.accessoryContextChoices}>
-        {groups.map((group) => {
-          const selected = draft.supersetGroup === group;
-          return <Pressable key={group || 'none'} accessibilityRole="button" accessibilityState={{ selected, disabled: !editable }} disabled={!editable} onPress={() => onChange({ supersetGroup: group, supersetPosition: group ? (draft.supersetPosition || '1') : '' })} style={[styles.accessoryContextChoice, selected && styles.accessoryContextChoiceSelected, !editable && styles.disabled]}><Text style={[styles.accessoryContextChoiceText, selected && styles.accessoryContextChoiceTextSelected]}>{group || 'None'}</Text></Pressable>;
-        })}
-      </ScrollView>
-      {draft.supersetGroup ? <Text style={styles.groupContextText}><Text style={styles.groupContextLetter}>{draft.supersetGroup}  </Text>{groupedWith.length ? `Grouped with: ${groupedWith[0]}${groupedWith.length > 1 ? ` +${groupedWith.length - 1}` : ''}` : 'Group assigned · add another movement to connect it'}</Text> : null}
+      <Pressable accessibilityRole="button" disabled={!editable} onPress={onGroupMovements} style={styles.compactContextRow}><View style={styles.compactContextCopy}><Text style={styles.fieldLabel}>GROUPED SET</Text><Text style={styles.compactContextValue}>{groupedWith.length ? groupedWith.join(' · ') : 'Separate movement'}</Text></View><Text style={styles.compactContextAction}>Choose members</Text><Ionicons name="chevron-forward" size={17} color={palette.muted} /></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={`Manage approved substitutions. ${approvedNames.length} approved`} accessibilityState={{ disabled: !editable || !onChooseSubstitution }} disabled={!editable || !onChooseSubstitution} onPress={onChooseSubstitution} style={({ pressed }) => [styles.compactContextRow, pressed && styles.pressed]}>
         <View style={styles.compactContextCopy}><Text style={styles.fieldLabel}>APPROVED SUBSTITUTIONS</Text><Text numberOfLines={1} style={approvedNames.length ? styles.compactContextValue : styles.emptyText}>{approvedNames.length ? approvedNames.join(' · ') : 'None approved'}</Text></View>
         <Text style={styles.compactContextAction}>{approvedNames.length} approved</Text><Ionicons name="chevron-forward" size={17} color={palette.muted} />
@@ -1912,7 +1926,7 @@ function MovementActionBar({ safeAreaBottom, dirty, saving, onSave, onDiscard, o
   );
 }
 
-function SmallButton({ label, onPress, disabled, primary }: { label: string; onPress: () => void; disabled: boolean; primary?: boolean }) {
+function SmallButton({ label, onPress, disabled, primary }: { label: string; onPress: () => void; disabled?: boolean; primary?: boolean }) {
   return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={[styles.smallButton, primary && styles.smallButtonPrimary, disabled && styles.disabled]}><Text style={[styles.smallButtonText, primary && styles.smallButtonTextPrimary]}>{label}</Text></Pressable>;
 }
 
@@ -1987,11 +2001,9 @@ function isCoreVariantItem(item: SessionMovementItem) {
   return String(item.lift || '').trim().toUpperCase() === 'VR';
 }
 
-function ensureCoreVariantManualLoad(draft: CoachMovementDraft, displayUnit: CoachDisplayUnit) {
-  if (!isCoreVariantDraft(draft) || draftHasManualOverride(draft)) return draft;
-  const target = loadWheelOptions(displayUnit, '')[0] || (displayUnit === 'kg' ? '20' : '45');
-  const range = storedRangeFromManualTarget(target, '0', displayUnit, displayUnit);
-  return { ...draft, targetLowLb: range.low, targetHighLb: range.high };
+function ensureCoreVariantManualLoad(draft: CoachMovementDraft, _displayUnit: CoachDisplayUnit) {
+  // A required manual target remains empty until the coach chooses it.
+  return draft;
 }
 
 function createSessionWorkspaceDraft({ title, athleteId, scheduledDate, storageUnit, notes, coreItems, accessoryItems }: {
@@ -2081,6 +2093,10 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
     const identityChanged = kind === 'accessory'
       && Number(item.movement_identity?.id || 0) !== Number(persisted.items[id]?.movement_identity?.id || 0);
     const patch = movementProgrammingPatch(movement, kind, storageUnit);
+    if (kind === 'core') {
+      patch.lift = item.lift;
+      if (item.core_movement?.id) patch.core_movement_id = item.core_movement.id;
+    }
     if (kind === 'accessory' && item.movement_identity?.id) {
       patch.movement_definition_id = item.movement_identity.id;
     }
@@ -2117,6 +2133,8 @@ function buildSessionWorkspaceSavePlan(current: SessionWorkspaceDraft, persisted
   };
 }
 
+let draftMovementSequence = -Date.now() * 1000;
+
 function addSessionDraftMovement(
   item: SessionMovementItem,
   kind: MovementKind,
@@ -2124,6 +2142,8 @@ function addSessionDraftMovement(
   setDraft: React.Dispatch<React.SetStateAction<SessionWorkspaceDraft>>,
   setSelectedId: React.Dispatch<React.SetStateAction<number | null>>,
 ) {
+  // Process-unique negative IDs cannot collide with a recovered draft.
+  if (item.id < 0) item = { ...item, id: --draftMovementSequence };
   setDraft((current) => {
     const movement = ensureCoreVariantManualLoad(movementDraftFromItem(item, storageUnit), storageUnit);
     return {
@@ -2179,7 +2199,9 @@ function movementItemWithDraft(item: SessionMovementItem, draft: CoachMovementDr
     reps_text: draft.repsText,
     rpe_target: Number(draft.rpe) || null,
     pct: Number(draft.pct) || null,
-    rir_target: Number(draft.rir) || null,
+    rir_target: draft.rir.trim() ? Number(draft.rir) : null,
+    superset_group: draft.supersetGroup || null,
+    superset_pos: draft.supersetPosition ? Number(draft.supersetPosition) : null,
     coach_prescribed_low_kg: toKg(draft.targetLowLb),
     coach_prescribed_high_kg: toKg(draft.targetHighLb),
     notes: draft.notes,
@@ -2260,7 +2282,6 @@ function calculatedLoadRequest(item: SessionMovementItem): CalculatedLoadRequest
 }
 
 function collapsedLoadPresentation(item: SessionMovementItem, kind: MovementKind, calculated: CalculatedLoadResult | null, displayUnit: CoachDisplayUnit) {
-  if (kind === 'accessory') return null;
   const manualLow = item.coach_prescribed_low_kg;
   const manualHigh = item.coach_prescribed_high_kg;
   const validManualLow = Number.isFinite(Number(manualLow)) && Number(manualLow) > 0 ? Number(manualLow) : null;
@@ -2278,7 +2299,7 @@ function collapsedLoadPresentation(item: SessionMovementItem, kind: MovementKind
       manual: true,
     };
   }
-  if (calculated?.lowKg != null || calculated?.highKg != null) {
+  if (kind !== 'accessory' && (calculated?.lowKg != null || calculated?.highKg != null)) {
     return {
       label: 'Calculated',
       value: formatLoggerWeightRangeKg(
@@ -2345,6 +2366,35 @@ function formatDate(value?: string | null) {
   if (!year || !month || !day) return value;
   return new Date(year, month - 1, day).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
+
+const authorStyles = StyleSheet.create({
+  topbar: { minHeight: 48, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: palette.line },
+  headerAction: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 5 },
+  link: { color: palette.violet, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 15 },
+  saveState: { fontFamily: SLFontFamilies.sans, fontSize: 12 },
+  overflow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  identity: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, gap: 5 },
+  subject: { color: palette.violet, fontSize: 11, letterSpacing: 0.7, fontFamily: SLFontFamilies.sansSemiBold },
+  title: { color: palette.text, fontSize: 27, lineHeight: 33, fontFamily: SLFontFamilies.sansBold },
+  identityLine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 30 },
+  date: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 14 },
+  lifecycle: { color: SLColors.accentMagenta, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 12, textTransform: 'capitalize' },
+  breadcrumb: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 12, lineHeight: 18 },
+  recovery: { color: SLColors.warning, fontSize: 13, lineHeight: 19, paddingHorizontal: 16, paddingBottom: 10 },
+  note: { paddingHorizontal: 16, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
+  noteTrigger: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 9 },
+  noteText: { flex: 1, color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 14, lineHeight: 20 },
+  movementHeading: { paddingHorizontal: 16, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  empty: { minHeight: 245, alignItems: 'center', justifyContent: 'center', gap: 16 },
+  emptyTitle: { fontFamily: SLFontFamilies.sansSemiBold, color: palette.text, fontSize: 19 },
+  addMovement: { marginHorizontal: 16, minHeight: 64, flexDirection: 'row', gap: 9, alignItems: 'center' },
+  toolbarLayer: { position: 'absolute', left: 16, right: 16, bottom: 0 },
+  toolbar: { minHeight: 64, padding: 6, flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 23, borderWidth: 1, borderColor: 'rgba(167,139,250,0.25)', backgroundColor: 'rgba(19,17,28,0.98)', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 20, shadowOffset: { width: 0, height: 5 } },
+  toolbarAction: { minWidth: 60, minHeight: 50, justifyContent: 'center', alignItems: 'center', gap: 3, paddingHorizontal: 8 },
+  toolbarLabel: { color: palette.muted, fontFamily: SLFontFamilies.sans, fontSize: 11 },
+  primaryAction: { flex: 1, flexDirection: 'row', gap: 7, backgroundColor: '#56318F', borderRadius: 17 },
+  primaryLabel: { color: palette.text, fontFamily: SLFontFamilies.sansSemiBold, fontSize: 14 },
+});
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: palette.canvas },
@@ -2421,7 +2471,7 @@ const styles = StyleSheet.create({
   smallButtonPrimary: { backgroundColor: palette.violetSoft, borderColor: 'rgba(167,139,250,0.45)' },
   smallButtonText: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 12 },
   smallButtonTextPrimary: { color: palette.violet },
-  programmingRegion: { gap: 10 },
+  programmingRegion: { gap: 8, paddingHorizontal: 16 },
   workloadMetric: { minHeight: 28, flexDirection: 'row', alignItems: 'center', gap: SLSpacing.xs, paddingHorizontal: SLSpacing.sm, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line, backgroundColor: SLColors.surfaceFlat },
   workloadMetricValue: { color: palette.text, fontFamily: SLFontFamilies.numeric, fontSize: 18, lineHeight: 22 },
   workloadMetricLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 12, lineHeight: 16, textTransform: 'uppercase' },
@@ -2446,25 +2496,25 @@ const styles = StyleSheet.create({
   movementGroupHeader: { minHeight: 28, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: SLSpacing.sm },
   movementGroupLabel: { color: palette.muted, fontFamily: SLFontFamilies.technical, fontSize: 13, lineHeight: 18, textTransform: 'uppercase' },
   movementList: { gap: 7 },
-  movementRow: { position: 'relative', minHeight: 124, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', paddingVertical: 12, paddingHorizontal: 12, borderRadius: SLRadius.md, backgroundColor: palette.object, borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
+  movementRow: { position: 'relative', minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', paddingVertical: 12, paddingHorizontal: 12, borderRadius: SLRadius.md, backgroundColor: '#101016', borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
   movementRowPressed: { backgroundColor: palette.objectRaised },
-  movementArtwork: { width: 72, height: 72, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  movementArtwork: { width: 48, height: 48, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   movementTrailing: { width: 24, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   artworkFallback: { alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: palette.violetSoft, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(167,139,250,0.25)' },
   movementCopy: { flex: 1, minWidth: 0, gap: 2 },
-  movementName: { color: palette.text },
+  movementName: { color: palette.text, fontSize: 17, lineHeight: 22, fontFamily: SLFontFamilies.sansSemiBold },
   expandedMovementName: { fontFamily: SLFontFamilies.sansBold, fontSize: 20, lineHeight: 25 },
   movementMeta: { color: palette.muted, textTransform: 'uppercase', fontFamily: SLFontFamilies.technical, fontSize: 13, lineHeight: 18 },
-  movementPrescription: { color: palette.text, fontSize: 16, lineHeight: 22 },
+  movementPrescription: { color: palette.text, fontSize: 14, lineHeight: 20 },
   movementLoadRow: { minHeight: 20, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
   movementLoadLabel: { color: SLColors.accentCyanMuted, textTransform: 'uppercase', paddingHorizontal: 8, paddingVertical: 3, borderRadius: SLRadius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.accentCyanMuted },
   movementLoadLabelManual: { color: SLColors.warning, borderColor: SLColors.warning },
   movementLoad: { color: SLColors.accentCyanMuted },
   movementLoadManual: { color: SLColors.warning },
-  expandedMovementCard: { position: 'relative', overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: SLColors.surfaceInset },
-  expandedMovementHeader: { minHeight: 112, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
-  expandedMovementArtwork: { width: 64, height: 64, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  expandedMovementCard: { position: 'relative', overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: '#101016' },
+  expandedMovementHeader: { minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
+  expandedMovementArtwork: { width: 52, height: 52, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   expandedMovementCopy: { flex: 1, minWidth: 0, gap: 4 },
   expandedPrescription: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },
   expandedLoad: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },

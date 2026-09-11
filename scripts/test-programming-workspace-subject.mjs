@@ -54,9 +54,9 @@ test('workspace mutation preserves both current and requested athlete identity',
     assert.throws(() => assertProgrammingMutationSubject(subject, ...pair));
   }
   assert.doesNotThrow(() => assertProgrammingMutationSubject(resolveProgrammingSubject(null, '12'), 12, 4));
-  assert.match(session, /assertProgrammingMutationSubject\(programmingSubject, payload\?\.athlete\?\.id \|\| null, plan\.athleteId\)/);
-  assert.match(session, /assertProgrammingMutationSubject\(programmingSubject, plan\.athleteId, plan\.metadataPatch\.athleteId\)/);
-  assert.match(session, /athleteOptions=\{workspaceOwned \? \[\] : roster\.map/);
+  assert.match(session, /assertProgrammingMutationSubject\(programmingSubject, payload\.athlete\.id, plan\.athleteId\)/);
+  assert.match(session, /plan\.athleteId !== payload\.athlete\.id/);
+  assert.match(session, /athleteOptions=\{\[\]\}/);
   assert.match(session, /assertProgrammingResponseSubject[\s\S]*json\.athlete\?\.id/);
 });
 
@@ -84,7 +84,7 @@ test('global and Individual builder routes and return destinations are preserved
 
 test('scoped picker is absent, cannot fetch the roster, and cannot switch subjects through its handler', () => {
   assert.match(manager, /const canSelectAthlete = coachMode && !focusedWorkspace/);
-  assert.match(manager, /\{!focusedWorkspace \? <Pressable[\s\S]*accessibilityLabel=\{canSelectAthlete \? 'Switch athlete'/);
+  assert.match(manager, /\{canSelectAthlete \? <Pressable[\s\S]*accessibilityLabel="Switch athlete"/);
   assert.match(manager, /\{canSelectAthlete \? <StoryboardSheet visible=\{sheet === 'athletes'\}/);
   assert.match(manager, /if \(sheet !== 'athletes' \|\| !canSelectAthlete/);
   assert.match(manager, /const selectAthlete = \(id: number\) => \{\s*if \(!canSelectAthlete\) return;/);

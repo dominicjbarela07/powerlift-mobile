@@ -33,5 +33,8 @@ export class EvidenceReadCache {
 export const evidenceReadCache = new EvidenceReadCache();
 export const invalidateEvidenceReads = () => evidenceReadCache.invalidate();
 export function isEvidenceRead(path: string) {
+  // Only the pure, selected-week projection is eligible; legacy training reads
+  // can attach Sessions by date and must never enter this cache.
+  if (/^\/workouts\/mobile\/programming\/composition(?:\?|$)/.test(path)) return true;
   return /^(\/mobile\/ledger(?:\/|\?|$)|\/athletes\/mobile\/progression(?:\?|$)|\/workouts\/mobile\/accomplishments(?:\/|\?|$))/.test(path);
 }

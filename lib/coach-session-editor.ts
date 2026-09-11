@@ -276,6 +276,8 @@ export function movementProgrammingPatch(
       movement: normalizedText(draft.movement),
       sets: normalizedText(draft.sets),
       reps_text: normalizedText(draft.repsText),
+      target_low_lb: draft.targetLowLb.trim() ? cleanNumeric(displayUnit === 'kg' ? Number(draft.targetLowLb) / KG_PER_LB : Number(draft.targetLowLb)) : '',
+      target_high_lb: draft.targetHighLb.trim() ? cleanNumeric(displayUnit === 'kg' ? Number(draft.targetHighLb) / KG_PER_LB : Number(draft.targetHighLb)) : '',
       rir_target: normalizedText(draft.rir),
       notes: normalizedText(draft.notes),
       superset_group: normalizedText(draft.supersetGroup) || null,

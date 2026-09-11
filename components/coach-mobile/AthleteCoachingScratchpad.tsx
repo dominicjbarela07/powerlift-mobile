@@ -20,7 +20,7 @@ type Props = Readonly<{
   athleteId: number;
   athleteName: string;
   initialScratchpad?: Partial<AthleteScratchpad> | null;
-  variant?: 'card' | 'compact';
+  variant?: 'card' | 'compact' | 'inline';
   onSaved?: (scratchpad: AthleteScratchpad) => void;
 }>;
 
@@ -129,7 +129,7 @@ export function AthleteCoachingScratchpadTrigger({ athleteId, athleteName, initi
 
   const preview = scratchpad?.body_preview || initialScratchpad?.body_preview || '';
   const updated = scratchpad?.updated_by?.name;
-  const trigger = variant === 'card' ? styles.cardTrigger : styles.compactTrigger;
+  const trigger = variant === 'inline' ? styles.inlineTrigger : variant === 'card' ? styles.cardTrigger : styles.compactTrigger;
   const copy = useMemo(() => preview || 'No pinned coaching note. Add private coaching context or next steps.', [preview]);
 
   return (
@@ -138,8 +138,8 @@ export function AthleteCoachingScratchpadTrigger({ athleteId, athleteName, initi
         <View style={styles.triggerIcon}><Ionicons color={SLColors.accentViolet} name="document-text-outline" size={20} /></View>
         <View style={styles.triggerCopy}>
           <Text style={styles.triggerTitle}>Notes & Next Steps</Text>
-          <Text numberOfLines={variant === 'card' ? 3 : 2} style={preview ? styles.triggerText : styles.triggerEmpty}>{copy}</Text>
-          {updated ? <Text numberOfLines={1} style={styles.updatedText}>Updated by {updated}</Text> : null}
+          {variant !== 'inline' || preview ? <Text numberOfLines={variant === 'card' ? 3 : 2} style={preview ? styles.triggerText : styles.triggerEmpty}>{copy}</Text> : null}
+          {updated && variant !== 'inline' ? <Text numberOfLines={1} style={styles.updatedText}>Updated by {updated}</Text> : null}
         </View>
         <Ionicons color={SLColors.textMuted} name="create-outline" size={19} />
       </Pressable>
@@ -190,6 +190,7 @@ export function AthleteCoachingScratchpadTrigger({ athleteId, athleteName, initi
 
 const styles = StyleSheet.create({
   cardTrigger: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.border, backgroundColor: SLColors.surfaceRaised, padding: SLSpacing.md },
+  inlineTrigger: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.borderSubtle },
   compactTrigger: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: SLRadius.md, borderWidth: 1, borderColor: SLColors.borderSubtle, backgroundColor: SLColors.surface, paddingHorizontal: SLSpacing.md, paddingVertical: 12 },
   pressed: { opacity: 0.82 },
   triggerIcon: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: SLColors.accentSoft },

@@ -79,7 +79,7 @@ assert.deepEqual(
   'Identity-free legacy prescriptions must fail closed to neutral artwork.',
 );
 
-assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{72\}/, 'Collapsed rows must render through the shared artwork component.');
+assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{48\}/, 'Collapsed rows must render through the shared artwork component.');
 assert.match(workspace, /<MovementArtwork item=\{item\} kind=\{kind\} size=\{64\}/, 'Expanded rows must render through the shared artwork component.');
 assert.match(workspace, /function MovementArtwork[\s\S]*<CanonicalMovementArtwork movement=\{movement\}/, 'Session Workspace must use the one governed individual-movement artwork resolver.');
 assert.doesNotMatch(workspace, /<MuscleMap/, 'Individual Session Workspace movement cards must never render full-figure anatomy.');

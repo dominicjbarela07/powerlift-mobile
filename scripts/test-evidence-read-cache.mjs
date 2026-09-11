@@ -30,3 +30,7 @@ assert.equal(isEvidenceRead('/athletes/mobile/progression?range=90d'), true);
 assert.equal(isEvidenceRead('/mobile/auth/me'), false);
 assert.equal(isEvidenceRead('https://untrusted.test/mobile/ledger/journey'), false);
 console.log('PASS: in-flight dedupe, freshness, account/athlete/period isolation, mutation race, rejection, read allowlist');
+
+assert.equal(isEvidenceRead('/workouts/mobile/programming/composition?athlete_id=12&block_id=149&week=3'), true);
+assert.equal(isEvidenceRead('/workouts/my_list/mobile/12'), false, 'legacy attaching GET remains uncached');
+assert.equal(isEvidenceRead('/workouts/mobile/programming/session-actions'), false);

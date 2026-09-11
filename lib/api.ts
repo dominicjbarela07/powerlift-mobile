@@ -444,6 +444,10 @@ export async function fetchJson<T = any>(
           : null,
     };
   };
+  // This endpoint computes a suggestion and performs no write. Keep its
+  // transport from invalidating evidence during every prescription keystroke.
+  const programmingSuggestionRead = method === 'POST' && requestPath === '/workouts/mobile/suggest_range';
+  if (programmingSuggestionRead) return performRequest();
   if (method !== 'GET' && method !== 'HEAD') {
     evidenceReadCache.invalidate(false);
     try { return await performRequest(); } finally { invalidateEvidenceReads(); }

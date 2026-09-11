@@ -202,7 +202,8 @@
     "test:accessory-strength-metric": "node --import tsx scripts/test-accessory-strength-metric-policy.mjs",
     "release:ios-ota": "node scripts/publish-validated-ios-ota.mjs",
     "release:production:ota": "bash scripts/eas-update-production.sh",
-    "test:coach-performance-v2": "node --import tsx scripts/test-coach-performance-v2.mjs"
+    "test:coach-performance-v2": "node --import tsx scripts/test-coach-performance-v2.mjs",
+    "test:session-authoring": "node scripts/test-session-workspace-draft-state.mjs && node scripts/test-session-workspace-dirty-reorder.mjs && node scripts/test-session-authoring-recovery.mjs && node scripts/test-evidence-read-cache.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
