@@ -101,12 +101,34 @@ export function attachRestTimerNotificationState(
   state: RestTimerCompletionState,
   timerId: string,
   notificationId: string,
+  expectedEndAtMs?: number,
 ): RestTimerCompletionState {
   if (!state.active || state.active.timerId !== timerId) return state;
+  if (expectedEndAtMs != null && state.active.endAtMs !== expectedEndAtMs) return state;
   return Object.freeze({
     ...state,
     active: Object.freeze({ ...state.active, notificationId }),
   });
+}
+
+/** Extend the current deadline, never restart from a displayed/rounded duration. */
+export function extendRestTimerState(
+  state: RestTimerCompletionState,
+  timerId: string,
+  seconds: number,
+  nowMs: number,
+): { state: RestTimerCompletionState; replacedNotificationId: string | null } {
+  const active = state.active;
+  if (!active || active.timerId !== timerId || active.endAtMs <= nowMs
+    || !Number.isFinite(seconds) || seconds <= 0) {
+    return { state, replacedNotificationId: null };
+  }
+  return {
+    state: Object.freeze({ ...state, active: Object.freeze({
+      ...active, endAtMs: active.endAtMs + seconds * 1000, notificationId: null,
+    }) }),
+    replacedNotificationId: active.notificationId,
+  };
 }
 
 export function reconcileRestTimerCompletionState(

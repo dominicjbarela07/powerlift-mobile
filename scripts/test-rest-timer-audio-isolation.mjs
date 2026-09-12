@@ -126,7 +126,8 @@ assert.doesNotMatch(route, /useAudioPlayer|setAudioModeAsync|setIsAudioActiveAsy
 assert.match(route, /const startRestTimer = \(seconds: number\) => \{[\s\S]*restCountdownAudioRef\.current\?\.reset\(\)/);
 assert.match(route, /const stopRestTimer = \(\) => \{[\s\S]*restCountdownAudioRef\.current\?\.reset\(\)/);
 assert.match(route, /restCountdownAudioRef\.current\?\.dispose\(\)/);
-assert.match(route, /remaining <= 0[\s\S]*setRestActive\(false\)/);
+assert.match(route, /useSyncExternalStore\(subscribeRestTimerCompletion, getRestTimerCompletionState\)/);
+assert.doesNotMatch(route, /setRestSeconds|setRestActive/);
 assert.doesNotMatch(appLayout, /RestTimerProvider|RestTimerContext|rest-timer-runtime/);
 assert.equal(fs.existsSync(path.join(root, 'context/RestTimerContext.tsx')), false);
 assert.equal(fs.existsSync(path.join(root, 'lib/rest-timer-runtime.ts')), false);

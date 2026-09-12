@@ -65,14 +65,12 @@ assert.match(commandStrip, /restActive && restSeconds <= 10/);
 assert.match(commandStrip, /Elapsed session time \$\{sessionElapsedLabel\}/);
 assert.match(commandStrip, /if \(!showTimerControls\) return null/);
 
-assert.match(workoutRoute, /deriveSessionElapsedSeconds\(workout\.started_at, sessionNowMs\)/);
-assert.match(workoutRoute, /formatSessionElapsed\(liveSessionDurationSeconds\)/);
-assert.match(workoutRoute, /setSessionClockForeground\(state === 'active'\)/);
-assert.match(workoutRoute, /if \(state === 'active'\) setSessionNowMs\(Date\.now\(\)\)/);
-assert.match(
-  workoutRoute,
-  /!sessionClockForeground[\s\S]*setInterval\(\(\) => setSessionNowMs\(Date\.now\(\)\), 1000\)/,
-);
+const clockText = fs.readFileSync(path.join(process.cwd(), 'components/workout-logger/session-clock-text.tsx'), 'utf8');
+assert.match(workoutRoute, /startedAt=\{workout.started_at\}/);
+assert.match(clockText, /deriveSessionElapsedSeconds\(startedAt, clock.getNow\(\)\)/);
+assert.match(clockText, /formatSessionElapsed\(seconds\)/);
+assert.match(clockText, /AppState.addEventListener\('change'/);
+assert.doesNotMatch(workoutRoute, /setSessionNowMs|setInterval\(/);
 assert.match(workoutRoute, /canonicalLoggedSetCountForSession\([\s\S]*coreItems: workout\.core_items[\s\S]*accessoryGroups: workout\.accessory_groups/);
 assert.match(workoutRoute, /plannedSetCountForWorkout\(workout\)/);
 assert.doesNotMatch(

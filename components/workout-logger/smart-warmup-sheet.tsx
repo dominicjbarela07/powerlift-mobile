@@ -1,3 +1,5 @@
+import { RestTimerClockText } from './session-clock-text';
+import type { ActiveRestTimer } from '@/lib/rest-timer-completion-core';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
@@ -151,7 +153,7 @@ export function SmartWarmupSheet({
   onRefresh,
   onOpenRestTimerPicker,
   restTimerActive = false,
-  restTimerSeconds = 0,
+  restTimer = null,
   onStopRestTimer,
   restTimerPicker,
 }: {
@@ -163,7 +165,7 @@ export function SmartWarmupSheet({
   onRefresh: () => Promise<unknown>;
   onOpenRestTimerPicker: (suggestedSeconds: number) => void;
   restTimerActive?: boolean;
-  restTimerSeconds?: number;
+  restTimer?: ActiveRestTimer | null;
   onStopRestTimer?: () => void;
   restTimerPicker?: React.ReactNode;
 }) {
@@ -495,7 +497,7 @@ export function SmartWarmupSheet({
                 onUndoLast={undoLastStep}
                 onSkip={!warmup.completed_steps.length ? () => { void mutate({ action: 'skip' }).then((didSkip) => { if (didSkip) onClose(); }); } : undefined}
                 restTimerActive={restTimerActive}
-                restTimerSeconds={restTimerSeconds}
+                restTimer={restTimer}
                 step={activeStep}
                 undoing={pendingAction === 'undo_last_step'}
               />
@@ -624,12 +626,11 @@ function QuickUndoButton({ busy, label = 'Undo Last', onPress, sequence, undoing
   </Pressable>;
 }
 
-function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastCompletedSequence, onComplete, onDisplayUnitChange, onOpenRestTimerPicker, onStopRestTimer, onUndoLast, onSkip, restTimerActive, restTimerSeconds, undoing }: { step: SmartWarmupStep; displayUnit: 'kg' | 'lb'; busy: boolean; completing: boolean; lastCompletedSequence: number | null; onComplete: (feedback?: Exclude<SmartWarmupFeedback, 'fast' | 'slow'>) => Promise<boolean>; onDisplayUnitChange: (unit: 'kg' | 'lb') => void; onOpenRestTimerPicker: (seconds: number) => void; onStopRestTimer?: () => void; onUndoLast: () => void; onSkip?: () => void; restTimerActive: boolean; restTimerSeconds: number; undoing: boolean }) {
+function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastCompletedSequence, onComplete, onDisplayUnitChange, onOpenRestTimerPicker, onStopRestTimer, onUndoLast, onSkip, restTimerActive, restTimer, undoing }: { step: SmartWarmupStep; displayUnit: 'kg' | 'lb'; busy: boolean; completing: boolean; lastCompletedSequence: number | null; onComplete: (feedback?: Exclude<SmartWarmupFeedback, 'fast' | 'slow'>) => Promise<boolean>; onDisplayUnitChange: (unit: 'kg' | 'lb') => void; onOpenRestTimerPicker: (seconds: number) => void; onStopRestTimer?: () => void; onUndoLast: () => void; onSkip?: () => void; restTimerActive: boolean; restTimer: ActiveRestTimer | null; undoing: boolean }) {
   const reduceMotion = useSLReducedMotion();
   const physicalRender = useMemo(() => resolvePhysicalPlateStackRender(step), [step]);
   const loadingConfig = { unit: step.unit, bar_key: step.bar_key, bar_weight_kg: step.bar_weight_kg, collar_key: step.collar_key, collar_weight_kg: step.collar_weight_kg, plates: [] } as SmartWarmupSession['loading_configuration'];
   const restLabel = `${Math.floor(step.rest_seconds / 60)}:${String(step.rest_seconds % 60).padStart(2, '0')}`;
-  const activeRestLabel = `${Math.floor(restTimerSeconds / 60)}:${String(restTimerSeconds % 60).padStart(2, '0')}`;
   return <View style={styles.activeWorkspace}>
     <View style={styles.activeTop}><View style={styles.activeStepIdentity}><View style={[styles.stepCircle, styles.stepCircleActive]}><Text style={styles.stepNumber}>{step.sequence}</Text></View><Text style={styles.activeBadge}>ACTIVE SET</Text></View>{lastCompletedSequence != null ? <QuickUndoButton busy={busy} onPress={onUndoLast} sequence={lastCompletedSequence} undoing={undoing} /> : <View style={styles.suggestedRest}><Ionicons name="timer-outline" size={16} color={SLColors.textMuted} /><Text style={styles.restLabel}>Suggested rest: {restLabel}</Text></View>}</View>
     {lastCompletedSequence != null ? <View style={styles.suggestedRestBelow}><Ionicons name="timer-outline" size={16} color={SLColors.textMuted} /><Text style={styles.restLabel}>Suggested rest: {restLabel}</Text></View> : null}
@@ -637,7 +638,7 @@ function ActiveWarmupWorkspace({ step, displayUnit, busy, completing, lastComple
     <Text style={styles.equation}>{formatWarmupPhysicalConfiguration(loadingConfig, displayUnit)}</Text>
     {physicalRender ? <Image accessibilityLabel="Required plate stack" resizeMode="contain" source={physicalRender.imageSource} style={styles.plateStack} /> : null}
     <Text style={styles.plates}>{`Per side: ${step.plates_per_side.length ? step.plates_per_side.map((plate) => `${plate.count}×${plate.denomination} ${step.unit}`).join(' · ') : 'Empty bar'}`}</Text>
-    <View style={styles.timerControl}><Pressable accessibilityLabel={`Set warmup rest timer, suggested ${restLabel}`} accessibilityRole="button" onPress={() => onOpenRestTimerPicker(step.rest_seconds)} style={styles.timerOpen} testID="smart-warmup-rest-timer"><View style={styles.timerCopy}><Ionicons name="timer-outline" size={20} color={SLColors.warning} /><View><Text style={styles.timerEyebrow}>{restTimerActive ? 'REST TIMER RUNNING' : 'REST TIMER'}</Text><Text style={styles.timerValue}>{restTimerActive ? activeRestLabel : restLabel}</Text></View></View><Text style={styles.timerAction}>Adjust</Text></Pressable>{restTimerActive && onStopRestTimer ? <Pressable accessibilityLabel="Stop warmup rest timer" accessibilityRole="button" onPress={onStopRestTimer} style={styles.timerStop} testID="smart-warmup-rest-timer-stop"><Text style={styles.timerStopText}>Stop</Text></Pressable> : null}</View>
+    <View style={styles.timerControl}><Pressable accessibilityLabel={`Set warmup rest timer, suggested ${restLabel}`} accessibilityRole="button" onPress={() => onOpenRestTimerPicker(step.rest_seconds)} style={styles.timerOpen} testID="smart-warmup-rest-timer"><View style={styles.timerCopy}><Ionicons name="timer-outline" size={20} color={SLColors.warning} /><View><Text style={styles.timerEyebrow}>{restTimerActive ? 'REST TIMER RUNNING' : 'REST TIMER'}</Text><Text style={styles.timerValue}>{restTimerActive && restTimer ? <RestTimerClockText timer={restTimer} style={styles.timerValue} /> : restLabel}</Text></View></View><Text style={styles.timerAction}>Adjust</Text></Pressable>{restTimerActive && onStopRestTimer ? <Pressable accessibilityLabel="Stop warmup rest timer" accessibilityRole="button" onPress={onStopRestTimer} style={styles.timerStop} testID="smart-warmup-rest-timer-stop"><Text style={styles.timerStopText}>Stop</Text></Pressable> : null}</View>
     {step.diagnostic ? <View><Text style={styles.feedbackPrompt}>How did that move?</Text><View style={styles.feedbackRow}>{FEEDBACK_OPTIONS.map((feedback) => <Pressable accessibilityLabel={`Warmup moved ${feedback.label.toLowerCase()}`} accessibilityRole="button" accessibilityState={{ disabled: busy }} key={feedback.key} disabled={busy} onPress={() => onComplete(feedback.key)} onPressIn={() => { if (!busy) void Haptics.selectionAsync().catch(() => undefined); }} style={[styles.feedback, feedback.key === 'flies' ? styles.flies : feedback.key === 'heavy' ? styles.heavy : feedback.key === 'very_heavy' ? styles.veryHeavy : null]} testID={`smart-warmup-feedback-${feedback.key}`}><Text numberOfLines={1} adjustsFontSizeToFit style={styles.feedbackText}>{feedback.label}</Text></Pressable>)}</View></View> : (
       <Pressable
         accessibilityLabel={completing ? 'Completing warmup set' : 'Complete Warmup Set'}

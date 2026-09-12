@@ -9,10 +9,12 @@ import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNav
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
 import { registerFocusedSession } from '@/lib/session-logger-focus';
+import { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';
+import { shouldOfferRestAfterAcceptedSet } from '@/lib/set-rest-handoff';
 import { ApprovedSubstitutionPicker } from '@/components/workout-logger/approved-substitution-picker';
 
 
-import React, { useCallback, useEffect, useMemo, useReducer, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState, useRef, useSyncExternalStore } from 'react';
 import {
   View,
   ActivityIndicator,
@@ -113,7 +115,6 @@ import {
 } from '@/components/workout-logger/session-shell';
 import {
   RestTimerFocus,
-  type RestTimerHeaderOrigin,
 } from '@/components/workout-logger/rest-timer-focus';
 import { useAuth } from '@/context/AuthContext';
 import { resolveSessionNoteAuthor } from '@/lib/session-note-author';
@@ -223,8 +224,6 @@ import {
 } from '@/lib/prescription-wheel-options';
 import {
   canonicalLoggedSetCountForSession,
-  deriveSessionElapsedSeconds,
-  formatSessionElapsed,
 } from '@/lib/session-header-metrics';
 import { sessionLoggerSharedHeaderShown } from '@/lib/session-logger-shell';
 import {
@@ -272,7 +271,6 @@ import {
   cueForRestTimerSecond,
   DEFAULT_REST_TIMER_CUE_CONFIG,
   REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS,
-  shouldPromoteRestTimer,
 } from '@/lib/rest-timer-cues';
 import { RestTimerCountdownAudioWindow } from '@/lib/rest-timer-countdown-audio';
 import {
@@ -285,12 +283,12 @@ import {
   loadLastUsedRestTimerSeconds,
   persistLastUsedRestTimerSeconds,
 } from '@/lib/rest-timer-preference';
-import { clearRestTimerExpiry } from '@/lib/rest-timer-storage';
 import { deriveRestTimerRemainingSeconds } from '@/lib/rest-timer-completion-core';
 import {
-  acknowledgeGlobalRestTimerCompletion,
   attachGlobalRestTimerNotification,
   beginGlobalRestTimer,
+  extendGlobalRestTimer,
+  subscribeRestTimerCompletion,
   getRestTimerCompletionState,
   hydrateRestTimerCompletion,
   reconcileGlobalRestTimerCompletion,
@@ -1795,10 +1793,6 @@ export default function WorkoutViewerScreen() {
   const completedSetSwipeTooltipSessionKey = data?.workout?.started_at
     ? `${rewardLoopDemoV2StorageScope}:${data.workout.started_at}`
     : rewardLoopDemoV2StorageScope;
-  const [sessionNowMs, setSessionNowMs] = useState(() => Date.now());
-  const [sessionClockForeground, setSessionClockForeground] = useState(
-    () => AppState.currentState == null || AppState.currentState === 'active',
-  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -2381,6 +2375,9 @@ export default function WorkoutViewerScreen() {
         return new Set([...current, acceptedItemId]);
       });
     }
+    acceptedRestOfferRef.current = { setLogId, offer: shouldOfferRestAfterAcceptedSet(
+      json, dataRef.current?.workout?.accessory_groups || [], acceptedItemId,
+    ) };
     const clientSubmissionId = String(json?.client_submission_id || json?.set?.client_submission_id || '') || null;
     const responseEvents = Array.isArray(json?.recognition_events) ? json.recognition_events as LoggerRecognitionEvent[] : [];
     const rawEvents = attachTransientRecognitionDelivery(responseEvents, {
@@ -2597,16 +2594,13 @@ export default function WorkoutViewerScreen() {
     null | 'begin' | 'complete' | 'cancel'
   >(null);
 
-  const [restSeconds, setRestSeconds] = useState(0);
-  const [restActive, setRestActive] = useState(false);
-  const [restTimerHeaderOrigin, setRestTimerHeaderOrigin] =
-    useState<RestTimerHeaderOrigin | null>(null);
+  const restSnapshot = useSyncExternalStore(subscribeRestTimerCompletion, getRestTimerCompletionState);
+  const restOwnerUserId = String(user?.id ?? user?.user_id ?? '');
+  const activeRestTimer = !coachPreviewRequested && data?.workout?.status === 'in_progress'
+    && restSnapshot.active?.workoutId === String(workoutId)
+    && restSnapshot.active?.ownerUserId === restOwnerUserId ? restSnapshot.active : null;
+  const restActive = Boolean(activeRestTimer);
   const restCountdownAudioRef = useRef<RestTimerCountdownAudioWindow | null>(null);
-  const restTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const restEndAtMsRef = useRef<number | null>(null);
-  const lastRestCueSecondRef = useRef<number | null>(null);
-  const restNotifIdRef = useRef<string | null>(null);
-  const restTimerIdRef = useRef<string | null>(null);
   const notifPermCheckedRef = useRef(false);
   const startRestCountdownAudio = useCallback((remaining: number) => {
     if (!restCountdownAudioRef.current) {
@@ -2625,6 +2619,7 @@ export default function WorkoutViewerScreen() {
   }, []);
 
   const deliverRestTimerCue = useCallback((remaining: number) => {
+    if (remaining > REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS || remaining < 0 || AppState.currentState !== 'active') return;
     const cue = cueForRestTimerSecond(remaining, DEFAULT_REST_TIMER_CUE_CONFIG);
     if (cue.tone) startRestCountdownAudio(remaining);
     if (cue.haptic === 'light') {
@@ -2636,20 +2631,6 @@ export default function WorkoutViewerScreen() {
     }
   }, [startRestCountdownAudio]);
 
-  const handleRestTimerLayout = useCallback((origin: RestTimerHeaderOrigin) => {
-    setRestTimerHeaderOrigin((current) => {
-      if (
-        current &&
-        Math.abs(current.x - origin.x) < 0.5 &&
-        Math.abs(current.y - origin.y) < 0.5 &&
-        Math.abs(current.width - origin.width) < 0.5 &&
-        Math.abs(current.height - origin.height) < 0.5
-      ) {
-        return current;
-      }
-      return origin;
-    });
-  }, []);
   const ensureNotifPerms = async () => {
     if (!Notifications) return false;
     // Only ask once per screen mount
@@ -2667,55 +2648,28 @@ export default function WorkoutViewerScreen() {
     return req.status === 'granted';
   };
 
-  const cancelRestEndNotification = async () => {
-    if (!Notifications) return;
-    const id = restNotifIdRef.current;
-    if (!id) return;
-    try {
-      await Notifications.cancelScheduledNotificationAsync(id);
-    } catch (e) {
-      // best-effort
-      console.log('cancelRestEndNotification error', e);
-    } finally {
-      restNotifIdRef.current = null;
+  const cancelRestEndNotification = (notificationId: string | null) => {
+    if (notificationId && Notifications) {
+      void Notifications.cancelScheduledNotificationAsync(notificationId).catch(() => undefined);
     }
   };
 
-  const scheduleRestEndNotification = async (seconds: number, timerId: string) => {
-    if (!Notifications) return;
-    // Replace any existing scheduled rest notification
-    await cancelRestEndNotification();
-
-    const granted = await ensureNotifPerms();
-    if (!granted) return;
-
-    try {
-      const id = await Notifications.scheduleNotificationAsync({
+  const scheduleRestEndNotification = (timer: NonNullable<typeof activeRestTimer>) => {
+    if (!Notifications) return Promise.resolve();
+    return scheduleRestTimerEnd(timer, {
+      authorize: ensureNotifPerms, now: Date.now,
+      readActive: () => getRestTimerCompletionState().active,
+      schedule: deadline => Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Rest over',
-          body: 'Time for the next set.',
-          data: {
-            kind: 'rest_end',
-            type: 'rest_timer_complete',
-            workout_id: String(workoutId),
-            timer_id: timerId,
-            owner_user_id: String(user?.id ?? user?.user_id ?? ''),
-          },
+          title: 'Rest over', body: 'Time for the next set.',
+          data: { kind: 'rest_end', type: 'rest_timer_complete', workout_id: deadline.workoutId,
+            timer_id: deadline.timerId, owner_user_id: deadline.ownerUserId },
         },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds,
-        },
-      });
-      const attached = await attachGlobalRestTimerNotification(timerId, id);
-      if (!attached) {
-        await Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined);
-        return;
-      }
-      restNotifIdRef.current = id;
-    } catch (e) {
-      console.log('scheduleRestEndNotification error', e);
-    }
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(deadline.endAtMs) },
+      }),
+      attach: attachGlobalRestTimerNotification,
+      cancel: cancelRestEndNotification,
+    }).catch(error => console.warn('rest timer notification scheduling failed', error));
   };
 
   // Shared timer picker state and helpers
@@ -2732,6 +2686,8 @@ export default function WorkoutViewerScreen() {
     promise: Promise<number | null>;
   } | null>(null);
   const timerPickerOpenRequestRef = useRef(0);
+  const timerPickerChoiceRef = useRef(true);
+  const acceptedRestOfferRef = useRef<{ setLogId: number; offer: boolean } | null>(null);
   const timerWheelRef = useRef<ScrollView | null>(null);
   const [cancelConfirmVisible, setCancelConfirmVisible] = useState(false);
   const [tardyReasonVisible, setTardyReasonVisible] = useState(false);
@@ -2739,12 +2695,14 @@ export default function WorkoutViewerScreen() {
 
   const resolveActiveTimerHandoff = useCallback((rawOutcome: unknown) => {
     const outcome = timerHandoffResolution(rawOutcome);
+    timerPickerOpenRequestRef.current += 1;
+    timerPickerChoiceRef.current = true;
     const identity = activeTimerHandoffIdentityRef.current;
     setTimerPickerVisible(false);
     if (!identity) return;
     if (!timerHandoffReleaseControllerRef.current.resolve(identity)) return;
     activeTimerHandoffIdentityRef.current = null;
-    if (outcome === 'dismissed') feedbackDispatch({ type: 'TIMER_IDLE' });
+    if (outcome === 'dismissed') feedbackDispatch({ type: getRestTimerCompletionState().active ? 'TIMER_ACTIVE' : 'TIMER_IDLE' });
     transientRecognitionTrace(13, `timer picker ${outcome}`);
     transientRecognitionTrace(14, 'timer handoff resolved', { outcome });
   }, [transientRecognitionTrace]);
@@ -3504,19 +3462,31 @@ export default function WorkoutViewerScreen() {
     );
   };
 
-  const openTimerPicker = useCallback((prescribedSeconds?: number) => {
+  const openTimerPicker = useCallback((prescribedSeconds?: number, handoffIdentity?: string) => {
+    if (coachPreviewRequested || dataRef.current?.workout?.status !== 'in_progress') return;
+    if (typeof prescribedSeconds !== 'number') prescribedSeconds = undefined;
     const requestId = timerPickerOpenRequestRef.current + 1;
     timerPickerOpenRequestRef.current = requestId;
-    const activeTimerSeconds = restActive && restSeconds > 0 ? restSeconds : null;
+    const activeTimer = getRestTimerCompletionState().active;
+    const activeTimerSeconds = !handoffIdentity && activeTimer?.workoutId === String(workoutId)
+      && activeTimer.ownerUserId === restOwnerUserId ? deriveRestTimerRemainingSeconds(activeTimer, Date.now()) : null;
 
     const presentPicker = (lastUsedSeconds: number | null) => {
       if (timerPickerOpenRequestRef.current !== requestId) return;
       const initialSeconds = resolveRestTimerPickerInitialSeconds({
         activeTimerSeconds,
-        sessionSelectedSeconds: prescribedSeconds ? null : sessionRestTimerSeconds,
+        sessionSelectedSeconds: sessionRestTimerSeconds,
         prescribedSeconds,
         lastUsedSeconds,
       });
+      if (handoffIdentity) {
+        activeTimerHandoffIdentityRef.current = handoffIdentity;
+        timerHandoffReleaseControllerRef.current.begin(handoffIdentity, () => {
+          activeTimerHandoffIdentityRef.current = null;
+          feedbackDispatch({ type: 'TIMER_IDLE' });
+        });
+      }
+      timerPickerChoiceRef.current = false;
       setTimerPickerValue(initialSeconds);
       setTimerPickerVisible(true);
       rewardLoopDemoV2Log('timer_handoff_opened', { default_seconds: initialSeconds });
@@ -3537,37 +3507,33 @@ export default function WorkoutViewerScreen() {
       return;
     }
     void loadScopedLastUsedRestTimer().then(presentPicker);
-  }, [loadScopedLastUsedRestTimer, restActive, restSeconds, rewardLoopDemoV2Log, sessionRestTimerSeconds]);
+  }, [loadScopedLastUsedRestTimer, rewardLoopDemoV2Log, sessionRestTimerSeconds, coachPreviewRequested, workoutId, restOwnerUserId]);
 
   const startRestTimer = (seconds: number) => {
+    if (executionScopeRef.current !== executionScope || coachPreviewRequested || !dataRef.current?.permissions?.can_log || dataRef.current?.workout.status !== 'in_progress') return;
     restCountdownAudioRef.current?.reset();
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
-    }
-
     const endAt = Date.now() + seconds * 1000;
-    restEndAtMsRef.current = endAt;
-    const globalTimer = beginGlobalRestTimer({
-      workoutId,
-      ownerUserId: user?.id ?? user?.user_id ?? '',
-      endAtMs: endAt,
-    });
-    restTimerIdRef.current = globalTimer.timerId;
-    if (globalTimer.replacedNotificationId && Notifications) {
-      void Notifications.cancelScheduledNotificationAsync(globalTimer.replacedNotificationId)
-        .catch(() => undefined);
-    }
-    lastRestCueSecondRef.current = null;
-    setRestSeconds(seconds);
-    setRestActive(true);
+    const started = beginGlobalRestTimer({ workoutId, ownerUserId: restOwnerUserId, endAtMs: endAt });
+    cancelRestEndNotification(started.replacedNotificationId);
+    const timer = getRestTimerCompletionState().active;
+    if (timer) void scheduleRestEndNotification(timer);
     feedbackDispatch({ type: 'TIMER_ACTIVE' });
+  };
 
-    // Schedule a local notification so the timer "works" while backgrounded
-    scheduleRestEndNotification(seconds, globalTimer.timerId);
+  const addRestTime = () => {
+    if (executionScopeRef.current !== executionScope || coachPreviewRequested) return;
+    const timer = getRestTimerCompletionState().active;
+    if (timer?.workoutId !== String(workoutId) || timer.ownerUserId !== restOwnerUserId) return;
+    const extended = extendGlobalRestTimer(timer.timerId, 30);
+    if (!extended) return;
+    restCountdownAudioRef.current?.reset();
+    cancelRestEndNotification(extended.replacedNotificationId);
+    void scheduleRestEndNotification(extended.timer);
   };
 
   const confirmRestTimerSelection = (seconds: number) => {
+    if (timerPickerChoiceRef.current || executionScopeRef.current !== executionScope || coachPreviewRequested) return;
+    timerPickerChoiceRef.current = true;
     const normalizedSeconds = normalizeRestTimerSeconds(seconds);
     setSessionRestTimerSeconds(normalizedSeconds);
     if (restTimerPreferenceOwnerKey) {
@@ -3584,101 +3550,23 @@ export default function WorkoutViewerScreen() {
   };
 
   const stopRestTimer = () => {
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
+    const snapshot = getRestTimerCompletionState();
+    const timer = snapshot.active?.workoutId === String(workoutId) ? snapshot.active
+      : snapshot.pending?.workoutId === String(workoutId) ? snapshot.pending : null;
+    if (timer && timer.ownerUserId === restOwnerUserId && !coachPreviewRequested) {
+      cancelRestEndNotification(timer.notificationId);
+      void stopGlobalRestTimer(timer.timerId);
     }
-    restEndAtMsRef.current = null;
-    const globalTimerState = getRestTimerCompletionState();
-    const activeGlobalTimer = globalTimerState.active;
-    const pendingGlobalTimer = globalTimerState.pending;
-    const timerId = restTimerIdRef.current
-      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null)
-      ?? (pendingGlobalTimer?.workoutId === String(workoutId) ? pendingGlobalTimer.timerId : null);
-    restTimerIdRef.current = null;
-    if (timerId) {
-      void stopGlobalRestTimer(timerId).then((notificationId) => {
-        if (notificationId && Notifications) {
-          void Notifications.cancelScheduledNotificationAsync(notificationId).catch(() => undefined);
-        }
-      });
-    }
-    if (workoutId) {
-      void clearRestTimerExpiry(workoutId).catch(() => undefined);
-    }
-    lastRestCueSecondRef.current = null;
     restCountdownAudioRef.current?.reset();
-    setRestActive(false);
-    setRestSeconds(0);
     feedbackDispatch({ type: 'TIMER_IDLE' });
-
-    // Cancel any pending rest-end notification
-    cancelRestEndNotification();
-  };
-
-  const formatRestTime = (totalSeconds: number) => {
-    const m = Math.floor(totalSeconds / 60);
-    const s = totalSeconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   useEffect(() => {
-    // If timer isn't active or has no end timestamp, ensure interval is cleared
-    if (!restActive || !restEndAtMsRef.current) {
-      if (restTimerRef.current) {
-        clearInterval(restTimerRef.current);
-        restTimerRef.current = null;
-      }
-      return;
+    restCountdownAudioRef.current?.reset();
+    if (feedbackStateRef.current.timer.status !== 'picker_pending') {
+      feedbackDispatch({ type: activeRestTimer ? 'TIMER_ACTIVE' : 'TIMER_IDLE' });
     }
-
-    const tick = () => {
-      const activeTimer = getRestTimerCompletionState().active;
-      const remaining = activeTimer?.workoutId === String(workoutId)
-        ? deriveRestTimerRemainingSeconds(activeTimer, Date.now())
-        : 0;
-
-      setRestSeconds(remaining);
-
-      if (
-        activeTimer?.workoutId === String(workoutId) &&
-        remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
-        remaining >= 0 &&
-        lastRestCueSecondRef.current !== remaining
-      ) {
-        lastRestCueSecondRef.current = remaining;
-        deliverRestTimerCue(remaining);
-      }
-
-      if (remaining <= 0) {
-        cancelRestEndNotification();
-        setRestActive(false);
-        restEndAtMsRef.current = null;
-        restTimerIdRef.current = null;
-        feedbackDispatch({ type: 'TIMER_IDLE' });
-        void reconcileGlobalRestTimerCompletion();
-
-        if (restTimerRef.current) {
-          clearInterval(restTimerRef.current);
-          restTimerRef.current = null;
-        }
-      }
-    };
-
-    // Immediate sync so UI is correct right away
-    tick();
-
-    // Update frequently for smooth UI; uses end timestamp so background is fine
-    const id = setInterval(tick, 250);
-    restTimerRef.current = id as any;
-
-    return () => {
-      if (restTimerRef.current) {
-        clearInterval(restTimerRef.current);
-        restTimerRef.current = null;
-      }
-    };
-  }, [deliverRestTimerCue, restActive, workoutId]);
+  }, [activeRestTimer?.timerId, activeRestTimer?.endAtMs]);
 
   useEffect(() => {
     if (coachPreviewRequested || !workoutId || String(data?.workout?.status || '').toLowerCase() !== 'in_progress') return;
@@ -3691,131 +3579,38 @@ export default function WorkoutViewerScreen() {
     const sub = AppState.addEventListener('change', (state) => {
       const previousState = loggerAppStateRef.current;
       loggerAppStateRef.current = state;
-      setSessionClockForeground(state === 'active');
-      if (state === 'active') setSessionNowMs(Date.now());
       if (state === 'active') feedbackDispatch({ type: 'APP_RESUMED' });
       else feedbackDispatch({ type: 'APP_BACKGROUNDED' });
       if (state === 'active' && previousState !== 'active') {
         resumeRefreshRef.current();
       }
-      if (state === 'active' && !coachPreviewRequested) {
-        const activeTimer = getRestTimerCompletionState().active;
-        const remaining = activeTimer?.workoutId === String(workoutId)
-          ? deriveRestTimerRemainingSeconds(activeTimer, Date.now())
-          : 0;
-        setRestSeconds(remaining);
-
-        if (
-          activeTimer?.workoutId === String(workoutId) &&
-          remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS &&
-          remaining >= 0 &&
-          lastRestCueSecondRef.current !== remaining
-        ) {
-          lastRestCueSecondRef.current = remaining;
-          deliverRestTimerCue(remaining);
-        }
-
-        if (!activeTimer || activeTimer.workoutId !== String(workoutId) || remaining <= 0) {
-          setRestActive(false);
-          restEndAtMsRef.current = null;
-          restTimerIdRef.current = null;
-          feedbackDispatch({ type: 'TIMER_IDLE' });
-          void reconcileGlobalRestTimerCompletion();
-        } else {
-          restTimerIdRef.current = activeTimer.timerId;
-          restEndAtMsRef.current = activeTimer.endAtMs;
-          setRestActive(true);
-        }
-      }
+      if (state === 'active') void reconcileGlobalRestTimerCompletion();
     });
 
     return () => sub.remove();
-  }, [deliverRestTimerCue, workoutId, coachPreviewRequested]);
+  }, [workoutId, coachPreviewRequested]);
 
   useEffect(() => {
     let cancelled = false;
     const status = String(data?.workout?.status || '').toLowerCase();
     if (coachPreviewRequested || !workoutId || status !== 'in_progress') return undefined;
-    void hydrateRestTimerCompletion().then(() => reconcileGlobalRestTimerCompletion()).then((snapshot) => {
+    void hydrateRestTimerCompletion().then(() => reconcileGlobalRestTimerCompletion()).then(() => {
       if (cancelled) return;
-      const activeTimer = snapshot.active?.workoutId === String(workoutId)
-        ? snapshot.active
-        : null;
-      const remaining = deriveRestTimerRemainingSeconds(activeTimer, Date.now());
-      if (!activeTimer || remaining <= 0) {
-        restTimerIdRef.current = null;
-        restEndAtMsRef.current = null;
-        setRestSeconds(0);
-        setRestActive(false);
-        feedbackDispatch({ type: 'TIMER_IDLE' });
-        if (snapshot.pending?.workoutId === String(workoutId)) {
-          void acknowledgeGlobalRestTimerCompletion(snapshot.pending.timerId);
-        }
-        return;
-      }
-      restTimerIdRef.current = activeTimer.timerId;
-      restEndAtMsRef.current = activeTimer.endAtMs;
-      setRestSeconds(remaining);
-      setRestActive(true);
-      feedbackDispatch({ type: 'TIMER_ACTIVE' });
+      // The subscribed global deadline owns remount/foreground state.
     }).catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [data?.workout?.status, workoutId, coachPreviewRequested]);
 
   useEffect(() => {
-    if (coachPreviewRequested || !data?.workout) return;
-    const status = String(data?.workout?.status || '').toLowerCase();
-    if (status === 'in_progress') return;
-
-    restCountdownAudioRef.current?.reset();
-
-    if (restTimerRef.current) {
-      clearInterval(restTimerRef.current);
-      restTimerRef.current = null;
-    }
-    restEndAtMsRef.current = null;
-    const activeGlobalTimer = getRestTimerCompletionState().active;
-    const timerId = restTimerIdRef.current
-      ?? (activeGlobalTimer?.workoutId === String(workoutId) ? activeGlobalTimer.timerId : null);
-    restTimerIdRef.current = null;
-    if (timerId) {
-      void stopGlobalRestTimer(timerId).then((notificationId) => {
-        if (notificationId && Notifications) {
-          void Notifications.cancelScheduledNotificationAsync(notificationId).catch(() => undefined);
-        }
-      });
-    }
-    if (workoutId) {
-      void clearRestTimerExpiry(workoutId).catch(() => undefined);
-    }
-    if (restActive) setRestActive(false);
-    if (restSeconds !== 0) setRestSeconds(0);
-    if (timerPickerVisible) {
-      if (feedbackState.timer.status === 'picker_pending') resolveActiveTimerHandoff('dismissed');
-      else setTimerPickerVisible(false);
-    }
-    cancelRestEndNotification();
-  }, [data?.workout?.status, feedbackState.timer.status, resolveActiveTimerHandoff, restActive, restSeconds, timerPickerVisible, workoutId, coachPreviewRequested]);
+    if (coachPreviewRequested || !data?.workout || data.workout.status === 'in_progress') return;
+    stopRestTimer();
+    if (timerPickerVisible) resolveActiveTimerHandoff('dismissed');
+  }, [data?.workout?.status, workoutId, coachPreviewRequested]);
 
   useEffect(() => () => {
     restCountdownAudioRef.current?.dispose();
     restCountdownAudioRef.current = null;
   }, []);
-
-  useEffect(() => {
-    const status = String(data?.workout?.status || '').toLowerCase();
-    if (
-      status !== 'in_progress'
-      || !data?.workout?.started_at
-      || !sessionClockForeground
-    ) return;
-
-    setSessionNowMs(Date.now());
-    const id = setInterval(() => setSessionNowMs(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [data?.workout?.status, data?.workout?.started_at, sessionClockForeground]);
 
   const updateStraightInput = (
     itemId: number,
@@ -5621,6 +5416,10 @@ export default function WorkoutViewerScreen() {
     setSubmissionAttemptsRef.current = {};
     acceptedLoadByItemIdRef.current = {};
     activeTimerHandoffIdentityRef.current = null;
+    acceptedRestOfferRef.current = null;
+    timerPickerOpenRequestRef.current += 1;
+    timerPickerChoiceRef.current = true;
+    setTimerPickerVisible(false);
     timerHandoffReleaseController.reset();
     feedbackDispatch({ type: 'RESET' });
     return () => {
@@ -5659,6 +5458,7 @@ export default function WorkoutViewerScreen() {
         if (coreWheel?.itemId === acceptedItemId) setCoreWheel(null);
         if (accessoryWheel?.itemId === acceptedItemId) setAccessoryWheel(null);
         requestAnimationFrame(() => {
+          if (executionScopeRef.current !== executionScope || coachPreviewRequested) return;
           transientRecognitionTrace(11, 'logger sheet close completed');
           if (isSessionFinalSet) {
             const acceptedWorkoutId = Number(workoutId || dataRef.current?.workout?.id || 0);
@@ -5676,18 +5476,16 @@ export default function WorkoutViewerScreen() {
             feedbackDispatch({ type: 'TIMER_IDLE' });
             return;
           }
-          if (!plan.openTimerPicker) {
+          if (!plan.openTimerPicker || acceptedRestOfferRef.current?.setLogId !== feedbackState.submission.lastSetLogId
+            || !acceptedRestOfferRef.current.offer) {
             feedbackDispatch({ type: 'TIMER_IDLE' });
             return;
           }
 
-          feedbackDispatch({ type: 'TIMER_IDLE' });
-          const restOwner = executionScope;
-          void loadScopedLastUsedRestTimer().then(saved => {
-            if (executionScopeRef.current !== restOwner || coachPreviewRequested) return;
-            const seconds = prescribedRestSecondsForItem(acceptedItemId) ?? sessionRestTimerSeconds ?? saved ?? 120;
-            if (seconds > 0) startRestTimer(seconds);
-          });
+          stopRestTimer();
+          feedbackDispatch({ type: 'TIMER_PICKER_PENDING' });
+          const handoffIdentity = `${executionScope}:${feedbackState.submission.lastSetLogId}`;
+          openTimerPicker(undefined, handoffIdentity);
           if (feedbackState.submission.status === 'persisted_new_set') {
             setCompletedSetSwipeTooltipCandidateSetLogId(feedbackState.submission.lastSetLogId);
           }
@@ -7408,13 +7206,6 @@ export default function WorkoutViewerScreen() {
   const isPreSession = screenMode === 'pre_session';
   const isActiveSession = screenMode === 'active_session';
   const isFinishedSession = screenMode === 'finished_session';
-  const liveSessionDurationSeconds =
-    isActiveSession
-      ? deriveSessionElapsedSeconds(workout.started_at, sessionNowMs)
-      : null;
-  const sessionElapsedLabel = liveSessionDurationSeconds != null
-    ? formatSessionElapsed(liveSessionDurationSeconds)
-    : '0:00';
   const loggedSets = loggedSetCountForWorkout(workout);
   const plannedSets = plannedSetCountForWorkout(workout);
   const durationEstimate = durationEstimateForWorkout(workout);
@@ -7436,12 +7227,6 @@ export default function WorkoutViewerScreen() {
     && data.coach?.avatar_fixture === 'coach-adrien'
       ? WORKOUT_DETAIL_COACH_AVATAR
       : undefined;
-  const restTimerPromoted = shouldPromoteRestTimer(
-    restActive,
-    restSeconds,
-    DEFAULT_REST_TIMER_CUE_CONFIG,
-  );
-  const restTimerFocusVisible = restTimerPromoted && restActive && restSeconds > 0;
   const devAccessoryAccentFor = (iconName: SLAccessoryIconName | null) => {
     switch (iconName) {
       case 'dumbbell-press':
@@ -8696,7 +8481,7 @@ export default function WorkoutViewerScreen() {
     <View style={styles.screen}>
       <Tabs.Screen options={{ headerShown: loggerHeaderShown }} />
       <SessionV3Header title={workout.label || 'Training Session'} subtitle={[workout.week_number ? `W${workout.week_number}` : null, workout.date ? new Date(`${workout.date.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : null].filter(Boolean).join(' · ')} active={isActiveSession} preview={isCoachAthletePreview ? athlete.name : null} inset={insets.top}
-        logged={loggedSets} total={plannedSets} elapsed={sessionElapsedLabel}
+        logged={loggedSets} total={plannedSets} startedAt={workout.started_at}
         onBack={() => { if (isPreSession && focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else handleBackToTrainingHub(); }}
         onActions={() => Alert.alert('Session actions', undefined, [
           ...(isCoachAthletePreview ? [{ text: 'Return to Coach Editor', onPress: handleReturnToCoachEditor }] : [
@@ -9201,7 +8986,7 @@ export default function WorkoutViewerScreen() {
         onPress={isPreSession ? () => { void handleBeginWorkoutPress(); } : focusedSetAction || (() => setNavigatorVisible(true))}
         secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : null) : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
         onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true);  } else setNavigatorVisible(true); }}
-        rest={restActive && !isCoachAthletePreview ? formatRestTime(restSeconds) : null} onRest={openTimerPicker} onSkip={stopRestTimer} onAddRest={() => startRestTimer(restSeconds + 30)}
+        rest={activeRestTimer} onRest={() => openTimerPicker()} onSkip={stopRestTimer} onAddRest={addRestTime} onRestSecond={deliverRestTimerCue}
       />
       <SessionMovementNavigator visible={navigatorVisible} bottom={insets.bottom} onClose={() => setNavigatorVisible(false)}
         rows={getOrderedWorkoutMovements(workout).map(row => {
@@ -10840,6 +10625,7 @@ export default function WorkoutViewerScreen() {
           timerPickerValue={timerPickerValue}
           setTimerPickerValue={setTimerPickerValue}
           startRestTimer={confirmRestTimerSelection}
+          onSkip={stopRestTimer}
           saveConfirmationVisible={feedbackState.recognition.saveConfirmationVisible}
           onMounted={handleTimerPickerMounted}
           onClose={resolveActiveTimerHandoff}
@@ -10855,7 +10641,7 @@ export default function WorkoutViewerScreen() {
         onRefresh={onRefresh}
         onOpenRestTimerPicker={openTimerPicker}
         restTimerActive={restActive}
-        restTimerSeconds={restSeconds}
+        restTimer={activeRestTimer}
         onStopRestTimer={stopRestTimer}
         restTimerPicker={<RestTimerPickerModal
           embedded
@@ -10864,6 +10650,7 @@ export default function WorkoutViewerScreen() {
           timerPickerValue={timerPickerValue}
           setTimerPickerValue={setTimerPickerValue}
           startRestTimer={confirmRestTimerSelection}
+          onSkip={stopRestTimer}
           saveConfirmationVisible={false}
           onMounted={handleTimerPickerMounted}
           onClose={resolveActiveTimerHandoff}
