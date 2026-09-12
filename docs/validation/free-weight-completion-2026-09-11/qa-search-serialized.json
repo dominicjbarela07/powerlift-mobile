@@ -1,0 +1,2202 @@
+[
+  {
+    "primary": "abs",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "abs",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Dumbbell Dead Bug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_abs",
+        "id": 500,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_dead_bug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "abs"
+      },
+      {
+        "display_name": "Dumbbell Sit-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_abs",
+        "id": 496,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_sit_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "abs"
+      },
+      {
+        "display_name": "Plate Sit-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_abs",
+        "id": 497,
+        "identity_status": "canonical",
+        "key": "accessory_plate_sit_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "abs"
+      },
+      {
+        "display_name": "Weighted Crunch",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_abs",
+        "id": 495,
+        "identity_status": "canonical",
+        "key": "accessory_weighted_crunch",
+        "ownership_scope": "global",
+        "primary_muscle_group": "abs"
+      },
+      {
+        "display_name": "Weighted Decline Sit-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_abs",
+        "id": 498,
+        "identity_status": "canonical",
+        "key": "accessory_weighted_decline_sit_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "abs"
+      }
+    ]
+  },
+  {
+    "primary": "biceps",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "biceps",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 1,
+    "items": [
+      {
+        "display_name": "EZ-Bar Preacher Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 261,
+        "identity_status": "canonical",
+        "key": "accessory_ez_bar_preacher_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Incline Dumbbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 257,
+        "identity_status": "canonical",
+        "key": "accessory_incline_dumbbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Alternating Dumbbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 254,
+        "identity_status": "canonical",
+        "key": "accessory_alternating_dumbbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Barbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 251,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Cheat Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 268,
+        "identity_status": "canonical",
+        "key": "accessory_cheat_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Concentration Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 262,
+        "identity_status": "canonical",
+        "key": "accessory_concentration_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Cross-Body Hammer Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 264,
+        "identity_status": "canonical",
+        "key": "accessory_cross_body_hammer_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Drag Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 266,
+        "identity_status": "canonical",
+        "key": "accessory_drag_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Dumbbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 253,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Dumbbell Preacher Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 260,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_preacher_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "EZ-Bar Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 252,
+        "identity_status": "canonical",
+        "key": "accessory_ez_bar_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Hammer Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 263,
+        "identity_status": "canonical",
+        "key": "accessory_hammer_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Reverse Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 267,
+        "identity_status": "canonical",
+        "key": "accessory_reverse_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Seated Dumbbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 255,
+        "identity_status": "canonical",
+        "key": "accessory_seated_dumbbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Single-Arm Preacher Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 259,
+        "identity_status": "canonical",
+        "key": "accessory_single_arm_preacher_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Spider Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 258,
+        "identity_status": "canonical",
+        "key": "accessory_spider_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Standing Dumbbell Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 256,
+        "identity_status": "canonical",
+        "key": "accessory_standing_dumbbell_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      },
+      {
+        "display_name": "Zottman Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_biceps",
+        "id": 265,
+        "identity_status": "canonical",
+        "key": "accessory_zottman_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "biceps"
+      }
+    ]
+  },
+  {
+    "primary": "calves",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "calves",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Calf Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_calves",
+        "id": 478,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_calf_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "calves"
+      },
+      {
+        "display_name": "Donkey Calf Raise with Weight",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_calves",
+        "id": 480,
+        "identity_status": "canonical",
+        "key": "accessory_donkey_calf_raise_with_weight",
+        "ownership_scope": "global",
+        "primary_muscle_group": "calves"
+      },
+      {
+        "display_name": "Seated Dumbbell Calf Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_calves",
+        "id": 479,
+        "identity_status": "canonical",
+        "key": "accessory_seated_dumbbell_calf_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "calves"
+      },
+      {
+        "display_name": "Single-Leg Dumbbell Calf Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_calves",
+        "id": 477,
+        "identity_status": "canonical",
+        "key": "accessory_single_leg_dumbbell_calf_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "calves"
+      },
+      {
+        "display_name": "Standing Dumbbell Calf Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_calves",
+        "id": 476,
+        "identity_status": "canonical",
+        "key": "accessory_standing_dumbbell_calf_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "calves"
+      }
+    ]
+  },
+  {
+    "primary": "chest",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "chest",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Incline Dumbbell Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 33,
+        "identity_status": "canonical",
+        "key": "accessory_incline_dumbbell_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Barbell Floor Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 42,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_floor_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Cambered-Bar Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 47,
+        "identity_status": "canonical",
+        "key": "accessory_cambered_bar_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Decline Dumbbell Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 34,
+        "identity_status": "canonical",
+        "key": "accessory_decline_dumbbell_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Decline Dumbbell Flys",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 41,
+        "identity_status": "canonical",
+        "key": "accessory_decline_dumbbell_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Dumbbell Floor Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 36,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_floor_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Dumbbell Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 39,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Dumbbell Hex Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 38,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_hex_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Dumbbell Squeeze Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 37,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_squeeze_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Flat Dumbbell Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 32,
+        "identity_status": "canonical",
+        "key": "accessory_flat_dumbbell_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Guillotine Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 45,
+        "identity_status": "canonical",
+        "key": "accessory_guillotine_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Incline Dumbbell Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 40,
+        "identity_status": "canonical",
+        "key": "accessory_incline_dumbbell_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Larsen Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 44,
+        "identity_status": "canonical",
+        "key": "accessory_larsen_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Neutral-Grip Dumbbell Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 35,
+        "identity_status": "canonical",
+        "key": "accessory_neutral_grip_dumbbell_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Reverse-Grip Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 46,
+        "identity_status": "canonical",
+        "key": "accessory_reverse_grip_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Spoto Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 43,
+        "identity_status": "canonical",
+        "key": "accessory_spoto_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      },
+      {
+        "display_name": "Weighted Push-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_chest",
+        "id": 73,
+        "identity_status": "canonical",
+        "key": "accessory_weighted_push_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "chest"
+      }
+    ]
+  },
+  {
+    "primary": "forearms",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "forearms",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Finger Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 333,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_finger_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Barbell Wrist Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 325,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_wrist_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Behind-the-Back Wrist Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 327,
+        "identity_status": "canonical",
+        "key": "accessory_behind_the_back_wrist_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Dumbbell Reverse Wrist Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 329,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_reverse_wrist_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Dumbbell Wrist Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 326,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_wrist_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Fat-Grip Hold",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 332,
+        "identity_status": "canonical",
+        "key": "accessory_fat_grip_hold",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Lever Bar Pronation",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 334,
+        "identity_status": "canonical",
+        "key": "accessory_lever_bar_pronation",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Lever Bar Supination",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 335,
+        "identity_status": "canonical",
+        "key": "accessory_lever_bar_supination",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Plate Pinch",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 331,
+        "identity_status": "canonical",
+        "key": "accessory_plate_pinch",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Radial Deviation",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 336,
+        "identity_status": "canonical",
+        "key": "accessory_radial_deviation",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Reverse Wrist Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 328,
+        "identity_status": "canonical",
+        "key": "accessory_reverse_wrist_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Ulnar Deviation",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 337,
+        "identity_status": "canonical",
+        "key": "accessory_ulnar_deviation",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      },
+      {
+        "display_name": "Wrist Roller",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_forearms",
+        "id": 330,
+        "identity_status": "canonical",
+        "key": "accessory_wrist_roller",
+        "ownership_scope": "global",
+        "primary_muscle_group": "forearms"
+      }
+    ]
+  },
+  {
+    "primary": "front_delts",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "front_delts",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Seated Dumbbell Shoulder Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 79,
+        "identity_status": "canonical",
+        "key": "accessory_seated_dumbbell_shoulder_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Alternating Dumbbell Front Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 83,
+        "identity_status": "canonical",
+        "key": "accessory_alternating_dumbbell_front_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Arnold Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 81,
+        "identity_status": "canonical",
+        "key": "accessory_arnold_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Barbell Front Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 85,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_front_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Bradford Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 90,
+        "identity_status": "canonical",
+        "key": "accessory_bradford_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Dumbbell Front Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 82,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_front_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Half-Kneeling Landmine Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 87,
+        "identity_status": "canonical",
+        "key": "accessory_half_kneeling_landmine_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Landmine Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 86,
+        "identity_status": "canonical",
+        "key": "accessory_landmine_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Plate Front Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 84,
+        "identity_status": "canonical",
+        "key": "accessory_plate_front_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Single-Arm Landmine Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 88,
+        "identity_status": "canonical",
+        "key": "accessory_single_arm_landmine_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Standing Dumbbell Shoulder Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 80,
+        "identity_status": "canonical",
+        "key": "accessory_standing_dumbbell_shoulder_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      },
+      {
+        "display_name": "Z Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_front_delts",
+        "id": 89,
+        "identity_status": "canonical",
+        "key": "accessory_z_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "front_delts"
+      }
+    ]
+  },
+  {
+    "primary": "glutes",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "glutes",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Hip Thrust",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 418,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_hip_thrust",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "B-Stance Hip Thrust",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 423,
+        "identity_status": "canonical",
+        "key": "accessory_b_stance_hip_thrust",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Barbell Glute Bridge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 420,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_glute_bridge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Deficit Reverse Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 426,
+        "identity_status": "canonical",
+        "key": "accessory_deficit_reverse_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Dumbbell Frog Pump",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 430,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_frog_pump",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Dumbbell Glute Bridge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 421,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_glute_bridge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Dumbbell Hip Thrust",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 419,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_hip_thrust",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Glute-Biased Step-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 428,
+        "identity_status": "canonical",
+        "key": "accessory_glute_biased_step_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Kas Glute Bridge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 424,
+        "identity_status": "canonical",
+        "key": "accessory_kas_glute_bridge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Long-Stride Bulgarian Split Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 429,
+        "identity_status": "canonical",
+        "key": "accessory_long_stride_bulgarian_split_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Long-Stride Reverse Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 427,
+        "identity_status": "canonical",
+        "key": "accessory_long_stride_reverse_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Single-Leg Hip Thrust",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 422,
+        "identity_status": "canonical",
+        "key": "accessory_single_leg_hip_thrust",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      },
+      {
+        "display_name": "Sumo Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_glutes",
+        "id": 425,
+        "identity_status": "canonical",
+        "key": "accessory_sumo_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "glutes"
+      }
+    ]
+  },
+  {
+    "primary": "hamstrings",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "hamstrings",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "B-Stance Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 390,
+        "identity_status": "canonical",
+        "key": "accessory_b_stance_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Barbell Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 393,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Dumbbell Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 395,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Dumbbell Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 388,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Glute-Ham Raise with Weight",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 396,
+        "identity_status": "canonical",
+        "key": "accessory_glute_ham_raise_with_weight",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 387,
+        "identity_status": "canonical",
+        "key": "accessory_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Seated Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 394,
+        "identity_status": "canonical",
+        "key": "accessory_seated_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Single-Leg Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 389,
+        "identity_status": "canonical",
+        "key": "accessory_single_leg_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Snatch-Grip Romanian Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 392,
+        "identity_status": "canonical",
+        "key": "accessory_snatch_grip_romanian_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      },
+      {
+        "display_name": "Stiff-Leg Deadlift",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hamstrings",
+        "id": 391,
+        "identity_status": "canonical",
+        "key": "accessory_stiff_leg_deadlift",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hamstrings"
+      }
+    ]
+  },
+  {
+    "primary": "hip_flexors",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "hip_flexors",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Ankle-Weight Hip Flexion",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hip_flexors",
+        "id": 570,
+        "identity_status": "canonical",
+        "key": "accessory_ankle_weight_hip_flexion",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hip_flexors"
+      },
+      {
+        "display_name": "Dumbbell Psoas March",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_hip_flexors",
+        "id": 569,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_psoas_march",
+        "ownership_scope": "global",
+        "primary_muscle_group": "hip_flexors"
+      }
+    ]
+  },
+  {
+    "primary": "lats",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "lats",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Pullover",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 156,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_pullover",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Dumbbell Pullover",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 155,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_pullover",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Kroc Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 157,
+        "identity_status": "canonical",
+        "key": "accessory_kroc_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Landmine Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 159,
+        "identity_status": "canonical",
+        "key": "accessory_landmine_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Lat-Biased Chest-Supported Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 162,
+        "identity_status": "canonical",
+        "key": "accessory_lat_biased_chest_supported_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Lat-Biased Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 161,
+        "identity_status": "canonical",
+        "key": "accessory_lat_biased_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Meadows Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 153,
+        "identity_status": "canonical",
+        "key": "accessory_meadows_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "One-Arm Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 154,
+        "identity_status": "canonical",
+        "key": "accessory_one_arm_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "One-Arm Landmine Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 160,
+        "identity_status": "canonical",
+        "key": "accessory_one_arm_landmine_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      },
+      {
+        "display_name": "Three-Point Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lats",
+        "id": 158,
+        "identity_status": "canonical",
+        "key": "accessory_three_point_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lats"
+      }
+    ]
+  },
+  {
+    "primary": "lower_back",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "lower_back",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Back Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 545,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_back_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 546,
+        "identity_status": "canonical",
+        "key": "accessory_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Jefferson Curl",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 547,
+        "identity_status": "canonical",
+        "key": "accessory_jefferson_curl",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Weighted Sorenson Hold",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 549,
+        "identity_status": "canonical",
+        "key": "accessory_weighted_sorenson_hold",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      },
+      {
+        "display_name": "Zercher Good Morning",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_lower_back",
+        "id": 548,
+        "identity_status": "canonical",
+        "key": "accessory_zercher_good_morning",
+        "ownership_scope": "global",
+        "primary_muscle_group": "lower_back"
+      }
+    ]
+  },
+  {
+    "primary": "neck",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "neck",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Plate Lateral Neck Flexion",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_neck",
+        "id": 582,
+        "identity_status": "canonical",
+        "key": "accessory_plate_lateral_neck_flexion",
+        "ownership_scope": "global",
+        "primary_muscle_group": "neck"
+      },
+      {
+        "display_name": "Plate Neck Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_neck",
+        "id": 581,
+        "identity_status": "canonical",
+        "key": "accessory_plate_neck_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "neck"
+      },
+      {
+        "display_name": "Plate Neck Flexion",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_neck",
+        "id": 580,
+        "identity_status": "canonical",
+        "key": "accessory_plate_neck_flexion",
+        "ownership_scope": "global",
+        "primary_muscle_group": "neck"
+      }
+    ]
+  },
+  {
+    "primary": "obliques",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "obliques",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Windshield Wiper",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 528,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_windshield_wiper",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      },
+      {
+        "display_name": "Dumbbell Side Bend",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 523,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_side_bend",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      },
+      {
+        "display_name": "Landmine Rotation",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 526,
+        "identity_status": "canonical",
+        "key": "accessory_landmine_rotation",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      },
+      {
+        "display_name": "Russian Twist with Weight",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 527,
+        "identity_status": "canonical",
+        "key": "accessory_russian_twist_with_weight",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      },
+      {
+        "display_name": "Suitcase Carry",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 525,
+        "identity_status": "canonical",
+        "key": "accessory_suitcase_carry",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      },
+      {
+        "display_name": "Suitcase March",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_obliques",
+        "id": 524,
+        "identity_status": "canonical",
+        "key": "accessory_suitcase_march",
+        "ownership_scope": "global",
+        "primary_muscle_group": "obliques"
+      }
+    ]
+  },
+  {
+    "primary": "quads",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "quads",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 1,
+    "items": [
+      {
+        "display_name": "Bulgarian Split Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 354,
+        "identity_status": "canonical",
+        "key": "accessory_bulgarian_split_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Walking Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 358,
+        "identity_status": "canonical",
+        "key": "accessory_walking_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Cyclist Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 352,
+        "identity_status": "canonical",
+        "key": "accessory_cyclist_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Dumbbell Step-Down",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 363,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_step_down",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Forward Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 359,
+        "identity_status": "canonical",
+        "key": "accessory_forward_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Front Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 348,
+        "identity_status": "canonical",
+        "key": "accessory_front_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Front-Foot-Elevated Split Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 355,
+        "identity_status": "canonical",
+        "key": "accessory_front_foot_elevated_split_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Goblet Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 351,
+        "identity_status": "canonical",
+        "key": "accessory_goblet_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Heel-Elevated Goblet Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 353,
+        "identity_status": "canonical",
+        "key": "accessory_heel_elevated_goblet_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Heel-Elevated Split Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 356,
+        "identity_status": "canonical",
+        "key": "accessory_heel_elevated_split_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "High-Bar Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 349,
+        "identity_status": "canonical",
+        "key": "accessory_high_bar_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Lateral Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 360,
+        "identity_status": "canonical",
+        "key": "accessory_lateral_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Peterson Step-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 362,
+        "identity_status": "canonical",
+        "key": "accessory_peterson_step_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Reverse Lunge",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 357,
+        "identity_status": "canonical",
+        "key": "accessory_reverse_lunge",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Spanish Squat with Weight",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 364,
+        "identity_status": "canonical",
+        "key": "accessory_spanish_squat_with_weight",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Step-Up",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 361,
+        "identity_status": "canonical",
+        "key": "accessory_step_up",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      },
+      {
+        "display_name": "Zercher Squat",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_quads",
+        "id": 350,
+        "identity_status": "canonical",
+        "key": "accessory_zercher_squat",
+        "ownership_scope": "global",
+        "primary_muscle_group": "quads"
+      }
+    ]
+  },
+  {
+    "primary": "rear_delts",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "rear_delts",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Bent-Over Dumbbell Reverse Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 126,
+        "identity_status": "canonical",
+        "key": "accessory_bent_over_dumbbell_reverse_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Chest-Supported Dumbbell Reverse Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 127,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_dumbbell_reverse_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Dumbbell Archer Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 150,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_archer_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Incline-Bench Rear-Delt Fly",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 128,
+        "identity_status": "canonical",
+        "key": "accessory_incline_bench_rear_delt_flye",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Prone Rear-Delt Swing",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 133,
+        "identity_status": "canonical",
+        "key": "accessory_prone_rear_delt_swing",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Rear-Delt Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 131,
+        "identity_status": "canonical",
+        "key": "accessory_rear_delt_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Rear-Delt Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 129,
+        "identity_status": "canonical",
+        "key": "accessory_rear_delt_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Wide-Elbow Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 130,
+        "identity_status": "canonical",
+        "key": "accessory_wide_elbow_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      },
+      {
+        "display_name": "Wide-Grip Chest-Supported Rear-Delt Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_rear_delts",
+        "id": 132,
+        "identity_status": "canonical",
+        "key": "accessory_wide_grip_chest_supported_rear_delt_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "rear_delts"
+      }
+    ]
+  },
+  {
+    "primary": "serratus",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "serratus",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Dumbbell Pullover Serratus Reach",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_serratus",
+        "id": 561,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_pullover_serratus_reach",
+        "ownership_scope": "global",
+        "primary_muscle_group": "serratus"
+      },
+      {
+        "display_name": "Dumbbell Serratus Punch",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_serratus",
+        "id": 560,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_serratus_punch",
+        "ownership_scope": "global",
+        "primary_muscle_group": "serratus"
+      }
+    ]
+  },
+  {
+    "primary": "side_delts",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "side_delts",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Chest-Supported Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 108,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 103,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Dumbbell Upright Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 111,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_upright_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Incline Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 105,
+        "identity_status": "canonical",
+        "key": "accessory_incline_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Lean-Away Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 106,
+        "identity_status": "canonical",
+        "key": "accessory_lean_away_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Lu Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 110,
+        "identity_status": "canonical",
+        "key": "accessory_lu_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Lying Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 107,
+        "identity_status": "canonical",
+        "key": "accessory_lying_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Partial Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 109,
+        "identity_status": "canonical",
+        "key": "accessory_partial_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Seated Dumbbell Lateral Raise",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 104,
+        "identity_status": "canonical",
+        "key": "accessory_seated_dumbbell_lateral_raise",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      },
+      {
+        "display_name": "Wide-Grip Barbell Upright Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_side_delts",
+        "id": 112,
+        "identity_status": "canonical",
+        "key": "accessory_wide_grip_barbell_upright_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "side_delts"
+      }
+    ]
+  },
+  {
+    "primary": "traps",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "traps",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 234,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Behind-the-Back Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 237,
+        "identity_status": "canonical",
+        "key": "accessory_behind_the_back_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Chest-Supported Kelso Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 241,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_kelso_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Dumbbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 235,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Farmer Carry",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 240,
+        "identity_status": "canonical",
+        "key": "accessory_farmer_carry",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Kelso Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 242,
+        "identity_status": "canonical",
+        "key": "accessory_kelso_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Overhead Barbell Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 239,
+        "identity_status": "canonical",
+        "key": "accessory_overhead_barbell_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Snatch-Grip Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 238,
+        "identity_status": "canonical",
+        "key": "accessory_snatch_grip_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      },
+      {
+        "display_name": "Trap-Bar Shrug",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_traps",
+        "id": 236,
+        "identity_status": "canonical",
+        "key": "accessory_trap_bar_shrug",
+        "ownership_scope": "global",
+        "primary_muscle_group": "traps"
+      }
+    ]
+  },
+  {
+    "primary": "triceps",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "triceps",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Barbell Skull Crusher",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 291,
+        "identity_status": "canonical",
+        "key": "accessory_barbell_skull_crusher",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Close-Grip Bench Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 289,
+        "identity_status": "canonical",
+        "key": "accessory_close_grip_bench_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Decline Skull Crusher",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 295,
+        "identity_status": "canonical",
+        "key": "accessory_decline_skull_crusher",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Dumbbell Overhead Triceps Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 296,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_overhead_triceps_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Dumbbell Skull Crusher",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 293,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_skull_crusher",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "EZ-Bar Skull Crusher",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 292,
+        "identity_status": "canonical",
+        "key": "accessory_ez_bar_skull_crusher",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Incline Skull Crusher",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 294,
+        "identity_status": "canonical",
+        "key": "accessory_incline_skull_crusher",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "JM Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 290,
+        "identity_status": "canonical",
+        "key": "accessory_jm_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "PJR Pullover",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 300,
+        "identity_status": "canonical",
+        "key": "accessory_pjr_pullover",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Rolling Dumbbell Triceps Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 299,
+        "identity_status": "canonical",
+        "key": "accessory_rolling_dumbbell_triceps_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Single-Arm Dumbbell Overhead Triceps Extension",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 297,
+        "identity_status": "canonical",
+        "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      },
+      {
+        "display_name": "Tate Press",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_triceps",
+        "id": 298,
+        "identity_status": "canonical",
+        "key": "accessory_tate_press",
+        "ownership_scope": "global",
+        "primary_muscle_group": "triceps"
+      }
+    ]
+  },
+  {
+    "primary": "upper_back",
+    "http_status": 200,
+    "request": {
+      "athlete_id": 12,
+      "primary_muscle_group": "upper_back",
+      "execution_family": "FREE_WEIGHT",
+      "limit": 49
+    },
+    "private_custom_results_omitted": 0,
+    "items": [
+      {
+        "display_name": "Chest-Supported Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 194,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Batwing Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 201,
+        "identity_status": "canonical",
+        "key": "accessory_batwing_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Bent-Over Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 191,
+        "identity_status": "canonical",
+        "key": "accessory_bent_over_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 195,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported Kelso Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 205,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_kelso_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Chest-Supported T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 199,
+        "identity_status": "canonical",
+        "key": "accessory_chest_supported_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Dumbbell High Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 206,
+        "identity_status": "canonical",
+        "key": "accessory_dumbbell_high_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Gorilla Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 202,
+        "identity_status": "canonical",
+        "key": "accessory_gorilla_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Helms Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 200,
+        "identity_status": "canonical",
+        "key": "accessory_helms_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Incline-Bench Dumbbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 196,
+        "identity_status": "canonical",
+        "key": "accessory_incline_bench_dumbbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Pendlay Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 192,
+        "identity_status": "canonical",
+        "key": "accessory_pendlay_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Seal Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 193,
+        "identity_status": "canonical",
+        "key": "accessory_seal_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Snatch-Grip Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 203,
+        "identity_status": "canonical",
+        "key": "accessory_snatch_grip_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 197,
+        "identity_status": "canonical",
+        "key": "accessory_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Wide-Elbow Barbell Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 204,
+        "identity_status": "canonical",
+        "key": "accessory_wide_elbow_barbell_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      },
+      {
+        "display_name": "Wide-Grip T-Bar Row",
+        "execution_family": "FREE_WEIGHT",
+        "family": "accessory_upper_back",
+        "id": 198,
+        "identity_status": "canonical",
+        "key": "accessory_wide_grip_t_bar_row",
+        "ownership_scope": "global",
+        "primary_muscle_group": "upper_back"
+      }
+    ]
+  }
+]

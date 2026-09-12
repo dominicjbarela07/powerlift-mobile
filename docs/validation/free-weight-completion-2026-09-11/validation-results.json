@@ -1,0 +1,53 @@
+{
+  "recorded_at_utc": "2026-09-12T00:18:34.419346+00:00",
+  "canonical_dev": true,
+  "coverage": {
+    "total": 198,
+    "retained": 98,
+    "new": 100,
+    "uncovered": []
+  },
+  "checks": [
+    {
+      "command": "node --import tsx scripts/test-free-weight-complete-artwork-family.mjs",
+      "exit_code": 0,
+      "result": "198 exact assets, 194 real search DTOs, 12 mixed Session identities, 98 prior assets byte-for-byte, fail-closed conflicts"
+    },
+    {
+      "command": "npm run test:accepted-behavior-contracts",
+      "exit_code": 0,
+      "result": "200/200 automatically discovered contracts passed, including Push/Pull, substitutions, equipment, history, programming subject, anatomy, navigation and release safeguards"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exit_code": 0
+    },
+    {
+      "command": "npx eslint components/workout-logger/session-v3-movement.tsx components/movement-history/CanonicalMovementHistoryScreen.tsx lib/canonical-movement-artwork.ts lib/canonical-movement-artwork-assets.ts",
+      "exit_code": 0,
+      "result": "No warnings or errors"
+    }
+  ],
+  "native": {
+    "runtime": "literal npm start; dirty canonical dev/canonical-mobile; iPhone17 iOS26.2 Expo Go; localhost8081/backend5000",
+    "passes": 2,
+    "logger": true,
+    "workspace": true,
+    "exact_history_sample_ids": [
+      33,
+      154,
+      253,
+      325,
+      354,
+      388,
+      476,
+      495,
+      7
+    ],
+    "accessories": "Top aggregate surface inspected; exact movement cards below fold not interactively inspected",
+    "search": "194 serialized backend results verified; native picker interaction unavailable",
+    "interaction_gate": "OPEN: Computer Use cgWindowNotFound; no native taps, scroll, refresh/back or picker interaction claimed"
+  },
+  "production_touched": false,
+  "testflight_touched": false
+}

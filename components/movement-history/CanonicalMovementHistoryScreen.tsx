@@ -371,7 +371,7 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                <CanonicalMovementArtwork movement={history.movement} size={96} testID="movement-history-canonical-artwork" />
+                <CanonicalMovementArtwork movement={history.movement} size={112} testID="movement-history-canonical-artwork" />
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
@@ -629,8 +629,8 @@ function DetailFact({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#020205' },
   content: { paddingHorizontal: 14, paddingBottom: SLLayout.tabBarClearance + 26 },
-  movementHeader: { minHeight: 104, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
-  muscleArtworkFrame: { width: 96, height: 96, flexShrink: 0, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  movementHeader: { minHeight: 120, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
+  muscleArtworkFrame: { width: 112, height: 112, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   coreArtwork: { width: 88, height: 82 },
   movementIdentity: { flex: 1, minWidth: 0, gap: 4 },
   movementName: { color: '#FAF8FC', fontSize: 25, lineHeight: 31, fontWeight: '600' },

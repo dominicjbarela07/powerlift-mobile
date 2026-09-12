@@ -23,6 +23,8 @@ const fixtures = [
 ];
 
 fixtures.forEach(([requestedLabel, canonicalNames, primary, secondary], index) => {
+  // Synthetic IDs exercise the taxonomy fallback without impersonating registered DEV IDs.
+  const fixtureId = 100001 + index;
   const candidates = Array.isArray(canonicalNames) ? canonicalNames : [canonicalNames];
   const movement = catalog.find((entry) => candidates.includes(entry.canonical_name));
   assert.ok(movement, `${requestedLabel} must resolve to an audited governed catalog entry`);
@@ -31,16 +33,16 @@ fixtures.forEach(([requestedLabel, canonicalNames, primary, secondary], index) =
   assert.deepEqual(
     resolveCanonicalMovementArtwork({
       kind: 'accessory',
-      movement_definition_id: index + 1,
+      movement_definition_id: fixtureId,
       movement_identity: {
-        id: index + 1,
+        id: fixtureId,
         primary_muscle_group: movement.primary_muscle_group,
         secondary_muscle_groups: movement.secondary_muscle_groups,
       },
     }),
     {
       kind: 'accessory',
-      canonicalIdentityId: index + 1,
+      canonicalIdentityId: fixtureId,
       regionKey: primary,
       primaryMuscleGroup: primary,
       secondaryMuscleGroups: secondary,
@@ -123,23 +125,24 @@ for (const [label, id, primary, secondary] of [
 assert.deepEqual(
   resolveCanonicalMovementArtwork({
     kind: 'accessory',
-    movement_identity: { id: 4, family: 'horizontal_pull' },
+    movement_identity: { id: 4, key: 'barbell_row', family: 'horizontal_pull' },
   }),
   {
     kind: 'accessory',
     canonicalIdentityId: 4,
+    artworkKey: 'barbell_row',
     regionKey: 'upper_back',
     primaryMuscleGroup: 'upper_back',
     secondaryMuscleGroups: [],
   },
-  'a governed movement family is the catalog-level artwork fallback when material taxonomy is absent',
+  'the existing governed family adapter supplies missing primary taxonomy for the exact legacy identity',
 );
 
 assert.deepEqual(
   resolveCanonicalMovementArtwork({
     kind: 'accessory',
     movement_identity: {
-      id: 500,
+      id: 100500,
       material_parameters: {
         accessory_taxonomy: {
           primary_muscle_group: 'rear_delts',
@@ -150,7 +153,7 @@ assert.deepEqual(
   }),
   {
     kind: 'accessory',
-    canonicalIdentityId: 500,
+    canonicalIdentityId: 100500,
     regionKey: 'rear_delts',
     primaryMuscleGroup: 'rear_delts',
     secondaryMuscleGroups: ['upper_back'],

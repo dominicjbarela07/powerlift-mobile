@@ -1,0 +1,41 @@
+
+> powerlift_mobile@1.0.0 start
+> node scripts/start-canonical-dev-metro.mjs
+
+[canonical-dev-metro] SOURCE PREFLIGHT PASS
+[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.
+{
+  "port": 8081,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "sha": "f43cd2c229444fe4b57c2cdba1c26592d00ecfca",
+  "remoteRef": "origin/dev/canonical-mobile",
+  "remoteSha": "f43cd2c229444fe4b57c2cdba1c26592d00ecfca",
+  "clean": false
+}
+Starting project at /Users/dominic/powerlifting_app_dev/powerlift_mobile
+React Compiler enabled
+Starting Metro Bundler
+
+iOS Bundled 817ms node_modules/expo-router/entry.js (3415 modules)
+iOS Bundled 122ms node_modules/expo-notifications/build/index.js (812 modules)
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1734?history=summary&view=coach-preview auth? true authMode? auto hasBody? false tz? America/New_York
+iOS Bundled 98ms node_modules/expo-constants/build/Constants.js (1 module)
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1734?history=summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=325 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=354 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=325 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=325 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=354 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=388 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=476 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=495 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=253 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=33 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=154 auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/athletes/12/movement-history?view=v2&range=all&limit=12&movement_definition_id=7 auth? true authMode? auto hasBody? false tz? America/New_York
+iOS Bundled 108ms node_modules/expo-router/entry.js (1 module)
+iOS Bundled 30ms node_modules/expo-notifications/build/index.js (1 module)
+iOS Bundled 16ms node_modules/expo-constants/build/Constants.js (1 module)

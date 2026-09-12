@@ -20,9 +20,10 @@ assert.equal(audit.candidate_count, 49);
 assert.equal(audit.mid_back_taxonomy_present, false);
 assert.deepEqual(audit.counts_by_primary, { rear_delts: 9, lats: 10, upper_back: 16, traps: 9, lower_back: 3 });
 const pullPrimaries = new Set(Object.keys(audit.counts_by_primary));
-assert.deepEqual(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES)
-  .filter(([, identity]) => pullPrimaries.has(identity.primary))
-  .map(([id]) => Number(id)).sort((a,b)=>a-b), audit.qualifying.map(r=>r.id).sort((a,b)=>a-b));
+// This historical batch remains immutable as the complete family grows.
+for (const row of audit.qualifying) {
+  assert.deepEqual(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], { key: row.key, primary: row.primary_muscle_group });
+}
 assert.equal(manifest.movements.filter(r=>r.final_status==='PENDING').length, 0);
 assert.equal(manifest.movements.filter(r=>r.final_status==='KEEP').length, 0);
 const uniqueAppFiles = new Set();
@@ -74,7 +75,7 @@ for (const group of searchGroups) {
   for (const item of group.items) {
     assert.equal(item.primary_muscle_group, group.primary);
     const selected = resolveCanonicalMovementArtwork({ ...item, kind: 'accessory' });
-    assert.equal(selected.artworkKey, audit.qualifying.some(row => row.id === item.id) ? item.key : undefined, 'real search DTO maps only the semantically qualified exact identity');
+    assert.equal(selected.artworkKey, CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[item.id]?.key, 'real historical search DTO maps its currently governed exact identity, including completed hinge coverage');
     assert.equal(selected.canonicalIdentityId, item.id);
   }
 }
@@ -97,14 +98,16 @@ assert.equal(resolve({ id: 314, key: 'accessory_machine_dip', primary_muscle_gro
 assert.equal(resolveCanonicalMovementArtwork({ kind:'core', core_movement_id:33, core_family:'bench' }).kind, 'core');
 assert.equal(resolveCanonicalMovementArtwork({ kind:'accessory', display_name:'Incline Dumbbell Bench Press' }).kind, 'neutral');
 const pushAudit = JSON.parse(read('docs/validation/free-weight-push-family-2026-09-11/taxonomy-audit.json'));
-assert.deepEqual(Object.keys(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).map(Number).sort((a,b)=>a-b),
-  [...pushAudit.qualifying, ...audit.qualifying].map(row=>row.id).sort((a,b)=>a-b),
-  'registry is exactly the two audited families, with no accidental extra mappings');
-for (const id of [546,548]) assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[id], undefined, 'deferred lower-body hinges stay outside pull art');
+for (const row of [...pushAudit.qualifying, ...audit.qualifying]) {
+  assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id]?.key, row.key, 'all 98 prior exact mappings remain intact');
+}
+for (const id of [546,548]) {
+  assert.equal(manifest.movements.some(row => row.id === id), false, 'hinges were deferred from this historical Pull batch; the Completion audit governs their new artwork');
+}
 const reviews = JSON.parse(read('docs/validation/free-weight-pull-family-2026-09-11/reviews.json'));
 for (const asset of manifest.movements) {
   assert.ok(reviews.some(review => review.id === asset.id && review.attempt === asset.attempt && review.status === 'ACCEPT'));
   const attempt = JSON.parse(read(`docs/validation/free-weight-pull-family-2026-09-11/attempts/${asset.id}-${asset.attempt}.json`));
   assert.ok(attempt.reference_paths[0].endsWith('/masters/dumbbell-incline-bench-press-v1.png'), 'every accepted asset uses the original master first');
 }
-console.log('[free-weight-pull-family] 47 exact assets, 98-ID union, 49 real search DTOs, mixed push/pull Session, immutable original, fail-closed swaps and hinge boundaries passed');
+console.log('[free-weight-pull-family] 47 immutable exact assets, 98 prior mappings, 49 real search DTOs, mixed push/pull Session, fail-closed swaps and historical scope passed');

@@ -18,9 +18,10 @@ const resolve = (identity) => resolveCanonicalMovementArtwork({ kind: 'accessory
 assert.equal(audit.count, 51);
 assert.deepEqual(audit.counts_by_primary, { chest: 17, front_delts: 12, side_delts: 10, triceps: 12 });
 const pushPrimaries = new Set(Object.keys(audit.counts_by_primary));
-assert.deepEqual(Object.entries(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES)
-  .filter(([, identity]) => pushPrimaries.has(identity.primary))
-  .map(([id]) => Number(id)).sort((a,b)=>a-b), audit.qualifying.map(r=>r.id).sort((a,b)=>a-b));
+// This historical batch remains immutable as the complete family grows.
+for (const row of audit.qualifying) {
+  assert.deepEqual(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], { key: row.key, primary: row.primary_muscle_group });
+}
 assert.equal(manifest.movements.filter(r=>r.final_status==='PENDING').length, 0);
 assert.equal(manifest.movements.filter(r=>r.final_status==='KEEP').length, 1);
 const uniqueAppFiles = new Set();

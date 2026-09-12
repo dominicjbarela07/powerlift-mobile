@@ -21,7 +21,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
 }) {
   if (!expanded) return <Pressable accessibilityRole="button" accessibilityLabel={`Expand ${title}`} onPress={onOpen} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     <Text style={[s.index, complete && s.success]}>{complete ? '✓' : String(index).padStart(2, '0')}</Text>
-    <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={52} />
+    <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={64} />
     <View style={s.copy}><Text numberOfLines={0} style={s.rowTitle}>{title}</Text><Text style={s.detail}>{prescription}</Text></View>
     <Ionicons name="chevron-forward" color={SLColors.textMuted} size={17} />
   </Pressable>;

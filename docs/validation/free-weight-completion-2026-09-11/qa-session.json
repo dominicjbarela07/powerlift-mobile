@@ -1,0 +1,24 @@
+{
+  "workout_id": 1734,
+  "athlete_id": 12,
+  "label": "Whole Free-weight Family Art QA",
+  "requested_status": "draft",
+  "movement_definition_ids": [
+    33,
+    154,
+    253,
+    325,
+    354,
+    388,
+    476,
+    495,
+    4,
+    5,
+    6,
+    7
+  ],
+  "created_http_status": 200,
+  "cleaned_up": true,
+  "delete_http_status": 200,
+  "performed_sets_before_cleanup": 0
+}

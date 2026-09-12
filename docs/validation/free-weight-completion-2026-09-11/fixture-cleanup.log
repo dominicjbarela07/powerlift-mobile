@@ -1,0 +1,3 @@
+/Users/dominic/powerlifting_app_dev/powerlift_mobile/docs/validation/free-weight-completion-2026-09-11/qa_session.py:53: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  w=Workout.query.get(wid)
+{"deleted_own_draft": 1734, "setlogs": 0}

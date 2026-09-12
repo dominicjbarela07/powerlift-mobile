@@ -33,7 +33,8 @@ assert.equal(resolve({ movement_identity: target, legacy: { state: 'resolved', e
 
 assert.equal(resolve({ key, primary_muscle_group: 'chest' }).kind, 'neutral', 'key without authoritative numeric ID is insufficient');
 assert.equal(resolve({ id: 33, primary_muscle_group: 'chest', display_name: 'Dumbbell Incline Bench Press' }).artworkKey, undefined, 'numeric row ID and display name cannot invent governed artwork membership');
-assert.equal(resolve({ id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, undefined, 'separate legacy movement is not mass-mapped');
+assert.equal(resolve({ id: 7, key: 'incline_dumbbell_press', family: 'horizontal_push' }).artworkKey, 'incline_dumbbell_press', 'separate legacy movement owns independently generated artwork');
+assert.equal(resolve({ id: 7, key, family: 'horizontal_push' }).kind, 'neutral', 'legacy identity cannot borrow ID33 artwork');
 for (const unrelated of [{ id: 135, key: 'accessory_machine_reverse_fly', primary_muscle_group: 'rear_delts' }, { id: 222, key: 'accessory_chest_supported_row', primary_muscle_group: 'upper_back' }]) {
   const result = resolve({ ...unrelated, display_name: 'Dumbbell Incline Bench Press' });
   assert.equal(result.artworkKey, undefined);
