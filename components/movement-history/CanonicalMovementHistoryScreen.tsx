@@ -371,7 +371,7 @@ export function CanonicalMovementHistoryScreen({
           <>
             <View style={styles.movementHeader}>
               <View style={styles.muscleArtworkFrame}>
-                <CanonicalMovementArtwork movement={history.movement} size={112} testID="movement-history-canonical-artwork" />
+                <CanonicalMovementArtwork movement={history.movement} size={__DEV__ ? 112 : 86} testID="movement-history-canonical-artwork" />
               </View>
               <View style={styles.movementIdentity}>
                 <Text style={styles.movementName}>{history.movement.display_name}</Text>
@@ -379,7 +379,7 @@ export function CanonicalMovementHistoryScreen({
               </View>
               {!readOnly && history.movement.favorite_supported !== false ? <Pressable accessibilityLabel={history.movement.is_favorite ? 'Remove movement favorite' : 'Favorite movement'} accessibilityRole="button" accessibilityState={{ selected: Boolean(history.movement.is_favorite), busy: favoriteSaving }} onPress={() => void toggleFavorite()} style={styles.favoriteButton}>
                 <Ionicons name={history.movement.is_favorite ? 'star' : 'star-outline'} size={23} color="#E9B83F" />
-              </Pressable> : null}
+              </Pressable> : __DEV__ ? null : <View style={styles.favoriteButton} />}
             </View>
 
             <View style={styles.summaryStrip}>
@@ -629,8 +629,8 @@ function DetailFact({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#020205' },
   content: { paddingHorizontal: 14, paddingBottom: SLLayout.tabBarClearance + 26 },
-  movementHeader: { minHeight: 120, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
-  muscleArtworkFrame: { width: 112, height: 112, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  movementHeader: { minHeight: __DEV__ ? 120 : 104, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 4 },
+  muscleArtworkFrame: __DEV__ ? { width: 112, height: 112, flexShrink: 0, alignItems: 'center', justifyContent: 'center' } : { width: 96, height: 86, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   coreArtwork: { width: 88, height: 82 },
   movementIdentity: { flex: 1, minWidth: 0, gap: 4 },
   movementName: { color: '#FAF8FC', fontSize: 25, lineHeight: 31, fontWeight: '600' },

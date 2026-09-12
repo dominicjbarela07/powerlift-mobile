@@ -38,7 +38,7 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID }:
   }, [movement?.core_movement_id, movement?.id, movement?.movement_definition_id, resolution]);
 
   if (resolution.kind === 'accessory') {
-    if (resolution.artworkKey) {
+    if (__DEV__ && resolution.artworkKey) {
       const asset = CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey];
       return (
         <View accessibilityLabel={asset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>

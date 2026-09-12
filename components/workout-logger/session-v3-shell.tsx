@@ -33,13 +33,13 @@ export function SessionV3PlanHero({ title, focus, planned, movements, artwork, n
 }
 
 export function SessionV3Footer({ bottom, label, disabled, onPress, secondary, onSecondary, unit, onUnit, rest, onRest, onSkip, onAddRest }: {
-  bottom: number; label: string; disabled?: boolean; onPress: () => void; secondary: string;
+  bottom: number; label: string; disabled?: boolean; onPress: () => void; secondary?: string | null;
   onSecondary: () => void; unit: string; onUnit: () => void;
   rest?: string | null; onRest: () => void; onSkip: () => void; onAddRest: () => void;
 }) {
   return <View style={[s.footer, { paddingBottom: Math.max(bottom, 12) }]}>
     {rest ? <View style={s.rest}><Pressable onPress={onRest}><Text style={s.restTime}>{rest}</Text></Pressable><View style={s.copy} /><Pressable accessibilityRole="button" onPress={onAddRest} style={s.smallAction}><Text style={s.cyan}>+30 sec</Text></Pressable><Pressable accessibilityRole="button" onPress={onSkip} style={s.smallAction}><Text style={s.cyan}>Skip</Text></Pressable></View> : null}
-    <View style={s.footerTools}><Pressable accessibilityRole="button" onPress={onSecondary} style={s.secondary}><Text style={s.subtitle}>{secondary} <Text style={s.cyan}>⌃</Text></Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel={`Display units ${unit}`} onPress={onUnit} style={s.unit}><Text style={s.subtitle}>{unit}</Text></Pressable></View>
+    <View style={s.footerTools}>{secondary ? <Pressable accessibilityRole="button" onPress={onSecondary} style={s.secondary}><Text style={s.subtitle}>{secondary} <Text style={s.cyan}>⌃</Text></Text></Pressable> : <View style={s.copy} />}<Pressable accessibilityRole="button" accessibilityLabel={`Display units ${unit}`} onPress={onUnit} style={s.unit}><Text style={s.subtitle}>{unit}</Text></Pressable></View>
     <Pressable accessibilityRole="button" disabled={disabled} accessibilityState={{ disabled: !!disabled }} onPress={onPress} style={({ pressed }) => [s.primary, (pressed || disabled) && s.dim]}>
       <LinearGradient colors={['#9862e8', '#6232c2']} style={s.primaryFill}><Text style={s.primaryText}>{label}</Text></LinearGradient>
     </Pressable>

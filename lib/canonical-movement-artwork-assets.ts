@@ -17,10 +17,12 @@ export const CANONICAL_CORE_MOVEMENT_ARTWORK: Readonly<
   press: require('@/assets/images/lift-icons/achievement-material-v2/press.png'),
 };
 
+// This generated family is explicitly DEV-only pending human review and release authorization.
+// Metro removes the unreachable asset requires from TestFlight/Production exports.
 export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
   CanonicalAccessoryArtworkKey,
   Readonly<{ source: ImageSourcePropType; thumbnail: ImageSourcePropType; label: string }>
->> = {
+>> = __DEV__ ? {
   accessory_flat_dumbbell_bench_press: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1-thumb.png'),
@@ -1011,14 +1013,14 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-row-v1-thumb.png'),
     label: 'Athlete performing single-arm dumbbell row',
   },
-};
+} : {} as Readonly<Record<CanonicalAccessoryArtworkKey, Readonly<{ source: ImageSourcePropType; thumbnail: ImageSourcePropType; label: string }>>>;
 
 export function canonicalMovementArtworkSource(
   movement?: CanonicalMovementArtworkInput | null,
 ): ImageSourcePropType | null {
   const resolution = resolveCanonicalMovementArtwork(movement);
   if (resolution.kind === 'accessory') {
-    if (resolution.artworkKey) return CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey].source;
+    if (__DEV__ && resolution.artworkKey) return CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey].source;
     return accessoryMuscleRegionAsset(resolution.regionKey).source;
   }
   if (resolution.kind === 'core' || resolution.kind === 'core_variant') {

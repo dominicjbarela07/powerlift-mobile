@@ -27,6 +27,7 @@ import {
   type ReadinessDisplayUnit,
 } from '@/lib/readiness';
 import { useSLMotionPreviewOverrides } from '@/lib/motion-preview';
+import type { SessionReadinessObservation } from '@/lib/session-readiness-start';
 
 export type ReadinessScaleProps = {
   label: string;
@@ -117,7 +118,7 @@ export function ReadinessScale({
     <View style={styles.scaleGroup}>
       <View style={styles.scaleHeaderRow}>
         <Text typographyRole="shortTechnicalLabel" style={styles.sectionLabel}>{label}</Text>
-        <Text typographyRole={valueText ? 'numeric' : 'bodyStrong'} style={styles.liveValue}>{hasSelection ? valueText || descriptor : 'Tap to choose'}</Text>
+        <Text typographyRole={hasSelection && valueText ? 'numeric' : 'bodyStrong'} style={styles.liveValue}>{hasSelection ? valueText || descriptor : 'Tap to choose'}</Text>
       </View>
       {prompt ? <Text typographyRole="bodyStrong" style={styles.prompt}>{prompt}</Text> : null}
       <View style={styles.endpointRow}>
@@ -177,10 +178,15 @@ type Props = {
   values: ReadinessModalValues;
   error?: string | null;
   submitting: boolean;
+  checking?: boolean;
+  readOnly?: boolean;
+  existing?: SessionReadinessObservation | null;
+  canSubmit?: boolean;
   reduceMotion: boolean;
   onChange: (next: ReadinessModalValues) => void;
   onSubmit: () => void;
   onCancel: () => void;
+  onSkip?: () => void;
 };
 
 export function ReadinessModal({
@@ -191,13 +197,20 @@ export function ReadinessModal({
   values,
   error,
   submitting,
+  checking = false,
+  readOnly = false,
+  existing = null,
+  canSubmit = true,
   reduceMotion,
   onChange,
   onSubmit,
   onCancel,
+  onSkip,
 }: Props) {
   const isDaily = context === 'daily';
   const priorDisplay = bodyweightKgToDisplay(priorBodyweightKg, unit);
+  const submitLabel = isDaily ? 'Save Check-In' : existing ? 'Continue to Session' : 'Save & Begin Session';
+  const submitDisabled = submitting || checking || readOnly || !canSubmit;
   const update = <K extends keyof ReadinessModalValues>(key: K, value: ReadinessModalValues[K]) => {
     onChange({ ...values, [key]: value });
   };
@@ -241,10 +254,24 @@ export function ReadinessModal({
           </View>
 
           <StrengthLedgerBottomSheetScrollView
+            style={styles.formScroll}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
+            {readOnly ? <Text style={styles.subtitle}>Preview only. Readiness and Session start are disabled.</Text> : null}
+            {checking ? <Text accessibilityLiveRegion="polite" style={styles.subtitle}>Checking for an existing check-in…</Text> : null}
+            {existing ? <View style={styles.bodyweightGroup}>
+              <Text typographyRole="bodyStrong" style={styles.liveValue}>Readiness already recorded</Text>
+              <Text style={styles.subtitle}>Your check-in for this {existing.workout_id ? 'Session' : 'day'} is saved. Continue without submitting it again.</Text>
+              <Text style={styles.subtitle}>{[
+                existing.sleep_hours != null ? `Sleep ${existing.sleep_hours} hr` : null,
+                existing.energy != null ? `Energy ${existing.energy}/5` : null,
+                existing.soreness != null ? `Soreness ${existing.soreness}/5` : null,
+                existing.stress != null ? `Stress ${existing.stress}/5` : null,
+                existing.bodyweight_kg != null ? `${bodyweightKgToDisplay(existing.bodyweight_kg, unit)} ${unit}` : null,
+              ].filter(Boolean).join(' · ')}</Text>
+            </View> : <View pointerEvents={submitting || checking ? 'none' : 'auto'}>
             <View style={styles.bodyweightGroup}>
               <Text typographyRole="shortTechnicalLabel" style={styles.sectionLabel}>BODY WEIGHT</Text>
               {!values.bodyweightSkipped ? (
@@ -298,26 +325,39 @@ export function ReadinessModal({
             <ReadinessScale label="ENERGY" low="Drained" high="Fired up" position={values.energyPosition} descriptors={['Drained', 'Low', 'Ready', 'Strong', 'Fired up']} reduceMotion={reduceMotion} hapticBoundaries onChange={(value) => update('energyPosition', value)} />
             <ReadinessScale label="SORENESS" low="Fresh" high="Very sore" position={values.sorenessPosition} descriptors={['Fresh', 'Light', 'Moderate', 'Sore', 'Very sore']} reduceMotion={reduceMotion} hapticBoundaries onChange={(value) => update('sorenessPosition', value)} />
             <ReadinessScale label="STRESS" low="Relaxed" high="High stress" position={values.stressPosition} descriptors={['Relaxed', 'Settled', 'Manageable', 'Elevated', 'High stress']} reduceMotion={reduceMotion} hapticBoundaries onChange={(value) => update('stressPosition', value)} />
+            </View>}
 
             {error ? (
               <Text typographyRole="errorText" accessibilityRole="alert" style={styles.errorText}>{error}</Text>
             ) : null}
 
+          </StrengthLedgerBottomSheetScrollView>
+          <View style={styles.actions}>
             <SLButton
               accessibilityLabel={submitting
                 ? (isDaily ? 'Saving check-in' : 'Beginning session')
-                : (isDaily ? 'Save Check-In' : 'Begin Session')}
-              accessibilityState={{ busy: submitting, disabled: submitting }}
-              disabled={submitting}
+                : submitLabel}
+              accessibilityState={{ busy: submitting, disabled: submitDisabled }}
+              disabled={submitDisabled}
               fullWidth
-              label={isDaily ? 'Save Check-In' : 'Begin Session'}
+              label={submitLabel}
               loading={submitting}
               onPress={onSubmit}
               size="lg"
               style={styles.primaryButton}
               variant="primary"
             />
-            <Pressable
+            {onSkip && !isDaily ? <SLButton
+              accessibilityLabel="Skip readiness and begin Session"
+              disabled={submitting || readOnly}
+              fullWidth
+              label="Skip & Begin Session"
+              onPress={onSkip}
+              size="lg"
+              variant="secondary"
+              style={styles.primaryButton}
+            /> : null}
+            {isDaily ? <Pressable
               accessibilityRole="button"
               accessibilityLabel="Cancel readiness check"
               disabled={submitting}
@@ -326,8 +366,8 @@ export function ReadinessModal({
               style={styles.cancelButton}
             >
               <Text typographyRole="shortButtonLabel" style={styles.cancelText}>Cancel</Text>
-            </Pressable>
-          </StrengthLedgerBottomSheetScrollView>
+            </Pressable> : null}
+          </View>
         </View>
       </KeyboardAvoidingView>
     </StrengthLedgerBottomSheet>
@@ -336,12 +376,14 @@ export function ReadinessModal({
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: SLColors.surfaceScrim },
-  sheet: { width: '100%', maxHeight: '94%', backgroundColor: SLColors.surfaceFloating, borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderTopColor: SLColors.borderFocus, overflow: 'hidden', ...SLShadows.level3 },
+  sheet: { flex: 1, width: '100%', backgroundColor: SLColors.surfaceFloating, borderTopLeftRadius: SLRadius.radiusSheet, borderTopRightRadius: SLRadius.radiusSheet, borderWidth: StyleSheet.hairlineWidth, borderColor: SLColors.borderStrong, borderTopColor: SLColors.borderFocus, overflow: 'hidden', ...SLShadows.level3 },
   headerRow: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 18, paddingTop: 18, paddingBottom: 12 },
   headerCopy: { flex: 1, paddingRight: 10 },
   title: { ...SLTypography.hero, color: SLColors.text, fontWeight: '900', letterSpacing: -0.6 },
   subtitle: { color: SLColors.textMuted, fontSize: SLTypography.label.fontSize, lineHeight: 20, marginTop: 5 },
   closeButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginTop: -8, marginRight: -10 },
+  formScroll: { flex: 1 },
+  actions: { paddingHorizontal: 18, paddingBottom: 14, paddingTop: 4, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: SLColors.borderStrong, backgroundColor: SLColors.surfaceFloating },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 16 },
   bodyweightGroup: { paddingTop: 5, paddingBottom: 15, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: SLColors.border },
   sectionLabel: { color: SLColors.textMuted, fontSize: SLTypography.caption.fontSize, fontWeight: '900', letterSpacing: 1.2 },
@@ -362,7 +404,7 @@ const styles = StyleSheet.create({
   railFill: { position: 'absolute', left: 0, height: 4, borderRadius: SLRadius.pill, backgroundColor: SLColors.accent },
   thumb: { position: 'absolute', width: 22, height: 22, borderRadius: SLRadius.pill, backgroundColor: SLColors.accent, borderWidth: 3, borderColor: SLColors.surfaceFloating },
   errorText: { color: SLColors.danger, fontSize: SLTypography.label.fontSize, lineHeight: 19, marginTop: 10 },
-  primaryButton: { marginTop: 16 },
+  primaryButton: { marginTop: 8 },
   cancelButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
   cancelText: { color: SLColors.textMuted, fontSize: SLTypography.label.fontSize, fontWeight: '700' },
 });

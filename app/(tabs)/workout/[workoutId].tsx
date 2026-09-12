@@ -237,7 +237,8 @@ import {
   resolveSessionCompletionTiming,
   resolveSessionTimeZone,
 } from '@/lib/post-session-times';
-import { buildReadinessPayload, createReadinessSubmissionGate, normalizeReadinessUnit, persistReadinessThenBegin } from '@/lib/readiness';
+import { buildReadinessPayload, normalizeReadinessUnit } from '@/lib/readiness';
+import { applicableSessionReadiness, createSessionReadinessStartGate, type SessionReadinessObservation } from '@/lib/session-readiness-start';
 import { ThemedText } from '@/components/themed-text';
 import { SLColors, SLFontFamilies, SLLayout, SLMotion, SLRadius, SLShadows, SLSpacing, SLTypography } from '@/constants/theme';
 import {
@@ -637,10 +638,7 @@ type WorkoutPayload = {
     accomplishment_history?: { items: LoggerRecognitionEvent[]; next_cursor: string | null; has_more: boolean } | null;
     completed_recap?: CompletedSessionRecapPayload | null;
   };
-  readiness_survey?: {
-    id: number;
-    bodyweight_kg?: number | null;
-  } | null;
+  readiness_survey?: SessionReadinessObservation | null;
   athlete: {
     id: number;
     name: string;
@@ -2966,90 +2964,73 @@ export default function WorkoutViewerScreen() {
     if (setMutationNoticeTimerRef.current) clearTimeout(setMutationNoticeTimerRef.current);
   }, []);
 
-  // --- Readiness survey (mobile only) ---
+  // Readiness belongs to the explicit pre -> active transition, never route entry.
   const [readinessVisible, setReadinessVisible] = useState(false);
-  const [pendingBeginWorkoutId, setPendingBeginWorkoutId] = useState<number | null>(null);
   const [readinessSubmitting, setReadinessSubmitting] = useState(false);
+  const [readinessChecking, setReadinessChecking] = useState(false);
+  const [readinessCanSubmit, setReadinessCanSubmit] = useState(false);
+  const [existingReadiness, setExistingReadiness] = useState<SessionReadinessObservation | null>(null);
   const [readinessError, setReadinessError] = useState<string | null>(null);
-  const readinessSubmissionGateRef = useRef(createReadinessSubmissionGate());
-
+  const readinessStartGateRef = useRef(createSessionReadinessStartGate());
+  const beginInFlightRef = useRef(false);
   const [readinessForm, setReadinessForm] = useState<ReadinessModalValues>({
-    bodyweight: '',
-    bodyweightSkipped: true,
-    sleepPosition: NaN,
-    energyPosition: NaN,
-    sorenessPosition: NaN,
-    stressPosition: NaN,
+    bodyweight: '', bodyweightSkipped: true,
+    sleepPosition: NaN, energyPosition: NaN, sorenessPosition: NaN, stressPosition: NaN,
   });
 
-  // If backend provides readiness data, this prevents re-prompting.
-  // If it doesn't yet, you'll still get prompted once per begin tap.
-  const hasReadinessForWorkout = () => {
-    return !!data?.readiness_survey;
-  };
-
-  const openReadinessThenBegin = (wkId: number) => {
-    setPendingBeginWorkoutId(wkId);
-    setReadinessError(null);
-    setReadinessForm({
-      bodyweight: '',
-      bodyweightSkipped: true,
-      sleepPosition: NaN,
-      energyPosition: NaN,
-      sorenessPosition: NaN,
-      stressPosition: NaN,
-    });
-    setReadinessVisible(true);
-  };
+  useEffect(() => {
+    const gate = readinessStartGateRef.current;
+    gate.invalidate();
+    setReadinessVisible(false);
+    setReadinessSubmitting(false);
+    setReadinessChecking(false);
+    setExistingReadiness(null);
+    return () => gate.invalidate();
+  }, [executionScope]);
 
   const cancelReadiness = () => {
-    if (readinessSubmitting) return;
+    if (!readinessStartGateRef.current.cancel()) return;
     setReadinessVisible(false);
-    setPendingBeginWorkoutId(null);
+    setReadinessChecking(false);
     setReadinessError(null);
   };
 
-  // Readiness must save before the session starts. Failure stays actionable.
-  const submitReadinessAndBegin = async () => {
-    const wkId = pendingBeginWorkoutId;
-    if (!wkId) {
-      setReadinessError('This training session is no longer available. Close and try again.');
-      return;
-    }
-
-    const built = buildReadinessPayload(readinessForm, unit);
-    if (!built.payload) {
+  const chooseReadinessAndBegin = async (choice: 'submit' | 'skip') => {
+    const gate = readinessStartGateRef.current;
+    const intent = gate.current();
+    if (!intent || gate.isWorking() || intent.preview || intent.scope !== executionScopeRef.current || !canLogFromServer) return;
+    if (choice === 'submit' && (!readinessCanSubmit || readinessChecking)) return;
+    const built = choice === 'submit' && !existingReadiness ? buildReadinessPayload(readinessForm, unit) : null;
+    if (built && !built.payload) {
       setReadinessError(built.error || 'Check your readiness values.');
       return;
     }
-
-    await readinessSubmissionGateRef.current.run(async () => {
-      try {
-        setReadinessSubmitting(true);
-        setReadinessError(null);
-        await persistReadinessThenBegin(
-          async () => {
-            const response = await fetchJson(`${API_BASE}/workouts/mobile/${wkId}/readiness`, {
-              method: 'POST',
-              auth: true,
-              body: built.payload,
-            });
-            if (!response.ok || !response.json?.ok) {
-              throw new Error(response.json?.error || `Unable to save readiness (HTTP ${response.status})`);
-            }
-          },
-          () => {
-            setReadinessVisible(false);
-            setPendingBeginWorkoutId(null);
-            requestAnimationFrame(() => void beginWorkout());
-          },
-        );
-      } catch (e: any) {
-        console.log('readiness submit error', e);
-        setReadinessError(e?.message || 'Could not save your check-in. Try again.');
-      } finally {
-        setReadinessSubmitting(false);
+    await gate.choose(intent, built?.payload ? async () => {
+      setReadinessSubmitting(true);
+      setReadinessError(null);
+      const response = await fetchJson(`${API_BASE}/workouts/mobile/${intent.workoutId}/readiness`, {
+        method: 'POST', auth: true, body: built.payload,
+      });
+      if (!response.ok || !response.json?.ok || !response.json?.readiness_survey?.id) {
+        throw new Error(response.json?.error || 'Could not save your check-in. Try again.');
       }
+      if (!gate.isCurrent(intent) || intent.scope !== executionScopeRef.current) return;
+      const saved = response.json.readiness_survey as SessionReadinessObservation;
+      setExistingReadiness(saved);
+      setData(current => current?.workout.id === intent.workoutId ? { ...current, readiness_survey: saved } : current);
+    } : null, async () => {
+      if (intent.scope !== executionScopeRef.current) return;
+      setReadinessSubmitting(true);
+      setReadinessVisible(false);
+      setReadinessChecking(false);
+      // Skip sends no readiness request, including no legacy skipped sentinel.
+      await beginWorkout();
+    }).catch((error: any) => {
+      if (gate.isCurrent(intent) && intent.scope === executionScopeRef.current) {
+        setReadinessError(error?.message || 'Could not save your check-in. Try again.');
+      }
+    }).finally(() => {
+      if (intent.scope === executionScopeRef.current) setReadinessSubmitting(false);
     });
   };
 
@@ -6011,7 +5992,7 @@ export default function WorkoutViewerScreen() {
   };
 
   const beginWorkoutConfirmed = async (reason?: string) => {
-    if (!data?.workout) return;
+    if (!data?.workout || beginInFlightRef.current) return;
     const wkId = data.workout.id;
 
     if (!canLogFromServer) {
@@ -6032,6 +6013,8 @@ export default function WorkoutViewerScreen() {
       return;
     }
 
+    beginInFlightRef.current = true;
+    const startScope = executionScope;
     try {
       setActionLoading('begin');
       setError(null);
@@ -6051,7 +6034,9 @@ export default function WorkoutViewerScreen() {
         return;
       }
 
+      if (executionScopeRef.current !== startScope) return;
       const timingEvent = await prepareSessionStartTiming(wkId);
+      if (executionScopeRef.current !== startScope) return;
 
       // Step 2: mark status as in_progress
       const begun = await fetchJson(
@@ -6074,7 +6059,7 @@ export default function WorkoutViewerScreen() {
       }
 
       // Pull fresh Training Session data (status, logs, etc.).
-      await fetchWorkout();
+      if (executionScopeRef.current === startScope) await fetchWorkout();
     } catch (err) {
       // Preserve the stable start event on an ambiguous network failure. If
       // the server committed before the response was lost, retry must replay
@@ -6082,7 +6067,8 @@ export default function WorkoutViewerScreen() {
       console.error('beginWorkout error', err);
       Alert.alert('Error', 'Failed to begin session');
     } finally {
-      setActionLoading(null);
+      beginInFlightRef.current = false;
+      if (executionScopeRef.current === startScope) setActionLoading(null);
     }
   };
 
@@ -7604,11 +7590,46 @@ export default function WorkoutViewerScreen() {
     router.replace('/(tabs)/workout' as any);
   };
 
-  const handleBeginWorkoutPress = () => {
-    if (hasReadinessForWorkout()) {
-      beginWorkout();
-    } else {
-      openReadinessThenBegin(workout.id);
+  const handleBeginWorkoutPress = async () => {
+    if ((!isCoachAthletePreview && !canBegin) || beginInFlightRef.current) return;
+    const gate = readinessStartGateRef.current;
+    const intent = gate.open({ scope: executionScope, workoutId: workout.id, preview: isCoachAthletePreview });
+    if (!intent) return; // Synchronous protection, including taps before React rerenders.
+    setReadinessForm({ bodyweight: '', bodyweightSkipped: true, sleepPosition: NaN, energyPosition: NaN, sorenessPosition: NaN, stressPosition: NaN });
+    setExistingReadiness(null);
+    setReadinessError(null);
+    setReadinessCanSubmit(false);
+    setReadinessChecking(!intent.preview);
+    setReadinessVisible(true);
+    if (intent.preview) return; // The preview can inspect the sheet, never execute a request.
+    const stillCurrent = () => gate.isCurrent(intent) && !gate.isWorking() && intent.scope === executionScopeRef.current;
+    try {
+      const fresh = await fetchJson(`${API_BASE}/workouts/mobile/${workout.id}`, { auth: true, cache: 'no-store' });
+      if (!stillCurrent()) return;
+      const payload = fresh.json as WorkoutPayload;
+      if (!fresh.ok || !payload?.workout || payload.workout.id !== workout.id || payload.athlete?.id !== athlete.id) throw new Error('Unable to check Session readiness.');
+      const capabilities = sessionExecutionCapabilities({ status: payload.workout.status, canLog: payload.permissions?.can_log, previewRequested: false, viewOnly: payload.permissions?.view_only });
+      setData(payload);
+      if (!capabilities.canBegin) {
+        cancelReadiness(); // A server-active Session resumes without another readiness gate.
+        return;
+      }
+      const subject = { workoutId: workout.id, athleteId: athlete.id, date: payload.workout.date };
+      let existing = payload.readiness_survey;
+      if (!applicableSessionReadiness(existing, subject)) {
+        // Calendar owns the canonical same-day fallback; another Session's row is never reused.
+        const day = await fetchJson(`${API_BASE}/athletes/mobile/calendar/day?date=${encodeURIComponent(subject.date)}&athlete_id=${athlete.id}`, { auth: true, cache: 'no-store' });
+        if (!stillCurrent()) return;
+        if (!day.ok || !day.json?.ok || day.json.calendar_day?.date !== subject.date) throw new Error('Unable to check today’s readiness.');
+        const session = day.json.calendar_day.sessions?.find((row: { workout_id: number }) => row.workout_id === workout.id);
+        existing = session?.readiness;
+      }
+      setExistingReadiness(applicableSessionReadiness(existing, subject) ? existing : null);
+      setReadinessCanSubmit(true);
+    } catch {
+      if (stillCurrent()) setReadinessError('Could not check existing readiness. Close and retry, or Skip to begin without saving a check-in.');
+    } finally {
+      if (stillCurrent()) setReadinessChecking(false);
     }
   };
 
@@ -9176,10 +9197,10 @@ export default function WorkoutViewerScreen() {
 
       <SessionV3Footer bottom={insets.bottom} unit={unit} onUnit={() => switchDisplayUnit(unit === 'kg' ? 'lb' : 'kg')}
         label={isCoachAthletePreview ? (isActiveSession ? 'Log set · Preview' : 'Begin Session · Preview') : isPreSession ? 'Begin Session' : focusedSetLabel}
-        disabled={isCoachAthletePreview || !!actionLoading || (isPreSession && !canBegin) || feedbackState.submission.status === 'submitting'}
-        onPress={isPreSession ? () => { void beginWorkout(); } : focusedSetAction || (() => setNavigatorVisible(true))}
-        secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : 'Check-in · optional') : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
-        onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true); else openReadinessThenBegin(workout.id); } else setNavigatorVisible(true); }}
+        disabled={(isCoachAthletePreview && !isPreSession) || !!actionLoading || readinessVisible || readinessSubmitting || (isPreSession && !isCoachAthletePreview && !canBegin) || feedbackState.submission.status === 'submitting'}
+        onPress={isPreSession ? () => { void handleBeginWorkoutPress(); } : focusedSetAction || (() => setNavigatorVisible(true))}
+        secondary={isPreSession ? (focusedMovementKey ? 'Back to Session plan' : isCoachAthletePreview ? 'Session movements' : null) : `${getOrderedWorkoutMovements(workout).findIndex(row => row.key === focusedMovementKey) + 1} of ${getOrderedWorkoutMovements(workout).length} movements`}
+        onSecondary={() => { if (isPreSession) { if (focusedMovementKey) { setFocusedMovementKey(null); setExpandedCoreDetails({}); setExpandedCompletedMovements({}); } else if (isCoachAthletePreview) setNavigatorVisible(true);  } else setNavigatorVisible(true); }}
         rest={restActive && !isCoachAthletePreview ? formatRestTime(restSeconds) : null} onRest={openTimerPicker} onSkip={stopRestTimer} onAddRest={() => startRestTimer(restSeconds + 30)}
       />
       <SessionMovementNavigator visible={navigatorVisible} bottom={insets.bottom} onClose={() => setNavigatorVisible(false)}
@@ -10860,7 +10881,12 @@ export default function WorkoutViewerScreen() {
         submitting={readinessSubmitting}
         reduceMotion={reduceMotion}
         onChange={setReadinessForm}
-        onSubmit={submitReadinessAndBegin}
+        checking={readinessChecking}
+        canSubmit={readinessCanSubmit}
+        existing={existingReadiness}
+        readOnly={isCoachAthletePreview}
+        onSubmit={() => { void chooseReadinessAndBegin('submit'); }}
+        onSkip={() => { void chooseReadinessAndBegin('skip'); }}
         onCancel={cancelReadiness}
       />
 

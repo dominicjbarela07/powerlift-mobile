@@ -1372,7 +1372,7 @@ function VisualMovementRow({ item, kind, pending, onOpen, displayUnit, calculate
       onPress={() => onOpen(item)}
       style={({ pressed }) => [styles.movementRow, item.superset_group && { borderLeftWidth: 2, borderLeftColor: palette.violet }, pressed && styles.movementRowPressed]}
     >
-      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
+      <View style={styles.movementArtwork}><MovementArtwork item={item} kind={kind} size={__DEV__ ? 64 : 48} /></View>
       <View style={styles.movementCopy}>
         <Text typographyRole="movementTitle" numberOfLines={2} style={styles.movementName}>{movementName(item)}</Text>
         <Text typographyRole="bodyStrong" numberOfLines={2} style={styles.movementPrescription}>{prescriptionSummary(item, kind)}</Text>
@@ -1391,7 +1391,7 @@ function InlineMovementWorkspace({ item, kind, draft, dirty, editable, storageUn
   return (
     <View accessibilityLabel={`${movementName(item)} expanded movement workspace`} style={styles.expandedMovementCard}>
       <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${movementName(item)} editor`} onPress={onCollapse} style={({ pressed }) => [styles.expandedMovementHeader, pressed && styles.pressed]}>
-        <View style={styles.expandedMovementArtwork}><MovementArtwork item={item} kind={kind} size={64} /></View>
+        <View style={styles.expandedMovementArtwork}><MovementArtwork item={item} kind={kind} size={__DEV__ ? 64 : 48} /></View>
         <View style={styles.expandedMovementCopy}>
           <Text numberOfLines={2} style={[styles.movementName, styles.expandedMovementName]}>{movementName(item)}</Text>
           <Text numberOfLines={2} style={styles.movementMeta}>{draftMovementMeta(draft, item, kind)}</Text>
@@ -2507,7 +2507,7 @@ const styles = StyleSheet.create({
   movementList: { gap: 7 },
   movementRow: { position: 'relative', minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 12, overflow: 'hidden', paddingVertical: 12, paddingHorizontal: 12, borderRadius: SLRadius.md, backgroundColor: '#101016', borderWidth: StyleSheet.hairlineWidth, borderColor: palette.line },
   movementRowPressed: { backgroundColor: palette.objectRaised },
-  movementArtwork: { width: 64, height: 64, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  movementArtwork: { width: __DEV__ ? 64 : 48, height: __DEV__ ? 64 : 48, zIndex: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   movementTrailing: { width: 24, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   movementArtworkImage: { shadowOpacity: 0.36, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   artworkFallback: { alignItems: 'center', justifyContent: 'center', borderRadius: SLRadius.md, backgroundColor: palette.violetSoft, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(167,139,250,0.25)' },
@@ -2523,7 +2523,7 @@ const styles = StyleSheet.create({
   movementLoadManual: { color: SLColors.warning },
   expandedMovementCard: { position: 'relative', overflow: 'hidden', borderRadius: SLRadius.lg, borderWidth: 1, borderColor: SLColors.borderStrong, backgroundColor: '#101016' },
   expandedMovementHeader: { minHeight: 82, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10 },
-  expandedMovementArtwork: { width: 64, height: 64, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  expandedMovementArtwork: { width: __DEV__ ? 64 : 52, height: __DEV__ ? 64 : 52, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   expandedMovementCopy: { flex: 1, minWidth: 0, gap: 4 },
   expandedPrescription: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },
   expandedLoad: { color: palette.text, fontFamily: SLFontFamilies.sansBold, fontSize: 16, lineHeight: 22 },

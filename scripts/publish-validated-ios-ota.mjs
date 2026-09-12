@@ -69,6 +69,7 @@ run('npx', [
   '--clear',
 ]);
 run(process.execPath, ['scripts/assert-ota-route-bundle.mjs', outputDir]);
+run(process.execPath, ['scripts/assert-no-dev-artwork-export.mjs', outputDir]);
 run(process.execPath, ['scripts/assert-ota-native-compatibility.mjs']);
 
 const bundleRoot = path.join(outputDir, '_expo', 'static', 'js', 'ios');
