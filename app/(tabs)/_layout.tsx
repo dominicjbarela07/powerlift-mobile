@@ -865,10 +865,10 @@ export default function TabsLayout() {
           name="dev-mocks/anatomy-system"
           options={{ href: null, headerShown: false, title: 'Dynamic Anatomy QA' }}
         />
-        <Tabs.Screen
+        {__DEV__ ? <Tabs.Screen
           name="dev-mocks/movement-art-hero"
           options={{ href: null, headerShown: false, title: 'Movement Art Focal Review' }}
-        />
+        /> : null}
         <Tabs.Screen
           name="dev-mocks/text-layout"
           options={{ href: null, headerShown: false, title: 'Text Layout QA' }}

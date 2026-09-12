@@ -59,13 +59,21 @@ const superset=read('components/workout-logger/superset-round-workspace.tsx');
 assert.match(superset,/selected && isActive && !movement.complete \? resolveApprovedExactMovementArtwork/);
 assert.match(superset,/!hero \? <CanonicalMovementArtwork requireHumanApproval/);
 assert.doesNotMatch(superset,/Log superset round|MOVEMENT PROGRESS/);
-const lab=read('app/(tabs)/dev-mocks/movement-art-hero.tsx');
-assert.match(lab,/if \(!__DEV__\) return null/);
-assert.match(lab,/CANDIDATE CROP STUDY · NOT APPROVED/);
-assert.doesNotMatch(lab,/fetch\(|\.decide\(|human_approved\s*[:=]|approvals=/,'focal studies cannot grant approval');
+const labPath='app/(tabs)/dev-mocks/movement-art-hero.tsx';
+const releaseTrack=JSON.parse(read('app.json')).expo.extra?.releaseTrack;
+const hasLab=fs.existsSync(labPath);
+if(hasLab){
+ const lab=read(labPath);
+ assert.match(lab,/if \(!__DEV__\) return null/);
+ assert.match(lab,/CANDIDATE CROP STUDY · NOT APPROVED/);
+ assert.doesNotMatch(lab,/fetch\(|\.decide\(|human_approved\s*[:=]|approvals=/,'focal studies cannot grant approval');
+} else {
+ assert.equal(releaseTrack,'testflight','canonical DEV must retain its focal lab');
+ assert.ok(JSON.parse(read('config/protected-fix-manifest.json')).releaseProjectionPaths.includes(labPath),'missing lab requires an explicit DEV release exclusion');
+}
 const layerConsumers=[];
 for(const folder of ['components','app']) {
  const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=`${dir}/${entry.name}`;if(entry.isDirectory())walk(file);else if(/\.tsx$/.test(file)&&read(file).includes('<MovementArtworkHero '))layerConsumers.push(file);}};walk(folder);
 }
-assert.deepEqual(layerConsumers.sort(),['app/(tabs)/dev-mocks/movement-art-hero.tsx','components/workout-logger/session-v3-movement.tsx','components/workout-logger/superset-round-workspace.tsx'].sort(),'only the two eligibility-governed surfaces and isolated crop lab may mount hero art');
+assert.deepEqual(layerConsumers.sort(),[...(hasLab?[labPath]:[]),'components/workout-logger/session-v3-movement.tsx','components/workout-logger/superset-round-workspace.tsx'].sort(),'only the two eligibility-governed surfaces and isolated crop lab may mount hero art');
 console.log('Movement hero: positive approval, exact identity, mapped-byte receipt, DEV scope, focal bounds, cached timer-independent layer, fallback, active-only and superset contracts PASS');
