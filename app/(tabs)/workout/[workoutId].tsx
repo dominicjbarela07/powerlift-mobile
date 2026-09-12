@@ -302,6 +302,7 @@ import {
   buildSupersetRoundModel,
   missingSupersetRoundItemIds,
 } from '@/lib/superset-rounds';
+import { supersetWorkspaceFocus, supersetMemberLabel, type SupersetMemberSelection } from '@/lib/superset-workspace-focus';
 import {
   advanceSequentialGroupStep,
   createSequentialGroupDraft,
@@ -1709,6 +1710,7 @@ export default function WorkoutViewerScreen() {
     coachWorkspaceMode?: string;
   }>();
   const coachPreviewRequested = athleteView === 'coach-preview';
+  const [supersetMemberSelection, setSupersetMemberSelection] = useState<SupersetMemberSelection>(null);
   const [focusedMovementKey, setFocusedMovementKey] = useState<string | null>(null);
   const [navigatorVisible, setNavigatorVisible] = useState(false);
   const executionOwner = String(user?.id ?? user?.user_id ?? '');
@@ -8039,10 +8041,10 @@ export default function WorkoutViewerScreen() {
       canConfigureEquipment:
         !isCoachAthletePreview && isMachineAccessoryItem(item),
       equipmentContext: equipmentPresentation?.contextLabel || null,
-      timelineLabel: simplifyMobileMovementName(executionName) || 'Accessory',
+      equipmentRequired: needsEquipmentSelection(item),
+      movementArtwork: canonicalArtworkInputForLoggerItem(item),
       prescription: accessoryTargetLine(executionItem),
       historyLine: accessoryLookbackLine(item),
-      primaryMuscleRegion: accessoryMuscleRegion(executionItem).key,
       set_logs: (item.set_logs || []).map((log) => ({
         ...log,
         resultLine: loggedSetText(log, unit, item),
@@ -8838,9 +8840,14 @@ export default function WorkoutViewerScreen() {
               if ((isActiveSession || focusedMovementKey) && focusedMovementKey !== detailKey) return null;
               const workspaceItems = supersetWorkspaceItems(grp.items);
               const roundModel = buildSupersetRoundModel(workspaceItems);
+              const memberFocus = supersetWorkspaceFocus(roundModel, supersetMemberSelection);
               if (focusedMovementKey === detailKey) {
-                focusedSetAction = canLog ? () => openSupersetRoundLogger(grp, roundModel.currentRoundIndex || 1) : undefined;
-                focusedSetLabel = 'Log superset round';
+                const nextItem = grp.items.find(item => item.id === memberFocus.next?.itemId);
+                focusedSetAction = canLog && !isCoachView && nextItem
+                  ? () => openAccessoryWheel(nextItem) : undefined;
+                focusedSetLabel = memberFocus.next
+                  ? `Log ${supersetMemberLabel(grp.group, memberFocus.next.position)} · Set ${memberFocus.next.nextSetIndex}`
+                  : 'Choose next movement';
               }
               return (
                 <View
@@ -8850,8 +8857,13 @@ export default function WorkoutViewerScreen() {
                 >
                   <SupersetRoundWorkspace
                     canLog={canLog && !isCoachView}
-                    executionHint={grp.dev_execution_hint || 'Alternate continuously'}
-                    expanded={Boolean(expandedCompletedMovements[detailKey])}
+                    phase={isPreSession ? 'pre' : isFinishedSession ? 'complete' : 'active'}
+                    expanded={isActiveSession || Boolean(expandedCompletedMovements[detailKey])}
+                    selectedItemId={memberFocus.member?.itemId}
+                    onSelectMember={(itemId) => {
+                      setSupersetMemberSelection({ itemId, evidenceKey: memberFocus.evidenceKey });
+                      openMovementCard(detailKey);
+                    }}
                     groupLabel={grp.group}
                     model={roundModel}
                     onConfigureEquipment={(itemId) => {
@@ -8867,12 +8879,6 @@ export default function WorkoutViewerScreen() {
                         mode: 'rir',
                         movementName: item.title,
                       })}
-                    onLogMovement={(itemId) => {
-                      const item = grp.items.find(
-                        (candidate) => candidate.id === itemId,
-                      );
-                      if (item) openAccessoryWheel(item);
-                    }}
                     onOpenHistory={(itemId) => {
                       const item = grp.items.find(
                         (candidate) => candidate.id === itemId,
@@ -8895,27 +8901,6 @@ export default function WorkoutViewerScreen() {
                     swappingItemId={savingItemId}
                     onToggle={() => toggleMovementCard(detailKey)}
                   />
-                </View>
-              );
-            }
-
-            if (isSuperset) {
-              return (
-                <View
-                  key={grp.group || `ss-${idx}`}
-                  style={[
-                    styles.supersetCard,
-                    styles.supersetCardSecondary,
-                    isPreSession && styles.movementCardPreSession,
-                    isFinishedSession && styles.movementCardFinished,
-                  ]}
-                >
-                  <View style={styles.supersetHeader}>
-                    <Text style={styles.supersetBadge}>
-                      Superset {grp.group}
-                    </Text>
-                  </View>
-                  {grp.items.map((it) => renderAccessoryMovement(it))}
                 </View>
               );
             }

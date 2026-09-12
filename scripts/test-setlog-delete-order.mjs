@@ -50,7 +50,7 @@ assert.match(
 );
 assert.match(
   superset,
-  /onEdit: canModifyLog[\s\S]*?onRemove: canModifyLog && persistedLog && canDeletePersistedSetLog\([\s\S]*?movement\.item\.set_logs/,
+  /onEdit: canModifyLog[\s\S]*?onRemove: canModifyLog && persistedLog && canDeletePersistedSetLog\([\s\S]*?item\.set_logs/,
   'each superset member derives eligibility only from its own SetLogs',
 );
 assert.match(

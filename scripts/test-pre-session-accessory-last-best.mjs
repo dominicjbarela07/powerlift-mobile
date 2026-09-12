@@ -141,7 +141,7 @@ assert.match(v3Source, /history \|\| \(progress \?/ , 'the full history peek sup
 for (const field of ['eyebrow', 'primary', 'supporting']) assert.ok(v3Source.includes(`progress.${field}`));
 assert.match(routeSource, /historyLine:\s*accessoryLookbackLine\(item\)/, 'superset movements reuse the governed Last Best resolver');
 assert.equal(
-  (supersetSource.match(/item\.historyLine/g) || []).length,
+  (supersetSource.match(/>\{item\.historyLine\}</g) || []).length,
   1,
   'each expanded superset movement has one historical reference rather than a stacked duplicate',
 );

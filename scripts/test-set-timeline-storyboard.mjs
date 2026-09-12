@@ -57,7 +57,7 @@ assert.match(
   /model\.movements\.map[\s\S]*?<CompactSetTimeline[\s\S]*?movement\.requiredSets[\s\S]*?movement\.nextSetIndex/,
   'each superset movement must preserve its own progression while using the same compact rail',
 );
-assert.match(superset, /onEditSet\(movement\.item, persistedLog\)/);
-assert.match(superset, /onDeleteSet\(movement\.item, persistedLog\)/);
+assert.match(superset, /onEditSet\(item, persistedLog\)/);
+assert.match(superset, /onDeleteSet\(item, persistedLog\)/);
 
 console.log('Set Timeline storyboard convergence contracts passed.');
