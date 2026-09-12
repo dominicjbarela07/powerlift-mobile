@@ -1,0 +1,56 @@
+{
+  "id": 349,
+  "key": "accessory_high_bar_squat",
+  "display_name": "High-Bar Squat",
+  "family": "accessory_quads",
+  "equipment_type": "free_weight",
+  "loading_implementation": "free_weight",
+  "load_convention": "total_external_load",
+  "sidedness": "bilateral",
+  "identity_status": "canonical",
+  "ownership_scope": "global",
+  "visibility": "public",
+  "retired_at": null,
+  "secondary_muscle_groups": [
+    "glutes",
+    "adductors"
+  ],
+  "primary_muscle_group": "quads",
+  "stored_primary_muscle_group": "quads",
+  "primary_taxonomy_source": "stored_accessory_taxonomy",
+  "asset_status": "APPROVED",
+  "final_status": "NEW",
+  "generation_batch": "Completion",
+  "implement": "Straight barbell in high back rack",
+  "files": {
+    "master": {
+      "path": "assets/images/movement-artwork/free-weight-v1/masters/high-bar-squat-v1.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "bytes": 1928246,
+      "sha256": "ad0bc25b344e7bf7322e2e2c476c7a4ff796e65500e1edaa279a77e0d9050c26"
+    },
+    "app": {
+      "path": "assets/images/movement-artwork/free-weight-v1/high-bar-squat-v1.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 323379,
+      "sha256": "4ad5d36ad519014ec8d1df1533f9ba17147b6dbe0dd477cf478ae1b8f42c3fab"
+    },
+    "thumbnail": {
+      "path": "assets/images/movement-artwork/free-weight-v1/high-bar-squat-v1-thumb.png",
+      "dimensions": [
+        192,
+        192
+      ],
+      "bytes": 47113,
+      "sha256": "b6ef3ee05b70e09603b9d0f4b81a8011f4eb60eac63c329ed5682820305c6c7c"
+    }
+  },
+  "attempt": 1,
+  "validation_note": "Rear three-quarter view exposes high trapezius bar placement, full squat depth and two planted feet. Symmetric intact bar/plates; bar margins tight but complete and away from rounded frame corners."
+}

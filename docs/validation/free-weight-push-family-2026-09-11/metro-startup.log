@@ -1,0 +1,28 @@
+
+> powerlift_mobile@1.0.0 start
+> node scripts/start-canonical-dev-metro.mjs
+
+[canonical-dev-metro] SOURCE PREFLIGHT PASS
+[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.
+{
+  "port": 8081,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "sha": "91648e326f4aef92fb88f6144a1ccfc0b635a8c1",
+  "remoteRef": "origin/dev/canonical-mobile",
+  "remoteSha": "91648e326f4aef92fb88f6144a1ccfc0b635a8c1",
+  "clean": false
+}
+Starting project at /Users/dominic/powerlifting_app_dev/powerlift_mobile
+React Compiler enabled
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@54.0.36 - expected version: ~54.0.37
+  expo-constants@18.0.13 - expected version: ~18.0.14
+  expo-file-system@19.0.23 - expected version: ~19.0.24
+  expo-updates@29.0.19 - expected version: ~29.0.20
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.

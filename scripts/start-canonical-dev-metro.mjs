@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
 
 import {
   CANONICAL_DEV_METRO_PORT,
@@ -10,6 +11,7 @@ import {
 } from './canonical-dev-metro-lineage.mjs';
 
 const source = assertCanonicalSource(inspectCanonicalSource());
+assertHumanArtworkGate();
 const existing = inspectMetroListener();
 if (existing.processes.length) {
   throw new Error(`Port ${CANONICAL_DEV_METRO_PORT} is already owned by PID ${existing.processes.map((process) => process.pid).join(', ')}`);

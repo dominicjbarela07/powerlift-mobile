@@ -1,0 +1,36 @@
+{
+  "definitions_audited": 633,
+  "qualifying": 51,
+  "groups": {
+    "chest": 17,
+    "triceps": 12,
+    "front_delts": 12,
+    "side_delts": 10
+  },
+  "existing_kept": 1,
+  "existing_regenerated": 0,
+  "new_accepted": 50,
+  "candidate_calls": 79,
+  "first_candidates": 50,
+  "refinement_calls": 29,
+  "rejected_candidates": 29,
+  "pending_assets": 0,
+  "family_checkpoints": 8,
+  "native_passes": 2,
+  "native_screens": [
+    "Logger coach preview",
+    "Session Workspace",
+    "Movement History"
+  ],
+  "native_search_interaction": "BLOCKED: Computer Use cgWindowNotFound; Browser connection list empty",
+  "api_search_id_coverage": 51,
+  "accepted_contracts": 198,
+  "historical_quarantine_unchanged": 49,
+  "typecheck": "PASS",
+  "eslint": {
+    "errors": 0,
+    "preexisting_workspace_warnings": 17
+  },
+  "testflight_touched": false,
+  "production_touched": false
+}

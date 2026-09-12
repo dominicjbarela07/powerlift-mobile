@@ -1,0 +1,507 @@
+{
+  "baseline": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+  "baseline_sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe",
+  "common_prompt": "Use case: photorealistic-natural. Create ONE square canonical Strength Ledger movement photograph for mobile cards and exact movement history. INPUT 1 is the approved ORIGINAL Incline Dumbbell Bench Press and the immutable, sole visual style control. Preserve its premium near-black studio, dark subtly textured floor, natural muscular adult athlete in graphite sleeveless shirt, black shorts and plain black shoes, believable skin/fabric, neutral brushed-silver equipment, broad neutral key and restrained violet rear-right rim. Same commercial fitness photography and normal-to-short-telephoto lens feel. Movement mechanics dictate a new camera/pose; do not copy the incline press pose. No new blue palette, fog, neon, shirtless posing, branding, text, numbers, watermarks, anatomy highlights or gym clutter. One athlete only, natural proportions, neutral focused expression, two anatomically plausible hands with wrapped grips, physically coherent implements and support/contact shadows. Fit the WHOLE athlete, both complete shoes, all weights/bar ends and bench/support feet within the square with about 8% breathing room; action occupies roughly 80\u201385% of longest image axis, not a tiny figure. Never cut off or merge equipment. Preserve full photographic detail and strong implement/torso/arm silhouette for downscaling.",
+  "movements": [
+    {
+      "id": 253,
+      "implement": "Two dumbbells",
+      "cue": "DUMBBELL CURL. Standing muscular adult athlete, feet hip width, upright quiet torso. BOTH elbows fixed beside ribs, both forearms curled to roughly horizontal/upward with palms SUPINATED toward shoulders. TWO matching brushed-silver dumbbells, fingers wrapped around separate continuous handles, wrists straight. Front three-quarter camera exposes palm-up grips and biceps elbow flexion; no shoulder press or hammer-neutral grip. Whole body and shoes."
+    },
+    {
+      "id": 325,
+      "implement": "Straight barbell",
+      "cue": "BARBELL WRIST CURL. Seated on a plain flat black bench, knees apart, torso leaning slightly forward. BOTH forearms rest palm-up along thighs with wrists just beyond kneecaps. Narrow supinated grip on a light straight silver barbell just in front of knees; wrists visibly curl the bar UP toward the forearms while elbows/forearms stay supported. Hands close enough inside knees, both palms facing up. Modest small symmetrical plates, shaft straight. Full side-front three-quarter view, camera close enough to clearly read forearm support and flexed wrists, entire seated athlete and bench in frame."
+    },
+    {
+      "id": 354,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "BULGARIAN SPLIT SQUAT, quad-focused bottom position. One rear foot rests shoelaces DOWN on a stable flat black bench behind athlete, rear knee lowered toward floor without touching. Front foot flat, front knee flexed roughly 90 degrees tracking over toes, torso mostly upright, front thigh near horizontal. One silver dumbbell held in each straight arm beside hips. Three-quarter SIDE camera clearly exposes long split stance, rear-foot elevation, full front foot and bench contact. Two legs only; no back-foot float or crossed feet, all bench feet visible."
+    },
+    {
+      "id": 388,
+      "implement": "Two dumbbells",
+      "cue": "DUMBBELL ROMANIAN DEADLIFT at controlled deep hip-hinge bottom. Athlete stands on BOTH flat feet hip-width, knees softly bent about 15-20 degrees, hips pushed BACK, neutral long flat spine and torso near horizontal. TWO matching silver dumbbells hang from straight arms very close to front/sides of shins, mid-shin height ABOVE floor. Head follows spine looking down-forward. True side three-quarter camera makes hip hinge and slight knee bend unmistakable; not a squat, lunge, row or one-leg balance. Full feet and both complete dumbbells."
+    },
+    {
+      "id": 476,
+      "implement": "Two dumbbells and low calf platform",
+      "cue": "STANDING DUMBBELL CALF RAISE at top plantarflexion. Upright athlete holds one silver dumbbell in each straight arm at sides. BOTH forefeet/balls of feet supported on front edge of one low stable black rectangular calf step, both HEELS clearly lifted high above toes, knees straight but not locked, ankles extended. Side three-quarter camera exposes raised heels and toes pressing into step. No hopping; contact of both forefeet is visible, whole platform and both shoes in frame. No machine or rack."
+    },
+    {
+      "id": 495,
+      "implement": "Single plate",
+      "cue": "WEIGHTED CRUNCH on dark floor. Athlete lies supine on thin dark mat, knees bent about90 degrees and BOTH feet planted on floor. Lower back and pelvis stay grounded. Shoulder blades curled just off floor, ribs draw toward pelvis; torso only about20-25 degrees off floor, NOT a full sit-up. BOTH hands hug one modest silver weight plate flat against upper chest. Neck neutral with small chin tuck, elbows relaxed. Elevated side three-quarter view shows short trunk-flexion arc and complete body/mat; plate supported by hands never resting on throat."
+    },
+    {
+      "id": 251,
+      "implement": "Straight barbell",
+      "cue": "BARBELL CURL. Standing athlete with quiet upright torso and knees softly extended, shoulder-width supinated grip on a perfectly STRAIGHT silver barbell, equal modest round plates at ends. Both elbows tucked next to ribs, forearms mid-curl slightly above horizontal; wrists neutral and palms toward ceiling. No EZ zigzag shaft. Front three-quarter view exposes both grips and complete straight continuous bar, whole body and shoes."
+    },
+    {
+      "id": 252,
+      "implement": "EZ bar",
+      "cue": "EZ BAR CURL. Standing athlete, torso upright, elbows at sides, both forearms mid-curl near horizontal. Both hands use the inner angled portions of a clearly and symmetrically zigzag EZ curl bar, semi-supinated wrists. Equal modest brushed-metal round plates at both ends. Front three-quarter view clearly distinguishes angled EZ grip geometry from a straight barbell. Whole body and bar."
+    },
+    {
+      "id": 254,
+      "implement": "Two dumbbells",
+      "cue": "ALTERNATING DUMBBELL CURL. Standing upright athlete. One arm is visibly curled to roughly 110 degrees at elbow, palm fully supinated, dumbbell near front shoulder; opposite arm hangs fully lowered beside hip holding other dumbbell with neutral grip. Both upper arms remain at sides, no shoulder press or leaning. Front three-quarter view clearly separates the asynchronous arms and weights; full body/shoes."
+    },
+    {
+      "id": 255,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "SEATED DUMBBELL CURL. Athlete seated upright on a plain flat bench with no backrest, both feet flat and knees at 90 degrees. Both elbows tucked by sides, both silver dumbbells curled at same time, palms visibly supinated, forearms above horizontal. Torso vertical without reclining. Front three-quarter view shows seated hips, flat bench, feet, both weights and underhand grips."
+    },
+    {
+      "id": 257,
+      "implement": "Two dumbbells and incline bench",
+      "cue": "INCLINE DUMBBELL CURL. Athlete reclines against a black bench backrest set about 55 degrees, head/back supported, both feet flat forward. Upper arms hang down slightly BEHIND torso, elbows below shoulders; both forearms supinated and curling matching dumbbells upward without shoulder flexion. Elbows stay low next to bench and wrists face up. Side-front view exposes inclined support, stretched upper-arm position behind torso and curl bend. NOT an incline press: weights below chest/shoulders, upper arms downward, no pressing elbows."
+    },
+    {
+      "id": 256,
+      "implement": "Two dumbbells",
+      "cue": "STANDING DUMBBELL CURL. Full-length standing athlete at controlled middle-lower curl phase, upper arms vertically beside ribs, both elbows bent about 80 degrees. Both palms fully SUPINATED upward, wrists straight; separate silver dumbbells forward from hips. Feet hip width, torso upright and still. Slightly SIDE-front view makes elbow angle and quiet shoulders obvious. This exact identity overlaps generic Dumbbell Curl; do not invent a different grip or stance just to differentiate it."
+    },
+    {
+      "id": 258,
+      "implement": "EZ bar and incline bench",
+      "cue": "SPIDER CURL using modest EZ bar. Athlete PRONE with CHEST supported on a black incline bench angled about 45 degrees, feet planted wide behind bench. Both upper arms hang straight DOWN beyond top of bench under shoulders, both elbows flex to bring EZ bar upward toward face/upper chest with underhand angled grips. Forearms are NOT resting on a preacher pad: elbows hang freely in front of bench. Side three-quarter camera shows downward upper-arm geometry, prone chest and free-hanging curl. Whole body and bench feet/bar ends."
+    },
+    {
+      "id": 259,
+      "implement": "Single dumbbell and preacher bench",
+      "cue": "SINGLE ARM PREACHER CURL. Athlete seated behind black preacher curl pad angled downward away from chest, ONE upper arm rests fully on pad with elbow supported near lower edge. That forearm curled upward to about 100 degrees, palm supinated, hand wrapped on one silver dumbbell. Opposite empty hand braces lightly on top edge of pad. Two feet flat, whole dedicated preacher bench and athlete. Front-side angle reveals a single working arm, supported elbow and palm-up curl; no duplicate dumbbell."
+    },
+    {
+      "id": 260,
+      "implement": "Two dumbbells and preacher bench",
+      "cue": "DUMBBELL PREACHER CURL, bilateral. Athlete seated at black preacher bench, BOTH upper arms lying on sloping pad, both elbows supported near lower edge. Two separate silver dumbbells in palm-up grips, both forearms curled upward about 95 degrees. Show clear space between two dumbbells and separate wrapped handles; no bar linking them. Feet planted, chest close to high edge pad. Front three-quarter view includes entire seated body, bench structure and both weights."
+    },
+    {
+      "id": 261,
+      "implement": "EZ bar and preacher bench",
+      "cue": "EZ BAR PREACHER CURL. Athlete seated with BOTH upper arms fully resting on sloped black preacher pad, elbows supported near lower edge. Both forearms curl one visibly zigzag symmetric silver EZ BAR upward using underhand angled grips, light equal plates on both sleeves. Pad supports upper arms, bar clears pad. Whole seated athlete, planted feet, bench supports and both bar ends. Front-side camera separates EZ shaft bends from pad and hands."
+    },
+    {
+      "id": 262,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "CONCENTRATION CURL, bilateral depiction honoring this definition's governed bilateral sidedness. Athlete seated on front edge of flat black bench, legs spread wide, torso leaned forward. BOTH elbows brace against the INNER thighs just above knees. BOTH palms supinated and forearms curl TWO separate modest silver dumbbells up between the knees; one dumbbell per hand, handles unconnected and clear separation. Elbows stay against thighs, not hanging free. Full front three-quarter view shows bilateral thigh bracing, coherent wrists and complete bench/feet. This is not a preacher curl: no arm pad."
+    },
+    {
+      "id": 263,
+      "implement": "Two dumbbells",
+      "cue": "HAMMER CURL, bilateral. Standing upright athlete, both upper arms vertical at ribs and elbows flexed 100 degrees, both hands maintain NEUTRAL thumb-up grips. Two silver dumbbells held with long axes of handles close to vertical, end discs stacked vertically with top heads pointing upward, palms facing each other. No palm-up supination. Front-side camera shows both neutral grips, vertical dumbbell heads, quiet torso and full planted shoes."
+    },
+    {
+      "id": 264,
+      "implement": "Two dumbbells",
+      "cue": "CROSS BODY HAMMER CURL, alternating phase with two dumbbells. Standing upright. Working elbow stays by side while its forearm bends DIAGONALLY ACROSS torso, bringing thumb-up neutral-grip dumbbell toward OPPOSITE pectoral/shoulder. Other arm hangs at side holding second dumbbell. Palms do not turn up, working dumbbell vertically oriented. Front view slightly three-quarter makes diagonal crossing path unmistakable, no shoulder shrug or lateral raise. Entire athlete and weights."
+    },
+    {
+      "id": 265,
+      "implement": "Two dumbbells",
+      "cue": "ZOTTMAN CURL at start of eccentric lowering after rotation. Standing stable athlete, both elbows tucked at sides and bent about 110 degrees. Both forearms have rotated to palms DOWN, overhand grips on two separate silver dumbbells in front of chest; show backs of hands facing UP toward camera and thumb wrap below handles. This pronated top/lowering phase defines Zottman versus ordinary supinated curl. Both upper arms remain down, no front raise. Front-side view, full body, no motion arrows or duplicate limbs."
+    },
+    {
+      "id": 266,
+      "implement": "Straight barbell",
+      "cue": "DRAG CURL with straight barbell. Upright standing athlete, palms UP on light straight silver bar. Both ELBOWS pulled conspicuously BACK behind rib cage, upper arms slope backward; bar travels very close against front abdomen/lower ribs at top curl. Forearms slope up-forward from rearward elbows to bar near torso, not the forward arc of standard curl. True side three-quarter view exposes elbows behind torso and bar near abdomen. Complete bar ends, feet and athlete."
+    },
+    {
+      "id": 267,
+      "implement": "Straight barbell",
+      "cue": "REVERSE CURL. Standing athlete with both elbows close to ribs, elbows bent around 90 degrees. Both hands use PRONATED OVERHAND grip on a perfectly straight light silver barbell: palms face floor, knuckles/bare backs of hands upward and thumbs wrapped underneath. Bar is in front waist/abdomen, elbows remain low without shoulder lift. Front elevated three-quarter view clearly exposes overhand wrists and straight bar with small symmetric plates, full body/shoes."
+    },
+    {
+      "id": 268,
+      "implement": "Straight barbell",
+      "cue": "CHEAT CURL, controlled assisted concentric phase using straight barbell. Standing muscular athlete with feet shoulder-width and softly bent knees, hips just extending forward from a small hinge to assist a heavier-than-strict supinated barbell curl. Torso leans BACK only about 10 degrees as bar reaches mid-abdomen, elbows bent around90 degrees, shoulders below ears. Athletic mild hip drive clearly visible, no extreme lumbar arch or unsafe contortion. Side three-quarter view emphasizes hips/knees and slight rearward torso; whole body and straight symmetrically loaded bar."
+    },
+    {
+      "id": 326,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "DUMBBELL WRIST CURL, bilateral. Athlete seated on flat bench, torso slightly forward, both forearms resting PALMS UP lengthwise on thighs, wrists extend just past knees. Each hand holds one SMALL silver dumbbell, wrists FLEX upward toward inner forearms while forearms stay down. No elbow/biceps curl; elbow angle stays fixed. Front elevated three-quarter view makes palm-up wrists and two separate weights clearly visible, complete bench and feet."
+    },
+    {
+      "id": 327,
+      "implement": "Straight barbell",
+      "cue": "BEHIND THE BACK WRIST CURL. Standing athlete, both arms long straight down BEHIND hips, narrow overhand grip on straight silver barbell held behind upper thighs/buttocks. Wrists FLEX so bar rises slightly behind glutes while elbows remain straight; fingers firmly closed. Rear three-quarter camera, athlete's back faces camera with face only in profile, clearly exposes bar BEHIND legs and wrists curling, both shoulders relaxed. Modest symmetric plates, full shoes and bar ends."
+    },
+    {
+      "id": 328,
+      "implement": "Straight barbell and flat bench",
+      "cue": "REVERSE WRIST CURL with light perfectly STRAIGHT barbell. Seated athlete leaning forward, BOTH forearms rest PALMS DOWN on thighs, wrists hanging beyond knees. Hands pronated, backs of hands UP; wrist EXTENSION lifts knuckles and straight silver bar upward while forearms remain on thighs. Small equal plates and a rigid unbent shaft, no EZ bar. Elevated front-side camera makes pronation and raised backs of hands obvious. Full athlete and bench."
+    },
+    {
+      "id": 329,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "DUMBBELL REVERSE WRIST CURL, bilateral. Seated forward on black bench, BOTH forearms supported on thighs PALMS DOWN, wrists just past knees. Two SMALL silver dumbbells in overhand grips, both wrists extend upwards so knuckles rise toward back of forearms; elbows and forearms do not lift. Elevated front three-quarter camera shows backs of both hands and two separate weighted handles. Full athlete and feet/bench, no palm-up grips."
+    },
+    {
+      "id": 330,
+      "implement": "Wrist roller with suspended plate",
+      "cue": "WRIST ROLLER. Standing athlete holds a short horizontal cylindrical silver roller handle with BOTH hands overhand shoulder-width at chest height, elbows softly bent. ONE taut narrow black cord attached to roller's center winds around shaft and runs visibly DOWN to one small silver plate on a loading pin, suspended above floor between feet. Hands rotate handle via wrist flexion/extension, one wrist slightly up and other slightly down. Entire continuous cord, roller and hanging weight visible, not a cable machine or pulley. Front three-quarter camera, whole body/shoes and plate."
+    },
+    {
+      "id": 331,
+      "implement": "Two pairs of smooth weight plates",
+      "cue": "PLATE PINCH, bilateral grip hold. Standing athlete arms straight at sides, each hand PINCHES the top rim of TWO modest smooth silver weight plates pressed face-to-face. THUMB presses one outward plate face, FOUR fingers press opposite face; fingers do NOT pass through plate holes or handles. Plates hang vertically beside thighs, weight held by friction of fingertips and thumb at upper edge. Front three-quarter camera makes near-hand pinch geometry obvious; smooth plain plate outer faces, centered holes empty, two coherent plate stacks, whole body and shoes."
+    },
+    {
+      "id": 332,
+      "implement": "Two thick-handled dumbbells",
+      "cue": "FAT GRIP HOLD, static bilateral grip. Standing still upright athlete with arms straight down beside hips, holding TWO silver dumbbells with conspicuously THICK matte graphite cylindrical sleeves around their handles (about 2.5-inch diameter). Hands wrap broadly around thick handles, fingers and thumb cannot meet as on thin handles. Neutral wrists, relaxed shoulders, no walking stride or shrug. Slight low front-side camera clearly exposes near-hand thick handle while keeping full figure and both dumbbells/shoes. No branding on sleeves."
+    },
+    {
+      "id": 333,
+      "implement": "Straight barbell and flat bench",
+      "cue": "BARBELL FINGER CURL, seated bilateral. Athlete seated leaning forward on black bench, BOTH forearms rest palms UP on thighs, wrists just beyond knees remain NEUTRAL without wrist flexion. Light straight silver bar lies across the curled proximal FINGER pads in a partly opened grip, rolled slightly away from palms. Fingers flex to roll shaft back toward palms while forearms remain supported. Clearly show thumbs relaxed and space between palm heels and bar, no floating bar or broken fingers. Elevated front-side camera emphasizes fingers and straight bar while full athlete/bench remain in frame. Light small symmetric plates."
+    },
+    {
+      "id": 334,
+      "implement": "Two short single-ended weighted lever bars",
+      "cue": "LEVER BAR PRONATION, bilateral synchronized representation. Seated athlete with both forearms supported horizontally on thighs, elbows near90 degrees, hands beyond knees. Each hand grips near unweighted end of one short straight leverage bar with ONE small silver disc securely collared at far end. Rotate BOTH forearms inward from neutral so palms turn DOWN and weighted tips tilt inward toward midline about45 degrees from vertical. Knuckles facing partly UP, fingers wrapped, wrists straight; two bars stop short of crossing/meeting. Elevated front view makes pronated hand orientation and two offset-weight bars clear; full seated body and bench. Not wrist flexion and not a two-ended dumbbell."
+    },
+    {
+      "id": 335,
+      "implement": "Two short single-ended weighted lever bars",
+      "cue": "LEVER BAR SUPINATION, bilateral synchronized representation. Seated athlete both forearms supported on thighs nearhorizontal, hands beyond knees. Each hand grips near bare unweighted end of ONE short straight lever bar, ONE small silver disc secured at far end. Rotate BOTH forearms OUTWARD so palms face visibly UP and weighted tips tilt OUTWARD away from center about45 degrees from vertical. Wrists stay straight, thumbs turn outward, elbows stay fixed. Front elevated camera clearly reveals palm-up grip and outward separated weighted levers, complete seated athlete/bench and both bar tips. Different from inward palm-down pronation."
+    },
+    {
+      "id": 336,
+      "implement": "Two short single-ended weighted lever bars",
+      "cue": "RADIAL DEVIATION, bilateral free-weight wrist movement. Standing side-front athlete with BOTH arms long down at sides, palms toward thighs. Each hand holds one short single-ended lever bar like a hammer with the loaded silver end projecting FORWARD on THUMB side of grip. Bend wrists toward THUMBS to lift the forward weighted ends UP to about35degrees above horizontal, upper arms/elbows remain straight and still. Strong SIDE three-quarter view exposes forward-pointing levers and thumb-side wrist hinge, full body, feet and all lever ends. Not biceps curl or forearm rotation; light realistic load."
+    },
+    {
+      "id": 337,
+      "implement": "Two short single-ended weighted lever bars",
+      "cue": "ULNAR DEVIATION, bilateral free-weight wrist movement. Standing athlete viewed from REAR three-quarter SIDE, BOTH arms long straight beside hips, palms toward thighs. Each hand grips one short single-ended lever bar whose weighted silver tip extends BEHIND body on PINKY side of grip. Bend wrists toward PINKIES to lift the rearward weighted ends backward and UP about30degrees above horizontal, with straight elbows and quiet shoulders. Whole figure, both feet and both rearward projecting levers clearly visible. This is a little-finger-side wrist hinge, NOT the forward thumb-side radial deviation and not a curl."
+    },
+    {
+      "id": 348,
+      "implement": "Straight barbell in front rack",
+      "cue": "FRONT SQUAT, full bottom position. Athlete standing shoulder-width, both heels flat, knees deeply flexed with thighs just below parallel, torso tall. Straight silver barbell with symmetric moderate plates rests across FRONT deltoids, elbows very HIGH forward, clean fingertip front-rack grip with wrists extended beneath bar. Bar clearly ahead of neck on front shoulders, not on upper back or elbows. Side-front three-quarter camera reveals front rack, upright torso, knee/hip depth and full flat feet. No rack or machine in scene; whole bar ends."
+    },
+    {
+      "id": 349,
+      "implement": "Straight barbell in high back rack",
+      "cue": "HIGH BAR SQUAT, controlled full bottom. Straight loaded silver barbell rests HIGH on upper trapezius just below back of neck, hands grip bar outside shoulders, elbows point down/back. Both feet shoulder-width flat, knees forward/out tracking toes, hips lowered so thighs just below parallel, torso relatively upright. SIDE-rear three-quarter view clearly shows upper-back bar placement, both knees and complete feet. Do not depict low-bar forward good morning or front rack. Whole athlete and both symmetric plate stacks/bar ends."
+    },
+    {
+      "id": 350,
+      "implement": "Straight barbell in elbow crooks",
+      "cue": "ZERCHER SQUAT at deep bottom. Athlete squats with both feet flat shoulder-width, knees bent and thighs near/below parallel, torso upright. ONE straight silver barbell cradled across CROOKS OF BOTH ELBOWS in front of lower chest, elbows around90degrees, forearms point up with fists together. Bar rests in elbow creases, NOT hands or shoulders; continuous bar projects beyond both elbows to small equal plates. Front-side angle exposes elbow support and deep squat, full shoes/bar ends. No impossible arm/bar intersection beyond natural crook contact."
+    },
+    {
+      "id": 351,
+      "implement": "Single dumbbell held goblet-style",
+      "cue": "GOBLET SQUAT, deep bottom on FLAT FLOOR. Athlete feet slightly wider than hips, both heels down flat, knees tracking outward, hips low and torso upright. BOTH hands cup underneath the TOP head of one vertical silver dumbbell held close to upper chest, lower head hangs between forearms. Elbows downward inside knees, wrist grips physically coherent. Front three-quarter view shows goblet hand cup, single vertical dumbbell and deep squat on flat floor; NO heel wedges, platform or bench. Full body and shoes."
+    },
+    {
+      "id": 352,
+      "implement": "Straight barbell and heel wedge",
+      "cue": "CYCLIST SQUAT with HIGH-BAR loading. Athlete narrow stance, feet close but not touching, BOTH heels visibly elevated on a single low black sloped squat wedge, toes lower on floor. Deep knee-forward squat, thighs below parallel, knees close tracking toes, torso very upright. Straight silver bar on HIGH upper back with symmetric modest plates, hands outside shoulders. Side-front view makes narrow stance, elevated heels, forward knees and bar-on-back unambiguous. Complete wedge, full feet and bar ends; not goblet squat."
+    },
+    {
+      "id": 353,
+      "implement": "Single dumbbell and heel wedge",
+      "cue": "HEEL ELEVATED GOBLET SQUAT at deep bottom. One silver dumbbell held VERTICAL at chest with BOTH hands cupped under top head, elbows point down inside knees. BOTH heels stand on one low stable black sloped wedge, toes lower toward floor, feet about hip-width. Knees travel forward and hips drop deeply with upright torso, thighs below parallel. Side-front camera clearly exposes heel lift/wedge and front goblet loading, full feet and weight; distinct from flat-floor goblet and back-loaded cyclist squat."
+    },
+    {
+      "id": 355,
+      "implement": "Two dumbbells and low front-foot platform",
+      "cue": "FRONT FOOT ELEVATED SPLIT SQUAT at bottom. Athlete in split stance with entire FRONT foot flat on one LOW black rectangular platform about10cm high. REAR foot stays on FLOOR behind, heel lifted and toes pressing floor, rear knee lowered close to floor. Front knee deeply bent, torso upright, TWO dumbbells hang at sides. Side three-quarter camera clearly shows FRONT-foot elevation and rear-foot floor contact; rear foot NOT on bench. Whole athlete, step, two weights and shoes."
+    },
+    {
+      "id": 356,
+      "implement": "Two dumbbells and front-heel wedge",
+      "cue": "HEEL ELEVATED SPLIT SQUAT at bottom. Split stance, FRONT HEEL rests on a small low black wedge while front TOES press lower floor, front knee tracks far forward with deep bend. REAR foot on floor behind on its toes, back heel up, rear knee lowered. Torso upright, one dumbbell held each side in straight arms. Side camera makes only front HEEL raised, not entire front foot on a box and not rear foot on a bench. Full shoes, low wedge and dumbbells visible."
+    },
+    {
+      "id": 357,
+      "implement": "Two dumbbells",
+      "cue": "REVERSE LUNGE with dumbbells, bottom of BACKWARD step. Front foot stays fully planted under athlete, same-side knee flexed near90degrees. Rear leg has stepped FAR BACK, rear forefoot grounded with heel high and rear knee just above floor. Torso tall with mild natural forward inclination, paired silver dumbbells hanging straight at sides. Side three-quarter view shows long rearward step behind hips and stable planted front foot. Two legs only, no bench/platform. Whole stance and both weights; a still represents position rather than proving travel direction."
+    },
+    {
+      "id": 358,
+      "implement": "Two dumbbells",
+      "cue": "WALKING LUNGE with paired dumbbells, transitioning FORWARD out of a stride. Front foot fully grounded, front knee still bent about60degrees supporting body rising and advancing. Rear leg trails back with heel high, only last toes touching floor about to leave; hips moving forward over planted leg. Torso tall, arms long with one silver dumbbell each side. True side three-quarter view clearly shows dynamic walking stride and trailing foot about to step through, no stationary parallel stance, no duplicated motion limbs. Full body and both shoes."
+    },
+    {
+      "id": 359,
+      "implement": "Two dumbbells",
+      "cue": "FORWARD LUNGE, controlled low position after a long forward step. Athlete facing left in side-front view, FRONT foot flat FAR AHEAD of hips, front knee about90degrees over ankle. Back knee bends and lowers close to floor with rear toes grounded/heel lifted. Upright trunk, two matching silver dumbbells at sides in straight arms, shoulders quiet. Show visible front-foot landing/forward reach stance, both complete legs/feet. No bench, no platform; no impossible airborne rear foot. Still depicts exact forward-lunge setup without motion arrows."
+    },
+    {
+      "id": 360,
+      "implement": "Single dumbbell in goblet hold",
+      "cue": "LATERAL LUNGE using one goblet-held dumbbell. Front camera slightly three-quarter, athlete takes very WIDE side stance: working knee bends deeply as hips sit BACK over that side, opposite leg extends long STRAIGHT sideways with foot flat. Both feet point forward, heels planted; chest up with slight hip hinge. Both hands cup top head of one vertical silver dumbbell at chest, elbows down. Lateral side-to-side geometry unmistakable, not a sagittal split squat. Full extended leg/foot, bent leg/foot and complete weight within frame."
+    },
+    {
+      "id": 361,
+      "implement": "Two dumbbells and stable step",
+      "cue": "STEP UP with paired dumbbells. Athlete near halfway up one sturdy black box about35cm tall. Working foot ENTIRELY flat on box, knee bent around60degrees bearing load; opposite leg trails down behind with its toes just lifting OFF FLOOR to step upward, not resting on box. Torso upright with modest natural lean; two silver dumbbells hang straight at sides. Side three-quarter camera shows box height, flat working sole, knee drive and trailing foot. Whole athlete, two legs only, full shoes/box/weights."
+    },
+    {
+      "id": 362,
+      "implement": "Two light dumbbells and low step",
+      "cue": "PETERSON STEP UP, loaded with two light dumbbells, small controlled single-leg knee-extension pattern. Athlete stands sideways at edge of LOW black step about10cm high. Working foot on step with HEEL SLIGHTLY RAISED to bias forefoot, working knee travels FORWARD and bends; nonworking leg extends diagonally forward off step with heel hovering just above lower FLOOR and toes lifted. Upright torso, paired light dumbbells at sides. Side-front angle clearly shows low step, forward heel-tap leg, elevated working heel and knee-over-toe, not a high box step-up. Full body and feet."
+    },
+    {
+      "id": 363,
+      "implement": "Two dumbbells and low step",
+      "cue": "DUMBBELL STEP DOWN, controlled eccentric single-leg lowering. Athlete on ONE working foot entirely FLAT on a sturdy black step about20cm high; working knee bent and hips lowering. Opposite leg reaches forward/down from edge with its HEEL just about to touch floor, toes dorsiflexed UP. Two modest silver dumbbells held at sides, torso tall with mild hip hinge. Side-front camera shows flat supported heel, descending unsupported leg and floor heel-tap. Whole two legs/shoes and step; no elevated supporting heel as in Peterson step-up."
+    },
+    {
+      "id": 364,
+      "implement": "Single dumbbell plus support band and fixed anchor",
+      "cue": "SPANISH SQUAT WITH WEIGHT. Athlete deep seated-back squat, shins nearly VERTICAL and both feet flat shoulder-width, torso upright. Both hands goblet-hold one vertical silver dumbbell at chest. A BROAD black support strap/band passes BEHIND BOTH KNEES and runs horizontally FORWARD to one sturdy visible low anchor post bolted into floor in front of athlete; tension permits sitting hips BACK. Show side three-quarter profile exposing strap behind knee hollows, taut front anchor and dumbbell. Not band-only exercise: external handheld weight is clear. No chair under athlete, no impossible strap through legs. Full body, anchor foot and complete strap path."
+    },
+    {
+      "id": 387,
+      "implement": "Straight barbell",
+      "cue": "ROMANIAN DEADLIFT, conventional barbell hinge bottom. Athlete stands feet hip width flat, knees softly flexed only15degrees, hips pushed BACK with neutral long flat spine and torso almost horizontal. Straight silver barbell held shoulder-width OVERHAND by straight arms, bar very close to SHINS just below knees/mid-shin and suspended ABOVE floor. Modest equal plates; not touching floor. TRUE SIDE three-quarter camera exposes hip hinge, shallow knee angle, bar close to legs and neutral head looking down-forward. No squat or rounded-back Jefferson curl; full shoes and bar ends with margin."
+    },
+    {
+      "id": 389,
+      "implement": "Two dumbbells",
+      "cue": "SINGLE LEG ROMANIAN DEADLIFT. Athlete balances on ONE planted flat foot with softly bent knee; opposite leg extends straight BACK and UP in line with near-horizontal torso, hips square to floor. TWO silver dumbbells held in straight arms hanging below shoulders near stance shin; head neutral looking down. Side three-quarter camera makes long T-shaped torso/rear-leg line and single support foot obvious. Only two anatomically coherent legs, no rear toe contact, no floating stance heel; full extended rear shoe, dumbbells and supporting foot."
+    },
+    {
+      "id": 390,
+      "implement": "Two dumbbells",
+      "cue": "B-STANCE ROMANIAN DEADLIFT. Side three-quarter full figure shows staggered kickstand stance: main working foot FLAT below hip; opposite foot only20cm back resting on toes with raised heel. Hips pushed back, both knees slightly soft, long neutral spine and torso inclined nearly horizontal. TWO silver dumbbells hang in straight arms near working shin. Rear foot remains on ground, unlike single-leg RDL. Whole feet, weights; no squat."
+    },
+    {
+      "id": 391,
+      "implement": "Straight barbell",
+      "cue": "STIFF-LEG DEADLIFT. Athlete hip hinges with legs visibly nearly straight, knees unlocked only5degrees; feet hip-width flat. Flat neutral long back, hips high, torso near horizontal; straight silver bar in overhand shoulder-width hands just above shoe tops, close to shins, modest balanced plates hovering just off floor. Side-front angle exposes near-straight knee distinction versus softly bent Romanian deadlift, full athlete and bar ends with generous margins. No spinal rounding."
+    },
+    {
+      "id": 392,
+      "implement": "Straight barbell",
+      "cue": "SNATCH-GRIP ROMANIAN DEADLIFT. Athlete hinge with hips back, softly bent knees, torso nearly horizontal and neutral spine. Both hands take unmistakably VERY WIDE overhand grip near inner plate collars, about1.5 shoulder-width, straight arms diagonally out to bar. Bar close to shins below knees, plates above floor. FRONT-SIDE three-quarter angle makes wide grip and hinge simultaneously clear. Straight intact bar and complete equal plates/ends inside frame."
+    },
+    {
+      "id": 393,
+      "implement": "Straight barbell",
+      "cue": "BARBELL GOOD MORNING. Side three-quarter view: standing athlete hinges forward from hips, hips pushed far back, knees softly bent, torso almost horizontal with flat neutral spine. Straight barbell rests firmly across upper BACK/trapezius below neck, held with both hands outside shoulders, elbows angled back; no hanging bar in hands. Feet flat hip-width. Full bar plates and shoes; keep bar on upper back, no spinal overflexion."
+    },
+    {
+      "id": 394,
+      "implement": "Straight barbell and flat bench",
+      "cue": "SEATED GOOD MORNING. Athlete sits astride near end of sturdy black flat bench, hips remain clearly ON PAD, feet spread and flat on floor. He hinges torso forward between thighs until back near horizontal, neutral long spine; straight barbell on upper back behind shoulders, hands grip outside shoulders. Side-front camera shows seated pelvis/pad contact, wide knees, forward hinge and intact bar. Full bench feet, both shoes, plates and bar ends."
+    },
+    {
+      "id": 395,
+      "implement": "Two dumbbells",
+      "cue": "DUMBBELL GOOD MORNING. Standing athlete performs hip hinge: feet hip-width, softly bent knees, hips back, torso near horizontal, flat neutral spine. TWO modest silver dumbbells held securely AT SHOULDERS in a front-rack, one hand each, palms inward and elbows folded close; loads stay at shoulders throughout, NOT hanging toward shins like RDL. Side three-quarter view makes shoulder loading and hinge obvious, full body shoes and both separate dumbbells."
+    },
+    {
+      "id": 396,
+      "implement": "Weight plate and glute-ham developer support",
+      "cue": "GLUTE-HAM RAISE WITH WEIGHT. Athletic man on a simple realistic black glute-ham developer, knees on front curved cushion, feet secured between two horizontal ankle rollers at rear footplate. At mid knee-flexion raise: shins horizontal toward rear rollers, KNEES bent about60degrees, thighs HIPS TORSO form ONE STRAIGHT diagonal line rising35degrees above horizontal. Hips stay EXTENDED, no bending torso over pad as back extension. Both hands hold ONE small round silver plate flat to chest. True SIDE camera clearly exposes pivot at knees, straight thigh-to-head line and feet secured. Whole support frame and body with margin, no selector stack/cables."
+    },
+    {
+      "id": 418,
+      "implement": "Straight padded barbell and flat bench",
+      "cue": "BARBELL HIP THRUST. Side-front three-quarter view. Athlete upper back/scapulae supported across edge of sturdy black bench, both feet hip-width FLAT on floor, shins vertical. Hips lifted to form horizontal shoulder-hip-knee line, chin gently tucked, no back hyperextension. Straight barbell lies TRANSVERSE across pelvis on black hip pad; two hands stabilize bar just outside hips. Equal round silver plates at either end remain above floor. Entire bench, both feet, bar ends and realistic hip contact."
+    },
+    {
+      "id": 419,
+      "implement": "One dumbbell and flat bench",
+      "cue": "DUMBBELL HIP THRUST. Side three-quarter view of athlete upper back supported at edge of black flat bench, both feet flat, knees90degrees, hips raised into straight horizontal shoulder-hip-knee line. ONE silver dumbbell lies sideways ACROSS HIP CREASE on small protective pad, both hands firmly stabilizing its ends. Weight is at pelvis, never abdomen/chest. Complete bench feet, full shoes, neutral head and no back overextension."
+    },
+    {
+      "id": 420,
+      "implement": "Straight padded barbell and exercise mat",
+      "cue": "BARBELL GLUTE BRIDGE on FLOOR, no bench. Side-front view athlete lying with head/shoulders on thin dark mat, both feet flat close to hips, knees bent. Hips lifted so torso slopes upward from floor shoulders toward pelvis, spine neutral. Straight silver barbell across padded HIP CREASE, hands stabilize bar outside hips, balanced plate ends. No shoulders elevated on support. Whole athlete, feet, mat and full bar visible."
+    },
+    {
+      "id": 421,
+      "implement": "One dumbbell and exercise mat",
+      "cue": "DUMBBELL GLUTE BRIDGE on FLOOR, no bench. Athlete shoulders/head on dark thin floor mat, both feet flat and knees bent, hips raised to shoulder-to-knee straight diagonal. ONE silver dumbbell held horizontally over PADDED HIP CREASE with two hands stabilizing ends. Side three-quarter camera exposes floor shoulder contact, pelvis loading, whole shoes and simple realistic dumbbell. No torso sit-up or bench."
+    },
+    {
+      "id": 422,
+      "implement": "One dumbbell and flat bench",
+      "cue": "SINGLE-LEG HIP THRUST WITH FREE WEIGHT. Athlete upper back supported on edge of black bench, ONE working foot flat on floor, working shin vertical; OTHER leg raised with knee flexed toward chest, foot entirely off ground. Hips level lifted to bench height, no back arch. One modest silver dumbbell across working HIP CREASE held securely by both hands. Side-front angle shows raised free knee and single support foot, both distinct legs, full bench and load."
+    },
+    {
+      "id": 423,
+      "implement": "Straight padded barbell and flat bench",
+      "cue": "B-STANCE HIP THRUST. Bench-supported upper back, hips raised nearly horizontal, padded barbell across pelvis stabilized both hands. Working foot flat close to hip, working shin vertical. Other foot STAGGERED FORWARD20cm, only heel touches floor and toes point UP as light kickstand. Both feet remain on ground at different distances, unlike single-leg hip thrust. Side-front camera exposes heel-only forward foot and close flat working foot, whole bench and barbell."
+    },
+    {
+      "id": 424,
+      "implement": "Straight padded barbell and flat bench",
+      "cue": "KAS GLUTE BRIDGE. Side view of bench-supported hip-extension movement, upper back anchored at bench edge, both feet flat below knees and shins nearly VERTICAL. Show high shortened-range position with hips only a few centimeters below top and torso almost horizontal, fixed ribcage and gently tucked chin. Padded barbell across pelvis held by two hands, modest equal silver plates. Shoulders on bench (not floor), knees quiet, no deep sitting hip-thrust bottom. Entire bench and two feet/ends; no arrows or temporal overlays."
+    },
+    {
+      "id": 425,
+      "implement": "Straight barbell",
+      "cue": "SUMO ROMANIAN DEADLIFT. Wide stance about1.5 shoulder-width, toes outward30degrees and knees track toes with soft bend. Hips high pushed BACK; torso inclines forward in hip hinge with flat neutral spine. Both arms hang straight BETWEEN thighs, narrow overhand grip on straight silver bar close to shins. Bar/plates suspended well above floor, NOT floor sumo deadlift squat. Front-side three-quarter view exposes wide feet and hands inside knees. Whole shoes, bar ends and plates."
+    },
+    {
+      "id": 426,
+      "implement": "Two dumbbells and low platform",
+      "cue": "DEFICIT REVERSE LUNGE. Working front foot completely flat on black20cm platform; other foot steps far backward to floor. At deep bottom, rear knee is BELOW top surface of platform, hovering near floor, front hip deeply flexed. Torso leans modestly forward with neutral spine, long stance and paired hanging silver dumbbells. Side profile shows the increased depth below raised front sole, whole legs, weights, platform and shoes."
+    },
+    {
+      "id": 427,
+      "implement": "Two dumbbells",
+      "cue": "LONG-STRIDE REVERSE LUNGE. Deliberately LONG distance between flat working front foot and far rear toes, aboutonefullleglength. Rear knee lowered near floor, front shin almost vertical, torso leans FORWARD30degrees from hips with neutral spine over front thigh. Two silver dumbbells hang beside working leg. Side three-quarter camera reveals long stance and glute-biased torso angle versus upright short quad lunge. All feet and weights complete."
+    },
+    {
+      "id": 428,
+      "implement": "Two dumbbells and high step",
+      "cue": "GLUTE-BIASED STEP-UP. Entire working foot flat on sturdy black box just BELOW KNEE height, deep front hip flexion, torso hinges FORWARD over front thigh with neutral spine about40degrees. Other foot trails on toes close to floor behind box as ascent starts; two dumbbells hang beside hips. Side profile shows forward torso inclination and loaded front hip, distinguish from tall-upright step-up. No pushing hand on thigh. Whole body, box and dumbbells."
+    },
+    {
+      "id": 429,
+      "implement": "Two dumbbells and flat bench",
+      "cue": "LONG-STRIDE BULGARIAN SPLIT SQUAT. Working front foot flat FAR in front of bench, shin nearly vertical, torso leans forward30degrees over front thigh with neutral spine. Rear foot instep rests on black flat bench, rear knee lowered near floor. Two silver dumbbells hang beside working leg. Side three-quarter view clearly exposes long stance, glute-biased hip hinge and rear-foot elevation. Whole rear bench INCLUDING outer leg, both shoes and weights with8percent margins; no shoe or bench crop."
+    },
+    {
+      "id": 430,
+      "implement": "One dumbbell and exercise mat",
+      "cue": "DUMBBELL FROG PUMP on FLOOR. Athlete lies supine, head/shoulders on dark mat, hips raised, knees bent and spread outward in butterfly position. SOLES OF BOTH FEET PRESS AGAINST EACH OTHER, outer foot edges on floor close to hips, NOT ordinary parallel flat feet. One silver dumbbell lies horizontally across padded hip crease held both hands. Elevated side-front view reveals both open knees and sole-to-sole contact, complete body, mat and one coherent weight. No bench, no band."
+    },
+    {
+      "id": 477,
+      "implement": "One dumbbell and low step",
+      "cue": "SINGLE-LEG DUMBBELL CALF RAISE. Standing athlete balances one foot FOREFOOT on low black step, heel raised well above step top in plantarflexion. Other leg bent behind, foot off ground. ONE silver dumbbell hangs in near hand on working-leg side; other fingertips touch simple black upright for balance. Side three-quarter view clearly shows single loaded foot, high heel and knee straight. Full body, both feet, step and dumbbell."
+    },
+    {
+      "id": 478,
+      "implement": "Straight barbell and low step",
+      "cue": "BARBELL CALF RAISE. Standing tall athlete with straight knees, straight silver barbell safely across upper back held both hands. BOTH forefeet supported on low black rectangular step, both heels raised HIGH off edge, showing plantarflexion. Side-front view exposes heel clearance and realistic toe/step contact. No squat, no dumbbells. Full body, bar ends, balanced plates and entire feet/step."
+    },
+    {
+      "id": 479,
+      "implement": "Two dumbbells, flat bench and low step",
+      "cue": "SEATED DUMBBELL CALF RAISE. Athlete sits upright on black flat bench, knees90degrees, both FOREFOOT balls on low step, heels raised above platform and unsupported behind. TWO modest silver dumbbells rest one on each thigh just ABOVE KNEE, held secure by corresponding hand, not held at sides. Side-front camera exposes bent knees with thigh loading and elevated heels. Whole bench/feet/weights, realistic weight-to-thigh contact."
+    },
+    {
+      "id": 480,
+      "implement": "Weight plate on dip belt, bench and low step",
+      "cue": "DONKEY CALF RAISE WITH WEIGHT. True SIDE three-quarter view of athlete hip-hinged forward90degrees with flat torso, both straight arms/hands supported on black flat bench in front. Legs nearly straight, BOTH forefeet on low step with heels raised high. A sturdy black DIP BELT around HIP PELVIS carries ONE silver plate hanging vertically on short intact chain BETWEEN THIGHS behind belt, well above floor. Free weight hangs from hips, never from neck or hands. Full figure, belt-to-chain-to-plate continuity, bench and forefoot platform; no rider, machine or cables."
+    },
+    {
+      "id": 496,
+      "implement": "One dumbbell and exercise mat",
+      "cue": "DUMBBELL SIT-UP. Athlete on dark thin floor mat, both feet flat, knees bent and pelvis grounded. Torso raised about60degrees above floor in mid sit-up, spine gently flexed, not just shoulder-blade crunch. Both hands hold one compact silver dumbbell horizontally snug to upper chest. Side three-quarter camera exposes large torso lift, complete shoes/mat and one intact weight. No bench or foot anchors, no twisted trunk."
+    },
+    {
+      "id": 497,
+      "implement": "Weight plate and exercise mat",
+      "cue": "PLATE SIT-UP. Athlete seated partway up from dark floor mat, pelvis on mat, bent knees and feet flat, trunk raised about55degrees toward knees. BOTH hands hold ONE small round silver plate flat at upper chest; elbows close. Side-front camera shows plate face, no dumbbell, whole figure and mat. Larger hip/trunk lift than short crunch. Natural controlled pose, no neck pulling."
+    },
+    {
+      "id": 498,
+      "implement": "Weight plate and decline sit-up bench",
+      "cue": "WEIGHTED DECLINE SIT-UP. Athlete lies along black DECLINE bench sloping DOWN from elevated foot end to low head end. Feet/ankles secured under paired rollers at HIGH end, knees bent. Torso curls upward off sloped pad toward knees, holding one silver plate to chest with both hands. Side profile reveals downward bench slope, high ankle support and raised torso. Entire sturdy bench frame, feet and plate, no impossible ankle roller intersection."
+    },
+    {
+      "id": 500,
+      "implement": "Two light dumbbells and exercise mat",
+      "cue": "DUMBBELL DEAD BUG. Athlete supine on dark floor mat, head and lower back supported, ribs down. TWO light silver dumbbells one in each hand. One arm points straight upward over chest while OPPOSITE arm reaches overhead near floor behind head; contralateral leg extends straight forward hovering low above floor, other knee held90degrees over hip. Diagonal opposite arm/leg extension, exactly2arms2legs. Elevated side angle keeps both weights, extended foot and overhead hand fully inside frame with8percent margins. Neutral trunk no arch."
+    },
+    {
+      "id": 523,
+      "implement": "One dumbbell",
+      "cue": "DUMBBELL SIDE BEND. Standing athlete feet hip-width flat, ONE silver dumbbell hangs in right hand beside thigh, left hand lightly at left hip. Trunk bends modestly SIDEWAYS toward loaded right side, ribs and shoulder tilt laterally while pelvis stays level, no forward hinge or rotation. Frontal three-quarter angle makes lateral trunk curve clear. Whole body/feet and single weight, free arm not holding a second weight."
+    },
+    {
+      "id": 524,
+      "implement": "One dumbbell",
+      "cue": "SUITCASE MARCH. Athlete stands tall holding ONE silver dumbbell at side in straight right arm, opposite left knee raised to HIP HEIGHT in marching position. Other foot planted flat under hip, torso level vertical with no leaning toward load. Free arm bent naturally for balance. Front three-quarter full figure shows single offset load, raised knee and one support foot; no walking lunge or farmers paired weights."
+    },
+    {
+      "id": 525,
+      "implement": "One dumbbell",
+      "cue": "SUITCASE CARRY. Athlete walking with one silver dumbbell held in straight right arm beside thigh, torso vertical and level resisting lateral bend. Opposite left arm swings gently; one foot planted forward and trailing heel lifting in normal SHORT WALKING stride, neither knee raised to hip height. Front-side angle makes unilateral single load and walking stance clear. Whole shoes and one intact weight."
+    },
+    {
+      "id": 526,
+      "implement": "Landmine barbell, plate and floor pivot",
+      "cue": "LANDMINE ROTATION. Athlete standing feet shoulder-width with small pivot of trailing foot, both hands clasp outer sleeve END of a long barbell at about upper-hip height to LEFT side of body. Torso rotates modestly toward loaded side, arms long with soft elbows. One round silver plate mounted on sleeve just BELOW hands. Opposite bar end extends diagonally to visible low black FLOOR PIVOT at front-right several feet away. Full continuous straight shaft, anchored end, realistic two-handed end grip, full athlete and feet. No floating bar, no cable, no bar crossing body."
+    },
+    {
+      "id": 527,
+      "implement": "One weight plate and exercise mat",
+      "cue": "RUSSIAN TWIST WITH WEIGHT. Athlete seated on dark mat, knees bent, both heels lightly touching floor for stability, trunk reclined about40degrees and ROTATED to left. Both hands hold one silver weight plate close beside left hip, elbows bent, shoulders rotated together; pelvis remains grounded. Elevated front-side view shows rotated torso versus fixed legs and exact plate. Whole body/mat, no twisting only neck, no dumbbell."
+    },
+    {
+      "id": 528,
+      "implement": "Straight barbell and exercise mat",
+      "cue": "BARBELL WINDSHIELD WIPER / floor wiper. Athlete SUPINE on dark mat, both arms straight vertically upward holding straight silver barbell shoulder-width over CHEST with modest balanced plates. Both legs together almost straight raised toward ceiling but rotated diagonally toward LEFT plate, hips rotated while shoulders stay on mat. Elevated front-foot three-quarter camera exposes bar held above chest and paired legs sweeping sideways, full shoes/bar ends with generous margins. Bar does not touch legs, no standing landmine, no extra limbs."
+    },
+    {
+      "id": 546,
+      "implement": "Straight barbell",
+      "cue": "GOOD MORNING, governed Lower Back accessory identity independent of hamstring Barbell Good Morning. True SIDE-rear three-quarter view makes back-loaded bar and hip hinge visible: feet shoulder-width flat, knees softly bent, hips back, torso inclined almost horizontal with long neutral spine. Straight silver bar across upper back/traps held both hands outside shoulders, realistic modest plates. Whole body and bar, no spinal rounding and no squat. Unique asset for this exact ID; do not invent a novel exercise difference based on muscle taxonomy."
+    },
+    {
+      "id": 548,
+      "implement": "Straight barbell",
+      "cue": "ZERCHER GOOD MORNING. Athlete standing feet shoulder-width, knees slightly bent, hips pushed BACK and torso hinged FORWARD about55degrees from upright with flat neutral spine. Straight silver bar cradled in BOTH ELBOW CROOKS in front of lower chest, fists close together raised toward chest, elbows remain bent sharply. Side-front angle clearly shows bar supported inside elbow creases and hip hinge, no back rack, no front squat. Full bar ends, balanced plates, complete shoes and hands."
+    },
+    {
+      "id": 560,
+      "implement": "Two light dumbbells and flat bench",
+      "cue": "DUMBBELL SERRATUS PUNCH, bilateral SUPINE. Athlete lies along black flat bench with head and torso supported and both feet flat on floor. TWO light silver dumbbells held in straight vertical arms above shoulders, neutral grips; elbows remain fully extended and shoulder blades lift/protract subtly off bench as athlete REACHES weights toward ceiling. No bent-elbow press. Side three-quarter camera exposes long straight arms, forward reaching shoulders and chest. Whole bench, feet and both dumbbells."
+    },
+    {
+      "id": 561,
+      "implement": "One dumbbell and flat bench",
+      "cue": "DUMBBELL PULLOVER SERRATUS REACH. Athlete lies supine along black flat bench, head supported and feet flat. Both hands securely cup upper end of ONE vertical silver dumbbell, arms long with only slight elbow bend and extended OVERHEAD just beyond head at approximately30degrees above bench plane; shoulders reach long without flaring ribs or arching lower back. Side three-quarter camera shows overhead arc and scapular reach, not a bent-elbow triceps extension. Whole dumbbell and hands beyond head, bench and feet, generous margins."
+    },
+    {
+      "id": 569,
+      "implement": "Two light dumbbells with secure midfoot straps and exercise mat",
+      "cue": "DUMBBELL PSOAS MARCH, supine hip-flexor march. Athlete lies on back on thin dark mat, head/shoulders and neutral lower back on mat, arms relaxed at sides. A LIGHT compact silver dumbbell is securely attached TRANSVERSE across TOP of near shoe using a realistic black foot-training strap around midfoot and handle, two tiny silver dumbbell heads outside shoe sides. Loaded leg flexes hip to bring knee90degrees above hip, shin horizontal, toes dorsiflexed UP; opposite leg extended low just above mat. Show elevated SIDE angle exposing loaded shoe, coherent strap-to-handle attachment and bent hip. Weight follows foot, no ankle cable/band resistance, no weight held in hands. Exactly two complete legs and shoes."
+    },
+    {
+      "id": 570,
+      "implement": "Two ankle-weight cuffs and balance support",
+      "cue": "ANKLE-WEIGHT HIP FLEXION. Athlete stands tall with one hand lightly on black support post for balance. Realistic compact dark weighted cuffs wrap BOTH ankles snugly above shoes. One knee raised to HIP HEIGHT with knee bent90degrees, other foot flat under hip. No dumbbells/cables/bands; external cuff weights evident as segmented padded ankle weights with buckles, never floating. Side three-quarter full figure shows hip flexion and neutral upright pelvis, both shoes and cuff attachment."
+    },
+    {
+      "id": 580,
+      "implement": "Small weight plate, folded towel and flat bench",
+      "cue": "PLATE NECK FLEXION. Athlete lies SUPINE lengthwise on black flat bench, torso/shoulders and pelvis supported, knees bent with feet flat on floor. Head projects just beyond bench HEAD END and is gently flexed chin toward chest, neck only slightly raised. ONE SMALL LIGHT round silver plate rests on folded black towel against FOREHEAD, BOTH hands lightly stabilize plate rim. Plate on forehead above brows, never on throat. Side camera exposes face-up position and small neck flexion, full body bench and feet, no extreme neck bend or heavy stack."
+    },
+    {
+      "id": 581,
+      "implement": "Small weight plate, folded towel and flat bench",
+      "cue": "PLATE NECK EXTENSION. Athlete lies PRONE face-down lengthwise on black flat bench, chest/pelvis supported, legs long toward floor and toes grounded. Head just beyond bench end, neck lifted to neutral alignment looking DOWN slightly forward, no hyperextension. ONE SMALL LIGHT silver plate rests on folded towel on BACK OF HEAD, both hands lightly hold rim steady. Side three-quarter camera clearly shows face DOWN, plate on occiput rather than forehead, supported chest. Entire bench and feet in frame."
+    },
+    {
+      "id": 582,
+      "implement": "Small weight plate, folded towel and flat bench",
+      "cue": "PLATE LATERAL NECK FLEXION. Athlete lies ON LEFT SIDE lengthwise on sturdy black flat bench, shoulder/trunk/hips supported, legs together slightly bent. Head just beyond bench end; neck modestly lifts right ear away from left shoulder. ONE SMALL LIGHT silver plate on folded towel against RIGHT SIDE OF HEAD above ear, right hand stabilizes rim, left forearm rests along torso. Three-quarter view exposes side-lying orientation and plate over temple/ear area, not forehead or throat. Full body and bench, no extreme range or heavy stack."
+    },
+    {
+      "id": 4,
+      "implement": "Straight barbell",
+      "cue": "BARBELL ROW, separate legacy canonical ID4. Athlete hinge forward at hips, softly flexed knees, torso about25degrees above horizontal with neutral spine. Straight silver barbell OVERHAND shoulder-width grip pulled close to lower ribs at top of row, elbows bent and travel behind trunk, wrists straight. Three-quarter view from front-left shows rowing elbow flexion and stable hips. Full shoes, balanced plates and bar ends. Unique photograph; do not reuse prior row asset; same original style."
+    },
+    {
+      "id": 5,
+      "implement": "One dumbbell and flat bench",
+      "cue": "SINGLE ARM DUMBBELL ROW, legacy canonical ID5. Athlete supports LEFT hand and LEFT knee on sturdy black flat bench, right foot flat on floor wide of bench. Right hand pulls ONE silver dumbbell toward right HIP, right elbow bent behind ribs; neutral flat spine torso near horizontal. Side-front camera shows unmistakable three-point support, one loaded arm, two coherent legs, complete bench and shoes. Unique canonical photograph, no second weight."
+    },
+    {
+      "id": 6,
+      "implement": "Straight barbell and incline bench",
+      "cue": "INCLINE BARBELL PRESS, legacy canonical ID6. Athlete reclines on black bench inclined30degrees, feet flat, hips and upper back on pads. Straight silver barbell at lower controlled phase just above UPPER CHEST, hands moderately wider than shoulders, wrists stacked over elbows, forearms vertical and elbows45degrees from torso. Front-side three-quarter view shows incline geometry and connected bar with balanced round plates. Entire bench feet, athlete shoes and bar ends with margins. No dumbbells."
+    },
+    {
+      "id": 7,
+      "implement": "Two dumbbells and incline bench",
+      "cue": "INCLINE DUMBBELL PRESS, separate legacy canonical ID7. Original reference remains sole style but create a distinct photograph for this ID. Athlete reclines on black30degree incline bench, both feet flat, hips/back supported. TWO silver dumbbells in mid pressing phase above upper chest, elbows flexed about110degrees, palms face forward, forearms nearly vertical, wrists neutral. Camera from athlete's OTHER FRONT SIDE relative original, shows distinct pose and same premium studio. Complete dumbbells, bench and feet with generous margins. No asset reuse or anatomy."
+    }
+  ]
+}

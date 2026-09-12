@@ -1,0 +1,21 @@
+{
+  "workout_id": 1733,
+  "athlete_id": 12,
+  "label": "Free-weight Push + Pull Art QA",
+  "requested_status": "draft",
+  "movement_definition_ids": [
+    33,
+    191,
+    80,
+    154,
+    194,
+    126,
+    235,
+    155,
+    545
+  ],
+  "created_http_status": 200,
+  "cleaned_up": true,
+  "delete_http_status": 200,
+  "performed_sets_before_cleanup": 0
+}

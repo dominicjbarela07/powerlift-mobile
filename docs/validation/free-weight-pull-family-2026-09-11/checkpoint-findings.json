@@ -1,0 +1,241 @@
+[
+  {
+    "file": "family-checkpoints/group-01.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      191,
+      194,
+      126,
+      154,
+      235,
+      127
+    ],
+    "review": "PASS",
+    "findings": "Rows, supported reverse fly and shrug retain distinct silhouettes against the three controls.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-02.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      128,
+      129,
+      130,
+      131,
+      153,
+      150
+    ],
+    "review": "PASS",
+    "findings": "Rear-delt fly/row elbow paths, unilateral Meadows and floor-supported Archer remain visually distinct.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-03.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      132,
+      133,
+      158,
+      155,
+      161,
+      157
+    ],
+    "review": "PASS",
+    "findings": "Supported wide row, swing, pullovers and unilateral rows stay coherent; rejected head support and edge crops were refined.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-04.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      192,
+      193,
+      195,
+      197,
+      162,
+      196
+    ],
+    "review": "PASS",
+    "findings": "Floor-origin Pendlay, raised seal bench, incline support and landmine setup remain distinct; no new visual baseline.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-05.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      159,
+      201,
+      198,
+      160,
+      156,
+      203
+    ],
+    "review": "PASS",
+    "findings": "Landmine grips, barbell pullover support and wide snatch grip remain readable; bar ends are tight but complete.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-06.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      545,
+      204,
+      202,
+      549,
+      199,
+      200
+    ],
+    "review": "PASS",
+    "findings": "Direct back extension and Sorenson hold use secured support; corrected T-bar shaft and Helms chest-edge support are clear.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-07.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      205,
+      206,
+      234,
+      236,
+      237,
+      238
+    ],
+    "review": "PASS",
+    "findings": "Straight-arm supported Kelso contrasts with bent-elbow high row; shrug implements/grips remain distinct.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  },
+  {
+    "file": "family-checkpoints/group-08.png",
+    "controls": [
+      33,
+      80,
+      292
+    ],
+    "new_ids": [
+      239,
+      240,
+      241,
+      242,
+      547
+    ],
+    "review": "PASS",
+    "findings": "Overhead shrug, walking carry, Kelso and Jefferson spinal curl remain consistent; no blue palette or muscle overlays.",
+    "inspected": [
+      "black level",
+      "floor texture",
+      "violet intensity",
+      "natural skin",
+      "graphite apparel",
+      "photographic realism",
+      "equipment continuity",
+      "subject scale",
+      "uncut silhouette",
+      "42px thumbnail"
+    ]
+  }
+]

@@ -1,0 +1,749 @@
+[
+  {
+    "id": 253,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two distinct supinated dumbbells, stable elbows and standing bilateral curl are clear; coherent hands, full athlete and matching original studio materials."
+  },
+  {
+    "id": 354,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear shoelaces contact bench, two unambiguous legs, front knee flexion and upright torso communicate quad-focused Bulgarian split squat. Complete equipment remains in frame; left bench margin is tight and will be monitored in product crops.",
+    "superseded_by_attempt": 2
+  },
+  {
+    "id": 388,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two separate dumbbells close to shins, hip displacement and softly flexed knees read as bilateral RDL. Flat supported spine and full shoes; original light/material treatment retained."
+  },
+  {
+    "id": 476,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both forefeet contact low step and both heels visibly rise; two side-held dumbbells and straight legs distinguish loaded calf raise. Whole athlete and step are intact."
+  },
+  {
+    "id": 495,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Grounded pelvis and bent knees with short raised shoulder/trunk arc communicate crunch; plate held on upper chest. Complete feet and mat; horizontal pose uses intended landscape occupancy within square."
+  },
+  {
+    "id": 325,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Bar shaft is visibly cambered like an EZ bar; this exact Barbell Wrist Curl cue requires a straight bar. Wrist support otherwise coherent."
+  },
+  {
+    "id": 325,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Corrected continuous straight shaft with symmetrical plates; seated palm-up forearms supported on thighs and wrists beyond knees. No EZ geometry remains; original studio appearance preserved."
+  },
+  {
+    "id": 251,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rigid straight bar, paired plates, supinated grips and elbows held beside upright torso. Whole bar ends and shoes, clear distinction from EZ curl."
+  },
+  {
+    "id": 252,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Symmetrical EZ shaft and angled underhand grips are clear; elbows remain beside torso, no equipment intersection or crop. Distinct from straight-bar curl."
+  },
+  {
+    "id": 254,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "One supinated arm flexed and opposite arm extended, each holding its own coherent dumbbell. Alternating phase clearly differs from synchronous curl without body lean."
+  },
+  {
+    "id": 255,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Upright sitting on flat bench, grounded feet, bilateral supinated curl with low elbows. Both dumbbells and bench supports are intact; seated relation reads at small size."
+  },
+  {
+    "id": 257,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Reclined supported torso, upper arms extending down behind the torso and palm-up forearm curl distinguish incline curl from a press. Bench and shoes complete, original materials/light retained."
+  },
+  {
+    "id": 256,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Standing bilateral supinated dumbbell curl at lower elbow-flexion phase; original definition is intentionally overlapping generic curl, with an independent asset and no invented grip distinction. Separate weights and full body intact."
+  },
+  {
+    "id": 258,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Prone chest on incline support with elbows hanging beyond pad, underhand EZ bar curling up; visibly different support relationship from preacher curl. Two feet and bench base remain coherent and in frame."
+  },
+  {
+    "id": 259,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single working arm supported at preacher pad, supinated dumbbell curl, opposite empty hand on pad; one implement matches unilateral definition. Full seated body, support structure and shoes intact."
+  },
+  {
+    "id": 260,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two separately gripped dumbbells, both supported upper arms/elbows on preacher pad and simultaneous palm-up curl. No connecting shaft or weight collisions; clear bilateral setup."
+  },
+  {
+    "id": 261,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single symmetrical EZ bar, both underhand hands and both elbows supported on preacher pad. Equipment and grip differ clearly from paired-dumbbell and unilateral variants; whole bench and athlete."
+  },
+  {
+    "id": 262,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both elbows brace at inner thighs with two independent supinated dumbbells, honoring the stored bilateral sidedness of Concentration Curl. No preacher pad or generic unsupported curl; no ID or taxonomy mutation."
+  },
+  {
+    "id": 263,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both hands maintain thumb-up neutral grips with vertical dumbbell handles, elbows at sides and quiet torso. Two independent implements and complete body; hammer grip unmistakable."
+  },
+  {
+    "id": 264,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Working neutral-grip forearm crosses diagonally to opposite chest while other loaded arm hangs. Two dumbbells preserve alternating bilateral setup; no supinated or forward-only curl."
+  },
+  {
+    "id": 265,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Pronated top/lowering phase with backs of hands visible and both elbows tucked communicates the defining rotated Zottman phase. Separate dumbbells, coherent grips and full shoes."
+  },
+  {
+    "id": 266,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Elbows behind torso and close bar path correctly depict drag curl, but shaft has subtle unwanted camber near the hands. Correct to a rigid straight bar before accepting."
+  },
+  {
+    "id": 267,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Clear overhand pronated grip on a straight light bar, low tucked elbows at mid-curl, neutral wrists; visually distinct from standard underhand curl. Complete bar and athlete."
+  },
+  {
+    "id": 268,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Mild rearward torso lean and softly bent knees with hips forward depict assisted concentric curl, without extreme back arch. Symmetrical heavier bar and supinated hands, complete framing."
+  },
+  {
+    "id": 326,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both palm-up forearms supported on thighs with independent small dumbbells beyond knees; isolated wrist work rather than biceps curl. Anatomical grips, full feet/bench and neutral equipment materials."
+  },
+  {
+    "id": 327,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear view clearly places straight bar behind thighs, long elbows and flexed wrists; visible palms/closed fingers support bar coherently. No front-bar shrug confusion or cropped implements."
+  },
+  {
+    "id": 328,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both pronated forearms supported on thighs, hands beyond knees on light straight bar; reverse-wrist setup distinct from supinated wrist curl. Straight shaft, coherent fingers and complete bench/shoes."
+  },
+  {
+    "id": 329,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two small separate dumbbells and supported palm-down forearms clearly depict bilateral reverse wrist curl. Backs of hands readable, elbows remain supported; full framing and family material treatment."
+  },
+  {
+    "id": 330,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two overhand grips on central roller, visible wound cord with continuous taut line to loaded pin/plate suspended above floor. No machine, missing attachment or floating disconnected weight; whole athlete."
+  },
+  {
+    "id": 331,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Each hand pinches opposing faces at the upper rim of paired smooth plates; center holes remain empty and no handles are used. Bilateral plate stacks and straight-arm grip hold are clear, full body intact."
+  },
+  {
+    "id": 266,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Rigid straight bar corrected; elbows remain behind torso and bar travels close to abdomen, preserving the drag-curl distinction. Whole body, hands and symmetrical plates intact."
+  },
+  {
+    "id": 332,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Thick black sleeves engulf the hands instead of showing fingers wrapped around an external handle; impossible hand/implement contact."
+  },
+  {
+    "id": 333,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Grip is closed into the palms, so this reads as ordinary wrist curl rather than the defining finger-roll phase. Need visibly partly extended fingers and shaft on finger pads."
+  },
+  {
+    "id": 334,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Weighted tips hang steeply downward and inward, making the wrist/forearm rotation ambiguous with wrist flexion. Correct to a clear pronated rotation with tips near horizontal and straight wrists."
+  },
+  {
+    "id": 335,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Palms-up lever orientation is plausible, but arms have spread off the stated thigh support; improve supported forearm geometry and expose rotation without shoulder movement."
+  },
+  {
+    "id": 336,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both thumb-side weighted lever ends point forward and upward, with long arms and small radial wrist deviation. Separate intact implements, natural skin and full figure."
+  },
+  {
+    "id": 337,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Far lever points backward while near lever points forward, depicting opposing deviation directions. Both loaded ends must project behind on the pinky side."
+  },
+  {
+    "id": 348,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Front-rack elbows are too low and bar reads close to throat instead of clearly supported across front deltoids; bar ends also have very tight frame clearance. Refine rack geometry and framing."
+  },
+  {
+    "id": 349,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear three-quarter view exposes high trapezius bar placement, full squat depth and two planted feet. Symmetric intact bar/plates; bar margins tight but complete and away from rounded frame corners.",
+    "superseded_by_attempt": 2,
+    "supersession_reason": "User rejected cosmetic lateral head turn; prior acceptance missed neck/gaze alignment."
+  },
+  {
+    "id": 350,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Front view leaves bar support ambiguous against the folded forearms; the exact Zercher identity needs visibly cradled elbow creases. Refine side angle and lower forearm/fist position to expose contact."
+  },
+  {
+    "id": 351,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single vertical dumbbell cupped at chest, deep upright squat with heels flat on floor and elbows inside knees. Complete feet, coherent weight and original studio character."
+  },
+  {
+    "id": 352,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Very narrow stance, heel-elevated sloped platform, knee-forward deep squat and high-back bar load distinguish cyclist squat from goblet variants. Whole bar and feet/support intact."
+  },
+  {
+    "id": 353,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Front goblet dumbbell and visible individual heel wedges distinguish this exact squat from flat-floor goblet and back-loaded cyclist variants. Stable foot contact and full figure, no implement artifact."
+  },
+  {
+    "id": 332,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Near hand now visibly wraps around the outside of a thick handle with coherent finger joints; opposite thumb/occluded grip is plausible. Sleeves no longer swallow the wrists, static loaded hold remains clear."
+  },
+  {
+    "id": 333,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Open palms and partly extended fingers now support straight shaft away from palm heels, with relaxed thumbs and neutral wrists. Defining finger-roll phase differs from closed-grip wrist curl."
+  },
+  {
+    "id": 334,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Both knuckles face up and weighted tips rotate inward nearly horizontally above hand level; short levers remain separate. Clear pronation with stable bent elbows, no dangling wrist-flexion ambiguity."
+  },
+  {
+    "id": 335,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Refinement retained the upright torso and arms spread away from thigh support. Regenerate with an explicitly forward-leaning support pose so supination is isolated and posture is unmistakable."
+  },
+  {
+    "id": 337,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Both pinky-side weighted tips now point backward and upward, with long elbows and visible matching ulnar deviation. Opposing-direction error fixed; complete athlete and implements."
+  },
+  {
+    "id": 348,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Raised elbows and folded front-rack wrists now expose the bar supported across front deltoids; deep upright squat, complete bar ends and planted feet."
+  },
+  {
+    "id": 350,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Straight shaft is visibly cradled in both elbow crooks below raised fists. Full squat, intact balanced plates and useful bar-end margins."
+  },
+  {
+    "id": 355,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Entire front sole rests on low platform with rear toes on floor and rear knee lowered. Two coherent dumbbells and complete stance clearly show front-foot elevation."
+  },
+  {
+    "id": 356,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Sloped heel wedge under working front foot distinguishes heel elevation from a flat whole-foot platform. Split stance and loaded dumbbells are complete and readable."
+  },
+  {
+    "id": 357,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Controlled bottom of reverse lunge with forward flat foot and rear toe support, paired hanging dumbbells. A still frame shows the loaded lunge position, not temporal travel direction."
+  },
+  {
+    "id": 358,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Higher transition phase and trailing toe-off communicate walking-lunge stride, with intact paired dumbbells and full feet. Static artwork does not claim to demonstrate the entire stepping cycle."
+  },
+  {
+    "id": 359,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Forward-facing opposite camera makes planted lead foot and lowered rear knee readable. Distinct complete asset for canonical forward-lunge identity; direction of travel still belongs to movement instructions."
+  },
+  {
+    "id": 360,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide lateral stance, flexed working knee and straight opposite leg with both soles grounded. Single goblet dumbbell and full shoes distinguish the lateral movement."
+  },
+  {
+    "id": 335,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Forward-leaning seated pose now supports forearms on thighs; both palms face upward with separate outward weighted levers and neutral wrists. Complete feet and bench, restrained original studio finish."
+  },
+  {
+    "id": 361,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Whole working sole on stable box, bent lead knee and trailing toe at lift-off; paired dumbbells hang clear of legs. Full platform and body inside frame."
+  },
+  {
+    "id": 362,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Low-step forefoot support with visibly elevated working heel and extended free leg distinguishes Peterson from flat-heel step-down. Complete paired light weights and stable support."
+  },
+  {
+    "id": 363,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Working foot flat on low step and opposite dorsiflexed heel touching floor clearly communicate step-down lowering. Correct two legs and separate weights."
+  },
+  {
+    "id": 387,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Neutral spine, hips back, softly flexed knees and close suspended bar show barbell Romanian hinge. Straight shaft, matched plates, whole shoes and generous margins."
+  },
+  {
+    "id": 389,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single flat stance foot and extended rear leg create clear T-shaped hinge with neutral back; paired dumbbells hang beneath shoulders. Entire rear shoe remains in frame."
+  },
+  {
+    "id": 364,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Support strap reads across front of knees from this angle, obscuring the defining posterior-knee support. Regenerate a side profile exposing strap behind knee hollows and both taut anchor runs."
+  },
+  {
+    "id": 390,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Staggered toe-supported rear foot distinguishes loaded kickstand hinge from fully airborne single-leg hinge. Neutral back and straight arms with two intact dumbbells."
+  },
+  {
+    "id": 391,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Nearly straight knees, high hips and low close bar distinguish stiff-leg hinge; hands, plates and shoe contact coherent. Natural spinal alignment without loaded spinal flexion."
+  },
+  {
+    "id": 392,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Very wide grip near inner collars and diagonal straight arms are unmistakable, while hips remain high and bar suspended. All bar ends and feet complete."
+  },
+  {
+    "id": 393,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Straight bar supported on upper back with held side grips, shallow knee flexion and forward hip hinge. Full symmetric bar and shoes, no back rounding."
+  },
+  {
+    "id": 394,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Pelvis remains on bench pad, feet wide and flat, torso hinges forward beneath back-racked bar. Seated support and loaded upper-back placement readable."
+  },
+  {
+    "id": 395,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two dumbbells remain at shoulder rack during hip hinge, distinct from weights hanging toward shins. Correct feet, elbows and separate intact implements."
+  },
+  {
+    "id": 396,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Horizontal supported lower legs and knee-flexion raise with aligned extended hips/torso distinguish this from a bent-waist back extension. Plate at chest, ankle rollers and entire support frame clear."
+  },
+  {
+    "id": 418,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Bench-supported upper back and padded bar across pelvis show loaded hip thrust; both flat feet, symmetric plates and intact grips visible."
+  },
+  {
+    "id": 420,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head/shoulders contact floor mat while hips lift under padded bar, distinctly different from bench-supported thrust. Complete body and bar; mat edge is incidental background."
+  },
+  {
+    "id": 421,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Floor shoulder contact and raised pelvis with a single dumbbell across hip crease clearly depict floor glute bridge. Natural hand support and planted feet."
+  },
+  {
+    "id": 422,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Only working foot touches floor; opposite bent leg raised fully clear, with bench upper-back support and hip dumbbell. Exact single-leg variant visible."
+  },
+  {
+    "id": 423,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Forward heel-only kickstand and nearer flat working foot distinguish B-stance from bilateral and airborne single-leg thrust. Padded bar and complete support equipment."
+  },
+  {
+    "id": 424,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Upper back on bench, near-vertical shins and elevated pelvis show shortened-range Kas position. A single frame cannot demonstrate the limited pulse amplitude; no fabricated temporal claim."
+  },
+  {
+    "id": 419,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Far shoe and near bench edge leave almost no frame clearance. Regenerate with wider composition so full equipment and athlete survive card cropping."
+  },
+  {
+    "id": 364,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "True side profile now exposes the band wrapping behind the near knee with taut runs to the fixed forward anchor. Upright squat, vertical shins and handheld dumbbell clear; tall anchor post extends outside scene naturally."
+  },
+  {
+    "id": 427,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Long stride with front vertical shin, rear toe support and forward torso inclination distinguishes glute-biased lunge. Complete paired weights and feet."
+  },
+  {
+    "id": 428,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Forward torso lean over loaded front hip and stable high-box sole show glute-biased step-up, compared directly with upright Step Up asset."
+  },
+  {
+    "id": 429,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Long distance from planted front foot to bench-elevated rear foot and forward trunk inclination show exact long-stride variant. Full bench and shoes remain contained."
+  },
+  {
+    "id": 430,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Externally rotated knees and joined turned-out feet communicate frog stance, with floor shoulders and hip-loaded dumbbell. One coherent weight and supported pelvis motion."
+  },
+  {
+    "id": 425,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Knees are too deeply flexed and torso too upright; pose reads sumo deadlift/squat rather than a high-hip Romanian hinge. Regenerate side angle with softer knees."
+  },
+  {
+    "id": 426,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Rear knee remains above front-platform top, hiding the extra deficit range. Regenerate deeper with rear knee unmistakably below supporting sole height."
+  },
+  {
+    "id": 477,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single loaded straight-leg forefoot stance, raised heel, airborne opposite foot and light balance hand are clear. Whole foot and dumbbell; upright support extends naturally out of frame."
+  },
+  {
+    "id": 478,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both heels raised with straight knees and back-racked bar, clear plantarflexion on step. Symmetric bar and complete shoes without malformed contact."
+  },
+  {
+    "id": 479,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Bent knees with one dumbbell resting on each thigh and both heels lifted distinguish seated calf raise. Weight-to-thigh contact and complete bench/platform clear."
+  },
+  {
+    "id": 496,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Torso raised well beyond short crunch with pelvis grounded, bent knees and single chest dumbbell. Complete hands and feet, coherent sit-up posture."
+  },
+  {
+    "id": 497,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Clearly visible chest plate and raised torso distinguish loaded plate sit-up from dumbbell version and short floor crunch. Whole limbs and realistic plate rim."
+  },
+  {
+    "id": 498,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Bench slopes downward from supported ankles to head end while torso curls up toward knees. Plate at chest, secured feet and full frame form readable weighted decline sit-up."
+  },
+  {
+    "id": 480,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Dip-belt chain attaches at an unexplained plate-edge eyelet instead of visibly threading the standard center hole. Correct the load connection."
+  },
+  {
+    "id": 500,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Near arm and near leg extend together, reading same-side extension instead of contralateral dead bug. Also too little margin at extended hand/foot. Correct opposite-limb pairing and widen composition."
+  },
+  {
+    "id": 523,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Loaded side bends laterally toward the single hanging dumbbell while pelvis and feet remain stable. Clear frontal trunk angle without forward hinge."
+  },
+  {
+    "id": 524,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "One offset dumbbell with contralateral knee raised to hip height and tall level torso shows suitcase march."
+  },
+  {
+    "id": 525,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single hanging weight with normal short walking stride, no elevated march knee, clear unweighted opposite arm."
+  },
+  {
+    "id": 526,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Continuous bar from floor pivot through one loaded sleeve to two-handed end grip; offset trunk/arm position identifies landmine rotation. No cable or floating anchor."
+  },
+  {
+    "id": 527,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Plate held beside rotated trunk with reclined torso and grounded bent-leg base identifies Russian twist. Coherent plate handles and two hands."
+  },
+  {
+    "id": 546,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Independent governed Lower Back Good Morning has back-racked bar, hip hinge and neutral spine. Distinct asset; no invented muscle-based change to mechanics or history merging."
+  },
+  {
+    "id": 548,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Bar sits visibly in elbow crooks while hips hinge back with shallow knee flexion, distinguishing Zercher good morning from squat and back-loaded version."
+  },
+  {
+    "id": 528,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Legs remain aligned too closely with body axis, reading a bilateral leg raise instead of lateral windshield-wiper rotation. Use higher camera and clearly lateral paired-leg displacement."
+  },
+  {
+    "id": 419,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Wider framing restores visible floor around far shoe and entire bench while retaining supported hip-thrust pose and single pelvis dumbbell."
+  },
+  {
+    "id": 560,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two light dumbbells reached vertically with extended elbows over supported torso depict serratus-punch position, distinct from flexed press phase. Scapular excursion is subtle and not a full temporal demonstration."
+  },
+  {
+    "id": 569,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Supine alternating hip-flexion pose with realistic small dumbbells strapped across both midfeet. One hip flexed and opposite leg long, hands unloaded. Final uses paired foot weights, documented as depicted implement; canonical identity/taxonomy unchanged."
+  },
+  {
+    "id": 570,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both ankle cuffs attach snugly above shoes; raised knee and supported upright stance communicate free-weight hip flexion. No resistance cable or band substituted."
+  },
+  {
+    "id": 581,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Prone chest-supported athlete holds small towel-padded plate against rear crown while neck extends to near-neutral. Complete bench and shoes, no large hyperextension or heavy stack."
+  },
+  {
+    "id": 561,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Far shoe is clipped by right image boundary and overhead weight has tight left clearance. Widen composition while preserving long-arm pullover reach."
+  },
+  {
+    "id": 580,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Plate appears atop crown instead of flat against forehead; face orientation and load point obscure neck flexion mechanics. Move padded plate to forehead in near-supine pose."
+  },
+  {
+    "id": 582,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Plate floats over side of forehead without clear padded contact, and neck action reads lifted torso. Regenerate side-lying supported shoulders with plate against upper temple and head beyond bench."
+  },
+  {
+    "id": 4,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Standing straight-bar bilateral row with hip hinge, elbows behind torso and bar toward lower ribs; independent legacy identity retained."
+  },
+  {
+    "id": 5,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single dumbbell row with opposite hand and knee supported on a flat bench; neutral torso and visible free-side elbow path. Legacy ID remains independent."
+  },
+  {
+    "id": 6,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Straight-bar incline press with full incline support, planted feet, bilateral grip and bar above upper chest. Legacy ID remains independent."
+  },
+  {
+    "id": 7,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Paired dumbbell incline press with supported torso, planted feet and clearly separated implements. Independent legacy ID; original ID33 art untouched."
+  },
+  {
+    "id": 425,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Wide externally rotated stance, straighter knees and hips back now read as a sumo Romanian hinge rather than the rejected deep squat; bar stays near shins."
+  },
+  {
+    "id": 426,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Front foot flat on raised platform and rear knee below its top; two dumbbells, rear toe support and visible deficit depth. Static bottom frame cannot demonstrate backward travel."
+  },
+  {
+    "id": 354,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Native crop refinement: full bench end and floor leg now have visible negative space, complete shoes and dumbbells contained. Correct rear-foot-elevated split squat retained. Supersedes own completion attempt1 after native inspection; no prior Push/Pull asset changed."
+  },
+  {
+    "id": 480,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Correct bent-hip donkey calf stance, near-straight knees, forefeet on platform and raised heels. Belt chain now passes through the plate center hole; hands support on bench."
+  },
+  {
+    "id": 500,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Supine dead bug with near arm reaching overhead and opposite far leg extending, other hip/knee held in tabletop, separate dumbbells. Full implements and shoes contained; broad crop reads best above thumbnail size."
+  },
+  {
+    "id": 528,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Supine bar held above chest with straight elbows, legs together visibly rotated to one side of torso; lateral wiper position now distinguishes it from the rejected forward leg raise."
+  },
+  {
+    "id": 561,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Two hands cup one dumbbell head, near-straight elbows reaching behind head on flat bench, planted feet fully contained; overhead pullover reach phase. Scapular reach remains subtle in a static frame."
+  },
+  {
+    "id": 580,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Plate contacts forehead correctly, but skull remains supported by the bench, weakening isolated neck-flexion geometry. Regenerate with shoulder at bench edge and unsupported head."
+  },
+  {
+    "id": 582,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Temple/plate contact corrected, but torso is still propped on the lower forearm, reading as side support rather than isolated neck flexion. Require lateral torso fully supported and head beyond bench end."
+  },
+  {
+    "id": 580,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Supine isolated neck flexion: shoulders/upper back supported, skull now lifted clear of short bench end, small plate contacts towel on forehead, hands stabilize it. Complete feet and bench contained."
+  },
+  {
+    "id": 582,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Side-lying trunk rests flat along bench, lower arm hangs free instead of propping torso, head extends beyond short end with lateral neck bend. Small plate sits against towel at upward-facing temple; no floating load."
+  },
+  {
+    "id": 349,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "User correction: head faces forward with torso, back of skull visible and neutral untwisted neck; sideways face/profile removed. Squat depth, body pose, high-bar placement, hands, feet, equipment and studio composition preserved."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "id": 82,
+  "attempt": 1,
+  "prompt": "Use case: photorealistic-natural. Create ONE square canonical movement identity photograph for a premium strength-training app, with one adult male athlete actually performing the specified exercise. Input image 1 is the ORIGINAL APPROVED MASTER STYLE SPECIMEN; every output must match it directly in natural muscular physique, adult age, graphite sleeveless shirt, black shorts, dark shoes, realistic skin and fabric, brushed silver metal, premium dark studio, charcoal textured floor, restrained violet rim light from rear right, neutral soft key from upper left/front. Preserve this visual grammar without copying its incline-press pose. Dark floor, no bright white soles, no bright colored lighting. Choose the specified camera for movement mechanics; comparable 60\u201370 mm photographic perspective. Square framing, full athlete and all required equipment in frame, about 8% dark crop-safe perimeter, occupy most of frame. Hands must anatomically grip the real handles; two arms, two hands, two legs; credible joints, contact, supports and equipment. Only required equipment. No text, logos, anatomy overlays, collages, diagrams, extra people or mirrors. Deliver one finished photograph.\nCRITICAL: Original image1 supplies STYLE ONLY. Do not preserve its athlete pose, wrist orientation or incline bench. Re-stage the new exact movement, with its own correct bench angle, support and equipment.\nEXACT GOVERNED MOVEMENT 82: Dumbbell Front Raise, BILATERAL. Standing athlete, knees softly unlocked, torso upright, BOTH nearly straight arms lifted directly FORWARD to shoulder height, two light silver dumbbells with pronated palms-down grip, parallel forearms. Not out to sides. Side-front three-quarter angle strongly reveals forward arm projection, feet and both dumbbells visible.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-df53531f-2e62-46df-8541-60c6cd5680c6.png",
+  "review": "ACCEPT",
+  "review_reason": "Both arms raised forward to shoulder height with pronated grips and soft elbows; full standing figure, four distinct dumbbell heads, no incline-pose contamination.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

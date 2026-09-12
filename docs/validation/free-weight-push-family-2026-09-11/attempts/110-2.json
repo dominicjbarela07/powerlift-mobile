@@ -1,0 +1,13 @@
+{
+  "id": 110,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. Image1 is the immutable ORIGINAL STYLE CONTROL. Edit Image2 only: remove ALL embossed/molded letters and numbers from BOTH weight plates, leaving clean smooth realistic neutral brushed silver metal. Preserve all plate holes, geometry, hands, overhead V pose, athlete, floor, light and framing. No new text, symbols, logos, marks. Everything else unchanged.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-dd563527-c58d-480b-9c8e-70d821cf6760.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-eb29623a-9858-47ec-9abe-425784375843.png",
+  "review": "ACCEPT",
+  "review_reason": "Both plate surfaces now have no letters or numbers; wide overhead lateral arc, full feet/hands, consistent original studio treatment.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}

@@ -1,0 +1,476 @@
+[
+  {
+    "id": 32,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Far shoe clipped at right edge."
+  },
+  {
+    "id": 32,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Horizontal bench, separate pronated dumbbells, realistic full figure; framing corrected."
+  },
+  {
+    "id": 34,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head below hips, ankle rollers grounded and decline geometry explicit."
+  },
+  {
+    "id": 35,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Dumbbell axes vertical rather than horizontal neutral-grip pressing."
+  },
+  {
+    "id": 35,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Corrected axes but reverted to pronated/flared press, not neutral grip."
+  },
+  {
+    "id": 36,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Far shoe at image edge; crop resilience inadequate."
+  },
+  {
+    "id": 36,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Upper arms/head/back grounded, knees bent, no bench; complete shoes now visible."
+  },
+  {
+    "id": 37,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Round dumbbells visibly compressed together with controlled press; distinct contact cue. Squeeze/Hex are overlapping catalog identities, not invented different mechanics."
+  },
+  {
+    "id": 35,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Foot-end view clearly exposes neutral palms-in grips and head-to-foot dumbbell axes; elbows tucked."
+  },
+  {
+    "id": 38,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Inner hex dumbbell heads merged into one shared central head; not two real independent dumbbells."
+  },
+  {
+    "id": 39,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Open fly arc with light weights and softly bent elbows differs visibly from press; horizontal support and complete limbs."
+  },
+  {
+    "id": 40,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Inclined backrest and open softly bent fly arc clear; both weights and feet in frame; matches original material/light."
+  },
+  {
+    "id": 38,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Four separate hex heads and two handles with visible central contact seam; corrected fused equipment. Graphite hex heads remain realistic and neutral."
+  },
+  {
+    "id": 41,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head-low decline and ankle rollers explicit; wide fly arc with restrained elbow bend; complete dumbbells."
+  },
+  {
+    "id": 42,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Bar sleeve and far shoe meet/clipped at frame edges; needs crop margin."
+  },
+  {
+    "id": 43,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Bar is a mid-press height, not the distinctive near-chest Spoto pause; left sleeve also clipped."
+  },
+  {
+    "id": 44,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both legs extended and floating without leg drive, horizontal bench and symmetric straight loaded bar; complete silhouette visible."
+  },
+  {
+    "id": 42,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Complete bar sleeves and shoes now visible; floor support and symmetric load preserved."
+  },
+  {
+    "id": 43,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Near-chest bar gap now correct, but far shoe is clipped; retain mechanics and correct only framing."
+  },
+  {
+    "id": 45,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Generated an incline bench instead of horizontal guillotine setup; bar remains too high."
+  },
+  {
+    "id": 43,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Characteristic near-chest suspended bar and flat bench preserved; full shoes and sleeve now inside frame. A still cannot prove pause duration."
+  },
+  {
+    "id": 45,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Flat bench and wide high-chest path corrected; far shoe still clipped and needs framing-only refinement."
+  },
+  {
+    "id": 46,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Visible underhand grip and tucked elbows, flat bench and balanced bar; full figure/implement. Far shoe clearance is tight but intact."
+  },
+  {
+    "id": 47,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Initial prompt specified the camber on the wrong side of the grip. Manufacturer's pressing reference confirms raised central chest-clearance section between hands, with hands on lower outer straight grips. Rebuild geometry; do not reuse this candidate."
+  },
+  {
+    "id": 73,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Plate visibly grounded on upper back; straight plank, bent elbows and planted hands/toes; full figure and clear free-weight identity."
+  },
+  {
+    "id": 47,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Functional camber now correct, but unnecessary tall rack uprights were copied from geometry reference and clip at top; remove rack only."
+  },
+  {
+    "id": 79,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Upright seated overhead press is correct, but a small bright logo-like chest mark violates unbranded apparel; remove mark and improve top margin."
+  },
+  {
+    "id": 80,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Standing overhead press with stable torso/legs and no bench; coherent athlete/style and full weights/shoes."
+  },
+  {
+    "id": 45,
+    "attempt": 3,
+    "status": "REJECT",
+    "reason": "Framing fixed but model raised bar toward lockout, losing the high-chest guillotine cue; return to attempt2 mechanics for targeted framing edit."
+  },
+  {
+    "id": 81,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Supinated palms-in start, forward elbows and upright seated posture clearly distinguish Arnold rotation start; credible overlapping separate dumbbells."
+  },
+  {
+    "id": 45,
+    "attempt": 4,
+    "status": "ACCEPT",
+    "reason": "Flat bench, wide pronated grip and flared bent elbows place bar over upper chest/neck line; framing correction retains lowered phase and both shoes. Skin, floor and restrained rim match original."
+  },
+  {
+    "id": 47,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Correct raised central camber with lower outer handgrips and symmetric plate loads; unwanted rack removed without changing bar geometry. Full bench athlete and sleeve ends retained."
+  },
+  {
+    "id": 79,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Near-upright supported seated overhead press, two intact dumbbells and planted feet; chest mark removed. Top margin remains modest but all equipment is inside square."
+  },
+  {
+    "id": 82,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Both arms raised forward to shoulder height with pronated grips and soft elbows; full standing figure, four distinct dumbbell heads, no incline-pose contamination."
+  },
+  {
+    "id": 83,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "One arm at shoulder height forward while opposite dumbbell rests by thigh, communicating alternating phase distinctly from bilateral front raise; full figure and equipment."
+  },
+  {
+    "id": 84,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "One plate gripped at opposite edges, forward shoulder-height arms and intact standing silhouette. Plate hole and two hands visible."
+  },
+  {
+    "id": 85,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Short straight loaded bar with pronated grip, arms projecting forward rather than elbows leading upright row. Complete bar and athlete."
+  },
+  {
+    "id": 86,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Press mechanics and bar continuity are coherent, but left landmine base is cropped by square edge."
+  },
+  {
+    "id": 87,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Clear half-kneeling stance with grounded knee and opposite foot, both hands at sleeve end, continuous anchored bar and secured plate; whole support visible."
+  },
+  {
+    "id": 88,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Single arm pressing sleeve with other hand empty at hip, staggered standing base and continuous bar to floor pivot; tight but intact anchor and hand margins."
+  },
+  {
+    "id": 89,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Unsupported upright floor-seated torso, extended legs/heels and overhead bar clearly identify Z Press; symmetric realistic bar and full shoes."
+  },
+  {
+    "id": 90,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear three-quarter shows bar just above/behind crown with elbows bent, not overhead lockout; representative Bradford transfer phase. Entire equipment and figure fit."
+  },
+  {
+    "id": 86,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Framing edit keeps bilateral press mechanics and continuous bar while restoring full grounded pivot base with visible left margin."
+  },
+  {
+    "id": 103,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Full standing T silhouette, soft elbows, pronated/neutral wrist rotation and two intact light dumbbells; lateral rather than forward arm plane."
+  },
+  {
+    "id": 104,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Upright seat contact, planted feet and wide lateral arms distinguish from standing and pressing; complete flat bench and both weights."
+  },
+  {
+    "id": 105,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Supported incline and framing are coherent, but supinated-looking grip and arm plane resemble incline fly too closely. Needs pronated lateral-abduction view."
+  },
+  {
+    "id": 106,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Body leans toward the support with feet away, the inverse of lean-away mechanics. Top of post also exits frame. Needs feet beside post and torso leaning outward."
+  },
+  {
+    "id": 105,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Inclined back support with pronated hands and sideways abduction corrected the fly-like first attempt; soft elbows, complete bench and planted feet."
+  },
+  {
+    "id": 106,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Feet now beside support, rigid body inclines away, supporting arm extended toward post, one free dumbbell lateral. Full capped post and base retained."
+  },
+  {
+    "id": 107,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Side-lying on horizontal bench, stacked legs and supported lower elbow, one raised upper arm in lateral plane. Four limbs, grounded support and full shoe edges."
+  },
+  {
+    "id": 108,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Prone chest contact and wide arm abduction distinguish from supine supported raise. Actual incline is steeper than prompt but remains valid chest-supported setup; intact bilateral dumbbells and grounded feet."
+  },
+  {
+    "id": 109,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Controlled low partial abduction with hands below ribs, not shoulder-height full raise; intact bilateral dumbbells, relaxed shoulder position, complete standing figure."
+  },
+  {
+    "id": 110,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Lu arc and plate grip are correct, but molded letters/numerals appear on plates, violating no-text/no-brand artwork rule."
+  },
+  {
+    "id": 111,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Two distinct dumbbells close to lower chest, wrists below bent outward/upward elbows; clear upright-row mechanics and full body."
+  },
+  {
+    "id": 112,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide pronated grip outside shoulder line, bar close to torso and elbows above wrists; symmetric light loading and complete bar/feet."
+  },
+  {
+    "id": 289,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Narrow pronated bar grip with tucked elbows on flat bench, grounded feet and full compact rack; distinct from wide chest pressing. Complete equipment despite tighter sleeve/shoe margins."
+  },
+  {
+    "id": 290,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Elbows/upper arms remain too vertical and bar too high, resembling a skull crusher rather than JM hybrid. Need forward lower upper arms and bar near upper chest."
+  },
+  {
+    "id": 110,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Both plate surfaces now have no letters or numbers; wide overhead lateral arc, full feet/hands, consistent original studio treatment."
+  },
+  {
+    "id": 290,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Side view improved upper-arm angle, but loaded bar remains above forehead rather than close to upper chest; still too similar to skull crusher."
+  },
+  {
+    "id": 291,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Straight bar is plausible but elbow flexion too shallow to clearly read skull crusher, and far shoe is clipped at right edge."
+  },
+  {
+    "id": 292,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "EZ bar identity is distinct and extension phase plausible, but far shoe exits right edge; deepen elbow fold for a more characteristic near-head phase."
+  },
+  {
+    "id": 293,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Neutral-grip dumbbells and deep elbow hinge are plausible with natural overlap, but far shoe is clipped. Needs framing only; retain pose."
+  },
+  {
+    "id": 291,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Elbows now flexed with straight bar above forehead and no head contact; full shoes restored. Recognizable lying elbow-extension phase rather than press lockout."
+  },
+  {
+    "id": 292,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Characteristic bent-elbow EZ extension over forehead, symmetric bent grip shaft and complete athlete/shoe framing; distinct implement from straight-bar version."
+  },
+  {
+    "id": 293,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Framing restores far shoe while keeping deep elbow hinge, neutral grips and two separate dumbbells beside head. Natural overlap, no bar/face intersection."
+  },
+  {
+    "id": 294,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Inclined backrest with elbows flexed and EZ bar behind crown, distinguishable from flat versions. Real bench support and complete shoes, same original studio."
+  },
+  {
+    "id": 290,
+    "attempt": 3,
+    "status": "REJECT",
+    "reason": "Low upper-chest hybrid arm position improved, but bar became too short/dumbbell-like and hands nearly merged; needs unmistakable separated barbell grips."
+  },
+  {
+    "id": 295,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Foot rollers are present but bench slopes in incline orientation; head is higher than hips. Regenerate true head-low decline from side."
+  },
+  {
+    "id": 296,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Seated upright two-hand cupped upper dumbbell head, both elbows overhead and single vertical weight behind crown. Full seat, athlete, weight and shoes."
+  },
+  {
+    "id": 297,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Standing unilateral extension with one hand at handle behind head, other arm empty, elbow overhead; complete figure and weight, distinct rear camera."
+  },
+  {
+    "id": 290,
+    "attempt": 4,
+    "status": "REJECT",
+    "reason": "Barbell restored but pose reverted to ordinary close-grip pressing with vertical forearms; far shoe cropped. Need actual JM mechanics reference rather than repeating text-only correction."
+  },
+  {
+    "id": 298,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Weights above face instead of inward onto upper chest, bench still inclined, and each dumbbell has mismatched head sizes. Regenerate flat-bench bottom Tate position."
+  },
+  {
+    "id": 299,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Neutral dumbbells rolled behind crown with upper arms angled back and deep elbow flexion. Both shoes complete; characteristic behind-head transition, temporal roll cannot be proved by still."
+  },
+  {
+    "id": 300,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Correct two-hand single dumbbell and bent-elbow overhead pullover position, but far shoe clipped at right. Framing-only correction required."
+  },
+  {
+    "id": 290,
+    "attempt": 5,
+    "status": "REJECT",
+    "reason": "Style, full framing and barbell improved, but forearms remain too upright and bar stays over the face. It reads as a skull crusher rather than the inventor's low chin/throat JM transition."
+  },
+  {
+    "id": 295,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "True head-low decline with secured feet, EZ bar behind forehead and deep elbow hinge. Whole bench, bar and shoes remain visible; original studio/skin/metal treatment retained."
+  },
+  {
+    "id": 298,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Dumbbell lower heads at upper chest, elbows flared and above wrists, forearms folding inward; distinct Tate bottom position. Matched dumbbell heads, complete shoes and flat bench in perspective."
+  },
+  {
+    "id": 300,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Far shoe fully restored; one dumbbell cupped by two hands behind crown with bent elbows and upper arms traveling back. Complete bench/athlete and original style retained."
+  },
+  {
+    "id": 290,
+    "attempt": 6,
+    "status": "ACCEPT",
+    "reason": "Side view now shows upper arms angled toward feet, raised elbows and forearms folding back/down toward chin; bar at chin transition rather than forehead extension. Pronated separated grips, natural occlusion of far arm, whole athlete/bench/bar. Distinct JM transition with safe facial clearance."
+  }
+]

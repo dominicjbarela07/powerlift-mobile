@@ -11,7 +11,7 @@ import {
 import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';
 import { SLColors, SLRadius } from '@/constants/theme';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
-import { CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
+import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK, CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';
 import {
   resolveCanonicalMovementArtwork,
   type CanonicalMovementArtworkInput,
@@ -38,6 +38,14 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID }:
   }, [movement?.core_movement_id, movement?.id, movement?.movement_definition_id, resolution]);
 
   if (resolution.kind === 'accessory') {
+    if (__DEV__ && resolution.artworkKey) {
+      const asset = CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey];
+      return (
+        <View accessibilityLabel={asset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>
+          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? asset.thumbnail : asset.source} style={styles.image} />
+        </View>
+      );
+    }
     const asset = accessoryMuscleRegionAsset(resolution.regionKey);
     return (
       <View accessibilityLabel={`${asset.label} targeted muscle-group artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>

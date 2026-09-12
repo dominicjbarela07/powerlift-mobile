@@ -1,0 +1,231 @@
+{
+  "workout": {
+    "accessory_groups": [
+      {
+        "items": [
+          {
+            "effective_movement_definition_id": 33,
+            "effective_movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "id": 18042,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 154,
+            "effective_movement_identity": {
+              "family": "accessory_lats",
+              "id": 154,
+              "key": "accessory_one_arm_dumbbell_row",
+              "primary_muscle_group": "lats"
+            },
+            "id": 18043,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_lats",
+              "id": 154,
+              "key": "accessory_one_arm_dumbbell_row",
+              "primary_muscle_group": "lats"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 253,
+            "effective_movement_identity": {
+              "family": "accessory_biceps",
+              "id": 253,
+              "key": "accessory_dumbbell_curl",
+              "primary_muscle_group": "biceps"
+            },
+            "id": 18044,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_biceps",
+              "id": 253,
+              "key": "accessory_dumbbell_curl",
+              "primary_muscle_group": "biceps"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 325,
+            "effective_movement_identity": {
+              "family": "accessory_forearms",
+              "id": 325,
+              "key": "accessory_barbell_wrist_curl",
+              "primary_muscle_group": "forearms"
+            },
+            "id": 18045,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_forearms",
+              "id": 325,
+              "key": "accessory_barbell_wrist_curl",
+              "primary_muscle_group": "forearms"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 354,
+            "effective_movement_identity": {
+              "family": "accessory_quads",
+              "id": 354,
+              "key": "accessory_bulgarian_split_squat",
+              "primary_muscle_group": "quads"
+            },
+            "id": 18046,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_quads",
+              "id": 354,
+              "key": "accessory_bulgarian_split_squat",
+              "primary_muscle_group": "quads"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 388,
+            "effective_movement_identity": {
+              "family": "accessory_hamstrings",
+              "id": 388,
+              "key": "accessory_dumbbell_romanian_deadlift",
+              "primary_muscle_group": "hamstrings"
+            },
+            "id": 18047,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_hamstrings",
+              "id": 388,
+              "key": "accessory_dumbbell_romanian_deadlift",
+              "primary_muscle_group": "hamstrings"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 476,
+            "effective_movement_identity": {
+              "family": "accessory_calves",
+              "id": 476,
+              "key": "accessory_standing_dumbbell_calf_raise",
+              "primary_muscle_group": "calves"
+            },
+            "id": 18048,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_calves",
+              "id": 476,
+              "key": "accessory_standing_dumbbell_calf_raise",
+              "primary_muscle_group": "calves"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 495,
+            "effective_movement_identity": {
+              "family": "accessory_abs",
+              "id": 495,
+              "key": "accessory_weighted_crunch",
+              "primary_muscle_group": "abs"
+            },
+            "id": 18049,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_abs",
+              "id": 495,
+              "key": "accessory_weighted_crunch",
+              "primary_muscle_group": "abs"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 4,
+            "effective_movement_identity": {
+              "family": "horizontal_pull",
+              "id": 4,
+              "key": "barbell_row",
+              "primary_muscle_group": null
+            },
+            "id": 18050,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "horizontal_pull",
+              "id": 4,
+              "key": "barbell_row",
+              "primary_muscle_group": null
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 5,
+            "effective_movement_identity": {
+              "family": "horizontal_pull",
+              "id": 5,
+              "key": "single_arm_dumbbell_row",
+              "primary_muscle_group": null
+            },
+            "id": 18051,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "horizontal_pull",
+              "id": 5,
+              "key": "single_arm_dumbbell_row",
+              "primary_muscle_group": null
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 6,
+            "effective_movement_identity": {
+              "family": "horizontal_push",
+              "id": 6,
+              "key": "incline_barbell_press",
+              "primary_muscle_group": null
+            },
+            "id": 18052,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "horizontal_push",
+              "id": 6,
+              "key": "incline_barbell_press",
+              "primary_muscle_group": null
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 7,
+            "effective_movement_identity": {
+              "family": "horizontal_push",
+              "id": 7,
+              "key": "incline_dumbbell_press",
+              "primary_muscle_group": null
+            },
+            "id": 18053,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "horizontal_push",
+              "id": 7,
+              "key": "incline_dumbbell_press",
+              "primary_muscle_group": null
+            },
+            "performed_canonical_movement_identity": null
+          }
+        ]
+      }
+    ],
+    "athlete_id": 12,
+    "core_items": [],
+    "id": 1734,
+    "label": "Whole Free-weight Family Art QA",
+    "status": "draft"
+  }
+}

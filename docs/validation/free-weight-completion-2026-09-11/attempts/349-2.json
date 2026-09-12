@@ -1,0 +1,12 @@
+{
+  "id": 349,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. Canonical MovementDefinition349 High-Bar Squat. Image1 is ONLY the fixed family lighting/material style reference. Image2 is the actual edit target. Correct ONLY the athlete's HEAD AND NECK in image2. The athlete must face STRAIGHT FORWARD in the same direction as the torso/pelvis, directly away from this rear three-quarter camera; NO turning the head to either shoulder, NO looking sideways and NO looking back at camera. Show predominantly the BACK OF HIS HEAD, with head centered above spine, neck neutral and chin gently tucked; facial eyes/nose/mouth should not appear in a full side profile. Align back-of-skull and nape naturally with the shirt's spinal centerline. Preserve the exact image2 squat stance, squat depth, torso, shoulders, high-bar rack position, hands/grip, all plates/barbell, shoes, crop, subject scale, dark studio, floor and violet lighting. Do not rotate the body or change the camera to expose the face. One athlete, photoreal, no text, no overlays. This is a targeted correction to the visibly sideways head, not a pose redesign.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/var/folders/lb/2j2b2zcj37bfw9d3f137tjc80000gn/T/codex-clipboard-2f2d3eed-7f0f-4d16-937c-efe3022b9e91.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5f63b7a9-01b8-4eb6-bad3-9e163d9badb5.png",
+  "review": "ACCEPT",
+  "source": "User-requested correction of lateral head turn; built-in image generation"
+}

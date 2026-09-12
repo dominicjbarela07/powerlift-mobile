@@ -1,0 +1,344 @@
+[
+  {
+    "id": 191,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Continuous-load unsupported row: hinged neutral torso, bent elbows and straight pronated bar above floor; symmetric plates/collars, natural contacts, complete equipment. Baseline studio/materials and reduced silhouette pass."
+  },
+  {
+    "id": 194,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Prone supported row: chest on incline pad, two distinct neutral-grip dumbbells and flexed elbows, planted feet. Bench angle is within representative generic supported-row execution. Complete equipment and baseline texture/lighting pass."
+  },
+  {
+    "id": 126,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Deep hinge and nearly straight widely abducted arms identify rear-delt reverse fly rather than row/upright raise. Rear camera preserves both separate weights and natural anatomy. Entire figure/equipment remain visible at thumbnail."
+  },
+  {
+    "id": 154,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Unilateral row clearly shows same-side knee/palm bench support, opposite floor foot and one dumbbell pulled to hip. Natural hand/implement contacts, full bench/feet and baseline photography pass."
+  },
+  {
+    "id": 235,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Elevated shoulders with straight elbows and two hanging dumbbells distinguish shrug contraction. Upright silhouette, complete shoes/weights and neutral metal in original studio style pass."
+  },
+  {
+    "id": 155,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Long-arm single-dumbbell pullover mechanics are recognizable, but head hovers above bench and far shoe is too close to edge. Refine head support and framing before acceptance."
+  },
+  {
+    "id": 127,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear camera shows chest-supported bilateral reverse fly, long softly bent arms and separate natural dumbbell grips. Whole bench/feet and restrained violet studio pass. Incline overlaps ID128 in catalog; do not invent different identity mechanics."
+  },
+  {
+    "id": 128,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Supported incline rear-delt fly with long arms in horizontal abduction, neutral head, intact incline bench and both weights. Honest overlap with ID127 retained; camera/pose differs without fabricated exercise semantics. Full crop and material language pass."
+  },
+  {
+    "id": 129,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear-delt bent-elbow dumbbell row: two flexed elbows travel out/back, neutral unsupported hinge and distinct implements. Rear view exposes posterior shoulder plane and elbow flexion versus fly. Complete shoes/equipment, original studio cohesion pass."
+  },
+  {
+    "id": 130,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide bilateral dumbbell row shows flared flexed elbows and semi-pronated grips from front-side view. Unsupported hinge distinguishes supported variants; natural hands, full footwear and original metal/floor/lighting pass."
+  },
+  {
+    "id": 131,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide pronated barbell row: laterally flared bent elbows, hinged torso, continuous shaft passing in front of body with matching plates, clear overhead rear shoulder plane. Entire bar/figure retained. Neutral studio/materials match original."
+  },
+  {
+    "id": 155,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Correction still leaves unsupported head/neck hovering and far shoe at right edge. Do not accept an attractive but physically unsupported pullover; regenerate from original with relaxed head contacting a longer pad."
+  },
+  {
+    "id": 153,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Meadows-specific overhand sleeve grip at loaded end, perpendicular staggered stance, single bent working elbow and thigh brace are legible. One coherent straight bar reaches a visible floor pivot; full shoe/implement silhouette and baseline studio pass."
+  },
+  {
+    "id": 150,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rotating plank archer row shows two grounded feet, supporting flat palm, open torso and one dumbbell beside ribs; natural wrist/shoulder geometry and complete silhouette. Stored bilateral default disclosed, without rewriting canonical metadata."
+  },
+  {
+    "id": 157,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Standing unilateral row mechanics and single heavy dumbbell pass, but incline bench extends beyond right canvas. Reframe the complete bench while preserving stance/grips."
+  },
+  {
+    "id": 156,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Correct straight-bar long-arm pullover, but head support remains unclear and far shoe almost touches edge. Refine neutral supported head and full-scene framing."
+  },
+  {
+    "id": 155,
+    "attempt": 3,
+    "status": "REJECT",
+    "reason": "Head support is improved and pullover arm path is correct, but far shoe remains at edge despite requested margin. Preserve pose and zoom out for crop-safe master."
+  },
+  {
+    "id": 132,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Chest pad visibly supports torso, wide pronated grip and flared flexed elbows identify supported rear-delt row. Straight bar remains in front of bench/frame with matching plates, full equipment and safe complete athlete crop; original studio pass."
+  },
+  {
+    "id": 133,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Prone support, low partial outward arm sweep with long elbows and heavier distinct dumbbells identify the rear-delt swing phase. A still cannot prove repeated swinging. Complete support/frame/feet, natural anatomy and baseline material/lighting pass."
+  },
+  {
+    "id": 158,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Exactly three support points: both floor feet plus flat palm on flat bench, with no kneeling. Tucked single-dumbbell row and controlled torso read clearly. Complete bench/shoes and metal geometry match original; bilateral catalog default disclosed."
+  },
+  {
+    "id": 155,
+    "attempt": 4,
+    "status": "ACCEPT",
+    "reason": "Targeted reframe now keeps complete shoes and single dumbbell safely inside square. Long arm pullover arc, back-of-head support on pad, full torso/foot contacts and equipment pass. Neutral dark studio remains consistent after refinement."
+  },
+  {
+    "id": 161,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Tucked elbows pull both neutral-grip dumbbells toward hip pockets in unsupported hinge, visibly distinct from rear-delt flare. Natural handles/hands, full shoes and original materials/lighting pass."
+  },
+  {
+    "id": 157,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Complete incline bench now fits within canvas with both base supports visible. Standing staggered Kroc row, single substantial dumbbell and bracing hand preserved. A still represents the top pull, not high-rep duration; family lighting/crop pass."
+  },
+  {
+    "id": 160,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Working hand sits above the shaft/plate junction instead of clearly wrapping a continuous handle. Refine hand-to-shaft contact; a convincing face/pose cannot excuse an unsupported weight."
+  },
+  {
+    "id": 192,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Pendlay dead-stop phase shows both plates contacting floor, long arms and near-horizontal hinged torso; visibly differs from continuous-load row. Straight bar, paired loading and full grounded shoes are coherent, studio/materials pass."
+  },
+  {
+    "id": 193,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Seal row has fully horizontal prone body supported on elevated flat bench, airborne shoes and bent-elbow bar pull with floor clearance. Frame/bar remain separate and complete; silver loading and original studio match."
+  },
+  {
+    "id": 195,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Moderate-grip barbell row with actual chest support, flexed elbows and clear bar-to-frame separation. Continuous straight shaft, symmetric plates and intact full bench/feet pass; distinguishes wide rear-delt grip."
+  },
+  {
+    "id": 197,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Free anchored shaft, short connected transverse T handle, bilateral close grip and bent-elbow pull distinguish T-bar setup. Grip is a valid pronated T-handle version rather than planned neutral handles. Full equipment/athlete and original style pass."
+  },
+  {
+    "id": 162,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Chest-supported row with elbows tucked close to torso and neutral dumbbells drawn toward waist, rather than wide rear-delt path. Prone chest contact, clear near implement/far implement occlusion, complete shoes/bench and original materials pass."
+  },
+  {
+    "id": 196,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Incline-supported bilateral dumbbell row shows bent elbows and real pad contact with two intact weights. Full bench/feet and natural metal/skin pass; catalog overlap with generic supported row remains documented, not invented."
+  },
+  {
+    "id": 156,
+    "attempt": 2,
+    "status": "REJECT",
+    "reason": "Framing improves but arm occlusion still makes head support ambiguous. Request an explicitly visible black headrest under occiput before final acceptance."
+  },
+  {
+    "id": 159,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Bilateral close neutral row handle visibly connects to free loaded landmine shaft, two flexed elbows draw load to lower ribs. Raised top phase is somewhat upright but remains a row, with straddled stance and intact pivot/plates. Full crop and baseline materials pass."
+  },
+  {
+    "id": 201,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Flat prone batwing top contraction uses deeply flexed elbows, hands near armpits and full chest support; separate dumbbells and braced feet remain clear. A still cannot prove hold duration. Whole bench/figure and original studio pass."
+  },
+  {
+    "id": 198,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide overhand T-handle and flared elbows clearly distinguish this from close V-grip landmine and short T-bar. Rigid handle connects to loaded free shaft and visible floor pivot; full athlete/weights, natural hands and original lighting pass."
+  },
+  {
+    "id": 160,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Corrected fist now wraps continuous shaft behind plate rather than floating above it. Parallel single-arm setup, tucked row, thigh brace and visible floor pivot remain clear, with natural equipment/contact and intact full silhouette."
+  },
+  {
+    "id": 156,
+    "attempt": 3,
+    "status": "ACCEPT",
+    "reason": "Visible padded headrest now resolves support ambiguity while long-arm shoulder pullover and separate overhand bar grips remain intact. Full straight bar, small symmetric plates, bench and complete shoes pass; same studio/material language."
+  },
+  {
+    "id": 200,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Torso is too upright and follows the whole vertical pad, losing the defining hinged top-edge chest brace of a Helms row. Regenerate strict side view with chest and hips at similar height."
+  },
+  {
+    "id": 199,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Long shaft and loaded sleeve do not share one straight axis around handle; geometry reads as bent/disconnected bar. Regenerate a true side view with one continuous straight landmine axis and clear bench clearance."
+  },
+  {
+    "id": 203,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Extra-wide pronated hand spacing near shaft ends, bent rowing elbows and unsupported hinge distinguish snatch-grip row. Entire continuous shaft and matching loaded sleeves remain visible with no cropped equipment; baseline materials pass."
+  },
+  {
+    "id": 545,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Posterior extension setup clearly shows pelvis/thigh pad, secured ankle rollers/footplate and a light straight bar across upper back with real hand support. Torso extends in line with supported legs, full apparatus/athlete intact. Distinct from standing hinges."
+  },
+  {
+    "id": 204,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Moderately wide grip with strongly flared flexed elbows and unsupported hinge identifies high wide-elbow barbell row. Separate from snatch-wide spacing; shaft/loading and all limbs are intact, original studio cohesion passes."
+  },
+  {
+    "id": 202,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Gorilla row shows wide hinge, one kettlebell grounded and one rowed to hip; both closed-loop handles and natural gripping hands are clear. Correct alternating phase, intact full feet/equipment and neutral metal style pass."
+  },
+  {
+    "id": 549,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Horizontal torso and legs, pelvis/thigh support, secured ankles and one plate held firmly at chest identify weighted Sorenson hold. Full stable apparatus, natural hands and controlled neutral spine pass; duration is not inferred from still."
+  },
+  {
+    "id": 547,
+    "attempt": 1,
+    "status": "REJECT",
+    "reason": "Light load, platform and spinal rounding are present, but high partial range resembles an elevated rounded deadlift. Refine to the more characteristic controlled curl with bar below toe/platform height."
+  },
+  {
+    "id": 199,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Straight landmine shaft and loaded sleeve now share one continuous axis. Chest support, neutral handle, elbow pull and complete apparatus identify the free-weight supported T-bar row. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 200,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Chest contacts the top edge of the upright bench while hips remain hinged and unsupported. Bilateral dumbbells at ribs and full bench distinguish Helms row from lying incline rows. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 205,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Chest-supported scapular row with straight elbows and continuous silver bar; rear angle exposes shoulder-blade position, both grips and whole bench. Isolated snapshot cannot encode scapular travel. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 206,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Unsupported hinged torso, bilateral dumbbells pulled high with flared elbows. Clear distinction from tucked lat row and straight-arm fly; complete silhouette and equipment. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 234,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Elevated shoulders, extended arms, shoulder-width grip and balanced continuous silver bar communicate loaded barbell shrug; whole feet and sleeves visible. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 236,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Loaded hex bar with coherent ring, neutral raised handles and symmetrical plates. Straight arms and elevated shoulders identify trap-bar shrug; full silhouette. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 237,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear view exposes bar behind thighs and elevated shoulders with straight arms. Continuous shaft, symmetric plates and real grips distinguish behind-back shrug. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 238,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide pronated grip, elevated shoulders and straight arms distinguish snatch-grip shrug. Silver shaft and both sleeves remain fully inside frame. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 239,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Wide overhead bar hold with straight elbows and elevated shoulders identifies overhead shrug. Whole bar, athlete and feet visible; overhead scapular travel is implicit in a static image. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 240,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Mid-stride farmer carry with two silver dumbbells, straight arms and upright torso. Clear walking stance distinguishes carry from shrug and all equipment remains visible. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 241,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Incline chest-supported dumbbell Kelso shrug with straight arms and scapular retraction. Both neutral grips, support and whole silhouette visible; no elbow-row substitution. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 242,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Unsupported hinged barbell Kelso shrug, straight elbows and retracted shoulder girdle. Continuous bar, full feet and balanced equipment; exact static scapular excursion is not measurable. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  },
+  {
+    "id": 547,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "Refinement shows light straight bar below toe/platform level, softly extended knees, rounded spinal articulation and tucked head. Full elevated platform and athlete visible; no deadlift-like partial-height framing. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+  }
+]

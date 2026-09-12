@@ -1,0 +1,1932 @@
+{
+  "baseline_sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe",
+  "movements": [
+    {
+      "id": 126,
+      "key": "accessory_bent_over_dumbbell_reverse_flye",
+      "display_name": "Bent-Over Dumbbell Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Deep hinge and nearly straight widely abducted arms identify rear-delt reverse fly rather than row/upright raise. Rear camera preserves both separate weights and natural anatomy. Entire figure/equipment remain visible at thumbnail.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/bent-over-dumbbell-reverse-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1945499,
+          "sha256": "89a9558af12ab23731fe9e56bd318cbd4d88d916928691210507b45bdc6976a0"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bent-over-dumbbell-reverse-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 330423,
+          "sha256": "4e96a9a932c237b07c0f3f5c2c3ddf2f06831a4fe9ca9db3bf341e944df3d7bc"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bent-over-dumbbell-reverse-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47408,
+          "sha256": "d28863ccaec07fa0375e3c96b5742f4b15c3a07c6e66844d73628371520ae462"
+        }
+      }
+    },
+    {
+      "id": 127,
+      "key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "display_name": "Chest-Supported Dumbbell Reverse Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Rear camera shows chest-supported bilateral reverse fly, long softly bent arms and separate natural dumbbell grips. Whole bench/feet and restrained violet studio pass. Incline overlaps ID128 in catalog; do not invent different identity mechanics.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-dumbbell-reverse-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1831832,
+          "sha256": "1d02ba16ab509008587fc3ee4206218db73ef220b4f8d0d2ea727a0932e0555e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-reverse-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310887,
+          "sha256": "25a433dd971d7581b689eb64200d6129604f71f9593578d467a08088c0e376fd"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-reverse-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46364,
+          "sha256": "f8da3cf804649a1ae74ac197bef2937a509f5b603644e8169d726eb1ae51d79d"
+        }
+      }
+    },
+    {
+      "id": 128,
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "display_name": "Incline-Bench Rear-Delt Fly",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Supported incline rear-delt fly with long arms in horizontal abduction, neutral head, intact incline bench and both weights. Honest overlap with ID127 retained; camera/pose differs without fabricated exercise semantics. Full crop and material language pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/incline-bench-rear-delt-flye-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1925743,
+          "sha256": "de38698a65b485e526f584ba7a13e83099758e6d13c58bab7b408f7142bcb869"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 329569,
+          "sha256": "33f08c7a5f81055acaa4b1c9e93849143d60b438f7712b8ebcae95fc7333ad48"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-bench-rear-delt-flye-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 49198,
+          "sha256": "0add4b810c7e50403086301e98f287756b2fee12f0a3172cc495f053894a9208"
+        }
+      }
+    },
+    {
+      "id": 129,
+      "key": "accessory_rear_delt_dumbbell_row",
+      "display_name": "Rear-Delt Dumbbell Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Rear-delt bent-elbow dumbbell row: two flexed elbows travel out/back, neutral unsupported hinge and distinct implements. Rear view exposes posterior shoulder plane and elbow flexion versus fly. Complete shoes/equipment, original studio cohesion pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/rear-delt-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1887478,
+          "sha256": "f078f24ffb299b100565729d0347ae70489a8e23953412690c24ee81aee00e9e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316825,
+          "sha256": "e0331a41a3fad843da766a8a81fbc396edf8f7ace91a4d53c92882ed1fe087fe"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45613,
+          "sha256": "7bb732c9788fd46ee1d76dfcebed424eed8fe038d5fae222674b7dbff1a4ff5d"
+        }
+      }
+    },
+    {
+      "id": 130,
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "display_name": "Wide-Elbow Dumbbell Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide bilateral dumbbell row shows flared flexed elbows and semi-pronated grips from front-side view. Unsupported hinge distinguishes supported variants; natural hands, full footwear and original metal/floor/lighting pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/wide-elbow-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1838896,
+          "sha256": "193a2f63eef94503e8774a5699abc7ba67ce2c60065c1c4b628f6f9f38bf1dc7"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310935,
+          "sha256": "f6e7c56fb6565dd2c58eed67d05c386cf226cdaf049f3d3c61c05686aec49b93"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-elbow-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45887,
+          "sha256": "e175c5e4648a8681ce33e2eb4632e9796f63194e0727858f313342e40ecf600e"
+        }
+      }
+    },
+    {
+      "id": 131,
+      "key": "accessory_rear_delt_barbell_row",
+      "display_name": "Rear-Delt Barbell Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide pronated barbell row: laterally flared bent elbows, hinged torso, continuous shaft passing in front of body with matching plates, clear overhead rear shoulder plane. Entire bar/figure retained. Neutral studio/materials match original.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/rear-delt-barbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1928806,
+          "sha256": "74a4a5409dedda91867406f9780ac4ec4c963c5a1074963606b0d78c26d624a2"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 327462,
+          "sha256": "6d817581efc1df829338301083f6aa71da64ca1b0137d90a271087c6b4d1832a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47929,
+          "sha256": "a3a9cb3a6278c2a36749d76c86842c73362e51b86568d637a336c15d8bd395dd"
+        }
+      }
+    },
+    {
+      "id": 132,
+      "key": "accessory_wide_grip_chest_supported_rear_delt_row",
+      "display_name": "Wide-Grip Chest-Supported Rear-Delt Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Chest pad visibly supports torso, wide pronated grip and flared flexed elbows identify supported rear-delt row. Straight bar remains in front of bench/frame with matching plates, full equipment and safe complete athlete crop; original studio pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/wide-grip-chest-supported-rear-delt-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1925678,
+          "sha256": "fadb78544146a889ba142962eb8659e457ae1b5166bab005881a58de85a66480"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-chest-supported-rear-delt-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 326175,
+          "sha256": "c19e961be53eedaff0325aa818f3f959b31a5c83c4082d1c4aa79726394382ba"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-chest-supported-rear-delt-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48418,
+          "sha256": "68dd99913baa1505465e16190584f0f7dcd48009e01a09bf3d6400d980ecb762"
+        }
+      }
+    },
+    {
+      "id": 133,
+      "key": "accessory_prone_rear_delt_swing",
+      "display_name": "Prone Rear-Delt Swing",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Prone support, low partial outward arm sweep with long elbows and heavier distinct dumbbells identify the rear-delt swing phase. A still cannot prove repeated swinging. Complete support/frame/feet, natural anatomy and baseline material/lighting pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/prone-rear-delt-swing-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1880253,
+          "sha256": "e45f61a78b06ac34bd2d8875ee1c0844725d95b35644235d53b4b04734993888"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/prone-rear-delt-swing-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 318783,
+          "sha256": "1fbcd65047fef36411470303108b4f8ae4b57637986abe93915b89232e360231"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/prone-rear-delt-swing-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46326,
+          "sha256": "0d907a62290cc36fb6115407cab6e81f47ed8be064a7bc680ee42225ecdebe3e"
+        }
+      }
+    },
+    {
+      "id": 150,
+      "key": "accessory_dumbbell_archer_row",
+      "display_name": "Dumbbell Archer Row",
+      "primary_muscle_group": "rear_delts",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Rotating plank archer row shows two grounded feet, supporting flat palm, open torso and one dumbbell beside ribs; natural wrist/shoulder geometry and complete silhouette. Stored bilateral default disclosed, without rewriting canonical metadata.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-archer-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1779825,
+          "sha256": "4e5744989ab4c004192aade4322f1049bc8b4063d5e99e289be71618db560cfc"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 301203,
+          "sha256": "8e5c58a227945b6941c69f9ab2c7511477a0dddb5452989d5694ae5817e6fc0a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43828,
+          "sha256": "ee03e84a8b65658015adc1909b549d117de828ca6803819cec0e4833b9c0f3ad"
+        }
+      }
+    },
+    {
+      "id": 153,
+      "key": "accessory_meadows_row",
+      "display_name": "Meadows Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Meadows-specific overhand sleeve grip at loaded end, perpendicular staggered stance, single bent working elbow and thigh brace are legible. One coherent straight bar reaches a visible floor pivot; full shoe/implement silhouette and baseline studio pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/meadows-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1814300,
+          "sha256": "6904c43d8ea89b9c41f60a47cdb66b48e7fa8d1841f7f89fa478123f76f11fb4"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/meadows-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303043,
+          "sha256": "191569f58197b54c52686d88b92bc9511653d21e240f743d1561065d7ec7cb1a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/meadows-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44265,
+          "sha256": "609dbe80dbb160f95f436c8215376a9bcc21123ad50c038ee8c14fb71699244a"
+        }
+      }
+    },
+    {
+      "id": 154,
+      "key": "accessory_one_arm_dumbbell_row",
+      "display_name": "One-Arm Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "unilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Unilateral row clearly shows same-side knee/palm bench support, opposite floor foot and one dumbbell pulled to hip. Natural hand/implement contacts, full bench/feet and baseline photography pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/one-arm-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1812397,
+          "sha256": "5d6fe9e1c45c8cd070f293a6b5562840de3dd96a7ce2cad735eb5217b68180c1"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/one-arm-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308301,
+          "sha256": "ee0345f66c83615b941f2be1e687f7b0d4ab082ec8ec1c100ff05e1e054d0464"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/one-arm-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45629,
+          "sha256": "0e7f1617699f1a08652d7226c59ea848bafdcb2b3901e2da86a93f0982b7d363"
+        }
+      }
+    },
+    {
+      "id": 155,
+      "key": "accessory_dumbbell_pullover",
+      "display_name": "Dumbbell Pullover",
+      "primary_muscle_group": "lats",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 4,
+      "review": "Targeted reframe now keeps complete shoes and single dumbbell safely inside square. Long arm pullover arc, back-of-head support on pad, full torso/foot contacts and equipment pass. Neutral dark studio remains consistent after refinement.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-pullover-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1825238,
+          "sha256": "3343d75a9c7f96137ce5a54c73dbdd151bc61ee770035d7a04ebdb41d5556532"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 299236,
+          "sha256": "88b03a27d5d8b44e89e52cbc2bc06adc70db26697f440d1279dad0c64dd47438"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41271,
+          "sha256": "3730d9b3f0241c3ff99ef4ea445a60d2f962403402ecb6fd739a07bd787dd2ad"
+        }
+      }
+    },
+    {
+      "id": 156,
+      "key": "accessory_barbell_pullover",
+      "display_name": "Barbell Pullover",
+      "primary_muscle_group": "lats",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 3,
+      "review": "Visible padded headrest now resolves support ambiguity while long-arm shoulder pullover and separate overhand bar grips remain intact. Full straight bar, small symmetric plates, bench and complete shoes pass; same studio/material language.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-pullover-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1704096,
+          "sha256": "3abcda2a922665a148fd6fda37ce2a59b3c029642976166b8f362c0d6d9ed2b1"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-pullover-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 282969,
+          "sha256": "4fbbb1f19f287ab776d94a40d894142eb0df834287d67e02161ae4eb001c4782"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-pullover-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42078,
+          "sha256": "0e7c6cc79b2c4a08d7a8983c8f3e43e2e217c9727aec42f087f2c561c40f00aa"
+        }
+      }
+    },
+    {
+      "id": 157,
+      "key": "accessory_kroc_row",
+      "display_name": "Kroc Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Complete incline bench now fits within canvas with both base supports visible. Standing staggered Kroc row, single substantial dumbbell and bracing hand preserved. A still represents the top pull, not high-rep duration; family lighting/crop pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/kroc-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1836945,
+          "sha256": "30eede845b342623e071fe475a14f1a1c86eb04496faf9da733c87150584f1db"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/kroc-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304540,
+          "sha256": "2acecba8d92f5a6f33efea3057a8b5a971d3186e7c954cabe35972dd3baaa813"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/kroc-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44270,
+          "sha256": "5696244ce567d77f7c9fad0f1105d6237b4544dd2a1d8a267affa3e5cc235554"
+        }
+      }
+    },
+    {
+      "id": 158,
+      "key": "accessory_three_point_dumbbell_row",
+      "display_name": "Three-Point Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Exactly three support points: both floor feet plus flat palm on flat bench, with no kneeling. Tucked single-dumbbell row and controlled torso read clearly. Complete bench/shoes and metal geometry match original; bilateral catalog default disclosed.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/three-point-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1869260,
+          "sha256": "b22584d80b7658716ac1553b357cc75aec801a80c1fd8d4387f188b2fdb97279"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 315407,
+          "sha256": "d456c5d4642761de2bfc753b73f311d768972d8d67d1b60721112f3bbf007164"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/three-point-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46171,
+          "sha256": "470a1a92ec773fb4294a63808b0891f8f4873bcb212dd0472b441ab72b61b84c"
+        }
+      }
+    },
+    {
+      "id": 159,
+      "key": "accessory_landmine_row",
+      "display_name": "Landmine Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Bilateral close neutral row handle visibly connects to free loaded landmine shaft, two flexed elbows draw load to lower ribs. Raised top phase is somewhat upright but remains a row, with straddled stance and intact pivot/plates. Full crop and baseline materials pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/landmine-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1792737,
+          "sha256": "9b8d79b0c3a8464dc6fed1b33b8542f59b722ea1141df13886c88fbc5206b1b2"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/landmine-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 309511,
+          "sha256": "5af96063baa9d753a050a54684404d16b6286c24955e97b89836d21e61520a85"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/landmine-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45195,
+          "sha256": "4be7a34c6669534a1ef199cd75732bd38b03b95261cf6e6d0de5c6ce2705eb52"
+        }
+      }
+    },
+    {
+      "id": 160,
+      "key": "accessory_one_arm_landmine_row",
+      "display_name": "One-Arm Landmine Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "unilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Corrected fist now wraps continuous shaft behind plate rather than floating above it. Parallel single-arm setup, tucked row, thigh brace and visible floor pivot remain clear, with natural equipment/contact and intact full silhouette.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/one-arm-landmine-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1732522,
+          "sha256": "5b487f449f0e54dfada6e2e797c22221f4cebd4e83f391be0404d49e28b1bf59"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/one-arm-landmine-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294774,
+          "sha256": "af5766ad09a0f615809474144723afdb6bdbf7ae665d9f76d7a9725a4a1bdccf"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/one-arm-landmine-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43456,
+          "sha256": "69c03e179d604f329620584d28e24ab2e38b3bb71c17488660ad38f2f1f3d263"
+        }
+      }
+    },
+    {
+      "id": 161,
+      "key": "accessory_lat_biased_dumbbell_row",
+      "display_name": "Lat-Biased Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Tucked elbows pull both neutral-grip dumbbells toward hip pockets in unsupported hinge, visibly distinct from rear-delt flare. Natural handles/hands, full shoes and original materials/lighting pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/lat-biased-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1785357,
+          "sha256": "9b6ca8e12196f96c58c702f2fb33f759ec34b07ef7e48e0464b5ac2cd38e8f6b"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lat-biased-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 296607,
+          "sha256": "bdcc39baaff071783b8c63a1cc1684642c9265be2a48892b3c029929d7f70c06"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lat-biased-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42757,
+          "sha256": "40ad0a7fc523fa1551471c3b58a1e20945f6ecd1340a4fbe2098aa9b132efb3f"
+        }
+      }
+    },
+    {
+      "id": 162,
+      "key": "accessory_lat_biased_chest_supported_dumbbell_row",
+      "display_name": "Lat-Biased Chest-Supported Dumbbell Row",
+      "primary_muscle_group": "lats",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Chest-supported row with elbows tucked close to torso and neutral dumbbells drawn toward waist, rather than wide rear-delt path. Prone chest contact, clear near implement/far implement occlusion, complete shoes/bench and original materials pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/lat-biased-chest-supported-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1799314,
+          "sha256": "f66bed006fdf19aa9480535982b701b73c265b0fa2bc2dfea753fb127316c43b"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lat-biased-chest-supported-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 302059,
+          "sha256": "ecf87afcc5b277dcb87e683af77d5ce7efcfd7fede613f77dca53bc2ca0c1e9e"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/lat-biased-chest-supported-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44787,
+          "sha256": "062cdc60859b31dcd8118fbb305121ac7d6be5d5923f9c12981c3b508798597f"
+        }
+      }
+    },
+    {
+      "id": 191,
+      "key": "accessory_bent_over_barbell_row",
+      "display_name": "Bent-Over Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Continuous-load unsupported row: hinged neutral torso, bent elbows and straight pronated bar above floor; symmetric plates/collars, natural contacts, complete equipment. Baseline studio/materials and reduced silhouette pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/bent-over-barbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1854459,
+          "sha256": "25b5eca5e80ff86617c5dca945e87895e626ed9a34486cca778c8213e4d8cbcc"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bent-over-barbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 314423,
+          "sha256": "5ba07c1724f99a6df6128660f0a203a08b351d597370c0958602f745a915f3a1"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/bent-over-barbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46186,
+          "sha256": "d3b7743e04b8603069b412c321ac52bd655c1c4391295025eed1043185ec6de3"
+        }
+      }
+    },
+    {
+      "id": 192,
+      "key": "accessory_pendlay_row",
+      "display_name": "Pendlay Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Pendlay dead-stop phase shows both plates contacting floor, long arms and near-horizontal hinged torso; visibly differs from continuous-load row. Straight bar, paired loading and full grounded shoes are coherent, studio/materials pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/pendlay-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1870843,
+          "sha256": "16367867218fe8ddaef903bb78807f8d846e7d48a0c6b411faa51305aedfebf8"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/pendlay-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317144,
+          "sha256": "a4dc74abd8518bb6137238a9259375364360dcd909d9edf90b2ee39c66e5a399"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/pendlay-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46795,
+          "sha256": "07a3890ba29aa4d3762d933e1d2b7825020ea4f2aa336e179303899523214f30"
+        }
+      }
+    },
+    {
+      "id": 193,
+      "key": "accessory_seal_row",
+      "display_name": "Seal Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Seal row has fully horizontal prone body supported on elevated flat bench, airborne shoes and bent-elbow bar pull with floor clearance. Frame/bar remain separate and complete; silver loading and original studio match.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/seal-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1877220,
+          "sha256": "0d6957417417fcf73c28e6694a6081a457ee7072e60636eb6d54b3cf58cc20e7"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seal-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316175,
+          "sha256": "9c2208bd6aa4e2861f4178092c0d64db9d756664a2afb8e470bf09625f5fc0f3"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/seal-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46005,
+          "sha256": "399eb0895fde40ccc71f909fd0b87cd20c6d313c2e3d7c4efe6bba2a94b95550"
+        }
+      }
+    },
+    {
+      "id": 194,
+      "key": "accessory_chest_supported_dumbbell_row",
+      "display_name": "Chest-Supported Dumbbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Prone supported row: chest on incline pad, two distinct neutral-grip dumbbells and flexed elbows, planted feet. Bench angle is within representative generic supported-row execution. Complete equipment and baseline texture/lighting pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1828953,
+          "sha256": "a907a9c829cec07d5851975638c819cbb23b198b6fb7b3a58449805c3a40edbb"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 311942,
+          "sha256": "c04711215ba4dd3325a4904dd1e7dfcc77cba7a948a5dfc832d5fa8ef43abe02"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46385,
+          "sha256": "ddba305c0a4d6018c3f2f0e3491ca035f7538339015d144c7342b15f8f8888d4"
+        }
+      }
+    },
+    {
+      "id": 195,
+      "key": "accessory_chest_supported_barbell_row",
+      "display_name": "Chest-Supported Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Moderate-grip barbell row with actual chest support, flexed elbows and clear bar-to-frame separation. Continuous straight shaft, symmetric plates and intact full bench/feet pass; distinguishes wide rear-delt grip.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-barbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1849464,
+          "sha256": "86f007c9f4a208c8722eef0352476dab18e28ee9f22c58ce7ea322a4514dcb91"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-barbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317911,
+          "sha256": "4ed702908ea5e5cdd61d635e687e29195a340b2931560385fc824602c8d9d0b3"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-barbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 48025,
+          "sha256": "96b047164ae3aa9136abacbe6cc07ed07bd3f59446602acfdb73c82792f1ef66"
+        }
+      }
+    },
+    {
+      "id": 196,
+      "key": "accessory_incline_bench_dumbbell_row",
+      "display_name": "Incline-Bench Dumbbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Incline-supported bilateral dumbbell row shows bent elbows and real pad contact with two intact weights. Full bench/feet and natural metal/skin pass; catalog overlap with generic supported row remains documented, not invented.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/incline-bench-dumbbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1829228,
+          "sha256": "bd408563094c1defaca1e3e2800649519b8be6618599b41dc5d794913bc8efe6"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 314460,
+          "sha256": "b2843dbad59e4529f67ac7b4e950650d3949a3c3dbf684e15c0201c0718c9547"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/incline-bench-dumbbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46689,
+          "sha256": "c952f157b2f52e4c63a00722735f9558d9c9de717e87b4d73542a0cfa85b5f7d"
+        }
+      }
+    },
+    {
+      "id": 197,
+      "key": "accessory_t_bar_row",
+      "display_name": "T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Free anchored shaft, short connected transverse T handle, bilateral close grip and bent-elbow pull distinguish T-bar setup. Grip is a valid pronated T-handle version rather than planned neutral handles. Full equipment/athlete and original style pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/t-bar-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1865125,
+          "sha256": "df29c7fd770512a73755fc368a45c534ebd9850a02b8be2dd22576512b8e0d90"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/t-bar-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310636,
+          "sha256": "77e6c3b872be9ff8a58f28a968128f86e50e7475fe69c0ef3c4a8bede0037ad1"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/t-bar-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44162,
+          "sha256": "fbf699691460a5760b2716e939428a3fc87b9ca4b6bdc122821b32945307d59d"
+        }
+      }
+    },
+    {
+      "id": 198,
+      "key": "accessory_wide_grip_t_bar_row",
+      "display_name": "Wide-Grip T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide overhand T-handle and flared elbows clearly distinguish this from close V-grip landmine and short T-bar. Rigid handle connects to loaded free shaft and visible floor pivot; full athlete/weights, natural hands and original lighting pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/wide-grip-t-bar-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1802456,
+          "sha256": "bdca40743ee0ca3d220c2fd71dfd1b8e8f57faf4b6d66ea4d011c49e9eca0d74"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-t-bar-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 305833,
+          "sha256": "45d761418f6b9e346d15f296be7d6ca35a28aa3fab73a11f345d66e763858a45"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-t-bar-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44549,
+          "sha256": "96f521eb9e9e2e42be1bca7a28718af8a79156fd8b2d1b60133e599e258e7cbd"
+        }
+      }
+    },
+    {
+      "id": 199,
+      "key": "accessory_chest_supported_t_bar_row",
+      "display_name": "Chest-Supported T-Bar Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Straight landmine shaft and loaded sleeve now share one continuous axis. Chest support, neutral handle, elbow pull and complete apparatus identify the free-weight supported T-bar row. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-t-bar-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1799095,
+          "sha256": "9ff2fd55e355c22de51de19b2fb134124e0e119c1c12cd1e5579f8c518d1ea32"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-t-bar-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 304245,
+          "sha256": "ad86e385bfa701d3a9ae6d79f0a71f43e46e35c191b75a91e036f0e4ec224523"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-t-bar-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43505,
+          "sha256": "db9a9e88784b4b03e4c203f3eefdb637d29f981b60ef85fb145b70966f590cd5"
+        }
+      }
+    },
+    {
+      "id": 200,
+      "key": "accessory_helms_row",
+      "display_name": "Helms Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Chest contacts the top edge of the upright bench while hips remain hinged and unsupported. Bilateral dumbbells at ribs and full bench distinguish Helms row from lying incline rows. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/helms-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1879827,
+          "sha256": "b62639cd2b899ec9c45de1d21314c88eeb512d46a046fbf4d943669becfa96c3"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/helms-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 316540,
+          "sha256": "d281186bc5dd72e6f28ec0f4c8dd88b8f15f7715af23d8c015f9b78443df767e"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/helms-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46642,
+          "sha256": "827434697c27d133d86b54863431582f494dc7a6e39db5e96cad61983ffed105"
+        }
+      }
+    },
+    {
+      "id": 201,
+      "key": "accessory_batwing_row",
+      "display_name": "Batwing Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Flat prone batwing top contraction uses deeply flexed elbows, hands near armpits and full chest support; separate dumbbells and braced feet remain clear. A still cannot prove hold duration. Whole bench/figure and original studio pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/batwing-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1885081,
+          "sha256": "36ba71b253beb64bf9eddcfdce7d8b503d744ec62374456bc56bc081e48a9426"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/batwing-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 319715,
+          "sha256": "0e8983b4eac53981b2575c29e0cc376f56e5b5656c63c3a2222a3b13130801f5"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/batwing-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45799,
+          "sha256": "70e9936005a19fdf98682683a1803269f4e8390fd3c919ee0a8166caf0465557"
+        }
+      }
+    },
+    {
+      "id": 202,
+      "key": "accessory_gorilla_row",
+      "display_name": "Gorilla Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Gorilla row shows wide hinge, one kettlebell grounded and one rowed to hip; both closed-loop handles and natural gripping hands are clear. Correct alternating phase, intact full feet/equipment and neutral metal style pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/gorilla-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1847735,
+          "sha256": "5f13f8dd621a6ea53f5685e53898773362bdbe10f9309b099d19ba6294064b61"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/gorilla-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 315413,
+          "sha256": "63035f18abc2a6397e5807664b84b7c92d88b9164813ce562e151e3f5212330d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/gorilla-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46221,
+          "sha256": "9a641bb2ce7506cfadd272dbebc066cf6d3de0865bb5711805094aea5d2cd2b2"
+        }
+      }
+    },
+    {
+      "id": 203,
+      "key": "accessory_snatch_grip_barbell_row",
+      "display_name": "Snatch-Grip Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Extra-wide pronated hand spacing near shaft ends, bent rowing elbows and unsupported hinge distinguish snatch-grip row. Entire continuous shaft and matching loaded sleeves remain visible with no cropped equipment; baseline materials pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/snatch-grip-barbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1868979,
+          "sha256": "84de3dd86dcc20276e8e6710617395ad7fd836cf7136a28798180e7eb7fe3bee"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/snatch-grip-barbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317262,
+          "sha256": "511474fdd4b22e7fa6776b42ded399d055bebce7022f51f6345c1293b1f945e6"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/snatch-grip-barbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46597,
+          "sha256": "e4e8ba50c4dbd8a5944881dccbf54476819b74c8c036072dc1af6db550d6c92f"
+        }
+      }
+    },
+    {
+      "id": 204,
+      "key": "accessory_wide_elbow_barbell_row",
+      "display_name": "Wide-Elbow Barbell Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Moderately wide grip with strongly flared flexed elbows and unsupported hinge identifies high wide-elbow barbell row. Separate from snatch-wide spacing; shaft/loading and all limbs are intact, original studio cohesion passes.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/wide-elbow-barbell-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1863323,
+          "sha256": "52632fba91a2acc93a40253881c6575157fd7425983fcc1223f1b300deb1b9da"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 320369,
+          "sha256": "591843c1237e9a9117b527e792198af20ae1a5940881236106406acacfd95adf"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/wide-elbow-barbell-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 47480,
+          "sha256": "a70f0e205446f0c75939933b79c7796dd17274732e855353bee0ecffa1b94389"
+        }
+      }
+    },
+    {
+      "id": 205,
+      "key": "accessory_chest_supported_kelso_row",
+      "display_name": "Chest-Supported Kelso Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Chest-supported scapular row with straight elbows and continuous silver bar; rear angle exposes shoulder-blade position, both grips and whole bench. Isolated snapshot cannot encode scapular travel. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-kelso-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1842036,
+          "sha256": "8df9fa4b2cb045e3c8a1ed6a39e4ce4c3b5f11256f52f0ae41dec7c270a47886"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 310993,
+          "sha256": "fa5950bd9599af48ae21f048e65403fd13a651e82b0a88f0904536a366bdfe99"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46553,
+          "sha256": "e57a50dc546584079a4d6ba5fc6e4068d31b23c134a1c82e9435e3d427693cba"
+        }
+      }
+    },
+    {
+      "id": 206,
+      "key": "accessory_dumbbell_high_row",
+      "display_name": "Dumbbell High Row",
+      "primary_muscle_group": "upper_back",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Unsupported hinged torso, bilateral dumbbells pulled high with flared elbows. Clear distinction from tucked lat row and straight-arm fly; complete silhouette and equipment. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-high-row-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1837226,
+          "sha256": "a085137b5b99eacfd55768cca508d1827d5962684a4a291872a913cec12b0725"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-high-row-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308162,
+          "sha256": "ad9eee448738567f386049cb1195b12de05a4a261ac361911a14d91922eedcab"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-high-row-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44654,
+          "sha256": "aa98188494f3151626f4df7de045fb446187773fbdde61c9a3054be71edd45bd"
+        }
+      }
+    },
+    {
+      "id": 234,
+      "key": "accessory_barbell_shrug",
+      "display_name": "Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Elevated shoulders, extended arms, shoulder-width grip and balanced continuous silver bar communicate loaded barbell shrug; whole feet and sleeves visible. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1819631,
+          "sha256": "1684e7f4e2061a992e354118717c2a0ac0bdd0c7bb707babd635ff9fe9b35a1f"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307666,
+          "sha256": "8c357b80af7d0449eb9ae6fd40ad5cd019569ebe0ac874a0a90be4602be8a82d"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44170,
+          "sha256": "6b74f0d132472bf66b66b6f5a0b51787a289d175217bc554ee1d52fc4a9a4881"
+        }
+      }
+    },
+    {
+      "id": 235,
+      "key": "accessory_dumbbell_shrug",
+      "display_name": "Dumbbell Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "dumbbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Elevated shoulders with straight elbows and two hanging dumbbells distinguish shrug contraction. Upright silhouette, complete shoes/weights and neutral metal in original studio style pass.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1737184,
+          "sha256": "2288275b7815d8eb34aeabc31cb0526858cca38a51eb716d621a5637c026f889"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 294921,
+          "sha256": "445904ceec67ebb7f9e59550288bdd34cccd59d53879498633ca7963988f0a27"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42121,
+          "sha256": "a265b4b0c69a6fa38c5abf123e05f6be98f84fcd0b13f9ee5606826370a9d3ef"
+        }
+      }
+    },
+    {
+      "id": 236,
+      "key": "accessory_trap_bar_shrug",
+      "display_name": "Trap-Bar Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Loaded hex bar with coherent ring, neutral raised handles and symmetrical plates. Straight arms and elevated shoulders identify trap-bar shrug; full silhouette. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/trap-bar-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1842314,
+          "sha256": "eb306eb32df29cb345c396db8e69f080111866bf27a673ed54f688111b553d9b"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/trap-bar-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 311112,
+          "sha256": "e0cb22d0633d5b2454887b13084257609be41e1f4f8659930f617e894cdc11f4"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/trap-bar-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45075,
+          "sha256": "ed340621beb9b393ed4882c9d06844ac1508d6726d45e309c806d8d125c66e2c"
+        }
+      }
+    },
+    {
+      "id": 237,
+      "key": "accessory_behind_the_back_barbell_shrug",
+      "display_name": "Behind-the-Back Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Rear view exposes bar behind thighs and elevated shoulders with straight arms. Continuous shaft, symmetric plates and real grips distinguish behind-back shrug. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/behind-the-back-barbell-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1787889,
+          "sha256": "b0356f81e59b743452a0ded87b74bde6cb8e1d6fcbabbd63cbeeabc7b58c1901"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 303137,
+          "sha256": "cbff2737f86882ba5f2d3f5d3588abbf0408201c6b14d94bb6c532d522ecde16"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 43427,
+          "sha256": "d453757ad81a0ace961c05a7ef89f964efa10cdfbd40168a5eb2182b23612425"
+        }
+      }
+    },
+    {
+      "id": 238,
+      "key": "accessory_snatch_grip_shrug",
+      "display_name": "Snatch-Grip Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide pronated grip, elevated shoulders and straight arms distinguish snatch-grip shrug. Silver shaft and both sleeves remain fully inside frame. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/snatch-grip-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1800217,
+          "sha256": "7bc370985450a12720f5c975d648af2c9616b3d5673f97212fc5ead6421b62ed"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/snatch-grip-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 308131,
+          "sha256": "f008b979c65bcf893d0690acebc7252ffea0a9f434745bbd85fa18916a71d003"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/snatch-grip-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44011,
+          "sha256": "2c6030f0993de896899819446b64e8d66033811a493be10d260626a6a440f3dd"
+        }
+      }
+    },
+    {
+      "id": 239,
+      "key": "accessory_overhead_barbell_shrug",
+      "display_name": "Overhead Barbell Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Wide overhead bar hold with straight elbows and elevated shoulders identifies overhead shrug. Whole bar, athlete and feet visible; overhead scapular travel is implicit in a static image. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/overhead-barbell-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1769256,
+          "sha256": "6ba24a86e6fcf6c0e599de72af6ce84647c4442f99f3fdca3e5c4101e28fcd21"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/overhead-barbell-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 293669,
+          "sha256": "c4dfbba5bf2e97163109d264b3d4fb8129dbbb446b3c4b81a181112d765b9fd2"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/overhead-barbell-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41915,
+          "sha256": "94c526c1521d86f99949c1ade542101ac3f1b5dddae4406d6dbc6a3749a5600b"
+        }
+      }
+    },
+    {
+      "id": 240,
+      "key": "accessory_farmer_carry",
+      "display_name": "Farmer Carry",
+      "primary_muscle_group": "traps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Mid-stride farmer carry with two silver dumbbells, straight arms and upright torso. Clear walking stance distinguishes carry from shrug and all equipment remains visible. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/farmer-carry-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1742101,
+          "sha256": "a23bf2200e2a291a9c64d45a27ec18ad1b6982031e8e25943be555c26b6c165e"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/farmer-carry-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 290479,
+          "sha256": "1e133ffe1acae4a4358eb909f94b918fafdf43088e1343b402311b898b54f166"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/farmer-carry-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 41111,
+          "sha256": "14b17ecd3971fcd4a191649f57d623e154ae2dcf488fa31d96c5d15c823adb16"
+        }
+      }
+    },
+    {
+      "id": 241,
+      "key": "accessory_chest_supported_kelso_shrug",
+      "display_name": "Chest-Supported Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Incline chest-supported dumbbell Kelso shrug with straight arms and scapular retraction. Both neutral grips, support and whole silhouette visible; no elbow-row substitution. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/chest-supported-kelso-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1871055,
+          "sha256": "5b55df9837388d179f20202b90fc295cfea6e0e5629b42aaf9cc32f12a722d88"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317984,
+          "sha256": "2163833ed9f7d4dee6d8f12b7dd4b6a8198be27ee396680528853fe850f367a0"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46704,
+          "sha256": "1b3af911dbe9207fd174eb93369887defdcd28ae388d6e451988ada45b9d14e2"
+        }
+      }
+    },
+    {
+      "id": 242,
+      "key": "accessory_kelso_shrug",
+      "display_name": "Kelso Shrug",
+      "primary_muscle_group": "traps",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Unsupported hinged barbell Kelso shrug, straight elbows and retracted shoulder girdle. Continuous bar, full feet and balanced equipment; exact static scapular excursion is not measurable. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/kelso-shrug-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1845860,
+          "sha256": "1187b261b9436903f3221a6403e3fe644e57a87a6b8c34764ee9377532f5a0d4"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 315033,
+          "sha256": "cbe5250a6936c12775cc110721782b460ee45aff37051689bce6866ce3a756a2"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/kelso-shrug-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 45736,
+          "sha256": "457f76a420907a82fbda3a7214271a479e2eb7a5d3743d9485ea1064e6c37abf"
+        }
+      }
+    },
+    {
+      "id": 545,
+      "key": "accessory_barbell_back_extension",
+      "display_name": "Barbell Back Extension",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "barbell",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Posterior extension setup clearly shows pelvis/thigh pad, secured ankle rollers/footplate and a light straight bar across upper back with real hand support. Torso extends in line with supported legs, full apparatus/athlete intact. Distinct from standing hinges.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/barbell-back-extension-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1792662,
+          "sha256": "554e3edcaf1266b500344a771ad85010741fe7fa33b593ad3cbfbad81b32c283"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 306287,
+          "sha256": "06171cc777b1e656be9f444926553385e868bfa7028a6808064694dbb3bac2d4"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/barbell-back-extension-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44287,
+          "sha256": "3cb7608871ba55a49535371604c0462f5e46246f9be2bd0d4f4cf7eca8a3b274"
+        }
+      }
+    },
+    {
+      "id": 547,
+      "key": "accessory_jefferson_curl",
+      "display_name": "Jefferson Curl",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 2,
+      "review": "Refinement shows light straight bar below toe/platform level, softly extended knees, rounded spinal articulation and tucked head. Full elevated platform and athlete visible; no deadlift-like partial-height framing. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/jefferson-curl-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1751974,
+          "sha256": "2d3a11431dce30bc2b273e7ea36e813b49502a32ceab9403840f7d39861c6f8d"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/jefferson-curl-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 293053,
+          "sha256": "fea2c594b9f45d365a5d5dded7fd35d4f0d7efdac06a66abcb9294c17c41a5b0"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/jefferson-curl-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 42007,
+          "sha256": "59f6cad9366d18c9211d99b85e958bf403ba960c17ac7f5b516cec4e48a2ad77"
+        }
+      }
+    },
+    {
+      "id": 549,
+      "key": "accessory_weighted_sorenson_hold",
+      "display_name": "Weighted Sorenson Hold",
+      "primary_muscle_group": "lower_back",
+      "equipment_type": "free_weight",
+      "existing_art_status": "MISSING_EXACT_ART",
+      "sidedness": "bilateral",
+      "final_status": "NEW",
+      "attempt": 1,
+      "review": "Horizontal torso and legs, pelvis/thigh support, secured ankles and one plate held firmly at chest identify weighted Sorenson hold. Full stable apparatus, natural hands and controlled neutral spine pass; duration is not inferred from still.",
+      "files": {
+        "master": {
+          "path": "assets/images/movement-artwork/free-weight-v1/masters/weighted-sorenson-hold-v1.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1822115,
+          "sha256": "a057ed62ab75e26b396990c9a14028c299c2347104f375f03b1da7f59a475b83"
+        },
+        "app": {
+          "path": "assets/images/movement-artwork/free-weight-v1/weighted-sorenson-hold-v1.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 307330,
+          "sha256": "418f3853fc4b679a49286686a0f71fae9138ab86b80b51480e948356790bb10a"
+        },
+        "thumbnail": {
+          "path": "assets/images/movement-artwork/free-weight-v1/weighted-sorenson-hold-v1-thumb.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 44568,
+          "sha256": "3819cb38530811ae5c5f21fa3c0e7a97fafb2467ed566d5da1b62015a640dc93"
+        }
+      }
+    }
+  ]
+}

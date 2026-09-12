@@ -1,0 +1,135 @@
+[
+  {
+    "id": 90,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved."
+  },
+  {
+    "id": 103,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 104,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 106,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 107,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Side-lying head faces in front of chest; upward side glance removed. Supporting hand, raised dumbbell and bench contact preserved."
+  },
+  {
+    "id": 109,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 110,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 111,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 112,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved."
+  },
+  {
+    "id": 131,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved."
+  },
+  {
+    "id": 150,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Neck follows rotated plank torso and gaze reaches floor ahead; backward shoulder glance removed. Archer torso rotation and row mechanics preserved."
+  },
+  {
+    "id": 205,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Nape follows inclined torso, head looks forward/down away from rear camera. Scapular-row phase, straight arms, bar and bench contacts preserved."
+  },
+  {
+    "id": 237,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved."
+  },
+  {
+    "id": 241,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Nape follows inclined torso, head looks forward/down away from rear camera. Kelso shrug, straight arms, dumbbells and bench preserved."
+  },
+  {
+    "id": 259,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head centered with sternum, gaze slightly down ahead; biceps-side head turn removed. Preacher pad, curling arm and support hand preserved."
+  },
+  {
+    "id": 297,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Back of head follows torso instead of side turn beneath raised arm. Overhead single-arm extension, dumbbell, grip and stance preserved."
+  },
+  {
+    "id": 327,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear skull and nape now follow torso; left over-shoulder look removed. Behind-back wrist/bar position and body preserved."
+  },
+  {
+    "id": 337,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Rear skull follows torso; right profile turn removed. Asymmetric weighted levers, wrist positions, body and camera preserved."
+  },
+  {
+    "id": 349,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "User-rejected squat head turn removed; rear head aligned with torso. Exact high-bar rack, squat depth, plates, grip, stance and scene preserved.",
+    "receipt": "docs/validation/free-weight-completion-2026-09-11/attempts/349-2.json"
+  },
+  {
+    "id": 360,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head and eyes now centered with chest; lateral gaze removed. Lunge and goblet dumbbell preserved."
+  },
+  {
+    "id": 526,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head now follows chest and gaze reaches the bar end; opposite-side over-shoulder look removed. Torso rotation, planted stance, landmine and hands preserved."
+  },
+  {
+    "id": 527,
+    "attempt": 1,
+    "status": "ACCEPT",
+    "reason": "Head follows rotated torso with gaze toward plate; extra shoulderward neck rotation removed. Twist, plate placement, legs and mat preserved."
+  }
+]

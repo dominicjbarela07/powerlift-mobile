@@ -1,0 +1,177 @@
+{
+  "workout": {
+    "accessory_groups": [
+      {
+        "items": [
+          {
+            "effective_movement_definition_id": 33,
+            "effective_movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "id": 18033,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 191,
+            "effective_movement_identity": {
+              "family": "accessory_upper_back",
+              "id": 191,
+              "key": "accessory_bent_over_barbell_row",
+              "primary_muscle_group": "upper_back"
+            },
+            "id": 18034,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_upper_back",
+              "id": 191,
+              "key": "accessory_bent_over_barbell_row",
+              "primary_muscle_group": "upper_back"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 80,
+            "effective_movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 80,
+              "key": "accessory_standing_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "id": 18035,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 80,
+              "key": "accessory_standing_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 154,
+            "effective_movement_identity": {
+              "family": "accessory_lats",
+              "id": 154,
+              "key": "accessory_one_arm_dumbbell_row",
+              "primary_muscle_group": "lats"
+            },
+            "id": 18036,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_lats",
+              "id": 154,
+              "key": "accessory_one_arm_dumbbell_row",
+              "primary_muscle_group": "lats"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 194,
+            "effective_movement_identity": {
+              "family": "accessory_upper_back",
+              "id": 194,
+              "key": "accessory_chest_supported_dumbbell_row",
+              "primary_muscle_group": "upper_back"
+            },
+            "id": 18037,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_upper_back",
+              "id": 194,
+              "key": "accessory_chest_supported_dumbbell_row",
+              "primary_muscle_group": "upper_back"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 126,
+            "effective_movement_identity": {
+              "family": "accessory_rear_delts",
+              "id": 126,
+              "key": "accessory_bent_over_dumbbell_reverse_flye",
+              "primary_muscle_group": "rear_delts"
+            },
+            "id": 18038,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_rear_delts",
+              "id": 126,
+              "key": "accessory_bent_over_dumbbell_reverse_flye",
+              "primary_muscle_group": "rear_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 235,
+            "effective_movement_identity": {
+              "family": "accessory_traps",
+              "id": 235,
+              "key": "accessory_dumbbell_shrug",
+              "primary_muscle_group": "traps"
+            },
+            "id": 18039,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_traps",
+              "id": 235,
+              "key": "accessory_dumbbell_shrug",
+              "primary_muscle_group": "traps"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 155,
+            "effective_movement_identity": {
+              "family": "accessory_lats",
+              "id": 155,
+              "key": "accessory_dumbbell_pullover",
+              "primary_muscle_group": "lats"
+            },
+            "id": 18040,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_lats",
+              "id": 155,
+              "key": "accessory_dumbbell_pullover",
+              "primary_muscle_group": "lats"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 545,
+            "effective_movement_identity": {
+              "family": "accessory_lower_back",
+              "id": 545,
+              "key": "accessory_barbell_back_extension",
+              "primary_muscle_group": "lower_back"
+            },
+            "id": 18041,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_lower_back",
+              "id": 545,
+              "key": "accessory_barbell_back_extension",
+              "primary_muscle_group": "lower_back"
+            },
+            "performed_canonical_movement_identity": null
+          }
+        ]
+      }
+    ],
+    "athlete_id": 12,
+    "core_items": [],
+    "id": 1733,
+    "label": "Free-weight Push + Pull Art QA",
+    "status": "draft"
+  }
+}

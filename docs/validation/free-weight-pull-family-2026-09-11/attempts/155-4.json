@@ -1,0 +1,12 @@
+{
+  "id": 155,
+  "attempt": 4,
+  "prompt": "Use case: precise-object-edit. INPUT 1 is the immutable original and ONLY photographic style reference. INPUT 2 is the edit target. Preserve its graphite clothing, natural athlete/skin, silver weights, near-black textured studio and restrained violet rear rim. Only zoom OUT the whole scene by 20% and center it. Keep athlete pose, relaxed head touching bench, single dumbbell, arms, feet, bench and exact photographic appearance unchanged. Add room on BOTH sides: right shoe and left dumbbell must be comfortably INSIDE the square, never touch canvas edges. One square photograph. No text or labels.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-bec045a1-48dc-4104-9992-2d6c5f23b561.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-d589b5c1-fd59-45b8-8eb5-f71804dab261.png",
+  "review": "ACCEPT",
+  "review_reason": "Targeted reframe now keeps complete shoes and single dumbbell safely inside square. Long arm pullover arc, back-of-head support on pad, full torso/foot contacts and equipment pass. Neutral dark studio remains consistent after refinement."
+}

@@ -1,0 +1,1594 @@
+{
+  "scope": "All 198 registered canonical free-weight movement images",
+  "source_commit": "888c58c302112960ccc2c08b6067893ab5f20b2a",
+  "criteria": "Independent head yaw/side glance relative to torso, not camera azimuth. Preserve exercise-defined neck motion.",
+  "reviewed_count": 198,
+  "corrected_count": 22,
+  "kept_count": 176,
+  "movements": [
+    {
+      "id": 4,
+      "key": "barbell_row",
+      "name": "Barbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 5,
+      "key": "single_arm_dumbbell_row",
+      "name": "Single-Arm Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 6,
+      "key": "incline_barbell_press",
+      "name": "Incline Barbell Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 7,
+      "key": "incline_dumbbell_press",
+      "name": "Incline Dumbbell Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 32,
+      "key": "accessory_flat_dumbbell_bench_press",
+      "name": "Flat Dumbbell Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 33,
+      "key": "accessory_incline_dumbbell_bench_press",
+      "name": "Incline Dumbbell Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 34,
+      "key": "accessory_decline_dumbbell_bench_press",
+      "name": "Decline Dumbbell Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 35,
+      "key": "accessory_neutral_grip_dumbbell_bench_press",
+      "name": "Neutral-Grip Dumbbell Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 36,
+      "key": "accessory_dumbbell_floor_press",
+      "name": "Dumbbell Floor Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 37,
+      "key": "accessory_dumbbell_squeeze_press",
+      "name": "Dumbbell Squeeze Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 38,
+      "key": "accessory_dumbbell_hex_press",
+      "name": "Dumbbell Hex Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 39,
+      "key": "accessory_dumbbell_flye",
+      "name": "Dumbbell Fly",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-01.jpg"
+    },
+    {
+      "id": 40,
+      "key": "accessory_incline_dumbbell_flye",
+      "name": "Incline Dumbbell Fly",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 41,
+      "key": "accessory_decline_dumbbell_flye",
+      "name": "Decline Dumbbell Flys",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 42,
+      "key": "accessory_barbell_floor_press",
+      "name": "Barbell Floor Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 43,
+      "key": "accessory_spoto_press",
+      "name": "Spoto Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 44,
+      "key": "accessory_larsen_press",
+      "name": "Larsen Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 45,
+      "key": "accessory_guillotine_press",
+      "name": "Guillotine Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 46,
+      "key": "accessory_reverse_grip_bench_press",
+      "name": "Reverse-Grip Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 47,
+      "key": "accessory_cambered_bar_bench_press",
+      "name": "Cambered-Bar Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 73,
+      "key": "accessory_weighted_push_up",
+      "name": "Weighted Push-Up",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 79,
+      "key": "accessory_seated_dumbbell_shoulder_press",
+      "name": "Seated Dumbbell Shoulder Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 80,
+      "key": "accessory_standing_dumbbell_shoulder_press",
+      "name": "Standing Dumbbell Shoulder Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 81,
+      "key": "accessory_arnold_press",
+      "name": "Arnold Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-02.jpg"
+    },
+    {
+      "id": 82,
+      "key": "accessory_dumbbell_front_raise",
+      "name": "Dumbbell Front Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 83,
+      "key": "accessory_alternating_dumbbell_front_raise",
+      "name": "Alternating Dumbbell Front Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 84,
+      "key": "accessory_plate_front_raise",
+      "name": "Plate Front Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 85,
+      "key": "accessory_barbell_front_raise",
+      "name": "Barbell Front Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 86,
+      "key": "accessory_landmine_press",
+      "name": "Landmine Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 87,
+      "key": "accessory_half_kneeling_landmine_press",
+      "name": "Half-Kneeling Landmine Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 88,
+      "key": "accessory_single_arm_landmine_press",
+      "name": "Single-Arm Landmine Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 89,
+      "key": "accessory_z_press",
+      "name": "Z Press",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 90,
+      "key": "accessory_bradford_press",
+      "name": "Bradford Press",
+      "decision": "CORRECT",
+      "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 103,
+      "key": "accessory_dumbbell_lateral_raise",
+      "name": "Dumbbell Lateral Raise",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 104,
+      "key": "accessory_seated_dumbbell_lateral_raise",
+      "name": "Seated Dumbbell Lateral Raise",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 105,
+      "key": "accessory_incline_dumbbell_lateral_raise",
+      "name": "Incline Dumbbell Lateral Raise",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-03.jpg"
+    },
+    {
+      "id": 106,
+      "key": "accessory_lean_away_dumbbell_lateral_raise",
+      "name": "Lean-Away Dumbbell Lateral Raise",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 107,
+      "key": "accessory_lying_dumbbell_lateral_raise",
+      "name": "Lying Dumbbell Lateral Raise",
+      "decision": "CORRECT",
+      "reason": "Side-lying head faces in front of chest; upward side glance removed. Supporting hand, raised dumbbell and bench contact preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 108,
+      "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "name": "Chest-Supported Dumbbell Lateral Raise",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 109,
+      "key": "accessory_partial_dumbbell_lateral_raise",
+      "name": "Partial Dumbbell Lateral Raise",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 110,
+      "key": "accessory_lu_raise",
+      "name": "Lu Raise",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 111,
+      "key": "accessory_dumbbell_upright_row",
+      "name": "Dumbbell Upright Row",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 112,
+      "key": "accessory_wide_grip_barbell_upright_row",
+      "name": "Wide-Grip Barbell Upright Row",
+      "decision": "CORRECT",
+      "reason": "Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 126,
+      "key": "accessory_bent_over_dumbbell_reverse_flye",
+      "name": "Bent-Over Dumbbell Reverse Fly",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 127,
+      "key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "name": "Chest-Supported Dumbbell Reverse Fly",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 128,
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "name": "Incline-Bench Rear-Delt Fly",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 129,
+      "key": "accessory_rear_delt_dumbbell_row",
+      "name": "Rear-Delt Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 130,
+      "key": "accessory_wide_elbow_dumbbell_row",
+      "name": "Wide-Elbow Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-04.jpg"
+    },
+    {
+      "id": 131,
+      "key": "accessory_rear_delt_barbell_row",
+      "name": "Rear-Delt Barbell Row",
+      "decision": "CORRECT",
+      "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 132,
+      "key": "accessory_wide_grip_chest_supported_rear_delt_row",
+      "name": "Wide-Grip Chest-Supported Rear-Delt Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 133,
+      "key": "accessory_prone_rear_delt_swing",
+      "name": "Prone Rear-Delt Swing",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 150,
+      "key": "accessory_dumbbell_archer_row",
+      "name": "Dumbbell Archer Row",
+      "decision": "CORRECT",
+      "reason": "Neck follows rotated plank torso and gaze reaches floor ahead; backward shoulder glance removed. Archer torso rotation and row mechanics preserved.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 153,
+      "key": "accessory_meadows_row",
+      "name": "Meadows Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 154,
+      "key": "accessory_one_arm_dumbbell_row",
+      "name": "One-Arm Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 155,
+      "key": "accessory_dumbbell_pullover",
+      "name": "Dumbbell Pullover",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 156,
+      "key": "accessory_barbell_pullover",
+      "name": "Barbell Pullover",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 157,
+      "key": "accessory_kroc_row",
+      "name": "Kroc Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 158,
+      "key": "accessory_three_point_dumbbell_row",
+      "name": "Three-Point Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 159,
+      "key": "accessory_landmine_row",
+      "name": "Landmine Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 160,
+      "key": "accessory_one_arm_landmine_row",
+      "name": "One-Arm Landmine Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-05.jpg"
+    },
+    {
+      "id": 161,
+      "key": "accessory_lat_biased_dumbbell_row",
+      "name": "Lat-Biased Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 162,
+      "key": "accessory_lat_biased_chest_supported_dumbbell_row",
+      "name": "Lat-Biased Chest-Supported Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 191,
+      "key": "accessory_bent_over_barbell_row",
+      "name": "Bent-Over Barbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 192,
+      "key": "accessory_pendlay_row",
+      "name": "Pendlay Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 193,
+      "key": "accessory_seal_row",
+      "name": "Seal Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 194,
+      "key": "accessory_chest_supported_dumbbell_row",
+      "name": "Chest-Supported Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 195,
+      "key": "accessory_chest_supported_barbell_row",
+      "name": "Chest-Supported Barbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 196,
+      "key": "accessory_incline_bench_dumbbell_row",
+      "name": "Incline-Bench Dumbbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 197,
+      "key": "accessory_t_bar_row",
+      "name": "T-Bar Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 198,
+      "key": "accessory_wide_grip_t_bar_row",
+      "name": "Wide-Grip T-Bar Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 199,
+      "key": "accessory_chest_supported_t_bar_row",
+      "name": "Chest-Supported T-Bar Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 200,
+      "key": "accessory_helms_row",
+      "name": "Helms Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-06.jpg"
+    },
+    {
+      "id": 201,
+      "key": "accessory_batwing_row",
+      "name": "Batwing Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 202,
+      "key": "accessory_gorilla_row",
+      "name": "Gorilla Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 203,
+      "key": "accessory_snatch_grip_barbell_row",
+      "name": "Snatch-Grip Barbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 204,
+      "key": "accessory_wide_elbow_barbell_row",
+      "name": "Wide-Elbow Barbell Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 205,
+      "key": "accessory_chest_supported_kelso_row",
+      "name": "Chest-Supported Kelso Row",
+      "decision": "CORRECT",
+      "reason": "Nape follows inclined torso, head looks forward/down away from rear camera. Scapular-row phase, straight arms, bar and bench contacts preserved.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 206,
+      "key": "accessory_dumbbell_high_row",
+      "name": "Dumbbell High Row",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 234,
+      "key": "accessory_barbell_shrug",
+      "name": "Barbell Shrug",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 235,
+      "key": "accessory_dumbbell_shrug",
+      "name": "Dumbbell Shrug",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 236,
+      "key": "accessory_trap_bar_shrug",
+      "name": "Trap-Bar Shrug",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 237,
+      "key": "accessory_behind_the_back_barbell_shrug",
+      "name": "Behind-the-Back Barbell Shrug",
+      "decision": "CORRECT",
+      "reason": "Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 238,
+      "key": "accessory_snatch_grip_shrug",
+      "name": "Snatch-Grip Shrug",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 239,
+      "key": "accessory_overhead_barbell_shrug",
+      "name": "Overhead Barbell Shrug",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-07.jpg"
+    },
+    {
+      "id": 240,
+      "key": "accessory_farmer_carry",
+      "name": "Farmer Carry",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 241,
+      "key": "accessory_chest_supported_kelso_shrug",
+      "name": "Chest-Supported Kelso Shrug",
+      "decision": "CORRECT",
+      "reason": "Nape follows inclined torso, head looks forward/down away from rear camera. Kelso shrug, straight arms, dumbbells and bench preserved.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 242,
+      "key": "accessory_kelso_shrug",
+      "name": "Kelso Shrug",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 251,
+      "key": "accessory_barbell_curl",
+      "name": "Barbell Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 252,
+      "key": "accessory_ez_bar_curl",
+      "name": "EZ-Bar Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 253,
+      "key": "accessory_dumbbell_curl",
+      "name": "Dumbbell Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 254,
+      "key": "accessory_alternating_dumbbell_curl",
+      "name": "Alternating Dumbbell Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 255,
+      "key": "accessory_seated_dumbbell_curl",
+      "name": "Seated Dumbbell Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 256,
+      "key": "accessory_standing_dumbbell_curl",
+      "name": "Standing Dumbbell Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 257,
+      "key": "accessory_incline_dumbbell_curl",
+      "name": "Incline Dumbbell Curl",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 258,
+      "key": "accessory_spider_curl",
+      "name": "Spider Curl",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 259,
+      "key": "accessory_single_arm_preacher_curl",
+      "name": "Single-Arm Preacher Curl",
+      "decision": "CORRECT",
+      "reason": "Head centered with sternum, gaze slightly down ahead; biceps-side head turn removed. Preacher pad, curling arm and support hand preserved.",
+      "evidence": "audit-sheets/group-08.jpg"
+    },
+    {
+      "id": 260,
+      "key": "accessory_dumbbell_preacher_curl",
+      "name": "Dumbbell Preacher Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 261,
+      "key": "accessory_ez_bar_preacher_curl",
+      "name": "EZ-Bar Preacher Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 262,
+      "key": "accessory_concentration_curl",
+      "name": "Concentration Curl",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 263,
+      "key": "accessory_hammer_curl",
+      "name": "Hammer Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 264,
+      "key": "accessory_cross_body_hammer_curl",
+      "name": "Cross-Body Hammer Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 265,
+      "key": "accessory_zottman_curl",
+      "name": "Zottman Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 266,
+      "key": "accessory_drag_curl",
+      "name": "Drag Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 267,
+      "key": "accessory_reverse_curl",
+      "name": "Reverse Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 268,
+      "key": "accessory_cheat_curl",
+      "name": "Cheat Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 289,
+      "key": "accessory_close_grip_bench_press",
+      "name": "Close-Grip Bench Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 290,
+      "key": "accessory_jm_press",
+      "name": "JM Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 291,
+      "key": "accessory_barbell_skull_crusher",
+      "name": "Barbell Skull Crusher",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-09.jpg"
+    },
+    {
+      "id": 292,
+      "key": "accessory_ez_bar_skull_crusher",
+      "name": "EZ-Bar Skull Crusher",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 293,
+      "key": "accessory_dumbbell_skull_crusher",
+      "name": "Dumbbell Skull Crusher",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 294,
+      "key": "accessory_incline_skull_crusher",
+      "name": "Incline Skull Crusher",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 295,
+      "key": "accessory_decline_skull_crusher",
+      "name": "Decline Skull Crusher",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 296,
+      "key": "accessory_dumbbell_overhead_triceps_extension",
+      "name": "Dumbbell Overhead Triceps Extension",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 297,
+      "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+      "name": "Single-Arm Dumbbell Overhead Triceps Extension",
+      "decision": "CORRECT",
+      "reason": "Back of head follows torso instead of side turn beneath raised arm. Overhead single-arm extension, dumbbell, grip and stance preserved.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 298,
+      "key": "accessory_tate_press",
+      "name": "Tate Press",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 299,
+      "key": "accessory_rolling_dumbbell_triceps_extension",
+      "name": "Rolling Dumbbell Triceps Extension",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 300,
+      "key": "accessory_pjr_pullover",
+      "name": "PJR Pullover",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 325,
+      "key": "accessory_barbell_wrist_curl",
+      "name": "Barbell Wrist Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 326,
+      "key": "accessory_dumbbell_wrist_curl",
+      "name": "Dumbbell Wrist Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 327,
+      "key": "accessory_behind_the_back_wrist_curl",
+      "name": "Behind-the-Back Wrist Curl",
+      "decision": "CORRECT",
+      "reason": "Rear skull and nape now follow torso; left over-shoulder look removed. Behind-back wrist/bar position and body preserved.",
+      "evidence": "audit-sheets/group-10.jpg"
+    },
+    {
+      "id": 328,
+      "key": "accessory_reverse_wrist_curl",
+      "name": "Reverse Wrist Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 329,
+      "key": "accessory_dumbbell_reverse_wrist_curl",
+      "name": "Dumbbell Reverse Wrist Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 330,
+      "key": "accessory_wrist_roller",
+      "name": "Wrist Roller",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 331,
+      "key": "accessory_plate_pinch",
+      "name": "Plate Pinch",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 332,
+      "key": "accessory_fat_grip_hold",
+      "name": "Fat-Grip Hold",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 333,
+      "key": "accessory_barbell_finger_curl",
+      "name": "Barbell Finger Curl",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 334,
+      "key": "accessory_lever_bar_pronation",
+      "name": "Lever Bar Pronation",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 335,
+      "key": "accessory_lever_bar_supination",
+      "name": "Lever Bar Supination",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 336,
+      "key": "accessory_radial_deviation",
+      "name": "Radial Deviation",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 337,
+      "key": "accessory_ulnar_deviation",
+      "name": "Ulnar Deviation",
+      "decision": "CORRECT",
+      "reason": "Rear skull follows torso; right profile turn removed. Asymmetric weighted levers, wrist positions, body and camera preserved.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 348,
+      "key": "accessory_front_squat",
+      "name": "Front Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-11.jpg"
+    },
+    {
+      "id": 349,
+      "key": "accessory_high_bar_squat",
+      "name": "High-Bar Squat",
+      "decision": "CORRECT",
+      "reason": "User-rejected squat head turn removed; rear head aligned with torso. Exact high-bar rack, squat depth, plates, grip, stance and scene preserved.",
+      "evidence": "comparisons/group-04.jpg"
+    },
+    {
+      "id": 350,
+      "key": "accessory_zercher_squat",
+      "name": "Zercher Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 351,
+      "key": "accessory_goblet_squat",
+      "name": "Goblet Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 352,
+      "key": "accessory_cyclist_squat",
+      "name": "Cyclist Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 353,
+      "key": "accessory_heel_elevated_goblet_squat",
+      "name": "Heel-Elevated Goblet Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 354,
+      "key": "accessory_bulgarian_split_squat",
+      "name": "Bulgarian Split Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 355,
+      "key": "accessory_front_foot_elevated_split_squat",
+      "name": "Front-Foot-Elevated Split Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 356,
+      "key": "accessory_heel_elevated_split_squat",
+      "name": "Heel-Elevated Split Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 357,
+      "key": "accessory_reverse_lunge",
+      "name": "Reverse Lunge",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 358,
+      "key": "accessory_walking_lunge",
+      "name": "Walking Lunge",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 359,
+      "key": "accessory_forward_lunge",
+      "name": "Forward Lunge",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 360,
+      "key": "accessory_lateral_lunge",
+      "name": "Lateral Lunge",
+      "decision": "CORRECT",
+      "reason": "Head and eyes now centered with chest; lateral gaze removed. Lunge and goblet dumbbell preserved.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 361,
+      "key": "accessory_step_up",
+      "name": "Step-Up",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-12.jpg"
+    },
+    {
+      "id": 362,
+      "key": "accessory_peterson_step_up",
+      "name": "Peterson Step-Up",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 363,
+      "key": "accessory_dumbbell_step_down",
+      "name": "Dumbbell Step-Down",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 364,
+      "key": "accessory_spanish_squat_with_weight",
+      "name": "Spanish Squat with Weight",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 387,
+      "key": "accessory_romanian_deadlift",
+      "name": "Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 388,
+      "key": "accessory_dumbbell_romanian_deadlift",
+      "name": "Dumbbell Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 389,
+      "key": "accessory_single_leg_romanian_deadlift",
+      "name": "Single-Leg Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 390,
+      "key": "accessory_b_stance_romanian_deadlift",
+      "name": "B-Stance Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 391,
+      "key": "accessory_stiff_leg_deadlift",
+      "name": "Stiff-Leg Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 392,
+      "key": "accessory_snatch_grip_romanian_deadlift",
+      "name": "Snatch-Grip Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 393,
+      "key": "accessory_barbell_good_morning",
+      "name": "Barbell Good Morning",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 394,
+      "key": "accessory_seated_good_morning",
+      "name": "Seated Good Morning",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 395,
+      "key": "accessory_dumbbell_good_morning",
+      "name": "Dumbbell Good Morning",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-13.jpg"
+    },
+    {
+      "id": 396,
+      "key": "accessory_glute_ham_raise_with_weight",
+      "name": "Glute-Ham Raise with Weight",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 418,
+      "key": "accessory_barbell_hip_thrust",
+      "name": "Barbell Hip Thrust",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 419,
+      "key": "accessory_dumbbell_hip_thrust",
+      "name": "Dumbbell Hip Thrust",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 420,
+      "key": "accessory_barbell_glute_bridge",
+      "name": "Barbell Glute Bridge",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 421,
+      "key": "accessory_dumbbell_glute_bridge",
+      "name": "Dumbbell Glute Bridge",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 422,
+      "key": "accessory_single_leg_hip_thrust",
+      "name": "Single-Leg Hip Thrust",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 423,
+      "key": "accessory_b_stance_hip_thrust",
+      "name": "B-Stance Hip Thrust",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 424,
+      "key": "accessory_kas_glute_bridge",
+      "name": "Kas Glute Bridge",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 425,
+      "key": "accessory_sumo_romanian_deadlift",
+      "name": "Sumo Romanian Deadlift",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 426,
+      "key": "accessory_deficit_reverse_lunge",
+      "name": "Deficit Reverse Lunge",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 427,
+      "key": "accessory_long_stride_reverse_lunge",
+      "name": "Long-Stride Reverse Lunge",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 428,
+      "key": "accessory_glute_biased_step_up",
+      "name": "Glute-Biased Step-Up",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-14.jpg"
+    },
+    {
+      "id": 429,
+      "key": "accessory_long_stride_bulgarian_split_squat",
+      "name": "Long-Stride Bulgarian Split Squat",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 430,
+      "key": "accessory_dumbbell_frog_pump",
+      "name": "Dumbbell Frog Pump",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 476,
+      "key": "accessory_standing_dumbbell_calf_raise",
+      "name": "Standing Dumbbell Calf Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 477,
+      "key": "accessory_single_leg_dumbbell_calf_raise",
+      "name": "Single-Leg Dumbbell Calf Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 478,
+      "key": "accessory_barbell_calf_raise",
+      "name": "Barbell Calf Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 479,
+      "key": "accessory_seated_dumbbell_calf_raise",
+      "name": "Seated Dumbbell Calf Raise",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 480,
+      "key": "accessory_donkey_calf_raise_with_weight",
+      "name": "Donkey Calf Raise with Weight",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 495,
+      "key": "accessory_weighted_crunch",
+      "name": "Weighted Crunch",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 496,
+      "key": "accessory_dumbbell_sit_up",
+      "name": "Dumbbell Sit-Up",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 497,
+      "key": "accessory_plate_sit_up",
+      "name": "Plate Sit-Up",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 498,
+      "key": "accessory_weighted_decline_sit_up",
+      "name": "Weighted Decline Sit-Up",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 500,
+      "key": "accessory_dumbbell_dead_bug",
+      "name": "Dumbbell Dead Bug",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-15.jpg"
+    },
+    {
+      "id": 523,
+      "key": "accessory_dumbbell_side_bend",
+      "name": "Dumbbell Side Bend",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 524,
+      "key": "accessory_suitcase_march",
+      "name": "Suitcase March",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 525,
+      "key": "accessory_suitcase_carry",
+      "name": "Suitcase Carry",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 526,
+      "key": "accessory_landmine_rotation",
+      "name": "Landmine Rotation",
+      "decision": "CORRECT",
+      "reason": "Head now follows chest and gaze reaches the bar end; opposite-side over-shoulder look removed. Torso rotation, planted stance, landmine and hands preserved.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 527,
+      "key": "accessory_russian_twist_with_weight",
+      "name": "Russian Twist with Weight",
+      "decision": "CORRECT",
+      "reason": "Head follows rotated torso with gaze toward plate; extra shoulderward neck rotation removed. Twist, plate placement, legs and mat preserved.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 528,
+      "key": "accessory_barbell_windshield_wiper",
+      "name": "Barbell Windshield Wiper",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 545,
+      "key": "accessory_barbell_back_extension",
+      "name": "Barbell Back Extension",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 546,
+      "key": "accessory_good_morning",
+      "name": "Good Morning",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 547,
+      "key": "accessory_jefferson_curl",
+      "name": "Jefferson Curl",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 548,
+      "key": "accessory_zercher_good_morning",
+      "name": "Zercher Good Morning",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 549,
+      "key": "accessory_weighted_sorenson_hold",
+      "name": "Weighted Sorenson Hold",
+      "decision": "KEEP",
+      "reason": "Checked head against torso and equipment plane. Face points along the exercise plane; side appearance follows camera azimuth, without an independent over-shoulder look.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 560,
+      "key": "accessory_dumbbell_serratus_punch",
+      "name": "Dumbbell Serratus Punch",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-16.jpg"
+    },
+    {
+      "id": 561,
+      "key": "accessory_dumbbell_pullover_serratus_reach",
+      "name": "Dumbbell Pullover Serratus Reach",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-17.jpg"
+    },
+    {
+      "id": 569,
+      "key": "accessory_dumbbell_psoas_march",
+      "name": "Dumbbell Psoas March",
+      "decision": "KEEP",
+      "reason": "Face follows the supported torso/bench orientation; upward or three-quarter face is from the exercise and camera, with no independent shoulderward glance.",
+      "evidence": "audit-sheets/group-17.jpg"
+    },
+    {
+      "id": 570,
+      "key": "accessory_ankle_weight_hip_flexion",
+      "name": "Ankle-Weight Hip Flexion",
+      "decision": "KEEP",
+      "reason": "Head and gaze follow the torso forward direction. The three-quarter or side camera view does not show an independent neck turn toward a shoulder.",
+      "evidence": "audit-sheets/group-17.jpg"
+    },
+    {
+      "id": 580,
+      "key": "accessory_plate_neck_flexion",
+      "name": "Plate Neck Flexion",
+      "decision": "KEEP",
+      "reason": "Head position depicts the governed neck exercise itself; no unrelated sideways glance. Preserve deliberate flexion/extension/lateral flexion.",
+      "evidence": "audit-sheets/group-17.jpg"
+    },
+    {
+      "id": 581,
+      "key": "accessory_plate_neck_extension",
+      "name": "Plate Neck Extension",
+      "decision": "KEEP",
+      "reason": "Head position depicts the governed neck exercise itself; no unrelated sideways glance. Preserve deliberate flexion/extension/lateral flexion.",
+      "evidence": "audit-sheets/group-17.jpg"
+    },
+    {
+      "id": 582,
+      "key": "accessory_plate_lateral_neck_flexion",
+      "name": "Plate Lateral Neck Flexion",
+      "decision": "KEEP",
+      "reason": "Head position depicts the governed neck exercise itself; no unrelated sideways glance. Preserve deliberate flexion/extension/lateral flexion.",
+      "evidence": "audit-sheets/group-17.jpg"
+    }
+  ]
+}

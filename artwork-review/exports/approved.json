@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "revision": 1,
+  "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
+  "updated_at": "2026-09-12T13:02:26.207425+00:00",
+  "updated_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
+  "families": {
+    "canonical_free_weight_accessories": {
+      "label": "Free-Weight Accessories",
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "test_only": false,
+      "baseline": {
+        "movement_definition_id": 33,
+        "key": "accessory_incline_dumbbell_bench_press",
+        "movement_name": "Incline Dumbbell Bench Press",
+        "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+        "files": {
+          "master": {
+            "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+            "dimensions": [
+              1254,
+              1254
+            ],
+            "bytes": 1871026,
+            "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+          },
+          "app": {
+            "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+            "dimensions": [
+              512,
+              512
+            ],
+            "bytes": 317984,
+            "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+          },
+          "thumbnail": {
+            "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+            "dimensions": [
+              192,
+              192
+            ],
+            "bytes": 46716,
+            "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+          }
+        }
+      }
+    }
+  },
+  "approved": [
+    {
+      "movement_definition_id": 33,
+      "key": "accessory_incline_dumbbell_bench_press",
+      "movement_name": "Incline Dumbbell Bench Press",
+      "primary_muscle_group": "chest",
+      "equipment_type": "dumbbell",
+      "implement": "Two dumbbells",
+      "family": "canonical_free_weight_accessories",
+      "generation_batch": "Push",
+      "generation_id": "backfill-existing-33-e05a3bf38fa7",
+      "candidate_id": "existing-33-e05a3bf38fa7",
+      "version": 1,
+      "supersedes_candidate_id": null,
+      "baseline_candidate_id": "existing-33-e05a3bf38fa7",
+      "files": {
+        "master": {
+          "path": "candidates/existing-33-e05a3bf38fa7/master.png",
+          "dimensions": [
+            1254,
+            1254
+          ],
+          "bytes": 1871026,
+          "sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe"
+        },
+        "app": {
+          "path": "candidates/existing-33-e05a3bf38fa7/app.png",
+          "dimensions": [
+            512,
+            512
+          ],
+          "bytes": 317984,
+          "sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+        },
+        "thumbnail": {
+          "path": "candidates/existing-33-e05a3bf38fa7/thumbnail.png",
+          "dimensions": [
+            192,
+            192
+          ],
+          "bytes": 46716,
+          "sha256": "741dde3985a23db10a37e71fed4aec03292f95d92758f657e71cea860c4e6cf1"
+        }
+      },
+      "candidate_asset": "candidates/existing-33-e05a3bf38fa7/master.png",
+      "status": "approved_existing",
+      "human_approved": true,
+      "automation_passed": true,
+      "reason": "",
+      "tags": [],
+      "review": {
+        "decision": "approved_existing",
+        "reason": "Prior explicit user approval of the original style baseline.",
+        "source": "documented_prior_user_approval",
+        "candidate_sha256": "e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe",
+        "reviewer": "prior_user_approval",
+        "reviewed_at": null
+      },
+      "review_history": [],
+      "created_at": "2026-09-12T13:02:25.547181+00:00",
+      "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
+      "test_only": false,
+      "existing_dev_backfill": true
+    }
+  ]
+}

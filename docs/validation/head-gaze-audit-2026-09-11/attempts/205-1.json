@@ -1,0 +1,11 @@
+{
+  "id": 205,
+  "attempt": 1,
+  "prompt": "Use case: precise-object-edit. Image 1 is ONLY the approved lighting/material/athlete style reference. Image 2 is the exact edit target. Correct ONLY the athlete's HEAD, NECK and GAZE to remove the cosmetic sideways or over-the-shoulder look. Head must follow the torso's actual forward direction, with natural neck alignment and no independent lateral rotation. Preserve all body pose, torso/shoulders/hip angles, exercise phase, hands and grip, equipment and plates, bench/supports, clothing, camera angle, subject size, framing, background, floor, dark photoreal studio and violet edge lighting from Image 2. Do not rotate the body or move the camera. No labels or overlays. Canonical MovementDefinition 205 Chest-Supported Kelso Row. Chest-Supported Kelso Row, rear three-quarter view: remove sideways peeking face. Head and nape follow chest-support bench/spine forward, chin gently tucked, gaze toward floor ahead of bench in the torso's forward plane. Show back/top of head, no full face profile. Preserve exact shoulder/exercise phase and equipment.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/chest-supported-kelso-row-v1.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-5ea5ca5c-dac8-46a8-ab49-d21265f30e13.png",
+  "tool": "built-in image_gen"
+}

@@ -1,0 +1,12 @@
+{
+  "id": 156,
+  "attempt": 3,
+  "prompt": "Use case: precise-object-edit. INPUT 1 is original immutable photographic style control. INPUT 2 is edit target. Preserve graphite apparel, natural athlete, silver metal, textured black studio and subtle violet rim. Correct ONLY head/neck support: back of skull rests directly on a visible small black padded HEADREST at the left end of the flat bench. This headrest supports the head physically so there is no unsupported gap; face relaxed looking up. Preserve the long-arm barbell pullover, all grips, shaft/plates, body/bench/shoes, camera and lighting. It must clearly read a supported pullover, not a crunch. Square photograph, no text.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-886f51c8-646c-4326-aa52-3fcf6b47840e.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-c271f721-119b-46ea-acfd-ebddc89e5d55.png",
+  "review": "ACCEPT",
+  "review_reason": "Visible padded headrest now resolves support ambiguity while long-arm shoulder pullover and separate overhand bar grips remain intact. Full straight bar, small symmetric plates, bench and complete shoes pass; same studio/material language."
+}

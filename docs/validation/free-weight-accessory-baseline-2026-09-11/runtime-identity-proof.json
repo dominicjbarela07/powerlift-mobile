@@ -1,0 +1,21 @@
+{
+  "environment": "canonical local DEV",
+  "workoutId": 1498,
+  "athleteId": 12,
+  "itemId": 16758,
+  "view": "coach-preview",
+  "trainingMutation": false,
+  "programmed": {
+    "id": 33,
+    "key": "accessory_incline_dumbbell_bench_press",
+    "kind": "accessory",
+    "identity_status": "canonical"
+  },
+  "effective": {
+    "id": 33,
+    "key": "accessory_incline_dumbbell_bench_press",
+    "kind": "accessory",
+    "identity_status": "canonical"
+  },
+  "legacyEffectiveId": 33
+}

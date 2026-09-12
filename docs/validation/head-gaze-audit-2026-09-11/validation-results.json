@@ -1,0 +1,39 @@
+{
+  "source_commit": "888c58c302112960ccc2c08b6067893ab5f20b2a",
+  "typecheck": {
+    "command": "npx tsc --noEmit",
+    "exit_code": 0,
+    "diagnostics": 0
+  },
+  "accepted_contracts": {
+    "command": "npm run test:accepted-behavior-contracts",
+    "exit_code": 0,
+    "passed": 201,
+    "total": 201,
+    "existing_quarantined": 49
+  },
+  "targeted_eslint": {
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "native_after_inspected_ids": [
+    103,
+    107,
+    131,
+    150,
+    237,
+    259,
+    349,
+    526
+  ],
+  "metro": {
+    "pid": 37284,
+    "cwd": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+    "port": 8081,
+    "startup_is_historical": true,
+    "current_filesystem_assets_verified": true
+  },
+  "production_changed": false,
+  "testflight_changed": false
+}

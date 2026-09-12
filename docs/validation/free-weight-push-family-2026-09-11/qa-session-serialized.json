@@ -1,0 +1,159 @@
+{
+  "workout": {
+    "accessory_groups": [
+      {
+        "items": [
+          {
+            "effective_movement_definition_id": 33,
+            "effective_movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "id": 18025,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_chest",
+              "id": 33,
+              "key": "accessory_incline_dumbbell_bench_press",
+              "primary_muscle_group": "chest"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 79,
+            "effective_movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 79,
+              "key": "accessory_seated_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "id": 18026,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 79,
+              "key": "accessory_seated_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 80,
+            "effective_movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 80,
+              "key": "accessory_standing_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "id": 18027,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 80,
+              "key": "accessory_standing_dumbbell_shoulder_press",
+              "primary_muscle_group": "front_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 84,
+            "effective_movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 84,
+              "key": "accessory_plate_front_raise",
+              "primary_muscle_group": "front_delts"
+            },
+            "id": 18028,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_front_delts",
+              "id": 84,
+              "key": "accessory_plate_front_raise",
+              "primary_muscle_group": "front_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 103,
+            "effective_movement_identity": {
+              "family": "accessory_side_delts",
+              "id": 103,
+              "key": "accessory_dumbbell_lateral_raise",
+              "primary_muscle_group": "side_delts"
+            },
+            "id": 18029,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_side_delts",
+              "id": 103,
+              "key": "accessory_dumbbell_lateral_raise",
+              "primary_muscle_group": "side_delts"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 289,
+            "effective_movement_identity": {
+              "family": "accessory_triceps",
+              "id": 289,
+              "key": "accessory_close_grip_bench_press",
+              "primary_muscle_group": "triceps"
+            },
+            "id": 18030,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_triceps",
+              "id": 289,
+              "key": "accessory_close_grip_bench_press",
+              "primary_muscle_group": "triceps"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 292,
+            "effective_movement_identity": {
+              "family": "accessory_triceps",
+              "id": 292,
+              "key": "accessory_ez_bar_skull_crusher",
+              "primary_muscle_group": "triceps"
+            },
+            "id": 18031,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_triceps",
+              "id": 292,
+              "key": "accessory_ez_bar_skull_crusher",
+              "primary_muscle_group": "triceps"
+            },
+            "performed_canonical_movement_identity": null
+          },
+          {
+            "effective_movement_definition_id": 297,
+            "effective_movement_identity": {
+              "family": "accessory_triceps",
+              "id": 297,
+              "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+              "primary_muscle_group": "triceps"
+            },
+            "id": 18032,
+            "is_substituted": false,
+            "movement_identity": {
+              "family": "accessory_triceps",
+              "id": 297,
+              "key": "accessory_single_arm_dumbbell_overhead_triceps_extension",
+              "primary_muscle_group": "triceps"
+            },
+            "performed_canonical_movement_identity": null
+          }
+        ]
+      }
+    ],
+    "athlete_id": 12,
+    "core_items": [],
+    "id": 1732,
+    "label": "Free-weight Push Art QA",
+    "status": "draft"
+  }
+}

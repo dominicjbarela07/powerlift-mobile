@@ -10,6 +10,8 @@ const areas = [
   ['canonical movement identity', ['scripts/test-accessory-identity-picker.mjs', 'scripts/test-movement-history-launch.mjs']],
   ['catalog authoring', ['scripts/test-accessory-catalog-review.mjs', 'scripts/test-governed-accessory-picker-layout.mjs']],
   ['individual movement artwork', ['scripts/test-individual-movement-artwork-hard-rule.mjs', 'scripts/test-session-workspace-accessory-artwork.mjs']],
+  ['human approval of canonical movement artwork', ['scripts/test-human-movement-art-approval.mjs']],
+  ['pre-Session readiness before execution', ['scripts/test-session-readiness-start.mjs', 'scripts/test-readiness-modal.mjs']],
   ['Swap and Session Workspace muscle drill-down anatomy', ['scripts/test-swap-muscle-thumbnail-framing.mjs']],
   ['Swap muscle-result equipment-type narrowing', ['scripts/test-swap-equipment-type-filter.mjs']],
   ['Session Logger shell', ['scripts/test-session-logger-shell-state.mjs', 'scripts/test-session-logger-three-zone-header.mjs', 'scripts/test-movement-lifecycle-status-layout.mjs', 'scripts/test-pre-session-accessory-last-best.mjs']],

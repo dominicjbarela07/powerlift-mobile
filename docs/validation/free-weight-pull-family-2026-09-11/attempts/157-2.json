@@ -1,0 +1,12 @@
+{
+  "id": 157,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. INPUT 1 is the immutable original and ONLY photographic style reference. INPUT 2 is the edit target. Preserve its graphite clothing, natural athlete/skin, silver weights, near-black textured studio and restrained violet rear rim. Only zoom OUT the whole scene and complete the bench currently cut off on the RIGHT. Show the entire incline bench with both base feet and seat fully inside frame, with 8% margin. Preserve athlete's standing Kroc row stance, hand support, single heavy dumbbell and all existing mechanics. One square photograph. No text or labels.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-086777c2-114c-4dca-a347-2cfede2bc741.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-8d6d9c2a-fbe4-48e2-9989-86b64fc9fd62.png",
+  "review": "ACCEPT",
+  "review_reason": "Complete incline bench now fits within canvas with both base supports visible. Standing staggered Kroc row, single substantial dumbbell and bracing hand preserved. A still represents the top pull, not high-rep duration; family lighting/crop pass."
+}

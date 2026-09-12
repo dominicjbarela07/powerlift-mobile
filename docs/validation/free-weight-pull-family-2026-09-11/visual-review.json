@@ -1,0 +1,37 @@
+{
+  "runtime": "Canonical DEV npm start; iPhone 17 iOS 26.2, Expo Go, local backend",
+  "first_pass": "native-pass-1",
+  "weaknesses": [
+    {
+      "area": "Focused Logger identity",
+      "evidence": "logger-expanded.png",
+      "finding": "Focused art shrinks to 48 points below its 52-point list thumbnail, weakening pose recognition beside the large title.",
+      "correction": "Focused art enlarged to 72 points; list density preserved.",
+      "second_pass_result": "PASS \u2014 runtime-current.png shows 72-point art with full bar silhouette"
+    },
+    {
+      "area": "Expanded programming card",
+      "evidence": "workspace-expanded.png",
+      "finding": "A 64-point asset sits inside a 52-point frame and visibly protrudes left of the identity column.",
+      "correction": "Match the non-shrinking frame to the existing 64-point asset.",
+      "second_pass_result": "IMPLEMENTED; expanded-state screenshot pending desktop window recovery"
+    },
+    {
+      "area": "Read-only history identity",
+      "evidence": "history-preview.png",
+      "finding": "Hidden favorite action leaves an empty 42-point column and its row gap, unnecessarily narrowing the movement name/muscle copy.",
+      "correction": "Omit the empty placeholder when no favorite action is available; retain the actual favorite action wherever allowed.",
+      "second_pass_result": "PASS \u2014 history-preview.png and history-supported-row.png show reclaimed width and no favorite placeholder"
+    }
+  ],
+  "second_pass": "native-pass-2",
+  "setlogs_created": 0,
+  "second_pass_status": "PARTIAL \u2014 native Logger, workspace overview and seven exact History surfaces inspected; expanded programming card and final picker interaction blocked by desktop cgWindowNotFound",
+  "history_preserved": {
+    "movement_definition_id": 194,
+    "athlete_id": 12,
+    "exposures": 7,
+    "sets": 28,
+    "date_range": "Jul 23 \u2013 Sep 3"
+  }
+}

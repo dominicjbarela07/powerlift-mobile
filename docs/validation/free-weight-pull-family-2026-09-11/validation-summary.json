@@ -1,0 +1,49 @@
+{
+  "canonical_definitions_inspected": 633,
+  "candidates_qualified_before_boundary_review": 49,
+  "qualifying_assets": 47,
+  "boundary_exclusions": 61,
+  "generated_candidates": 57,
+  "accepted_assets": 47,
+  "rejected_candidates": 10,
+  "new_movements_refined": 7,
+  "existing_exact_assets_replaced": 0,
+  "combined_registry_count": 98,
+  "immutable_original_and_push_hashes": "PASS",
+  "accepted_contracts": {
+    "passed": 199,
+    "failed": 0,
+    "historical_quarantined": 49
+  },
+  "typecheck_exit_code": 0,
+  "eslint": {
+    "exit_code": 0,
+    "errors": 0,
+    "preexisting_warnings": 17
+  },
+  "real_search_dtos": 49,
+  "mixed_session_definition_ids": [
+    33,
+    191,
+    80,
+    154,
+    194,
+    126,
+    235,
+    155,
+    545
+  ],
+  "native_runtime": "npm start, canonical dev/canonical-mobile, dirty filesystem, Metro 8081, Expo Go, iPhone 17 iOS 26.2",
+  "native_visual_gate": "PARTIAL; see visual-review.json",
+  "interactive_first_pass_picker": "PASS; searched Dumbbell and dismissed without selecting",
+  "interactive_final_pass": "BLOCKED: Computer Use cgWindowNotFound; device screenshots and deep links remain functional",
+  "testflight": false,
+  "production": false,
+  "qa_draft_cleanup": {
+    "workout_id": 1733,
+    "deleted": true,
+    "performed_sets": 0,
+    "http_status": 200
+  },
+  "returned_existing_session": 1498
+}

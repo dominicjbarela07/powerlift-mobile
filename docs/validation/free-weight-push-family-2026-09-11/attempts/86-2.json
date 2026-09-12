@@ -1,0 +1,13 @@
+{
+  "id": 86,
+  "attempt": 2,
+  "prompt": "Use case: precise-object-edit. Image1 is immutable STYLE CONTROL ONLY. EDIT IMAGE2 ONLY: zoom the camera out slightly to fit the entire floor pivot base with 6% clear left margin. Preserve exactly the athlete standing bilateral landmine pressing pose, hand grips, continuous bar, loaded sleeve and natural proportions. Do not raise or lower arms. Same dark studio, restrained violet, skin/fabric/metal. Square photo, no text/logo.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-bd1b59d5-56aa-4110-ac4c-d177389769c8.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-931c6b1a-4c32-431f-925d-ff161d93034a.png",
+  "review": "ACCEPT",
+  "review_reason": "Framing edit keeps bilateral press mechanics and continuous bar while restoring full grounded pivot base with visible left margin.",
+  "original_style_reference": "assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png"
+}
