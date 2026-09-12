@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Preserve prior masters; copy accepted independent generations and resize only."""
+# Historical automation acceptance is not human approval. This pipeline is frozen.
+raise SystemExit("Human artwork approval required. Register candidates with ../scripts/movement_art_review.py; use its guarded promote command after human review. Historical materialization is disabled.")
+
 import hashlib
 import json
 import math

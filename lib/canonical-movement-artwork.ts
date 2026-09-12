@@ -2,6 +2,7 @@ import {
   focusedAccessoryMuscleRegionKey,
   type FocusedAccessoryMuscleRegionKey,
 } from '@/lib/accessory-muscle-group';
+import { isMovementArtworkReviewDenied } from '@/lib/movement-art-review-policy';
 
 export type CanonicalCoreArtworkFamily = 'squat' | 'bench' | 'deadlift' | 'press';
 // Entire free-weight inventory: docs/validation/free-weight-completion-2026-09-11/asset-manifest.json.
@@ -279,7 +280,7 @@ export type CanonicalMovementArtworkResolution =
     }>
   | Readonly<{
       kind: 'neutral';
-      reason: 'missing_canonical_identity' | 'missing_governed_taxonomy' | 'unsupported_core_family';
+      reason: 'missing_canonical_identity' | 'missing_governed_taxonomy' | 'unsupported_core_family' | 'human_artwork_review_required';
     }>;
 
 const CORE_FAMILIES = new Set<CanonicalCoreArtworkFamily>(['squat', 'bench', 'deadlift', 'press']);
@@ -475,6 +476,9 @@ export function resolveCanonicalMovementArtwork(
       kind: 'neutral',
       reason: hasAccessoryIdentity ? 'missing_governed_taxonomy' : 'missing_canonical_identity',
     };
+  }
+  if (accessory.artworkKey && isMovementArtworkReviewDenied(accessory.artworkKey)) {
+    return { kind: 'neutral', reason: 'human_artwork_review_required' };
   }
   return {
     kind: 'accessory',

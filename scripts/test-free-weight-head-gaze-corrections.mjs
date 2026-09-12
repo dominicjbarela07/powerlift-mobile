@@ -10,6 +10,7 @@ const json = path => JSON.parse(read(path));
 const before = json(correctionDocument + 'inventory-before.json');
 const audit = json(correctionDocument + 'audit-decisions.json');
 const current = json('docs/validation/free-weight-completion-2026-09-11/asset-manifest.json');
+const humanState = json('artwork-review/review-state.json');
 const expected = [90,103,104,106,107,109,110,111,112,131,150,205,237,241,259,297,327,337,349,360,526,527];
 const sortedIds = rows => rows.map(row => row.id).sort((a,b) => a-b);
 assert.deepEqual(sortedIds(artworkCorrections), expected, 'only explicitly reviewed heads may change');
@@ -33,7 +34,8 @@ for (const previous of before.movements) {
   assert.ok(decision.reason && read(correctionDocument + decision.evidence).length);
   if (!expected.includes(previous.id)) {
     assert.equal(decision.decision, 'KEEP');
-    assert.deepEqual(asset.files, previous.files, 'all 176 unaffected images stay byte-for-byte identical');
+    const humanRevision = humanState.canonical_assets.find(row => row.movement_definition_id === previous.id && row.approval_source === 'human_review_ui');
+    if (!humanRevision) assert.deepEqual(asset.files, previous.files, 'unaffected images stay byte-for-byte identical unless explicitly human-approved later');
   }
   for (const role of ['master', 'app', 'thumbnail']) {
     const file = asset.files[role];

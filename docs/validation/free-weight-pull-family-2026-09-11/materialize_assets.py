@@ -4,6 +4,9 @@
 Run from mobile root using ../venv/bin/python. No AI creation/editing occurs here:
 only native-master copying, Lanczos downsampling and unaltered proof arrangement.
 """
+# Historical automation acceptance is not human approval. This pipeline is frozen.
+raise SystemExit("Human artwork approval required. Register candidates with ../scripts/movement_art_review.py; use its guarded promote command after human review. Historical materialization is disabled.")
+
 import hashlib
 import json
 import shutil

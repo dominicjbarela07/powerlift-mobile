@@ -29,6 +29,17 @@ Artwork is registered by canonical MovementDefinition ID with its expected stabl
 
 ## Generation and acceptance procedure
 
+**Human approval is now mandatory.** Follow the backend
+`docs/DEV_MOVEMENT_ART_REVIEW.md` workflow and review at `/dev/art-review`.
+The checks below are automated/agent preflight only; they never constitute human
+acceptance. Register candidates as pending and stop. Only the human can approve
+or reject real candidates. Read exact rejection notes from `artwork-review/exports/rejected.json`;
+regenerate only those rejected items and preserve versions. The original approved
+baseline remains approved_existing; prior automated family acceptance does not
+silently count as human approval. Existing DEV bytes have a one-time preservation
+receipt while their human review is pending. New canonical bytes require a verified
+human approval receipt through the guarded promotion flow.
+
 1. Read the individual audited identity, equipment, sidedness and aliases. Record its distinguishing mechanics and the chosen representative phase/camera before generating.
 2. Use built-in image generation, one call per candidate, with the original master attached. Independent candidates may run concurrently; acceptance is individual.
 3. Inspect the full generated image for hands/limbs, grip, joint path, bench/support geometry, loading symmetry, realistic contact and crop safety.
