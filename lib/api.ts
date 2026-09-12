@@ -1,4 +1,5 @@
 import { evidenceReadCache, invalidateEvidenceReads, isEvidenceRead } from './evidence-read-cache';
+import { sessionExposureCache } from './session-exposure-cache';
 // app/lib/api.ts
 
 import * as SecureStore from 'expo-secure-store';
@@ -450,7 +451,7 @@ export async function fetchJson<T = any>(
   if (programmingSuggestionRead) return performRequest();
   if (method !== 'GET' && method !== 'HEAD') {
     evidenceReadCache.invalidate(false);
-    try { return await performRequest(); } finally { invalidateEvidenceReads(); }
+    try { return await performRequest(); } finally { invalidateEvidenceReads({ path: requestPath }); }
   }
   const header = (...names: string[]) => String(Object.entries(mergedHeaders).find(([key]) => names.includes(key.toLowerCase()))?.[1] || '');
   const response = evidenceRead
@@ -460,6 +461,8 @@ export async function fetchJson<T = any>(
       performRequest,
     ) : await performRequest();
   if ([401, 403, 404].includes(response.status)) evidenceReadCache.invalidate(false);
+  if ([401, 403].includes(response.status)) sessionExposureCache.deny();
+  if (response.ok && /^\/workouts\/mobile\/\d+(?:\?|$)/.test(requestPath)) sessionExposureCache.authorize();
   if (fetchInit.signal?.aborted) throw new ApiRequestError({
     kind: 'cancelled', message: 'Request cancelled.', method, path: requestPath,
     importance: requestImportance, requestId, elapsedMs: Date.now() - requestStartedAt,

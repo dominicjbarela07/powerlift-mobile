@@ -34,11 +34,14 @@ export function formatPerformedLoad(
   weightKg: number | null | undefined,
   unit: LoggerDisplayUnit,
   semantics?: PerformedLoadSemantics | null,
+  precision: 'logger' | 'recorded' = 'logger',
 ) {
   const numeric = weightKg == null ? null : Number(weightKg);
   const hasRecordedLoad = numeric != null && Number.isFinite(numeric);
   const positiveLoad = hasRecordedLoad && numeric > 0;
-  const formatted = hasRecordedLoad ? formatLoggerWeightKg(numeric, unit) : null;
+  const formatted = hasRecordedLoad ? precision === 'recorded'
+    ? (unit === 'lb' ? numeric / 0.45359237 : numeric).toLocaleString('en-US', { maximumFractionDigits: 2 })
+    : formatLoggerWeightKg(numeric, unit) : null;
 
   if (isAssistanceLoad(semantics)) {
     return formatted == null ? 'Assistance' : `${formatted} ${unit} assistance`;
@@ -48,4 +51,3 @@ export function formatPerformedLoad(
   }
   return formatted == null ? null : `${formatted} ${unit}`;
 }
-

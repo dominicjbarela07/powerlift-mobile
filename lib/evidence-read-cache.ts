@@ -3,6 +3,8 @@
  * Server reads still authorize the relationship; this is not an access grant.
  */
 export class EvidenceReadCache {
+  private invalidationListeners = new Set<(change: { path?: string }) => void>();
+  onInvalidation = (listener: (change: { path?: string }) => void) => { this.invalidationListeners.add(listener); return () => { this.invalidationListeners.delete(listener); }; };
   private entries = new Map<string, { promise: Promise<any>; expires: number; generation: number }>();
   private scope = '';
   private generation = 0;
@@ -11,7 +13,7 @@ export class EvidenceReadCache {
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   snapshot = () => this.evidenceRevision;
   constructor(private readonly ttlMs = 10_000, private readonly now = Date.now) {}
-  invalidate(notify = true) { this.generation += 1; this.entries.clear(); if (notify) { this.evidenceRevision += 1; this.listeners.forEach((listener) => listener()); } }
+  invalidate(notify = true, change: { path?: string } = {}) { this.generation += 1; this.entries.clear(); if (notify) { this.evidenceRevision += 1; this.invalidationListeners.forEach((listener) => listener(change)); this.listeners.forEach((listener) => listener()); } }
   read<T extends { ok: boolean; json: unknown }>(scope: string, key: string, load: () => Promise<T>): Promise<T> {
     if (scope !== this.scope) { this.invalidate(false); this.scope = scope; }
     const existing = this.entries.get(key);
@@ -31,7 +33,7 @@ export class EvidenceReadCache {
   }
 }
 export const evidenceReadCache = new EvidenceReadCache();
-export const invalidateEvidenceReads = () => evidenceReadCache.invalidate();
+export const invalidateEvidenceReads = (change?: { path?: string }) => evidenceReadCache.invalidate(true, change);
 export function isEvidenceRead(path: string) {
   // Only the pure, selected-week projection is eligible; legacy training reads
   // can attach Sessions by date and must never enter this cache.

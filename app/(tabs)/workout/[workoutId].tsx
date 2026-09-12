@@ -7,6 +7,7 @@ import { CompletedSessionCorrection } from '@/components/workout-logger/complete
 import { SessionSetEntryContext } from '@/components/workout-logger/session-set-entry-context';
 import { SessionV3Header, SessionV3PlanHero, SessionV3Footer, SessionMovementNavigator } from '@/components/workout-logger/session-v3-shell';
 import { SessionHistoryPeek } from '@/components/workout-logger/session-history-peek';
+import { invalidateEvidenceReads } from '@/lib/evidence-read-cache';
 import { sessionExecutionCapabilities } from '@/lib/session-logger-lifecycle';
 import { registerFocusedSession } from '@/lib/session-logger-focus';
 import { scheduleRestTimerEnd } from '@/lib/rest-timer-notification-scheduling';
@@ -6528,7 +6529,7 @@ export default function WorkoutViewerScreen() {
         request_active: workoutRequestManagerRef.current.hasActiveRequest(),
       });
     }
-    remountLoggerBody();
+    if (reason === 'body_recovery') remountLoggerBody();
     void fetchWorkout({ silent: true, reason });
   }, [fetchWorkout, remountLoggerBody, workoutId]);
 
@@ -7113,6 +7114,7 @@ export default function WorkoutViewerScreen() {
   }, [fetchWorkout]);
 
   const onRefresh = useCallback(async () => {
+    invalidateEvidenceReads();
     await fetchWorkout({ silent: true });
   }, [fetchWorkout]);
 
@@ -8136,7 +8138,7 @@ export default function WorkoutViewerScreen() {
 
   const historyPeekFor = (item: WorkoutItem) => {
     const resolution = resolveMovementHistoryLaunchForItem({ athleteId: athlete.id, item });
-    return resolution.ok ? <SessionHistoryPeek target={resolution.target} workoutId={workout.id} unit={unit} onOpen={() => openCanonicalMovementHistory(item)} /> : null;
+    return resolution.ok ? <SessionHistoryPeek target={resolution.target} workoutId={workout.id} sessionDate={workout.date} ownerId={executionOwner} history={item.movement_history} semantics={itemLoadSemantics(item)} unit={unit} onOpen={() => openCanonicalMovementHistory(item)} /> : null;
   };
   let focusedSetAction: (() => void) | undefined;
   let focusedSetLabel = 'Choose movement';

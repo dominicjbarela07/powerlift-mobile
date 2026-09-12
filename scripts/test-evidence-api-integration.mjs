@@ -12,11 +12,15 @@ const evaluate = (path, globals = {}) => {
   return exports;
 };
 const cache = evaluate('../lib/evidence-read-cache.ts');
+const exposure = evaluate('../lib/session-exposure-cache.ts', { require: name => {
+  assert.equal(name, './evidence-read-cache'); return cache;
+} });
 const policy = evaluate('../lib/api-request-policy.ts');
 let account = 'account-a'; let mode = 'coach'; let calls = [];
 let implementation = async () => new Response(JSON.stringify({ ok: true, weight_kg: 100 }), { status: 200 });
 const modules = {
   './evidence-read-cache': cache,
+  './session-exposure-cache': exposure,
   'expo-secure-store': { getItemAsync: async (key) => key === 'auth_token' ? account : null },
   '@react-native-async-storage/async-storage': { getItem: async () => mode },
   'expo-constants': { expoConfig: {} },
