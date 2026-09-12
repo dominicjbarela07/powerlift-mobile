@@ -6,6 +6,7 @@ import {
   attachRestTimerNotificationState,
   beginRestTimerState,
   createActiveRestTimer,
+  extendRestTimerState,
   reconcileRestTimerCompletionState,
   stopRestTimerState,
   type RestTimerCompletionState,
@@ -20,17 +21,20 @@ let hydratePromise: Promise<RestTimerCompletionState> | null = null;
 let timerGeneration = 0;
 let stateRevision = 0;
 const listeners = new Set<Listener>();
+let persistenceTail: Promise<void> = Promise.resolve();
 
 function emit(): void {
   listeners.forEach((listener) => listener(currentState));
 }
 
-async function persistState(): Promise<void> {
-  if (!currentState.active && !currentState.pending) {
-    await AsyncStorage.removeItem(GLOBAL_REST_TIMER_STORAGE_KEY);
-    return;
-  }
-  await AsyncStorage.setItem(GLOBAL_REST_TIMER_STORAGE_KEY, JSON.stringify(currentState));
+function persistState(): Promise<void> {
+  // Capture every transition and write in order. A slow earlier write cannot
+  // resurrect a skipped timer or replace the deadline after rapid extensions.
+  const serialized = currentState.active || currentState.pending ? JSON.stringify(currentState) : null;
+  persistenceTail = persistenceTail.catch(() => undefined).then(() => serialized
+    ? AsyncStorage.setItem(GLOBAL_REST_TIMER_STORAGE_KEY, serialized)
+    : AsyncStorage.removeItem(GLOBAL_REST_TIMER_STORAGE_KEY));
+  return persistenceTail;
 }
 
 function validState(value: unknown): RestTimerCompletionState {
@@ -133,14 +137,25 @@ export function beginGlobalRestTimer(input: {
 export async function attachGlobalRestTimerNotification(
   timerId: string,
   notificationId: string,
+  expectedEndAtMs?: number,
 ): Promise<boolean> {
-  const next = attachRestTimerNotificationState(currentState, timerId, notificationId);
+  const next = attachRestTimerNotificationState(currentState, timerId, notificationId, expectedEndAtMs);
   if (next === currentState) return false;
   currentState = next;
   stateRevision += 1;
   emit();
   await persistState().catch(() => undefined);
   return true;
+}
+
+export function extendGlobalRestTimer(timerId: string, seconds = 30, nowMs = Date.now()) {
+  const transition = extendRestTimerState(currentState, timerId, seconds, nowMs);
+  if (transition.state === currentState) return null;
+  currentState = transition.state;
+  stateRevision += 1;
+  emit();
+  void persistState().catch(() => undefined);
+  return { timer: currentState.active!, replacedNotificationId: transition.replacedNotificationId };
 }
 
 export async function reconcileGlobalRestTimerCompletion(
@@ -152,11 +167,12 @@ export async function reconcileGlobalRestTimerCompletion(
   if (next === currentState) return currentState;
   currentState = next;
   stateRevision += 1;
+  emit();
+  const persisted = persistState();
   if (previousActive && !currentState.active) {
     await clearRestTimerExpiry(previousActive.workoutId).catch(() => undefined);
   }
-  emit();
-  await persistState().catch(() => undefined);
+  await persisted.catch(() => undefined);
   return currentState;
 }
 
@@ -167,10 +183,11 @@ export async function stopGlobalRestTimer(timerId?: string | null): Promise<stri
   if (transition.state === currentState) return null;
   currentState = transition.state;
   stateRevision += 1;
+  emit();
+  const persisted = persistState();
   if (previousActive) await clearRestTimerExpiry(previousActive.workoutId).catch(() => undefined);
   if (previousPending) await clearRestTimerExpiry(previousPending.workoutId).catch(() => undefined);
-  emit();
-  await persistState().catch(() => undefined);
+  await persisted.catch(() => undefined);
   return transition.notificationId;
 }
 

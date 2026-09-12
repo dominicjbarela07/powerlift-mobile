@@ -55,25 +55,24 @@ assert.match(workoutRoute, /createAudioPlayer\([\s\S]*rest-countdown-sequence\.w
 assert.match(workoutRoute, /keepAudioSessionActive: false/);
 assert.match(workoutRoute, /new RestTimerCountdownAudioWindow/);
 assert.doesNotMatch(workoutRoute, /setAudioModeAsync|setIsAudioActiveAsync/);
-assert.match(
-  workoutRoute,
-  /remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)/,
-);
+assert.match(workoutRoute, /onRestSecond=\{deliverRestTimerCue\}/);
+assert.match(workoutRoute, /remaining > REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS/);
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Light/);
 assert.match(workoutRoute, /Haptics\.ImpactFeedbackStyle\.Medium/);
 assert.match(workoutRoute, /Haptics\.NotificationFeedbackType\.Success/);
-assert.match(workoutRoute, /restTimerPromoted && restActive && restSeconds > 0/);
+assert.match(workoutRoute, /rest=\{activeRestTimer\}/);
 assert.match(workoutRoute, /<SessionV3Footer[\s\S]*rest=\{/);
 assert.doesNotMatch(workoutRoute, /restTimerZeroVisible|restTimerReadyVisible/);
 assert.doesNotMatch(workoutRoute, /presentRestTimerReady\(/);
-assert.match(workoutRoute, /remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
-assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*remaining <= REST_TIMER_DRAMATIC_COUNTDOWN_START_SECONDS[\s\S]*deliverRestTimerCue\(remaining\)[\s\S]*remaining <= 0[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
-assert.match(workoutRoute, /onAddRest=\{[\s\S]*restSeconds \+ 30/);
+assert.match(workoutRoute, /useSyncExternalStore\(subscribeRestTimerCompletion, getRestTimerCompletionState\)/);
+assert.match(workoutRoute, /AppState\.addEventListener\('change'[\s\S]*reconcileGlobalRestTimerCompletion\(\)/);
+assert.match(workoutRoute, /onAddRest=\{addRestTime\}/);
+assert.match(workoutRoute, /extendGlobalRestTimer\(timer.timerId, 30\)/);
 assert.match(restTimerPresenter, /isRestTimerNotification\(notification\.request\.content\.data\)[\s\S]*shouldShowAlert: !suppressRestEnd/);
 assert.match(workoutRoute, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*endAtMs: endAt/);
 assert.doesNotMatch(restTimerRuntime, /persistRestTimerExpiry/);
 assert.doesNotMatch(workoutRoute, /loadRestTimerExpiry/);
-assert.match(workoutRoute, /clearRestTimerExpiry\(workoutId\)/);
+assert.match(restTimerRuntime, /clearRestTimerExpiry\(previousActive.workoutId\)/);
 assert.match(restTimerStorage, /REST_TIMER_STORAGE_PREFIX = 'strength-ledger:rest-timer:v1'/);
 assert.match(restTimerStorage, /endAtMs <= nowMs[\s\S]*AsyncStorage\.removeItem\(key\)/);
 
@@ -213,14 +212,15 @@ const startTimerBody = workoutRoute.slice(
 );
 const stopTimerBody = workoutRoute.slice(
   workoutRoute.indexOf('const stopRestTimer'),
-  workoutRoute.indexOf('const formatRestTime'),
+  workoutRoute.indexOf('  useEffect(() => {', workoutRoute.indexOf('const stopRestTimer')),
 );
 assert.doesNotMatch(
   startTimerBody,
   /useEffect|set_logs|loggedSets|save|submission/i,
   'Timer start remains explicit and must not be coupled to set completion.',
 );
-assert.match(stopTimerBody, /setRestActive\(false\)/);
-assert.match(stopTimerBody, /setRestSeconds\(0\)/);
+assert.match(stopTimerBody, /stopGlobalRestTimer\(timer.timerId\)/);
+assert.match(stopTimerBody, /cancelRestEndNotification\(timer.notificationId\)/);
+assert.doesNotMatch(workoutRoute, /setRestSeconds|setRestActive|restEndAtMsRef/);
 
 console.log('Training Session Logger progress typography and rest-timer refinement tests passed.');

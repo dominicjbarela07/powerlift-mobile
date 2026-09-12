@@ -7,10 +7,12 @@ import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { SLFontFamilies } from '@/constants/theme';
+import { RestTimerClockText, SessionElapsedClockText } from './session-clock-text';
+import type { ActiveRestTimer } from '@/lib/rest-timer-completion-core';
 
-export function SessionV3Header({ title, subtitle, active, preview, inset, onBack, onActions, logged, total, elapsed }: {
+export function SessionV3Header({ title, subtitle, active, preview, inset, onBack, onActions, logged, total, startedAt }: {
   title: string; subtitle: string; active: boolean; preview?: string | null; inset: number;
-  onBack: () => void; onActions: () => void; logged: number; total: number; elapsed: string;
+  onBack: () => void; onActions: () => void; logged: number; total: number; startedAt: string | null;
 }) {
   return <View style={[s.header, { paddingTop: inset + 4 }]}>
     <View style={s.headerRow}>
@@ -18,7 +20,7 @@ export function SessionV3Header({ title, subtitle, active, preview, inset, onBac
       <View style={s.copy}><Text style={s.headerTitle}>{preview ? `Preview · ${preview}` : title}</Text><Text style={s.subtitle}>{preview ? 'Read only · Return to Coach Editor' : subtitle}</Text></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Session actions" onPress={onActions} style={s.icon}><Ionicons name="ellipsis-horizontal" size={23} color="#d4cadd" /></Pressable>
     </View>
-    {active ? <><View style={s.progressRow}><Text style={s.subtitle}><Text style={s.green}>●</Text> {logged} / {total} sets saved</Text><Text style={s.subtitle}>{elapsed} elapsed</Text></View><View style={s.track}><View style={[s.fill, { width: `${Math.min(100, total ? logged / total * 100 : 0)}%` }]} /></View></> : null}
+    {active ? <><View style={s.progressRow}><Text style={s.subtitle}><Text style={s.green}>●</Text> {logged} / {total} sets saved</Text><SessionElapsedClockText startedAt={startedAt} style={s.subtitle} /></View><View style={s.track}><View style={[s.fill, { width: `${Math.min(100, total ? logged / total * 100 : 0)}%` }]} /></View></> : null}
   </View>;
 }
 
@@ -32,13 +34,13 @@ export function SessionV3PlanHero({ title, focus, planned, movements, artwork, n
   </View>;
 }
 
-export function SessionV3Footer({ bottom, label, disabled, onPress, secondary, onSecondary, unit, onUnit, rest, onRest, onSkip, onAddRest }: {
+export function SessionV3Footer({ bottom, label, disabled, onPress, secondary, onSecondary, unit, onUnit, rest, onRest, onSkip, onAddRest, onRestSecond }: {
   bottom: number; label: string; disabled?: boolean; onPress: () => void; secondary?: string | null;
   onSecondary: () => void; unit: string; onUnit: () => void;
-  rest?: string | null; onRest: () => void; onSkip: () => void; onAddRest: () => void;
+  rest?: ActiveRestTimer | null; onRest: () => void; onSkip: () => void; onAddRest: () => void; onRestSecond?: (seconds: number) => void;
 }) {
   return <View style={[s.footer, { paddingBottom: Math.max(bottom, 12) }]}>
-    {rest ? <View style={s.rest}><Pressable onPress={onRest}><Text style={s.restTime}>{rest}</Text></Pressable><View style={s.copy} /><Pressable accessibilityRole="button" onPress={onAddRest} style={s.smallAction}><Text style={s.cyan}>+30 sec</Text></Pressable><Pressable accessibilityRole="button" onPress={onSkip} style={s.smallAction}><Text style={s.cyan}>Skip</Text></Pressable></View> : null}
+    {rest ? <View style={s.rest}><Pressable accessibilityRole="button" accessibilityLabel="Adjust rest timer" onPress={onRest}><RestTimerClockText timer={rest} style={s.restTime} onSecond={onRestSecond} /></Pressable><View style={s.copy} /><Pressable accessibilityRole="button" accessibilityLabel="Add 30 seconds to rest timer" onPress={onAddRest} style={({ pressed }) => [s.smallAction, pressed && s.dim]}><Text style={s.cyan}>+30 sec</Text></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Skip active rest timer" onPress={onSkip} style={({ pressed }) => [s.smallAction, pressed && s.dim]}><Text style={s.cyan}>Skip</Text></Pressable></View> : null}
     <View style={s.footerTools}>{secondary ? <Pressable accessibilityRole="button" onPress={onSecondary} style={s.secondary}><Text style={s.subtitle}>{secondary} <Text style={s.cyan}>⌃</Text></Text></Pressable> : <View style={s.copy} />}<Pressable accessibilityRole="button" accessibilityLabel={`Display units ${unit}`} onPress={onUnit} style={s.unit}><Text style={s.subtitle}>{unit}</Text></Pressable></View>
     <Pressable accessibilityRole="button" disabled={disabled} accessibilityState={{ disabled: !!disabled }} onPress={onPress} style={({ pressed }) => [s.primary, (pressed || disabled) && s.dim]}>
       <LinearGradient colors={['#9862e8', '#6232c2']} style={s.primaryFill}><Text style={s.primaryText}>{label}</Text></LinearGradient>
@@ -65,6 +67,6 @@ const s = StyleSheet.create({
   eyebrow: { color: '#b395e6', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.4 }, title: { color: '#f6f1fc', fontSize: 30, lineHeight: 35, fontFamily: SLFontFamilies.sansBold, marginVertical: 10 }, focus: { color: '#c9bfd7', fontSize: 14, lineHeight: 21 },
   stats: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#2e2637', flexDirection: 'row', gap: 35, paddingVertical: 8 }, number: { fontSize: 25, color: '#f0eaf8', fontFamily: SLFontFamilies.sansBold }, note: { borderLeftWidth: 2, borderLeftColor: '#a77fe3', paddingLeft: 11, marginVertical: 13 }, noteText: { color: '#d1c7df', fontSize: 13, lineHeight: 19, marginTop: 6 },
   footer: { paddingHorizontal: 20, paddingTop: 3, backgroundColor: '#08060df5', borderTopWidth: 1, borderTopColor: '#271f30' }, footerTools: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 38 }, secondary: { minHeight: 38, justifyContent: 'center', flex: 1 }, unit: { width: 40, height: 32, borderWidth: 1, borderColor: '#45354f', borderRadius: 16, justifyContent: 'center', alignItems: 'center' }, primary: { borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#a47be5' }, primaryFill: { minHeight: 52, justifyContent: 'center', alignItems: 'center', padding: 12 }, primaryText: { color: '#fff', fontSize: 17, fontFamily: SLFontFamilies.sansBold }, dim: { opacity: 0.5 },
-  rest: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, marginTop: 8, backgroundColor: '#0f2025', borderWidth: 1, borderColor: '#30424c', borderRadius: 14 }, restTime: { fontSize: 30, color: '#d4f2f7', fontFamily: SLFontFamilies.sansSemiBold }, smallAction: { minHeight: 36, justifyContent: 'center' },
+  rest: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, marginTop: 8, backgroundColor: '#0f2025', borderWidth: 1, borderColor: '#30424c', borderRadius: 14 }, restTime: { fontSize: 30, lineHeight: 36, fontVariant: ['tabular-nums'], color: '#d4f2f7', fontFamily: SLFontFamilies.sansSemiBold }, smallAction: { minHeight: 44, minWidth: 54, alignItems: 'center', justifyContent: 'center' },
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0009' }, sheet: { maxHeight: '80%', backgroundColor: '#0f0c16', borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, borderColor: '#41314e', padding: 18 }, navigatorRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: '#312638', paddingVertical: 16 }, selected: { backgroundColor: '#22182e' },
 });

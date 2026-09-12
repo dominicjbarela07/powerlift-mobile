@@ -148,8 +148,8 @@ assert.match(
   'the final branch must queue exactly one prompt and return before rest progression',
 );
 assert.ok(
-  canonicalHandoff.indexOf("type: 'QUEUE_CANONICAL_FINAL_SET'") < canonicalHandoff.indexOf('startRestTimer(seconds)'),
-  'the final-session branch must return before automatic rest',
+  canonicalHandoff.indexOf("type: 'QUEUE_CANONICAL_FINAL_SET'") < canonicalHandoff.indexOf('openTimerPicker(undefined, handoffIdentity)'),
+  'the final-session branch must return before the rest picker',
 );
 assert.match(
   completionPresentation,

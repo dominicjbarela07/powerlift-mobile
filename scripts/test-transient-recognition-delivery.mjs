@@ -213,7 +213,7 @@ assert.notEqual(recognitionDeliveryId(afterReset[0]), recognitionDeliveryId(resp
 assert.equal(feedbackMotionDuration(500, true), 0);
 assert.equal(feedbackMotionDuration(500, false), 500);
 
-// The Session's one-second wall clock causes ordinary React rerenders. The
+// Timer ticks are isolated, and unrelated React rerenders remain possible. The
 // choreography must be keyed only by the canonical transient delivery and
 // must read haptic/phase callbacks through refs so those rerenders cannot
 // restart phase one or duplicate haptics.
@@ -233,7 +233,7 @@ const loggerScreenSource = fs.readFileSync(
   new URL('../app/(tabs)/workout/[workoutId].tsx', import.meta.url),
   'utf8',
 );
-assert.match(loggerScreenSource, /setInterval\(\(\) => setSessionNowMs\(Date\.now\(\)\), 1000\)/);
+assert.doesNotMatch(loggerScreenSource, /setSessionNowMs|setInterval\(/, 'clock ticks stay below the logger tree');
 assert.match(canonicalRecognitionSource, /const onImpactRef = useRef\(onImpact\)/);
 assert.match(canonicalRecognitionSource, /onImpactRef\.current\?\.\(\)/);
 assert.doesNotMatch(canonicalRecognitionSource, /\], \[[^\]]*onImpact[^\]]*\]\);/);

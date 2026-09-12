@@ -170,7 +170,7 @@ assert.match(presenter, /action: \{[\s\S]*minHeight: 54/);
 assert.doesNotMatch(presenter, /expo-audio|createAudioPlayer|RestTimerProvider|RestTimerContext/);
 
 assert.match(route, /beginGlobalRestTimer\([\s\S]*workoutId,[\s\S]*ownerUserId:/);
-assert.match(route, /type: 'rest_timer_complete'[\s\S]*workout_id: String\(workoutId\)[\s\S]*timer_id: timerId/);
+assert.match(route, /type: 'rest_timer_complete'[\s\S]*workout_id: deadline.workoutId[\s\S]*timer_id: deadline.timerId/);
 assert.match(route, /Do not cancel the active rest completion notification here/);
 assert.doesNotMatch(route, /presentRestTimerReady\(/);
 assert.match(runtime, /strength-ledger:rest-timer-completion:v2/);

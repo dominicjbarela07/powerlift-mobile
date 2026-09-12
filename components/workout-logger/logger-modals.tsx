@@ -113,6 +113,7 @@ export function RestTimerPickerModal({
   saveConfirmationVisible,
   onMounted,
   onClose,
+  onSkip,
   styles,
   embedded = false,
 }: any) {
@@ -218,13 +219,17 @@ export function RestTimerPickerModal({
 
       <View style={restTimerPickerStyles.actions}>
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Skip Rest"
           style={[styles.actionButton, restTimerPickerStyles.cancelButton]}
-          onPress={() => onClose('dismissed')}
+          onPress={() => { onSkip?.(); onClose('dismissed'); }}
         >
-          <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Cancel</Text>
+          <Text style={[styles.actionButtonText, styles.actionSecondaryText]}>Skip Rest</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Start Timer"
           style={[styles.actionButton, styles.actionPrimary, restTimerPickerStyles.startButton]}
           onPress={() => {
             startRestTimer(REST_TIMER_OPTIONS[nearestRestTimerIndex(timerPickerValue)]);
