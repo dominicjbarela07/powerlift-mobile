@@ -24,11 +24,13 @@ type Props = Readonly<{
   style?: StyleProp<ViewStyle>;
   testID?: string;
   requireHumanApproval?: boolean;
+  /** Keep governed accessory muscle context visible beside an exact movement hero. */
+  accessoryPresentation?: 'movement' | 'muscle-focus';
 }>;
 
 const warned = new Set<string>();
 
-export function CanonicalMovementArtwork({ movement, size = 72, style, testID, requireHumanApproval = false }: Props) {
+export function CanonicalMovementArtwork({ movement, size = 72, style, testID, requireHumanApproval = false, accessoryPresentation = 'movement' }: Props) {
   const resolution = resolveCanonicalMovementArtwork(movement);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID, r
   }, [movement?.core_movement_id, movement?.id, movement?.movement_definition_id, resolution]);
 
   if (resolution.kind === 'accessory') {
-    if (__DEV__ && resolution.artworkKey && (!requireHumanApproval || resolveApprovedExactMovementArtwork(movement))) {
+    if (accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && (!requireHumanApproval || resolveApprovedExactMovementArtwork(movement))) {
       const asset = CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey];
       return (
         <View accessibilityLabel={asset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>

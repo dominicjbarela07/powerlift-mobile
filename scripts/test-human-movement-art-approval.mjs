@@ -10,7 +10,7 @@ assert.equal(assertHumanArtworkGate(root).canonical, 198);
 const state = JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = __DEV__ \? \{/,
   'the explicitly DEV-only generated family must be removed from release bundles');
-assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /if \(__DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/);
+assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /if \(accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/);
 // Actual decision totals belong to the human and must never be reset by a test.
 for (const item of state.items) {
   if (item.status === 'pending' || item.status === 'rejected') assert.equal(item.human_approved, false);

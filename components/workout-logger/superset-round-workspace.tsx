@@ -72,7 +72,7 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
         {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} surface="superset" reduceMotion={reduceMotion} /> : null}
         <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={s.memberRow}>
           <Text style={[s.memberLabel, movement.complete && s.complete]}>{label}</Text>
-          {!hero ? <CanonicalMovementArtwork requireHumanApproval movement={item.movementArtwork} size={selected && isActive ? 56 : 44} /> : null}
+          <CanonicalMovementArtwork requireHumanApproval movement={item.movementArtwork} accessoryPresentation="muscle-focus" size={selected && isActive ? 56 : 44} />
           <View style={s.memberCopy}>
             <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle]}>{item.title}</Text>
             <Text style={[s.prescription, selected && isActive && s.activePrescription, hero && s.heroPrescription]}>{item.prescription}</Text>
