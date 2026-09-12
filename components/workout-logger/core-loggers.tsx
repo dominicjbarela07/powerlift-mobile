@@ -405,6 +405,7 @@ export function CoreMovementLedgerRow({
       ? `${focusedRow.timelineLabel || focusedRow.label} · SET ${focusedRowIndex + 1} OF ${allDetailRows.length}`
       : loggerFocus?.currentSetPositionLabel;
     return <SessionV3Movement
+      active={isActiveMovement} reduceMotion={reduceMotion}
       title={title} index={sessionIndex} expanded={Boolean(expanded)} complete={isComplete}
       prescription={headerPrescription} focus={loggerFocus ? { ...loggerFocus, currentSetPositionLabel: positionLabel } : null} visual={visualContext}
       note={expanded ? movementNote : null} prior={priorPerformanceCue}

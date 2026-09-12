@@ -5,7 +5,8 @@
     "app.json",
     "eas.json",
     "app/(tabs)/dev-mocks/anatomy-system.tsx",
-    "app/(tabs)/dev-mocks/text-layout.tsx"
+    "app/(tabs)/dev-mocks/text-layout.tsx",
+    "app/(tabs)/dev-mocks/movement-art-hero.tsx"
   ],
   "protectedFixes": [
     {

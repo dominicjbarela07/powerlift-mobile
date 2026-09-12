@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
+import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import { LoggerPlateStackVisual } from './logger-primitives';
 import type { ActiveMovementVisualContext, MovementLoggerFocusModel } from './core-loggers';
 import type { AccessoryLastBestCue } from '@/lib/accessory-last-best';
@@ -10,9 +12,9 @@ import { SLColors, SLFontFamilies } from '@/constants/theme';
 
 /** Lifecycle composition only; prescription, identity and write callbacks stay canonical. */
 export function SessionV3Movement({ title, index, expanded, complete, prescription, focus,
-  visual, note, prior, equipment, actions, warmup, history, timeline, onOpen,
+  visual, note, prior, equipment, actions, warmup, history, timeline, onOpen, active = false, reduceMotion = false,
 }: {
-  title: string; index: number; expanded: boolean; complete: boolean;
+  title: string; index: number; expanded: boolean; complete: boolean; active?: boolean; reduceMotion?: boolean;
   prescription?: string | null; focus?: MovementLoggerFocusModel | null;
   visual?: ActiveMovementVisualContext | null; note?: string | null;
   prior?: AccessoryLastBestCue | null;
@@ -21,7 +23,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
 }) {
   if (!expanded) return <Pressable accessibilityRole="button" accessibilityLabel={`Expand ${title}`} onPress={onOpen} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     <Text style={[s.index, complete && s.success]}>{complete ? '✓' : String(index).padStart(2, '0')}</Text>
-    <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={__DEV__ ? 64 : 42} />
+    <CanonicalMovementArtwork requireHumanApproval movement={visual?.movementArtworkInput} size={__DEV__ ? 64 : 42} />
     <View style={s.copy}><Text numberOfLines={0} style={s.rowTitle}>{title}</Text><Text style={s.detail}>{prescription}</Text></View>
     <Ionicons name="chevron-forward" color={SLColors.textMuted} size={17} />
   </Pressable>;
@@ -30,9 +32,12 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
   const load = focus?.currentSetLoadLabel || '';
   const loadParts = load.match(/^(.*?)\s*(kg|lb)$/i);
   const progress = prior || visual?.progress;
+  const hero = active && !complete ? resolveApprovedExactMovementArtwork(visual?.movementArtworkInput) : null;
   return <View style={s.workspace}>
+    <View style={s.activeHeader}>
+    {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} reduceMotion={reduceMotion} /> : null}
     <Pressable accessibilityRole="button" accessibilityLabel={`Collapse ${title}`} onPress={onOpen} style={s.heading}>
-      <CanonicalMovementArtwork movement={visual?.movementArtworkInput} size={__DEV__ ? 72 : 48} />
+      {!hero ? <CanonicalMovementArtwork requireHumanApproval movement={visual?.movementArtworkInput} size={__DEV__ ? 72 : 48} /> : null}
       <View style={s.copy}><Text numberOfLines={0} style={s.title}>{title}</Text><Text style={s.eyebrow}>{complete ? 'MOVEMENT COMPLETE' : focus?.currentSetPositionLabel || prescription}</Text></View>
     </Pressable>
     {!complete && focus ? <>
@@ -51,6 +56,7 @@ export function SessionV3Movement({ title, index, expanded, complete, prescripti
       </View>
       {visual?.physicalSetup ? <Text style={s.setup}>{visual.physicalSetup}</Text> : null}
     </> : null}
+    </View>
     {equipment}
     {note ? <Text style={s.note}>{note}</Text> : null}
     {history || (progress ? <Pressable accessibilityRole="button" accessibilityLabel={`View ${title} movement history`} onPress={focus?.onViewHistory} style={s.evidence}>
@@ -69,6 +75,7 @@ const s = StyleSheet.create({
   pressed: { backgroundColor: '#17101f' }, index: { color: '#8e819f', fontSize: 12, width: 21 }, success: { color: '#88deb5' },
   copy: { flex: 1 }, rowTitle: { color: '#f8f6fb', fontFamily: SLFontFamilies.sansSemiBold, fontSize: 16 },
   detail: { color: '#b7b0c2', fontSize: 12, lineHeight: 17, marginTop: 3 },
+  activeHeader: { position: 'relative' },
   workspace: { paddingVertical: 8 }, heading: { flexDirection: 'row', gap: 8, alignItems: 'center', paddingVertical: 8 },
   title: { color: '#faf7ff', fontFamily: SLFontFamilies.sansBold, fontSize: 26, lineHeight: 31 },
   eyebrow: { color: '#b391ec', fontFamily: SLFontFamilies.sansBold, fontSize: 10, letterSpacing: 1.2, marginTop: 7 },

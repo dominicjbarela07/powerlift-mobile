@@ -8,6 +8,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';
 import { SLColors, SLRadius } from '@/constants/theme';
 import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';
@@ -22,11 +23,12 @@ type Props = Readonly<{
   size?: number;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  requireHumanApproval?: boolean;
 }>;
 
 const warned = new Set<string>();
 
-export function CanonicalMovementArtwork({ movement, size = 72, style, testID }: Props) {
+export function CanonicalMovementArtwork({ movement, size = 72, style, testID, requireHumanApproval = false }: Props) {
   const resolution = resolveCanonicalMovementArtwork(movement);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function CanonicalMovementArtwork({ movement, size = 72, style, testID }:
   }, [movement?.core_movement_id, movement?.id, movement?.movement_definition_id, resolution]);
 
   if (resolution.kind === 'accessory') {
-    if (__DEV__ && resolution.artworkKey) {
+    if (__DEV__ && resolution.artworkKey && (!requireHumanApproval || resolveApprovedExactMovementArtwork(movement))) {
       const asset = CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[resolution.artworkKey];
       return (
         <View accessibilityLabel={asset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>

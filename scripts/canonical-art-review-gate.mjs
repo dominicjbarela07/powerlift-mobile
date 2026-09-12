@@ -7,6 +7,23 @@ import { fileURLToPath } from 'node:url';
 const defaultRoot = fileURLToPath(new URL('../', import.meta.url));
 const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 
+export function approvedExactArtworkPolicy(state) {
+  return state.canonical_assets.flatMap(active => {
+    const row = state.items.find(candidate => candidate.candidate_id === active.candidate_id);
+    const review = row?.review;
+    const human = row?.status === 'approved' && review?.decision === 'approved'
+      && review.source === 'human_review_ui' && Number.isInteger(review.reviewer_user_id) && review.reviewer_user_id > 0
+      && row.review_history.some(event => JSON.stringify(event) === JSON.stringify(review));
+    const prior = row?.status === 'approved_existing' && review?.decision === 'approved_existing'
+      && review.source === 'documented_prior_user_approval';
+    if ((!human && !prior) || !row || row.test_only || !['approved', 'approved_existing'].includes(row.status)
+        || row.human_approved !== true || row.review?.candidate_sha256 !== row.files.master.sha256
+        || !['master', 'app', 'thumbnail'].every(role => active.files[role].sha256 === row.files[role].sha256)) return [];
+    return [{ key: active.key, movement_definition_id: active.movement_definition_id,
+      candidate_id: row.candidate_id, app_sha256: active.files.app.sha256 }];
+  }).sort((a, b) => a.key.localeCompare(b.key));
+}
+
 export function assertHumanArtworkGate(root = defaultRoot) {
   root = fs.realpathSync(root);
   const reviewRoot = path.join(root, 'artwork-review');
@@ -61,6 +78,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
   assert.ok(!mapping.includes('artwork-review/candidates'), 'candidate storage must never be bundled as canonical artwork');
   const policy = JSON.parse(fs.readFileSync(path.join(reviewRoot, 'runtime-policy.json'), 'utf8'));
   assert.deepEqual(policy.denied_keys, [...new Set(denied)].sort(), 'runtime rejection policy must reflect durable human decisions');
+  assert.deepEqual(policy.approved_exact_artwork, approvedExactArtworkPolicy(state), 'hero eligibility must match positive human approval of mapped bytes');
   return {canonical: state.canonical_assets.length, denied: denied.length};
 }
 

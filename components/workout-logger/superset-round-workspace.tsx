@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { MovementArtworkHero } from '@/components/movement/MovementArtworkHero';
+import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';
 import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
 import { CompactSetTimeline } from './compact-set-timeline';
 import { SLColors, SLFontFamilies } from '@/constants/theme';
@@ -65,13 +67,15 @@ export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, sel
       const swapAction = swapActionForItem(item.id);
       const swapBusy = swappingItemId === item.id;
       const showEvidence = selected && evidenceItemId === item.id;
+      const hero = selected && isActive && !movement.complete ? resolveApprovedExactMovementArtwork(item.movementArtwork) : null;
       return <View key={item.id} style={[s.member, selected && isActive && s.selectedMember]}>
+        {hero ? <MovementArtworkHero artworkKey={hero.key} receiptId={hero.candidate_id} surface="superset" reduceMotion={reduceMotion} /> : null}
         <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={s.memberRow}>
           <Text style={[s.memberLabel, movement.complete && s.complete]}>{label}</Text>
-          <CanonicalMovementArtwork movement={item.movementArtwork} size={selected && isActive ? 56 : 44} />
+          {!hero ? <CanonicalMovementArtwork requireHumanApproval movement={item.movementArtwork} size={selected && isActive ? 56 : 44} /> : null}
           <View style={s.memberCopy}>
             <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle]}>{item.title}</Text>
-            <Text style={[s.prescription, selected && isActive && s.activePrescription]}>{item.prescription}</Text>
+            <Text style={[s.prescription, selected && isActive && s.activePrescription, hero && s.heroPrescription]}>{item.prescription}</Text>
             {item.equipmentRequired ? <Text style={s.required}>Equipment required</Text> : item.equipmentContext ? <Text style={s.equipment}>{item.equipmentContext}</Text> : null}
             {state ? <Text style={[s.state, movement.complete || roundEntry?.log ? s.complete : selected ? s.current : null]}>{state}</Text> : null}
           </View>
@@ -121,6 +125,7 @@ const s = StyleSheet.create({
   title: { color: '#f5f0fb', fontSize: 16, lineHeight: 21, fontFamily: SLFontFamilies.sansSemiBold },
   activeTitle: { fontSize: 23, lineHeight: 28 },
   activePrescription: { fontSize: 15, lineHeight: 22 },
+  heroPrescription: { maxWidth: '55%' },
   prescription: { color: '#c3b9cf', fontSize: 12, lineHeight: 18, marginTop: 3 },
   equipment: { color: '#aea2be', fontSize: 11, lineHeight: 16, marginTop: 2 },
   required: { color: '#e8bd83', fontSize: 11, lineHeight: 17, marginTop: 2 },
