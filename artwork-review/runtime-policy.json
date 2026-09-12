@@ -1,4 +1,12 @@
 {
   "schema_version": 1,
-  "denied_keys": []
+  "denied_keys": [],
+  "approved_exact_artwork": [
+    {
+      "key": "accessory_incline_dumbbell_bench_press",
+      "movement_definition_id": 33,
+      "candidate_id": "existing-33-e05a3bf38fa7",
+      "app_sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+    }
+  ]
 }

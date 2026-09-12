@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { assertHumanArtworkGate } from './canonical-art-review-gate.mjs';
+import { assertHumanArtworkGate, approvedExactArtworkPolicy } from './canonical-art-review-gate.mjs';
 import { isMovementArtworkReviewDenied } from '../lib/movement-art-review-policy.ts';
 
 const root = process.cwd();
@@ -10,7 +10,7 @@ assert.equal(assertHumanArtworkGate(root).canonical, 198);
 const state = JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
 assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = __DEV__ \? \{/,
   'the explicitly DEV-only generated family must be removed from release bundles');
-assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /if \(__DEV__ && resolution.artworkKey\)/);
+assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /if \(__DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/);
 // Actual decision totals belong to the human and must never be reset by a test.
 for (const item of state.items) {
   if (item.status === 'pending' || item.status === 'rejected') assert.equal(item.human_approved, false);
@@ -29,7 +29,7 @@ try {
     fs.writeFileSync(target, typeof value === 'string' ? value : JSON.stringify(value));
   };
   write('artwork-review/review-state.json', fixture);
-  write('artwork-review/runtime-policy.json', {denied_keys: []});
+  write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   write('lib/canonical-movement-artwork.ts', `  33: { key: '${original.key}', primary: 'chest' },`);
   const mapping = `export const fixture = {\n  ${original.key}: {\n    source: require('@/${original.files.app.path}'),\n    thumbnail: require('@/${original.files.thumbnail.path}'),\n  },\n};`;
   write('lib/canonical-movement-artwork-assets.ts', mapping);
@@ -50,6 +50,7 @@ try {
   fixture.items[0].review_history = [approval]; fixture.items[0].review = approval;
   fixture.canonical_assets[0].review = approval;
   write('artwork-review/review-state.json', fixture);
+  write('artwork-review/runtime-policy.json', {denied_keys: [], approved_exact_artwork: approvedExactArtworkPolicy(fixture)});
   assert.equal(assertHumanArtworkGate(temporary).canonical, 1, 'exact approved receipt enables governed mapping');
   write('lib/canonical-movement-artwork-assets.ts', mapping.replace(original.files.app.path, candidate.files.app.path));
   assert.throws(() => assertHumanArtworkGate(temporary), /correct identity/);
