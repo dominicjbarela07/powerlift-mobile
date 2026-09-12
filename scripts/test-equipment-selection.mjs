@@ -515,7 +515,7 @@ assert.match(
 );
 assert.match(
   routeSource,
-  /setIdentityPickerManufacturer\(identity\)[\s\S]*Which version are you using\?[\s\S]*MACHINE_EQUIPMENT_TYPES\.map[\s\S]*chooseEquipmentVariant\(variant\.key\)/,
+  /setIdentityPickerManufacturer\(identity\)[\s\S]*Which version are you using\?[\s\S]*equipmentFlowVariants\(identityPickerSubject\)[\s\S]*chooseEquipmentVariant\(variant\.key\)/,
   'DEV selection must move directly from manufacturer to the lightweight variant picker.',
 );
 assert.match(

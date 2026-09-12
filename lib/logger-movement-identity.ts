@@ -10,8 +10,12 @@ export type LoggerIdentityReference = EquipmentIdentityLike & {
   family?: string | null;
   primary_muscle_group?: string | null;
   secondary_muscle_groups?: string[] | null;
+  execution_family?: string | null;
+  requires_equipment_configuration?: boolean | null;
   material_parameters?: (NonNullable<EquipmentIdentityLike['material_parameters']> & {
     accessory_taxonomy?: {
+      execution_family?: string | null;
+      requires_equipment_configuration?: boolean | null;
       primary_muscle_group?: string | null;
       secondary_muscle_groups?: string[] | null;
     } | null;

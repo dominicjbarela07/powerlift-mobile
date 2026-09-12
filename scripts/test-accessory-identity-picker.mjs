@@ -7,7 +7,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const source = fs.readFileSync(path.join(here, '..', 'app', '(tabs)', 'workout', '[workoutId].tsx'), 'utf8');
 
 assert.match(source, /const identityPickerRequestRef = useRef\(0\)/, 'picker requests must have a monotonic sequence');
-assert.match(source, /requestId !== identityPickerRequestRef\.current/, 'stale picker responses must be ignored');
+assert.match(source, /requestId === identityPickerRequestRef\.current[\s\S]*identityPickerEntryRef\.current === entry[\s\S]*if \(!currentRequest\(\)\) return/, 'stale picker responses must match both request and exact entry ownership');
 assert.match(source, /identityPickerQuery\.trim\(\) \? 220 : 0/, 'typed picker searches must be debounced');
 assert.match(source, /Sets already logged keep their original equipment identity/, 'mid-session equipment changes must explain immutable prior sets');
 assert.doesNotMatch(source, /`\$\{row\.comparison_policy\.confidence\} confidence`/, 'internal confidence tiers must not appear in athlete picker copy');
@@ -38,7 +38,7 @@ assert.match(
 );
 assert.match(
   source,
-  /equipment-manufacturers[\s\S]*manufacturer_key:[\s\S]*equipment_type: equipmentVariant/,
+  /equipment-manufacturers[\s\S]*equipmentFlowWrite\(entry\.subject, identity\.manufacturer\?\.key \|\| 'other', equipmentVariant/,
   'live selection must use the manufacturer plus type production contract',
 );
 assert.match(
@@ -63,7 +63,7 @@ assert.doesNotMatch(
 );
 assert.match(
   source,
-  /Which version are you using\?[\s\S]*MACHINE_EQUIPMENT_TYPES\.map/,
+  /Which version are you using\?[\s\S]*equipmentFlowVariants\(identityPickerSubject\)/,
   'the second step must remain a lightweight variant list',
 );
 assert.match(

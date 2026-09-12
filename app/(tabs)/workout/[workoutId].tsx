@@ -340,10 +340,9 @@ import {
   equipmentPresentationLabel,
   equipmentPresentationParts,
 } from '@/lib/equipment-presentation';
-import {
-  MACHINE_EQUIPMENT_TYPES,
-  type MachineEquipmentType,
-} from '@/lib/machine-equipment';
+import { type MachineEquipmentType } from '@/lib/machine-equipment';
+import { equipmentFlowSubject, assertEquipmentFlowSubject, assertEquipmentResponseSubject,
+  equipmentFlowVariants, equipmentFlowWrite, type EquipmentFlowSubject } from '@/lib/equipment-flow-subject';
 import {
   accessoryRepeatDraft,
   coreRepeatDraft,
@@ -681,14 +680,6 @@ function itemLoadSemantics(item?: WorkoutItem | null): PerformedLoadSemantics {
     measurementType: identity?.measurement_type,
     loadingBehavior: item?.movement_history?.loading_behavior,
   };
-}
-
-function canonicalMovementIdentityId(item?: WorkoutItem | null): number | null {
-  const identity = item?.performed_canonical_movement_identity
-    || item?.effective_movement_identity
-    || item?.movement_identity
-    || null;
-  return identity?.id == null ? null : Number(identity.id);
 }
 
 function loggedSetText(log?: SetLog | null, unit: 'kg' | 'lb' = 'kg', item?: WorkoutItem | null) {
@@ -3011,6 +3002,9 @@ export default function WorkoutViewerScreen() {
   const [identityPickerManufacturer, setIdentityPickerManufacturer] =
     useState<GeneralMovementIdentity | null>(null);
   const identityPickerRequestRef = useRef(0);
+  const [identityPickerSubject, setIdentityPickerSubject] = useState<EquipmentFlowSubject | null>(null);
+  const identityPickerEntryRef = useRef<{ subject: EquipmentFlowSubject; scope: string } | null>(null);
+  const identityPickerSaveRef = useRef<object | null>(null);
   const [swapAccForm, setSwapAccForm] = useState({
     sets: '',
     rir: '',
@@ -3706,21 +3700,29 @@ export default function WorkoutViewerScreen() {
   };
 
   const loadIdentityPicker = useCallback(async (item: WorkoutItem, query = '') => {
+    const entry = identityPickerEntryRef.current;
+    if (!entry || entry.scope !== executionScopeRef.current) return;
     const requestId = ++identityPickerRequestRef.current;
+    const currentRequest = () => requestId === identityPickerRequestRef.current
+      && identityPickerEntryRef.current === entry && entry.scope === executionScopeRef.current;
     setIdentityPickerError(null);
-    const family = item.movement_identity?.family_id;
+    try { assertEquipmentFlowSubject(entry.subject, item); } catch (error: any) {
+      setIdentityPickerError(error.message); setIdentityPickerRows([]); return;
+    }
+    const effective = resolveLoggerMovementIdentity(item).effective;
+    const family = effective?.family_id;
     if (isIdealWorkoutDetailPreview) {
       const activeEquipment = activeEquipmentIdentity(item);
       const rows = orderEquipmentChoices(
         workoutDetailMachineIdentityChoices(
           query,
           family,
-          item.movement_identity?.family_display_name || item.movement,
-          canonicalMovementIdentityId(item),
+          effective?.family_display_name || entry.subject.displayName,
+          entry.subject.movementDefinitionId,
         ) as GeneralMovementIdentity[],
         activeEquipment?.id,
       );
-      if (requestId === identityPickerRequestRef.current) {
+      if (currentRequest()) {
         setIdentityPickerRows(rows);
         setIdentityPickerLoading(false);
       }
@@ -3733,7 +3735,8 @@ export default function WorkoutViewerScreen() {
         { method: 'GET', auth: true },
       );
       if (!response.ok || !response.json?.ok) throw new Error(response.json?.error || 'Could not load equipment choices.');
-      if (requestId !== identityPickerRequestRef.current) return;
+      if (!currentRequest()) return;
+      assertEquipmentResponseSubject(entry.subject, response.json);
       const needle = query.trim().toLowerCase();
       setIdentityPickerRows(orderEquipmentChoices(
         (response.json.items || []).filter((row: GeneralMovementIdentity) => (
@@ -3742,18 +3745,39 @@ export default function WorkoutViewerScreen() {
           || [
             row.manufacturer?.display_name,
             row.display_name,
-            item.movement,
+            entry.subject.displayName,
           ].filter(Boolean).join(' ').toLowerCase().includes(needle)
         )),
         activeEquipmentIdentity(item)?.id,
       ));
     } catch (error: any) {
-      if (requestId !== identityPickerRequestRef.current) return;
+      if (!currentRequest()) return;
+      setIdentityPickerRows([]);
       setIdentityPickerError(error?.message || 'Could not load equipment choices.');
     } finally {
-      if (requestId === identityPickerRequestRef.current) setIdentityPickerLoading(false);
+      if (currentRequest()) setIdentityPickerLoading(false);
     }
   }, [data?.athlete?.id, isIdealWorkoutDetailPreview, workoutId]);
+
+  useEffect(() => {
+    const entry = identityPickerEntryRef.current;
+    if (!entry) return;
+    const currentItem = data?.workout?.accessory_groups.flatMap(group => group.items)
+      .find(item => Number(item.id) === entry.subject.itemId);
+    try {
+      if (entry.scope !== executionScope) throw new Error('Session context changed. Reopen Equipment from the current Session.');
+      const subject = assertEquipmentFlowSubject(entry.subject, currentItem);
+      setIdentityPickerSubject(subject);
+      setIdentityPickerItem(currentItem || null);
+    } catch (error: any) {
+      identityPickerEntryRef.current = null;
+      identityPickerRequestRef.current += 1;
+      setIdentityPickerRows([]);
+      setIdentityPickerManufacturer(null);
+      setIdentityPickerLoading(false);
+      setIdentityPickerError(error.message);
+    }
+  }, [data, executionScope]);
 
   useEffect(() => {
     if (!identityPickerItem) {
@@ -3768,6 +3792,8 @@ export default function WorkoutViewerScreen() {
   }, [identityPickerItem, identityPickerQuery, loadIdentityPicker]);
 
   const closeIdentityPicker = () => {
+    identityPickerEntryRef.current = null;
+    setIdentityPickerSubject(null);
     identityPickerRequestRef.current += 1;
     Keyboard.dismiss();
     setIdentityPickerItem(null);
@@ -3806,95 +3832,114 @@ export default function WorkoutViewerScreen() {
     identity: GeneralMovementIdentity,
     equipmentVariant?: MachineEquipmentType,
   ) => {
-    if (!identityPickerItem || !workoutId) return;
+    const entry = identityPickerEntryRef.current;
+    if (!identityPickerItem || !workoutId || !entry || identityPickerSaveRef.current) return;
     const equipmentOwner = executionScope;
     const pickerItem = identityPickerItem;
     const continuation = identityPickerContinuation;
     const previousIdentityId = activeEquipmentIdentity(pickerItem)?.id ?? null;
+    identityPickerSaveRef.current = entry;
     setIdentityPickerLoading(true);
-    if (isIdealWorkoutDetailPreview) {
-      const itemId = Number(pickerItem.id);
-      const nextItem = applyWorkoutDetailMachineIdentity(
-        pickerItem,
-        Number(identity.id),
-        identity,
-      ) as WorkoutItem;
-      const nextPayload = data ? {
-        ...data,
+    try {
+      const currentItem = dataRef.current?.workout?.accessory_groups.flatMap(group => group.items)
+        .find(item => Number(item.id) === entry.subject.itemId);
+      assertEquipmentFlowSubject(entry.subject, currentItem);
+      assertEquipmentFlowSubject(entry.subject, pickerItem);
+      if (entry.scope !== equipmentOwner) throw new Error('Session context changed. Reopen Equipment.');
+      if (isIdealWorkoutDetailPreview) {
+        const itemId = Number(pickerItem.id);
+        const nextItem = applyWorkoutDetailMachineIdentity(
+          pickerItem,
+          Number(identity.id),
+          identity,
+        ) as WorkoutItem;
+        const nextPayload = data ? {
+          ...data,
+          workout: {
+            ...data.workout,
+            accessory_groups: data.workout.accessory_groups.map((group) => ({
+              ...group,
+              items: group.items.map((item) => (
+                Number(item.id) === itemId
+                  ? nextItem
+                  : item
+              )),
+            })),
+          },
+        } as WorkoutPayload : null;
+        if (nextPayload) setData(nextPayload);
+        rememberWorkoutDetailEquipmentSelection(workoutId, itemId, identity);
+        closeIdentityPicker();
+        setIdentityPickerLoading(false);
+        if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
+          showSetMutationNotice('Equipment updated');
+        }
+        resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
+        return;
+      }
+      const response = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${pickerItem.id}/performed-identity`, {
+        method: 'PUT',
+        auth: true,
+        body: {
+          ...(continuation.kind === 'evidence_correction' ? { intent: 'evidence_correction' } : {}),
+          ...equipmentFlowWrite(entry.subject, identity.manufacturer?.key || 'other', equipmentVariant as MachineEquipmentType),
+        },
+      });
+      if (executionScopeRef.current !== equipmentOwner || identityPickerEntryRef.current !== entry) return;
+      if (!response.ok || !response.json?.ok) {
+        setIdentityPickerError(response.json?.error || 'Could not save equipment choice.');
+        setIdentityPickerLoading(false);
+        return;
+      }
+      const latestPayload = dataRef.current;
+      const latestItem = latestPayload?.workout.accessory_groups.flatMap(group => group.items)
+        .find(item => Number(item.id) === entry.subject.itemId);
+      assertEquipmentFlowSubject(entry.subject, latestItem);
+      const nextItem = {
+        ...latestItem!,
+        performed_movement_identity:
+          response.json?.performed_movement_identity,
+      };
+      if (!nextItem.performed_movement_identity?.key?.startsWith('machine_equipment_')) {
+        throw new Error('The server did not return a supported equipment configuration. Refresh the Session.');
+      }
+      assertEquipmentFlowSubject(entry.subject, nextItem);
+      const nextPayload = latestPayload ? {
+        ...latestPayload,
         workout: {
-          ...data.workout,
-          accessory_groups: data.workout.accessory_groups.map((group) => ({
+          ...latestPayload.workout,
+          accessory_groups: latestPayload.workout.accessory_groups.map((group) => ({
             ...group,
             items: group.items.map((item) => (
-              Number(item.id) === itemId
+              Number(item.id) === Number(nextItem.id)
                 ? nextItem
                 : item
             )),
           })),
         },
       } as WorkoutPayload : null;
-      if (nextPayload) setData(nextPayload);
-      rememberWorkoutDetailEquipmentSelection(workoutId, itemId, identity);
+      if (nextPayload) { dataRef.current = nextPayload; setData(nextPayload); }
+      const refreshed = await fetchWorkout({ silent: true });
+      if (executionScopeRef.current !== equipmentOwner || identityPickerEntryRef.current !== entry) return;
+      if (!refreshed) throw new Error('Equipment was saved, but the Session could not refresh. Refresh before continuing to log.');
+      const confirmedItem = dataRef.current?.workout.accessory_groups.flatMap(group => group.items)
+        .find(item => Number(item.id) === entry.subject.itemId);
+      assertEquipmentFlowSubject(entry.subject, confirmedItem);
+      if (confirmedItem?.performed_movement_identity?.id !== nextItem.performed_movement_identity.id) {
+        throw new Error('The saved equipment could not be confirmed. Refresh the Session before logging.');
+      }
       closeIdentityPicker();
       setIdentityPickerLoading(false);
       if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
         showSetMutationNotice('Equipment updated');
       }
-      resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
-      return;
+      resumeAfterEquipmentSelection(confirmedItem!, continuation, dataRef.current || undefined);
+    } catch (error: any) {
+      if (identityPickerEntryRef.current === entry) setIdentityPickerError(error?.message || 'Could not save equipment choice.');
+    } finally {
+      if (identityPickerSaveRef.current === entry) identityPickerSaveRef.current = null;
+      if (identityPickerEntryRef.current === entry) setIdentityPickerLoading(false);
     }
-    const response = await fetchJson(`${API_BASE}/workouts/mobile/${workoutId}/items/${pickerItem.id}/performed-identity`, {
-      method: 'PUT',
-      auth: true,
-      body: equipmentVariant
-        ? {
-            ...(continuation.kind === 'evidence_correction'
-              ? { intent: 'evidence_correction' }
-              : {}),
-            manufacturer_key: identity.manufacturer?.key || 'other',
-            equipment_type: equipmentVariant,
-          }
-        : {
-            ...(continuation.kind === 'evidence_correction'
-              ? { intent: 'evidence_correction' }
-              : {}),
-            movement_definition_id: identity.id,
-          },
-    });
-    if (executionScopeRef.current !== equipmentOwner) return;
-    if (!response.ok || !response.json?.ok) {
-      setIdentityPickerError(response.json?.error || 'Could not save equipment choice.');
-      setIdentityPickerLoading(false);
-      return;
-    }
-    const nextItem = {
-      ...pickerItem,
-      performed_movement_identity:
-        response.json?.performed_movement_identity || identity,
-    };
-    const nextPayload = data ? {
-      ...data,
-      workout: {
-        ...data.workout,
-        accessory_groups: data.workout.accessory_groups.map((group) => ({
-          ...group,
-          items: group.items.map((item) => (
-            Number(item.id) === Number(nextItem.id)
-              ? nextItem
-              : item
-          )),
-        })),
-      },
-    } as WorkoutPayload : null;
-    if (nextPayload) setData(nextPayload);
-    closeIdentityPicker();
-    await fetchWorkout({ silent: true });
-    if (executionScopeRef.current !== equipmentOwner) return;
-    setIdentityPickerLoading(false);
-    if (previousIdentityId != null && Number(previousIdentityId) !== Number(identity.id)) {
-      showSetMutationNotice('Equipment updated');
-    }
-    resumeAfterEquipmentSelection(nextItem, continuation, nextPayload);
   };
 
   const choosePerformedIdentity = async (identity: GeneralMovementIdentity) => {
@@ -3927,6 +3972,10 @@ export default function WorkoutViewerScreen() {
     item: WorkoutItem,
     continuation: EquipmentSelectionContinuation = { kind: 'none' },
   ) => {
+    let subject: EquipmentFlowSubject;
+    try { subject = equipmentFlowSubject(item); } catch (error: any) {
+      Alert.alert('Equipment unavailable', error.message); return;
+    }
     const operation = continuation.kind === 'none'
       ? equipmentSelectionOperation({
           sessionStatus: data?.workout?.status,
@@ -3940,13 +3989,24 @@ export default function WorkoutViewerScreen() {
         : continuation
     );
     const open = () => {
+      if (executionScopeRef.current !== executionScope) return;
+      try {
+        const currentItem = dataRef.current?.workout?.accessory_groups.flatMap(group => group.items)
+          .find(candidate => Number(candidate.id) === subject.itemId);
+        subject = assertEquipmentFlowSubject(subject, currentItem);
+        item = currentItem!;
+      } catch (error: any) { Alert.alert('Equipment unavailable', error.message); return; }
+      identityPickerRequestRef.current += 1;
+      identityPickerEntryRef.current = { subject, scope: executionScope };
+      setIdentityPickerSubject(subject);
+      const effective = resolveLoggerMovementIdentity(item).effective;
       const initialRows = isIdealWorkoutDetailPreview
         ? orderEquipmentChoices(
             workoutDetailMachineIdentityChoices(
               '',
-              item.movement_identity?.family_id,
-              item.movement_identity?.family_display_name || item.movement,
-              canonicalMovementIdentityId(item),
+              effective?.family_id,
+              effective?.family_display_name || subject.displayName,
+              subject.movementDefinitionId,
             ) as GeneralMovementIdentity[],
             activeEquipmentIdentity(item)?.id,
           )
@@ -9892,7 +9952,7 @@ export default function WorkoutViewerScreen() {
                       : 'EQUIPMENT FOR'}
                   </Text>
                   <Text style={styles.equipmentPickerMovementTitle}>
-                    {simplifyMobileMovementName(identityPickerItem.movement) || 'Accessory'}
+                    {identityPickerSubject?.displayName || 'Movement unavailable'}
                   </Text>
                   <Text style={styles.equipmentPickerMovementMeta}>
                     {identityPickerContinuation.kind === 'evidence_correction'
@@ -9949,7 +10009,7 @@ export default function WorkoutViewerScreen() {
                       </Text>
                     ) : null}
                     <View style={styles.equipmentVariantOptions}>
-                      {MACHINE_EQUIPMENT_TYPES.map((variant) => {
+                      {(identityPickerSubject ? equipmentFlowVariants(identityPickerSubject) : []).map((variant) => {
                         const activeIdentity = activeEquipmentIdentity(identityPickerItem);
                         const selectedOther = (
                           identityPickerManufacturer.equipment_context?.option_kind === 'other'
@@ -9988,6 +10048,7 @@ export default function WorkoutViewerScreen() {
                               current && styles.identityPickerRowCurrent,
                             ]}
                             onPress={() => void chooseEquipmentVariant(variant.key)}
+                            disabled={identityPickerLoading || !identityPickerEntryRef.current}
                           >
                             <Text style={styles.equipmentVariantLabel}>
                               {variant.label}
