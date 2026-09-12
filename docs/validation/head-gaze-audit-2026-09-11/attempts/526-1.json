@@ -1,0 +1,11 @@
+{
+  "id": 526,
+  "attempt": 1,
+  "prompt": "Use case: precise-object-edit. Image 1 is ONLY the approved lighting/material/athlete style reference. Image 2 is the exact edit target. Correct ONLY the athlete's HEAD, NECK and GAZE to remove the cosmetic sideways or over-the-shoulder look. Head must follow the torso's actual forward direction, with natural neck alignment and no independent lateral rotation. Preserve all body pose, torso/shoulders/hip angles, exercise phase, hands and grip, equipment and plates, bench/supports, clothing, camera angle, subject size, framing, background, floor, dark photoreal studio and violet edge lighting from Image 2. Do not rotate the body or move the camera. No labels or overlays. Canonical MovementDefinition 526 Landmine Rotation. Landmine Rotation: head is wrongly craned far toward screen-left while torso and implement point screen-right. Correct head to face forward with sternum, chin neutral, eyes toward the bar-end in front of chest. No glance over left shoulder. Preserve exact torso rotation, planted feet, bar angle, hands and pivot.",
+  "reference_paths": [
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png",
+    "/Users/dominic/powerlifting_app_dev/powerlift_mobile/assets/images/movement-artwork/free-weight-v1/masters/landmine-rotation-v1.png"
+  ],
+  "path": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-f54e6119-1f70-4e1f-aa9e-d7f7bf785479.png",
+  "tool": "built-in image_gen"
+}

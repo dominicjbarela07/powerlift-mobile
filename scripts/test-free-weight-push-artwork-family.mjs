@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { reviewedFreeWeightFiles } from './reviewed-free-weight-corrections.mjs';
 import {
   CANONICAL_ACCESSORY_ARTWORK_IDENTITIES,
   resolveCanonicalMovementArtwork,
@@ -18,7 +19,7 @@ const resolve = (identity) => resolveCanonicalMovementArtwork({ kind: 'accessory
 assert.equal(audit.count, 51);
 assert.deepEqual(audit.counts_by_primary, { chest: 17, front_delts: 12, side_delts: 10, triceps: 12 });
 const pushPrimaries = new Set(Object.keys(audit.counts_by_primary));
-// This historical batch remains immutable as the complete family grows.
+// Historical identity membership stays fixed; exact reviewed head corrections retain provenance.
 for (const row of audit.qualifying) {
   assert.deepEqual(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], { key: row.key, primary: row.primary_muscle_group });
 }
@@ -56,7 +57,7 @@ for (const row of audit.qualifying) {
   assert.ok(asset?.files);
   uniqueAppFiles.add(asset.files.app.path);
   for (const role of ['master','app','thumbnail']) {
-    const file = asset.files[role];
+    const file = reviewedFreeWeightFiles(asset)[role];
     const bytes = read(file.path);
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), file.sha256);
     assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)], file.dimensions);

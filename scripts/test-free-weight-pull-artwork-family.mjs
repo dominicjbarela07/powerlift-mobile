@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { reviewedFreeWeightFiles } from './reviewed-free-weight-corrections.mjs';
 import {
   CANONICAL_ACCESSORY_ARTWORK_IDENTITIES,
   resolveCanonicalMovementArtwork,
@@ -20,7 +21,7 @@ assert.equal(audit.candidate_count, 49);
 assert.equal(audit.mid_back_taxonomy_present, false);
 assert.deepEqual(audit.counts_by_primary, { rear_delts: 9, lats: 10, upper_back: 16, traps: 9, lower_back: 3 });
 const pullPrimaries = new Set(Object.keys(audit.counts_by_primary));
-// This historical batch remains immutable as the complete family grows.
+// Historical identity membership stays fixed; exact reviewed head corrections retain provenance.
 for (const row of audit.qualifying) {
   assert.deepEqual(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], { key: row.key, primary: row.primary_muscle_group });
 }
@@ -58,7 +59,7 @@ for (const row of audit.qualifying) {
   assert.ok(asset?.files);
   uniqueAppFiles.add(asset.files.app.path);
   for (const role of ['master','app','thumbnail']) {
-    const file = asset.files[role];
+    const file = reviewedFreeWeightFiles(asset)[role];
     const bytes = read(file.path);
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), file.sha256);
     assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)], file.dimensions);
@@ -110,4 +111,4 @@ for (const asset of manifest.movements) {
   const attempt = JSON.parse(read(`docs/validation/free-weight-pull-family-2026-09-11/attempts/${asset.id}-${asset.attempt}.json`));
   assert.ok(attempt.reference_paths[0].endsWith('/masters/dumbbell-incline-bench-press-v1.png'), 'every accepted asset uses the original master first');
 }
-console.log('[free-weight-pull-family] 47 immutable exact assets, 98 prior mappings, 49 real search DTOs, mixed push/pull Session, fail-closed swaps and historical scope passed');
+console.log('[free-weight-pull-family] 47 exact assets with reviewed correction provenance, 98 prior mappings, 49 real search DTOs, mixed push/pull Session, fail-closed swaps and historical scope passed');

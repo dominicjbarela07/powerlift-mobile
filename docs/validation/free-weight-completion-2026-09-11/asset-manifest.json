@@ -6,6 +6,7 @@
   "approved": 198,
   "retained": 98,
   "new": 100,
+  "reviewed_head_gaze_corrections": 22,
   "uncovered_confirmed_ids": [],
   "taxonomy_product_blocked": [
     {
@@ -1000,8 +1001,8 @@
             1254,
             1254
           ],
-          "bytes": 1886695,
-          "sha256": "5e8457cee44350d8088478fe0f0485babd28a511ae4e05c52895af8358d98854"
+          "bytes": 1803001,
+          "sha256": "816cb8157f5b2a26e9e05cd5ffbb3ecc934e7b5da37c24e6c511acd2f904a158"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/single-arm-preacher-curl-v1.png",
@@ -1009,8 +1010,8 @@
             512,
             512
           ],
-          "bytes": 318088,
-          "sha256": "1f4519cce0ba7621055043c93aba0aaf5589c47b756a612e82125dcdd45b9f99"
+          "bytes": 311943,
+          "sha256": "20817ca982bd645e6d1f8a4f58641256b35f9f4796cb84eb5f34b34d9bde2019"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/single-arm-preacher-curl-v1-thumb.png",
@@ -1018,12 +1019,13 @@
             192,
             192
           ],
-          "bytes": 46805,
-          "sha256": "53c5f60a8cf4a58f7b94ecb1942f0c0eab88e3e3486f81452cfb40c22c41491d"
+          "bytes": 46692,
+          "sha256": "0b50946cb1a9134e821f74625ae4727b172a81aed911320b9eca37cda3d08a7c"
         }
       },
       "attempt": 1,
-      "validation_note": "Single working arm supported at preacher pad, supinated dumbbell curl, opposite empty hand on pad; one implement matches unilateral definition. Full seated body, support structure and shoes intact."
+      "validation_note": "Reviewed head/gaze correction: Head centered with sternum, gaze slightly down ahead; biceps-side head turn removed. Preacher pad, curling arm and support hand preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/259-1.json"
     },
     {
       "id": 260,
@@ -2960,8 +2962,8 @@
             1254,
             1254
           ],
-          "bytes": 1723254,
-          "sha256": "61612925fba90ad5e3bcdec79f6c095054c54b059eb280f34fde20dc8b29c6b9"
+          "bytes": 1670496,
+          "sha256": "e789ff326e8cf6920b1d87e7e950e73177ecf6cb16c6918638c5ddadabfb3f96"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-wrist-curl-v1.png",
@@ -2969,8 +2971,8 @@
             512,
             512
           ],
-          "bytes": 289702,
-          "sha256": "bdb3fdfe99b5084758edd13ae7b21be9301f82b66ecfbf979c89be6f1cdcabfa"
+          "bytes": 286363,
+          "sha256": "2f65a8dca94a9f75e20ed2f1241eb3b333ba104bf23c72c85ed65bedeacfaee0"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-wrist-curl-v1-thumb.png",
@@ -2978,12 +2980,13 @@
             192,
             192
           ],
-          "bytes": 41118,
-          "sha256": "149192dfb4eb804bc24c86e0dc2cdccb66eaaf44f8c1afddb1d74d9750136832"
+          "bytes": 40999,
+          "sha256": "7ed821c040fc771018461b5d2a7853203847757d07b7271a2c1a17b541f921be"
         }
       },
       "attempt": 1,
-      "validation_note": "Rear view clearly places straight bar behind thighs, long elbows and flexed wrists; visible palms/closed fingers support bar coherently. No front-bar shrug confusion or cropped implements."
+      "validation_note": "Reviewed head/gaze correction: Rear skull and nape now follow torso; left over-shoulder look removed. Behind-back wrist/bar position and body preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/327-1.json"
     },
     {
       "id": 328,
@@ -3490,8 +3493,8 @@
             1254,
             1254
           ],
-          "bytes": 1681696,
-          "sha256": "17b85ffce34b29d607f8a7706f7c1014701ee08bf3a77881f0029276366c7306"
+          "bytes": 1636775,
+          "sha256": "93aaec01db844c2442e22b5e3c970dad4c3690a0450ab5ab3ed9a53c855bcb56"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/ulnar-deviation-v1.png",
@@ -3499,8 +3502,8 @@
             512,
             512
           ],
-          "bytes": 283031,
-          "sha256": "5194b490327e7ff8afb67dbfd30ba49fcc7f5bd5bf053285822e07e6de0fdc93"
+          "bytes": 273325,
+          "sha256": "2febb81d209be664237444ec8183796d8955e4a90f7eedaf77e1c5cae11ae025"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/ulnar-deviation-v1-thumb.png",
@@ -3508,12 +3511,13 @@
             192,
             192
           ],
-          "bytes": 39957,
-          "sha256": "ec3222a767c67496449853385d010498c444dc4de71167455a00bfea2c12f00a"
+          "bytes": 39245,
+          "sha256": "fcb57afd3891103ac6066f3be301d5b2528699e816af28bdcdd59c42e230f5e2"
         }
       },
       "attempt": 2,
-      "validation_note": "Both pinky-side weighted tips now point backward and upward, with long elbows and visible matching ulnar deviation. Opposing-direction error fixed; complete athlete and implements."
+      "validation_note": "Reviewed head/gaze correction: Rear skull follows torso; right profile turn removed. Asymmetric weighted levers, wrist positions, body and camera preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/337-1.json"
     },
     {
       "id": 79,
@@ -4151,8 +4155,8 @@
             1254,
             1254
           ],
-          "bytes": 1738116,
-          "sha256": "061be91e96377ec4f2b1912e809be58906ce67f19ae79a0270b7e71836e9de1d"
+          "bytes": 1672791,
+          "sha256": "838523d49abb58516fab91d3aec158ed5fb862c718e713d4f4b2c24c33cae821"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/bradford-press-v1.png",
@@ -4160,8 +4164,8 @@
             512,
             512
           ],
-          "bytes": 293889,
-          "sha256": "d4bf5707833b4fc7526ba8e48e544895e94bfbd40d0b1396bfa135dc9a7bb3e3"
+          "bytes": 282631,
+          "sha256": "a363234c1d75cb60b1a04c7f7ef15cbf489072a58aa8af63f62c8ba4013f16b8"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/bradford-press-v1-thumb.png",
@@ -4169,11 +4173,12 @@
             192,
             192
           ],
-          "bytes": 42333,
-          "sha256": "24fb95a520595af6eef0dff20fdce1778180f08335795519f2925b961a3620a4"
+          "bytes": 41826,
+          "sha256": "f69340b1488fd577920325cc4d00cf92137f4873c5c0e73eb4fd5b8041943dbb"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Rear three-quarter shows bar just above/behind crown with elbows bent, not overhead lockout; representative Bradford transfer phase. Entire equipment and figure fit."
+      "validation_note": "Reviewed head/gaze correction: Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/90-1.json"
     },
     {
       "id": 418,
@@ -6741,8 +6746,8 @@
             1254,
             1254
           ],
-          "bytes": 1762822,
-          "sha256": "0af3944950e786efec2af3083e9c5da00361da560ff47dd4656c275958f9cd4a"
+          "bytes": 1676053,
+          "sha256": "1021a59b7f73414cb5f911b142c105f51ccec9341d87c604e75d901a22e723b0"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/landmine-rotation-v1.png",
@@ -6750,8 +6755,8 @@
             512,
             512
           ],
-          "bytes": 291428,
-          "sha256": "2f8530a78526cc96fc57002af4bd182af0bf6abe843943ddd0670407eb0efa99"
+          "bytes": 285339,
+          "sha256": "7cee7fafaf39e66cc8156e041fa4b0c29628b095ca1ac711af611733ebe27d87"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/landmine-rotation-v1-thumb.png",
@@ -6759,12 +6764,13 @@
             192,
             192
           ],
-          "bytes": 42178,
-          "sha256": "f64feb9c769c1659cbaa329450514e888052d9ba718b559857a9303d34b5714f"
+          "bytes": 41699,
+          "sha256": "70c22b3550c821e776951f173ad3a05887a772f96b284630770227d225c68957"
         }
       },
       "attempt": 1,
-      "validation_note": "Continuous bar from floor pivot through one loaded sleeve to two-handed end grip; offset trunk/arm position identifies landmine rotation. No cable or floating anchor."
+      "validation_note": "Reviewed head/gaze correction: Head now follows chest and gaze reaches the bar end; opposite-side over-shoulder look removed. Torso rotation, planted stance, landmine and hands preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/526-1.json"
     },
     {
       "id": 527,
@@ -6796,8 +6802,8 @@
             1254,
             1254
           ],
-          "bytes": 1989441,
-          "sha256": "597ed2e4c31c0a8586124c60de1e5ea4850a71a70b44086d14487e2a254fa878"
+          "bytes": 1859056,
+          "sha256": "531bf6460b2e1e896af1fb8cc9e38a21a8eebd45c61690f988e0ef0d1e461103"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/russian-twist-with-weight-v1.png",
@@ -6805,8 +6811,8 @@
             512,
             512
           ],
-          "bytes": 329748,
-          "sha256": "650181389ffb429c4a4e0e67752ec2abfcaf33e131c57da1f7565b1d47857828"
+          "bytes": 318418,
+          "sha256": "7576cf1734cbe0269499314cd9ce25142d68b9bfbc6cf2905e2d5432eb06338f"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/russian-twist-with-weight-v1-thumb.png",
@@ -6814,12 +6820,13 @@
             192,
             192
           ],
-          "bytes": 48124,
-          "sha256": "6d67b77a1affc44d36d5782b543880bd7169a385909194bb505ad01c3e98759f"
+          "bytes": 48154,
+          "sha256": "e52e934598de1e36c5f679b131cde71a1bf21713bc5f409f278bbb502d87c9eb"
         }
       },
       "attempt": 1,
-      "validation_note": "Plate held beside rotated trunk with reclined torso and grounded bent-leg base identifies Russian twist. Coherent plate handles and two hands."
+      "validation_note": "Reviewed head/gaze correction: Head follows rotated torso with gaze toward plate; extra shoulderward neck rotation removed. Twist, plate placement, legs and mat preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/527-1.json"
     },
     {
       "id": 528,
@@ -6963,8 +6970,8 @@
             1254,
             1254
           ],
-          "bytes": 1928246,
-          "sha256": "ad0bc25b344e7bf7322e2e2c476c7a4ff796e65500e1edaa279a77e0d9050c26"
+          "bytes": 1795980,
+          "sha256": "f9d3c1db5e0d20ba05456e62c120380737c255d69b709850da6e6e89842cc2a8"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/high-bar-squat-v1.png",
@@ -6972,8 +6979,8 @@
             512,
             512
           ],
-          "bytes": 323379,
-          "sha256": "4ad5d36ad519014ec8d1df1533f9ba17147b6dbe0dd477cf478ae1b8f42c3fab"
+          "bytes": 311020,
+          "sha256": "c23d19808e3b43842d636a8b7c4691ace17266c3768557b4cb1b10c4e21f85ea"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/high-bar-squat-v1-thumb.png",
@@ -6981,12 +6988,13 @@
             192,
             192
           ],
-          "bytes": 47113,
-          "sha256": "b6ef3ee05b70e09603b9d0f4b81a8011f4eb60eac63c329ed5682820305c6c7c"
+          "bytes": 46784,
+          "sha256": "83f43dfe0eef6c0b7f0b55e4105191a465a35fe20795c465644f6ad48ffecbd4"
         }
       },
-      "attempt": 1,
-      "validation_note": "Rear three-quarter view exposes high trapezius bar placement, full squat depth and two planted feet. Symmetric intact bar/plates; bar margins tight but complete and away from rounded frame corners."
+      "attempt": 2,
+      "validation_note": "Reviewed head/gaze correction: User-rejected squat head turn removed; rear head aligned with torso. Exact high-bar rack, squat depth, plates, grip, stance and scene preserved.",
+      "gaze_correction_receipt": "docs/validation/free-weight-completion-2026-09-11/attempts/349-2.json"
     },
     {
       "id": 350,
@@ -7579,8 +7587,8 @@
             1254,
             1254
           ],
-          "bytes": 1780899,
-          "sha256": "6947673cb3d119ceb80a35c8cde26e6b38946c909d1ab91c5803a12b81727326"
+          "bytes": 1672778,
+          "sha256": "c246c60cd1ca004056e93734dde3cd77c932cc0726aff2e18e9bb336b2504564"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/lateral-lunge-v1.png",
@@ -7588,8 +7596,8 @@
             512,
             512
           ],
-          "bytes": 298067,
-          "sha256": "835db0d364fabac63286410dde5ad3edf2141c4e8bd91ac3ed052908bf8274ce"
+          "bytes": 289885,
+          "sha256": "b11a64b3eac71d0d427f8d872fde6f632b20e76c65fcc379dc2c82bb887a4e5a"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/lateral-lunge-v1-thumb.png",
@@ -7597,12 +7605,13 @@
             192,
             192
           ],
-          "bytes": 43558,
-          "sha256": "448ebc0c8d946405c5c19249b99a93e025fe92d4a2b328f2bf37d6260b33a7c1"
+          "bytes": 42870,
+          "sha256": "fc9b2fb62f84af3c5dd437b08ab1e66c5b87bc50270872456a8bba4011929662"
         }
       },
       "attempt": 1,
-      "validation_note": "Wide lateral stance, flexed working knee and straight opposite leg with both soles grounded. Single goblet dumbbell and full shoes distinguish the lateral movement."
+      "validation_note": "Reviewed head/gaze correction: Head and eyes now centered with chest; lateral gaze removed. Lunge and goblet dumbbell preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/360-1.json"
     },
     {
       "id": 361,
@@ -8128,8 +8137,8 @@
             1254,
             1254
           ],
-          "bytes": 1928806,
-          "sha256": "74a4a5409dedda91867406f9780ac4ec4c963c5a1074963606b0d78c26d624a2"
+          "bytes": 1776381,
+          "sha256": "03dae1f84f1c6f765d63b4484de959dbd636adfa789926b3f4fd342d2b16d576"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1.png",
@@ -8137,8 +8146,8 @@
             512,
             512
           ],
-          "bytes": 327462,
-          "sha256": "6d817581efc1df829338301083f6aa71da64ca1b0137d90a271087c6b4d1832a"
+          "bytes": 308605,
+          "sha256": "8897738757dec069e3ae59f4d77073f085711c0b14b6d2f3f626552f11e5e733"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/rear-delt-barbell-row-v1-thumb.png",
@@ -8146,11 +8155,12 @@
             192,
             192
           ],
-          "bytes": 47929,
-          "sha256": "a3a9cb3a6278c2a36749d76c86842c73362e51b86568d637a336c15d8bd395dd"
+          "bytes": 46940,
+          "sha256": "4b23f645e10ec6a69218b85c81823c81462543b73bb79322b37e758d89adcf2b"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Wide pronated barbell row: laterally flared bent elbows, hinged torso, continuous shaft passing in front of body with matching plates, clear overhead rear shoulder plane. Entire bar/figure retained. Neutral studio/materials match original."
+      "validation_note": "Reviewed head/gaze correction: Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/131-1.json"
     },
     {
       "id": 132,
@@ -8291,8 +8301,8 @@
             1254,
             1254
           ],
-          "bytes": 1779825,
-          "sha256": "4e5744989ab4c004192aade4322f1049bc8b4063d5e99e289be71618db560cfc"
+          "bytes": 1694996,
+          "sha256": "530a514964f3810d7c8c74b861d99f5475cae92592229bd5d305167ba5ff6d8c"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1.png",
@@ -8300,8 +8310,8 @@
             512,
             512
           ],
-          "bytes": 301203,
-          "sha256": "8e5c58a227945b6941c69f9ab2c7511477a0dddb5452989d5694ae5817e6fc0a"
+          "bytes": 292945,
+          "sha256": "8fdac75b24d98fa01029add964a32e9970970a70236cf5f82a67e095e3671c23"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-archer-row-v1-thumb.png",
@@ -8309,11 +8319,12 @@
             192,
             192
           ],
-          "bytes": 43828,
-          "sha256": "ee03e84a8b65658015adc1909b549d117de828ca6803819cec0e4833b9c0f3ad"
+          "bytes": 43527,
+          "sha256": "05ca0ca9734bc1cb3a63cc84abb6c6f6e86bd5f5639e1b0443459040d3fd1cea"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Rotating plank archer row shows two grounded feet, supporting flat palm, open torso and one dumbbell beside ribs; natural wrist/shoulder geometry and complete silhouette. Stored bilateral default disclosed, without rewriting canonical metadata."
+      "validation_note": "Reviewed head/gaze correction: Neck follows rotated plank torso and gaze reaches floor ahead; backward shoulder glance removed. Archer torso rotation and row mechanics preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/150-1.json"
     },
     {
       "id": 560,
@@ -8456,8 +8467,8 @@
             1254,
             1254
           ],
-          "bytes": 1726634,
-          "sha256": "84311199e49b4f48a3ce9b9d6dc3f413d535c1f191559da3f9d1c83e4b6ef796"
+          "bytes": 1644968,
+          "sha256": "674a6ba729e231c332e19d9a1a0282f87bbdf1fb65e6239f873f84f2c57f929b"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-lateral-raise-v1.png",
@@ -8465,8 +8476,8 @@
             512,
             512
           ],
-          "bytes": 288277,
-          "sha256": "90f88f974f103b3e78c0d7c8096c66234abdaf0476c3532fbabd4ea8a8e5b7cf"
+          "bytes": 280286,
+          "sha256": "b183fe0f50fef1ecd4ba105c25177bb414e2eed1fe1d0f11d155c4227936c3fd"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-lateral-raise-v1-thumb.png",
@@ -8474,11 +8485,12 @@
             192,
             192
           ],
-          "bytes": 41118,
-          "sha256": "46f07718b07b8c665db3d502c01c8995d5979b4110c1d0301cd5490b541fa326"
+          "bytes": 41033,
+          "sha256": "5dc653f57582ca53280e4456d8714e29021cfcbe39b10159cba2ed3dd25c8705"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Full standing T silhouette, soft elbows, pronated/neutral wrist rotation and two intact light dumbbells; lateral rather than forward arm plane."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/103-1.json"
     },
     {
       "id": 104,
@@ -8511,8 +8523,8 @@
             1254,
             1254
           ],
-          "bytes": 1793119,
-          "sha256": "70c1933877e4948dc319c503bb5c7ced1da97cbf5e6b1b1d643a21495e1fdf8e"
+          "bytes": 1739220,
+          "sha256": "2f7cff73715397ca286d208d2c3454474d477223024bfb8cd52330e0b73476d7"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-lateral-raise-v1.png",
@@ -8520,8 +8532,8 @@
             512,
             512
           ],
-          "bytes": 304424,
-          "sha256": "4407aee41bbf94e573bb8687bf2844690aeffe9e20df6e5eca34fc71b25750ae"
+          "bytes": 298029,
+          "sha256": "a965e62195624d6b7f2f1b183dce31f620af9b4425f0838911729ea42e6f37dc"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/seated-dumbbell-lateral-raise-v1-thumb.png",
@@ -8529,11 +8541,12 @@
             192,
             192
           ],
-          "bytes": 45052,
-          "sha256": "8540893ec99dd9549193d1b75e2e2c68481654455a6d0c8859fd2f2cca3c71bc"
+          "bytes": 44735,
+          "sha256": "c2e2307a07f3f76f6cf17a3ce77161107e2921fd62fdd85848135bb61c58303f"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Upright seat contact, planted feet and wide lateral arms distinguish from standing and pressing; complete flat bench and both weights."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/104-1.json"
     },
     {
       "id": 105,
@@ -8621,8 +8634,8 @@
             1254,
             1254
           ],
-          "bytes": 1784958,
-          "sha256": "73cd9fbb19863c6980a612befa1ee05737c22643d63bfef95bd0425928000c6d"
+          "bytes": 1679025,
+          "sha256": "a64dc7a837aa4c1f5ab55584d807578e1c063879202e8da29c6cdcc1c4196c83"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/lean-away-dumbbell-lateral-raise-v1.png",
@@ -8630,8 +8643,8 @@
             512,
             512
           ],
-          "bytes": 298553,
-          "sha256": "00e938c0f3467354b329558101076e75b0c357c3bf7a5abaec89b3cfa88ed08b"
+          "bytes": 287300,
+          "sha256": "b77727cdc1bf2b6faa3865290211fdc62c94b465cb97cc44e291fe8533577731"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/lean-away-dumbbell-lateral-raise-v1-thumb.png",
@@ -8639,11 +8652,12 @@
             192,
             192
           ],
-          "bytes": 42788,
-          "sha256": "78368b6dc879412ae4f7e10242e53b571a289f1a46826b1abffd50fdb847f6d9"
+          "bytes": 42680,
+          "sha256": "ca13bcfa40220411e9022987b9897384ec19a47ea7b8c39d02fcdabd429a8bc6"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Feet now beside support, rigid body inclines away, supporting arm extended toward post, one free dumbbell lateral. Full capped post and base retained."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/106-1.json"
     },
     {
       "id": 107,
@@ -8676,8 +8690,8 @@
             1254,
             1254
           ],
-          "bytes": 1775048,
-          "sha256": "3042599f0fbbca22620ab478f5680e0f86d998a9ba8501729f4654ddf4df4634"
+          "bytes": 1702118,
+          "sha256": "28f28781347578cce2e0f04740eb0b3db27bf83a87f1841b23c27058206f567b"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/lying-dumbbell-lateral-raise-v1.png",
@@ -8685,8 +8699,8 @@
             512,
             512
           ],
-          "bytes": 300064,
-          "sha256": "df6547c4aea7a03f1d8d88cf27105dc0988116be702eefd11519db583b62c9e9"
+          "bytes": 294776,
+          "sha256": "6f29759ba8362f6a37f83b2fe50978db5f3e393ae90c6fac1f4e55c55f2a1ea7"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/lying-dumbbell-lateral-raise-v1-thumb.png",
@@ -8694,11 +8708,12 @@
             192,
             192
           ],
-          "bytes": 43348,
-          "sha256": "e0dbb661615dc564ad10fc7f0d7a010b7578c58bdde021251a3585457961a497"
+          "bytes": 43993,
+          "sha256": "964c2275e4f435c6f2520c734ad7f7cfeb898746ce13e1a6d4e9fa4c27b897fb"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Side-lying on horizontal bench, stacked legs and supported lower elbow, one raised upper arm in lateral plane. Four limbs, grounded support and full shoe edges."
+      "validation_note": "Reviewed head/gaze correction: Side-lying head faces in front of chest; upward side glance removed. Supporting hand, raised dumbbell and bench contact preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/107-1.json"
     },
     {
       "id": 108,
@@ -8786,8 +8801,8 @@
             1254,
             1254
           ],
-          "bytes": 1789422,
-          "sha256": "63a4a8d9df2aa035786e14a7ff01614a1a4fe48c0f96d7a6a4152621abd6b002"
+          "bytes": 1710345,
+          "sha256": "67f8d053a5ee5aed0e7417c7a774bb8cccdd09a980736d149ee4c77b0001c218"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/partial-dumbbell-lateral-raise-v1.png",
@@ -8795,8 +8810,8 @@
             512,
             512
           ],
-          "bytes": 299611,
-          "sha256": "b008b6d7ff97accafa172b9d21fea07ab1003022bddd02ba98635ddd86709377"
+          "bytes": 295871,
+          "sha256": "b330af1559880c7e73a6459a3ecf21be0185d422e3e96e32c7117306342a4717"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/partial-dumbbell-lateral-raise-v1-thumb.png",
@@ -8804,11 +8819,12 @@
             192,
             192
           ],
-          "bytes": 42915,
-          "sha256": "e58c5007032ba5be079496c6ba9b8b4d332ae795b76784add9b5284c5de2fff9"
+          "bytes": 43234,
+          "sha256": "4446f37245857641fa457a9e65f9b202d147ed1f5ce7261e031da6a57fb2c146"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Controlled low partial abduction with hands below ribs, not shoulder-height full raise; intact bilateral dumbbells, relaxed shoulder position, complete standing figure."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/109-1.json"
     },
     {
       "id": 110,
@@ -8841,8 +8857,8 @@
             1254,
             1254
           ],
-          "bytes": 1641424,
-          "sha256": "32f10d8f6c78de826a4c7676aca11c605168e50bebaf01f0380e40d6b60e1974"
+          "bytes": 1610401,
+          "sha256": "1a65efc655fb68eda8ee2c398727fa89d5ed868ebf737a5c535e127325bc8d6f"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/lu-raise-v1.png",
@@ -8850,8 +8866,8 @@
             512,
             512
           ],
-          "bytes": 283315,
-          "sha256": "b0a59f9960fb40e98e68a417e5e15f64098e91430b8f8f7e768bcc77554defce"
+          "bytes": 282570,
+          "sha256": "95c94c650a49d64932fedb821c694718fb15123aee3bd9ddc5733059560ef2ce"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/lu-raise-v1-thumb.png",
@@ -8859,11 +8875,12 @@
             192,
             192
           ],
-          "bytes": 41353,
-          "sha256": "8a45e8b475e77e9152dae0c00a89501c38aa5f39299b384a02df593302dd8143"
+          "bytes": 41713,
+          "sha256": "729eed7060b739fce79572dd8c777c0844547f2894a3614e3be6f3ee5c4bb28f"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Both plate surfaces now have no letters or numbers; wide overhead lateral arc, full feet/hands, consistent original studio treatment."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/110-1.json"
     },
     {
       "id": 111,
@@ -8896,8 +8913,8 @@
             1254,
             1254
           ],
-          "bytes": 1735154,
-          "sha256": "75fd2e0429c0653742c85d33ea3c01cc16511bc102af2f330e681de888b45965"
+          "bytes": 1646862,
+          "sha256": "52946906b929582b438b72d490359c00850238dd1e2df3fd67be6457e1e79789"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-upright-row-v1.png",
@@ -8905,8 +8922,8 @@
             512,
             512
           ],
-          "bytes": 287857,
-          "sha256": "da40fbc4e02c7ca1b295042a7b9fa8bb253d974e65686e043f23892b7bb7fd57"
+          "bytes": 281674,
+          "sha256": "546a344f38461de65162c998055a9c07ffd67e7623679421cbfd09ffbfc65961"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/dumbbell-upright-row-v1-thumb.png",
@@ -8914,11 +8931,12 @@
             192,
             192
           ],
-          "bytes": 40680,
-          "sha256": "6653cceb4755ce6bca331c226bb41a3b986ac2156b145b2a2679e3b9684269e9"
+          "bytes": 41249,
+          "sha256": "5a612dd149cf6ae12c13ef8e222a995eb7ac5b2f449e3896cb15e01a1c4da3f2"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Two distinct dumbbells close to lower chest, wrists below bent outward/upward elbows; clear upright-row mechanics and full body."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/111-1.json"
     },
     {
       "id": 112,
@@ -8951,8 +8969,8 @@
             1254,
             1254
           ],
-          "bytes": 1754083,
-          "sha256": "49149fd56e16b7a4de7ed98b1365b1d0ec4cf1b12ec81f1bd2eac7b841b54e6e"
+          "bytes": 1666453,
+          "sha256": "8068777ce78ab62fd305d35021110a54f40fc4ec3661d3818050bd34bfdf08b4"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-barbell-upright-row-v1.png",
@@ -8960,8 +8978,8 @@
             512,
             512
           ],
-          "bytes": 294054,
-          "sha256": "75d97966a1b5e5028dd2752fc13c63630a2aa1209691295071e4e5fa26c7c5f6"
+          "bytes": 288218,
+          "sha256": "d33e25a67a9de4da0b24f6265f20151383bb7ac6e69f968fc6fb0df234419a54"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/wide-grip-barbell-upright-row-v1-thumb.png",
@@ -8969,11 +8987,12 @@
             192,
             192
           ],
-          "bytes": 42724,
-          "sha256": "1e071b8b527d5d70709d7f2826a960e94e55058d97adf81d87b8f717c673c1c7"
+          "bytes": 42356,
+          "sha256": "341afcaa5937a018a9b7f25826d253b1b9e1941a6973d079ae3d6cbecd63085c"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Wide pronated grip outside shoulder line, bar close to torso and elbows above wrists; symmetric light loading and complete bar/feet."
+      "validation_note": "Reviewed head/gaze correction: Rightward posed gaze removed; head now faces with sternum. Original lift, support, equipment, framing and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/112-1.json"
     },
     {
       "id": 234,
@@ -9171,8 +9190,8 @@
             1254,
             1254
           ],
-          "bytes": 1787889,
-          "sha256": "b0356f81e59b743452a0ded87b74bde6cb8e1d6fcbabbd63cbeeabc7b58c1901"
+          "bytes": 1711225,
+          "sha256": "85a673acf58ccb94ebba20c7f8ce4cd32ce5d736da6322c4997361f7d1adad29"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1.png",
@@ -9180,8 +9199,8 @@
             512,
             512
           ],
-          "bytes": 303137,
-          "sha256": "cbff2737f86882ba5f2d3f5d3588abbf0408201c6b14d94bb6c532d522ecde16"
+          "bytes": 294650,
+          "sha256": "ba146775280345fa038d2a32f1be5a090ec064cb306aad1f0ec88a1c729de1c8"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/behind-the-back-barbell-shrug-v1-thumb.png",
@@ -9189,11 +9208,12 @@
             192,
             192
           ],
-          "bytes": 43427,
-          "sha256": "d453757ad81a0ace961c05a7ef89f964efa10cdfbd40168a5eb2182b23612425"
+          "bytes": 43508,
+          "sha256": "12c79f8016ef7703f4c70c717fa408a298ba6869429a4bf11aee9e4ec634c620"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Rear view exposes bar behind thighs and elevated shoulders with straight arms. Continuous shaft, symmetric plates and real grips distinguish behind-back shrug. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+      "validation_note": "Reviewed head/gaze correction: Back of head now follows the torso; over-shoulder face removed. Original implement, hands, stance, camera and lighting preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/237-1.json"
     },
     {
       "id": 238,
@@ -9391,8 +9411,8 @@
             1254,
             1254
           ],
-          "bytes": 1871055,
-          "sha256": "5b55df9837388d179f20202b90fc295cfea6e0e5629b42aaf9cc32f12a722d88"
+          "bytes": 1786312,
+          "sha256": "a315aa8761dbd3dec86bc52c66694304fdba1a8d2d7abe788d34e4b0734f3535"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1.png",
@@ -9400,8 +9420,8 @@
             512,
             512
           ],
-          "bytes": 317984,
-          "sha256": "2163833ed9f7d4dee6d8f12b7dd4b6a8198be27ee396680528853fe850f367a0"
+          "bytes": 316613,
+          "sha256": "dadd215b27f5eca659f29ba24fb48bb81b349aa6f3675825705676ade1bbfb68"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-shrug-v1-thumb.png",
@@ -9409,11 +9429,12 @@
             192,
             192
           ],
-          "bytes": 46704,
-          "sha256": "1b3af911dbe9207fd174eb93369887defdcd28ae388d6e451988ada45b9d14e2"
+          "bytes": 47445,
+          "sha256": "48a4da8a9389257409189057ae78f3d7deaaa3bfedd325cf371c1fdbca69e0d6"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Incline chest-supported dumbbell Kelso shrug with straight arms and scapular retraction. Both neutral grips, support and whole silhouette visible; no elbow-row substitution. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+      "validation_note": "Reviewed head/gaze correction: Nape follows inclined torso, head looks forward/down away from rear camera. Kelso shrug, straight arms, dumbbells and bench preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/241-1.json"
     },
     {
       "id": 242,
@@ -9941,8 +9962,8 @@
             1254,
             1254
           ],
-          "bytes": 1713496,
-          "sha256": "a23250358b5879403e0998259c4c549fbc4f4d3831b43e7554d2c57d9568f082"
+          "bytes": 1650285,
+          "sha256": "e6e959450dfa6ccdefcccc3cc67931924a01afb6081ec46423896abbbafc27e9"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-overhead-triceps-extension-v1.png",
@@ -9950,8 +9971,8 @@
             512,
             512
           ],
-          "bytes": 285101,
-          "sha256": "950c392d568b16deb62c84f1750ff1d4e2b34a10419d9d047a7975f50f4451df"
+          "bytes": 277804,
+          "sha256": "966d5cf8a205d57adf6746ce61b5348be7f45f514b8f28578779a5f8a230c447"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/single-arm-dumbbell-overhead-triceps-extension-v1-thumb.png",
@@ -9959,11 +9980,12 @@
             192,
             192
           ],
-          "bytes": 40119,
-          "sha256": "ec5bf7c96e1cbd1523833b8570da5a218ef50f7469f4dda16574a6d3af4c889c"
+          "bytes": 40468,
+          "sha256": "7ef4582e744a6af0d126fd38a99ab4502ea2d9aa7d74025fd75e3927b28686e9"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Standing unilateral extension with one hand at handle behind head, other arm empty, elbow overhead; complete figure and weight, distinct rear camera."
+      "validation_note": "Reviewed head/gaze correction: Back of head follows torso instead of side turn beneath raised arm. Overhead single-arm extension, dumbbell, grip and stance preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/297-1.json"
     },
     {
       "id": 298,
@@ -11052,8 +11074,8 @@
             1254,
             1254
           ],
-          "bytes": 1842036,
-          "sha256": "8df9fa4b2cb045e3c8a1ed6a39e4ce4c3b5f11256f52f0ae41dec7c270a47886"
+          "bytes": 1740275,
+          "sha256": "dd78a70b36c4a9e9d102ca3b8574753f7471acbfddc24558a2a0a58d35449123"
         },
         "app": {
           "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1.png",
@@ -11061,8 +11083,8 @@
             512,
             512
           ],
-          "bytes": 310993,
-          "sha256": "fa5950bd9599af48ae21f048e65403fd13a651e82b0a88f0904536a366bdfe99"
+          "bytes": 302101,
+          "sha256": "f730dd524768f878bda128cf65b145e20d8fb744d9d184c97d37127dfbd8dd98"
         },
         "thumbnail": {
           "path": "assets/images/movement-artwork/free-weight-v1/chest-supported-kelso-row-v1-thumb.png",
@@ -11070,11 +11092,12 @@
             192,
             192
           ],
-          "bytes": 46553,
-          "sha256": "e57a50dc546584079a4d6ba5fc6e4068d31b23c134a1c82e9435e3d427693cba"
+          "bytes": 46198,
+          "sha256": "cd8dc34789109f996eb3d66b4557c9482d95e50a361b963e3d7c8ff6803fa868"
         }
       },
-      "validation_note": "Prior approved art retained byte-for-byte. Chest-supported scapular row with straight elbows and continuous silver bar; rear angle exposes shoulder-blade position, both grips and whole bench. Isolated snapshot cannot encode scapular travel. Original-reference studio black, graphite apparel, natural skin, silver equipment and restrained violet remain consistent."
+      "validation_note": "Reviewed head/gaze correction: Nape follows inclined torso, head looks forward/down away from rear camera. Scapular-row phase, straight arms, bar and bench contacts preserved.",
+      "gaze_correction_receipt": "docs/validation/head-gaze-audit-2026-09-11/attempts/205-1.json"
     },
     {
       "id": 206,

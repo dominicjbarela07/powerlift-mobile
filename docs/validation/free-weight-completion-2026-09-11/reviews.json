@@ -232,7 +232,9 @@
     "id": 349,
     "attempt": 1,
     "status": "ACCEPT",
-    "reason": "Rear three-quarter view exposes high trapezius bar placement, full squat depth and two planted feet. Symmetric intact bar/plates; bar margins tight but complete and away from rounded frame corners."
+    "reason": "Rear three-quarter view exposes high trapezius bar placement, full squat depth and two planted feet. Symmetric intact bar/plates; bar margins tight but complete and away from rounded frame corners.",
+    "superseded_by_attempt": 2,
+    "supersession_reason": "User rejected cosmetic lateral head turn; prior acceptance missed neck/gaze alignment."
   },
   {
     "id": 350,
@@ -737,5 +739,11 @@
     "attempt": 3,
     "status": "ACCEPT",
     "reason": "Side-lying trunk rests flat along bench, lower arm hangs free instead of propping torso, head extends beyond short end with lateral neck bend. Small plate sits against towel at upward-facing temple; no floating load."
+  },
+  {
+    "id": 349,
+    "attempt": 2,
+    "status": "ACCEPT",
+    "reason": "User correction: head faces forward with torso, back of skull visible and neutral untwisted neck; sideways face/profile removed. Squat depth, body pose, high-bar placement, hands, feet, equipment and studio composition preserved."
   }
 ]

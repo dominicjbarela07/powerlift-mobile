@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { reviewedFreeWeightFiles } from './reviewed-free-weight-corrections.mjs';
 import { CANONICAL_ACCESSORY_ARTWORK_IDENTITIES as registry, resolveCanonicalMovementArtwork as resolve } from '../lib/canonical-movement-artwork.ts';
 import { canonicalArtworkInputForLoggerItem } from '../lib/logger-movement-identity.ts';
 
@@ -72,7 +73,7 @@ for (const row of confirmed) {
     assert.ok(attempt.reference_paths[0].endsWith('/masters/dumbbell-incline-bench-press-v1.png'));
   } else {
     const prior=json('docs/validation/free-weight-'+asset.generation_batch.toLowerCase()+'-family-2026-09-11/asset-manifest.json').movements.find(item=>item.id===row.id);
-    assert.deepEqual(asset.files,prior.files,'all 98 approved assets retained byte-for-byte');
+    assert.deepEqual(asset.files,reviewedFreeWeightFiles(prior),'historical files remain immutable except exact reviewed head corrections');
   }
 }
 assert.equal(uniqueFiles.size,198);
@@ -107,4 +108,4 @@ for(const item of items) {
   assert.equal(selected.canonicalIdentityId,item.effective_movement_definition_id);
 }
 assert.equal(crypto.createHash('sha256').update(read('assets/images/movement-artwork/free-weight-v1/masters/dumbbell-incline-bench-press-v1.png')).digest('hex'),'e05a3bf38fa70279a8f369df65498bb952231b3aff1575b41edc15a3da80a9fe');
-console.log('[free-weight-complete-family] 198 exact assets, 100 reviewed additions, 98 immutable retained assets, 194 real search DTOs, four independent legacy IDs, mixed-family Session and fail-closed identities passed');
+console.log('[free-weight-complete-family] 198 exact assets, 100 reviewed additions, 98 prior identities with verified correction provenance, 194 real search DTOs, four independent legacy IDs, mixed-family Session and fail-closed identities passed');
