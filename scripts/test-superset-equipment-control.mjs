@@ -149,7 +149,7 @@ assert.match(
 );
 assert.match(
   workspaceSource,
-  /movement\.item\.canConfigureEquipment[\s\S]*?accessibilityLabel=\{`Configure equipment for \$\{positionLabel\}, \$\{movement\.item\.title\}`\}[\s\S]*?onPress=\{\(\) => onConfigureEquipment\(movement\.itemId\)\}[\s\S]*?>Equipment</,
+  /item\.canConfigureEquipment[\s\S]*?accessibilityLabel=\{`Configure equipment for \$\{label\}, \$\{item\.title\}`\}[\s\S]*?onPress=\{\(\) => onConfigureEquipment\(item\.id\)\}[\s\S]*?>Equipment</,
   'Each configurable superset member must expose its own reachable Equipment action.',
 );
 assert.doesNotMatch(
@@ -238,7 +238,7 @@ assert.equal(restored.workout.started_at, before.workout.started_at);
 resetRememberedWorkoutDetailEquipmentSelections();
 
 const equipmentPressBlock = workspaceSource.match(
-  /accessibilityLabel=\{`Configure equipment for[\s\S]*?onPress=\{\(\) => onConfigureEquipment\(movement\.itemId\)\}/,
+  /accessibilityLabel=\{`Configure equipment for[\s\S]*?onPress=\{\(\) => onConfigureEquipment\(item\.id\)\}/,
 )?.[0] || '';
 assert.ok(equipmentPressBlock, 'Equipment must be user-invoked from the movement action.');
 assert.doesNotMatch(

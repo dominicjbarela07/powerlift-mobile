@@ -46,11 +46,10 @@ assert.match(fs.readFileSync(path.join(root, 'components/workout-logger/session-
 assert.doesNotMatch(core, /ellipsizeMode="tail"[\s\S]{0,160}?style=\{styles\.activeMovementTitle\}/, 'canonical Logger movement titles must not be deliberately ellipsized');
 assert.match(core, /ledgerHeaderActions:\s*\{[\s\S]*?minWidth:\s*MOVEMENT_STATUS_COLUMN_WIDTH[\s\S]*?flexShrink:\s*0/, 'legacy collapsed/expanded cards must retain the same fixed status width');
 
-assert.match(superset, /<MovementLifecycleStatusLabel[\s\S]*?label=\{statusLabel\(model\.status\)\}/, 'superset headers must consume the same no-wrap primitive');
-assert.match(superset, /status === 'complete'\) return 'COMPLETED'/, 'superset completion must use the canonical lifecycle label');
-assert.match(superset, /eyebrow:\s*\{[\s\S]*?flex:\s*1[\s\S]*?minWidth:\s*0/, 'superset identity copy must yield space to lifecycle status');
-assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.movementName\}>\{item\.title\}<\/Text>/, 'superset card movement names must remain complete');
-assert.match(superset, /<Text numberOfLines=\{0\} style=\{styles\.workTitle\}>/, 'expanded superset movement names must remain complete');
+assert.match(superset, /roundLabel/);
+assert.match(superset, /rounds complete/);
+assert.match(superset, /header: \{[^}]*flexWrap: 'wrap'/, 'round status wraps at narrow phone widths');
+assert.match(superset, /<Text numberOfLines=\{0\} style=\{\[s\.title,/, 'member names are never clipped');
 
 assert.match(route, /const accessoryKind = machineAccessory[\s\S]*?<CoreMovementLedgerRow/, 'machine, free-weight, and bodyweight accessories must share the canonical movement card');
 assert.match(route, /<CoreMovementLedgerRow[\s\S]*?title=\{resolveLoggerMovementIdentity\(core\)\.displayName\}/, 'Core, TOP, and backdown work must share the canonical movement card');

@@ -134,27 +134,17 @@ assert.match(
   /if \(isSuperset && grp\.group\)[\s\S]*?<SupersetRoundWorkspace/,
   'live and Ideal State must render the same canonical superset workspace',
 );
-assert.match(
-  route,
-  /<SupersetRoundWorkspace[\s\S]*?onLogMovement=\{\(itemId\) => \{[\s\S]*?candidate\.id === itemId[\s\S]*?openAccessoryWheel\(item\)/,
-  'each grouped movement must open the canonical individual Set Logger',
-);
+assert.match(route, /const nextItem = grp\.items\.find[\s\S]*?openAccessoryWheel\(nextItem\)/,
+  'the sole floating action must open the exact next member in the canonical individual Logger');
 assert.match(
   route,
   /const handleAccessorySave = async[\s\S]*?loggedIndexes[\s\S]*?while \(loggedIndexes\.has\(accessorySetIndex\)\) accessorySetIndex \+= 1[\s\S]*?logAccessorySet/,
   'next set identity must derive independently from the selected movement evidence',
 );
 assert.match(route, /\/items\/\$\{itemId\}\/log_acc/);
-assert.match(workspace, /MOVEMENT PROGRESS/);
-assert.match(workspace, /Log these movements in any order/);
 assert.match(workspace, /model\.movements\.map/);
-assert.match(workspace, /onLogMovement\(movement\.itemId\)/);
-assert.match(
-  workspace,
-  /<SLButton[\s\S]*?disableNativePressAnimation[\s\S]*?onPress=\{\(\) => onLogMovement\(movement\.itemId\)\}/,
-  'grouped movement logging must not overlap native press animation with Set Logger presentation',
-);
-assert.match(workspace, /movement\.loggedRequiredSets} \/ \{movement\.requiredSets/);
+assert.match(workspace, /Round \$\{model\.currentRoundIndex/);
+assert.doesNotMatch(workspace, /MOVEMENT PROGRESS|onLogMovement|<SLButton/);
 assert.doesNotMatch(workspace, /Log Round|ROUND TIMELINE|onLogRound/);
 assert.match(workspace, /onOpenHistory\(item\.id\)/);
 assert.match(

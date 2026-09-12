@@ -71,7 +71,8 @@ assert.doesNotMatch(medallion, /MuscleMap|isGovernedMuscleId/, 'Logger movement 
 assert.doesNotMatch(medallion, /<Text/);
 assert.match(coreLogger, /<CanonicalMovementArtwork/);
 assert.doesNotMatch(coreLogger, /<AccessoryMuscleRegionMedallion|<CoreVariantBadge|<MuscleMap/, 'individual Logger cards must have exactly one canonical artwork path');
-assert.match(superset, /<AccessoryMuscleRegionMedallion/);
+assert.match(superset, /<CanonicalMovementArtwork/);
+assert.doesNotMatch(superset, /<AccessoryMuscleRegionMedallion/);
 assert.doesNotMatch(coreLogger, /activeMovementMuscleGroupText|accessoryMuscleGroupLabel/);
 assert.doesNotMatch(superset, /muscleGroupBadgeText|primaryMuscleGroup/);
 assert.match(pickerArtwork, /resolveCanonicalMovementArtwork/);

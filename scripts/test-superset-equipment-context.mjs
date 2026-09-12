@@ -214,8 +214,8 @@ assert.match(
 );
 assert.match(
   workspaceSource,
-  /movement\.item\.equipmentContext[\s\S]*styles\.workEquipmentContext[\s\S]*movement\.item\.prescription/,
-  'Superset movement cards must render brand context between name and prescription.',
+  /item\.prescription[\s\S]*item\.equipmentContext[\s\S]*s\.equipment/,
+  'Superset movement cards must render member-specific brand context beside its prescription.',
 );
 assert.doesNotMatch(
   workspaceSource.match(/<View style=\{styles\.historySection\}>[\s\S]*?<\/View>\s*<\/View>/)?.[0] || '',

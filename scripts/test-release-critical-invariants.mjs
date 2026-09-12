@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['canonical superset storyboard and next-member progression', ['scripts/test-superset-rounds.mjs', 'scripts/test-superset-workspace-convergence.mjs']],
   ['platform-wide mobile full-width and text layout', ['scripts/test-mobile-full-width-enforcement.mjs', 'scripts/test-mobile-text-layout-contract.mjs']],
   ['Athlete Meet Packet V2 lifecycle and immersive shell', ['scripts/test-athlete-meet-packet-v2.mjs', 'scripts/test-immersive-meet-mode-shell.mjs']],
   ['Coach Session Reviewer V3 evidence and shared tools', ['scripts/test-review-hub-canonical-parity.mjs']],

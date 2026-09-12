@@ -77,11 +77,8 @@ assert.match(
   /activeMovementMetadataAnodized:[\s\S]*color: SLColors\.textSecondary[\s\S]*activeMovementPrescriptionAnodized:[\s\S]*color: SLColors\.textStrong/,
   'the material must keep scheme and prescription typography neutral',
 );
-assert.match(
-  superset,
-  /stateAccent = movementCardStateAccent\(materialState\)[\s\S]*<MovementCardMaterial[\s\S]*state=\{materialState\}/,
-  'the unified superset workspace must use the same group-level material primitive',
-);
+assert.match(superset, /borderLeftWidth: 2/, 'superset grouping uses a restrained shared accent rail');
+assert.doesNotMatch(superset, /<MovementCardMaterial/, 'compact grouped rows must not restore nested standalone card material');
 assert.doesNotMatch(
   superset,
   /<LinearGradient/,

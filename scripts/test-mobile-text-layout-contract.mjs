@@ -109,7 +109,7 @@ assert.doesNotMatch(
   'the core Set title must not share its row with the unit control',
 );
 assert.match(read('components/workout-logger/session-v3-movement.tsx'), /numberOfLines=\{0\} style=\{s\.title\}/, 'canonical Session Logger movement names must grow instead of ellipsizing');
-assert.match(supersetWorkspace, /<Text numberOfLines=\{0\} style=\{styles\.movementName\}>/, 'superset movement names must grow instead of ellipsizing');
+assert.match(supersetWorkspace, /<Text numberOfLines=\{0\} style=\{\[s\.title,/, 'superset movement names must grow instead of ellipsizing');
 
 const contextualHeader = read('components/ui/sl-contextual-header.tsx');
 assert.match(contextualHeader, /<Text numberOfLines=\{0\} style=\{styles\.title\}>\{title\}<\/Text>/);

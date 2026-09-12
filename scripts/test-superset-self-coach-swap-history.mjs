@@ -90,9 +90,9 @@ const logger = readFileSync(
 );
 
 assert.match(workspace, /swapActionForItem:\s*\(itemId: number\)/, 'superset workspace receives canonical per-item swap eligibility');
-assert.match(workspace, /onSwapMovement\(movement\.itemId\)/, 'superset movement Swap uses the parent canonical action');
-assert.match(workspace, /accessibilityLabel=\{`\$\{swapAction\} \$\{movement\.item\.title\}`\}/, 'Swap remains a named, reachable movement action');
-assert.match(workspace, /pressed && styles\.controlPressed/, 'Swap and History expose immediate pressed feedback');
+assert.match(workspace, /onSwapMovement\(item\.id\)/, 'superset movement Swap uses the parent canonical action');
+assert.match(workspace, /accessibilityLabel=\{`\$\{swapAction\} \$\{item\.title\}`\}/, 'Swap remains a named, reachable movement action');
+assert.match(workspace, /pressed && s\.controlPressed/, 'Swap and History expose immediate pressed feedback');
 assert.match(workspace, /onPress=\{\(\) => onOpenHistory\(item\.id\)\}/, 'every visible History row is interactive even without prior performance');
 assert.match(logger, /const executionItem = accessoryExecutionItem\(item\)[\s\S]*title: simplifyMobileMovementName\(executionName\)/, 'superset cards render the current performed identity and prescription');
 assert.match(logger, /onSwapMovement=\{\(itemId\) => \{[\s\S]*openSwapAcc\(item\)/, 'superset Swap reuses the canonical governed picker path');

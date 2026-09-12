@@ -1,736 +1,135 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { SLMotionPressable as Pressable } from '@/components/ui/sl-motion';
-
+import React, { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
-import { SLButton } from '@/components/ui/sl-button';
-import { CompactSetTimeline } from '@/components/workout-logger/compact-set-timeline';
-import { MovementLifecycleStatusLabel } from '@/components/workout-logger/movement-lifecycle-status-label';
-import { AccessoryMuscleRegionMedallion } from '@/components/workout-logger/accessory-muscle-region-medallion';
-import { MovementCardMaterial } from '@/components/workout-logger/movement-card-material';
-import {
-  SLColors,
-  SLMovementCardMaterial,
-  SLRadius,
-  SLSpacing,
-  SLTypography,
-} from '@/constants/theme';
-import {
-  type SupersetRoundLog,
-  type SupersetRoundModel,
-  type SupersetRoundSourceItem,
-} from '@/lib/superset-rounds';
-import { movementCardStateAccent } from '@/lib/movement-card-material';
-import {
-  combineAccessoryMuscleRegions,
-  type AccessoryMuscleRegionKey,
-} from '@/lib/accessory-muscle-group';
+import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import type { CanonicalMovementArtworkInput } from '@/lib/canonical-movement-artwork';
+import { CompactSetTimeline } from './compact-set-timeline';
+import { SLColors, SLFontFamilies } from '@/constants/theme';
+import type { SupersetRoundLog, SupersetRoundModel, SupersetRoundSourceItem } from '@/lib/superset-rounds';
+import { supersetMemberLabel } from '@/lib/superset-workspace-focus';
 import { canDeletePersistedSetLog } from '@/lib/set-log-delete-order';
 
 export type SupersetWorkspaceLog = SupersetRoundLog & Readonly<{
-  id: number;
-  actual_weight_kg?: number | null;
-  actual_reps?: number | null;
-  actual_rpe?: number | null;
-  actual_rir?: number | null;
-  resultLine?: string | null;
+  id: number; actual_weight_kg?: number | null; actual_reps?: number | null;
+  actual_rpe?: number | null; actual_rir?: number | null; resultLine?: string | null;
 }>;
-
 export type SupersetWorkspaceItem = SupersetRoundSourceItem & Readonly<{
-  title: string;
-  canConfigureEquipment?: boolean;
-  equipmentContext?: string | null;
-  prescription: string;
-  historyLine?: string | null;
-  timelineLabel?: string | null;
-  primaryMuscleRegion?: AccessoryMuscleRegionKey | null;
+  title: string; canConfigureEquipment?: boolean; equipmentRequired?: boolean;
+  equipmentContext?: string | null; prescription: string; historyLine?: string | null;
+  movementArtwork?: CanonicalMovementArtworkInput | null;
   set_logs?: readonly SupersetWorkspaceLog[] | null;
 }>;
-
-type SupersetRoundWorkspaceProps = {
-  groupLabel: string;
-  executionHint?: string | null;
-  model: SupersetRoundModel<SupersetWorkspaceItem>;
-  expanded: boolean;
-  canLog: boolean;
-  reduceMotion?: boolean;
-  onToggle: () => void;
-  onConfigureEquipment: (itemId: number) => void;
-  onLogMovement: (itemId: number) => void;
-  onOpenHistory: (itemId: number) => void;
-  onSwapMovement: (itemId: number) => void;
-  swapActionForItem: (itemId: number) => 'Swap' | 'Sub' | null;
-  swappingItemId?: number | null;
-  onEditSet: (
-    item: SupersetWorkspaceItem,
-    log: SupersetWorkspaceLog,
-  ) => void;
-  onDeleteSet: (
-    item: SupersetWorkspaceItem,
-    log: SupersetWorkspaceLog,
-  ) => void;
+type Props = {
+  groupLabel: string; model: SupersetRoundModel<SupersetWorkspaceItem>;
+  phase: 'pre' | 'active' | 'complete'; expanded: boolean; selectedItemId?: number;
+  canLog: boolean; reduceMotion?: boolean; onToggle: () => void;
+  onSelectMember: (itemId: number) => void; onConfigureEquipment: (itemId: number) => void;
+  onOpenHistory: (itemId: number) => void; onSwapMovement: (itemId: number) => void;
+  swapActionForItem: (itemId: number) => 'Swap' | 'Sub' | null; swappingItemId?: number | null;
+  onEditSet: (item: SupersetWorkspaceItem, log: SupersetWorkspaceLog) => void;
+  onDeleteSet: (item: SupersetWorkspaceItem, log: SupersetWorkspaceLog) => void;
 };
 
-function statusLabel(status: SupersetRoundModel<SupersetWorkspaceItem>['status']) {
-  if (status === 'complete') return 'COMPLETED';
-  if (status === 'in_progress') return 'IN PROGRESS';
-  return 'NOT STARTED';
+/** Shared Pre/Active/Coach composition. The canonical floating footer owns the
+ * sole logging action; rows own identity and contextual tools, never a second Logger. */
+export function SupersetRoundWorkspace({ groupLabel, model, phase, expanded, selectedItemId, canLog,
+  reduceMotion = false, onToggle, onSelectMember, onConfigureEquipment, onOpenHistory,
+  onSwapMovement, swapActionForItem, swappingItemId, onEditSet, onDeleteSet }: Props) {
+  const [evidenceItemId, setEvidenceItemId] = useState<number | null>(null);
+  const isActive = phase === 'active';
+  const complete = model.status === 'complete';
+  const currentRound = model.rounds.find(round => round.index === model.currentRoundIndex);
+  const roundHint = currentRound?.entries.length === 1
+    ? `${supersetMemberLabel(groupLabel, currentRound.entries[0].position)} only this round · rest after the set`
+    : 'Alternate members · rest after the round';
+  const progress = complete ? `${model.roundCount} rounds complete`
+    : isActive ? `Round ${model.currentRoundIndex || 1} of ${model.roundCount}`
+      : `${model.roundCount} ${model.roundCount === 1 ? 'round' : 'rounds'}`;
+  return <View style={[s.group, isActive && s.activeGroup]} testID={`superset-${groupLabel}`}>
+    <Pressable disabled={isActive} accessibilityRole={isActive ? "header" : "button"} accessibilityState={{ expanded }} accessibilityLabel={`Superset ${groupLabel}, ${progress}`} onPress={onToggle} style={s.header}>
+      <Text style={s.eyebrow}>SUPERSET {groupLabel}</Text>
+      <Text style={[s.roundLabel, complete && s.complete]}>{progress}</Text>
+      {!isActive ? <Ionicons color="#b4a6c6" name={expanded ? 'chevron-up' : 'chevron-down'} size={16} /> : null}
+    </Pressable>
+    {isActive ? <View style={s.roundRail} accessibilityLabel={`${model.completedRounds} of ${model.roundCount} rounds complete`}>
+      {model.rounds.map(round => <View key={round.index} style={[s.roundSegment, round.complete && s.roundComplete, round.index === model.currentRoundIndex && s.roundCurrent]} />)}
+    </View> : null}
+    {model.movements.map(movement => {
+      const item = movement.item;
+      const label = supersetMemberLabel(groupLabel, movement.position);
+      const selected = expanded && selectedItemId === item.id;
+      const roundEntry = currentRound?.entries.find(entry => entry.itemId === item.id);
+      const state = movement.complete ? 'COMPLETE' : selected && isActive ? `SET ${movement.nextSetIndex} · CURRENT` : roundEntry?.log ? 'SAVED' : isActive ? 'NEXT' : null;
+      const logs = [...(item.set_logs || [])].sort((a,b) => Number(a.set_index) - Number(b.set_index));
+      const swapAction = swapActionForItem(item.id);
+      const swapBusy = swappingItemId === item.id;
+      const showEvidence = selected && evidenceItemId === item.id;
+      return <View key={item.id} style={[s.member, selected && isActive && s.selectedMember]}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${item.title}, ${movement.loggedRequiredSets} of ${movement.requiredSets} sets${state ? `, ${state}` : ''}`} onPress={() => onSelectMember(item.id)} style={s.memberRow}>
+          <Text style={[s.memberLabel, movement.complete && s.complete]}>{label}</Text>
+          <CanonicalMovementArtwork movement={item.movementArtwork} size={selected && isActive ? 56 : 44} />
+          <View style={s.memberCopy}>
+            <Text numberOfLines={0} style={[s.title, selected && isActive && s.activeTitle]}>{item.title}</Text>
+            <Text style={[s.prescription, selected && isActive && s.activePrescription]}>{item.prescription}</Text>
+            {item.equipmentRequired ? <Text style={s.required}>Equipment required</Text> : item.equipmentContext ? <Text style={s.equipment}>{item.equipmentContext}</Text> : null}
+            {state ? <Text style={[s.state, movement.complete || roundEntry?.log ? s.complete : selected ? s.current : null]}>{state}</Text> : null}
+          </View>
+          {movement.complete ? <Ionicons name="checkmark-circle" color={SLColors.success} size={18} /> : null}
+        </Pressable>
+        {selected ? <View style={s.details}>
+          <View style={s.tools}>
+            {item.canConfigureEquipment ? <Pressable accessibilityRole="button" accessibilityLabel={`Configure equipment for ${label}, ${item.title}`} onPress={() => onConfigureEquipment(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}>
+              <Ionicons name="barbell-outline" color="#c9b1ec" size={16} /><Text style={s.toolText}>Equipment</Text>
+            </Pressable> : null}
+            {swapAction ? <Pressable accessibilityRole="button" accessibilityLabel={`${swapAction} ${item.title}`} disabled={swapBusy} onPress={() => onSwapMovement(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}>
+              {swapBusy ? <ActivityIndicator size="small" color="#c9b1ec" /> : <Ionicons name="swap-horizontal-outline" color="#c9b1ec" size={16} />}<Text style={s.toolText}>{swapBusy ? 'Updating…' : swapAction}</Text>
+            </Pressable> : null}
+            <Pressable accessibilityRole="button" accessibilityLabel={`History for ${item.title}`} onPress={() => onOpenHistory(item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}><Ionicons name="time-outline" color="#aadce5" size={16} /><Text style={s.historyText}>History</Text></Pressable>
+            {logs.length ? <Pressable accessibilityRole="button" accessibilityLabel={`View saved sets for ${item.title}`} accessibilityState={{ expanded: showEvidence }} onPress={() => setEvidenceItemId(showEvidence ? null : item.id)} style={({ pressed }) => [s.tool, pressed && s.controlPressed]}><Text style={s.toolText}>{logs.length} saved {logs.length === 1 ? 'set' : 'sets'}</Text><Ionicons name={showEvidence ? 'chevron-up' : 'chevron-down'} color="#c9b1ec" size={14} /></Pressable> : null}
+          </View>
+          {isActive && item.historyLine ? <Pressable accessibilityRole="button" accessibilityLabel={`Prior performance for ${item.title}`} onPress={() => onOpenHistory(item.id)} style={s.prior}><Text style={s.priorText}>{item.historyLine}</Text><Ionicons name="arrow-up-right-box-outline" color="#aadce5" size={14} /></Pressable> : null}
+          {showEvidence ? <CompactSetTimeline reduceMotion={reduceMotion} title={`${label} · SAVED SETS`} totalCount={movement.requiredSets} rows={Array.from({ length: movement.requiredSets }, (_, offset) => {
+            const setIndex = offset + 1;
+            const persistedLog = logs.find(log => log.set_index === setIndex);
+            const canModifyLog = Boolean(canLog && persistedLog && Number.isFinite(Number(persistedLog.id)));
+            return { key: `${item.id}:${setIndex}`, label: String(setIndex), state: persistedLog ? 'completed' as const : movement.nextSetIndex === setIndex ? 'active' as const : 'locked' as const,
+              resultText: persistedLog?.resultLine || 'Logged',
+              onEdit: canModifyLog && persistedLog ? () => onEditSet(item, persistedLog) : undefined,
+              onRemove: canModifyLog && persistedLog && canDeletePersistedSetLog(persistedLog, item.set_logs) ? () => onDeleteSet(item, persistedLog) : undefined };
+          })} /> : null}
+        </View> : null}
+      </View>;
+    })}
+    {isActive && !complete ? <Text style={s.roundHint}>{roundHint}</Text> : null}
+  </View>;
 }
-
-function movementPositionLabel(position: number) {
-  if (position >= 1 && position <= 26) {
-    return String.fromCharCode(64 + position);
-  }
-  return String(position);
-}
-
-export function SupersetRoundWorkspace({
-  groupLabel,
-  executionHint,
-  model,
-  expanded,
-  canLog,
-  reduceMotion = false,
-  onToggle,
-  onConfigureEquipment,
-  onLogMovement,
-  onOpenHistory,
-  onSwapMovement,
-  swapActionForItem,
-  swappingItemId = null,
-  onEditSet,
-  onDeleteSet,
-}: SupersetRoundWorkspaceProps) {
-  const materialState = model.status === 'complete'
-    ? 'complete' as const
-    : model.status === 'in_progress'
-      ? 'in_progress' as const
-      : 'not_started' as const;
-  const stateAccent = movementCardStateAccent(materialState);
-  const combinedMuscleRegion = combineAccessoryMuscleRegions(
-    model.items.map((item) => item.primaryMuscleRegion),
-  );
-
-  return (
-    <View style={styles.card}>
-      <MovementCardMaterial
-        expanded={expanded}
-        state={materialState}
-      />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ expanded }}
-        accessibilityLabel={`Superset ${groupLabel}, ${statusLabel(model.status)}, ${model.loggedRequiredSets} of ${model.totalRequiredSets} sets`}
-        onPress={onToggle}
-        style={styles.header}
-      >
-        <AccessoryMuscleRegionMedallion
-          accessibilityLabel={`${combinedMuscleRegion.label} primary muscle group for superset ${groupLabel}`}
-          containerStyle={styles.muscleGroupMedallion}
-          regionKey={combinedMuscleRegion.key}
-        />
-        <View style={styles.headerCopy}>
-          <View style={styles.eyebrowRow}>
-            <Text style={styles.eyebrow}>SUPERSET {groupLabel}</Text>
-            <MovementLifecycleStatusLabel
-              label={statusLabel(model.status)}
-              style={[styles.status, { color: stateAccent }]}
-            />
-          </View>
-          <View style={styles.movementNames}>
-            {model.items.map((item, index) => (
-              <React.Fragment key={item.id}>
-                <Text numberOfLines={0} style={styles.movementName}>{item.title}</Text>
-                {index < model.items.length - 1 ? (
-                  <Ionicons
-                    color={SLColors.accentViolet}
-                    name="arrow-down"
-                    size={15}
-                    style={styles.movementConnector}
-                  />
-                ) : null}
-              </React.Fragment>
-            ))}
-          </View>
-          <Text numberOfLines={1} style={styles.summary}>
-            {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
-            {executionHint ? ` · ${executionHint}` : ''}
-          </Text>
-        </View>
-        <Ionicons
-          color={stateAccent}
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          size={22}
-          style={styles.chevron}
-        />
-      </Pressable>
-
-      {expanded ? (
-        <View style={styles.expanded}>
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionLabel}>MOVEMENT PROGRESS</Text>
-              <Text style={styles.sectionMeta}>
-                {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
-              </Text>
-            </View>
-            <Text style={styles.roundCount}>
-              {model.loggedRequiredSets} / {model.totalRequiredSets} SETS
-            </Text>
-            <Text style={styles.flexibleOrderHint}>
-              Log these movements in any order. Each movement keeps its own next set.
-            </Text>
-            <View style={styles.workList}>
-              {model.movements.map((movement) => {
-                const positionLabel = movementPositionLabel(movement.position);
-                const isSuggested = movement.itemId === model.suggestedNextItemId;
-                const logs = [...(movement.item.set_logs || [])]
-                  .filter((log) => movement.loggedSetIndexes.includes(Number(log.set_index || 0)))
-                  .sort((a, b) => Number(a.set_index || 0) - Number(b.set_index || 0));
-                const swapAction = swapActionForItem(movement.itemId);
-                const swapBusy = swappingItemId === movement.itemId;
-                return (
-                  <View key={movement.itemId} style={styles.workItem}>
-                    <View style={styles.workItemHeader}>
-                      <View style={[
-                        styles.positionBadge,
-                        movement.complete && styles.positionBadgeComplete,
-                      ]}>
-                        {movement.complete ? (
-                          <Ionicons color={SLColors.textStrong} name="checkmark" size={16} />
-                        ) : (
-                          <Text style={styles.positionBadgeText}>{positionLabel}</Text>
-                        )}
-                      </View>
-                      <View style={styles.workCopy}>
-                        <View style={styles.workTitleRow}>
-                          <Text numberOfLines={0} style={styles.workTitle}>
-                            {positionLabel} · {movement.item.title}
-                          </Text>
-                          {isSuggested && !movement.complete ? (
-                            <Text style={styles.suggestedPill}>NEXT</Text>
-                          ) : null}
-                        </View>
-                        {movement.item.equipmentContext ? (
-                          <Text numberOfLines={1} style={styles.workEquipmentContext}>
-                            {movement.item.equipmentContext}
-                          </Text>
-                        ) : null}
-                        <Text style={styles.workPrescription}>
-                          {movement.item.prescription}
-                        </Text>
-                      </View>
-                      <Text style={[
-                        styles.movementProgress,
-                        movement.complete && styles.movementProgressComplete,
-                      ]}>
-                        {movement.loggedRequiredSets} / {movement.requiredSets}
-                      </Text>
-                    </View>
-
-                    {movement.item.canConfigureEquipment || swapAction ? (
-                      <View style={styles.movementActions}>
-                        {movement.item.canConfigureEquipment ? (
-                          <Pressable
-                            accessibilityLabel={`Configure equipment for ${positionLabel}, ${movement.item.title}`}
-                            accessibilityRole="button"
-                            onPress={() => onConfigureEquipment(movement.itemId)}
-                            style={({ pressed }) => [
-                              styles.movementAction,
-                              pressed && styles.controlPressed,
-                            ]}
-                          >
-                            <Ionicons color={SLColors.accentViolet} name="barbell-outline" size={17} />
-                            <Text style={styles.movementActionText}>Equipment</Text>
-                          </Pressable>
-                        ) : null}
-                        {swapAction ? (
-                          <Pressable
-                            accessibilityLabel={`${swapAction} ${movement.item.title}`}
-                            accessibilityRole="button"
-                            accessibilityState={{ busy: swapBusy, disabled: swapBusy }}
-                            disabled={swapBusy}
-                            onPress={() => onSwapMovement(movement.itemId)}
-                            style={({ pressed }) => [
-                              styles.movementAction,
-                              pressed && styles.controlPressed,
-                              swapBusy && styles.controlBusy,
-                            ]}
-                          >
-                            {swapBusy ? (
-                              <ActivityIndicator color={SLColors.accentViolet} size="small" />
-                            ) : (
-                              <Ionicons color={SLColors.accentViolet} name="swap-horizontal-outline" size={17} />
-                            )}
-                            <Text style={styles.movementActionText}>{swapBusy ? 'Updating…' : swapAction}</Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
-                    ) : null}
-
-                    <View style={styles.movementEvidence}>
-                      <CompactSetTimeline
-                        reduceMotion={reduceMotion}
-                        rows={Array.from({ length: movement.requiredSets }, (_, setOffset) => {
-                          const setIndex = setOffset + 1;
-                          const persistedLog = logs.find(
-                            (candidate) => Number(candidate.set_index || 0) === setIndex,
-                          ) as SupersetWorkspaceLog | undefined;
-                          const canModifyLog = Boolean(
-                            canLog
-                            && persistedLog
-                            && Number.isFinite(Number(persistedLog.id)),
-                          );
-                          return {
-                            key: `${movement.itemId}:${setIndex}`,
-                            label: String(setIndex),
-                            state: persistedLog
-                              ? 'completed' as const
-                              : movement.nextSetIndex === setIndex
-                                ? 'active' as const
-                                : 'locked' as const,
-                            resultText: persistedLog?.resultLine || 'Logged',
-                            onEdit: canModifyLog && persistedLog
-                              ? () => onEditSet(movement.item, persistedLog)
-                              : undefined,
-                            onRemove: canModifyLog && persistedLog && canDeletePersistedSetLog(
-                              persistedLog,
-                              movement.item.set_logs,
-                            )
-                              ? () => onDeleteSet(movement.item, persistedLog)
-                              : undefined,
-                          };
-                        })}
-                        title={`SET TIMELINE · ${positionLabel}`}
-                        totalCount={movement.requiredSets}
-                      />
-                    </View>
-
-                    {canLog && movement.nextSetIndex != null ? (
-                      <SLButton
-                        accessibilityLabel={`Log ${movement.item.title}, set ${movement.nextSetIndex} of ${movement.requiredSets}`}
-                        disableNativePressAnimation
-                        fullWidth
-                        iconRight="chevron-forward"
-                        iconRightPosition="edge"
-                        label={`Log ${positionLabel} · Set ${movement.nextSetIndex}`}
-                        onPress={() => onLogMovement(movement.itemId)}
-                        size="sm"
-                        style={styles.logMovementButton}
-                        variant={isSuggested ? 'primary' : 'secondary'}
-                      />
-                    ) : movement.complete ? (
-                      <View style={styles.movementCompleteRow}>
-                        <Ionicons color={SLColors.success} name="checkmark-circle" size={17} />
-                        <Text style={styles.movementCompleteText}>All prescribed sets complete</Text>
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-
-          <View style={styles.historySection}>
-            <Text style={styles.sectionLabel}>HISTORY</Text>
-            {model.items.map((item) => (
-              <Pressable
-                accessibilityRole="button"
-                key={item.id}
-                onPress={() => onOpenHistory(item.id)}
-                style={({ pressed }) => [
-                  styles.historyRow,
-                  pressed && styles.controlPressed,
-                ]}
-              >
-                <View style={styles.historyCopy}>
-                  <Text numberOfLines={1} style={styles.historyTitle}>{item.title}</Text>
-                  <Text numberOfLines={1} style={styles.historyMeta}>
-                    {item.historyLine || 'No previous performance'}
-                  </Text>
-                </View>
-                <Ionicons color={SLColors.textMuted} name="chevron-forward" size={18} />
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      ) : null}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: SLMovementCardMaterial.base,
-    borderColor: SLMovementCardMaterial.neutralBorder,
-    borderRadius: SLRadius.xl,
-    borderWidth: 1,
-    marginBottom: SLSpacing.lg,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  header: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: SLSpacing.md,
-    paddingHorizontal: SLSpacing.lg,
-    paddingVertical: SLSpacing.lg,
-  },
-  muscleGroupMedallion: {
-    alignSelf: 'center',
-    width: 78,
-  },
-  headerCopy: {
-    flex: 1,
-    minWidth: 0,
-  },
-  eyebrowRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SLSpacing.sm,
-    marginBottom: SLSpacing.sm,
-  },
-  eyebrow: {
-    flex: 1,
-    minWidth: 0,
-    color: SLColors.accentViolet,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '900',
-    letterSpacing: 0.9,
-  },
-  status: {
-    fontWeight: '800',
-    letterSpacing: 0.65,
-  },
-  movementNames: {
-    gap: 1,
-  },
-  movementName: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.cardTitle.fontSize,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
-  movementConnector: {
-    marginLeft: 2,
-    marginVertical: 1,
-  },
-  summary: {
-    color: SLColors.accentMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '700',
-    marginTop: SLSpacing.sm,
-    textTransform: 'uppercase',
-  },
-  chevron: {
-    alignSelf: 'center',
-    marginLeft: SLSpacing.xs,
-  },
-  expanded: {
-    borderTopColor: SLColors.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingBottom: SLSpacing.lg,
-    paddingHorizontal: SLSpacing.lg,
-  },
-  section: {
-    paddingVertical: SLSpacing.xl,
-  },
-  timelineSection: {
-    borderTopColor: SLColors.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  sectionHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  sectionLabel: {
-    color: SLColors.accentMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '900',
-    letterSpacing: 0.9,
-  },
-  sectionMeta: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '700',
-  },
-  roundCount: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.screenTitle.fontSize,
-    fontWeight: '800',
-    marginTop: SLSpacing.md,
-  },
-  flexibleOrderHint: {
-    color: SLColors.textSecondary,
-    fontSize: SLTypography.label.fontSize,
-    lineHeight: 19,
-    marginTop: SLSpacing.sm,
-  },
-  workList: {
-    gap: SLSpacing.md,
-    marginTop: SLSpacing.lg,
-  },
-  workItem: {
-    backgroundColor: SLColors.surfaceEmbedded,
-    borderColor: SLColors.borderStandard,
-    borderRadius: SLRadius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    gap: SLSpacing.md,
-    padding: SLSpacing.md,
-  },
-  workItemHeader: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: SLSpacing.sm,
-  },
-  positionBadge: {
-    alignItems: 'center',
-    backgroundColor: SLColors.accentSoft,
-    borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.pill,
-    borderWidth: 1,
-    height: 30,
-    justifyContent: 'center',
-    width: 30,
-  },
-  positionBadgeComplete: {
-    backgroundColor: SLColors.successSoft,
-    borderColor: SLColors.success,
-  },
-  positionBadgeText: {
-    color: SLColors.accentViolet,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '900',
-  },
-  workCopy: {
-    flex: 1,
-    minWidth: 0,
-  },
-  workTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SLSpacing.sm,
-  },
-  workTitle: {
-    color: SLColors.textStrong,
-    flexShrink: 1,
-    fontSize: SLTypography.rowTitle.fontSize,
-    fontWeight: '700',
-  },
-  suggestedPill: {
-    backgroundColor: SLColors.accentSoft,
-    borderRadius: SLRadius.pill,
-    color: SLColors.accentViolet,
-    fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 0.7,
-    overflow: 'hidden',
-    paddingHorizontal: SLSpacing.sm,
-    paddingVertical: 3,
-  },
-  workPrescription: {
-    color: SLColors.textSecondary,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '600',
-    marginTop: 3,
-  },
-  workEquipmentContext: {
-    color: SLColors.accentMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '700',
-    marginTop: 3,
-  },
-  movementProgress: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '900',
-    paddingTop: 5,
-  },
-  movementProgressComplete: {
-    color: SLColors.success,
-  },
-  movementAction: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: SLColors.accentSoft,
-    borderColor: SLColors.borderFocus,
-    borderRadius: SLRadius.radiusControl,
-    borderWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: SLSpacing.xs,
-    minHeight: 40,
-    paddingHorizontal: SLSpacing.md,
-  },
-  movementActions: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SLSpacing.sm,
-  },
-  movementActionText: {
-    color: SLColors.accentViolet,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '800',
-  },
-  controlPressed: {
-    opacity: 0.72,
-    transform: [{ scale: 0.985 }],
-  },
-  controlBusy: {
-    opacity: 0.72,
-  },
-  movementEvidence: {
-    borderTopColor: SLColors.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    gap: SLSpacing.xs,
-    paddingTop: SLSpacing.sm,
-  },
-  noSetsYet: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    paddingVertical: SLSpacing.xs,
-  },
-  logMovementButton: {
-    marginTop: SLSpacing.xs,
-  },
-  movementCompleteRow: {
-    alignItems: 'center',
-    borderTopColor: SLColors.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: SLSpacing.sm,
-    paddingTop: SLSpacing.md,
-  },
-  movementCompleteText: {
-    color: SLColors.success,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '800',
-  },
-  timeline: {
-    marginTop: SLSpacing.lg,
-  },
-  roundRow: {
-    flexDirection: 'row',
-    gap: SLSpacing.md,
-    paddingBottom: SLSpacing.lg,
-  },
-  roundNode: {
-    alignItems: 'center',
-    backgroundColor: SLColors.surfaceEmbedded,
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.pill,
-    borderWidth: 1,
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  roundNodeCurrent: {
-    backgroundColor: SLColors.accentSoft,
-    borderColor: SLColors.accentViolet,
-  },
-  roundNodeComplete: {
-    backgroundColor: SLColors.successSoft,
-    borderColor: SLColors.success,
-  },
-  roundNodeText: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.rowTitle.fontSize,
-    fontWeight: '700',
-  },
-  roundNodeTextCurrent: {
-    color: SLColors.textStrong,
-  },
-  roundBody: {
-    borderBottomColor: SLColors.divider,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flex: 1,
-    gap: SLSpacing.sm,
-    paddingBottom: SLSpacing.lg,
-  },
-  roundLabel: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-  },
-  timelineMovement: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SLSpacing.sm,
-  },
-  timelineDot: {
-    backgroundColor: 'transparent',
-    borderColor: SLColors.borderStrong,
-    borderRadius: SLRadius.pill,
-    borderWidth: 1,
-    height: 11,
-    width: 11,
-  },
-  timelineDotReady: {
-    borderColor: SLColors.accentViolet,
-  },
-  timelineDotComplete: {
-    backgroundColor: SLColors.success,
-    borderColor: SLColors.success,
-  },
-  timelineCopy: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flex: 1,
-    gap: SLSpacing.sm,
-    justifyContent: 'space-between',
-  },
-  timelineTitle: {
-    color: SLColors.textStrong,
-    flex: 1,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '700',
-  },
-  timelineState: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    fontWeight: '700',
-  },
-  timelineStateReady: {
-    color: SLColors.accentViolet,
-  },
-  timelineStateComplete: {
-    color: SLColors.success,
-  },
-  logRoundButton: {
-    marginBottom: SLSpacing.lg,
-  },
-  historySection: {
-    borderTopColor: SLColors.divider,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: SLSpacing.lg,
-  },
-  historyRow: {
-    alignItems: 'center',
-    borderBottomColor: SLColors.divider,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    gap: SLSpacing.md,
-    minHeight: 58,
-  },
-  historyCopy: {
-    flex: 1,
-    minWidth: 0,
-  },
-  historyTitle: {
-    color: SLColors.textStrong,
-    fontSize: SLTypography.label.fontSize,
-    fontWeight: '700',
-  },
-  historyMeta: {
-    color: SLColors.textMuted,
-    fontSize: SLTypography.caption.fontSize,
-    marginTop: 2,
-  },
+const s = StyleSheet.create({
+  group: { marginBottom: 12, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#74518e', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#2b2632' },
+  activeGroup: { borderLeftColor: '#bd80c3', paddingBottom: 8 },
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 8, rowGap: 4, paddingVertical: 12 },
+  eyebrow: { color: '#ceaceb', fontSize: 12, fontFamily: SLFontFamilies.sansBold, letterSpacing: 1.1, flex: 1, minWidth: 0 },
+  roundLabel: { color: '#d1bdde', fontSize: 13, lineHeight: 18 },
+  roundRail: { flexDirection: 'row', gap: 5, marginBottom: 8 },
+  roundSegment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: '#302a3b' },
+  roundCurrent: { backgroundColor: '#cf8ebc' }, roundComplete: { backgroundColor: '#80d7a8' },
+  member: { paddingVertical: 9, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#29232f' },
+  selectedMember: { backgroundColor: '#0d0b12' },
+  memberRow: { flexDirection: 'row', gap: 8, alignItems: 'center', paddingVertical: 3, paddingRight: 4 },
+  memberLabel: { color: '#bd9fdc', fontSize: 12, width: 23, fontFamily: SLFontFamilies.sansSemiBold },
+  memberCopy: { flex: 1, minWidth: 0 },
+  title: { color: '#f5f0fb', fontSize: 16, lineHeight: 21, fontFamily: SLFontFamilies.sansSemiBold },
+  activeTitle: { fontSize: 23, lineHeight: 28 },
+  activePrescription: { fontSize: 15, lineHeight: 22 },
+  prescription: { color: '#c3b9cf', fontSize: 12, lineHeight: 18, marginTop: 3 },
+  equipment: { color: '#aea2be', fontSize: 11, lineHeight: 16, marginTop: 2 },
+  required: { color: '#e8bd83', fontSize: 11, lineHeight: 17, marginTop: 2 },
+  state: { color: '#9c91ad', fontSize: 10, lineHeight: 16, marginTop: 4, fontFamily: SLFontFamilies.sansSemiBold },
+  current: { color: '#d7a9f1' }, complete: { color: '#86ddb0' },
+  details: { paddingLeft: 4 }, tools: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 15 },
+  tool: { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 44 },
+  controlPressed: { opacity: 0.6 },
+  toolText: { color: '#c9b1ec', fontSize: 12 }, historyText: { color: '#aadce5', fontSize: 12 },
+  prior: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 }, priorText: { flex: 1, color: '#afcbd5', fontSize: 12, lineHeight: 18 },
+  roundHint: { color: '#a59bb2', fontSize: 11, lineHeight: 17, paddingTop: 10 },
 });
