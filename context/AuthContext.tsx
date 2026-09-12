@@ -1,4 +1,5 @@
 import { setExecutionActor } from '@/lib/execution-actor';
+import { sessionExposureCache } from '@/lib/session-exposure-cache';
 import { purgeAuthoringJournals } from '@/lib/session-authoring-journal';
 // context/AuthContext.tsx
 import React, {
@@ -119,6 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [token]);
 
   const persistUser = useCallback(async (nextUser: AuthUser | null) => {
+    if (nextUser?.id !== userRef.current?.id) sessionExposureCache.deny();
     const pendingMode = pendingMobileModeRef.current?.requestedMode;
     const reconciledUser = nextUser && pendingMode
       ? { ...nextUser, mobile_mode: pendingMode }
@@ -470,6 +472,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function logout() {
+    sessionExposureCache.deny();
     stopVideoUploadQueue();
     await purgeAuthoringJournals().catch(() => undefined);
     await persistUser(null);

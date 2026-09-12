@@ -25,7 +25,7 @@ const areas = [
     'scripts/test-rest-timer-zero-deadlock.mjs',
     'scripts/test-rest-timer-picker-material.mjs',
   ]],
-  ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs']],
+  ['Session Logger performance, route, and resume ownership', ['scripts/test-session-logger-performance-contract.mjs', 'scripts/test-session-logger-resume-contract.mjs', 'scripts/test-session-exposure-snapshot.mjs']],
   ['Session Logger request timeout ownership', ['scripts/test-session-logger-request-policy.mjs']],
   ['equipment', ['scripts/test-equipment-gating-regression.mjs', 'scripts/test-equipment-usage-semantics.mjs', 'scripts/test-canonical-equipment-picker.mjs', 'scripts/test-manufacturer-branding.mjs', 'scripts/test-superset-equipment-context.mjs', 'scripts/test-superset-equipment-control.mjs', 'scripts/test-machine-brand-keyboard-selection.mjs']],
   ['completed Session equipment evidence correction', ['scripts/test-completed-session-equipment-correction.mjs']],
