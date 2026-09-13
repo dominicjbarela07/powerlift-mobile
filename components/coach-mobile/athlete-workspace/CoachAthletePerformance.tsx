@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { AnalyticalTimeSeriesChart } from '@/components/charts/AnalyticalTimeSeriesChart';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
 import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';
 import { FloatingDisplayUnitRegistration, floatingControlBottom, SL_FLOATING_CONTROL } from '@/components/ui/floating-control-coordinator';
 import { Text } from '@/components/ui/sl-text';
@@ -139,7 +140,7 @@ export function CoachAthletePerformance() {
             {model.accessoryPreview.map((progress) => {
               const movement = model.accessories!.movements.find((m) => m.id === progress.movement_id)!;
               return <Pressable key={progress.identity_key} accessibilityRole="button" accessibilityLabel={`Open ${movement.name} accessory evidence`} onPress={() => open(`movement/${movement.id}`)} style={({ pressed }) => [s.movementRow, pressed && v.pressed]}>
-                <CanonicalMovementArtwork movement={movement} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(progress.prior, progress.current, unit)}</Text><Text style={v.meta}>{progress.assisted ? 'Assistance · ' : ''}{progress.current.equipment_model || progress.current.equipment_type?.replace(/_/g, ' ') || 'Same equipment'} · {periodDate(progress.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
+                <CanonicalMovementArtwork surface="CoachAthletePerformance" movement={canonicalArtworkInputFromDefinition(movement)} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(progress.prior, progress.current, unit)}</Text><Text style={v.meta}>{progress.assisted ? 'Assistance · ' : ''}{progress.current.equipment_model || progress.current.equipment_type?.replace(/_/g, ' ') || 'Same equipment'} · {periodDate(progress.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
               </Pressable>;
             })}
             <EvidenceLink quiet title="Open Accessories" onPress={() => open('accessories')} />
@@ -150,7 +151,7 @@ export function CoachAthletePerformance() {
             {model.variantPreview.map((movement) => {
               const p = movement.latest_progression!;
               return <Pressable key={movement.core_movement_id} accessibilityRole="button" accessibilityLabel={`Open ${movement.name} variant evidence`} onPress={() => open(`variant/${movement.core_movement_id}`)} style={({ pressed }) => [s.movementRow, pressed && v.pressed]}>
-                <CanonicalMovementArtwork movement={{ core_movement_id: movement.core_movement_id, core_movement: { id: movement.core_movement_id, family: movement.family, kind: 'variant' } }} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(p.prior, p.current, unit)}</Text><Text style={v.meta}>{movement.parent_lift_label} variant · {periodDate(p.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
+                <CanonicalMovementArtwork surface="CoachAthletePerformance" movement={{ core_movement_id: movement.core_movement_id, core_movement: { id: movement.core_movement_id, family: movement.family, kind: 'variant' } }} size={54} /><View style={v.flex}><Text style={v.rowTitle}>{movement.name}</Text><Text style={s.progressText}>{performanceTaskChange(p.prior, p.current, unit)}</Text><Text style={v.meta}>{movement.parent_lift_label} variant · {periodDate(p.occurred_on)}</Text></View><Ionicons name="chevron-forward" size={15} color={INK.muted} />
               </Pressable>;
             })}
             <EvidenceLink quiet title="Open Core Variants" onPress={() => open('variants')} />

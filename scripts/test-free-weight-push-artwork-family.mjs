@@ -18,25 +18,29 @@ const resolve = (identity) => resolveCanonicalMovementArtwork({ kind: 'accessory
 
 assert.equal(audit.count, 51);
 assert.deepEqual(audit.counts_by_primary, { chest: 17, front_delts: 12, side_delts: 10, triceps: 12 });
+const currentQualifying = audit.qualifying.filter(row => row.id !== 38);
+assert.equal(currentQualifying.length,50,'owner-retired hex press has no current artwork');
 const pushPrimaries = new Set(Object.keys(audit.counts_by_primary));
 // Historical identity membership stays fixed; exact reviewed head corrections retain provenance.
-for (const row of audit.qualifying) {
+for (const row of currentQualifying) {
   assert.deepEqual(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id], { key: row.key, primary: row.primary_muscle_group });
 }
 assert.equal(manifest.movements.filter(r=>r.final_status==='PENDING').length, 0);
 assert.equal(manifest.movements.filter(r=>r.final_status==='KEEP').length, 1);
 const uniqueAppFiles = new Set();
-for (const row of audit.qualifying) {
+for (const row of currentQualifying) {
   assert.equal(row.execution_family, 'FREE_WEIGHT');
   assert.equal(row.identity_status, 'canonical');
   assert.equal(row.retired_at, null);
   const identity = { id: row.id, key: row.key, family: row.family, primary_muscle_group: row.primary_muscle_group };
   assert.equal(resolve(identity).artworkKey, row.key);
-  assert.equal(resolve({ ...identity, key: undefined }).kind, 'neutral', 'registered definition ID needs its stable catalog key to exclude unrelated row-ID collisions');
+  assert.equal(resolve({ ...identity, key: undefined }).artworkKey, undefined, 'missing key excludes exact photography while preserving governed anatomy');
+  assert.equal(resolve({ ...identity, key: undefined }).kind, 'accessory');
   assert.equal(resolve({ ...identity, key: 'contradictory_identity' }).kind, 'neutral');
-  assert.equal(resolve({ ...identity, primary_muscle_group: 'lats', family: 'accessory_lats' }).kind, 'neutral');
+  assert.equal(resolve({ ...identity, primary_muscle_group: 'lats', family: 'accessory_lats' }).artworkKey, undefined, 'governed taxonomy remains available, but incompatible photography is excluded');
   assert.equal(resolve({ ...identity, id: 999999 }).kind, 'neutral', 'known key cannot override a contradictory ID');
-  assert.equal(resolve({ ...identity, id: undefined }).kind, 'neutral');
+  assert.equal(resolve({ ...identity, id: undefined }).artworkKey, undefined);
+  assert.equal(resolve({ ...identity, id: undefined }).kind, 'accessory', 'governed taxonomy can survive without an exact ID');
   assert.equal(resolveCanonicalMovementArtwork({ kind: 'accessory', ...identity,
     movement_identity: { ...identity, key: 'contradictory_identity' },
   }).kind, 'neutral', 'contradictory nested identity cannot fall through to outer picker data');
@@ -66,15 +70,15 @@ for (const row of audit.qualifying) {
   assert.ok(mappingSource.includes(`require('@/${asset.files.app.path}')`));
   assert.ok(mappingSource.includes(`require('@/${asset.files.thumbnail.path}')`));
 }
-assert.equal(uniqueAppFiles.size, audit.count, 'separate IDs must not silently reuse one generic image');
+assert.equal(uniqueAppFiles.size, currentQualifying.length, 'separate IDs must not silently reuse one generic image');
 const searchGroups = JSON.parse(read('docs/validation/free-weight-push-family-2026-09-11/qa-search-serialized.json'));
 assert.equal(searchGroups.flatMap(group => group.items).length, 51);
 for (const group of searchGroups) {
   assert.equal(group.http_status, 200);
   for (const item of group.items) {
     assert.equal(item.primary_muscle_group, group.primary);
-    const selected = resolveCanonicalMovementArtwork({ ...item, kind: 'accessory' });
-    assert.equal(selected.artworkKey, item.key, 'real search DTO selects the same exact canonical asset');
+    const selected = resolveCanonicalMovementArtwork({ movement_identity: item, kind: 'accessory' });
+    assert.equal(selected.artworkKey, item.id === 38 ? undefined : item.key, 'real search DTO selects the same exact canonical asset');
     assert.equal(selected.canonicalIdentityId, item.id);
   }
 }
@@ -96,4 +100,4 @@ assert.equal(resolve({ id: 321, key: 'accessory_weighted_dip', primary_muscle_gr
 assert.equal(resolve({ id: 314, key: 'accessory_machine_dip', primary_muscle_group: 'triceps' }).kind, 'accessory');
 assert.equal(resolveCanonicalMovementArtwork({ kind:'core', core_movement_id:33, core_family:'bench' }).kind, 'core');
 assert.equal(resolveCanonicalMovementArtwork({ kind:'accessory', display_name:'Incline Dumbbell Bench Press' }).kind, 'neutral');
-console.log('[free-weight-push-family] complete audited ID coverage, immutable baseline, 51 distinct files, identity conflicts, swaps and excluded/Core isolation passed');
+console.log('[free-weight-push-family] complete audited ID coverage, immutable baseline, 50 current files, retired hex-press historical identity, identity conflicts, swaps and excluded/Core isolation passed');

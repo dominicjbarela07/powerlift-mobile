@@ -196,7 +196,7 @@ assert.doesNotMatch(renderer, /MuscleMap|full-body|full_body/, 'the individual r
 assert.doesNotMatch(resolver, /movement_name|movementName|display_name|displayName|equipment_definition|manufacturer/, 'the resolver may not consume display names or equipment identity');
 assert.doesNotMatch(resolver, /normalizedToken\(movement\.(?:name|movement|label)\)/, 'the resolver may not normalize display text to infer artwork');
 assert.match(renderer, /Ionicons name="help-outline"/, 'unresolved identities require a neutral placeholder');
-assert.match(renderer, /console\.warn\('\[movement-artwork\] neutral fail-closed result'/, 'DEV diagnostics must expose missing governed mappings');
+assert.match(renderer, /console\.warn\('\[movement-artwork\] unresolved governed subject'/, 'DEV diagnostics must expose missing governed mappings');
 
 const individualConsumers = [
   ['components/coach-mobile/SessionEditingWorkspace.tsx', /CanonicalMovementArtwork/],

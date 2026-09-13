@@ -117,7 +117,7 @@ normalized values and ramp as the body.
 | Accessories development hero | period aggregate | `MuscleMap` |
 | Accessories muscle library and Ledger muscle drill-down | muscle aggregate | `MuscleMap`; library highlight arrays remain stable across display-unit changes |
 | Session Workspace muscle discovery | muscle aggregate | `GovernedMuscleThumbnail` |
-| Session Logger, including standalone and Superset movements | exact movement | `CanonicalMovementArtwork` |
+| Session Logger, including standalone and Superset movements | exact movement with compact targeted-muscle context | `CanonicalMovementArtwork`; `accessoryPresentation="muscle-focus"` keeps the governed regional cue left of the name, including when an approved exact hero is visible |
 | Swap Accessory confirmation and results | exact movement plus muscle aggregate browse | `CanonicalMovementArtwork` / `GovernedMuscleThumbnail` |
 | Programming/Editor movement rows and picker | exact movement plus muscle aggregate browse | `CanonicalMovementArtwork` / `GovernedMuscleThumbnail` |
 | Ledger movement cards, history, and Accessory progress cards | exact movement | `CanonicalMovementArtwork` |

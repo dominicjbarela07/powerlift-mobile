@@ -15,7 +15,7 @@ export function SessionSetEntryContext({ title, visual, target }: {
     {endpoints.length ? <View style={s.stacks}>{endpoints.map((endpoint, index) => <View key={index} style={s.endpoint}>
       {endpoint.plateStack ? <LoggerPlateStackVisual plateStack={endpoint.plateStack} style={s.stack} /> : null}
       <Text style={s.load}>{endpoint.displayLabel}</Text>
-    </View>)}</View> : <CanonicalMovementArtwork movement={visual.movementArtworkInput} size={60} />}
+    </View>)}</View> : <CanonicalMovementArtwork surface="session-set-entry-context" movement={visual.movementArtworkInput} size={60} />}
   </View>;
 }
 const s = StyleSheet.create({

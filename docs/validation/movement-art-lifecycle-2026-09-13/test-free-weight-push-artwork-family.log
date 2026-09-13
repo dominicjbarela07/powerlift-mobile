@@ -1,0 +1,23 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: registered definition ID needs its stable catalog key to exclude unrelated row-ID collisions
++ actual - expected
+
++ 'accessory'
+- 'neutral'
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-free-weight-push-artwork-family.mjs:37:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'accessory',
+  expected: 'neutral',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

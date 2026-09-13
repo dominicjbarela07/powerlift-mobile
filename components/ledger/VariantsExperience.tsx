@@ -95,7 +95,6 @@ function useVariantStory(athleteId?: number) {
 
 function variantArtwork(movement: Pick<CoreVariantMovement, 'core_movement_id' | 'family'>) {
   return {
-    id: movement.core_movement_id,
     core_movement_id: movement.core_movement_id,
     identity_type: 'core',
     kind: 'variant',
@@ -274,7 +273,7 @@ function ProgressCard({ movement, unit, onPress }: { movement: CoreVariantMoveme
 
 function BlockTimeline({ movement, unit }: { movement: CoreVariantMovement; unit: 'lb' | 'kg' }) {
   const tone = FAMILY_TONES[movement.family];
-  return <View style={styles.blockTimeline}><View style={styles.timelineIdentity}><CanonicalMovementArtwork movement={variantArtwork(movement)} size={54} /><View style={styles.timelineCopy}><Text style={styles.timelineName}>{movement.name}</Text><Text style={styles.timelineMeta}>{movement.session_count} Sessions · {movement.set_count} working sets</Text></View></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.blockRail}>{movement.block_usage.map((block, index) => <React.Fragment key={block.block_id}>{index ? <View style={[styles.blockConnector, block.programmed && { backgroundColor: `${tone}80` }]} /> : null}<BlockUsageCard block={block} tone={tone} unit={unit} /></React.Fragment>)}</ScrollView></View>;
+  return <View style={styles.blockTimeline}><View style={styles.timelineIdentity}><CanonicalMovementArtwork surface="VariantsExperience" movement={variantArtwork(movement)} size={54} /><View style={styles.timelineCopy}><Text style={styles.timelineName}>{movement.name}</Text><Text style={styles.timelineMeta}>{movement.session_count} Sessions · {movement.set_count} working sets</Text></View></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.blockRail}>{movement.block_usage.map((block, index) => <React.Fragment key={block.block_id}>{index ? <View style={[styles.blockConnector, block.programmed && { backgroundColor: `${tone}80` }]} /> : null}<BlockUsageCard block={block} tone={tone} unit={unit} /></React.Fragment>)}</ScrollView></View>;
 }
 
 function BlockUsageCard({ block, tone, unit }: { block: CoreVariantBlockUsage; tone: string; unit: 'lb' | 'kg' }) {

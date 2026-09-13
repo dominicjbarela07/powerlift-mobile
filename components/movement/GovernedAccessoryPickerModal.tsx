@@ -295,7 +295,7 @@ export function GovernedAccessorySubstitutionPickerModal({
 
   const renderIdentity = (identity: GovernedAccessoryIdentity, reason?: string) => (
     <Pressable accessibilityLabel={`Select ${identity.display_name}`} accessibilityRole="button" key={identity.id} onPress={() => void onSelect(identity)} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
-      <CanonicalMovementArtwork movement={{ ...identity, kind: 'accessory' }} size={62} style={styles.artwork} testID="governed-picker-canonical-movement-artwork" />
+      <CanonicalMovementArtwork movement={{ kind: 'accessory', movement_identity: identity }} size={62} style={styles.artwork} testID="governed-picker-canonical-movement-artwork" />
       <View style={styles.rowCopy}>
         <Text numberOfLines={2} style={styles.rowTitle}>{identity.display_name}</Text>
         <Text numberOfLines={2} style={styles.rowMeta}>{reason || [accessoryTaxonomyLabel(identity.primary_muscle_group), accessoryTaxonomyLabel(identity.execution_family)].filter(Boolean).join(' · ') || 'Governed accessory'}</Text>
@@ -346,7 +346,7 @@ export function GovernedAccessorySubstitutionPickerModal({
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" style={styles.scroll}>
             {step === 'home' ? <>
               {currentIdentity ? <View style={styles.contextCard}>
-                <CanonicalMovementArtwork movement={{ ...currentIdentity, kind: 'accessory' }} size={70} style={styles.contextArtwork} />
+                <CanonicalMovementArtwork surface="GovernedAccessoryPickerModal" movement={{ kind: 'accessory', movement_identity: currentIdentity }} size={70} style={styles.contextArtwork} />
                 <View style={styles.contextCopy}><Text style={styles.sectionLabel}>SWAPPING</Text><Text numberOfLines={2} style={styles.contextName}>{currentIdentity.display_name}</Text><Text numberOfLines={1} style={styles.contextMeta}>{[accessoryTaxonomyLabel(currentIdentity.primary_muscle_group), currentIdentity.family_display_name || accessoryTaxonomyLabel(currentIdentity.family)].filter(Boolean).join(' · ')}</Text><Text style={styles.prescriptionLabel}>Current prescription</Text><Text style={styles.prescription}>{currentPrescription || 'No prescription'}</Text></View>
               </View> : null}
               <Text style={styles.sectionLabel}>SIMILAR MOVEMENTS</Text>

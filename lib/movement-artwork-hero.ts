@@ -1,5 +1,5 @@
 import policy from '@/artwork-review/runtime-policy.json';
-import { resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
+import { resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
 
 export type ApprovedExactArtwork = Readonly<{
   key: CanonicalAccessoryArtworkKey;
@@ -17,7 +17,7 @@ type ApprovalPolicy = Readonly<{
  * The DEV startup byte guard verifies this projection against the review store.
  */
 export function resolveApprovedExactMovementArtwork(
-  movement?: CanonicalMovementArtworkInput | null,
+  movement?: MovementArtInput | null,
   dev = typeof __DEV__ !== 'undefined' && __DEV__,
   approvals: ApprovalPolicy = policy,
 ): ApprovedExactArtwork | null {

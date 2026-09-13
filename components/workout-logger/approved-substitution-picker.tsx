@@ -31,7 +31,7 @@ export function ApprovedSubstitutionPicker({ visible, choices, currentName, pres
         <Text style={styles.prescription}>{prescription} · prescription retained</Text>
         <ScrollView>
           {choices.map((identity) => <Pressable key={identity.id} accessibilityRole="button" accessibilityLabel={`Substitute ${identity.display_name}`} onPress={() => onSelect(identity)} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
-            <CanonicalMovementArtwork movement={identity} size={52} style={styles.art} />
+            <CanonicalMovementArtwork surface="approved-substitution-picker" movement={{ kind: 'accessory', movement_identity: identity }} size={52} style={styles.art} />
             <View style={styles.copy}><Text style={styles.name}>{identity.display_name}</Text><Text style={styles.context}>Approved for this Session</Text></View>
             <Ionicons name="chevron-forward" size={20} color={SLColors.accentViolet} />
           </Pressable>)}

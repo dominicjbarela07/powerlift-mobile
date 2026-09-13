@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const areas = [
+  ['movement artwork identity survives completion', ['scripts/test-movement-art-lifecycle.mjs', 'scripts/test-movement-art-consumer-convergence.mjs']],
   ['canonical superset storyboard and next-member progression', ['scripts/test-superset-rounds.mjs', 'scripts/test-superset-workspace-convergence.mjs']],
   ['platform-wide mobile full-width and text layout', ['scripts/test-mobile-full-width-enforcement.mjs', 'scripts/test-mobile-text-layout-contract.mjs']],
   ['Athlete Meet Packet V2 lifecycle and immersive shell', ['scripts/test-athlete-meet-packet-v2.mjs', 'scripts/test-immersive-meet-mode-shell.mjs']],

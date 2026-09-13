@@ -1,0 +1,505 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /CanonicalMovementArtwork movement=\{history\.movement\}/. Input:
+
+"import { Ionicons } from '@expo/vector-icons';\n" +
+  "import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';\n" +
+  "import { LinearGradient } from 'expo-linear-gradient';\n" +
+  "import { useNavigation, useRouter } from 'expo-router';\n" +
+  "import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';\n" +
+  'import {\n' +
+  '  Image,\n' +
+  '  Pressable,\n' +
+  '  RefreshControl,\n' +
+  '  ScrollView,\n' +
+  '  StyleSheet,\n' +
+  '  View,\n' +
+  "} from 'react-native';\n" +
+  '\n' +
+  "import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';\n" +
+  "import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';\n" +
+  "import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';\n" +
+  "import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';\n" +
+  "import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';\n" +
+  "import { SLContextualHeader } from '@/components/ui';\n" +
+  "import { Text } from '@/components/ui/sl-text';\n" +
+  "import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';\n" +
+  "import { SLScreen } from '@/components/ui/sl-screen';\n" +
+  "import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';\n" +
+  "import { SLLayout } from '@/constants/theme';\n" +
+  "import { API_BASE } from '@/lib/api';\n" +
+  'import {\n' +
+  '  fetchCanonicalMovementExposure,\n' +
+  '  fetchCanonicalMovementHistory,\n' +
+  '  setCanonicalMovementFavorite,\n' +
+  '  type CanonicalHistoryExposure,\n' +
+  '  type CanonicalHistoryExposureDetail,\n' +
+  '  type CanonicalHistorySet,\n' +
+  '  type CanonicalMovementHistory,\n' +
+  '  type MovementHistoryDateRange,\n' +
+  '  type MovementHistoryQuery,\n' +
+  '  type MovementHistoryUnit,\n' +
+  "} from '@/lib/canonical-movement-history';\n" +
+  'import {\n' +
+  '  formatCalculatedWeightDeltaFromKg,\n' +
+  '  formatCalculatedWeightFromKg,\n' +
+  '  kilogramsToDisplayValue,\n' +
+  "} from '@/lib/display-units';\n" +
+  "import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';\n" +
+  "import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';\n" +
+  "import type { AnalyticalXDomainMode } from '@/lib/chart-fidelity';\n" +
+  "import { formatPerformedLoad } from '@/lib/performed-load-semantics';\n" +
+  'import {\n' +
+  '  buildLoadRepProfileLayout,\n' +
+  '  loadRepProfileAccessibilityLabel,\n' +
+  '  type LoadRepProfileCoordinate,\n' +
+  "} from '@/lib/load-rep-profile';\n" +
+  '\n' +
+  "type FilterPreset = 'all' | 'rir1' | 'rir2' | 'reps6to10' | 'reps8to12' | 'reps12plus';\n" +
+  '\n' +
+  'function titleCase(value?: string | null) {\n' +
+  "  return String(value || '').replace(/^accessory_/, '').replaceAll('_', ' ').replace(/\\b\\w/g, (letter) => letter.toUpperCase());\n" +
+  '}\n' +
+  '\n' +
+  'function dateLabel(value?: string | null, year = true) {\n' +
+  "  if (!value) return '—';\n" +
+  '  const parsed = new Date(`${value.slice(0, 10)}T12:00:00`);\n' +
+  '  if (Number.isNaN(parsed.getTime())) return value;\n' +
+  "  return parsed.toLocaleDateString('en-US', year ? { month: 'short', day: 'numeric', year: 'numeric' } : { month: 'short', day: 'numeric' });\n" +
+  '}\n' +
+  '\n' +
+  'function relativeDate(value?: string | null) {\n' +
+  '  if (!value) return null;\n' +
+  '  const today = new Date();\n' +
+  '  const parsed = new Date(`${value.slice(0, 10)}T12:00:00`);\n' +
+  '  const delta = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - parsed.getTime()) / 86400000);\n' +
+  "  if (delta === 0) return 'Today';\n" +
+  "  if (delta === 1) return 'Yesterday';\n" +
+  '  return null;\n' +
+  '}\n' +
+  '\n' +
+  'function displayWeight(valueKg: number | null | undefined, unit: MovementHistoryUnit, digits = 1) {\n' +
+  "  if (valueKg == null || !Number.isFinite(Number(valueKg))) return '—';\n" +
+  "  return kilogramsToDisplayValue(Number(valueKg), unit).toLocaleString('en-US', { maximumFractionDigits: digits });\n" +
+  '}\n' +
+  '\n' +
+  'function setLabel(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {\n' +
+  "  if (!set) return 'No comparable set';\n" +
+  "  const effort = set.rir != null ? ` @ ${set.rir} RIR` : set.rpe != null ? ` @ RPE ${set.rpe}` : '';\n" +
+  '  const load = formatPerformedLoad(set.weight_kg, unit, {\n' +
+  '    loadConvention: set.load_convention,\n' +
+  '    measurementType: set.measurement_type,\n' +
+  '  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;\n' +
+  "  return `${load} × ${set.reps ?? '—'}${effort}`;\n" +
+  '}\n' +
+  '\n' +
+  'function compactSetLoad(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {\n' +
+  "  if (!set) return '—';\n" +
+  '  const load = formatPerformedLoad(set.weight_kg, unit, {\n' +
+  '    loadConvention: set.load_convention,\n' +
+  '    measurementType: set.measurement_type,\n' +
+  '  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;\n' +
+  "  return `${load} × ${set.reps ?? '—'}`;\n" +
+  '}\n' +
+  '\n' +
+  'function compactSetEffort(set: CanonicalHistorySet | null | undefined) {\n' +
+  '  if (!set) return null;\n' +
+  '  if (set.rir != null) return `${set.rir} RIR`;\n' +
+  '  if (set.rpe != null) return `RPE ${set.rpe}`;\n' +
+  "  return 'Effort not recorded';\n" +
+  '}\n' +
+  '\n' +
+  'function compactEquipmentLabel(value?: string | null) {\n' +
+  "  return String(value || 'Unknown').replace(/ Machine$/i, '');\n" +
+  '}\n' +
+  '\n' +
+  'function durationLabel(seconds?: number | null) {\n' +
+  "  if (!seconds) return '—';\n" +
+  '  const minutes = Math.floor(seconds / 60);\n' +
+  '  const remainder = seconds % 60;\n' +
+  "  return `${minutes}:${String(remainder).padStart(2, '0')}`;\n" +
+  '}\n' +
+  '\n' +
+  'function absoluteAssetUrl(value?: string | null) {\n' +
+  '  if (!value) return null;\n' +
+  '  if (/^https?:\\/\\//i.test(value)) return value;\n' +
+  "  return `${API_BASE}${value.startsWith('/') ? value : `/${value}`}`;\n" +
+  '}\n' +
+  '\n' +
+  'function filterQuery(preset: FilterPreset) {\n' +
+  "  if (preset === 'rir1') return { rirMax: 1 };\n" +
+  "  if (preset === 'rir2') return { rirMax: 2 };\n" +
+  "  if (preset === 'reps6to10') return { repMin: 6, repMax: 10 };\n" +
+  "  if (preset === 'reps8to12') return { repMin: 8, repMax: 12 };\n" +
+  "  if (preset === 'reps12plus') return { repMin: 12 };\n" +
+  '  return {};\n' +
+  '}\n' +
+  '\n' +
+  "function movementLoadSemantics(movement?: CanonicalMovementHistory['movement'] | null) {\n" +
+  '  return {\n' +
+  "    load_convention: typeof movement?.load_convention === 'string' ? movement.load_convention : null,\n" +
+  "    measurement_type: typeof movement?.measurement_type === 'string' ? movement.measurement_type : null,\n" +
+  '  };\n' +
+  '}\n' +
+  '\n' +
+  'function withLoadSemantics<T extends CanonicalHistorySet | null | undefined>(\n' +
+  '  set: T,\n' +
+  "  movement?: CanonicalMovementHistory['movement'] | null,\n" +
+  '): T {\n' +
+  '  if (!set) return set;\n' +
+  '  const semantics = movementLoadSemantics(movement);\n' +
+  '  return {\n' +
+  '    ...set,\n' +
+  '    load_convention: set.load_convention || semantics.load_convention,\n' +
+  '    measurement_type: set.measurement_type || semantics.measurement_type,\n' +
+  '  } as T;\n' +
+  '}\n' +
+  '\n' +
+  'function hydrateHistoryLoadSemantics(payload: CanonicalMovementHistory) {\n' +
+  '  const hydrateExposure = (row: CanonicalHistoryExposure) => ({\n' +
+  '    ...row,\n' +
+  '    best_set: withLoadSemantics(row.best_set, payload.movement),\n' +
+  '  });\n' +
+  '  return {\n' +
+  '    ...payload,\n' +
+  '    equipment_breakdown: payload.equipment_breakdown.map((row) => ({\n' +
+  '      ...row,\n' +
+  '      best_performance: withLoadSemantics(row.best_performance, payload.movement),\n' +
+  '    })),\n' +
+  '    load_rep_profile: payload.load_rep_profile.map((row) => withLoadSemantics(row, payload.movement)),\n' +
+  '    statistics: {\n' +
+  '      ...payload.statistics,\n' +
+  '      load_pr: withLoadSemantics(payload.statistics.load_pr, payload.movement),\n' +
+  '      rep_pr_at_load: withLoadSemantics(payload.statistics.rep_pr_at_load, payload.movement),\n' +
+  '      best_n_rep_load: withLoadSemantics(payload.statistics.best_n_rep_load, payload.movement),\n' +
+  '    },\n' +
+  '    exposures: payload.exposures.map(hydrateExposure),\n' +
+  '  } as CanonicalMovementHistory;\n' +
+  '}\n' +
+  '\n' +
+  'function hydrateDetailLoadSemantics(\n' +
+  '  detail: CanonicalHistoryExposureDetail,\n' +
+  "  movement?: CanonicalMovementHistory['movement'] | null,\n" +
+  ') {\n' +
+  '  return {\n' +
+  '    ...detail,\n' +
+  '    best_set: withLoadSemantics(detail.best_set, movement),\n' +
+  '    sets: detail.sets.map((row) => withLoadSemantics(row, movement)),\n' +
+  '  };\n' +
+  '}\n' +
+  '\n' +
+  'export function CanonicalMovementHistoryScreen({\n' +
+  '  movementDefinitionId,\n' +
+  '  coreMovementId,\n' +
+  '  athleteId,\n' +
+  '  initialEquipmentContextDefinitionId,\n' +
+  '  initialDisplayUnit,\n' +
+  "  presentation = 'screen',\n" +
+  '  readOnly = false,\n' +
+  '  onRequestClose,\n' +
+  '}: {\n' +
+  '  movementDefinitionId?: number | null;\n' +
+  '  coreMovementId?: number | null;\n' +
+  '  athleteId?: number | null;\n' +
+  '  initialEquipmentContextDefinitionId?: number | null;\n' +
+  '  initialDisplayUnit?: MovementHistoryUnit | null;\n' +
+  "  presentation?: 'screen' | 'sheet';\n" +
+  '  readOnly?: boolean;\n' +
+  '  onRequestClose?: () => void;\n' +
+  '}) {\n' +
+  '  const router = useRouter();\n' +
+  '  const navigation = useNavigation();\n' +
+  '  useLayoutEffect(() => {\n' +
+  "    if (presentation === 'sheet') return undefined;\n" +
+  '    navigation.setOptions({ headerShown: false });\n' +
+  '    return () => navigation.setOptions({ headerShown: true });\n' +
+  '  }, [navigation, presentation]);\n' +
+  '\n' +
+  '  const [resolvedAthleteId, setResolvedAthleteId] = useState<number | null>(athleteId || null);\n' +
+  '  const [history, setHistory] = useState<CanonicalMovementHistory | null>(null);\n' +
+  '  const [loading, setLoading] = useState(true);\n' +
+  '  const [refreshing, setRefreshing] = useState(false);\n' +
+  '  const [error, setError] = useState<string | null>(null);\n' +
+  "  const [range, setRange] = useState<MovementHistoryDateRange>('all');\n" +
+  "  const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');\n" +
+  '  const [equipmentDefinitionId, setEquipmentDefinitionId] = useState<number | null>(null);\n' +
+  "  const [filterPreset, setFilterPreset] = useState<FilterPreset>('all');\n" +
+  '  const [filterSheetOpen, setFilterSheetOpen] = useState(false);\n' +
+  '  const [rangeSheetOpen, setRangeSheetOpen] = useState(false);\n' +
+  '  const [scopeSheetOpen, setScopeSheetOpen] = useState(false);\n' +
+  '  const [selectedExposureId, setSelectedExposureId] = useState<string | null>(null);\n' +
+  '  const [exposureDetail, setExposureDetail] = useState<CanonicalHistoryExposureDetail | null>(null);\n' +
+  '  const [detailLoading, setDetailLoading] = useState(false);\n' +
+  '  const [detailError, setDetailError] = useState<string | null>(null);\n' +
+  '  const [loadingMore, setLoadingMore] = useState(false);\n' +
+  '  const [favoriteSaving, setFavoriteSaving] = useState(false);\n' +
+  '  const requestGeneration = useRef(0);\n' +
+  '\n' +
+  '  useEffect(() => {\n' +
+  '    setResolvedAthleteId(athleteId || null);\n' +
+  '    setEquipmentDefinitionId(null);\n' +
+  "    setRange('all');\n" +
+  "    setFilterPreset('all');\n" +
+  '    setHistory(null);\n' +
+  '  }, [athleteId, coreMovementId, initialEquipmentContextDefinitionId, movementDefinitionId]);\n' +
+  '\n' +
+  '  useEffect(() => {\n' +
+  '    if (resolvedAthleteId || (!movementDefinitionId && !'... 58036 more characters
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-canonical-movement-history-v2.mjs:135:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: "import { Ionicons } from '@expo/vector-icons';\n" +
+    "import { Canvas, Circle, Line, vec } from '@shopify/react-native-skia';\n" +
+    "import { LinearGradient } from 'expo-linear-gradient';\n" +
+    "import { useNavigation, useRouter } from 'expo-router';\n" +
+    "import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';\n" +
+    'import {\n' +
+    '  Image,\n' +
+    '  Pressable,\n' +
+    '  RefreshControl,\n' +
+    '  ScrollView,\n' +
+    '  StyleSheet,\n' +
+    '  View,\n' +
+    "} from 'react-native';\n" +
+    '\n' +
+    "import { AnalyticalHistoryChart } from '@/components/movement-history/AnalyticalHistoryChart';\n" +
+    "import { ChartAxisModeToggle } from '@/components/charts/ChartAxisModeToggle';\n" +
+    "import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';\n" +
+    "import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';\n" +
+    "import { StrengthLedgerBottomSheet } from '@/components/sheets/StrengthLedgerBottomSheet';\n" +
+    "import { SLContextualHeader } from '@/components/ui';\n" +
+    "import { Text } from '@/components/ui/sl-text';\n" +
+    "import { FloatingControlCoordinator, FloatingDisplayUnitRegistration } from '@/components/ui/floating-control-coordinator';\n" +
+    "import { SLScreen } from '@/components/ui/sl-screen';\n" +
+    "import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';\n" +
+    "import { SLLayout } from '@/constants/theme';\n" +
+    "import { API_BASE } from '@/lib/api';\n" +
+    'import {\n' +
+    '  fetchCanonicalMovementExposure,\n' +
+    '  fetchCanonicalMovementHistory,\n' +
+    '  setCanonicalMovementFavorite,\n' +
+    '  type CanonicalHistoryExposure,\n' +
+    '  type CanonicalHistoryExposureDetail,\n' +
+    '  type CanonicalHistorySet,\n' +
+    '  type CanonicalMovementHistory,\n' +
+    '  type MovementHistoryDateRange,\n' +
+    '  type MovementHistoryQuery,\n' +
+    '  type MovementHistoryUnit,\n' +
+    "} from '@/lib/canonical-movement-history';\n" +
+    'import {\n' +
+    '  formatCalculatedWeightDeltaFromKg,\n' +
+    '  formatCalculatedWeightFromKg,\n' +
+    '  kilogramsToDisplayValue,\n' +
+    "} from '@/lib/display-units';\n" +
+    "import { fetchLedgerExplorationIndex } from '@/lib/ledger-exploration';\n" +
+    "import { useSurfaceWeightUnit } from '@/lib/surface-weight-unit';\n" +
+    "import type { AnalyticalXDomainMode } from '@/lib/chart-fidelity';\n" +
+    "import { formatPerformedLoad } from '@/lib/performed-load-semantics';\n" +
+    'import {\n' +
+    '  buildLoadRepProfileLayout,\n' +
+    '  loadRepProfileAccessibilityLabel,\n' +
+    '  type LoadRepProfileCoordinate,\n' +
+    "} from '@/lib/load-rep-profile';\n" +
+    '\n' +
+    "type FilterPreset = 'all' | 'rir1' | 'rir2' | 'reps6to10' | 'reps8to12' | 'reps12plus';\n" +
+    '\n' +
+    'function titleCase(value?: string | null) {\n' +
+    "  return String(value || '').replace(/^accessory_/, '').replaceAll('_', ' ').replace(/\\b\\w/g, (letter) => letter.toUpperCase());\n" +
+    '}\n' +
+    '\n' +
+    'function dateLabel(value?: string | null, year = true) {\n' +
+    "  if (!value) return '—';\n" +
+    '  const parsed = new Date(`${value.slice(0, 10)}T12:00:00`);\n' +
+    '  if (Number.isNaN(parsed.getTime())) return value;\n' +
+    "  return parsed.toLocaleDateString('en-US', year ? { month: 'short', day: 'numeric', year: 'numeric' } : { month: 'short', day: 'numeric' });\n" +
+    '}\n' +
+    '\n' +
+    'function relativeDate(value?: string | null) {\n' +
+    '  if (!value) return null;\n' +
+    '  const today = new Date();\n' +
+    '  const parsed = new Date(`${value.slice(0, 10)}T12:00:00`);\n' +
+    '  const delta = Math.round((new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() - parsed.getTime()) / 86400000);\n' +
+    "  if (delta === 0) return 'Today';\n" +
+    "  if (delta === 1) return 'Yesterday';\n" +
+    '  return null;\n' +
+    '}\n' +
+    '\n' +
+    'function displayWeight(valueKg: number | null | undefined, unit: MovementHistoryUnit, digits = 1) {\n' +
+    "  if (valueKg == null || !Number.isFinite(Number(valueKg))) return '—';\n" +
+    "  return kilogramsToDisplayValue(Number(valueKg), unit).toLocaleString('en-US', { maximumFractionDigits: digits });\n" +
+    '}\n' +
+    '\n' +
+    'function setLabel(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {\n' +
+    "  if (!set) return 'No comparable set';\n" +
+    "  const effort = set.rir != null ? ` @ ${set.rir} RIR` : set.rpe != null ? ` @ RPE ${set.rpe}` : '';\n" +
+    '  const load = formatPerformedLoad(set.weight_kg, unit, {\n' +
+    '    loadConvention: set.load_convention,\n' +
+    '    measurementType: set.measurement_type,\n' +
+    '  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;\n' +
+    "  return `${load} × ${set.reps ?? '—'}${effort}`;\n" +
+    '}\n' +
+    '\n' +
+    'function compactSetLoad(set: CanonicalHistorySet | null | undefined, unit: MovementHistoryUnit) {\n' +
+    "  if (!set) return '—';\n" +
+    '  const load = formatPerformedLoad(set.weight_kg, unit, {\n' +
+    '    loadConvention: set.load_convention,\n' +
+    '    measurementType: set.measurement_type,\n' +
+    '  }) || `${displayWeight(set.weight_kg, unit)} ${unit}`;\n' +
+    "  return `${load} × ${set.reps ?? '—'}`;\n" +
+    '}\n' +
+    '\n' +
+    'function compactSetEffort(set: CanonicalHistorySet | null | undefined) {\n' +
+    '  if (!set) return null;\n' +
+    '  if (set.rir != null) return `${set.rir} RIR`;\n' +
+    '  if (set.rpe != null) return `RPE ${set.rpe}`;\n' +
+    "  return 'Effort not recorded';\n" +
+    '}\n' +
+    '\n' +
+    'function compactEquipmentLabel(value?: string | null) {\n' +
+    "  return String(value || 'Unknown').replace(/ Machine$/i, '');\n" +
+    '}\n' +
+    '\n' +
+    'function durationLabel(seconds?: number | null) {\n' +
+    "  if (!seconds) return '—';\n" +
+    '  const minutes = Math.floor(seconds / 60);\n' +
+    '  const remainder = seconds % 60;\n' +
+    "  return `${minutes}:${String(remainder).padStart(2, '0')}`;\n" +
+    '}\n' +
+    '\n' +
+    'function absoluteAssetUrl(value?: string | null) {\n' +
+    '  if (!value) return null;\n' +
+    '  if (/^https?:\\/\\//i.test(value)) return value;\n' +
+    "  return `${API_BASE}${value.startsWith('/') ? value : `/${value}`}`;\n" +
+    '}\n' +
+    '\n' +
+    'function filterQuery(preset: FilterPreset) {\n' +
+    "  if (preset === 'rir1') return { rirMax: 1 };\n" +
+    "  if (preset === 'rir2') return { rirMax: 2 };\n" +
+    "  if (preset === 'reps6to10') return { repMin: 6, repMax: 10 };\n" +
+    "  if (preset === 'reps8to12') return { repMin: 8, repMax: 12 };\n" +
+    "  if (preset === 'reps12plus') return { repMin: 12 };\n" +
+    '  return {};\n' +
+    '}\n' +
+    '\n' +
+    "function movementLoadSemantics(movement?: CanonicalMovementHistory['movement'] | null) {\n" +
+    '  return {\n' +
+    "    load_convention: typeof movement?.load_convention === 'string' ? movement.load_convention : null,\n" +
+    "    measurement_type: typeof movement?.measurement_type === 'string' ? movement.measurement_type : null,\n" +
+    '  };\n' +
+    '}\n' +
+    '\n' +
+    'function withLoadSemantics<T extends CanonicalHistorySet | null | undefined>(\n' +
+    '  set: T,\n' +
+    "  movement?: CanonicalMovementHistory['movement'] | null,\n" +
+    '): T {\n' +
+    '  if (!set) return set;\n' +
+    '  const semantics = movementLoadSemantics(movement);\n' +
+    '  return {\n' +
+    '    ...set,\n' +
+    '    load_convention: set.load_convention || semantics.load_convention,\n' +
+    '    measurement_type: set.measurement_type || semantics.measurement_type,\n' +
+    '  } as T;\n' +
+    '}\n' +
+    '\n' +
+    'function hydrateHistoryLoadSemantics(payload: CanonicalMovementHistory) {\n' +
+    '  const hydrateExposure = (row: CanonicalHistoryExposure) => ({\n' +
+    '    ...row,\n' +
+    '    best_set: withLoadSemantics(row.best_set, payload.movement),\n' +
+    '  });\n' +
+    '  return {\n' +
+    '    ...payload,\n' +
+    '    equipment_breakdown: payload.equipment_breakdown.map((row) => ({\n' +
+    '      ...row,\n' +
+    '      best_performance: withLoadSemantics(row.best_performance, payload.movement),\n' +
+    '    })),\n' +
+    '    load_rep_profile: payload.load_rep_profile.map((row) => withLoadSemantics(row, payload.movement)),\n' +
+    '    statistics: {\n' +
+    '      ...payload.statistics,\n' +
+    '      load_pr: withLoadSemantics(payload.statistics.load_pr, payload.movement),\n' +
+    '      rep_pr_at_load: withLoadSemantics(payload.statistics.rep_pr_at_load, payload.movement),\n' +
+    '      best_n_rep_load: withLoadSemantics(payload.statistics.best_n_rep_load, payload.movement),\n' +
+    '    },\n' +
+    '    exposures: payload.exposures.map(hydrateExposure),\n' +
+    '  } as CanonicalMovementHistory;\n' +
+    '}\n' +
+    '\n' +
+    'function hydrateDetailLoadSemantics(\n' +
+    '  detail: CanonicalHistoryExposureDetail,\n' +
+    "  movement?: CanonicalMovementHistory['movement'] | null,\n" +
+    ') {\n' +
+    '  return {\n' +
+    '    ...detail,\n' +
+    '    best_set: withLoadSemantics(detail.best_set, movement),\n' +
+    '    sets: detail.sets.map((row) => withLoadSemantics(row, movement)),\n' +
+    '  };\n' +
+    '}\n' +
+    '\n' +
+    'export function CanonicalMovementHistoryScreen({\n' +
+    '  movementDefinitionId,\n' +
+    '  coreMovementId,\n' +
+    '  athleteId,\n' +
+    '  initialEquipmentContextDefinitionId,\n' +
+    '  initialDisplayUnit,\n' +
+    "  presentation = 'screen',\n" +
+    '  readOnly = false,\n' +
+    '  onRequestClose,\n' +
+    '}: {\n' +
+    '  movementDefinitionId?: number | null;\n' +
+    '  coreMovementId?: number | null;\n' +
+    '  athleteId?: number | null;\n' +
+    '  initialEquipmentContextDefinitionId?: number | null;\n' +
+    '  initialDisplayUnit?: MovementHistoryUnit | null;\n' +
+    "  presentation?: 'screen' | 'sheet';\n" +
+    '  readOnly?: boolean;\n' +
+    '  onRequestClose?: () => void;\n' +
+    '}) {\n' +
+    '  const router = useRouter();\n' +
+    '  const navigation = useNavigation();\n' +
+    '  useLayoutEffect(() => {\n' +
+    "    if (presentation === 'sheet') return undefined;\n" +
+    '    navigation.setOptions({ headerShown: false });\n' +
+    '    return () => navigation.setOptions({ headerShown: true });\n' +
+    '  }, [navigation, presentation]);\n' +
+    '\n' +
+    '  const [resolvedAthleteId, setResolvedAthleteId] = useState<number | null>(athleteId || null);\n' +
+    '  const [history, setHistory] = useState<CanonicalMovementHistory | null>(null);\n' +
+    '  const [loading, setLoading] = useState(true);\n' +
+    '  const [refreshing, setRefreshing] = useState(false);\n' +
+    '  const [error, setError] = useState<string | null>(null);\n' +
+    "  const [range, setRange] = useState<MovementHistoryDateRange>('all');\n" +
+    "  const [historyAxisMode, setHistoryAxisMode] = useState<AnalyticalXDomainMode>('chronological');\n" +
+    '  const [equipmentDefinitionId, setEquipmentDefinitionId] = useState<number | null>(null);\n' +
+    "  const [filterPreset, setFilterPreset] = useState<FilterPreset>('all');\n" +
+    '  const [filterSheetOpen, setFilterSheetOpen] = useState(false);\n' +
+    '  const [rangeSheetOpen, setRangeSheetOpen] = useState(false);\n' +
+    '  const [scopeSheetOpen, setScopeSheetOpen] = useState(false);\n' +
+    '  const [selectedExposureId, setSelectedExposureId] = useState<string | null>(null);\n' +
+    '  const [exposureDetail, setExposureDetail] = useState<CanonicalHistoryExposureDetail | null>(null);\n' +
+    '  const [detailLoading, setDetailLoading] = useState(false);\n' +
+    '  const [detailError, setDetailError] = useState<string | null>(null);\n' +
+    '  const [loadingMore, setLoadingMore] = useState(false);\n' +
+    '  const [favoriteSaving, setFavoriteSaving] = useState(false);\n' +
+    '  const requestGeneration = useRef(0);\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    '    setResolvedAthleteId(athleteId || null);\n' +
+    '    setEquipmentDefinitionId(null);\n' +
+    "    setRange('all');\n" +
+    "    setFilterPreset('all');\n" +
+    '    setHistory(null);\n' +
+    '  }, [athleteId, coreMovementId, initialEquipmentContextDefinitionId, movementDefinitionId]);\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    '    if (resolvedAthleteId || (!movementDefinitionId && !'... 58036 more characters,
+  expected: /CanonicalMovementArtwork movement=\{history\.movement\}/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

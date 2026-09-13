@@ -1,0 +1,76 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: same-movement Swap must not improve or change the canonical artwork subject
++ actual - expected
+... Skipped lines
+
+  {
+    artSubjectVersion: 1,
+    canonicalIdentityId: 314,
+    canonicalKey: 'accessory_machine_dip',
+    coreFamily: null,
+...
+    movementDefinitionId: null,
++   performedMovementDefinitionId: null,
+-   performedMovementDefinitionId: 314,
+    primaryMuscleGroup: 'triceps',
+    reason: null,
+    secondaryMuscleGroups: [
+      'chest'
+    ],
+    sessionItemId: 2505,
++   source: 'effective'
+-   source: 'performed_evidence'
+  }
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-logger-canonical-artwork-subject.mjs:35:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: {
+    artSubjectVersion: 1,
+    domain: 'accessory',
+    canonicalIdentityId: 314,
+    canonicalKey: 'accessory_machine_dip',
+    movementDefinitionId: null,
+    effectiveMovementDefinitionId: 314,
+    performedMovementDefinitionId: null,
+    family: 'accessory_triceps',
+    primaryMuscleGroup: 'triceps',
+    secondaryMuscleGroups: [ 'chest' ],
+    equipmentType: 'machine',
+    coreFamily: null,
+    coreVariant: false,
+    source: 'effective',
+    reason: null,
+    sessionItemId: 2505,
+    evidenceId: null
+  },
+  expected: {
+    artSubjectVersion: 1,
+    domain: 'accessory',
+    canonicalIdentityId: 314,
+    canonicalKey: 'accessory_machine_dip',
+    movementDefinitionId: null,
+    effectiveMovementDefinitionId: 314,
+    performedMovementDefinitionId: 314,
+    family: 'accessory_triceps',
+    primaryMuscleGroup: 'triceps',
+    secondaryMuscleGroups: [ 'chest' ],
+    equipmentType: 'machine',
+    coreFamily: null,
+    coreVariant: false,
+    source: 'performed_evidence',
+    reason: null,
+    sessionItemId: 2505,
+    evidenceId: null
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.2.1

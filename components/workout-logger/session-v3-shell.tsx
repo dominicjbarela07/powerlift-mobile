@@ -28,7 +28,7 @@ export function SessionV3PlanHero({ title, focus, planned, movements, artwork, n
   title: string; focus: string; planned: number; movements: number; artwork?: CanonicalMovementArtworkInput | null; note?: string | null;
 }) {
   return <View style={s.hero}>
-    <View style={s.heroRow}><View style={s.heroCopy}><Text style={s.eyebrow}>TODAY’S SESSION</Text><Text style={s.title}>{title}</Text><Text style={s.focus}>{focus}</Text></View><CanonicalMovementArtwork movement={artwork} size={120} style={s.heroArt} /></View>
+    <View style={s.heroRow}><View style={s.heroCopy}><Text style={s.eyebrow}>TODAY’S SESSION</Text><Text style={s.title}>{title}</Text><Text style={s.focus}>{focus}</Text></View><CanonicalMovementArtwork surface="session-v3-shell" movement={artwork} size={120} style={s.heroArt} /></View>
     <View style={s.stats}><View><Text style={s.number}>{planned}</Text><Text style={s.subtitle}>work sets</Text></View><View><Text style={s.number}>{movements}</Text><Text style={s.subtitle}>movements</Text></View></View>
     {note ? <View style={s.note}><Text style={s.eyebrow}>SESSION NOTE</Text><Text style={s.noteText}>{note}</Text></View> : null}
   </View>;
@@ -54,7 +54,7 @@ export function SessionMovementNavigator({ visible, rows, onClose, onSelect, bot
   return <Modal visible={visible} transparent animationType={reduceMotion ? 'none' : 'slide'} onRequestClose={onClose}><View style={s.backdrop}><Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close movement navigator" /><View style={[s.sheet, { paddingBottom: Math.max(20, bottom) }]}>
     <View style={s.headerRow}><Text style={[s.title, s.copy]}>Session movements</Text><Pressable onPress={onClose} style={s.icon} accessibilityLabel="Close"><Ionicons name="close" color="#eee" size={24} /></Pressable></View>
     <ScrollView>{rows.map((row, i) => <Pressable key={row.key} accessibilityRole="button" accessibilityState={{ selected: row.selected }} onPress={() => onSelect(row.key)} style={[s.navigatorRow, row.selected && s.selected]}>
-      <Text style={row.complete ? s.green : s.subtitle}>{row.complete ? '✓' : String(i + 1).padStart(2, '0')}</Text><CanonicalMovementArtwork movement={row.artwork} size={40} /><View style={s.copy}><Text style={s.headerTitle}>{row.title}</Text><Text style={s.subtitle}>{row.summary}</Text></View><Ionicons name="chevron-forward" color="#b494e6" size={18} />
+      <Text style={row.complete ? s.green : s.subtitle}>{row.complete ? '✓' : String(i + 1).padStart(2, '0')}</Text><CanonicalMovementArtwork surface="session-v3-shell" movement={row.artwork} size={40} /><View style={s.copy}><Text style={s.headerTitle}>{row.title}</Text><Text style={s.subtitle}>{row.summary}</Text></View><Ionicons name="chevron-forward" color="#b494e6" size={18} />
     </Pressable>)}</ScrollView>
   </View></View></Modal>;
 }

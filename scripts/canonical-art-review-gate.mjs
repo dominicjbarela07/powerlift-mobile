@@ -34,7 +34,7 @@ export function assertHumanArtworkGate(root = defaultRoot) {
   const grandfathered = new Map(state.grandfathered_assets.map(row => [row.key, row]));
   const allowedPaths = new Set();
   const denied = [];
-  const identities = fs.readFileSync(path.join(root, 'lib/canonical-movement-artwork.ts'), 'utf8');
+  const identities = fs.readFileSync(path.join(root, 'lib/canonical-accessory-artwork-identities.ts'), 'utf8');
   const mapping = fs.readFileSync(path.join(root, 'lib/canonical-movement-artwork-assets.ts'), 'utf8');
   for (const active of state.canonical_assets) {
     const candidate = candidates.get(active.candidate_id);

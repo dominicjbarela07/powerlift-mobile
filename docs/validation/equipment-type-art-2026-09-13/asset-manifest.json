@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "family": "equipment_category_closeups",
+  "scope": "DEV only; category artwork, separate from canonical movement artwork review",
+  "tool": "built-in image_gen",
+  "user_direction": "close up of the plate load and the weight stack and pins",
+  "assets": [
+    {
+      "key": "plate_loaded",
+      "selected_generation": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-6660428b-802d-4d29-afed-c9329650c36f.png",
+      "selection_reason": "Two mounted round plates, concentric loading sleeve and supporting machine bracket read immediately in a tight close-up.",
+      "files": {
+        "master": {
+          "path": "assets/images/equipment-types/v1/masters/plate-loaded.png",
+          "sha256": "082c56f9d11d59c25360a78a3af42a5a0c2380f34bcd64f502a3c6ae674861ea",
+          "width": 1254,
+          "height": 1254,
+          "bytes": 2337144
+        },
+        "app": {
+          "path": "assets/images/equipment-types/v1/plate-loaded.png",
+          "sha256": "1f4978e90f820c0ca93f1cb3962cd2ab28e8fb67463ed93d04d1d71fdc6805f7",
+          "width": 512,
+          "height": 512,
+          "bytes": 393925
+        },
+        "thumbnail": {
+          "path": "docs/validation/equipment-type-art-2026-09-13/plate-loaded-80.png",
+          "sha256": "8375fb7247c4e34481a7f45535d5ddf316f20eb161b4bdb4132562ac4954eecb",
+          "width": 80,
+          "height": 80,
+          "bytes": 11027
+        }
+      }
+    },
+    {
+      "key": "selectorized",
+      "selected_generation": "/Users/dominic/.codex/generated_images/01a08943-0eb2-7290-8c5d-18b31580104e/exec-4fa699fc-bfa6-44bd-959b-cb1c00025a71.png",
+      "selection_reason": "Rectangular slabs, guide rods and a flush centered selector pin remain distinct at mobile size. The offset pin of earlier iterations was corrected.",
+      "files": {
+        "master": {
+          "path": "assets/images/equipment-types/v1/masters/selectorized.png",
+          "sha256": "3fb4018be3328f30c768cfb5f27623aa9ea934d2c78c2e04014716c0e1cfddbb",
+          "width": 1254,
+          "height": 1254,
+          "bytes": 2259733
+        },
+        "app": {
+          "path": "assets/images/equipment-types/v1/selectorized.png",
+          "sha256": "fd03fc4672a0d3226f81f4bb254461ab5b7608c39151af85f18d4754667ba8e4",
+          "width": 512,
+          "height": 512,
+          "bytes": 361141
+        },
+        "thumbnail": {
+          "path": "docs/validation/equipment-type-art-2026-09-13/selectorized-80.png",
+          "sha256": "93093ddd325167b5545eb5287c521a277232e2fc43a9c96e5517b0f3e0ce9651",
+          "width": 80,
+          "height": 80,
+          "bytes": 9994
+        }
+      }
+    }
+  ]
+}

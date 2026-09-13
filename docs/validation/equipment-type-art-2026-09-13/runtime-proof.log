@@ -1,0 +1,100 @@
+
+> powerlift_mobile@1.0.0 start
+> node scripts/start-canonical-dev-metro.mjs
+
+[canonical-dev-metro] SOURCE PREFLIGHT PASS
+[canonical-dev-metro] Working tree contains local changes; Metro will run against current filesystem state.
+{
+  "port": 8081,
+  "projectRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "gitRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "scriptRoot": "/Users/dominic/powerlifting_app_dev/powerlift_mobile",
+  "branch": "dev/canonical-mobile",
+  "sha": "95f6a8df14bf6af1d500d8cfc2c0ead46b5ff47b",
+  "remoteRef": "origin/dev/canonical-mobile",
+  "remoteSha": "95f6a8df14bf6af1d500d8cfc2c0ead46b5ff47b",
+  "clean": false
+}
+Starting project at /Users/dominic/powerlifting_app_dev/powerlift_mobile
+React Compiler enabled
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@54.0.36 - expected version: ~54.0.37
+  expo-constants@18.0.13 - expected version: ~18.0.14
+  expo-file-system@19.0.23 - expected version: ~19.0.24
+  expo-updates@29.0.19 - expected version: ~29.0.20
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+iOS node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+iOS node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (3202/3203)
+| (node:46533) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+iOS node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (3202/3203)
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:46534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS Bundled 6355ms node_modules/expo-router/entry.js (3426 modules)
+ WARN  Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build
+ WARN  expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.
+ WARN  `expo-notifications` functionality is not fully supported in Expo Go:
+We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  fetchJson GET http://127.0.0.1:5000/mobile/me auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/mobile/settings auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson POST http://127.0.0.1:5000/workouts/mobile/1742/timing-events auth? true authMode? auto hasBody? true tz? America/New_York
+iOS node_modules/expo-notifications/build/index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+ LOG  fetchJson parse failed: 404 http://127.0.0.1:5000/workouts/mobile/1742/timing-events <!doctype html>
+<html lang=en>
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+ WARN  fetchJson response error POST /workouts/mobile/1742/timing-events status 404
+iOS Bundled 179ms node_modules/expo-notifications/build/index.js (666 modules)
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744?history=summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/meet-planner/mobile/athlete/current auth? true authMode? auto hasBody? false tz? America/New_York
+iOS Bundled 145ms node_modules/expo-constants/build/Constants.js (560 modules)
+ LOG  Push permission existing status: granted
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  Expo push token received: ExponentPushToken[...i08xk]
+ LOG  fetchJson POST http://127.0.0.1:5000/messenger/mobile/push-token auth? true authMode? auto hasBody? true tz? America/New_York
+ LOG  Push token backend registration response: {"ok": true}
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744?history=summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson PUT http://127.0.0.1:5000/workouts/mobile/1744/items/18094/performed-identity auth? true authMode? auto hasBody? true tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744?history=summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson PUT http://127.0.0.1:5000/workouts/mobile/1744/items/18094/performed-identity auth? true authMode? auto hasBody? true tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744?history=summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/workouts/mobile/1744/items/18094/equipment-manufacturers auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York
+ LOG  fetchJson GET http://127.0.0.1:5000/messenger/mobile/unread-summary auth? true authMode? auto hasBody? false tz? America/New_York

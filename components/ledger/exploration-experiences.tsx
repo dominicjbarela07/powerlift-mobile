@@ -6,6 +6,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/ui/sl-text';
 import { SLContextualHeader } from '@/components/ui/sl-contextual-header';
 import { CanonicalMovementArtwork } from '@/components/movement/CanonicalMovementArtwork';
+import { canonicalArtworkInputFromDefinition } from '@/lib/canonical-movement-artwork';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { SLColors } from '@/constants/theme';
 import { displayWeight, type LedgerUnit } from '@/lib/ledger-data';
@@ -74,7 +75,7 @@ function ContextBar({ data }: { data: LedgerExplorationIndex }) {
 }
 
 function MovementArtwork({ movement, size = 58 }: { movement: LedgerMovementProgress; size?: number }) {
-  return <CanonicalMovementArtwork movement={movement} size={size} style={styles.artworkFrame} testID="ledger-canonical-movement-artwork" />;
+  return <CanonicalMovementArtwork movement={canonicalArtworkInputFromDefinition(movement)} size={size} style={styles.artworkFrame} testID="ledger-canonical-movement-artwork" />;
 }
 
 function MovementRow({ movement, unit, tone, onPress }: { movement: LedgerMovementProgress; unit: LedgerUnit; tone: string; onPress: () => void }) {

@@ -33,8 +33,8 @@ const sameMovementSwap = canonicalArtworkInputForLoggerItem({
 });
 
 assert.deepEqual(
-  initialHydration,
-  sameMovementSwap,
+  resolveCanonicalMovementArtwork(initialHydration),
+  resolveCanonicalMovementArtwork(sameMovementSwap),
   'same-movement Swap must not improve or change the canonical artwork subject',
 );
 assert.deepEqual(resolveCanonicalMovementArtwork(initialHydration), {
@@ -55,8 +55,8 @@ const legacyHydration = canonicalArtworkInputForLoggerItem({
   },
 });
 assert.deepEqual(
-  legacyHydration,
-  initialHydration,
+  resolveCanonicalMovementArtwork(legacyHydration),
+  resolveCanonicalMovementArtwork(initialHydration),
   'a server-governed legacy identity must normalize to the same artwork subject',
 );
 
@@ -65,11 +65,8 @@ const unresolved = canonicalArtworkInputForLoggerItem({
   movement: 'Unmapped Legacy Accessory',
   is_substituted: false,
 });
-assert.deepEqual(unresolved, {
-  kind: 'accessory',
-  is_substituted: false,
-  effective_movement_identity: null,
-});
+assert.equal(unresolved.canonicalIdentityId, null);
+assert.equal(unresolved.sessionItemId, 314, 'row identity is diagnostic context only');
 assert.deepEqual(resolveCanonicalMovementArtwork(unresolved), {
   kind: 'neutral',
   reason: 'missing_canonical_identity',

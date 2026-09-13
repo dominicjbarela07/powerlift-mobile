@@ -1,0 +1,237 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /if \(accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/. Input:
+
+"import { Ionicons } from '@expo/vector-icons';\n" +
+  "import React, { useEffect } from 'react';\n" +
+  'import {\n' +
+  '  Image,\n' +
+  '  type StyleProp,\n' +
+  '  StyleSheet,\n' +
+  '  View,\n' +
+  '  type ViewStyle,\n' +
+  "} from 'react-native';\n" +
+  '\n' +
+  "import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';\n" +
+  "import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';\n" +
+  "import { SLColors, SLRadius } from '@/constants/theme';\n" +
+  "import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';\n" +
+  "import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK, CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';\n" +
+  'import {\n' +
+  '  resolveCanonicalMovementArtwork,\n' +
+  '  normalizeCanonicalMovementArtSubject,\n' +
+  '  type CanonicalMovementArtworkInput,\n' +
+  "} from '@/lib/canonical-movement-artwork';\n" +
+  '\n' +
+  'type Props = Readonly<{\n' +
+  '  movement?: CanonicalMovementArtworkInput | null;\n' +
+  '  size?: number;\n' +
+  '  style?: StyleProp<ViewStyle>;\n' +
+  '  testID?: string;\n' +
+  '  surface?: string;\n' +
+  '  requireHumanApproval?: boolean;\n' +
+  '  /** Keep governed accessory muscle context visible beside an exact movement hero. */\n' +
+  "  accessoryPresentation?: 'movement' | 'muscle-focus';\n" +
+  '}>;\n' +
+  '\n' +
+  'const warned = new Set<string>();\n' +
+  '\n' +
+  "export function CanonicalMovementArtwork({ movement, size = 72, style, testID, surface, accessoryPresentation = 'movement' }: Props) {\n" +
+  '  const subject = normalizeCanonicalMovementArtSubject(movement);\n' +
+  '  const resolution = resolveCanonicalMovementArtwork(subject);\n' +
+  '\n' +
+  '  useEffect(() => {\n' +
+  "    if (!__DEV__ || resolution.kind !== 'neutral') return;\n" +
+  "    const consumer = surface || testID || 'canonical-movement-artwork';\n" +
+  '    const key = `${consumer}:${resolution.reason}:${subject.canonicalIdentityId}:${subject.canonicalKey}:${subject.sessionItemId}`;\n' +
+  '    if (warned.has(key)) return;\n' +
+  '    if (warned.size >= 200) warned.clear();\n' +
+  '    warned.add(key);\n' +
+  "    console.warn('[movement-artwork] unresolved governed subject', {\n" +
+  '      surface: consumer, reason: resolution.reason, sessionItemId: subject.sessionItemId, evidenceId: subject.evidenceId,\n' +
+  '      canonicalId: subject.canonicalIdentityId, effectiveId: subject.effectiveMovementDefinitionId,\n' +
+  '      performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey, source: subject.source,\n' +
+  '    });\n' +
+  '  }, [subject, resolution, surface, testID]);\n' +
+  '\n' +
+  "  if (resolution.kind === 'accessory') {\n" +
+  "    const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;\n" +
+  '    const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;\n' +
+  '    if (exactAsset) {\n' +
+  '      return (\n' +
+  '        <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>\n' +
+  '          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? exactAsset.thumbnail : exactAsset.source} style={styles.image} />\n' +
+  '        </View>\n' +
+  '      );\n' +
+  '    }\n' +
+  '    const asset = accessoryMuscleRegionAsset(resolution.regionKey);\n' +
+  '    return (\n' +
+  '      <View accessibilityLabel={`${asset.label} targeted muscle-group artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+  '        <Image accessibilityIgnoresInvertColors resizeMode="contain" source={asset.source} style={styles.image} />\n' +
+  '      </View>\n' +
+  '    );\n' +
+  '  }\n' +
+  '\n' +
+  "  if (resolution.kind === 'core_variant') {\n" +
+  '    return (\n' +
+  '      <View style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+  '        <View style={{ transform: [{ scale: size / 92 }] }}>\n' +
+  '          <CoreVariantBadge accentColor={SLColors.accentViolet} family={resolution.family} liftArtworkSource={CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]} />\n' +
+  '        </View>\n' +
+  '      </View>\n' +
+  '    );\n' +
+  '  }\n' +
+  '\n' +
+  "  if (resolution.kind === 'core') {\n" +
+  '    return (\n' +
+  '      <View accessibilityLabel={`${resolution.family} canonical Core artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+  '        <Image accessibilityIgnoresInvertColors resizeMode="contain" source={CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]} style={styles.image} />\n' +
+  '      </View>\n' +
+  '    );\n' +
+  '  }\n' +
+  '\n' +
+  '  return (\n' +
+  '    <View accessibilityLabel="Movement artwork unavailable" accessibilityRole="image" style={[styles.frame, styles.neutral, { width: size, height: size }, style]} testID={testID}>\n' +
+  '      <Ionicons name="help-outline" size={Math.max(18, Math.round(size * 0.38))} color={SLColors.accentMuted} />\n' +
+  '    </View>\n' +
+  '  );\n' +
+  '}\n' +
+  '\n' +
+  'const styles = StyleSheet.create({\n' +
+  '  frame: {\n' +
+  "    alignItems: 'center',\n" +
+  '    borderRadius: SLRadius.lg,\n' +
+  "    justifyContent: 'center',\n" +
+  "    overflow: 'hidden',\n" +
+  '  },\n' +
+  "  image: { height: '100%', width: '100%' },\n" +
+  '  neutral: {\n' +
+  '    backgroundColor: SLColors.surfaceFloating,\n' +
+  '    borderColor: SLColors.borderStrong,\n' +
+  '    borderWidth: StyleSheet.hairlineWidth,\n' +
+  '  },\n' +
+  '});\n'
+
+    at file:///Users/dominic/powerlifting_app_dev/powerlift_mobile/scripts/test-human-movement-art-approval.mjs:13:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: "import { Ionicons } from '@expo/vector-icons';\n" +
+    "import React, { useEffect } from 'react';\n" +
+    'import {\n' +
+    '  Image,\n' +
+    '  type StyleProp,\n' +
+    '  StyleSheet,\n' +
+    '  View,\n' +
+    '  type ViewStyle,\n' +
+    "} from 'react-native';\n" +
+    '\n' +
+    "import { resolveApprovedExactMovementArtwork } from '@/lib/movement-artwork-hero';\n" +
+    "import { CoreVariantBadge } from '@/components/workout-logger/core-variant-badge';\n" +
+    "import { SLColors, SLRadius } from '@/constants/theme';\n" +
+    "import { accessoryMuscleRegionAsset } from '@/lib/accessory-muscle-region-assets';\n" +
+    "import { CANONICAL_ACCESSORY_MOVEMENT_ARTWORK, CANONICAL_CORE_MOVEMENT_ARTWORK } from '@/lib/canonical-movement-artwork-assets';\n" +
+    'import {\n' +
+    '  resolveCanonicalMovementArtwork,\n' +
+    '  normalizeCanonicalMovementArtSubject,\n' +
+    '  type CanonicalMovementArtworkInput,\n' +
+    "} from '@/lib/canonical-movement-artwork';\n" +
+    '\n' +
+    'type Props = Readonly<{\n' +
+    '  movement?: CanonicalMovementArtworkInput | null;\n' +
+    '  size?: number;\n' +
+    '  style?: StyleProp<ViewStyle>;\n' +
+    '  testID?: string;\n' +
+    '  surface?: string;\n' +
+    '  requireHumanApproval?: boolean;\n' +
+    '  /** Keep governed accessory muscle context visible beside an exact movement hero. */\n' +
+    "  accessoryPresentation?: 'movement' | 'muscle-focus';\n" +
+    '}>;\n' +
+    '\n' +
+    'const warned = new Set<string>();\n' +
+    '\n' +
+    "export function CanonicalMovementArtwork({ movement, size = 72, style, testID, surface, accessoryPresentation = 'movement' }: Props) {\n" +
+    '  const subject = normalizeCanonicalMovementArtSubject(movement);\n' +
+    '  const resolution = resolveCanonicalMovementArtwork(subject);\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    "    if (!__DEV__ || resolution.kind !== 'neutral') return;\n" +
+    "    const consumer = surface || testID || 'canonical-movement-artwork';\n" +
+    '    const key = `${consumer}:${resolution.reason}:${subject.canonicalIdentityId}:${subject.canonicalKey}:${subject.sessionItemId}`;\n' +
+    '    if (warned.has(key)) return;\n' +
+    '    if (warned.size >= 200) warned.clear();\n' +
+    '    warned.add(key);\n' +
+    "    console.warn('[movement-artwork] unresolved governed subject', {\n" +
+    '      surface: consumer, reason: resolution.reason, sessionItemId: subject.sessionItemId, evidenceId: subject.evidenceId,\n' +
+    '      canonicalId: subject.canonicalIdentityId, effectiveId: subject.effectiveMovementDefinitionId,\n' +
+    '      performedId: subject.performedMovementDefinitionId, movementKey: subject.canonicalKey, source: subject.source,\n' +
+    '    });\n' +
+    '  }, [subject, resolution, surface, testID]);\n' +
+    '\n' +
+    "  if (resolution.kind === 'accessory') {\n" +
+    "    const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;\n" +
+    '    const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;\n' +
+    '    if (exactAsset) {\n' +
+    '      return (\n' +
+    '        <View accessibilityLabel={exactAsset.label} accessibilityRole="image" style={[styles.frame, { width: size, height: size, borderRadius: Math.min(SLRadius.lg, size * 0.16) }, style]} testID={testID}>\n' +
+    '          <Image accessibilityIgnoresInvertColors resizeMode="contain" source={size <= 64 ? exactAsset.thumbnail : exactAsset.source} style={styles.image} />\n' +
+    '        </View>\n' +
+    '      );\n' +
+    '    }\n' +
+    '    const asset = accessoryMuscleRegionAsset(resolution.regionKey);\n' +
+    '    return (\n' +
+    '      <View accessibilityLabel={`${asset.label} targeted muscle-group artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+    '        <Image accessibilityIgnoresInvertColors resizeMode="contain" source={asset.source} style={styles.image} />\n' +
+    '      </View>\n' +
+    '    );\n' +
+    '  }\n' +
+    '\n' +
+    "  if (resolution.kind === 'core_variant') {\n" +
+    '    return (\n' +
+    '      <View style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+    '        <View style={{ transform: [{ scale: size / 92 }] }}>\n' +
+    '          <CoreVariantBadge accentColor={SLColors.accentViolet} family={resolution.family} liftArtworkSource={CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]} />\n' +
+    '        </View>\n' +
+    '      </View>\n' +
+    '    );\n' +
+    '  }\n' +
+    '\n' +
+    "  if (resolution.kind === 'core') {\n" +
+    '    return (\n' +
+    '      <View accessibilityLabel={`${resolution.family} canonical Core artwork`} accessibilityRole="image" style={[styles.frame, { width: size, height: size }, style]} testID={testID}>\n' +
+    '        <Image accessibilityIgnoresInvertColors resizeMode="contain" source={CANONICAL_CORE_MOVEMENT_ARTWORK[resolution.family]} style={styles.image} />\n' +
+    '      </View>\n' +
+    '    );\n' +
+    '  }\n' +
+    '\n' +
+    '  return (\n' +
+    '    <View accessibilityLabel="Movement artwork unavailable" accessibilityRole="image" style={[styles.frame, styles.neutral, { width: size, height: size }, style]} testID={testID}>\n' +
+    '      <Ionicons name="help-outline" size={Math.max(18, Math.round(size * 0.38))} color={SLColors.accentMuted} />\n' +
+    '    </View>\n' +
+    '  );\n' +
+    '}\n' +
+    '\n' +
+    'const styles = StyleSheet.create({\n' +
+    '  frame: {\n' +
+    "    alignItems: 'center',\n" +
+    '    borderRadius: SLRadius.lg,\n' +
+    "    justifyContent: 'center',\n" +
+    "    overflow: 'hidden',\n" +
+    '  },\n' +
+    "  image: { height: '100%', width: '100%' },\n" +
+    '  neutral: {\n' +
+    '    backgroundColor: SLColors.surfaceFloating,\n' +
+    '    borderColor: SLColors.borderStrong,\n' +
+    '    borderWidth: StyleSheet.hairlineWidth,\n' +
+    '  },\n' +
+    '});\n',
+  expected: /if \(accessoryPresentation === 'movement' && __DEV__ && resolution.artworkKey && \(!requireHumanApproval \|\| resolveApprovedExactMovementArtwork\(movement\)\)\)/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.2.1
