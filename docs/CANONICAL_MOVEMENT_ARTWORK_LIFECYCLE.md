@@ -58,7 +58,7 @@ catalog has 195 exact approved accessories, 376 anatomy accessories and 30 Core 
 After a governed catalog change, run `venv/bin/python scripts/export_movement_art_taxonomy.py`
 from canonical backend DEV and commit the resulting projection. The exhaustive
 `test-governed-movement-art-taxonomy.mjs` tests every catalog entry across definition,
-initial Logger hydration, performed references, saved evidence, recap measurement,
+initial Logger hydration, thin older performed references, saved evidence, recap measurement,
 and deterministic legacy contracts. The release harness also checks the live DEV
 catalog against the projection and refuses stale metadata. Backend serialization
 and seven-movement same-Swap contracts live in `tests/test_governed_movement_art_serialization.py`.

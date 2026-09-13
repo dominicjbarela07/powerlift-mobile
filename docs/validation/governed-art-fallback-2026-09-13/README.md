@@ -91,10 +91,10 @@ Enrichment from payload references requires matching IDs. Conflicting catalog ke
 fail closed, including movements without photos. Existing artwork receipts and bytes
 are unchanged; recovering a key never constitutes approval.
 
-`test-governed-movement-art-taxonomy.mjs` exercises all 601 definitions and **6,852
+`test-governed-movement-art-taxonomy.mjs` exercises all 601 definitions and **7,423
 accessory lifecycle contracts**: rich definition, ID-only, thin preferred reference,
 same-ID enrichment, Logger adapter, performed identity, saved sets, recap measurement
-and governed legacy mapping. Denied photography is separately tested against every
+and governed legacy mapping, including older performed references without taxonomy. Denied photography is separately tested against every
 shape. Core uses the explicit Core foreign key and preserves variant semantics.
 The release runner compares the projection against the current canonical DEV DB.
 

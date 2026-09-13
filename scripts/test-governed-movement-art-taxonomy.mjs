@@ -32,6 +32,7 @@ for (const d of catalog) {
     { effective_movement_definition_id: d.id },
     { performed_canonical_movement_definition_id: d.id },
     { effective_movement_identity: { id: d.id } },
+    { performed_movement_identity: { id: d.id } },
     { movement_identity: { key: d.key } },
     { performed_canonical_movement_identity: { id: d.id }, movement_identity: d },
     { effective_movement_identity: { id: d.id }, movement_identity: d },
@@ -67,6 +68,8 @@ assert.equal(resolve({ kind: 'accessory', id: 216, movement: 'Chest-Supported Ma
 assert.equal(resolve({ effective_movement_identity: { id: 216, key: 'accessory_machine_pullover' } }).kind, 'neutral', 'contradictory ID/key cannot borrow catalog taxonomy');
 assert.equal(resolve({ effective_movement_identity: { id: 216, key: 'accessory_machine_pullover', primary_muscle_group: 'lats' } }).kind, 'neutral', 'taxonomy cannot excuse contradictory governed identity');
 assert.equal(resolve({ performed_movement_identity: { id: 216, key: 'machine_equipment_216' } }).kind, 'neutral');
+assert.equal(resolve({ movement_identity: { id: 33 }, performed_movement_identity: { id: 178 } }).canonicalIdentityId, 178, 'known older performed B outranks programmed A even without taxonomy');
+assert.equal(resolve({ movement_identity: { id: 33 }, performed_movement_identity: { id: 178, key: 'accessory_chest_supported_machine_row' } }).kind, 'neutral', 'contradictory older performed identity cannot paint programmed A');
 assert.equal(resolve({ kind: 'accessory', movement_definition_id: 1000999 }).kind, 'neutral', 'genuinely unresolved remains neutral');
 const renderer = fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8');
 assert.match(renderer, /if \(!__DEV__ \|\| resolution.kind !== 'neutral'\) return/);

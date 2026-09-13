@@ -201,7 +201,10 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     identityId = base.effectiveMovementDefinitionId;
     identity = positiveId(row.movement_identity?.id) === identityId ? row.movement_identity || null : { id: identityId };
     source = 'effective';
-  } else if (row.performed_movement_identity && !equipmentOnly(row.performed_movement_identity) && taxonomy(row.performed_movement_identity).primary) {
+  } else if (row.performed_movement_identity && !equipmentOnly(row.performed_movement_identity)
+    && (taxonomy(row.performed_movement_identity).primary
+      || governedAccessoryArtworkTaxonomy(positiveId(row.performed_movement_identity.id))
+      || governedAccessoryArtworkTaxonomy(null, row.performed_movement_identity.key))) {
     identity = row.performed_movement_identity; source = 'performed_movement';
   } else if (row.measurement?.canonical_identity_id) {
     identity = { id: row.measurement.canonical_identity_id, key: row.measurement.canonical_identity_key,
@@ -275,7 +278,7 @@ export function normalizeCanonicalMovementArtSubject(input?: MovementArtInput | 
     taxonomySource = 'catalog';
   }
   return { ...base, domain: 'accessory', canonicalIdentityId: identityId, canonicalKey: identity.key || null, taxonomySource,
-    performedMovementDefinitionId: source === 'performed_evidence' || source === 'performed_canonical' ? identityId : base.performedMovementDefinitionId,
+    performedMovementDefinitionId: ['performed_evidence', 'performed_canonical', 'performed_movement'].includes(source) ? identityId : base.performedMovementDefinitionId,
     family: identity.family || null, primaryMuscleGroup: muscles.primary, secondaryMuscleGroups: muscles.secondary,
     equipmentType: identity.equipment_type || row.measurement?.equipment_type || null, source,
     reason: muscles.primary ? null : identityId ? 'missing_governed_taxonomy' : 'missing_canonical_identity' };
