@@ -8,16 +8,18 @@ import { equipmentFlowSubject, equipmentFlowVariants, equipmentFlowWrite } from 
 
 const source = fs.readFileSync('lib/equipment-type-artwork.ts', 'utf8');
 const code = ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
-function load(dev) {
+function load(dev, channel = '') {
   const requested = [], exports = {};
-  vm.runInNewContext(code, {exports,__DEV__:dev,require:file=>{ requested.push(file); return file; }});
+  vm.runInNewContext(code, {exports,__DEV__:dev,process:{env:{EXPO_PUBLIC_APPROVED_ART_CHANNEL:channel}},require:file=>{ requested.push(file); return file; }});
   return {artwork:exports.EQUIPMENT_TYPE_ARTWORK,requested};
 }
-const dev = load(true), release = load(false);
+const dev = load(true), release = load(false), testflight = load(false, 'testflight');
+assert.equal(testflight.requested.length,2,'TestFlight imports the completed category pair');
+assert.deepEqual(Object.keys(testflight.artwork),Object.keys(dev.artwork));
 assert.deepEqual(Object.keys(dev.artwork).sort(), MACHINE_EQUIPMENT_TYPES.map(row=>row.key).sort());
 assert.equal(dev.requested.length,2,'exactly two category assets');
 assert.equal(release.artwork,null);
-assert.equal(release.requested.length,0,'release does not execute these DEV image requires');
+assert.equal(release.requested.length,0,'Production does not execute these image requires');
 assert.equal(dev.artwork.machine,undefined,'no broad machine or display-label fallback');
 assert.equal(dev.artwork['Plate Loaded'],undefined);
 assert.equal(dev.artwork.cable,undefined);
@@ -43,9 +45,9 @@ for (const row of equipmentFlowVariants(subject)) {
 }
 assert.deepEqual(equipmentFlowVariants(equipmentFlowSubject({...item,effective_movement_identity:{...identity,equipment_type:'plate_loaded_machine'}})).map(row=>row.key),['plate_loaded']);
 const route=fs.readFileSync('app/(tabs)/workout/[workoutId].tsx','utf8');
-assert.match(route,/__DEV__ && identityPickerSubject\?\.domain === 'machine'/,'cable and release presentations stay unchanged');
+assert.match(route,/approvedArtRuntimeEnabled\(\) && identityPickerSubject\?\.domain === 'machine'/,'only governed machine category presentation is enabled');
 assert.match(route,/<EquipmentTypeChoice[\s\S]*equipmentType=\{variant.key\}[\s\S]*onPress=\{\(\) => void chooseEquipmentVariant\(variant.key\)\}/,'same governed key drives art and existing selection callback');
 const component=fs.readFileSync('components/workout-logger/equipment-type-choice.tsx','utf8');
 assert.match(component,/contentFit="contain"/,'never clip the plates or selector pin');
 assert.doesNotMatch(component,/fetchJson|fetch\(|manufacturer_key|performed_movement/,'presentation owns no identity mutations');
-console.log('Equipment category art: two exact keys, distinct verified close-ups, no release assets, contained crop and unchanged governed selection writes PASS');
+console.log('Equipment category art: two exact keys, distinct verified close-ups, TestFlight includes / Production excludes, contained crop and unchanged governed selection writes PASS');

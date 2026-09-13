@@ -35,7 +35,7 @@ const warned = new Set<string>();
 export function CanonicalMovementArtwork({ movement, size = 72, style, testID, surface, accessoryPresentation = 'movement' }: Props) {
   const subject = normalizeCanonicalMovementArtSubject(movement);
   const resolution = resolveCanonicalMovementArtwork(subject);
-  const approved = accessoryPresentation === 'movement' && __DEV__ ? resolveApprovedExactMovementArtwork(subject) : null;
+  const approved = accessoryPresentation === 'movement' ? resolveApprovedExactMovementArtwork(subject) : null;
   const exactAsset = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
 
   useEffect(() => {

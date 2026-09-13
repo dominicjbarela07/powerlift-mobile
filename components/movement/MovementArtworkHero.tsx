@@ -1,3 +1,4 @@
+import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Image } from 'expo-image';
@@ -27,12 +28,13 @@ export const MovementArtworkHero = memo(function MovementArtworkHero({
     const { width, height } = event.nativeEvent.layout;
     setBounds(previous => previous.width === width && previous.height === height ? previous : { width, height });
   }, []);
-  const asset = __DEV__ ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[artworkKey] : null;
+  const enabled = approvedArtRuntimeEnabled();
+  const asset = enabled ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[artworkKey] : null;
   useEffect(() => {
     if (__DEV__ && movementDefinitionId && !asset) reportApprovedArtworkBypass(
       { identity_type: 'accessory', movement_definition_id: movementDefinitionId }, null, `movement-art-hero:${surface}`);
   }, [asset, movementDefinitionId, surface]);
-  if (!__DEV__) return null;
+  if (!enabled) return null;
   if (!asset) return null;
   const rgb = surface === 'superset' ? '13,11,18' : '0,0,0';
   const shade = (alpha: number) => `rgba(${rgb},${alpha})`;

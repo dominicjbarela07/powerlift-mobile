@@ -1,3 +1,4 @@
+import { approvedArtRuntimeEnabled } from './approved-art-runtime';
 import policy from '@/artwork-review/runtime-policy.json';
 import { normalizeCanonicalMovementArtSubject, resolveCanonicalMovementArtwork, type CanonicalMovementArtworkInput, type MovementArtInput, type CanonicalAccessoryArtworkKey } from './canonical-movement-artwork';
 
@@ -18,7 +19,7 @@ type ApprovalPolicy = Readonly<{
  */
 export function resolveApprovedExactMovementArtwork(
   movement?: MovementArtInput | null,
-  dev = typeof __DEV__ !== 'undefined' && __DEV__,
+  dev = approvedArtRuntimeEnabled(),
   approvals: ApprovalPolicy = policy,
 ): ApprovedExactArtwork | null {
   if (!dev) return null;
@@ -60,9 +61,9 @@ export function reportApprovedArtworkBypass(movement: MovementArtInput | null | 
  */
 export function resolveMovementArtworkPresentation(movement: MovementArtInput | null | undefined,
   expanded: boolean, complete: boolean, surface: string,
-  dev = typeof __DEV__ !== 'undefined' && __DEV__, approvals: ApprovalPolicy = policy) {
+  dev = approvedArtRuntimeEnabled(), approvals: ApprovalPolicy = policy) {
   const approved = resolveApprovedExactMovementArtwork(movement, dev, approvals);
-  if (expanded && !complete) reportApprovedArtworkBypass(movement, approved?.key || null, `${surface}:hero`, approvals, dev);
+  if (expanded && !complete) reportApprovedArtworkBypass(movement, approved?.key || null, `${surface}:hero`, approvals);
   return {
     thumbnailPresentation: expanded ? 'muscle-focus' as const : 'movement' as const,
     hero: expanded && !complete ? approved : null,

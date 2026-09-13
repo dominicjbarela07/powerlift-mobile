@@ -46,7 +46,7 @@ if (!apiBase) {
 const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'strength-ledger-ios-ota-'));
 const run = (command, commandArgs, options = {}) => execFileSync(command, commandArgs, {
   cwd: root,
-  env: { ...process.env, EXPO_PUBLIC_API_BASE: apiBase },
+  env: { ...process.env, EXPO_PUBLIC_API_BASE: apiBase, EXPO_PUBLIC_APPROVED_ART_CHANNEL: branch === 'testflight' ? 'testflight' : 'disabled' },
   encoding: 'utf8',
   maxBuffer: 64 * 1024 * 1024,
   stdio: options.capture ? ['ignore', 'pipe', 'inherit'] : 'inherit',

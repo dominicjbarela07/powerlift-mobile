@@ -9,8 +9,8 @@ export type EquipmentTypeArtwork = Readonly<{
 
 // Category illustrations only. Equipment identity, manufacturer, model and
 // comparability continue to be owned by the existing equipment flow.
-// Keep this newly generated pair out of TestFlight/Production bundles.
-export const EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = __DEV__ ? {
+// The validated category pair is enabled for DEV and the governed TestFlight OTA only.
+export const EQUIPMENT_TYPE_ARTWORK: Readonly<Record<MachineEquipmentType, EquipmentTypeArtwork>> | null = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
   plate_loaded: {
     source: require('@/assets/images/equipment-types/v1/plate-loaded.png'),
     description: 'Plates on loading horns',

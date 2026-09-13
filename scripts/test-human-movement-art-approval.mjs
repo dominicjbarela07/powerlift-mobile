@@ -8,16 +8,16 @@ import { isMovementArtworkReviewDenied } from '../lib/movement-art-review-policy
 const root = process.cwd();
 assert.equal(assertHumanArtworkGate(root).canonical, 195);
 const state = JSON.parse(fs.readFileSync('artwork-review/review-state.json'));
-assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = __DEV__ \? \{/,
-  'the explicitly DEV-only generated family must be removed from release bundles');
-assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /const approved = accessoryPresentation === 'movement' && __DEV__ \? resolveApprovedExactMovementArtwork\(subject\) : null/, 'every exact image requires a positive human receipt; absence retains anatomy');
+assert.match(fs.readFileSync('lib/canonical-movement-artwork-assets.ts', 'utf8'), />> = \(__DEV__ \|\| process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight'\) \? \{/,
+  'only DEV and explicitly authorized TestFlight exports include the approved family');
+assert.match(fs.readFileSync('components/movement/CanonicalMovementArtwork.tsx', 'utf8'), /const approved = accessoryPresentation === 'movement' \? resolveApprovedExactMovementArtwork\(subject\) : null/, 'every exact image requires a positive human receipt; absence retains anatomy');
 // Actual decision totals belong to the human and must never be reset by a test.
 for (const item of state.items) {
   if (item.status === 'pending' || item.status === 'rejected') assert.equal(item.human_approved, false);
 }
 assert.equal(isMovementArtworkReviewDenied('example', true, ['example']), true);
 assert.equal(isMovementArtworkReviewDenied('different', true, ['example']), false);
-assert.equal(isMovementArtworkReviewDenied('example', false, ['example']), false, 'DEV review cannot alter released runtime behavior');
+assert.equal(isMovementArtworkReviewDenied('example', false, ['example']), false, 'disabled artwork runtime preserves existing fallback');
 
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'sl-art-approval-gate-'));
 try {
@@ -72,4 +72,4 @@ for (const [folder, file] of [
   assert.ok(source.indexOf('raise SystemExit') < source.indexOf('shutil.copyfile'));
 }
 assert.ok(fs.readFileSync('scripts/start-canonical-dev-metro.mjs', 'utf8').includes('assertHumanArtworkGate();'));
-console.log('[human-art-review] exact human receipts, pending denial, identity-bound paths, immutable bytes, DEV-only rejection policy and retired automatic pipelines PASS');
+console.log('[human-art-review] exact human receipts, pending denial, identity-bound paths, immutable bytes, runtime-gated rejection policy and retired automatic pipelines PASS');

@@ -82,6 +82,7 @@ import {
   type SupersetWorkspaceItem,
 } from '@/components/workout-logger/superset-round-workspace';
 import { ManufacturerBrandMark } from '@/components/workout-logger/manufacturer-brand-mark';
+import { approvedArtRuntimeEnabled } from '@/lib/approved-art-runtime';
 import { EquipmentTypeChoice } from '@/components/workout-logger/equipment-type-choice';
 import { manufacturerMatchesSearch } from '@/lib/manufacturer-registry';
 import {
@@ -7128,7 +7129,7 @@ export default function WorkoutViewerScreen() {
       return;
     }
 
-    if (!manualMovementSelectionRef.current && firstIncomplete?.key) {
+    if ((!manualMovementSelectionRef.current || !restored) && firstIncomplete?.key) {
       const anyCoreExpanded = Object.values(expandedCoreDetails).some(Boolean);
       const anyAccessoryExpanded = Object.values(expandedCompletedMovements).some(Boolean);
       if (!anyCoreExpanded && !anyAccessoryExpanded) {
@@ -9941,7 +9942,7 @@ export default function WorkoutViewerScreen() {
             style={[
               styles.movementHistorySheet,
               styles.equipmentPickerSheet,
-              __DEV__ && identityPickerSubject?.domain === 'machine' && identityPickerManufacturer && styles.equipmentTypeArtSheet,
+              approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine' && identityPickerManufacturer && styles.equipmentTypeArtSheet,
             ]}
           >
             <View style={styles.coreWheelHandle} />
@@ -9979,7 +9980,7 @@ export default function WorkoutViewerScreen() {
                       </TouchableOpacity>
                       <View style={styles.equipmentPickerHeaderCopy}>
                         <Text style={styles.coreWheelTitle}>
-                          {__DEV__ && identityPickerSubject?.domain === 'machine'
+                          {approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine'
                             ? 'Equipment type'
                             : identityPickerContinuation.kind === 'evidence_correction'
                             ? 'Which version did you use?'
@@ -10014,7 +10015,7 @@ export default function WorkoutViewerScreen() {
                     ) : null}
                     <View style={[
                       styles.equipmentVariantOptions,
-                      __DEV__ && identityPickerSubject?.domain === 'machine' && styles.equipmentVariantArtOptions,
+                      approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine' && styles.equipmentVariantArtOptions,
                     ]}>
                       {(identityPickerSubject ? equipmentFlowVariants(identityPickerSubject) : []).map((variant) => {
                         const activeIdentity = activeEquipmentIdentity(identityPickerItem);
@@ -10047,7 +10048,7 @@ export default function WorkoutViewerScreen() {
                           variant.key,
                           current,
                         ).join(' · ');
-                        if (__DEV__ && identityPickerSubject?.domain === 'machine') {
+                        if (approvedArtRuntimeEnabled() && identityPickerSubject?.domain === 'machine') {
                           return (
                             <EquipmentTypeChoice
                               key={variant.key}

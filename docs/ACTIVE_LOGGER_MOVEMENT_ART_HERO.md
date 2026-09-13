@@ -65,9 +65,17 @@ TSX consumers with native host elements represented as trees. It checks every
 approved mapping, source import, PRE/ACTIVE/remount, independent coverage,
 pending/rejected/missing receipts, thumbnail geometry and diagnostic behavior.
 Native screenshots remain a separate visual acceptance requirement; see the
-[validation record and outstanding checks](validation/movement-art-consumption-2026-09-13/README.md).
+[current TestFlight validation](validation/testflight-approved-art-2026-09-13/README.md).
 
 The hidden DEV focal lab remains a composition study, never an approval surface.
-The existing `__DEV__` boundary still excludes this photographic family from
-release bundles. This task authorizes **DEV only**, with no TestFlight or
-Production publication and no new art generation.
+The September 13 TestFlight authorization enables the current positive mapping
+through `EXPO_PUBLIC_APPROVED_ART_CHANNEL=testflight`, injected by the governed
+iOS publisher. The inline registry condition permits Metro to remove all image
+requires from ordinary/Production exports. DEV diagnostics and the review UI stay
+private. No artwork or human approval is changed.
+
+The export guard checks actual bytes: every approved app/thumbnail derivative
+must be present, while pending, rejected and master image hashes must be absent.
+The independently validated equipment-category close-up pair uses the same
+TestFlight switch, but remains separate from exact movement identity and its
+human-review receipts. Neither flag nor automation grants movement approval.

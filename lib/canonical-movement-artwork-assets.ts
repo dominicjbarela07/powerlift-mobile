@@ -18,12 +18,13 @@ export const CANONICAL_CORE_MOVEMENT_ARTWORK: Readonly<
   press: require('@/assets/images/lift-icons/achievement-material-v2/press.png'),
 };
 
-// This generated family is explicitly DEV-only pending human review and release authorization.
-// Metro removes the unreachable asset requires from TestFlight/Production exports.
+// Keep this build-time condition inline so Metro removes the asset requires
+// outside DEV and the explicitly authorized TestFlight export. Human receipts
+// and the export hash guard independently restrict which candidates may ship.
 export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
   CanonicalAccessoryArtworkKey,
   Readonly<{ source: ImageSourcePropType; thumbnail: ImageSourcePropType; label: string }>
->> = __DEV__ ? {
+>> = (__DEV__ || process.env.EXPO_PUBLIC_APPROVED_ART_CHANNEL === 'testflight') ? {
   accessory_ankle_weight_psoas_march: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-psoas-march-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-psoas-march-v1-thumb.png'),
@@ -1006,7 +1007,7 @@ export function canonicalMovementArtworkSource(
 ): ImageSourcePropType | null {
   const resolution = resolveCanonicalMovementArtwork(movement);
   if (resolution.kind === 'accessory') {
-    const approved = __DEV__ ? resolveApprovedExactMovementArtwork(movement) : null;
+    const approved = resolveApprovedExactMovementArtwork(movement);
     const exact = approved ? CANONICAL_ACCESSORY_MOVEMENT_ARTWORK[approved.key] : null;
     if (exact) return exact.source;
     return accessoryMuscleRegionAsset(resolution.regionKey).source;
