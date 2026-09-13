@@ -23,6 +23,11 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
   CanonicalAccessoryArtworkKey,
   Readonly<{ source: ImageSourcePropType; thumbnail: ImageSourcePropType; label: string }>
 >> = __DEV__ ? {
+  accessory_ankle_weight_psoas_march: {
+    source: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-psoas-march-v1.png'),
+    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-psoas-march-v1-thumb.png'),
+    label: 'Athlete performing ankle-weight psoas march',
+  },
   accessory_flat_dumbbell_bench_press: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/flat-dumbbell-bench-press-v1-thumb.png'),
@@ -52,11 +57,6 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-squeeze-press-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-squeeze-press-v1-thumb.png'),
     label: 'Athlete performing dumbbell squeeze press',
-  },
-  accessory_dumbbell_hex_press: {
-    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-hex-press-v1.png'),
-    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-hex-press-v1-thumb.png'),
-    label: 'Athlete performing dumbbell hex press',
   },
   accessory_dumbbell_flye: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-flye-v1.png'),
@@ -863,11 +863,6 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/seated-good-morning-v1-thumb.png'),
     label: 'Athlete performing seated good morning',
   },
-  accessory_dumbbell_good_morning: {
-    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-good-morning-v1.png'),
-    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-good-morning-v1-thumb.png'),
-    label: 'Athlete performing dumbbell good morning',
-  },
   accessory_glute_ham_raise_with_weight: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/glute-ham-raise-with-weight-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/glute-ham-raise-with-weight-v1-thumb.png'),
@@ -963,11 +958,6 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/deficit-reverse-lunge-v1-thumb.png'),
     label: 'Athlete performing deficit reverse lunge',
   },
-  accessory_dumbbell_psoas_march: {
-    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-psoas-march-v1.png'),
-    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-psoas-march-v1-thumb.png'),
-    label: 'Athlete performing dumbbell psoas march',
-  },
   accessory_ankle_weight_hip_flexion: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-hip-flexion-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/ankle-weight-hip-flexion-v1-thumb.png'),
@@ -997,11 +987,6 @@ export const CANONICAL_ACCESSORY_MOVEMENT_ARTWORK: Readonly<Record<
     source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-serratus-punch-v1.png'),
     thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-serratus-punch-v1-thumb.png'),
     label: 'Athlete performing dumbbell serratus punch',
-  },
-  accessory_dumbbell_pullover_serratus_reach: {
-    source: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-serratus-reach-v1.png'),
-    thumbnail: require('@/assets/images/movement-artwork/free-weight-v1/dumbbell-pullover-serratus-reach-v1-thumb.png'),
-    label: 'Athlete performing dumbbell pullover serratus reach',
   },
   barbell_row: {
     source: require('@/assets/images/movement-artwork/free-weight-v1/barbell-row-v1.png'),

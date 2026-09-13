@@ -1,69 +1,6 @@
 {
   "schema_version": 1,
-  "denied_keys": [
-    "accessory_barbell_back_extension",
-    "accessory_barbell_finger_curl",
-    "accessory_barbell_glute_bridge",
-    "accessory_barbell_good_morning",
-    "accessory_barbell_hip_thrust",
-    "accessory_barbell_skull_crusher",
-    "accessory_barbell_windshield_wiper",
-    "accessory_bradford_press",
-    "accessory_bulgarian_split_squat",
-    "accessory_cambered_bar_bench_press",
-    "accessory_chest_supported_dumbbell_lateral_raise",
-    "accessory_chest_supported_dumbbell_reverse_flye",
-    "accessory_chest_supported_dumbbell_row",
-    "accessory_chest_supported_kelso_row",
-    "accessory_chest_supported_kelso_shrug",
-    "accessory_chest_supported_t_bar_row",
-    "accessory_concentration_curl",
-    "accessory_decline_skull_crusher",
-    "accessory_drag_curl",
-    "accessory_dumbbell_good_morning",
-    "accessory_dumbbell_hex_press",
-    "accessory_dumbbell_hip_thrust",
-    "accessory_dumbbell_lateral_raise",
-    "accessory_dumbbell_overhead_triceps_extension",
-    "accessory_dumbbell_psoas_march",
-    "accessory_dumbbell_pullover_serratus_reach",
-    "accessory_dumbbell_serratus_punch",
-    "accessory_dumbbell_sit_up",
-    "accessory_dumbbell_skull_crusher",
-    "accessory_dumbbell_squeeze_press",
-    "accessory_ez_bar_skull_crusher",
-    "accessory_good_morning",
-    "accessory_half_kneeling_landmine_press",
-    "accessory_helms_row",
-    "accessory_high_bar_squat",
-    "accessory_incline_bench_rear_delt_flye",
-    "accessory_incline_dumbbell_curl",
-    "accessory_jefferson_curl",
-    "accessory_jm_press",
-    "accessory_kelso_shrug",
-    "accessory_kroc_row",
-    "accessory_landmine_rotation",
-    "accessory_larsen_press",
-    "accessory_lean_away_dumbbell_lateral_raise",
-    "accessory_lying_dumbbell_lateral_raise",
-    "accessory_meadows_row",
-    "accessory_one_arm_landmine_row",
-    "accessory_partial_dumbbell_lateral_raise",
-    "accessory_pjr_pullover",
-    "accessory_rolling_dumbbell_triceps_extension",
-    "accessory_seal_row",
-    "accessory_seated_dumbbell_calf_raise",
-    "accessory_seated_dumbbell_lateral_raise",
-    "accessory_single_arm_landmine_press",
-    "accessory_single_leg_hip_thrust",
-    "accessory_t_bar_row",
-    "accessory_tate_press",
-    "accessory_three_point_dumbbell_row",
-    "accessory_weighted_sorenson_hold",
-    "accessory_wide_grip_t_bar_row",
-    "accessory_wrist_roller",
-    "accessory_zercher_good_morning"
-  ],
+  "denied_keys": [],
   "approved_exact_artwork": [
     {
       "key": "accessory_alternating_dumbbell_curl",
@@ -84,6 +21,12 @@
       "app_sha256": "40679182dc561dd69362d9550702705d4ad44eaebb1bab67123b5fb6b3e93730"
     },
     {
+      "key": "accessory_ankle_weight_psoas_march",
+      "movement_definition_id": 646,
+      "candidate_id": "dbdcd379caf4fb75b32afcc1",
+      "app_sha256": "321a78113870fded2fe7aaf42a53d85bc97c00d97f431d86ece31061bd61b1e1"
+    },
+    {
       "key": "accessory_arnold_press",
       "movement_definition_id": 81,
       "candidate_id": "existing-81-1cba1751a88e",
@@ -102,6 +45,12 @@
       "app_sha256": "a1d4db0d50d426b4c96eb57ab2d3fde2cc5230860d30cee9798e369632c361e1"
     },
     {
+      "key": "accessory_barbell_back_extension",
+      "movement_definition_id": 545,
+      "candidate_id": "f3ca088b8eab5e49eb9fdcb0",
+      "app_sha256": "db45402f4bf4157d25a8c7c741165f4a3e5ecea7fac3bdfc78810b7407e86f08"
+    },
+    {
       "key": "accessory_barbell_calf_raise",
       "movement_definition_id": 478,
       "candidate_id": "existing-478-1fbd762a4186",
@@ -112,6 +61,12 @@
       "movement_definition_id": 251,
       "candidate_id": "existing-251-6e16969d4372",
       "app_sha256": "300a8f66f10501f2ab8a88e7f47266249a276039ca48e2c38d6a79fb4047e54f"
+    },
+    {
+      "key": "accessory_barbell_finger_curl",
+      "movement_definition_id": 333,
+      "candidate_id": "beac64fa6b75da56508b32c7",
+      "app_sha256": "a5942280e845419e73b846aa0074925c60f9066ab34c76f5c09608f84008df32"
     },
     {
       "key": "accessory_barbell_floor_press",
@@ -126,6 +81,24 @@
       "app_sha256": "adff2ae24fc634d86cad897bbab4cdbd9976103fc1dc7686e0b1441ab5152e1a"
     },
     {
+      "key": "accessory_barbell_glute_bridge",
+      "movement_definition_id": 420,
+      "candidate_id": "d2e8f7a4c3bd391ac89dec1a",
+      "app_sha256": "661fadd319d17e1cb5c1d273c76da55f678ed2e2202a9ffc0bc8394d70670a4e"
+    },
+    {
+      "key": "accessory_barbell_good_morning",
+      "movement_definition_id": 393,
+      "candidate_id": "d686fe47c46b87c0e35ef82b",
+      "app_sha256": "b4507b8354d6f502da0b58a7a56d7e22b935dd19ffa4f930655b005334e6d7c4"
+    },
+    {
+      "key": "accessory_barbell_hip_thrust",
+      "movement_definition_id": 418,
+      "candidate_id": "fa6c65756a9cb8312fce7558",
+      "app_sha256": "9f56ef9ef103c2291c3dc5bd3b0040f6e3ab6844a94f8d0c26f0f5a4a42672bd"
+    },
+    {
       "key": "accessory_barbell_pullover",
       "movement_definition_id": 156,
       "candidate_id": "existing-156-3abcda2a9226",
@@ -136,6 +109,18 @@
       "movement_definition_id": 234,
       "candidate_id": "existing-234-1684e7f4e206",
       "app_sha256": "8c357b80af7d0449eb9ae6fd40ad5cd019569ebe0ac874a0a90be4602be8a82d"
+    },
+    {
+      "key": "accessory_barbell_skull_crusher",
+      "movement_definition_id": 291,
+      "candidate_id": "178bb560d0358869e69878f8",
+      "app_sha256": "abe293697a45b9d618aa46d62f883f28279be237c12748d7245921d672314db2"
+    },
+    {
+      "key": "accessory_barbell_windshield_wiper",
+      "movement_definition_id": 528,
+      "candidate_id": "e78129b160d524883bb7b447",
+      "app_sha256": "aa90bce38b175e864305483560bdc10dfebec30ac387ef2d4abf6771d0a82044"
     },
     {
       "key": "accessory_barbell_wrist_curl",
@@ -174,6 +159,24 @@
       "app_sha256": "4e96a9a932c237b07c0f3f5c2c3ddf2f06831a4fe9ca9db3bf341e944df3d7bc"
     },
     {
+      "key": "accessory_bradford_press",
+      "movement_definition_id": 90,
+      "candidate_id": "c74a8f233421fa70dcc9c611",
+      "app_sha256": "170fcd711e601c24e82c1bed2793206541f8efd3dac6021675b9a054ab90856d"
+    },
+    {
+      "key": "accessory_bulgarian_split_squat",
+      "movement_definition_id": 354,
+      "candidate_id": "9e88fe3a964fb4b3305173e0",
+      "app_sha256": "e10078a0ddbb50492e6450ab4dbf46301e7bc8bce5a65b9d6c120fb054a98ebd"
+    },
+    {
+      "key": "accessory_cambered_bar_bench_press",
+      "movement_definition_id": 47,
+      "candidate_id": "5959c93e723389b45858d160",
+      "app_sha256": "6721b466406d867f70e1f9a1ff876a4434509f4219886b65220a620de0eda39e"
+    },
+    {
       "key": "accessory_cheat_curl",
       "movement_definition_id": 268,
       "candidate_id": "existing-268-72bd33e4bd4a",
@@ -186,10 +189,52 @@
       "app_sha256": "4ed702908ea5e5cdd61d635e687e29195a340b2931560385fc824602c8d9d0b3"
     },
     {
+      "key": "accessory_chest_supported_dumbbell_lateral_raise",
+      "movement_definition_id": 108,
+      "candidate_id": "306dc6090aa9986433f79be4",
+      "app_sha256": "bcab8d4bfe3e493a5d6ace360331ce9355d6bc352c5fd5de26af88866f683649"
+    },
+    {
+      "key": "accessory_chest_supported_dumbbell_reverse_flye",
+      "movement_definition_id": 127,
+      "candidate_id": "9e8366baa208633bca0dd89b",
+      "app_sha256": "49a8a63dda007e81492a07b8e2cdcb47cdc0401064e2f40c3eb2c456df2ecbc7"
+    },
+    {
+      "key": "accessory_chest_supported_dumbbell_row",
+      "movement_definition_id": 194,
+      "candidate_id": "2f25dec4e506f661fb33f4d6",
+      "app_sha256": "f898db1a8690961188fbf3d800aa7cb9a64f6ebb719f7edbe9c44a77713b2b78"
+    },
+    {
+      "key": "accessory_chest_supported_kelso_row",
+      "movement_definition_id": 205,
+      "candidate_id": "709164d609f64a1a9546febb",
+      "app_sha256": "874f66c70d841debb1d49a19008f49481a6bb03299af6f4ef63453c86342bb8b"
+    },
+    {
+      "key": "accessory_chest_supported_kelso_shrug",
+      "movement_definition_id": 241,
+      "candidate_id": "2b859ef3a9b610949a642277",
+      "app_sha256": "afa0cc7615218c0e6c146aba595523f6e475ad7f970339f3bdce4ad8a10305ad"
+    },
+    {
+      "key": "accessory_chest_supported_t_bar_row",
+      "movement_definition_id": 199,
+      "candidate_id": "6e7734eac43593177792d550",
+      "app_sha256": "1fe9b9682e7a5d4a2d32671c719070b8fe99a71d4e992c340f1ceaa68cee0585"
+    },
+    {
       "key": "accessory_close_grip_bench_press",
       "movement_definition_id": 289,
       "candidate_id": "existing-289-34cbcfe4a344",
       "app_sha256": "dcce40fa5224bc16b6e0f9048c26206a1b1f3ee5fd72ae9e761f844111fe07df"
+    },
+    {
+      "key": "accessory_concentration_curl",
+      "movement_definition_id": 262,
+      "candidate_id": "ca32cda271f62b3711a3fbc8",
+      "app_sha256": "ee040127e2ee08356ff4cc12a0e42d398b50ed435926affa102fae3ea683977c"
     },
     {
       "key": "accessory_cross_body_hammer_curl",
@@ -216,6 +261,12 @@
       "app_sha256": "585a37f452e5a5e47380b1ae24d822d4c8d2afca1febb26d1d3a087e6fe5796c"
     },
     {
+      "key": "accessory_decline_skull_crusher",
+      "movement_definition_id": 295,
+      "candidate_id": "9511f6af6d5d3d9750ea1e5e",
+      "app_sha256": "1fc4f24d3a77d9b0305224ba88248debf7466aafe44fef6e6450d14d1284d405"
+    },
+    {
       "key": "accessory_deficit_reverse_lunge",
       "movement_definition_id": 426,
       "candidate_id": "existing-426-b7e584fb1db8",
@@ -226,6 +277,12 @@
       "movement_definition_id": 480,
       "candidate_id": "existing-480-863cc433be9d",
       "app_sha256": "d8dcb932784487d3acf4ebf8742e97b5cb0ca150acdda518c600158a8b0adce7"
+    },
+    {
+      "key": "accessory_drag_curl",
+      "movement_definition_id": 266,
+      "candidate_id": "bcca2060472fe6aead619f56",
+      "app_sha256": "973aab56010ed63160ca2bbfd789d222edad63c3bd8dbc3f609dfe672c14e75e"
     },
     {
       "key": "accessory_dumbbell_archer_row",
@@ -282,6 +339,24 @@
       "app_sha256": "ad9eee448738567f386049cb1195b12de05a4a261ac361911a14d91922eedcab"
     },
     {
+      "key": "accessory_dumbbell_hip_thrust",
+      "movement_definition_id": 419,
+      "candidate_id": "9ec6d42f89a34028484bae94",
+      "app_sha256": "62e2b24ff04d0bb2ed97aa4ef22b5f63c276b19eea9de12997bc38dcbcede9f4"
+    },
+    {
+      "key": "accessory_dumbbell_lateral_raise",
+      "movement_definition_id": 103,
+      "candidate_id": "328e95f86182e8df9b089c8d",
+      "app_sha256": "da25d829fb67708372cd613f4b12de90fe47be0d411d8a7dd99146577554526c"
+    },
+    {
+      "key": "accessory_dumbbell_overhead_triceps_extension",
+      "movement_definition_id": 296,
+      "candidate_id": "14edbc1bf77ba1b24225f62b",
+      "app_sha256": "73e8532c1da79e917e8b938ee1d1c72d42ea44ea36b7568d50ef65df230ff9d6"
+    },
+    {
       "key": "accessory_dumbbell_preacher_curl",
       "movement_definition_id": 260,
       "candidate_id": "existing-260-998885d05e71",
@@ -306,6 +381,12 @@
       "app_sha256": "7165e7c91b6fd81ae143ef40a5432cd8f97df4b83ffd19985f97b7ca68745283"
     },
     {
+      "key": "accessory_dumbbell_serratus_punch",
+      "movement_definition_id": 560,
+      "candidate_id": "3dbe9edc7e5b9277127ebaa6",
+      "app_sha256": "bc139d9d6279641f978c271682e5e65b52fb1d41140959c253cf029b4576d30b"
+    },
+    {
       "key": "accessory_dumbbell_shrug",
       "movement_definition_id": 235,
       "candidate_id": "existing-235-2288275b7815",
@@ -316,6 +397,24 @@
       "movement_definition_id": 523,
       "candidate_id": "existing-523-a00d055bd34f",
       "app_sha256": "aab661f92a7e716724c14fd019c7d9c53c0422d6e11e30a37ddb2f1e30ac840a"
+    },
+    {
+      "key": "accessory_dumbbell_sit_up",
+      "movement_definition_id": 496,
+      "candidate_id": "2565fbaceac311a474fda11e",
+      "app_sha256": "4262d212fe2653657053df031c8bcc46f4bebe926d912b58e9f2a8c131e7f9db"
+    },
+    {
+      "key": "accessory_dumbbell_skull_crusher",
+      "movement_definition_id": 293,
+      "candidate_id": "f11ec8bb26619230e58b6206",
+      "app_sha256": "12ab94335df4dfd3480687a7e7be1a1ba4257a8a2ea1b9d4ab294d38e1602c8b"
+    },
+    {
+      "key": "accessory_dumbbell_squeeze_press",
+      "movement_definition_id": 37,
+      "candidate_id": "86d3e3c45a05a3b02d8df847",
+      "app_sha256": "0a00df537f408a2f0e4c60b0d6bde06e09b1a45191608a265a6a858ddc553ce1"
     },
     {
       "key": "accessory_dumbbell_step_down",
@@ -346,6 +445,12 @@
       "movement_definition_id": 261,
       "candidate_id": "existing-261-8f6542a238a3",
       "app_sha256": "b7704c5113d4dbfd4b3bb32ca35380517d3f793b35a671656745e8589c543f56"
+    },
+    {
+      "key": "accessory_ez_bar_skull_crusher",
+      "movement_definition_id": 292,
+      "candidate_id": "6f786855c6b0a2ddb835afab",
+      "app_sha256": "46626b16fa7ddf54c75b9edf6a406e33fa54f12da501de73d8559542555af89c"
     },
     {
       "key": "accessory_farmer_carry",
@@ -402,6 +507,12 @@
       "app_sha256": "ed2b61ee59c18f41c94e2cdd647683d5f7713b84839a8782117f965cf72fd600"
     },
     {
+      "key": "accessory_good_morning",
+      "movement_definition_id": 546,
+      "candidate_id": "9635b933e05318233687a15b",
+      "app_sha256": "16db63f89835112bc6db8f1e38cfe9c7ef40b6ffef6ad0ba22472edc770900c0"
+    },
+    {
       "key": "accessory_gorilla_row",
       "movement_definition_id": 202,
       "candidate_id": "existing-202-5f13f8dd621a",
@@ -412,6 +523,12 @@
       "movement_definition_id": 45,
       "candidate_id": "existing-45-23cc93213d5f",
       "app_sha256": "576b2298b67d3ac331caeeb41b68b8818240144b1b3f00b66f912670a52f3f77"
+    },
+    {
+      "key": "accessory_half_kneeling_landmine_press",
+      "movement_definition_id": 87,
+      "candidate_id": "9a198a3297f07211f8dcba5c",
+      "app_sha256": "cb6d1e8cd7f03d7597cd18f804b70f79ee0da42249a2503fd402787bb8bfb691"
     },
     {
       "key": "accessory_hammer_curl",
@@ -432,16 +549,40 @@
       "app_sha256": "f32625373de4c3e1f4fa95675b3c7e47210c2cf6685b66245450a59fe4fd2732"
     },
     {
+      "key": "accessory_helms_row",
+      "movement_definition_id": 200,
+      "candidate_id": "10ea7843be69547ca8a368fe",
+      "app_sha256": "62eccc87f2954ecae8fba1d5eda02c8dbb507f7689a843c8428575aca02dd6ae"
+    },
+    {
+      "key": "accessory_high_bar_squat",
+      "movement_definition_id": 349,
+      "candidate_id": "35a3cef411c6353aa387316d",
+      "app_sha256": "4e6ca5fd35ec70926c7e7b1fde4a61875db886106a37cc1c95645c44b59c165a"
+    },
+    {
       "key": "accessory_incline_bench_dumbbell_row",
       "movement_definition_id": 196,
       "candidate_id": "existing-196-bd408563094c",
       "app_sha256": "b2843dbad59e4529f67ac7b4e950650d3949a3c3dbf684e15c0201c0718c9547"
     },
     {
+      "key": "accessory_incline_bench_rear_delt_flye",
+      "movement_definition_id": 128,
+      "candidate_id": "10ca2a4cb45d5db26f65834d",
+      "app_sha256": "a71b66e3caf45458adedde88a4a2b79c87a295bcdfb1f2135f61569ed4a1f390"
+    },
+    {
       "key": "accessory_incline_dumbbell_bench_press",
       "movement_definition_id": 33,
       "candidate_id": "existing-33-e05a3bf38fa7",
       "app_sha256": "14df7b7e03afa5cc37074a53a00117f7da58771821873de5ec0f94fa3e7d60a4"
+    },
+    {
+      "key": "accessory_incline_dumbbell_curl",
+      "movement_definition_id": 257,
+      "candidate_id": "3ea38c3a103a0fdcbbaad99a",
+      "app_sha256": "4c2a84d8cbb7538e4086630ced16b7896f3ecf9043f7c47bbc1bfd45873ca1c3"
     },
     {
       "key": "accessory_incline_dumbbell_flye",
@@ -462,10 +603,34 @@
       "app_sha256": "dfaa79be70a0abfc5a5041a190d13bfb945d8b517073846c2a3ee68aadc32c48"
     },
     {
+      "key": "accessory_jefferson_curl",
+      "movement_definition_id": 547,
+      "candidate_id": "f446851c99e5d016bd4cb3ea",
+      "app_sha256": "97e902a1c6c47a4ea341596f54110e11318148feed78662525ee52adeda2665e"
+    },
+    {
+      "key": "accessory_jm_press",
+      "movement_definition_id": 290,
+      "candidate_id": "a87891ab9dc55a5aecf21de0",
+      "app_sha256": "ec09889815eb84dcaecc2af000e3b493c4121a642456aa4fa02edc293bc1c1d6"
+    },
+    {
       "key": "accessory_kas_glute_bridge",
       "movement_definition_id": 424,
       "candidate_id": "existing-424-8ea01113aedc",
       "app_sha256": "0f8c902e80d22b93c106bd42289d0d64140fe6822d7836af07825d398d6f2d3e"
+    },
+    {
+      "key": "accessory_kelso_shrug",
+      "movement_definition_id": 242,
+      "candidate_id": "6e7e72507bca7cb4c2620ac1",
+      "app_sha256": "36cc64ed65ce1b28ac42f67e265d47ee639a771d011012f986ae551e02cb936e"
+    },
+    {
+      "key": "accessory_kroc_row",
+      "movement_definition_id": 157,
+      "candidate_id": "12fa54e079be66ef501596dd",
+      "app_sha256": "565fc0d896d9124ebd555d048c7cf9139ec27a746942c1898a165cccffa1a00f"
     },
     {
       "key": "accessory_landmine_press",
@@ -474,10 +639,22 @@
       "app_sha256": "09aea674dd272e36062b2e3853f656a9d895e19c584b7534b2561db5f518d9dc"
     },
     {
+      "key": "accessory_landmine_rotation",
+      "movement_definition_id": 526,
+      "candidate_id": "9a90a98de48fb2df9e2419c8",
+      "app_sha256": "6a2b880b6f212621408bd67a6abf6d2efb933f466fc55c78e37c689228828959"
+    },
+    {
       "key": "accessory_landmine_row",
       "movement_definition_id": 159,
       "candidate_id": "existing-159-9b8d79b0c3a8",
       "app_sha256": "5af96063baa9d753a050a54684404d16b6286c24955e97b89836d21e61520a85"
+    },
+    {
+      "key": "accessory_larsen_press",
+      "movement_definition_id": 44,
+      "candidate_id": "c21d93af35adb5e5acb1761e",
+      "app_sha256": "2469b5862f78a13ff76dc92195532fc7adc1acd73f1a26491811bd96841328ea"
     },
     {
       "key": "accessory_lat_biased_chest_supported_dumbbell_row",
@@ -496,6 +673,12 @@
       "movement_definition_id": 360,
       "candidate_id": "existing-360-c246c60cd1ca",
       "app_sha256": "b11a64b3eac71d0d427f8d872fde6f632b20e76c65fcc379dc2c82bb887a4e5a"
+    },
+    {
+      "key": "accessory_lean_away_dumbbell_lateral_raise",
+      "movement_definition_id": 106,
+      "candidate_id": "40d02b8114f15e28ef43dcbc",
+      "app_sha256": "20063a2918670276a9ecbe1fecc73167bcc73ccb71f19d7eff9141139edc380d"
     },
     {
       "key": "accessory_lever_bar_pronation",
@@ -528,6 +711,18 @@
       "app_sha256": "95c94c650a49d64932fedb821c694718fb15123aee3bd9ddc5733059560ef2ce"
     },
     {
+      "key": "accessory_lying_dumbbell_lateral_raise",
+      "movement_definition_id": 107,
+      "candidate_id": "002fdea8869cefe72d636472",
+      "app_sha256": "98524844205e4664eca28a84bfca9d45912da41a72aa7b0cb552fd3261c5fcc1"
+    },
+    {
+      "key": "accessory_meadows_row",
+      "movement_definition_id": 153,
+      "candidate_id": "cec5839e3dfba5963b43f3d0",
+      "app_sha256": "0e0d29857373961bb513edb3d53c9073d55366b2a41374bc8417aa25cde6e648"
+    },
+    {
       "key": "accessory_neutral_grip_dumbbell_bench_press",
       "movement_definition_id": 35,
       "candidate_id": "existing-35-296d401df6ee",
@@ -540,10 +735,22 @@
       "app_sha256": "ee0345f66c83615b941f2be1e687f7b0d4ab082ec8ec1c100ff05e1e054d0464"
     },
     {
+      "key": "accessory_one_arm_landmine_row",
+      "movement_definition_id": 160,
+      "candidate_id": "3f1683a4b3708031be95b9e5",
+      "app_sha256": "012aecd4d915419ca0a5808bca6cac0e635d497d5132446acba1e7bec9b5d08a"
+    },
+    {
       "key": "accessory_overhead_barbell_shrug",
       "movement_definition_id": 239,
       "candidate_id": "existing-239-6ba24a86e6fc",
       "app_sha256": "c4dfbba5bf2e97163109d264b3d4fb8129dbbb446b3c4b81a181112d765b9fd2"
+    },
+    {
+      "key": "accessory_partial_dumbbell_lateral_raise",
+      "movement_definition_id": 109,
+      "candidate_id": "7db82a2ea76e3da146bdfbb7",
+      "app_sha256": "c8ba7f6748c17c543520169a3cc466de25136c44df171d9dbd438ef089d1b42a"
     },
     {
       "key": "accessory_pendlay_row",
@@ -556,6 +763,12 @@
       "movement_definition_id": 362,
       "candidate_id": "existing-362-87e596521883",
       "app_sha256": "1043b05c3b235a7fa135bf34f67e1abf9c4189e6a7549eb8ec43a5201aad8e84"
+    },
+    {
+      "key": "accessory_pjr_pullover",
+      "movement_definition_id": 300,
+      "candidate_id": "68825e3f1a8f1583a80cff79",
+      "app_sha256": "7213955b152b5774d4d262bbd819e4ce185f9cbaceb58dcd7f94dde41ca64736"
     },
     {
       "key": "accessory_plate_front_raise",
@@ -642,6 +855,12 @@
       "app_sha256": "150f1c1d7b81c69e05b76ca26fb8396f6ada59b08166c5c7b87af5e2adeed9fe"
     },
     {
+      "key": "accessory_rolling_dumbbell_triceps_extension",
+      "movement_definition_id": 299,
+      "candidate_id": "cc927f933bde1d986cbf9f32",
+      "app_sha256": "44e0eba7666689b6b98ceb170f52e0cb2160c5d67b849119c1c4c74d9e55e6a2"
+    },
+    {
       "key": "accessory_romanian_deadlift",
       "movement_definition_id": 387,
       "candidate_id": "existing-387-b9194abb637a",
@@ -654,10 +873,28 @@
       "app_sha256": "7576cf1734cbe0269499314cd9ce25142d68b9bfbc6cf2905e2d5432eb06338f"
     },
     {
+      "key": "accessory_seal_row",
+      "movement_definition_id": 193,
+      "candidate_id": "dc93962ff2ba57a922540910",
+      "app_sha256": "cb8cf084ee7633451d57df66612e86bbf43aa0da66c46e2206cfd67ba6c39db1"
+    },
+    {
+      "key": "accessory_seated_dumbbell_calf_raise",
+      "movement_definition_id": 479,
+      "candidate_id": "8fd7cad47c02dd45290993f7",
+      "app_sha256": "ea885c68438ece788d04a14190a6f5cab18f554265970b5c6c0feb3a38c93da8"
+    },
+    {
       "key": "accessory_seated_dumbbell_curl",
       "movement_definition_id": 255,
       "candidate_id": "existing-255-c3e09688f658",
       "app_sha256": "7cf1873a7b45f7e351f82bfffab3678130875f9eb68fd068ca4a5c24c969bce7"
+    },
+    {
+      "key": "accessory_seated_dumbbell_lateral_raise",
+      "movement_definition_id": 104,
+      "candidate_id": "fc78b6ea33a42873b8e8b90b",
+      "app_sha256": "6fd9d4322db6fa0af76fc70559367fc45e47002f5cad416f34e0224c6bae1d45"
     },
     {
       "key": "accessory_seated_dumbbell_shoulder_press",
@@ -678,6 +915,12 @@
       "app_sha256": "966d5cf8a205d57adf6746ce61b5348be7f45f514b8f28578779a5f8a230c447"
     },
     {
+      "key": "accessory_single_arm_landmine_press",
+      "movement_definition_id": 88,
+      "candidate_id": "19630db860f56dc567216fcc",
+      "app_sha256": "4b9948d466ac3ac99c19cd3d8611acdb9cde0090f27243e197e93a54a58ee4e3"
+    },
+    {
       "key": "accessory_single_arm_preacher_curl",
       "movement_definition_id": 259,
       "candidate_id": "existing-259-816cb8157f5b",
@@ -688,6 +931,12 @@
       "movement_definition_id": 477,
       "candidate_id": "existing-477-0112167b9e7b",
       "app_sha256": "1f7d09285857ee9d9b9c3b110110af8eb411f2909a59678e5ca6fe73b3cd537a"
+    },
+    {
+      "key": "accessory_single_leg_hip_thrust",
+      "movement_definition_id": 422,
+      "candidate_id": "21258909b16cd32a763f1ea6",
+      "app_sha256": "598a1f30b8fe810a74ac3dd25f6b474861e18c1454b7b0000ec9a3ab6419122a"
     },
     {
       "key": "accessory_single_leg_romanian_deadlift",
@@ -780,6 +1029,24 @@
       "app_sha256": "622ed79eaca0e8c131c5ae8401902e0af5f360acb58dcee17a7446c7bd7b674c"
     },
     {
+      "key": "accessory_t_bar_row",
+      "movement_definition_id": 197,
+      "candidate_id": "3ba704aa187db2f7eb9d2d29",
+      "app_sha256": "cd9f45be4dd4c8c618eddbd1c9e85e34801918f6a2ec3ace0916bd4eb1bc1ce1"
+    },
+    {
+      "key": "accessory_tate_press",
+      "movement_definition_id": 298,
+      "candidate_id": "4008bdb56e70b4d34d62d535",
+      "app_sha256": "0e0aa8793c07cf16b21ac922c9d6f15760d43b75b1850204a1e354bbd82d4440"
+    },
+    {
+      "key": "accessory_three_point_dumbbell_row",
+      "movement_definition_id": 158,
+      "candidate_id": "5795559f49af0c86eb2e8be3",
+      "app_sha256": "e6839f11ff7c87a2ef518875f797ced571faac87acba6bddc473fe9d04230be7"
+    },
+    {
       "key": "accessory_trap_bar_shrug",
       "movement_definition_id": 236,
       "candidate_id": "existing-236-eb306eb32df2",
@@ -816,6 +1083,12 @@
       "app_sha256": "c935ea019b742a10f88e2e9c1baa54fa2dd6e437216e0e49d115a2e986d477c3"
     },
     {
+      "key": "accessory_weighted_sorenson_hold",
+      "movement_definition_id": 549,
+      "candidate_id": "213f6f72a3266e7d7ca19659",
+      "app_sha256": "d2636716c769a45d596e0e5010545e39a0357d035eb87c458f6179ed7e0d6fbb"
+    },
+    {
       "key": "accessory_wide_elbow_barbell_row",
       "movement_definition_id": 204,
       "candidate_id": "existing-204-52632fba91a2",
@@ -840,10 +1113,28 @@
       "app_sha256": "c19e961be53eedaff0325aa818f3f959b31a5c83c4082d1c4aa79726394382ba"
     },
     {
+      "key": "accessory_wide_grip_t_bar_row",
+      "movement_definition_id": 198,
+      "candidate_id": "45d0e073e62f8e7c2c833447",
+      "app_sha256": "d26aedf1e43f76fd298de50b679969e07ed05942ab4f61f6cf221f6dbaa5785f"
+    },
+    {
+      "key": "accessory_wrist_roller",
+      "movement_definition_id": 330,
+      "candidate_id": "18bf80d33b8ea1b81dc7f47e",
+      "app_sha256": "7c536ea935b329aaca265be6ea244ce3c17747c464c8252bd3aeb72d6f0f08a8"
+    },
+    {
       "key": "accessory_z_press",
       "movement_definition_id": 89,
       "candidate_id": "existing-89-f7eac0edf2f9",
       "app_sha256": "a3aa513ada13e20968e28452a5beae5aca0d663b14557f467200ae8aa437b3ba"
+    },
+    {
+      "key": "accessory_zercher_good_morning",
+      "movement_definition_id": 548,
+      "candidate_id": "86c3b54494286b088fdc7aff",
+      "app_sha256": "c0aa306c3539035829d400a5ff16a574ffd94564691d051425f82adaaf904317"
     },
     {
       "key": "accessory_zercher_squat",

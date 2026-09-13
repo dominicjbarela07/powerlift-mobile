@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "revision": 420,
+  "revision": 480,
   "asset_root": "/Users/dominic/powerlifting_app_dev/powerlift_mobile/artwork-review",
-  "updated_at": "2026-09-13T15:32:46.275977+00:00",
-  "updated_at_display": "Sep 13, 2026 08:32 AM PT (Sep 13, 2026 11:32 AM Eastern)",
+  "updated_at": "2026-09-13T15:46:18.864974+00:00",
+  "updated_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
   "families": {
     "canonical_free_weight_accessories": {
       "label": "Free-Weight Accessories",
@@ -17339,7 +17339,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 38,
@@ -17431,7 +17437,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 39,
@@ -17917,7 +17929,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 45,
@@ -18163,7 +18181,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 73,
@@ -18969,7 +18993,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 88,
@@ -19058,7 +19088,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 89,
@@ -19233,7 +19269,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 103,
@@ -19322,7 +19364,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 104,
@@ -19402,7 +19450,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 105,
@@ -19571,7 +19625,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 107,
@@ -19660,7 +19720,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 108,
@@ -19746,7 +19812,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 109,
@@ -19835,7 +19907,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 110,
@@ -20244,7 +20322,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 128,
@@ -20330,7 +20414,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 129,
@@ -20890,7 +20980,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 154,
@@ -21219,7 +21315,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 158,
@@ -21305,7 +21407,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 159,
@@ -21474,7 +21582,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 161,
@@ -21880,7 +21994,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 194,
@@ -21969,7 +22089,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 195,
@@ -22215,7 +22341,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 198,
@@ -22295,7 +22427,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 199,
@@ -22387,7 +22525,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 200,
@@ -22473,7 +22617,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 201,
@@ -22879,7 +23029,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 206,
@@ -23605,7 +23761,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 242,
@@ -23685,7 +23847,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 251,
@@ -24254,7 +24422,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 258,
@@ -24660,7 +24834,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 263,
@@ -24986,7 +25166,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 267,
@@ -25318,7 +25504,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 291,
@@ -25407,7 +25599,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 292,
@@ -25493,7 +25691,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 293,
@@ -25579,7 +25783,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 294,
@@ -25745,7 +25955,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 296,
@@ -25831,7 +26047,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 297,
@@ -26000,7 +26222,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 299,
@@ -26080,7 +26308,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 300,
@@ -26166,7 +26400,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 325,
@@ -26652,7 +26892,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 331,
@@ -26898,7 +27144,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 334,
@@ -27387,7 +27639,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 350,
@@ -27793,7 +28051,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 355,
@@ -29153,7 +29417,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 394,
@@ -29313,7 +29583,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 396,
@@ -29473,7 +29749,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 419,
@@ -29559,7 +29841,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 420,
@@ -29645,7 +29933,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 421,
@@ -29820,7 +30114,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 423,
@@ -30780,7 +31080,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 480,
@@ -31026,7 +31332,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 497,
@@ -31586,7 +31898,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 527,
@@ -31746,7 +32064,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 545,
@@ -31832,7 +32156,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 546,
@@ -31921,7 +32251,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 547,
@@ -32007,7 +32343,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 548,
@@ -32087,7 +32429,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 549,
@@ -32176,7 +32524,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 560,
@@ -32262,7 +32616,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 561,
@@ -32342,7 +32702,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 569,
@@ -32428,7 +32794,13 @@
       "created_at": "2026-09-12T13:02:25.547181+00:00",
       "created_at_display": "Sep 12, 2026 06:02 AM PT (Sep 12, 2026 09:02 AM Eastern)",
       "test_only": false,
-      "existing_dev_backfill": true
+      "existing_dev_backfill": true,
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
+      }
     },
     {
       "movement_definition_id": 570,
@@ -32849,6 +33221,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "4eb5389395e9fbd57e81f18206b3ff88055f31b8de2c5a2fb9dfe8294ab63c8d",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33048,6 +33426,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "f2f94af7e62704d6b467b7e35afa4052afacf8a92c3c89abfbcd947fac83e613",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33149,6 +33533,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "1fc3061bb4d024675cb7f086cd0a8e0cf8a7f32feaa23263f74445191729b261",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33439,6 +33829,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d7c46c03024c9a46fa1f9d6a85db56ab42a710eaa06c508f114057f2fda25abf",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33532,6 +33928,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "37b950322a0424af8c845f28691f9bd084e6f9aea4b8f33d1a39bdf79b91c8a0",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33634,6 +34036,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "1fb2bf6c6cbd5ce50daf711ad173ed522189ae0d6d5dcaa23e7386844b907268",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33736,6 +34144,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "4252439728cf611cdd020153f568a10f1616c2f867185ee329088da4d766c4cf",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -33831,6 +34245,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "59e947504d25814fd70977ccd0d6070d5e00c11962a5196ce6e1d30f0ae35fee",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -34023,6 +34443,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "22c2ddcaa215be497bc1b38ee8ae46a620d6ce2c1113f6141d21b47b0f28ba8e",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -34118,6 +34544,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "a4ff34e518ca265c29e33d9cf620896710ddcf7ff6fb913638682b8f12185423",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -34309,6 +34741,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "ecfd328c10407b7174cf784750bbb30665ea89079fc54dd39b86abefd5711c4b",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -35733,6 +36171,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "617f16ab3ab2739c4e29b08a70a1a1850e0e01a0b286e72ebbf65d9ab4541406",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -35933,6 +36377,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "b523df93936bd9e585d32462621144aca667d725c2ef1bed3184383c1f6c8da2",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -37259,6 +37709,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "a9109ebad0f548220f82eabe118285c180cd0d67dfd3bffc5eaf96530f452754",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -37542,6 +37998,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "ddde038e4f4b722ee0a7e66121c3c01df7100ce44c7c7d07bfc148f00bb68b96",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -37638,6 +38100,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "a2b6e0fe9960b170b73b4a17645ad5b74cd119a4d8243d8912ab9b3221670102",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -37733,6 +38201,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "c2db075f9fd7a7a0883056933f3f55e5b23ed88569972bdabf4f305b92fef89a",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38017,6 +38491,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "456f5d662a017b4cfa4a8282dcda71c2c2938ced56bc7c401f45019b0d44e701",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38115,6 +38595,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "5b24ad174dcf8415b64d032f26710cc1352f9aad5acf927fcfbba6f0d8682c6e",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38208,6 +38694,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "0029d266c2121faab213ef01e8081d5c0d80c73d401c60a28edf76c15e59ecfb",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38327,6 +38819,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "9801ebfd5c768b62575de4e5b83e1b5ea83031b0d4a70fe563b3ab67c3a67b1d",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38431,6 +38929,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "a3a20e247833b31605def5604c8ce173a18c4cc5ec079036de348459a8f981ed",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38628,6 +39132,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "b6e9e48b87d4e8b4f7cae20d45a9f7774d61335c46445d0e0c1d3854ae2dda46",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38729,6 +39239,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "2b2ba230041280c3b69d34e940864a5f6368d8b3c6803e27505a74eb8fb63149",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -38831,6 +39347,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "d01c13a4fa50b9496c3da284a0fe82794428b59dd0cda5942b53ffdf5aef0d22",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39025,6 +39547,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "31194bbc6190bb0976d821f4c864a52f8b7bc4ccfa8b51c42db2c9022b03f415",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39120,6 +39648,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "6f7cb919b05b27c47d56c5e2285be7459401c7b50b4cf5f7cafd001cc5cbb882",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39213,6 +39747,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "5bbf56c384086733e391eda87f5435d7a53b7f901e9eeb611e42072a3fde7a1b",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39312,6 +39852,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "f8b5c75f530cf769edcbf16560e8309809bc88b3a111a74dd723ce2203b16a76",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39411,6 +39957,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "ed7ccab470221bf571f12f70204352a542e389735e300c7b26e8e251810172b0",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39606,6 +40158,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "b13e9ef7c87ba8cb274f2ac2e2e8b02e751e7b4ecc68458f1c0107b776ad27fe",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -39984,6 +40542,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "1c12ad5a6d9f0b00fb8bbd592dc61399af807d48f4067e76eabca6a03fa37bbf",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40083,6 +40647,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "2124463ed8dc0e3b7489e163c0ebdab6c99b7898117b410ade919db081e5f07d",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40275,6 +40845,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "51eebcba1e3377960ea4f6b4f50f9cf84b4c9de93aee9c76c99df8fd81c832e2",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40377,6 +40953,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "0cd8cb0b61a5545f9648bf59165583b01d896ea6d872d8d14fe6a9a325d38e93",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40473,6 +41055,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "36cc0fa4e59e377c9539592d5001551a8bea5138ade00483be34e885e79928d7",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40574,6 +41162,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "4200944d9aaca5b3a8a03820e903cf8d9748626388ab8e522972d0c3c6dde334",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -40959,6 +41553,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "3efc74774831a081d03475891b74b74c339963813b6cc36312185d2f1b19029a",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -41058,6 +41658,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "90e6c7229571a4818f0f5643aed1f9ee0c9f8d006d601058638d59bcf2769e50",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -41159,6 +41765,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "5b35c6b83086081b63480f0508e51f1076376a07160453118dc7389fbd0ef385",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -41354,6 +41966,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "76e520c863e58fec68c869596d057fd78846273dff20cc29cefe7453c5861214",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -41553,6 +42171,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "efdc109a6f1cb3c09a266aded2e0554d3228d65cdc0b360754a9ddc30fa9240f",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -41942,6 +42566,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "798be42f2d2f417cf657278390101815afe7815a0bf05c0469356248e4513d6f",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -42046,6 +42676,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "743b75938a0aaa74c0ac089811958ba91b0d76ab5352fab8054dc865c53732ad",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -42141,6 +42777,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "ff81edaa433b5ad5f2fe04ac7100047a988850e454b75cd45dd441002c616298",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -42236,6 +42878,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "b4b775b8b9c710eb2754e8fdc863583910400d95c2c2255804a186cd685e22e2",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -42331,6 +42979,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "5cff5a5c826fba0b9b847b0f3b6efdaaf5162ef5f38efb4db09038ba665c66a2",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -42529,6 +43183,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "4defaa6740e5bcbd619acb815633e926278c0695df1ea3a2ffd6d43ab4efbbde",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {
@@ -43087,6 +43747,12 @@
         "reviewer_user_id": 1,
         "candidate_sha256": "b2fff5af70c16ea080aad3fa5ba529df40bd15de16c4b78fef0a1e5af6f8aa70",
         "source": "human_review_ui"
+      },
+      "asset_deletion": {
+        "deleted_at": "2026-09-13T15:46:18.864931+00:00",
+        "deleted_at_display": "Sep 13, 2026 08:46 AM PT (Sep 13, 2026 11:46 AM Eastern)",
+        "source": "explicit_owner_requested_cleanup",
+        "owner_instruction": "ITS GOOD, DELETE ALL REJECTED IMAGES AND WRAP IT UP"
       }
     },
     {

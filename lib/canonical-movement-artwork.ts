@@ -8,14 +8,22 @@ export type CanonicalCoreArtworkFamily = 'squat' | 'bench' | 'deadlift' | 'press
 // Entire free-weight inventory: docs/validation/free-weight-completion-2026-09-11/asset-manifest.json.
 // Numeric MovementDefinition IDs are the lookup boundary. Stable keys and primary
 // taxonomy must agree, excluding row-ID collisions and contradictory subjects.
+// Retired artwork keeps exact identity validation for immutable performed history.
+const RETIRED_ACCESSORY_ARTWORK_IDENTITIES = {
+  38: { key: 'accessory_dumbbell_hex_press', primary: 'chest' },
+  395: { key: 'accessory_dumbbell_good_morning', primary: 'hamstrings' },
+  561: { key: 'accessory_dumbbell_pullover_serratus_reach', primary: 'serratus' },
+  569: { key: 'accessory_dumbbell_psoas_march', primary: 'hip_flexors' },
+} as const;
+
 export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
+  646: { key: 'accessory_ankle_weight_psoas_march', primary: 'hip_flexors' },
   32: { key: 'accessory_flat_dumbbell_bench_press', primary: 'chest' },
   33: { key: 'accessory_incline_dumbbell_bench_press', primary: 'chest' },
   34: { key: 'accessory_decline_dumbbell_bench_press', primary: 'chest' },
   35: { key: 'accessory_neutral_grip_dumbbell_bench_press', primary: 'chest' },
   36: { key: 'accessory_dumbbell_floor_press', primary: 'chest' },
   37: { key: 'accessory_dumbbell_squeeze_press', primary: 'chest' },
-  38: { key: 'accessory_dumbbell_hex_press', primary: 'chest' },
   39: { key: 'accessory_dumbbell_flye', primary: 'chest' },
   40: { key: 'accessory_incline_dumbbell_flye', primary: 'chest' },
   41: { key: 'accessory_decline_dumbbell_flye', primary: 'chest' },
@@ -177,7 +185,6 @@ export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
   392: { key: 'accessory_snatch_grip_romanian_deadlift', primary: 'hamstrings' },
   393: { key: 'accessory_barbell_good_morning', primary: 'hamstrings' },
   394: { key: 'accessory_seated_good_morning', primary: 'hamstrings' },
-  395: { key: 'accessory_dumbbell_good_morning', primary: 'hamstrings' },
   396: { key: 'accessory_glute_ham_raise_with_weight', primary: 'hamstrings' },
   546: { key: 'accessory_good_morning', primary: 'lower_back' },
   548: { key: 'accessory_zercher_good_morning', primary: 'lower_back' },
@@ -197,21 +204,19 @@ export const CANONICAL_ACCESSORY_ARTWORK_IDENTITIES = {
   419: { key: 'accessory_dumbbell_hip_thrust', primary: 'glutes' },
   425: { key: 'accessory_sumo_romanian_deadlift', primary: 'glutes' },
   426: { key: 'accessory_deficit_reverse_lunge', primary: 'glutes' },
-  569: { key: 'accessory_dumbbell_psoas_march', primary: 'hip_flexors' },
   570: { key: 'accessory_ankle_weight_hip_flexion', primary: 'hip_flexors' },
   580: { key: 'accessory_plate_neck_flexion', primary: 'neck' },
   581: { key: 'accessory_plate_neck_extension', primary: 'neck' },
   582: { key: 'accessory_plate_lateral_neck_flexion', primary: 'neck' },
   528: { key: 'accessory_barbell_windshield_wiper', primary: 'obliques' },
   560: { key: 'accessory_dumbbell_serratus_punch', primary: 'serratus' },
-  561: { key: 'accessory_dumbbell_pullover_serratus_reach', primary: 'serratus' },
   4: { key: 'barbell_row', primary: 'upper_back' },
   5: { key: 'single_arm_dumbbell_row', primary: 'upper_back' },
 } as const;
 export type CanonicalAccessoryArtworkKey =
   typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES]['key'];
 const REGISTERED_ACCESSORY_ARTWORK_KEYS = new Set<string>(
-  Object.values(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES).map((entry) => entry.key),
+  [...Object.values(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES), ...Object.values(RETIRED_ACCESSORY_ARTWORK_IDENTITIES)].map((entry) => entry.key),
 );
 
 type GovernedAccessoryIdentity = Readonly<{
@@ -379,15 +384,18 @@ function explicitAccessoryIdentity(
     if (positiveId(idOverride) && positiveId(identity?.id) !== positiveId(idOverride)) return null;
     const taxonomy = governedTaxonomy(identity, allowParentFallback);
     if (!id || !taxonomy) return null;
-    const registered = CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[
+    const activeArtwork = CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[
       id as keyof typeof CANONICAL_ACCESSORY_ARTWORK_IDENTITIES
+    ];
+    const registered = activeArtwork ?? RETIRED_ACCESSORY_ARTWORK_IDENTITIES[
+      id as keyof typeof RETIRED_ACCESSORY_ARTWORK_IDENTITIES
     ];
     if (registered && (
       identity?.key !== registered.key
       || taxonomy.primaryMuscleGroup !== registered.primary
     )) return null;
     if (!registered && REGISTERED_ACCESSORY_ARTWORK_KEYS.has(identity?.key || '')) return null;
-    const artworkKey: CanonicalAccessoryArtworkKey | undefined = registered?.key;
+    const artworkKey: CanonicalAccessoryArtworkKey | undefined = activeArtwork?.key;
     return { id, ...taxonomy, ...(artworkKey ? { artworkKey } : {}) };
   };
 

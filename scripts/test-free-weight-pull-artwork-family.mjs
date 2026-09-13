@@ -99,8 +99,8 @@ assert.equal(resolve({ id: 314, key: 'accessory_machine_dip', primary_muscle_gro
 assert.equal(resolveCanonicalMovementArtwork({ kind:'core', core_movement_id:33, core_family:'bench' }).kind, 'core');
 assert.equal(resolveCanonicalMovementArtwork({ kind:'accessory', display_name:'Incline Dumbbell Bench Press' }).kind, 'neutral');
 const pushAudit = JSON.parse(read('docs/validation/free-weight-push-family-2026-09-11/taxonomy-audit.json'));
-for (const row of [...pushAudit.qualifying, ...audit.qualifying]) {
-  assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id]?.key, row.key, 'all 98 prior exact mappings remain intact');
+for (const row of [...pushAudit.qualifying, ...audit.qualifying].filter(row=>row.id!==38)) {
+  assert.equal(CANONICAL_ACCESSORY_ARTWORK_IDENTITIES[row.id]?.key, row.key, '97 surviving prior exact mappings remain intact; retired hex press is excluded');
 }
 for (const id of [546,548]) {
   assert.equal(manifest.movements.some(row => row.id === id), false, 'hinges were deferred from this historical Pull batch; the Completion audit governs their new artwork');
@@ -111,4 +111,4 @@ for (const asset of manifest.movements) {
   const attempt = JSON.parse(read(`docs/validation/free-weight-pull-family-2026-09-11/attempts/${asset.id}-${asset.attempt}.json`));
   assert.ok(attempt.reference_paths[0].endsWith('/masters/dumbbell-incline-bench-press-v1.png'), 'every accepted asset uses the original master first');
 }
-console.log('[free-weight-pull-family] 47 exact assets with reviewed correction provenance, 98 prior mappings, 49 real search DTOs, mixed push/pull Session, fail-closed swaps and historical scope passed');
+console.log('[free-weight-pull-family] 47 exact assets with human correction provenance, 97 surviving prior mappings, 49 real search DTOs, mixed push/pull Session, fail-closed swaps and historical scope passed');
